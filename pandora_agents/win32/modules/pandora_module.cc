@@ -885,12 +885,15 @@ Pandora_Module::addGenericCondition (string condition, list<Condition *> **condi
 	if (sscanf (condition.c_str (), "%255s %lf %1023[^\n]s", operation, &(cond->value_1), command) == 3) {
 		cond->operation = operation;
 		cond->command = command;
+		cond->command = command;
+		cond->command = "cmd.exe /c \"" + cond->command + "\"";
 		(*condition_list)->push_back (cond);		
 	/* Regular expression */
 	} else if (sscanf (condition.c_str (), "=~ %1023s %1023[^\n]s", string_value, command) == 2) {
 		cond->operation = "=~";
 		cond->string_value = string_value;
 		cond->command = command;
+		cond->command = "cmd.exe /c \"" + cond->command + "\"";
 		if (regcomp (&(cond->regexp), string_value, 0) != 0) {
 			pandoraDebug ("Invalid regular expression %s", string_value);
 			delete (cond);
@@ -901,12 +904,15 @@ Pandora_Module::addGenericCondition (string condition, list<Condition *> **condi
 	} else if (sscanf (condition.c_str (), "(%lf , %lf) %1023[^\n]s", &(cond->value_1), &(cond->value_2), command) == 3) {
 		cond->operation = "()";
 		cond->command = command;
+		cond->command = "cmd.exe /c \"" + cond->command + "\"";
 		(*condition_list)->push_back (cond);
 	} else {
 		pandoraLog ("Invalid condition: %s", condition.c_str ());
 		delete (cond);
 		return;
 	}
+
+	return;
 }
 
 /** 

@@ -1,0 +1,37 @@
+#!C:\Program Files\ActiveState Perl Dev Kit 9.0.1\bin\perlsvc-gui.exe
+PAP-Version: 1.0
+Packer: ..\Program Files\ActiveState Perl Dev Kit 9.0.1\bin\perlsvc.exe
+Script: pandora_agent
+Cwd: C:\pc
+Byref: 0
+Clean: 0
+Date: 2012-05-23 15:41:01
+Debug: 
+Dependent: 0
+Dyndll: 0
+Exe: Win32\PandoraAgent.exe
+Force: 0
+Gui: 0
+Hostname: netviewersim
+Lib: lib:Win32\lib
+Manifest: 
+No-Compress: 0
+No-Gui: 0
+No-Logo: 0
+Runlib: 
+Shared: none
+Singleton: 0
+Tmpdir: 
+Verbose: 0
+Version-Comments: 
+Version-CompanyName: 
+Version-FileDescription: 
+Version-FileVersion: 
+Version-InternalName: 
+Version-LegalCopyright: 
+Version-LegalTrademarks: 
+Version-OriginalFilename: 
+Version-ProductName: 
+Version-ProductVersion: 
+Warnings: 0
+Xclude: 0

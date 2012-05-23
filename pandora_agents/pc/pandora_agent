@@ -1,0 +1,2263 @@
+#!/usr/bin/perl
+# **********************************************************************
+# Pandora FMS Generic Unix/Perl Agent
+# (c) 2009-2011 Artica Soluciones Tecnológicas
+# with the help of many people. Please see http://pandorafms.org
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+=head1 NAME
+
+pandora_agent - Pandora FMS Agent
+
+=head1 VERSION
+
+Version 4.0
+
+=head1 USAGE
+
+<< pandora_agent F<pandora home> >>
+
+=cut
+package PerlSvc;
+
+use strict;
+use warnings;
+
+use POSIX qw(strftime floor);
+use Sys::Hostname;
+use File::Basename;
+use File::Copy;
+use IO::Socket;
+
+# Agent XML data
+my $Xml;
+
+# Semaphore used to acces $Xml
+my $Sem = undef;
+
+# Semaphore used to control the number of threads
+my $ThreadSem = undef;
+
+# Load thread support
+eval {
+	local $SIG{__DIE__};
+	require threads;
+	require threads::shared;
+	require Thread::Semaphore;
+};
+if (!$@) {
+	$Sem = Thread::Semaphore->new;
+	threads::shared::share (\$Xml);
+	threads::shared::share (\$Sem);
+}	
+
+use constant AGENT_VERSION => '4.0.1';
+use constant AGENT_BUILD => '111213';
+
+# Commands to retrieve total memory information in kB
+use constant TOTALMEMORY_CMDS => {
+	linux => 'cat /proc/meminfo | grep MemTotal: | awk \'{ print $2 }\'',
+	solaris => '/usr/sbin/prtconf | awk \'/Memory/ { print $3 * 1024 }\'',
+	hpux => 'swapinfo -t | grep memory | awk \'{print $2}\'',
+	freebsd => '/sbin/sysctl hw.physmem | awk \'{print $2 / 1024}\'',
+};
+
+# Commands to retrieve free memory information in kB
+use constant FREEMEMORY_CMDS => {
+	linux => 'cat /proc/meminfo | grep MemFree: | awk \'{ print $2 }\'',
+	solaris => 'vmstat 1 2 | tail -1 | awk \'{ print $5 }\'',
+	hpux => 'swapinfo -t | grep memory | awk \'{print $4}\'',
+	freebsd => '/sbin/sysctl -n vm.stats.vm.v_page_size vm.stats.vm.v_free_count | tr "\n" " " | awk \'{ print $1 * $2 / 1024 }\'',
+};
+
+# Commands to retrieve cpu information
+use constant CPUUSAGE_CMDS => {
+	linux => 'vmstat 1 2 | tail -1 | awk \'{ print $13 }\'',
+	solaris => 'vmstat 1 2 | tail -1 | awk \'{ print $21 }\'',
+	hpux => 'vmstat 1 2 | tail -1 | awk \'{ print $16 }\'',
+	freebsd => 'vmstat -n 0 1 2 | tail -1 | awk \'{ print $15 }\''
+};
+
+# Commands to retrieve process information
+use constant PROC_CMDS => {
+	# cpu usage, memory usage, command name
+	linux => 'ps aux | awk \'NR > 1 {ps = ""; for (i = 11; i <= NF; ++i) {ps = (ps " " $i) }; print $3, $6, ps}\'',
+	solaris => 'prstat 1 1 | awk \'NR > 1 {split ($10, ps, "/"); cpu = substr ($9, 1, length ($9) - 1); mem = substr ($3, 1, length ($3) - 1); print cpu, mem, ps[1]}\'',
+	hpux => 'ps -elf | awk \'NR > 1 {ps = ""; for (i = 15; i <= NF; ++i) {ps = (ps " " $i) }; print 0, $10, ps}\'',
+	aix => 'ps aux | awk \'NR > 1 {print $3, $6, $11}\'',
+	freebsd => 'ps axww -o %cpu= -o %mem= -o command= | sed -e "s/^ *//"',
+};
+
+# Commands to retrieve partition information in kB
+use constant PART_CMDS => {
+	# total, available, mount point
+	linux => 'df -P | awk \'NR > 1 {print $2, $4, $6}\'',
+	solaris => 'df -k | awk \'NR > 1 {print $2, $4, $6}\'',
+	hpux => 'df -P | awk \'NR > 1 {print $2, $4, $6}\'',
+	aix => 'df -kP | awk \'NR > 1 {print $2, $4, $6}\'',
+	freebsd => 'df -k | awk \'NR > 1 {print $2, $4, $6}\''
+};
+
+# Commands to call df with POSIX output format
+use constant DF_CMDS => {
+	# total, available, mount point
+	linux => 'df -P',
+	solaris => 'df -k',
+	hpux => 'df -P',
+	aix => 'df -kP',
+	freebsd => 'df -k'
+};
+	
+# Used to calculate the MD5 checksum of a string
+use constant MOD232 => 2**32;
+
+# Directory where pandora_agent.conf is located
+my $ConfDir = '';
+
+# Pandora FMS agent configuration file
+my $ConfFile = 'pandora_agent.conf';
+
+# Broker agent configuration files
+my @BrokerPid;
+
+# Configuration tokens
+my %Conf = (
+	'server_ip' => 'localhost',
+	'server_path' => '/var/spool/pandora/data_in',
+	'logfile' =>'/var/log/pandora/pandora_agent.log',
+	'temporal' => '/var/spool/pandora',
+	'interval' => 300,
+	'debug' => 0,		
+	'agent_name' => hostname (),
+	'description' => '',
+	'group' => '',
+	'encoding' => 'ISO-8859-1',
+	'server_port' => 41121,
+	'transfer_mode' => 'tentacle',
+	'server_pwd' => '',
+	'server_ssl' => 'no',
+	'server_opts' => '',
+	'delayed_startup' => 0,
+	'pandora_nice' => 10,
+	'cron_mode' => 0,
+	'remote_config' => 0,
+	'secondary_mode' => 'never',
+	'secondary_server_ip' => 'localhost',
+	'secondary_server_path' => '/var/spool/pandora/data_in',
+	'secondary_server_port' => 41121,
+	'secondary_transfer_mode' => 'tentacle',
+	'secondary_server_pwd' => '',
+	'secondary_server_ssl' => 'no',
+	'secondary_server_opts' => '',
+	'autotime' => 0,
+	'temporal_min_size' => 1,
+	'timezone_offset' => 0,
+	'pandora_exec' => 'pandora_agent_exec',
+	'agent_threads' => 1,
+	'udp_server_port' => 41122,
+	'udp_server_auth_address' => '0.0.0.0',
+	'udp_server' => 0,
+	'proxy_mode' => 0,
+	'proxy_max_connection' => 10,
+	'proxy_timeout' => 1,
+	'intensive_interval' => 0,
+	'timestamp' => 0,
+	'xml_buffer' => 0,
+	'win32_monitoring_lib' => 'WMI',
+);
+
+# Service configuration;
+our %Config = (ServiceName => "pandoraFMSagent",
+	           DisplayName => "Pandora FMS Agent",
+	           Description => "Pandora FMS Agent",
+	);
+
+# Modules
+my @Modules;
+
+# Plugins
+my @Plugins;
+
+# Logfile file handle
+my $LogFileFH;
+
+# Agent name MD5;
+my $AgentMD5;
+
+# Remote configuration file name
+my $RemoteConfFile;
+
+# Remote md5 file name
+my $RemoteMD5File;
+
+# Process data
+my %Procs = (
+	'__utimestamp__' => 0
+);
+
+# Partition data
+my %Parts = (
+	'__utimestamp__' => 0
+);
+
+# Collections
+my %Collections;
+
+# $DevNull
+my $DevNull = '/dev/null';
+
+# Shell command separator
+my $CmdSep = ';';
+
+# PID of tentacle proxy, used in proxy mode
+my $tentacle_pid = undef;
+
+# OS and OS version
+my $OS = $^O;
+my $OS_VERSION = guess_os_version ($OS);
+
+# Windows specific modules
+my $Win32 = undef;
+if ($OS eq 'windows') {
+	use PandoraWin32;
+}
+
+################################################################################
+# Print usage information and exit.
+################################################################################
+sub print_usage () {
+	print "\nUsage: $0 <Pandora home>\n\n";
+	print "\tPandora home is the directory where pandora_agent.conf is located,\n";
+	print "\tby default /etc/pandora.\n\n";
+}
+
+################################################################################
+# Print an error message and exit.
+################################################################################
+sub error ($) {
+	my $msg = shift;
+	print ("[ERROR] $msg\n\n");
+	`logger -i -t pandora_agent_daemon [ERROR] $msg 2>/dev/null`;
+}
+
+################################################################################
+# Recursively delete files and directories.
+################################################################################
+sub rmrf {
+	my $path = shift;
+	local *DIR;
+
+	if (-d $path) {
+		opendir (DIR, $path) || return;
+		while (defined (my $file_name = readdir(DIR))) {
+			next if ($file_name eq '.' || $file_name eq '..');
+			rmrf ("$path/$file_name");
+		}
+		closedir (DIR);
+		rmdir ($path);
+	} else {
+		unlink ($path);
+	}
+}
+
+################################################################################
+# Recursively set file permissions.
+################################################################################
+sub chmodr {
+	my ($perm, $path) = @_;
+	local *DIR;
+
+	if (-d $path) {
+		opendir (DIR, $path) || return;
+		while (defined (my $file_name = readdir(DIR))) {
+			next if ($file_name eq '.' || $file_name eq '..');
+			chmodr ($perm, "$path/$file_name");
+		}
+		closedir (DIR);
+	}
+	chmod ($perm, $path);
+}
+
+################################################################################
+# Open the agent logfile and start logging.
+################################################################################
+sub start_log (;$) {
+	my $quiet = shift;
+
+	# Get the logfile
+	my $log_file_name = read_config ('logfile');
+	$log_file_name = '/var/log/pandora/pandora_agent.log' unless defined ($log_file_name);
+
+	# Open it
+	if (! open ($LogFileFH, "> $log_file_name")) {
+		error ("Could not open log file '$log_file_name' for writing: $!.");
+	} elsif (! defined ($quiet)) {
+		print "Logging to $log_file_name\n";
+	}
+}
+
+################################################################################
+# Close the agent logfile and stop logging.
+################################################################################
+sub stop_log () {
+	close ($LogFileFH);
+}
+
+################################################################################
+# Log a message to the agent logfile.
+################################################################################
+sub log_message ($$;$) {
+	my ($source, $msg, $dest) = @_;
+	
+	if (defined ($dest)) {
+		print $dest strftime ('%Y/%m/%d %H:%M:%S', localtime ()) . " - [$source] - $msg\n";
+	} else {
+	
+		#  Check if the filehandle is open
+		if (! defined (fileno ($LogFileFH))) {
+			return;
+		}
+
+		#Trying to write into log file to test its writable		
+		syswrite ($LogFileFH, "");
+		
+		#If no error, the file is writable
+		if (!$!) {
+			print $LogFileFH strftime ('%Y/%m/%d %H:%M:%S', localtime ()) . " - [$source] - $msg\n";
+		} else {
+			#If error then log into syslog!
+			`logger -i -t pandora_agent_daemon [ERROR] $msg 2>/dev/null`;
+		}
+	}
+}
+
+################################################################################
+# Add the given directory to the PATH.
+################################################################################
+sub add_dir_to_path {
+	my $dir = shift;
+	
+	if ($OS eq 'windows') {
+		#  Replace / with \
+		$dir =~ s/\//\\/g;
+		$ENV{'PATH'} .= ";$dir";
+	} else {
+		$ENV{'PATH'} .= ":$dir";
+	}
+}
+################################################################################
+# Parse configuration file (modules, plugins and collections)
+################################################################################
+sub parse_conf_modules($) {
+	my ($param) = @_;
+	my $module;
+	
+	foreach my $line (@{$param}) {
+		
+		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
+		# Module definition
+		if ($line =~ /^\s*module_begin\s*$/) {
+			$module = {
+				'name' => '',
+				'type' => 'generic_data',
+				'description' => '',
+				'func' => 0,
+				'params' => '',
+				'description' => '',
+				'interval' => 1,
+				'timeout' => 0,
+				'counter' => 0,
+				'max' => undef,
+				'min' => undef,
+				'post_process' => undef,
+			    'min_critical' => undef,
+			    'max_critical' => undef,
+			    'min_warning' => undef,
+			    'max_warning' => undef,
+			    'disabled' => undef,
+			    'min_ff_event' => undef,
+				'save' => '',
+				'conditions' => [],
+				'cron' => '',
+				'cron_utimestamp' => 0,
+				'cron_interval' => -1,
+				'precondition' => [],
+				'is_intensive' => 0,
+				'intensive_conditions' => [],
+				'intensive_match' => 0,
+				'timestamp' => 0,
+			};
+		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
+			$module->{'name'} = $1;
+		} elsif ($line =~ /^\s*module_description\s+(.+)$/) {
+			$module->{'description'} = $1;
+		} elsif ($line =~ /^\s*module_type\s+(\S+)\s*$/) {
+			$module->{'type'} = $1;
+		}elsif ($line =~ /^\s*module_precondition\s+(.*)$/) {
+			my $action = $1;
+			
+			# Numeric comparison
+			if ($action =~ /^\s*([<>!=]+)\s+(\d+(?:\.\d*)?)\s+(.*)$/) {
+				push (@{$module->{'precondition'}}, {'operator' => $1, 'value_1' => $2, 'command' => $3});
+			# Interval
+			} elsif ($action =~ /^\s*[(]\s*(\d+(?:\.\d*)?)\s*,\s*(\d+(?:\.\d*)?)\s*[)]\s+(.*)$/) {
+				push (@{$module->{'precondition'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2, 'command' => $3});
+			# Regular expression
+			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
+				push (@{$module->{'precondition'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
+			}
+		} elsif ($line =~ /^\s*module_exec\s+(.+)$/) {
+			$module->{'func'} = \&module_exec;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_cpuusage\s+(.*)$/) {
+			$module->{'func'} = \&module_cpuusage;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_freememory\s+(.*)$/) {
+			$module->{'func'} = \&module_freememory;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_freepercentmemory\s+(.*)$/) {
+			$module->{'func'} = \&module_freepercentmemory;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_proc\s+(.+)$/) {
+			$module->{'func'} = \&module_proc;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_service\s+(.+)$/) {
+			$module->{'func'} = \&module_service;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_cpuproc\s+(.+)$/) {
+			$module->{'func'} = \&module_cpuproc;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_memproc\s+(.+)$/) {
+			$module->{'func'} = \&module_memproc;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_freedisk\s+(.*)$/) {
+			$module->{'func'} = \&module_freedisk;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_freepercentdisk\s+(.*)$/) {
+			$module->{'func'} = \&module_freepercentdisk;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_occupiedpercentdisk\s+(.*)$/) {
+			$module->{'func'} = \&module_occupiedpercentdisk;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_max\s+(.*)\s*$/) {
+			$module->{'max'} = $1;
+		} elsif ($line =~ /^\s*module_min\s+(.*)\s*$/) {
+			$module->{'min'} = $1;
+		} elsif ($line =~ /^\s*module_postprocess\s+(.*)\s*$/) {
+			$module->{'post_process'} = $1;
+		} elsif ($line =~ /^\s*module_interval\s+(\d+)\s*$/) {
+			$module->{'interval'} = $1;
+		} elsif ($line =~ /^\s*module_timeout\s+(\d+)\s*$/) {
+			$module->{'timeout'} = $1;
+		} elsif ($line =~ /^\s*module_save\s+(\w+)$/) {
+			$module->{'save'} = $1;
+		} elsif ($line =~ /^\s*module_condition\s+(.*)$/) {
+			my $action = $1;
+			# Numeric comparison
+			if ($action =~ /^\s*([<>!=]+)\s+(\d+(?:\.\d*)?)\s+(.*)$/) {
+				push (@{$module->{'conditions'}}, {'operator' => $1, 'value_1' => $2, 'command' => $3});
+			# Interval
+			} elsif ($action =~ /^\s*[(]\s*(\d+(?:\.\d*)?)\s*,\s*(\d+(?:\.\d*)?)\s*[)]\s+(.*)$/) {
+				push (@{$module->{'conditions'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2, 'command' => $3});
+			# Regular expression
+			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
+				push (@{$module->{'conditions'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
+			}
+		} elsif ($line =~ /^\s*module_intensive_condition\s+(.*)$/) {
+			my $action = $1;
+			
+			$module->{'is_intensive'} = 1;
+			
+			# Numeric comparison
+			if ($action =~ /^\s*([<>!=]+)\s+(\d+(?:\.\d*)?)\s*$/) {
+				push (@{$module->{'intensive_conditions'}}, {'operator' => $1, 'value_1' => $2});
+			# Interval
+			} elsif ($action =~ /^\s*[(]\s*(\d+(?:\.\d*)?)\s*,\s*(\d+(?:\.\d*)?)\s*[)]\s*$/) {
+				push (@{$module->{'intensive_conditions'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2});
+			# Regular expression
+			} elsif ($action =~ /^\s*=~\s+(\S*)\s*$/) {
+				push (@{$module->{'intensive_conditions'}}, {'operator' => '=~', 'value_1' => $1});
+			}
+		} elsif ($line =~ /^\s*module_crontab\s+(((\*|(\d+(-\d+){0,1}))\s*){5}).*$/) {
+			$module->{'cron'} = $1;
+		} elsif ($line =~ /^\s*module_cron_interval\s+(\d+).*$/) {
+			$module->{'cron_interval'} = $1;
+		} elsif ($line =~ /^\s*module_end\s*$/) {
+			next unless ($module->{'name'} ne '') and ($module->{'func'} != 0);
+
+			# Set the intensive interval
+			if ($module->{'is_intensive'} == 1) {				
+				$module->{'intensive_interval'} = $module->{'interval'};
+			} else {
+				$module->{'intensive_interval'} = $module->{'interval'} * ($Conf{'interval'} / $Conf{'intensive_interval'});
+			}
+
+			# Make the module run the first time
+			$module->{'counter'} = $module->{'intensive_interval'};
+
+			push (@Modules, $module);
+		# Plugin
+		} elsif ($line =~ /^\s*module_plugin\s+(.+)$/) {
+			push (@Plugins, $1);
+		# Module proc command redefinition		
+		} elsif ($line =~ /^\s*module_proc_cmd\s+(.+)$/) {
+			PROC_CMDS->{$OS} = $1;
+		# Module freedisk command redefinition		
+		} elsif ($line =~ /^\s*module_freedisk_cmd\s+(.+)$/) {
+			PART_CMDS->{$OS} = $1;
+		# Collection
+		} elsif ($line =~ /^\s*file_collection\s+(.+)$/) {
+			my $collection = $1;
+			
+			# Prevent path traversal attacks
+			if ($collection !~ m/(\.\.)|\//) {
+				$Collections{$collection} = 0;
+			}
+		# Min critical
+		} elsif ($line =~ /^\s*module_min_critical\s+(.*)\s*$/) {
+			$module->{'min_critical'} = $1;
+		# Max critical
+		} elsif ($line =~ /^\s*module_max_critical\s+(.*)\s*$/) {
+			$module->{'max_critical'} = $1;
+		# Min warning
+		} elsif ($line =~ /^\s*module_min_warning\s+(.*)\s*$/) {
+			$module->{'min_warning'} = $1;
+		# Max warning
+		} elsif ($line =~ /^\s*module_max_warning\s+(.*)\s*$/) {
+			$module->{'max_warning'} = $1;
+		# Disabled
+		} elsif ($line =~ /^\s*module_disabled\s+(.*)\s*$/) {
+			$module->{'disabled'} = $1;
+		# Min ff event
+		} elsif ($line =~ /^\s*module_min_ff_event\s+(.*)\s*$/) {
+			$module->{'min_ff_event'} = $1;
+		}
+	}
+	return;
+}
+
+################################################################################
+# Create configuration file for broker agents.
+################################################################################
+sub write_broker_conf($){
+	my ($broker_agent) = @_;
+	my $content = '';
+
+	if (! open (CONF_FILE, "$ConfDir/$ConfFile")) {
+		error ("Could not open file '$ConfDir/$ConfFile': $!.");
+		return 1;
+	}
+	
+	if (! open (BROKER_FILE, ">$ConfDir/${broker_agent}.conf")) {
+		error ("Could not write configuration file: $!");
+		return 1;
+	}
+
+	while (my $line = <CONF_FILE>){
+
+		# Skip broker definitions
+		if ($line =~ m/^\s*broker_agent/) {
+			next;
+		}
+		
+		# Change the agent name
+		if ($line =~ m/^\s*#*\s*agent_name\s+/) {
+			$line = "agent_name $broker_agent\n";
+		}
+		# Change the logfile
+		elsif ($line =~ m/^\s*logfile\s+(.*)/) {
+			$line = 'logfile ' . dirname ($1) . "/$broker_agent.log\n";
+		}
+
+		print BROKER_FILE $line;
+	}
+	close (BROKER_FILE);
+	close (CONF_FILE);
+	return 0;
+}
+
+################################################################################
+# Read configuration file. Exit on error.
+################################################################################
+sub read_config (;$) {
+	my $token = shift;
+	my @found_tokens;
+	my $module;
+
+	if (! -e "$ConfDir/$ConfFile") {
+		error ("File '$ConfDir/$ConfFile' not found.");
+		return undef;
+	}
+	
+	if (! open (CONF_FILE, "$ConfDir/$ConfFile")) {
+		error ("Could not open file '$ConfDir/$ConfFile': $!.");
+		return undef;
+	}
+	
+	my @file = <CONF_FILE>;
+	close(CONF_FILE);
+	
+	foreach my $line (@file){
+		# Skip comments and empty lines
+		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
+		
+		# Token search
+		if (defined ($token)) {
+			if ($line =~ /^\s*(\S+)\s+(.*)$/ && $1 eq $token) {
+				
+				# Multiple value token
+				if (wantarray ()) {
+					push (@found_tokens, $2);
+				}
+				# Single value token
+				else {
+					return $2;
+				}
+			}
+			next;
+		}
+		next if ($line =~ /^module\s*\w*/);
+		
+		# Additional configuration file
+		if ($line =~ /^include\s+(.*)\s*/) {
+			log_message ('setup', "include is $1");
+			$Conf{'include'} = $Conf{'include'} ? "$Conf{'include'} $1" : $1;
+
+			foreach my $file_name (glob("$1")) {
+				open (FILE, "$file_name") or next;
+
+				log_message ('setup', "reading $file_name");
+				my @file_conf = <FILE>;
+				parse_conf_modules(\@file_conf); 
+				close (FILE);
+			}
+			next;
+		}
+
+		#Configuration token
+		if ($line =~ /^\s*(\S+)\s+(.*)$/) {		
+			log_message ('setup', "$1 is $2");
+			$Conf{$1} = $2;
+			
+			# Remove trailing spaces
+			$Conf{$1} =~ s/\s*$//;
+		}
+	}
+
+	# Token search
+	if (defined ($token)) {
+		
+		# Multiple value token
+		if (wantarray ()) {
+			return @found_tokens;
+		}
+		
+		# Single value token not found.
+		return undef;
+	}
+	
+	# Set the intensive interval
+	if ($Conf{'intensive_interval'} == 0) {
+		$Conf{'intensive_interval'} = $Conf{'interval'};
+	}
+
+	# Set the
+	if ($OS eq 'windows') {
+		$Win32 = PandoraWin32->new ($Conf{'win32_monitoring_lib'});
+	}
+	
+	# Module, plugin and collection definitions
+	parse_conf_modules(\@file);
+
+	# Update the agent MD5 since agent_name may have changed
+	$AgentMD5 = md5 ($Conf{'agent_name'});
+	$RemoteConfFile = "$AgentMD5.conf";
+	$RemoteMD5File = "$AgentMD5.md5";
+	
+	# Set the maximun number of threads
+	$ThreadSem = Thread::Semaphore->new ($Conf{'agent_threads'}) if defined ($Sem);
+
+	# Set tentacle client options
+	if ($Conf{'transfer_mode'} eq 'tentacle') {
+		$Conf{'server_opts'} = '-x \'' . $Conf{'server_pwd'} . '\' ' . $Conf{'server_opts'} if ($Conf{'server_pwd'} ne '');
+		$Conf{'server_opts'} = '-c ' . $Conf{'server_opts'} if ($Conf{'server_ssl'} eq 'yes');
+	}
+
+	# Set tentacle client options for secondary server	
+	if ($Conf{'secondary_transfer_mode'} eq 'tentacle') {
+		$Conf{'secondary_server_opts'} = '-x \'' . $Conf{'secondary_server_pwd'} . '\' ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_pwd'} ne '');
+		$Conf{'secondary_server_opts'} = '-c ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_ssl'} eq 'yes');		
+	}
+}
+
+#################################################################################
+## Remove any trailing / from directory names.
+#################################################################################
+sub fix_directory ($) {
+	my $dir = shift;
+
+	my $char = chop ($dir);
+	return $dir if ($char eq '/');
+	return $dir . $char;
+}
+
+
+
+################################################################################
+# Sends a file to the server.
+################################################################################
+#sub send_file ($;$) {
+sub send_file {
+	my ($file, $secondary) = @_;
+	my $output;
+
+	if ($Conf{'transfer_mode'} eq 'tentacle') {
+ 		$output = `tentacle_client -v -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} "$file" 2>&1 >$DevNull`;
+	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
+ 		$output = `scp -P $Conf{'server_port'} $file pandora@"$Conf{'server_ip'}:$Conf{'server_path'}" 2>&1 >$DevNull`;
+	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
+		my $base = basename ($file);
+		my $dir = dirname ($file);
+
+		$output = `ftp -n $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >$DevNull <<FEOF1
+		quote USER pandora
+		quote PASS $Conf{'server_pwd'}
+		lcd "$dir"
+		cd "$Conf{'server_path'}"
+		put "$base"
+		quit
+		FEOF1`
+	} elsif ($Conf{'transfer_mode'} eq 'local') {
+		$output = `cp $file $Conf{'server_path'}/ 2>&1 >$DevNull`;
+	}
+
+	# Get the errorlevel
+	my $rc = $? >> 8;
+	if ($rc != 0) {
+		log_message ('error', "Error sending file '$file': $output");
+	}
+
+	return $rc unless (defined ($secondary));
+
+	# Send the file to the secondary server
+	return $rc unless ($Conf{'secondary_mode'} eq 'always' || ($Conf{'secondary_mode'} eq 'on_error' && $rc != 0));
+	
+	swap_servers ();
+	$rc = send_file ($file);
+	swap_servers ();
+	return $rc;
+}
+
+################################################################################
+# Send buffered XML files.
+################################################################################
+sub send_buffered_xml_files () {
+
+	# Read XML files from the temporal directory
+	opendir(TEMPORAL, $Conf{'temporal'}) or return;
+	while (my $xml_file = readdir(TEMPORAL)) { 
+	
+		# Skip non data files and symlinks
+		next if ($xml_file !~ m/\.data$/ || -l "$Conf{'temporal'}/$xml_file");
+
+		send_file ("$Conf{'temporal'}/$xml_file", 1);
+	}
+}
+
+################################################################################
+# Swap primary and secondary servers.
+################################################################################
+sub swap_servers () {
+	($Conf{'server_ip'}, $Conf{'secondary_server_ip'}) = ($Conf{'secondary_server_ip'}, $Conf{'server_ip'});
+	($Conf{'server_path'}, $Conf{'secondary_server_path'}) = ($Conf{'secondary_server_path'}, $Conf{'server_path'});
+	($Conf{'server_port'}, $Conf{'secondary_server_port'}) = ($Conf{'secondary_server_port'}, $Conf{'server_port'});
+	($Conf{'server_transfer_mode'}, $Conf{'secondary_server_transfer_mode'}) = ($Conf{'secondary_server_transfer_mode'}, $Conf{'server_transfer_mode'});
+	($Conf{'server_pwd'}, $Conf{'secondary_server_pwd'}) = ($Conf{'secondary_server_pwd'}, $Conf{'server_pwd'});
+	($Conf{'server_ssl'}, $Conf{'secondary_server_ssl'}) = ($Conf{'secondary_server_ssl'}, $Conf{'server_ssl'});
+	($Conf{'server_opts'}, $Conf{'secondary_server_opts'}) = ($Conf{'secondary_server_opts'}, $Conf{'server_opts'});
+}
+
+################################################################################
+# Receive a file from the server.
+################################################################################
+sub recv_file ($) {
+	my $file = shift;
+	my $output;
+
+	if ($Conf{'transfer_mode'} eq 'tentacle') {
+ 		$output = `cd "$Conf{'temporal'}"$CmdSep tentacle_client -v -g -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} $file 2>&1 >$DevNull`;
+	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
+ 		$output = `scp -P $Conf{'server_port'} pandora@"$Conf{'server_ip'}:$Conf{'server_path'}/$file" $Conf{'temporal'} 2>&1 >$DevNull`;
+	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
+		my $base = basename ($file);
+		my $dir = dirname ($file);
+
+		$output = `ftp -n $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >$DevNull <<FEOF1
+		quote USER pandora
+		quote PASS $Conf{'server_pwd'}
+		lcd "$Conf{'temporal'}"
+		cd "$Conf{'server_path'}"
+		get "$file"
+		quit
+		FEOF1`
+	} elsif ($Conf{'transfer_mode'} eq 'local') {
+		$output = `cp $Conf{'server_path'}/$file $Conf{'temporal'} 2>&1 >$DevNull`;
+	}
+
+	# Get the errorlevel
+	my $rc = $? >> 8;
+	if ($rc != 0) {
+		log_message ('error', "Error retrieving file: $output");
+	}
+
+	return $rc;
+}
+
+################################################################################
+# Check the server for a remote configuration.
+################################################################################
+sub check_remote_config () {
+
+	return unless ($Conf{'remote_config'} eq '1');
+
+	# Calculate the configuration file MD5 digest
+	if (! open (CONF_FILE, "$ConfDir/$ConfFile")) {
+		error ("Could not open file '$ConfDir/$ConfFile': $!.");
+		return 1;
+	}
+	
+	binmode(CONF_FILE);
+	my $conf_md5 = md5 (join ('', <CONF_FILE>));
+	close (CONF_FILE);
+
+	# Remove temporary files if they exist as symlink to avoid symlink attack
+	for my $file ("$Conf{'temporal'}/$RemoteMD5File", "$Conf{'temporal'}/$RemoteConfFile")  {
+		error ("File '$file' already exists as a symlink and could not be removed: $!") if (-l $file && ! unlink($file));
+	}
+
+	# Get the remote MD5 file
+	if (recv_file ($RemoteMD5File) != 0) {
+		if (! open (MD5_FILE, "> $Conf{'temporal'}/$RemoteMD5File")) {
+			error ("Could not open file '$ConfDir/$RemoteMD5File' for writing: $!.");
+			return 1;
+		}
+		print MD5_FILE $conf_md5;
+		close (MD5_FILE);
+		copy ("$ConfDir/$ConfFile", "$Conf{'temporal'}/$RemoteConfFile");
+		send_file ("$Conf{'temporal'}/$RemoteConfFile");
+		send_file ("$Conf{'temporal'}/$RemoteMD5File");
+		log_message ('remote config', 'Uploading configuration for the first time.');
+		unlink ("$Conf{'temporal'}/$RemoteConfFile");
+		unlink ("$Conf{'temporal'}/$RemoteMD5File");
+		return 0;
+	}
+
+	if (! open (MD5_FILE, "< $Conf{'temporal'}/$RemoteMD5File")) {
+		error ("Could not open file '$ConfDir/$RemoteMD5File' for writing: $!.");
+		return 1;
+	}
+	
+	my $remote_conf_md5 = <MD5_FILE>;
+	close (MD5_FILE);
+	
+	# No changes
+	return 0 if ($remote_conf_md5 eq $conf_md5);
+	
+	# Get the new configuration file
+	return 1 if (recv_file ($RemoteConfFile) != 0);
+	log_message ('remote config', 'Configuration has changed!');
+
+	# Empty modules, plugins and collections
+	@Modules = ();
+	@Plugins = ();
+	%Collections = ();
+
+	# Save the new configuration and reload it
+	move ("$Conf{'temporal'}/$RemoteConfFile", "$ConfDir/$ConfFile");
+	read_config ();
+	
+	# Log file may have changed
+	stop_log ();
+	start_log ('quiet');
+	
+	#Set nice of the pandora_agent
+	my $PID = $$;
+	`renice "$Conf{'pandora_nice'}" "$PID"`;
+	
+	return 0;
+}
+
+################################################################################
+# Launchs tentacle server in proxy mode.
+################################################################################
+sub launch_tentacle_proxy () {
+
+	# Check if proxy server ip is right.
+	if ($Conf{'server_ip'} ne "localhost") {	
+		
+		#Create a new process and launch tentacle.
+		$tentacle_pid = fork();	
+
+		if ($tentacle_pid == 0) {
+
+			#Execute tentacle server as a daemon
+			my $new_process = "tentacle_server -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'}." -c ".$Conf{'proxy_max_connection'}." -t ".$Conf{'proxy_timeout'};
+
+			log_message ('setup', 'Proxy mode enabled');
+			exec ($new_process);		
+		} 
+	} else {
+		error ('You can not proxy to localhost');
+		return 1;
+	}
+	
+	return 0;
+}
+
+################################################################################
+# Delete old collections and download new collections.
+################################################################################
+sub check_collections () {
+
+	# Delete old collections
+	opendir (DIR, "$ConfDir/collections") || return;
+ 	while (defined (my $file_name = readdir(DIR))) {
+		next if ($file_name eq '.' || $file_name eq '..');
+
+		# Do not delete md5 files associated to a collection
+		$file_name =~ s/\.md5$//;
+
+		if (! defined ($Collections{$file_name})) {
+			rmrf ("$ConfDir/collections/$file_name");
+			unlink ("$ConfDir/collections/$file_name.md5");
+		}
+	}
+	closedir (DIR);
+
+	# Download new collections
+	while (my ($collection, $in_path) = each (%Collections)) {
+		my $collection_file = $collection . ".zip";
+		my $collection_md5_file = $collection . ".md5";
+
+		# Add the collection directory to the PATH
+		if ($in_path == 0) {
+			$Collections{$collection} = 1;
+			add_dir_to_path ("$ConfDir/collections/$collection");
+		}
+
+		# Get remote md5
+ 		if (-l "$Conf{'temporal'}/$collection_md5_file" && !unlink("$Conf{'temporal'}/$collection_md5_file")) {
+			error ("File '$Conf{'temporal'}/$collection_md5_file' already exists as a symlink and could not be removed: $!.");
+			return 1;
+		}
+		
+		next unless (recv_file ($collection_md5_file) == 0);
+		if (! open (MD5_FILE, "< $Conf{'temporal'}/$collection_md5_file")) {
+			error ("Could not open file '$Conf{'temporal'}/$collection_md5_file' for reading: $!.");
+			return 2;
+		}
+		
+		my $remote_collection_md5 = <MD5_FILE>;
+		close (MD5_FILE);
+		unlink ("$Conf{'temporal'}/$collection_md5_file");
+
+		# Read local md5
+		my $local_collection_md5 = '';
+		if (defined (open (MD5_FILE, "< $ConfDir/collections/$collection_md5_file"))) {
+			$local_collection_md5 = <MD5_FILE>;
+			close MD5_FILE;
+		}
+
+		# Check for changes
+		$local_collection_md5 = $remote_collection_md5 unless defined ($local_collection_md5);
+		next if ($local_collection_md5 eq $remote_collection_md5);
+		
+		# Download and unzip
+		next unless (recv_file ($collection_file) == 0);
+		rmrf ("$ConfDir/collections/$collection");
+		`unzip -d "$ConfDir/collections/$collection" "$Conf{'temporal'}/$collection_file" 2>$DevNull`;
+		unlink ("$Conf{'temporal'}/$collection_file");		
+		
+		# Save the new md5
+		if (! open (MD5_FILE, "> $ConfDir/collections/$collection_md5_file")) {
+			error ("Could not open file '$ConfDir/collections/$collection_md5_file' for writing: $!.");
+			return 2;
+		}
+		
+		print MD5_FILE "$remote_collection_md5";
+		close (MD5_FILE);
+		
+		# Set proper file permissions
+		chmodr (0750, "$ConfDir/collections/$collection");
+	}
+}
+
+###############################################################################
+# MD5 leftrotate function. See http://en.wikipedia.org/wiki/MD5#Pseudocode.
+###############################################################################
+sub leftrotate ($$) {
+	my ($x, $c) = @_;
+
+	return (0xFFFFFFFF & ($x << $c)) | ($x >> (32 - $c));
+}
+
+###############################################################################
+# Initialize some variables needed by the MD5 algorithm.
+# See http://en.wikipedia.org/wiki/MD5#Pseudocode.
+###############################################################################
+my (@R, @K);
+sub md5_init () {
+
+	# R specifies the per-round shift amounts
+	@R = (7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
+		  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
+		  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
+		  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21);
+
+	# Use binary integer part of the sines of integers (radians) as constants
+	for (my $i = 0; $i < 64; $i++) {
+		$K[$i] = floor(abs(sin($i + 1)) * MOD232);
+	}
+}
+
+###############################################################################
+# Return the MD5 checksum of the given string. 
+# Pseudocode from http://en.wikipedia.org/wiki/MD5#Pseudocode.
+###############################################################################
+sub md5 ($) {
+	my $str = shift;
+
+	# Note: All variables are unsigned 32 bits and wrap modulo 2^32 when calculating
+
+	# Initialize variables
+	my $h0 = 0x67452301;
+	my $h1 = 0xEFCDAB89;
+	my $h2 = 0x98BADCFE;
+	my $h3 = 0x10325476;
+
+	# Pre-processing
+	my $msg = unpack ("B*", pack ("A*", $str));
+	my $bit_len = length ($msg);
+
+	# Append "1" bit to message
+	$msg .= '1';
+
+	# Append "0" bits until message length in bits ≡ 448 (mod 512)
+	$msg .= '0' while ((length ($msg) % 512) != 448);
+
+	# Append bit /* bit, not byte */ length of unpadded message as 64-bit little-endian integer to message
+	$msg .= unpack ("B64", pack ("VV", $bit_len));
+
+	# Process the message in successive 512-bit chunks
+	for (my $i = 0; $i < length ($msg); $i += 512) {
+
+		my @w;
+		my $chunk = substr ($msg, $i, 512);
+
+		# Break chunk into sixteen 32-bit little-endian words w[i], 0 <= i <= 15
+		for (my $j = 0; $j < length ($chunk); $j += 32) {
+			push (@w, unpack ("V", pack ("B32", substr ($chunk, $j, 32))));
+		}
+
+		# Initialize hash value for this chunk
+		my $a = $h0;
+		my $b = $h1;
+		my $c = $h2;
+		my $d = $h3;
+		my $f;
+		my $g;
+
+		# Main loop
+		for (my $y = 0; $y < 64; $y++) {
+			if ($y <= 15) {
+				$f = $d ^ ($b & ($c ^ $d));
+				$g = $y;
+			}
+			elsif ($y <= 31) {
+				$f = $c ^ ($d & ($b ^ $c));
+				$g = (5 * $y + 1) % 16;
+			}
+			elsif ($y <= 47) {
+				$f = $b ^ $c ^ $d;
+				$g = (3 * $y + 5) % 16;
+			}
+			else {
+				$f = $c ^ ($b | (0xFFFFFFFF & (~ $d)));
+				$g = (7 * $y) % 16;
+			}
+
+			my $temp = $d;
+			$d = $c;
+			$c = $b;
+			$b = ($b + leftrotate (($a + $f + $K[$y] + $w[$g]) % MOD232, $R[$y])) % MOD232;
+			$a = $temp;
+		}
+
+		# Add this chunk's hash to result so far
+		$h0 = ($h0 + $a) % MOD232;
+		$h1 = ($h1 + $b) % MOD232;
+		$h2 = ($h2 + $c) % MOD232;
+		$h3 = ($h3 + $d) % MOD232;
+	}
+
+	# Digest := h0 append h1 append h2 append h3 #(expressed as little-endian)
+	return unpack ("H*", pack ("V", $h0)) . unpack ("H*", pack ("V", $h1)) . unpack ("H*", pack ("V", $h2)) . unpack ("H*", pack ("V", $h3));
+}
+
+################################################################################
+# Try to guess the OS version.
+################################################################################
+sub guess_os_version {
+	my $os = shift;
+	my $os_version;
+
+	# Linux
+	if ($os eq 'linux') {
+		$os_version = `lsb_release -sd 2>$DevNull`;
+	# AIX
+	} elsif ($os eq 'aix') {
+		$os_version = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
+	# Windows
+	} elsif ($os =~ /win/i) {
+		$os_version = `ver`;
+		$DevNull = '/Nul';
+		$CmdSep = '\&';
+		$OS = "windows";
+
+	# Solaris, HP-UX, BSD and others
+	} else {
+		$os_version = `uname -r`;
+	}
+	
+	# Something went wrong
+	return '' unless defined ($os_version);
+	
+	# Remove any trailing new lines
+	chomp ($os_version);
+
+	return $os_version;
+}
+
+################################################################################
+# Execute the given module.
+################################################################################
+sub exec_module ($) {
+	my $module = shift;
+
+	# Need something to execute
+	if ($module->{'func'} == 0) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
+	
+	# Check module interval
+	if (++($module->{'counter'}) < $module->{'intensive_interval'}) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
+
+	# Check module cron
+	if (check_module_cron ($module) != 1) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
+
+	# Check module preconditions
+	if (evaluate_module_preconditions ($module) == 0) {
+		return;
+	}
+	
+	# Reset module counter
+	$module->{'counter'} = 0;
+
+	# Temporarily disable strict refs
+	no strict 'refs';
+
+	# Run
+	my @value = &{$module->{'func'}}($module);
+	if (defined ($value[0])) {
+
+		# Evaluate intensive conditions
+		if ($module->{'is_intensive'} == 1) {
+			my $intensive_match = evaluate_module_intensive_conditions ($module, $value[0]);
+			if ($intensive_match == $module->{'intensive_match'} && $module->{'timestamp'} + $module->{'interval'} * $Conf{'interval'} > time ()) {
+				$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+				return;
+			}
+			
+			# Update the time reference
+			$module->{'timestamp'} = time () if ($module->{'timestamp'} + $module->{'interval'} * $Conf{'interval'} <= time ());
+			
+			# Update the intensive match status
+			$module->{'intensive_match'} = $intensive_match;
+		}
+		
+		# Evaluate module conditions
+		evaluate_module_conditions ($module, $value[0]);
+		
+		# Write the module XML
+		write_module_xml ($module, @value);
+	}
+	
+	# Save the module value if needed (only works for the first returned value)
+	if ($module->{'save'} ne '') {
+		if (defined ($value[0])) {
+			$ENV{$module->{'save'}} = $value[0] ;
+		} else {
+			$ENV{$module->{'save'}} = '';
+		}
+	}
+	
+	$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+}
+
+################################################################################
+# Load process information.
+################################################################################
+sub load_procs () {
+	my $utimestamp = time ();
+
+	# Do we know hoy to get process information in this OS?
+	return unless defined (PROC_CMDS->{$OS});
+
+	# Update at most once every interval
+	return if ($Procs{'__utimestamp__'} > ($utimestamp - $Conf{'interval'}));
+
+	# Get process information
+	my $cmd = PROC_CMDS->{$OS};
+	my @procs = `$cmd`;
+	return undef unless ($? eq 0);
+
+	# Clear past process infomation
+	%Procs = ();
+
+	# Parse process information
+	foreach my $proc (@procs) {
+
+		chomp ($proc);		
+		my @proc_info = split (/\s+/, $proc);
+		next unless ($#proc_info >= 2);
+
+		# Process command
+		my $proc_cmd = join (' ', @proc_info[2..$#proc_info]);
+
+		# Process command
+		$Procs{$proc_cmd} = ();
+		
+		# Process CPU usage
+		$Procs{$proc_cmd}{'cpu'} = $proc_info[0];
+
+		# Process virtual size
+		$Procs{$proc_cmd}{'size'} = $proc_info[1];
+	}
+
+	$Procs{'__utimestamp__'} = $utimestamp;
+}
+
+################################################################################
+# Load partition information.
+################################################################################
+sub load_parts () {
+	my $utimestamp = time ();
+
+	# Do we know hoy to get partition information in this OS?
+	return unless defined (PART_CMDS->{$OS});
+
+	# Update at most once every interval
+	return if ($Parts{'__utimestamp__'} > ($utimestamp - $Conf{'interval'}));
+
+	# Get partition information
+	my $cmd = PART_CMDS->{$OS};
+	my @parts = `$cmd`;
+	return undef unless ($? eq 0);
+
+	# Parse partition information
+	foreach my $part (@parts) {
+
+		chomp ($part);		
+		my @part_info = split (/\s+/, $part);
+		next unless ($#part_info >= 2);
+		
+		my $part = join (' ', @part_info[2..$#part_info]);
+
+		# Mount point
+		$Parts{$part} = ();
+		
+		# Total space in kB
+		$Parts{$part}{'total'} = $part_info[0];
+
+		# Available space in kB
+		$Parts{$part}{'avail'} = $part_info[1];
+	}
+
+	$Parts{'__utimestamp__'} = $utimestamp;
+}
+
+################################################################################
+# Execute the given command.
+################################################################################
+sub module_exec ($) {
+	my $module = shift;
+	my @data;
+	my $exe;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Execute the command
+	if ($module->{'timeout'} == 0) {
+		@data = `$module->{'params'} 2> $DevNull`;
+	} else {
+		my $cmd = quotemeta ($module->{'params'});
+		@data = `$Conf{'pandora_exec'} $module->{'timeout'} $cmd 2> $DevNull`;
+	}
+
+	# Something went wrong or no data
+	return () unless ($? eq 0 && defined ($data[0]));
+
+	return @data;
+}
+
+################################################################################
+# Get the status of a process. 1 running, 0 not running.
+################################################################################
+sub module_proc ($) {
+	my $module = shift;
+	
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Win32
+	if ($OS eq 'windows') {
+		return ($Win32->get_process_status($module->{'params'}));
+	}
+
+	# Data collection layer
+	load_procs ();
+
+	return (1) if defined ($Procs{$module->{'params'}});
+	return (0);
+}
+
+################################################################################
+# Get the status of a service. 1 running, 0 not running.
+################################################################################
+sub module_service ($) {
+	my $module = shift;
+	
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Win32
+	if ($OS eq 'windows') {
+		return ($Win32->get_service_status($module->{'params'}));
+	}
+
+	return (module_proc($module));
+}
+
+################################################################################
+# Get the CPU usage of a process.
+################################################################################
+sub module_cpuproc ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Data collection layer
+	load_procs ();
+
+	return () unless defined ($Procs{$module->{'params'}}) and defined ($Procs{$module->{'params'}}{'cpu'});
+	return ($Procs{$module->{'params'}}{'cpu'});
+}
+
+################################################################################
+# Get the memory usage of a process in Mbytes.
+################################################################################
+sub module_memproc ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Data collection layer
+	load_procs ();
+
+	return () unless defined ($Procs{$module->{'params'}}) and defined ($Procs{$module->{'params'}}{'size'});
+	return (sprintf ("%d", $Procs{$module->{'params'}}{'size'} / 1024));
+}
+
+################################################################################
+# Get the free space in a partition in Mbytes.
+################################################################################
+sub module_freedisk ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Win32
+	if ($OS eq 'windows') {
+		return ($Win32->get_free_disk_space($module->{'params'}));
+	}
+	
+	# Data collection layer
+	load_parts ();
+
+	return () unless defined ($Parts{$module->{'params'}}) and defined ($Parts{$module->{'params'}}{'avail'});
+	
+	my $avail = sprintf("%d", $Parts{$module->{'params'}}{'avail'} / 1024);
+	return ($avail);
+}
+
+################################################################################
+# Get the free space in a partition in %.
+################################################################################
+sub module_freepercentdisk ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Win32
+	if ($OS eq 'windows') {
+		return ($Win32->get_free_disk_space_percentage($module->{'params'}));
+	}
+	
+	# Data collection layer
+	load_parts ();
+
+	return () unless defined ($Parts{$module->{'params'}}) and defined ($Parts{$module->{'params'}}{'avail'});
+	
+	my $availp = sprintf("%d", $Parts{$module->{'params'}}{'avail'} * 100 / $Parts{$module->{'params'}}{'total'});
+	return ($availp);
+}
+
+################################################################################
+# Get the occupied space in a partition in %.
+################################################################################
+sub module_occupiedpercentdisk ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Data collection layer
+	load_parts ();
+
+	return () unless defined ($Parts{$module->{'params'}}) and defined ($Parts{$module->{'params'}}{'avail'});
+	
+	my $occupiedp = sprintf("%d", ($Parts{$module->{'params'}}{'total'} - $Parts{$module->{'params'}}{'avail'}) * 100 / $Parts{$module->{'params'}}{'total'});
+	return ($occupiedp);
+}
+
+################################################################################
+# Get the CPU usage %.
+################################################################################
+sub module_cpuusage ($) {
+	my $module = shift;
+
+	# Win32
+	if ($OS eq 'windows') {
+		return ($Win32->get_cpu_usage());
+	}
+	
+	# Do we know hoy to get CPU usage in this OS?
+	return () unless defined (CPUUSAGE_CMDS->{$OS});
+
+	# Get CPU usage
+	my $cmd = CPUUSAGE_CMDS->{$OS};
+	my @data = `$cmd 2> $DevNull`;
+
+	# Something went wrong or no data
+	return () unless ($? eq 0 && defined ($data[0]));
+
+	return ($data[0]);
+}
+
+################################################################################
+# Get the free space in a partition in Mbytes.
+################################################################################
+sub module_freememory ($) {
+	my $module = shift;
+	
+	# Win32
+	if ($OS eq 'windows') {
+		return ($Win32->get_free_memory());
+	}
+	
+	# Do we know hoy to get memory information in this OS?
+	return () unless defined (FREEMEMORY_CMDS->{$OS});
+
+	# Get available memory
+	my $cmd = FREEMEMORY_CMDS->{$OS};
+	my @data = `$cmd 2> $DevNull`;
+
+	# Something went wrong or no data
+	return () unless ($? eq 0 && defined ($data[0]));
+
+	return (sprintf ("%d", $data[0] / 1024));
+}
+
+################################################################################
+# Get the free space in a partition in %.
+################################################################################
+sub module_freepercentmemory ($) {
+	my $module = shift;
+	
+	# Win32
+	if ($OS eq 'windows') {
+		return ($Win32->get_free_memory_percentage());
+	}
+	
+	# Do we know hoy to get memory information in this OS?
+	return unless defined (TOTALMEMORY_CMDS->{$OS});
+
+	# Get CPU usage
+	my $cmd = TOTALMEMORY_CMDS->{$OS};
+	my @data = `$cmd 2> $DevNull`;
+
+	# Something went wrong or no data
+	return () unless ($? eq 0 && defined ($data[0]));
+
+	# Get total memory in MB
+	my $total = sprintf ("%d", $data[0] / 1024);
+	
+	# Get available memory in MB
+	my ($avail) = module_freememory ($module);
+	return () unless defined ($avail);
+	
+	return sprintf (("%d", $avail * 100 / $total));
+}
+
+################################################################################
+# Evaluate and execute module preconditions.
+################################################################################
+sub evaluate_module_preconditions ($) {
+	my ($module) = @_;
+
+	# Evaluate preconditions
+	foreach my $precondition (@{$module->{'precondition'}}) {
+		my $data = `$precondition->{'command'} 2> $DevNull`;		
+		return 0 if (evaluate_condition ($precondition, $data) == 0);
+	}
+
+	return 1;
+}
+
+################################################################################
+# Evaluate a module condition. Returns 1 if the condition matches, 0 otherwise.
+################################################################################
+sub evaluate_condition ($$) {
+	my ($condition, $data) = @_;
+	
+	{
+		no warnings;
+		if (($condition->{'operator'} eq '>' && $data > $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '<' && $data < $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '=' && $data == $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '!=' && $data != $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '=~' && $data =~ /$condition->{'value_1'}/) ||
+			($condition->{'operator'} eq '()' && $data > $condition->{'value_1'} && $data < $condition->{'value_2'})) {
+				return 1;
+		}
+	}
+	
+	return 0;
+}
+
+
+################################################################################
+# Evaluate and execute module conditions.
+################################################################################
+sub evaluate_module_conditions ($$) {
+	my ($module, $data) = @_;
+
+	# Evaluate conditions
+	foreach my $condition (@{$module->{'conditions'}}) {
+		if (evaluate_condition ($condition, $data) == 1) {
+				`$condition->{'command'} 2> $DevNull`;
+		}
+	}
+}
+
+################################################################################
+# Evaluate intensive conditions.
+################################################################################
+sub evaluate_module_intensive_conditions ($$) {
+	my ($module, $data) = @_;
+
+	# Evaluate conditions
+	foreach my $condition (@{$module->{'intensive_conditions'}}) {
+		return 0 if (evaluate_condition ($condition, $data) == 0);
+	}
+	
+	return 1;
+}
+
+################################################################################
+# Checks the module's cron string. Returns 1 if the module should be run, 0 if
+# not.
+################################################################################
+sub check_module_cron ($) {
+	my $module = shift;
+	
+	# No cron string defined
+	return 1 unless ($module->{'cron'} ne '');
+
+	# Check if the module was already executed
+	return 0 unless (time() > $module->{'cron_utimestamp'});
+
+	# Get cron configuration
+	my @cron_params = split (/\s/, $module->{'cron'});
+
+	# Get current time
+	my $current_time = time();
+	my @time = localtime($current_time);
+
+	# Minutes, hours, day of the month, month and day of the week
+	my @time_params = @time[1, 2, 3, 4, 6];
+
+	# Fix month (localtime retuns 0..11 and we need 1..12)
+	$time_params[3] += 1;
+	
+	# Check cron parameters	
+	for (my $i = 0; $i < 5; $i++) {
+		
+		# Wildcard
+		next if ($cron_params[$i] eq '*');
+		
+		# Get interval
+		my ($bottom, $top) = split (/-/, $cron_params[$i]);
+		$top = $bottom unless defined ($top);
+		
+		# Check interval
+		if ($bottom <= $top) {
+			return 0 if ($time_params[$i] < $bottom || $time_params[$i] > $top);
+		} else {
+			return 0 if ($time_params[$i] < $bottom && $time_params[$i] > $top);
+		}
+	}
+
+	# Do not check in the next minute, hour, day or month.
+	my $offset = 0; 
+	if ($module->{'cron_interval'} >= 0) {
+		$offset = $module->{'cron_interval'};
+	} elsif($cron_params[0] ne '*') {
+		# 1 minute
+		$offset = 60;
+	} elsif($cron_params[1] ne '*') {
+		# 1 hour
+		$offset = 3600;
+	} elsif($cron_params[2] ne '*' || $cron_params[4] ne '*') {
+		# 1 day
+		$offset = 86400;
+	} elsif($cron_params[3] ne '*') {
+		# 31 days
+		$offset = 2678400;
+	}
+
+	$module->{'cron_utimestamp'} = $current_time + $offset;
+	return 1;
+}
+
+################################################################################
+# Write module data in XML format.
+################################################################################
+sub write_module_xml ($@) {
+	my ($module, @data) = @_;
+
+	# No data
+	return unless (defined $data[0]);
+
+	# Critical section
+	$Sem->down () if (defined ($Sem));
+
+	$Xml .= "	<module>\n" .
+		"	<name><![CDATA[" . $module->{'name'} . "]]></name>\n" .
+		"	<description><![CDATA[" . $module->{'description'} . "]]></description>\n" . 
+		"	<type>" . $module->{'type'} . "</type>\n";
+
+	# Interval
+	$Xml .= "	<module_interval>" . $module->{'interval'} . "</module_interval>\n";
+	
+	# Min
+	$Xml .= "	<min>" . $module->{'min'} . "</min>\n" if (defined ($module->{'min'}));
+
+	# Max
+	$Xml .= "	<max>" . $module->{'max'} . "</max>\n" if (defined ($module->{'max'}));
+
+	# Post process
+	$Xml .= "	<post_process>" . $module->{'post_process'} . "</post_process>\n" if (defined ($module->{'post_process'}));
+
+	# Min critical
+	$Xml .= "	<min_critical>" . $module->{'min_critical'} . "</min_critical>\n" if (defined ($module->{'min_critical'}));
+
+	# Max critical
+	$Xml .= "	<max_critical>" . $module->{'max_critical'} . "</max_critical>\n" if (defined ($module->{'max_critical'}));
+
+	# Min warning
+	$Xml .= "	<min_warning>" . $module->{'min_warning'} . "</min_warning>\n" if (defined ($module->{'min_warning'}));
+
+	# Max warning
+	$Xml .= "	<max_warning>" . $module->{'max_warning'} . "</max_warning>\n" if (defined ($module->{'max_warning'}));
+
+	# Disabled
+	$Xml .= "	<disabled>" . $module->{'disabled'} . "</disabled>\n" if (defined ($module->{'disabled'}));
+
+	# Min ff event
+	$Xml .= "	<min_ff_event>" . $module->{'min_ff_event'} . "</min_ff_event>\n" if (defined ($module->{'min_ff_event'}));
+
+	# Data list
+	if ($#data > 0) {
+		$Xml .= "	<datalist>\n";
+		foreach my $data_item (@data) {
+			chomp ($data_item);
+			$Xml .= "	<data><value><![CDATA[$data_item]]></value></data>\n";
+		}
+		$Xml .= "	</datalist>\n";
+	# Single data
+	} else {
+		chomp ($data[0]);
+		$Xml .= "	<data><![CDATA[$data[0]]]></data>\n";
+	}
+	$Xml .= "	</module>\n";
+
+ 	$Sem->up () if (defined ($Sem));
+}
+
+################################################################################
+# Receive a UDP server signal to restart agent
+################################################################################
+sub udp_server_signal () {
+	log_message ('udp server', 'Received signal to restart the agent.');
+}
+
+################################################################################
+# Basic UDP server to restart agent on UDP signal received
+################################################################################
+sub udp_server ($$) {
+
+	my $udp_port = shift;
+	my $udp_auth_address = shift;
+	my $parent_pid = getppid();
+
+	my($sock, $oldmsg, $newmsg, $hisaddr, $hishost, $MAXLEN);
+	$MAXLEN = 1024;
+
+	log_message ('udp server', 'Starting UDP server listening on '.$udp_auth_address.":".$udp_port);
+	$sock = IO::Socket::INET->new(LocalPort => $udp_port, Proto => 'udp') or die "socket: $@";
+
+	while ($sock->recv($newmsg, $MAXLEN)) {
+		my($port, $ipaddr) = sockaddr_in($sock->peername);
+		$hishost = gethostbyaddr($ipaddr, AF_INET);
+
+		log_message ('udp server', 'Received signal from '.$hishost);
+
+		if (($udp_auth_address eq "0.0.0.0") || ($hishost eq $udp_auth_address)){
+			if ($newmsg =~ /REFRESH AGENT/){
+				# Send signal to restart agent
+				kill 'SIGINT' , $parent_pid;
+			}
+		}
+	}
+}
+
+################################################################################
+# Execute the given plugin.
+################################################################################
+sub exec_plugin ($) {
+	my $plugin = shift;
+
+	my $output = `$plugin 2>$DevNull`;
+
+	# Do not save the output if there was an error
+	if ($? != 0) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
+
+	# Critical section
+	$Sem->down () if (defined ($Sem));
+	$Xml .= $output;
+ 	$Sem->up () if (defined ($Sem));
+
+	$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+}
+
+################################################################################
+# TERM Handler
+################################################################################
+sub kill_signal_handler (){
+	# Kill tentacle server if it was launched
+
+	if (defined ($tentacle_pid)) {
+			print "kill -9 $tentacle_pid\n";
+			`kill -9 $tentacle_pid`;
+	}
+	exit (0);
+}
+
+################################################################################
+# Get the free disk space in the temporal directory (in bytes).
+################################################################################
+sub temporal_freedisk () {
+
+	# Call df
+	return 0 unless defined (DF_CMDS->{$OS});
+	my $cmd = DF_CMDS->{$OS} . ' ' . $Conf{'temporal'} . ' | awk \'NR > 1 {print $4}\'';	
+	my $temporal_freedisk = `$cmd`;
+
+	# Check for errors
+	return 0 unless ($? eq 0);
+
+	# Convert to bytes
+	return 1024 * int ($temporal_freedisk);
+}
+
+################################################################################
+# Launches one execution ot the Pandora FMS agent.
+# Returns 1 if the agent should execute again, 0 if not.
+################################################################################
+sub pandora_agent_run () {
+
+	# Must be set to 0 if the agent is a broker agent
+	my $main_agent = -1;
+
+	# Ignore signals from UDP and Tentacle server while processing execution
+	if ($Conf{'udp_server'} == 1 || $Conf{'proxy_mode'}){
+		$SIG{'INT'} = 'DEFAULT';
+	}
+
+	# Check for a new configuration
+	check_remote_config () unless ($Conf{'debug'} eq '1');
+
+	# Check file collections
+	check_collections () unless ($Conf{'debug'} eq '1');
+
+	# Launch broker agents
+	@BrokerPid = ();
+	my @broker_agents = read_config ('broker_agent');
+	foreach my $broker_agent (@broker_agents) {
+		
+		# Create broker conf file if it does not exist
+		if (! -e "$ConfDir/${broker_agent}.conf") {
+			write_broker_conf($broker_agent);
+		}
+		
+		$main_agent = fork ();
+			
+		# Broker agent
+		if ($main_agent == 0) {
+		
+			# Set the configuration file
+			$ConfFile = "${broker_agent}.conf";
+			
+			# Log to a new file
+			stop_log ();
+			start_log ('quiet');
+				
+			# Read configuration file
+			@Modules = ();
+			@Plugins = ();
+			%Collections = ();
+			read_config ();
+					
+			# Check for a new configuration
+			check_remote_config () unless ($Conf{'debug'} eq '1');
+				
+			# Check file collections
+			check_collections () unless ($Conf{'debug'} eq '1');
+					
+			# Execute
+			last;
+		} else {
+			push (@BrokerPid, $main_agent);
+		}
+	}
+
+	my $address;
+
+	if(defined($Conf{'address'})) {
+		# Check if address is auto to get the local ip
+		if ($Conf{'address'} eq 'auto') {
+			# Tested on Ubuntu, debian, Suse, Solaris 10 and AIX 5.1
+			$address = `ifconfig -a | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | head -1 | sed -e 's/addr\\://' | sed -e 's/inet\\://'`;
+			chomp($address);
+		}
+		else {
+			$address = $Conf{'address'};
+		}
+	}
+	
+	# Clear the XML
+	$Xml = "";
+
+	# Execute modules
+	foreach my $module (@Modules) {
+
+		# Execute the module in a separate thread
+		if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1) {
+			$ThreadSem->down ();
+			my $thr = threads->create (\&exec_module, $module);
+			if (! defined ($thr)) {
+				$ThreadSem->up ();
+			} else {
+				$thr->detach();
+			}
+		# Execute the module
+		} else {
+			exec_module ($module);
+		}
+	}
+
+	# Execute plugins
+	if ($Conf{'timestamp'} + $Conf{'interval'} <= time ()) {
+		foreach my $plugin (@Plugins) {
+	
+			# Execute the plugin in a separate thread
+			if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1) {
+				$ThreadSem->down ();
+				my $thr = threads->create (\&exec_plugin, $plugin);
+				if (! defined ($thr)) {
+					$ThreadSem->up ();
+				} else {
+					$thr->detach();
+				}
+			# Execute the plugin
+			} else {
+				exec_plugin ($plugin);
+			}
+		}
+	}
+
+	# Wait for all the threads
+	$ThreadSem->down ($Conf{'agent_threads'}) if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+	$ThreadSem->up ($Conf{'agent_threads'}) if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+
+	if ($Xml ne "" || $Conf{'timestamp'} + $Conf{'interval'} <= time ()) {
+		
+		# Update the time reference
+		$Conf{'timestamp'} = time () if ($Conf{'timestamp'} + $Conf{'interval'} <= time ());
+		
+		# Compose the XML
+		my $xml_header = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
+			"<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
+			"' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
+			"' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" . strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
+			"' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
+	
+		if (defined ($Conf{'address'})) {
+			$xml_header .= "' address='" .$address;
+		}
+		
+		if (defined ($Conf{'parent_agent_name'})) {
+			$xml_header .= "' parent_agent_name='" .$Conf{'parent_agent_name'};
+		}
+		
+		# Check the gis mode (exec or manual). If exec script is defined, we execute it and get the coordenates
+		if (defined ($Conf{'gis_exec'}) && (-e $Conf{'gis_exec'})) {		
+			my $coord_str = `$Conf{'gis_exec'}`;
+			chomp($coord_str);
+			my @coords = split(',',$coord_str);
+			# Check if lat and long are numeric
+			if (defined($coords[0]) && defined($coords[1]) && ($coords[0] =~ /^-?(\d+)\.(\d+)$|^-?(\d+)$/) && ($coords[1] =~ /^-?(\d+)\.(\d+)$|^-?(\d+)$/)) {
+				my $lat = $coords[0];
+				my $long = $coords[1];
+				
+				$xml_header .= "' longitude='" .$long . "' latitude='" .$lat;
+	
+				if (defined ($coords[2])) {
+					my $alt = $coords[2];
+					$xml_header .= "' altitude='" .$alt;
+				}
+				if (defined ($Conf{'position_description'})) {
+					$xml_header .= "' position_description='" .$Conf{'position_description'};
+				}
+			}
+		}
+		elsif (defined ($Conf{'longitude'}) && defined ($Conf{'latitude'})) {
+			$xml_header .= "' longitude='" .$Conf{'longitude'} . "' latitude='" .$Conf{'latitude'};
+			if (defined ($Conf{'altitude'})) {
+				$xml_header .= "' altitude='" .$Conf{'altitude'};
+			}
+			if (defined ($Conf{'position_description'})) {
+				$xml_header .= "' position_description='" .$Conf{'position_description'};
+			}
+		}
+		$xml_header .= "'>\n";
+		$Xml = $xml_header . $Xml . "</agent_data>";
+
+		# Save XML data file
+		my $temp_file = $Conf{'temporal'} . '/' . $Conf{'agent_name'} . '.' . time () . '.data';
+		if (-l $temp_file && !unlink($temp_file)) {
+			error ("File '$temp_file' already exists as a symlink and could not be removed: $!");
+			return 1;
+		}
+		
+		if (! open (TEMP_FILE, "> $temp_file")) {
+			error ("Could not write XML data file: $!");
+			return 1;
+		}
+		
+		print TEMP_FILE $Xml;
+		close (TEMP_FILE);
+
+		# Debug mode
+		if ($Conf{'debug'} eq '1') {
+			log_message ('debug', "Wrote XML data file '$temp_file'");
+			log_message ('debug', "Wrote XML data file '$temp_file'", *STDOUT);
+			return 0;
+		}
+
+		# Send the XML data file
+		my $rc = send_file ($temp_file, 1);
+		if ($rc == 0 || $Conf{'xml_buffer'} == 0 || temporal_freedisk () < $Conf{'temporal_min_size'}) {
+			unlink ($temp_file);
+		}
+		
+		# Send buffered XML data files
+		if ($Conf{'xml_buffer'} == 1) {
+			send_buffered_xml_files ();
+		}
+	}
+	
+	# Enable signal capture to break the Sleep interval on UDP signal
+	if ($Conf{'udp_server'} == 1) {
+		$SIG{'INT'} = \&udp_server_signal;
+	}
+
+	# Sleep if main agent
+	if ($main_agent != 0) {
+		foreach my $broker_pid (@BrokerPid) {
+			waitpid ($broker_pid, 0);
+		}
+		
+		# Cron mode
+		return (0) if ($Conf{'cron_mode'} == 1);
+	}
+	# Finish if broker agent
+	else {
+		return (0);
+	}
+	
+	return 1;
+}
+
+################################################################################
+# Service run. The Startup() function is called automatically when the service
+# starts.
+################################################################################
+sub Startup {
+
+	# Configure the agent
+	if (configure($Config{'Parameters'}) != 0) {
+		return;
+	}
+
+	# Main agent loop
+	do {
+		if (pandora_agent_run () == 0) {
+			return;
+		}
+	} while (ContinueRun($Conf{'intensive_interval'}));
+}
+
+################################################################################
+# Interactive run. The Interactive() function is called when PandoraAgent.exe is
+# run from the commandline.
+################################################################################
+sub Interactive () {
+
+	if ($#ARGV != 0) {
+		print_usage ();
+		return;
+	}
+	
+	# Set the path to the configuration file
+	$Config{'Parameters'} = $ARGV[0];
+	
+	# Run!
+	Startup();
+}
+
+################################################################################
+# Configure the agent.
+# Returns 0 if the configuration file was properly read, 1 if not.
+################################################################################
+sub configure ($) {
+	my $conf_dir = shift;
+	
+	#Handler TERM signal.
+	$SIG{'TERM'} = \&kill_signal_handler;
+
+	$ConfDir = fix_directory ($conf_dir);
+	if (! -d "$ConfDir") {
+		error ("Directory '$ConfDir' does not exist.");
+		return 1;
+	}
+	
+	# Add util dir to PATH in Win32
+	if ($OS eq 'windows') {
+		add_dir_to_path ("$ConfDir\\util");
+	}
+
+	#Pandora home path
+	$ENV{'PANDORA_HOME'}=$ConfDir;
+
+	# Get user to run as
+	my $pandora_user = read_config ('pandora_user');
+	if (defined ($pandora_user)) {
+		# Change the EUID
+		my $pandora_user_uid = getpwnam ($pandora_user);
+		if (!defined ($pandora_user_uid)) {
+			error ("Cannot get uid for user $pandora_user. Does the user exist and can we read /etc/passwd?");
+			return 1;
+		}
+		$> = $pandora_user_uid;
+		if ($> != $pandora_user_uid) {
+			error ("Cannot run as $pandora_user: Insufficient permissions.");
+			return 1;
+		}
+	}
+
+	# Initialize MD5 variables
+	md5_init ();
+
+	# Start logging
+	start_log ();
+
+	log_message ('log', 'Running as user ' . getpwuid ($>)) if (defined (&getpwuid));
+
+	# Read configuration file
+	read_config ();
+
+	$ENV{'PANDORA_AGENT'}=$Conf{'agent_name'};
+
+	# Fix directory names
+	$Conf{'temporal'} = fix_directory ($Conf{'temporal'});
+	if (! -d "$Conf{'temporal'}") {
+		error ("Temporal directory '" . $Conf{'temporal'} . "' does not exist.");
+		return 1;
+	}
+	$Conf{'server_path'} = fix_directory ($Conf{'server_path'});
+	$Conf{'secondary_server_path'} = fix_directory ($Conf{'secondary_server_path'});
+
+	# Startup delay
+	log_message ('log', 'Sleeping for ' . $Conf{'delayed_startup'} . ' seconds.') if 
+	($Conf{'delayed_startup'} > 0);
+	sleep ($Conf{'delayed_startup'});
+
+	#Set nice of the pandora_agent
+	if ($OS ne 'windows') {
+		my $PID = $$;
+		`renice "$Conf{'pandora_nice'}" "$PID"`;
+	}
+
+	#Launch tentacle server in proxy mode if configured
+	if ($Conf{'proxy_mode'}) {
+		
+		#Check if user is root
+		if ($> != 0) {		
+			if (launch_tentacle_proxy() != 0) {
+				return 1;
+			}
+		} else {
+			error ('Proxy mode can not be launched as root');
+			return 1;
+		}
+	}
+
+	# Add the plugins directory to the PATH
+	add_dir_to_path ("$ConfDir/plugins");
+
+	# Start UDP server if configured
+	if ($Conf{'udp_server'} == 1){
+		my $pid = fork();
+
+		if ($pid == 0){
+			udp_server ($Conf{'udp_server_port'}, $Conf{'udp_server_auth_address'});
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+################################################################################
+# Called before installing the service.
+################################################################################
+sub Install {
+	if (defined ($ARGV[0])) {
+		$Config{'Parameters'} = $ARGV[0];
+	}
+}
+
+################################################################################
+# Called before un-installing the service.
+################################################################################
+sub Remove {
+}
+
+################################################################################
+# Main.
+################################################################################
+
+# Running as `perl pandora_agent`
+if (! defined (&ContinueRun)) {
+
+	if ($#ARGV != 0) {
+		print_usage ();
+		exit 1;
+	}
+	
+	*ContinueRun = sub {
+		if ($OS eq 'windows') {
+			Win32::Sleep(1000*shift);
+		} else {
+			sleep ($Conf{'intensive_interval'});
+		}
+		return 1;
+    };
+	
+	#*RunningAsService = sub {
+	#	return 0;
+	#};
+	
+	# Interactive run
+	Interactive();
+}
+
+__END__
+
+=head1 EXIT STATUS
+
+=over 
+
+=item 0 on Success
+
+=item 1 on Error
+
+=back 
+
+=head1 CONFIGURATION
+
+By default pandora_agent uses F</etc/pandora> as B<home configuration directory>. There is the F<pandora_agent.conf> file with all the configuration of the agent.
+
+=head1 DEPENDENCIES
+
+
+=head1 LICENSE
+
+This is released under the GNU Lesser General Public License.
+
+=head1 SEE ALSO
+
+
+=head1 COPYRIGHT
+
+Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+
+=cut

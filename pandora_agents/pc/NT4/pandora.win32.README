@@ -1,0 +1,25 @@
+Pandora FMS for windows NT4
+===========================
+
+This agent is a port of the Unix agent (in perl) compiled with ActiveState DevKit Perl compiler. This is a stand-alone EXE with all the tools it will need to run. It has the same features than the Unix agent, but running on a NT4 box. This means can execute commands and get the output to produce data for Pandora FMS.
+
+Could be used on any Windows machine (NT4, Win95, Windows 2000-2008, and of course Windows 7), could be useful on windows embedded systems without WMI core, which makes standard Pandora FMS windows agent to do not run properly.
+
+Install
+=======
+
+Copy all contents on a directory of your choice, for example c:\pandora.
+
+Edit pandora_agent.conf and set your parameters, including the log file and the temporal directory, should be something like c:\pandora\temp and c:\pandora\log. MAKE SURE that directories exists before trying to start Pandora agent.
+
+Run
+===
+
+This agent does not run as a service, so you need to install in the startup menu or start by hand. The shortlink you create must have a parameter, which is where is the main Pandora FMS agent directory, in this scenario is c:\pandora, so the command to start will be :
+
+ c:\pandora\pandora_agent.exe c:\pandora
+
+Install as a service
+====================
+
+srvany.exe tool is provided to do this. Is a microsoft resource kit tool to be able to use any .exe as a service. Just read the documentation about how to use srvany (provided in this package).

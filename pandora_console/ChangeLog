@@ -1,3 +1,15 @@
+2012-05-24 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager/lib/functions.php: set the wget method
+	by default.
+	
+	* extensions/update_manager/lib/functions.ajax.php,
+	extensions/update_manager/update_pandora.php: cleaned source code
+	style.
+	
+	
+	MERGED FROM 4.0.2
+
 2012-05-22  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php: Fixed 

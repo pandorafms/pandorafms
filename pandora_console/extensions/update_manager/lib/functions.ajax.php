@@ -35,7 +35,7 @@ function check_keygen_online() {
 	
 	db_clean_cache();
 	$settings = um_db_load_settings ();
-	return check_keygen ($settings);		
+	return check_keygen ($settings);
 }
 
 function update_pandora_get_packages_online_ajax($ajax = true) {

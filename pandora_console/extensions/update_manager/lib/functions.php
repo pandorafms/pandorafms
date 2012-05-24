@@ -54,10 +54,10 @@ function update_pandora_installation() {
 	
 	if (empty($row)) {
 		//The url of update manager.
-		$conf_update_pandora = array('url' => 'http://192.168.70.213/pandora.tar.gz',
+		$conf_update_pandora = array('url' => '',
 			'last_installed' => '',
 			'last_contact' => '',
-			'download_mode' => 'curl');
+			'download_mode' => 'wget');
 		
 		$values = array('token' => 'update_pandora_conf_url',
 			'value' => $conf_update_pandora['url']);
@@ -78,7 +78,7 @@ function update_pandora_installation() {
 		}
 	}
 	
-	$dir = $config['attachment_store'] .  '/update_pandora/';
+	$dir = $config['attachment_store'] . '/update_pandora/';
 	
 	if (!is_dir($dir)) {
 		$return = mkdir($dir);

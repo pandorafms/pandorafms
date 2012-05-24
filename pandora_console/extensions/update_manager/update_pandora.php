@@ -152,8 +152,8 @@ function update_pandora_administration($settings, $user_key) {
 		 </div> 
 	</div>
 	<?php
-
-	echo '<h4>' . __('Downloaded Packages') . '</h4>';	
+	
+	echo '<h4>' . __('Downloaded Packages') . '</h4>';
 	$tableMain = null;
 	$tableMain->width = '95%';
 	$tableMain->data = array();

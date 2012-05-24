@@ -3897,6 +3897,24 @@ function otherParameter2Filter($other, $return_as_array = false) {
 		}
 	}
 	
+	if (isset($other['data'][13]) && ($other['data'][13] != null)) { 
+		if ($return_as_array) {
+			$filter['id_group'] = $other['data'][13];
+		}
+		else {
+			$filterString .= ' AND id_grupo =' . $other['data'][13];
+		}
+	}
+
+	if (isset($other['data'][14]) && ($other['data'][14] != null)) {
+		
+		if ($return_as_array) {
+			$filter['tag'] = $other['data'][14];
+		}
+		else {
+			$filterString .= " AND tags LIKE '%" . $other['data'][14]."%'";
+		}
+	}
 	if ($return_as_array) {
 		return $filter;
 	}
@@ -4503,6 +4521,14 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 		$pagination = $filter['limit'];
 	if (isset($filter['offset']))
 		$offset = $filter['offset'];
+	if (isset($filter['id_group'])) { 	
+		$id_group = $filter['id_group'];
+		//A little hack to make the query fetch all groups and not only "All" (with id=0)
+		if ($id_group == 0)
+			$id_group = -1;
+	}
+	if (isset($filter['tag']))
+		$tag = $filter['tag'];
 	if ($filter['utimestamp']) {
 		if (isset($filter['utimestamp']['>'])) {
 			$utimestamp_upper = $filter['utimestamp']['>'];

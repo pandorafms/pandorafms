@@ -1,3 +1,10 @@
+2012-05-24 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager/lib/functions.ajax.php: some fixes, and
+	exclude the install "install.php" file or "config.php".
+	
+	MERGED FROM 4.0.2
+
 2012-05-24  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Updated defaults: compact is not enabled by default
@@ -11,7 +18,6 @@
 	* extensions/update_manager/lib/functions.ajax.php,
 	extensions/update_manager/update_pandora.php: cleaned source code
 	style.
-	
 	
 	MERGED FROM 4.0.2
 

@@ -323,12 +323,15 @@ function update_pandora_install_package() {
 	//Get total files
 	//The grep command is because the fucking tar don't apply
 	//strip-components in mode "t"
-	$command = 'tar tzvf ' . $dir . $filename . ' | grep -v "pandora_console/$" | wc -l > /tmp/' . $package . '.info.txt';
+	$command = 'tar tzvf ' . $dir . $filename .
+		' --exclude="pandora_console/install.php" --exclude="pandora_console/include/config.php" | grep -v "pandora_console/$" | wc -l > /tmp/' . $package . '.info.txt';
 	exec($command, $output, $status);
-	html_debug_print($command, true);
+	//html_debug_print($command, true);
 	
-	$command = 'tar xzvf ' . $dir . $filename . ' --strip-components=1 -C ' . $config['homedir'] . ' 1>/tmp/' . $package . '.files.info.txt';
-	html_debug_print($command, true);
+	$command = 'tar xzvf ' . $dir . $filename .
+		' --exclude="pandora_console/install.php" --exclude="pandora_console/include/config.php" ' .
+		' --strip-components=1 -C ' . $config['homedir'] . ' 1>/tmp/' . $package . '.files.info.txt';
+	//html_debug_print($command, true);
 	
 	//Maybe this line run for seconds or minutes
 	exec($command, $output, $status);

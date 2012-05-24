@@ -1,3 +1,7 @@
+2012-05-24 Santiago Munin <burning1@gmail.com>
+	
+	* pandoradb_data.sql: Fixed a double insert with the same ID value (it was making fail the installation).
+
 2012-05-24 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/lib/functions.ajax.php: some fixes, and

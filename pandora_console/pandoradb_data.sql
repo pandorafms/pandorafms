@@ -44,11 +44,11 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('block_size','20'),
 ('days_purge','60'),
 ('days_delete_unknown','0'),
-('days_compact','90'),
+('days_compact','0'),
 ('graph_res','5'),
 ('step_compact','1'),
 ('db_scheme_version','4.0.2'),
-('db_scheme_build','PD120425'),
+('db_scheme_build','PD120524'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),
@@ -79,8 +79,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('integria_enabled', '0'),
 ('integria_api_password', ''),
 ('integria_inventory', '0'),
-('integria_url', ''),
-('list_ACL_IPs_for_API_0', '127.0.0.1');
+('integria_url', '');
 
 UNLOCK TABLES;
 
@@ -271,7 +270,7 @@ INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0
 -- Dumping data for table `tnews`
 --
 
-INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 4.0.2!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
+INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 4.0!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
 (2,'admin','New Pandora FMS Agent Features','Feel free to test our new features for both Windows and Linux agents: Proxy and Broker modes.',NOW());
 
 INSERT INTO tmodule VALUES (1,'Agent&#x20;module');
@@ -318,37 +317,9 @@ INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `t
 
 -- WMI components
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `plugin_user`, `max_timeout`) VALUES (200, 'CPU&#x20;load', 'CPU0&#x20;load&#x20;average', 14, 1, 100, 0, 300, 1, '', '', '', 'SELECT&#x20;LoadPercentage&#x20;from&#x20;Win32_Processor&#x20;WHERE&#x20;DeviceID&#x20;=&#x20;&quot;CPU0&quot;', 1, 6, 'Administrator', 10);
-
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `plugin_user`, `max_timeout`) VALUES (201, 'Free&#x20;RAM', 'Available&#x20;RAM&#x20;memory&#x20;in&#x20;bytes', 14, 1, 0, 0, 300, 0, '', '', '', 'SELECT&#x20;AvailableBytes&#x20;from&#x20;Win32_PerfRawData_PerfOS_Memory', 1, 6, 'Administrator', 10);
-
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `plugin_user`, `max_timeout`) VALUES (202, 'Windows&#x20;version', 'Operating&#x20;system&#x20;version', 14, 3, 0, 0, 300, 1, '', '', '', 'SELECT&#x20;Caption&#x20;FROM&#x20;Win32_OperatingSystem', 1, 6, 'Administrator', 10);
 
--- Some other SNMP Components added in 4.0.2
-
-INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`,  `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`) VALUES (533,'memAvailReal','The&#x20;amount&#x20;of&#x20;free&
-#x20;real&#x20;memory,&#x20;in&#x20;kilobytes.',5,15,0,0,0,0,'1','','public','1.3.6.1.4.1.2021.4.6.0',4,2,0,'','',
-'',0,1,10000.00,40000.00,'',0.00,10000.00,'',0,'','','',0,0,0.0000000000000);
-
-INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`,  `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`) VALUES (534,'memAvailSwap','The&#x20;amount&
-#x20;of&#x20;free&#x20;swap&#x20;memory,&#x20;in&#x20;kilobytes.',5,15,0,0,0,0,'1','','public','1.3.6.1.4.1.2021.4
-.4.0',4,2,0,'','','',0,1,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.0000000000000);
-
-INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`,  `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`) VALUES (535,'ssCpuIdle','The&#x20;percentages&#x20;of&#x20;idle&#x20;CPU&#x20;time.',5,15,0,0,0,0,'1','','public','1.3.6.1.4.1.2021.11.11.0',4,2,0,'',''
-,'',0,1,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.0000000000000);
-
-INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`,  `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`) VALUES (536,'SNMP-LoadInt.5','The&#x20;5-minute&#x20;system&#x20;load&#x20;average.',5,15,0,0,0,0,'1','','public','1.3.6.1.4.1.2021.10.1.5.2',4,2,0,'',''
-,'',0,1,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.0000000000000);
-INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`,  `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`) VALUES (537,'SNMP-LoadInt.1','The&#x20;1-minute&#x20;system&#x20;load&#x20;average.&#x20;',5,15,0,0,0,0,'1','','public','1.3.6.1.4.1.2021.10.1.5.1',4,2,0,'','','',0,1,0.00,0.00,'',0.00,
-0.00,'',0,'','','',0,0,0.0000000000000);
-
-INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`,  `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`) VALUES (538,'SNMP-LoadInt.15','The&#x20;15-minute&#x20;system&#x20;load&#x20;average.&#x20;',5,15,0,0,0,0,'1','','public','1.3.6.1.4.1.2021.10.1.5.3',4,2,0,'','','',0,1,0.00,0.00,'',0.00,0.00,'',
-0,'','','',0,0,0.0000000000000);
-
-INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`,  `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`) VALUES (539,'Total&#x20;cache&#x20;memory','Total&#x20;Cached&#x20;Memory',5,15,0,0,0,0,'1','','public','.1.3.6.1.4.1.2021.4.15.0'
-,4,2,0,'','','',0,1,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.0000000000000);
-
-INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`,  `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`) VALUES (540,'CPU&#x20;Raw&#x20;Interrupts','CPU&#x20;Raw&#x20;interrupts&#x20;information&#x20;from&#x20;the&#x20;NetSNMP&#x20;agent.',5,16,0,0,0,0,'1','','public','.1.3.6.1.4.1.2021.11.59.0'
-,4,2,0,'','','',0,1,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.0000000000000);
 
 --
 -- Dumping data for table `tnetwork_component_group`
@@ -356,11 +327,11 @@ INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `t
 
 INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (1,'General group',0);
 INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (2,'Cisco MIBs',10);
-INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (5,'NetSNMP&#x20;UNIX&#x20;Systems',12);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (5,'UNIX MIBs',12);
 INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (10,'Network Management',0);
 INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (11,'Microsoft Windows MIB',12);
 INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (12,'Operating Systems',0);
-INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (13,'UCD&#x20;Mibs&#x20;&#40;Unix&#x20;systems&#41;',12);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (13,'UCD Mibs (Linux, UCD-SNMP)',12);
 INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (14,'WMI',12);
 
 
@@ -373,11 +344,51 @@ INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (4,'Full 
 INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (5,'Linux Server','Full Monitoring of a Linux server services.');
 INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (6,'Basic WMI monitoring','Basic monitoring of a Windows host.');
 
-INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES
-(7,'Linux&#x20;Server&#x20;with&#x20;SNMP','Group&#x20;of&#x20;&quot;basic&quot;&#x20;modules&#x20;for&#x20;SNMP&#x20;monitoring&#x20;of&#x20;Linux&#x20;remote&#x20;devices.&#x20;This&#x20;includes&#x20;basic&#x20;conectivity&#x20;checks&#x20;and&#x20;a&#x20;full&#x20;range&#x20;of&#x20;System');
-
-INSERT INTO `tnetwork_profile_component` VALUES (24,1),(25,1),(27,1),(28,1),(30,1),(31,1),(34,1),(39,1),(34,2),(34,3),(37,3),(39,3),(38,3),(24,3),(3,4),(24,4),(25,4),(26,4),(27,4),(28,4),(29,4),(30,4),(31,4),(32,4),(45,4),(46,4),(47,4),(48,4),(3,5),(50,5),(53,5),(24,5),(30,5),(27,5),(34,5),(1,5),(2,5),(49,5),(4,5),(51,5),(52,5),(39,5),(200,6),(201,6),(202,6),(540,7),(533,7),(534,7),(537,7),(538,7),(536,7),(535,7),(539,7),(1,7),(4,7),(34,7),(30,7),(27,7),(24,7);
-
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (24,1);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (25,1);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (27,1);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (28,1);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (30,1);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (31,1);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (34,1);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (39,1);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (34,2);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (34,3);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (37,3);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (39,3);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (38,3);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (24,3);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (3,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (24,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (25,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (26,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (27,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (28,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (29,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (30,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (31,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (32,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (45,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (46,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (47,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (48,4);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (3,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (50,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (53,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (24,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (30,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (27,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (34,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (1,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (2,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (49,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (4,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (51,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (52,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (39,5);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (200,6);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (201,6);
+INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (202,6);
 
 
 -- GIS Data
@@ -415,7 +426,4 @@ INSERT INTO `trecon_script` VALUES
 
 INSERT INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`) VALUES (1,'IPMI&#x20;Plugin','Plugin&#x20;to&#x20;get&#x20;IPMI&#x20;monitors&#x20;from&#x20;a&#x20;IPMI&#x20;Device.',0,'/usr/share/pandora_server/util/plugin/ipmi-plugin.pl','-h','','-u','-p',0),(2,'DNS&#x20;Plugin','This&#x20;plugin&#x20;is&#x20;used&#x20;to&#x20;check&#x20;if&#x20;a&#x20;specific&#x20;domain&#x20;return&#x20;a&#x20;specific&#x20;IP&#x20;address,&#x20;and&#x20;to&#x20;check&#x20;how&#x20;time&#x20;&#40;milisecs&#41;&#x20;takes&#x20;the&#x20;DNS&#x20;to&#x20;answer.&#x20;Use&#x20;IP&#x20;address&#x20;parameter&#x20;to&#x20;specify&#x20;the&#x20;IP&#x20;of&#x20;your&#x20;domain.&#x20;Use&#x20;these&#x20;custom&#x20;parameters&#x20;for&#x20;the&#x20;other&#x20;parameters:&#x0d;&#x0a;&#x0d;&#x0a;-d&#x20;domain&#x20;to&#x20;check&#x20;&#40;for&#x20;example&#x20;pandorafms.com&#41;&#x0d;&#x0a;-s&#x20;DNS&#x20;Server&#x20;to&#x20;check&#x20;&#x20;&#40;for&#x20;example&#x20;8.8.8.8&#41;&#x0d;&#x0a;&#x0d;&#x0a;Optional&#x20;parameters:&#x0d;&#x0a;&#x0d;&#x0a;-t&#x20;Do&#x20;a&#x20;DNS&#x20;time&#x20;response&#x20;check&#x20;instead&#x20;DNS&#x20;resolve&#x20;test&#x0d;&#x0a;&#x0d;&#x0a;',15,'/usr/share/pandora_server/util/plugin/dns_plugin.sh','-i','','','',0),(3,'UDP&#x20;port&#x20;check','Check&#x20;a&#x20;remote&#x20;UDP&#x20;port&#x20;&#40;by&#x20;using&#x20;NMAP&#41;.&#x20;Use&#x20;IP&#x20;address&#x20;and&#x20;Port&#x20;options.',5,'/usr/share/pandora_server/util/plugin/udp_nmap_plugin.sh','-t','-p','','',0),(4,'SMTP&#x20;Check','This&#x20;plugin&#x20;is&#x20;used&#x20;to&#x20;send&#x20;a&#x20;mail&#x20;to&#x20;a&#x20;SMTP&#x20;server&#x20;and&#x20;check&#x20;if&#x20;works.&#x20;Parameters&#x20;in&#x20;the&#x20;plugin&#x20;&#x0d;&#x0a;IP&#x20;Addres&#x20;-&#x20;SMTP&#x20;Server&#x20;IP&#x20;address&#x0d;&#x0a;User&#x20;-&#x20;AUTH&#x20;login&#x20;&#x20;&#x0d;&#x0a;Pass&#x20;-&#x20;AUTH&#x20;password&#x0d;&#x0a;Port&#x20;-&#x20;SMTP&#x20;port&#x20;&#40;optional&#41;&#x0d;&#x0a;&#x0d;&#x0a;Optional&#x20;parameters&#x20;&#x0d;&#x0a;&#x0d;&#x0a;&#x20;-d&#x20;Destination&#x20;email&#x0d;&#x0a;&#x20;-f&#x20;Email&#x20;of&#x20;the&#x20;sender&#x0d;&#x0a;&#x20;-a&#x20;Autentication&#x20;system,&#x20;could&#x20;be&#x20;LOGIN,&#x20;PLAIN,&#x20;CRAM-MD5&#x20;or&#x20;DIGEST-MD&#x0d;&#x0a;&#x0d;&#x0a;&#x0d;&#x0a;',10,'/usr/share/pandora_server/util/plugin/SMTP_check.pl','-h','-o','-u','-p',0);
 
-INSERT INTO `tagent_custom_fields` VALUES (1,'Serial&#x20;Number',0),(2,'Department',0),(3,'Additional&#x20;ID',0);
-
-INSERT INTO `ttag` VALUES (1,'network','Network&#x20;equipment','http://artica.es'),(2,'critical','Critical&#x20;modules',''),(3,'dmz','DMZ&#x20;Network&#x20;Zone',''),(4,'performance','Performance&#x20;anda&#x20;capacity&#x20;modules',''),(5,'configuration','','');
 

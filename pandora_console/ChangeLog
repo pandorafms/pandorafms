@@ -1,3 +1,8 @@
+2012-05-24  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Updated defaults: compact is not enabled by default
+	and dbschema version is updated.
+
 2012-05-24 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/lib/functions.php: set the wget method

@@ -81,6 +81,9 @@ public class Options extends Activity {
 		text = (EditText) findViewById(R.id.password);
 		text.setText(password);
 
+		((CheckBox) findViewById(R.id.checkBox_advanced_options))
+				.setChecked(preferences.getBoolean("show_advanced", false));
+
 		Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this, R.array.refresh_combo,
@@ -160,10 +163,12 @@ public class Options extends Activity {
 	 * Saves all options
 	 */
 	private void save_options() {
+		boolean advancedFilterOff = false;
 		SharedPreferences preferences = getSharedPreferences(
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
 		SharedPreferences.Editor editorPreferences = preferences.edit();
+		
 		// Connection settings
 		EditText text = (EditText) findViewById(R.id.url);
 		String url = text.getText().toString();
@@ -181,8 +186,13 @@ public class Options extends Activity {
 		editorPreferences.putInt("refreshTimeKey",
 				combo.getSelectedItemPosition());
 
+		CheckBox cb = (CheckBox) findViewById(R.id.checkBox_advanced_options);
+		editorPreferences.putBoolean("show_advanced", cb.isChecked());
+		if (!cb.isChecked()) {
+			advancedFilterOff = true;
+		}
 		// Notification settings
-		CheckBox cb = (CheckBox) findViewById(R.id.vibration_on);
+		cb = (CheckBox) findViewById(R.id.vibration_on);
 		editorPreferences.putBoolean("vibration", cb.isChecked());
 		cb = (CheckBox) findViewById(R.id.led_flash_on);
 		editorPreferences.putBoolean("led", cb.isChecked());
@@ -202,6 +212,8 @@ public class Options extends Activity {
 					Toast.LENGTH_LONG);
 			toast.show();
 		}
+		if (advancedFilterOff)
+			setAdvancedOptionsDefaults();
 	}
 
 	/**
@@ -245,6 +257,24 @@ public class Options extends Activity {
 			Log.e(TAG, "Sound setting problem (null uri)");
 			button.setText(getString(R.string.silence));
 		}
+	}
+	/**
+	 * Puts advanced options to default values.
+	 */
+	private void setAdvancedOptionsDefaults() {
+		SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editorPreferences = preferences.edit();
+
+		editorPreferences.putString("filterAgentName", "");
+		editorPreferences.putInt("filterIDGroup", 0);
+		editorPreferences.putInt("filterSeverity", -1);
+		editorPreferences.putString("filterEventSearch", "");
+		editorPreferences.putInt("filterLastTime", 6);
+		// There were changes
+		editorPreferences.putBoolean("filterChanges", true);
+		editorPreferences.commit();
 	}
 
 	/**

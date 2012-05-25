@@ -45,6 +45,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -159,6 +160,23 @@ public class Main extends Activity {
 		}
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		// Show advanced options?
+		if (preferences.getBoolean("show_advanced", false)) {
+			((LinearLayout) findViewById(R.id.show_hide_layout))
+					.setVisibility(View.VISIBLE);
+		} else {
+			((LinearLayout) findViewById(R.id.show_hide_layout))
+					.setVisibility(View.INVISIBLE);
+			clearAdvancedOptions();
+		}
+	}
+
 	public void onRestart() {
 		super.onRestart();
 
@@ -169,7 +187,7 @@ public class Main extends Activity {
 	}
 
 	/**
-	 * Get groups throught an api call.
+	 * Get groups through an api call.
 	 * 
 	 * @return A list of groups.
 	 */
@@ -332,6 +350,8 @@ public class Main extends Activity {
 		combo = (Spinner) findViewById(R.id.status_combo);
 		this.object.status = combo.getSelectedItemPosition() - 0;
 
+		text = (EditText) findViewById(R.id.tag);
+		this.object.eventTag = text.getText().toString();
 		text = (EditText) findViewById(R.id.event_search_text);
 		this.object.eventSearch = text.getText().toString();
 
@@ -352,6 +372,7 @@ public class Main extends Activity {
 		int filterStatus = -1;
 		int filterLastTime = 0;
 		String filterEventSearch = "";
+		String filterTag = "";
 
 		EditText text = (EditText) findViewById(R.id.agent_name);
 		filterAgentName = text.getText().toString();
@@ -381,9 +402,12 @@ public class Main extends Activity {
 		combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
 		filterLastTime = combo.getSelectedItemPosition();
 
+		text = (EditText) findViewById(R.id.tag);
+		filterTag = text.getText().toString();
+		
 		text = (EditText) findViewById(R.id.event_search_text);
 		filterEventSearch = text.getText().toString();
-
+		
 		SharedPreferences preferences = getSharedPreferences(
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
@@ -393,6 +417,7 @@ public class Main extends Activity {
 		editorPreferences.putInt("filterIDGroup", filterIDGroup);
 		editorPreferences.putInt("filterSeverity", filterSeverity);
 		editorPreferences.putInt("filterStatus", filterStatus);
+		editorPreferences.putString("filterTag", filterTag);
 		editorPreferences.putString("filterEventSearch", filterEventSearch);
 		editorPreferences.putInt("filterLastTime", filterLastTime);
 
@@ -412,13 +437,18 @@ public class Main extends Activity {
 
 	/**
 	 * Resets the filter form.
+	 * 
 	 */
 	private void reset_form() {
-		EditText text = (EditText) findViewById(R.id.agent_name);
-		text.setText("");
-
 		Spinner combo = (Spinner) findViewById(R.id.group_combo);
 		combo.setSelection(0);
+		combo = (Spinner) findViewById(R.id.status_combo);
+		combo.setSelection(3);
+		EditText text = (EditText) findViewById(R.id.tag);
+		text.setText("");
+
+		text = (EditText) findViewById(R.id.agent_name);
+		text.setText("");
 
 		combo = (Spinner) findViewById(R.id.severity_combo);
 		combo.setSelection(0);
@@ -426,11 +456,27 @@ public class Main extends Activity {
 		combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
 		combo.setSelection(6);
 
-		combo = (Spinner) findViewById(R.id.status_combo);
-		combo.setSelection(3);
-
 		text = (EditText) findViewById(R.id.event_search_text);
 		text.setText("");
 
 	}
+
+	/**
+	 * Clears advanced options.
+	 */
+	private void clearAdvancedOptions() {
+
+		EditText text = (EditText) findViewById(R.id.agent_name);
+		text.setText("");
+
+		Spinner combo = (Spinner) findViewById(R.id.severity_combo);
+		combo.setSelection(0);
+
+		combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
+		combo.setSelection(6);
+
+		text = (EditText) findViewById(R.id.event_search_text);
+		text.setText("");
+	}
+
 }

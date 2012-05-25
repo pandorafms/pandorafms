@@ -15,22 +15,17 @@
 // GNU General Public License for more details. 
 -->
 <resources>
-	<!-- CONST -->
-	<string name="pandroid_event_viewer_str">Pandroid Event Viewer</string>
-	
-	<string name="const_string_preferences">PANDROID_EVENT_VIEWER_PREFERENCES</string>
 
-	<string name="item_tab_main_text">Filter</string>
-	<string name="item_tab_event_list_text">Event list</string>
-	
+    <!-- CONST -->
+    <string name="pandroid_event_viewer_str">Pandroid Event Viewer</string>
+    <string name="const_string_preferences">PANDROID_EVENT_VIEWER_PREFERENCES</string>
+    <string name="item_tab_main_text">Filter</string>
+    <string name="item_tab_event_list_text">Event list</string>
     <string name="main_text">main text (value)</string>
     <string name="list_text">list (value)</string>
-    
     <string name="system_str">System</string>
-    
     <string name="empty_str">- Empty -</string>
     <string name="all_str">All</string>
-    
     <string name="tags_label_str">Tags</string>
     <string name="comments_label_str">Comments</string>
     <string name="group_label_str">Group</string>
@@ -55,36 +50,29 @@
     <string name="refresh_time_label_str">Refresh time</string>
     <string name="set_as_filter_watcher_button_str">Filter by default</string>
     <string name="validate_event_button_str">Validate Event</string>
-    
-	<string name="config_update_succesful_str">Update configuration successful.</string>
+    <string name="config_update_succesful_str">Update configuration successful.</string>
     <string name="config_update_fail_str">Update configuration is failed.</string>
     <string name="please_set_preferences_str">Please set the preferences as the API URL, user and password for your Pandora FMS.</string>
     <string name="preferences_set_demo_pandora_str">Pandroid Event Viewer is connecting with PandoraFMS public demo, please change the preferences for your Pandora FMS.</string>
     <string name="filter_update_succesful_str">Update filter successful.</string>
     <string name="filter_update_fail_str">Update filter is failed.</string>
-    
     <string name="notification_criticity_0_str">There are %s events and all in Maintenance state.</string>
     <string name="notification_criticity_1_str">There are %s events and some are in Informational state.</string>
     <string name="notification_criticity_2_str">There are %s events and some are in Normal state.</string>
     <string name="notification_criticity_3_str">There are %s events and some are in Warning state.</string>
     <string name="notification_criticity_4_str">There are %s events and some are in Critical state.</string>
-    
     <string name="loading_events_criticity_0_str">Loading the %s events and all in Maintenance state.</string>
     <string name="loading_events_criticity_1_str">Loading the %s events and some are in Informational state.</string>
     <string name="loading_events_criticity_2_str">Loading the %s events and some are in Normal state.</string>
     <string name="loading_events_criticity_3_str">Loading the %s events and some are in Warning state.</string>
     <string name="loading_events_criticity_4_str">Loading the %s events and some are in Critical state.</string>
-    
     <string name="successful_validate_event_str">The event validation is successful.</string>
     <string name="fail_validate_event_str">The event validation is failed.</string>
-    
     <string name="status_label_str">Status</string>
     <string name="event_search_label_str">Event search</string>
     <string name="max_time_old_event_str">Oldest event</string>
-    
     <string name="licensed_under_gpl_str">Licensed under GPL v2</string>
     <string name="develop_team_str">Developer: Miguel de Dios</string>
-    
     <string name="alert_recovered_str">Alert recovered</string>
     <string name="alert_manual_validation_str">Alert manually validated</string>
     <string name="going_up_warning_str">Going from critical to warning</string>
@@ -96,14 +84,10 @@
     <string name="new_agent_str">New agent created</string>
     <string name="unknown_str">Unknown type:</string>
     <string name="unknown_event_str">Unknown event</string>
-    
     <string name="validate_event_label_str">Event validated</string>
-	
     <string name="pandroid_event_viewer_description_str">Realtime event viewer for Pandora FMS.</string>
     <string name="pandroid_info_txt"><b>Welcome to Pandora FMS Event viewer for Android</b></string>
-    <string name="pandroid_info_long_txt"><p>This app is used for to see confortable and standaralone the events status from the monitoring server of Pandora FMS. From this app you can see in realtime the events and validate or filter.</p>
-        <p>The configuration as default connecting with public demo of Pandora FMS in firefly.artica.es. Please change the configuration for to use your Pandora FMS server.</p></string>
-    
+    <string name="pandroid_info_long_txt"><p>This app is used for to see confortable and standaralone the events status from the monitoring server of Pandora FMS. From this app you can see in realtime the events and validate or filter.</p><p>The configuration as default connecting with public demo of Pandora FMS in firefly.artica.es. Please change the configuration for to use your Pandora FMS server.</p></string>
     <string name="check_connection">Connection status</string>
     <string name="connection">Connection</string>
     <string name="notification">Notification</string>
@@ -111,5 +95,7 @@
     <string name="led_flash">Led flashes</string>
     <string name="sound">Sound</string>
     <string name="select_sound">Select notification sound</string>
-     <string name="silence">Silence</string>
+    <string name="silence">Silence</string>
+    <string name="tag_label_str">Tag</string>
+	<string name="advanced_options">Show advanced search options</string>
 </resources>

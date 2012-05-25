@@ -21,41 +21,21 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:orientation="vertical" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/agent_label_str" />
-
-        <EditText
-            android:id="@+id/agent_name"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:singleLine="true" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/event_search_label_str" />
-
-        <EditText
-            android:id="@+id/event_search_text"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:singleLine="true" />
 
         <TableLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
 
-            <TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:paddingRight="5dip"
                     android:text="@string/group_label_str" />
@@ -63,8 +43,7 @@
                 <Spinner
                     android:id="@+id/group_combo"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                     />
+                    android:layout_height="wrap_content" />
 
                 <ProgressBar
                     android:id="@+id/loading_group"
@@ -73,25 +52,14 @@
                     android:layout_gravity="right" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingRight="5dip"
-                    android:text="@string/severity_label_str" />
-
-                <Spinner
-                    android:id="@+id/severity_combo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </TableRow>
-
-            <TableRow>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:paddingRight="5dip"
                     android:text="@string/status_label_str" />
@@ -99,23 +67,98 @@
                 <Spinner
                     android:id="@+id/status_combo"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:paddingRight="5dip"
-                    android:text="@string/max_time_old_event_str"/>
+                    android:text="@string/tag_label_str" />
 
-                <Spinner
-                    android:id="@+id/max_time_old_event_combo"
+                <EditText
+                    android:id="@+id/tag"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:inputType="text"
+                    android:layout_height="wrap_content" />
             </TableRow>
         </TableLayout>
+
+        <LinearLayout
+            android:id="@+id/show_hide_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="invisible" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/agent_label_str" />
+
+            <EditText
+                android:id="@+id/agent_name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:singleLine="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/event_search_label_str" />
+
+            <EditText
+                android:id="@+id/event_search_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:singleLine="true" />
+
+            <TableLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:paddingRight="5dip"
+                        android:text="@string/severity_label_str" />
+
+                    <Spinner
+                        android:id="@+id/severity_combo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:paddingRight="5dip"
+                        android:text="@string/max_time_old_event_str" />
+
+                    <Spinner
+                        android:id="@+id/max_time_old_event_combo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"

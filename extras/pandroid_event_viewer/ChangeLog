@@ -1,3 +1,13 @@
+2012-05-25 Santiago Munín <burning1@gmail.com>
+
+	* src/pandroid_event_viewer/pandorafms/Options.java: Added the option to show or hide advanced options (filter view).
+	* res/layout/options.xml: Checkbox to select show or hide advanced options.
+	* res/layout/main.xml: Show/hide advanced options (layout) and tag filter.
+	* res/values/strings.xml: Added new entries.
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	  src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java: Adapted event parsing to Pandora FMS v5 and added the tag filter.
+	* src/pandroid_event_viewer/pandorafms/Main.java: Now, removes advanced filter options if "hide advanced options" is selected in options view.
+
 2012-05-23 Santiago Munín <burning1@gmail.com>
 
 	* Core.java: Added a generic function which will serialize given params in order to send an API request.

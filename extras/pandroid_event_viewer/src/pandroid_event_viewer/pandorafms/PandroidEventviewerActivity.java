@@ -70,9 +70,10 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	public int pagination;
 	public long offset;
 	public int status;
+	public String eventTag;
 	public String eventSearch;
 	public int filterLastTime;
-
+	
 	public boolean showOptionsFirstTime;
 	public boolean showTabListFirstTime;
 
@@ -110,6 +111,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 		this.agentNameStr = preferences.getString("filterAgentName", "");
 		this.severity = preferences.getInt("filterSeverity", -1);
 		this.status = preferences.getInt("filterStatus", 3);
+		this.eventTag = preferences.getString("filterTag", "");
 		this.eventSearch = preferences.getString("filterEventSearch", "");
 		this.filterLastTime = preferences.getInt("filterLastTime", 6);
 		this.timestamp = Core.convertMaxTimeOldEventValuesToTimestamp(0,
@@ -156,15 +158,26 @@ public class PandroidEventviewerActivity extends TabActivity implements
 
 		Intent i = getIntent();
 		long count_events = i.getLongExtra("count_events", 0);
-
+		SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		boolean changes = false;
+		
+		//Checks if there are filter changes
+		if (!preferences.getBoolean("filterChanges", false)) {
+			SharedPreferences.Editor editorPreferences = preferences.edit();
+			editorPreferences.putBoolean("filterChanges", false);
+			editorPreferences.commit();
+			changes = true;
+		}
 		if (count_events > 0) {
 			process_notification(i);
-		} else {
-			if (this.showTabListFirstTime) {
-				executeBackgroundGetEvents();
-				this.showTabListFirstTime = false;
-			}
 		}
+		if (changes || this.showTabListFirstTime ) {
+			executeBackgroundGetEvents();
+			this.showTabListFirstTime = false;
+		}
+	
 	}
 
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -255,9 +268,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	 */
 	private String serializeParams2Api(boolean total) {
 		String totalStr = (total) ? "total" : "-1";
-		if (!total) {
-			totalStr = "-1";
-		}
+
 		return Core.serializeParams2Api(new String[] { ";", // Separator
 				Integer.toString(this.severity), // Severity
 				this.agentNameStr, // Agent name
@@ -271,7 +282,8 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				String.valueOf(this.pagination), // Pagination
 				String.valueOf(this.offset), // Event list offset
 				totalStr, // Count or show
-				String.valueOf(this.id_group) // Group id
+				String.valueOf(this.id_group), // Group id
+				this.eventTag
 				});
 	}
 
@@ -378,11 +390,11 @@ public class PandroidEventviewerActivity extends TabActivity implements
 			}
 
 			for (int i = 0; i < lines.length; i++) {
-				String[] items = lines[i].split(";", 21);
+				String[] items = lines[i].split(";",23);
 
 				EventListItem event = new EventListItem();
 
-				if (items.length != 21) {
+				if (items.length != 23) {
 					event.event = getApplication().getString(
 							R.string.unknown_event_str);
 				} else {
@@ -432,13 +444,13 @@ public class PandroidEventviewerActivity extends TabActivity implements
 					}
 					event.user_comment = items[12];
 					event.tags = items[13];
-					event.agent_name = items[14];
-					event.group_name = items[15];
-					event.group_icon = items[16];
-					event.description_event = items[17];
-					event.description_image = items[18];
-					event.criticity_name = items[19];
-					event.criticity_image = items[20];
+					event.agent_name = items[16];
+					event.group_name = items[17];
+					event.group_icon = items[18];
+					event.description_event = items[19];
+					event.description_image = items[20];
+					event.criticity_name = items[21];
+					event.criticity_image = items[22];
 
 					event.opened = false;
 				}

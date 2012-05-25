@@ -110,7 +110,8 @@ public class PandroidEventviewerService extends IntentService {
 
 				httpPost = new HttpPost(this.url + "/include/api.php");
 
-				String parametersAPI = serializeParams2Api(context, true, false, false);
+				String parametersAPI = serializeParams2Api(context, true,
+						false, false);
 				Log.d(TAG, "Parameters checking new events: " + parametersAPI);
 
 				// Get total count.
@@ -203,6 +204,7 @@ public class PandroidEventviewerService extends IntentService {
 		int filterStatus = preferences.getInt("filterStatus", 3);
 		String filterEventSearch = preferences.getString("filterEventSearch",
 				"");
+		String filterTag = preferences.getString("filterTag", "");
 
 		Calendar c = Calendar.getInstance();
 		long now = (c.getTimeInMillis() / 1000);
@@ -242,7 +244,7 @@ public class PandroidEventviewerService extends IntentService {
 				Long.toString(0), // The offset of list events
 				totalStr, // Count or show
 				Integer.toString(idGroup), // Group ID
-		});
+				filterTag });
 	}
 
 	/**

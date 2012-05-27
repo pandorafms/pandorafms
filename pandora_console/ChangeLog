@@ -1,3 +1,11 @@
+2012-05-27  Junichi Satoh  <junichi@rworks.jp>
+
+	* general/pandora_help.php: Fixed i18n translation does not work
+	in the help window.
+
+	* include/help/ja/help_main_help.php: Added new general
+	introduction help file.
+
 2012-05-24 Santiago Munin <burning1@gmail.com>
 	
 	* include/functions_api.php: Added "group id" and "tag" to the current get_events filters.

@@ -38,6 +38,10 @@ if (! isset($_SESSION['id_usuario'])) {
 }
 
 $user_language = get_user_language ($_SESSION['id_usuario']);
+if (file_exists ('../include/languages/'.$user_language.'.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ('../include/languages/'.$user_language.'.mo'));
+	$l10n->load_tables();
+}
 
 /* Possible file locations */
 $safe_language = safe_url_extraclean ($user_language, "en");

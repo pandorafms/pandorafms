@@ -1650,3 +1650,7 @@ input#text-id_parent.ac_input, input, textarea, select {
 	border: 1px solid #cbcbcb;
 }
 
+span#plugin_description {
+	font-size: 9px;
+}
+

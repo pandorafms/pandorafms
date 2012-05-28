@@ -1,3 +1,11 @@
+2012-05-28  Sancho Lerena <slerena@artica.es>
+
+	* godmode/agentes/module_manager_editor_plugin.php: A bit more
+	space on IP target field (a URL doesn't fit there!). 
+
+	* include/styles/pandora.css: Plugin description is not shown
+	in small font.
+
 2012-05-27  Junichi Satoh  <junichi@rworks.jp>
 
 	* general/pandora_help.php: Fixed i18n translation does not work

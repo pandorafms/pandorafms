@@ -1,3 +1,11 @@
+2012-05-28  Sancho Lerena <slerena@artica.es>
+
+	* godmode/agentes/module_manager_editor_plugin.php: A bit more
+	space on IP target field (a URL doesn't fit there!). 
+
+	* include/styles/pandora.css: Plugin description is not shown
+	in small font.
+
 2012-05-28  Vanessa Gil <vanessa.gil@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql

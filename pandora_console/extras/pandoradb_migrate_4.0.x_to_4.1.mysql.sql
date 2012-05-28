@@ -231,3 +231,17 @@ ALTER TABLE `tusuario` ADD COLUMN `login_blocked` tinyint(1) DEFAULT 0;
 -- -----------------------------------------------------
 
 INSERT INTO `talert_commands` (`name`, `command`, `description`, `internal`) VALUES ('Validate Event','Internal type','This alert validate the events matched with a module given the agent name (_field1_) and module name (_field2_)', 1);
+
+-- -----------------------------------------------------
+-- Table `tconfig`
+-- -----------------------------------------------------
+
+INSERT INTO `tconfig` (`token`, `value`) VALUES
+('enable_pass_policy', 0),
+('pass_size', 4),
+('pass_needs_numbers', 0),
+('pass_needs_symbols', 0),
+('pass_expire', 0),
+('first_login', 0),
+('mins_fail_pass', 5),
+('number_attempts', 5);

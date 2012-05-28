@@ -1,3 +1,9 @@
+2012-05-28  Vanessa Gil <vanessa.gil@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Update 'tconfig' fields.
+
 2012-05-27  Junichi Satoh  <junichi@rworks.jp>
 
 	* general/pandora_help.php: Fixed i18n translation does not work

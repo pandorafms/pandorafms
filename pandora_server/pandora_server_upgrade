@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Pandora FMS Server Upgrader (c) 2008-2010 Artica ST
+# Pandora FMS Server Upgrader (c) 2008-2012 Artica ST
 # Linux Version (generic), for SuSe and Debian/Ubuntu only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
@@ -66,7 +66,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 4.0dev Server Upgrade (c) 2009-2010 Artica ST"
+echo "Pandora FMS 4.0.2 Server Upgrade (c) 2009-2012 Artica ST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 echo " "
 

@@ -1,3 +1,13 @@
+2012-05-29  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_manage.pl,
+	pandora_server_upgrade,
+	DEBIAN/control,
+	README,
+	pandora_server.spec,
+	lib/PandoraFMS/Config.pm,
+	pandora_server.redhat.spec: Updated version string to 4.0.2
+
 2012-05-29  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* util/pandora_db.pl: Merged from trunk: Don't delete non-initialized

@@ -34,10 +34,11 @@
 			<ImageView
 				android:layout_weight="0"
 				android:id="@+id/img_severity"
-				android:layout_width="wrap_content"
+				android:layout_width="0dp"
 	    		android:layout_height="wrap_content"
 	    		android:layout_gravity="center"
-	    		android:paddingRight="5px"
+	    		android:contentDescription="@string/img_severity"
+	    		android:paddingRight="5dp"
 			/>
 			<TextView
 				android:id="@+id/severity_text"
@@ -62,10 +63,11 @@
 			<ImageView
 				android:layout_weight="0"
 				android:id="@+id/img_type"
-				android:layout_width="wrap_content"
+				android:layout_width="0dp"
 	    		android:layout_height="wrap_content"
 	    		android:layout_gravity="center"
-	    		android:paddingRight="5px"
+	    		android:contentDescription="@string/img_type"
+	    		android:paddingRight="0dp"
 			/>
 			<TextView
 				android:id="@+id/type_text"
@@ -108,7 +110,8 @@
 				android:layout_width="wrap_content"
 	    		android:layout_height="wrap_content"
 	    		android:layout_gravity="center"
-	    		android:paddingRight="5px"
+	    		android:contentDescription="@string/img_group"
+	    		android:paddingRight="5dp"
 			/>
 			<TextView
 				android:layout_weight="1"
@@ -143,7 +146,7 @@
 		<TextView
 			android:id="@+id/comments_text"
 			android:textColor="#000"
-			android:text="- Empty -"
+			android:text="@string/empty"
 			android:singleLine="false"
 			android:layout_width="wrap_content"
 		/>
@@ -157,7 +160,9 @@
 		<TextView
 			android:id="@+id/tags_text"
 			android:textColor="#000"
-			android:text="- Empty -" 
+			android:text="@string/empty"
+			android:linksClickable="true"
+
 		/>
 	</TableRow>
 	<TableRow

@@ -485,7 +485,26 @@ public class EventList extends ListActivity {
 					if (item.tags.length() != 0) {
 						text = (TextView) viewEventExtended
 								.findViewById(R.id.tags_text);
-						text.setText(item.tags);
+						String[] tags = item.tags.split(",");
+						String tagText = "";
+						for (int i = 0; i < tags.length; i++) {
+							String parts[] = tags[i].split(" ");
+							if (i > 0) {
+								tagText += ", ";
+							}
+							if (parts.length == 2) {
+								if (!parts[1].startsWith("http://")) {
+									parts[1] = "http://" + parts[1];
+								}
+								tagText += "<a href=\"" + parts[1] + "\">"
+										+ parts[0] + "</a>";
+							} else {
+								tagText += parts[0];
+							}
+						}
+						// TODO ask miguel (links are not returned)
+						text.setText(Html.fromHtml(tagText));
+						text.setMovementMethod(LinkMovementMethod.getInstance());
 					}
 
 					if (item.user_comment.length() != 0) {
@@ -518,8 +537,6 @@ public class EventList extends ListActivity {
 								.fromHtml("<a href='"
 										+ this.object.url
 										+ "/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente="
-										// "/mobile/index.php?page=agent&id="
-										// //The link to Pandora Console Mobile
 										+ item.id_agent + "'>"
 										+ item.agent_name + "</a>"));
 						text.setMovementMethod(LinkMovementMethod.getInstance());

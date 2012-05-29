@@ -1,3 +1,11 @@
+2012-05-29  Sancho Lerena <slerena@artica.es>
+
+	* pandora_console.redhat.spec,
+	pandora_console_install,
+	pandora_console_upgrade,
+	DEBIAN/control,
+	pandora_console.spec: Updated version on package specs.
+
 2012-05-29  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_api.php: Merged from trunk. Added

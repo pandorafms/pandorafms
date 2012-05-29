@@ -5,7 +5,7 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION=4.0dev
+PI_VERSION=4.0.2
 USER=`whoami`
 
 if [ $USER != "root" ]
@@ -107,7 +107,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS $PI_VERSION Console Upgrade (c) 2009-2011 Artica ST"
+echo "Pandora FMS $PI_VERSION Console Upgrade (c) 2009-2012 Artica ST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
 echo " "
 

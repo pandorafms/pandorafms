@@ -457,7 +457,7 @@ sub pandora_checkdb_consistency {
 	# 1. Check for modules that do not have tagente_estado but have tagente_module
 
 	print "[CHECKDB] Deleting non-init data... \n";
-	my @modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_estado WHERE utimestamp = 0');
+	my @modules = get_db_rows ($dbh, 'SELECT id_agente_modulo,id_agente FROM tagente_estado WHERE utimestamp = 0');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
 
@@ -465,11 +465,19 @@ sub pandora_checkdb_consistency {
 		my $is_policy_module = enterprise_hook ('is_policy_module', [$dbh, $id_agente_modulo]);
 		next if (defined($is_policy_module) && $is_policy_module);
 
+		# Skip if agent is disabled
+		my $is_agent_disabled = get_db_value ($dbh, 'SELECT disabled FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
+		next if (defined($is_agent_disabled) && $is_agent_disabled);
+
+		# Skip if module is disabled
+		my $is_module_disabled = get_db_value ($dbh, 'SELECT disabled FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agente_modulo);
+		next if (defined($is_module_disabled) && $is_module_disabled);
+
 		# Delete the module
-		db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);;
+		db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agente_modulo);
 
 		# Delete any alerts associated to the module
-		db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ? AND NOT EXISTS (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente_modulo = ?)', $id_agente_modulo, $id_agente_modulo);
+		db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $id_agente_modulo);
 	}
 
 	print "[CHECKDB] Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days)... \n";

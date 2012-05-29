@@ -9,8 +9,8 @@
 # Please see http://www.pandorafms.org. This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION=4.0
-PI_BUILD=110923
+PI_VERSION=4.0.2
+PI_BUILD=120529
 OS_NAME=`uname -s`
 
 FORCE=0
@@ -462,7 +462,7 @@ fi
 
 # Script banner at start
 echo " "
-echo "Pandora FMS Agent UNIX Installer $PI_VERSION $PI_BUILD (c) 2008-2010 ArticaST"
+echo "Pandora FMS Agent UNIX Installer $PI_VERSION $PI_BUILD (c) 2008-2012 ArticaST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
 echo " "
 

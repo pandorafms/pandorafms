@@ -98,4 +98,8 @@
     <string name="silence">Silence</string>
     <string name="tag_label_str">Tag</string>
 	<string name="advanced_options">Show advanced search options</string>
+	<string name="empty">- Empty -</string>
+	<string name="img_severity">Severity image</string>
+	<string name="img_group">Group image</string>
+	<string name="img_type">Type image</string>
 </resources>

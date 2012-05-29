@@ -1,3 +1,7 @@
+2012-05-29 Santiago Munín <burnin1@gmail.com>
+
+	*src/pandrod_event_viewer/pandorafms/EventList.java: Now tags are links to their urls (if have).
+	
 2012-05-25 Santiago Munín <burning1@gmail.com>
 
 	* src/pandroid_event_viewer/pandorafms/Options.java: Added the option to show or hide advanced options (filter view).

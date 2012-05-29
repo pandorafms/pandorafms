@@ -1,3 +1,9 @@
+2012-05-29  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Merged from trunk. Added
+	"group_id", "tag" and "event_type" to the get_events
+	filters. Some fixes.
+
 2012-05-28  Sancho Lerena <slerena@artica.es>
 
 	* godmode/agentes/module_manager_editor_plugin.php: A bit more

@@ -36,7 +36,7 @@ enterprise_include_once ('include/functions_local_components.php');
  * @return mixed
  */
 function parseOtherParameter($other, $otherType) {
-	
+
 	switch ($otherType) {
 		case 'url_encode':
 			$returnVar = array('type' => 'string', 'data' => urldecode($other));
@@ -3769,18 +3769,18 @@ function set_enable_disable_user ($id, $thrash2, $other, $thrash3) {
 function otherParameter2Filter($other, $return_as_array = false) {
 	$filter = array();
 	
-	if (($other['data'][1] != null) && ($other['data'][1] != -1) && ($other['data'][1] != '')) {
+	if (isset($other['data'][1]) && ($other['data'][1] != -1) && ($other['data'][1] != '')) {
 		$filter['criticity'] = $other['data'][1];
 	}
 	
 	$idAgent = null;
-	if ($other['data'][2] != '') {
+	if (isset($other['data'][2]) && $other['data'][2] != '') {
 		$idAgent = agents_get_agent_id($other['data'][2]);
 		$filter['id_agente'] = $idAgent;
 	}
 	
 	$idAgentModulo = null;
-	if ($other['data'][3] != '') {
+	if (isset($other['data'][3]) && $other['data'][3] != '') {
 		$filterModule = array('nombre' => $other['data'][3]);
 		if ($idAgent != null) {
 			$filterModule['id_agente'] = $idAgent;
@@ -3791,7 +3791,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
 		}
 	}
 	
-	if ($other['data'][4] != '') {
+	if (isset($other['data'][4]) && $other['data'][4] != '') {
 		$idTemplate = db_get_value_filter('id', 'talert_templates', array('name' => $other['data'][4]));
 		if ($idTemplate !== false) {
 			if ($idAgentModulo != null) {
@@ -3803,7 +3803,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
 		}
 	}
 	
-	if ($other['data'][5] != '') {
+	if (isset($other['data'][5]) && $other['data'][5] != '') {
 		$filter['id_usuario'] = $other['data'][5];
 	}
 	
@@ -3812,7 +3812,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
 		$filterString = '1 = 1';
 	}
 	
-	if (($other['data'][6] != null) && ($other['data'][6] != -1)) {
+	if (isset($other['data'][6]) && ($other['data'][6] != '') && ($other['data'][6] != -1)) {
 		if ($return_as_array) {
 			$filter['utimestamp']['>'] = $other['data'][6];
 		}
@@ -3821,7 +3821,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
 		}
 	}
 	
-	if (($other['data'][7] != null) && ($other['data'][7] != -1)) {
+	if (isset($other['data'][7]) && ($other['data'][7] != '') && ($other['data'][7] != -1)) {
 		if ($return_as_array) {
 			$filter['utimestamp']['<'] = $other['data'][7];
 		}
@@ -3830,12 +3830,12 @@ function otherParameter2Filter($other, $return_as_array = false) {
 		}
 	}
 	
-	if (($other['data'][8] != null) && ($other['data'][8] != -1)) {
+	if (isset($other['data'][8]) && ($other['data'][8] != '')) {
 		if ($return_as_array) {
 			$filter['estado'] = $other['data'][8];
 		}
 		else {
-			$estado = (int)$other[8];
+			$estado = (int)$other['data'][8];
 			
 			if ($estado >= 0) {
 				$filterString .= ' AND estado = ' . $estado;
@@ -3843,16 +3843,16 @@ function otherParameter2Filter($other, $return_as_array = false) {
 		}
 	}
 	
-	if (($other['data'][9] != null) && ($other['data'][9] != "")) {
+	if (isset($other['data'][9]) && ($other['data'][9] != '')) {
 		if ($return_as_array) {
 			$filter['evento'] = $other['data'][9];
 		}
 		else {
-			$filterString .= ' AND evento like "%' . $other[9] . '%"';
+			$filterString .= ' AND evento like "%' . $other['data'][9] . '%"';
 		}
 	}
 	
-	if ($other['data'][10] != null) {
+	if (isset($other['data'][10]) && ($other['data'][10] != '')) {
 		if ($return_as_array) {
 			$filter['limit'] = $other['data'][10];
 		}
@@ -3861,7 +3861,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
 		}
 	}
 	
-	if ($other['data'][11] != null) {
+	if (isset($other['data'][11]) && ($other['data'][11] != '')) {
 		if ($return_as_array) {
 			$filter['offset'] = $other['data'][11];
 		}
@@ -3870,7 +3870,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
 		}
 	}
 	
-	if (isset($other['data'][12]) && ($other['data'][12] != null)) {
+	if (isset($other['data'][12]) && ($other['data'][12] != '')) {
 		if ($return_as_array) {
 			$filter['total'] = false;
 			$filter['more_criticity'] = false;
@@ -3896,7 +3896,44 @@ function otherParameter2Filter($other, $return_as_array = false) {
 			
 		}
 	}
-	
+
+	if (isset($other['data'][13]) && ($other['data'][13] != '')) { 
+		if ($return_as_array) {
+			$filter['id_group'] = $other['data'][13];
+		}
+		else {
+			$filterString .= ' AND id_grupo =' . $other['data'][13];
+		}
+	}
+
+	if (isset($other['data'][14]) && ($other['data'][14] != '')) {
+		
+		if ($return_as_array) {
+			$filter['tag'] = $other['data'][14];
+		}
+		else {
+			$filterString .= " AND tags LIKE '%" . $other['data'][14]."%'";
+		}
+	}
+
+	if (isset($other['data'][15]) && ($other['data'][15] != '')) {
+		if ($return_as_array) {
+			$filter['event_type'] = $other['data'][15];
+		}
+		else {
+			$event_type = $other['data'][15];
+
+			if ($event_type == "not_normal") {
+				$filterString .= " AND ( event_type LIKE '%warning%'
+					OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ) ";
+			}
+			else {
+				$filterString .= ' AND event_type LIKE "%' . $event_type . '%"';
+			}
+		}
+
+	}
+
 	if ($return_as_array) {
 		return $filter;
 	}
@@ -4503,6 +4540,16 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 		$pagination = $filter['limit'];
 	if (isset($filter['offset']))
 		$offset = $filter['offset'];
+	if (isset($filter['id_group'])) { 	
+		$id_group = $filter['id_group'];
+		//A little hack to make the query fetch all groups and not only "All" (with id=0)
+		if ($id_group == 0)
+			$id_group = -1;
+	}
+	if (isset($filter['tag']))
+		$tag = $filter['tag'];
+	if (isset($filter['event_type']))
+		$event_type = $filter['event_type'];
 	if ($filter['utimestamp']) {
 		if (isset($filter['utimestamp']['>'])) {
 			$utimestamp_upper = $filter['utimestamp']['>'];
@@ -4555,8 +4602,8 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
 			$sql_post .= " AND event_type LIKE '%$event_type%' ";
 		}
 		elseif ($event_type == "not_normal") {
-			$sql_post .= " AND event_type LIKE '%warning%'
-				OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
+			$sql_post .= " AND ( event_type LIKE '%warning%'
+				OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ) ";
 		}
 		else {
 			$sql_post .= " AND event_type = '".$event_type."'";
@@ -4768,7 +4815,7 @@ function get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
 		
 		return;
 	}
-	
+
 	if ($other['type'] == 'string') {
 		if ($other['data'] != '') {
 			returnError('error_parameter', 'Error in the parameters.');
@@ -4780,18 +4827,18 @@ function get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
 	}
 	else if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
-		
+
 		$filterString = otherParameter2Filter($other);
 	}
-	
+
 	$dataRows = db_get_all_rows_filter('tevento', $filterString);
 	$last_error = error_get_last();
 	if (!empty($last_error)) {
 		returnError('ERROR_API_PANDORAFMS', $returnType);
-		
+
 		return;
 	}
-	
+
 	$data['type'] = 'array';
 	$data['data'] = $dataRows;
 	

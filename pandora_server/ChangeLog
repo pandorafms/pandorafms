@@ -1,3 +1,9 @@
+2012-05-30  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Updated batch statistic queries to get
+	information about groups. SQL code taken from new functions in
+	functions_group.php. Unified criteria to calculate information.
+
 2012-05-29  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_manage.pl,

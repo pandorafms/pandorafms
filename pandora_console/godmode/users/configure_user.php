@@ -173,9 +173,16 @@ if ($create_user) {
 			case "mysql":
 			case "postgresql":
 				$result = create_user($id, $password_new, $values);
+				if ($result) {
+					$res = save_pass_history($id, $password_new);
+				}
 				break;
 			case "oracle":
 				$result = db_process_sql('/INSERT INTO tusuario (fullname, firstname, lastname, email, phone, comments, is_admin, language, id_skin, block_size, flash_chart, id_user, password, last_connect, registered) VALUES (\'' . $values['fullname'] . '\',\'\',\'\',\'\',\'\',\'\',' . $values['is_admin'] . ',\'' . $values['language'] .'\',' . $values['id_skin'] . ',' . $values['block_size'] . ',' . $values['flash_chart'] . ',\'' . $id . '\',\'' . $password_new . '\',0,\'' . get_system_time () . '\')');		
+				
+				if ($result) {
+					$res = db_process_sql('/INSERT INTO tpassword_history (id_user, password, date_begin) VALUES (\'' . $id . '\',\'' . md5($password_new) . '\',\'' . date ("Y/m/d H:i:s", get_system_time()) . '\')');		
+				}
 				break;		
 		}
 			
@@ -226,6 +233,9 @@ if ($update_user) {
 		if ($password_new != '') {
 			if ($password_confirm == $password_new) {
 				$res2 = update_user_password ($id, $password_new);
+				if ($res2) {
+					$res3 = save_pass_history($id, $password_new);
+				}
 				ui_print_result_message ($res1 || $res2,
 					__('User info successfully updated'),
 					__('Error updating user info (no change?)'));

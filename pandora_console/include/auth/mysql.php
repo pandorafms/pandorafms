@@ -342,6 +342,19 @@ function create_user ($id_user, $password, $user_info) {
 }
 
 /**
+ * Save password history
+ *
+ * @return bool false
+ */
+function save_pass_history ($id_user, $password) {
+	$values["id_user"] = $id_user;
+	$values["password"] = md5 ($password);
+	$values["date_begin"] = date ("Y/m/d H:i:s", get_system_time());
+
+	return (@db_process_sql_insert ("tpassword_history", $values)) !== false;
+}
+
+/**
  * Deletes the user
  *
  * @param string User id

@@ -94,7 +94,10 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('pass_expire', 0),
 ('first_login', 0),
 ('mins_fail_pass', 5),
-('number_attempts', 5);
+('number_attempts', 5),
+('enable_pass_policy_admin', 0),
+('enable_pass_history', 0),
+('compare_pass', 3);
 
 UNLOCK TABLES;
 

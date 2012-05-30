@@ -225,6 +225,9 @@ function config_update_config () {
 		$config['number_attempts'] = get_parameter('number_attempts', $config['number_attempts']);
 		$config['pass_needs_numbers'] = get_parameter('pass_needs_numbers', $config['pass_needs_numbers']);
 		$config['pass_needs_symbols'] = get_parameter('pass_needs_symbols', $config['pass_needs_symbols']);
+		$config['enable_pass_policy_admin'] = get_parameter('enable_pass_policy_admin', $config['enable_pass_policy_admin']);
+		$config['enable_pass_history'] = get_parameter('enable_pass_history', $config['enable_pass_history']);
+		$config['compare_pass'] = get_parameter('compare_pass', $config['compare_pass']);
 	}
 	
 	# Update of Pandora FMS license 

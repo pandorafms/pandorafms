@@ -232,6 +232,22 @@ sub error ($) {
 }
 
 ################################################################################
+# Check a regular expression. Returns 1 if its valid, 0 otherwise.
+################################################################################
+sub valid_regexp ($) {
+	my $regexp = shift;
+	
+	eval {
+		'' =~ /$regexp/;
+	};
+
+	# Something went wrong
+	return 0 if ($@);
+	
+	return 1;
+}
+
+################################################################################
 # Recursively delete files and directories.
 ################################################################################
 sub rmrf {
@@ -375,7 +391,11 @@ sub parse_conf_modules($) {
 				push (@{$module->{'precondition'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2, 'command' => $3});
 			# Regular expression
 			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
-				push (@{$module->{'precondition'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
+				if (valid_regexp ($1)) {
+					push (@{$module->{'precondition'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
+				} else {
+					log_message ('setup', "Invalid regular expression in module precondition: $line");
+				}
 			}
 		} elsif ($line =~ /^\s*module_exec\s+(.+)$/) {
 			$module->{'func'} = \&module_exec;
@@ -429,7 +449,11 @@ sub parse_conf_modules($) {
 				push (@{$module->{'conditions'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2, 'command' => $3});
 			# Regular expression
 			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
-				push (@{$module->{'conditions'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
+				if (valid_regexp ($1)) {
+					push (@{$module->{'conditions'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
+				} else {
+					log_message ('setup', "Invalid regular expression in module condition: $line");
+				}
 			}
 		} elsif ($line =~ /^\s*module_intensive_condition\s+(.*)$/) {
 			my $action = $1;
@@ -444,7 +468,11 @@ sub parse_conf_modules($) {
 				push (@{$module->{'intensive_conditions'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2});
 			# Regular expression
 			} elsif ($action =~ /^\s*=~\s+(\S*)\s*$/) {
-				push (@{$module->{'intensive_conditions'}}, {'operator' => '=~', 'value_1' => $1});
+				if (valid_regexp ($1)) {
+					push (@{$module->{'intensive_conditions'}}, {'operator' => '=~', 'value_1' => $1});
+				} else {
+					log_message ('setup', "Invalid regular expression in intensive condition: $line");
+				}
 			}
 		} elsif ($line =~ /^\s*module_crontab\s+(((\*|(\d+(-\d+){0,1}))\s*){5}).*$/) {
 			$module->{'cron'} = $1;

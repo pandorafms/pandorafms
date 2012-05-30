@@ -232,7 +232,7 @@ $where = sprintf("(tagente_modulo.id_policy_module = 0 AND disabled = 0 AND tage
 
 $search_string_entities = io_safe_input($search_string);
 
-$basic_where = sprintf(" tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND (nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
+$basic_where = sprintf(" tagente_estado.utimestamp !=0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND (nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
 
 switch ($config["dbtype"]) {
 	case "postgresql":

@@ -139,6 +139,11 @@ $fields = array ('id_grupo', 'id_agente', 'evento', 'estado', 'id_usuario',
 	'event_type', 'criticity', 'timestamp');
 
 $sql = db_get_all_rows_filter ('tevento', $filter, $fields, 'AND', true, true);
+
+// If filter is empty and there are others filters not empty append "WHERE" clause
+if (empty($filter) and (!empty($filter_state) or !empty($timestamp_filter)))
+	$sql .= ' WHERE 1=1 ';
+
 $sql .= $filter_state . $timestamp_filter . ' ORDER BY timestamp DESC';  
 
 $new = true;

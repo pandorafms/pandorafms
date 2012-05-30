@@ -1,3 +1,8 @@
+2012-05-30  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_api.php: Added to API a test function
+	to test the API connection returning OK when success
+
 2012-05-30 Dario Rodriguez <dario@artica.es>
 
         * include/functions_reporting.php: Fixed group view,

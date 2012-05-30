@@ -178,6 +178,10 @@ function isInACL($ip) {
 	return false;
 }
 
+function get_test() {
+	echo "OK";
+}
+
 //-------------------------DEFINED OPERATIONS FUNCTIONS-----------------
 function get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 	if ($other['type'] == 'string') {

@@ -1,3 +1,10 @@
+2012-05-30 Dario Rodriguez <dario@artica.es>
+
+        * include/functions_reporting.php: Fixed group view,
+        unkown agent count was wrong.
+
+	MERGED PANDORA 4.0.2
+
 2012-05-30  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* godmode/db/db_main.php: Tiny bug fix. The number of log4x

@@ -137,6 +137,31 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	}
 	
 	if ($result !== false) { 
+		// If the module is synthetic we duplicate the operations too
+		if($module['id_modulo'] == 5) {
+			$synth_ops = db_get_all_rows_field_filter('tmodule_synth','id_agent_module_target',$module['id_agente_modulo']);
+			
+			if($synth_ops === false) {
+				$synth_ops = array();
+			}
+			
+			foreach($synth_ops as $synth_op) {
+				unset($synth_op['id']);
+				$synth_op['id_agent_module_target'] = $id_new_module;
+				switch ($config['dbtype']) {
+					case "mysql":
+					case "postgresql":
+						db_process_sql_insert ('tmodule_synth',
+							$synth_op);
+						break;
+					case "oracle":
+						db_process_sql_insert ('tmodule_synth',
+							$synth_op, false);
+						break;
+				}
+			}
+		}
+		
 		//Added the config data if necesary
 		enterprise_include_once('include/functions_config_agents.php');
 		

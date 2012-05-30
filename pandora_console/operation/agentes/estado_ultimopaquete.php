@@ -183,7 +183,8 @@ if($extra_sql == ENTERPRISE_NOT_HOOK) {
 else if ($extra_sql != '') {
 	$extra_sql .= ' OR ';
 }
-	
+
+
 // Build the order sql
 if(!empty($order)) {
 	$order_sql = ' ORDER BY ';
@@ -209,7 +210,7 @@ $is_extra_sql = (int)$is_extra;
 
 $where = sprintf("(tagente_modulo.id_policy_module = 0 AND disabled = 0 AND tagente_estado.utimestamp !=0 AND tagente_modulo.id_agente = %s AND delete_pending = 0)", $id_agente);
 
-$basic_where = " tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND ";
+$basic_where = " tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.utimestamp !=0 AND ";
 
 switch ($config["dbtype"]) {
 	case "postgresql":
@@ -223,6 +224,7 @@ switch ($config["dbtype"]) {
 
 		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s (%s %s) %s %s", 
 					$params, $basic_where, $extra_sql, $where, $order_sql, $limit_sql);
+
 		$modules = db_get_all_rows_sql($sql);
 		break;
 	case "oracle":	

@@ -1,3 +1,14 @@
+2012-05-30  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_reporting.php
+	include/functions_groups.php: Group/tactical stats
+	are now done with functins in function_group. This
+	method is also used in the server for the batch
+	stats system.
+
+	* operation/agentes/estado_ultimopaquete.php: Fixed
+	view on non-init policy modules, shown in the data tab.
+
 2012-05-30 Dario Rodriguez <dario@artica.es>
 
 	* include/functions_reporting.php: Fixed group view,

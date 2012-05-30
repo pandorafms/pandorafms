@@ -899,202 +899,58 @@ function reporting_get_group_stats ($id_group = 0) {
 				array_push($covered_groups, $group);
 				array_push($group_array, $group);
 			}
-			
+
 			// If there are not groups to query, we jump to nextone
-			if(empty($group_array)) {
+			
+			if (empty($group_array)) {
 				continue;
 			}
+
+			// Get unknown agents by using the status code in modules.
+						
+			$data["agents_unknown"] = groups_agent_unknown ($group_array);
+
+			// Get monitor NOT INIT, except disabled AND async modules
+
+			$data["monitor_not_init"] = groups_monitor_not_init ($group_array);
+					
+			// Get monitor OK, except disabled and non-init
 			
-			$group_clause = implode(",",$group_array);
+			$data["monitor_ok"] = groups_monitor_ok ($group_array);
 
-			$group_clause = "(".$group_clause.")";
+			// Get monitor CRITICAL, except disabled and non-init
+
+			$data["monitor_critical"] = groups_monitor_critical ($group_array);
 			
-			switch ($config["dbtype"]) {
-				case "mysql":
-					$agents_in_group = db_get_all_rows_sql ("SELECT id_agente
-						FROM tagente
-						WHERE id_grupo IN $group_clause AND disabled = 0");
-					break;
-				case "postgresql":
-					$agents_in_group = db_get_all_rows_sql ("SELECT id_agente
-						FROM tagente
-						WHERE id_grupo IN $group_clause AND disabled = 0");
-					break;
-				case "oracle":
-					$agents_in_group = db_get_all_rows_sql ("SELECT id_agente
-						FROM tagente
-						WHERE id_grupo IN $group_clause AND disabled = 0");
-					break;
-			}
-
-			//Count unkown agents, forget agent without modules
-			if (!$agents_in_group) {
-				$agents_in_group = array();
-			}
-			$data["agents_unknown"] = 0;
-
-			foreach ($agents_in_group as $id) {
-				$info = reporting_get_agent_module_info($id['id_agente']);
-
-				//If the agent has modules then is counted
-				if ($info['monitor_unknown']) {
-					$data["agents_unknown"]++;	
-				}
-			}
-
-			//Calculate other metrics
-			$data["total_agents"] += db_get_sql ("SELECT COUNT(*)
-					FROM tagente WHERE id_grupo IN $group_clause AND disabled = 0");
-
-			$data["monitor_checks"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-				FROM tagente_estado, tagente, tagente_modulo
-				WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0
-					AND tagente_estado.id_agente = tagente.id_agente
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0");
-
-			$data["total_not_init"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-				FROM tagente_estado, tagente, tagente_modulo
-				WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0
-					AND tagente_estado.id_agente = tagente.id_agente
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-					AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24)
-					AND tagente_estado.utimestamp = 0");
-
-			switch ($config["dbtype"]) {
-				case "mysql":
-					$data["monitor_ok"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0
-							AND tagente_estado.id_agente = tagente.id_agente
-							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-							AND tagente_modulo.disabled = 0 AND estado = 0
-							AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
-							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100)))
-							AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24)))");
-					break;
-				case "postgresql":
-					$data["monitor_ok"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0
-							AND tagente_estado.id_agente = tagente.id_agente
-							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-							AND tagente_modulo.disabled = 0 AND estado = 0
-							AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
-							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100)))
-							AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24)))");
-					break;
-				case "oracle":
-					$data["monitor_ok"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0
-							AND tagente_estado.id_agente = tagente.id_agente
-							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-							AND tagente_modulo.disabled = 0 AND estado = 0
-							AND ((ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
-							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100)))
-							AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24)))");
-					break;
-			}
-
-			switch ($config["dbtype"]) {
-				case "mysql":
-					$data["monitor_critical"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0
-							AND tagente_estado.id_agente = tagente.id_agente
-							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-							AND tagente_modulo.disabled = 0 AND estado = 1
-							AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
-					break;
-				case "postgresql":
-					$data["monitor_critical"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0
-							AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-							AND tagente_modulo.disabled = 0 AND estado = 1 AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
-					break;
-				case "oracle":
-					$data["monitor_critical"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0
-							AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-							AND tagente_modulo.disabled = 0 AND estado = 1 AND ((ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
-					break;
-			}
+			// Get monitor WARNING, except disabled and non-init
 			
-			switch ($config["dbtype"]) {
-				case "mysql":
-					$data["monitor_warning"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente
-							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-							AND estado = 2 AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
-							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
-					break;
-				case "postgresql":
-					$data["monitor_warning"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente
-							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-							AND estado = 2 AND ((ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
-							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
-					break;
-				case "oracle":
-					$data["monitor_warning"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente
-							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-							AND estado = 2 AND ((ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)
-							OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) AND utimestamp > 0");
-					break;
-			}
+			$data["monitor_warning"] = groups_monitor_warning ($group_array);
+		
+			// Get monitor UNKNOWN, except disabled and non-init
+			
+			$data["monitor_unknown"] = groups_monitor_unknown ($group_array);
+			
+			// Get alerts configured, except disabled 
 
-			switch ($config["dbtype"]) {
-				case "mysql":
-					$data["monitor_unknown"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
-							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-							AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
-							AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
-					break;
-				case "postgresql":
-					$data["monitor_unknown"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
-							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-							AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
-							AND (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
-					break;
-				case "oracle":
-					$data["monitor_unknown"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
-							AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-							AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100)
-							AND (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
-					break;
-			}
+			$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
 
-			$data["monitor_not_init"] += db_get_sql ("SELECT COUNT(tagente_estado.id_agente_estado)
-				FROM tagente_estado, tagente, tagente_modulo
-				WHERE tagente.id_grupo IN $group_clause AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
-					AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24) AND utimestamp = 0");
+			// Get alert configured currently FIRED, except disabled 
 
-			$data["monitor_alerts"] += db_get_sql ("SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-				WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
-					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
+			$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
+					
+			// Calculate totals using partial counts from above
+			
+			// Get TOTAL agents in a group
+			$data["total_agents"] += groups_total_agents ($group_array);
 
-			$data["monitor_alerts_fired"] += db_get_sql ("SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-				WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
-					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo AND times_fired > 0");
+			// Get TOTAL non-init modules, except disabled ones and async modules
+
+			$data["total_not_init"] += $data["monitor_not_init"];
+
+			// Get total count of monitors for this group, except disabled.
+
+			$data["monitor_checks"] += $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
+					
 		}
 		/*
 		 Monitor health (percentage)

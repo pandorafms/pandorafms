@@ -1,3 +1,9 @@
+2012-05-30  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* godmode/db/db_main.php: Tiny bug fix. The number of log4x
+	turns red when tagente_datos (not tagente_datos_log4x) is more
+	than the threshold (max_data).
+
 2012-05-29  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_api.php: added "event_type" to the

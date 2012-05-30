@@ -14,116 +14,80 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
 -->
-<TableLayout 
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:background="#FFFFFF"
->
-	<TableRow>
-		<TextView
-			android:textColor="#000"
-			android:text="@string/severity_label_str"
-			android:paddingRight="5dip"
-		/>
-		<LinearLayout
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-		>
-			<ImageView
-				android:layout_weight="0"
-				android:id="@+id/img_severity"
-				android:layout_width="0dp"
-	    		android:layout_height="wrap_content"
-	    		android:layout_gravity="center"
-	    		android:contentDescription="@string/img_severity"
-	    		android:paddingRight="5dp"
-			/>
-			<TextView
-				android:id="@+id/severity_text"
-				android:textColor="#000"
-				android:text=""
-				android:layout_width="wrap_content"
-	    		android:layout_height="wrap_content"
-			/>
-		</LinearLayout>
-	</TableRow>
-	<TableRow>
-		<TextView
-			android:textColor="#000"
-			android:text="@string/type_label_str"
-			android:paddingRight="5dip"
-		/>
-		<LinearLayout
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-		>
-			<ImageView
-				android:layout_weight="0"
-				android:id="@+id/img_type"
-				android:layout_width="0dp"
-	    		android:layout_height="wrap_content"
-	    		android:layout_gravity="center"
-	    		android:contentDescription="@string/img_type"
-	    		android:paddingRight="0dp"
-			/>
-			<TextView
-				android:id="@+id/type_text"
-				android:textColor="#000"
-				android:text=""
-				android:layout_width="wrap_content"
-	    		android:layout_height="wrap_content"
-			/>
-		</LinearLayout>
-	</TableRow>
-	<TableRow
-		android:id="@+id/row_agent"
-		android:visibility="gone"
-	>
-		<TextView
-			android:textColor="#000"
-			android:text="@string/agent_label_str"
-			android:paddingRight="5dip"
-		/>
-		<TextView
-			android:id="@+id/agent_text"
-			android:textColor="#000"
-			android:text=""
-		/>
-	</TableRow>
-	<TableRow>
-		<TextView
-			android:textColor="#000"
-			android:text="@string/group_label_str"
-			android:paddingRight="5dip"
-		/>
-		<LinearLayout
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-		>
-			<ImageView
-				android:layout_weight="0"
-				android:id="@+id/img_group"
-				android:layout_width="wrap_content"
-	    		android:layout_height="wrap_content"
-	    		android:layout_gravity="center"
-	    		android:contentDescription="@string/img_group"
-	    		android:paddingRight="5dp"
-			/>
-			<TextView
-				android:layout_weight="1"
-				android:id="@+id/group_text"
-				android:textColor="#000"
-				android:text="@string/all_str"
-				android:layout_width="wrap_content"
-	    		android:layout_height="wrap_content"
-			/>
-		</LinearLayout>
-	</TableRow>
-	<!--<TableRow>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFFFFF" >
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="5dip"
+            android:text="@string/severity_label_str"
+            android:textColor="#000" />
+
+        <TextView
+            android:id="@+id/severity_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:text=""
+            android:textColor="#000" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:paddingRight="5dip"
+            android:text="@string/type_label_str"
+            android:textColor="#000" />
+
+        <TextView
+            android:id="@+id/type_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:text=""
+            android:textColor="#000" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/row_agent"
+        android:visibility="gone" >
+
+        <TextView
+            android:paddingRight="5dip"
+            android:text="@string/agent_label_str"
+            android:textColor="#000" />
+
+        <TextView
+            android:id="@+id/agent_text"
+            android:text=""
+            android:textColor="#000" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:paddingRight="5dip"
+            android:text="@string/group_label_str"
+            android:textColor="#000" />
+
+        <TextView
+            android:id="@+id/group_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:text="@string/all_str"
+            android:textColor="#000" />
+    </TableRow>
+    <!--
+    <TableRow>
 		<TextView
 			android:textColor="#000"
 			android:text="Count"
@@ -133,53 +97,54 @@
 			android:textColor="#000"
 			android:text="1" 
 		/>
-	</TableRow>-->
-	<TableRow
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-	>
-		<TextView
-			android:textColor="#000"
-			android:text="@string/comments_label_str"
-			android:paddingRight="5dip"
-		/>
-		<TextView
-			android:id="@+id/comments_text"
-			android:textColor="#000"
-			android:text="@string/empty"
-			android:singleLine="false"
-			android:layout_width="wrap_content"
-		/>
 	</TableRow>
-	<TableRow>
-		<TextView
-			android:textColor="#000"
-			android:text="@string/tags_label_str"
-			android:paddingRight="5dip"
-		/>
-		<TextView
-			android:id="@+id/tags_text"
-			android:textColor="#000"
-			android:text="@string/empty"
-			android:linksClickable="true"
+    -->
 
-		/>
-	</TableRow>
-	<TableRow
-		android:gravity="right"
-	> 
-		<Button
-			android:id="@+id/validate_button_extended"
-			android:text="@string/validate_event_button_str"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-		/>
-		<TextView
-			android:id="@+id/validate_event_label"
-			android:textColor="#000"
-			android:textStyle="bold"
-			android:visibility="gone"
-			android:text="@string/validate_event_label_str"
-		/>
-	</TableRow>
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:paddingRight="5dip"
+            android:text="@string/comments_label_str"
+            android:textColor="#000" />
+
+        <TextView
+            android:id="@+id/comments_text"
+            android:layout_width="wrap_content"
+            android:singleLine="false"
+            android:text="@string/empty"
+            android:textColor="#000" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:paddingRight="5dip"
+            android:text="@string/tags_label_str"
+            android:textColor="#000" />
+
+        <TextView
+            android:id="@+id/tags_text"
+            android:linksClickable="true"
+            android:text="@string/empty"
+            android:textColor="#000" />
+    </TableRow>
+
+    <TableRow android:gravity="right" >
+
+        <Button
+            android:id="@+id/validate_button_extended"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/validate_event_button_str" />
+
+        <TextView
+            android:id="@+id/validate_event_label"
+            android:text="@string/validate_event_label_str"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </TableRow>
+
 </TableLayout>

@@ -1,3 +1,8 @@
+2012-05-30 Dario Rodriguez <dario@artica.es>
+
+	* include/functions_reporting.php: Fixed group view,
+	unkown agent count was wrong.
+
 2012-05-29  Sancho Lerena <slerena@artica.es>
 
 	* pandora_console.redhat.spec,

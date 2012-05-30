@@ -911,22 +911,38 @@ function reporting_get_group_stats ($id_group = 0) {
 			
 			switch ($config["dbtype"]) {
 				case "mysql":
-					$data["agents_unknown"] += db_get_sql ("SELECT COUNT(*)
+					$agents_in_group = db_get_all_rows_sql ("SELECT id_agente
 						FROM tagente
-						WHERE id_grupo IN $group_clause AND disabled = 0 AND ultimo_contacto < NOW() - (intervalo * 2)");
+						WHERE id_grupo IN $group_clause AND disabled = 0");
 					break;
 				case "postgresql":
-					$data["agents_unknown"] += db_get_sql ("SELECT COUNT(*)
+					$agents_in_group = db_get_all_rows_sql ("SELECT id_agente
 						FROM tagente
-						WHERE id_grupo IN $group_clause AND disabled = 0 AND ceil(date_part('epoch', ultimo_contacto)) < ceil(date_part('epoch', NOW())) - (intervalo * 2)");
+						WHERE id_grupo IN $group_clause AND disabled = 0");
 					break;
 				case "oracle":
-					$data["agents_unknown"] += db_get_sql ("SELECT COUNT(*)
+					$agents_in_group = db_get_all_rows_sql ("SELECT id_agente
 						FROM tagente
-						WHERE id_grupo IN $group_clause AND disabled = 0 AND ultimo_contacto < CURRENT_TIMESTAMP - (intervalo * 2)");
+						WHERE id_grupo IN $group_clause AND disabled = 0");
 					break;
 			}
 
+			//Count unkown agents, forget agent without modules
+			if (!$agents_in_group) {
+				$agents_in_group = array();
+			}
+			$data["agents_unknown"] = 0;
+
+			foreach ($agents_in_group as $id) {
+				$info = reporting_get_agent_module_info($id['id_agente']);
+
+				//If the agent has modules then is counted
+				if ($info['monitor_unknown']) {
+					$data["agents_unknown"]++;	
+				}
+			}
+
+			//Calculate other metrics
 			$data["total_agents"] += db_get_sql ("SELECT COUNT(*)
 					FROM tagente WHERE id_grupo IN $group_clause AND disabled = 0");
 

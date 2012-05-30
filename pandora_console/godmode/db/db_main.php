@@ -123,7 +123,7 @@ echo '<tr class="rowPair"><td>';
 echo __('Total log4x items (tagente_datos_log4x)');
 echo '<td><b>';
 
-if ($stat_data > $max_data)
+if ($stat_data_log4x > $max_data)
 	echo "<font color='#ff0000'>$stat_data_log4x</font>";
 else
 	echo $stat_data_log4x;

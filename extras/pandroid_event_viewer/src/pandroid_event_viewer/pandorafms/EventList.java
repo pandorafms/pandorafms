@@ -34,6 +34,8 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -68,7 +70,6 @@ public class EventList extends ListActivity {
 
 	// private HashMap<Integer, Boolean> openedItem;
 	private HashMap<String, Bitmap> imgGroups;
-	private HashMap<String, Bitmap> imgSeverity;
 	private HashMap<String, Bitmap> imgType;
 
 	private BroadcastReceiver onBroadcast;
@@ -78,7 +79,6 @@ public class EventList extends ListActivity {
 		super.onCreate(savedInstanceState);
 
 		this.imgGroups = new HashMap<String, Bitmap>();
-		this.imgSeverity = new HashMap<String, Bitmap>();
 		this.imgType = new HashMap<String, Bitmap>();
 
 		Intent i = getIntent();
@@ -226,7 +226,7 @@ public class EventList extends ListActivity {
 	 * @return A bitmap of that image
 	 */
 	private Bitmap downloadImage(String fileUrl) {
-		Log.i(TAG, "Downloading image");
+		Log.i(TAG, "Downloading image: " + fileUrl);
 		URL myFileUrl = null;
 
 		try {
@@ -243,7 +243,12 @@ public class EventList extends ListActivity {
 		return null;
 	}
 
-	// TODO comment
+	/**
+	 * Sets the group image on event list.
+	 * @param view Parent view.
+	 * @param group_icon Group icon.
+	 * @param id Group's ImageView id.
+	 */
 	private void setImageGroup(View view, String group_icon, int id) {
 		ImageView imgview = (ImageView) view.findViewById(id);
 		Bitmap img;
@@ -272,8 +277,13 @@ public class EventList extends ListActivity {
 		}
 	}
 
-	// TODO comment
-	public void setImageType(View view, String url, int id) {
+	/**
+	 * Sets type's image on event list.
+	 * @param view
+	 * @param url
+	 * @param id
+	 */
+	private void setImageType(View view, String url, int id) {
 		ImageView imgview = (ImageView) view.findViewById(id);
 		Bitmap img = null;
 
@@ -293,23 +303,54 @@ public class EventList extends ListActivity {
 	}
 
 	// TODO comment
-
-	public void setImageSeverity(View view, String url, int id) {
-		ImageView imgview = (ImageView) view.findViewById(id);
+	private void setTextViewImage(View view, String url, int id) {
+		TextView tview = (TextView) view.findViewById(id);
 		Bitmap img = null;
 
-		if (this.imgSeverity.containsKey(url)) {
-			img = this.imgSeverity.get(url);
+		if (this.imgType.containsKey(url)) {
+			img = this.imgType.get(url);
 		} else {
 			img = this.downloadImage(url);
 
 			if (img != null) {
-				this.imgSeverity.put(url, img);
+				this.imgType.put(url, img);
 			}
 		}
 
 		if (img != null) {
-			imgview.setImageBitmap(img);
+			Drawable d = new BitmapDrawable(img);
+			d.setBounds(0, 0, 16, 16);
+			tview.setCompoundDrawables(d, null, null, null);
+		}
+	}
+
+	// TODO comment
+	private void setTextViewGroupImage(View view, String group_icon, int id) {
+		TextView tview = (TextView) view.findViewById(id);
+		Bitmap img = null;
+
+		if (this.imgGroups.containsKey(group_icon)) {
+			img = this.imgGroups.get(group_icon);
+		} else {
+			SharedPreferences preferences = getApplicationContext()
+					.getSharedPreferences(
+							getApplicationContext().getString(
+									R.string.const_string_preferences),
+							Activity.MODE_PRIVATE);
+
+			String url = preferences.getString("url", "");
+
+			img = this.downloadImage(url + "/images/groups_small/" + group_icon
+					+ ".png");
+
+			if (img != null) {
+				this.imgGroups.put(group_icon, img);
+			}
+		}
+		if (img != null) {
+			Drawable d = new BitmapDrawable(img);
+			d.setBounds(0, 0, 16, 16);
+			tview.setCompoundDrawables(d, null, null, null);
 		}
 	}
 
@@ -350,7 +391,6 @@ public class EventList extends ListActivity {
 
 		public MyAdapter(Context c, PandroidEventviewerActivity object) {
 			mContext = c;
-
 			this.object = object;
 			showLoadingEvents = false;
 		}
@@ -502,7 +542,6 @@ public class EventList extends ListActivity {
 								tagText += parts[0];
 							}
 						}
-						// TODO ask miguel (links are not returned)
 						text.setText(Html.fromHtml(tagText));
 						text.setMovementMethod(LinkMovementMethod.getInstance());
 					}
@@ -518,12 +557,12 @@ public class EventList extends ListActivity {
 								.findViewById(R.id.group_text);
 						text.setText(item.group_name);
 						if (item.group_icon.length() != 0)
-							setImageGroup(viewEventExtended, item.group_icon,
-									R.id.img_group);
+							setTextViewGroupImage(viewEventExtended,
+									item.group_icon, R.id.group_text);
 					} else {
 						// ALL
-						setImageGroup(viewEventExtended, "world",
-								R.id.img_group);
+						setTextViewGroupImage(viewEventExtended, "world",
+								R.id.group_text);
 					}
 
 					if (item.agent_name.length() != 0) {
@@ -543,8 +582,8 @@ public class EventList extends ListActivity {
 					}
 
 					if (item.description_image.length() != 0)
-						setImageType(viewEventExtended, item.description_image,
-								R.id.img_type);
+						setTextViewImage(viewEventExtended,
+								item.description_image, R.id.type_text);
 					text = (TextView) viewEventExtended
 							.findViewById(R.id.type_text);
 					text.setText(eventType2Text(item.event_type));
@@ -555,8 +594,8 @@ public class EventList extends ListActivity {
 						text.setText(item.criticity_name);
 
 						if (item.criticity_image.length() != 0)
-							setImageType(viewEventExtended,
-									item.criticity_image, R.id.img_severity);
+							setTextViewImage(viewEventExtended,
+									item.criticity_image, R.id.severity_text);
 					}
 
 					// Set the open and close the extended info event row

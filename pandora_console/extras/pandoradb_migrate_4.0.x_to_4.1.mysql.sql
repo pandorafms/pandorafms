@@ -244,4 +244,19 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('pass_expire', 0),
 ('first_login', 0),
 ('mins_fail_pass', 5),
-('number_attempts', 5);
+('number_attempts', 5),
+('enable_pass_policy_admin', 0),
+('enable_pass_history', 0),
+('compare_pass', 3);
+
+-- -----------------------------------------------------
+-- Table `tpassword_history`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpassword_history` (
+  `id_pass`  int(10) unsigned NOT NULL auto_increment,
+  `id_user` varchar(60) NOT NULL,
+  `password` varchar(45) default NULL,
+  `date_begin` DATETIME  NOT NULL DEFAULT 0,
+  `date_end` DATETIME  NOT NULL DEFAULT 0,
+PRIMARY KEY  (`id_pass`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

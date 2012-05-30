@@ -1,3 +1,21 @@
+2012-05-30  Vanessa Gil <vanessa.gil@artica.es>
+
+	* pandoradb.sql
+	  pandoradb.postgreSQL.sql
+	  pandoradb.oracle.sql
+	  pandoradb_data.sql
+	  pandoradb.data.oracle.sql
+	  pandoradb.data.postgreSQL.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql
+	  index.php
+	  godmode/users/configure_user.php
+	  include/functions_config.php
+	  include/auth/mysql.php
+	  include/javascript/jquery.pandora.js: Added admin users to password policy
+	and added password history.
+
 2012-05-30  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_api.php: Added to API a test function

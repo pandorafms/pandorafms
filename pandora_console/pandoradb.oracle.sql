@@ -1602,3 +1602,15 @@ CREATE TABLE IF NOT EXISTS ttimezone (
 
 CREATE SEQUENCE ttimezone_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER ttimezone_inc BEFORE INSERT ON ttimezone REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttimezone_s.nextval INTO :NEW.ID_TZ FROM dual; END ttimezone_inc;;
+
+-- -----------------------------------------------------
+-- Table `tpassword_history`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS tpassword_history (
+  id_pass  NUMBER(10) NOT NULL PRIMARY KEY,
+  id_user varchar2(60) NOT NULL,
+  password varchar2(45) default '',
+  date_begin TIMESTAMP DEFAULT 0,
+  date_end TIMESTAMP DEFAULT 0
+);
+CREATE SEQUENCE tpassword_history_s INCREMENT BY 1 START WITH 1;

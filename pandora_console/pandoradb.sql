@@ -1403,3 +1403,15 @@ CREATE TABLE IF NOT EXISTS `ttimezone` (
   `timezone` varchar(60) NOT NULL,
 PRIMARY KEY  (`id_tz`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tpassword_history`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpassword_history` (
+  `id_pass`  int(10) unsigned NOT NULL auto_increment,
+  `id_user` varchar(60) NOT NULL,
+  `password` varchar(45) default NULL,
+  `date_begin` DATETIME  NOT NULL DEFAULT 0,
+  `date_end` DATETIME  NOT NULL DEFAULT 0,
+PRIMARY KEY  (`id_pass`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

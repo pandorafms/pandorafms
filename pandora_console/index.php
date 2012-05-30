@@ -186,7 +186,7 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	
 	$expired_pass = false;
 	
-	if (($nick_in_db != false)&&(!is_user_admin($nick)) && (defined('PANDORA_ENTERPRISE')) && ($config['enable_pass_policy'])) {
+	if (($nick_in_db != false)&& ((!is_user_admin($nick) || $config['enable_pass_policy_admin'])) && (defined('PANDORA_ENTERPRISE')) && ($config['enable_pass_policy'])) {
 		include_once(ENTERPRISE_DIR."/include/auth/mysql.php");
 	
 		$blocked = login_check_blocked($nick);
@@ -284,7 +284,7 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	else { //login wrong
 		$blocked = false;
 		
-		if (!is_user_admin($nick)) {
+		if (!is_user_admin($nick) || $config['enable_pass_policy_admin']) {
 			$blocked = login_check_blocked($nick);
 		}
 		

@@ -1297,3 +1297,14 @@ CREATE TABLE "ttimezone" (
   "zone" varchar(60) NOT NULL,
   "timezone" varchar(60) NOT NULL
 );
+
+-- -----------------------------------------------------
+-- Table `tpassword_history`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "tpassword_history" (
+  "id_pass"  INTEGER NOT NULL PRIMARY KEY,
+  "id_user" varchar(60) NOT NULL,
+  "password" varchar(45) default NULL,
+  "date_begin" BIGINT NOT NULL default 0,
+  "date_end" BIGINT NOT NULL default 0,
+);

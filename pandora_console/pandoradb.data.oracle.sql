@@ -100,6 +100,9 @@ INSERT INTO tconfig (token, value) VALUES ('pass_expire', 0);
 INSERT INTO tconfig (token, value) VALUES ('first_login', 0);
 INSERT INTO tconfig (token, value) VALUES ('mins_fail_pass', 5);
 INSERT INTO tconfig (token, value) VALUES ('number_attempts', 5);
+INSERT INTO tconfig (token, value) VALUES ('enable_pass_policy_admin', 0);
+INSERT INTO tconfig (token, value) VALUES ('enable_pass_history', 0);
+INSERT INTO tconfig (token, value) VALUES ('compare_pass', 3);
 COMMIT;
 END;;
 

@@ -41,6 +41,7 @@ define ('ERR_DB_DB', -40002);
 define ('ERR_FILE', -50000);
 define ('ERR_NOCHANGES', -60000);
 define ('ERR_NODATA', -70000);
+define ('ERR_CONNECTION', -80000);
 
 /* Visual console constants */
 define('MIN_WIDTH',300);

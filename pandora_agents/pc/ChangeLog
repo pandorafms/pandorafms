@@ -1,3 +1,8 @@
+2012-05-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Merged from unix agent. Check for valid regular
+	  expressions before adding module conditions.
+
 2012-04-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* DEBIAN/postinst, DEBIAN/make_deb_package.sh: disabled the checking

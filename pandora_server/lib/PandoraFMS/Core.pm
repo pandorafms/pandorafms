@@ -2315,7 +2315,7 @@ sub pandora_server_statistics ($$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_group_statistics (I<$pa_config>, I<$dbh>) >>
+=head2 C<< pandora_process_policy_queue (I<$pa_config>, I<$dbh>) >>
 
 Process groups statistics for statistics table
 

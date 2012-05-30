@@ -1,4 +1,6 @@
 2012-05-30  Sancho Lerena <slerena@artica.es>
+	
+	* lib/PandoraFMS/Core.pm: Fixed description/comment for a function.
 
 	* lib/PandoraFMS/Core.pm: Updated batch statistic queries to get
 	information about groups. SQL code taken from new functions in

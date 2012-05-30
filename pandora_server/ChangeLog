@@ -1,3 +1,9 @@
+2012-05-30  Sancho Lerena <slerena@artica.es>
+
+        * lib/PandoraFMS/Core.pm: Updated batch statistic queries to get
+        information about groups. SQL code taken from new functions in
+        functions_group.php. Unified criteria to calculate information.
+
 2012-05-29  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* util/pandora_db.pl: Don't delete non-initialized modules which

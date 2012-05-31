@@ -261,7 +261,7 @@ function mainSystemInfo() {
 	
 	echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
 
-	echo "<form method='post'>";
+	echo "<form method='post' action='index.php?extension_in_menu=gsetup&sec=gextensions&sec2=extensions/system_info'>";
 	$table = null;
 	$table->width = '98%';
 	$table->align = array();
@@ -326,8 +326,14 @@ function mainSystemInfo() {
 		$url_zip = ui_get_full_url(false);
 
 		$url = '<a href="' .$url_zip . 'attachment/last_info.zip">' . __('System info file zipped') . '</a>';
-		echo '<b>' . __('File:') . '</b> ' . $url . '<br />';
-		echo '<b>' . __('Location:') . '</b> ' . $zipArchive;
+
+		if($log_info || $system_info || $pandora_diag) {
+			echo '<b>' . __('File:') . '</b> ' . $url . '<br />';
+			echo '<b>' . __('Location:') . '</b> ' . $zipArchive;
+		}
+		else {
+			echo __('No selected');
+		}
     	
 		$zip = new ZipArchive;
 		

@@ -14,7 +14,7 @@
 
 //Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
 if (function_exists ('mb_internal_encoding')) {
-        mb_internal_encoding ("UTF-8");
+	mb_internal_encoding ("UTF-8");
 }
 
 ob_start ();

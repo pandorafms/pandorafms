@@ -82,11 +82,16 @@
                     android:paddingRight="5dip"
                     android:text="@string/tag_label_str" />
 
-                <EditText
+                <Spinner
                     android:id="@+id/tag"
                     android:layout_width="wrap_content"
-                    android:inputType="text"
                     android:layout_height="wrap_content" />
+
+                <ProgressBar
+                    android:id="@+id/loading_tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
             </TableRow>
         </TableLayout>
 

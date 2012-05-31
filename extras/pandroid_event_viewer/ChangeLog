@@ -1,3 +1,7 @@
+2012-05-31 Santiago Munín <burnin1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Main.java: Added tag retrieving.
+	* res/layout/main.xml: Added tags' spinner.
+
 2012-05-30 Santiago Munín <burnin1@gmail.com>
 
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Removed unused methods and added two that will set images to the left of some textviews.

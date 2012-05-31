@@ -100,6 +100,7 @@ public class Main extends Activity {
 			buttonbuttonSetAsFilterWatcher.setEnabled(false);
 
 			new GetGroupsAsyncTask().execute();
+			new GetTagsAsyncTask().execute();
 		}
 
 		SharedPreferences preferences = getSharedPreferences(
@@ -283,6 +284,90 @@ public class Main extends Activity {
 		}
 	}
 
+	/**
+	 * Get tags through an api call.
+	 * 
+	 * @return A list of groups.
+	 */
+	private List<String> getTags() {
+		ArrayList<String> array = new ArrayList<String>();
+
+		SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+
+		String url = preferences.getString("url", "");
+		String user = preferences.getString("user", "");
+		String password = preferences.getString("password", "");
+
+		try {
+			DefaultHttpClient httpClient = new DefaultHttpClient();
+
+			HttpPost httpPost = new HttpPost(url + "/include/api.php");
+
+			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+			parameters.add(new BasicNameValuePair("user", user));
+			parameters.add(new BasicNameValuePair("pass", password));
+			parameters.add(new BasicNameValuePair("op", "get"));
+			parameters.add(new BasicNameValuePair("op2", "tags"));
+			parameters.add(new BasicNameValuePair("return_type", "csv"));
+
+			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters);
+
+			httpPost.setEntity(entity);
+
+			HttpResponse response = httpClient.execute(httpPost);
+			HttpEntity entityResponse = response.getEntity();
+
+			String return_api = Core.convertStreamToString(entityResponse
+					.getContent());
+
+			String[] lines = return_api.split("\n");
+			array.add("");
+			for (int i = 0; i < lines.length; i++) {
+				String[] tags = lines[i].split(";", 2);
+				array.add(tags[1]);
+			}
+		} catch (Exception e) {
+		//	Log.e(TAG + ": getting tags", e.getMessage());
+		}
+
+		return array;
+	}
+
+	/**
+	 * Async task which get tags.
+	 * 
+	 * @author Santiago Munín González
+	 * 
+	 */
+	private class GetTagsAsyncTask extends AsyncTask<Void, Void, Void> {
+		private List<String> list;
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// TODO here
+			list = getTags();
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void unused) {
+			Spinner combo = (Spinner) findViewById(R.id.tag);
+
+			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+					getApplicationContext(),
+					android.R.layout.simple_spinner_item, list);
+			combo.setAdapter(spinnerArrayAdapter);
+			combo.setSelection(0);
+
+			ProgressBar loadingGroup = (ProgressBar) findViewById(R.id.loading_tag);
+
+			loadingGroup.setVisibility(ProgressBar.GONE);
+			combo.setVisibility(Spinner.VISIBLE);
+		}
+	}
+
 	// For options
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -350,11 +435,13 @@ public class Main extends Activity {
 		combo = (Spinner) findViewById(R.id.status_combo);
 		this.object.status = combo.getSelectedItemPosition() - 0;
 
-		text = (EditText) findViewById(R.id.tag);
-		this.object.eventTag = text.getText().toString();
 		text = (EditText) findViewById(R.id.event_search_text);
 		this.object.eventSearch = text.getText().toString();
 
+		combo = (Spinner) findViewById(R.id.tag);
+		if (combo.getSelectedItem() != null) {
+			this.object.eventTag = combo.getSelectedItem().toString();
+		}
 		this.object.getNewListEvents = true;
 		this.object.executeBackgroundGetEvents();
 
@@ -402,12 +489,12 @@ public class Main extends Activity {
 		combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
 		filterLastTime = combo.getSelectedItemPosition();
 
-		text = (EditText) findViewById(R.id.tag);
-		filterTag = text.getText().toString();
-		
+		combo = (Spinner) findViewById(R.id.tag);
+		filterTag = combo.getSelectedItem().toString();
+
 		text = (EditText) findViewById(R.id.event_search_text);
 		filterEventSearch = text.getText().toString();
-		
+
 		SharedPreferences preferences = getSharedPreferences(
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
@@ -444,10 +531,10 @@ public class Main extends Activity {
 		combo.setSelection(0);
 		combo = (Spinner) findViewById(R.id.status_combo);
 		combo.setSelection(3);
-		EditText text = (EditText) findViewById(R.id.tag);
-		text.setText("");
+		combo = (Spinner) findViewById(R.id.tag);
+		combo.setSelection(0);
 
-		text = (EditText) findViewById(R.id.agent_name);
+		EditText text = (EditText) findViewById(R.id.agent_name);
 		text.setText("");
 
 		combo = (Spinner) findViewById(R.id.severity_combo);

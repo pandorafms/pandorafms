@@ -27,7 +27,7 @@ require_once($config['homedir'] . "/include/functions_modules.php");
 // ==========================
 if (isset ($_POST["template_id"])) {
 	// Take agent data
-	$row = db_get_row ("tagente", "id_agente", $id_agente);
+	$row = db_get_row ("tagente", "id_agente", $id_agente);	
 	if ($row !== false) {
 		$intervalo = $row["intervalo"]; 
 		$nombre_agente = $row["nombre"];
@@ -43,8 +43,9 @@ if (isset ($_POST["template_id"])) {
 	} else {
 		return;
 	}
-
+	
 	$id_np = get_parameter_post ("template_id");
+	$name_template = db_get_value ('name', 'tnetwork_profile', 'id_np', $id_np);
 	$npc = db_get_all_rows_field_filter ("tnetwork_profile_component", "id_np", $id_np);
 	if ($npc === false) {
 		$npc = array ();
@@ -54,12 +55,12 @@ if (isset ($_POST["template_id"])) {
 		if ($nc === false) {
 			$nc = array ();
 		}
-		foreach ($nc as $row2) {
+		foreach ($nc as $row2) {	
 			// Insert each module from tnetwork_component into agent
 			$values = array(
 				'id_agente' => $id_agente,
 				'id_tipo_modulo' => $row2["type"],
-				'descripcion' => $row2["description"],
+				'descripcion' => __('Created by template ').$name_template. ' . '.$row2["description"],
 				'nombre' => $row2["name"],
 				'max' => $row2["max"],
 				'min' => $row2["min"],

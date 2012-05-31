@@ -19,20 +19,13 @@ package pandroid_event_viewer.pandorafms;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,9 +41,6 @@ import android.widget.Toast;
 public class PopupValidationEvent extends Activity {
 	private int id_event;
 	private String comment;
-	private String url;
-	private String user;
-	private String password;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -102,52 +92,19 @@ public class PopupValidationEvent extends Activity {
 	private boolean sendValidation() {
 		boolean return_var = false;
 
-		if (this.url == null) {
-			SharedPreferences preferences = getApplicationContext()
-					.getSharedPreferences(
-							getApplicationContext().getString(
-									R.string.const_string_preferences),
-							Activity.MODE_PRIVATE);
+		List<NameValuePair> parameters;
+		// Set event validation.
+		parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("op", "set"));
+		parameters.add(new BasicNameValuePair("op2", "validate_events"));
+		parameters.add(new BasicNameValuePair("id", new Integer(this.id_event)
+				.toString()));
+		parameters.add(new BasicNameValuePair("other", this.comment));
+		String return_api = Core.httpGet(getApplicationContext(), parameters);
 
-			this.url = preferences.getString("url", "");
-			this.user = preferences.getString("user", "");
-			this.password = preferences.getString("password", "");
+		if (return_api.startsWith("Correct validation")) {
+			return_var = true;
 		}
-		try {
-			DefaultHttpClient httpClient = new DefaultHttpClient();
-			UrlEncodedFormEntity entity;
-			HttpPost httpPost;
-			List<NameValuePair> parameters;
-			HttpResponse response;
-			HttpEntity entityResponse;
-			String return_api;
-
-			httpPost = new HttpPost(this.url + "/include/api.php");
-
-			// Set event validation.
-			parameters = new ArrayList<NameValuePair>();
-			parameters.add(new BasicNameValuePair("user", this.user));
-			parameters.add(new BasicNameValuePair("pass", this.password));
-			parameters.add(new BasicNameValuePair("op", "set"));
-			parameters.add(new BasicNameValuePair("op2", "validate_events"));
-			parameters.add(new BasicNameValuePair("id", new Integer(
-					this.id_event).toString()));
-			parameters.add(new BasicNameValuePair("other", this.comment));
-			entity = new UrlEncodedFormEntity(parameters);
-			httpPost.setEntity(entity);
-			response = httpClient.execute(httpPost);
-			entityResponse = response.getEntity();
-			return_api = Core
-					.convertStreamToString(entityResponse.getContent());
-			return_api = return_api.replace("\n", "");
-
-			if (return_api.startsWith("Correct validation")) {
-				return_var = true;
-			}
-		} catch (Exception e) {
-			Log.e("EXCEPTION sendValidation", e.getMessage());
-		}
-
 		return return_var;
 	}
 

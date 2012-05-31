@@ -20,7 +20,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -168,7 +178,8 @@ public class Core {
 	}
 
 	/**
-	 * Converts max event age chosen from spinner to seconds (either are seconds or not)
+	 * Converts max event age chosen from spinner to seconds (either are seconds
+	 * or not)
 	 * 
 	 * @return Time in milliseconds.
 	 */
@@ -243,19 +254,63 @@ public class Core {
 
 		return returnvar * 1000;
 	}
+
 	/**
 	 * 
 	 * @param params
 	 * @return
 	 */
 	public static String serializeParams2Api(String[] params) {
-			String return_var = params[0];
+		String return_var = params[0];
 
-			for (int i = 1; i < params.length; i++) {
-				return_var+= "|" + params[i];
-			}
-
-			Log.i(TAG + " serializeParams2Api", return_var);
-			return return_var;
+		for (int i = 1; i < params.length; i++) {
+			return_var += "|" + params[i];
 		}
+
+		Log.i(TAG + " serializeParams2Api", return_var);
+		return return_var;
 	}
+
+	/**
+	 * Performs an http get petition.
+	 * @param context Application context.
+	 * @param additionalParameters Petition additional parameters
+	 * @return Petition result.
+	 */
+	public static String httpGet(Context context,
+			List<NameValuePair> additionalParameters) {
+		SharedPreferences preferences = context.getSharedPreferences(
+				context.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+
+		String url = preferences.getString("url", "") + "/include/api.php";
+		String user = preferences.getString("user", "");
+		String password = preferences.getString("password", "");
+		if (url.length() == 0 || user.length() == 0) {
+			return "";
+		}
+		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("user", user));
+		parameters.add(new BasicNameValuePair("pass", password));
+		parameters.addAll(additionalParameters);
+		try {
+			DefaultHttpClient httpClient = new DefaultHttpClient();
+			UrlEncodedFormEntity entity;
+			HttpPost httpPost;
+			HttpResponse response;
+			HttpEntity entityResponse;
+			String return_api;
+			httpPost = new HttpPost(url);
+			entity = new UrlEncodedFormEntity(parameters);
+			httpPost.setEntity(entity);
+			response = httpClient.execute(httpPost);
+			entityResponse = response.getEntity();
+			return_api = Core
+					.convertStreamToString(entityResponse.getContent());
+			return return_api;
+		} catch (Exception e) {
+			Log.e(TAG+" http petition", e.getMessage());
+		}
+		return "";
+	}
+}

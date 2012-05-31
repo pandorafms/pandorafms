@@ -1,4 +1,13 @@
 2012-05-31 Santiago Munín <burnin1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Core.java: Added a method which performs http petitions.
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Added javadoc comments.
+	* src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java,
+	  src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+	  src/pandroid_event_viewer/pandorafms/Main.java,
+	  src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java: Changed api request (now they use Core's new method).
+
+
+2012-05-31 Santiago Munín <burnin1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Main.java: Now, on MainActivity's restart, fetches groups and tags if url was changed.
 	* src/pandroid_event_viewer/pandorafms/Options.java: Puts a boolean in SharedPreferences if url was changed.
 

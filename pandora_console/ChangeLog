@@ -1,3 +1,8 @@
+2012-05-31 Santiago Munin <burning1@gmail.com>
+
+        * include/functions_tags.php: Added a method to get all tags.
+	* include/functions_api.php: Added de get_tags api call.
+
 2012-05-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/graphs/functions_pchart.php

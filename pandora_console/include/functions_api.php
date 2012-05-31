@@ -5102,4 +5102,31 @@ function set_enable_module_alerts ($agent_name, $module_name, $thrash3, $thrash4
 	returnData('string', array('type' => 'string', 'data' => "Correct alerts enable"));
 }
 
+function get_tags($thrash1, $thrash2, $other, $returnType, $user_in_db) {
+	if ($other['type'] == 'string') {
+		if ($other['data'] != '') {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {//Default values
+			$separator = ';';
+		}
+	}
+	else if ($other['type'] == 'array') {
+		$separator = $other['data'][0];
+	}
+	
+	$tags = tags_get_all_tags();
+	
+	$data_tags = array();
+	foreach ($tags as $id => $tag) {
+		$data_tags[] = array($id, $tag);
+	}
+	
+	$data['type'] = 'array';
+	$data['data'] = $data_tags;
+	
+	returnData($returnType, $data, $separator);
+}
+
 ?>

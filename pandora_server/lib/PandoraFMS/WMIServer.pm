@@ -154,8 +154,8 @@ sub data_consumer ($$) {
 	logger ($pa_config, "Executing AM # $module_id WMI command '$wmi_command'", 9);
 
 	# Execute command
-	my $module_data = `$wmi_command`;
-	if (! defined ($module_data)) {
+	my $module_data = `$wmi_command 2>/dev/null`;
+	if ($? ne 0 || ! defined ($module_data)) {
 		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}

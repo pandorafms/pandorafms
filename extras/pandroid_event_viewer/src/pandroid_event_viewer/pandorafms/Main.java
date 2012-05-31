@@ -180,10 +180,16 @@ public class Main extends Activity {
 
 	public void onRestart() {
 		super.onRestart();
-
-		if (this.pandoraGroups.size() == 0) {
-			Log.i(TAG, "onRestart: getting groups");
+		SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editorPreferences = preferences.edit();
+		if (preferences.getBoolean("url_changed", false)) {
+			Log.i(TAG, "Getting groups and tags");
 			new GetGroupsAsyncTask().execute();
+			new GetTagsAsyncTask().execute();
+			editorPreferences.putBoolean("url_changed", false);
+			editorPreferences.commit();
 		}
 	}
 
@@ -329,7 +335,7 @@ public class Main extends Activity {
 				array.add(tags[1]);
 			}
 		} catch (Exception e) {
-		//	Log.e(TAG + ": getting tags", e.getMessage());
+			Log.e(TAG, "getting tags problem");
 		}
 
 		return array;

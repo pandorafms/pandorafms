@@ -177,6 +177,8 @@ public class Options extends Activity {
 		}
 
 		editorPreferences.putString("url", url);
+		//MainActivity uses this to know if it has to check tags and groups again
+		editorPreferences.putBoolean("url_changed", true);
 		text = (EditText) findViewById(R.id.user);
 		editorPreferences.putString("user", text.getText().toString());
 		text = (EditText) findViewById(R.id.password);

@@ -1,4 +1,8 @@
 2012-05-31 Santiago Munín <burnin1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Main.java: Now, on MainActivity's restart, fetches groups and tags if url was changed.
+	* src/pandroid_event_viewer/pandorafms/Options.java: Puts a boolean in SharedPreferences if url was changed.
+
+2012-05-31 Santiago Munín <burnin1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Main.java: Added tag retrieving.
 	* res/layout/main.xml: Added tags' spinner.
 

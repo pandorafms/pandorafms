@@ -1,3 +1,9 @@
+2012-05-31  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/ver_agente.php: Sorted the agents into
+	the massive operations combo and other ajax calls for 
+	bug 3530282
+
 2012-05-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/events/export_csv.php: Fixed csv events exportation 

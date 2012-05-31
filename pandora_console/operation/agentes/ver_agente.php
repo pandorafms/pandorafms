@@ -59,7 +59,7 @@ if (is_ajax ()) {
 			$groups = array_keys($groups_orig);
 		}
 		
-		$filter = " WHERE id_grupo IN (". implode(',', $groups) .")";
+		$filter = " WHERE id_grupo IN (". implode(',', $groups) .") ORDER BY nombre";
 		$agents = db_get_all_rows_sql("SELECT id_agente, nombre FROM tagente". $filter);
 		
 		echo json_encode($agents);

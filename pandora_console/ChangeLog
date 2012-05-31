@@ -1,3 +1,9 @@
+2012-05-31  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/agentes/agent_template.php: Fixed bug: adding
+	modules to an agent with templates, if the agent already had
+	modules can be duplicated with the same name.
+
 2012-05-31  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/system_info.php: Fixed strange behavior in

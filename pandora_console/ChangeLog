@@ -1,5 +1,10 @@
 2012-05-31  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/system_info.php: Fixed strange behavior in
+	the system info form for bug 3530863
+
+2012-05-31  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/ver_agente.php: Sorted the agents into
 	the massive operations combo and other ajax calls for 
 	bug 3530282

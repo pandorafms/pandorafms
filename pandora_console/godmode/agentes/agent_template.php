@@ -44,6 +44,7 @@ if (isset ($_POST["template_id"])) {
 		return;
 	}
 
+	$name_template = db_get_value ('name', 'tnetwork_profile', 'id_np', $id_np);
 	$id_np = get_parameter_post ("template_id");
 	$npc = db_get_all_rows_field_filter ("tnetwork_profile_component", "id_np", $id_np);
 	if ($npc === false) {
@@ -59,7 +60,7 @@ if (isset ($_POST["template_id"])) {
 			$values = array(
 				'id_agente' => $id_agente,
 				'id_tipo_modulo' => $row2["type"],
-				'descripcion' => $row2["description"],
+				'descripcion' => __('Created by template ').$name_template. ' . '.$row2["description"],
 				'nombre' => $row2["name"],
 				'max' => $row2["max"],
 				'min' => $row2["min"],

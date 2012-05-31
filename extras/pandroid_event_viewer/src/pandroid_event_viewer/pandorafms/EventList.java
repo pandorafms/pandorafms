@@ -302,7 +302,12 @@ public class EventList extends ListActivity {
 		}
 	}
 
-	// TODO comment
+	/**
+	 * Sets an image to the left of a TextView.
+	 * @param view Parent view.
+	 * @param url Image uri.
+	 * @param id TextView's id;
+	 */
 	private void setTextViewImage(View view, String url, int id) {
 		TextView tview = (TextView) view.findViewById(id);
 		Bitmap img = null;
@@ -324,7 +329,12 @@ public class EventList extends ListActivity {
 		}
 	}
 
-	// TODO comment
+	/**
+	 * Sets an image to the left of group's TextView.
+	 * @param view Parent view.
+	 * @param group_icon Icon name.
+	 * @param id Group's TextView id;
+	 */
 	private void setTextViewGroupImage(View view, String group_icon, int id) {
 		TextView tview = (TextView) view.findViewById(id);
 		Bitmap img = null;

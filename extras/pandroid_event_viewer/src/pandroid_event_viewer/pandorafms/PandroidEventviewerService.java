@@ -20,12 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
@@ -85,94 +80,57 @@ public class PandroidEventviewerService extends IntentService {
 			SharedPreferences preferences = context.getSharedPreferences(
 					context.getString(R.string.const_string_preferences),
 					Activity.MODE_PRIVATE);
-
-			this.url = preferences.getString("url", "");
-			this.user = preferences.getString("user", "");
-			this.password = preferences.getString("password", "");
 			Calendar c = Calendar.getInstance();
 			long now = (c.getTimeInMillis() / 1000);
 			long old_previous_filterTimestamp = preferences.getLong(
 					"previous_filterTimestamp", now);
 
-			if ((user.length() == 0) && (password.length() == 0)
-					&& (url.length() == 0)) {
+			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+			String parametersAPI = serializeParams2Api(context, true, false,
+					false);
+
+			// Get total count.
+			parameters = new ArrayList<NameValuePair>();
+			parameters.add(new BasicNameValuePair("op", "get"));
+			parameters.add(new BasicNameValuePair("op2", "events"));
+			parameters.add(new BasicNameValuePair("other_mode",
+					"url_encode_separator_|"));
+			parameters.add(new BasicNameValuePair("return_type", "csv"));
+			parameters.add(new BasicNameValuePair("other", parametersAPI));
+			String return_api = Core.httpGet(getApplicationContext(),
+					parameters);
+			Log.i(TAG + " checkNewEvents", return_api);
+			return_api = return_api.replace("\n", "");
+			try {
+				this.count_events = new Long(return_api).longValue();
+			} catch (NumberFormatException e) {
+				Log.e(TAG, e.getMessage());
 				return;
 			}
-			try {
 
-				DefaultHttpClient httpClient = new DefaultHttpClient();
-				UrlEncodedFormEntity entity;
-				HttpPost httpPost;
-				List<NameValuePair> parameters;
-				HttpResponse response;
-				HttpEntity entityResponse;
-				String return_api;
-
-				httpPost = new HttpPost(this.url + "/include/api.php");
-
-				String parametersAPI = serializeParams2Api(context, true,
-						false, false);
-				Log.d(TAG, "Parameters checking new events: " + parametersAPI);
-
-				// Get total count.
+			// Check the event more critical
+			if (this.count_events != 0) {
+				Log.i(TAG, "There are new events");
 				parameters = new ArrayList<NameValuePair>();
-				parameters.add(new BasicNameValuePair("user", this.user));
-				parameters.add(new BasicNameValuePair("pass", this.password));
 				parameters.add(new BasicNameValuePair("op", "get"));
 				parameters.add(new BasicNameValuePair("op2", "events"));
 				parameters.add(new BasicNameValuePair("other_mode",
 						"url_encode_separator_|"));
 				parameters.add(new BasicNameValuePair("return_type", "csv"));
-				parameters.add(new BasicNameValuePair("other", parametersAPI));
-				entity = new UrlEncodedFormEntity(parameters);
-				httpPost.setEntity(entity);
-				response = httpClient.execute(httpPost);
-				entityResponse = response.getEntity();
-				return_api = Core.convertStreamToString(entityResponse
-						.getContent());
-
+				parameters.add(new BasicNameValuePair("other",
+						serializeParams2Api(context, false, true, true)));
+				return_api = Core.httpGet(getApplicationContext(), parameters);
 				return_api = return_api.replace("\n", "");
-				Log.i(TAG + " checkNewEvents", return_api);
-				this.count_events = new Long(return_api).longValue();
+				this.more_criticity = new Integer(return_api).intValue();
+				notificationEvent(context);
+			} else {
+				this.more_criticity = -1;
 
-				// Check the event more critical
-				if (this.count_events != 0) {
-					Log.i(TAG, "There are new events");
-					parameters = new ArrayList<NameValuePair>();
-					parameters.add(new BasicNameValuePair("user", this.user));
-					parameters
-							.add(new BasicNameValuePair("pass", this.password));
-					parameters.add(new BasicNameValuePair("op", "get"));
-					parameters.add(new BasicNameValuePair("op2", "events"));
-					parameters.add(new BasicNameValuePair("other_mode",
-							"url_encode_separator_|"));
-					parameters
-							.add(new BasicNameValuePair("return_type", "csv"));
-					parameters.add(new BasicNameValuePair("other",
-							serializeParams2Api(context, false, true, true)));
-					entity = new UrlEncodedFormEntity(parameters);
-					httpPost.setEntity(entity);
-					response = httpClient.execute(httpPost);
-					entityResponse = response.getEntity();
-					return_api = Core.convertStreamToString(entityResponse
-							.getContent());
-					return_api = return_api.replace("\n", "");
-					this.more_criticity = new Integer(return_api).intValue();
-					notificationEvent(context);
-				} else {
-					this.more_criticity = -1;
-
-					// Restore timestamp
-					SharedPreferences.Editor editorPreferences = preferences
-							.edit();
-					editorPreferences.putLong("previous_filterTimestamp",
-							old_previous_filterTimestamp);
-					editorPreferences.commit();
-				}
-
-			} catch (Exception e) {
-				Log.e(TAG + " EXCEPTION checkNewEvents", e.getMessage());
-				return;
+				// Restore timestamp
+				SharedPreferences.Editor editorPreferences = preferences.edit();
+				editorPreferences.putLong("previous_filterTimestamp",
+						old_previous_filterTimestamp);
+				editorPreferences.commit();
 			}
 		}
 		Log.d(TAG, "Check finished at "
@@ -199,7 +157,6 @@ public class PandroidEventviewerService extends IntentService {
 		String filterAgentName = preferences.getString("filterAgentName", "");
 
 		int idGroup = preferences.getInt("filterIDGroup", 0);
-		Log.d(TAG, "idGroup: " + idGroup);
 		int filterSeverity = preferences.getInt("filterSeverity", -1);
 		int filterStatus = preferences.getInt("filterStatus", 3);
 		String filterEventSearch = preferences.getString("filterEventSearch",
@@ -244,7 +201,7 @@ public class PandroidEventviewerService extends IntentService {
 				Long.toString(0), // The offset of list events
 				totalStr, // Count or show
 				Integer.toString(idGroup), // Group ID
-				filterTag });
+				filterTag }); // Tag
 	}
 
 	/**
@@ -351,5 +308,4 @@ public class PandroidEventviewerService extends IntentService {
 		mNotificationManager.notify(NOTIFICATION_PANDROID_EVENT_VIEWER,
 				notification);
 	}
-
 }

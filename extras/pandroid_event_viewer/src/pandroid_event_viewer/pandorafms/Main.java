@@ -201,22 +201,8 @@ public class Main extends Activity {
 	private List<String> getGroups() {
 		ArrayList<String> array = new ArrayList<String>();
 
-		SharedPreferences preferences = getSharedPreferences(
-				this.getString(R.string.const_string_preferences),
-				Activity.MODE_PRIVATE);
-
-		String url = preferences.getString("url", "");
-		String user = preferences.getString("user", "");
-		String password = preferences.getString("password", "");
-
 		try {
-			DefaultHttpClient httpClient = new DefaultHttpClient();
-
-			HttpPost httpPost = new HttpPost(url + "/include/api.php");
-
 			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-			parameters.add(new BasicNameValuePair("user", user));
-			parameters.add(new BasicNameValuePair("pass", password));
 			parameters.add(new BasicNameValuePair("op", "get"));
 			parameters.add(new BasicNameValuePair("op2", "groups"));
 			parameters.add(new BasicNameValuePair("other_mode",
@@ -224,16 +210,7 @@ public class Main extends Activity {
 			parameters.add(new BasicNameValuePair("return_type", "csv"));
 			parameters.add(new BasicNameValuePair("other", ";"));
 
-			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters);
-
-			httpPost.setEntity(entity);
-
-			HttpResponse response = httpClient.execute(httpPost);
-			HttpEntity entityResponse = response.getEntity();
-
-			String return_api = Core.convertStreamToString(entityResponse
-					.getContent());
-
+			String return_api = Core.httpGet(getApplicationContext(), parameters);
 			String[] lines = return_api.split("\n");
 
 			for (int i = 0; i < lines.length; i++) {
@@ -352,7 +329,6 @@ public class Main extends Activity {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			// TODO here
 			list = getTags();
 			return null;
 		}

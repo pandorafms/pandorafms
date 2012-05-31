@@ -20,16 +20,10 @@ package pandroid_event_viewer.pandorafms;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
@@ -73,7 +67,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	public String eventTag;
 	public String eventSearch;
 	public int filterLastTime;
-	
+
 	public boolean showOptionsFirstTime;
 	public boolean showTabListFirstTime;
 
@@ -162,8 +156,8 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
 		boolean changes = false;
-		
-		//Checks if there are filter changes
+
+		// Checks if there are filter changes
 		if (!preferences.getBoolean("filterChanges", false)) {
 			SharedPreferences.Editor editorPreferences = preferences.edit();
 			editorPreferences.putBoolean("filterChanges", false);
@@ -173,11 +167,11 @@ public class PandroidEventviewerActivity extends TabActivity implements
 		if (count_events > 0) {
 			process_notification(i);
 		}
-		if (changes || this.showTabListFirstTime ) {
+		if (changes || this.showTabListFirstTime) {
 			executeBackgroundGetEvents();
 			this.showTabListFirstTime = false;
 		}
-	
+
 	}
 
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -283,8 +277,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				String.valueOf(this.offset), // Event list offset
 				totalStr, // Count or show
 				String.valueOf(this.id_group), // Group id
-				this.eventTag
-				});
+				this.eventTag });
 	}
 
 	/**
@@ -293,173 +286,137 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	 * @param newEvents
 	 */
 	private void getEvents(boolean newEvents) {
-		SharedPreferences preferences = getSharedPreferences(
-				this.getString(R.string.const_string_preferences),
-				Activity.MODE_PRIVATE);
-
-		String url = preferences.getString("url", "");
-		String user = preferences.getString("user", "");
-		String password = preferences.getString("password", "");
-
+		// Get total count.
+		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("op", "get"));
+		parameters.add(new BasicNameValuePair("op2", "events"));
+		parameters.add(new BasicNameValuePair("other_mode",
+				"url_encode_separator_|"));
+		parameters.add(new BasicNameValuePair("return_type", "csv"));
+		parameters.add(new BasicNameValuePair("other",
+				serializeParams2Api(true)));
+		String return_api = Core.httpGet(getApplicationContext(), parameters);
+		Log.i(TAG + " getEvents", return_api);
+		return_api = return_api.replace("\n", "");
 		try {
-			DefaultHttpClient httpClient = new DefaultHttpClient();
-			UrlEncodedFormEntity entity;
-			HttpPost httpPost;
-			List<NameValuePair> parameters;
-			HttpResponse response;
-			HttpEntity entityResponse;
-			String return_api;
-
-			httpPost = new HttpPost(url + "/include/api.php");
-
-			// Get total count.
-			parameters = new ArrayList<NameValuePair>();
-			parameters.add(new BasicNameValuePair("user", user));
-			parameters.add(new BasicNameValuePair("pass", password));
-			parameters.add(new BasicNameValuePair("op", "get"));
-			parameters.add(new BasicNameValuePair("op2", "events"));
-			parameters.add(new BasicNameValuePair("other_mode",
-					"url_encode_separator_|"));
-			parameters.add(new BasicNameValuePair("return_type", "csv"));
-			parameters.add(new BasicNameValuePair("other",
-					serializeParams2Api(true)));
-			entity = new UrlEncodedFormEntity(parameters);
-			httpPost.setEntity(entity);
-			response = httpClient.execute(httpPost);
-			entityResponse = response.getEntity();
-			return_api = Core
-					.convertStreamToString(entityResponse.getContent());
-			return_api = return_api.replace("\n", "");
-			Log.i(TAG + " getEvents", return_api);
 			this.count_events = new Long(return_api).longValue();
-
-			if (this.count_events == 0) {
-				return;
-			}
-
-			// Get the list of events.
-			parameters = new ArrayList<NameValuePair>();
-			parameters.add(new BasicNameValuePair("user", user));
-			parameters.add(new BasicNameValuePair("pass", password));
-			parameters.add(new BasicNameValuePair("op", "get"));
-			parameters.add(new BasicNameValuePair("op2", "events"));
-			parameters.add(new BasicNameValuePair("other_mode",
-					"url_encode_separator_|"));
-			parameters.add(new BasicNameValuePair("return_type", "csv"));
-			parameters.add(new BasicNameValuePair("other",
-					serializeParams2Api(false)));
-			entity = new UrlEncodedFormEntity(parameters);
-			httpPost.setEntity(entity);
-			response = httpClient.execute(httpPost);
-			entityResponse = response.getEntity();
-
-			return_api = Core
-					.convertStreamToString(entityResponse.getContent());
-			return_api = return_api.replaceAll("\\<.*?\\>", ""); // Clean html
-																	// tags.
-
-			Pattern pattern = Pattern
-					.compile("Unable to process XML data file '(.*)'");
-			Matcher matcher;
-			String filename;
-
-			boolean endReplace = false;
-			int i22 = 0;
-			while (!endReplace) {
-				Log.i(TAG + " getEvents - loop", i22 + "");
-				i22++;
-				matcher = pattern.matcher(return_api);
-
-				if (matcher.find()) {
-					filename = matcher.group(1);
-					return_api = return_api
-							.replaceFirst(
-									"Unable to process XML data file[^\n]*\n[^\n]*line 187 thread .*\n",
-									"Bad XML: " + filename);
-				} else {
-					endReplace = true;
-				}
-			}
-
-			Log.i(TAG + " getEvents - return_api", return_api);
-
-			String[] lines = return_api.split("\n");
-
-			if (return_api.length() == 0) {
-				return;
-			}
-
-			for (int i = 0; i < lines.length; i++) {
-				String[] items = lines[i].split(";",23);
-
-				EventListItem event = new EventListItem();
-
-				if (items.length != 23) {
-					event.event = getApplication().getString(
-							R.string.unknown_event_str);
-				} else {
-					if (items[0].length() == 0) {
-						event.id_event = 0;
-					} else {
-						event.id_event = Integer.parseInt(items[0]);
-					}
-					if (items[1].length() == 0) {
-						event.id_agent = 0;
-					} else {
-						event.id_agent = Integer.parseInt(items[1]);
-					}
-					event.id_user = items[2];
-					if (items[3].length() == 0) {
-						event.id_group = 0;
-					} else {
-						event.id_group = Integer.parseInt(items[3]);
-					}
-					if (items[4].length() == 0) {
-						event.status = 0;
-					} else {
-						event.status = Integer.parseInt(items[4]);
-					}
-					event.timestamp = items[5];
-					event.event = items[6];
-					if (items[7].length() == 0) {
-						event.utimestamp = 0;
-					} else {
-						event.utimestamp = Integer.parseInt(items[7]);
-					}
-					event.event_type = items[8];
-					if (items[9].length() == 0) {
-						event.id_agentmodule = 0;
-					} else {
-						event.id_agentmodule = Integer.parseInt(items[9]);
-					}
-					if (items[10].length() == 0) {
-						event.id_alert_am = 0;
-					} else {
-						event.id_alert_am = Integer.parseInt(items[10]);
-					}
-					if (items[11].length() == 0) {
-						event.criticity = 0;
-					} else {
-						event.criticity = Integer.parseInt(items[11]);
-					}
-					event.user_comment = items[12];
-					event.tags = items[13];
-					event.agent_name = items[16];
-					event.group_name = items[17];
-					event.group_icon = items[18];
-					event.description_event = items[19];
-					event.description_image = items[20];
-					event.criticity_name = items[21];
-					event.criticity_image = items[22];
-
-					event.opened = false;
-				}
-				this.eventList.add(event);
-			}
-		} catch (Exception e) {
-			Log.e(TAG + " getEvents", e.getMessage());
-
+		} catch (NumberFormatException e) {
+			Log.e(TAG, e.getMessage());
 			return;
+		}
+
+		if (this.count_events == 0) {
+			return;
+		}
+
+		// Get the list of events.
+		parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("op", "get"));
+		parameters.add(new BasicNameValuePair("op2", "events"));
+		parameters.add(new BasicNameValuePair("other_mode",
+				"url_encode_separator_|"));
+		parameters.add(new BasicNameValuePair("return_type", "csv"));
+		parameters.add(new BasicNameValuePair("other",
+				serializeParams2Api(false)));
+		return_api = Core.httpGet(getApplicationContext(), parameters);
+
+		Pattern pattern = Pattern
+				.compile("Unable to process XML data file '(.*)'");
+		Matcher matcher;
+		String filename;
+
+		boolean endReplace = false;
+		int i22 = 0;
+		while (!endReplace) {
+			Log.i(TAG + " getEvents - loop", i22 + "");
+			i22++;
+			matcher = pattern.matcher(return_api);
+
+			if (matcher.find()) {
+				filename = matcher.group(1);
+				return_api = return_api
+						.replaceFirst(
+								"Unable to process XML data file[^\n]*\n[^\n]*line 187 thread .*\n",
+								"Bad XML: " + filename);
+			} else {
+				endReplace = true;
+			}
+		}
+
+		Log.i(TAG + " getEvents - return_api", return_api);
+
+		String[] lines = return_api.split("\n");
+
+		if (return_api.length() == 0) {
+			return;
+		}
+
+		for (int i = 0; i < lines.length; i++) {
+			String[] items = lines[i].split(";", 23);
+
+			EventListItem event = new EventListItem();
+
+			if (items.length != 23) {
+				event.event = getApplication().getString(
+						R.string.unknown_event_str);
+			} else {
+				if (items[0].length() == 0) {
+					event.id_event = 0;
+				} else {
+					event.id_event = Integer.parseInt(items[0]);
+				}
+				if (items[1].length() == 0) {
+					event.id_agent = 0;
+				} else {
+					event.id_agent = Integer.parseInt(items[1]);
+				}
+				event.id_user = items[2];
+				if (items[3].length() == 0) {
+					event.id_group = 0;
+				} else {
+					event.id_group = Integer.parseInt(items[3]);
+				}
+				if (items[4].length() == 0) {
+					event.status = 0;
+				} else {
+					event.status = Integer.parseInt(items[4]);
+				}
+				event.timestamp = items[5];
+				event.event = items[6];
+				if (items[7].length() == 0) {
+					event.utimestamp = 0;
+				} else {
+					event.utimestamp = Integer.parseInt(items[7]);
+				}
+				event.event_type = items[8];
+				if (items[9].length() == 0) {
+					event.id_agentmodule = 0;
+				} else {
+					event.id_agentmodule = Integer.parseInt(items[9]);
+				}
+				if (items[10].length() == 0) {
+					event.id_alert_am = 0;
+				} else {
+					event.id_alert_am = Integer.parseInt(items[10]);
+				}
+				if (items[11].length() == 0) {
+					event.criticity = 0;
+				} else {
+					event.criticity = Integer.parseInt(items[11]);
+				}
+				event.user_comment = items[12];
+				event.tags = items[13];
+				event.agent_name = items[16];
+				event.group_name = items[17];
+				event.group_icon = items[18];
+				event.description_event = items[19];
+				event.description_image = items[20];
+				event.criticity_name = items[21];
+				event.criticity_image = items[22];
+
+				event.opened = false;
+			}
+			this.eventList.add(event);
 		}
 	}
 

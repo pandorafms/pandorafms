@@ -707,11 +707,16 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 
 	 // Get the max number of scale
 	 $max_all = 0;
+
+	 $serie_ne_zero = false;
 	 foreach($data as $serie) {
 		 $max_this_serie = max($serie);
 		 if($max_this_serie > $max_all) {
 			$max_all = $max_this_serie; 
 		 }
+		 // Detect if all serie is equal to zero or not
+		 if ($serie != 0)
+			$serie_ne_zero = true;
 	 }
 	 
 	 // Get the number of digits of the scale
@@ -722,7 +727,8 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 }
 
 	 // If the number is less than 1 we count the decimals
-	 if($digits_left == 0){ 
+	 // Also check if the serie is not all equal to zero (!$serie_ne_zero)
+	 if($digits_left == 0 and !$serie_ne_zero) { 
 		while($max_all < 1) {
 			$digits_left ++;
 			$max_all *= 10;

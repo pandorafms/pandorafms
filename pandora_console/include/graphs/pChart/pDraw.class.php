@@ -1808,7 +1808,13 @@
          $AutoMargin = (($AxisMax-$AxisMin)/100)*$XReleasePercent;
 
          $Data["Axis"][$AxisID]["Min"] = $AxisMin-$AutoMargin; $Data["Axis"][$AxisID]["Max"] = $AxisMax+$AutoMargin;
-         if ( $Mode == SCALE_MODE_START0 ) { $Data["Axis"][$AxisID]["Min"] = 0; }
+         if ( $Mode == SCALE_MODE_START0 ) { 
+			 $Data["Axis"][$AxisID]["Min"] = 0;
+			 // Hack: When max and min graph values are equal to zero then force max = 1
+			 if($Data["Axis"][$AxisID]["Max"] == 0) {
+				 $Data["Axis"][$AxisID]["Max"] = 1;
+			 }
+		 }
         }
        elseif ( $Mode == SCALE_MODE_MANUAL )
         {

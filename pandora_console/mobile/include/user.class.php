@@ -40,11 +40,20 @@ class User {
 			//hack to compatibility with pandora
 			global $config;
 			$config['id_user'] = $this->user;
-			$this->system->setSessionBase('id_usuario', $this->user);		
+			$this->system->setSessionBase('id_usuario', $this->user);
 		}
 	}
 	
 	public function isLogged() {
+		$autologin = $this->system->getRequest('autologin', false);
+		if ($autologin) {
+			$user = $this->system->getRequest('user', null);
+			$password = $this->system->getRequest('password', null);
+			if ($this->checkLogin($user, $password)) {
+				$this->hackinjectConfig();
+			}
+		}
+		
 		return $this->logged;
 	}
 	

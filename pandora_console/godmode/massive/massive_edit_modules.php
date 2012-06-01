@@ -399,6 +399,8 @@ $table->data['edit5'][3] = html_print_input_password ('plugin_pass', '', '', 15,
 // Export target
 $table->data['edit6'][0] = __('Export target');
 $targets2 = db_get_all_rows_sql ("SELECT id, name FROM tserver_export ORDER by name");
+if ($targets2 == null)
+	$targets2 = array();
 $targets =  array_merge(array(0 => __('None')), $targets2 );
 $table->data['edit6'][1] = html_print_select ($targets, 'id_export', '','', __('No change'), '', true, false, false);
 $table->data['edit6'][2] = __('Unit');
@@ -540,9 +542,14 @@ $(document).ready (function () {
 				}
 			}
 			else if(this.id == "checkbox-recursion"){
+				$("#checkbox-force_group").attr("checked", false);
 				$("#groups_select").trigger("change");
 			}
 			else {
+				if (this.id == "checkbox-force_group") {
+					$("#checkbox-recursion").attr("checked", false);
+				}
+				
 				if(this.checked) {
 					$(".select_agents_row_2").css('display', 'none');
 					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").show ();
@@ -585,7 +592,7 @@ $(document).ready (function () {
 	
 	$("#groups_select").change (
 		function () {
-		$('input[type=checkbox]').attr('checked', false);
+
 			if (this.value < 0) {
 				clean_lists();
 				$(".select_agents_row_2").css('display', 'none');

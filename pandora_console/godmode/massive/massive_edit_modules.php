@@ -36,7 +36,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	
 	/* List of fields which can be updated */
 	$fields = array ('min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'module_interval',
-		'disabled', 'post_process', 'snmp_community', 'tcp_send', 'custom_string_1', 'plugin_parameter', 
+		'disabled', 'post_process', 'unit', 'snmp_community', 'tcp_send', 'custom_string_1', 'plugin_parameter', 
 		'custom_string_2', 'custom_string_3', 'min', 'max', 'id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
 	$values = array ();
 
@@ -359,7 +359,7 @@ $table->data['edit2'][1] = html_print_extended_select_for_time ('module_interval
 $table->data['edit2'][2] = __('Disabled');
 $table->data['edit2'][3] = html_print_select(array('' => __('No change'), '1' => __('Yes'), '0' => __('No')),'disabled','','','', '', true);
 
-$table->data['edit3'][0] = __('Post process');
+$table->data['edit3'][0] = __('Post process').ui_print_help_icon ('postprocess', true);
 $table->data['edit3'][1] = html_print_input_text ('post_process', '', '', 10, 15, true);
 $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '', '', 10, 15, true);
@@ -401,6 +401,9 @@ $table->data['edit6'][0] = __('Export target');
 $targets2 = db_get_all_rows_sql ("SELECT id, name FROM tserver_export ORDER by name");
 $targets =  array_merge(array(0 => __('None')), $targets2 );
 $table->data['edit6'][1] = html_print_select ($targets, 'id_export', '','', __('No change'), '', true, false, false);
+$table->data['edit6'][2] = __('Unit');
+$table->data['edit6'][3] = html_print_input_text ('unit', '', '', 15, 60, true);
+
 
 /* FF stands for Flip-flop */
 $table->data['edit7'][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);

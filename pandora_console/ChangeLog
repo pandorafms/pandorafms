@@ -1,3 +1,10 @@
+2012-06-01  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/massive/massive_edit_modules.php: Added units to
+	module massive editor and missed help bubble in the same
+	editor to post process field
+	Merged from 4.0.x
+
 2012-05-31 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/include/user.class.php: added option to get from url a

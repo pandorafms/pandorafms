@@ -1,3 +1,6 @@
+2012-06-01 Santiago Munín <burnin1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Now Agent's link points to mobile console.
+
 2012-05-31 Santiago Munín <burnin1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Core.java: Added a method which performs http petitions.
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Added javadoc comments.

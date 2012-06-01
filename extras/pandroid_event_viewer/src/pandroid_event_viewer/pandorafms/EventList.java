@@ -71,7 +71,6 @@ public class EventList extends ListActivity {
 	// private HashMap<Integer, Boolean> openedItem;
 	private HashMap<String, Bitmap> imgGroups;
 	private HashMap<String, Bitmap> imgType;
-
 	private BroadcastReceiver onBroadcast;
 
 	@Override
@@ -585,8 +584,10 @@ public class EventList extends ListActivity {
 						text.setText(Html
 								.fromHtml("<a href='"
 										+ this.object.url
-										+ "/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente="
-										+ item.id_agent + "'>"
+										+ "/mobile/index.php?page=agent&id="
+										+ item.id_agent
+										+" &autologin=1&user="+this.object.user+"&password="+ this.object.password
+										+"'>"
 										+ item.agent_name + "</a>"));
 						text.setMovementMethod(LinkMovementMethod.getInstance());
 					}

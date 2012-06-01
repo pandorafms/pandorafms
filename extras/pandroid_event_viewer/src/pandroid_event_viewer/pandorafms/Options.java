@@ -92,8 +92,8 @@ public class Options extends Activity {
 		combo.setAdapter(adapter);
 		combo.setSelection(refreshTimeKey);
 
-		final Button buttonSearch = (Button) findViewById(R.id.update_options);
-		buttonSearch.setOnClickListener(new View.OnClickListener() {
+		final Button button = (Button) findViewById(R.id.update_options);
+		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				save_options();

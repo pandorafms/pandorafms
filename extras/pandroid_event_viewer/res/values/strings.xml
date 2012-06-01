@@ -105,4 +105,6 @@
 	<string name="artica_copyright">Copyright (&#169;) 2011 Artica</string>
 	<string name="dont_show_again">Don\'t show again</string>
 	<string name="pandorafms_logo_description">PandoraFMS\'s logo</string>
+	<string name="description">Description</string>
+	<string name="incident_close_button">Close incident</string>
 </resources>

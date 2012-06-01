@@ -79,7 +79,7 @@
             android:label="@string/pandroid_event_viewer_str"
             android:theme="@android:style/Theme.Dialog" >
         </activity>
-
+		<activity android:name=".IncidentList"/>
         <service android:name=".PandroidEventviewerService" >
         </service>
 

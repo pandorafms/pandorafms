@@ -121,7 +121,7 @@ public class PandroidEventviewerService extends IntentService {
 						serializeParams2Api(context, false, true, true)));
 				return_api = Core.httpGet(getApplicationContext(), parameters);
 				return_api = return_api.replace("\n", "");
-				this.more_criticity = new Integer(return_api).intValue();
+				this.more_criticity = Integer.valueOf(return_api).intValue();
 				notificationEvent(context);
 			} else {
 				this.more_criticity = -1;

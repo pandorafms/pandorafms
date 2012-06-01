@@ -141,6 +141,7 @@ ui_require_jquery_file ('bgiframe');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+	
 	$("#text_id_agent").autocomplete({
 		minLength: 2,
 		source: function( request, response ) {
@@ -196,11 +197,35 @@ $(document).ready (function () {
 					}
 				});
 			});
-				
-			
+
 			return false;
 		}
 	})
+	.data( "autocomplete")._renderItem = function( ul, item ) {
+		if (item.ip == "") {
+			text = "<a>" + item.name + "</a>";
+		}
+		else {
+			text = "<a>" + item.name
+				+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
+		}
+		
+		return $("<li></li>")
+			.data("item.autocomplete", item)
+			.append(text)
+			.appendTo(ul);
+	};	
+	
+	//Force the size of autocomplete
+	$(".ui-autocomplete").css("max-height", "100px");
+	$(".ui-autocomplete").css("overflow-y", "auto");
+	/* prevent horizontal scrollbar */
+	$(".ui-autocomplete").css("overflow-x", "hidden");
+	/* add padding to account for vertical scrollbar */
+	$(".ui-autocomplete").css("padding-right", "20px");
+	
+	//Force to style of items
+	$(".ui-autocomplete").css("text-align", "left");
 
 <?php if (! $id_agente) : ?>
 	$("#id_group").pandoraSelectGroupAgent ({

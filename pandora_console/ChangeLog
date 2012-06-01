@@ -1,5 +1,10 @@
 2012-06-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/alerts/alert_list.builder.php: Fixed agent autocomplete
+	in alert builder.
+
+2012-06-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/massive/massive_edit_modules.php: Fixed group recursion 
 	checkbox in massive module edition.
 	

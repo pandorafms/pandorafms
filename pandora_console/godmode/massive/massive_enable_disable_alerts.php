@@ -229,9 +229,21 @@ $(document).ready (function () {
 				"id_agents[]" : idAgents
 				},
 				function (data, status) {
+					
 					options = "";
+					var arr=[];
+					
 					jQuery.each (data, function (id, value) {
-						options += "<option value=\""+id+"\">"+value+"</option>";
+						
+						/* Get all values in id_alert_templates select	*/
+						$("#id_alert_templates option").each(function() {
+							  arr.push($(this).val());
+						});
+					
+						/* If the value is not in the select, then add it	*/
+						if ($.inArray(id,arr) <= -1)						
+							options += "<option value=\""+id+"\">"+value+"</option>";
+							
 					});
 					$("#id_alert_templates").append (options);
 					$("#template_loading").hide ();
@@ -268,8 +280,19 @@ $(document).ready (function () {
 			},
 			function (data, status) {
 				options = "";
+				var arr=[];
+
 				jQuery.each (data, function (id, value) {
-					options += "<option value=\""+id+"\">"+value+"</option>";
+					
+					/* Get all values in id_alert_templates select	*/
+					$("#id_enabled_alerts option").each(function() {
+						  arr.push($(this).val());
+					});
+				
+					/* If the value is not in the select, then add it	*/
+					if ($.inArray(id,arr) <= -1)						
+						options += "<option value=\""+id+"\">"+value+"</option>";
+				
 				});
 				$("#id_enabled_alerts").append (options);
 				$("#alerts_loading").hide ();

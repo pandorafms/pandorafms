@@ -1,5 +1,13 @@
 2012-06-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/massive/massive_enable_disable_alerts.php
+	 godmode/massive/massive_delete_action_alerts.php
+	 godmode/massive/massive_standby_alerts.php
+	 godmode/massive/massive_add_action_alerts.php: Fixed javascript
+	 behavior when multiselect combos are selected by keyboard input.
+
+2012-06-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/massive/massive_edit_modules.php: Fixed group recursion 
 	checkbox in massive module edition.
 

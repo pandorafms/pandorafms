@@ -110,6 +110,11 @@ if ($add) {
 
 $groups = users_get_groups ();
 
+// Avoid php warning
+if (empty($alert_templates)) {
+	$alert_templates = '';
+}
+
 $table->id = 'delete_table';
 $table->width = '98%';
 $table->data = array ();
@@ -213,7 +218,8 @@ $(document).ready (function () {
 
 		var $select_template = $("#id_alert_templates").disable ();
 		$("option", $select_template).remove ();
-		
+		$("#id_alert_templates").find("option").remove().end();
+		var options = "";
 		jQuery.post ("ajax.php",
 				{"page" : "godmode/massive/massive_add_action_alerts",
 				"get_alerts" : 1,
@@ -221,12 +227,28 @@ $(document).ready (function () {
                                 },
 				function (data, status) {
 					options = "";
-					jQuery.each (data, function (id, value) {
-							options += "<option value=\""+id+"\">"+value+"</option>";
-					});
+					var arr=[];
 					
-					if(options == "") {
-						options += "<option><?php echo __('None'); ?></option>";
+					jQuery.each (data, function (id, value) {
+						
+							/* Get all values in id_alert_templates select	*/
+							$("#id_alert_templates option").each(function() {
+								  arr.push($(this).val());
+							});
+						
+							/* If the value is not in the select, then add it	*/
+							if ($.inArray(id,arr) <= -1)
+								options += "<option value=\""+id+"\">"+value+"</option>";
+														
+					});
+
+					if (options == "") {
+						/* If the select id_alert_templates is empty, add None option */
+						if ($("#id_alert_templates option").size() == 0) {
+							/* If the value is not in the select, then add it	*/
+							if ($.inArray(<?php echo "'" . __('None') . "'" ?>,arr) <= -1)						
+								options += "<option><?php echo __('None'); ?></option>";
+						}
 					}
 					
 					$("#id_alert_templates").append (options);

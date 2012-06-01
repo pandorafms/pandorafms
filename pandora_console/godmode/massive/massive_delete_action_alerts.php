@@ -210,7 +210,9 @@ $(document).ready (function () {
 
 		var $select_template = $("#id_alert_templates").disable ();
 		$("option", $select_template).remove ();
-
+		$("#id_alert_templates").find("option").remove().end();
+		var options = "";
+		
 		jQuery.post ("ajax.php",
 				{"page" : "godmode/massive/massive_delete_action_alerts",
 				"get_alerts" : 1,
@@ -218,9 +220,19 @@ $(document).ready (function () {
 				},
 				function (data, status) {
 					options = "";
-					jQuery.each (data, function (id, value) {
-						options += "<option value=\""+id+"\">"+value+"</option>";
+					var arr=[];								
+					
+					jQuery.each (data, function (id, value) {					
+							/* Get all values in id_alert_templates select	*/
+							$("#id_alert_templates option").each(function() {
+								  arr.push($(this).val());
+							});		
+						
+							/* If the value is not in the select, then add it	*/
+							if ($.inArray(id,arr) <= -1)						
+								options += "<option value=\""+id+"\">"+value+"</option>";
 					});
+					
 					$("#id_alert_templates").append (options);
 					$("#template_loading").hide ();
 					$select_template.enable ();

@@ -216,7 +216,7 @@ public class Main extends Activity {
 			for (int i = 0; i < lines.length; i++) {
 				String[] groups = lines[i].split(";", 21);
 
-				this.pandoraGroups.put(new Integer(groups[0]), groups[1]);
+				this.pandoraGroups.put(Integer.valueOf(groups[0]), groups[1]);
 
 				array.add(groups[1]);
 			}

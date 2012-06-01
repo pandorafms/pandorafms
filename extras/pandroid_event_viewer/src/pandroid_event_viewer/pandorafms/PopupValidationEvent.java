@@ -97,7 +97,7 @@ public class PopupValidationEvent extends Activity {
 		parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("op", "set"));
 		parameters.add(new BasicNameValuePair("op2", "validate_events"));
-		parameters.add(new BasicNameValuePair("id", new Integer(this.id_event)
+		parameters.add(new BasicNameValuePair("id", Integer.valueOf(this.id_event)
 				.toString()));
 		parameters.add(new BasicNameValuePair("other", this.comment));
 		String return_api = Core.httpGet(getApplicationContext(), parameters);

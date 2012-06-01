@@ -23,11 +23,12 @@
 >
 	<ImageView
 		android:layout_weight="0"
+		android:contentDescription="@string/pandorafms_logo_description"
 		android:id="@+id/img_logo_about"
 		android:layout_width="wrap_content"
-   		android:layout_height="wrap_content"
+   		android:layout_height="0dp"
    		android:layout_gravity="center"
-   		android:padding="5px"
+   		android:padding="5dp"
    		android:src="@drawable/pandorafms_logo"
 	/>
 	<TextView
@@ -53,9 +54,9 @@
 	    android:layout_height="wrap_content"
 	>
 		<TextView
-		    android:layout_width="wrap_content"
+		    android:layout_width="0dp"
 		    android:layout_height="wrap_content"
-		    android:text="Don't show again"
+		    android:text="@string/dont_show_again"
 		    android:layout_weight="2"
 		/>
 		<CheckBox

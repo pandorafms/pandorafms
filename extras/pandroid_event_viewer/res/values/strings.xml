@@ -102,4 +102,7 @@
 	<string name="img_severity">Severity image</string>
 	<string name="img_group">Group image</string>
 	<string name="img_type">Type image</string>
+	<string name="artica_copyright">Copyright (&#169;) 2011 Artica</string>
+	<string name="dont_show_again">Don\'t show again</string>
+	<string name="pandorafms_logo_description">PandoraFMS\'s logo</string>
 </resources>

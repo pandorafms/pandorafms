@@ -1,4 +1,9 @@
 2012-06-01 Santiago Munín <burnin1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Core.java: Added image setting methods.
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Removed image setting methods.
+	* res/layout/item_list_event_layout.xml: Removed not needed ImageViews.
+
+2012-06-01 Santiago Munín <burnin1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Now Agent's link points to mobile console.
 
 2012-05-31 Santiago Munín <burnin1@gmail.com>

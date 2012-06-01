@@ -16,12 +16,7 @@ GNU General Public License for more details.
  */
 package pandroid_event_viewer.pandorafms;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -32,14 +27,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,7 +40,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -62,23 +52,15 @@ import android.widget.TextView;
  * 
  */
 public class EventList extends ListActivity {
-	private static String TAG = "EventList";
 	private ListView lv;
 	private MyAdapter la;
-
 	private PandroidEventviewerActivity object;
 
-	// private HashMap<Integer, Boolean> openedItem;
-	private HashMap<String, Bitmap> imgGroups;
-	private HashMap<String, Bitmap> imgType;
 	private BroadcastReceiver onBroadcast;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		this.imgGroups = new HashMap<String, Bitmap>();
-		this.imgType = new HashMap<String, Bitmap>();
 
 		Intent i = getIntent();
 		this.object = (PandroidEventviewerActivity) i
@@ -219,147 +201,68 @@ public class EventList extends ListActivity {
 	}
 
 	/**
-	 * Downloads an image
-	 * 
-	 * @param fileUrl
-	 * @return A bitmap of that image
-	 */
-	private Bitmap downloadImage(String fileUrl) {
-		Log.i(TAG, "Downloading image: " + fileUrl);
-		URL myFileUrl = null;
-
-		try {
-			myFileUrl = new URL(fileUrl);
-			HttpURLConnection conn = (HttpURLConnection) myFileUrl
-					.openConnection();
-			conn.setDoInput(true);
-			conn.connect();
-			InputStream is = conn.getInputStream();
-			return BitmapFactory.decodeStream(is);
-		} catch (IOException e) {
-			Log.e(TAG, "Downloading image: error");
-		}
-		return null;
-	}
-
-	/**
 	 * Sets the group image on event list.
-	 * @param view Parent view.
-	 * @param group_icon Group icon.
-	 * @param id Group's ImageView id.
-	 */
-	private void setImageGroup(View view, String group_icon, int id) {
-		ImageView imgview = (ImageView) view.findViewById(id);
-		Bitmap img;
-
-		if (this.imgGroups.containsKey(group_icon)) {
-			img = this.imgGroups.get(group_icon);
-		} else {
-			SharedPreferences preferences = getApplicationContext()
-					.getSharedPreferences(
-							getApplicationContext().getString(
-									R.string.const_string_preferences),
-							Activity.MODE_PRIVATE);
-
-			String url = preferences.getString("url", "");
-
-			img = this.downloadImage(url + "/images/groups_small/" + group_icon
-					+ ".png");
-
-			if (img != null) {
-				this.imgGroups.put(group_icon, img);
-			}
-		}
-
-		if (img != null) {
-			imgview.setImageBitmap(img);
-		}
-	}
-
-	/**
-	 * Sets type's image on event list.
+	 * 
 	 * @param view
-	 * @param url
+	 *            Parent view.
+	 * @param group_icon
+	 *            Group icon.
 	 * @param id
+	 *            Group's ImageView id.
 	 */
-	private void setImageType(View view, String url, int id) {
-		ImageView imgview = (ImageView) view.findViewById(id);
-		Bitmap img = null;
-
-		if (this.imgType.containsKey(url)) {
-			img = this.imgType.get(url);
-		} else {
-			img = this.downloadImage(url);
-
-			if (img != null) {
-				this.imgType.put(url, img);
-			}
-		}
-
-		if (img != null) {
-			imgview.setImageBitmap(img);
-		}
-	}
-
-	/**
-	 * Sets an image to the left of a TextView.
-	 * @param view Parent view.
-	 * @param url Image uri.
-	 * @param id TextView's id;
+	/*
+	 * private void setImageGroup(View view, String group_icon, int id) {
+	 * ImageView imgview = (ImageView) view.findViewById(id); Bitmap img;
+	 * 
+	 * SharedPreferences preferences = getApplicationContext()
+	 * .getSharedPreferences( getApplicationContext().getString(
+	 * R.string.const_string_preferences), Activity.MODE_PRIVATE);
+	 * 
+	 * String url = preferences.getString("url", "");
+	 * 
+	 * img = Core.downloadImage(url + "/images/groups_small/" + group_icon +
+	 * ".png");
+	 * 
+	 * if (img != null) { imgview.setImageBitmap(img); } }
 	 */
-	private void setTextViewImage(View view, String url, int id) {
-		TextView tview = (TextView) view.findViewById(id);
-		Bitmap img = null;
 
-		if (this.imgType.containsKey(url)) {
-			img = this.imgType.get(url);
-		} else {
-			img = this.downloadImage(url);
+	private String getImageGroupUrl(String group_icon) {
+		SharedPreferences preferences = getApplicationContext()
+				.getSharedPreferences(
+						getApplicationContext().getString(
+								R.string.const_string_preferences),
+						Activity.MODE_PRIVATE);
 
-			if (img != null) {
-				this.imgType.put(url, img);
-			}
-		}
-
-		if (img != null) {
-			Drawable d = new BitmapDrawable(img);
-			d.setBounds(0, 0, 16, 16);
-			tview.setCompoundDrawables(d, null, null, null);
-		}
+		String url = preferences.getString("url", "");
+		return url + "/images/groups_small/" + group_icon + ".png";
 	}
 
 	/**
 	 * Sets an image to the left of group's TextView.
-	 * @param view Parent view.
-	 * @param group_icon Icon name.
-	 * @param id Group's TextView id;
+	 * 
+	 * @param view
+	 *            Parent view.
+	 * @param group_icon
+	 *            Icon name.
+	 * @param id
+	 *            Group's TextView id;
 	 */
 	private void setTextViewGroupImage(View view, String group_icon, int id) {
 		TextView tview = (TextView) view.findViewById(id);
 		Bitmap img = null;
 
-		if (this.imgGroups.containsKey(group_icon)) {
-			img = this.imgGroups.get(group_icon);
-		} else {
-			SharedPreferences preferences = getApplicationContext()
-					.getSharedPreferences(
-							getApplicationContext().getString(
-									R.string.const_string_preferences),
-							Activity.MODE_PRIVATE);
+		SharedPreferences preferences = getApplicationContext()
+				.getSharedPreferences(
+						getApplicationContext().getString(
+								R.string.const_string_preferences),
+						Activity.MODE_PRIVATE);
 
-			String url = preferences.getString("url", "");
+		String url = preferences.getString("url", "");
+		img = Core.downloadImage(url + "/images/groups_small/" + group_icon
+				+ ".png");
 
-			img = this.downloadImage(url + "/images/groups_small/" + group_icon
-					+ ".png");
-
-			if (img != null) {
-				this.imgGroups.put(group_icon, img);
-			}
-		}
 		if (img != null) {
-			Drawable d = new BitmapDrawable(img);
-			d.setBounds(0, 0, 16, 16);
-			tview.setCompoundDrawables(d, null, null, null);
+			Core.setTextViewLeftImage(tview, img);
 		}
 	}
 
@@ -510,18 +413,21 @@ public class EventList extends ListActivity {
 				timestamp.setText(item.timestamp);
 
 				if (item.criticity_image.length() != 0)
-					setImageType(view, item.criticity_image,
-							R.id.img_severity_colapse_item);
-				if (item.group_icon.length() != 0)
-					setImageGroup(view, item.group_icon,
-							R.id.img_group_colapse_item);
+					Core.setTextViewLeftImage(
+							(TextView) view.findViewById(R.id.event_name),
+							Core.downloadImage(item.criticity_image));
 
-				ImageView imgValidate = (ImageView) view
-						.findViewById(R.id.img_validate_colapse_item);
+				if (item.group_icon.length() != 0)
+					Core.setTextViewLeftImage(
+							(TextView) view.findViewById(R.id.agent_name),
+							getImageGroupUrl(item.group_icon));
+
 				if (item.status == 1) {
-					imgValidate.setImageResource(R.drawable.tick);
+					Core.setTextViewLeftImage(timestamp, getResources()
+							.getDrawable(R.drawable.tick), 24);
 				} else {
-					imgValidate.setImageResource(R.drawable.tick_off);
+					Core.setTextViewLeftImage(timestamp, getResources()
+							.getDrawable(R.drawable.tick_off), 24);
 				}
 
 				// Show extended info
@@ -581,20 +487,21 @@ public class EventList extends ListActivity {
 
 						text = (TextView) viewEventExtended
 								.findViewById(R.id.agent_text);
-						text.setText(Html
-								.fromHtml("<a href='"
-										+ this.object.url
-										+ "/mobile/index.php?page=agent&id="
-										+ item.id_agent
-										+" &autologin=1&user="+this.object.user+"&password="+ this.object.password
-										+"'>"
-										+ item.agent_name + "</a>"));
+						text.setText(Html.fromHtml("<a href='"
+								+ this.object.url
+								+ "/mobile/index.php?page=agent&id="
+								+ item.id_agent + " &autologin=1&user="
+								+ this.object.user + "&password="
+								+ this.object.password + "'>" + item.agent_name
+								+ "</a>"));
 						text.setMovementMethod(LinkMovementMethod.getInstance());
 					}
 
 					if (item.description_image.length() != 0)
-						setTextViewImage(viewEventExtended,
-								item.description_image, R.id.type_text);
+						Core.setTextViewLeftImage((TextView) viewEventExtended
+								.findViewById(R.id.type_text),
+								item.description_image);
+
 					text = (TextView) viewEventExtended
 							.findViewById(R.id.type_text);
 					text.setText(eventType2Text(item.event_type));
@@ -605,8 +512,10 @@ public class EventList extends ListActivity {
 						text.setText(item.criticity_name);
 
 						if (item.criticity_image.length() != 0)
-							setTextViewImage(viewEventExtended,
-									item.criticity_image, R.id.severity_text);
+							Core.setTextViewLeftImage(
+									(TextView) viewEventExtended
+											.findViewById(R.id.severity_text),
+									item.criticity_image);
 					}
 
 					// Set the open and close the extended info event row

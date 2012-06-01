@@ -20,9 +20,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -38,7 +42,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.widget.TextView;
 
 /**
  * This class provides basic functions to manage services and some received
@@ -49,6 +58,7 @@ import android.util.Log;
  */
 public class Core {
 	private static String TAG = "Core";
+	private static Map<String, Bitmap> imgCache = new HashMap<String, Bitmap>();
 
 	/**
 	 * Reads from the input stream and returns a string.
@@ -273,8 +283,11 @@ public class Core {
 
 	/**
 	 * Performs an http get petition.
-	 * @param context Application context.
-	 * @param additionalParameters Petition additional parameters
+	 * 
+	 * @param context
+	 *            Application context.
+	 * @param additionalParameters
+	 *            Petition additional parameters
 	 * @return Petition result.
 	 */
 	public static String httpGet(Context context,
@@ -309,8 +322,80 @@ public class Core {
 					.convertStreamToString(entityResponse.getContent());
 			return return_api;
 		} catch (Exception e) {
-			Log.e(TAG+" http petition", e.getMessage());
+			Log.e(TAG + " http petition", e.getMessage());
 		}
 		return "";
+	}
+
+	/**
+	 * Downloads an image
+	 * 
+	 * @param fileUrl
+	 *            Image's url.
+	 * @return A bitmap of that image.
+	 */
+	public static Bitmap downloadImage(String fileUrl) {
+		if (imgCache.containsKey(fileUrl)) {
+			Log.i(TAG, "Fetched from cache: " + fileUrl);
+			return imgCache.get(fileUrl);
+		}
+		Log.i(TAG, "Downloading image: " + fileUrl);
+		URL myFileUrl = null;
+
+		try {
+			myFileUrl = new URL(fileUrl);
+			HttpURLConnection conn = (HttpURLConnection) myFileUrl
+					.openConnection();
+			conn.setDoInput(true);
+			conn.connect();
+			InputStream is = conn.getInputStream();
+			Bitmap img = BitmapFactory.decodeStream(is);
+			imgCache.put(fileUrl, img);
+			return img;
+		} catch (IOException e) {
+			Log.e(TAG, "Downloading image: error");
+		}
+		return null;
+	}
+
+	/**
+	 * Puts the image to the left of theTextView.
+	 * 
+	 * @param view
+	 *            TextView.
+	 * @param image
+	 *            Bitmap.
+	 */
+	public static void setTextViewLeftImage(TextView view, Bitmap image) {
+		Drawable d = new BitmapDrawable(image);
+		setTextViewLeftImage(view, d, 16);
+	}
+
+	/**
+	 * Puts the image to the left of theTextView.
+	 * 
+	 * @param view
+	 *            TextView.
+	 * @param url
+	 *            Image's url.
+	 */
+	public static void setTextViewLeftImage(TextView view, String url) {
+		Drawable d = new BitmapDrawable(Core.downloadImage(url));
+		setTextViewLeftImage(view, d, 16);
+	}
+
+	/**
+	 * Puts the image to the left of theTextView.
+	 * 
+	 * @param view
+	 *            TextView.
+	 * @param image
+	 *            Image.
+	 * @param size Image size
+	 */
+	public static void setTextViewLeftImage(TextView view, Drawable image,
+			int size) {
+		image.setBounds(0, 0, size, size);
+		view.setCompoundDrawables(image, null, null, null);
 	}
 }

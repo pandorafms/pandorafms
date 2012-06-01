@@ -200,32 +200,6 @@ public class EventList extends ListActivity {
 		}
 	}
 
-	/**
-	 * Sets the group image on event list.
-	 * 
-	 * @param view
-	 *            Parent view.
-	 * @param group_icon
-	 *            Group icon.
-	 * @param id
-	 *            Group's ImageView id.
-	 */
-	/*
-	 * private void setImageGroup(View view, String group_icon, int id) {
-	 * ImageView imgview = (ImageView) view.findViewById(id); Bitmap img;
-	 * 
-	 * SharedPreferences preferences = getApplicationContext()
-	 * .getSharedPreferences( getApplicationContext().getString(
-	 * R.string.const_string_preferences), Activity.MODE_PRIVATE);
-	 * 
-	 * String url = preferences.getString("url", "");
-	 * 
-	 * img = Core.downloadImage(url + "/images/groups_small/" + group_icon +
-	 * ".png");
-	 * 
-	 * if (img != null) { imgview.setImageBitmap(img); } }
-	 */
-
 	private String getImageGroupUrl(String group_icon) {
 		SharedPreferences preferences = getApplicationContext()
 				.getSharedPreferences(

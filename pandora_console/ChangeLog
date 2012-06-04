@@ -1,3 +1,10 @@
+2012-06-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* images/min.png
+	 images/max.png
+	 images/sum.png
+	 images/avg.png: Changed operators images in Global wizard report. 
+
 2012-06-01 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/alerts/alert_list.builder.php: Fixed agent autocomplete

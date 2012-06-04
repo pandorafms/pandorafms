@@ -125,7 +125,7 @@ elseif ($search_agents && ($config['metaconsole'] == 1)) {
 
 		$agents = agents_get_agents ($filter, array ('id_agente','nombre', 'direccion'));
 		if ($agents === false)
-			return;
+			continue;
 		foreach ($agents as $agent) {
 			echo io_safe_output($agent['nombre']) . " (" . io_safe_output($server['server_name']) . ") " . "|" . io_safe_output($agent['id_agente']) . "|" . io_safe_output($server['server_name']) . "|" . io_safe_output($agent['direccion']) . "|". "\n";
 		}
@@ -225,7 +225,7 @@ elseif ($search_agents_2 && ($config['metaconsole'] == 1)) {
 	
 		$agents = agents_get_agents ($filter, array ('id_agente','nombre', 'direccion'));
 		if ($agents === false)
-			$agents = array();
+			continue;
 		
 		$data = array();
 		foreach ($agents as $agent) {

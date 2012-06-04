@@ -1,3 +1,8 @@
+2012-06-04  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/alerts/alert_list.list.php: Fixed bug: 
+	Standard user can not add actions to an alert.
+
 2012-06-04  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_modules.php

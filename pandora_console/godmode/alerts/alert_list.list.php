@@ -472,7 +472,7 @@ foreach ($simple_alerts as $alert) {
 	$data[3] .= html_print_input_hidden ('add_action', 1, true);
 	$data[3] .= html_print_input_hidden ('id_alert_module', $alert['id'], true);
 	$own_info = get_user_info($config['id_user']);
-	$own_groups = users_get_groups($config['id_user'], 'LW', $own_info['is_admin']);
+	$own_groups = users_get_groups($config['id_user'], 'LW', true);
 	$filter_groups = '';
 	$filter_groups = implode(',', array_keys($own_groups));
 	$actions = alerts_get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');

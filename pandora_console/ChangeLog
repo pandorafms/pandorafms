@@ -1,3 +1,12 @@
+2012-06-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_modules.php
+	include/functions_io.php: Added new safe string function
+	to scape strings to use it in regular expressions and
+	change the parameters of enterprise functions to be
+	compatible con last changes
+	Merged from 4.0.x
+
 2012-06-04  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/setup/os.list.php: Fixed bug: you can delete

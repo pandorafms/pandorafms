@@ -93,10 +93,11 @@ elseif ($search_agents && ($config['metaconsole'] == 1)) {
 	}
 	
 	foreach ($servers as $server) {
+
 		if (!metaconsole_load_external_db ($server)) {
 			continue;
 		}
-		
+
 		$id_agent = (int) get_parameter ('id_agent');
 		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
 		$id_group = (int) get_parameter('id_group');
@@ -124,7 +125,7 @@ elseif ($search_agents && ($config['metaconsole'] == 1)) {
 
 		$agents = agents_get_agents ($filter, array ('id_agente','nombre', 'direccion'));
 		if ($agents === false)
-			return;
+			continue;
 		foreach ($agents as $agent) {
 			echo io_safe_output($agent['nombre']) . " (" . io_safe_output($server['server_name']) . ") " . "|" . io_safe_output($agent['id_agente']) . "|" . io_safe_output($server['server_name']) . "|" . io_safe_output($agent['direccion']) . "|". "\n";
 		}

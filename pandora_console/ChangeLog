@@ -1,3 +1,8 @@
+2012-06-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/ajax/agent.php: Fixed function search_agent when 
+	metaconsole is activated an one of the nodes return no agents.
+
 2012-06-04  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/alerts/alert_list.list.php: Fixed bug: 

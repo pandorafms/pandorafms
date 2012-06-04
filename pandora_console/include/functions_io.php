@@ -31,6 +31,33 @@ function io_safe_input_array(&$item) {
 }
 
 /** 
+ * Scape in a string de reserved characters to use it
+ * into a regular expression
+ * 
+ * @param string String to be scaped
+ * 
+ * @return string Scaped string
+ */
+function io_safe_expreg($string) {
+	// Scape regular expression characters
+	$string = str_replace('(','\(',$string);
+	$string = str_replace(')','\)',$string);
+	$string = str_replace('{','\{',$string);
+	$string = str_replace('}','\}',$string);
+	$string = str_replace('[','\[',$string);
+	$string = str_replace(']','\]',$string);
+	$string = str_replace('.','\.',$string);
+	$string = str_replace('*','\*',$string);
+	$string = str_replace('+','\+',$string);
+	$string = str_replace('?','\?',$string);
+	$string = str_replace('|','\|',$string);
+	$string = str_replace('^','\^',$string);
+	$string = str_replace('$','\$',$string);
+	
+	return $string;
+}
+
+/** 
  * Cleans a string by encoding to UTF-8 and replacing the HTML
  * entities. UTF-8 is necessary for foreign chars like asian 
  * and our databases are (or should be) UTF-8

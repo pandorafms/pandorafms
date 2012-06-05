@@ -774,7 +774,7 @@ function printTree_($type) {
 				case 'group':
 					$id = $item['id_grupo'];
 					$name = $item['nombre'];
-					$iconImg = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']), true, array ("style" => 'vertical-align: middle; width: 16px; height: 16px;'));
+					$iconImg = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']).".png", true, array ("style" => 'vertical-align: middle; width: 16px; height: 16px;'));
 					
 					$agentes = db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE id_grupo=$id");
 					if ($agentes === false) {

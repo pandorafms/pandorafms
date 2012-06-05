@@ -1,3 +1,8 @@
+2012-06-05  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_modules.php: Fixed bug: When you
+	copy a policy module, still liked to policy.
+
 2012-06-05 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/tree.php: Fixed a missing group icons

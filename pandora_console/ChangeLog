@@ -1,3 +1,11 @@
+2012-06-06  Vanessa Gil <vanessa.gil@artica.es>
+
+	* operation/agentes/exportdata.php
+	  operation/agentes/exportdata.csv.php
+	  operation/agentes/exportdata.excel.php: Fixed bug export
+	data: If you choose first the type of export, the chosen 
+	agent modules are not loaded into the page.
+
 2012-06-06  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* godmode/agentes/planned_downtime.php: merged from trunk.

@@ -327,11 +327,29 @@ if (empty($export_btn)) {
 		
 	//Module selector
 	$table->data[2][0] = '<b>'.__('Modules').'</b>';
+	$table->data[2][0] .= ui_print_help_tip(__("No modules of type string. You can not calculate their average"),true);
 
 	if ($agent > 0) {
 		$modules = agents_get_modules ($agent);
 	} else {
 		$modules = array ();
+	}
+
+	if(!empty($modules)) { //remove modules of type string because you cant calculate their average.
+		$i = 0;
+		foreach ($modules as $key=>$module) {
+			$id_module_type = modules_get_agentmodule_type ($key);
+			switch ($id_module_type) {
+				case 3:
+				case 10:
+				case 17:
+				case 23:
+				case 33:
+					unset($modules[$i]);
+					break;
+			}
+			$i++;
+		}
 	}
 
 	$disabled_export_button = false;

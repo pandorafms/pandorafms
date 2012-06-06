@@ -1,5 +1,10 @@
 2012-06-06  Vanessa Gil <vanessa.gil@artica.es>
 
+	* operation/agentes/exportdata.php: Fixed bug:
+	If the data type of module is string, don't export the data in format: table, Excel or CSV.
+
+2012-06-06  Vanessa Gil <vanessa.gil@artica.es>
+
 	* include/functions_modules.php: Fixed bug: When you
 	copy a policy module, still liked to policy.
 

@@ -14,24 +14,23 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item
-		android:id="@+id/options_button_menu_options"
-		android:title="@string/options_label_str"
-		android:icon="@drawable/config"
-	/>
-	<item
-		android:id="@+id/refresh_button_menu_options"
-		android:title="@string/refresh_label_str"
-		android:icon="@drawable/refresh"
-	/>
-	<item
-		android:id="@+id/about_button_menu_options"
-		android:title="@string/about_label_str"
-		android:icon="@drawable/about"
-	/>
-		<item
-		android:id="@+id/incidents_button_menu_options"
-		android:title="@string/incidents_label_str"
-	/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/options_button_menu_options"
+        android:icon="@drawable/config"
+        android:title="@string/options_label_str"/>
+    <item
+        android:id="@+id/refresh_button_menu_options"
+        android:icon="@drawable/refresh"
+        android:title="@string/refresh_label_str"/>
+    <item
+        android:id="@+id/about_button_menu_options"
+        android:icon="@drawable/about"
+        android:title="@string/about_label_str"/>
+    <item
+        android:id="@+id/incidents_button_menu_options"
+        android:icon="@drawable/incident"
+        android:title="@string/incidents_label_str"/>
+
 </menu>

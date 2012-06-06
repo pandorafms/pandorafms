@@ -1,4 +1,13 @@
-2012-06-06 Santiago Munín <burnin1@gmail.com>
+2012-06-06 Santiago Munín <burning1@gmail.com>
+
+	* src/pandroid_event_viewer/pandorafms/CreateIncidentActivity.java: All api operations are now asynchronous.
+	* res/layout/create_incident.xml: Progress circle next to groups spinner.
+	* res/values/strings.xml: New entries.
+	* res/menu/options_menu_list_events.xml, res/menu/options_menu.xml: New incident icon.
+	* res/drawable-ldpi/incident.png: Added new icon
+
+2012-06-06 Santiago Munín <burning1@gmail.com>
+
 	* AndroidManifest.xml: Added CreateIncidentActivity (new activity).
 	* src/pandroid_event_viewer/pandorafms/Core.java: Added some getAgents and getGroups
 	* res/values/strings.xml: Added new entries
@@ -6,7 +15,8 @@
 	* res/menu/options_menu_list_events.xml, res/menu/options_menu.xml: Added "Incidents" entry
 	* res/layout/create_incident.xml: CreateIncidentActivity's layout.
 
-2012-06-01 Santiago Munín <burnin1@gmail.com>
+2012-06-01 Santiago Munín <burning1@gmail.com>
+
 	* AndroidManifest.xml: Added IncidenList (new activity)
 	* src/pandroid_event_viewer/pandorafms/IncidentListItem.java: Added, value object of incidents.
 	* src/pandroid_event_viewer/pandorafms/IncidentList.java: New activity. It will show all incidents.
@@ -15,18 +25,22 @@
 	* res/layout/item_list_incident_layout.xml: Layout of IncidentList items.
 	* res/values/strings.xml: Added new entries.
 
-2012-06-01 Santiago Munín <burnin1@gmail.com>
+2012-06-01 Santiago Munín <burning1@gmail.com>
+
 	* Little changes on the whole app: Fixed some Lint errors.
 
-2012-06-01 Santiago Munín <burnin1@gmail.com>
+2012-06-01 Santiago Munín <burning1@gmail.com>
+
 	* src/pandroid_event_viewer/pandorafms/Core.java: Added image setting methods.
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Removed image setting methods.
 	* res/layout/item_list_event_layout.xml: Removed not needed ImageViews.
 
-2012-06-01 Santiago Munín <burnin1@gmail.com>
+2012-06-01 Santiago Munín <burning1@gmail.com>
+
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Now Agent's link points to mobile console.
 
-2012-05-31 Santiago Munín <burnin1@gmail.com>
+2012-05-31 Santiago Munín <burning1@gmail.com>
+
 	* src/pandroid_event_viewer/pandorafms/Core.java: Added a method which performs http petitions.
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Added javadoc comments.
 	* src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java,
@@ -35,24 +49,26 @@
 	  src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java: Changed api request (now they use Core's new method).
 
 
-2012-05-31 Santiago Munín <burnin1@gmail.com>
+2012-05-31 Santiago Munín <burning1@gmail.com>
+
 	* src/pandroid_event_viewer/pandorafms/Main.java: Now, on MainActivity's restart, fetches groups and tags if url was changed.
 	* src/pandroid_event_viewer/pandorafms/Options.java: Puts a boolean in SharedPreferences if url was changed.
 
-2012-05-31 Santiago Munín <burnin1@gmail.com>
+2012-05-31 Santiago Munín <burning1@gmail.com>
+
 	* src/pandroid_event_viewer/pandorafms/Main.java: Added tag retrieving.
 	* res/layout/main.xml: Added tags' spinner.
 
-2012-05-30 Santiago Munín <burnin1@gmail.com>
+2012-05-30 Santiago Munín <burning1@gmail.com>
 
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Removed unused methods and added two that will set images to the left of some textviews.
 	* res/layout/item_list_event_extended.xml: Refactored some linear layouts with textviews and imageviews. Now, it is a single textview with an image on the left.
 
-2012-05-29 Santiago Munín <burnin1@gmail.com>
+2012-05-29 Santiago Munín <burning1@gmail.com>
 
 	* src/pandrod_event_viewer/pandorafms/EventList.java: Now tags are links to their urls (if have).
 	
-2012-05-25 Santiago Munín <burning1@gmail.com>
+2012-05-25 Santiago Munín <burningg1@gmail.com>
 
 	* src/pandroid_event_viewer/pandorafms/Options.java: Added the option to show or hide advanced options (filter view).
 	* res/layout/options.xml: Checkbox to select show or hide advanced options.
@@ -62,21 +78,21 @@
 	  src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java: Adapted event parsing to Pandora FMS v5 and added the tag filter.
 	* src/pandroid_event_viewer/pandorafms/Main.java: Now, removes advanced filter options if "hide advanced options" is selected in options view.
 
-2012-05-23 Santiago Munín <burning1@gmail.com>
+2012-05-23 Santiago Munín <burningg1@gmail.com>
 
 	* Core.java: Added a generic function which will serialize given params in order to send an API request.
 	* PandroidEventviewerActivity.java, PandroidEventviewerService: Refactorized the serialization of parameters (now, they call Core.java function). 
 
-2012-05-22 Santiago Munín <burning1@gmail.com>
+2012-05-22 Santiago Munín <burningg1@gmail.com>
 
 	* PandroidEventviewerService.java, PandroidEventviewerActivity.java: Added group filter.
 	* res/layout/main.xml: Enabled group spinner.
 
-2012-05-21 Santiago Munín  <burning1@gmail.com>
+2012-05-21 Santiago Munín  <burningg1@gmail.com>
 
 	* EventList.java, PopupValidationEvent.java: Removed references to Core as an object.
 	
-2012-05-19 Santiago Munín <burning1@gmail.com>
+2012-05-19 Santiago Munín <burningg1@gmail.com>
 
 	* AlarmReceiver.java: Removed. Now it's the service which will retrieve data.
 	* Core.java: The method of setting periodically data retrieval was changed. 
@@ -84,7 +100,7 @@
 	* PandroidEventviewerService.java: Every time it receives a call from the AlarmManager, will search for new events.
 	* Most of files have little changes to adapt the new data retrieval subsystem.
 	
-2012-05-17 Santiago Munín  <burning1@gmail.com>
+2012-05-17 Santiago Munín  <burningg1@gmail.com>
 	
 	* Core.java: Changed methods to static. 
 	
@@ -95,7 +111,7 @@
 	  PandroidEventviewerActivity.java: Instances of "Core" removed.
 
 
-2012-05-12 Santiago Munín  <burning1@gmail.com>
+2012-05-12 Santiago Munín  <burningg1@gmail.com>
 
 	* Licenses and javadoc comments added to all files, refactorized code.
        
@@ -106,7 +122,7 @@
       res/drawable-ldpi/ok.png,
       res/values/styles.xml: Added in order to build the new notification options' UI.
 
-2012-05-08  Santiago Munín  <burning1@gmail.com>
+2012-05-08  Santiago Munín  <burningg1@gmail.com>
 	
 	* Options.java: Fixed a null pointer bug which was making the
 	app crash when accessing the options.

@@ -49,7 +49,7 @@ $end_time = get_parameter_post ('end_time', 0);
 $export_type = get_parameter_post ('export_type', 'data');
 $export_btn = get_parameter_post ('export_btn', 0);
 
-if (!empty ($export_btn) && !empty ($module)) {
+if (!empty ($module)) {
 
 	// Disable SQL cache
 	global $sql_cache;
@@ -157,19 +157,9 @@ if (!empty ($export_btn) && !empty ($module)) {
 		unset ($output);
 		$output = "";
 	} // main foreach
-	echo $dataend;
-
-/*
-switch ($export_type) {
-	case "excel":
-		exit; // Necesary for CSV export, if not give problems
-		break;
-
+	echo $dataend;	
 }
-*/
-	
-}
-elseif (!empty ($export_btn) && empty ($module)) {
+else {
 	ui_print_error_message (__('No modules specified'));
 }
 

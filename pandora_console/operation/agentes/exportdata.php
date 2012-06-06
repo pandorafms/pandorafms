@@ -273,6 +273,7 @@ if (empty($export_btn)) {
 		
 	//Module selector
 	$table->data[2][0] = '<b>'.__('Modules').'</b>';
+	$table->data[2][0] .= ui_print_help_tip(__("No modules of type string. You can not calculate their average"),true);
 
 	if ($agent > 0) {
 		$modules = agents_get_modules ($agent);

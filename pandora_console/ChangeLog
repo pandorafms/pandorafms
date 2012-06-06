@@ -1,5 +1,9 @@
 2012-06-06  Vanessa Gil <vanessa.gil@artica.es>
 
+	* operation/agentes/exportdata.php: Added help tip.
+
+2012-06-06  Vanessa Gil <vanessa.gil@artica.es>
+
 	* operation/agentes/exportdata.php: Fixed bug:
 	If the data type of module is string, don't export the data in format: table, Excel or CSV.
 

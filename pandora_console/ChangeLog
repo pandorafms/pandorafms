@@ -1,3 +1,9 @@
+2012-06-06  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* godmode/agentes/planned_downtime.php: merged from trunk.
+	fixed that 'Affect' column at 'planned downtime' might show
+	bad values. cleaned source code style.
+
 2012-06-05  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/functions_modules.php: Fixed bug: When you

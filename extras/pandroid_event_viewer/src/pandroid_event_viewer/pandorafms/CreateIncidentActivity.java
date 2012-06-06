@@ -10,6 +10,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,7 +21,9 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 /**
  * Allows user to create an incident.
@@ -34,20 +37,28 @@ public class CreateIncidentActivity extends Activity {
 	Spinner source, priority, group, status;
 	int priority_code, status_code;
 	Map<Integer, String> groups;
+	ProgressBar groupLoadingStatus;
+	ProgressDialog dialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.create_incident);
-		setViews();
+		initializeViews();
+		resetViews();
 	}
 
-	private void setViews() {
+	/**
+	 * Initializes views.
+	 */
+	private void initializeViews() {
 		title = (EditText) findViewById(R.id.incident_title);
-		title.setText("");
 		description = (EditText) findViewById(R.id.incident_description);
-		description.setText("");
 		priority = (Spinner) findViewById(R.id.incident_priority);
+		group = (Spinner) findViewById(R.id.incident_group);
+		source = (Spinner) findViewById(R.id.incident_source);
+		status = (Spinner) findViewById(R.id.incident_status);
+		groupLoadingStatus = (ProgressBar) findViewById(R.id.loading_group);
 		priority.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -63,9 +74,6 @@ public class CreateIncidentActivity extends Activity {
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
-		group = (Spinner) findViewById(R.id.incident_group);
-		source = (Spinner) findViewById(R.id.incident_source);
-		status = (Spinner) findViewById(R.id.incident_status);
 		status.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -81,16 +89,39 @@ public class CreateIncidentActivity extends Activity {
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
-		new GetGroupsAsyncTask().execute((Void) null);
-
 		((Button) findViewById(R.id.incident_create_button))
 				.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
-						sendNewIncident();
+						if (title != null && title.length() > 0) {
+							dialog = ProgressDialog
+									.show(CreateIncidentActivity.this,
+											"",
+											getString(R.string.creating_incident),
+											true);
+							new SetNewIncidentAsyncTask().execute((Void) null);
+						} else {
+							Toast.makeText(getApplicationContext(),
+									R.string.title_empty, Toast.LENGTH_SHORT)
+									.show();
+						}
 					}
 				});
+	}
+
+	/**
+	 * Resets views.
+	 */
+	private void resetViews() {
+
+		title.setText("");
+		description.setText("");
+		source.setSelection(0);
+		priority.setSelection(0);
+		group.setSelection(0);
+		status.setSelection(0);
+		new GetGroupsAsyncTask().execute((Void) null);
 	}
 
 	/**
@@ -101,11 +132,6 @@ public class CreateIncidentActivity extends Activity {
 		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("op", "set"));
 		parameters.add(new BasicNameValuePair("op2", "new_incident"));
-		/*
-		 * 
-		 * op=set&op2=new_incident&other=titulo|descripcion%20texto|Logfiles|2|10
-		 * |12&other_mode=url_encode_separator_|
-		 */
 		parameters.add(new BasicNameValuePair("other_mode",
 				"url_encode_separator_|"));
 		String incidentParams[] = new String[6];
@@ -148,36 +174,30 @@ public class CreateIncidentActivity extends Activity {
 					android.R.layout.simple_spinner_item, list);
 			group.setAdapter(spinnerArrayAdapter);
 			group.setSelection(0);
-			/*
-			 * ProgressBar loadingGroup = (ProgressBar)
-			 * findViewById(R.id.loading_group);
-			 * 
-			 * loadingGroup.setVisibility(ProgressBar.GONE);
-			 * combo.setVisibility(Spinner.VISIBLE);
-			 */
+			groupLoadingStatus.setVisibility(ProgressBar.GONE);
 		}
 	}
 
-	/*
-	 * private class GetAgentsAsyncTask extends AsyncTask<Void, Void,
-	 * Map<Integer, String>> {
+	/**
+	 * Performs the api call to add the new incident
 	 * 
-	 * @Override protected Map<Integer, String> doInBackground(Void... params) {
-	 * return Core.getAgents(getApplicationContext()); }
+	 * @author Santiago Munín González
 	 * 
-	 * @Override protected void onPostExecute(Map<Integer, String> result) {
-	 * agents = result; List<String> list = new LinkedList<String>(); for
-	 * (Entry<Integer, String> entry : result.entrySet()) {
-	 * list.add(entry.getValue()); } ArrayAdapter<String> spinnerArrayAdapter =
-	 * new ArrayAdapter<String>( getApplicationContext(),
-	 * android.R.layout.simple_spinner_item, list);
-	 * agent.setAdapter(spinnerArrayAdapter); agent.setSelection(0); /*
-	 * ProgressBar loadingGroup = (ProgressBar)
-	 * findViewById(R.id.loading_group);
-	 * 
-	 * loadingGroup.setVisibility(ProgressBar.GONE);
-	 * combo.setVisibility(Spinner.VISIBLE);
 	 */
-	// }
-	// }
+	private class SetNewIncidentAsyncTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			sendNewIncident();
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			Toast.makeText(getApplicationContext(), R.string.incident_created,
+					Toast.LENGTH_SHORT).show();
+			dialog.dismiss();
+			finish();
+		}
+	}
 }

@@ -115,8 +115,8 @@
             <Spinner
                 android:id="@+id/incident_status"
                 android:layout_width="wrap_content"
-                android:entries="@array/incident_status"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:entries="@array/incident_status" />
         </TableRow>
 
         <TableRow
@@ -137,20 +137,25 @@
                 android:id="@+id/incident_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
+            <ProgressBar
+                android:id="@+id/loading_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </TableRow>
     </TableLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_weight="1"
-        android:orientation="vertical" >
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/incident_create_button"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
             android:text="@string/create" />
     </LinearLayout>
 

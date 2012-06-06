@@ -122,7 +122,7 @@ $sql_body = io_safe_output($sql_body);
 $sql = "SELECT * " . $sql_body;
 $sql_count = "SELECT count(*) " . $sql_body;
 
-$count = db_get_value_sql($sql_count);
+$count = db_get_table_count($sql_count, true);
 
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -139,7 +139,7 @@ switch ($config["dbtype"]) {
 		break;		 
 }
 
-$result = db_get_all_rows_sql ($sql);
+$result = db_get_all_rows_sql ($sql, true);
 if ($result === false) {
 	$result = array ();
 }

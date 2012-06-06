@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function postgresql_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null, $port = null) {
+function postgresql_connect_db($host = null, $db = null, $user = null, $pass = null, $port = null) {
 	global $config;
 	
 	if ($host === null)
@@ -35,17 +35,9 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
 		" password='" . $pass . "'");
 	
 	if (! $connect_id) {
-		include ($config["homedir"]."/general/error_authconfig.php");
-		exit;
+		return false;
 	}
-	
-	if ($history){
-		$config['history_db_dbconnection'] = $connect_id;
-	}
-	else{
-		$config['dbconnection'] = $connect_id;
-	}	
-	
+		
 	return $connect_id;
 }
 
@@ -135,32 +127,39 @@ function postgresql_db_get_row ($table, $field_search, $condition, $fields = fal
 	return $result[0];
 }
 
-function postgresql_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
+function postgresql_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = true, $dbconnection = false) {
 	global $config;
 	
 	$history = array ();
-	
+
+	if ($dbconnection === false) {
+		$dbconnection = $config['dbconnection'];
+	}
+		
 	// To disable globally SQL cache depending on global variable.
 	// Used in several critical places like Metaconsole trans-server queries
 	if (isset($config["dbcache"]))
 		$cache = $config["dbcache"];
 	
 	// Read from the history DB if necessary
-	if ($search_history_db) {
+	if ($search_history_db && $config['history_db_enabled'] == 1) {
 		$cache = false;
 		$history = false;
 		
-		if (isset($config['history_db_connection']))
+		// Connect to the history DB
+		$history_db_connection = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
+		if ($history_db_connection !== false) {
 			$history = postgresql_db_process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
-			
+		}
+		
 		if ($history === false) {
 			$history = array ();
 		}
 	}
 	
-	$return = postgresql_db_process_sql ($sql, 'affected_rows', $config['dbconnection'], $cache);
+	$return = postgresql_db_process_sql ($sql, 'affected_rows', $dbconnection, $cache);
 	if ($return === false) {
-		return false;
+		$return = array ();
 	}
 
 	// Append result to the history DB data
@@ -610,9 +609,9 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
  * @return the first value of the first row of a table result from query.
  *
  */
-function postgresql_db_get_value_sql($sql) {	
+function postgresql_db_get_value_sql($sql, $dbconnection = false) {	
 	$sql .= " LIMIT 1";
-	$result = db_get_all_rows_sql ($sql);
+	$result = postgresql_db_get_all_rows_sql ($sql, false, true, $dbconnection);
 
 	if($result === false)
 		return false;
@@ -630,7 +629,7 @@ function postgresql_db_get_value_sql($sql) {
  */
 function postgresql_db_get_row_sql ($sql, $search_history_db = false) {
 	$sql .= " LIMIT 1";
-	$result = db_get_all_rows_sql($sql, $search_history_db);
+	$result = postgresql_db_get_all_rows_sql($sql, $search_history_db);
 
 	if($result === false)
 		return false;
@@ -1047,4 +1046,41 @@ function postgresql_db_get_type_field_table($table, $field) {
 	
 	return pg_field_type($result, $field); 
 }
+
+/**
+ * Get the element count of a table.
+ * 
+ * @param string $sql SQL query to get the element count.
+ * 
+ * @return int Return the number of elements in the table.
+ */
+function postgresql_db_get_table_count($sql, $search_history_db = false) {
+	global $config;
+
+	$history_count = 0;
+	$count = postgresql_db_get_value_sql ($sql);
+	if ($count === false) {
+		$count = 0;
+	}
+
+	// Search the history DB for matches
+	if ($search_history_db && $config['history_db_enabled'] == 1) {
+
+		// Connect to the history DB
+		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
+			$config['history_db_connection'] = postgresql_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
+		}
+		if ($config['history_db_connection'] !== false) {
+			$history_count = postgresql_db_get_value_sql ($sql, $config['history_db_connection']);
+			if ($history_count === false) {
+				$history_count = 0;
+			}
+		}
+	}
+
+	$count += $history_count;
+
+	return $count;
+}
+
 ?>

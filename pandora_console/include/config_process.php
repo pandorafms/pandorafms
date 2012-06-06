@@ -93,7 +93,7 @@ require_once ($ownDir . 'functions_db.php');
 require_once ($ownDir . 'functions.php');
 
 db_select_engine();
-db_connect();
+$config['dbconnection'] = db_connect();
 
 
 if (! defined ('EXTENSIONS_DIR'))
@@ -167,20 +167,6 @@ if (file_exists ($config["homedir"].'/'.ENTERPRISE_DIR.'/index.php')) {
 else {
 	$config['enterprise_installed'] = 0;
 }
-
-// Connect to the history DB
-if (isset($config['history_db_enabled'])) {
-	if ($config['history_db_enabled']) {
-		/*$config['history_db_connection'] =*/ db_connect(
-			$config['history_db_host'] . ':' . $config['history_db_port'],
-			$config['history_db_name'],
-			$config['history_db_user'],
-			$config['history_db_pass'], true);
-	}
-}
-
-// Make dbconnection the default connection again (the link identifier of the already opened link will be returned)
-db_connect();
 
 // Function include_graphs_dependencies() it's called in the code below
 require_once("include_graph_dependencies.php");

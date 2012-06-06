@@ -25,6 +25,7 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_alerts.php");
 include_once($config['homedir'] . "/include/functions_users.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
 
 function db_select_engine() {
 	global $config;
@@ -42,20 +43,37 @@ function db_select_engine() {
 	}
 }
 
-function db_connect($host = null, $db = null, $user = null, $pass = null, $history = null, $port = null) {
+function db_connect($host = null, $db = null, $user = null, $pass = null, $port = null, $critical = true) {
 	global $config;
+	static $error = 0;
 	
 	switch ($config["dbtype"]) {
 		case "mysql": 
-			return mysql_connect_db($host, $db, $user, $pass, $history, $port);
+			$return = mysql_connect_db($host, $db, $user, $pass, $port);
 			break;
 		case "postgresql":
-			return postgresql_connect_db($host, $db, $user, $pass, $history, $port);
+			$return = postgresql_connect_db($host, $db, $user, $pass, $port);
 			break;
 		case "oracle":
-			return oracle_connect_db($host, $db, $user, $pass, $history, $port);
+			$return = oracle_connect_db($host, $db, $user, $pass, $port);
 			break;
+		default:
+			$return = false;
 	}
+	
+	// Something went wrong
+	if ($return === false) {
+		if ($critical) {
+			include ($config["homedir"]."/general/error_authconfig.php");
+			exit;
+		} else if ($error == 0) {
+			// Display the error once even if multiple connection attempts are made
+			$error = 1;
+			ui_print_error_message (__("Error connecting to database %s at %s.", $db, $host));
+		}
+	}
+	
+	return $return;
 }
 
 /**
@@ -1111,4 +1129,29 @@ function db_get_type_field_table($table, $field) {
 			break;
 	}
 }
+
+/**
+ * Get the element count of a table.
+ * 
+ * @param string $sql SQL query to get the element count.
+ * 
+ * @return int Return the number of elements in the table.
+ */
+function db_get_table_count($table, $search_history_db = false) {
+	global $config;
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_db_get_table_count($table, $search_history_db);
+			break;
+		case "postgresql":
+			return postgresql_db_get_table_count($table, $search_history_db);
+			break;
+		case "oracle":
+			return oracle_db_get_table_count($table, $search_history_db);
+			break;
+	}
+}
+
+
 ?>

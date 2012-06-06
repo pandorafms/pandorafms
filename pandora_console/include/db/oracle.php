@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function oracle_connect_db($host = null, $db = null, $user = null, $pass = null, $history = null, $port = null) {
+function oracle_connect_db($host = null, $db = null, $user = null, $pass = null, $port = null) {
 	global $config;
 	
 	if ($host === null)
@@ -31,10 +31,8 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null,
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to oci_pconnect().
 	$connect_id = oci_connect($user, $pass, '//' . $host . ':' . $port . '/' . $db);
-	
 	if (! $connect_id) {
-		include ($config["homedir"]."/general/error_authconfig.php");
-		exit;
+		return false;
 	}
 
 	// Set date and timestamp formats for this session
@@ -52,13 +50,6 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null,
 	oci_free_statement($datetime_format);
 	oci_free_statement($date_format);
 	oci_free_statement($decimal_separator);
-	
-	if ($history){
-		$config['history_db_dbconnection'] = $connect_id;
-	}
-	else{
-		$config['dbconnection'] = $connect_id;
-	}		
 	
 	return $connect_id;
 }
@@ -148,32 +139,41 @@ function oracle_db_get_row ($table, $field_search, $condition, $fields = false) 
 	return $result[0];
 }
 
-function oracle_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
+function oracle_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = true, $dbconnection = false) {
 	global $config;
 	
 	$history = array ();
-	
+
+	if ($dbconnection === false) {
+		$dbconnection = $config['dbconnection'];
+	}
+		
 	// To disable globally SQL cache depending on global variable.
 	// Used in several critical places like Metaconsole trans-server queries
 	if (isset($config["dbcache"]))
 		$cache = $config["dbcache"];
 	
 	// Read from the history DB if necessary
-	if ($search_history_db) {
+	if ($search_history_db && $config['history_db_enabled'] == 1) {
 		$cache = false;
 		$history = false;
 		
-		if (isset($config['history_db_connection']))
+		// Connect to the history DB
+		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
+			$config['history_db_connection'] = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
+		}
+		if ($config['history_db_connection'] !== false) {
 			$history = oracle_db_process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
-			
+		}
+		
 		if ($history === false) {
 			$history = array ();
 		}
 	}
 	
-	$return = oracle_db_process_sql ($sql, 'affected_rows', $config['dbconnection'], $cache);
+	$return = oracle_db_process_sql ($sql, 'affected_rows', $dbconnection, $cache);
 	if ($return === false) {
-		return false;
+		$return = array ();
 	}
 
 	// Append result to the history DB data
@@ -847,9 +847,9 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
  * @return the first value of the first row of a table result from query.
  *
  */
-function oracle_db_get_value_sql($sql) {	
+function oracle_db_get_value_sql($sql, $dbconnection = false) {	
 	$sql = "SELECT * FROM (" . $sql . ") WHERE rownum < 2";
-	$result = db_get_all_rows_sql ($sql);
+	$result = oracle_db_get_all_rows_sql ($sql, false, true, $dbconnection);
 
 	if($result === false)
 		return false;
@@ -867,7 +867,7 @@ function oracle_db_get_value_sql($sql) {
  */
 function oracle_db_get_row_sql ($sql, $search_history_db = false) {
 	$sql = "SELECT * FROM (" . $sql . ") WHERE rownum < 2";
-	$result = db_get_all_rows_sql($sql, $search_history_db);
+	$result = oracle_db_get_all_rows_sql($sql, $search_history_db);
 
 	if($result === false)
 		return false;
@@ -1411,6 +1411,42 @@ function oracle_list_all_field_table($table_name, $return_mode = 'array'){
 	else{
 		return $field_list;
 	}
+}
+
+/**
+ * Get the element count of a table.
+ * 
+ * @param string $sql SQL query to get the element count.
+ * 
+ * @return int Return the number of elements in the table.
+ */
+function oracle_db_get_table_count($sql, $search_history_db = false) {
+	global $config;
+
+	$history_count = 0;
+	$count = oracle_db_get_value_sql ($sql);
+	if ($count === false) {
+		$count = 0;
+	}
+
+	// Search the history DB for matches
+	if ($search_history_db && $config['history_db_enabled'] == 1) {
+
+		// Connect to the history DB
+		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
+			$config['history_db_connection'] = oracle_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
+		}
+		if ($config['history_db_connection'] !== false) {
+			$history_count = oracle_db_get_value_sql ($sql, $config['history_db_connection']);
+			if ($history_count === false) {
+				$history_count = 0;
+			}
+		}
+	}
+
+	$count += $history_count;
+
+	return $count;
 }
 
 ?>

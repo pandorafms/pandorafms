@@ -1,3 +1,13 @@
+2012-06-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/db/postgresql.php,
+	  include/db/mysql.php,
+	  include/db/oracle.php,
+	  include/config_process.php,
+	  include/functions_db.php,
+	  operation/agentes/datos_agente.php: Fixed and improved the history
+	  database feature.
+
 2012-06-06  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/agentes/exportdata.php: Added help tip.

@@ -1,3 +1,9 @@
+2012-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	
+	* operation/agentes/ver_agente.php
+	 pandora_console/godmode/alerts/alert_list.builder.php: Fixed alert
+	 creation when metaconsole is activated.
+
 2012-06-06  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/agentes/exportdata.php

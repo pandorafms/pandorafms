@@ -259,6 +259,8 @@ if (is_ajax ()) {
 		$indexed = (bool) get_parameter ('indexed', true);
 		$agentName = (string) get_parameter ('agent_name', null);
 		$server_name = (string) get_parameter ('server_name', null);
+		/* This will force to get local modules although metaconsole is active, by default get all modules from all nodes */
+		$force_local_modules = (int) get_parameter ('force_local_modules', 0);
 		
 		if ($agentName != null) {
 				$search = array();
@@ -267,7 +269,7 @@ if (is_ajax ()) {
 		else
 			$search = false;
 		
-		if ($config ['metaconsole'] == 1) {
+		if ($config ['metaconsole'] == 1 and !$force_local_modules) { 
 			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
 				$connection = metaconsole_get_connection($server_name);
 				if (metaconsole_load_external_db($connection)) {

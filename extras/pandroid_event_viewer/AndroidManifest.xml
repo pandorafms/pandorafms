@@ -79,7 +79,9 @@
             android:label="@string/pandroid_event_viewer_str"
             android:theme="@android:style/Theme.Dialog" >
         </activity>
-		<activity android:name=".IncidentList"/>
+        <!-- 
+		<activity android:name=".IncidentList"/> -->
+		<activity android:name=".CreateIncidentActivity"/>
         <service android:name=".PandroidEventviewerService" >
         </service>
 

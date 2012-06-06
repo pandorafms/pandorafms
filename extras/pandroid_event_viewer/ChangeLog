@@ -1,3 +1,11 @@
+2012-06-06 Santiago Munín <burnin1@gmail.com>
+	* AndroidManifest.xml: Added CreateIncidentActivity (new activity).
+	* src/pandroid_event_viewer/pandorafms/Core.java: Added some getAgents and getGroups
+	* res/values/strings.xml: Added new entries
+	* res/values/arrays.xml: Added new entries
+	* res/menu/options_menu_list_events.xml, res/menu/options_menu.xml: Added "Incidents" entry
+	* res/layout/create_incident.xml: CreateIncidentActivity's layout.
+
 2012-06-01 Santiago Munín <burnin1@gmail.com>
 	* AndroidManifest.xml: Added IncidenList (new activity)
 	* src/pandroid_event_viewer/pandorafms/IncidentListItem.java: Added, value object of incidents.
@@ -6,7 +14,6 @@
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Deprecated function removed.
 	* res/layout/item_list_incident_layout.xml: Layout of IncidentList items.
 	* res/values/strings.xml: Added new entries.
-
 
 2012-06-01 Santiago Munín <burnin1@gmail.com>
 	* Little changes on the whole app: Fixed some Lint errors.

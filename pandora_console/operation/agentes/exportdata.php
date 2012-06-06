@@ -279,12 +279,29 @@ if (empty($export_btn)) {
 	} else {
 		$modules = array ();
 	}
-
+	
+	if(!empty($modules)) { //remove modules of type string because you cant calculate their average.
+		$i = 0;
+		foreach ($modules as $key=>$module) {
+			$id_module_type = modules_get_agentmodule_type ($key);
+			switch ($id_module_type) {
+				case 3:
+				case 10:
+				case 17:
+				case 23:
+				case 33:
+					unset($modules[$i]);
+					break;
+			}
+			$i++;
+		}
+	}
+	
 	$disabled_export_button = false;
 	if (empty($modules)) {
 		$disabled_export_button = true;
 	}
-
+	
 	$table->data[2][1] = html_print_select ($modules, "module_arr[]", array_keys ($modules), '', '', 0, true, true, true, 'w155', false);
 
 	//Start date selector

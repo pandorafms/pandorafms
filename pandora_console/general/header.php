@@ -95,7 +95,13 @@ config_check();
 			// Main help icon
 			echo "&nbsp;";
 			echo "&nbsp;";
-			echo ui_print_help_icon ("main_help", true);			
+			echo ui_print_help_icon ("main_help", true);
+			if ($config['metaconsole'] == 1) {
+				echo "&nbsp;";
+				echo "&nbsp;";				
+				html_print_image("images/application_double.png", false, array("alt" => __('Metaconsole activated'), "class" => 'bot', "title" => __('You are using metaconsole')));
+			}			
+						
 			echo '</td>';
 		echo '<td width="20%">';
 			
@@ -120,10 +126,7 @@ config_check();
 				unset ($servers); // Since this is the header, we don't like to trickle down variables.
 				echo '</a>';
 			}
-			else {
-				// TODO: Put here to remark this is a metaconsole
-				echo "";
-			}
+
 ?>
 		</td>
 		<td width="20%">

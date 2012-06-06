@@ -30,79 +30,82 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 
 	enterprise_hook ('metaconsole_menu');
 
-	//View agents
-	$menu["estado"]["text"] = __('Monitoring');
-	$menu["estado"]["sec2"] = "operation/agentes/tactical";
-	$menu["estado"]["refr"] = 0;
-	$menu["estado"]["id"] = "oper-agents";
-	
-	$sub = array ();
-	$sub["operation/agentes/tactical"]["text"] = __('Tactical view');
-	$sub["operation/agentes/tactical"]["refr"] = 0;
+	if ($config['metaconsole'] == 0) {
+		//View agents
+		$menu["estado"]["text"] = __('Monitoring');
+		$menu["estado"]["sec2"] = "operation/agentes/tactical";
+		$menu["estado"]["refr"] = 0;
+		$menu["estado"]["id"] = "oper-agents";
 		
-	$sub["operation/agentes/group_view"]["text"] = __('Group view');
-	$sub["operation/agentes/group_view"]["refr"] = 0;
-	
-	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
-	$sub["operation/agentes/estado_agente"]["refr"] = 0;
-	$sub["operation/agentes/estado_agente"]["subsecs"] = array(
-		"operation/agentes/ver_agente");
-	
-	$sub["operation/agentes/alerts_status"]["text"] = __('Alert detail');
-	$sub["operation/agentes/alerts_status"]["refr"] = 0;
-	
-	$sub["operation/agentes/status_monitor"]["text"] = __('Monitor detail');
-	$sub["operation/agentes/status_monitor"]["refr"] = 0;
-	
-	enterprise_hook ('services_menu');
-	
-	enterprise_hook ('inventory_menu');
-	
-	$sub["operation/servers/recon_view"]["text"] = __('Recon view');
-	$sub["operation/servers/recon_view"]["refr"] = 0;
-	
-	
-	//SNMP Console
-	$sub["operation/snmpconsole/snmp_view"]["text"] = __('SNMP console');
-	$sub["operation/snmpconsole/snmp_view"]["refr"] = 0;
-	$sub["operation/snmpconsole/snmp_view"]["subsecs"] = array(
-		"enterprise/godmode/snmpconsole",
-		"godmode/snmpconsole/snmp_trap_editor",
-		"godmode/snmpconsole/snmp_alert",
-		"godmode/snmpconsole/snmp_filters",
-		"godmode/snmpconsole/snmp_trap_generator");
-	
-	$sub2 = array();
-	
-	$sub2["godmode/snmpconsole/snmp_alert"]["text"] = __("SNMP alerts");
-	$sub2['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');	
-	enterprise_hook ('snmpconsole_submenu');	
-	$sub2['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
+		$sub = array ();
+		$sub["operation/agentes/tactical"]["text"] = __('Tactical view');
+		$sub["operation/agentes/tactical"]["refr"] = 0;
+			
+		$sub["operation/agentes/group_view"]["text"] = __('Group view');
+		$sub["operation/agentes/group_view"]["refr"] = 0;
+		
+		$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
+		$sub["operation/agentes/estado_agente"]["refr"] = 0;
+		$sub["operation/agentes/estado_agente"]["subsecs"] = array(
+			"operation/agentes/ver_agente");
+		
+		$sub["operation/agentes/alerts_status"]["text"] = __('Alert detail');
+		$sub["operation/agentes/alerts_status"]["refr"] = 0;
+		
+		$sub["operation/agentes/status_monitor"]["text"] = __('Monitor detail');
+		$sub["operation/agentes/status_monitor"]["refr"] = 0;
+		
+		enterprise_hook ('services_menu');
+		
+		enterprise_hook ('inventory_menu');
+		
+		$sub["operation/servers/recon_view"]["text"] = __('Recon view');
+		$sub["operation/servers/recon_view"]["refr"] = 0;
+		
+		
+		//SNMP Console
+		$sub["operation/snmpconsole/snmp_view"]["text"] = __('SNMP console');
+		$sub["operation/snmpconsole/snmp_view"]["refr"] = 0;
+		$sub["operation/snmpconsole/snmp_view"]["subsecs"] = array(
+			"enterprise/godmode/snmpconsole",
+			"godmode/snmpconsole/snmp_trap_editor",
+			"godmode/snmpconsole/snmp_alert",
+			"godmode/snmpconsole/snmp_filters",
+			"godmode/snmpconsole/snmp_trap_generator");
+		
+		$sub2 = array();
+		
+		$sub2["godmode/snmpconsole/snmp_alert"]["text"] = __("SNMP alerts");
+		$sub2['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');	
+		enterprise_hook ('snmpconsole_submenu');	
+		$sub2['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
 
-	$sub["operation/snmpconsole/snmp_view"]["sub2"] = $sub2;
-	
-	$sub['operation/tree']['text'] = __('Tree view');
-	$sub["operation/tree"]["refr"] = 0;
+		$sub["operation/snmpconsole/snmp_view"]["sub2"] = $sub2;
 		
-	$menu["estado"]["sub"] = $sub;
-	//End of view agents
+		$sub['operation/tree']['text'] = __('Tree view');
+		$sub["operation/tree"]["refr"] = 0;
+			
+		$menu["estado"]["sub"] = $sub;
+		//End of view agents
+	}
 	
 	//Start network view
-	
-	$menu["network"]["text"] = __('Network View');
-	$menu["network"]["sec2"] = "operation/agentes/networkmap_list";
-	$menu["network"]["refr"] = 0;
-	$menu["network"]["id"] = "oper-networkconsole";
-	
-	$sub = array();
-	
-	$sub["operation/agentes/networkmap_list"]["text"] = __('Network map');
-	$sub["operation/agentes/networkmap_list"]["refr"] = 0;
-	
-	enterprise_hook ('networkmap_console');
-	
-	$menu["network"]["sub"] = $sub;
-	//End networkview
+	if ($config['metaconsole'] == 0) {
+		$menu["network"]["text"] = __('Network View');
+		$menu["network"]["sec2"] = "operation/agentes/networkmap_list";
+		$menu["network"]["refr"] = 0;
+		$menu["network"]["id"] = "oper-networkconsole";
+		
+		$sub = array();
+		
+		$sub["operation/agentes/networkmap_list"]["text"] = __('Network map');
+		$sub["operation/agentes/networkmap_list"]["refr"] = 0;
+		
+		enterprise_hook ('networkmap_console');
+		
+		$menu["network"]["sub"] = $sub;
+		//End networkview
+	}
 	
 	// Reporting
 	$menu["reporting"]["text"] = __('Reporting');
@@ -172,25 +175,27 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		}	
 	}
 	
-	$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
-	
-	$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');	
-	//Set godomode path
-	$sub["godmode/reporting/graphs"]["subsecs"] = array(
-		"operation/reporting/graph_viewer",
-		"godmode/reporting/graph_builder");
+	if ($config['metaconsole'] == 0) {
+		$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
+		
+		$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');	
+		//Set godomode path
+		$sub["godmode/reporting/graphs"]["subsecs"] = array(
+			"operation/reporting/graph_viewer",
+			"godmode/reporting/graph_builder");
+																
+		$sub["operation/agentes/exportdata"]["text"] = __('Export data');
+		$sub["operation/agentes/exportdata"]["subsecs"] =  array("operation/agentes/exportdata");
 															
-	$sub["operation/agentes/exportdata"]["text"] = __('Export data');
-	$sub["operation/agentes/exportdata"]["subsecs"] =  array("operation/agentes/exportdata");
-														
-	enterprise_hook ('dashboard_menu');
-	enterprise_hook ('reporting_godmenu');	
+		enterprise_hook ('dashboard_menu');
+		enterprise_hook ('reporting_godmenu');	
+	}
 	
 	$menu["reporting"]["sub"] = $sub;
 	//End reporting
 	
 	//INI GIS Maps
-	if ($config['activate_gis']) {
+	if ($config['activate_gis'] and ($config['metaconsole'] == 0)) {
 		$menu["gismaps"]["text"] = __('GIS Maps');
 		$menu["gismaps"]["sec2"] = "operation/gis_maps/index";
 		$menu["gismaps"]["refr"] = 0;
@@ -229,7 +234,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 }
 
 // Rest of options, all with AR privilege (or should events be with incidents?)
-if (check_acl ($config['id_user'], 0, "AR")) {
+if (check_acl ($config['id_user'], 0, "AR") and ($config['metaconsole'] == 0)) {
 	// Events
 	$menu["eventos"]["text"] = __('View events'); 
 	$menu["eventos"]["refr"] = 0;
@@ -340,13 +345,13 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$menu["extensions"]["id"] = "oper-extensions";
 		
 		$sub = array ();
-		
+
 		foreach ($config["extensions"] as $extension) {
 			//If no operation_menu is a godmode extension
 			if ($extension["operation_menu"] == '') {
 				continue;
 			}
-			
+	
 			$extension_menu = $extension["operation_menu"];
 			
 			//Check if was displayed inside other menu
@@ -356,7 +361,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			}
 			else {
 				if (array_key_exists('fatherId',$extension_menu)) {
-					if (strlen($extension_menu['fatherId']) > 0) {
+					// Check that extension father ID exists previously on the menu
+					if ((strlen($extension_menu['fatherId']) > 0) and array_key_exists($extension_menu['fatherId'], $menu)) {
 						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
 						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["refr"] = 0;
 						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["icon"] = $extension_menu['icon'];
@@ -373,6 +379,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	}
 }
 
+// Save operation menu array to use in operation/extensions.php view
+$operation_menu_array = $menu;
 
 menu_print_menu ($menu, true);
 ?>

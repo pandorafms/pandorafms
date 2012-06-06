@@ -1,3 +1,15 @@
+2012-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_menu.php
+	 include/styles/pandora_minimal.css
+	 operation/extensions.php
+	 operation/menu.php
+	 general/header.php
+	 godmode/extensions.php
+	 godmode/menu.php: Invalid menu entries hided in metaconsola and 
+	 added image in header. Also added info_box css attributes in
+	 pandora_minimal css file.
+
 2012-06-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/db/postgresql.php,

@@ -290,7 +290,6 @@ function menu_print_menu (&$menu) {
 		}
 		
 		// Choose valid section (sec)
-
 		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $main["sec2"])) == false){
 			continue;
 		} 

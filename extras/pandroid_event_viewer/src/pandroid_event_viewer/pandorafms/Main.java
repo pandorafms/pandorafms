@@ -210,7 +210,8 @@ public class Main extends Activity {
 			parameters.add(new BasicNameValuePair("return_type", "csv"));
 			parameters.add(new BasicNameValuePair("other", ";"));
 
-			String return_api = Core.httpGet(getApplicationContext(), parameters);
+			String return_api = Core.httpGet(getApplicationContext(),
+					parameters);
 			String[] lines = return_api.split("\n");
 
 			for (int i = 0; i < lines.length; i++) {
@@ -369,8 +370,11 @@ public class Main extends Activity {
 			i = new Intent(this, About.class);
 			startActivity(i);
 			break;
-		}
 
+		case R.id.incidents_button_menu_options:
+			startActivity(new Intent(this, CreateIncidentActivity.class));
+			break;
+		}
 		return true;
 	}
 

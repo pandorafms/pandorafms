@@ -107,4 +107,9 @@
 	<string name="pandorafms_logo_description">PandoraFMS\'s logo</string>
 	<string name="description">Description</string>
 	<string name="incident_close_button">Close incident</string>
+	<string name="incidents_label_str">Incidents</string>
+	<string name="title">Title</string>
+	<string name="priority">Priority</string>
+	<string name="create">Create</string>
+	<string name="source">Source</string>
 </resources>

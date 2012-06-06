@@ -18,17 +18,15 @@ package pandroid_event_viewer.pandorafms;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import android.app.ListActivity;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -139,7 +137,7 @@ public class IncidentList extends ListActivity {
 		@Override
 		public int getCount() {
 			// TODO +1?
-			return incidents.size()+1;
+			return incidents.size();
 		}
 
 		@Override

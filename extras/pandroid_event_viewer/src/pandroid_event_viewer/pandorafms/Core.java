@@ -266,9 +266,9 @@ public class Core {
 	}
 
 	/**
-	 * 
+	 * Converts params  to string.
 	 * @param params
-	 * @return
+	 * @return All params in a single string.
 	 */
 	public static String serializeParams2Api(String[] params) {
 		String return_var = params[0];
@@ -276,7 +276,6 @@ public class Core {
 		for (int i = 1; i < params.length; i++) {
 			return_var += "|" + params[i];
 		}
-
 		Log.i(TAG + " serializeParams2Api", return_var);
 		return return_var;
 	}
@@ -391,11 +390,72 @@ public class Core {
 	 *            TextView.
 	 * @param image
 	 *            Image.
-	 * @param size Image size
+	 * @param size
+	 *            Image size
 	 */
 	public static void setTextViewLeftImage(TextView view, Drawable image,
 			int size) {
 		image.setBounds(0, 0, size, size);
 		view.setCompoundDrawables(image, null, null, null);
+	}
+
+	/**
+	 * Get groups through an api call.
+	 * 
+	 * @param context
+	 *            Application context.
+	 * @return Map containing id -> group.
+	 */
+	public static Map<Integer, String> getGroups(Context context) {
+		Map<Integer, String> result = new HashMap<Integer, String>();
+		try {
+			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+			parameters.add(new BasicNameValuePair("op", "get"));
+			parameters.add(new BasicNameValuePair("op2", "groups"));
+			parameters.add(new BasicNameValuePair("other_mode",
+					"url_encode_separator_|"));
+			parameters.add(new BasicNameValuePair("return_type", "csv"));
+			parameters.add(new BasicNameValuePair("other", ";"));
+
+			String return_api = Core.httpGet(context, parameters);
+			String[] lines = return_api.split("\n");
+
+			for (int i = 0; i < lines.length; i++) {
+				String[] groups = lines[i].split(";", 21);
+
+				result.put(Integer.valueOf(groups[0]), groups[1]);
+			}
+		} catch (Exception e) {
+			Log.e(TAG + ": getting groups", e.getMessage());
+		}
+		return result;
+	}
+
+	/**
+	 * Get agents through an api call.
+	 * 
+	 * @param context
+	 * @return Map containing id -> agent.
+	 */
+	public static Map<Integer, String> getAgents(Context context) {
+		Map<Integer, String> result = new HashMap<Integer, String>();
+		try {
+			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+			parameters.add(new BasicNameValuePair("op", "get"));
+			parameters.add(new BasicNameValuePair("op2", "all_agents"));
+			parameters.add(new BasicNameValuePair("return_type", "csv"));
+
+			String return_api = Core.httpGet(context, parameters);
+			String[] lines = return_api.split("\n");
+
+			for (int i = 0; i < lines.length; i++) {
+				String[] agents = lines[i].split(";");
+
+				result.put(Integer.valueOf(agents[0]), agents[1]);
+			}
+		} catch (Exception e) {
+			Log.e(TAG + ": getting groups", e.getMessage());
+		}
+		return result;
 	}
 }

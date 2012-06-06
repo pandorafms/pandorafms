@@ -1,5 +1,10 @@
 2012-06-06  Vanessa Gil <vanessa.gil@artica.es>
 
+	* include/functions_modules.php: Fixed bug: When you
+	copy a policy module, still liked to policy.
+
+2012-06-06  Vanessa Gil <vanessa.gil@artica.es>
+
 	* operation/agentes/exportdata.php
 	  operation/agentes/exportdata.csv.php
 	  operation/agentes/exportdata.excel.php: Fixed bug export

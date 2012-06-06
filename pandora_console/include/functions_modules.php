@@ -80,6 +80,8 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		/* Rewrite different values */
 		$new_module['id_agente'] = $id_destiny_agent;
 		$new_module['ip_target'] = agents_get_address ($id_destiny_agent);
+		$new_module['policy_linked'] = 0;
+		$new_module['id_policy_module'] = 0;
 		
 		/* Unset numeric indexes or SQL would fail */
 		$len = count ($new_module) / 2;
@@ -97,6 +99,8 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		/* Rewrite different values */
 		$new_module['id_agente'] = $id_destiny_agent;
 		$new_module['ip_target'] = agents_get_address ($id_destiny_agent);
+		$new_module['policy_linked'] = 0;
+		$new_module['id_policy_module'] = 0;
 		
 		/* Unset numeric indexes or SQL would fail */
 		$len = count ($new_module) / 2;

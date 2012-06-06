@@ -125,7 +125,6 @@ if (is_ajax ()) {
  	return;
 }
 
-
 // Load global vars
 require_once ("include/config.php");
 require_once ("include/functions_agents.php");
@@ -166,7 +165,7 @@ $end_date = get_parameter_post ('end_date', 0);
 $start_time = get_parameter_post ('start_time', 0);
 $end_time = get_parameter_post ('end_time', 0);
 $export_type = get_parameter_post ('export_type', 'data');
-$export_btn = get_parameter_post ('export_btn', 0);
+$export_btn = get_parameter ('export_btn', 0);
 
 if (!empty ($export_btn) && !empty ($module)) {
 
@@ -285,7 +284,7 @@ elseif (!empty ($export_btn) && empty ($module)) {
 }
 
 if (empty($export_btn)) {
-	echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form">';
+	echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form" id="export_form">';
 	
 	$table->width = '98%';
 	$table->border = 0;
@@ -369,8 +368,8 @@ if (empty($export_btn)) {
 	html_print_table ($table);
 
 	// Submit button
-	echo '<div class="action-buttons" style="width:80%;">';
-		html_print_submit_button (__('Export'), 'export_btn', $disabled_export_button, 'class="sub wand"');
+	echo '<div class="action-buttons" style="width:98%;">';
+		html_print_button (__('Export'), 'export_btn', $disabled_export_button, 'change_action()', 'class="sub wand"');
 	echo '</div></form>';
 }
 ui_require_jquery_file ('pandora.controls');
@@ -460,13 +459,13 @@ $(document).ready (function () {
 		//Force to style of items
 		$(".ui-autocomplete").css("text-align", "left");
 	}
-	
-	$("select#export_type").trigger('change');
+
 });
 
-$("select#export_type").change (function () {
+function change_action() {
 	type = $("#export_type").val();
 	var f = document.forms.export_form;
+
 	switch (type) {
 		case 'csv':
 			f.action = "operation/agentes/exportdata.csv.php";
@@ -476,10 +475,11 @@ $("select#export_type").change (function () {
 			break;
 		case 'avg':
 		case 'data':
-			f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata";
+			f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata&export_btn=1";
 			break;
 	}
-});
+	$("#export_form").submit();
+}
 
 function submit_group() {
 	var f = document.forms.export_form;

@@ -848,7 +848,7 @@ function groups_agent_unknown ($group_array) {
 		return 0;
 		
 	} else if (!is_array ($group_array)){
-		$group_array[0] = $group_array;
+		$group_array = array($group_array);
 	}
 			
 	$group_clause = implode (",", $group_array);
@@ -857,6 +857,67 @@ function groups_agent_unknown ($group_array) {
 	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 3 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_grupo IN $group_clause");
 	
 }
+
+// Get ok agents by using the status code in modules.
+
+function groups_agent_ok ($group_array) {
+
+	// If there are not groups to query, we jump to nextone
+	
+	if (empty ($group_array)) {
+		return 0;
+		
+	} else if (!is_array ($group_array)){
+		$group_array = array($group_array);
+	}
+			
+	$group_clause = implode (",", $group_array);
+	$group_clause = "(" . $group_clause . ")";
+	
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_grupo IN $group_clause");
+	
+}
+
+// Get critical agents by using the status code in modules.
+
+function groups_agent_critical ($group_array) {
+
+	// If there are not groups to query, we jump to nextone
+	
+	if (empty ($group_array)) {
+		return 0;
+		
+	} else if (!is_array ($group_array)){
+		$group_array = array($group_array);
+	}
+			
+	$group_clause = implode (",", $group_array);
+	$group_clause = "(" . $group_clause . ")";
+	
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_grupo IN $group_clause");
+	
+}
+
+// Get warning agents by using the status code in modules.
+
+function groups_agent_warning ($group_array) {
+
+	// If there are not groups to query, we jump to nextone
+	
+	if (empty ($group_array)) {
+		return 0;
+		
+	} else if (!is_array ($group_array)){
+		$group_array = array($group_array);
+	}
+			
+	$group_clause = implode (",", $group_array);
+	$group_clause = "(" . $group_clause . ")";
+	
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_grupo IN $group_clause");
+	
+}
+
 
 // Get monitor NOT INIT, except disabled AND async modules
 
@@ -868,7 +929,7 @@ function groups_monitor_not_init ($group_array) {
 		return 0;
 		
 	} else if (!is_array ($group_array)){
-		$group_array[0] = $group_array;
+		$group_array = array($group_array);
 	}
 			
 	$group_clause = implode (",", $group_array);
@@ -894,7 +955,7 @@ function groups_monitor_ok ($group_array) {
 		return 0;
 		
 	} else if (!is_array ($group_array)){
-		$group_array[0] = $group_array;
+		$group_array = array($group_array);
 	}
 			
 	$group_clause = implode (",", $group_array);
@@ -917,7 +978,7 @@ function groups_monitor_critical ($group_array) {
 		return 0;
 		
 	} else if (!is_array ($group_array)){
-		$group_array[0] = $group_array;
+		$group_array = array($group_array);
 	}
 			
 	$group_clause = implode (",", $group_array);
@@ -941,7 +1002,7 @@ function groups_monitor_warning ($group_array) {
 		return 0;
 		
 	} else if (!is_array ($group_array)){
-		$group_array[0] = $group_array;
+		$group_array = array($group_array);
 	}
 			
 	$group_clause = implode (",", $group_array);
@@ -965,7 +1026,7 @@ function groups_monitor_unknown ($group_array) {
 		return 0;
 		
 	} else if (!is_array ($group_array)){
-		$group_array[0] = $group_array;
+		$group_array = array($group_array);
 	}
 			
 	$group_clause = implode (",", $group_array);
@@ -989,7 +1050,7 @@ function groups_monitor_alerts ($group_array) {
 		return 0;
 		
 	} else if (!is_array ($group_array)){
-		$group_array[0] = $group_array;
+		$group_array = array($group_array);
 	}
 			
 	$group_clause = implode (",", $group_array);
@@ -1015,7 +1076,7 @@ function groups_monitor_fired_alerts ($group_array) {
 		return 0;
 		
 	} else if (!is_array ($group_array)){
-		$group_array[0] = $group_array;
+		$group_array = array($group_array);
 	}
 			
 	$group_clause = implode (",", $group_array);
@@ -1040,7 +1101,7 @@ function groups_total_agents ($group_array) {
 		return 0;
 		
 	} else if (!is_array ($group_array)){
-		$group_array[0] = $group_array;
+		$group_array = array($group_array);
 	}
 			
 	$group_clause = implode (",", $group_array);

@@ -1856,4 +1856,78 @@ function agents_get_count_incidents ($id_agent) {
 	return db_get_value('count(*)', 'tincidencia', 'id_agent', $id_agent);
 }
 
+
+// Get critical monitors by using the status code in modules.
+
+function agents_monitor_critical ($id_agent) {
+	
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente = $id_agent");
+}
+
+// Get warning monitors by using the status code in modules.
+
+function agents_monitor_warning ($id_agent) {
+	
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente = $id_agent");
+}
+
+// Get unknown monitors by using the status code in modules.
+
+function agents_monitor_unknown ($id_agent) {
+	
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 3 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente = $id_agent");
+}
+
+// Get ok monitors by using the status code in modules.
+
+function agents_monitor_ok ($id_agent) {
+	
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente = $id_agent");
+}
+
+//Get alert fired for this agent
+
+function agents_get_alerts_fired ($id_agent) {
+	
+	$modules_agent = agents_get_modules($id_agent, "id_agente_modulo");
+	
+	if (empty($modules_agent)) {
+		return 0;
+	}
+	
+	$mod_clause = "(".implode(",", $modules_agent).")";	
+	
+	return db_get_sql ("SELECT COUNT(times_fired) FROM talert_template_modules WHERE id_agent_module IN ".$mod_clause);
+}
+
+//Returns the alert image to display tree view
+
+function agents_tree_view_alert_img ($alert_fired) {
+
+	if ($alert_fired) {
+		return ui_print_status_image (STATUS_ALERT_FIRED, __('Alert fired'), true);
+	} else {
+		return ui_print_status_image (STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
+	}
+}
+
+//Returns the status image to display tree view
+
+function agetns_tree_view_status_img ($critical, $warning, $unknown) {
+	
+	if ($critical > 0) {
+		return ui_print_status_image (STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'), true);
+	}
+	else if ($warning > 0) {
+		return ui_print_status_image (STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true);
+	}
+	else if ($unknown > 0) {
+		return ui_print_status_image (STATUS_AGENT_DOWN, __('At least one module is in UKNOWN status'), true);	
+	}
+	else {
+		return ui_print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
+	}	
+}		
+
+	
 ?>

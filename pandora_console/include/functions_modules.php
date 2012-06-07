@@ -1247,4 +1247,66 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 	}
 }
 
+// Get unknown agents by using the status code in modules
+
+function modules_agents_unknown ($module_name) {
+	
+	//TODO REVIEW ORACLE AND POSTGRES
+	
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 3 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre LIKE '%$module_name%')");
+	
+}
+
+// Get ok agents by using the status code in modules.
+
+function modules_agents_ok ($module_name) {
+		
+	//!!!Query explanation!!!
+	//An agent is OK if all its modules are OK
+	//The status values are: 0 OK; 1 Critical; 2 Warning; 3 Unkown
+	//This query grouped all modules by agents and select the MAX value for status which has the value 0 
+	//If MAX(estado) is 0 it means all modules has status 0 => OK
+	//Then we count the agents of the group selected to know how many agents are in OK status
+	
+	//TODO REVIEW ORACLE AND POSTGRES
+	
+	return db_get_sql ("SELECT COUNT(max_estado) FROM (SELECT MAX(tagente_estado.estado) as max_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre LIKE '%$module_name%') GROUP BY tagente.id_agente HAVING max_estado = 0) AS S1");
+	
+}
+
+// Get critical agents by using the status code in modules.
+
+function modules_agents_critical ($module_name) {
+		
+	//!!!Query explanation!!!
+	//An agent is Warning when has at least one module in warning status and nothing more in critical status
+	//The status values are: 0 OK; 1 Critical; 2 Warning; 3 Unkown
+	//If estado = 1 it means at leas 1 module is in critical status so the agent is critical
+	//Then we count the agents of the group selected to know how many agents are in critical status	
+	
+	//TODO REVIEW ORACLE AND POSTGRES
+	
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre LIKE '%$module_name%')");
+	
+}
+
+// Get warning agents by using the status code in modules.
+
+function modules_agents_warning ($module_name) {
+	
+	//!!!Query explanation!!!
+	//An agent is Warning when has at least one module in warning status and nothing more in critical status
+	//The status values are: 0 OK; 1 Critical; 2 Warning; 3 Unkown
+	//This query grouped all modules by agents and select the MIN value for status which has the value 0 
+	//If MIN(estado) is 2 it means at least one module is warning and there is no critical modules
+	//Then we count the agents of the group selected to know how many agents are in warning status
+	
+	//TODO REVIEW ORACLE AND POSTGRES
+	
+	return db_get_sql ("SELECT COUNT(min_estado) FROM (SELECT MIN(tagente_estado.estado) as min_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre LIKE '%$module_name%') GROUP BY tagente.id_agente HAVING min_estado = 2) AS S1");
+	
+}
+
+
 ?>
+

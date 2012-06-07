@@ -1,3 +1,9 @@
+2012-06-07 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_modules.php,
+	operation/tree.php: Improved performance of tree
+	view for modules, its not very good but now works...
+
 2012-06-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/menu.php

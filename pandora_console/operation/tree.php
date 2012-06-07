@@ -632,6 +632,7 @@ if (is_ajax ())
 
 include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . "/include/functions_os.php");
+include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_reporting.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
@@ -851,36 +852,13 @@ function printTree_($type) {
 					break;
 				case 'module':
 					$id = str_replace(array(' ','#'), array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_'),io_safe_output($item['nombre']));
+					$id = str_replace ("/", "_", $id);
 					$name = io_safe_output($item['nombre']);
-					$name_sql = io_safe_input($item['nombre']);
-					$agentes = db_get_all_rows_sql("SELECT id_agente FROM tagente 
-													WHERE id_agente IN (SELECT id_agente FROM tagente_modulo
-																		WHERE nombre COLLATE utf8_general_ci LIKE '%$name_sql%')");
-					if ($agentes === false) {
-						$agentes = array();
-					}
-					$num_ok = 0;
-					$num_critical = 0;
-					$num_warning = 0;
-					$num_unknown = 0;
-					foreach ($agentes as $agente) {
-						$stat = reporting_get_agent_module_info ($agente["id_agente"]);
-
-						switch ($stat['status']) {
-							case 'agent_ok.png':
-								$num_ok++;
-								break;
-							case 'agent_critical.png':
-								$num_critical++;
-								break;
-							case 'agent_warning.png':
-								$num_warning++;
-								break;
-							case 'agent_down.png':
-								$num_unknown++;
-								break;
-						}
-					}
+					$module_name = $item['nombre'];
+					$num_ok = modules_agents_ok($module_name);
+					$num_critical = modules_agents_critical($module_name);
+					$num_warning = modules_agents_warning($module_name);
+					$num_unknown = modules_agents_unknown($module_name);
 					break;
 			}
 			

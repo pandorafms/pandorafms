@@ -807,12 +807,10 @@ function printTree_($type) {
 					$id = $item['id_grupo'];
 					$name = $item['nombre'];
 					$iconImg = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']).".png", true, array ("style" => 'vertical-align: middle; width: 16px; height: 16px;'));
-					
 					$num_ok = groups_agent_ok($id);
 					$num_critical = groups_agent_critical($id);
 					$num_warning = groups_agent_warning($id);
 					$num_unknown = groups_agent_unknown ($id);
-					
 					break;
 				case 'module_group':
 					$id = $item['id_mg'];

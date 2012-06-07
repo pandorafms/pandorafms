@@ -24,6 +24,7 @@ global $config;
 
 if (is_ajax ())
 {
+	
 	function printTable($id_agente) {
 		global $config;
 
@@ -51,7 +52,7 @@ if (is_ajax ())
 			require_once ("general/noaccess.php");
 			return;
 		}
-		
+
 		echo '<div id="id_div3" width="450px">';
 		echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:15%">';
 		//Agent name
@@ -166,7 +167,7 @@ if (is_ajax ())
 
 		//End of table
 		echo '</table></div>';
-
+		
 		// Blank space below title, DONT remove this, this
 		// Breaks the layout when Flash charts are enabled :-o
 		echo '<div id="id_div" style="height: 10px">&nbsp;</div>';	
@@ -193,11 +194,11 @@ if (is_ajax ())
 			
 		return;
 }
-
+	
 	require_once ('include/functions_reporting.php');
 	require_once ('include/functions_users.php');
 	require_once ('include/functions_servers.php');
-	
+
 	global $config;
 	
 	$enterpriseEnable = false;
@@ -320,7 +321,23 @@ if (is_ajax ())
 				$count++;
 				switch ($type) {
 					case 'group':
-						$agent_info = reporting_get_agent_module_info ($row["id_agente"]);
+						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"]);
+						
+						$agent_info["monitor_critical"] = agents_monitor_critical ($row["id_agente"]);
+						$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"]);
+						$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"]);
+						$agent_info["monitor_normal"] = agents_monitor_ok ($row["id_agente"]);
+						
+						$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
+						
+						$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
+																				$agent_info["monitor_warning"],
+																				$agent_info["monitor_unknown"]);
+												
+						//Count all modules
+						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
+						
+						
 						break;
 					case 'os':
 						$agent_info = reporting_get_agent_module_info ($row["id_agente"]);
@@ -381,7 +398,6 @@ if (is_ajax ())
 					html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
 
 				echo $img;
-			
 				echo "</a>";
 				echo " ";
 				echo str_replace('.png' ,'_ball.png',
@@ -394,7 +410,7 @@ if (is_ajax ())
 				echo "<a onfocus='JavaScript: this.blur()'
 					href='javascript: loadTable(\"agent_" . $type . "\"," . $row["id_agente"] . ", " . $less . ", \"" . $id . "\")'>";
 				echo " ";
-
+					
 				echo $row["nombre"];
 
 				echo " (";
@@ -632,7 +648,22 @@ function printTree_($type) {
 
 	echo '<table class="databox" style="width:98%">';
 	echo '<tr><td style="width:60%" valign="top">';
-	$avariableGroups = users_get_groups(); //db_get_all_rows_in_table('tgrupo', 'nombre');
+	
+	//Get all groups
+	$avariableGroups = users_get_groups (); //db_get_all_rows_in_table('tgrupo', 'nombre');	
+	
+	//Get all groups with agents
+	$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente");
+	
+	$fgroups = array();
+	
+	foreach ($full_groups as $fg) {
+		$fgroups[$fg['id_grupo']] = "";
+	}
+
+	//We only want groups with agents, so we need the intesect of both arrays.
+	$avariableGroups = array_intersect_key($avariableGroups, $fgroups);
+	
 	$avariableGroupsIds = implode(',',array_keys($avariableGroups));
 	if($avariableGroupsIds == ''){
 		$avariableGroupsIds == -1;
@@ -776,33 +807,10 @@ function printTree_($type) {
 					$id = $item['id_grupo'];
 					$name = $item['nombre'];
 					$iconImg = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']).".png", true, array ("style" => 'vertical-align: middle; width: 16px; height: 16px;'));
-					
-					$agentes = db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE id_grupo=$id");
-					if ($agentes === false) {
-						$agentes = array();
-					}
-					$num_ok = 0;
-					$num_critical = 0;
-					$num_warning = 0;
-					$num_unknown = 0;
-					foreach ($agentes as $agente) {
-						$stat = reporting_get_agent_module_info ($agente["id_agente"]);
-
-						switch ($stat['status']) {
-							case 'agent_ok.png':
-								$num_ok++;
-								break;
-							case 'agent_critical.png':
-								$num_critical++;
-								break;
-							case 'agent_warning.png':
-								$num_warning++;
-								break;
-							case 'agent_down.png':
-								$num_unknown++;
-								break;
-						}
-					}
+					$num_ok = groups_agent_ok($id);
+					$num_critical = groups_agent_critical($id);
+					$num_warning = groups_agent_warning($id);
+					$num_unknown = groups_agent_unknown ($id);
 					break;
 				case 'module_group':
 					$id = $item['id_mg'];
@@ -923,7 +931,9 @@ function printTree_($type) {
 					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "3"));
 				}
 			}
-			if (($type == 'os') && ($num_ok == 0) && ($num_critical == 0) && ($num_warning == 0) && ($num_unknown == 0)) {
+			
+			//skip if there is a empty OS or group!
+			if (($type == 'os' || $type == 'group') && ($num_ok == 0) && ($num_critical == 0) && ($num_warning == 0) && ($num_unknown == 0)) {
 				continue;
 			} else {
 				echo "<li style='margin: 0px 0px 0px 0px;'>
@@ -936,7 +946,7 @@ function printTree_($type) {
 							
 				echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $id . "'></div>";
 				echo "</li>\n";
-			} 
+			}
 		}
 		echo "</ul>\n";
 		echo '</td>';
@@ -1042,6 +1052,11 @@ printTree_($activeTab);
 				return;
 			
 			if (loadDiv == 0) {
+				
+				//Put an spinner to simulate loading process
+				$('#tree_div'+id_father+'_'+type+'_'+div_id).html("<img style='padding-top:10px;padding-bottom:10px;padding-left:20px;' src=images/spinner.gif>");
+				$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');
+				
 				$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv', 2);
 				$.ajax({
 					type: "POST",
@@ -1139,8 +1154,8 @@ printTree_($activeTab);
 			);
 		}
 		
-		function loadTable(type, div_id, less_branchs, id_father) {	
-			id_agent = div_id;		
+		function loadTable(type, div_id, less_branchs, id_father) {
+			id_agent = div_id;				
 			$.ajax({
 				type: "POST",
 				url: "ajax.php",
@@ -1149,7 +1164,8 @@ printTree_($activeTab);
 					$('#cont').html(data);	
 				}
 			});
-			loadSubTree(type, div_id, less_branchs, id_father);
+			
+			loadSubTree(type, div_id, less_branchs, id_father);		
 	}
 </script>
 

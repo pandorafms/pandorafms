@@ -1,3 +1,11 @@
+2012-06-07 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/tree.php,
+	include/functions_groups.php: Fixed some errors and 
+	improved performance of group tree view.
+
+	MERGED FROM 4.0.2
+
 2012-06-06 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/ver_agente.php

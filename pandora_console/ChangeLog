@@ -1,3 +1,10 @@
+2012-06-07 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_os.php: Created this file.
+	include/functions_groups,
+	operation/tree.php: Fixed a bug related to search
+	improved performance of OS tab for tree view.
+
 2012-06-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	
 	* godmode/reporting/reporting_builder.list_items.php

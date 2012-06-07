@@ -248,7 +248,7 @@ if (is_ajax ())
 				$groups_sql = implode(', ', $avariableGroupsIds);
 				
 				if ($search_free != '') {
-					$search_sql = " AND nombre LIKE '%$search_free%'";
+					$search_sql = " AND nombre COLLATE utf8_general_ci LIKE '%$search_free%'";
 				} else {
 					$search_sql = '';
 				}
@@ -289,7 +289,7 @@ if (is_ajax ())
 							WHERE id_agente IN (
 									SELECT id_agente
 									FROM tagente_modulo
-									WHERE nombre LIKE \'%s\'
+									WHERE nombre COLLATE utf8_general_ci LIKE \'%s\'
 								)
 								AND (%s id_grupo IN (%s))', $name, $extra_sql, $groups_sql);
 						break;
@@ -321,6 +321,7 @@ if (is_ajax ())
 				$count++;
 				switch ($type) {
 					case 'group':
+					case 'os':
 						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"]);
 						
 						$agent_info["monitor_critical"] = agents_monitor_critical ($row["id_agente"]);
@@ -336,11 +337,6 @@ if (is_ajax ())
 												
 						//Count all modules
 						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
-						
-						
-						break;
-					case 'os':
-						$agent_info = reporting_get_agent_module_info ($row["id_agente"]);
 						break;
 					case 'module_group':
 						$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' id_module_group = ' . $id);
@@ -355,11 +351,11 @@ if (is_ajax ())
 					case 'module':
 						switch ($config["dbtype"]) {
 							case "mysql":
-								$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' nombre LIKE "' . $name . '"');
+								$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' nombre COLLATE utf8_general_ci LIKE "' . $name . '"');
 								break;
 							case "postgresql":
 							case "oracle":
-								$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' nombre LIKE \'' . $name . '\'');
+								$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' nombre COLLATE utf8_general_ci LIKE \'' . $name . '\'');
 								break;
 						}
 						break;
@@ -487,14 +483,14 @@ if (is_ajax ())
 							$sql = 'SELECT * 
 								FROM tagente_modulo AS t1 
 								INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
-								WHERE t1.id_agente = ' . $id . ' AND nombre LIKE \'' . io_safe_input($name) . '\'';
+								WHERE t1.id_agente = ' . $id . ' AND nombre COLLATE utf8_general_ci LIKE \'' . io_safe_input($name) . '\'';
 							break;
 						case "postgresql":
 						case "oracle":
 							$sql = 'SELECT * 
 								FROM tagente_modulo AS t1 
 								INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
-								WHERE t1.id_agente = ' . $id . ' AND nombre LIKE \'' . io_safe_input($name) . '\'';
+								WHERE t1.id_agente = ' . $id . ' AND nombre  COLLATE utf8_general_ciLIKE \'' . io_safe_input($name) . '\'';
 							break;
 					}
 					break;
@@ -635,6 +631,7 @@ if (is_ajax ())
 
 
 include_once($config['homedir'] . "/include/functions_groups.php");
+include_once($config['homedir'] . "/include/functions_os.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 include_once($config['homedir'] . "/include/functions_reporting.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
@@ -674,10 +671,10 @@ function printTree_($type) {
 			if ($search_free != '') {
 				$sql = "SELECT * FROM tconfig_os 
 						WHERE id_os IN (SELECT id_os FROM tagente 
-									WHERE nombre LIKE '%$search_free%')";
+									WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
 				$list = db_get_all_rows_sql($sql);
 			} else {
-				$list = db_get_all_rows_in_table('tconfig_os', 'name');
+				$list = db_get_all_rows_sql("SELECT DISTINCT (tagente.id_os), tconfig_os.name FROM tagente, tconfig_os WHERE tagente.id_os = tconfig_os.id_os");
 			}
 			break;
 		case 'group':
@@ -690,7 +687,7 @@ function printTree_($type) {
 				);
 				if ($search_free != '') {
 					$sql_search = " AND id_grupo IN (SELECT id_grupo FROM tagente
-									WHERE nombre LIKE '%$search_free%')";
+									WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
 				} else {
 					$sql_search ='';
 				}
@@ -709,7 +706,7 @@ function printTree_($type) {
 				$sql = "SELECT * FROM tmodule_group
 						WHERE id_mg IN (SELECT id_module_group FROM tagente_modulo 
 										WHERE id_agente IN (SELECT id_agente FROM tagente
-														WHERE nombre LIKE '%$search_free%'))";
+														WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%'))";
 				$list = db_get_all_rows_sql($sql);
 			} else {
 				$list = db_get_all_rows_in_table('tmodule_group', 'name');
@@ -725,7 +722,7 @@ function printTree_($type) {
 						WHERE id_group IN ($groups) 
 						AND id IN (SELECT id_policy FROM tpolicy_agents
 								WHERE id_agent IN (SELECT id_agente FROM tagente
-											WHERE nombre LIKE '%$search_free%'))";
+											WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%'))";
 				$list = db_get_all_rows_sql($sql);
 			} else {
 				$list = db_get_all_rows_filter('tpolicies', array('id_group' => array_keys($avariableGroups)));
@@ -736,7 +733,7 @@ function printTree_($type) {
 		case 'module':
 			if ($search_free != '') {
 					$sql_search = " AND t1.id_agente IN (SELECT id_agente FROM tagente
-									WHERE nombre LIKE '%$search_free%')";
+									WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
 				} else {
 					$sql_search ='';
 				}
@@ -774,34 +771,10 @@ function printTree_($type) {
 					$id = $item['id_os'];
 					$name = $item['name'];
 					$iconImg = html_print_image(str_replace('.png' ,'_small.png', ui_print_os_icon ($item['id_os'], false, true, false)) . " ", true);
-					
-					$agentes = db_get_all_rows_sql("SELECT id_agente FROM tagente WHERE id_os=$id");
-					if ($agentes === false) {
-						$agentes = array();
-					}
-					
-					$num_ok = 0;
-					$num_critical = 0;
-					$num_warning = 0;
-					$num_unknown = 0;
-					foreach ($agentes as $agente) {
-						$stat = reporting_get_agent_module_info ($agente["id_agente"]);
-
-						switch ($stat['status']) {
-							case 'agent_ok.png':
-								$num_ok++;
-								break;
-							case 'agent_critical.png':
-								$num_critical++;
-								break;
-							case 'agent_warning.png':
-								$num_warning++;
-								break;
-							case 'agent_down.png':
-								$num_unknown++;
-								break;
-						}
-					}
+					$num_ok = os_agents_ok($id);
+					$num_critical = os_agents_critical($id);
+					$num_warning = os_agents_warning($id);
+					$num_unknown = os_agents_unknown($id);
 					break;
 				case 'group':
 					$id = $item['id_grupo'];
@@ -882,7 +855,7 @@ function printTree_($type) {
 					$name_sql = io_safe_input($item['nombre']);
 					$agentes = db_get_all_rows_sql("SELECT id_agente FROM tagente 
 													WHERE id_agente IN (SELECT id_agente FROM tagente_modulo
-																		WHERE nombre LIKE '$name_sql')");
+																		WHERE nombre COLLATE utf8_general_ci LIKE '%$name_sql%')");
 					if ($agentes === false) {
 						$agentes = array();
 					}
@@ -932,21 +905,16 @@ function printTree_($type) {
 				}
 			}
 			
-			//skip if there is a empty OS or group!
-			if (($type == 'os' || $type == 'group') && ($num_ok == 0) && ($num_critical == 0) && ($num_warning == 0) && ($num_unknown == 0)) {
-				continue;
-			} else {
-				echo "<li style='margin: 0px 0px 0px 0px;'>
-					<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\")'>" .
-					$img . $iconImg ."&nbsp;" . __($name) . ' ('.
-					'<span class="green">'.'<b>'.$num_ok.'</b>'.'</span>'. 
-					' : <span class="red">'.$num_critical.'</span>' .
-					' : <span class="yellow">'.$num_warning.'</span>'.
-					' : <span class="grey">'.$num_unknown.'</span>'.') '. "</a>";
-							
-				echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $id . "'></div>";
-				echo "</li>\n";
-			}
+			echo "<li style='margin: 0px 0px 0px 0px;'>
+				<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\")'>" .
+				$img . $iconImg ."&nbsp;" . __($name) . ' ('.
+				'<span class="green">'.'<b>'.$num_ok.'</b>'.'</span>'. 
+				' : <span class="red">'.$num_critical.'</span>' .
+				' : <span class="yellow">'.$num_warning.'</span>'.
+				' : <span class="grey">'.$num_unknown.'</span>'.') '. "</a>";
+						
+			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $id . "'></div>";
+			echo "</li>\n";
 		}
 		echo "</ul>\n";
 		echo '</td>';

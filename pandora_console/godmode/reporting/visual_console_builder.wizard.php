@@ -217,6 +217,7 @@ function check_fields() {
 
 function hidden_rows() {
 	$("tr", "#wizard_table").hide(); //Hide all in the form table
+	
 	//Show the id ".*-all_.*"
 	$("tr", "#wizard_table").filter(function () {return /^wizard_table\-all.*/.test(this.id); }).show();
 	

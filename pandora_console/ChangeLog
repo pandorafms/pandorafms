@@ -1,5 +1,10 @@
 2012-06-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/menu.php: Hide not valid sections with metaconsole 
+	 activated.
+
+2012-06-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/styles/pandora_minimal.css
 	 operation/extensions.php
 	 operation/menu.php

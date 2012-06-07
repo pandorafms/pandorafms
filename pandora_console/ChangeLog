@@ -1,4 +1,12 @@
 2012-06-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	
+	* godmode/reporting/reporting_builder.list_items.php
+	 godmode/reporting/graph_builder.php
+	 godmode/reporting/graph_builder.graph_editor.php: Added code to 
+	 support metaconsole in custom graphs (but commented due to database
+	 support is not implemented)
+
+2012-06-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/reporting/reporting_builder.list_items.php
 	 godmode/reporting/graph_builder.php

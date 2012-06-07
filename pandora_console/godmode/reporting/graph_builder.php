@@ -72,6 +72,7 @@ if ($add_graph) {
 	$events = get_parameter_post ("events");
 	$stacked = get_parameter ("stacked", 0);
 	$period = get_parameter_post ("period");
+
 	// Create graph
 	$values = array( 'id_user' => $config['id_user'], 'name' => $name, 'description' => $description, 
 	'period' => $period, 'width' => $width, 'height' => $height,
@@ -124,22 +125,57 @@ if ($add_module) {
 	// Remove 'None' module option
 	if ($id_modules[0] == '0')
 		unset($id_modules[0]);	
-		
+
 	if (!empty($id_modules)) {
+	
+		// If metaconsole is not activated (tgraph and tgraph_source doesn't support in db table)
+		//if ($config['metaconsole'] == 0) {
+		
+				$id_agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (".
+					implode(',', $id_agents).
+					") AND nombre IN ('".
+					implode("','", $id_modules).
+					"')");
 
-		$id_agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (".
-			implode(',', $id_agents).
-			") AND nombre IN ('".
-			implode("','", $id_modules).
-			"')");
+				if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
+					foreach($id_agent_modules as $id_agent_module)
+						$result = db_process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
+					}
+				else
+					$result = false;
+		
+		//}
+		// Metaconsole activated
+		/*else {
+		
+			foreach ($id_agents as $current_agent_key => $current_agent_name) {
+				$split_position = strpos($current_agent_name, '|');
+				
+				// Deserialize agent and server
+				$id_agent = substr($current_agent_name, $split_position + 1);
+				$server_name = substr($current_agent_name, 0, $split_position);
+				
+				$connection_data = enterprise_hook('metaconsole_get_connection', array($server_name));
+				
+				$connection_result = enterprise_hook('metaconsole_load_external_db', array($connection_data)); 
 
-		if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
-			foreach($id_agent_modules as $id_agent_module)
-				$result = db_process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
+				$id_agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".
+					$id_agent .
+					" AND nombre IN ('".
+					implode("','", $id_modules).
+					"')");
+
+				if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
+					foreach($id_agent_modules as $id_agent_module)
+						$result = db_process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
+					}
+				else
+					$result = false;				
+
+				enterprise_hook('metaconsole_restore_db');
 			}
-		else
-			$result = false;
-
+			
+		}*/
 	}
 	else 
 		$result = false;

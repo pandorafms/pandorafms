@@ -128,7 +128,40 @@ echo "<td style='vertical-align: top;'>".__('Agents')."</td>";
 echo "<td></td>";
 echo "<td style='vertical-align: top;'>".__('Modules')."</td>";
 echo "</tr><tr>";
-echo "<td>".html_print_select (agents_get_group_agents(), 'id_agents[]', 0, false, '', '', true, true, true, '', false, 'width:200px;')."</td>";
+// If metaconsole is activated
+/*if ($config['metaconsole'] == 1) {
+	enterprise_include_once('include/functions_metaconsole.php');
+	
+	$connection_names = enterprise_hook('metaconsole_get_connection_names');
+	if ($connection_names === false)
+		$connection_names = array();
+
+	$agents_tmp = array();
+	$agents = array();	
+	
+	foreach ($connection_names as $connection) {
+		$connection_data = enterprise_hook('metaconsole_get_connection', array($connection));
+		
+		$connection_result = enterprise_hook('metaconsole_load_external_db', array($connection_data)); 
+		
+		if ($connection_result != false) {
+			$agents_tmp = agents_get_group_agents ();
+			
+			if ($agents_tmp === false)
+				$agents_tmp = array();
+				
+			foreach ($agents_tmp as $agent_key => $agent_name) {
+				$agents[$connection_data['server_name'] . '|' . $agent_key] = $agent_name . ' (' . $connection_data['server_name'] . ')';
+			}
+		}
+		
+		enterprise_hook('metaconsole_restore_db');
+	}
+
+}
+else {*/
+	echo "<td>".html_print_select (agents_get_group_agents(), 'id_agents[]', 0, false, '', '', true, true, true, '', false, 'width:200px;')."</td>";
+//}	
 echo "<td style='vertical-align: center; text-align: center;'>" . html_print_image("images/darrowright.png", true) . "</td>";
 echo "<td>".html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:200px;')."</td>";
 echo "</tr><tr>";

@@ -1,3 +1,12 @@
+2012-06-07 Dario Rodriguez <dario.rodriguez@artica.es>
+
+        * include/functions_os.php: Created this file.
+        include/functions_groups,
+        operation/tree.php: Fixed a bug related to search
+        improved performance of OS tab for tree view.
+
+	MERGED FROM 4.0.2
+
 2012-06-07  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_ui.php: Merged from 4.0.x: Fixed bug:

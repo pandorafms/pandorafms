@@ -1065,7 +1065,6 @@ printTree_($activeTab);
 						type + "&id=" + div_id + "&less_branchs=" + less_branchs + "&id_father=" + id_father + "&status=" + status + "&search_free=" + search_free,
 					success: function(msg){
 						if (msg.length != 0) {
-							console.log(msg);
 							$('#tree_div'+id_father+'_'+type+'_'+div_id).hide();
 							$('#tree_div'+id_father+'_'+type+'_'+div_id).html(msg);
 							$('#tree_div'+id_father+'_'+type+'_'+div_id).show('normal');

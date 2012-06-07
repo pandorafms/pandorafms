@@ -1,5 +1,9 @@
 2012-06-07 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* operation/tree.php: Deleted a debug trace for js
+
+2012-06-07 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* include/functions_groups.php
 	operation/tree.php: Fixed and improved performance for
 	group tree view.

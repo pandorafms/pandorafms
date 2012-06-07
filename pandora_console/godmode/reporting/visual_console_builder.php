@@ -49,7 +49,7 @@ switch ($activeTab) {
 				$visualConsoleName = get_parameter('name');
 				
 				$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background);
-					
+				
 				// If the background is changed the size is reseted 			
 				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				$background_now = $visualConsole['background'];
@@ -78,7 +78,7 @@ switch ($activeTab) {
 							$idVisualConsole = db_process_sql_insert('tlayout', $values);
 						else
 							$idVisualConsole = false;
-							
+						
 						if ($idVisualConsole !== false) {
 							$action = 'edit';
 							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully created.').'</h3>');
@@ -204,11 +204,13 @@ switch ($activeTab) {
 					}
 					else {
 						$id_modules = array();
+						
 						foreach ($name_modules as $mod) {
 							foreach ($id_agents as $ag) {
 								$id_module = agents_get_modules($ag,
 									array('id_agente_modulo'),
-									array('nombre' => $mod));
+									array('nombre' => io_safe_input($mod)));
+									
 								if (empty($id_module))
 									continue;
 								else {

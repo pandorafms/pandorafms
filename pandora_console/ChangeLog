@@ -1,3 +1,12 @@
+2012-06-07 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.php: fixed the modules
+	name with white spaces...again in Pandora console..
+	
+	* extensions/update_manager/lib/functions.ajax.php: upload lost
+	changes.
+
 2012-06-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/extensions.php
@@ -247,6 +256,11 @@
 
 	* pandoradb_data.sql: Updated defaults: compact is not enabled by default
 	and dbschema version is updated.
+
+2012-05-24 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager/lib/functions.ajax.php: some fixes, and
+	exclude the install "install.php" file or "config.php".
 
 2012-05-24 Miguel de Dios <miguel.dedios@artica.es>
 	

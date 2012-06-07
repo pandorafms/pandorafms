@@ -106,7 +106,7 @@ if(count($module_array) > 0){
 		echo "</tr></table>";
 		echo "</td>";
 		echo "<td class='$tdcolor' align='center'>";
-		echo "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=". $id ."&delete=" . $idgs_array[$a] . "'>".html_print_image('images/cross.png', true, array ('title' => __('Delete')))."</a>";
+		echo '<a onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id='. $id .'&delete=' . $idgs_array[$a] . '">'.html_print_image('images/cross.png', true, array ('title' => __('Delete'))).'</a>';
 
 		echo "</td></tr>";
 	}

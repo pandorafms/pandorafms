@@ -1,3 +1,10 @@
+2012-06-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/reporting/reporting_builder.list_items.php
+	 godmode/reporting/graph_builder.php
+	 godmode/reporting/graph_builder.graph_editor.php: Fixed sql error
+	when there are no modules selected in custom graph builder.
+
 2012-06-07  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_ui.php: fixed bug: string truncation

@@ -362,7 +362,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			else {
 				if (array_key_exists('fatherId',$extension_menu)) {
 					// Check that extension father ID exists previously on the menu
-					if ((strlen($extension_menu['fatherId']) > 0) and array_key_exists($extension_menu['fatherId'], $menu)) {
+					if ((strlen($extension_menu['fatherId']) > 0) and (($config['metaconsole'] == 0) or (array_key_exists($extension_menu['fatherId'], $menu)))) {
 						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
 						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["refr"] = 0;
 						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["icon"] = $extension_menu['icon'];

@@ -238,8 +238,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 			} else {
 						
 				if (array_key_exists('fatherId',$extmenu)) {
-					// Check that extension father ID exists previously on the menu
-					if (strlen($extmenu['fatherId']) > 0 and array_key_exists($extension_menu['fatherId'], $menu)) {
+					// Check that extension father ID exists previously on the menu (only if metaconsole is activated)
+					if (strlen($extmenu['fatherId']) > 0 and (($config['metaconsole'] == 0) or (array_key_exists($extension_menu['fatherId'], $menu)))) {
 						$menu[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
 						if ($extmenu["name"] != 'DB interface'){
 							if (!empty($config['refr'])){

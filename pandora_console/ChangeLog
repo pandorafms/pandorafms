@@ -1,3 +1,9 @@
+2012-06-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/menu.php
+	 godmode/menu.php: Fixed bug that make dissapear extensions without
+	 fatherId in menu.
+
 2012-06-07 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_os.php: Created this file.

@@ -259,10 +259,12 @@ foreach ($extensions as $file => $extension) {
 	}
 	
 	// Filter operation and godmode extensions not included in metaconsole
-	if (!empty($config['extensions'][$file]['operation_menu']['fatherId']) and !array_key_exists($config['extensions'][$file]['operation_menu']['fatherId'], $operation_menu_array))
-		continue;
-	if (!empty($config['extensions'][$file]['godmode_menu']['fatherId']) and !array_key_exists($config['extensions'][$file]['godmode_menu']['fatherId'], $menu))
-		continue;
+	if ($config['metaconsole'] == 1) {
+		if (!empty($config['extensions'][$file]['operation_menu']['fatherId']) and !array_key_exists($config['extensions'][$file]['operation_menu']['fatherId'], $operation_menu_array))
+			continue;
+		if (!empty($config['extensions'][$file]['godmode_menu']['fatherId']) and !array_key_exists($config['extensions'][$file]['godmode_menu']['fatherId'], $menu))
+			continue;
+	}
 
 	$table->data[] = $data;
 }

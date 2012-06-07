@@ -52,14 +52,15 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 	} 
 	
 	$text = io_safe_output($text);
-	if ((strlen($text)) > ($numChars)) {
+	if (mb_strlen($text, "UTF-8") > ($numChars)) {
 		$half_length = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
-		$truncateText2 = mb_strimwidth($text, (strlen($text) - $half_length), strlen($text));
-		// In case $numChars were an odd number.
-		$half_length = $numChars - $half_length - 3;
-		$truncateText = mb_strimwidth($text, 0, $half_length) . $suffix;
+		// Depending on the strange behavior of mb_strimwidth() itself,
+		// the 3rd parameter is not to be $numChars but the length of original text (just means 'large enough').
+		$truncateText2 = mb_strimwidth($text, (mb_strlen($text, "UTF-8") - $half_length), strlen($text), "", "UTF-8" );
+
+		$truncateText = mb_strimwidth($text, 0, ($numChars - $half_length), $suffix, "UTF-8");
 		$truncateText=$truncateText . $truncateText2;
-		
+
 		if ($showTextInTitle) {
 			if ($style !== false){
 				$truncateText = '<span style="' . $style . '" title="'.$text.'">'.$truncateText.'</span>';

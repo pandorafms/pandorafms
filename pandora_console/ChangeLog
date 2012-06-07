@@ -1,3 +1,8 @@
+2012-06-07  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_ui.php: fixed bug: string truncation
+	didn't always work for multi-byte characters.
+
 2012-06-07 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/tree.php: Deleted a debug trace for js

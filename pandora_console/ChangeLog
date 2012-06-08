@@ -1,3 +1,11 @@
+2012-06-08 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_modules.php,
+	include/functions_groups.php,
+	include/functions_os.php,
+	operation/tree.php: Fixed a problem with unknown agent
+	counting.
+
 2012-06-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Fixed update of custom 

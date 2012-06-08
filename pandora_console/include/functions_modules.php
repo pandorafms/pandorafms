@@ -1252,8 +1252,7 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 function modules_agents_unknown ($module_name) {
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	
-	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 3 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre LIKE '%$module_name%')");
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado = 3 AND tagente_modulo.nombre = '$module_name'");
 	
 }
 
@@ -1270,7 +1269,7 @@ function modules_agents_ok ($module_name) {
 	
 	//TODO REVIEW ORACLE AND POSTGRES
 	
-	return db_get_sql ("SELECT COUNT(max_estado) FROM (SELECT MAX(tagente_estado.estado) as max_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre LIKE '%$module_name%') GROUP BY tagente.id_agente HAVING max_estado = 0) AS S1");
+	return db_get_sql ("SELECT COUNT(max_estado) FROM (SELECT MAX(tagente_estado.estado) as max_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre = '$module_name') GROUP BY tagente.id_agente HAVING max_estado = 0) AS S1");
 	
 }
 
@@ -1286,7 +1285,7 @@ function modules_agents_critical ($module_name) {
 	
 	//TODO REVIEW ORACLE AND POSTGRES
 	
-	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre LIKE '%$module_name%')");
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre = '$module_name')");
 	
 }
 
@@ -1303,10 +1302,9 @@ function modules_agents_warning ($module_name) {
 	
 	//TODO REVIEW ORACLE AND POSTGRES
 	
-	return db_get_sql ("SELECT COUNT(min_estado) FROM (SELECT MIN(tagente_estado.estado) as min_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre LIKE '%$module_name%') GROUP BY tagente.id_agente HAVING min_estado = 2) AS S1");
+	return db_get_sql ("SELECT COUNT(min_estado) FROM (SELECT MIN(tagente_estado.estado) as min_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente IN (SELECT id_agente FROM tagente_modulo WHERE nombre = '$module_name') GROUP BY tagente.id_agente HAVING min_estado = 2) AS S1");
 	
 }
 
 
 ?>
-

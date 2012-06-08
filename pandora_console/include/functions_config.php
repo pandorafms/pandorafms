@@ -170,7 +170,7 @@ function config_update_config () {
 	config_update_value ('agentaccess', (int) get_parameter ('agentaccess', $config['agentaccess']));
 	config_update_value ('flash_charts', (bool) get_parameter ('flash_charts', $config["flash_charts"]));
 	config_update_value ('attachment_store', (string) get_parameter ('attachment_store', $config["attachment_store"]));
-	config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API'])));
+	config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API'));
 
 	config_update_value ('custom_logo', (string) get_parameter ('custom_logo', $config["custom_logo"]));
 	config_update_value ('history_db_enabled', (bool) get_parameter ('history_db_enabled', $config['history_db_enabled']));

@@ -104,7 +104,12 @@ $table->data[14][0] = __('Attachment store') . ui_print_help_tip (__("Directory 
 $table->data[14][1] = html_print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
 
 $table->data[15][0] = __('IP list with API access') . ui_print_help_icon ("ip_api_list", true);
-$list_ACL_IPs_for_API = get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API']));
+if (isset($_POST["list_ACL_IPs_for_API"])) {
+	$list_ACL_IPs_for_API = get_parameter_post('list_ACL_IPs_for_API');
+}
+else {
+	$list_ACL_IPs_for_API = get_parameter_get('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API']));
+}
 $table->data[15][1] = html_print_textarea('list_ACL_IPs_for_API', 2, 25, $list_ACL_IPs_for_API, 'style="height: 50px; width: 300px"', true);
 
 $table->data[16][0] = __('API password') . 

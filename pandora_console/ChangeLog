@@ -1,3 +1,8 @@
+2012-06-08  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_config.php, godmode/setup/setup.php: Fixed that
+	ACL with API access cannot be removed after once configured.
+
 2012-06-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/visual_console_builder.wizard.php,

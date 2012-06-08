@@ -2418,11 +2418,11 @@ sub pandora_group_statistics ($$) {
 					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.utimestamp != 0");
 		$warning = 0 unless defined ($warning);
 		
-		$unknown = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado)
-				FROM tagente_estado, tagente, tagente_modulo
-				WHERE tagente.id_grupo = $group AND tagente.disabled = 0
-					AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado = 3 
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.utimestamp != 0");
+		$unknown = get_db_value ($dbh, 		"SELECT COUNT(min_estado) FROM 
+		(SELECT MIN(tagente_estado.estado) as min_estado FROM tagente_estado, tagente, tagente_modulo 
+		WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+		AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado != 0 
+		AND tagente.id_grupo = $group GROUP BY tagente.id_agente HAVING min_estado = 3) AS S1");
 		$unknown = 0 unless defined ($unknown);
 		
 		$non_init = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado)

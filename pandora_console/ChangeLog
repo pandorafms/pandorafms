@@ -1,3 +1,16 @@
+2012-06-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/db/postgresql.php,
+	  include/db/mysql.php,
+	  include/db/oracle.php,
+	  include/config_process.php,
+	  include/functions_db.php,
+	  operation/agentes/datos_agente.php: Merged from 4.0 branch. Fixed and
+	  improved the history database feature.
+
+	* include/graphs/fgraph.php: Merged from 4.0 branch. Protect against
+	  accidental output that might corrupt an image.
+
 2012-06-08 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_modules.php,

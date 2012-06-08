@@ -44,27 +44,23 @@ function config_create_value ($token, $value) {
 function config_update_value ($token, $value) {
 	global $config;
 	
-	switch ($token) {
-		case 'list_ACL_IPs_for_API':
-			return (bool) config_create_value ($token, $value);
-			break;
-		default:
-			if (!isset ($config[$token])) {
-				$config[$token] = $value;
-				return (bool) config_create_value ($token, $value);
-			}
-			
-			/* If it has not changed */
-			if ($config[$token] == $value)
-				return true;
-			
-			$config[$token] = $value;
-			
-			return (bool) db_process_sql_update ('tconfig', 
-				array ('value' => $value),
-				array ('token' => $token));
-			break;
+	if ($token == 'list_ACL_IPs_for_API')
+		$value = str_replace(array("\r\n", "\r", "\n"), ";", io_safe_output($value));
+
+	if (!isset ($config[$token])) {
+		$config[$token] = $value;
+		return (bool) config_create_value ($token, $value);
 	}
+	
+	/* If it has not changed */
+	if ($config[$token] == $value)
+		return true;
+	
+	$config[$token] = $value;
+	
+	return (bool) db_process_sql_update ('tconfig', 
+		array ('value' => $value),
+		array ('token' => $token));
 }
 
 /**
@@ -128,7 +124,7 @@ function config_update_config () {
 	config_update_value ('agentaccess', (int) get_parameter ('agentaccess', $config['agentaccess']));
 	config_update_value ('flash_charts', (bool) get_parameter ('flash_charts', $config["flash_charts"]));
 	config_update_value ('attachment_store', (string) get_parameter ('attachment_store', $config["attachment_store"]));
-	config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API'])));
+	config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API'));
 
 	config_update_value ('custom_logo', (string) get_parameter ('custom_logo', $config["custom_logo"]));
 	config_update_value ('history_db_enabled', (bool) get_parameter ('history_db_enabled', $config['history_db_enabled']));

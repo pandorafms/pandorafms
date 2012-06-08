@@ -824,34 +824,10 @@ function printTree_($type) {
 				case 'policies':
 					$id = $item['id'];
 					$name = $item['name'];
-					$agentes = db_get_all_rows_sql("SELECT id_agente FROM tagente
-													WHERE id_agente IN (SELECT id_agent FROM tpolicy_agents
-																		WHERE id_policy=$id)");
-					if ($agentes === false) {
-						$agentes = array();
-					}
-					$num_ok = 0;
-					$num_critical = 0;
-					$num_warning = 0;
-					$num_unknown = 0;
-					foreach ($agentes as $agente) {
-						$stat = reporting_get_agent_module_info ($agente["id_agente"]);
-
-						switch ($stat['status']) {
-							case 'agent_ok.png':
-								$num_ok++;
-								break;
-							case 'agent_critical.png':
-								$num_critical++;
-								break;
-							case 'agent_warning.png':
-								$num_warning++;
-								break;
-							case 'agent_down.png':
-								$num_unknown++;
-								break;
-						}
-					}
+					$num_ok = policies_agents_ok($id);
+					$num_critical = policies_agents_critical($id);
+					$num_warning = policies_agents_warning($id);
+					$num_unknown = policies_agents_unknown($id);
 					break;
 				case 'module':
 					$id = str_replace(array(' ','#'), array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_'),io_safe_output($item['nombre']));

@@ -387,6 +387,7 @@ switch ($action) {
 						
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
+
 						$values['id_agent_module'] = '';
 						if (isset($values['type'])) {
 							if (($values['type'] == 'alert_report_agent') or ($values['type'] == 'event_report_agent'))
@@ -424,14 +425,17 @@ switch ($action) {
 							break;
 						}
 						
-						$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
-						if ($id_gs !== false) {
-							$server_name = strstr($values ['id_gs'], '|');
-							$values ['id_gs'] = $id_gs;
-							$values['server_name'] = substr ($server_name, 1, strlen($server_name));
+						// If metaconsole is activated
+						if ($config['metaconsole'] == 1) {
+							$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
+							if ($id_gs !== false) {
+								$server_name = strstr($values ['id_gs'], '|');
+								$values ['id_gs'] = $id_gs;
+								$values['server_name'] = substr ($server_name, 1, strlen($server_name));
+							}
 						}
 						
-						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
+						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar') OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');

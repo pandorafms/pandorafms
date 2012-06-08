@@ -322,6 +322,7 @@ if (is_ajax ())
 				switch ($type) {
 					case 'group':
 					case 'os':
+					case 'policies':
 						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"]);
 						
 						$agent_info["monitor_critical"] = agents_monitor_critical ($row["id_agente"]);
@@ -340,13 +341,6 @@ if (is_ajax ())
 						break;
 					case 'module_group':
 						$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' id_module_group = ' . $id);
-						break;
-					case 'policies':
-						$whereQuery = '';
-						if ($id_father != 0)
-							$whereQuery = ' id_modulo IN 
-								(SELECT id_module FROM tpolicy_modules WHERE id_policy = ' . $id_father . ')';
-						$agent_info = reporting_get_agent_module_info ($row["id_agente"], $whereQuery);
 						break;
 					case 'module':
 						switch ($config["dbtype"]) {

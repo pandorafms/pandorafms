@@ -439,8 +439,7 @@ if (is_ajax ())
 
 		//also aknolegment as second subtree/branch
 		case 'agent_group': 
-		case 'agent_module_group': 
-		case 'agent_group': 
+		case 'agent_module_group':  
 		case 'agent_os':
 		case 'agent_policies':
 		case 'agent_module':
@@ -716,9 +715,11 @@ function printTree_($type) {
 			}
 			break;
 		case 'policies':
+			$groups_id = array_keys($avariableGroups);
+			$groups = implode(',',$groups_id);
+			
 			if ($search_free != '') {
-				$groups_id = array_keys($avariableGroups);
-				$groups = implode(',',$groups_id);
+
 				$sql = "SELECT * FROM tpolicies
 						WHERE id_group IN ($groups) 
 						AND id IN (SELECT id_policy FROM tpolicy_agents
@@ -726,7 +727,8 @@ function printTree_($type) {
 											WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%'))";
 				$list = db_get_all_rows_sql($sql);
 			} else {
-				$list = db_get_all_rows_filter('tpolicies', array('id_group' => array_keys($avariableGroups)));
+				
+				$list = db_get_all_rows_sql("SELECT id, name FROM tpolicies WHERE id_group IN  ($groups) AND id IN (SELECT DISTINCT id_policy FROM tpolicy_agents)");
 				if ($list !== false)
 					array_push($list, array('id' => 0, 'name' => 'No policy'));
 			}
@@ -742,15 +744,16 @@ function printTree_($type) {
 				case "mysql":
 				case "postgresql":
 					$list = db_get_all_rows_sql('SELECT t1.nombre
-						FROM tagente_modulo t1, tagente t2
-						WHERE t1.id_agente = t2.id_agente AND t2.id_grupo in (' . $avariableGroupsIds . ')' .$sql_search.'
-						GROUP BY t1.nombre ORDER BY t1.nombre ASC');
+						FROM tagente_modulo t1, tagente t2, tagente_estado t3
+						WHERE t1.id_agente = t2.id_agente AND t1.id_agente_modulo = t3.id_agente_modulo
+						AND t3.utimestamp !=0 AND t2.id_grupo in (' . $avariableGroupsIds . ')' .$sql_search.'
+						GROUP BY t1.nombre ORDER BY t1.nombre');
 					break;
 				case "oracle":	
 					$list = db_get_all_rows_sql('SELECT dbms_lob.substr(t1.nombre,4000,1) as nombre
-						FROM tagente_modulo t1, tagente t2
-						WHERE t1.id_agente = t2.id_agente AND t2.id_grupo in (' . $avariableGroupsIds . ')
-						GROUP BY dbms_lob.substr(t1.nombre,4000,1) ORDER BY dbms_lob.substr(t1.nombre,4000,1) ASC');
+						FROM tagente_modulo t1, tagente t2, tagente_estado t3
+						WHERE t1.id_agente = t2.id_agente AND t2.id_grupo in (' . $avariableGroupsIds . ') AND t1.id_agente_modulo = t3.id_agente_modulo
+						AND t3.utimestamp !=0 GROUP BY dbms_lob.substr(t1.nombre,4000,1) ORDER BY dbms_lob.substr(t1.nombre,4000,1) ASC');
 					break;
 			}		
 			break;

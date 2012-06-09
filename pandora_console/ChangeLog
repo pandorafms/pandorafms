@@ -1,3 +1,8 @@
+2012-06-09  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_config.php,
+	godmode/setup/setup.php: Fixed problem removing API password from setup.
+
 2012-06-08 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/tree.php: Improved performance of

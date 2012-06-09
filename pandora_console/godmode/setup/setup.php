@@ -113,7 +113,7 @@ else {
 $table->data[15][1] = html_print_textarea('list_ACL_IPs_for_API', 2, 25, $list_ACL_IPs_for_API, 'style="height: 50px; width: 300px"', true);
 
 $table->data[16][0] = __('API password') . 
-	ui_print_help_tip (__("Please be careful if you put a password put https access."), true);
+ui_print_help_tip (__("Please be careful if you set a password, you shold use https access."), true);
 $table->data[16][1] = html_print_input_text('api_password', $config['api_password'], '', 25, 255, true);
 
 $table->data[17][0] = __('Enable GIS features in Pandora Console');

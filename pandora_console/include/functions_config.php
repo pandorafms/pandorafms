@@ -238,7 +238,7 @@ function config_update_config () {
 	config_update_value ('sound_critical', get_parameter('sound_critical', $config['sound_critical']));
 	config_update_value ('sound_warning', get_parameter('sound_warning', $config['sound_warning']));
 	
-	config_update_value ('api_password', get_parameter('api_password', $config['api_password']));
+	config_update_value ('api_password', get_parameter('api_password', ""));
 	
 	config_update_value ('collection_max_size', get_parameter('collection_max_size', $config['collection_max_size']));
 

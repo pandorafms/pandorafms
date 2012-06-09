@@ -189,14 +189,14 @@ function config_update_config () {
 	
 	config_update_value ('integria_enabled', get_parameter ('integria_enabled', $config['integria_enabled']));
 	config_update_value ('integria_inventory', get_parameter ('integria_inventory', $config['integria_inventory']));
-	config_update_value ('integria_api_password', get_parameter ('integria_api_password', $config['integria_api_password']));
+	config_update_value ('integria_api_password', get_parameter ('integria_api_password', ""));
 	config_update_value ('integria_url', get_parameter ('integria_url', $config['integria_url']));
 	
 	config_update_value ('sound_alert', get_parameter('sound_alert', $config['sound_alert']));
 	config_update_value ('sound_critical', get_parameter('sound_critical', $config['sound_critical']));
 	config_update_value ('sound_warning', get_parameter('sound_warning', $config['sound_warning']));
 	
-	config_update_value ('api_password', get_parameter('api_password', $config['api_password']));
+	config_update_value ('api_password', get_parameter('api_password', ""));
 	
 	config_update_value ('collection_max_size', get_parameter('collection_max_size', $config['collection_max_size']));
 

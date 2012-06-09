@@ -1,3 +1,8 @@
+2012-06-09  Sancho Lerena <slerena@artica.es>
+
+	* functions_config.php: Fixed API password problem when
+	you try to set it blank.
+
 2012-06-08 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/tree.php: Improved performance of

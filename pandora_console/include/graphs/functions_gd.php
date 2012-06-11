@@ -25,18 +25,18 @@ else if(file_exists('../functions.php')) {
 }
 
 $types = array('histogram', 'progressbar');
-	
+
 $id_graph = get_parameter('id_graph', false);
 $graph_type = get_parameter('graph_type', '');
 
 if($id_graph && in_array($graph_type, $types)) {
-
+	
 	if (!$id_graph) {
 		exit;
 	}
-
+	
 	$graph = unserialize_in_temp($id_graph);
-
+	
 	if (!isset($graph)) {
 		exit;
 	}

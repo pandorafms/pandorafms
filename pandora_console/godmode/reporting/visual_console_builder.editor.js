@@ -115,7 +115,7 @@ function updateAction() {
 	
 	values = readFields();
 	
-	// TODO VALIDATE DATA	
+	// TODO VALIDATE DATA
 	switch (selectedItem) {
 		case 'background':
 			if(values['width'] == 0 && values['height'] == 0) {
@@ -558,13 +558,12 @@ function setAspectRatioBackground(side) {
 		data: "page=godmode/reporting/visual_console_builder.editor&get_original_size_background=1&background=" + $("#background_img").attr('src'),
 		async: false,
 		dataType: "json",
-		success: function(data){
+		success: function(data) {
 			old_width = parseInt($("#background").css('width').replace('px', ''));
 			old_height = parseInt($("#background").css('height').replace('px', ''));
 			
 			img_width = data[0];
 			img_height = data[1];
-			
 			
 			if (side == 'width') {
 				ratio = old_width / img_width;
@@ -582,8 +581,6 @@ function setAspectRatioBackground(side) {
 			var values = {};
 			values['width'] = width;
 			values['height'] = height;
-			
-			
 			
 			updateDB('background', 0, values);
 		}
@@ -763,6 +760,9 @@ function getModuleValue(id_data, process_simple_value) {
 }
 
 function getPercentileBar(id_data, values) {
+	max_percentile = values['max_percentile'];
+	width_percentile = values['width_percentile'];
+	
 	var parameter = Array();
 	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -778,11 +778,14 @@ function getPercentileBar(id_data, values) {
 		success: function (data)
 		{
 			module_value = data['value'];
-			max_percentile = data['max_percentile'];
-			width_percentile = data['width_percentile'];
-			unit_text = false
-			if (data['unit_text'] != false)
+			//max_percentile = data['max_percentile'];
+			//width_percentile = data['width_percentile'];
+			unit_text = false;
+			
+			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean') {
 				unit_text = data['unit_text'];
+			}
+			
 			colorRGB = data['colorRGB'];
 		}
 	});
@@ -810,7 +813,7 @@ function getPercentileBar(id_data, values) {
 	else
 		var percentile = 100;
 	
-	if (unit_text == false) {
+	if (unit_text == false && typeof(unit_text) == 'boolean') {
 		value_text = percentile + "%";
 	}
 	else {
@@ -825,6 +828,9 @@ function getPercentileBar(id_data, values) {
 }
 
 function getPercentileBubble(id_data, values) {
+	max_percentile = values['max_percentile'];
+	width_percentile = values['width_percentile'];
+	
 	var parameter = Array();
 	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -840,10 +846,10 @@ function getPercentileBubble(id_data, values) {
 		success: function (data)
 		{
 			module_value = data['value'];
-			max_percentile = data['max_percentile'];
-			width_percentile = data['width_percentile'];
+			//max_percentile = data['max_percentile'];
+			//width_percentile = data['width_percentile'];
 			unit_text = false
-			if (data['unit_text'] != false)
+			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean')
 				unit_text = data['unit_text'];
 			colorRGB = data['colorRGB'];
 		}
@@ -872,7 +878,7 @@ function getPercentileBubble(id_data, values) {
 	else
 		var percentile = 100;
 	
-	if (unit_text == false) {
+	if (unit_text == false && typeof(unit_text) == 'boolean') {
 		value_text = percentile + "%";
 	}
 	else {
@@ -944,13 +950,13 @@ function createItem(type, values, id_data) {
 				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
-
+			
 			var element_status= null;
 			var parameter = Array();
 			parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 			parameter.push ({name: "get_element_status", value: "1"});
 			parameter.push ({name: "id_element", value: id_data});
-
+			
 			jQuery.ajax ({
 				type: 'POST',
 				url: action="ajax.php",
@@ -1268,13 +1274,9 @@ function deleteDB(idElement) {
 function activeToolboxButton(id, active) {
 	if (active) {
 		$("input." + id + "[name=button_toolbox2]").removeAttr('disabled');
-//		$("#" + id).attr('class', 'button_toolbox');
-//		$(".label", $("#" + id)).css('color','#000000');
 	}
 	else {
 		$("input." + id + "[name=button_toolbox2]").attr('disabled', 'disabled');
-//		$("#" + id).attr('class', 'button_toolbox disabled');
-//		$(".label", $("#" + id)).css('color','#aaaaaa');
 	}
 }
 
@@ -1416,8 +1418,7 @@ function eventsItems() {
 		event.stopPropagation();
 		
 		var values = {};
-		
-		values['mov_left'] = ui.position.left; 
+		values['mov_left'] = ui.position.left;
 		values['mov_top'] = ui.position.top; 
 		
 		updateDB(selectedItem, idItem, values, 'dragstop');

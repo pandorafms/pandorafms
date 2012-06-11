@@ -48,17 +48,17 @@ include_once('functions_utils.php');
 */
 
 if (isset($_GET['homeurl'])) {
-	$homeurl = $_GET['homeurl']; 	
+	$homeurl = $_GET['homeurl'];
 }
 else $homeurl = '';
 
 if (isset($_GET['ttl'])) {
-	$ttl = $_GET['ttl']; 	
+	$ttl = $_GET['ttl'];
 }
 else $ttl_param = 1;
 
 if (isset($_GET['graph_type'])) {
-	$graph_type = $_GET['graph_type']; 	
+	$graph_type = $_GET['graph_type'];
 }
 else $graph_type = '';
 
@@ -148,16 +148,16 @@ function histogram($chart_data, $width, $height, $font, $max, $title, $mode, $tt
 	$graph['max'] = $max;
 	$graph['title'] = $title;
 	$graph['mode'] = $mode;
-
+	
 	$id_graph = serialize_in_temp($graph, null, $ttl);
-		
+	
 	return "<img src='include/graphs/functions_gd.php?graph_type=histogram&ttl=".$ttl."&id_graph=".$id_graph."'>";
 }
 
 function progressbar($progress, $width, $height, $title, $font, $mode = 1, 
 					$out_of_lim_str = false, $out_of_lim_image = false, $ttl = 1) {
 	$graph = array();
-
+	
 	$graph['progress'] = $progress;
 	$graph['width'] = $width;
 	$graph['height'] = $height;
@@ -166,9 +166,9 @@ function progressbar($progress, $width, $height, $title, $font, $mode = 1,
 	$graph['title'] = $title;
 	$graph['font'] = $font;
 	$graph['mode'] = $mode;
-
+	
 	$id_graph = serialize_in_temp($graph, null, $ttl);
-		
+	
 	return "<img src='include/graphs/functions_gd.php?graph_type=progressbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
 }
 
@@ -183,16 +183,16 @@ function slicesbar_graph($chart_data, $period, $width, $height, $colors, $font,
 	$graph['font'] = $font;
 	$graph['round_corner'] = $round_corner;
 	$graph['color'] = $colors;
-
+	
 	$id_graph = serialize_in_temp($graph, null, $ttl);
-		
+	
 	return "<img src='".$home_url."include/graphs/functions_pchart.php?graph_type=slicebar&ttl=".$ttl."&id_graph=".$id_graph."'>";
 }
 
 function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),
 	$legend = array(), $xaxisname = "", $yaxisname = "", $homedir="",
 	$water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1, $reduce_data_columns = false) {
-		
+	
 	if($flash_chart) {
 		// Url encode the legend to avoid eliminate weird symbols like %, &...
 		foreach($legend as $i => $v) {
@@ -213,9 +213,9 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
 		$graph['force_steps'] = $force_steps;
-
+		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
-	
+		
 		return "<img src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=vbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
 	}
 }
@@ -232,7 +232,7 @@ function threshold_graph($flash_chart, $chart_data, $width, $height, $ttl = 1) {
 function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homeurl="",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1) {
-
+	
 	// ATTENTION: The min size is 130x150 
 	// It's not the same minsize for all graphs, but we are choosed a prudent minsize for all
 	if($height <= 130) {
@@ -241,7 +241,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	if($width < 150) {
 		$width = 150;
 	}
-
+	
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -268,17 +268,17 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$graph['water_mark'] = $water_mark;
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
-				
+		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
-
+		
 		return "<img src='".$homeurl."include/graphs/functions_pchart.php?graph_type=area&ttl=".$ttl."&id_graph=" . $id_graph . "'>";
-	}	
+	}
 }
 
 function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
-
+	
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -309,13 +309,13 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?graph_type=stacked_area&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
-	}	
+	}
 }
 
 function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "", $yaxisname = "",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $homeurl = '') {
-		
+	
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
@@ -330,7 +330,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 		}
 		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index);
 	}
-	else {		
+	else {
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;
@@ -380,7 +380,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
-	}	
+	}
 }
 
 function kiviat_graph($graph_type, $flash_chart, $chart_data, $width, $height, $no_data_image, $ttl = 1, $homedir="") {
@@ -392,9 +392,9 @@ function kiviat_graph($graph_type, $flash_chart, $chart_data, $width, $height, $
 	$graph['data'] = $chart_data;
 	$graph['width'] = $width;
 	$graph['height'] = $height;
-		
+	
 	$id_graph = serialize_in_temp($graph, null, $ttl);
-		
+	
 	return "<img src='".$homedir."include/graphs/functions_pchart.php?graph_type=".$graph_type."&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
 }
 
@@ -436,9 +436,9 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
 		$graph['force_steps'] = $force_steps;
-
+		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
-	
+		
 		return "<img src='".$homedir."include/graphs/functions_pchart.php?graph_type=hbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
 	}
 }
@@ -459,7 +459,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '', $font_size = '', $ttl = 1) {
 	// This library allows only 8 colors
 	$max_values = 8;
-
+	
 	if(count($chart_data) > $max_values) {
 		$chart_data_trunc = array();
 		$n = 1;
@@ -483,7 +483,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 			case "2d":
 					return fs_2d_pie_chart (array_values($chart_data), array_keys($chart_data), $width, $height);
 				break;
-			case "3d":				
+			case "3d":
 					return fs_3d_pie_chart(array_values($chart_data), array_keys($chart_data), $width, $height);
 				break;
 		}
@@ -496,14 +496,14 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 		$graph['water_mark'] = $water_mark;
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
-
+		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		switch($graph_type) {
 			case "2d":
 					return "<img src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie2d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
-			case "3d":				
+			case "3d":
 					return "<img src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
 		}

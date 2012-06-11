@@ -273,7 +273,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<tr id="label_color_row" class="static_graph percentile_bar percentile_item module_graph simple_value label datos">
 			<td><?php echo __('Label color');?></td>
 			<td><?php html_print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', false);?></td>
-		</tr>				
+		</tr>
 	</tbody>
 </table>
 <?php

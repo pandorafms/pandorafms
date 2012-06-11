@@ -118,30 +118,25 @@ function visual_map_print_item($layoutData) {
 	switch ($status) {
 		case 1:
 			//Critical (BAD)
-			//$imgStatus = "_bad.png";
 			$colorStatus = "#ff0000";
 			break;
 		case 4:
 			//Critical (ALERT)
-			//$imgStatus = "4".$img."_bad.png";
 			$colorStatus = "#ff8800";
 			break;
 		case 0:
 			//Normal (OK)
-			//$imgStatus .= "_ok.png";
 			$colorStatus = "#00ff00";
 			break;
 		case 2:
 			//Warning
-			//$imgStatus .= "_warning.png";
 			$colorStatus = "#ffff00";
 			break;
 		case 3:
-			//Unknown
 		default:
-			//$imgStatus .= ".png";
-			$colorStatus = "#5A5AFF";
+			//Unknown
 			// Default is Blue (Other)
+			$colorStatus = "#5A5AFF";
 			break;
 	}
 	
@@ -187,11 +182,9 @@ function visual_map_print_item($layoutData) {
 			}
 			
 			if ( $max_percentile > 0)
-				$percentile = $module_value / $max_percentile * 100;
+				$percentile = format_numeric($module_value / $max_percentile * 100, 0);
 			else
 				$percentile = 100;
-			
-			$percentile = round($percentile);
 			
 			echo '<div id="' . $id . '" class="item percentile_item" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text . '<br />';

@@ -529,8 +529,6 @@ if (is_ajax ())
 			}
 			// This line checks for initializated modules or (non-initialized) asyncronous modules	
 			$sql .= ' AND disabled = 0 AND (utimestamp > 0 OR id_tipo_modulo IN (21,22,23))';
-			echo "DEBUG => $sql<br>";
-			
 			$countRows = db_get_num_rows($sql);
 			
 			if ($countRows === 0) {

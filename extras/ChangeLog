@@ -1,3 +1,8 @@
+2012-06-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_update_version.sh: Merged from trunk. Update version string in
+	  server configuration file.
+
 2012-05-05  Sancho Lerena <slerena@artica.es>
 
 	* anytermd: Added anyterm to extras. Included modifications on original

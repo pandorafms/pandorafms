@@ -1,5 +1,11 @@
 2012-06-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_ui.php
+	 include/functions.php: Added pass of check_referer by url to
+	 solve problems with autorefresh functionality.
+
+2012-06-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_reporting.php
 	 operation/reporting/reporting_xml.php: Fixed XML items exportation
 	 and item editor for alert agent and alert event.

@@ -32,6 +32,9 @@ function check_refererer() {
 	if (isset($_SERVER['HTTP_REFERER'])) {
 		$referer = $_SERVER['HTTP_REFERER'];
 	}
+	else if (isset($_GET['HTTP_REFERER'])) {
+		$referer = $_GET['HTTP_REFERER'];
+	}
 	
 	$url = 'http://';
 	if ($config['https']) {

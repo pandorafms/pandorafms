@@ -1,3 +1,7 @@
+2012-06-11  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/users/configure_user.php: Removed 'add extra policies'.
+
 2012-06-11 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_modules.php,

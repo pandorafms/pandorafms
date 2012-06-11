@@ -1,3 +1,11 @@
+2012-06-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_modules.php,
+	include/functions_agents.php,
+	operation/tree.php: Improved tree view for module groups.
+
+	MERGED FROM 4.0.2
+
 2012-06-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map.php: cleaned source code style.

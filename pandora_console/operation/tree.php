@@ -32,6 +32,7 @@ if (is_ajax ())
 		require_once ($config["homedir"] . '/include/functions_graph.php');
 		include_graphs_dependencies();
 		require_once ($config['homedir'] . '/include/functions_groups.php');
+		require_once ($config['homedir'] . '/include/functions_gis.php');
 
 		$agent = db_get_row ("tagente", "id_agente", $id_agente);
 

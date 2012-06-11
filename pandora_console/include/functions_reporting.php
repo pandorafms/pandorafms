@@ -1233,11 +1233,11 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 	$table->head[3] = __('Fired');
 	
 	
-	$alerts = db_get_all_rows_sql('SELECT *
+	$alerts = db_get_all_rows_sql('SELECT *, t1.id as id_alert_template_module
 		FROM talert_template_modules AS t1
-			INNER JOIN talert_templates AS t2 ON t1.id = t2.id
+			INNER JOIN talert_templates AS t2 ON t1.id_alert_template = t2.id
 		WHERE id_agent_module = ' . $id_agent_module);
-	
+
 	if ($alerts === false) {
 		$alerts = array();
 	}
@@ -1250,7 +1250,7 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 			FROM talert_actions 
 			WHERE id IN (SELECT id_alert_action 
 				FROM talert_template_module_actions 
-				WHERE id_alert_template_module = ' . $alert['id'] . ');');
+				WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ');');
 		$data[2] = '<ul class="action_list">';
 		if ($actions === false) {
 			$actions = array();
@@ -1261,7 +1261,7 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 		$data[2] .= '</ul>';
 		
 		$data[3] = '<ul style="list-style-type: disc; margin-left: 10px;">';
-		$firedTimes = get_module_alert_fired($id_agent_module, $alert['id'], (int) $period, (int) $date);
+		$firedTimes = get_module_alert_fired($id_agent_module, $alert['id_alert_template_module'], (int) $period, (int) $date);
 		if ($firedTimes === false) {
 			$firedTimes = array();
 		}

@@ -209,7 +209,7 @@ foreach ($contents as $content) {
 				230, '', null, false, true, false, ($datetime + $content['period']), '', true, 0, true, true);
 				
 			preg_match("/src='(.*)'/", $img, $matches);
-			$url = $matches[1];
+			$url = "<![CDATA[".$matches[1]."]]>";
 			
 			$data["objdata"]["img"] = $url; 
 			break;
@@ -232,7 +232,7 @@ foreach ($contents as $content) {
 				array_push ($weights, $content2["weight"]);
 			}
 			
-			$img = $data[0] = 	graphic_combined_module(
+			$img = graphic_combined_module(
 				$modules,
 				$weights,
 				$content['period'],
@@ -246,7 +246,7 @@ foreach ($contents as $content) {
 				$datetime);
 			
 			preg_match("/src='(.*)'/", $img, $matches);
-			$url = $matches[1];
+			$url = "<![CDATA[".$matches[1]."]]>";
 				
 			$data["objdata"]["img"] = $url;
 			

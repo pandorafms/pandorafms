@@ -1,3 +1,9 @@
+2012-06-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_reporting.php
+	 operation/reporting/reporting_xml.php: Fixed XML items exportation
+	 and item editor for alert agent and alert event.
+
 2012-06-09  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_config.php,

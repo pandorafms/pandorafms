@@ -1,10 +1,9 @@
-2012-06-06 Santiago Munín <burning1@gmail.com>
+2012-06-11 Santiago Munín <burning1@gmail.com>
 
-	* src/pandroid_event_viewer/pandorafms/CreateIncidentActivity.java: All api operations are now asynchronous.
-	* res/layout/create_incident.xml: Progress circle next to groups spinner.
-	* res/values/strings.xml: New entries.
-	* res/menu/options_menu_list_events.xml, res/menu/options_menu.xml: New incident icon.
-	* res/drawable-ldpi/incident.png: Added new icon
+	* src/pandroid_event_viewer/pandorafms/Options.java,
+	src/pandroid_event_viewer/pandorafms/Main.java,
+	res/layout/main.xml,
+	res/layout/options.xml: Changed advanced filter from Options to Filter.
 
 2012-06-06 Santiago Munín <burning1@gmail.com>
 

@@ -35,6 +35,7 @@ import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,6 +45,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -103,7 +107,7 @@ public class Main extends Activity {
 			new GetTagsAsyncTask().execute();
 		}
 
-		SharedPreferences preferences = getSharedPreferences(
+		final SharedPreferences preferences = getSharedPreferences(
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
 
@@ -153,28 +157,41 @@ public class Main extends Activity {
 						save_filter_watcher();
 					}
 				});
+		LinearLayout advancedOptions = (LinearLayout) findViewById(R.id.show_hide_layout);
+		// Show advanced options?
+		if (preferences.getBoolean("show_advanced", false)) {
+			advancedOptions.setVisibility(View.VISIBLE);
+		} else {
+			advancedOptions.setVisibility(View.INVISIBLE);
+			setAdvancedOptionsDefaults();
+			clearAdvancedOptions();
+		}
+		CheckBox cb = (CheckBox) findViewById(R.id.checkBox_advanced_options);
+		cb.setChecked(preferences.getBoolean("show_advanced", false));
+		cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				LinearLayout advancedOptions = (LinearLayout) findViewById(R.id.show_hide_layout);
+				Editor preferencesEditor = preferences.edit();
+				if (isChecked) {
+					advancedOptions.setVisibility(View.VISIBLE);
+					preferencesEditor.putBoolean("show_advanced", true);
+				} else {
+					advancedOptions.setVisibility(View.INVISIBLE);
+					preferencesEditor.putBoolean("show_advanced", false);
+					setAdvancedOptionsDefaults();
+					clearAdvancedOptions();
+				}
+				preferencesEditor.commit();
+			}
+		});
 
 		if (this.object.show_popup_info) {
 			this.object.show_popup_info = false;
 			i = new Intent(this, About.class);
 			startActivity(i);
-		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		SharedPreferences preferences = getSharedPreferences(
-				this.getString(R.string.const_string_preferences),
-				Activity.MODE_PRIVATE);
-		// Show advanced options?
-		if (preferences.getBoolean("show_advanced", false)) {
-			((LinearLayout) findViewById(R.id.show_hide_layout))
-					.setVisibility(View.VISIBLE);
-		} else {
-			((LinearLayout) findViewById(R.id.show_hide_layout))
-					.setVisibility(View.INVISIBLE);
-			clearAdvancedOptions();
 		}
 	}
 
@@ -552,4 +569,22 @@ public class Main extends Activity {
 		text.setText("");
 	}
 
+	/**
+	 * Puts advanced options to default values.
+	 */
+	private void setAdvancedOptionsDefaults() {
+		SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editorPreferences = preferences.edit();
+
+		editorPreferences.putString("filterAgentName", "");
+		editorPreferences.putInt("filterIDGroup", 0);
+		editorPreferences.putInt("filterSeverity", -1);
+		editorPreferences.putString("filterEventSearch", "");
+		editorPreferences.putInt("filterLastTime", 6);
+		// There were changes
+		editorPreferences.putBoolean("filterChanges", true);
+		editorPreferences.commit();
+	}
 }

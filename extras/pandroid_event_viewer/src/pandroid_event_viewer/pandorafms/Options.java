@@ -257,22 +257,28 @@ public class Options extends Activity {
 	 * @author Santiago Munín González
 	 * 
 	 */
-	private class CheckConnectionAsyncTask extends AsyncTask<Void, Void, Void> {
+	private class CheckConnectionAsyncTask extends
+			AsyncTask<Void, Void, String> {
 
 		private boolean connectionOk = false;
 
 		@Override
-		protected Void doInBackground(Void... arg0) {
-			// TODO implement check
-			this.connectionOk = false;
-			return null;
+		protected String doInBackground(Void... arg0) {
+			String version = API.getVersion(getApplicationContext());
+			if (version.length() > 0) {
+				this.connectionOk = true;
+			} else {
+				this.connectionOk = false;
+			}
+			return version;
 		}
 
 		/**
 		 * Choose an image (ok or wrong)
 		 */
-		protected void onPostExecute(Void v) {
+		protected void onPostExecute(String v) {
 			if (this.connectionOk) {
+				connectionStatus.setText(v);
 				connectionStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0,
 						0, R.drawable.ok);
 			} else {

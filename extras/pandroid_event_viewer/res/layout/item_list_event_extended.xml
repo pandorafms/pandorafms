@@ -131,7 +131,9 @@
             android:textColor="#000" />
     </TableRow>
 
-    <TableRow android:gravity="right" >
+    <TableRow
+        android:layout_marginTop="4dp"
+        android:gravity="right" >
 
         <Button
             android:id="@+id/validate_button_extended"
@@ -145,6 +147,12 @@
             android:textColor="#000"
             android:textStyle="bold"
             android:visibility="gone" />
+
+        <Button
+            android:id="@+id/create_incident_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_incident" />
     </TableRow>
 
 </TableLayout>

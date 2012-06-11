@@ -82,6 +82,7 @@
         <item>2 weeks</item>
         <item>1 month</item>
     </string-array>
+    <!-- 
     <string-array name="incident_priority">
         <item>Informative</item>
         <item>Low</item>
@@ -108,5 +109,6 @@
         <item>Expired incidents</item>
         <item>Closed incidents</item>
     </string-array>
+     -->
 
 </resources>

@@ -610,11 +610,13 @@ function visual_map_get_status_element($layoutData) {
 	if ($layoutData['id_layout_linked'] != 0) {
 		$status = visual_map_get_layout_status ($layoutData['id_layout_linked']);
 	}
-	else if ($layoutData["type"] == 0) { //Single object
+	else if ($layoutData["type"] == 0) {
+		//Single object
+		
 		//Status for a simple module
 		if ($layoutData['id_agente_modulo'] != 0) {
 			$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
-
+		
 		//Status for a whole agent, if agente_modulo was == 0
 		}
 		else if ($layoutData['id_agent'] != 0) {

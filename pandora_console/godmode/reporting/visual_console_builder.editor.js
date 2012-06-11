@@ -150,46 +150,6 @@ function updateAction() {
 			
 			$("#" + idItem).css('color', values['label_color']);
 			
-			switch ($('#hidden-status_' + idItem).val()) {
-				case '1':
-					//Critical (BAD)
-					suffix = "_bad.png";
-					break;
-				case '4':
-					//Critical (ALERT)
-					suffix = "_bad.png";
-					break;
-				case '0':
-					//Normal (OK)
-					suffix = "_ok.png";
-					break;
-				case '2':
-					//Warning
-					suffix = "_warning.png";
-					break;
-				case '3':
-					//Unknown
-				default:
-					suffix = ".png";
-					// Default is Grey (Other)
-			}
-			
-			var params = [];
-			params.push("get_image_path=1");
-			params.push("img_src=images/console/icons/" + values['image'] + suffix);
-			params.push("page=include/ajax/skins.ajax");
-			params.push("only_src=1");
-			jQuery.ajax ({
-				data: params.join ("&"),
-				type: 'POST',
-				url: action="ajax.php",
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					$("#image_" + idItem).attr('src', data);
-				}
-			});	
-			
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -1177,6 +1137,64 @@ function updateDB(type, idElement , values, event) {
 					case 'module_graph':
 						$("#image_" + idElement).attr("src", getModuleGraph(idElement));
 					case 'static_graph':
+						if (event != 'dragstop') {
+							var element_status= null;
+							var parameter = Array();
+							parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+							parameter.push ({name: "get_element_status", value: "1"});
+							parameter.push ({name: "id_element", value: idElement});
+							
+							jQuery.ajax ({
+								type: 'POST',
+								url: action="ajax.php",
+								data: parameter,
+								async: false,
+								timeout: 10000,
+								success: function (data) {
+									$('#hidden-status_' + idElement).val(data);
+								}
+							});
+							
+							switch ($('#hidden-status_' + idElement).val()) {
+								case '1':
+									//Critical (BAD)
+									suffix = "_bad.png";
+									break;
+								case '4':
+									//Critical (ALERT)
+									suffix = "_bad.png";
+									break;
+								case '0':
+									//Normal (OK)
+									suffix = "_ok.png";
+									break;
+								case '2':
+									//Warning
+									suffix = "_warning.png";
+									break;
+								case '3':
+									//Unknown
+								default:
+									suffix = ".png";
+									// Default is Grey (Other)
+							}
+							
+							var params = [];
+							params.push("get_image_path=1");
+							params.push("img_src=images/console/icons/" + values['image'] + suffix);
+							params.push("page=include/ajax/skins.ajax");
+							params.push("only_src=1");
+							jQuery.ajax ({
+								data: params.join ("&"),
+								type: 'POST',
+								url: action="ajax.php",
+								async: false,
+								timeout: 10000,
+								success: function (data) {
+									$("#image_" + idElement).attr('src', data);
+								}
+							});
+						}
 					case 'percentile_item':
 					case 'percentile_bar':
 					case 'simple_value':

@@ -469,18 +469,20 @@ switch ($action) {
 }
 
 /* visual map element status check  */
-if ($get_element_status){
-
-	$res = visual_map_get_status_element($id_element);
-
-	echo $res;	
+if ($get_element_status) {
+	$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+	
+	$res = visual_map_get_status_element($layoutData);
+	
+	echo $res;
+	
 	return;
 }
 
 if ($get_image_path_status){
 	$img_src = get_parameter("img_src");
 	$only_src = get_parameter("only_src", 0);
-
+	
 	$result = array();
 	
 	$result['bad'] = html_print_image($img_src . '_bad.png', true, '', $only_src);
@@ -488,7 +490,7 @@ if ($get_image_path_status){
 	$result['warning'] = html_print_image($img_src . '_warning.png', true, '', $only_src);
 	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
 	$result['normal'] = html_print_image($img_src . '.png', true, '', $only_src);
-
+	
 	echo json_encode($result);
 }
 

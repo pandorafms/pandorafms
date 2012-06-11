@@ -1,3 +1,14 @@
+2012-06-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_visual_map.php: cleaned source code style.
+	
+	* include/ajax/visual_console_builder.ajax.php,
+	godmode/reporting/visual_console_builder.editor.js: fixed the set
+	status to items when change somethings that module or method to get
+	status that agent to module status item.
+	
+	MERGED FROM 4.0.2
+
 2012-06-11  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/users/configure_user.php

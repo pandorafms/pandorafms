@@ -149,10 +149,10 @@ function visual_map_print_item($layoutData) {
 			$colorStatus = "#ffff00";
 			break;
 		case 3:
-			//Unknown
 		default:
-			$colorStatus = "#5A5AFF";
+			//Unknown
 			// Default is Blue (Other)
+			$colorStatus = "#5A5AFF";
 			break;
 	}
 	
@@ -198,11 +198,9 @@ function visual_map_print_item($layoutData) {
 			}
 			
 			if ( $max_percentile > 0)
-				$percentile = $module_value / $max_percentile * 100;
+				$percentile = format_numeric($module_value / $max_percentile * 100, 0);
 			else
 				$percentile = 100;
-			
-			$percentile = round($percentile);
 			
 			echo '<div id="' . $id . '" class="item percentile_item" style="color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			echo $text . '<br />';

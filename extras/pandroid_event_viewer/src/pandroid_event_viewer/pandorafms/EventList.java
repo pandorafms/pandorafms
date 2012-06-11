@@ -177,9 +177,6 @@ public class EventList extends ListActivity {
 			i = new Intent(this, About.class);
 			startActivity(i);
 			break;
-		case R.id.incidents_button_menu_options:
-			startActivity(new Intent(this, CreateIncidentActivity.class));
-			break;
 		}
 
 		return true;
@@ -349,7 +346,7 @@ public class EventList extends ListActivity {
 					}
 				}
 			} else {
-				EventListItem item = this.object.eventList.get(position);
+				final EventListItem item = this.object.eventList.get(position);
 
 				switch (item.criticity) {
 
@@ -514,10 +511,27 @@ public class EventList extends ListActivity {
 						OnClickListenerButtonValidate clickListener = new OnClickListenerButtonValidate();
 						clickListener.id_event = item.id_event;
 						button.setOnClickListener(clickListener);
-
 						text = (TextView) viewEventExtended
 								.findViewById(R.id.validate_event_label);
 						text.setVisibility(TextView.GONE);
+						((Button) viewEventExtended
+								.findViewById(R.id.create_incident_button))
+								.setOnClickListener(new OnClickListener() {
+
+									@Override
+									public void onClick(View v) {
+										// TODO
+										Intent intent = new Intent(
+												getBaseContext(),
+												CreateIncidentActivity.class);
+										intent.putExtra("group",
+												item.group_name);
+										intent.putExtra("title", item.event);
+										intent.putExtra("description",
+												item.description_event);
+										startActivity(intent);
+									}
+								});
 					} else {
 						button.setVisibility(Button.GONE);
 						text = (TextView) viewEventExtended

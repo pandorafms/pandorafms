@@ -115,5 +115,7 @@
     <string name="incident_created">Incident created</string>
     <string name="title_empty">Sorry, you must provide a title</string>
     <string name="creating_incident">Creating new incident…</string>
+    <string name="create_incident">Create incident</string>
+    <string name="create_incident_group_error">There was an error creating the incident: unrecognized event group. Please, contact administrator.</string>
 
 </resources>

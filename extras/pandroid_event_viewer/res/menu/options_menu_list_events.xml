@@ -28,9 +28,5 @@
         android:id="@+id/about_button_menu_options"
         android:icon="@drawable/about"
         android:title="@string/about_label_str"/>
-    <item
-        android:id="@+id/incidents_button_menu_options"
-        android:icon="@drawable/incident"
-        android:title="@string/incidents_label_str"/>
 
 </menu>

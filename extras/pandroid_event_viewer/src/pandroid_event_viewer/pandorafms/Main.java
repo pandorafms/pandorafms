@@ -387,10 +387,6 @@ public class Main extends Activity {
 			i = new Intent(this, About.class);
 			startActivity(i);
 			break;
-
-		case R.id.incidents_button_menu_options:
-			startActivity(new Intent(this, CreateIncidentActivity.class));
-			break;
 		}
 		return true;
 	}

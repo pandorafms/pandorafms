@@ -1,9 +1,7 @@
 package pandroid_event_viewer.pandorafms;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.NameValuePair;
@@ -16,13 +14,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 /**
@@ -33,16 +26,22 @@ import android.widget.Toast;
  */
 public class CreateIncidentActivity extends Activity {
 	private static String TAG = "CreateIncidentActivity";
-	EditText title, description;
-	Spinner source, priority, group, status;
-	int priority_code, status_code;
-	Map<Integer, String> groups;
-	ProgressBar groupLoadingStatus;
-	ProgressDialog dialog;
+	private static int DEFAULT_STATUS_CODE = 0;
+	private static int DEFAULT_PRIORITY_CODE = 0;
+	private static String DEFAULT_SOURCE = "Pandora FMS Event";
+	private EditText title, description;
+	private ProgressDialog dialog;
+	private String eventTitle, eventDescription, eventGroup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) {
+			eventTitle = extras.getString("title");
+			eventDescription = extras.getString("description");
+			eventGroup = extras.getString("group");
+		}
 		setContentView(R.layout.create_incident);
 		initializeViews();
 		resetViews();
@@ -54,41 +53,7 @@ public class CreateIncidentActivity extends Activity {
 	private void initializeViews() {
 		title = (EditText) findViewById(R.id.incident_title);
 		description = (EditText) findViewById(R.id.incident_description);
-		priority = (Spinner) findViewById(R.id.incident_priority);
-		group = (Spinner) findViewById(R.id.incident_group);
-		source = (Spinner) findViewById(R.id.incident_source);
-		status = (Spinner) findViewById(R.id.incident_status);
-		groupLoadingStatus = (ProgressBar) findViewById(R.id.loading_group);
-		priority.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				priority_code = arg0.getSelectedItemPosition();
-				if (priority_code == 5) {
-					priority_code = 10;
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
-		});
-		status.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				status_code = arg0.getSelectedItemPosition();
-				if (status_code == 4) {
-					status_code = 13;
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
-		});
 		((Button) findViewById(R.id.incident_create_button))
 				.setOnClickListener(new OnClickListener() {
 
@@ -115,13 +80,8 @@ public class CreateIncidentActivity extends Activity {
 	 */
 	private void resetViews() {
 
-		title.setText("");
-		description.setText("");
-		source.setSelection(0);
-		priority.setSelection(0);
-		group.setSelection(0);
-		status.setSelection(0);
-		new GetGroupsAsyncTask().execute((Void) null);
+		title.setText(eventTitle);
+		description.setText(eventDescription);
 	}
 
 	/**
@@ -137,45 +97,27 @@ public class CreateIncidentActivity extends Activity {
 		String incidentParams[] = new String[6];
 		incidentParams[0] = title.getText().toString();
 		incidentParams[1] = description.getText().toString();
-		incidentParams[2] = String.valueOf(source.getSelectedItem().toString());
-		incidentParams[3] = String.valueOf(priority_code);
-		incidentParams[4] = String.valueOf(status_code);
-		incidentParams[5] = String.valueOf(groups.get(group
-				.getSelectedItemPosition()));
+		incidentParams[2] = String.valueOf(DEFAULT_SOURCE);
+		incidentParams[3] = String.valueOf(DEFAULT_PRIORITY_CODE);
+		incidentParams[4] = String.valueOf(DEFAULT_STATUS_CODE);
+		int groupCode = -1;
+		for (Entry<Integer, String> entry : Core.getGroups(
+				getApplicationContext()).entrySet()) {
+			if (entry.getValue().equals(eventGroup)) {
+				groupCode = entry.getKey();
+			}
+		}
+		if (groupCode >= 0) {
+			incidentParams[5] = String.valueOf(groupCode);
+		} else {
+			Toast.makeText(getApplicationContext(),
+					R.string.create_incident_group_error, Toast.LENGTH_SHORT)
+					.show();
+			finish();
+		}
 		parameters.add(new BasicNameValuePair("other", Core
 				.serializeParams2Api(incidentParams)));
 		Core.httpGet(getApplicationContext(), parameters);
-
-	}
-
-	/**
-	 * Async task which get groups.
-	 * 
-	 * @author Santiago Munín González
-	 * 
-	 */
-	private class GetGroupsAsyncTask extends
-			AsyncTask<Void, Void, Map<Integer, String>> {
-
-		@Override
-		protected Map<Integer, String> doInBackground(Void... params) {
-			return Core.getGroups(getApplicationContext());
-		}
-
-		@Override
-		protected void onPostExecute(Map<Integer, String> result) {
-			groups = result;
-			List<String> list = new LinkedList<String>();
-			for (Entry<Integer, String> entry : result.entrySet()) {
-				list.add(entry.getValue());
-			}
-			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-					getApplicationContext(),
-					android.R.layout.simple_spinner_item, list);
-			group.setAdapter(spinnerArrayAdapter);
-			group.setSelection(0);
-			groupLoadingStatus.setVisibility(ProgressBar.GONE);
-		}
 	}
 
 	/**

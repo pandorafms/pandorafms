@@ -32,7 +32,6 @@ if (is_ajax ())
 		require_once ($config["homedir"] . '/include/functions_graph.php');
 		include_graphs_dependencies();
 		require_once ($config['homedir'] . '/include/functions_groups.php');
-		require_once ($config['homedir'] . '/include/functions_gis.php');
 
 		$agent = db_get_row ("tagente", "id_agente", $id_agente);
 
@@ -288,14 +287,16 @@ if (is_ajax ())
 						//example:
 						//			"Load_articapandora_32_pandoraartica_Average"
 						//result -> "Load Average"
-						$name = str_replace(array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_'),array(' ','#'),$id);
-
+						$name = str_replace(array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_','_articapandora_'.ord('/').'_pandoraartica_'),array(' ','#','/'),$id);
+						
+						$name = io_safe_input($name);
+						
 						$sql = sprintf('SELECT *
 							FROM tagente
 							WHERE id_agente IN (
 									SELECT id_agente
 									FROM tagente_modulo
-									WHERE nombre COLLATE utf8_general_ci LIKE \'%s\'
+									WHERE nombre = \'%s\'
 								)
 								AND (%s id_grupo IN (%s))', $name, $extra_sql, $groups_sql);
 						break;
@@ -366,11 +367,26 @@ if (is_ajax ())
 					case 'module':
 						switch ($config["dbtype"]) {
 							case "mysql":
-								$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' nombre COLLATE utf8_general_ci LIKE "' . $name . '"');
+								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
+								$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
+								$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
+								$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
+								$agent_info["monitor_normal"] = agents_monitor_ok ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
+						
+								$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
+						
+								$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
+																				$agent_info["monitor_warning"],
+																				$agent_info["monitor_unknown"]);
+												
+								//Count all modules
+								$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
+						
 								break;
 							case "postgresql":
 							case "oracle":
-								$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' nombre COLLATE utf8_general_ci LIKE \'' . $name . '\'');
+								//TODO REVIEW ORACLE AND POSTGRESQL
+								$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = \'' . $name . '\'');
 								break;
 						}
 						break;
@@ -504,7 +520,7 @@ if (is_ajax ())
 							$sql = 'SELECT * 
 								FROM tagente_modulo AS t1 
 								INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
-								WHERE t1.id_agente = ' . $id . ' AND nombre  COLLATE utf8_general_ciLIKE \'' . io_safe_input($name) . '\'';
+								WHERE t1.id_agente = ' . $id . ' AND nombre COLLATE utf8_general_ci LIKE \'' . io_safe_input($name) . '\'';
 							break;
 					}
 					break;
@@ -821,8 +837,7 @@ function printTree_($type) {
 					$num_unknown = policies_agents_unknown($id);
 					break;
 				case 'module':
-					$id = str_replace(array(' ','#'), array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_'),io_safe_output($item['nombre']));
-					$id = str_replace ("/", "_", $id);
+					$id = str_replace(array(' ','#','/'), array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_', '_articapandora_'.ord('/').'_pandoraartica_'),io_safe_output($item['nombre']));
 					$name = io_safe_output($item['nombre']);
 					$module_name = $item['nombre'];
 					$num_ok = modules_agents_ok($module_name);

@@ -78,7 +78,7 @@ switch ($action) {
 		preg_match("/src='(.*)'/", $img, $matches);
 		$url = $matches[1];
 		
-		echo $url;	
+		echo $url;
 		break;
 	case 'get_layout_data':
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
@@ -101,6 +101,9 @@ switch ($action) {
 			default:
 				$returnValue = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 				
+				//html_debug_print($value_show);
+				//html_debug_print($layoutData);
+				
 				if (($layoutData['type'] == PERCENTILE_BAR) ||
 					($layoutData['type'] == PERCENTILE_BUBBLE)) {
 					if ($value_show == 'value') {
@@ -109,7 +112,13 @@ switch ($action) {
 						$unit_text_db = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 						$unit_text_db = trim(io_safe_output($unit_text_db));
 						
-						$unit_text = false;
+						if ($value_show == 'value') {
+							//Set empty string unit at the moment
+							//and change for old false value
+							
+							$unit_text = '';
+						}
+						
 						if (!empty($unit_text_db))
 							$unit_text = $unit_text_db;
 					}

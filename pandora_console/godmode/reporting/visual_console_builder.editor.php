@@ -265,7 +265,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<tr id="label_color_row" class="static_graph percentile_bar percentile_item module_graph simple_value label datos">
 			<td><?php echo __('Label color');?></td>
 			<td><?php html_print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', false);?></td>
-		</tr>				
+		</tr>
 	</tbody>
 </table>
 <?php
@@ -333,7 +333,6 @@ ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
 //ui_require_jquery_file ('autocomplete');
 ui_require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
-
 // Javascript file for base 64 encoding of label parameter 
 ui_require_javascript_file ('encode_decode_base64');
 ?>

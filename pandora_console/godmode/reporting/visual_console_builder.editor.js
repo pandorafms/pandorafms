@@ -153,7 +153,7 @@ function updateAction() {
 	
 	values = readFields();
 	
-	// TODO VALIDATE DATA	
+	// TODO VALIDATE DATA
 	switch (selectedItem) {
 		case 'background':
 			if(values['width'] == 0 && values['height'] == 0) {
@@ -179,7 +179,7 @@ function updateAction() {
 				success: function (data) {
 					$("#background_img").attr('src', data);
 				}
-			});
+			});	
 			
 			idElement = 0;
 			break;
@@ -325,6 +325,7 @@ function readFields() {
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
 	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
 	values['value_show'] = $("input[name=value_show]:checked").val();
+	
 	
 	return values;
 }
@@ -581,8 +582,8 @@ function setAspectRatioBackground(side) {
 		url: "ajax.php",
 		data: parameter,
 		type: "POST",
-		dataType: 'json',
-		success: function (data) {
+		dataType: "json",
+		success: function(data) {
 			old_width = parseInt($("#background").css('width').replace('px', ''));
 			old_height = parseInt($("#background").css('height').replace('px', ''));
 			
@@ -790,6 +791,9 @@ function getModuleValue(id_data, process_simple_value) {
 }
 
 function getPercentileBar(id_data, values) {
+	max_percentile = values['max_percentile'];
+	width_percentile = values['width_percentile'];
+	
 	var parameter = Array();
 	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -805,11 +809,14 @@ function getPercentileBar(id_data, values) {
 		success: function (data)
 		{
 			module_value = data['value'];
-			max_percentile = data['max_percentile'];
-			width_percentile = data['width_percentile'];
-			unit_text = false
-			if (data['unit_text'] != false)
+			//max_percentile = data['max_percentile'];
+			//width_percentile = data['width_percentile'];
+			unit_text = false;
+			
+			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean') {
 				unit_text = data['unit_text'];
+			}
+			
 			colorRGB = data['colorRGB'];
 		}
 	});
@@ -837,7 +844,7 @@ function getPercentileBar(id_data, values) {
 	else
 		var percentile = 100;
 	
-	if (unit_text == false) {
+	if (unit_text == false && typeof(unit_text) == 'boolean') {
 		value_text = percentile + "%";
 	}
 	else {
@@ -852,6 +859,9 @@ function getPercentileBar(id_data, values) {
 }
 
 function getPercentileBubble(id_data, values) {
+	max_percentile = values['max_percentile'];
+	width_percentile = values['width_percentile'];
+	
 	var parameter = Array();
 	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -867,10 +877,10 @@ function getPercentileBubble(id_data, values) {
 		success: function (data)
 		{
 			module_value = data['value'];
-			max_percentile = data['max_percentile'];
-			width_percentile = data['width_percentile'];
+			//max_percentile = data['max_percentile'];
+			//width_percentile = data['width_percentile'];
 			unit_text = false
-			if (data['unit_text'] != false)
+			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean')
 				unit_text = data['unit_text'];
 			colorRGB = data['colorRGB'];
 		}
@@ -899,7 +909,7 @@ function getPercentileBubble(id_data, values) {
 	else
 		var percentile = 100;
 	
-	if (unit_text == false) {
+	if (unit_text == false && typeof(unit_text) == 'boolean') {
 		value_text = percentile + "%";
 	}
 	else {

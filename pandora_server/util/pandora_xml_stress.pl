@@ -43,23 +43,23 @@ my $LogLock :shared;
 ################################################################################
 sub load_config ($\%\@) {
 	my ($conf_file, $conf, $modules) = @_;
-
+	
 	open (FILE, "<", $conf_file) || die ("[error] Could not open configuration file '$conf_file': $!.\n\n");
 	
 	while (my $line = <FILE>) {
-
+		
 		# A module definition
 		if ($line =~ m/module_begin/) {
 			my %module;
-
+			
 			# A comment
 			next if ($line =~ m/^#/);
-
+			
 			while (my $line = <FILE>) {
-
+				
 				# A comment
 				next if ($line =~ m/^#/);
-
+				
 				last if ($line =~ m/module_end/);
 				 
 				# Unknown line
@@ -75,7 +75,7 @@ sub load_config ($\%\@) {
 		
 		# Unknown line
 		next if ($line !~ /^\s*(\w+)\s+(.+)$/);
-
+		
 		$conf->{$1} = $2;
 	}
 	close (FILE);
@@ -86,7 +86,7 @@ sub load_config ($\%\@) {
 ################################################################################
 sub generate_xml_files ($$$$$$) {
 	my ($agents, $start, $step, $conf, $modules, $local_conf) = @_;
-
+	
 	# Read agent configuration
 	my $interval = get_conf_token ($conf, 'agent_interval', '300');
 	my $xml_version = get_conf_token ($conf, 'xml_version', '1.0');
@@ -101,23 +101,23 @@ sub generate_xml_files ($$$$$$) {
 	my $longitude_base = get_conf_token ($conf, 'longitude_base', '-3.708187');
 	my $altitude_base = get_conf_token ($conf, 'altitude_base', '0');
 	my $position_radius = get_conf_token ($conf, 'position_radius', '10');
-
+	
 	# Get time_from
 	my $time_now = strftime ("%Y-%m-%d %H:%M:%S", localtime ());
 	my $time_from = get_conf_token ($conf, 'time_from', $time_now);
 	die ("[error] Invalid time_from: $time_from\n\n") unless ($time_from =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
 	my $utimestamp_from = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-
+	
 	# Get time_to
 	my $time_to = get_conf_token ($conf, 'time_to', $time_now);
 	die ("[error] Invalid time_to: $time_to\n\n") unless ($time_to =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
 	my $utimestamp_to = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-
+	
 	# Generate data files
 	my $utimestamp = $utimestamp_from;
 	while ($utimestamp <= $utimestamp_to) {
 		for (my $i = $start; $i < $start + $step; $i++) {
-
+			
 			# Get the name of the agent
 			last unless defined ($agents->[$i]);
 			my $agent_name = $agents->[$i];
@@ -143,12 +143,12 @@ sub generate_xml_files ($$$$$$) {
 				# Skip unnamed modules
 				my $module_name = get_conf_token ($module, 'module_name', '');
 				next if ($module_name eq '');
-
+				
 				# Read module configuration
 				my $module_type = get_conf_token ($module, 'module_type', 'generic_data');
 				my $module_description = get_conf_token ($module, 'module_description', '');
 				my $module_unit = get_conf_token ($module, 'module_unit', '');
-
+				
 				#my $module_min = get_conf_token ($module, 'module_min', '0');
 				#my $module_max = get_conf_token ($module, 'module_max', '255');
 				#my $module_variation = get_conf_token ($module, 'module_variation', '100');
@@ -214,31 +214,31 @@ sub generate_xml_files ($$$$$$) {
 				$module->{'module_data'} = $rnd_data;
 				$xml_data .= "\t\t<data>$rnd_data</data>\n";
 				$xml_data .= "\t</module>\n";
-			}	
-
+			}
+			
 			$xml_data .= "</agent_data>\n";
-
+			
 			# Fix the temporal path
 			my $last_char = chop ($temporal);
 			$temporal .= $last_char if ($last_char ne '/');
-
+			
 			# Save the XML data file
 			# The temporal dir is normaly the /var/spool/pandora/data_in
 			my $xml_file = $temporal . '/' . $agent_name . '_' . $utimestamp . '.data';
 			open (FILE, ">", $xml_file) || die ("[error] Could not write to '$xml_file': $!.\n\n");
 			print FILE $xml_data;
 			close (FILE);
-
+			
 			copy_xml_file ($conf, $xml_file);
 			$XMLFiles++;
 		}
-
+		
 		# First run, let the server create the new agent before sending more data
 		if ($utimestamp == $utimestamp_from) {
 			threads->yield ();
 			sleep ($startup_delay);
 		}
-
+		
 		$utimestamp += $interval;
 	}
 }
@@ -248,7 +248,7 @@ sub generate_xml_files ($$$$$$) {
 ################################################################################
 sub generate_random_data ($$$$$) {
 	my ($module_type, $current_data, $min, $max, $variation) = @_;
-
+	
 	my $change_rnd = int rand (100);
 	return $current_data unless ($variation > $change_rnd) or $current_data eq '';
 	
@@ -257,7 +257,7 @@ sub generate_random_data ($$$$$) {
 		my @chars = ("A" .. "Z","a" .. "z", 0..9);
 		return join ("", @chars[map {rand @chars} (1..(rand ($max - $min + 1) + $min))]);
 	}
-
+	
 	# Proc
 	if ($module_type =~ m/proc/) {
 		return int (rand ($max - $min + 1) + $min);
@@ -308,7 +308,7 @@ sub generate_scatter_data ($$$$$$) {
 	# And check the probability now
 	my $other_rnd = int rand(100);
 		
-	if ( $prob >= $other_rnd) {		
+	if ( $prob >= $other_rnd) {
 		return int (rand ($max - $min + 1) + $min);
 	}
 	else {

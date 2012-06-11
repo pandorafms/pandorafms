@@ -507,7 +507,9 @@ html_print_table ($table);
 
 unset ($table);
 
+/*
 if ($enterprise_include) {
 	policies_profile_form($id);
 }
+*/
 ?>

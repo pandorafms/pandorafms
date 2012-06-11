@@ -55,7 +55,7 @@ if (is_ajax ())
 		}
 
 		echo '<div id="id_div3" width="450px">';
-		echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:15%">';
+		echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:70%">';
 		//Agent name
 		echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
 		if ($agent['disabled']) {
@@ -279,7 +279,7 @@ if (is_ajax ())
 							$queryWhere = 'id_agente NOT IN (SELECT id_agent FROM tpolicy_agents)';
 						else
 							$queryWhere = sprintf(' id_agente IN (SELECT id_agent FROM tpolicy_agents WHERE id_policy = %s)',$id);
-							
+						
 						$sql = sprintf('SELECT * FROM tagente 
 								WHERE %s AND ( %s id_grupo IN (%s))', $queryWhere, $extra_sql, $groups_sql);
 						break;
@@ -300,6 +300,7 @@ if (is_ajax ())
 									WHERE nombre = \'%s\'
 								)
 								AND (%s id_grupo IN (%s))', $name, $extra_sql, $groups_sql);
+						
 						break;
 				}
 				
@@ -508,26 +509,28 @@ if (is_ajax ())
 						WHERE t1.id_agente = ' . $id . $whereQuery;
 					break;
 				case 'module':
-					$name = str_replace(array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_'),array(' ','#'),$id_father);
+					$name = str_replace(array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_','_articapandora_'.ord('/').'_pandoraartica_'),array(' ','#','/'),$id_father);
 					switch ($config["dbtype"]) {
 						case "mysql":
 							$sql = 'SELECT * 
 								FROM tagente_modulo AS t1 
 								INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
-								WHERE t1.id_agente = ' . $id . ' AND nombre COLLATE utf8_general_ci LIKE \'' . io_safe_input($name) . '\'';
+								WHERE t1.id_agente = ' . $id . ' AND nombre = \'' . io_safe_input($name) . '\'';
 							break;
 						case "postgresql":
 						case "oracle":
 							$sql = 'SELECT * 
 								FROM tagente_modulo AS t1 
 								INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
-								WHERE t1.id_agente = ' . $id . ' AND nombre COLLATE utf8_general_ci LIKE \'' . io_safe_input($name) . '\'';
+								WHERE t1.id_agente = ' . $id . ' AND nombre = \'' . io_safe_input($name) . '\'';
 							break;
 					}
 					break;
 			}
 			// This line checks for initializated modules or (non-initialized) asyncronous modules	
 			$sql .= ' AND disabled = 0 AND (utimestamp > 0 OR id_tipo_modulo IN (21,22,23))';
+			echo "DEBUG => $sql<br>";
+			
 			$countRows = db_get_num_rows($sql);
 			
 			if ($countRows === 0) {

@@ -1,3 +1,8 @@
+2012-06-11  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/users/configure_user.php
+	  operation/users/user_edit.php: Removed 'add extra policies'.
+
 2012-06-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/graphs/functions_gd.php, include/graphs/fgraph.php:

@@ -248,6 +248,7 @@ echo html_print_select($values, 'section', io_safe_output($user_info["section"])
 echo "&nbsp;&nbsp;";
 
 $dashboards = get_user_dashboards ($user_info['id_user']);
+$dashboards_aux = array();
 if ($dashboards === false) {
 	$dashboards = array('None'=>'None');
 } else {

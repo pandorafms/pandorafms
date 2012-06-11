@@ -1,5 +1,13 @@
 2012-06-11 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.editor.php: cleaned source
+	code style.
+	
+	MERGED FROM TRUNK
+
+2012-06-11 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_io.php: fixed the function "io_safe_output" for
 	arrays, now into the function call other function with the name
 	"io_safe_output_array".

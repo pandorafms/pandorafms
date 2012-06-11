@@ -321,6 +321,8 @@ echo '<span style="display: none" id="message_alert_no_period">' . __('No period
 echo '<span style="display: none" id="message_alert_no_agent">' . __('No agent defined.') .'</span>';
 echo '<span style="display: none" id="message_alert_no_module">' . __('No module defined.') .'</span>';
 
+
+//CSS
 ui_require_css_file ('color-picker');
 
 ui_require_jquery_file('ui.core');

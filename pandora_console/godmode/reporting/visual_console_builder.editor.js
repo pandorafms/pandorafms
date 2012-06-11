@@ -1069,8 +1069,9 @@ function insertDB(type, values) {
 		success: function (data)
 			{
 				if (data['correct']) {
-					createItem(type, values, data['id_data']);
-					addItemSelectParents(data['id_data'], data['text']);
+					id = data['id_data'];
+					createItem(type, values, id);
+					addItemSelectParents(id, data['text']);
 					eventsItems();
 				}
 				else {

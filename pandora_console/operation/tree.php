@@ -265,9 +265,14 @@ if (is_ajax ())
 								WHERE id_os = %s AND (%s id_grupo IN (%s))', $id, $extra_sql, $groups_sql);
 						break;
 					case 'module_group':
+						$extra_sql = substr($extra_sql,1);
+						$extra_sql = "tagente_modulo.".$extra_sql;  
 						$sql = sprintf('SELECT * FROM tagente 
-								WHERE id_agente IN (SELECT id_agente FROM tagente_modulo WHERE id_module_group = %s) 
-								AND (%s id_grupo IN (%s))', $id, $extra_sql, $groups_sql);
+								WHERE id_agente IN (SELECT tagente_modulo.id_agente FROM tagente_modulo, tagente_estado
+								WHERE tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_estado.utimestamp !=0 AND 
+								tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+								AND id_module_group = %s 
+								AND ((%s id_grupo IN (%s)))', $id, $extra_sql, $groups_sql);					
 						break;
 					case 'policies':
 						if ($id == 0)
@@ -341,7 +346,22 @@ if (is_ajax ())
 						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
 						break;
 					case 'module_group':
-						$agent_info = reporting_get_agent_module_info ($row["id_agente"], ' id_module_group = ' . $id);
+						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], "id_module_group = $id");
+						
+						$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], "tagente_modulo.id_module_group = $id");
+						$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], "tagente_modulo.id_module_group = $id");
+						$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], "tagente_modulo.id_module_group = $id");
+						$agent_info["monitor_normal"] = agents_monitor_ok ($row["id_agente"], "tagente_modulo.id_module_group = $id");
+						
+						$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
+						
+						$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
+																				$agent_info["monitor_warning"],
+																				$agent_info["monitor_unknown"]);
+												
+						//Count all modules
+						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
+						
 						break;
 					case 'module':
 						switch ($config["dbtype"]) {
@@ -704,7 +724,7 @@ function printTree_($type) {
 														WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%'))";
 				$list = db_get_all_rows_sql($sql);
 			} else {
-				$list = db_get_all_rows_in_table('tmodule_group', 'name');
+				$list = db_get_all_rows_sql("SELECT distinct id_mg, name FROM tmodule_group, tagente_modulo WHERE tmodule_group.id_mg = tagente_modulo.id_module_group");
 				if ($list !== false)
 					array_push($list, array('id_mg' => 0, 'name' => 'Not assigned'));
 			}
@@ -787,34 +807,10 @@ function printTree_($type) {
 				case 'module_group':
 					$id = $item['id_mg'];
 					$name = $item['name'];
-					$agentes = db_get_all_rows_sql("SELECT id_agente FROM tagente 
-													WHERE id_agente IN (SELECT id_agente FROM tagente_modulo
-																		WHERE id_module_group=$id)");
-					if ($agentes === false) {
-						$agentes = array();
-					}
-					$num_ok = 0;
-					$num_critical = 0;
-					$num_warning = 0;
-					$num_unknown = 0;
-					foreach ($agentes as $agente) {
-						$stat = reporting_get_agent_module_info ($agente["id_agente"]);
-
-						switch ($stat['status']) {
-							case 'agent_ok.png':
-								$num_ok++;
-								break;
-							case 'agent_critical.png':
-								$num_critical++;
-								break;
-							case 'agent_warning.png':
-								$num_warning++;
-								break;
-							case 'agent_down.png':
-								$num_unknown++;
-								break;
-						}
-					}
+					$num_ok = modules_group_agent_ok($id);
+					$num_critical = modules_group_agent_critical ($id);
+					$num_warning = modules_group_agent_warning($id);
+					$num_unknown = modules_group_agent_unknown($id);
 					break;
 				case 'policies':
 					$id = $item['id'];

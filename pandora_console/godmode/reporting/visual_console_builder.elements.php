@@ -105,6 +105,15 @@ foreach ($layoutDatas as $layoutData) {
 		case SIMPLE_VALUE:
 			$table->data[$i + 1]['icon'] = html_print_image('images/binary.png', true, array('title' => __('Simple Value')));
 			break;
+		case SIMPLE_VALUE_MAX:
+			$table->data[$i + 1]['icon'] = html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Max)')));
+			break;
+		case SIMPLE_VALUE_MIN:
+			$table->data[$i + 1]['icon'] = html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Min)')));
+			break;
+		case SIMPLE_VALUE_AVG:
+			$table->data[$i + 1]['icon'] = html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Avg)')));
+			break;
 		case LABEL:
 			$table->data[$i + 1]['icon'] = html_print_image('images/tag_red.png', true, array('title' => __('Label')));
 			break;
@@ -157,8 +166,8 @@ foreach ($layoutDatas as $layoutData) {
 		$activeTab  . '&action=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
 		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
 	
+	
 	//Second row
-		
 	$table->data[$i + 2]['icon'] = '';
 	
 	//Agent
@@ -173,8 +182,11 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Modules
 	if (($layoutData['type'] != ICON) && ($layoutData['type'] != LABEL)) {
-		$sql = 'SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE disabled = 0 AND id_agente = ' . $layoutData['id_agent'];
-		$table->data[$i + 2][1] = html_print_select_from_sql($sql,
+		$modules = agents_get_modules($layoutData['id_agent']);
+		
+		$modules = io_safe_output($modules);
+		
+		$table->data[$i + 2][1] = html_print_select($modules,
 			'module_' . $idLayoutData, $layoutData['id_agente_modulo'], '', '---', 0, true);
 	}
 	else {
@@ -185,16 +197,21 @@ foreach ($layoutDatas as $layoutData) {
 	$table->data[$i + 2][2] = '';
 	
 	//Period
-	if ($layoutData['type'] == MODULE_GRAPH) {
-		$table->data[$i + 2][3] = html_print_extended_select_for_time ('period_' . $idLayoutData, $layoutData['period'], '', '--', '0', 10, true);
-	}
-	else {
-		$table->data[$i + 2][3] = '';
+	switch ($layoutData['type']) {
+		case MODULE_GRAPH:
+		case SIMPLE_VALUE_MAX:
+		case SIMPLE_VALUE_MIN:
+		case SIMPLE_VALUE_AVG:
+			$table->data[$i + 2][3] = html_print_extended_select_for_time ('period_' . $idLayoutData, $layoutData['period'], '', '--', '0', 10, true);
+			break;
+		default:
+			$table->data[$i + 2][3] = '';
+			break;
 	}
 	
 	//Map linked
 	$table->data[$i + 2][4] = html_print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
-					'map_linked_' . $idLayoutData, $layoutData['id_layout_linked'], '', 'None', '', true);
+		'map_linked_' . $idLayoutData, $layoutData['id_layout_linked'], '', 'None', '', true);
 	$table->data[$i + 2][5] = '';
 	
 	if ($alternativeStyle) {

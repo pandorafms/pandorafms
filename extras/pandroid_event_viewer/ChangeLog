@@ -1,5 +1,10 @@
 2012-06-11 Santiago Munín <burning1@gmail.com>
 
+	* src/pandroid_event_viewer/pandorafms/Main.java,
+	res/layout/main.xml: Now the advanced options' layout is GONE not INVISIBLE.
+
+2012-06-11 Santiago Munín <burning1@gmail.com>
+
 	* src/pandroid_event_viewer/pandorafms/Options.java,
 	src/pandroid_event_viewer/pandorafms/Main.java,
 	res/layout/main.xml,

@@ -162,7 +162,7 @@ public class Main extends Activity {
 		if (preferences.getBoolean("show_advanced", false)) {
 			advancedOptions.setVisibility(View.VISIBLE);
 		} else {
-			advancedOptions.setVisibility(View.INVISIBLE);
+			advancedOptions.setVisibility(View.GONE);
 			setAdvancedOptionsDefaults();
 			clearAdvancedOptions();
 		}
@@ -179,7 +179,7 @@ public class Main extends Activity {
 					advancedOptions.setVisibility(View.VISIBLE);
 					preferencesEditor.putBoolean("show_advanced", true);
 				} else {
-					advancedOptions.setVisibility(View.INVISIBLE);
+					advancedOptions.setVisibility(View.GONE);
 					preferencesEditor.putBoolean("show_advanced", false);
 					setAdvancedOptionsDefaults();
 					clearAdvancedOptions();

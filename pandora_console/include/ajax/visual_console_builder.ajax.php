@@ -57,7 +57,7 @@ $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
 $id_agent_module = get_parameter('id_agent_module', 0);
-$process_simple_value = get_parameter('process_simple_value', 0);
+$process_simple_value = get_parameter('process_simple_value', PROCESS_VALUE_NONE);
 $type_percentile = get_parameter('type_percentile', 'percentile');
 $value_show = get_parameter('value_show', 'percent');
 
@@ -94,7 +94,8 @@ switch ($action) {
 			case SIMPLE_VALUE_MIN:
 			case SIMPLE_VALUE_AVG:
 				$type = visual_map_get_simple_value_type($process_simple_value);
-				$returnValue = visual_map_get_simple_value($type, $layoutData['id_agente_modulo']);
+				$returnValue = visual_map_get_simple_value($type,
+					$layoutData['id_agente_modulo'], $period);
 				break;
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
@@ -221,7 +222,10 @@ switch ($action) {
 				db_process_sql_update('tlayout', $values, array('id' => $id_visual_console));
 				break;
 			case 'simple_value':
-				$values['type'] = visual_map_get_simple_value_type($process_simple_value);
+				if ($action == 'update') {
+					$values['type'] = visual_map_get_simple_value_type($process_simple_value);
+					$values['period'] = $period;
+				}
 			case 'percentile_bar':
 			case 'percentile_item':
 			case 'static_graph':
@@ -428,8 +432,9 @@ switch ($action) {
 				$values['height'] = $height;
 				break;
 			case 'simple_value':
-				//This allows min, max and avg process in a simple value		
-				$values['type'] = visual_map_get_simple_value_type($process_simple_value);				
+				//This allows min, max and avg process in a simple value
+				$values['type'] = visual_map_get_simple_value_type($process_simple_value);
+				$values['period'] = $period;
 				break;
 			case 'label':
 				$values['type'] = LABEL;

@@ -218,7 +218,7 @@ function visual_map_print_item($layoutData) {
 		case SIMPLE_VALUE_AVG:
 			echo '<div id="' . $id . '" class="item simple_value" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text;
-			$value = visual_map_get_simple_value($type, $id_module);	
+			$value = visual_map_get_simple_value($type, $id_module, $period);
 			echo ' <span id="simplevalue_' . $id . '" style="font-weight:bold;">' . $value . '</span>';
 			echo '</div>';
 			break;
@@ -272,19 +272,19 @@ function visual_map_print_item($layoutData) {
  * SIMPLE_VALUE, SIMPLE_VALUE_MAX, SIMPLE_VALUE_MIN, SIMPLE_VALUE_AVG
  */
 function visual_map_get_simple_value_type($process_simple_value) {
-	switch ($process_simple_value){
-		case 0:
+	switch ($process_simple_value) {
+		case PROCESS_VALUE_NONE:
 			return SIMPLE_VALUE;
-			break;						
-		case 1:
+			break;
+		case PROCESS_VALUE_MIN:
 			return SIMPLE_VALUE_MIN;
 			break;
-		case 2:
+		case PROCESS_VALUE_MAX:
 			return SIMPLE_VALUE_MAX;
 			break;
-		case 3:
+		case PROCESS_VALUE_AVG:
 			return SIMPLE_VALUE_AVG;
-			break;		
+			break;
 	}
 }
 
@@ -294,22 +294,26 @@ function visual_map_get_simple_value_type($process_simple_value) {
  * @param int type of the retrieving choosed among the constants:
  * SIMPLE_VALUE, SIMPLE_VALUE_MAX, SIMPLE_VALUE_MIN, SIMPLE_VALUE_AVG
  * @param int id agent module
+ * @param int period The period in seconds for calculate the avg or min or max value.
  * 
  * @return string value retrieved with units
  */
-function visual_map_get_simple_value($type, $id_module) {
-	$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
+function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) {
+	$unit_text = db_get_sql ('SELECT unit
+		FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
 	$unit_text = trim(io_safe_output($unit_text));
-	switch ($type){
+	
+	switch ($type) {
 		case SIMPLE_VALUE:
-			$value = db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module);
+			$value = db_get_value ('datos', 'tagente_estado',
+				'id_agente_modulo', $id_module);
 			$value = format_for_graph($value, 2);
 			if (!empty($unit_text))
 				$value .= " " . $unit_text;
 			return $value;
 			break;
-		case SIMPLE_VALUE_MAX:	
-			$value = reporting_get_agentmodule_data_max ($id_module, 86400, 0);
+		case SIMPLE_VALUE_MAX:
+			$value = reporting_get_agentmodule_data_max ($id_module, $period, 0);
 			if ($value === false) {
 				$value = __('Unknown');
 			}
@@ -321,7 +325,7 @@ function visual_map_get_simple_value($type, $id_module) {
 			return $value;
 			break;
 		case SIMPLE_VALUE_MIN:
-			$value = reporting_get_agentmodule_data_min ($id_module, 86400, 0);
+			$value = reporting_get_agentmodule_data_min ($id_module, $period, 0);
 			if ($value === false) {
 				$value = __('Unknown');
 			}
@@ -329,11 +333,11 @@ function visual_map_get_simple_value($type, $id_module) {
 				$value = format_for_graph($value, 2);
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
-			}					
+			}
 			return $value;
 			break;
-		case SIMPLE_VALUE_AVG:	
-			$value = reporting_get_agentmodule_data_average ($id_module, 86400, 0);
+		case SIMPLE_VALUE_AVG:
+			$value = reporting_get_agentmodule_data_average ($id_module, $period, 0);
 			if ($value === false) {
 				$value = __('Unknown');
 			}
@@ -341,10 +345,10 @@ function visual_map_get_simple_value($type, $id_module) {
 				$value = format_for_graph($value, 2);
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
-			}				
+			}
 			return $value;
 			break;
-	}		
+	}
 }
 
 /**
@@ -473,7 +477,21 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 				}
 				break;
 			case SIMPLE_VALUE:
-				$value_type = $process_value;
+				$value_image = '';
+				switch ($process_value) {
+					case PROCESS_VALUE_NONE:
+						$value_type = SIMPLE_VALUE;
+						break;
+					case PROCESS_VALUE_MIN:
+						$value_type = SIMPLE_VALUE_MIN;
+						break;
+					case PROCESS_VALUE_MAX:
+						$value_type = SIMPLE_VALUE_MAX;
+						break;
+					case PROCESS_VALUE_AVG:
+						$value_type = SIMPLE_VALUE_AVG;
+						break;
+				}
 				break;
 		}
 		
@@ -1039,7 +1057,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					
 					echo '<strong>'.$layout_data['label']. ' ';
 					//TODO: change interface to add a period parameter, now is set to 1 day
-					switch ($layout_data['type']){
+					switch ($layout_data['type']) {
 						case 2:
 							$value = db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
 							$value = format_for_graph($value, 2);
@@ -1048,7 +1066,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							echo $value;
 							break;
 						case 6:
-							$value = reporting_get_agentmodule_data_max ($layout_data['id_agente_modulo'], 86400, 0);
+							$value = reporting_get_agentmodule_data_max ($layout_data['id_agente_modulo'], $layout_data['period'], 0);
 							if ($value === false) {
 								$value = __('Unknown');
 							}
@@ -1060,7 +1078,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							echo $value;
 							break;
 						case 7:
-							$value = reporting_get_agentmodule_data_min ($layout_data['id_agente_modulo'], 86400, 0);
+							$value = reporting_get_agentmodule_data_min ($layout_data['id_agente_modulo'], $layout_data['period'], 0);
 							if ($value === false) {
 								$value = __('Unknown');
 							}
@@ -1072,7 +1090,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							echo $value;
 							break;
 						case 8:
-							$value = reporting_get_agentmodule_data_average($layout_data['id_agente_modulo'], 86400, 0);
+							$value = reporting_get_agentmodule_data_average($layout_data['id_agente_modulo'], $layout_data['period'], 0);
 							if ($value === false) {
 								$value = __('Unknown');
 							}

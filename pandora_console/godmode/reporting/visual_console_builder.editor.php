@@ -137,9 +137,9 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<tr id="process_value_row" class="simple_value datos">
 			<td><?php echo '<span>' . __('Process') . '</span>';?></td>
 			<td><?php html_print_select (
-				array ('1' => __('Min value'), 
-				'2' => __('Max value'),
-				'3' => __('Avg value')), 'process_value', '', '', __('None'), 0);?></td>
+				array (PROCESS_VALUE_MIN => __('Min value'), 
+				PROCESS_VALUE_MAX => __('Max value'),
+				PROCESS_VALUE_AVG => __('Avg value')), 'process_value', '', '', __('None'), PROCESS_VALUE_NONE);?></td>
 		</tr>	
 		<tr id="background_row_1" class="background datos">
 			<td><?php echo __('Background');?></td>
@@ -191,7 +191,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="period_row" class="module_graph datos">
+		<tr id="period_row" class="module_graph simple_value datos">
 			<td><?php echo __('Period');?></td>
 			<td><?php 
 				html_print_extended_select_for_time ('period', '', '', '', '')

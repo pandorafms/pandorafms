@@ -74,16 +74,16 @@ $table->data["staticgraph_modulegraph"][0] = __('Size (px)');
 $table->data["staticgraph_modulegraph"][1] = __('Width').': '.html_print_input_text ('width', 0, '', 5, 5, true);
 $table->data["staticgraph_modulegraph"][1] .= ' ' . __('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
 
-$table->rowstyle["modulegraph"] = 'display: none;';
-$table->data["modulegraph"][0] = __('Period');
-$table->data["modulegraph"][1] = html_print_extended_select_for_time ('period', '', '', '', '', false, true);
+$table->rowstyle["modulegraph_simplevalue"] = 'display: none;';
+$table->data["modulegraph_simplevalue"][0] = __('Period');
+$table->data["modulegraph_simplevalue"][1] = html_print_extended_select_for_time ('period', '', '', '', '', false, true);
 
 $table->rowstyle["simplevalue"] = 'display: none;';
 $table->data["simplevalue"][0] = __('Process');
 $table->data["simplevalue"][1] = html_print_select (
-	array (SIMPLE_VALUE_MIN => __('Min value'), 
-	SIMPLE_VALUE_MAX => __('Max value'),
-	SIMPLE_VALUE_AVG => __('Avg value')), 'process_value', '', '', '', '', true);
+	array (PROCESS_VALUE_MIN => __('Min value'), 
+	PROCESS_VALUE_MAX => __('Max value'),
+	PROCESS_VALUE_AVG => __('Avg value')), 'process_value', PROCESS_VALUE_AVG, '', __('None'), PROCESS_VALUE_NONE, true);
 
 $table->rowstyle["percentileitem_1"] = 'display: none;';
 $table->data["percentileitem_1"][0] = __('Width (px)');
@@ -146,6 +146,17 @@ echo '<span id="loading_text" style="display: none;">' . __('Loading...') . '</s
 var show_only_enabled_modules = true;
 $(document).ready (function () {
 	hidden_rows();
+	
+	$("#process_value").change(function () {
+		selected = $("#process_value").val();
+		
+		if (selected == <?php echo PROCESS_VALUE_NONE;?>) {
+			$("tr", "#wizard_table").filter(function () {return /^.*modulegraph_simplevalue.*/.test(this.id); }).hide();
+		}
+		else {
+			$("tr", "#wizard_table").filter(function () {return /^.*modulegraph_simplevalue.*/.test(this.id); }).show();
+		}
+	});
 	
 	$("#groups").change (function () {
 		$('#id_agents').attr('disabled', true);

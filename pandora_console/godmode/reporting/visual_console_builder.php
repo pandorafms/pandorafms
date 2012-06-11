@@ -133,8 +133,13 @@ switch ($activeTab) {
 					$values['pos_x'] = get_parameter('left_' . $id, 0);
 					$values['pos_y'] = get_parameter('top_' . $id, 0);
 					$type = db_get_value('type', 'tlayout_data', 'id', $id);
-					if ($type == 1) {
-						$values['period'] = get_parameter('period_' . $id, 0);
+					switch($type) {
+						case MODULE_GRAPH:
+						case SIMPLE_VALUE_MAX:
+						case SIMPLE_VALUE_MIN:
+						case SIMPLE_VALUE_AVG:
+							$values['period'] = get_parameter('period_' . $id, 0);
+							break;
 					}
 					$agentName = get_parameter('agent_' .  $id, '');
 					$values['id_agent'] = agents_get_agent_id($agentName);

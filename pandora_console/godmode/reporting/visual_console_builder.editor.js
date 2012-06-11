@@ -98,8 +98,6 @@ function eventsTextAgent() {
 						}
 					});
 				});
-		
-				
 			}
 		);
 }
@@ -141,7 +139,7 @@ function updateAction() {
 				success: function (data) {
 					$("#background_img").attr('src', data);
 				}
-			});	
+			});
 			
 			var idElement = 0;
 			break;
@@ -180,7 +178,7 @@ function updateAction() {
 			break;
 		case 'simple_value':
 			$("#text_" + idItem).html(values['label']);
-			$("#simplevalue_" + idItem).html(getModuleValue(idItem,values['process_simple_value']));
+			$("#simplevalue_" + idItem).html(getModuleValue(idItem,values['process_simple_value'], values['period']));
 			break;
 		case 'label':
 			$("#" + idItem).css('color', values['label_color']);
@@ -696,11 +694,12 @@ function getModuleGraph(id_data) {
 	return img;
 }
 
-function getModuleValue(id_data, process_simple_value) {
+function getModuleValue(id_data, process_simple_value, period) {
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "period", value: period});
 	if(process_simple_value != undefined) {
 		parameter.push ({name: "process_simple_value", value: process_simple_value});
 	}
@@ -987,7 +986,7 @@ function createItem(type, values, id_data) {
 			var imageSize = '';
 			
 			var item = $('<div id="' + id_data + '" class="item simple_value" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
-					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span>' +
+					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' +
 					'<strong>' + getModuleValue(id_data) + '</strong>' +
 				'</div>'
 			);

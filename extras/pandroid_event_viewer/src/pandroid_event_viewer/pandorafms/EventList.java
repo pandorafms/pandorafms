@@ -520,7 +520,6 @@ public class EventList extends ListActivity {
 
 									@Override
 									public void onClick(View v) {
-										// TODO
 										Intent intent = new Intent(
 												getBaseContext(),
 												CreateIncidentActivity.class);

@@ -101,7 +101,7 @@ public class CreateIncidentActivity extends Activity {
 		incidentParams[3] = String.valueOf(DEFAULT_PRIORITY_CODE);
 		incidentParams[4] = String.valueOf(DEFAULT_STATUS_CODE);
 		int groupCode = -1;
-		for (Entry<Integer, String> entry : Core.getGroups(
+		for (Entry<Integer, String> entry : API.getGroups(
 				getApplicationContext()).entrySet()) {
 			if (entry.getValue().equals(eventGroup)) {
 				groupCode = entry.getKey();

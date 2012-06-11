@@ -1,10 +1,16 @@
 2012-06-11 Santiago Munín <burning1@gmail.com>
 
+	* src/pandroid_event_viewer/pandorafms/Core.java,
+	src/pandroid_event_viewer/pandorafms/API.java: Moved api functions to API.java
+	* src/pandroid_event_viewer/pandorafms/Options.java: Connection status works ok now.
+
+2012-06-11 Santiago Munín <burning1@gmail.com>
+
 	* res/values/arrays.xml: Removed some entries.
 	* res/values/strings.xml: Added one entry.
 	* res/layout/create_incident.xml: Removed form fields.
 	* res/layout/item_list_event_extended.xml: Added a button to create an incident from the event.
-	* src/pandroid_event_viewer/pandorafms/EventList.java: Added crate incident button logic.
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Added create incident button logic.
 	* src/pandroid_event_viewer/pandorafms/CreateIncidentActivity.java: Removed fields logic.
 	* src/pandroid_event_viewer/pandorafms/Main.java,
 	src/pandroid_event_viewer/pandorafms/EventList.java,

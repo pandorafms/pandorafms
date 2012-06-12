@@ -2828,6 +2828,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
+						
 			$data[0] = reporting_get_group_detailed_event($content['id_group'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
 			break;

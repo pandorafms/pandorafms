@@ -50,7 +50,7 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 			echo $text;
 		}
 	} 
-	
+
 	$text = io_safe_output($text);
 	if (mb_strlen($text, "UTF-8") > ($numChars)) {
 		$half_length = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.

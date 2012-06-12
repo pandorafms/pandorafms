@@ -273,10 +273,7 @@ foreach ($items as $item) {
 		$connection = metaconsole_get_connection($server_name);
 		if (!metaconsole_load_external_db($connection)) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
-			// Don't skip SLA or top N or general report items
-			if (($item['type'] != 'SLA') and ($item['type'] != 'top_n') and ($item['type'] != 'general')
-				and ($item['type'] != 'exception') and ($item['type'] != 'group_report'))
-				continue;
+
 		}
 	}
 	

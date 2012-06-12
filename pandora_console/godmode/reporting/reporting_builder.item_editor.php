@@ -219,6 +219,7 @@ switch ($action) {
 				$description = $item['description'];
 				$sql = $item['external_source'];
 				$idCustom = $item['treport_custom_sql_id'];
+				$period = 0;
 				break;
 			case 'sql_graph_hbar':
 				$description = $item['description'];
@@ -481,8 +482,10 @@ html_print_input_hidden('id_item', $idItem);
 					$agent_name = '';
 
 					if (metaconsole_load_external_db($connection))
-						$agent_name = db_get_value_filter('nombre', 'tagente', array('id_agente' => $idAgent));				
-						
+						$agent_name = db_get_value_filter('nombre', 'tagente', array('id_agente' => $idAgent));	
+						// Append server name
+						if (!empty($agent_name))		
+							$agent_name .= ' (' . $server_name . ')';
 					//Restore db connection
 					metaconsole_restore_db();
 				}
@@ -1408,6 +1411,7 @@ function chooseType() {
 		case 'event_report_group':
 			$("#row_description").show();
 			$("#row_period").show();
+			$("#row_servers").show();
 			$("#row_group").show();
 			$("#row_show_in_two_columns").show();
 			break;
@@ -1616,6 +1620,7 @@ function chooseType() {
 			break;
 		case 'group_report':
 			$("#row_group").show();
+			$("#row_servers").show();
 			break;
 		case 'top_n':
 			$("#row_description").show();
@@ -1651,7 +1656,7 @@ function chooseType() {
 			$("#row_agent_multi").show();
 			$("#row_module_multi").show();
 			$("#row_show_in_two_columns").show();
-			
+			$("#row_servers").show();
 			$("#id_agents").change(agent_changed_by_multiple_agents_inventory);
 			$("#id_agents").trigger('change');
 			
@@ -1670,6 +1675,8 @@ function chooseType() {
 
 			$("#id_agents").change(agent_changed_by_multiple_agents_inventory);
 			$("#id_agents").trigger('change');
+			
+			$("#row_servers").show();
 			
 			$("#combo_group").change(function() {
 				$('#hidden-date_selected').val('');

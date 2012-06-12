@@ -1,8 +1,38 @@
+2012-06-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* images/console/background/switch_3com.gif: removed unused
+	background because it is in gif....and it is so ugly.
+	
+	* images/console/background/Nortel-3510-24T-800x477.jpg: fixed the
+	image, now it is a standar jpg.
+	
+	MERGED FROM 4.0.2
+	
+	* images/console/background/worldmap2.png,
+	images/console/background/white_boxed2.jpg,
+	images/console/background/mapa-asia.png: added lost background files
+	from the branch 4.0.2.
+
 2012-06-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_servers.php,
 	  godmode/servers/modificar_server.php: Merged from 4.0 branch. Added
 	  real-time export server stats.
+
+2012-06-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* images/console/background/switch_3com.gif: removed unused
+	background because it is in gif....and it is so ugly.
+	
+	* images/console/background/Nortel-3510-24T-800x477.jpg: fixed the
+	image, now it is a standar jpg.
+	
+	MERGED FROM 4.0.2
+	
+	* images/console/background/worldmap2.png,
+	images/console/background/white_boxed2.jpg,
+	images/console/background/mapa-asia.png: added lost background files
+	from the branch 4.0.2.
 
 2012-06-12 Miguel de Dios <miguel.dedios@artica.es>
 	

@@ -1,5 +1,15 @@
 2012-06-12 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* images/console/icons/light_ok.png, images/console/icons/light.png:
+	modified the files for to give more coherence.
+	
+	* images/console/icons/user_warning.png,
+	images/console/icons/user_bad.png,
+	images/console/icons/user_ok.png: added lost status item for the
+	visual map.
+
+2012-06-12 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* images/console/background/switch_3com.gif: removed unused
 	background because it is in gif....and it is so ugly.
 	

@@ -1,3 +1,8 @@
+2012-06-12  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_config.php: Fixed bug: update password 
+	parameters.
+
 2012-06-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_io.php: fixed the function "io_safe_output" for

@@ -213,17 +213,17 @@ function config_update_config () {
 	
 	$enterprise = enterprise_include_once ('godmode/setup/setup.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
-		$config['enable_pass_policy'] = get_parameter('enable_pass_policy', $config['enable_pass_policy']);
-		$config['pass_size'] = get_parameter('pass_size', $config['pass_size']);
-		$config['pass_expire'] = get_parameter('pass_expire', $config['pass_expire']);
-		$config['first_login'] = get_parameter('first_login', $config['first_login']);
-		$config['mins_fail_pass'] = get_parameter('mins_fail_pass', $config['mins_fail_pass']);
-		$config['number_attempts'] = get_parameter('number_attempts', $config['number_attempts']);
-		$config['pass_needs_numbers'] = get_parameter('pass_needs_numbers', $config['pass_needs_numbers']);
-		$config['pass_needs_symbols'] = get_parameter('pass_needs_symbols', $config['pass_needs_symbols']);
-		$config['enable_pass_policy_admin'] = get_parameter('enable_pass_policy_admin', $config['enable_pass_policy_admin']);
-		$config['enable_pass_history'] = get_parameter('enable_pass_history', $config['enable_pass_history']);
-		$config['compare_pass'] = get_parameter('compare_pass', $config['compare_pass']);
+		config_update_value ('enable_pass_policy', get_parameter('enable_pass_policy', $config['enable_pass_policy']));
+		config_update_value ('pass_size', get_parameter('pass_size', $config['pass_size']));
+		config_update_value ('pass_expire', get_parameter('pass_expire', $config['pass_expire']));
+		config_update_value ('first_login',  get_parameter('first_login', $config['first_login']));
+		config_update_value ('mins_fail_pass', get_parameter('mins_fail_pass', $config['mins_fail_pass']));
+		config_update_value ('number_attempts', get_parameter('number_attempts', $config['number_attempts']));
+		config_update_value ('pass_needs_numbers', get_parameter('pass_needs_numbers', $config['pass_needs_numbers']));
+		config_update_value ('pass_needs_symbols', get_parameter('pass_needs_symbols', $config['pass_needs_symbols']));
+		config_update_value ('enable_pass_policy_admin', get_parameter('enable_pass_policy_admin', $config['enable_pass_policy_admin']));
+		config_update_value ('enable_pass_history', get_parameter('enable_pass_history', $config['enable_pass_history']));
+		config_update_value ('compare_pass', get_parameter('compare_pass', $config['compare_pass']));
 	}
 	
 	# Update of Pandora FMS license 

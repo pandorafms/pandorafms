@@ -145,10 +145,13 @@ else {
 				$data[4] = 'N/A';
 				$data[5] = 'N/A';
 				break;
+			case "export":
+				$data[3] = progress_bar($server["load"], 60, 20, $server["lag_txt"], 0);
+				$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
+				$data[5] = 'N/A';
+				break;
 			default:
-				// Load
-				$data[3] =
-					progress_bar($server["load"], 60, 20, $server["lag_txt"], 0);
+				$data[3] = progress_bar($server["load"], 60, 20, $server["lag_txt"], 0);
 				$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
 				$data[5] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
 				break;

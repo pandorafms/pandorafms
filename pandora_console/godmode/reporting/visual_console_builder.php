@@ -214,7 +214,7 @@ switch ($activeTab) {
 							foreach ($id_agents as $ag) {
 								$id_module = agents_get_modules($ag,
 									array('id_agente_modulo'),
-									array('nombre' => io_safe_input($mod)));
+									array('nombre' => $mod));
 									
 								if (empty($id_module))
 									continue;

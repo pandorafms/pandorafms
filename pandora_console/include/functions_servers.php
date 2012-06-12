@@ -251,8 +251,51 @@ function servers_get_info ($id_server = -1) {
 			$server["module_lag"] = 0;
 			$server["lag"] = 0;
 
+			// Export server
+			if ($server["server_type"] == 7) {
+				
+				# Get modules exported by this server
+				$server["modules"] = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo, tserver_export WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export = tserver_export.id AND tserver_export.id_export_server = " . $server["id_server"]);
+
+				# Get total exported modules
+				$server["modules_total"] = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export != 0");
+		
+				$server["lag"] = 0;
+				$server["module_lag"] = 0;
 			
-			if ($server["server_type"] != 3) {
+			}
+			// Recon server
+			else if ($server["server_type"] == 3) {
+
+				$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/recon_view&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
+			
+				//Total jobs running on this recon server
+				$server["modules"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
+		
+				//Total recon jobs (all servers)
+				$server["modules_total"] = db_get_sql ("SELECT COUNT(status) FROM trecon_task");
+		
+				//Lag (take average active time of all active tasks)
+				$server["module_lag"] = 0;
+
+				switch ($config["dbtype"]) {
+					case "mysql":
+						$server["lag"] = db_get_sql ("SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+
+						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						break;
+					case "postgresql":
+						$server["lag"] = db_get_sql ("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp from trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+
+						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						break;
+					case "oracle":
+						$server["lag"] = db_get_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp from trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+
+						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+						break;
+				}
+			} else {
 
 				// ---------------------------------------------------------------
 				// Data, Plugin, WMI, Network and Others
@@ -362,37 +405,6 @@ function servers_get_info ($id_server = -1) {
 			// ---------------------------------------------------------------
 
 			}
-			elseif ($server["server_type"] == 3) {
-
-				$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/recon_view&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
-			
-				//Total jobs running on this recon server
-				$server["modules"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
-		
-				//Total recon jobs (all servers)
-				$server["modules_total"] = db_get_sql ("SELECT COUNT(status) FROM trecon_task");
-		
-				//Lag (take average active time of all active tasks)
-				$server["module_lag"] = 0;
-
-				switch ($config["dbtype"]) {
-					case "mysql":
-						$server["lag"] = db_get_sql ("SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
-
-						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
-						break;
-					case "postgresql":
-						$server["lag"] = db_get_sql ("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP)) - utimestamp from trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
-
-						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil(date_part('epoch', CURRENT_TIMESTAMP))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
-						break;
-					case "oracle":
-						$server["lag"] = db_get_sql ("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - utimestamp from trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
-
-						$server["module_lag"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400))  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
-						break;
-				}
-			} // recon
 		} // Take data for realtime mode
 
 		if (isset($server["module_lag"]))

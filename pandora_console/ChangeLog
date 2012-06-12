@@ -1,3 +1,9 @@
+2012-06-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_servers.php,
+	  godmode/servers/modificar_server.php: Added real-time export server
+	  stats.
+
 2012-06-12 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: added the lost

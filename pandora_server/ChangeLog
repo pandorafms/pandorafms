@@ -1,3 +1,7 @@
+2012-06-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added export server stats.
+
 2012-06-12 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* lib/PandoraFMS/ReconServer.pm: fixed the recode into html entities

@@ -2240,24 +2240,44 @@ sub pandora_server_statistics ($$) {
 
 	# For each server, update stats: Simple.
 	foreach my $server (@servers) {
-		if ($server->{"server_type"} !=3) {
+		
+		# Export server
+		if ($server->{"server_type"} == 7) {
+	
+			# Get modules exported by this server
+			$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo, tserver_export WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export = tserver_export.id AND tserver_export.id_export_server = ?", $server->{"id_server"});
+
+			# Get total exported modules
+			$server->{"modules_total"} = get_db_value ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export != 0");
+		
+			$server->{"lag"} = 0;
+			$server->{"module_lag"} = 0;
+		# Recon server
+		} elsif ($server->{"server_type"} == 3) {
+
+				# Total jobs running on this recon server
+				$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ?", $server->{"id_server"});
+		
+				# Total recon jobs (all servers)
+				$server->{"modules_total"} = get_db_value ($dbh, "SELECT COUNT(status) FROM trecon_task");
+		
+				# Lag (take average active time of all active tasks)			
+
+				$server->{"lag"} = get_db_value ($dbh, "SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP() > (utimestamp + interval_sweep) AND id_recon_server = ?", $server->{"id_server"});
+
+				$server->{"module_lag"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP() > (utimestamp + interval_sweep) AND id_recon_server = ?", $server->{"id_server"});
+
+		}
+		else {
 
 			# Get LAG
-			$server->{"modules"} = get_db_value ($dbh, "SELECT count(tagente_estado.id_agente_modulo) FROM tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = ".$server->{"id_server"});
+			$server->{"modules"} = get_db_value ($dbh, "SELECT count(tagente_estado.id_agente_modulo) FROM tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = ?", $server->{"id_server"});
 
-			$server->{"modules_total"} = get_db_value ($dbh,"SELECT count(tagente_estado.id_agente_modulo) FROM tserver, tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = tserver.id_server AND tserver.server_type = ".$server->{"server_type"});
+			$server->{"modules_total"} = get_db_value ($dbh,"SELECT count(tagente_estado.id_agente_modulo) FROM tserver, tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = tserver.id_server AND tserver.server_type = ?", $server->{"server_type"});
 
+			# Dataserver
 			if ($server->{"server_type"} != 0){
-				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag 
-					FROM tagente_estado, tagente_modulo
-					WHERE utimestamp > 0
-					AND tagente_modulo.disabled = 0
-					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-					AND current_interval > 0
-					AND running_by = ".$server->{"id_server"}."
-					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-					AND (UNIX_TIMESTAMP() - utimestamp) > current_interval");
-			} else {
+				
 				# Local/Dataserver server LAG calculation:
 				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag 
 					FROM tagente_estado, tagente_modulo
@@ -2267,28 +2287,22 @@ sub pandora_server_statistics ($$) {
 					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 					AND current_interval > 0
 					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-					AND running_by = ".$server->{"id_server"}."
-					AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)");
+					AND running_by = ?
+					AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)", $server->{"id_server"});
+			} else {
+				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag 
+					FROM tagente_estado, tagente_modulo
+					WHERE utimestamp > 0
+					AND tagente_modulo.disabled = 0
+					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+					AND current_interval > 0
+					AND running_by = ?
+					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+					AND (UNIX_TIMESTAMP() - utimestamp) > current_interval", $server->{"id_server"});
 			}
-
+			
 			$server->{"module_lag"} = $lag_row->{'module_lag'};
 			$server->{"lag"} = $lag_row->{'lag'};
-	
-		} else {
-			# Recon server only
-
-				# Total jobs running on this recon server
-				$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ".$server->{"id_server"});
-		
-				# Total recon jobs (all servers)
-				$server->{"modules_total"} = get_db_value ($dbh, "SELECT COUNT(status) FROM trecon_task");
-		
-				# Lag (take average active time of all active tasks)			
-
-				$server->{"lag"} = get_db_value ($dbh, "SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP() > (utimestamp + interval_sweep) AND id_recon_server = ".$server->{"id_server"});
-
-				$server->{"module_lag"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP() > (utimestamp + interval_sweep) AND id_recon_server = ".$server->{"id_server"});
-
 		}
 
 		# Check that all values are defined and set to 0 if not

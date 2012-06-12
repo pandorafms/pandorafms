@@ -1,3 +1,11 @@
+2012-06-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* images/console/background/switch_3com.gif: removed unused
+	background because it is in gif....and it is so ugly.
+	
+	* images/console/background/Nortel-3510-24T-800x477.jpg: fixed the
+	image, now it is a standar jpg.
+
 2012-06-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_servers.php,

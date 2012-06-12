@@ -193,6 +193,7 @@ elseif ($search_agents_2 && ($config['metaconsole'] == 1)) {
 		return;
 	}
 	
+	$data = array();
 	foreach ($servers as $server) {
 		if (metaconsole_load_external_db ($server) != NOERR) {
 			continue;
@@ -227,7 +228,6 @@ elseif ($search_agents_2 && ($config['metaconsole'] == 1)) {
 		if ($agents === false)
 			continue;
 		
-		$data = array();
 		foreach ($agents as $agent) {
 			$data[] = array('id' => $agent['id_agente'],
 				'name' => io_safe_output($agent['nombre']) . " (" . io_safe_output($server['server_name']) . ") ",
@@ -235,9 +235,10 @@ elseif ($search_agents_2 && ($config['metaconsole'] == 1)) {
 		}
 		//Restore db connection
 		metaconsole_restore_db();
-		
-		echo json_encode($data);
+
 	}
+
+	echo json_encode($data);
 	return;
 }
 ?>

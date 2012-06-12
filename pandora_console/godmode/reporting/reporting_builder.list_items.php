@@ -273,10 +273,7 @@ foreach ($items as $item) {
 		$connection = metaconsole_get_connection($server_name);
 		if (metaconsole_load_external_db($connection) != NOERR) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
-			// Don't skip SLA or top N or general report items
-			if (($item['type'] != 'SLA') and ($item['type'] != 'top_n') and ($item['type'] != 'general')
-				and ($item['type'] != 'exception') and ($item['type'] != 'group_report'))
-				continue;
+
 		}
 	}
 	
@@ -320,7 +317,7 @@ foreach ($items as $item) {
 	
 	$row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
 	$row[6] .= '&nbsp;&nbsp;';
-	$row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
+	$row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
 	
 	$row[7] = '';
 	//You can sort the items if the filter is not enable.

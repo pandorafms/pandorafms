@@ -618,13 +618,38 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 			break;
 	}
 	$error = false;
-	
+
+	$repeated_modules = array();
 	foreach ($destiny_id_agents as $id_destiny_agent) {
 		foreach ($target_modules as $id_agent_module) {
-			$result = modules_copy_agent_module_to_agent ($id_agent_module,
-				$id_destiny_agent);
-		
-			if ($result === false) {
+			
+			// Check the module name exists in target
+			$module = modules_get_agentmodule ($id_agent_module);
+			if ($module === false)
+				return false;
+				
+			$modules = agents_get_modules ($id_destiny_agent, false,
+				array ('nombre' => $module['nombre'], 'disabled' => false));
+
+			// Keep all modules repeated
+			if (! empty ($modules)) {
+				$modules_repeated = array_pop (array_keys ($modules));
+				$result = $modules_repeated;
+				$repeated_modules[] = $modules_repeated;		
+			}
+			else {
+			
+				$result = modules_copy_agent_module_to_agent ($id_agent_module,
+					$id_destiny_agent);
+
+				if ($result === false) {
+					$error = true;
+					break;
+				}
+			}
+			
+			// Check if all modules are repeated and no alerts are copied, if YES then error
+			if (empty($target_alerts) and count($repeated_modules) == count($target_modules)) {
 				$error = true;
 				break;
 			}

@@ -1,3 +1,14 @@
+2012-06-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_modules.php
+	 include/functions_agents.php: Fixed problem when modules are 
+	 repeated in source and target agents. 
+	 
+	* operation/events/events_list.php: Delete double confirmation when
+	an event is deleted.
+	
+	Merged from trunk.
+
 2012-06-12 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* images/console/icons/light_ok.png, images/console/icons/light.png:

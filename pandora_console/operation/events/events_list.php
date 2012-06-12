@@ -523,7 +523,7 @@ foreach ($result as $event) {
 	// Delete event
 	if (check_acl ($config["id_user"], $event["id_grupo"], "IM") == 1) {
 		if($event['estado'] != 2) {
-			$data[4] .= '<a class="delete_event" href="#"  onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;" id="delete-'.$event['id_evento'].'">';
+			$data[4] .= '<a class="delete_event" href="#"   id="delete-'.$event['id_evento'].'">';
 			$data[4] .= html_print_image ("images/cross.png", true,
 				array ("title" => __('Delete event')));
 			$data[4] .= '</a>&nbsp;';

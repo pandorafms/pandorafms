@@ -1,5 +1,12 @@
 2012-06-12 Dario Rodriguez <dario.rodriguez@artica.es>
 
+        * operation/agentes/estado_agente.php: Improved
+        performance using new functions.
+
+	MERGED FROM 4.0.2
+
+2012-06-12 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* operation/tree.php: Fixed some errors with tree view
 	for policies.
 

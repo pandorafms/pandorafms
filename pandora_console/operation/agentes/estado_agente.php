@@ -424,7 +424,21 @@ foreach ($agents as $agent) {
 	$rowPair = !$rowPair;
 	$iterator++;
 		
-	$agent_info = reporting_get_agent_module_info ($agent["id_agente"]);
+	$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($agent["id_agente"]);
+						
+	$agent_info["monitor_critical"] = agents_monitor_critical ($agent["id_agente"]);
+	$agent_info["monitor_warning"] = agents_monitor_warning ($agent["id_agente"]);
+	$agent_info["monitor_unknown"] = agents_monitor_unknown ($agent["id_agente"]);
+	$agent_info["monitor_normal"] = agents_monitor_ok ($agent["id_agente"]);
+	
+	$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
+	
+	$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
+															$agent_info["monitor_warning"],
+															$agent_info["monitor_unknown"]);
+															
+	//Count all modules
+	$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
 	
 	$data = array ();
 	

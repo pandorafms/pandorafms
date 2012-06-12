@@ -918,7 +918,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 		$config['fontpath'], $config['font_size']);
 }
 
-function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false) {
+function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false, $options = false) {
 	global $config;
 	
 	$out_of_lim_str = __("Out of limits");
@@ -934,10 +934,21 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value
 		$colorRGB = implode('|', $colorRGB);
 	}
 	
+	$class_tag = '';
+	$id_tag = '';
+	if ($options !== false) {
+		foreach ($options as $option_type => $option_value) {
+			if ($option_type == 'class')
+				$class_tag = ' class="' . $option_value . '" ';
+			else if ($option_type == 'id')
+				$id_tag = ' id="' . $option_value . '" ';
+		}
+	}
+	
 	require_once("include_graph_dependencies.php");
 	include_graphs_dependencies($config['homedir'].'/');
 	
-	return "<img title='" . $title . "' alt='" . $title . "'" .
+	return "<img title='" . $title . "' alt='" . $title . "'" . $class_tag . $id_tag . 
 		" src='" . $config['homeurl'] . "/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar" .
 		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .

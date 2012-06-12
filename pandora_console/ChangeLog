@@ -1,5 +1,9 @@
 2012-06-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php: Added options for progress_bar graph.
+
+2012-06-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_modules.php
 	 include/functions_agents.php: Fixed problem when modules are 
 	 repeated in source and target agents. 

@@ -29,7 +29,7 @@ include_once($config['homedir'] . '/include/functions_tags.php');
  * This function avoid duplicated by comparing module names.
  * 
  * @param int Source agent module id.
- * @param int Detiny agent id.
+ * @param int Destiny agent id.
  * @param string Forced name to the new module.
  *
  * @return New agent module id on success. Existing module id if it already exists.

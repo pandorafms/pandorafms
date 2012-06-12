@@ -1,3 +1,9 @@
+2012-06-12 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/ReconServer.pm: fixed the recode into html entities
+	the name of network component into the function
+	"create_network_profile_modules".
+
 2012-06-11 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* pandora_server/util/pandora_xml_stress.pl: cleaned source code

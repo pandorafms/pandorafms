@@ -467,11 +467,33 @@ switch ($action) {
 						
 						// If metaconsole is activated
 						if ($config['metaconsole'] == 1) {
-							$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
-							if ($id_gs !== false) {
-								$server_name = strstr($values ['id_gs'], '|');
-								$values ['id_gs'] = $id_gs;
-								$values['server_name'] = substr ($server_name, 1, strlen($server_name));
+							if ($values['type'] == 'custom_graph') {
+								$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
+								if ($id_gs !== false) {
+									$server_name = strstr($values ['id_gs'], '|');
+									$values ['id_gs'] = $id_gs;
+									$values['server_name'] = substr ($server_name, 1, strlen($server_name));
+								}
+							}
+							
+							// Get agent and server name
+							$agent_name_server = io_safe_output(get_parameter('agent'));
+							
+							if (isset($agent_name_server)) {
+								
+								$separator_pos = strpos($agent_name_server, '(');
+								
+								if (($separator_pos != false) and ($separator_pos != 0)) {
+									
+									$server_name = substr($agent_name_server, $separator_pos);
+									$server_name = str_replace('(', '', $server_name);
+									$server_name = str_replace(')', '', $server_name);
+									// Will update server_name variable
+									$values['server_name'] = trim($server_name);
+									$agent_name = substr($agent_name_server, 0, $separator_pos);
+							
+								}
+								
 							}
 						}
 						
@@ -496,7 +518,7 @@ switch ($action) {
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$values['style'] = io_safe_input(json_encode($style));
-						
+
 						if ($good_format){
 							$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
 						}
@@ -616,11 +638,16 @@ switch ($action) {
 							$resultOperationDB = false;
 							break;
 						}
-						$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
-						if ($id_gs !== false && $id_gs !== '') {
-							$server_name = strstr($values ['id_gs'], '|');
-							$values ['id_gs'] = $id_gs;
-							$values['server_name'] = substr ($server_name, 1, strlen($server_name));
+						
+						if ($config['metaconsole'] == 1) {
+							if ($values['type'] == 'custom_graph') {
+								$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
+								if ($id_gs !== false && $id_gs !== '') {
+									$server_name = strstr($values ['id_gs'], '|');
+									$values ['id_gs'] = $id_gs;
+									$values['server_name'] = substr ($server_name, 1, strlen($server_name));
+								}
+							}
 						}
 						
 						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')

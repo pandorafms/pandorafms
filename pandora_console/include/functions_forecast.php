@@ -60,7 +60,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 	$agent_interval = 300;
 	$cont = 1;
 	$data = array();
-	$table->data = array();	
+	//$table->data = array();	
 
 	// Creates data for calculation		
 	foreach ($module_data as $utimestamp => $row) {
@@ -93,7 +93,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 		$last_timestamp = $utimestamp;	
 		$cont++;
 		
-		array_push($table->data, $data);												
+		//array_push($table->data, $data);												
 	}		
 
 	$cont--;
@@ -197,11 +197,12 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 		}
 		// Using this function for prediction_date
 		if ($prediction_period == false){
-			// These statements stop the prediction when interval is greater than 4 years
-			if ($current_ts - $last_timestamp >= 126144000){
+			// These statements stop the prediction when interval is greater than 2 years
+			if ($current_ts - $last_timestamp >= 94608000){
 				return false;
 			} 
 			//html_debug_print(" Date " . $timestamp_f . " data: " . $output_data[$timestamp_f]);
+
 			// Found it
 			if ($max_value >= $output_data[$timestamp_f] and $min_value <= $output_data[$timestamp_f]){
 				return $current_ts;
@@ -231,6 +232,6 @@ function forecast_prediction_date ($module_id, $period = 5184000, $max_value = 0
 	if ($min_value > $max_value){
 		return false;
 	}	
-	
+
 	return forecast_projection_graph($module_id, $period, false, $max_value, $min_value);
 }

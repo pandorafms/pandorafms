@@ -32,7 +32,7 @@ require_once($config['homedir'] . '/include/functions_html.php');
  * true the html artifal to show the tooltip with rest of text.
  * 
  * @param string $text The text to truncate.
- * @param integer $numChars Number chars (-3 for char "[...]") max the text. 
+ * @param mixed $numChars Number chars (-3 for char "[...]") max the text. Or the strings "agent_small", "agent_medium", "module_small", "module_medium", "description" or "generic" for to take the values from user config.
  * @param boolean $showTextInAToopTip Flag to show the tooltip.
  * @param boolean $return Flag to return as string or not.
  * @param boolean $showTextInTitle Flag to show the text on title.
@@ -41,7 +41,35 @@ require_once($config['homedir'] . '/include/functions_html.php');
  *
  * @return string Truncated text.
  */
-function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '[&hellip;]', $style = false) {
+function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '[&hellip;]', $style = false) {
+	global $config;
+	
+	if (is_string($numChars)) {
+		switch ($numChars) {
+			case 'agent_small':
+				$numChars = $config['agent_size_text_small'];
+				break;
+			case 'agent_medium':
+				$numChars = $config['agent_size_text_medium'];
+				break;
+			case 'module_small':
+				$numChars = $config['module_size_text_small'];
+				break;
+			case 'module_medium':
+				$numChars = $config['module_size_text_medium'];
+				break;
+			case 'description':
+				$numChars = $config['description_size_text'];
+				break;
+			case 'item_title':
+				$numChars = $config['item_title_size_text'];
+				break;
+			default:
+				$numChars = (int)$numChars;
+				break;
+		}
+	}
+	
 	if ($numChars == 0) {
 		if ($return == true) {
 			return $text;
@@ -62,7 +90,7 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 		$truncateText = $truncateText . $truncateText2;
 		
 		if ($showTextInTitle) {
-			if ($style !== false){
+			if ($style !== false) {
 				$truncateText = '<span style="' . $style . '" title="'.$text.'">'.$truncateText.'</span>';
 			}
 			else {
@@ -70,9 +98,9 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 			}
 		}
 		if ($showTextInAToopTip) {
-			if ($style !== false){
+			if ($style !== false) {
 				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span style="' . $style . '">' . $text . '</span></a>';
-			}	
+			}
 			else {
 				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span>' . $text . '</span></a>';
 			}
@@ -551,7 +579,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
  * 
  * @return string HTML with agent name and link
  */
-function ui_print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '', $cutname = false) {
+function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_medium', $style = '', $cutname = false) {
 	$agent_name = (string) agents_get_name ($id_agent);
 	$agent_name_full = $agent_name;
 	if ($cutname) {

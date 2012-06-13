@@ -245,7 +245,13 @@ function config_update_config () {
 	config_update_value ('font_size', get_parameter('font_size', $config['font_size']));
 	config_update_value ('refr', get_parameter('refr', $config['refr']));
 	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));
-
+	
+	config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small', $config['agent_size_text_small']));
+	config_update_value ('agent_size_text_medium', get_parameter('agent_size_text_medium', $config['agent_size_text_medium']));
+	config_update_value ('module_size_text_small', get_parameter('module_size_text_small', $config['module_size_text_small']));
+	config_update_value ('module_size_text_medium', get_parameter('module_size_text_medium', $config['module_size_text_medium']));
+	config_update_value ('description_size_text', get_parameter('description_size_text', $config['description_size_text']));
+	config_update_value ('item_title_size_text', get_parameter('item_title_size_text', $config['item_title_size_text']));
 	
 	enterprise_include_once('include/functions_policies.php');
 	$enterprise = enterprise_include_once ('include/functions_skins.php');
@@ -655,6 +661,30 @@ function config_process_config () {
 	
 	if (!isset ($config['refr'])) {
 		config_update_value ('refr', '');
+	}
+	
+	if (!isset($config['agent_size_text_small'])) {
+		config_update_value ('agent_size_text_small', 15);
+	}
+	
+	if (!isset($config['agent_size_text_medium'])) {
+		config_update_value ('agent_size_text_medium', 50);
+	}
+	
+	if (!isset($config['module_size_text_small'])) {
+		config_update_value ('module_size_text_small', 15);
+	}
+	
+	if (!isset($config['module_size_text_medium'])) {
+		config_update_value ('module_size_text_medium', 50);
+	}
+	
+	if (!isset($config['description_size_text'])) {
+		config_update_value ('description_size_text', 50);
+	}
+	
+	if (!isset($config['item_title_size_text'])) {
+		config_update_value ('item_title_size_text', 40);
 	}
 	
 	/* Finally, check if any value was overwritten in a form */

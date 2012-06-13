@@ -55,7 +55,7 @@ class MonitorStatus {
 		$fields[4] = __('Not normal'); //default
 		$fields[5] = __('Not init');
 		foreach ($fields as $key => $field) {
-			$fields[$key] = ui_print_truncate_text($field, $config['text_char_long'], false, true, false);
+			$fields[$key] = ui_print_truncate_text($field, GENERIC_SIZE_TEXT, false, true, false);
 		}
 		$table->data[0][3] = html_print_select ($fields, "status", $status, '', '', -1, true);
 		$table->data[1][0] = '<span alt="' . __('Module group') . '" title="' . __('Module group') . '"><b>' . __('M') . '</b></span>';
@@ -187,7 +187,7 @@ class MonitorStatus {
 			
 			$data = array();
 			
-			if($row['utimestamp'] == 0 && (($row['module_type'] < 21 || $row['module_type'] > 23) && $row['module_type'] != 100)){
+			if($row['utimestamp'] == 0 && (($row['module_type'] < 21 || $row['module_type'] > 23) && $row['module_type'] != 100)) {
 				$statusImg = ui_print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
 			}
 			elseif ($row["estado"] == 0) {

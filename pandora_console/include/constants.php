@@ -79,4 +79,8 @@ switch ($config["dbtype"]) {
 		define ('BACKUP_FULLPATH', 'DATA_PUMP_DIR');
 		break;
 }
+
+/* The styles */
+/* Size of text in characters for truncate */
+define('GENERIC_SIZE_TEXT', 25);
 ?>

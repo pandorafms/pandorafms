@@ -1,5 +1,13 @@
 2012-06-13 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_config.php, include/functions_ui.php,
+	include/functions.php, include/constants.php,
+	mobile/operation/agents/monitor_status.php,
+	godmode/setup/setup_visuals.php: started to working into the set
+	a standar truncate string in all code of Pandora Console.
+
+2012-06-13 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_modules.php,
 	operation/agentes/estado_ultimopaquete.php,
 	operation/agentes/ver_agente.php,

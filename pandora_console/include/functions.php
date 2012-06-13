@@ -817,10 +817,8 @@ function get_event_types () {
 	$types['error'] = __('Error');
 	$types['configuration_change'] = __('Configuration change ');
 	
-	if (isset($config['text_char_long'])) {
-		foreach ($types as $key => $type) {
-			$types[$key] = ui_print_truncate_text($type, $config['text_char_long'], false, true, false);
-		}
+	foreach ($types as $key => $type) {
+		$types[$key] = ui_print_truncate_text($type, GENERIC_SIZE_TEXT, false, true, false);
 	}
 	
 	return $types;
@@ -841,10 +839,8 @@ function get_priorities () {
 	$priorities[3] = __('Warning');
 	$priorities[4] = __('Critical');
 	
-	if (isset($config['text_char_long'])) {
-		foreach ($priorities as $key => $priority) {
-			$priorities[$key] = ui_print_truncate_text($priority, $config['text_char_long'], false, true, false);
-		}
+	foreach ($priorities as $key => $priority) {
+		$priorities[$key] = ui_print_truncate_text($priority, GENERIC_SIZE_TEXT, false, true, false);
 	}
 	
 	return $priorities;

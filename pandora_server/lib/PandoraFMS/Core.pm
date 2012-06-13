@@ -2401,7 +2401,7 @@ sub pandora_group_statistics ($$) {
 		# NOTICE - Calculations done here MUST BE the same than used in PHP code to have
 		# the same criteria. PLEASE, double check any changes here and in functions_group.php
 
-		$agents_unknown = get_db_value ($dbh, "SELECT COUNT( DISTINCT tagente_estado.id_agente) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 3 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_grupo = $group");
+		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(min_estado) FROM (SELECT MIN(tagente_estado.estado) as min_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado != 0 AND tagente.id_grupo IN $group GROUP BY tagente.id_agente HAVING min_estado = 3) AS S1");
 		
 		$agents_unknown = 0 unless defined ($agents_unknown);
 

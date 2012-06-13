@@ -91,4 +91,8 @@ define('COL_NORMAL','#8ae234');
 define('COL_NOTINIT','#ef2929');
 define('COL_UNKNOWN','#aaaaaa');
 define('COL_ALERTFIRED','#ff8800');
+
+/* The styles */
+/* Size of text in characters for truncate */
+define('GENERIC_SIZE_TEXT', 25);
 ?>

@@ -1,5 +1,10 @@
 2012-06-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* extensions/update_manager/main.php: Added message when user 
+	doesn't have an enterprise update installed on web console.
+
+2012-06-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/agentes/estado_agente.php: Added confirmation message
 	to improve user feedback.
 	

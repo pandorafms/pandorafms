@@ -184,7 +184,8 @@ if($extra_sql == ENTERPRISE_NOT_HOOK) {
 else if ($extra_sql != '') {
 	$extra_sql .= ' OR ';
 }
-	
+
+
 // Build the order sql
 if(!empty($order)) {
 	$order_sql = ' ORDER BY ';
@@ -246,6 +247,7 @@ switch ($config["dbtype"]) {
 
 		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s (%s %s) %s %s", 
 					$params, $basic_where, $extra_sql, $where, $order_sql, $limit_sql);
+
 		$modules = db_get_all_rows_sql($sql);
 		break;
 	case "oracle":	
@@ -418,7 +420,7 @@ foreach ($modules as $module) {
 	AND ($module["id_tipo_modulo"] != 17)
 	AND ($module["id_tipo_modulo"] != 23)) {
 		echo "</td><td class='".$tdcolor."f9' title='".io_safe_output($module["descripcion"])."'>"; 
-		echo mb_strimwidth(io_safe_output($module["descripcion"]), 0, 35, "...", "UTF-8");
+		echo ui_print_truncate_text(io_safe_output($module["descripcion"]), 35, false);
 		echo "</td>";
 	}
 	else{
@@ -456,7 +458,7 @@ foreach ($modules as $module) {
 			else $colspan= 1;
 			
 			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".io_safe_output($module["datos"])."'>";
-			echo mb_strimwidth(io_safe_output($module["datos"]), 0, 45, "...", "UTF-8");
+			io_safe_output(io_safe_output($module["datos"]), 45, false);
 		}
 		echo "</td>";
 			

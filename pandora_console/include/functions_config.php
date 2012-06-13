@@ -256,13 +256,13 @@ function config_process_config () {
 	
 	/* Compatibility fix */
 	foreach ($configs as $c) {
-			$config[$c['token']] = $c['value'];
+		$config[$c['token']] = $c['value'];
 	}
 	
 	if (!isset ($config['language'])) {
 		config_update_value ('language', 'en');
 	}
-
+	
 	if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
 		$config['homeurl'] = '/'.$config['homeurl'];
 	}
@@ -404,55 +404,55 @@ function config_process_config () {
 	if (!isset ($config['fontpath'])) {
 		config_update_value ( 'fontpath', $config['homedir'].'/include/fonts/smallfont.ttf');
 	}
-
+	
 	if (!isset ($config['style'])) {
 		config_update_value ( 'style', 'pandora');
 	}
-
+	
 	if (!isset ($config['flash_charts'])) {
 		config_update_value ( 'flash_charts', true);
 	}
-			
+	
 	if (!isset ($config["custom_logo"])){
 		config_update_value ('custom_logo', 'none.png');
 	}
-
+	
 	if (!isset ($config['history_db_enabled'])) {
 		config_update_value ( 'history_db_enabled', false);
 	}
-
+	
 	if (!isset ($config['history_db_host'])) {
 		config_update_value ( 'history_db_host', '');
 	}
-
+	
 	if (!isset ($config['history_db_port'])) {
 		config_update_value ( 'history_db_port', 3306);
 	}
-
+	
 	if (!isset ($config['history_db_name'])) {
 		config_update_value ( 'history_db_name', 'pandora');
 	}
-
+	
 	if (!isset ($config['history_db_user'])) {
 		config_update_value ( 'history_db_user', 'pandora');
 	}
-
+	
 	if (!isset ($config['history_db_pass'])) {
 		config_update_value ( 'history_db_pass', '');
 	}
-
+	
 	if (!isset ($config['history_db_days'])) {
 		config_update_value ( 'history_db_days', 0);
 	}
-
+	
 	if (!isset ($config['history_db_step'])) {
 		config_update_value ( 'history_db_step', 0);
 	}
-
+	
 	if (!isset ($config['history_db_delay'])) {
 		config_update_value ( 'history_db_delay', 0);
 	}
-
+	
 	if (!isset ($config['activate_gis'])) {
 		config_update_value ( 'activate_gis', 0);
 	}
@@ -476,119 +476,119 @@ function config_process_config () {
 	if (!isset ($config['auth'])) {
 		config_update_value ( 'auth', 'mysql');
 	}
-
+	
 	if (!isset ($config['autocreate_remote_users'])) {
 		config_update_value ('autocreate_remote_users', 0);
 	}
-
+	
 	if (!isset ($config['autocreate_blacklist'])) {
 		config_update_value ('autocreate_blacklist', '');
 	}
-
+	
 	if (!isset ($config['default_remote_profile'])) {
 		config_update_value ('default_remote_profile', 0);
 	}
-
+	
 	if (!isset ($config['default_remote_group'])) {
 		config_update_value ('default_remote_group', 0);
 	}
-
+	
 	if (!isset ($config['ldap_server'])) {
 		config_update_value ( 'ldap_server', 'localhost');
 	}
-
+	
 	if (!isset ($config['ldap_port'])) {
 		config_update_value ( 'ldap_port', 389);
 	}
-
+	
 	if (!isset ($config['ldap_version'])) {
 		config_update_value ( 'ldap_version', '3');
 	}
-
+	
 	if (!isset ($config['ldap_start_tls'])) {
 		config_update_value ( 'ldap_start_tls', 0);
 	}
-
+	
 	if (!isset ($config['ldap_base_dn'])) {
 		config_update_value ( 'ldap_base_dn', 'ou=People,dc=edu,dc=example,dc=org');
 	}
-
+	
 	if (!isset ($config['ldap_login_attr'])) {
 		config_update_value ( 'ldap_login_attr', 'uid');
 	}
-
+	
 	if (!isset ($config['ad_server'])) {
 		config_update_value ( 'ad_server', 'localhost');
 	}
-
+	
 	if (!isset ($config['ad_port'])) {
 		config_update_value ( 'ad_port', 389);
 	}
-
+	
 	if (!isset ($config['ad_start_tls'])) {
 		config_update_value ( 'ad_start_tls', 0);
 	}
-
+	
 	if (!isset ($config['ad_domain'])) {
 		config_update_value ( 'ad_domain', '');
 	}
-
+	
 	if (!isset ($config['rpandora_server'])) {
 		config_update_value ( 'rpandora_server', 'localhost');
 	}
-
+	
 	if (!isset ($config['rpandora_port'])) {
 		config_update_value ( 'rpandora_port', 3306);
 	}
-
+	
 	if (!isset ($config['rpandora_dbname'])) {
 		config_update_value ( 'rpandora_dbname', 'pandora');
 	}
-
+	
 	if (!isset ($config['rpandora_user'])) {
 		config_update_value ( 'rpandora_user', 'pandora');
 	}
-
+	
 	if (!isset ($config['rpandora_pass'])) {
 		config_update_value ( 'rpandora_pass', '');
 	}
-
+	
 	if (!isset ($config['rbabel_server'])) {
 		config_update_value ( 'rbabel_server', 'localhost');
 	}
-
+	
 	if (!isset ($config['rbabel_port'])) {
 		config_update_value ( 'rbabel_port', 3306);
 	}
-
+	
 	if (!isset ($config['rbabel_dbname'])) {
 		config_update_value ( 'rbabel_dbname', 'babel');
 	}
-
+	
 	if (!isset ($config['rbabel_user'])) {
 		config_update_value ( 'rbabel_user', 'babel');
 	}
-
+	
 	if (!isset ($config['rbabel_pass'])) {
 		config_update_value ( 'rbabel_pass', '');
 	}
-
+	
 	if (!isset ($config['rintegria_server'])) {
 		config_update_value ( 'rintegria_server', 'localhost');
 	}
-
+	
 	if (!isset ($config['rintegria_port'])) {
 		config_update_value ( 'rintegria_port', 3306);
 	}
-
+	
 	if (!isset ($config['rintegria_dbname'])) {
 		config_update_value ( 'rintegria_dbname', 'integria');
 	}
-
+	
 	if (!isset ($config['rintegria_user'])) {
 		config_update_value ( 'rintegria_user', 'integria');
 	}
-
+	
 	if (!isset ($config['rintegria_pass'])) {
 		config_update_value ( 'rintegria_pass', '');
 	}
@@ -618,7 +618,6 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['relative_path']) && (isset ($_POST['nick']) || isset ($config['id_user'])) && isset($config['enterprise_installed'])) {
-	
 		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {		
 			if(isset($config['id_user']))
@@ -645,7 +644,7 @@ function config_process_config () {
 	config_update_config();
 }
 
-function config_check (){
+function config_check () {
 	global $config;
 	
 	// At this first version I'm passing errors using session variables, because the error management

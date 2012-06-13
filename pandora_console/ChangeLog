@@ -1,3 +1,15 @@
+2012-06-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/estado_agente.php: Improved user feedback when
+	user delete an agent in this view.
+	* operation/agentes/tactical.php: Removed empty links in tactical 
+	view.
+	
+	Merged from branches.
+	
+	* godmode/setup/performance.php: Added enterprise_include_once to
+	avoid a PHP error.
+
 2012-06-13  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* operation/agentes/estado_ultimopaquete.php: Merged from 4.0.x:

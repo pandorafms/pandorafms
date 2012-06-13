@@ -162,6 +162,14 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 
 ui_print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status", false, $onheader);
 
+// User is deleting agent
+if (isset($result_delete)) {
+	if ($result_delete)
+		ui_print_success_message(__("Sucessfully deleted agent"));
+	else
+		ui_print_error_message(__("There was an error message deleting the agent"));
+}	
+
 echo '<form method="post" action="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '">';
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';

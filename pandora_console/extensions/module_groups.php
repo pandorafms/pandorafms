@@ -142,14 +142,14 @@ function mainModuleGroups() {
 	
 	$agentGroups = users_get_groups ($config['id_user'], "AR", false);
 	$modelGroups = users_get_all_model_groups();
-
+	
 	if(!empty($agentGroups) && !empty($modelGroups)) {
 		array_walk($modelGroups, 'translate'); //Translate all head titles to language is set
-
+		
 		foreach ($modelGroups as $i => $n) {
 			$modelGroups[$i] = ui_print_truncate_text($n, 20);
 		}
-
+		
 		$head = $modelGroups;
 		array_unshift($head, '&nbsp;');
 		
@@ -171,7 +171,7 @@ function mainModuleGroups() {
 			$row = array();
 			
 			array_push($row, ui_print_truncate_text($name, 20));
-		
+			
 			foreach ($modelGroups as $idModelGroup => $modelGroup) {
 				$query = sprintf($sql,$idAgentGroup, $idModelGroup);
 				
@@ -191,12 +191,12 @@ function mainModuleGroups() {
 							}
 						}
 					}
-				}			
+				}
 				
 				$states = array();
 				if ($rowsDB !== false) {
 					foreach ($rowsDB as $rowDB) {
-						$states[$rowDB['estado']] = $rowDB['count'];	
+						$states[$rowDB['estado']] = $rowDB['count'];
 					}
 				}
 				
@@ -215,14 +215,14 @@ function mainModuleGroups() {
 				else {
 					
 					if ($fired) {
-							$color = '#ffa300'; //Orange when the cell for this model group and agent has at least one alert fired.
+						$color = '#ffa300'; //Orange when the cell for this model group and agent has at least one alert fired.
 					}
 					else if (array_key_exists(1,$states)) {
-							$color = '#cc0000'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
-							$font_color = '#ffffff';
+						$color = '#cc0000'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
+						$font_color = '#ffffff';
 					}
 					elseif (array_key_exists(2,$states)) {
-							$color = '#fce94f'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
+						$color = '#fce94f'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
 					}
 					elseif (array_key_exists(3,$states)) {
 						$color = '#babdb6'; //Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.

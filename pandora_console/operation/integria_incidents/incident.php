@@ -153,7 +153,7 @@ $delete_file = get_parameter('delete_file', 0);
 
 if($delete_file != 0) {
 	$url = $integria_api."&op=delete_file&params=".$delete_file;
-	
+
 	// Call the integria API
 	$result = incidents_call_api($url);
 }
@@ -162,7 +162,7 @@ $delete_incident = get_parameter('delete_incident', 0);
 
 if($delete_incident != 0) {
 	$url = $integria_api."&op=delete_incident&params=".$delete_incident;
-	
+
 	// Call the integria API
 	$result = incidents_call_api($url);
 }

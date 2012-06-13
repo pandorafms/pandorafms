@@ -582,9 +582,9 @@ foreach ($result as $row) {
 	if ($row["extended_info"] != "") {
 		$data[3] .= ui_print_help_tip ($row["extended_info"], true, '/images/comments.png');
 	}
-
+	
 	$data[4] = ($row['module_interval'] == 0) ? $row['agent_interval'] : $row['module_interval'];
-
+	
 	if($row['utimestamp'] == 0 && (($row['module_type'] < 21 || $row['module_type'] > 23) && $row['module_type'] != 100)){
 		$data[5] = ui_print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
 	}
@@ -611,13 +611,13 @@ foreach ($result as $row) {
 				break;
 		}
 	}
-
+	
 	$data[6] = "";
-
-	if ($row['history_data'] == 1){
-
+	
+	if ($row['history_data'] == 1) {
+		
 		$graph_type = return_graphtype ($row["module_type"]);
-
+		
 		$nombre_tipo_modulo = modules_get_moduletype_name ($row["module_type"]);
 		$handle = "stat".$nombre_tipo_modulo."_".$row["id_agente_modulo"];
 		$url = 'include/procesos.php?agente='.$row["id_agente_modulo"];

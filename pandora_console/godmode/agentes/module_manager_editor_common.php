@@ -133,8 +133,13 @@ if (!empty($id_agent_module) && isset($id_agente)) {
 	$table_simple->data[0][1] .= '</a> ';
 }
 
+$disabled_enable = 0;
+$policy_link = db_get_value('id_policy_module', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+if ($policy_link != 0) {
+	$disabled_enable = 1;
+}
 $table_simple->data[0][2] = __('Disabled');
-$table_simple->data[0][3] = html_print_checkbox ("disabled", 1, $disabled, true);
+$table_simple->data[0][3] = html_print_checkbox ("disabled", 1, $disabled, true, $disabled_enable);
 
 $table_simple->data[1][0] = __('Type').' ' . ui_print_help_icon ('module_type', true);
 $table_simple->data[1][0] .= html_print_input_hidden ('id_module_type_hidden', $id_module_type, true);

@@ -117,6 +117,12 @@ if (!empty($agent_to_delete)) {
 	if (check_acl ($config["id_user"], $id_grupo, "AW")==1) {
 		$id_agentes[0] = $id_agente;
 		$result = agents_delete_agent($id_agentes);
+		
+		if ($result != false)
+			$result_delete = true;
+		else
+			$result_delete = false;
+		
 		db_pandora_audit("Agent management", "Delete Agent " . $agent_name);
 	}
 	else {
@@ -161,6 +167,14 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 }
 
 ui_print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status", false, $onheader);
+
+// User is deleting agent
+if (isset($result_delete)) {
+	if ($result_delete)
+		ui_print_success_message(__("Sucessfully deleted agent"));
+	else
+		ui_print_error_message(__("There was an error message deleting the agent"));
+}	
 
 echo '<form method="post" action="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '">';
 

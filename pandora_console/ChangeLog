@@ -1,3 +1,11 @@
+2012-06-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/estado_agente.php: Added confirmation message
+	to improve user feedback.
+	
+	* operation/agentes/tactical.php: Removed empty links in tactical 
+	view.
+
 2012-06-13  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* operation/agentes/estado_ultimopaquete.php: Fixed string

@@ -216,13 +216,15 @@ class MonitorStatus {
 			
 			$data[] = str_replace('<img src="' , '<img width="15" height="15" src="', $statusImg);
 			
-			$data[] = '<a href="index.php?page=agent&id=' . $row['id_agent'] . '">' . ui_print_truncate_text($row['agent_name'], 25, true, true) . '</a>';
+			$data[] = '<a href="index.php?page=agent&id=' . $row['id_agent'] . '">' .
+				ui_print_truncate_text($row['agent_name'], 25, true, true) . '</a>';
 			$data[] = '<a href="index.php?page=agent&action=view_module_graph&id=' . $row['id_agente_modulo'] . '">' . 
 				ui_print_truncate_text($row['module_name'], 25, true, true) . '</a>';
 			if (is_numeric($row["datos"]))
 				$data[] = format_numeric($row["datos"]);
 			else
-				$data[] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($row["datos"]),0,12)."</span>";
+				$data[] = "<span title='".$row['datos']."' style='white-space: nowrap;'>" .
+					substr(io_safe_output($row["datos"]),0,12)."</span>";
 				
 			$data[] = ui_print_timestamp ($row["utimestamp"], true, array('units' => 'tiny'));
 			
@@ -230,11 +232,11 @@ class MonitorStatus {
 		}
 		
 		html_print_table($table);
-
+		
 		$pagination = ui_pagination ($total,
 			ui_get_url_refresh (array ()),
 			0, 0, true);
-
+			
 		echo $pagination;
 	}
 }

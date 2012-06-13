@@ -399,24 +399,23 @@ foreach ($simple_alerts as $alert) {
 		$data[0] .= '</a>';
 	}
 	$data[1] = ui_print_truncate_text(modules_get_agentmodule_name ($alert['id_agent_module']), 35, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
-
+	
 	$data[2] = ' <a class="template_details"
 		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">' .
 		html_print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help")) . '</a> ';
 	$data[2] .= "<a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
 	$data[2] .= ui_print_truncate_text(alerts_get_alert_template_name ($alert['id_alert_template']), 55, false, true, true, '[&hellip;]', 'font-size: 7.1pt');
 	$data[2] .= "</a>";
-		
+	
 	$actions = alerts_get_alert_agent_module_actions ($alert['id']);
-
+	
 	$data[3] = '';
-	if (empty($actions)){
+	if (empty($actions)) {
 		// Get and show default actions for this alert
 		$default_action = db_get_sql ("SELECT id_alert_action FROM talert_templates WHERE id = ".$alert["id_alert_template"]);
 		if ($default_action != ""){
 			$data[3] = __("Default"). " : ".db_get_sql ("SELECT name FROM talert_actions WHERE id = $default_action");
 		}
-
 	}
 	else {
 		$data[3] = '<ul class="action_list">';
@@ -443,22 +442,20 @@ foreach ($simple_alerts as $alert) {
 			}
 			if ($action['module_action_threshold'] != 0)
 				$data[3] .= ' '.__('Threshold').' '.$action['module_action_threshold'];
-
+			
 			$data[3] .= ')</em>';
 			$data[3] .= '</font>';
-//			$data[6] .= ' <span class="delete" style="clear:right">';
 			$data[3] .= '<form method="post" class="delete_link" style="display: inline; vertical-align: -50%;">';
 			$data[3] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
 			$data[3] .= html_print_input_hidden ('delete_action', 1, true);
 			$data[3] .= html_print_input_hidden ('id_alert', $alert['id'], true);
 			$data[3] .= html_print_input_hidden ('id_action', $action_id, true);
 			$data[3] .= '</form>';
-//			$data[3] .= '</span>';
 			$data[3] .= '</li>';
 		}
 		$data[3] .= '</ul>';
 	}
-
+	
 	
 	$data[3] .= '<a class="add_action" id="add-action-'.$alert['id'].'" href="#">';
 	$data[3] .= html_print_image ('images/add.png', true);

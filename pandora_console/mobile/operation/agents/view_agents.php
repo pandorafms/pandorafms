@@ -403,7 +403,7 @@ class viewGraph {
 		echo "<h3 class='title_h3'><a href='index.php?page=agent&id=" . $this->agentModule['id_agente'] . "'>" . modules_get_agentmodule_agent_name($this->idAgentModule)."</a> / ".io_safe_output($this->agentModule['nombre']) . "</h3>";
 		
 		echo "<h3 class='title_h3'>" . __('Graph') . "</h3>";
-
+		
 		echo grafico_modulo_sparse($this->idAgentModule, $this->period, 0, 240,
 			200, io_safe_output($this->agentModule['nombre']), null, false,
 			false, true, 0, '', true, false, true, true, '../');

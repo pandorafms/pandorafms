@@ -475,13 +475,14 @@ foreach ($result as $event) {
 	
 	// Event description
 	$data[1] = '<span title="'.$event["evento"].'" class="f9">';
-
-
+	
+	
 	$data[1] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $event["id_evento"] . ');">';
-
-	$data[1] .= '<span class="'.$myclass.'" style="font-size: 7.5pt;">' . ui_print_truncate_text (io_safe_output($event["evento"]), 160) . '</span>';
+	
+	$data[1] .= '<span class="'.$myclass.'" style="font-size: 7.5pt;">' .
+		ui_print_truncate_text (io_safe_output($event["evento"]), 160) . '</span>';
 	$data[1] .= '</a></span>';
-
+	
 	
 	$data[2] = '<span class="'.$myclass.'">';
 	if ($event["event_type"] == "system") {

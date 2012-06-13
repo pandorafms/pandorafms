@@ -220,7 +220,10 @@ function mainAgentsModules() {
 		
 		echo "<tr style='height: 25px;'>";
 		
-		echo "<td class='$rowcolor'><a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" . ui_print_truncate_text(io_safe_output($agent['nombre']), 35, true, true, true, '...', 'font-size:10px; font-weight: bold;') . "</a></td>";
+		echo "<td class='$rowcolor'>
+			<a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" .
+			ui_print_truncate_text(io_safe_output($agent['nombre']), 35, true, true, true, '...', 'font-size:10px; font-weight: bold;') .
+			"</a></td>";
 		$agent_modules = agents_get_modules($agent['id_agente']);
 		
 		$nmodules = 0;

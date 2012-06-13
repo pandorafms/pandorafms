@@ -402,8 +402,10 @@ if ($agents !== false) {
 		}
 		echo '<span class="left">';
 		echo "<strong><a href='index.php?sec=gagente&
-		sec2=godmode/agentes/configurar_agente&tab=main&
-		id_agente=".$agent["id_agente"]."'>" . ui_print_truncate_text($agent["nombre"], 60, true, true, true, '[&hellip;]', 'font-size: 7pt')."</a></strong>";
+			sec2=godmode/agentes/configurar_agente&tab=main&
+			id_agente=" . $agent["id_agente"] . "'>" .
+			ui_print_truncate_text($agent["nombre"], 60, true, true, true, '[&hellip;]', 'font-size: 7pt') .
+			"</a></strong>";
 		if ($agent["disabled"]) {
 			ui_print_help_tip(__('Disabled'));
 			echo "</em>";
@@ -427,7 +429,7 @@ if ($agents !== false) {
 		
 		echo '</div>';
 		echo "</td>";
-
+		
 		echo "<td align='center' class='$tdcolor'>";
 		// Has remote configuration ?
 		$agent_md5 = md5 ($agent["nombre"], false);
@@ -446,7 +448,8 @@ if ($agents !== false) {
 		// Group icon and name
 		echo "<td class='$tdcolor' align='center' valign='middle'>" . ui_print_group_icon ($id_grupo, true)."</td>";
 		// Description
-		echo "<td class='".$tdcolor."f9'>". ui_print_truncate_text($agent["comentarios"], 65, true, true, true, '[&hellip;]', 'font-size: 6.5pt;')."</td>";
+		echo "<td class='".$tdcolor."f9'>" .
+			ui_print_truncate_text($agent["comentarios"], 65, true, true, true, '[&hellip;]', 'font-size: 6.5pt;')."</td>";
 		// Action
 		//When there is only one element in page it's necesary go back page.
 		if ((count($agents) == 1) && ($offset >= $config["block_size"]))

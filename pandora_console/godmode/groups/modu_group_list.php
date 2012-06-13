@@ -151,23 +151,23 @@ switch ($config["dbtype"]) {
 			LIMIT " . $config['block_size'] . " OFFSET " . $offset;
 		break;
 	case "oracle":
-	    $set = array ();
-	    $set['limit'] = $config["block_size"];
-	    $set['offset'] = $offset;
-	    
-	    $sql = "SELECT * 
-	   		FROM tmodule_group
-	    	ORDER BY name ASC";
-	    
-	    $sql = oracle_recode_query ($sql, $set);
-	    break;
+		$set = array ();
+		$set['limit'] = $config["block_size"];
+		$set['offset'] = $offset;
+		
+		$sql = "SELECT * 
+			FROM tmodule_group
+			ORDER BY name ASC";
+		
+		$sql = oracle_recode_query ($sql, $set);
+		break;
 }
-	
+
 $groups = db_get_all_rows_sql($sql);
 
 $table->width = '98%';
 
-if(!empty($groups)) {
+if (!empty($groups)) {
 	$table->head = array ();
 	$table->head[0] = __('ID');
 	$table->head[1] = __('Name');
@@ -176,19 +176,20 @@ if(!empty($groups)) {
 	$table->align[1] = 'left';
 	$table->align[2] = 'center';
 	$table->data = array ();
-
+	
 	foreach ($groups as $id_group ) {
 		$data = array ();
 		$data[0] = 	$id_group["id_mg"];
-		$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">' . ui_print_truncate_text($id_group["name"], 50).'</a></strong>';
+		$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">' .
+			ui_print_truncate_text($id_group["name"], 50).'</a></strong>';
 		$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 		
 		array_push ($table->data, $data);
 	}
-
+	
 	html_print_table ($table);
 }
-else{
+else {
 	echo "<div class='nf'>".__('There are no defined module groups')."</div>";
 }
 

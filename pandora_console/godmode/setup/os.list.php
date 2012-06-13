@@ -38,7 +38,7 @@ $table->size[0] = '20px';
 $table->size[4] = '20px';
 
 $osList = db_get_all_rows_in_table('tconfig_os');
-if($osList === false) {
+if ($osList === false) {
 	$osList = array();
 }
 
@@ -60,7 +60,7 @@ foreach ($osList as $os) {
 	$table->data[] = $data;
 }
 
-if(isset($data)) {
+if (isset($data)) {
 	html_print_table($table);
 }
 else {

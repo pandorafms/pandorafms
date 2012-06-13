@@ -125,9 +125,9 @@ $table->data[18][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('i
 $table->data[18][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('integria_enabled', 0, '', $config["integria_enabled"], true);
 
 if($config["integria_enabled"]) {
-       require_once('include/functions_incidents.php');
-        $invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories"); 
-     	$bad_input = false;
+	require_once('include/functions_incidents.php');
+	$invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories"); 
+		$bad_input = false;
 	// Wrong connection to api, bad password
 	if (empty($invent)) {
 		$bad_input = true;
@@ -165,7 +165,7 @@ if($config["integria_enabled"]) {
 	if ($bad_input){
 		$table->data[19][1] .= html_print_image('images/error.png', true, array('title' => __('URL and/or Integria password are incorrect')));
 	}
-
+	
 	$table->data[20][0] = __('Integria API password');
 	$table->data[20][1] = html_print_input_text ('integria_api_password', $config["integria_api_password"], '', 25, 25, true);
 	
@@ -213,7 +213,7 @@ if ($update_manager_installed == 1)
 	$license_info = db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key');
 else
 	$license_info = false;
-	
+
 if ($license_info === false)
 	$license_info = '';
 $table->data[26][1] = html_print_input_text ('license_info_key', $license_info, '', 40, 255, true);
@@ -250,8 +250,8 @@ $(document).ready (function () {
 	});
 });
 </script>
-<?php
 
+<?php
 echo '<form id="form_setup" method="post">';
 echo "<fieldset>";
 echo "<legend>" . __('General options') . "</legend>";

@@ -257,7 +257,6 @@ if(xml_parse(xml_parser_create(), $xml)) {
 			$result_sources = incidents_xml_to_array(incidents_call_api($url_sources));
 			$result_groups = incidents_xml_to_array(incidents_call_api($url_groups));
 			$result_users = incidents_xml_to_array(incidents_call_api($url_users));
-
 			require_once('incident.incident.php');
 			break;
 		case 'workunits':

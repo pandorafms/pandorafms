@@ -803,11 +803,11 @@ function get_event_types () {
 	$types = array ();
 	
 	$types['unknown'] = __('Unknown');
-
+	
 	$types['critical'] = __('Monitor Critical');
 	$types['warning'] = __('Monitor Warning');
- 	$types['normal'] = __('Monitor Normal');
-
+	$types['normal'] = __('Monitor Normal');
+	
 	$types['alert_fired'] = __('Alert fired');
 	$types['alert_recovered'] = __('Alert recovered');
 	$types['alert_ceased'] = __('Alert ceased');

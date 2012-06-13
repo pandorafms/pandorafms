@@ -353,17 +353,16 @@ if ($id_agente) {
 				}
 			break;
 		default:
-
-	}	
+			break;
+	}
 	
-	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' . ui_print_truncate_text(agents_get_name ($id_agente), 25, false) . ' ' . $tab_description, "images/setup.png", false, "", true, $onheader);
-	
+	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' .
+		ui_print_truncate_text(agents_get_name ($id_agente), 25, false) .
+		' ' . $tab_description, "images/setup.png", false, "", true, $onheader);
 }
-// Create agent 
 else {
-
+	// Create agent 
 	ui_print_page_header (__('Agent manager'), "images/bricks.png", false, "create_agent", true);
-
 }
 
 $delete_conf_file = (bool) get_parameter('delete_conf_file');

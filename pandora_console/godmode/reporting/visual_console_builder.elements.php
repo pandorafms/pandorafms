@@ -40,7 +40,7 @@ foreach ($all_images as $image_file) {
 	if (strpos ($image_file, "_ok"))
 		continue;
 	if (strpos ($image_file, "_warning"))
-		continue;	
+		continue;
 	$image_file = substr ($image_file, 0, strlen ($image_file) - 4);
 	$images_list[$image_file] = $image_file;
 }

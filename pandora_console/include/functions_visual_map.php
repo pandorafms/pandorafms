@@ -57,7 +57,6 @@ function visual_map_print_button_editor($idDiv, $label, $float = 'left', $disabl
 	echo $label;
 	echo '</span>';
 	echo '</div>';
-	
 }
 
 function visual_map_print_item($layoutData) {

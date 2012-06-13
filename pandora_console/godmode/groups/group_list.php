@@ -302,7 +302,10 @@ if(!empty($groups)) {
 		
 		if ($group['hash_branch']) {
 			$data[0] = '<strong>'.$tabulation . ' ' . 
-				'<a href="javascript: showBranch(' . $group['id_grupo'] . ', ' . $group['parent'] . ');" title="' . __('Show branch children') . '"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' . $symbol . '</span> '. ui_print_truncate_text($group['nombre']).'</a></strong>';
+				'<a href="javascript: showBranch(' . $group['id_grupo'] .
+				', ' . $group['parent'] . ');" title="' . __('Show branch children') .
+				'"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' .
+				$symbol . '</span> '. ui_print_truncate_text($group['nombre']).'</a></strong>';
 		}
 		else {
 			$data[0] = '<strong>'.$tabulation . ' '. ui_print_truncate_text($group['nombre'], 60).'</strong>';
@@ -314,7 +317,6 @@ if(!empty($groups)) {
 			$data[4] = '';
 		}
 		else {
-			
 			$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
 			//Check if there is only a group to unable delete it
 			if ((count($groups) > 3) || (count($groups) <= 3 && $group['parent'] != 0)) {
@@ -325,7 +327,7 @@ if(!empty($groups)) {
 		array_push ($table->data, $data);
 		$iterator++;
 	}
-
+	
 	html_print_table ($table);
 }
 else {
@@ -347,7 +349,7 @@ function showBranch(parent) {
 	if (display != 'none') {
 		$('.symbol_' + parent).html('+');
 		$('.parent_' + parent).css('display', 'none');
-
+		
 		//Close the child branch too
 		$('.branch_' + parent).css('display', 'none');
 		$('.symbol_branch_' + parent).html('+');

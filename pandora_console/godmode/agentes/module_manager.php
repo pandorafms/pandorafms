@@ -438,10 +438,11 @@ foreach ($modules as $module) {
 		
 		$data = array ();
 	}
-
+	
 	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	if ($module["disabled"])
-		$data[0] .= '<em class="disabled_module">' . ui_print_truncate_text($module['nombre'], 50, false, true, true, '[&hellip;]', 'font-size: 7.2pt').'</em>';
+		$data[0] .= '<em class="disabled_module">' .
+			ui_print_truncate_text($module['nombre'], 50, false, true, true, '[&hellip;]', 'font-size: 7.2pt').'</em>';
 	else
 		$data[0] .= ui_print_truncate_text($module['nombre'], 50, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	$data[0] .= '</a>';
@@ -501,11 +502,12 @@ foreach ($modules as $module) {
 	if ($type) {
 		$data[3] = ui_print_moduletype_icon ($type, true);
 	}
-
+	
 	// Module interval
 	if ($module['module_interval']) {
 		$data[4] = $module['module_interval'];
-	} else {
+	}
+	else {
 		$data[4] = $agent_interval;
 	}
 	
@@ -514,12 +516,12 @@ foreach ($modules as $module) {
 	$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
 	
 	modules_get_status($module['id_agente_modulo'], $module_status['estado'], $module_status['datos'], $status, $title);
-
+	
 	$data[6] = ui_print_status_image($status, $title, true);
 	
 	// MAX / MIN values
 	$data[7] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]); 
-
+	
 	// Delete module
 	$data[8] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
 	$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
@@ -534,7 +536,7 @@ foreach ($modules as $module) {
 	$data[8] .= '</a> ';
 	
 	// Make a data normalization
-
+	
 	if (isset($numericModules[$type])) {
 		if ($numericModules[$type] === true) {
 			$data[8] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

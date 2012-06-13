@@ -335,7 +335,7 @@ if (is_ajax ()) {
 			$size_bad_modules = 0;
 		else
 			$size_bad_modules = sizeof ($bad_modules);
-
+		
 		// Modules down
 		if ($size_bad_modules > 0) {
 			echo '<strong>'.__('Monitors down').':</strong> '.$size_bad_modules.' / '.$total_modules;
@@ -347,7 +347,7 @@ if (is_ajax ()) {
 			}
 			echo '</ul>';
 		}
-
+		
 		// Alerts (if present)
 		$sql = sprintf ('SELECT COUNT(talert_template_modules.id)
 				FROM talert_template_modules, tagente_modulo, tagente
@@ -414,7 +414,7 @@ if (is_ajax ()) {
 			$ips = $ips[count($ips)-1];
 			
 			$ips = explode(',', $ips);
-			if(count($ips) == 1) {
+			if (count($ips) == 1) {
 				echo $ips[0];
 			}
 			else {
@@ -427,14 +427,14 @@ if (is_ajax ()) {
 		}
 		return;
 	}
-
+	
 	if ($get_group_status_tooltip) {
 		$id_group = (int) get_parameter ('id_group');
 		$group = db_get_row ('tgrupo', 'id_grupo', $id_group);
 		echo '<h3>' . html_print_image("images/groups_small/" . groups_get_icon ($group['id_grupo']) . ".png", true);
-		echo ui_print_truncate_text($group['nombre'],25,false,true,false).'</h3>';
+		echo ui_print_truncate_text($group['nombre'], 25, false, true, false) . '</h3>';
 		echo '<strong>'.__('Parent').':</strong> ';
-		if($group['parent'] == 0) {
+		if ($group['parent'] == 0) {
 			echo __('None').'<br />';
 		}
 		else {
@@ -444,7 +444,7 @@ if (is_ajax ()) {
 		}
 		echo '<strong>'.__('Sons').':</strong> ';
 		$groups_sons = db_get_all_fields_in_table ('tgrupo', 'parent', $group['id_grupo']);
-		if($groups_sons === false){ 
+		if ($groups_sons === false) { 
 			echo __('None').'<br />';
 		}
 		else {
@@ -457,14 +457,14 @@ if (is_ajax ()) {
 		
 		return;
 	}
-
+	
 	if ($get_agent_id) {
 		$agent_name = (string) get_parameter ("agent_name");
 		
 		echo agents_get_agent_id ($agent_name);
 		return;
 	}
-
+	
 	return;
 }
 
@@ -710,10 +710,10 @@ switch($tab) {
 		break;	
 	case "policy":
 		$header_description = ' - ' . __('Policy');
-		break;	
+		break;
 }
 
-ui_print_page_header (__('Agent').'&nbsp;-&nbsp;'.ui_print_truncate_text(agents_get_name($id_agente),25, false) . $header_description, $icon, false, "", false, $onheader);
+ui_print_page_header(__('Agent') . '&nbsp;-&nbsp;' . ui_print_truncate_text(agents_get_name($id_agente),25, false) . $header_description, $icon, false, "", false, $onheader);
 
 
 switch ($tab) {
@@ -726,10 +726,10 @@ switch ($tab) {
 	case "sla":
 		require ("sla_view.php");
 		break;
-	case "manage":	
+	case "manage":
 		require ("estado_generalagente.php");
 		break;
-	case "main":	
+	case "main":
 		require ("estado_generalagente.php");
 		require ("estado_monitores.php");
 		require ("alerts_status.php");

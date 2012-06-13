@@ -144,13 +144,13 @@ if ($get_metaconsole_hash_data) {
 	enterprise_include_once('include/functions_metaconsole.php');
 	
 	$server = enterprise_hook('metaconsole_get_connection', array($server_name));
-			
-	$pwd = $server["auth_token"];            // Create HASH login info
+	
+	$pwd = $server["auth_token"]; // Create HASH login info
 	$user = $config["id_user"];
 	$hashdata = $user.$pwd;
 	$hashdata = md5($hashdata);
 	$url_hash = "&loginhash=auto&loginhash_data=$hashdata&loginhash_user=$user";
-
+	
 	echo $url_hash;
 	return;
 }
@@ -161,7 +161,7 @@ if ($get_metaconsole_server_url) {
 	enterprise_include_once('include/functions_metaconsole.php');
 	
 	$server = enterprise_hook('metaconsole_get_connection', array($server_name));
-
+	
 	echo $server["server_url"];
 	return;
 }

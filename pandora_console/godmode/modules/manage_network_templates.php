@@ -208,7 +208,8 @@ if (!empty ($table->data)) {
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
 	echo "</form>";
-} else {
+}
+else {
 	echo '<div class="nf" style="width:'.$table->width.'">'.__('There are no defined network profiles').'</div>';	
 }
 

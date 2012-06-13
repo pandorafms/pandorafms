@@ -149,21 +149,21 @@ if ($config['activate_gis']) {
 	$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
 	
 	echo '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
-    echo '<td class="datos2" colspan="2">';
-
-    if ($dataPositionAgent === false) {
-        echo __('There is no GIS data.');
-    }
-    else {
-        echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
-        if ($dataPositionAgent['description'] != "")
-                echo $dataPositionAgent['description'];
-        else
-                echo $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
-        echo "</a>";
-    }
-
-    echo '</td></tr>';
+	echo '<td class="datos2" colspan="2">';
+	
+	if ($dataPositionAgent === false) {
+		echo __('There is no GIS data.');
+	}
+	else {
+		echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
+		if ($dataPositionAgent['description'] != "")
+			echo $dataPositionAgent['description'];
+		else
+			echo $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
+		echo "</a>";
+	}
+	
+	echo '</td></tr>';
 }
 // Last contact
 echo '<tr><td class="datos"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos f9" colspan="2">';

@@ -73,7 +73,7 @@ if(!isset($result['id_incidencia'])) {
 		unset ($event);
 	}
 }
-	
+
 $table->width = "98%";
 $table->class = "databox";
 
@@ -83,25 +83,25 @@ $table->colspan[3][0] = 3;
 $table->colspan[4][0] = 3;
 
 $table->data[0][0] = "<b>".__('Title')."</b><br/>".html_print_input_text("title", $result['titulo'], '', 80, 255, true);
-if(isset($result['id_incidencia'])) {
+if (isset($result['id_incidencia'])) {
 	$table->data[1][2] = "<b>".__('Assigned user')."</b><br/>".html_print_select ($users, 'id_user', $result['id_usuario'], '', '', 0, true, false, false);
 }
 else {
 	$table->data[1][2] = "";
 }
-if (isset($groups)){
+if (isset($groups)) {
 	$table->data[1][0] = "<b>".__('Group')."</b><br/>".html_print_select ($groups, 'group', $result['id_grupo'], '', '', 0, true, false, false);
 }
 $table->data[1][1] = "<b>".__('Priority')."</b><br/>".html_print_select (incidents_get_priorities (), 'priority', $result['prioridad'], '', '', 0, true, false, false);
 $table->data[1][2] = "<b>".__('Creator')."</b><br/>".$result['id_creator'];
 
-if(isset($result['id_incidencia'])) {
+if (isset($result['id_incidencia'])) {
 	$table->data[2][0] = "<b>".__('Source')."</b><br/>".html_print_select ($sources, 'source', $result['origen'], '', '', 0, true, false, false);
 	$table->data[2][1] = "<b>".__('Resolution')."</b><br/>".html_print_select ($resolutions, 'resolution', $result['resolution'], '', '', 0, true, false, false);
 	$table->data[2][2] = "<b>".__('Status')."</b><br/>".html_print_select ($status, 'status', $result['estado'], '', '', 0, true, false, false);
 }
 
-if(is_array($result['descripcion'])) {
+if (is_array($result['descripcion'])) {
 	$result['descripcion'] = "";
 }
 

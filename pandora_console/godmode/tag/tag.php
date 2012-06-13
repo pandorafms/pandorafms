@@ -123,7 +123,7 @@ $rowPair = true;
 $iterator = 0;
 
 if (!empty($result)){
-
+	
 	$table->width = '98%';
 	$table->data = array ();
 	$table->head = array ();
@@ -139,7 +139,7 @@ if (!empty($result)){
 	$table->head[2] = __('Detail information');
 	$table->head[3] = __('Number of modules affected');
 	$table->head[4] = __('Actions');
-
+	
 	foreach ($result as $tag) {
 		if ($rowPair)
 			$table->rowclass[$iterator] = 'rowPair';
@@ -147,29 +147,30 @@ if (!empty($result)){
 			$table->rowclass[$iterator] = 'rowOdd';
 		$rowPair = !$rowPair;
 		$iterator++;
-
+		
 		$data = array ();
-
+		
 		$data[0] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . $tag["name"] . "</a>";  
 		$data[1] = ui_print_truncate_text($tag["description"], 25, false);
 		$data[2] = '<a href="' . $tag["url"] . '">' . $tag["url"] . '</a>';
 		$data[3] = ' <a class="tag_details"
 		href="ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag='.$tag['id_tag'].'">' .
 		html_print_image("images/zoom.png", true, array("id" => 'tag-details-'.$tag['id_tag'], "class" => "img_help")) . '</a> ';
-	
-	
 		
-		$data[3] .= tags_get_modules_count($tag["id_tag"]);				
+		
+		
+		$data[3] .= tags_get_modules_count($tag["id_tag"]);
 		$data[4] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
 		$data[4] .= '<a  href="index.php?sec=gmodules&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
 		array_push ($table->data, $data);
 	}
-
-html_print_table ($table);
-
-// No tags available or selected
-}else
+	
+	html_print_table ($table);
+}
+else {
+	// No tags available or selected
 	echo "<div class='nf'>".__('No tags selected')."</div>";
+}
 
 ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');

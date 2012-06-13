@@ -465,11 +465,11 @@ foreach ($agents as $agent) {
 	$data[0] .= ' | ';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'&tab=data">'.__('Data').'</a>';	
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
-		$data[0] .= ' | ';		
+		$data[0] .= ' | ';
 		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
 	}
 	$data[0] .= '</div>';
-				
+	
 	/*if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">';
 		$data[0] .= html_print_image ("images/setup.png", true, array ("border" => 0, "width" => 16));
@@ -479,7 +479,7 @@ foreach ($agents as $agent) {
 	$data[1] = ui_print_truncate_text($agent["description"], 50, false, true, true, '[&hellip;]', 'font-size: 6.5pt');
 	
 	$data[2] = ui_print_os_icon ($agent["id_os"], false, true);
-
+	
 	//The interval we are thinking that it must be the agent interval in this
 	//cell and it'snt the interval of modules.
 //	if ($agent_info["interval"] > $agent["intervalo"]) {
@@ -505,12 +505,12 @@ foreach ($agents as $agent) {
 	if ($agent_info["monitor_normal"] > 0)
 		$data[5] .= ' : <span class="green">'.$agent_info["monitor_normal"].'</span>';
 	$data[5] .= '</b>';
-
+	
 	$data[6] = $agent_info["status_img"];
 	
 	$data[7] = $agent_info["alert_img"];
-
-
+	
+	
 	$last_time = strtotime ($agent["ultimo_contacto"]);
 	$now = time ();
 	$diferencia = $now - $last_time;

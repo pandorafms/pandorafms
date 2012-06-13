@@ -450,33 +450,37 @@ if ($traps !== false) {
 		//OID
 		if (empty ($trap["oid"])) {
 			$data[2] = __('N/A');
-		} else {
+		}
+		else {
 			$data[2] = enterprise_hook ('editor_link', array ($trap));
 			if ($data[2] === ENTERPRISE_NOT_HOOK) {
 				$data[2] = $trap["oid"];
 			}
 		}
-	
-		//Value		
+		
+		//Value
 		if (empty ($trap["value"])) {
 			$data[3] = __('N/A');
-		} else {
+		}
+		else {
 			$data[3] = ui_print_truncate_text($trap["value"], 15, false);
 		}
 		
-		//Custom		
+		//Custom
 		if (empty ($trap["oid_custom"])) {
 			$data[4] = __('N/A');
-		} else {
+		}
+		else {
 			$data[4] = ui_print_truncate_text($trap["oid_custom"], 25, false);
 		}
-	
+		
 		//User
 		if (!empty ($trap["status"])) {
 			$data[5] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
 			if (!empty($trap["id_usuario"]))
 				$data[5] .= ui_print_help_tip(get_user_fullname($trap["id_usuario"]), true);
-		} else {
+		}
+		else {
 			$data[5] = '--';
 		}
 		
@@ -488,13 +492,14 @@ if ($traps !== false) {
 		// Use alert severity if fired
 		if (!empty ($trap["alerted"])) {
 			$data[7] = html_print_image("images/pixel_yellow.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert fired'))); 		
-		} else {
+		}
+		else {
 			$data[7] = html_print_image("images/pixel_gray.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert not fired')));
 		}
-	
-		// Severity	
+		
+		// Severity
 		$table->rowclass[$idx] = get_priority_class ($severity);
-	
+		
 		//Actions
 		$data[8] = "";
 		

@@ -298,7 +298,8 @@ if ($count < 1) {
 			$data[0] .= '&nbsp;&nbsp;'.html_print_image ("images/attachment.png", true, array ("style" => "align:middle;"));
 		
 		$data[1] = incidents_print_status_img ($row["estado"], true);
-		$data[2] = '<a href="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.ui_print_truncate_text(io_safe_output($row["titulo"]),45).'</a>';
+		$data[2] = '<a href="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">' .
+			ui_print_truncate_text(io_safe_output($row["titulo"]),45).'</a>';
 		$data[3] = incidents_print_priority_img ($row["prioridad"], true);
 		$data[4] = ui_print_group_icon ($row["id_grupo"], true);
 		$data[5] = ui_print_timestamp ($row["actualizacion"], true);
@@ -310,7 +311,7 @@ if ($count < 1) {
 		} else {
 			$data[8] = '';
 		}
-
+		
 		array_push ($table->data, $data);
 	}
 	

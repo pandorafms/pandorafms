@@ -50,22 +50,22 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 			echo $text;
 		}
 	} 
-
+	
 	$text = io_safe_output($text);
 	if (mb_strlen($text, "UTF-8") > ($numChars)) {
 		$half_length = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
 		// Depending on the strange behavior of mb_strimwidth() itself,
 		// the 3rd parameter is not to be $numChars but the length of original text (just means 'large enough').
 		$truncateText2 = mb_strimwidth($text, (mb_strlen($text, "UTF-8") - $half_length), strlen($text), "", "UTF-8" );
-
+		
 		$truncateText = mb_strimwidth($text, 0, ($numChars - $half_length), $suffix, "UTF-8");
-		$truncateText=$truncateText . $truncateText2;
-
+		$truncateText = $truncateText . $truncateText2;
+		
 		if ($showTextInTitle) {
 			if ($style !== false){
 				$truncateText = '<span style="' . $style . '" title="'.$text.'">'.$truncateText.'</span>';
 			}
-			else{
+			else {
 				$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';
 			}
 		}
@@ -73,21 +73,21 @@ function ui_print_truncate_text($text, $numChars = 25, $showTextInAToopTip = tru
 			if ($style !== false){
 				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span style="' . $style . '">' . $text . '</span></a>';
 			}	
-			else{
+			else {
 				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span>' . $text . '</span></a>';
 			}
 		}
-		else{
-			if ($style !== false){
+		else {
+			if ($style !== false) {
 				$truncateText = '<span style="' . $style . '">'.$truncateText.'</span>';
 			}
 		}
 	}
 	else {
-		if ($style !== false){ 
+		if ($style !== false) { 
 			$truncateText = '<span style="' . $style . '">' . $text . '</span>';
 		}
-		else{ 
+		else { 
 			$truncateText = $text;
 		}
 	}
@@ -687,7 +687,8 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 		}
 	} 
 	elseif ($agent == 0) {
-		$data[$index['module_name']] .= ui_print_truncate_text(modules_get_agentmodule_name ($alert["id_agent_module"]), 30, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+		$data[$index['module_name']] .=
+			ui_print_truncate_text(modules_get_agentmodule_name ($alert["id_agent_module"]), 30, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	} 
 	else {
 		if ($agent_style !== false) {
@@ -696,7 +697,8 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 		else {
 			$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);		
 		}
-		$data[$index['module_name']] = ui_print_truncate_text (modules_get_agentmodule_name ($alert["id_agent_module"]), 30, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+		$data[$index['module_name']] =
+			ui_print_truncate_text (modules_get_agentmodule_name ($alert["id_agent_module"]), 30, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	}
 	$data[$index['agent_name']] .= $disabledHtmlEnd;
 	
@@ -711,7 +713,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	else {
 		$actionDefault = db_get_value_sql("SELECT id_alert_action FROM talert_compound_actions WHERE id_alert_compound = " . $alert['id']);
 	}
-	$data[$index['description']] .= $disabledHtmlStart . ui_print_truncate_text (io_safe_input ($description), 35, false, true, true, '[&hellip;]', 'font-size: 7.1pt') . $disabledHtmlEnd;
+	$data[$index['description']] .= $disabledHtmlStart . ui_print_truncate_text (io_safe_output($description), 35, false, true, true, '[&hellip;]', 'font-size: 7.1pt') . $disabledHtmlEnd;
 	
 	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false, $compound);
 	

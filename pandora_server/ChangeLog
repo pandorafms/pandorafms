@@ -1,3 +1,10 @@
+2012-06-12 Dario Rodriguez <dario.rodriguez@artica.es>
+
+        * lib/PandoraFMS/Core.pm: Fixed an error with group_statistics agent
+        queries.
+
+	MERGED FROM 4.0.2
+
 2012-06-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Merged from 4.0 branch. Added export server

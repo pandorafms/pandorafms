@@ -24,7 +24,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 	return;
 }
 // Load enterprise extensions
-enterprise_include ('godmode/setup/setup.php');
+enterprise_include_once ('godmode/setup/setup.php');
 
 /*
  NOTICE FOR DEVELOPERS:

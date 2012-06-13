@@ -1,3 +1,8 @@
+2012-06-13  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* operation/agentes/estado_ultimopaquete.php: Fixed string
+	truncation problem for multi-byte characters.
+
 2012-06-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php: Added options for progress_bar graph.

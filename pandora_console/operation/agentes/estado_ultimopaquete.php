@@ -397,10 +397,7 @@ foreach ($modules as $module) {
 	AND ($module["id_tipo_modulo"] != 17)
 	AND ($module["id_tipo_modulo"] != 23)) {
 		echo "</td><td class='".$tdcolor."f9' title='".io_safe_output($module["descripcion"])."'>"; 
-		echo io_safe_output(substr($module["descripcion"],0,32));
-		if (strlen($module["descripcion"]) > 32){
-			echo "...";
-		}
+		echo mb_strimwidth(io_safe_output($module["descripcion"]), 0, 35, "...", "UTF-8");
 		echo "</td>";
 	}
 	else{
@@ -438,10 +435,7 @@ foreach ($modules as $module) {
 			else $colspan= 1;
 			
 			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".io_safe_output($module["datos"])."'>";
-			echo substr(io_safe_output($module["datos"]),0,42);
-			if (strlen(io_safe_output($module["datos"])) > 42){
-				echo "...";
-			}
+			echo mb_strimwidth(io_safe_output($module["datos"]), 0, 45, "...", "UTF-8");
 		}
 		echo "</td>";
 			

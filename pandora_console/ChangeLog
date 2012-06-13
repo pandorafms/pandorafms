@@ -1,5 +1,12 @@
 2012-06-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/agentes/module_manager_editor.php: Fixed strings of link
+	and unlink actions due to bad translation.
+	
+	Merged from branches.
+	
+2012-06-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* extensions/update_manager/main.php: Added message when user 
 	doesn't have an enterprise update installed on web console.
 

@@ -250,7 +250,7 @@ if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 		}
 		else {
 			$result = policies_relink_module($id_agent_module);
-			ui_print_result_message($result, __('Module relinked to the policy successful'));
+			ui_print_result_message($result, __('Module will be linked in the next application'));
 			
 			db_pandora_audit("Agent management", "Re-link module " . $id_agent_module);
 		}
@@ -258,7 +258,7 @@ if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 
 	if($unlink_policy) {
 		$result = policies_unlink_module($id_agent_module);
-		ui_print_result_message($result, __('Module unlinked from the policy successful'));
+		ui_print_result_message($result, __('Module will be unlinked in the next application'));
 		
 		db_pandora_audit("Agent management", "Unlink module " . $id_agent_module);
 	}

@@ -1,3 +1,8 @@
+2012-06-13 Vanessa Gil <vanessa.gil@artica.es>
+	
+	* godmode/agents/manage_config_remote.php: When you copy a remote
+	configuration, you don't know when is finished.
+
 2012-06-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/module_manager_editor.php: Fixed strings of link

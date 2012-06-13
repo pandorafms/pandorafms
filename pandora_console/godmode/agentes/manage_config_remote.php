@@ -105,8 +105,19 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 			$agent_md5_src = md5($agent_name_src);
 			$agent_md5_dst = md5($agent_name_dst);
 	
-			copy  ( $config["remote_config"]."/md5/".$agent_md5_src.".md5", $config["remote_config"]."/md5/".$agent_md5_dst.".md5" );
-			copy  ( $config["remote_config"]."/conf/".$agent_md5_src.".conf", $config["remote_config"]."/conf/".$agent_md5_dst.".conf" );			
+			$copy_md5 = copy  ( $config["remote_config"]."/md5/".$agent_md5_src.".md5", $config["remote_config"]."/md5/".$agent_md5_dst.".md5" );
+			$copy_conf = copy  ( $config["remote_config"]."/conf/".$agent_md5_src.".conf", $config["remote_config"]."/conf/".$agent_md5_dst.".conf" );			
+			
+			if (!$copy_md5) {
+				ui_print_error_message(__('Error copying md5 file ').$agent_name_src.__(' md5 file'));
+			} else {
+				ui_print_success_message(__('Copied ').$agent_name_src.__(' md5 file'));
+			}
+			if (!$copy_conf) {
+				ui_print_error_message(__('Error copying ').$agent_name_src.__(' config file'));
+			} else {
+				ui_print_success_message(__('Copied ').$agent_name_src.__(' config file'));
+			}
 		} // for each destination agent
 	} //end if copy modules or alerts
 

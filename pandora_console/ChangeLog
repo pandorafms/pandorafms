@@ -1,3 +1,11 @@
+2012-06-13 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_modules.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/ver_agente.php,
+	godmode/agentes/manage_config_remote.php: cleaned source code from
+	merge some cosmetic changes in the trunk and this branch.
+
 2012-06-13  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/agentes/module_manage_editor_common.php: Disable button

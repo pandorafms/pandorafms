@@ -389,7 +389,7 @@ if (is_ajax ()) {
 		$module = db_get_row ('tagente_modulo', 'id_agente_modulo', $id_module);
 		echo '<h3>';
 		echo html_print_image("images/brick.png", true) . '&nbsp;'; 
-		echo ui_print_truncate_text($module['nombre'],25,false,true,false).'</h3>';
+		echo ui_print_truncate_text($module['nombre'], 25, false, true, false).'</h3>';
 		echo '<strong>'.__('Type').':</strong> ';
 		$agentmoduletype = modules_get_agentmodule_type ($module['id_agente_modulo']);
 		echo modules_get_moduletype_name ($agentmoduletype).'&nbsp;';
@@ -403,7 +403,7 @@ if (is_ajax ()) {
 			echo $modulegroup.'<br />';
 		}
 		echo '<strong>'.__('Agent').':</strong> ';
-		echo ui_print_truncate_text(modules_get_agentmodule_agent_name ($module['id_agente_modulo']),25,false,true,false).'<br />';
+		echo ui_print_truncate_text(modules_get_agentmodule_agent_name($module['id_agente_modulo']), 25, false, true, false).'<br />';
 		
 		if($module['id_tipo_modulo'] == 18) {
 			echo '<strong>'.__('Address').':</strong> ';

@@ -1,4 +1,9 @@
 2012-06-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	
+	* operation/agentes/estado_agente.php: Lost lines from my last 
+	commit.
+
+2012-06-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/estado_agente.php: Improved user feedback when
 	user delete an agent in this view.

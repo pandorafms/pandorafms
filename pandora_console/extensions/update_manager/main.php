@@ -85,9 +85,12 @@ function main_view_enterprise($settings, $user_key) {
 	
 	
 	echo '<h4>';
-		echo __('Your Pandora FMS Enterprise version number is') . ' ' .
-			$settings->current_update;
-	echo "</h4>";
+		if ($settings->current_update == 0) 
+			echo __('You do not have installed any updates of Pandora FMS Enterprise');
+		else
+			echo __('Your Pandora FMS Enterprise version number is') . ' ' .
+				$settings->current_update;
+	echo '</h4>';
 	
 	echo "<br><br>";
 	

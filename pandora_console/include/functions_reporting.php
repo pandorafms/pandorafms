@@ -2116,7 +2116,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 1:
 		case 'simple_graph':
 			reporting_header_content($mini, $content, $report, $table, __('Simple graph'),
-				ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false));
+				ui_print_truncate_text($agent_name, 75, false).' <br> ' .
+				ui_print_truncate_text($module_name, 75, false));
 			
 			//RUNNING
 			$table->colspan[1][0] = 4;
@@ -2136,8 +2137,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$report["datetime"], '', 0, 0, true, true);
 			
 			array_push ($table->data, $data);
-			
-			break;		
+			break;
 		case 'projection_graph':
 			reporting_header_content($mini, $content, $report, $table, __('Projection graph'),
 				ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false));
@@ -2189,7 +2189,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'prediction_date':
 			reporting_header_content($mini, $content, $report, $table, __('Prediction date'),
-				ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false));
+				ui_print_truncate_text($agent_name, 75, false).' <br> ' .
+				ui_print_truncate_text($module_name, 75, false));
 			
 			//RUNNING
 			$table->colspan[1][0] = 4;
@@ -2664,7 +2665,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[0][0] = 2;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2695,7 +2696,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2813,10 +2814,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			
 			$data[0] = graph_custom_sql_graph($content["id_rc"], $sizgraph_w, 200, $content["type"], true);
-
+			
 			array_push($table->data, $data);
 			break;
-
 		case 'event_report_group':
 			reporting_header_content($mini, $content, $report, $table, __('Group detailed event'),
 				ui_print_truncate_text(groups_get_name($content['id_group'], true), 60, false));
@@ -2831,10 +2831,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
+			
 			$data[0] = reporting_get_group_detailed_event($content['id_group'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
 			break;
-
 		case 'event_report_module':
 			reporting_header_content($mini, $content, $report, $table, __('Module detailed event'),
 				ui_print_truncate_text($agent_name, 70, false).' <br> ' . ui_print_truncate_text($module_name, 70, false));
@@ -2875,7 +2875,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2914,7 +2914,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2933,10 +2933,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$datelimit = $report["datetime"] - $content['period'];
 		
 			$result = db_get_all_rows_sql('SELECT *
-                                FROM tagente_datos
-                                WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
-                                        AND utimestamp > ' . $datelimit . '
-                                        AND utimestamp <= ' . $report["datetime"]);
+				FROM tagente_datos
+				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
+					AND utimestamp > ' . $datelimit . '
+					AND utimestamp <= ' . $report["datetime"]);
 			
 			// Adds string data if there is no numeric data	
 			if ((count($result) < 0) or (!$result)){ 
@@ -3024,7 +3024,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -3222,6 +3222,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						}
 
 						$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $row ['id_agent_module']);
+						
 						$id_agent_module[$key] = $row['id_agent_module'];
 						$agent_name[$key] = $ag_name;
 						$module_name[$key] = $mod_name;
@@ -3320,7 +3321,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$agent_list = array();
 					$modules_list = array();
 					$operation_list = array();
-					foreach ($generals as $general) {					
+					foreach ($generals as $general) {
 						//Metaconsole connection
 						$server_name = $general ['server_name'];
 						if (($config ['metaconsole'] == 1) && $server_name != '') {

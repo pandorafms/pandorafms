@@ -55,7 +55,7 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 echo '<div style="height: 10px">&nbsp;</div>';	
 	
 	//Floating div
-	echo '<div id="agent_access" style="float:right; width:320px; padding-top:11px;">';
+	echo '<div id="agent_access" style="float:right; width:320px; padding-top:10px;">';
 
 if ($config["agentaccess"]){
 	echo '<b>'.__('Agent access rate (24h)').'</b><br />';
@@ -149,21 +149,21 @@ if ($config['activate_gis']) {
 	$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
 	
 	echo '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
-    echo '<td class="datos2" colspan="2">';
-
-    if ($dataPositionAgent === false) {
-        echo __('There is no GIS data.');
-    }
-    else {
-        echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
-        if ($dataPositionAgent['description'] != "")
-                echo $dataPositionAgent['description'];
-        else
-                echo $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
-        echo "</a>";
-    }
-
-    echo '</td></tr>';
+	echo '<td class="datos2" colspan="2">';
+	
+	if ($dataPositionAgent === false) {
+		echo __('There is no GIS data.');
+	}
+	else {
+		echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
+		if ($dataPositionAgent['description'] != "")
+			echo $dataPositionAgent['description'];
+		else
+			echo $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
+		echo "</a>";
+	}
+	
+	echo '</td></tr>';
 }
 
 // If the url description is setted

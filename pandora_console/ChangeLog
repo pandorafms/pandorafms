@@ -1,3 +1,21 @@
+2012-06-13 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_html.php, include/functions_reporting.php,
+	include/functions_groups.php, include/functions_visual_map.php,
+	include/ajax/reporting.ajax.php, include/functions_config.php,
+	include/functions_ui.php, include/functions.php,
+	extensions/agents_modules.php, extensions/module_groups.php,
+	operation/incidents/incident.php,
+	operation/incidents/incident_detail.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/estado_generalagente.php,
+	operation/agentes/estado_agente.php,
+	operation/agentes/ver_agente.php,
+	operation/snmpconsole/snmp_view.php,
+	operation/integria_incidents/incident.incident.php,
+	operation/integria_incidents/incident.php: a lot of fixes in
+	relation with entities and clean source code style.
+
 2012-06-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/module_manager_editor.php: Fixed strings of link

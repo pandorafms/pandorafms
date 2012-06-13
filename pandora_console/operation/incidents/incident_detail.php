@@ -181,7 +181,7 @@ elseif (isset ($_GET["insert_form"])) {
 	$id_creator = $config["id_user"];
 	$id_grupo = 0;
 	$id_agent = 0;
-
+	
 	if (isset ($_GET["from_event"])) {
 		$event = get_parameter ("from_event");
 		$texto = io_safe_output(events_get_description ($event));

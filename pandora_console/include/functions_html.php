@@ -225,7 +225,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
 		
 		$user_groups_tree = groups_get_groups_tree_recursive($user_groups, $parent_group);
 	}
-
+	
 	$fields = array();
 	foreach ($user_groups_tree as $group) {
 		if (isset($config['text_char_long'])) {
@@ -240,7 +240,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
 	
 	$output = html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value,
 		$return, $multiple, false, $class, $disabled, $style, $option_style);
-		
+	
 	if ($return) {
 		return $output;
 	}

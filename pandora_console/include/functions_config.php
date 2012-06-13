@@ -80,14 +80,15 @@ function config_update_config () {
 	
 	if ($update_config) {
 		db_pandora_audit("Setup", "Setup has changed");
-	} else {
+	}
+	else {
 		return false;
 	}
 	
 	$style = (string) get_parameter ('style', $config["style"]);
 	if ($style != $config['style'])
 		$style = substr ($style, 0, strlen ($style) - 4);
-
+	
 	config_update_value ('language', (string) get_parameter ('language', $config["language"]));	
 	config_update_value ('remote_config', (string) get_parameter ('remote_config', $config["remote_config"]));
 	config_update_value ('block_size', (int) get_parameter ('block_size', $config["block_size"]));
@@ -125,7 +126,7 @@ function config_update_config () {
 	config_update_value ('flash_charts', (bool) get_parameter ('flash_charts', $config["flash_charts"]));
 	config_update_value ('attachment_store', (string) get_parameter ('attachment_store', $config["attachment_store"]));
 	config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API'));
-
+	
 	config_update_value ('custom_logo', (string) get_parameter ('custom_logo', $config["custom_logo"]));
 	config_update_value ('history_db_enabled', (bool) get_parameter ('history_db_enabled', $config['history_db_enabled']));
 	config_update_value ('history_db_host', (string) get_parameter ('history_db_host', $config['history_db_host']));
@@ -156,31 +157,31 @@ function config_update_config () {
 	config_update_value ('autocreate_blacklist', get_parameter ('autocreate_blacklist', $config['autocreate_blacklist']));
 	config_update_value ('default_remote_profile', get_parameter ('default_remote_profile', $config['default_remote_profile']));
 	config_update_value ('default_remote_group', get_parameter ('default_remote_group', $config['default_remote_group']));
-
+	
 	config_update_value ('ldap_server', get_parameter ('ldap_server', $config['ldap_server']));
 	config_update_value ('ldap_port', get_parameter ('ldap_port', $config['ldap_port']));
 	config_update_value ('ldap_version', get_parameter ('ldap_version', $config['ldap_version']));
 	config_update_value ('ldap_start_tls', get_parameter ('ldap_start_tls', $config['ldap_start_tls']));
 	config_update_value ('ldap_base_dn', get_parameter ('ldap_base_dn', $config['ldap_base_dn']));
 	config_update_value ('ldap_login_attr', get_parameter ('ldap_login_attr', $config['ldap_login_attr']));
-
+	
 	config_update_value ('ad_server', get_parameter ('ad_server', $config['ad_server']));
 	config_update_value ('ad_port', get_parameter ('ad_port', $config['ad_port']));
 	config_update_value ('ad_start_tls', get_parameter ('ad_start_tls', $config['ad_start_tls']));
 	config_update_value ('ad_domain', get_parameter ('ad_domain', $config['ad_domain']));
-
+	
 	config_update_value ('rpandora_server', get_parameter ('rpandora_server', $config['rpandora_server']));
 	config_update_value ('rpandora_port', get_parameter ('rpandora_port', $config['rpandora_port']));
 	config_update_value ('rpandora_dbname', get_parameter ('rpandora_dbname', $config['rpandora_dbname']));
 	config_update_value ('rpandora_user', get_parameter ('rpandora_user', $config['rpandora_user']));
 	config_update_value ('rpandora_pass', get_parameter ('rpandora_pass', $config['rpandora_pass']));
-
+	
 	config_update_value ('rbabel_server', get_parameter ('rbabel_server', $config['rbabel_server']));
 	config_update_value ('rbabel_port', get_parameter ('rbabel_port', $config['rbabel_port']));
 	config_update_value ('rbabel_dbname', get_parameter ('rbabel_dbname', $config['rbabel_dbname']));
 	config_update_value ('rbabel_user', get_parameter ('rbabel_user', $config['rbabel_user']));
 	config_update_value ('rbabel_pass', get_parameter ('rbabel_pass', $config['rbabel_pass']));
-
+	
 	config_update_value ('rintegria_server', get_parameter ('rintegria_server', $config['rintegria_server']));
 	config_update_value ('rintegria_port', get_parameter ('rintegria_port', $config['rintegria_port']));
 	config_update_value ('rintegria_dbname', get_parameter ('rintegria_dbname', $config['rintegria_dbname']));
@@ -199,9 +200,9 @@ function config_update_config () {
 	config_update_value ('api_password', get_parameter('api_password', ""));
 	
 	config_update_value ('collection_max_size', get_parameter('collection_max_size', $config['collection_max_size']));
-
+	
 	config_update_value ('font_size', get_parameter('font_size', $config['font_size']));
-	config_update_value ('refr', get_parameter('refr', $config['refr']));	
+	config_update_value ('refr', get_parameter('refr', $config['refr']));
 	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));
 
 	
@@ -228,10 +229,10 @@ function config_update_config () {
 	
 	# Update of Pandora FMS license 
 	$update_manager_installed = db_get_value('value', 'tconfig', 'token', 'update_manager_installed');
-
+	
 	if ($update_manager_installed == 1) {
-
-		if (isset($_POST['license_info_key'])){
+		
+		if (isset($_POST['license_info_key'])) {
 			$values = array("value" => get_parameter('license_info_key'));
 			$where = array("key" => 'customer_key');
 			$update_manage_settings_result = db_process_sql_update('tupdate_settings', $values, $where);
@@ -245,7 +246,7 @@ function config_update_config () {
  */
 function config_process_config () {
 	global $config;
-
+	
 	$configs = db_get_all_rows_in_table ('tconfig');
 	
 	if (empty ($configs)) {

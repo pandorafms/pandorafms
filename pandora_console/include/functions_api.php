@@ -160,16 +160,16 @@ function isInACL($ip) {
 	
 	// If the IP is not in the list, we check one by one, all the wildcard registers
 	foreach($config['list_ACL_IPs_for_API'] as $acl_ip) {
-		if(preg_match('/\*$/', $acl_ip)) {
-			// Remove the final wildcard
-			$acl_ip = substr($acl_ip,0,strlen($acl_ip)-1);
-			
+		if(preg_match('/\*/', $acl_ip)) {
+						
 			// Scape for protection
-			$acl_ip = str_replace('*','\*',$acl_ip);
 			$acl_ip = str_replace('.','\.',$acl_ip);
 			
+			// Replace wilcard by .* to do efective in regular expression
+			$acl_ip = str_replace('*','.*',$acl_ip);
+			
 			// If the string match with the beginning of the IP give it access
-			if(preg_match('/^'.$acl_ip.'/', $ip)) {
+			if(preg_match('/'.$acl_ip.'/', $ip)) {
 				return true;
 			}
 		}
@@ -178,8 +178,15 @@ function isInACL($ip) {
 	return false;
 }
 
+// Return string OK,[version],[build]
+function api_get_test() {
+	global $pandora_version;
+	global $build_version;
+	echo "OK,$pandora_version,$build_version";
+}
+
 //-------------------------DEFINED OPERATIONS FUNCTIONS-----------------
-function get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db) {
+function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 	if ($other['type'] == 'string') {
 		if ($other['data'] != '') {
 			returnError('error_parameter', 'Error in the parameters.');
@@ -206,7 +213,7 @@ function get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 	returnData($returnType, $data, $separator);
 }
 
-function get_agent_module_name_last_value($agentName, $moduleName, $other = ';', $returnType)
+function api_get_agent_module_name_last_value($agentName, $moduleName, $other = ';', $returnType)
 {
 	$idAgent = agents_get_agent_id($agentName);
 	switch ($config["dbtype"]) {
@@ -249,7 +256,7 @@ function get_agent_module_name_last_value($agentName, $moduleName, $other = ';',
 	}
 }
 
-function get_module_last_value($idAgentModule, $trash1, $other = ';', $returnType)
+function api_get_module_last_value($idAgentModule, $trash1, $other = ';', $returnType)
 {
 	$sql = sprintf('SELECT datos FROM tagente_estado WHERE id_agente_modulo = %d', $idAgentModule);
 	$value = db_get_value_sql($sql);
@@ -294,7 +301,7 @@ function get_module_last_value($idAgentModule, $trash1, $other = ';', $returnTyp
  * @param $returnType
  * @return unknown_type
  */
-function get_tree_agents($trash1, $trahs2, $other, $returnType)
+function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
 {
 	if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
@@ -683,7 +690,7 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
  * 
  * @param $thrash3 Don't use.
  */
-function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
+function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	global $config;
 	
 	$name = $other['data'][0];
@@ -753,7 +760,7 @@ function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrast2 Don't use.
  * @param $thrash3 Don't use.
  */
-function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
+function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 	$agentName = $id;
 	$idAgent[0] = agents_get_agent_id($agentName);
 	if (!agents_delete_agent ($idAgent, true))
@@ -775,7 +782,7 @@ function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
  * 
  * @param $thrash3 Don't use.
  */
-function get_all_agents($thrash1, $thrash2, $other, $thrash3) {
+function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 
 	$where = '';
 
@@ -901,7 +908,7 @@ function get_all_agents($thrash1, $thrash2, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use.
  */
-function get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
+function api_get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
 
 	$sql = sprintf("SELECT id_agente, id_agente_modulo, nombre 
 	FROM tagente_modulo WHERE id_agente = %d AND disabled = 0 AND delete_pending = 0", $other['data'][0]);
@@ -931,7 +938,7 @@ function get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use.
  */
-function get_group_agent($thrash1, $thrash2, $other, $thrash3) {
+function api_get_group_agent($thrash1, $thrash2, $other, $thrash3) {
 
 	$sql = sprintf("SELECT groups.nombre nombre 
 	FROM tagente agents, tgrupo groups WHERE id_agente = %d AND agents.disabled = 0 AND groups.disabled = 0
@@ -962,7 +969,7 @@ function get_group_agent($thrash1, $thrash2, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use.
  */
-function get_policies($thrash1, $thrash2, $other, $thrash3) {
+function api_get_policies($thrash1, $thrash2, $other, $thrash3) {
 
 	$where = '';
 
@@ -1000,7 +1007,7 @@ function get_policies($thrash1, $thrash2, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use.
  */
-function get_policy_modules($thrash1, $thrash2, $other, $thrash3) {
+function api_get_policy_modules($thrash1, $thrash2, $other, $thrash3) {
 	
 	$where = '';
 	
@@ -1044,7 +1051,7 @@ function get_policy_modules($thrash1, $thrash2, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use
  */
-function set_create_network_module($id, $thrash1, $other, $thrash3) {
+function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
 	$agentName = $id;
 	
 	$idAgent = agents_get_agent_id($agentName);
@@ -1115,7 +1122,7 @@ function set_create_network_module($id, $thrash1, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use
  */
-function set_update_network_module($id_module, $thrash1, $other, $thrash3){
+function api_set_update_network_module($id_module, $thrash1, $other, $thrash3){
 	
 	if ($id_module == "") {
 		returnError('error_update_network_module', __('Error updating network module. Module name cannot be left blank.'));
@@ -1181,7 +1188,7 @@ function set_update_network_module($id_module, $thrash1, $other, $thrash3){
  *  
  * @param $thrash3 Don't use
  */
-function set_create_plugin_module($id, $thrash1, $other, $thrash3) {
+function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 	$agentName = $id;
 	
 	if ($other['data'][22] == "") {
@@ -1255,7 +1262,7 @@ function set_create_plugin_module($id, $thrash1, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use
  */
-function set_update_plugin_module($id_module, $thrash1, $other, $thrash3){
+function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3){
 	
 	if ($id_module == "") {
 		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module cannot be left blank.'));
@@ -1322,7 +1329,7 @@ function set_update_plugin_module($id_module, $thrash1, $other, $thrash3){
  *  
  * @param $thrash3 Don't use
  */
-function set_create_data_module($id, $thrash1, $other, $thrash3) {
+function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 	$agentName = $id;
 	
 	if ($other['data'][0] == "") {
@@ -1387,7 +1394,7 @@ function set_create_data_module($id, $thrash1, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use
  */
-function set_update_data_module($id_module, $thrash1, $other, $thrash3){
+function api_set_update_data_module($id_module, $thrash1, $other, $thrash3){
 	
 	if ($id_module == "") {
 		returnError('error_update_data_module', __('Error updating data module. Id_module cannot be left blank.'));
@@ -1461,7 +1468,7 @@ function set_update_data_module($id_module, $thrash1, $other, $thrash3){
  * 
  * @param $thrash3 Don't use
  */
-function set_create_snmp_module($id, $thrash1, $other, $thrash3) {
+function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 	$agentName = $id;
 	
 	if ($other['data'][0] == "") {
@@ -1593,7 +1600,7 @@ function set_create_snmp_module($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
+function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 	
 	if ($id_module == "") {
 		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module cannot be left blank.'));
@@ -1686,7 +1693,7 @@ function set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
  * @param $thrash2 Don't use.
 
  */
-function set_new_network_component($id, $thrash1, $other, $thrash2) {
+function api_set_new_network_component($id, $thrash1, $other, $thrash2) {
 
 	if ($id == ""){
 		returnError('error_set_new_network_component', __('Error creating network component. Network component name cannot be left blank.'));
@@ -1755,7 +1762,7 @@ function set_new_network_component($id, $thrash1, $other, $thrash2) {
  * @param $thrash2 Don't use.
 
  */
-function set_new_plugin_component($id, $thrash1, $other, $thrash2) {
+function api_set_new_plugin_component($id, $thrash1, $other, $thrash2) {
 
 	if ($id == ""){
 		returnError('error_set_new_plugin_component', __('Error creating plugin component. Plugin component name cannot be left blank.'));
@@ -1829,7 +1836,7 @@ function set_new_plugin_component($id, $thrash1, $other, $thrash2) {
  * @param $thrash2 Don't use.
 
  */
-function set_new_snmp_component($id, $thrash1, $other, $thrash2) {
+function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 
 	if ($id == ""){
 		returnError('error_set_new_snmp_component', __('Error creating SNMP component. SNMP component name cannot be left blank.'));
@@ -1951,7 +1958,7 @@ function set_new_snmp_component($id, $thrash1, $other, $thrash2) {
  * @param $thrash2 Don't use.
 
  */
-function set_new_local_component($id, $thrash1, $other, $thrash2) {
+function api_set_new_local_component($id, $thrash1, $other, $thrash2) {
 
 	if ($id == ""){
 		returnError('error_set_new_local_component', __('Error creating local component. Local component name cannot be left blank.'));
@@ -2001,7 +2008,7 @@ function set_new_local_component($id, $thrash1, $other, $thrash2) {
  * @param $thrash2 Don't use.
 
  */
-function get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
+function api_get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
 
 	if ($id == ""){
 		returnError('error_get_module_value_all_agents', __('Error getting module value from all agents. Module name cannot be left blank.'));
@@ -2049,7 +2056,7 @@ function get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
  *    
  * @param $thrash3 Don't use
  */
-function set_create_alert_template($name, $thrash1, $other, $thrash3) {
+function api_set_create_alert_template($name, $thrash1, $other, $thrash3) {
 	if ($name == "") {
 		returnError('error_create_alert_template', __('Error creating alert template. Template name cannot be left blank.'));
 		return;
@@ -2146,7 +2153,7 @@ function set_create_alert_template($name, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_update_alert_template($id_template, $thrash1, $other, $thrash3) {
+function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3) {
 
 	if ($id_template == "") {
 		returnError('error_update_alert_template', __('Error updating alert template. Id_template cannot be left blank.'));
@@ -2198,7 +2205,7 @@ function set_update_alert_template($id_template, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_delete_alert_template($id_template, $thrash1, $other, $thrash3) {
+function api_set_delete_alert_template($id_template, $thrash1, $other, $thrash3) {
 
 	if ($id_template == "") {
 		returnError('error_delete_alert_template', __('Error deleting alert template. Id_template cannot be left blank.'));
@@ -2228,7 +2235,7 @@ function set_delete_alert_template($id_template, $thrash1, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use.
  */
-function get_all_alert_templates($thrash1, $thrash2, $other, $thrash3) {
+function api_get_all_alert_templates($thrash1, $thrash2, $other, $thrash3) {
 
 	if (!isset($other['data'][0]))
 		$separator = ';'; // by default
@@ -2265,7 +2272,7 @@ function get_all_alert_templates($thrash1, $thrash2, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function get_alert_template($id_template, $thrash1, $other, $thrash3) {
+function api_get_alert_template($id_template, $thrash1, $other, $thrash3) {
 	
 	$filter_templates = false;
 
@@ -2307,7 +2314,7 @@ function get_alert_template($id_template, $thrash1, $other, $thrash3) {
  *
  * @param $thrash3 Don't use.
  */
-function get_module_groups($thrash1, $thrash2, $other, $thrash3) {
+function api_get_module_groups($thrash1, $thrash2, $other, $thrash3) {
 
         if (!isset($other['data'][0]))
                 $separator = ';'; // by default
@@ -2343,7 +2350,7 @@ function get_module_groups($thrash1, $thrash2, $other, $thrash3) {
  *
  * @param $thrash3 Don't use.
  */
-function get_plugins($thrash1, $thrash2, $other, $thrash3) {
+function api_get_plugins($thrash1, $thrash2, $other, $thrash3) {
 
         if (!isset($other['data'][0]))
                 $separator = ';'; // by default
@@ -2375,7 +2382,7 @@ function get_plugins($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrash1 Don't use
  * @param $thrash2 Don't use
  */
-function set_create_network_module_from_component($agent_name, $component_name, $thrash1, $thrash2) {
+function api_set_create_network_module_from_component($agent_name, $component_name, $thrash1, $thrash2) {
 	$agent_id = agents_get_agent_id($agent_name);
 	
 	if (!$agent_id){
@@ -2424,7 +2431,7 @@ function set_create_network_module_from_component($agent_name, $component_name, 
  *    
  * @param $thrash3 Don't use
  */
-function set_create_module_template($id, $thrash1, $other, $thrash3) {
+function api_set_create_module_template($id, $thrash1, $other, $thrash3) {
 	if ($id == "") {
 		returnError('error_module_to_template', __('Error assigning module to template. Id_template cannot be left blank.'));
 		return;
@@ -2488,7 +2495,7 @@ function set_create_module_template($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_delete_module_template($id, $thrash1, $other, $thrash3) {
+function api_set_delete_module_template($id, $thrash1, $other, $thrash3) {
 
 	if ($id == "") {
 		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template cannot be left blank.'));
@@ -2526,7 +2533,7 @@ function set_delete_module_template($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
+function api_set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
 
 	// Return all groups
 	$allGroups = db_get_all_rows_filter('tgrupo', array(), 'id_grupo');
@@ -2601,7 +2608,7 @@ function set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
+function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
 
 	# Get all policies
 	$policies = enterprise_hook('policies_get_policies', array(false, false, false, true));
@@ -2684,7 +2691,7 @@ function set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_stop_downtime($id, $thrash1, $other, $thrash3) {
+function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_stop_downtime', __('Error stopping downtime. Id_downtime cannot be left blank.'));
 		return;	
@@ -2720,7 +2727,7 @@ function set_stop_downtime($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_add_agent_policy($id, $thrash1, $other, $thrash3) {
+function api_set_add_agent_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_policy cannot be left blank.'));
 		return;			
@@ -2779,7 +2786,7 @@ function set_add_agent_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
+function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_add_data_module_policy', __('Error adding data module to policy. Id_policy cannot be left blank.'));
 		return;			
@@ -2849,7 +2856,7 @@ function set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
+function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_update_data_module_policy', __('Error updating data module in policy. Id_policy cannot be left blank.'));
 		return;			
@@ -2914,7 +2921,7 @@ function set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
+function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_network_data_module_policy', __('Error adding network module to policy. Id_policy cannot be left blank.'));
 		return;			
@@ -2993,7 +3000,7 @@ function set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
+function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_update_network_module_policy', __('Error updating network module in policy. Id_policy cannot be left blank.'));
 		return;			
@@ -3056,7 +3063,7 @@ function set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
+function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Id_policy cannot be left blank.'));
 		return;			
@@ -3140,7 +3147,7 @@ function set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
+function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_update_plugin_module_policy', __('Error updating plugin module in policy. Id_policy cannot be left blank.'));
 		return;			
@@ -3204,7 +3211,7 @@ function set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
+function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Id_policy cannot be left blank.'));
 		return;			
@@ -3337,7 +3344,7 @@ function set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
+function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Id_policy cannot be left blank.'));
 		return;			
@@ -3423,7 +3430,7 @@ function set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_apply_policy($id, $thrash1, $other, $thrash3) {
+function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
 	if ($id == ""){
 		returnError('error_apply_policy', __('Error applying policy. Id_policy cannot be left blank.'));
 		return;			
@@ -3496,7 +3503,7 @@ function set_apply_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function set_apply_all_policies($id, $thrash1, $other, $thrash3) {
+function api_set_apply_all_policies($id, $thrash1, $other, $thrash3) {
 	$policies = array();
 
 	# Get all policies
@@ -3546,7 +3553,7 @@ function set_apply_all_policies($id, $thrash1, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use
  */
-function set_create_group($id, $thrash1, $other, $thrash3) {
+function api_set_create_group($id, $thrash1, $other, $thrash3) {
 	$group_name = $id;
 	
 	if ($id == ""){
@@ -3604,7 +3611,7 @@ function set_create_group($id, $thrash1, $other, $thrash3) {
  *  
  * @param $returnType Don't use.
  */
-function get_module_data($id, $thrash1, $other, $returnType) {
+function api_get_module_data($id, $thrash1, $other, $returnType) {
 	
 	$separator = $other['data'][0];
 	$periodSeconds = $other['data'][1];
@@ -3638,7 +3645,7 @@ function get_module_data($id, $thrash1, $other, $returnType) {
  *  
  * @param $thrash3 Don't use.
  */
-function set_new_user($id, $thrash2, $other, $thrash3) {
+function api_set_new_user($id, $thrash2, $other, $thrash3) {
 	$values = array ();
 	$values['fullname'] = $other['data'][0];
 	$values['firstname'] = $other['data'][1];
@@ -3670,7 +3677,7 @@ function set_new_user($id, $thrash2, $other, $thrash3) {
  *  
  * @param $thrash3 Don't use.
  */
-function set_update_user($id, $thrash2, $other, $thrash3) {
+function api_set_update_user($id, $thrash2, $other, $thrash3) {
 
 	$fields_user = array('fullname', 'firstname', 'lastname', 'middlename', 'password', 'email', 
 						 'phone', 'language', 'comments', 'is_admin', 'block_size', 'flash_chart');
@@ -3731,7 +3738,7 @@ function set_update_user($id, $thrash2, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 
-function set_enable_disable_user ($id, $thrash2, $other, $thrash3) {
+function api_set_enable_disable_user ($id, $thrash2, $other, $thrash3) {
 	
 	if ($id == ""){
 		returnError('error_enable_disable_user', 'Error enable/disable user. Id_user cannot be left blank.');
@@ -3949,7 +3956,7 @@ function otherParameter2Filter($other, $return_as_array = false) {
  * @param $other
  * @param $trash1
  */
-function set_new_alert_template($id, $id2, $other, $trash1) {
+function api_set_new_alert_template($id, $id2, $other, $trash1) {
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');
 		return;
@@ -3992,7 +3999,7 @@ function set_new_alert_template($id, $id2, $other, $trash1) {
 	}
 }
 
-function set_delete_module($id, $id2, $other, $trash1) {
+function api_set_delete_module($id, $id2, $other, $trash1) {
 	if ($other['type'] == 'string') {
 		$simulate = false;
 		if ($other['data'] == 'simulate') {
@@ -4031,7 +4038,7 @@ function set_delete_module($id, $id2, $other, $trash1) {
 	}
 }
 
-function set_module_data($id, $thrash2, $other, $trash1) {
+function api_set_module_data($id, $thrash2, $other, $trash1) {
 	global $config;
 	
 	if ($other['type'] == 'array') {
@@ -4080,7 +4087,7 @@ function set_module_data($id, $thrash2, $other, $trash1) {
 	}
 }
 
-function set_new_module($id, $id2, $other, $trash1) {
+function api_set_new_module($id, $id2, $other, $trash1) {
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');
 		return;
@@ -4181,7 +4188,7 @@ function set_new_module($id, $id2, $other, $trash1) {
  * @param unknown_type $other
  * @param unknown_type $trash1
  */
-function set_alert_actions($id, $id2, $other, $trash1) {
+function api_set_alert_actions($id, $id2, $other, $trash1) {
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');
 		return;
@@ -4240,7 +4247,7 @@ function set_alert_actions($id, $id2, $other, $trash1) {
 	}
 }
 
-function set_new_event($trash1, $trash2, $other, $trash3) {
+function api_set_new_event($trash1, $trash2, $other, $trash3) {
 	$simulate = false;
 	$time = get_system_time();
 	
@@ -4385,7 +4392,7 @@ function set_new_event($trash1, $trash2, $other, $trash3) {
 	return;
 }
 
-function set_event_validate_filter_pro($trash1, $trash2, $other, $trash3) {
+function api_set_event_validate_filter_pro($trash1, $trash2, $other, $trash3) {
 	$simulate = false;
 	
 	if ($other['type'] == 'string') {
@@ -4444,7 +4451,7 @@ function set_event_validate_filter_pro($trash1, $trash2, $other, $trash3) {
 	}
 }
 
-function set_event_validate_filter($trash1, $trash2, $other, $trash3) {
+function api_set_event_validate_filter($trash1, $trash2, $other, $trash3) {
 	$simulate = false;
 	
 	if ($other['type'] == 'string') {
@@ -4479,7 +4486,7 @@ function set_event_validate_filter($trash1, $trash2, $other, $trash3) {
 	}
 }
 
-function set_validate_events($id_event, $trash1, $other, $return_type, $user_in_db) {
+function api_set_validate_events($id_event, $trash1, $other, $return_type, $user_in_db) {
 	$text = $other['data'];
 	
 	// Set off the standby mode when close an event
@@ -4498,7 +4505,7 @@ function set_validate_events($id_event, $trash1, $other, $return_type, $user_in_
 	}
 }
 
-function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_db) {
+function api_get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_db) {
 	global $config;
 	
 	//By default.
@@ -4801,7 +4808,7 @@ function get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_d
  * @param $returnType
  * @param $user_in_db
  */
-function get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
+function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
 	if ($user_in_db !== null) {
 		get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_db);
 		$last_error = error_get_last();
@@ -4854,7 +4861,7 @@ function get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
  * @param $thrash2 Don't use.
  * @param $thrash3 Don't use.
  */
-function set_delete_user($id, $thrash1, $thrash2, $thrash3) {
+function api_set_delete_user($id, $thrash1, $thrash2, $thrash3) {
 	if (!delete_user($id))
 		returnError('error_delete_user', 'Error delete user');
 	else
@@ -4876,7 +4883,7 @@ function set_delete_user($id, $thrash1, $thrash2, $thrash3) {
  * @param $thrash2 Don't use.
 
  */
-function set_add_user_profile($id, $thrash1, $other, $thrash2) {
+function api_set_add_user_profile($id, $thrash1, $other, $thrash2) {
 	$group = $other['data'][0];
 	$profile = $other['data'][1];
 
@@ -4900,7 +4907,7 @@ function set_add_user_profile($id, $thrash1, $other, $thrash2) {
  *  
  * @param $thrash2 Don't use.
  */
-function set_delete_user_profile($id, $thrash1, $other, $thrash2) {
+function api_set_delete_user_profile($id, $thrash1, $other, $thrash2) {
 	$group = $other['data'][0];
 	$profile = $other['data'][1];
 	
@@ -4930,7 +4937,7 @@ function set_delete_user_profile($id, $thrash1, $other, $thrash2) {
  *  
  * @param $thrash3 Don't use.
  */
-function set_new_incident($thrash1, $thrash2, $other, $thrash3) {
+function api_set_new_incident($thrash1, $thrash2, $other, $thrash3) {
 	$title = $other['data'][0];
 	$description = $other['data'][1];
 	$origin = $other['data'][2];
@@ -4966,7 +4973,7 @@ function set_new_incident($thrash1, $thrash2, $other, $thrash3) {
  * @param $other string Note.
  * @param $thrash2 Don't use.
  */
-function set_new_note_incident($id, $id2, $other, $thrash2) {
+function api_set_new_note_incident($id, $id2, $other, $thrash2) {
 	$values = array(
 		'id_usuario' => $id,
 		'id_incident' => $id2,
@@ -4991,7 +4998,7 @@ function set_new_note_incident($id, $id2, $other, $thrash2) {
 // http://localhost/pandora_console/include/api.php?op=set&op2=enable_module&id=garfio&id2=Status
  */
 
-function set_disable_module ($agent_name, $module_name, $thrast3, $thrash4) {
+function api_set_disable_module ($agent_name, $module_name, $thrast3, $thrash4) {
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
     db_process_sql("UPDATE tagente_modulo SET disabled = 1 WHERE id_agente_modulo = $id_agent_module");
@@ -5008,7 +5015,7 @@ function set_disable_module ($agent_name, $module_name, $thrast3, $thrash4) {
  * @param $thrash4 Don't use.
  */
 
-function set_enable_module ($agent_name, $module_name, $thrast3, $thrash4) {
+function api_set_enable_module ($agent_name, $module_name, $thrast3, $thrash4) {
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
     db_process_sql("UPDATE tagente_modulo SET disabled = 0 WHERE id_agente_modulo = $id_agent_module");
@@ -5027,7 +5034,7 @@ function set_enable_module ($agent_name, $module_name, $thrast3, $thrash4) {
 // http://localhost/pandora_console/include/api.php?op=set&op2=disable_alert&id=garfio&id2=Status&other=Warning%20condition
  */
 
-function set_disable_alert ($agent_name, $module_name, $template_name, $thrash4) {
+function api_set_disable_alert ($agent_name, $module_name, $template_name, $thrash4) {
 
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
@@ -5048,7 +5055,7 @@ function set_disable_alert ($agent_name, $module_name, $template_name, $thrash4)
 // http://localhost/pandora_console/include/api.php?op=set&op2=enable_alert&id=garfio&id2=Status&other=Warning%20condition
  */
 
-function set_enable_alert ($agent_name, $module_name, $template_name, $thrash4) {
+function api_set_enable_alert ($agent_name, $module_name, $template_name, $thrash4) {
 
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
@@ -5069,7 +5076,7 @@ function set_enable_alert ($agent_name, $module_name, $template_name, $thrash4) 
 // http://localhost/pandora_console/include/api.php?op=set&op2=disable_module_alerts&id=garfio&id2=Status
  */
 
-function set_disable_module_alerts ($agent_name, $module_name, $thrash3, $thrash4) {
+function api_set_disable_module_alerts ($agent_name, $module_name, $thrash3, $thrash4) {
 
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
@@ -5089,7 +5096,7 @@ function set_disable_module_alerts ($agent_name, $module_name, $thrash3, $thrash
 // http://localhost/pandora_console/include/api.php?op=set&op2=enable_module_alerts&id=garfio&id2=Status
  */
 
-function set_enable_module_alerts ($agent_name, $module_name, $thrash3, $thrash4) {
+function api_set_enable_module_alerts ($agent_name, $module_name, $thrash3, $thrash4) {
 
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));

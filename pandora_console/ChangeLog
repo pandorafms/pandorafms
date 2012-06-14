@@ -1,5 +1,14 @@
 2012-06-14  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_api.php
+	include/api.php: Change the names of the functions_api
+	functions with prefix 'api_' for security. Improve
+	the wildcards of the ACL's IP list to allow place 
+	wilcard anywhere. Add to API the possibility 
+	of be extended from extensions.
+
+2012-06-14  Sergio Martin <sergio.martin@artica.es>
+
 	* include/api.php: Change the security checks adding
 	a new parameter to API pass
 

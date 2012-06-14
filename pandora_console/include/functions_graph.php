@@ -553,7 +553,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('datos', 'utimestamp'));
+			array ('datos', 'utimestamp'), 'AND', true);
 		if ($data === false) {
 			$data = array ();
 		}

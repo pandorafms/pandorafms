@@ -398,12 +398,7 @@ function servers_get_info ($id_server = -1) {
 					
 				if (!empty ($result["module_lag"])) {
 					$server["module_lag"] = $result["module_lag"];
-				} 
-
-			// ---------------------------------------------------------------
-			// Recon server only
-			// ---------------------------------------------------------------
-
+				}
 			}
 		} // Take data for realtime mode
 

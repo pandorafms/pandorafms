@@ -1,3 +1,10 @@
+2012-06-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_graph.php: Added history database support to
+	  combined graphs.
+
+	* include/functions_servers.php: Removed some comments.
+
 2012-06-13 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php, include/functions_ui.php,

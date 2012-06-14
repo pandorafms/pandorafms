@@ -305,10 +305,10 @@ if(!empty($groups)) {
 				'<a href="javascript: showBranch(' . $group['id_grupo'] .
 				', ' . $group['parent'] . ');" title="' . __('Show branch children') .
 				'"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' .
-				$symbol . '</span> '. ui_print_truncate_text($group['nombre']).'</a></strong>';
+				$symbol . '</span> '. ui_print_truncate_text($group['nombre']) . '</a></strong>';
 		}
 		else {
-			$data[0] = '<strong>'.$tabulation . ' '. ui_print_truncate_text($group['nombre'], 60).'</strong>';
+			$data[0] = '<strong>'.$tabulation . ' ' . ui_print_truncate_text($group['nombre']) . '</strong>';
 		}
 		$data[1] = $group['id_grupo'];
 		$data[2] = ui_print_group_icon($group['id_grupo'], true);

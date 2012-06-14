@@ -1,3 +1,36 @@
+2012-06-14 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_html.php, include/functions_reporting.php,
+	include/functions_groups.php, include/functions_visual_map.php,
+	include/ajax/reporting.ajax.php, include/functions_ui.php,
+	extensions/agents_modules.php, extensions/module_groups.php,
+	operation/incidents/incident.php,
+	operation/incidents/incident_detail.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/estado_agente.php,
+	operation/agentes/ver_agente.php,
+	operation/snmpconsole/snmp_view.php,
+	operation/integria_incidents/incident.incident.php,
+	mobile/operation/agents/monitor_status.php,
+	mobile/operation/agents/view_agents.php,
+	mobile/operation/agents/view_alerts.php,
+	mobile/operation/events/events.php, mobile/index.php,
+	godmode/groups/modu_group_list.php, godmode/groups/group_list.php,
+	godmode/agentes/module_manager.php,
+	godmode/agentes/modificar_agente.php,
+	godmode/agentes/configurar_agente.php,
+	godmode/alerts/alert_list.list.php, godmode/setup/os.list.php,
+	godmode/users/configure_user.php,
+	godmode/modules/manage_network_templates.php,
+	godmode/reporting/reporting_builder.list_items.php,
+	godmode/tag/tag.php: changed the calls of "ui_print_truncate_text"
+	now we are trying that more easy and standar, now the string name of
+	agent have the equal number of characters in all code...but there
+	are two styles, small and medium size for agents text name, modules
+	text name, but description is only size. You can set this sizes in
+	the visual setup page into your Pandora.
+
 2012-06-14  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_api.php

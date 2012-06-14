@@ -342,7 +342,7 @@ if (is_ajax ()) {
 			echo '<ul>';
 			foreach ($bad_modules as $module) {
 				echo '<li>';
-				echo ui_print_truncate_text($module['nombre']);
+				echo ui_print_truncate_text($module['nombre'], 'module_small');
 				echo '</li>';
 			}
 			echo '</ul>';
@@ -389,7 +389,7 @@ if (is_ajax ()) {
 		$module = db_get_row ('tagente_modulo', 'id_agente_modulo', $id_module);
 		echo '<h3>';
 		echo html_print_image("images/brick.png", true) . '&nbsp;'; 
-		echo ui_print_truncate_text($module['nombre'], 25, false, true, false).'</h3>';
+		echo ui_print_truncate_text($module['nombre'], 'module_small', false, true, false).'</h3>';
 		echo '<strong>'.__('Type').':</strong> ';
 		$agentmoduletype = modules_get_agentmodule_type ($module['id_agente_modulo']);
 		echo modules_get_moduletype_name ($agentmoduletype).'&nbsp;';
@@ -403,7 +403,7 @@ if (is_ajax ()) {
 			echo $modulegroup.'<br />';
 		}
 		echo '<strong>'.__('Agent').':</strong> ';
-		echo ui_print_truncate_text(modules_get_agentmodule_agent_name($module['id_agente_modulo']), 25, false, true, false).'<br />';
+		echo ui_print_truncate_text(modules_get_agentmodule_agent_name($module['id_agente_modulo']), 'agent_small', false, true, false).'<br />';
 		
 		if($module['id_tipo_modulo'] == 18) {
 			echo '<strong>'.__('Address').':</strong> ';
@@ -432,7 +432,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter ('id_group');
 		$group = db_get_row ('tgrupo', 'id_grupo', $id_group);
 		echo '<h3>' . html_print_image("images/groups_small/" . groups_get_icon ($group['id_grupo']) . ".png", true);
-		echo ui_print_truncate_text($group['nombre'], 25, false, true, false) . '</h3>';
+		echo ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false) . '</h3>';
 		echo '<strong>'.__('Parent').':</strong> ';
 		if ($group['parent'] == 0) {
 			echo __('None').'<br />';
@@ -713,7 +713,9 @@ switch($tab) {
 		break;
 }
 
-ui_print_page_header(__('Agent') . '&nbsp;-&nbsp;' . ui_print_truncate_text(agents_get_name($id_agente),25, false) . $header_description, $icon, false, "", false, $onheader);
+ui_print_page_header(__('Agent') . '&nbsp;-&nbsp;' .
+	ui_print_truncate_text(agents_get_name($id_agente), 'agent_small', false) .
+	$header_description, $icon, false, "", false, $onheader);
 
 
 switch ($tab) {

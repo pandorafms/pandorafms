@@ -64,7 +64,6 @@ array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true);
 $form_filter .=  ui_print_help_tip(__('Type at least two characters to search'), true); //'<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 $form_filter .= "</td>\n";
 
-
 $form_filter .= "<td>".__('Module name')."</td><td>";
 $form_filter .= html_print_input_text ('module_name', $moduleName, '', 12, 255, true);
 $form_filter .= "</td>\n";
@@ -398,13 +397,15 @@ foreach ($simple_alerts as $alert) {
 			$data[0] .= '</span>';
 		$data[0] .= '</a>';
 	}
-	$data[1] = ui_print_truncate_text(modules_get_agentmodule_name ($alert['id_agent_module']), 35, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+	$data[1] = ui_print_truncate_text(
+		modules_get_agentmodule_name ($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	
 	$data[2] = ' <a class="template_details"
 		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">' .
 		html_print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help")) . '</a> ';
 	$data[2] .= "<a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
-	$data[2] .= ui_print_truncate_text(alerts_get_alert_template_name ($alert['id_alert_template']), 55, false, true, true, '[&hellip;]', 'font-size: 7.1pt');
+	$data[2] .= ui_print_truncate_text(
+		alerts_get_alert_template_name ($alert['id_alert_template']), GENERIC_SIZE_TEXT, false, true, true, '[&hellip;]', 'font-size: 7.1pt');
 	$data[2] .= "</a>";
 	
 	$actions = alerts_get_alert_agent_module_actions ($alert['id']);
@@ -425,7 +426,7 @@ foreach ($simple_alerts as $alert) {
 				$data[3] .= '<font class="action_name" style="font-style: italic; color: #aaaaaa;">';
 			else
 				$data[3] .= '<font class="action_name">';
-			$data[3] .= ui_print_truncate_text($action['name'], 15, false);
+			$data[3] .= ui_print_truncate_text($action['name'], GENERIC_SIZE_TEXT, false);
 			$data[3] .= ' <em>(';
 			if ($action['fires_min'] == $action['fires_max']) {
 				if ($action['fires_min'] == 0)

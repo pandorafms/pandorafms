@@ -397,7 +397,7 @@ foreach ($modules as $module) {
 	AND ($module["id_tipo_modulo"] != 17)
 	AND ($module["id_tipo_modulo"] != 23)) {
 		echo "</td><td class='".$tdcolor."f9' title='".io_safe_output($module["descripcion"])."'>"; 
-		echo ui_print_truncate_text(io_safe_output($module["descripcion"]), 35, false);
+		echo ui_print_truncate_text(io_safe_output($module["descripcion"]), 'description', false);
 		echo "</td>";
 	}
 	else{

@@ -66,9 +66,9 @@ class ViewAlerts {
 			$idAgent = modules_get_agentmodule_agent($alert["id_agent_module"]);
 			
 			$data[] = '<a href="index.php?page=agent&id=' . $idAgent . '">' .
-				ui_print_truncate_text(modules_get_agentmodule_name($alert["id_agent_module"]), 20, true, true) . '</a>';
+				ui_print_truncate_text(modules_get_agentmodule_name($alert["id_agent_module"]), 'module_small', true, true) . '</a>';
 			$template = io_safe_output(alerts_get_alert_template ($alert['id_alert_template']));
-			$data[] = ui_print_truncate_text(io_safe_output($template['name']), 20, true, true);
+			$data[] = ui_print_truncate_text(io_safe_output($template['name']), GENERIC_SIZE_TEXT, true, true);
 			$data[] = ui_print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));
 			
 			$status = STATUS_ALERT_NOT_FIRED;

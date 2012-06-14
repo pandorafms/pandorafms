@@ -497,16 +497,16 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 		switch ($label_type) {
 			case 'agent_module':
 			default:
-				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 10, false, true, false, '…', false);
-				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 10, false, true, false, '…', false);
+				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
+				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
 				$label = $agent_label . " - " . $module_label;
 				break;
 			case 'module':
-				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 20, false, true, false, '…', false);
+				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
 				$label = $module_label;
 				break;
 			case 'agent':
-				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 20, false, true, false, '…', false);
+				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
 				$label = $agent_label;
 				break;
 			case 'none':
@@ -1498,11 +1498,11 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 		}
 		
 		if (!empty($agent)) {
-			$text .= " (" . ui_print_truncate_text($agent, 10, false);
+			$text .= " (" . ui_print_truncate_text($agent, 'agent_small', false);
 			
 			$moduleName = io_safe_output(db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module));
 			if (!empty($moduleName)) {
-				$text .= " - " . ui_print_truncate_text($moduleName, 10, false);
+				$text .= " - " . ui_print_truncate_text($moduleName, 'module_small', false);
 			}
 			
 			$text .= ")"; 

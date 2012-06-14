@@ -150,14 +150,12 @@ if (!empty($result)){
 		
 		$data = array ();
 		
-		$data[0] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . $tag["name"] . "</a>";  
-		$data[1] = ui_print_truncate_text($tag["description"], 25, false);
+		$data[0] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=" . $tag["id_tag"] . "'>" . $tag["name"] . "</a>";  
+		$data[1] = ui_print_truncate_text($tag["description"], 'description', false);
 		$data[2] = '<a href="' . $tag["url"] . '">' . $tag["url"] . '</a>';
 		$data[3] = ' <a class="tag_details"
-		href="ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag='.$tag['id_tag'].'">' .
-		html_print_image("images/zoom.png", true, array("id" => 'tag-details-'.$tag['id_tag'], "class" => "img_help")) . '</a> ';
-		
-		
+			href="ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag=' . $tag['id_tag'] . '">' .
+			html_print_image("images/zoom.png", true, array("id" => 'tag-details-'.$tag['id_tag'], "class" => "img_help")) . '</a> ';
 		
 		$data[3] .= tags_get_modules_count($tag["id_tag"]);
 		$data[4] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
@@ -186,6 +184,5 @@ ui_require_jquery_file ('cluetip');
 	}).click (function () {
 		return false;
 	});
-
 /* ]]> */
 </script>

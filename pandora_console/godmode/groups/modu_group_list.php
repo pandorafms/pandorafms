@@ -180,8 +180,8 @@ if (!empty($groups)) {
 	foreach ($groups as $id_group ) {
 		$data = array ();
 		$data[0] = 	$id_group["id_mg"];
-		$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">' .
-			ui_print_truncate_text($id_group["name"], 50).'</a></strong>';
+		$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group=' . $id_group["id_mg"].'">' .
+			ui_print_truncate_text($id_group["name"], GENERIC_SIZE_TEXT).'</a></strong>';
 		$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 		
 		array_push ($table->data, $data);

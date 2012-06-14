@@ -108,7 +108,7 @@ class ViewAgents {
 			
 			$data = array();
 			
-			$truncName = ui_print_truncate_text($agent['nombre'], 25, true, true);
+			$truncName = ui_print_truncate_text($agent['nombre'], 'agent_small', true, true);
 			
 			$data[] = ui_print_group_icon_path($agent["id_grupo"], true, "../images/groups_small", '', false);
 			$data[] = '<a href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . $truncName . '</a>';
@@ -235,7 +235,7 @@ class ViewAgent {
 			$data = array();
 			
 			$data[] = '<a href="index.php?page=agent&action=view_module_graph&id=' . $module['id_agente_modulo'] . '">' . 
-				ui_print_truncate_text($module["nombre"], 20, true, true) . '</a>';
+				ui_print_truncate_text($module["nombre"], 'module_small', true, true) . '</a>';
 			$status = STATUS_MODULE_WARNING;
 			$title = "";
 		
@@ -291,7 +291,7 @@ class ViewAgent {
 				$salida = "<span style='$style'>$salida</span>";
 			}
 			else {
-				if (is_numeric($module["datos"])){
+				if (is_numeric($module["datos"])) {
 					$salida = format_numeric($module["datos"]);
 				}
 				else {
@@ -342,10 +342,10 @@ class ViewAgent {
 			
 			$data = array();
 			
-			$data[] = ui_print_truncate_text(modules_get_agentmodule_name($alert["id_agent_module"]), 20, true, true);
+			$data[] = ui_print_truncate_text(modules_get_agentmodule_name($alert["id_agent_module"]), 'module_small', true, true);
 			
 			$template = io_safe_output(alerts_get_alert_template ($alert['id_alert_template']));
-			$data[] = ui_print_truncate_text(io_safe_output($template['name']), 20, true, true);
+			$data[] = ui_print_truncate_text(io_safe_output($template['name']), GENERIC_SIZE_TEXT, true, true);
 			
 			$data[] = ui_print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));
 			
@@ -507,15 +507,15 @@ class viewGraph {
 			
 			$data = array ();
 		
-			foreach($columns as $col => $attr){
+			foreach($columns as $col => $attr) {
 				$data[] = $attr[1] ($row[$attr[0]]);
 			}
 		
 			array_push ($table->data, $data);
 		}
-
+		
 		html_print_table($table);
-
+		
 		$pagination = ui_pagination ($count,
 			ui_get_url_refresh (array ('period' => $this->period)),
 			0, 0, true);

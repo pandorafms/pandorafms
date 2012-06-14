@@ -69,7 +69,7 @@ if(!isset($result['id_incidencia'])) {
 	if (isset ($_GET["from_event"])) {
 		$event = get_parameter ("from_event");
 		$result['descripcion'] = io_safe_output(events_get_description ($event));
-		$result['titulo'] = ui_print_truncate_text($result['descripcion'], 75, false, true, false);
+		$result['titulo'] = ui_print_truncate_text($result['descripcion'], 'description', false, true, false);
 		unset ($event);
 	}
 }

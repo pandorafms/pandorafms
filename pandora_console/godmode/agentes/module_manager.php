@@ -439,12 +439,12 @@ foreach ($modules as $module) {
 		$data = array ();
 	}
 	
-	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=' . $id_agente . '&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	if ($module["disabled"])
 		$data[0] .= '<em class="disabled_module">' .
-			ui_print_truncate_text($module['nombre'], 50, false, true, true, '[&hellip;]', 'font-size: 7.2pt').'</em>';
+			ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '[&hellip;]', 'font-size: 7.2pt').'</em>';
 	else
-		$data[0] .= ui_print_truncate_text($module['nombre'], 50, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+		$data[0] .= ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	$data[0] .= '</a>';
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -511,7 +511,7 @@ foreach ($modules as $module) {
 		$data[4] = $agent_interval;
 	}
 	
-	$data[5] = ui_print_truncate_text($module['descripcion'], 50, false);
+	$data[5] = ui_print_truncate_text($module['descripcion'], 'description', false);
 	
 	$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
 	
@@ -545,7 +545,7 @@ foreach ($modules as $module) {
 			$data[8] .= '</a>';
 		}
 	}
-
+	
 	array_push ($table->data, $data);
 }
 

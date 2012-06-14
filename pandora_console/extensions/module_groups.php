@@ -147,7 +147,7 @@ function mainModuleGroups() {
 		array_walk($modelGroups, 'translate'); //Translate all head titles to language is set
 		
 		foreach ($modelGroups as $i => $n) {
-			$modelGroups[$i] = ui_print_truncate_text($n, 20);
+			$modelGroups[$i] = ui_print_truncate_text($n, GENERIC_SIZE_TEXT);
 		}
 		
 		$head = $modelGroups;
@@ -170,7 +170,7 @@ function mainModuleGroups() {
 			
 			$row = array();
 			
-			array_push($row, ui_print_truncate_text($name, 20));
+			array_push($row, ui_print_truncate_text($name, GENERIC_SIZE_TEXT));
 			
 			foreach ($modelGroups as $idModelGroup => $modelGroup) {
 				$query = sprintf($sql,$idAgentGroup, $idModelGroup);

@@ -222,7 +222,7 @@ function mainAgentsModules() {
 		
 		echo "<td class='$rowcolor'>
 			<a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" .
-			ui_print_truncate_text(io_safe_output($agent['nombre']), 35, true, true, true, '...', 'font-size:10px; font-weight: bold;') .
+			ui_print_truncate_text(io_safe_output($agent['nombre']), 'agent_size_text_small', true, true, true, '...', 'font-size:10px; font-weight: bold;') .
 			"</a></td>";
 		$agent_modules = agents_get_modules($agent['id_agente']);
 		

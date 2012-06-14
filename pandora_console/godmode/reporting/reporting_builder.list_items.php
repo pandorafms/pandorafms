@@ -283,20 +283,20 @@ foreach ($items as $item) {
 			$row[3] = '';
 		}
 		else {
-			$row[2] = ui_print_truncate_text(agents_get_name(agents_get_agent_id_by_module_id($item['id_agent_module'])), 35);
+			$row[2] = ui_print_truncate_text(agents_get_name(agents_get_agent_id_by_module_id($item['id_agent_module'])), 'agent_small');
 			$module_name_db = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
-			$row[3] = ui_print_truncate_text(io_safe_output($module_name_db), 35);
+			$row[3] = ui_print_truncate_text(io_safe_output($module_name_db), 'module_small');
 		}
 	}
 	else {
-		$row[2] = ui_print_truncate_text(agents_get_name($item['id_agent']), 35);
+		$row[2] = ui_print_truncate_text(agents_get_name($item['id_agent']), 'agent_small');
 		
 		if ($item['id_agent_module'] == '') {
 			$row [3] = '';
 		}
 		else {
 			$module_name_db = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']))
-			$row[3] = ui_print_truncate_text(io_safe_output($module_name_db),35);
+			$row[3] = ui_print_truncate_text(io_safe_output($module_name_db), 'module_small');
 		}
 	}
 	
@@ -311,7 +311,7 @@ foreach ($items as $item) {
 		$row[5] = '-';
 	}
 	else {
-		$row[5] = ui_print_truncate_text($item['description'], 40, true, true);
+		$row[5] = ui_print_truncate_text($item['description'], 'description', true, true);
 	}
 	
 	$row[6] = '';

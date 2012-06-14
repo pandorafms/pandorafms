@@ -184,7 +184,7 @@ $table->data = array ();
 foreach ($result as $row) {
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row["id_np"].'">'. io_safe_output($row["name"]).'</a>';
-	$data[1] = ui_print_truncate_text(io_safe_output($row["description"]), 80, true, true, true, '[&hellip;]');
+	$data[1] = ui_print_truncate_text(io_safe_output($row["description"]), 'description', true, true, true, '[&hellip;]');
 	$data[2] = html_print_input_image ("delete_profile", "images/cross.png",
 		$row["id_np"],'', true,
 		array ('onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;'));

@@ -716,7 +716,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	} 
 	elseif ($agent == 0) {
 		$data[$index['module_name']] .=
-			ui_print_truncate_text(modules_get_agentmodule_name ($alert["id_agent_module"]), 30, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+			ui_print_truncate_text(modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	} 
 	else {
 		if ($agent_style !== false) {
@@ -726,7 +726,7 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 			$data[$index['agent_name']] .= ui_print_agent_name (modules_get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);		
 		}
 		$data[$index['module_name']] =
-			ui_print_truncate_text (modules_get_agentmodule_name ($alert["id_agent_module"]), 30, false, true, true, '[&hellip;]', 'font-size: 7.2pt');
+			ui_print_truncate_text (modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	}
 	$data[$index['agent_name']] .= $disabledHtmlEnd;
 	
@@ -741,7 +741,9 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	else {
 		$actionDefault = db_get_value_sql("SELECT id_alert_action FROM talert_compound_actions WHERE id_alert_compound = " . $alert['id']);
 	}
-	$data[$index['description']] .= $disabledHtmlStart . ui_print_truncate_text (io_safe_output($description), 35, false, true, true, '[&hellip;]', 'font-size: 7.1pt') . $disabledHtmlEnd;
+	$data[$index['description']] .= $disabledHtmlStart .
+		ui_print_truncate_text (io_safe_output($description), 'description', false, true, true, '[&hellip;]', 'font-size: 7.1pt') .
+		$disabledHtmlEnd;
 	
 	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false, $compound);
 	
@@ -772,10 +774,12 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	if ($alert["times_fired"] > 0) {
 		$status = STATUS_ALERT_FIRED;
 		$title = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
-	} elseif ($alert["disabled"] > 0) {
+	}
+	elseif ($alert["disabled"] > 0) {
 		$status = STATUS_ALERT_DISABLED;
 		$title = __('Alert disabled');
-	} else {
+	}
+	else {
 		$status = STATUS_ALERT_NOT_FIRED;
 		$title = __('Alert not fired');
 	}

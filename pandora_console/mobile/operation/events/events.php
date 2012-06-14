@@ -179,15 +179,15 @@ class EventsView {
 			$data[] = $row["evento"];
 			
 			if ($row["event_type"] == "system") {
-				$data[] = ui_print_truncate_text(__('System'), 20, true, true);
+				$data[] = ui_print_truncate_text(__('System'), GENERIC_SIZE_TEXT, true, true);
 			}
 			elseif ($row["id_agente"] > 0) {
 				// Agent name
 				$data[] = '<a href="index.php?page=agent&id=' . $row["id_agente"] . '">' .
-					ui_print_truncate_text(agents_get_name($row["id_agente"]), 20, true, true) . '</a>';
+					ui_print_truncate_text(agents_get_name($row["id_agente"]), 'agent_small', true, true) . '</a>';
 			}
 			else {
-				$data[] = ui_print_truncate_text(__('Alert SNMP'), 20, true, true);
+				$data[] = ui_print_truncate_text(__('Alert SNMP'), GENERIC_SIZE_TEXT, true, true);
 			}
 			
 			$table->data[] = $data;

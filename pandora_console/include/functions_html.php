@@ -228,12 +228,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
 	
 	$fields = array();
 	foreach ($user_groups_tree as $group) {
-		if (isset($config['text_char_long'])) {
-			$groupName = ui_print_truncate_text($group['nombre'], $config['text_char_long'], false, true, false);
-		}
-		else {
-			$groupName = $group['nombre'];
-		}
+		$groupName = ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false);
 		
 		$fields[$group['id_grupo']] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
 	}
@@ -401,21 +396,16 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false,
 	$multiple = false, $sort = true, $disabled = false, $style = false, $size = false) {
 	global $config;
-
+	
 	$fields = array ();
 	$result = db_get_all_rows_sql ($sql);
 	if ($result === false)
 		$result = array ();
-
+	
 	foreach ($result as $row) {
 		$id = array_shift($row);
 		$value = array_shift($row);
-		if (isset($config['text_char_long'])) {
-			$fields[$id] = ui_print_truncate_text($value, $config['text_char_long'], false, true, false);
-		}
-		else {
-			$fields[$id] = $value;
-		}
+		$fields[$id] = ui_print_truncate_text($value, GENERIC_SIZE_TEXT, false, true, false);
 	}
 	
 	return html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled, $style,'', $size);
@@ -438,7 +428,7 @@ function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', 
 
 function html_print_extended_select_for_time ($name, $selected = '', $script = '', $nothing = '',
 	$nothing_value = '0', $size = false, $return = false, $select_style = false) {
-
+	
 	$fields = get_periods();
 	
 	if (($selected !== false) && (!isset($fields[$selected]) && $selected != 0)) {
@@ -447,11 +437,11 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 	
 	$units = array(
 		1 => __('seconds'),
-		60 => __('minutes'),
-		3600 => __('hours'),
-		86400 => __('days'),
-		2592000 => __('months'),
-		31104000 => __('years'));
+		SECONDS_1MINUTE => __('minutes'),
+		SECONDS_1HOUR => __('hours'),
+		SECONDS_1DAY => __('days'),
+		SECONDS_1MONTH => __('months'),
+		SECONDS_1YEAR => __('years'));
 	
 	$uniq_name = uniqid($name);
 	

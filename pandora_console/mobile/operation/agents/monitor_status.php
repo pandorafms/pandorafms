@@ -217,9 +217,9 @@ class MonitorStatus {
 			$data[] = str_replace('<img src="' , '<img width="15" height="15" src="', $statusImg);
 			
 			$data[] = '<a href="index.php?page=agent&id=' . $row['id_agent'] . '">' .
-				ui_print_truncate_text($row['agent_name'], 25, true, true) . '</a>';
+				ui_print_truncate_text($row['agent_name'], 'agent_small', true, true) . '</a>';
 			$data[] = '<a href="index.php?page=agent&action=view_module_graph&id=' . $row['id_agente_modulo'] . '">' . 
-				ui_print_truncate_text($row['module_name'], 25, true, true) . '</a>';
+				ui_print_truncate_text($row['module_name'], 'module_small', true, true) . '</a>';
 			if (is_numeric($row["datos"]))
 				$data[] = format_numeric($row["datos"]);
 			else

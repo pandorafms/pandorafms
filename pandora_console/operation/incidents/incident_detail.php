@@ -183,7 +183,7 @@ elseif (isset ($_GET["insert_form"])) {
 	if (isset ($_GET["from_event"])) {
 		$event = get_parameter ("from_event");
 		$texto = io_safe_output(events_get_description ($event));
-		$titulo = ui_print_truncate_text(events_get_description ($event), 75, false, true, false);
+		$titulo = ui_print_truncate_text(events_get_description ($event), 'description', false, true, false);
 		$id_grupo = events_get_group ($event);
 		$origen = "Pandora FMS Event";
 		unset ($event);

@@ -354,7 +354,7 @@ $own_info = get_user_info ($config['id_user']);
 if ($config['admin_can_make_admin']) {
 	$table->data[6][0] = __('Global Profile');
 	$table->data[6][1] = '';
-	if ($own_info['is_admin'] || $user_info['is_admin']){
+	if ($own_info['is_admin'] || $user_info['is_admin']) {
 		$table->data[6][1] = html_print_radio_button ('is_admin', 1, '', $user_info['is_admin'], true);
 		$table->data[6][1] .= __('Administrator');
 		$table->data[6][1] .= ui_print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"), true);
@@ -384,10 +384,11 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else
 	$display_all_group = false;
 
-if ($new_user){		
+if ($new_user) {		
 	$usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 	$id_usr = $config['id_user'];
-}else{
+}
+else {
 	$usr_groups = (users_get_groups($id, 'AR', $display_all_group));
 	$id_usr = $id;
 }
@@ -420,7 +421,8 @@ if ($new_user) {
 		html_print_input_hidden ('create_user', 1);
 		html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	}
-} else {
+}
+else {
 	if ($config['user_can_update_info']) {
 		html_print_input_hidden ('update_user', 1);
 		html_print_submit_button (__('Update'), 'uptbutton', false, 'class="sub upd"');
@@ -469,7 +471,7 @@ foreach ($result as $profile) {
 	$data[0] = '<a href="index.php?sec=gusaurios&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'">'.profile_get_name ($profile['id_perfil']).'</a>';
 	$data[1] = ui_print_group_icon($profile["id_grupo"], true) .
 		' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">' .
-		ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), 35).'</a>';
+		ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), GENERIC_SIZE_TEXT).'</a>';
 	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[2] .= html_print_input_hidden ('delete_profile', 1, true);
 	$data[2] .= html_print_input_hidden ('id_user_profile', $profile['id_up'], true);
@@ -485,7 +487,7 @@ foreach ($result as $profile) {
 	$data[0] = '<form method="post">';
 	if (check_acl ($config['id_user'], 0, "PM")) {
 		$data[0] .= html_print_select (profile_get_profiles (), 'assign_profile', 0, '',
-		 	__('None'), 0, true, false, false);
+			__('None'), 0, true, false, false);
 	}
 	else {
 		$data[0] .= html_print_select (profile_get_profiles (array ('pandora_management' => '<> 1',

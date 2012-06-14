@@ -2113,8 +2113,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 1:
 		case 'simple_graph':
 			reporting_header_content($mini, $content, $report, $table, __('Simple graph'),
-				ui_print_truncate_text($agent_name, 75, false).' <br> ' .
-				ui_print_truncate_text($module_name, 75, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false).' <br> ' .
+				ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
 			$table->colspan[1][0] = 4;
@@ -2137,7 +2137,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'projection_graph':
 			reporting_header_content($mini, $content, $report, $table, __('Projection graph'),
-				ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false).' <br> ' .
+				ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
 			$table->colspan[1][0] = 4;
@@ -2186,8 +2187,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'prediction_date':
 			reporting_header_content($mini, $content, $report, $table, __('Prediction date'),
-				ui_print_truncate_text($agent_name, 75, false).' <br> ' .
-				ui_print_truncate_text($module_name, 75, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false).' <br> ' .
+				ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
 			$table->colspan[1][0] = 4;
@@ -2220,7 +2221,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'simple_baseline_graph':
 			reporting_header_content($mini, $content, $report, $table, __('Simple baseline graph'),
-				ui_print_truncate_text($agent_name, 65, false).' <br> ' . ui_print_truncate_text($module_name, 65, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false).' <br> ' .
+				ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
 			$table->colspan[1][0] = 4;
@@ -2260,7 +2262,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 			
 			reporting_header_content($mini, $content, $report, $table, __('Custom graph'),
-				ui_print_truncate_text($graph['name'], 25, false));
+				ui_print_truncate_text($graph['name'], 'item_title', false));
 			
 			//RUNNING
 			// Put description at the end of the module (if exists)
@@ -2541,7 +2543,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 6:
 		case 'monitor_report':
 			reporting_header_content($mini, $content, $report, $table, __('Monitor report'),
-				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
 			
@@ -2574,7 +2577,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 7:
 		case 'avg_value':
 			reporting_header_content($mini, $content, $report, $table, __('Avg. Value'),
-				ui_print_truncate_text($agent_name, 75, false).' <br> '.ui_print_truncate_text($module_name, 75, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
 			
@@ -2603,7 +2607,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 8:
 		case 'max_value':
 			reporting_header_content($mini, $content, $report, $table, __('Max. Value'),
-				ui_print_truncate_text($agent_name, 75, false).' <br> ' . ui_print_truncate_text($module_name, 75, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> ' . ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
 			
@@ -2627,13 +2632,14 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 9:
 		case 'min_value':
 			reporting_header_content($mini, $content, $report, $table, __('Min. Value'),
-				ui_print_truncate_text($agent_name, 75, false).' <br> '.ui_print_truncate_text($module_name, 75, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[0][0] = 2;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2656,7 +2662,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 10:
 		case 'sumatory':
 			reporting_header_content($mini, $content, $report, $table, __('Summatory'),
-				ui_print_truncate_text($agent_name, 75, false).' <br> '.ui_print_truncate_text($module_name, 75, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> ' . ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
 			
@@ -2687,7 +2694,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'agent_detailed_event':
 		case 'event_report_agent':
 			reporting_header_content($mini, $content, $report, $table, __('Agent detailed event'),
-				ui_print_truncate_text(agents_get_name($content['id_agent']), 75, false));
+				ui_print_truncate_text(agents_get_name($content['id_agent']), 'agent_medium', false));
 			
 			//RUNNING
 			
@@ -2834,11 +2841,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'event_report_module':
 			reporting_header_content($mini, $content, $report, $table, __('Module detailed event'),
-				ui_print_truncate_text($agent_name, 70, false).' <br> ' . ui_print_truncate_text($module_name, 70, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> ' . ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2851,11 +2859,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'alert_report_module':
 			reporting_header_content($mini, $content, $report, $table, __('Alert report module'),
-				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2868,7 +2877,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break; 
 		case 'alert_report_agent':
 			reporting_header_content($mini, $content, $report, $table, __('Alert report agent'),
-				ui_print_truncate_text($agent_name, 70, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false));
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
@@ -2885,11 +2894,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'url':
 			reporting_header_content($mini, $content, $report, $table, __('Import text from URL'),
-				ui_print_truncate_text($content["external_source"], 70, false));
+				ui_print_truncate_text($content["external_source"], 'description', false));
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2907,7 +2916,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'database_serialized':
 			reporting_header_content($mini, $content, $report, $table, __('Serialize data'),
-				ui_print_truncate_text($module_name, 75, false));
+				ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
@@ -2928,7 +2937,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_unshift($table2->head, __('Date'));
 			
 			$datelimit = $report["datetime"] - $content['period'];
-		
+			
 			$result = db_get_all_rows_sql('SELECT *
 				FROM tagente_datos
 				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
@@ -2965,11 +2974,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'TTRT':
 			reporting_header_content($mini, $content, $report, $table, __('TTRT'),
-				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2980,7 +2990,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$ttr = reporting_get_agentmodule_ttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($ttr === false) {
 				$ttr = __('Unknown');
-			} else if ($ttr != 0) {
+			}
+			else if ($ttr != 0) {
 				$ttr = human_time_description_raw ($ttr);
 			}
 			
@@ -2991,11 +3002,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'TTO':
 			reporting_header_content($mini, $content, $report, $table, __('TTO'),
-				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -3006,7 +3018,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$tto = reporting_get_agentmodule_tto ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($tto === false) {
 				$tto = __('Unknown');
-			} else if ($tto != 0) {
+			}
+			else if ($tto != 0) {
 				$tto = human_time_description_raw ($tto);
 			}
 			
@@ -3017,7 +3030,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'MTBF':
 			reporting_header_content($mini, $content, $report, $table, __('MTBF'),
-				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
@@ -3032,7 +3046,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$mtbf = reporting_get_agentmodule_mtbf ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($mtbf === false) {
 				$mtbf = __('Unknown');
-			} else if ($mtbf != 0) {
+			}
+			else if ($mtbf != 0) {
 				$mtbf = human_time_description_raw ($mtbf);
 			}
 			
@@ -3043,11 +3058,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'MTTR':
 			reporting_header_content($mini, $content, $report, $table, __('MTTR'),
-				ui_print_truncate_text($agent_name, 70, false).' <br> '.ui_print_truncate_text($module_name, 70, false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -3058,7 +3074,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$mttr = reporting_get_agentmodule_mttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($mttr === false) {
 				$mttr = __('Unknown');
-			} else if ($mttr != 0) {
+			}
+			else if ($mttr != 0) {
 				$mttr = human_time_description_raw ($mttr);
 			}
 			
@@ -3304,7 +3321,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							metaconsole_restore_db();
 						}
 					}
-
+					
 					$table2->width = '99%';
 					$table2->data = array ();
 					$table2->head = array ();
@@ -3312,11 +3329,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table2->style[0] = 'text-align: left';
 					$i = 1;
 					foreach ($modules_list as $m) {
-						$table2->head[$i] = ui_print_truncate_text($m, 20, false);
+						$table2->head[$i] = ui_print_truncate_text($m, 'module_small', false);
 						$table2->style[$i] = 'text-align: center';
 						$i++;
 					}
-
+					
 					foreach ($agent_list as $a) {
 						$data = array();
 						$data[0] = $a;
@@ -4054,25 +4071,25 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				break;
 			}
 			$table_data = '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE;">';
-
+			
 			$table_data .= "<th style='background-color: #799E48;'>".__("Agents")." / ".__("Modules")."</th>";
-
+			
 			$nmodules = 0;
-			foreach($modules_by_name as $module) {
+			foreach ($modules_by_name as $module) {
 				$nmodules++;
 				
 				if($nmodules > $block) { //Will show only the (block) first modules
 					continue;
 				}
 				
-				$file_name = string2image(ui_print_truncate_text($module['name'], 30, false, true, false, '...'), false, false, 6, 270, '#90B165', 'FFF', 4, 0);
-				$table_data .= '<th width="22px">'.html_print_image($file_name, true, array('title' => $module['name']))."</th>";
+				$file_name = string2image(ui_print_truncate_text($module['name'], 'module_small', false, true, false, '...'), false, false, 6, 270, '#90B165', 'FFF', 4, 0);
+				$table_data .= '<th width="22px">' . html_print_image($file_name, true, array('title' => $module['name']))."</th>";
 			}
 			
 			if ($block < $nmodules) {
 				$table_data .= "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><b>...</b></th>";
 			}
-
+			
 			$filter_agents = false;
 			if($id_group > 0) {
 				$filter_agents = array('id_grupo' => $id_group);
@@ -4080,11 +4097,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// Prepare pagination
 			ui_pagination ((int)count(agents_get_agents ($filter_agents)));
 			$table_data .= "<br>";
-	
+			
 			foreach ($agents as $agent) {
 				// Get stats for this group
 				$agent_status = agents_get_status($agent['id_agente']);
-
+				
 				switch($agent_status) {
 					case 4: // Alert fired status
 						$rowcolor = '#ffa300';
@@ -4112,28 +4129,28 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_data .= "<tr style='height: 35px;'>";
 				
-				$file_name = string2image(ui_print_truncate_text($agent['nombre'], 35, false, true, false, '...'), false, false, 6, 0, $rowcolor, $textcolor, 4, 0);
+				$file_name = string2image(ui_print_truncate_text($agent['nombre'], 'agent_small', false, true, false, '...'), false, false, 6, 0, $rowcolor, $textcolor, 4, 0);
 				$table_data .= "<td style='background-color: ".$rowcolor.";'>".html_print_image($file_name, true, array('title' => $agent['nombre']))."</td>";
 				$agent_modules = agents_get_modules($agent['id_agente']);
 				
 				$nmodules = 0;
-
-				foreach($modules_by_name as $module) {
+				
+				foreach ($modules_by_name as $module) {
 					$nmodules++;
 					
-					if($nmodules > $block) {
+					if ($nmodules > $block) {
 						continue;
 					}
 					
 					$match = false;
 					foreach($module['id'] as $module_id){
-						if(!$match && array_key_exists($module_id,$agent_modules)) {
+						if (!$match && array_key_exists($module_id,$agent_modules)) {
 							$status = modules_get_agentmodule_status($module_id);
 							$table_data .= "<td style='text-align: center; background-color: #DDD;'>";
 							$win_handle = dechex(crc32($module_id.$module["name"]));
 							$graph_type = return_graphtype (modules_get_agentmodule_type($module_id));
-
-							switch($status){
+							
+							switch ($status) {
 								case 0:
 									$table_data .= ui_print_status_image ('module_ok.png', $module['name']." in ".$agent['nombre'].": ".__('NORMAL'), true, array('width' => '20px', 'height' => '20px'));
 									break;

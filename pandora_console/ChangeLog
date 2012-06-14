@@ -1,3 +1,8 @@
+2012-06-14  Sergio Martin <sergio.martin@artica.es>
+
+	* include/api.php: Change the security checks adding
+	a new parameter to API pass
+
 2012-06-14 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_agents.php: deprecated the function with bad and

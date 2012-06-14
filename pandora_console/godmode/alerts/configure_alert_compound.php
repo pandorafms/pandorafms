@@ -384,7 +384,7 @@ if ($step == 2) {
 		5, 7, true);
 	
 	$table->data[4][0] = __('Actions');
-	switch ($config['dbtype']){
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
 			$table->data[4][1] = html_print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
@@ -394,8 +394,8 @@ if ($step == 2) {
 			$table->data[4][1] = html_print_select_from_sql ('SELECT id, dbms_lob.substr(name,4000,1) as name FROM talert_actions ORDER BY dbms_lob.substr(name,4000,1)',
 			'action', '', '', __('Select'), 0, true, false, false).' ';				
 			break;
-	}	
-
+	}
+	
 	$table->data[4][1] .= html_print_button (__('Add'), 'add_action', false, '',
 		'class="sub next"', true);
 	$table->data[4][1] .=  '<br />';
@@ -409,7 +409,7 @@ if ($step == 2) {
 	$table->data[4][1] .=  ' '.__('matches of the alert');
 	$table->data[4][1] .=  ui_print_help_icon("alert-matches", true);
 	$table->data[4][1] .=  '</span>';
-*/	
+*/
 	$table->data['actions'][0] = __('Assigned actions');
 	$table->data['actions'][1] = '<ul id="alert_actions">';
 	if ($id) {
@@ -425,7 +425,8 @@ if ($step == 2) {
 					$table->data['actions'][1] .= __('Always');
 				else
 					$table->data['actions'][1] .= __('On').' '.$action['fires_min'];
-			} else {
+			}
+			else {
 				if ($action['fires_min'] == 0)
 					$table->data['actions'][1] .= __('Until').' '.$action['fires_max'];
 				else
@@ -435,14 +436,15 @@ if ($step == 2) {
 			$table->data['actions'][1] .= ')</em>';
 			$table->data['actions'][1] .= '<a href="#" class="remove_action" />';
 			$table->data['actions'][1] .= html_print_image('images/cross.png', true, array("title" => __('Delete')));
-                        $table->data['actions'][1] .= '</a>';
+			$table->data['actions'][1] .= '</a>';
 			$table->data['actions'][1] .= html_print_input_hidden ('actions[]', $action['id'], true);
 			$table->data['actions'][1] .= '</li>';
 		}
 	}
 	$table->data['actions'][1] .= '</ul>';
 	
-} else if ($step == 3) {
+}
+else if ($step == 3) {
 	/* Alert recover */
 	if (! $recovery_notify) {
 		$table->rowstyle = array ();
@@ -462,7 +464,8 @@ if ($step == 2) {
 	$table->data['field3'][0] = __('Field 3');
 	$table->data['field3'][1] = html_print_textarea ('field3_recovery', 10, 30,
 		$field3_recovery, '', true);
-} else {
+}
+else {
 	/* Step 1 by default */
 	$table->size = array ();
 	$table->size[0] = '20%';
@@ -477,7 +480,7 @@ if ($step == 2) {
 	if ($id) {
 		$table->rowstyle['conditions'] = '';
 	}
-
+	
 	$table->data[0][0] = __('Name');
 	$table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
 	
@@ -487,7 +490,7 @@ if ($step == 2) {
 	$table->data[2][0] = __('Description');
 	$table->data[2][1] =  html_print_textarea ('description', 10, 30,
 		$description, '', true);
-
+	
 	$table->data[3][0] = __('Condition');
 	$table->data[3][0] .= '<a name="condition" />';
 	$table->colspan[3][0] = 2;
@@ -519,7 +522,7 @@ if ($step == 2) {
 			$data[0] = '<a href="#" class="remove_alert" id="alert-'.$alert['id'].'" />';
 			$data[0] .= html_print_image("images/delete.png", true);
 			$data[0] .= '</a>';
-			$idAgent = agents_get_module_id($alert['id_agent_module']);
+			$idAgent = agents_get_agent_id_by_module_id($alert['id_agent_module']);
 			$nameAgent = agents_get_name($idAgent);
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $idAgent . '">' . $nameAgent . '</a>';
 			$data[2] = modules_get_agentmodule_name ($alert['id_agent_module']);
@@ -543,7 +546,8 @@ if ($step == 2) {
 /* If it's the last step it will redirect to compound lists */
 if ($step >= LAST_STEP) {
 	echo '<form method="post" id="alert_form" action="index.php?sec=galertas&sec2=godmode/alerts/alert_compounds">';
-} else {
+}
+else {
 	echo '<form method="post" id="alert_form">';
 }
 html_print_table ($table);
@@ -553,13 +557,15 @@ echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
 	html_print_input_hidden ('id', $id);
 	html_print_input_hidden ('update_compound', 1);
-} else {
+}
+else {
 	html_print_input_hidden ('create_compound', 1);
 }
 
 if ($step >= LAST_STEP) {
 	html_print_submit_button (__('Finish'), 'finish', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('step', $step + 1);
 	html_print_submit_button (__('Next'), 'next', false, 'class="sub next"');
 }
@@ -605,7 +611,8 @@ if ($step == 1) {
 	
 	if (! $id_agent) {
 		$table_alerts->class = 'invisible';
-	} else {
+	}
+	else {
 		$alerts = agents_get_alerts_simple ($id_agent);
 		
 		if (empty ($alerts)) {

@@ -1,8 +1,18 @@
-2012-06-14  Ramon Novoa  <rnovoa@artica.es>
+2012-06-14 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php: deprecated the function with bad and
+	crazy name "agents_get_module_id" and changed for the function with
+	more clear mind name "agents_get_agent_id_by_module_id".
+	
+	* godmode/alerts/configure_alert_compound.php,
+	godmode/reporting/reporting_builder.list_items.php: changed the
+	calls of the deprecate function "agents_get_module_id".
 
+2012-06-14  Ramon Novoa  <rnovoa@artica.es>
+	
 	* include/functions_graph.php: Added history database support to
 	  combined graphs.
-
+	
 	* include/functions_servers.php: Removed some comments.
 
 2012-06-13 Miguel de Dios <miguel.dedios@artica.es>

@@ -1,3 +1,9 @@
+2012-06-14  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_agents.php
+	  godmode/agentes/modificar_agente.php
+	  operation/agentes/estado_agente.php: Fixed bug: sort doesn't work.
+
 2012-06-14  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_api.php

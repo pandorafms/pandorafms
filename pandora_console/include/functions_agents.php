@@ -462,7 +462,11 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		if(!isset($order['order'])) {
 			$order['order'] = 'ASC';
 		}
-		$order = 'ORDER BY '.$order['field'] . ' ' . $order['order'];
+		if (!isset($order['field2'])) {
+			$order = 'ORDER BY '.$order['field'] . ' ' . $order['order'];
+		} else {
+			$order = 'ORDER BY '.$order['field'] . ', '. $order['field2'] . ' '. $order['order'];
+		}
 	}
 	
 	$where = db_format_array_where_clause_sql ($filter, 'AND', '');

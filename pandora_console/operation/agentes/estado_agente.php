@@ -253,11 +253,11 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectNameUp = $selected;
-				$order = array('field' => 'nombre', 'order' => 'ASC');
+				$order = array('field' => 'nombre COLLATE utf8_general_ci', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectNameDown = $selected;
-				$order = array('field' => 'nombre', 'order' => 'DESC');
+				$order = array('field' => 'nombre COLLATE utf8_general_ci', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -265,11 +265,11 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectOsUp = $selected;
-				$order = array('field' => 'id_os', 'order' => 'ASC');
+				$order = array('field' => 'id_os', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectOsDown = $selected;
-				$order = array('field' => 'id_os', 'order' => 'DESC');
+				$order = array('field' => 'id_os', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -277,11 +277,11 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectIntervalUp = $selected;
-				$order = array('field' => 'intervalo', 'order' => 'ASC');
+				$order = array('field' => 'intervalo', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectIntervalDown = $selected;
-				$order = array('field' => 'intervalo', 'order' => 'DESC');
+				$order = array('field' => 'intervalo', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -289,11 +289,11 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectGroupUp = $selected;
-				$order = array('field' => 'id_grupo', 'order' => 'ASC');
+				$order = array('field' => 'id_grupo', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectGroupDown = $selected;
-				$order = array('field' => 'id_grupo', 'order' => 'DESC');
+				$order = array('field' => 'id_grupo', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -301,11 +301,11 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectLastContactUp = $selected;
-				$order = array('field' => 'ultimo_contacto', 'order' => 'ASC');
+				$order = array('field' => 'ultimo_contacto', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectLastContactDown = $selected;
-				$order = array('field' => 'ultimo_contacto', 'order' => 'DESC');
+				$order = array('field' => 'ultimo_contacto', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -320,7 +320,7 @@ switch ($sortField) {
 		$selectGroupDown = '';
 		$selectLastContactUp = '';
 		$selectLastContactDown = '';
-		$order = array('field' => 'nombre', 'order' => 'ASC');
+		$order = array('field' => 'nombre COLLATE utf8_general_ci', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 		break;
 }
 
@@ -354,7 +354,7 @@ $total_agents = agents_get_agents(array (
 $total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
 
 $agents = agents_get_agents(array (
-	'order' => 'nombre ASC',
+	'order' => 'nombre COLLATE utf8_general_ci ASC',
 	'id_grupo' => $groups,
 	'disabled' => 0,
 	'status' => $status,

@@ -26,7 +26,7 @@ class EventsView {
 	
 	function show() {
 		global $config;
-
+		
 		require_once ($config['homedir'].'/include/functions_agents.php');
 		
 		$config['text_char_long'] = 12;
@@ -107,14 +107,9 @@ class EventsView {
 		$sqlFreeSearch = '';
 		if ($search != "")
 			$sqlFreeSearch .= " AND evento LIKE '%".$search."%'";
-
-			
-			
+		
 		$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
 		$sqlTimestamp = " AND utimestamp > ".$unixtime;
-			
-		
-		
 		
 		$sql  = 'SELECT *
 			FROM tevento
@@ -178,20 +173,21 @@ class EventsView {
 			
 			$table->rowclass[$iterator] = get_priority_class($row["criticity"]);
 			$iterator++;
-				
+			
 			$data[] = ui_print_timestamp($row["timestamp"], true, array('units' => 'tiny'));
-						
+			
 			$data[] = $row["evento"];
 			
 			if ($row["event_type"] == "system") {
-				$data[] = ui_print_truncate_text(__('System'), 20, true, true);
+				$data[] = ui_print_truncate_text(__('System'), GENERIC_SIZE_TEXT, true, true);
 			}
 			elseif ($row["id_agente"] > 0) {
 				// Agent name
-				$data[] = '<a href="index.php?page=agent&id=' . $row["id_agente"] . '">' . ui_print_truncate_text(agents_get_name($row["id_agente"]), 20, true, true) . '</a>';
+				$data[] = '<a href="index.php?page=agent&id=' . $row["id_agente"] . '">' .
+					ui_print_truncate_text(agents_get_name($row["id_agente"]), 'agent_small', true, true) . '</a>';
 			}
 			else {
-				$data[] = ui_print_truncate_text(__('Alert SNMP'), 20, true, true);
+				$data[] = ui_print_truncate_text(__('Alert SNMP'), GENERIC_SIZE_TEXT, true, true);
 			}
 			
 			$table->data[] = $data;

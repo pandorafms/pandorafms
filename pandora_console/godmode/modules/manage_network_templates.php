@@ -43,7 +43,8 @@ if ($delete_profile) { // if delete
 	
 	if ($result) {
 		db_pandora_audit("Module management", "Delete module template #$id");
-	} else {
+	}
+	else {
 		db_pandora_audit("Module management", "Fail try to delete module template #$id");
 	}
 	
@@ -73,7 +74,8 @@ if ($multiple_delete) {
 	$str_ids = implode (',', $ids);
 	if ($result) {
 		db_pandora_audit("Module management", "Multiple delete module template: $str_ids");
-	} else {
+	}
+	else {
 		db_pandora_audit("Module management", "Fail try to delete module template: $str_ids");
 	}
 		
@@ -198,7 +200,7 @@ $table->data = array ();
 foreach ($result as $row) {
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row["id_np"].'">'. io_safe_output($row["name"]).'</a>';
-	$data[1] = ui_print_truncate_text(io_safe_output($row["description"]), 80, true, true, true, '[&hellip;]');
+	$data[1] = ui_print_truncate_text(io_safe_output($row["description"]), 'description', true, true, true, '[&hellip;]');
 	$data[2] = html_print_input_image ("delete_profile", "images/cross.png",
 		$row["id_np"],'', true,
 		array ('onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;'));
@@ -222,7 +224,8 @@ if (!empty ($table->data)) {
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
 	echo "</form>";
-} else {
+}
+else {
 	echo '<div class="nf" style="width:'.$table->width.'">'.__('There are no defined network profiles').'</div>';	
 }
 

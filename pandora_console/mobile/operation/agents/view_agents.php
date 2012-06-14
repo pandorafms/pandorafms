@@ -108,7 +108,7 @@ class ViewAgents {
 			
 			$data = array();
 			
-			$truncName = ui_print_truncate_text($agent['nombre'], 25, true, true);
+			$truncName = ui_print_truncate_text($agent['nombre'], 'agent_small', true, true);
 			
 			$data[] = ui_print_group_icon_path($agent["id_grupo"], true, "../images/groups_small", '', false);
 			$data[] = '<a href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . $truncName . '</a>';
@@ -240,7 +240,7 @@ class ViewAgent {
 			$data = array();
 			
 			$data[] = '<a href="index.php?page=agent&action=view_module_graph&id=' . $module['id_agente_modulo'] . '">' . 
-				ui_print_truncate_text($module["nombre"], 20, true, true) . '</a>';
+				ui_print_truncate_text($module["nombre"], 'module_small', true, true) . '</a>';
 			$status = STATUS_MODULE_WARNING;
 			$title = "";
 		
@@ -347,10 +347,10 @@ class ViewAgent {
 			
 			$data = array();
 			
-			$data[] = ui_print_truncate_text(modules_get_agentmodule_name($alert["id_agent_module"]), 20, true, true);
+			$data[] = ui_print_truncate_text(modules_get_agentmodule_name($alert["id_agent_module"]), 'module_small', true, true);
 			
 			$template = io_safe_output(alerts_get_alert_template ($alert['id_alert_template']));
-			$data[] = ui_print_truncate_text(io_safe_output($template['name']), 20, true, true);
+			$data[] = ui_print_truncate_text(io_safe_output($template['name']), GENERIC_SIZE_TEXT, true, true);
 			
 			$data[] = ui_print_timestamp ($alert["last_fired"], true, array('units' => 'tiny'));
 			
@@ -408,7 +408,7 @@ class viewGraph {
 		echo "<h3 class='title_h3'><a href='index.php?page=agent&id=" . $this->agentModule['id_agente'] . "'>" . modules_get_agentmodule_agent_name($this->idAgentModule)."</a> / ".io_safe_output($this->agentModule['nombre']) . "</h3>";
 		
 		echo "<h3 class='title_h3'>" . __('Graph') . "</h3>";
-
+		
 		echo grafico_modulo_sparse($this->idAgentModule, $this->period, 0, 240,
 			200, io_safe_output($this->agentModule['nombre']), null, false,
 			false, true, 0, '', true, false, true, true, '../');
@@ -524,7 +524,7 @@ class viewGraph {
 		$pagination = ui_pagination ($count,
 			ui_get_url_refresh (array ('period' => $this->period)),
 			0, 0, true);
-			
+		
 		$pagination = str_replace('images/go_first.png', '../images/go_first.png', $pagination);
 		$pagination = str_replace('images/go_previous.png', '../images/go_previous.png', $pagination);
 		$pagination = str_replace('images/go_next.png', '../images/go_next.png', $pagination);

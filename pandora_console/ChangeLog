@@ -1,3 +1,8 @@
+2012-06-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_graph.php: Merged from 4.0 branch. Added history
+	  database support to combined graphs.
+
 2012-06-13 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php, include/functions_ui.php,

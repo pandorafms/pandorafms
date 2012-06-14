@@ -34,6 +34,7 @@ $id2 = get_parameter('id2');
 $otherSerialize = get_parameter('other');
 $otherMode = get_parameter('other_mode', 'url_encode');
 $returnType = get_parameter('return_type', 'string');
+$api_password = get_parameter('apipass', '');
 $password = get_parameter('pass', '');
 $user = get_parameter('user', '');
 
@@ -43,27 +44,25 @@ $apiPassword = db_get_value_filter('value', 'tconfig', array('token' => 'api_pas
 
 $correctLogin = false;
 $user_in_db = null;
-if (!empty($apiPassword)) {
-	if (($password === $apiPassword) && (empty($user))) {
-		$correctLogin = true;
-	}
-	else {
+$no_login_msg = "";
+
+if (isInACL($ipOrigin)) {
+	if(empty($apiPassword) || (!empty($apiPassword) && $api_password === $apiPassword)) {
 		$user_in_db = process_user_login($user, $password);
 		if ($user_in_db !== false) {
 			$config['id_user'] = $user_in_db;
 			$correctLogin = true;
 		}
+		else {
+			$no_login_msg = "Incorrect user credentials";
+		}
+	}
+	else {
+		$no_login_msg = "Incorrect given API password";
 	}
 }
 else {
-	$user_in_db = process_user_login($user, $password);
-	if ($user_in_db !== false) {
-		$config['id_user'] = $user_in_db;
-		$correctLogin = true;
-	}
-	else if (isInACL($ipOrigin)) {
-		$correctLogin = true;
-	}
+	$no_login_msg = "IP $ipOrigin is not in ACL list";
 }
 
 if ($correctLogin) {
@@ -86,6 +85,7 @@ if ($correctLogin) {
 	}
 }
 else {
-	echo 'ERROR: Your IP (' . $ipOrigin . ') is not in ACL IP list.';
+	db_pandora_audit("API access Failed", $no_login_msg, $user, $ipOrigin);
+	echo 'auth error';
 }
 ?>

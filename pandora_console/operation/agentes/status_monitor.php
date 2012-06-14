@@ -573,12 +573,12 @@ foreach ($result as $row) {
 	}
 	
 	$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row["id_agent"].'">';
-	$data[1] .= ui_print_truncate_text($row["agent_name"], 40, false, true, false, '[&hellip;]', 'font-size:7.5pt;');
+	$data[1] .= ui_print_truncate_text($row["agent_name"], 'agent_medium', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
 	$data[1] .= '</a></strong>';
 	
 	$data[2] = html_print_image("images/" . modules_show_icon_type ($row["module_type"]), true); 
 	
-	$data[3] = ui_print_truncate_text($row["module_name"],30,false,true,true);
+	$data[3] = ui_print_truncate_text($row["module_name"], 'module_small', false, true, true);
 	if ($row["extended_info"] != "") {
 		$data[3] .= ui_print_help_tip ($row["extended_info"], true, '/images/comments.png');
 	}

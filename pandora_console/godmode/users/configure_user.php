@@ -482,9 +482,11 @@ foreach ($result as $profile) {
 	}
 	
 	$data = array ();
-
+	
 	$data[0] = '<a href="index.php?sec=gusaurios&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'">'.profile_get_name ($profile['id_perfil']).'</a>';
-	$data[1] = ui_print_group_icon($profile["id_grupo"],true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">' . ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), 35).'</a>';
+	$data[1] = ui_print_group_icon($profile["id_grupo"], true) .
+		' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">' .
+		ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), GENERIC_SIZE_TEXT).'</a>';
 	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[2] .= html_print_input_hidden ('delete_profile', 1, true);
 	$data[2] .= html_print_input_hidden ('id_user_profile', $profile['id_up'], true);
@@ -500,7 +502,7 @@ foreach ($result as $profile) {
 	$data[0] = '<form method="post">';
 	if (check_acl ($config['id_user'], 0, "PM")) {
 		$data[0] .= html_print_select (profile_get_profiles (), 'assign_profile', 0, '',
-		 	__('None'), 0, true, false, false);
+			__('None'), 0, true, false, false);
 	}
 	else {
 		$data[0] .= html_print_select (profile_get_profiles (array ('pandora_management' => '<> 1',

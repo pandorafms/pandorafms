@@ -476,7 +476,7 @@ if ($traps !== false) {
 			$data[3] = __('N/A');
 		}
 		else {
-			$data[3] = ui_print_truncate_text($trap["value"], 15, false);
+			$data[3] = ui_print_truncate_text($trap["value"], GENERIC_SIZE_TEXT, false);
 		}
 		
 		//Custom
@@ -484,7 +484,7 @@ if ($traps !== false) {
 			$data[4] = __('N/A');
 		}
 		else {
-			$data[4] = ui_print_truncate_text($trap["oid_custom"], 25, false);
+			$data[4] = ui_print_truncate_text($trap["oid_custom"], GENERIC_SIZE_TEXT, false);
 		}
 		
 		//User

@@ -476,7 +476,7 @@ foreach ($agents as $agent) {
 		$data[0] .= '</a>&nbsp;';
 	}*/
 	
-	$data[1] = ui_print_truncate_text($agent["description"], 50, false, true, true, '[&hellip;]', 'font-size: 6.5pt');
+	$data[1] = ui_print_truncate_text($agent["description"], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
 	
 	$data[2] = ui_print_os_icon ($agent["id_os"], false, true);
 	

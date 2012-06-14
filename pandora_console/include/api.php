@@ -29,6 +29,8 @@ $ipOrigin = $_SERVER['REMOTE_ADDR'];
 //Get the parameters and parse if necesary.
 $op = get_parameter('op');
 $op2 = get_parameter('op2');
+$ext_name = get_parameter('ext_name');
+$ext_function = get_parameter('ext_function');
 $id = get_parameter('id');
 $id2 = get_parameter('id2');
 $otherSerialize = get_parameter('other');
@@ -67,11 +69,25 @@ else {
 
 if ($correctLogin) {
 	if (($op !== 'get') && ($op !== 'set') && ($op !== 'help'))
-			returnError('no_set_no_get_no_help', $returnType);
+		returnError('no_set_no_get_no_help', $returnType);
 	else {
-		if (!function_exists($op.'_'.$op2))
-			returnError('no_exist_operation', $returnType);
+		$function_name = '';
+		
+		// Check if is an extension function and get the function name
+		if ($op2 == 'extension') {
+			$extension_api_url = $config["homedir"]."/".EXTENSIONS_DIR."/$ext_name/$ext_name.api.php";
+			// The extension API file must exist and the extension must be enabled
+			if(file_exists($extension_api_url) && !in_array($ext_name,extensions_get_disabled_extensions())) {
+				include_once($extension_api_url);
+				$function_name = 'apiextension_'.$op.'_'.$ext_function;
+			}
+		}
 		else {
+			$function_name = 'api_'.$op.'_'.$op2;
+		}
+		
+		// Check if the function exists
+		if (function_exists($function_name)) {
 			if (!DEBUG) {
 				error_reporting(0);
 			}
@@ -80,7 +96,10 @@ if ($correctLogin) {
 				ini_set("display_errors", 1);
 			}
 			
-			call_user_func($op.'_'.$op2, $id, $id2, $other, $returnType, $user_in_db);
+			call_user_func($function_name, $id, $id2, $other, $returnType, $user_in_db);
+		}
+		else {
+			returnError('no_exist_operation', $returnType);
 		}
 	}
 }

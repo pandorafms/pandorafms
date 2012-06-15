@@ -175,6 +175,7 @@ if (is_ajax ()) {
 	return;
 }
 
+
 $offset = (int) get_parameter ("offset", 0);
 $ev_group = (int) get_parameter ("ev_group", 0); //0 = all
 $event_type = get_parameter ("event_type", ''); // 0 all
@@ -295,6 +296,11 @@ else {
 	echo "</h2>";
 }
 
+// Error div for ajax messages
+echo "<div id='show_message_error'>";
+echo "</div>";
+
+
 if (($section == 'validate') && ($ids[0] == -1)) {
 		$section = 'list';
 		ui_print_error_message (__('No events selected'));
@@ -345,7 +351,7 @@ if ($validate) {
 //Process deletion (pass array or single value)
 if ($delete) {
 	$ids = (array) get_parameter ("eventid", -1);
-		
+	
 	if ($ids[0] != -1) {
 		$return = events_delete_event ($ids, ($group_rep == 1));
 		ui_print_result_message ($return,
@@ -668,12 +674,12 @@ $(document).ready( function() {
 			"similars" : <?php echo ($group_rep ? 1 : 0) ?>
 			},
 			function (data, status) {
-				if (data == "ok")
+				if (data == "ok") { 
 					$tr.remove ();
+					$('#show_message_error').html('<h3 class="suc"> <?php echo __('Successfully delete'); ?> </h3>');
+				}
 				else
-					$("#result")
-						.showMessage ("<?php echo __('Could not be deleted')?>")
-						.addClass ("error");
+					$('#show_message_error').html('<h3 class="error"> <?php echo __('Error deleting event'); ?> </h3>');
 			},
 			"html"
 		);

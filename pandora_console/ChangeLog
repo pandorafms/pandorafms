@@ -1,3 +1,7 @@
+2012-06-15  Sergio Martin <sergio.martin@artica.es>
+
+	* include/constants.php: Merge some constants from trunk
+
 2012-06-15  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/events/events.php: Show success message

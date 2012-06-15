@@ -31,13 +31,17 @@ define ('AGENT_ENABLED',0);
 define ('AGENT_DISABLED',1);
 
 /* Error report codes */
+define ('NOERR',11111);
 define ('ERR_GENERIC',-10000);
 define ('ERR_EXIST',-20000);
 define ('ERR_INCOMPLETE', -30000);
 define ('ERR_DB', -40000);
+define ('ERR_DB_HOST', -40001);
+define ('ERR_DB_DB', -40002);
 define ('ERR_FILE', -50000);
 define ('ERR_NOCHANGES', -60000);
 define ('ERR_NODATA', -70000);
+define ('ERR_CONNECTION', -80000);
 
 /* Visual console constants */
 define('MIN_WIDTH',300);

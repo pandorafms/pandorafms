@@ -1,5 +1,10 @@
 2012-06-15  Vanessa Gil <vanessa.gil@artica.es>
 
+	* operation/events/events.php: Show success message
+	when you delete an event.
+
+2012-06-15  Vanessa Gil <vanessa.gil@artica.es>
+
 	* include/functions_agents.php
 	  godmode/agentes/modificar_agente.php
 	  operation/agentes/estado_agente.php: Fixed bug: sort doesn't work.

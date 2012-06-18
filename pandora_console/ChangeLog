@@ -1,3 +1,24 @@
+2012-06-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_html.php
+	 godmode/agentes/module_manager_editor_common.php: Modified width
+	 of module type select in module editor when you are 
+	 editing/creating a network module.
+	 
+	* include/functions.php
+	 godmode/reporting/visual_console_builder.php: Fixed autorefresh
+	 functionality.
+
+	* include/functions_ui.php
+	 godmode/massive/massive_edit_modules.php 
+	 operation/agentes/ver_agente.php: Several Php warnings
+	 fixed over console code.
+
+	* godmode/reporting/reporting_builder.list_items.php: Fixed broken 
+    view due to a bad sintax statement.
+
+	Merged fro branches.
+
 2012-06-18  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_config.php: Cleaning the mess when 

@@ -1057,15 +1057,8 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	if ($config["refr"] > 0) {
 		$query = ui_get_url_refresh (false);
-
-
-			$HTTP_REFERER = '';
-			if (isset($_SERVER['HTTP_REFERER']))
-				$HTTP_REFERER = '&HTTP_REFERER=' . $_SERVER['HTTP_REFERER'];
-			else if (isset($_GET['HTTP_REFERER']))
-				$HTTP_REFERER = '&HTTP_REFERER=' . $_GET['HTTP_REFERER'];
 		
-		$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL='.$query. $HTTP_REFERER .'" />';
+		$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL=' . $query . '" />';
 	}
 	$output .= "\n\t";
 	$output .= '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>

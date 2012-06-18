@@ -175,7 +175,7 @@ else {
 		ORDER BY descripcion',
 		implode (',', $categories));
 	$table_simple->data[1][1] = html_print_select_from_sql ($sql, 'id_module_type',
-		$idModuleType, '', '', '', true, false, false, $disabledBecauseInPolicy);
+		$idModuleType, '', '', '', true, false, false, $disabledBecauseInPolicy, false, false, 100);
 }
 
 $table_simple->data[1][2] = __('Module group');

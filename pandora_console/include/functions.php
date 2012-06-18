@@ -32,9 +32,11 @@ function check_refererer() {
 	if (isset($_SERVER['HTTP_REFERER'])) {
 		$referer = $_SERVER['HTTP_REFERER'];
 	}
-	else if (isset($_GET['HTTP_REFERER'])) {
-		$referer = $_GET['HTTP_REFERER'];
-	}
+
+	// If refresh is performed then dont't check referer
+	// This is done due to problems with HTTP_REFERER var when metarefresh is performed
+	if ($config["refr"] > 0) 
+		return true;
 	
 	$url = 'http://';
 	if ($config['https']) {

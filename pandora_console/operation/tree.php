@@ -735,7 +735,8 @@ function printTree_($type) {
 	$avariableGroups = users_get_groups (); //db_get_all_rows_in_table('tgrupo', 'nombre');	
 	
 	//Get all groups with agents
-	$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente");
+	$full_groups = db_get_all_rows_sql("SELECT DISTINCT tagente.id_grupo FROM tagente, tagente_estado WHERE 
+					tagente.id_agente = tagente_estado.id_agente AND tagente_estado.utimestamp != 0");
 	
 	$fgroups = array();
 	

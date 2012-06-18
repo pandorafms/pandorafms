@@ -373,7 +373,11 @@ function menu_get_sec_pages($sec,$menu_hash = false) {
 	else {
 		$menu = json_decode(base64_decode($menu_hash),true);
 	}
+	
+	// Get the sec2 of the main section
+	$sec2_array[$menu[$sec]['sec2']] = $menu[$sec]['text'];
 
+	// Get the sec2 of the subsections
 	foreach($menu[$sec]['sub'] as $k => $v) {
 		// Avoid special cases of standalone windows
 		if(preg_match('/^javascript:/',$k) || preg_match('/\.php/',$k)) {
@@ -398,11 +402,9 @@ function menu_get_sec_pages($sec,$menu_hash = false) {
  * 
  * @return true if the page is in section, false otherwise
  */
-function menu_sec2_in_sec($sec,$sec2) {
-	if($sec != 'estado') return false;
-	
+function menu_sec2_in_sec($sec,$sec2) {	
 	$sec2_array = menu_get_sec_pages($sec);
-	
+
 	// If this value has various parameters, we only get the first
 	$sec2 = explode('&',$sec2);
 	$sec2 = $sec2[0];

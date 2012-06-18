@@ -1,3 +1,8 @@
+2012-06-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/users/user_edit.php: Removed redirection due to Php 
+	warning, now skins are applied when user update it.
+
 2012-06-15  Sergio Martin <sergio.martin@artica.es>
 
 	* include/constants.php: Merge some constants from trunk

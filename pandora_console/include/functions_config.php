@@ -682,14 +682,17 @@ function config_check (){
 	
 	// At this first version I'm passing errors using session variables, because the error management
 	// is done by an AJAX request. Better solutions could be implemented in the future :-)
-	
+
 	// Check default password for "admin"
-	$hashpass = db_get_sql ("SELECT password FROM tusuario WHERE id_user = 'admin'");
-	if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
-		$config["alert_cnt"]++;
-		$_SESSION["alert_msg"] .= ui_print_error_message(
-			array('message' => __('Default password for "Admin" user has not been changed.').'</h3>'.'<p>'.__('Please change the default password because is a common vulnerability reported.'),
-				'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
+	if ($is_admin) {	
+		$hashpass = db_get_sql ("SELECT password FROM tusuario WHERE id_user = 'admin'");
+		if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
+			$config["alert_cnt"]++;
+			$_SESSION["alert_msg"] .= ui_print_error_message(
+				array('message' => __('Default password for "Admin" user has not been changed.').'</h3>'.'<p>'.__('Please change the default password because is a common vulnerability reported.'),
+					'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+		}
 	}
 	
 	if (!is_writable ("attachment")){

@@ -1,3 +1,8 @@
+2012-06-18  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_config.php: Fixed bug: Notice to change
+	Admin password is displayed for other users.
+
 2012-06-18 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/auth/ldap.php, include/javascript/pandora.js,

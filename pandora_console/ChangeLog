@@ -1,3 +1,11 @@
+2012-06-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_config.php: Fixed a problem with 
+	ACL IP List and API password values on setup that 
+	be erased when update another setup section (in example 
+	visual styles). This problem appeared when we try to 
+	fix the empty setting of these fields.
+
 2012-06-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -67,7 +67,7 @@ function ChangeDBAction(causer) {
 <?php
 
 $version = '4.0.2';
-$build = '120417';
+$build = '120618';
 $banner = "v$version Build $build";
 
 error_reporting(0);
@@ -538,7 +538,7 @@ function install_step3() {
 	
 	echo "
 	<div id='install_container'>
-	<div id='wizard' style='height: 665px;'>
+	<div id='wizard' style='height: 720px;'>
 		<div id='install_box'>
 			<h2>Environment and database setup</h2>
 			<p>
@@ -636,10 +636,12 @@ function install_step3() {
 	print_logo_status (4,6);
 
 	echo "</div>
+
 		<div id='foot_install'>
 			<i>Pandora FMS is an OpenSource Software project registered at 
 			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 		</div>
+
 	</div>";
 }
 

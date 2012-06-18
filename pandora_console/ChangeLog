@@ -1,5 +1,9 @@
 2012-06-18  Sancho Lerena <slerena@artica.es>
 
+	* include/config_process.php: Updated version / build
+
+	* functions_config.php: Changed some defaults on text size
+
 	* install.php: Small modifications in step3, bad render
 	in chrome.
 

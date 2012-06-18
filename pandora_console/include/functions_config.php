@@ -690,7 +690,7 @@ function config_process_config () {
 	}
 	
 	if (!isset($config['agent_size_text_small'])) {
-		config_update_value ('agent_size_text_small', 15);
+		config_update_value ('agent_size_text_small', 18);
 	}
 	
 	if (!isset($config['agent_size_text_medium'])) {
@@ -698,7 +698,7 @@ function config_process_config () {
 	}
 	
 	if (!isset($config['module_size_text_small'])) {
-		config_update_value ('module_size_text_small', 15);
+		config_update_value ('module_size_text_small', 25);
 	}
 	
 	if (!isset($config['module_size_text_medium'])) {
@@ -706,11 +706,11 @@ function config_process_config () {
 	}
 	
 	if (!isset($config['description_size_text'])) {
-		config_update_value ('description_size_text', 50);
+		config_update_value ('description_size_text', 60);
 	}
 	
 	if (!isset($config['item_title_size_text'])) {
-		config_update_value ('item_title_size_text', 40);
+		config_update_value ('item_title_size_text', 45);
 	}
 	
 	/* Finally, check if any value was overwritten in a form */

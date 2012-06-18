@@ -1,3 +1,8 @@
+2012-06-18  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_config.php: Don't display
+	notice to update.
+
 2012-06-15  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/events/events.php: Show success message

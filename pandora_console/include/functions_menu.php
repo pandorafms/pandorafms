@@ -342,14 +342,35 @@ function menu_get_full_sec() {
 /**
  * Get the sec list built in menu
  *
+ * @param bool If true, the array returned will have the structure
+ * 		to combo categories (optgroup)
+ * 
  * @return array Sections list
  */
-function menu_get_sec() {
+function menu_get_sec($with_categories = false) {
 	$menu = menu_get_full_sec();
 	unset($menu['class']);
 
+	$in_godmode = false;
 	foreach($menu as $k => $v) {
-		$sec_array[$k] = $v['text'];
+		if($with_categories) {
+			if(!$in_godmode && $k[0] == 'g') {
+				$in_godmode = true;
+			}
+			
+			if($in_godmode) {
+				$category = __('Administration');
+			}
+			else {
+				$category = __('Operation');
+			}
+			
+			$sec_array[$k]['optgroup'] = $category;
+			$sec_array[$k]['name'] = $v['text'];
+		}
+		else {
+			$sec_array[$k] = $v['text'];
+		}
 	}
 
 	return $sec_array;

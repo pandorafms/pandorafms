@@ -1,3 +1,8 @@
+2012-06-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_menu.php: Added categories in the
+	combo of sections (Operation and Administration)
+
 2012-06-18 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/tree.php: Fixed a bug which shows groups

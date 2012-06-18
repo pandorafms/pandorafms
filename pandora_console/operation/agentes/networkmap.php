@@ -44,6 +44,8 @@ if($delete_networkmap) {
 	$message = ui_print_result_message ($result,
 		__('Network map deleted successfully'),
 		__('Could not delete network map'), '', true);
+		
+	echo $message;
 	
 	$id_networkmap = 0;
 }
@@ -220,6 +222,7 @@ if(!$nomaps && $id_networkmap != 0) {
 				html_print_image("images/file.png", true, array ("title" => __('Save map'))) .'</a>');
 }
 
+$title = '';
 switch($activeTab){
 	case 'topology':
 			$title = __('Topology view');

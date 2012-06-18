@@ -1,5 +1,9 @@
 2012-06-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* index.php: Fixed global autorefresh bug.
+
+2012-06-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_config.php
 	 operation/users/user_edit.php
 	 godmode/massive/massive_add_action_alerts.php

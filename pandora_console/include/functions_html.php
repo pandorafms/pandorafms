@@ -390,11 +390,12 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
  * @param bool $disabled if it's true, disable the select.
  * @param string $style The string of style.
  * @param mixed $size Max elements showed in select or default (size=10) 
+ * @param int $truncante_size Truncate size of the element, by default is set to GENERIC_SIZE_TEXT constant
  *
  * @return string HTML code if return parameter is true.
  */
 function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false,
-	$multiple = false, $sort = true, $disabled = false, $style = false, $size = false) {
+	$multiple = false, $sort = true, $disabled = false, $style = false, $size = false, $trucate_size = GENERIC_SIZE_TEXT) {
 	global $config;
 	
 	$fields = array ();
@@ -405,7 +406,7 @@ function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', 
 	foreach ($result as $row) {
 		$id = array_shift($row);
 		$value = array_shift($row);
-		$fields[$id] = ui_print_truncate_text($value, GENERIC_SIZE_TEXT, false, true, false);
+		$fields[$id] = ui_print_truncate_text($value, $trucate_size, false, true, false);
 	}
 	
 	return html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled, $style,'', $size);

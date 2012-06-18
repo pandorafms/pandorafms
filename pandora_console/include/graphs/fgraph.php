@@ -198,7 +198,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 		foreach($legend as $i => $v) {
 			$legend[$i] = urlencode($v);
 		}
-		echo fs_2d_column_chart ($chart_data, $width, $height, $homedir, $reduce_data_columns, $yaxisname);
+		echo fs_2d_column_chart ($chart_data, $width, $height, $homedir, $reduce_data_columns, $yaxisname, $font_size);
 	}
 	else {
 		$graph = array();
@@ -328,7 +328,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 		foreach($legend as $i => $v) {
 			$legend[$i] = urlencode($v);
 		}
-		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index);
+		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index, $font_size);
 	}
 	else {
 		$graph = array();
@@ -362,7 +362,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		foreach($legend as $i => $v) {
 			$legend[$i] = urlencode($v);
 		}
-		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index);
+		return fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index, $font_size);
 	}
 	else {
 		$graph = array();
@@ -416,10 +416,10 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 		}
 		include_flash_chart_script();
 		if ($return){
-			return fs_2d_hcolumn_chart ($chart_data, $width, $height);
+			return fs_2d_hcolumn_chart ($chart_data, $width, $height, $font_size);
 		}
 		else{
-			echo fs_2d_hcolumn_chart ($chart_data, $width, $height);
+			echo fs_2d_hcolumn_chart ($chart_data, $width, $height, $font_size);
 		}
 	}
 	else {
@@ -481,10 +481,10 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	if($flash_chart) {
 		switch($graph_type) {
 			case "2d":
-					return fs_2d_pie_chart (array_values($chart_data), array_keys($chart_data), $width, $height);
+					return fs_2d_pie_chart (array_values($chart_data), array_keys($chart_data), $width, $height, "FFFFFF", $font_size);
 				break;
 			case "3d":
-					return fs_3d_pie_chart(array_values($chart_data), array_keys($chart_data), $width, $height);
+					return fs_3d_pie_chart(array_values($chart_data), array_keys($chart_data), $width, $height, "FFFFFF", $font_size);
 				break;
 		}
 	}

@@ -295,7 +295,7 @@ foreach ($items as $item) {
 			$row [3] = '';
 		}
 		else {
-			$module_name_db = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']))
+			$module_name_db = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 			$row[3] = ui_print_truncate_text(io_safe_output($module_name_db), 'module_small');
 		}
 	}

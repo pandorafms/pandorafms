@@ -139,7 +139,7 @@ function fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_i
 	
 	$font_size_char = '';
 	if ($font_size !== false)
-		$font_size_char = "baseFontSize=" . $font_size + 1 . ";";
+		$font_size_char = "baseFontSize=" . ($font_size + 1) . ";";
 	else
 		$font_size_char = "baseFontSize=9;";		
 	
@@ -170,7 +170,7 @@ function fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_i
 	return $output;	
 }
 
-function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index) {
+function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_index, $font_size = '') {
 	global $config;
 	
 	$graph_type = "MSLine";
@@ -286,9 +286,15 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 		}
 	}
 	
-	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . 
+	$font_size_char = '';
+	if ($font_size !== false)
+		$font_size_char = "baseFontSize=" . ($font_size + 1) . ";";
+	else
+		$font_size_char = "baseFontSize=9;";	
+
+	$chart->setChartParams($font_size_char . 'animation=0;numVDivLines=' . $num_vlines . 
 		';showShadow=0;showAlternateVGridColor=1;showNames=1;rotateNames=1;' . 
-		'lineThickness=3;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;' .
+		'lineThickness=3;anchorRadius=0.5;showValues=0;showLimits=0;' .
 		'showAreaBorder=1;areaBorderThickness=0.1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 	
 	$random_number = uniqid();
@@ -436,7 +442,7 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 
 	$font_size_char = '';
 	if (!empty($font_size))
-		$font_size_char = "baseFontSize=" . $font_size + 1 . ";";
+		$font_size_char = "baseFontSize=" . ($font_size + 1)  . ";";
 	else
 		$font_size_char = "baseFontSize=9;";		
 
@@ -498,15 +504,22 @@ function get_chart_code ($chart, $width, $height, $swf) {
 }
 
 // Prints a 3D pie chart
-function fs_3d_pie_chart ($data, $names, $width, $height, $background = "FFFFFF") {
+function fs_3d_pie_chart ($data, $names, $width, $height, $background = "FFFFFF", $font_size = '') {
 	if ((sizeof ($data) != sizeof ($names)) OR (sizeof($data) == 0) ){
 		return;
 	}
+	
+	// Font size
+	$font_size_char = '';
+	if (!empty($font_size))
+		$font_size_char = "baseFontSize=" . ($font_size + 1)  . ";";
+	else
+		$font_size_char = "baseFontSize=9;";	
 
 	// Generate the XML
 	$chart = new FusionCharts("Pie3D", $width, $height);
 	$chart->setSWFPath("include/graphs/FusionCharts/");
-  	$params="showNames=1;showValues=0;showPercentageValues=0;baseFontSize=9;bgColor=$background;bgAlpha=100;canvasBgAlpha=100;";
+  	$params = $font_size_char . "showNames=1;showValues=0;showPercentageValues=0;bgColor=$background;bgAlpha=100;canvasBgAlpha=100;";
   	$chart->setChartParams($params);
 
 	for ($i = 0; $i < sizeof ($data); $i++) {
@@ -518,15 +531,22 @@ function fs_3d_pie_chart ($data, $names, $width, $height, $background = "FFFFFF"
 }
 
 // Prints a 2D pie chart
-function fs_2d_pie_chart ($data, $names, $width, $height, $background = "FFFFFF") {
+function fs_2d_pie_chart ($data, $names, $width, $height, $background = "FFFFFF", $font_size = '') {
 	if ((sizeof ($data) != sizeof ($names)) OR (sizeof($data) == 0) ){
 		return;
 	}
+	
+	// Font size
+	$font_size_char = '';
+	if (!empty($font_size))
+		$font_size_char = "baseFontSize=" . ($font_size + 1)  . ";";
+	else
+		$font_size_char = "baseFontSize=9;";	
 
 	// Generate the XML
 	$chart = new FusionCharts("Pie3D", $width, $height);
 	$chart->setSWFPath("include/graphs/FusionCharts/");
-  	$params="showNames=1;showValues=0;showPercentageValues=0;baseFontSize=9;bgColor=$background;bgAlpha=100;canvasBgAlpha=100;";
+  	$params = $font_size_char . "showNames=1;showValues=0;showPercentageValues=0;bgColor=$background;bgAlpha=100;canvasBgAlpha=100;";
   	$chart->setChartParams($params);
 
 	for ($i = 0; $i < sizeof ($data); $i++) {
@@ -538,7 +558,7 @@ function fs_2d_pie_chart ($data, $names, $width, $height, $background = "FFFFFF"
 }
 
 // Returns a 2D column chart
-function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data_columns = false, $yaxisname = '') {
+function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data_columns = false, $yaxisname = '', $font_size = '') {
 	if (sizeof ($data) == 0) {
 		return;
 	}
@@ -611,10 +631,19 @@ function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data
 			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
 		}
 	}
+	
 	$unit_encode = '';
 	if (isset($yaxisname))
 		$yaxisname_encode = urlencode($yaxisname);
-    $chart->setChartParams('yAxisName=' . $yaxisname_encode . ';decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
+		
+	// Font size
+	$font_size_char = '';
+	if (!empty($font_size))
+		$font_size_char = "baseFontSize=" . ($font_size + 1)  . ";";
+	else
+		$font_size_char = "baseFontSize=9;";	
+		
+    $chart->setChartParams('yAxisName=' . $yaxisname_encode . ';decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;' . $font_size_char 
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
@@ -622,7 +651,7 @@ function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data
 }
 
 // Returns a BAR Horizontalchart
-function fs_2d_hcolumn_chart ($data, $width, $height) {
+function fs_2d_hcolumn_chart ($data, $width, $height, $font_size = '') {
 	if (sizeof ($data) == 0) {
 		return;
 	}
@@ -688,8 +717,15 @@ function fs_2d_hcolumn_chart ($data, $width, $height) {
 			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name/* . ';color=95BB04'*/);
 		}
 	}
+	
+	// Font size
+	$font_size_char = '';
+	if (!empty($font_size))
+		$font_size_char = "baseFontSize=" . ($font_size + 1)  . ";";
+	else
+		$font_size_char = "baseFontSize=9;";	
 
-  	$params='showNames=1;showValues=0;showPercentageValues=0;baseFontSize=9;rotateNames=1;chartLeftMargin=0;chartRightMargin=0;chartBottomMargin=0;chartTopMargin=0;showBarShadow=1;showLimits=1';
+  	$params='showNames=1;showValues=0;showPercentageValues=0;' . $font_size_char . 'rotateNames=1;chartLeftMargin=0;chartRightMargin=0;chartBottomMargin=0;chartTopMargin=0;showBarShadow=1;showLimits=1';
 
     $chart->setChartParams($params.';numVDivLines='.$num_vlines.($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
@@ -698,7 +734,7 @@ function fs_2d_hcolumn_chart ($data, $width, $height) {
 }
 
 // Returns a 3D column chart
-function fs_3d_column_chart ($data, $width, $height) {
+function fs_3d_column_chart ($data, $width, $height, $font_size = '') {
 	if (sizeof ($data) == 0) {
 		return;
 	}
@@ -724,8 +760,15 @@ function fs_3d_column_chart ($data, $width, $height) {
 		}
 		$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
 	}
+	
+	// Font size
+	$font_size_char = '';
+	if (!empty($font_size))
+		$font_size_char = "baseFontSize=" . ($font_size + 1)  . ";";
+	else
+		$font_size_char = "baseFontSize=9;";	
 
-    $chart->setChartParams('decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' 
+    $chart->setChartParams('decimalPrecision=0;showAlternateVGridColor=1; numVDivLines='.$num_vlines.';showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;' . $font_size_char
 . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code

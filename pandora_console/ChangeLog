@@ -1,3 +1,17 @@
+2012-06-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/graphs/functions_fsgraph.php
+	 include/graphs/fgraph.php: Added variable font size in flash 
+	 charts.
+	 
+	 godmode/agentes/module_manager_editor_common.php: Modified width
+	 of module type select in module editor when you are 
+	 editing/creating a network module.
+	 
+    * include/functions_html.php 
+     godmode/reporting/reporting_builder.list_items.php: Fixed broken 
+    view due to a bad sintax statement.
+
 2012-06-18  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_config.php: Fixed a problem with 

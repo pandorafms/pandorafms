@@ -250,6 +250,11 @@ switch ($activeTab) {
 		break;
 }
 
+if (isset($config['vc_refr']) and $config['vc_refr'] != 0)
+	$view_refresh = $config['vc_refr'];
+else
+	$view_refresh = '60';
+
 $buttons = array(
 	'data' => array('active' => false,
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=data&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' . 
@@ -264,7 +269,7 @@ $buttons = array(
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=editor&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
 			html_print_image ("images/config.png", true, array ("title" => __('Editor'))) .'</a>'),
 	'view' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $idVisualConsole . '&refr=60">' .
+		'text' => '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $idVisualConsole . '&refr=' . $view_refresh . '">' .
 			html_print_image ("images/eye.png", true, array ("title" => __('View'))) .'</a>'),);
 
 if ($action == 'new' || $idVisualConsole === false){

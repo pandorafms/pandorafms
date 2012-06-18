@@ -642,8 +642,29 @@ function config_process_config () {
 	
 	if (!isset ($config['relative_path']) && (isset ($_POST['nick']) || isset ($config['id_user'])) && isset($config['enterprise_installed'])) {
 		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
-		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {		
-			if(isset($config['id_user']))
+		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+			
+			// Try to update user table in order to refresh skin inmediatly
+			$is_user_updating = get_parameter("sec2", "");
+			
+			if ($is_user_updating == 'operation/users/user_edit') {
+				$id = get_parameter_get ("id", $config["id_user"]); // ID given as parameter
+				$user_info = get_user_info ($id);
+				 
+				//If current user is editing himself or if the user has UM (User Management) rights on any groups the user is part of AND the authorization scheme allows for users/admins to update info
+				if (($config["id_user"] == $id || check_acl ($config["id_user"], users_get_groups ($id), "UM")) && $config["user_can_update_info"]) {
+					$view_mode = false;
+				} else {
+					$view_mode = true;
+				}
+
+				if (isset ($_GET["modified"]) && !$view_mode) { 
+					$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
+					$return_update_skin = update_user ($id, $upd_info);
+				}
+			}		
+					
+			if (isset($config['id_user']))
 				$relative_path = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
 			else
 				$relative_path = enterprise_hook('skins_set_image_skin_path',array($_POST['nick']));

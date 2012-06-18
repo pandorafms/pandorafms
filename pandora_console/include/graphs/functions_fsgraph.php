@@ -22,7 +22,7 @@ if (!class_exists("FusionCharts")) {
 ///////////////////////////////
 ///////////////////////////////
 ///////////////////////////////
-function fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index) {
+function fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $font_size = '') {
 	global $config;
 	
 	$graph_type = "StackedArea2D";
@@ -137,9 +137,15 @@ function fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_i
 		}
 	}
 	
-	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . 
+	$font_size_char = '';
+	if ($font_size !== false)
+		$font_size_char = "baseFontSize=" . $font_size + 1 . ";";
+	else
+		$font_size_char = "baseFontSize=9;";		
+	
+	$chart->setChartParams($font_size_char.'animation=0;numVDivLines=' . $num_vlines . 
 		';showShadow=0;showAlternateVGridColor=1;showNames=1;rotateNames=1;' . 
-		'lineThickness=0.1;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;' .
+		'lineThickness=0.1;anchorRadius=0.5;showValues=0;showLimits=0;' .
 		'showAreaBorder=1;areaBorderThickness=0.1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 	
 	$random_number = uniqid();
@@ -309,7 +315,7 @@ function fs_line_graph($chart_data, $width, $height, $color, $legend, $long_inde
 }
 
 
-function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit) {
+function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit, $font_size = '') {
 	global $config;
 
 	$graph_type = "MSArea2D"; //MSLine is possible also
@@ -427,9 +433,16 @@ function fs_area_graph($chart_data, $width, $height, $color, $legend, $long_inde
 	$unit_encode = '';
 	if (isset($unit))
 		$unit_encode = urlencode($unit);
-	$chart->setChartParams('yAxisName=' . $unit_encode . ';'.'animation=0;numVDivLines=' . $num_vlines . 
+
+	$font_size_char = '';
+	if (!empty($font_size))
+		$font_size_char = "baseFontSize=" . $font_size + 1 . ";";
+	else
+		$font_size_char = "baseFontSize=9;";		
+
+	$chart->setChartParams($font_size_char.'yAxisName=' . $unit_encode . ';'.'animation=0;numVDivLines=' . $num_vlines . 
 		';showShadow=0;showAlternateVGridColor=1;showNames=1;rotateNames=1;' . 
-		'lineThickness=0.1;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;' .
+		'lineThickness=0.1;anchorRadius=0.5;showValues=0;showLimits=0;' .
 		'showAreaBorder=1;areaBorderThickness=0.1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 	
 	$random_number = uniqid();

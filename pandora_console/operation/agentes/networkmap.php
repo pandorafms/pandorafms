@@ -222,6 +222,7 @@ if(!$nomaps && $id_networkmap != 0) {
 				html_print_image("images/file.png", true, array ("title" => __('Save map'))) .'</a>');
 }
 
+$title = '';
 switch($activeTab){
 	case 'topology':
 			$title = __('Topology view');

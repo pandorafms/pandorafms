@@ -254,7 +254,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 			}
 		else
 			$legend = array();
-		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit);
+		return fs_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $font_size);
 	}
 	else {
 		$graph = array();
@@ -288,7 +288,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 		foreach($legend as $i => $v) {
 			$legend[$i] = urlencode($v);
 		}
-		return fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index);
+		return fs_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $font_size);
 	}
 	else {
 		//Stack the data

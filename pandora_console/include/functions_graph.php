@@ -328,7 +328,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	
 	///////
 	// Color commented not to restrict serie colors
-	/*$color = array();
+	$color = array();
 	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	if($show_events) {
 		$color['event'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
@@ -339,8 +339,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
-	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		*/
-	
+	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
+
 	$legend = array();
 	$legend['sum'] = __('Avg') . ' (' . $avg_value . ') ' . $unit;
 	if($show_events) {
@@ -361,9 +361,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($flash_chart) {
 		include_flash_chart_script($homeurl);
 	}
-	
+
 	// Color commented not to restrict serie colors
-	return area_graph($flash_chart, $chart, $width, $height, '' /*$color*/ ,$legend,
+	return area_graph($flash_chart, $chart, $width, $height, $color ,$legend,
 		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
 		 $config['homedir'] .  "/images/logo_vertical_water.png",
 		 $config['fontpath'], $config['font_size'], $unit, $ttl);

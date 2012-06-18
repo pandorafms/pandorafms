@@ -1,5 +1,22 @@
 2012-06-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_graph.php
+	 include/graphs/functions_fsgraph.php
+	 include/graphs/fgraph.php
+	 include/functions_config.php
+	 include/functions_ui.php
+	 include/functions.php
+	 index.php
+	 operation/agentes/ver_agente.php
+	 operation/agentes/networkmap.php
+	 godmode/massive/massive_edit_modules.php
+	 godmode/reporting/visual_console_builder.php: Several Php warnings
+	 fixed over console code. Also skins are now applied at update time.
+	 Global autorefresh fixed and check_referer/autorefresh issue fixed
+	(old solution was insecure).
+
+2012-06-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/users/user_edit.php: Removed redirection due to Php 
 	warning, now skins are applied when user update it.
 

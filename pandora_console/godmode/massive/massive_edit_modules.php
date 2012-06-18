@@ -106,7 +106,7 @@ $idAgentMassive = (int) get_parameter('id_agent_massive');
 $group_select = get_parameter('groups_select');
 
 $module_name = get_parameter ('module_name');
-$agents_select = get_parameter('agents');
+$agents_select = get_parameter('agents', array());
 $agents_id = get_parameter('id_agents');
 $modules_select = get_parameter('module');
 $selection_mode = get_parameter('selection_mode', 'modules');
@@ -114,7 +114,8 @@ $recursion = get_parameter('recursion');
 
 $update = (bool) get_parameter_post ('update');
 
-if ($update) {	
+if ($update) {
+	$agents_ = '';
 	if($selection_mode == 'modules') {	
 		$force = get_parameter('force_type', false);
 		

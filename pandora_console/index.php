@@ -97,7 +97,8 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 $config["pure"] = (bool) get_parameter ("pure");
 
 // Auto Refresh page (can now be disabled anywhere in the script)
-$config["refr"] = (int) get_parameter ("refr");
+if (get_parameter ("refr"))
+	$config["refr"] = (int) get_parameter ("refr");
 
 ob_start ();
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";

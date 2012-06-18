@@ -111,6 +111,9 @@ if (is_ajax ()) {
 		
 		$nameAgents = db_get_all_rows_sql($sql);
 		
+		if ($nameAgents == false)
+			$nameAgents = array();
+		
 		foreach ($nameAgents as $nameAgent) {
 			$names[] = $nameAgent['name'];
 		}

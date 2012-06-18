@@ -886,7 +886,7 @@ switch ($action) {
 		break;
 	// Added for report templates
 	default:
-		if ($enterpriseEnable){
+		if ($enterpriseEnable) {
 			$buttons = array(
 				'list_reports' => array('active' => false,
 					'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">' . 

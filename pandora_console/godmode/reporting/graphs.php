@@ -48,7 +48,7 @@ switch ($activeTab){
 	case 'main':	$buttons['graph_list']['active'] = true;
 					$subsection = ' &raquo; '.__('Graph list');
 					break;
-	default:		$subsection = reporting_enterprise_add_graph_template_subsection($activeTab, &$buttons);
+	default:		$subsection = reporting_enterprise_add_graph_template_subsection($activeTab, $buttons);
 					break;
 	}
 

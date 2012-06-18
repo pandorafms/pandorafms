@@ -110,6 +110,11 @@ if ($add) {
 
 $groups = users_get_groups ();
 
+// Avoid php warning
+if (empty($alert_templates)) {
+	$alert_templates = '';
+}
+
 $table->id = 'delete_table';
 $table->width = '98%';
 $table->data = array ();

@@ -128,12 +128,12 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	}
 
 	// Reload page to update skin
-        if ($return){
+       /* if ($return){
                 header ('location:' . $config['homeurl'] . '/index.php?sec=usuarios&sec2=operation/users/user_edit&status=1');
         }
         else{
                 header ('location:' . $config['homeurl'] . '/index.php?sec=usuarios&sec2=operation/users/user_edit&status=0');
-        }
+        }*/
 
 	$user_info = $upd_info;
 }
@@ -247,7 +247,7 @@ $values = array ('Default' =>__('Default'), 'Dashboard'=>__('Dashboard'), 'Visua
 echo html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
 echo "&nbsp;&nbsp;";
 
-$dashboards = get_user_dashboards ($user_info['id_user']);
+$dashboards = get_user_dashboards ($config['id_user']);
 $dashboards_aux = array();
 if ($dashboards === false) {
 	$dashboards = array('None'=>'None');
@@ -258,7 +258,7 @@ if ($dashboards === false) {
 }
 echo html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
 
-$layouts = visual_map_get_user_layouts ($user_info['id_user'], true);
+$layouts = visual_map_get_user_layouts ($config['id_user'], true);
 $layouts_aux = array();
 if ($layouts === false) {
 	$layouts_aux = array('None'=>'None');

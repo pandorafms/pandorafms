@@ -1,3 +1,14 @@
+2012-06-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_config.php
+	 operation/users/user_edit.php
+	 godmode/massive/massive_add_action_alerts.php
+	 godmode/reporting/reporting_builder.php
+	 godmode/reporting/graphs.php: Fixed Php warning due to pass by
+	 references variables and improvement in skins update.
+	 
+	 Merged from branches.
+
 2012-06-18  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/functions_config.php: Don't display

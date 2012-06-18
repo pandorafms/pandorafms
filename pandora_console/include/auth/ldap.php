@@ -107,7 +107,6 @@ foreach ($opt_keys as $key) {
 $config["auth_error"] = &$ldap_cache["error"];
 
 unset ($req_keys, $opt_keys);
-	
 
 /**
  * process_user_login accepts $login and $pass and handles it according to current authentication scheme

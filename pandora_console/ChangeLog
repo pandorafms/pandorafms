@@ -1,5 +1,7 @@
 2012-06-18  Sancho Lerena <slerena@artica.es>
 
+	* extensions/update_manager/update_pandora.php: Fixed typo in title.
+
 	* include/config_process.php: Updated version / build
 
 	* functions_config.php: Changed some defaults on text size

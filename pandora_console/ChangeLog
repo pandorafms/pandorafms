@@ -1,3 +1,11 @@
+2012-06-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_config.php: Cleaning the mess when 
+	update setup fields. Now, looking the $sec2, only
+	will be updated the fields of the current setup section
+	In this way, set fields as empty value has been
+	fixed
+
 2012-06-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/graphs/functions_fsgraph.php

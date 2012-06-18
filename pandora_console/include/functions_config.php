@@ -130,147 +130,152 @@ function config_update_config () {
 	if (! $update_config)
 		return false;
 	
-	$style = (string) get_parameter ('style', $config["style"]);
-	if ($style != $config['style'])
-		$style = substr ($style, 0, strlen ($style) - 4);
-	
-	config_update_value ('language', (string) get_parameter ('language', $config["language"]));	
-	config_update_value ('remote_config', (string) get_parameter ('remote_config', $config["remote_config"]));
-	config_update_value ('block_size', (int) get_parameter ('block_size', $config["block_size"]));
-	config_update_value ('days_purge', (int) get_parameter ('days_purge', $config["days_purge"]));
-	config_update_value ('days_delete_unknown', (int) get_parameter ('days_delete_unknown', $config["days_delete_unknown"]));
-	config_update_value ('days_compact', (int) get_parameter ('days_compact', $config["days_compact"]));
-	config_update_value ('graph_res', (int) get_parameter ('graph_res', $config["graph_res"]));
-	config_update_value ('step_compact', (int) get_parameter ('step_compact', $config["step_compact"]));
-	config_update_value ('style', $style);
-	config_update_value ('graph_color1', (string) get_parameter ('graph_color1', $config["graph_color1"]));
-	config_update_value ('graph_color2', (string) get_parameter ('graph_color2', $config["graph_color2"]));
-	config_update_value ('graph_color3', (string) get_parameter ('graph_color3', $config["graph_color3"]));
-	config_update_value ('sla_period', (int) get_parameter ('sla_period', $config["sla_period"]));
-	config_update_value ('date_format', (string) get_parameter ('date_format', $config["date_format"]));
-	config_update_value ('trap2agent', (string) get_parameter ('trap2agent', $config["trap2agent"]));
-	config_update_value ('autoupdate', (bool) get_parameter ('autoupdate', $config["autoupdate"]));
-	config_update_value ('prominent_time', (string) get_parameter ('prominent_time', $config["prominent_time"]));
-	config_update_value ('timesource', (string) get_parameter ('timesource', $config["timesource"]));
-	config_update_value ('event_view_hr', (int) get_parameter ('event_view_hr', $config["event_view_hr"]));
-	if (isset($_POST['loginhash_pwd'])){
-		// Reinitialization of login hash pass
-		if (empty($_POST['loginhash_pwd'])){ 
-			config_update_value ('loginhash_pwd', $_POST['loginhash_pwd']);
-		}
-		else{
-			config_update_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]));
-		}
+	$sec2 = get_parameter_get('sec2');
+	switch($sec2) {
+		case 'godmode/setup/setup':
+			//////// MAIN SETUP
+			config_update_value ('language', (string) get_parameter ('language'));	
+			config_update_value ('remote_config', (string) get_parameter ('remote_config'));
+			config_update_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd'));
+			config_update_value ('timesource', (string) get_parameter ('timesource'));
+			config_update_value ('autoupdate', (bool) get_parameter ('autoupdate'));
+			config_update_value ('https', (bool) get_parameter ('https'));
+			config_update_value ('attachment_store', (string) get_parameter ('attachment_store'));
+			config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API'));
+			config_update_value ('api_password', get_parameter('api_password'));
+			config_update_value ('activate_gis', (bool) get_parameter ('activate_gis'));
+			config_update_value ('integria_enabled', get_parameter ('integria_enabled'));
+			config_update_value ('integria_inventory', get_parameter ('integria_inventory'));
+			config_update_value ('integria_api_password', get_parameter ('integria_api_password'));
+			config_update_value ('integria_url', get_parameter ('integria_url'));
+			config_update_value ('timezone', (string) get_parameter ('timezone'));
+			config_update_value ('sound_alert', get_parameter('sound_alert'));
+			config_update_value ('sound_critical', get_parameter('sound_critical'));
+			config_update_value ('sound_warning', get_parameter('sound_warning'));
+			# Update of Pandora FMS license 
+			$update_manager_installed = db_get_value('value', 'tconfig', 'token', 'update_manager_installed');
+			
+			if ($update_manager_installed == 1) {
+				if (isset($_POST['license_info_key'])) {
+					$values = array("value" => get_parameter('license_info_key'));
+					$where = array("key" => 'customer_key');
+					$update_manage_settings_result = db_process_sql_update('tupdate_settings', $values, $where);
+				}
+			}
+			
+			config_update_value ('trap2agent', (string) get_parameter ('trap2agent'));
+			config_update_value ('acl_enterprise', get_parameter ('acl_enterprise'));
+			config_update_value ('metaconsole', get_parameter ('metaconsole'));
+			config_update_value ('collection_max_size', get_parameter('collection_max_size'));
+			/////////////
+			break;
+		case 'godmode/setup/setup_auth':
+			//////// AUTHENTICATION SETUP
+			config_update_value ('auth', get_parameter ('auth'));
+			config_update_value ('autocreate_remote_users', get_parameter ('autocreate_remote_users'));
+			config_update_value ('default_remote_profile', get_parameter ('default_remote_profile'));
+			config_update_value ('default_remote_group', get_parameter ('default_remote_group'));
+			config_update_value ('autocreate_blacklist', get_parameter ('autocreate_blacklist'));
+			
+			config_update_value ('ad_server', get_parameter ('ad_server'));
+			config_update_value ('ad_port', get_parameter ('ad_port'));
+			config_update_value ('ad_start_tls', get_parameter ('ad_start_tls'));
+			config_update_value ('ad_domain', get_parameter ('ad_domain'));
+			
+			config_update_value ('ldap_server', get_parameter ('ldap_server'));
+			config_update_value ('ldap_port', get_parameter ('ldap_port'));
+			config_update_value ('ldap_version', get_parameter ('ldap_version'));
+			config_update_value ('ldap_start_tls', get_parameter ('ldap_start_tls'));
+			config_update_value ('ldap_base_dn', get_parameter ('ldap_base_dn'));
+			config_update_value ('ldap_login_attr', get_parameter ('ldap_login_attr'));
+			
+			config_update_value ('rpandora_server', get_parameter ('rpandora_server'));
+			config_update_value ('rpandora_port', get_parameter ('rpandora_port'));
+			config_update_value ('rpandora_dbname', get_parameter ('rpandora_dbname'));
+			config_update_value ('rpandora_user', get_parameter ('rpandora_user'));
+			config_update_value ('rpandora_pass', get_parameter ('rpandora_pass'));
+			
+			config_update_value ('rbabel_server', get_parameter ('rbabel_server'));
+			config_update_value ('rbabel_port', get_parameter ('rbabel_port'));
+			config_update_value ('rbabel_dbname', get_parameter ('rbabel_dbname'));
+			config_update_value ('rbabel_user', get_parameter ('rbabel_user'));
+			config_update_value ('rbabel_pass', get_parameter ('rbabel_pass'));
+			
+			config_update_value ('rintegria_server', get_parameter ('rintegria_server'));
+			config_update_value ('rintegria_port', get_parameter ('rintegria_port'));
+			config_update_value ('rintegria_dbname', get_parameter ('rintegria_dbname'));
+			config_update_value ('rintegria_user', get_parameter ('rintegria_user'));
+			config_update_value ('rintegria_pass', get_parameter ('rintegria_pass'));
+			/////////////
+			break;
+		case 'godmode/setup/performance':
+			//////// PERFORMANCE SETUP
+			config_update_value ('event_purge', get_parameter ('event_purge'));
+			config_update_value ('trap_purge', get_parameter ('trap_purge'));
+			config_update_value ('string_purge', get_parameter ('string_purge'));
+			config_update_value ('audit_purge', get_parameter ('audit_purge'));
+			config_update_value ('gis_purge', get_parameter ('gis_purge'));
+			config_update_value ('days_purge', (int) get_parameter ('days_purge'));
+			config_update_value ('days_delete_unknown', (int) get_parameter ('days_delete_unknown'));
+			config_update_value ('days_compact', (int) get_parameter ('days_compact'));
+			config_update_value ('step_compact', (int) get_parameter ('step_compact'));
+			config_update_value ('sla_period', (int) get_parameter ('sla_period'));
+			config_update_value ('event_view_hr', (int) get_parameter ('event_view_hr'));
+			config_update_value ('realtimestats', get_parameter ('realtimestats'));
+			config_update_value ('stats_interval', get_parameter ('stats_interval'));
+			config_update_value ('agentaccess', (int) get_parameter ('agentaccess'));
+			config_update_value ('compact_header', (bool) get_parameter ('compact_header'));
+			/////////////
+			break;
+		case 'godmode/setup/setup_visuals':
+			//////// VISUAL STYLES SETUP
+			config_update_value ('date_format', (string) get_parameter ('date_format'));
+			config_update_value ('prominent_time', (string) get_parameter ('prominent_time'));
+			config_update_value ('graph_color1', (string) get_parameter ('graph_color1'));
+			config_update_value ('graph_color2', (string) get_parameter ('graph_color2'));
+			config_update_value ('graph_color3', (string) get_parameter ('graph_color3'));
+			config_update_value ('graph_res', (int) get_parameter ('graph_res'));
+			$style = (string) get_parameter ('style');
+			if ($style != $config['style'])
+				$style = substr ($style, 0, strlen ($style) - 4);
+			config_update_value ('style', $style);
+			config_update_value ('block_size', (int) get_parameter ('block_size'));
+			config_update_value ('round_corner', (bool) get_parameter ('round_corner'));
+			config_update_value ('status_images_set', (string) get_parameter ('status_images_set'));
+			config_update_value ('fontpath', (string) get_parameter ('fontpath'));
+			config_update_value ('font_size', get_parameter('font_size'));
+			config_update_value ('flash_charts', (bool) get_parameter ('flash_charts'));
+			config_update_value ('custom_logo', (string) get_parameter ('custom_logo'));
+			config_update_value ('refr', get_parameter('refr'));
+			config_update_value ('vc_refr', get_parameter('vc_refr'));
+			config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small'));
+			config_update_value ('agent_size_text_medium', get_parameter('agent_size_text_medium'));
+			config_update_value ('module_size_text_small', get_parameter('module_size_text_small'));
+			config_update_value ('module_size_text_medium', get_parameter('module_size_text_medium'));
+			config_update_value ('description_size_text', get_parameter('description_size_text'));
+			config_update_value ('item_title_size_text', get_parameter('item_title_size_text'));
+			/////////////
+			break;
+		case 'enterprise/godmode/setup/setup_history':
+			//////// HISTORY DATABASE SETUP
+			config_update_value ('history_db_enabled', (bool) get_parameter ('history_db_enabled'));
+			config_update_value ('history_db_host', (string) get_parameter ('history_db_host'));
+			config_update_value ('history_db_port', (int) get_parameter ('history_db_port'));
+			config_update_value ('history_db_name', (string) get_parameter ('history_db_name'));
+			config_update_value ('history_db_user', (string) get_parameter ('history_db_user'));
+			config_update_value ('history_db_pass', (string) get_parameter ('history_db_pass'));
+			config_update_value ('history_db_days', (string) get_parameter ('history_db_days'));
+			config_update_value ('history_db_step', (string) get_parameter ('history_db_step'));
+			config_update_value ('history_db_delay', (string) get_parameter ('history_db_delay'));
+			///////////////
+			break;
 	}
-	config_update_value ('https', (bool) get_parameter ('https', $config["https"]));
-	config_update_value ('compact_header', (bool) get_parameter ('compact_header', $config["compact_header"]));
-	config_update_value ('fontpath', (string) get_parameter ('fontpath', $config["fontpath"]));
-	config_update_value ('round_corner', (bool) get_parameter ('round_corner', $config["round_corner"]));
-	config_update_value ('status_images_set', (string) get_parameter ('status_images_set', $config["status_images_set"]));
-	config_update_value ('agentaccess', (int) get_parameter ('agentaccess', $config['agentaccess']));
-	config_update_value ('flash_charts', (bool) get_parameter ('flash_charts', $config["flash_charts"]));
-	config_update_value ('attachment_store', (string) get_parameter ('attachment_store', $config["attachment_store"]));
-	config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API'])));
-	
-	config_update_value ('custom_logo', (string) get_parameter ('custom_logo', $config["custom_logo"]));
-	config_update_value ('history_db_enabled', (bool) get_parameter ('history_db_enabled', $config['history_db_enabled']));
-	config_update_value ('history_db_host', (string) get_parameter ('history_db_host', $config['history_db_host']));
-	config_update_value ('history_db_port', (int) get_parameter ('history_db_port', $config['history_db_port']));
-	config_update_value ('history_db_name', (string) get_parameter ('history_db_name', $config['history_db_name']));
-	config_update_value ('history_db_user', (string) get_parameter ('history_db_user', $config['history_db_user']));
-	config_update_value ('history_db_pass', (string) get_parameter ('history_db_pass', $config['history_db_pass']));
-	config_update_value ('history_db_days', (string) get_parameter ('history_db_days', $config['history_db_days']));
-	config_update_value ('history_db_step', (string) get_parameter ('history_db_step', $config['history_db_step']));
-	config_update_value ('history_db_delay', (string) get_parameter ('history_db_delay', $config['history_db_delay']));
-	config_update_value ('timezone', (string) get_parameter ('timezone', $config['timezone']));
-	config_update_value ('activate_gis', (bool) get_parameter ('activate_gis', $config['activate_gis']));
-	config_update_value ('stats_interval', get_parameter ('stats_interval', $config['stats_interval']));
-	config_update_value ('realtimestats', get_parameter ('realtimestats', $config['realtimestats']));
-	config_update_value ('event_purge', get_parameter ('event_purge', $config['event_purge']));
-	config_update_value ('trap_purge', get_parameter ('trap_purge', $config['trap_purge']));
-	config_update_value ('string_purge', get_parameter ('string_purge', $config['string_purge']));
-	config_update_value ('audit_purge', get_parameter ('audit_purge', $config['audit_purge']));
-	config_update_value ('acl_enterprise', get_parameter ('acl_enterprise', $config['acl_enterprise']));
-	config_update_value ('metaconsole', get_parameter ('metaconsole', $config['metaconsole']));
-	config_update_value ('gis_purge', get_parameter ('gis_purge', $config['gis_purge']));
-	config_update_value ('auth', get_parameter ('auth', $config['auth']));
-	config_update_value ('autocreate_remote_users', get_parameter ('autocreate_remote_users', $config['autocreate_remote_users']));
-	config_update_value ('autocreate_blacklist', get_parameter ('autocreate_blacklist', $config['autocreate_blacklist']));
-	config_update_value ('default_remote_profile', get_parameter ('default_remote_profile', $config['default_remote_profile']));
-	config_update_value ('default_remote_group', get_parameter ('default_remote_group', $config['default_remote_group']));
-	
-	config_update_value ('ldap_server', get_parameter ('ldap_server', $config['ldap_server']));
-	config_update_value ('ldap_port', get_parameter ('ldap_port', $config['ldap_port']));
-	config_update_value ('ldap_version', get_parameter ('ldap_version', $config['ldap_version']));
-	config_update_value ('ldap_start_tls', get_parameter ('ldap_start_tls', $config['ldap_start_tls']));
-	config_update_value ('ldap_base_dn', get_parameter ('ldap_base_dn', $config['ldap_base_dn']));
-	config_update_value ('ldap_login_attr', get_parameter ('ldap_login_attr', $config['ldap_login_attr']));
-	
-	config_update_value ('ad_server', get_parameter ('ad_server', $config['ad_server']));
-	config_update_value ('ad_port', get_parameter ('ad_port', $config['ad_port']));
-	config_update_value ('ad_start_tls', get_parameter ('ad_start_tls', $config['ad_start_tls']));
-	config_update_value ('ad_domain', get_parameter ('ad_domain', $config['ad_domain']));
-	
-	config_update_value ('rpandora_server', get_parameter ('rpandora_server', $config['rpandora_server']));
-	config_update_value ('rpandora_port', get_parameter ('rpandora_port', $config['rpandora_port']));
-	config_update_value ('rpandora_dbname', get_parameter ('rpandora_dbname', $config['rpandora_dbname']));
-	config_update_value ('rpandora_user', get_parameter ('rpandora_user', $config['rpandora_user']));
-	config_update_value ('rpandora_pass', get_parameter ('rpandora_pass', $config['rpandora_pass']));
-	
-	config_update_value ('rbabel_server', get_parameter ('rbabel_server', $config['rbabel_server']));
-	config_update_value ('rbabel_port', get_parameter ('rbabel_port', $config['rbabel_port']));
-	config_update_value ('rbabel_dbname', get_parameter ('rbabel_dbname', $config['rbabel_dbname']));
-	config_update_value ('rbabel_user', get_parameter ('rbabel_user', $config['rbabel_user']));
-	config_update_value ('rbabel_pass', get_parameter ('rbabel_pass', $config['rbabel_pass']));
-	
-	config_update_value ('rintegria_server', get_parameter ('rintegria_server', $config['rintegria_server']));
-	config_update_value ('rintegria_port', get_parameter ('rintegria_port', $config['rintegria_port']));
-	config_update_value ('rintegria_dbname', get_parameter ('rintegria_dbname', $config['rintegria_dbname']));
-	config_update_value ('rintegria_user', get_parameter ('rintegria_user', $config['rintegria_user']));
-	config_update_value ('rintegria_pass', get_parameter ('rintegria_pass', $config['rintegria_pass']));
-	
-	config_update_value ('integria_enabled', get_parameter ('integria_enabled', $config['integria_enabled']));
-	config_update_value ('integria_inventory', get_parameter ('integria_inventory', $config['integria_inventory']));
-	config_update_value ('integria_api_password', get_parameter ('integria_api_password', $config['integria_api_password']));
-	config_update_value ('integria_url', get_parameter ('integria_url', $config['integria_url']));
-	
-	config_update_value ('sound_alert', get_parameter('sound_alert', $config['sound_alert']));
-	config_update_value ('sound_critical', get_parameter('sound_critical', $config['sound_critical']));
-	config_update_value ('sound_warning', get_parameter('sound_warning', $config['sound_warning']));
-	
-	config_update_value ('api_password', get_parameter('api_password', $config['api_password']));
-	
-	config_update_value ('collection_max_size', get_parameter('collection_max_size', $config['collection_max_size']));
-	
-	config_update_value ('font_size', get_parameter('font_size', $config['font_size']));
-	config_update_value ('refr', get_parameter('refr', $config['refr']));
-	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));
-	
-	config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small', $config['agent_size_text_small']));
-	config_update_value ('agent_size_text_medium', get_parameter('agent_size_text_medium', $config['agent_size_text_medium']));
-	config_update_value ('module_size_text_small', get_parameter('module_size_text_small', $config['module_size_text_small']));
-	config_update_value ('module_size_text_medium', get_parameter('module_size_text_medium', $config['module_size_text_medium']));
-	config_update_value ('description_size_text', get_parameter('description_size_text', $config['description_size_text']));
-	config_update_value ('item_title_size_text', get_parameter('item_title_size_text', $config['item_title_size_text']));
-	
+		
 	enterprise_include_once('include/functions_policies.php');
 	$enterprise = enterprise_include_once ('include/functions_skins.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
 		$config['relative_path'] = get_parameter('relative_path', $config['relative_path']);
 	}
-	
-	# Update of Pandora FMS license 
-	$update_manager_installed = db_get_value('value', 'tconfig', 'token', 'update_manager_installed');
-	
-	if ($update_manager_installed == 1) {
-		
-		if (isset($_POST['license_info_key'])) {
-			$values = array("value" => get_parameter('license_info_key'));
-			$where = array("key" => 'customer_key');
-			$update_manage_settings_result = db_process_sql_update('tupdate_settings', $values, $where);
-		}
-	}
-	
 }
 
 /**

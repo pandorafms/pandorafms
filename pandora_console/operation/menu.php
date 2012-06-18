@@ -22,8 +22,8 @@ require_once ('include/functions_menu.php');
 
 enterprise_include ('operation/menu.php');
 
-$menu = array ();
-$menu['class'] = 'operation';
+$menu_operation = array ();
+$menu_operation['class'] = 'operation';
 
 // Agent read, Server read
 if (check_acl ($config['id_user'], 0, "AR")) {
@@ -32,10 +32,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 
 	if ($config['metaconsole'] == 0) {
 		//View agents
-		$menu["estado"]["text"] = __('Monitoring');
-		$menu["estado"]["sec2"] = "operation/agentes/tactical";
-		$menu["estado"]["refr"] = 0;
-		$menu["estado"]["id"] = "oper-agents";
+		$menu_operation["estado"]["text"] = __('Monitoring');
+		$menu_operation["estado"]["sec2"] = "operation/agentes/tactical";
+		$menu_operation["estado"]["refr"] = 0;
+		$menu_operation["estado"]["id"] = "oper-agents";
 		
 		$sub = array ();
 		$sub["operation/agentes/tactical"]["text"] = __('Tactical view');
@@ -85,16 +85,16 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$sub['operation/tree']['text'] = __('Tree view');
 		$sub["operation/tree"]["refr"] = 0;
 			
-		$menu["estado"]["sub"] = $sub;
+		$menu_operation["estado"]["sub"] = $sub;
 		//End of view agents
 	}
 	
 	//Start network view
 	if ($config['metaconsole'] == 0) {
-		$menu["network"]["text"] = __('Network View');
-		$menu["network"]["sec2"] = "operation/agentes/networkmap_list";
-		$menu["network"]["refr"] = 0;
-		$menu["network"]["id"] = "oper-networkconsole";
+		$menu_operation["network"]["text"] = __('Network View');
+		$menu_operation["network"]["sec2"] = "operation/agentes/networkmap_list";
+		$menu_operation["network"]["refr"] = 0;
+		$menu_operation["network"]["id"] = "oper-networkconsole";
 		
 		$sub = array();
 		
@@ -103,15 +103,15 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		
 		enterprise_hook ('networkmap_console');
 		
-		$menu["network"]["sub"] = $sub;
+		$menu_operation["network"]["sub"] = $sub;
 		//End networkview
 	}
 	
 	// Reporting
-	$menu["reporting"]["text"] = __('Reporting');
-	$menu["reporting"]["sec2"] = "godmode/reporting/reporting_builder";
-	$menu["reporting"]["id"] = "oper-reporting";
-	$menu["reporting"]["refr"] = 60;
+	$menu_operation["reporting"]["text"] = __('Reporting');
+	$menu_operation["reporting"]["sec2"] = "godmode/reporting/reporting_builder";
+	$menu_operation["reporting"]["id"] = "oper-reporting";
+	$menu_operation["reporting"]["refr"] = 60;
 	
 	$sub = array ();
 
@@ -191,15 +191,15 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		enterprise_hook ('reporting_godmenu');	
 	}
 	
-	$menu["reporting"]["sub"] = $sub;
+	$menu_operation["reporting"]["sub"] = $sub;
 	//End reporting
 	
 	//INI GIS Maps
 	if ($config['activate_gis'] and ($config['metaconsole'] == 0)) {
-		$menu["gismaps"]["text"] = __('GIS Maps');
-		$menu["gismaps"]["sec2"] = "operation/gis_maps/index";
-		$menu["gismaps"]["refr"] = 0;
-		$menu["gismaps"]["id"] = "oper-gismaps";
+		$menu_operation["gismaps"]["text"] = __('GIS Maps');
+		$menu_operation["gismaps"]["sec2"] = "operation/gis_maps/index";
+		$menu_operation["gismaps"]["refr"] = 0;
+		$menu_operation["gismaps"]["id"] = "oper-gismaps";
 		
 		$sub = array ();
 		
@@ -228,7 +228,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["refr"] = 0;
 		}
 		
-		$menu["gismaps"]["sub"] = $sub;
+		$menu_operation["gismaps"]["sub"] = $sub;
 	}
 	//END GIS Maps
 }
@@ -236,10 +236,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 // Rest of options, all with AR privilege (or should events be with incidents?)
 if (check_acl ($config['id_user'], 0, "AR") and ($config['metaconsole'] == 0)) {
 	// Events
-	$menu["eventos"]["text"] = __('View events'); 
-	$menu["eventos"]["refr"] = 0;
-	$menu["eventos"]["sec2"] = "operation/events/events";
-	$menu["eventos"]["id"] = "oper-events";
+	$menu_operation["eventos"]["text"] = __('View events'); 
+	$menu_operation["eventos"]["refr"] = 0;
+	$menu_operation["eventos"]["sec2"] = "operation/events/events";
+	$menu_operation["eventos"]["id"] = "oper-events";
 	
 	$sub = array ();
 	$sub["operation/events/event_statistics"]["text"] = __('Statistics');
@@ -279,13 +279,13 @@ if (check_acl ($config['id_user'], 0, "AR") and ($config['metaconsole'] == 0)) {
 	</script>
 	<?php
 	
-	$menu["eventos"]["sub"] = $sub;
+	$menu_operation["eventos"]["sub"] = $sub;
 }
 
 //Workspace
-$menu["workspace"]["text"] = __('Workspace');
-$menu["workspace"]["sec2"] = "operation/users/user_edit";
-$menu["workspace"]["id"] = "oper-users";
+$menu_operation["workspace"]["text"] = __('Workspace');
+$menu_operation["workspace"]["sec2"] = "operation/users/user_edit";
+$menu_operation["workspace"]["id"] = "oper-users";
 
 // ANY user can view him/herself !
 // Users
@@ -333,16 +333,16 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/messages/message_list"]["sub2"] = $sub2;
 }
 
-$menu["workspace"]["sub"] = $sub;
+$menu_operation["workspace"]["sub"] = $sub;
 
 //End Workspace
 
 if (check_acl ($config['id_user'], 0, "AR")) {
 	// Extensions menu additions
 	if (is_array ($config['extensions'])) {
-		$menu["extensions"]["text"] = __('Extensions');
-		$menu["extensions"]["sec2"] = "operation/extensions";
-		$menu["extensions"]["id"] = "oper-extensions";
+		$menu_operation["extensions"]["text"] = __('Extensions');
+		$menu_operation["extensions"]["sec2"] = "operation/extensions";
+		$menu_operation["extensions"]["id"] = "oper-extensions";
 		
 		$sub = array ();
 
@@ -362,25 +362,25 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			else {
 				if (array_key_exists('fatherId',$extension_menu)) {
 					// Check that extension father ID exists previously on the menu
-					if ((strlen($extension_menu['fatherId']) > 0) and (($config['metaconsole'] == 0) or (array_key_exists($extension_menu['fatherId'], $menu)))) {
-						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
-						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["refr"] = 0;
-						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["icon"] = $extension_menu['icon'];
-						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["sec"] = 'extensions';
-						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["extension"] = true;
-						$menu[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["enterprise"] = $extension['enterprise'];
-						$menu[$extension_menu['fatherId']]['hasExtensions'] = true;
+					if ((strlen($extension_menu['fatherId']) > 0) and (($config['metaconsole'] == 0) or (array_key_exists($extension_menu['fatherId'], $menu_operation)))) {
+						$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
+						$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["refr"] = 0;
+						$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["icon"] = $extension_menu['icon'];
+						$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["sec"] = 'extensions';
+						$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["extension"] = true;
+						$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["enterprise"] = $extension['enterprise'];
+						$menu_operation[$extension_menu['fatherId']]['hasExtensions'] = true;
 					}
 				}
 			}
 		}
 		
-		$menu["extensions"]["sub"] = $sub;
+		$menu_operation["extensions"]["sub"] = $sub;
 	}
 }
 
 // Save operation menu array to use in operation/extensions.php view
-$operation_menu_array = $menu;
+$operation_menu_array = $menu_operation;
 
-menu_print_menu ($menu, true);
+menu_print_menu ($menu_operation, true);
 ?>

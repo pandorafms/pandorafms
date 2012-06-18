@@ -1,3 +1,12 @@
+2012-06-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_menu.php
+	index.php
+	operation/menu.php
+	godmode/menu.php: Added functions to manage sec and sec2 to control
+	access in ACLs. Rename variables in menu construction to can get 
+	all the sata structures in other sections
+
 2012-06-18  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/functions_config.php: Fixed bug: Notice to change

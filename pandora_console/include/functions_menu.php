@@ -318,4 +318,100 @@ function menu_print_menu (&$menu) {
 	echo '<ul style="height: 0px;"><li>&nbsp;</li></ul></div>';
 }
 
+/**
+ * Get all the data structure of menu. Operation and Godmode
+ *
+ * @return array Menu structure.
+ */
+function menu_get_full_sec() {
+	global $menu_operation;
+	global $menu_godmode;
+	
+	if($menu_godmode == null || $menu_operation == null) {
+		return array();
+	}
+	else {
+		$menu = $menu_operation + $menu_godmode;
+	}
+	
+	unset($menu['class']);
+	
+	return $menu;
+}
+
+/**
+ * Get the sec list built in menu
+ *
+ * @return array Sections list
+ */
+function menu_get_sec() {
+	$menu = menu_get_full_sec();
+	unset($menu['class']);
+
+	foreach($menu as $k => $v) {
+		$sec_array[$k] = $v['text'];
+	}
+
+	return $sec_array;
+}
+
+/**
+ * Get the pages in a section
+ *
+ * @param string sec code
+ * @param string menu hash. All the menu structure (For example
+ * 		returned by menu_get_full_sec(), json encoded and after that 
+ * 		base64 encoded. If this value is false this data is obtained from
+ * 		menu_get_full_sec();
+ * 
+ * @return array Sections list
+ */
+function menu_get_sec_pages($sec,$menu_hash = false) {
+	if($menu_hash === false) {
+		$menu = menu_get_full_sec();
+	}
+	else {
+		$menu = json_decode(base64_decode($menu_hash),true);
+	}
+
+	foreach($menu[$sec]['sub'] as $k => $v) {
+		// Avoid special cases of standalone windows
+		if(preg_match('/^javascript:/',$k) || preg_match('/\.php/',$k)) {
+			continue;
+		}
+		
+		// If this value has various parameters, we only get the first
+		$k = explode('&',$k);
+		$k = $k[0];
+		
+		$sec2_array[$k] = $v['text'];
+	}
+
+	return $sec2_array;
+}
+
+/**
+ * Check if a page (sec2) is in a section (sec)
+ *
+ * @param string section (sec) code
+ * @param string page (sec2)code
+ * 
+ * @return true if the page is in section, false otherwise
+ */
+function menu_sec2_in_sec($sec,$sec2) {
+	if($sec != 'estado') return false;
+	
+	$sec2_array = menu_get_sec_pages($sec);
+	
+	// If this value has various parameters, we only get the first
+	$sec2 = explode('&',$sec2);
+	$sec2 = $sec2[0];
+		
+	if($sec2_array != null && in_array($sec2,array_keys($sec2_array))) {
+		return true;
+	}
+	
+	return false;	
+}
+
 ?>

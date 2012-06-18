@@ -339,7 +339,7 @@ function incidents_delete_attach ($id_attach, $transact = true) {
 		}
 		unlink ($config["attachment_store"]."/pand".$id."_".$filename);
 	}
-		
+	
 	if ($transact == true && $errors > 0) {
 		db_process_sql_rollback ();
 		return false;

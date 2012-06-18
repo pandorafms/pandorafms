@@ -1,3 +1,19 @@
+2012-06-18 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/auth/ldap.php, include/javascript/pandora.js,
+	include/functions_incidents.php: cleaned source code style.
+	
+	* include/functions_users.php, operation/users/webchat.php: a lot of
+	fixes, the "error connection" don't appear when timeout the
+	connection for to get new messages, fixed empty messages, and
+	fixed when make freak actions with user connect in webchat for
+	example delete. And the most important the chat files (logs and
+	others) now Pandora save this files in attachment dir instead the
+	tmp system dir.
+	
+	* godmode/users/user_list.php: added to call to delete from the
+	chat user list when delete a user.
+
 2012-06-18  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_config.php: Cleaning the mess when 

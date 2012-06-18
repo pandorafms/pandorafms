@@ -108,19 +108,25 @@ ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pan
 if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter ("delete_user", 0);
 	// Only allow delete user if is not the actual user
-	if($id_user != $config['id_user']){
+	if ($id_user != $config['id_user']) {
+		
+		$user_row = users_get_user_by_id($id_user);
+		
 		$result = delete_user ($id_user);
-
+		
+		if ($result) {
+			users_save_logout($user_row, true);
+		}
+		
 		db_pandora_audit("User management",
 			"Deleted user ".io_safe_input($id_user));
-
+		
 		ui_print_result_message ($result,
 			__('Successfully deleted'),
 			__('There was a problem deleting the user'));
 	}
 	else
 		ui_print_error_message (__('There was a problem deleting the user'));
-	
 }
 elseif (isset ($_GET["profile_del"])) { //delete profile
 	$id_profile = (int) get_parameter_post ("delete_profile");
@@ -160,7 +166,7 @@ $table->size[5] = '45px';
 $info1 = array ();
 
 $info1 = get_users ($order, array ('offset' => (int) get_parameter ('offset'),
-			'limit' => (int) $config['block_size']));
+	'limit' => (int) $config['block_size']));
 
 $info = array();
 $own_info = get_user_info ($config['id_user']);	

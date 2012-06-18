@@ -232,7 +232,7 @@ define("MAX_TIMES", 10);
 //////////////////////WEBCHAT FUNCTIONS/////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 function users_get_last_messages($last_time = false) {
-	$file_global_counter_chat = sys_get_temp_dir() . '/pandora_chat.global_counter.txt';
+	$file_global_counter_chat = $config["attachment_store"] . '/pandora_chat.global_counter.txt';
 	
 	//First lock the file
 	$fp_global_counter = @fopen($file_global_counter_chat, "a+");
@@ -263,7 +263,7 @@ function users_get_last_messages($last_time = false) {
 		$last_time = 24 * 60 * 60;
 	$from = $timestamp - $last_time;
 	
-	$log_chat_file = sys_get_temp_dir() . '/pandora_chat.log.json.txt';
+	$log_chat_file = $config["attachment_store"] . '/pandora_chat.log.json.txt';
 	
 	$return = array('correct' => false, 'log' => array());
 	
@@ -300,7 +300,7 @@ function users_get_last_messages($last_time = false) {
 function users_save_login() {
 	global $config;
 	
-	$file_global_user_list = sys_get_temp_dir() . '/pandora_chat.user_list.json.txt';
+	$file_global_user_list = $config["attachment_store"] . '/pandora_chat.user_list.json.txt';
 	
 	$user = db_get_row_filter('tusuario',
 		array('id_user' => $config['id_user']));
@@ -329,7 +329,14 @@ function users_save_login() {
 	$user_list = json_decode($user_list_json, true);
 	if (empty($user_list))
 		$user_list = array();
-	$user_list[$config['id_user']] = $user['fullname'];
+	
+	if (isset($user_list[$config['id_user']])) {
+		$user_list[$config['id_user']]['count']++;
+	}
+	else {
+		$user_list[$config['id_user']] = array('name' => $user['fullname'],
+			'count' => 1);
+	}
 	
 	//Clean the file
 	ftruncate($fp_user_list, 0);
@@ -345,19 +352,30 @@ function users_save_login() {
 	fclose($fp_user_list);
 }
 
-function users_save_logout() {
+function users_save_logout($user = false, $delete = false) {
 	global $config;
 	
 	$return = array('correct' => false, 'users' => array());
 	
-	$file_global_user_list = sys_get_temp_dir() . '/pandora_chat.user_list.json.txt';
+	$file_global_user_list = $config["attachment_store"] . '/pandora_chat.user_list.json.txt';
 	
-	$user = db_get_row_filter('tusuario',
-		array('id_user' => $config['id_user']));
-		
-	$message = sprintf(__('User %s logout at %s'), $user['fullname'],
-		date($config['date_format']));
-	users_save_text_message($message, 'notification');
+	if (empty($user)) {
+		$user = db_get_row_filter('tusuario',
+			array('id_user' => $config['id_user']));
+	}
+	
+	if ($delete) {
+		$no_json_output = true;
+		$message = sprintf(__('User %s was deleted in the DB at %s'),
+			$user['fullname'], date($config['date_format']));
+	}
+	else {
+		$no_json_output = false;
+		$message = sprintf(__('User %s logout at %s'), $user['fullname'],
+			date($config['date_format']));
+	}
+	
+	users_save_text_message($message, 'notification', $no_json_output);
 	
 	//First lock the file
 	$fp_user_list = @fopen($file_global_user_list, "a+");
@@ -379,7 +397,19 @@ function users_save_logout() {
 	$user_list = json_decode($user_list_json, true);
 	if (empty($user_list))
 		$user_list = array();
-	unset($user_list[$config['id_user']]);
+	
+	if ($delete) {
+		unset($user_list[$user['id_user']]);
+	}
+	else {
+		if (isset($user_list[$config['id_user']])) {
+			$user_list[$config['id_user']]['count']--;
+		}
+		
+		if ($user_list[$config['id_user']]['count'] <= 0) {
+			unset($user_list[$user['id_user']]);
+		}
+	}
 	
 	//Clean the file
 	ftruncate($fp_user_list, 0);
@@ -395,11 +425,11 @@ function users_save_logout() {
 	fclose($fp_user_list);
 }
 
-function users_save_text_message($message = false, $type = 'message') {
+function users_save_text_message($message = false, $type = 'message', $no_json_output = false) {
 	global $config;
 	
-	$file_global_counter_chat = sys_get_temp_dir() . '/pandora_chat.global_counter.txt';
-	$log_chat_file = sys_get_temp_dir() . '/pandora_chat.log.json.txt';
+	$file_global_counter_chat = $config["attachment_store"] . '/pandora_chat.global_counter.txt';
+	$log_chat_file = $config["attachment_store"] . '/pandora_chat.log.json.txt';
 	
 	$return = array('correct' => false);
 	
@@ -419,7 +449,8 @@ function users_save_text_message($message = false, $type = 'message') {
 	//First lock the file
 	$fp_global_counter = @fopen($file_global_counter_chat, "a+");
 	if ($fp_global_counter === false) {
-		echo json_encode($return);
+		if (!$no_json_output)
+			echo json_encode($return);
 		
 		return;
 	}
@@ -428,7 +459,8 @@ function users_save_text_message($message = false, $type = 'message') {
 	while (!flock($fp_global_counter, LOCK_EX)) {
 		$tries++;
 		if ($tries > MAX_TIMES) {
-			echo json_encode($return);
+			if (!$no_json_output)
+				echo json_encode($return);
 			
 			return;
 		}
@@ -453,7 +485,8 @@ function users_save_text_message($message = false, $type = 'message') {
 	if ($status === false) {
 		fclose($fp_global_counter);
 		
-		echo json_encode($return);
+		if (!$no_json_output)
+			echo json_encode($return);
 		
 		return;
 	}
@@ -466,7 +499,8 @@ function users_save_text_message($message = false, $type = 'message') {
 		fclose($fp_global_counter);
 		
 		$return['correct'] = true;
-		echo json_encode($return);
+		if (!$no_json_output)
+			echo json_encode($return);
 	}
 	
 	return;
@@ -475,12 +509,14 @@ function users_save_text_message($message = false, $type = 'message') {
 function users_long_polling_check_messages($global_counter) {
 	global $config;
 	
-	$file_global_counter_chat = sys_get_temp_dir() . '/pandora_chat.global_counter.txt';
-	$log_chat_file = sys_get_temp_dir() . '/pandora_chat.log.json.txt';
+	$file_global_counter_chat = $config["attachment_store"] . '/pandora_chat.global_counter.txt';
+	$log_chat_file = $config["attachment_store"] . '/pandora_chat.log.json.txt';
 	
 	$changes = false;
 	
 	$tries_general = 0;
+	
+	$error = false;
 	
 	while (!$changes) {
 		//First lock the file
@@ -493,6 +529,7 @@ function users_long_polling_check_messages($global_counter) {
 				$tries++;
 				if ($tries > MAX_TIMES) {
 					$lock = false;
+					$error = true;
 					break;
 				}
 				
@@ -541,7 +578,8 @@ function users_long_polling_check_messages($global_counter) {
 		}
 	}
 	
-	echo json_encode(array('correct' => false));
+	//Because maybe the exit of loop for exaust.
+	echo json_encode(array('correct' => false, 'error' => $error));
 	
 	return;
 }
@@ -554,7 +592,7 @@ function users_long_polling_check_messages($global_counter) {
 function users_get_last_global_counter($mode = 'json') {
 	global $config;
 	
-	$file_global_counter_chat = sys_get_temp_dir() . '/pandora_chat.global_counter.txt';
+	$file_global_counter_chat = $config["attachment_store"] . '/pandora_chat.global_counter.txt';
 	
 	$global_counter_file = 0;
 	
@@ -605,8 +643,8 @@ function users_get_last_type_message() {
 	
 	$return = 'false';
 	
-	$file_global_counter_chat = sys_get_temp_dir() . '/pandora_chat.global_counter.txt';
-	$log_chat_file = sys_get_temp_dir() . '/pandora_chat.log.json.txt';
+	$file_global_counter_chat = $config["attachment_store"] . '/pandora_chat.global_counter.txt';
+	$log_chat_file = $config["attachment_store"] . '/pandora_chat.log.json.txt';
 	
 	$global_counter_file = 0;
 	
@@ -653,7 +691,7 @@ function users_check_users() {
 	
 	$return = array('correct' => false, 'users' => '');
 	
-	$file_global_user_list = sys_get_temp_dir() . '/pandora_chat.user_list.json.txt';
+	$file_global_user_list = $config["attachment_store"] . '/pandora_chat.user_list.json.txt';
 	
 	//First lock the file
 	$fp_user_list = @fopen($file_global_user_list, "a+");
@@ -682,8 +720,13 @@ function users_check_users() {
 	
 	fclose($fp_user_list);
 	
+	$user_name_list = array();
+	foreach ($user_list as $user) {
+		$user_name_list[] = $user['name'];
+	}
+	
 	$return['correct'] = true;
-	$return['users'] = implode('<br />', $user_list);
+	$return['users'] = implode('<br />', $user_name_list);
 	echo json_encode($return);
 	
 	return;

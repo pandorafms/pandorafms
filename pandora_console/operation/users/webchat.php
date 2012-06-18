@@ -36,7 +36,8 @@ if (is_ajax ()) {
 		}
 		if ($send_message) {
 			$message = get_parameter('message', false);
-			users_save_text_message($message);
+			if (!empty($message))
+				users_save_text_message($message);
 		}
 		if ($send_login) {
 			users_save_login();
@@ -95,7 +96,7 @@ html_print_table($table);
 	var first_time = true;
 	
 	$(document).ready(function() {
-		$("input[name=\"message_box\"]").keydown(function(e){
+		$("input[name=\"message_box\"]").keydown(function(e) {
 			//Enter key.
 			if (e.keyCode == 13) {
 				send_message();
@@ -159,10 +160,12 @@ html_print_table($table);
 					print_messages(data['log']);
 				}
 				else {
-					print_messages({
-						0: {'type' : 'error',
-							'text': '<?php echo __('Error in connection.');?>'}
-						}, false);
+					if (data['error']) {
+						print_messages({
+							0: {'type' : 'error',
+								'text': '<?php echo __('Error in connection.');?>'}
+							}, false);
+					}
 				}
 				long_polling_check_messages();
 			},

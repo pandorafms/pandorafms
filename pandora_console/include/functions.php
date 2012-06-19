@@ -37,18 +37,17 @@ function check_refererer() {
 	// This is done due to problems with HTTP_REFERER var when metarefresh is performed
 	if ($config["refr"] > 0) 
 		return true;
-	
-	$url = 'http://';
-	if ($config['https']) {
-		$url = 'https://';
-	}
+		
 	//Check if the referer have a port (for example when apache run in other port to 80)
 	if (preg_match('/http(s?):\/\/.*:[0-9]*/', $referer) == 1) {
-		$url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $config["homeurl"];
+		$url = $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $config["homeurl"];
 	}
 	else {
-		$url .= $_SERVER['SERVER_NAME'] . $config["homeurl"];
+		$url = $_SERVER['SERVER_NAME'] . $config["homeurl"];
 	}
+
+	// Remove protocol from referer
+	$referer = preg_replace('/http(s?):\/\//','',$referer);
 	
 	if (strpos($referer, $url) === 0) {
 		return true;

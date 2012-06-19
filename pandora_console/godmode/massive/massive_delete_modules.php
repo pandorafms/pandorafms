@@ -395,17 +395,15 @@ $(document).ready (function () {
 				}
 				else {
 					$(".select_agents_row_2").css('display', '');
-
 				}
 			}
 		}
 	);
 	
 	$("#form_modules input[name=selection_mode]").change (function () {
-		console.log(this.value);
 		selector = this.value;
 		clean_lists();
-
+		
 		if(selector == 'agents') {
 			$(".select_modules_row").css('display', 'none');
 			$(".select_agents_row").css('display', '');
@@ -415,7 +413,7 @@ $(document).ready (function () {
 			$(".select_modules_row").css('display', '');
 		}
 	});
-
+	
 	$("#groups_select").change (
 		function () {
 			$('#checkbox-force_group').attr('checked', false);
@@ -430,7 +428,7 @@ $(document).ready (function () {
 				$('input[type=checkbox]').removeAttr('disabled');
 				$(".select_agents_row_2").css('display', '');
 			}
-						
+			
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 				"get_agents_group_json" : 1,
@@ -439,7 +437,7 @@ $(document).ready (function () {
 				},
 				function (data, status) {
 					$("#id_agents").html('');
-				
+					
 					jQuery.each (data, function (id, value) {
 						option = $("<option></option>").attr ("value", value["id_agente"]).html (value["nombre"]);
 						$("#id_agents").append (option);

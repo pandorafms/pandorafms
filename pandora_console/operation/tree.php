@@ -1020,8 +1020,8 @@ printTree_($activeTab);
 
 <script language="javascript" type="text/javascript">
 	
-	status = $('#status').val();
-	search_free = $('#text-search_free').val();
+	var status = $('#status').val();
+	var search_free = $('#text-search_free').val();
 		/**
 		 * loadSubTree asincronous load ajax the agents or modules (pass type, id to search and binary structure of branch),
 		 * change the [+] or [-] image (with same more or less div id) of tree and anime (for show or hide)

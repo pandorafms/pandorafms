@@ -77,22 +77,21 @@ window.onload = function() {
 	d.termNumber = 1;
 	xMoveTo(d, visibleMargin - menuW, 0);
 	xShow(d);
-
+	
 	// If navigator is IE then call attachEvent, else call addEventListener
 	if ('\v'=='v')
 		document.getElementById('show_menu').attachEvent('onclick', docOnMousemoveIn);
 	else
 		document.getElementById('show_menu').addEventListener('click', docOnMousemoveIn, false);
 	
-
-
+	
+	
 	// Hack to repeat the init process to period select
 	var periodSelectId = $('[name="period"]').attr('class');
-
+	
 	period_select_init(periodSelectId);
 	
 	$("#graph_menu_arrow").click(function(){
-		console.log($("#graph_menu_arrow").attr("src").indexOf("hide"));
 		if ($("#graph_menu_arrow").attr("src").indexOf("hide") == -1){
 			$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow_hide.png");	
 		}
@@ -100,14 +99,14 @@ window.onload = function() {
 			$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow.png");
 		}
 	});
-
+	
 };
 
 function docOnMousemoveIn(evt) {
-
+	
 	var e = new xEvent(evt);
 	var d = getTermEle(e.target);
-
+	
 //	if (!tnActive) { // no def is active
 //		if (d) { // mouse is over a term, activate its def
 		if (showed == 0) {

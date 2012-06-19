@@ -100,9 +100,42 @@ $config["pure"] = (bool) get_parameter ("pure");
 if (get_parameter ("refr"))
 	$config["refr"] = (int) get_parameter ("refr");
 
+/* Hack to change IE render version if visual console editor is rendered or not  */
+$sec2 = get_parameter_get ('sec2');
+$sec2 = safe_url_extraclean ($sec2);
+$page = $sec2; //Reference variable for old time sake
+$tab_vc = get_parameter_get('tab', '');
 ob_start ();
+?>
+<!--[if !IE]> -->
+<?php
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
+?>
+<![endif]-->
+<!--[if IE]>																																									
+<?php  
+if ($sec2 == 'godmode/reporting/visual_console_builder' and $tab_vc == 'editor')  
+	echo '<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->'."\n";
+else 
+	echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
+
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
+?>
+<![endif]-->
+<!--[if IE]>																																									
+<?php  
+
+if ($sec2 == 'godmode/reporting/visual_console_builder' and $tab_vc == 'editor') { 
+
+	echo '<meta http-equiv="X-UA-Compatible" content="IE=7" >' . "\n"; 
+} 
+else { 
+
+	echo '<meta http-equiv="X-UA-Compatible" content="IE=9" >' . "\n"; 
+}	
+?>
+<![endif]-->
+<?php 
 echo '<head>';
 
 //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
@@ -119,9 +152,7 @@ ob_start ('ui_process_page_body');
 
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 
-$sec2 = get_parameter_get ('sec2');
-$sec2 = safe_url_extraclean ($sec2);
-$page = $sec2; //Reference variable for old time sake
+
 
 $sec = get_parameter_get ('sec');
 $sec = safe_url_extraclean ($sec);

@@ -1,3 +1,9 @@
+2012-06-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	
+	* index.php: Hack to allow use visual console editor in IE9.
+	When this view is going to be rendered then change IE render 
+	version to IEv7.5
+	
 2012-06-19 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/javascript/webchat.js, extensions/pandora_logs.php,

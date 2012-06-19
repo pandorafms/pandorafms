@@ -1,3 +1,9 @@
+2012-06-19  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_incidents.php: Changed a parameter
+	of the xml2array function to set it equal to recent
+	fix in 4.0.2
+
 2012-06-19 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/reporting_builder.list_items.php: some fixes.

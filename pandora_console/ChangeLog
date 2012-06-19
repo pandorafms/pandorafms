@@ -1,3 +1,8 @@
+2012-06-19  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions.php: Fixed check referer bug with 
+	https when is not forced. Bug #3525494
+
 2012-06-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/graphs/pChart/pPie.class.php: Fixed a bug in pie3d graph

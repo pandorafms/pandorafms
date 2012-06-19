@@ -65,6 +65,11 @@ if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
 	$from_date = get_parameter_post("date_purge");
 	
 	$deleted = db_process_sql_delete('tsesion', array('utimestamp' => '< ' . $from_date));
+	
+	if ($deleted)
+		ui_print_success_message(__('Success data deleted'));
+	else
+		ui_print_error_message(__('Error deleting data'));
 }
 # End of get parameters block
 

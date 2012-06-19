@@ -1,5 +1,10 @@
 2012-06-19  Vanessa Gil <vanessa.gil@artica.es>
 
+	* godmode/db/db_audit.php: Fixed bug:don't display any 
+	message to confirm the action.
+
+2012-06-19  Vanessa Gil <vanessa.gil@artica.es>
+
 	* godmode/db/db_sanity.php: Fixed bug: to sanitise
 	my database now, don't display any message to confirm
 	the action.

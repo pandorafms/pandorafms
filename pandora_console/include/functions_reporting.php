@@ -4077,18 +4077,18 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$nmodules = 0;
 			foreach ($modules_by_name as $module) {
 				$nmodules++;
-				
-				if($nmodules > $block) { //Will show only the (block) first modules
+				// Don't use pagination
+				/*if($nmodules > $block) { //Will show only the (block) first modules
 					continue;
-				}
+				}*/
 				
 				$file_name = string2image(ui_print_truncate_text($module['name'], 'module_small', false, true, false, '...'), false, false, 6, 270, '#90B165', 'FFF', 4, 0);
 				$table_data .= '<th width="22px">' . html_print_image($file_name, true, array('title' => $module['name']))."</th>";
 			}
-			
-			if ($block < $nmodules) {
+			// Dont use pagination
+			/*if ($block < $nmodules) {
 				$table_data .= "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><b>...</b></th>";
-			}
+			}*/
 			
 			$filter_agents = false;
 			if($id_group > 0) {
@@ -4137,10 +4137,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				foreach ($modules_by_name as $module) {
 					$nmodules++;
-					
-					if ($nmodules > $block) {
+					// Don't use pagination
+					/*if ($nmodules > $block) {
 						continue;
-					}
+					}*/
 					
 					$match = false;
 					foreach($module['id'] as $module_id){

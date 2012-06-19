@@ -1,3 +1,15 @@
+2012-06-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/graphs/pChart/pPie.class.php: Fixed a bug in pie3d graph
+	function when graph data only has one element.
+	
+	* include/functions_reporting.php
+	 operation/reporting/reporting_viewer.php: Fixed a visualization 
+	 problem in agent_modules report item.
+	 
+	* godmode/users/profile_list.php: Fixed a bug when profile creation
+	fails.
+
 2012-06-19  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_incidents.php: Fixed incidents list

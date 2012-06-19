@@ -211,7 +211,14 @@ foreach ($contents as $content) {
 	
 	reporting_render_report_html_item ($content, $table, $report);
 
+	if ($content['type'] == 'agent_module')
+		echo '<div style="width: 99%; overflow: auto;">';
+		
 	html_print_table ($table);
+	
+	if ($content['type'] == 'agent_module')
+		echo '</div>';
+	
 	flush ();
 }
 ?>

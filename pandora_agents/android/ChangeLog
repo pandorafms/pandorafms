@@ -1,3 +1,40 @@
+2012-06-19 Mark Holland <mark@mark-holland.me.uk>
+
+	* res/layout.main.xml: removed as no longer used
+	 in pandroid 2.0
+
+	* res/values/strings.xml: Added strings for simID,
+	upTime, start, loading and agent stopped. Replicated
+	in values-en and values-es
+	
+	* src/pandroid/agent/core.java: Added variables 
+	for simID and upTime
+ 	
+	* src/pandroid/agent/PandroidAgent.java: commented
+	out unnecessary code from version 1.0. Removed
+	absolute tab height as it interferes with high
+	density screens.
+
+	* src/pandroid/agent/PandroidAgentListener.java: 
+	Android version is now set as per device rather 
+	than a fixed string. simID, upTime and networkOperator methods
+	and then added to XML
+
+	* src/pandroid/agent/setup.java: commented
+	out unnecessary code from version 1.0
+
+	* src/pandroid/agent/SMSActivity.java: Started work
+
+	* src/pandroid/agent/SMSBroadcastReceiver.java: 
+	Started work
+
+	* src/pandroid/agent/status.java: Created onStart
+	method to better follow android standard. run()
+	is executed here. Fixed way toasts for connection 
+	messages are handled. Added textviews for simID 
+	and upTime values. added start/stop, show and hide 
+	XML buttons for debugging purposes.
+
 2012-06-08  Sergio Martin <sergio.martin@artica.es>
 
 	* ChangeLog: Create the android agent change 

@@ -29,30 +29,36 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
-import android.app.ActivityManager.RunningAppProcessInfo;
+//import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+//import android.content.pm.PackageManager;
+//import android.hardware.Sensor;
+//import android.hardware.SensorEvent;
+//import android.hardware.SensorEventListener;
+//import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.SystemClock;
+import android.telephony.ServiceState;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class PandroidAgentListener extends Service {
+	
+	public static final String LOG_TAG = "mark";
     Handler h = new Handler();
 
     int defaultInterval = 300;
@@ -65,6 +71,12 @@ public class PandroidAgentListener extends Service {
     String defaultTask = "";
     String defaultTaskHumanName = "";
     String lastGpsContactDateTime = "";
+    
+    String osversion = "";
+    String defaultSimID = "";
+    String defaultUpTime = "0";
+    String defaultNetworkOperator = "";
+    String defaultSMSReceived = "5";
 
     boolean showLastXML = true;
     
@@ -145,10 +157,11 @@ public class PandroidAgentListener extends Service {
 		String agentName = getSharedData("PANDROID_DATA", "agentName", defaultAgentName, "string");
 		String interval = getSharedData("PANDROID_DATA", "interval", Integer.toString(defaultInterval), "integer");
 		
+
 		
 		
 		buffer += "<agent_data " +
-			"description='' group='' os_name='android' os_version='2.1' " +
+			"description='' group='' os_name='android' os_version='"+Build.VERSION.RELEASE+"' " +		//change to read real version of os
 			"interval='"+ interval +"' version='4.0(Build 111012)' " + 
 			"timestamp='" + getHumanDateTime(-1) + "' agent_name='" + agentName + "' " +
 			"timezone_offset='0'" + gpsData +">\n";
@@ -159,17 +172,21 @@ public class PandroidAgentListener extends Service {
 		String orientation = getSharedData("PANDROID_DATA", "orientation", "361", "float");
 		String proximity = getSharedData("PANDROID_DATA", "proximity", "-1.0", "float");
 		String batteryLevel = getSharedData("PANDROID_DATA", "batteryLevel", "-1", "integer");
-		String taskStatus = getSharedData("PANDROID_DATA", "taskStatus", "disabled", "string");
-		String taskRun = getSharedData("PANDROID_DATA", "taskRun", "false", "string");
+		//String taskStatus = getSharedData("PANDROID_DATA", "taskStatus", "disabled", "string");
+		//String taskRun = getSharedData("PANDROID_DATA", "taskRun", "false", "string");
 		String taskHumanName = getSharedData("PANDROID_DATA", "taskHumanName", "", "string");
 		taskHumanName = StringEscapeUtils.escapeHtml4(taskHumanName);
 		
-		String task = getSharedData("PANDROID_DATA", "task", "", "string");
+		//String task = getSharedData("PANDROID_DATA", "task", "", "string");
 		String memoryStatus = getSharedData("PANDROID_DATA", "memoryStatus", defaultMemoryStatus, "string");
 		String availableRamKb = getSharedData("PANDROID_DATA", "availableRamKb", "0" , "long");
 		String totalRamKb = getSharedData("PANDROID_DATA", "totalRamKb", "0", "long");
+		String sim_ID = getSharedData("PANDROID_DATA", "simID", defaultSimID, "string");
+		String upTime = getSharedData("PANDROID_DATA", "upTime", defaultUpTime, "long");
+		String networkOperator  = getSharedData("PANDROID_DATA", "networkOperator", defaultNetworkOperator, "string");
+		//String SMSReceived = getSharedData("PANDROID_DATA", "SMSReceived", defaultSMSReceived, "integer");
 		
-		buffer += buildmoduleXML("battery_level", "The actually device battery level", "generic_data", batteryLevel);	
+		buffer += buildmoduleXML("battery_level", "The current Battery level", "generic_data", batteryLevel);	
 		
 		if(!orientation.equals("361.0")) {
 			buffer += buildmoduleXML("orientation", "The actually device orientation (in degrees)", "generic_data", orientation);		
@@ -197,15 +214,19 @@ public class PandroidAgentListener extends Service {
 			Float freeMemory = new Float((Float.valueOf(availableRamKb) / Float.valueOf(totalRamKb)) * 100.0);
 			
 			DecimalFormat formatPercent = new DecimalFormat("#.##");
-			buffer += buildmoduleXML("freeRamMemory", "The available ram in percent value.", "generic_data",
+			buffer += buildmoduleXML("freeRamMemory", "The percentage of available ram.", "generic_data",
 				formatPercent.format(freeMemory.doubleValue()));
 		}
 		//buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);
 		
+		buffer += buildmoduleXML("simID", "The Sim ID.", "generic_data_string", sim_ID);
+		buffer += buildmoduleXML("upTime","Total device uptime in seconds.", "generic_data", upTime);
+		buffer += buildmoduleXML("networkOperator","Currently registered network operator", "generic_data_string", networkOperator);
+		//buffer += buildmoduleXML("SMSRecieved","Number of SMS recieved", "generic_data", SMSReceived);
 		// End_Modules
 		
 		buffer += "</agent_data>";
-		
+		//Log.v("mark",buffer);
 		return buffer;
 	}
 	
@@ -314,7 +335,7 @@ public class PandroidAgentListener extends Service {
         registerReceiver(batteryLevelReceiver, batteryLevelFilter);
     }
     
-    private void sensors() {
+    /*private void sensors() {
     	// Sensor listeners
     	
         SensorEventListener orientationLevelReceiver = new SensorEventListener() {
@@ -370,8 +391,8 @@ public class PandroidAgentListener extends Service {
                     (20));
                     //SensorManager.SENSOR_DELAY_UI );
         }
-    }
-
+    }//end sensors
+    */
 	private void updateValues() {
         batteryLevel();
         String gpsStatus = getSharedData("PANDROID_DATA", "gpsStatus", defaultGpsStatus, "string");
@@ -389,6 +410,10 @@ public class PandroidAgentListener extends Service {
         //sensors();
         //getTaskStatus();
         getMemoryStatus();
+        getSimID();
+        getUpTime();
+        getNetworkOperator();
+        //getSMSReceived();
 	}
 	
 	private void getMemoryStatus() {
@@ -421,7 +446,7 @@ public class PandroidAgentListener extends Service {
 		putSharedData("PANDROID_DATA", "totalRamKb", "" + totalRamKb, "long");
 	}
 	
-	private void getTaskStatus() {
+	/*private void getTaskStatus() {
 		String taskStatus = getSharedData("PANDROID_DATA", "taskStatus", defaultTaskStatus, "string");
 		String task = getSharedData("PANDROID_DATA", "task", defaultTask, "string");
 		String taskHumanName = getSharedData("PANDROID_DATA", "taskHumanName", defaultTaskHumanName, "string");
@@ -445,8 +470,54 @@ public class PandroidAgentListener extends Service {
 			}
 		}
 		putSharedData("PANDROID_DATA", "taskRun", run, "string");
+	}//end gettaskstatus
+	*/
+	/**
+	 * Retrieves the simID of the device if available
+	 */
+	public void getSimID(){
+		String simID = getSharedData("PANDROID_DATA", "simID", defaultSimID, "string");
+		
+	    String serviceName = Context.TELEPHONY_SERVICE;
+	    TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
+	    simID = telephonyManager.getSimSerialNumber();
+	    
+		
+		putSharedData("PANDROID_DATA", "simID", simID, "string");
 	}
+	/**
+	 * Retrieves the time in seconds since the device was switched on
+	 */
+	public void getUpTime(){
+		String upTime = defaultUpTime;
 	
+		upTime = ""+SystemClock.elapsedRealtime()/1000;
+		
+		//Log.v(LOG_TAG, upTime);
+		putSharedData("PANDROID_DATA", "upTime", upTime, "long");
+	}
+	public void getNetworkOperator(){
+		String networkOperator = defaultNetworkOperator;
+		
+		
+		String serviceName = Context.TELEPHONY_SERVICE;
+	    TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
+		networkOperator = telephonyManager.getNetworkOperatorName();
+	    
+		if(networkOperator != null)
+		Log.v(LOG_TAG, networkOperator);
+		putSharedData("PANDROID_DATA", "networkOperator", networkOperator, "string");
+	}
+	/*
+	public void getSMSReceived(){
+		String SMSReceived = defaultSMSReceived;
+	
+		SMSReceived = getSharedData("SMS_DATA", "SMSReceived", defaultSMSReceived, "integer");
+		
+		Log.v(LOG_TAG, "SMSReceived:"+SMSReceived);
+		//putSharedData("PANDROID_DATA", "upTime", upTime, "long");
+	}
+	*/
     private void putSharedData(String preferenceName, String tokenName, String data, String type) {
 		int mode = Activity.MODE_PRIVATE;
 		SharedPreferences agentPreferences = getSharedPreferences(preferenceName, mode);
@@ -539,6 +610,8 @@ public class PandroidAgentListener extends Service {
     	
         return humanDateTime;
     }
+  
+    
     
     ///////////////////////////////////////////
     // Getting values from device functions
@@ -546,21 +619,20 @@ public class PandroidAgentListener extends Service {
     
     public class MyLocationListener implements LocationListener {
 
-	    @Override
 	    public void onLocationChanged(Location loc) {
             putSharedData("PANDROID_DATA", "latitude", new Double(loc.getLatitude()).toString(), "float");
             putSharedData("PANDROID_DATA", "longitude", new Double(loc.getLongitude()).toString(), "float");
 	    }
 	    
-	    @Override	
+	    	
 	    public void onProviderDisabled(String provider) {
 	    }
 	
-	    @Override
+	    
 	    public void onProviderEnabled(String provider) {
 	    }
 	
-	    @Override
+	    
 	
 	    public void onStatusChanged(String provider, int status, Bundle extras) {
 	    }

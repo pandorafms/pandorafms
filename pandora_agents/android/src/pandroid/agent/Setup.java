@@ -1,33 +1,33 @@
 package pandroid.agent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+//import java.util.ArrayList;
+//import java.util.HashMap;
+//import java.util.List;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
+//import android.app.ActivityManager;
+//import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.AsyncTask;
+//import android.content.pm.PackageManager;
+//import android.content.pm.PackageManager.NameNotFoundException;
+//import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
+//import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
+//import android.widget.ProgressBar;
+//import android.widget.Spinner;
 import android.widget.Toast;
 
 public class Setup extends Activity {
 	
-	private HashMap<String, String> listProcesses;
+	//private HashMap<String, String> listProcesses;
 	
 	
 	/** Called when the activity is first created. */
@@ -35,7 +35,7 @@ public class Setup extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        listProcesses = new HashMap<String, String>();
+       // listProcesses = new HashMap<String, String>();
         
         setContentView(R.layout.setup);
 		
@@ -96,6 +96,8 @@ public class Setup extends Activity {
         });
 	}
     
+	
+	/*
     private void loadInBackgroundProcessInExecution() {
     	new GetProcessInExecutionAsyncTask().execute();
     }
@@ -132,10 +134,11 @@ public class Setup extends Activity {
 			}
 		}
 		
+		
 		@Override
 		protected void onPostExecute(Void unused)
 		{
-			/*
+			
 			Spinner combo = (Spinner)findViewById(R.id.processes_combo);
 			ArrayList<String> listProcess = new ArrayList<String>(listProcesses.keySet());
 			ArrayList<String> listProcessHuman = new ArrayList<String>(listProcesses.values());
@@ -160,6 +163,7 @@ public class Setup extends Activity {
 		    		position = listProcess.indexOf(Core.task);	
 		    	}
 		    }
+		    
 			
 	    	ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
 		    	android.R.layout.simple_spinner_item, listProcessHuman);
@@ -177,16 +181,20 @@ public class Setup extends Activity {
 		    
 		    Button button = (Button)findViewById(R.id.update);
 		    button.setEnabled(true);
-		    */
+		    
 		}
     	
-    }
-    
+    	
+    	
+    }*/
+	
+
+
     private void getDataFromView() {
         // Init form values
 		EditText editText;
 		CheckBox checkBox;
-		Spinner combo;
+		//Spinner combo;
 		
 		editText = (EditText) findViewById(R.id.serverAddrInput);
 		Core.serverAddr = editText.getText().toString();

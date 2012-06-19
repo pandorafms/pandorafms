@@ -14,56 +14,59 @@
 
 package pandroid.agent;
 
-import java.util.Date;
+//import java.util.Date;
 
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+//import android.app.Activity;
+//import android.app.AlarmManager;
+//import android.app.PendingIntent;
 import android.app.TabActivity;
-import android.content.ComponentName;
-import android.content.Context;
+//import android.content.ComponentName;
+//import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
+//import android.content.SharedPreferences;
+//import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telephony.TelephonyManager;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
+//import android.telephony.TelephonyManager;
+//import android.view.KeyEvent;
+//import android.view.View;
+//import android.view.View.OnClickListener;
+//import android.view.View.OnKeyListener;
+//import android.view.inputmethod.InputMethodManager;
+//import android.widget.Button;
+//import android.widget.CheckBox;
+//import android.widget.EditText;
 import android.widget.TabHost;
-import android.widget.TextView;
+//import android.widget.TextView;
 
 public class PandroidAgent extends TabActivity {
 //public class PandroidAgent extends Activity {
     Handler h = new Handler();
     
-    int defaultInterval = 300;
+    int defaultInterval = 300; //important
+    /*
     String defaultServerPort = "41121";
     String defaultServerAddr = "farscape.artica.es";
     String defaultAgentName = "pandroid";
     String defaultGpsStatus = "disabled"; // "disabled" or "enabled"
+    */
+    //boolean alarmEnabled;
     
-    boolean alarmEnabled;
+    //boolean showLastXML = true;
     
-    boolean showLastXML = true;
-    
-    String lastGpsContactDateTime = "";
+    //String lastGpsContactDateTime = "";
+    /*
     Thread thread = new Thread();
     ComponentName service = null;
     PendingIntent sender = null;
     AlarmManager am = null;
-    
+    */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        //if removed, battery -1 and agent reverts to defaults in core
         Core.restartAgentListener(getApplicationContext());
+        
         
         
         final TabHost tabHost = getTabHost();
@@ -82,8 +85,8 @@ public class PandroidAgent extends TabActivity {
 			.setContent(new Intent(this, Setup.class))
 		);
         
-        tabHost.getTabWidget().getChildAt(0).getLayoutParams().height=45;
-		tabHost.getTabWidget().getChildAt(1).getLayoutParams().height=45;
+        //tabHost.getTabWidget().getChildAt(0).getLayoutParams();
+		//tabHost.getTabWidget().getChildAt(1).getLayoutParams();
         
     }
 }

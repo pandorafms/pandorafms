@@ -6,14 +6,14 @@
 	<string name="setup_str">Setup</string>
 	<string name="app_name">Pandroid Agent</string>
 	<string name="interval">Interval:</string>
-	<string name="update">Update conf.</string>
+	<string name="update">Update configuration.</string>
 	<string name="reset">Set default</string>
 	<string name="serverAddr">Server Address:</string>
 	<string name="serverPort">Server Port:</string>
 	<string name="confTitle">Pandroid Agent Configuration</string>
 	<string name="agent">Agent name:</string>
 	<string name="gpsReport">Report GPS data</string>
-	<string name="memoryReport">Report memory system</string>
+	<string name="memoryReport">Report available memory</string>
 	<string name="taskReport">Report task</string>
 	<string name="gpsMode">GPS Mode</string>
 	<string name="gpsCurrent">Current position (high battery cost)</string>
@@ -29,7 +29,7 @@
 	<string name="orientation">Orientation</string>
 	<string name="proximity">Proximity</string>
 	<string name="incorrect_update">Unsucessful update options.</string>
-	<string name="correct_update">sucessful update options.</string>
+	<string name="correct_update">sucessfully updated configuration.</string>
 	<string name="task">Task</string>
 	<string name="memory">Memory</string>
 	<string name="help_label_str">Help</string>
@@ -48,4 +48,17 @@
 		Pandroid Agent is an Android Pandora FMS agent for Pandora FMS. &lt;p&gt;
 		Pandora FMS is a general purpose monitoring system. With android agent you can get GPS information of your device, know how much battery left, memory on device. This could be expanded in the future to report if a given process is running, very useful to use the agent on embedded devices on tablets to report to a central server. Also can be expanded to get information given by the user for other app and stored in the device or doing a lot of things more. Complete source code is provided.&lt;p&gt;See more about Pandora FMS at &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
 	</string>
+	<string name="start">Start</string>
+	<string name="correct_start">Connection successful</string>
+	<string name="contact_stopped_str">Agent Stopped</string>
+	<string name="sim_id">Sim ID:</string>
+	<string name="sim_id_value"/>
+	<string name="loading_str">Loading...</string>
+	<string name="uptime">Device up time:</string>
+	<string name="uptime_value"/>
+	<string name="sms_received">Received SMS: </string>
+	<string name="sms_received_value"/>
+	<string name="sms_activity_str">SMS</string>
+	<string name="networkoperator">Network operator:</string>
+	<string name="networkoperator_value"/>
 </resources>

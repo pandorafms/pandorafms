@@ -27,7 +27,7 @@ import java.net.UnknownHostException;
 class tentacle_client {
 
 	// Return 0 when success, -1 when error
-    public int tentacle_client(String args[]) {
+    public int tentacle_client(String args[]) { 
     	
 	    int port = 41121;
 	    String send = null;

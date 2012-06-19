@@ -48,4 +48,15 @@
 		Pandroid Agent es un agente en Android para Pandora FMS. &lt;p&gt;
 		Pandora FMS es un sistema de monitorizaci&#243;n de prop&#243;sito general. Con el agente en Android puedes monitorizar GPS, cuanta batería le queda al dispositivo, memoria disponible. Este podrá expandirse en el futuro para reportar si un proceso esta en ejecución, siendo muy útil para sistemas embebidos en servidores centrales. Tambien se puede expandir para obtener información de otras aplicaciones en el dispositivo o hacer otras cosas mas. El código fuente esta disponible.&lt;p&gt;Puedes informarte de esto y mas en Pandora FMS en &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
 	</string>
+	<string name="start">Iniciar</string>
+	<string name="correct_start">Conexion con exito</string>
+	<string name="contact_stopped_str">Agente parado</string>
+	<string name="sim_id">Sim ID:</string>
+	<string name="sim_id_value"/>
+	<string name="loading_str">Cargando...</string>
+	<string name="uptime">Tiempo encendido:</string>
+	<string name="uptime_value"/>
+	<string name="sms_received">SMS recibido: </string>
+	<string name="sms_received_value"/>
+	<string name="sms_activity_str">SMS</string>
 </resources>

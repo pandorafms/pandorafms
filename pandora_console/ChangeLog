@@ -1,3 +1,8 @@
+2012-06-19  Sergio Martin <sergio.martin@artica.es>
+
+	* general/header.php: Add hint to explain the use of
+	blank characters in global search as AND conditions
+
 2012-06-19  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/db/db_audit.php: Fixed bug:don't display any 

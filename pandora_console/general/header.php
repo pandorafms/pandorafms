@@ -189,6 +189,9 @@ config_check();
 				size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
 			<!-- onClick="javascript: document.quicksearch.submit()" -->
 			<input type='hidden' name='head_search_keywords' value='abc' />
+			<?php
+				ui_print_help_tip (__("Blank characters are used as AND conditions"));
+			?>
 		</form>
 		<?php
 		}

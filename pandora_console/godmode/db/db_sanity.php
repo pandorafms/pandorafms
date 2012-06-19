@@ -52,6 +52,7 @@ if ($sanity == 1) {
 			db_process_sql ($sql);
 		}
 	}
+	ui_print_message(__('Check tagente_estado table: Done'));
 	
 	echo "<h3>".__('Checking database consistency')."</h2>";
 
@@ -77,6 +78,7 @@ if ($sanity == 1) {
 			}
 		}
 	}
+	ui_print_message(__('Check database consistency: Done'));
 }
 elseif ($sanity == 2) {
 	echo "<h3>".__('Deleting non-init data')."</h2>";

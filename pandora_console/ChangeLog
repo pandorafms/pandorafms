@@ -1,3 +1,9 @@
+2012-06-19 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/reporting_builder.list_items.php: some fixes.
+
+	MERGED FROM 4.0.2
+
 2012-06-18  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_menu.php: Added categories in the

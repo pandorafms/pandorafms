@@ -1,3 +1,8 @@
+2012-06-19 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/javascript/pandora.js,
+	godmode/reporting/reporting_builder.list_items.php: some fixes.
+
 2012-06-18  Sancho Lerena <slerena@artica.es>
 
 	* extensions/update_manager/update_pandora.php: Fixed typo in title.

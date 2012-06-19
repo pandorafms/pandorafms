@@ -282,7 +282,6 @@ function agent_changed_by_multiple_agents_with_alerts (event, id_agent, selected
 				 );
 }
 
-
 /**
  * Fill up select box with id "agent" with agents after module has been selected, but this not empty the select box.s
  *

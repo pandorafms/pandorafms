@@ -1,3 +1,8 @@
+2012-06-19  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_incidents.php: Fixed incidents list
+	retrieved because bad parse of XML due to CDATA use
+
 2012-06-19 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/javascript/pandora.js,

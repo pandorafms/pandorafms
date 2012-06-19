@@ -442,7 +442,7 @@ function incidents_call_api($url, $postparameters = false) {
  * @return array A Json encoded array with xml content.
  */
 function incidents_xml_to_array($xml) {
-	$xmlObj = simplexml_load_string($xml);
+	$xmlObj = simplexml_load_string($xml,'SimpleXMLElement',LIBXML_NOCDATA);
 	return json_decode(json_encode($xmlObj), true);
 }
 

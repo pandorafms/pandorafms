@@ -59,13 +59,13 @@ if ($delete_profile) {
 	$sql = sprintf ('DELETE FROM tperfil WHERE id_perfil = %d', $id_profile);
 	$ret = db_process_sql ($sql);
 	if ($ret === false) {
-		echo '<h3 class="error">'.__('There was a problem deleting the profile').'</h3>';
+		ui_print_error_message(__('There was a problem deleting the profile'));
 	}
 	else {		
 		db_pandora_audit("Profile management",
 			"Delete profile ". $profile['name']);
 		
-		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+		ui_print_success_message(__('Successfully deleted'));
 	}
 	
 	//Delete profile from user data
@@ -110,14 +110,14 @@ if ($update_profile) {
 			db_pandora_audit("User management",
 				"Update profile ". $name, false, false, $info);
 			
-			echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
+			ui_print_success_message(__('Successfully updated'));
 		}
 		else {
-			echo '<h3 class="error"'.__('There was a problem updating this profile').'</h3>';
+			ui_print_error_message(__('There was a problem updating this profile'));
 		}
 	}
 	else {
-		 echo '<h3 class="error"'.__('Profile name cannot be empty').'</h3>';
+		 ui_print_error_message(__('Profile name cannot be empty'));
 	}
 	$id_profile = 0;
 }
@@ -153,7 +153,7 @@ if ($create_profile) {
 		$ret = db_process_sql_insert('tperfil', $values);
 	
 		if ($ret !== false) {
-			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
+			ui_print_success_message(__('Successfully created'));
 			
 			$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
 				' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
@@ -165,11 +165,11 @@ if ($create_profile) {
 				"Created profile ". $name, false, false, $info);
 		}
 		else {
-			echo '<h3 class="error">'.__('There was a problem creating this profile').'</h3>';
+			ui_print_error_message(__('There was a problem creating this profile'));
 		}
 	}
 	else {
-		 echo '<h3 class="error"'.__('There was a problem creating this profile').'</h3>';
+		 ui_print_error_message(__('There was a problem creating this profile'));
 	}
 	$id_profile = 0;
 }

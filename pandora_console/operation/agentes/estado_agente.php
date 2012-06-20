@@ -487,7 +487,7 @@ foreach ($agents as $agent) {
 //	} else {
 //		$data[2] = $agent["intervalo"];
 //	}
-	$data[3] = $agent["intervalo"];
+	$data[3] = human_time_description_raw($agent["intervalo"]);
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	

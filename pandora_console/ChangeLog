@@ -1,5 +1,12 @@
 2012-06-20  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_reporting.php: Added missed 
+	global $config
+
+	Merged from trunk
+
+2012-06-20  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_graph.php
 	include/functions_reporting.php: Fixed layout issues in
 	SLA reports and add ttl param to slice graphs 

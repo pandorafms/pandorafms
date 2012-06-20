@@ -298,6 +298,7 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 
  * @return float The sumatory of the module values in the interval.
  */
 function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
+	global $config;
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];

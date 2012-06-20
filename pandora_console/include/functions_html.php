@@ -130,20 +130,20 @@ function html_print_select_style ($fields, $name, $selected = '', $style='', $sc
 	if (!empty ($disabled)) {
 		$attributes .= ' disabled="disabled"';
 	}
-
+	
 	$output .= '<select style="'.$style.'" id="'.$id.'" name="'.$name.'"'.$attributes.'>';
-
+	
 	if ($nothing != '' || empty ($fields)) {
 		if ($nothing == '') {
 			$nothing = __('None');
-		}		
+		}
 		$output .= '<option value="'.$nothing_value.'"';
 		if ($nothing_value == $selected) {
 			$output .= ' selected="selected"';
 		}
 		$output .= '>'.$nothing.'</option>';
 	}
-
+	
 	if (!empty ($fields)) {
 		if ($sort !== false) {
 			asort ($fields);
@@ -169,12 +169,12 @@ function html_print_select_style ($fields, $name, $selected = '', $style='', $sc
 			}
 		}
 	}
-
+	
 	$output .= "</select>";
-
+	
 	if ($return)
 		return $output;
-
+	
 	echo $output;
 }
 
@@ -513,10 +513,7 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 		"onfocus", "onblur", "onselect", "onchange", "onclick", "ondblclick", "onmousedown", 
 		"onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup");
 
-	if ($password)
-		$output = '<input type="password" autocomplete="off"  ';
-	else
-		$output = '<input type="text" ';
+	$output = '<input '.($password ? 'type="password" ' : 'type="text" ');
 
 	if ($disabled && (!is_array ($attributes) || !array_key_exists ("disabled", $attributes))) {
 		$output .= 'readonly="readonly" ';
@@ -1174,7 +1171,7 @@ function html_print_checkbox_extended ($name, $value, $checked, $disabled, $scri
  */
 function html_print_checkbox ($name, $value, $checked = false, $return = false, $disabled = false, $script = '') {
 	$output = html_print_checkbox_extended ($name, $value, (bool) $checked, $disabled, $script, '', true);
-
+	
 	if ($return === false)
 		echo $output;
 	
@@ -1220,7 +1217,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		}
 		return io_safe_input($src);
 	}
-
+	
 	$output = '<img src="'.io_safe_input ($src).'" '; //safe input necessary to strip out html entities correctly
 	$style = '';
 	

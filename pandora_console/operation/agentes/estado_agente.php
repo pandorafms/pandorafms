@@ -301,11 +301,11 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectLastContactUp = $selected;
-				$order = array('field' => 'ultimo_contacto', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
+				$order = array('field' => 'ultimo_contacto', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
 				break;
 			case 'down':
 				$selectLastContactDown = $selected;
-				$order = array('field' => 'ultimo_contacto', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'DESC');
+				$order = array('field' => 'ultimo_contacto', 'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 				break;
 		}
 		break;

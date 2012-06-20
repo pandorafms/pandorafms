@@ -87,7 +87,7 @@ public class API {
 			parameters.add(new BasicNameValuePair("op2", "test"));
 			String return_api = Core.httpGet(context, parameters);
 			// TODO wait version
-			if (return_api.equals("OK\n")) {
+			if (return_api.contains("OK")) {
 				return "4.0.2";
 			} else {
 				return "";
@@ -95,5 +95,22 @@ public class API {
 		} catch (Exception e) {
 			return "";
 		}
+	}
+
+	/**
+	 * Get events from pandora console.
+	 * 
+	 * @param newEvents
+	 */
+	public static String getEvents(Context context, String other) {
+		// Get total count.
+		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("op", "get"));
+		parameters.add(new BasicNameValuePair("op2", "events"));
+		parameters.add(new BasicNameValuePair("other_mode",
+				"url_encode_separator_|"));
+		parameters.add(new BasicNameValuePair("return_type", "csv"));
+		parameters.add(new BasicNameValuePair("other", other));
+		return Core.httpGet(context, parameters);
 	}
 }

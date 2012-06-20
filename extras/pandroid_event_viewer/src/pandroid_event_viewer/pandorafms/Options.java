@@ -16,8 +16,13 @@ GNU General Public License for more details.
  */
 package pandroid_event_viewer.pandorafms;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
@@ -129,7 +134,7 @@ public class Options extends Activity {
 				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE,
 						getString(R.string.select_sound));
 				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT,
-						false);
+						true);
 				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT,
 						false);
 				intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI,
@@ -160,6 +165,48 @@ public class Options extends Activity {
 	 * Saves all options
 	 */
 	private void save_options() {
+		String url = ((EditText) findViewById(R.id.url)).getText().toString();
+		if (url.contains("https")) {
+			try {
+				if (!Core.isValidCertificate(new URL(url))) {
+					// Displays confirmation dialog
+					DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							switch (which) {
+							case DialogInterface.BUTTON_NEGATIVE:
+								Toast.makeText(getApplicationContext(),
+										R.string.options_not_saved,
+										Toast.LENGTH_SHORT).show();
+								return;
+							case DialogInterface.BUTTON_POSITIVE:
+								writeChanges();
+								return;
+							}
+						}
+					};
+
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setMessage(
+							getString(R.string.certificate_not_valid))
+							.setPositiveButton(getString(android.R.string.yes),
+									dialogClickListener)
+							.setNegativeButton(getString(android.R.string.no),
+									dialogClickListener).show();
+				} else {
+					writeChanges();
+				}
+			} catch (MalformedURLException e) {
+				Toast.makeText(getApplicationContext(), R.string.url_not_valid,
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
+		} else {
+			writeChanges();
+		}
+	}
+
+	private void writeChanges() {
 		SharedPreferences preferences = getSharedPreferences(
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
@@ -171,7 +218,6 @@ public class Options extends Activity {
 		if (url.charAt(url.length() - 1) == '/') {
 			url = url.substring(0, url.length() - 1);
 		}
-
 		editorPreferences.putString("url", url);
 		// MainActivity uses this to know if it has to check tags and groups
 		// again

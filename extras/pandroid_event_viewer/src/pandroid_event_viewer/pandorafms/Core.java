@@ -20,13 +20,26 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -59,6 +72,8 @@ import android.widget.TextView;
 public class Core {
 	private static String TAG = "Core";
 	private static Map<String, Bitmap> imgCache = new HashMap<String, Bitmap>();
+	// Don't use this variable, just call getSocketFactory
+	private static SSLSocketFactory sslSocketFactory;
 
 	/**
 	 * Reads from the input stream and returns a string.
@@ -266,7 +281,8 @@ public class Core {
 	}
 
 	/**
-	 * Converts params  to string.
+	 * Converts params to string.
+	 * 
 	 * @param params
 	 * @return All params in a single string.
 	 */
@@ -305,6 +321,10 @@ public class Core {
 		parameters.add(new BasicNameValuePair("user", user));
 		parameters.add(new BasicNameValuePair("pass", password));
 		parameters.addAll(additionalParameters);
+		if (url.contains("https")) {
+			// Secure connection
+			return Core.httpsGet(url, parameters);
+		}
 		try {
 			DefaultHttpClient httpClient = new DefaultHttpClient();
 			UrlEncodedFormEntity entity;
@@ -343,16 +363,30 @@ public class Core {
 
 		try {
 			myFileUrl = new URL(fileUrl);
-			HttpURLConnection conn = (HttpURLConnection) myFileUrl
-					.openConnection();
-			conn.setDoInput(true);
-			conn.connect();
-			InputStream is = conn.getInputStream();
-			Bitmap img = BitmapFactory.decodeStream(is);
-			imgCache.put(fileUrl, img);
-			return img;
+			if (fileUrl.contains("https")) {
+				HttpsURLConnection con = (HttpsURLConnection) new URL(fileUrl)
+						.openConnection();
+				con.setHostnameVerifier(new HostnameVerifier() {
+					public boolean verify(String hostname, SSLSession session) {
+						return true;
+					}
+				});
+				con.setSSLSocketFactory(getSocketFactory());
+				Bitmap img = BitmapFactory.decodeStream(con.getInputStream());
+				imgCache.put(fileUrl, img);
+				return img;
+			} else {
+				HttpURLConnection conn = (HttpURLConnection) myFileUrl
+						.openConnection();
+				conn.setDoInput(true);
+				conn.connect();
+				InputStream is = conn.getInputStream();
+				Bitmap img = BitmapFactory.decodeStream(is);
+				imgCache.put(fileUrl, img);
+				return img;
+			}
 		} catch (IOException e) {
-			Log.e(TAG, "Downloading image: error");
+			Log.e(TAG, "Downloading image "+fileUrl+": error");
 		}
 		return null;
 	}
@@ -397,5 +431,93 @@ public class Core {
 			int size) {
 		image.setBounds(0, 0, size, size);
 		view.setCompoundDrawables(image, null, null, null);
+	}
+
+	/**
+	 * Finds out if the given url has a CA signed certificate.
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public static boolean isValidCertificate(URL url) {
+
+		HttpsURLConnection con;
+		try {
+			con = (HttpsURLConnection) url.openConnection();
+			con.connect();
+			con.disconnect();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	public static String httpsGet(String url,
+			List<NameValuePair> additionalParameters) {
+		String result = "";
+		try {
+			HttpsURLConnection con = (HttpsURLConnection) new URL(url)
+					.openConnection();
+			con.setHostnameVerifier(new HostnameVerifier() {
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
+			});
+			con.setSSLSocketFactory(getSocketFactory());
+			con.setDoOutput(true);
+			String postData = "";
+			boolean first = true;
+			for (NameValuePair nameValuePair : additionalParameters) {
+				postData = first ? postData : postData + "&";
+				first = false;
+				postData += URLEncoder.encode(nameValuePair.getName()) + "="
+						+ URLEncoder.encode(nameValuePair.getValue());
+			}
+			if (postData.length() > 0) {
+				OutputStreamWriter wr = new OutputStreamWriter(
+						con.getOutputStream());
+				wr.write(postData);
+				wr.flush();
+			}
+
+			InputStream inputStream;
+			inputStream = con.getInputStream();
+			BufferedReader bufferedReader = new BufferedReader(
+					new InputStreamReader(inputStream));
+			String temp;
+			while ((temp = bufferedReader.readLine()) != null) {
+				Log.d("CONTENT", temp);
+				result += temp+"\n";
+			}
+		} catch (IOException e) {
+			return "";
+		}
+		return result;
+	}
+
+	/**
+	 * Returns a SSL Factory instance that accepts all server certificates.
+	 * 
+	 * @return An SSL-specific socket factory.
+	 **/
+	private static final SSLSocketFactory getSocketFactory() {
+		if (sslSocketFactory == null) {
+			try {
+				TrustManager[] tm = new TrustManager[] { new NaiveTrustManager() };
+				SSLContext context = SSLContext.getInstance("TLS");
+				context.init(new KeyManager[0], tm, new SecureRandom());
+
+				sslSocketFactory = (SSLSocketFactory) context
+						.getSocketFactory();
+
+			} catch (KeyManagementException e) {
+				Log.e("No SSL algorithm support: " + e.getMessage(),
+						e.toString());
+			} catch (NoSuchAlgorithmException e) {
+				Log.e("Exception when setting up the Naive key management.",
+						e.toString());
+			}
+		}
+		return sslSocketFactory;
 	}
 }

@@ -62,12 +62,12 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <Button
+  <!--   <Button
         android:id="@+id/button_load_more_events"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/load_more_events_button_str"
-        android:visibility="gone" />
+        android:visibility="gone" /> -->
 
     <LinearLayout
         android:id="@+id/loading_more_events"

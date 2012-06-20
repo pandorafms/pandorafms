@@ -1,3 +1,9 @@
+2012-06-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_agents.php
+	operation/agentes/estado_agente.php: Fixed sort actions
+	of agents operation view
+
 2012-06-20 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/net_tools.php: cleaned source code style.

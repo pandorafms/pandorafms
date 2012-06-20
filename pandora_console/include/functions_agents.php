@@ -465,7 +465,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		if (!isset($order['field2'])) {
 			$order = 'ORDER BY '.$order['field'] . ' ' . $order['order'];
 		} else {
-			$order = 'ORDER BY '.$order['field'] . ', '. $order['field2'] . ' '. $order['order'];
+			$order = 'ORDER BY '.$order['field'] . ' ' . $order['order'] . ', ' . $order['field2'];
 		}
 	}
 	

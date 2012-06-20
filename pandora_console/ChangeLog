@@ -1,3 +1,9 @@
+2012-06-20  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/agentes/module_manager.php
+	  operation/agentes/estado_agente.php
+	  operation/agentes/status_monitor: Changed interval format.
+
 2012-06-20 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_ui.php: work around into the function

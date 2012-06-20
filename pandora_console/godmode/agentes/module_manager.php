@@ -508,10 +508,10 @@ foreach ($modules as $module) {
 	
 	// Module interval
 	if ($module['module_interval']) {
-		$data[4] = $module['module_interval'];
+		$data[4] = human_time_description_raw($module['module_interval']);
 	}
 	else {
-		$data[4] = $agent_interval;
+		$data[4] = human_time_description_raw($agent_interval);
 	}
 	
 	$data[5] = ui_print_truncate_text($module['descripcion'], 'description', false);

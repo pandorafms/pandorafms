@@ -43,6 +43,7 @@ SERVER_CONF_FILE="$CODEHOME/pandora_server/conf/pandora_server.conf"
 CONSOLE_DB_FILE="$CODEHOME/pandora_console/pandoradb_data.sql"
 CONSOLE_FILE="$CODEHOME/pandora_console/include/config_process.php"
 CONSOLE_INSTALL_FILE="$CODEHOME/pandora_console/install.php"
+AGENT_BASE_DIR="$CODEHOME/pandora_agents/"
 AGENT_UNIX_FILE="$CODEHOME/pandora_agents/unix/pandora_agent"
 AGENT_WIN_FILE="$CODEHOME/pandora_agents/win32/pandora.cc"
 AGENT_WIN_MPI_FILE="$CODEHOME/pandora_agents/win32/installer/pandora.mpi"
@@ -124,6 +125,10 @@ else
 	sed -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-Setup\<\%Ext\%\>}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
 fi
 sed -e "s/\s*VALUE \"ProductVersion\".*/      VALUE \"ProductVersion\", \"($VERSION(Build $BUILD))\"/" "$AGENT_WIN_RC_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_RC_FILE"
+echo "Updating Agent configuration files..."
+for conf in `find $AGENT_BASE_DIR -name pandora_agent.conf`; do
+	sed -e "s/#\s*[Vv]ersion\s*[^\,]*/# Version $VERSION/" "$conf" > "$TEMP_FILE" && mv "$TEMP_FILE" "$conf"
+done
 
 rm -f "$TEMP_FILE"
 

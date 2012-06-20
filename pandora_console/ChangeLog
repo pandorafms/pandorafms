@@ -1,3 +1,9 @@
+2012-06-20  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions.php: Changed ambiguous time representation
+	"MM:SS minutes", that can read 'MM hours SS minute', to 
+	"MM minutes SS seconds".
+
 2012-06-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	
 	* index.php: Hack to allow use visual console editor in IE9.

@@ -48,7 +48,7 @@ $ag_modulename = (string) get_parameter ('ag_modulename');
 $ag_group = (int) get_parameter ('ag_group', 0);
 $offset = (int) get_parameter ('offset');
 $status = (int) get_parameter ('status', 4);
-$modulegroup = (int) get_parameter ('modulegroup');
+$modulegroup = (int) get_parameter ('modulegroup', -1);
 $sql_extra = '';
 $refr = get_parameter('refr', 0);
 // Sort functionality
@@ -81,8 +81,10 @@ echo '</td>';
 
 echo '<td valign="middle">'.__('Module group').'</td>';
 echo '<td valign="middle">';
-html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
-	'modulegroup', $modulegroup, '',__('All'), 0, false, false, true, false, 'width: 100px;');
+$rows = db_get_all_rows_sql("SELECT * FROM tmodule_group ORDER BY name");
+$rows = io_safe_output($rows);
+$rows[0] = __('Not assigned');
+html_print_select($rows, 'modulegroup', $modulegroup, '', __('All'), -1);
 
 echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
@@ -92,7 +94,6 @@ $user_groups = implode (",", array_keys (users_get_groups ()));
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
-		
 		$profiles = db_get_all_rows_sql('SELECT id_grupo
 			FROM tusuario_perfil AS t1
 				INNER JOIN tperfil AS t2 ON t1.id_perfil = t2.id_perfil
@@ -164,8 +165,8 @@ switch ($config["dbtype"]) {
 			FROM tagente
 			WHERE';
 		
-		$sql .= $extra_sql.'(';		
-				
+		$sql .= $extra_sql.'(';
+		
 		if ($flag_is_admin || $flag_all_group) {
 			$sql .= ' 1 = 1 ';
 		}
@@ -254,7 +255,7 @@ switch ($sortField) {
 				$order = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
 				break;
 		}
-		break;		
+		break;
 	case 'interval':
 		switch ($sort) {
 			case 'up':
@@ -302,7 +303,7 @@ switch ($sortField) {
 				$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
 				break;
 		}
-		break;		
+		break;
 	default:
 		$selectAgentNameUp = $selected;
 		$selectAgentNameDown = '';
@@ -339,7 +340,7 @@ elseif($user_groups != '') {
 }
 
 // Module group
-if ($modulegroup > 0) {
+if ($modulegroup > -1) {
 	$sql .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
 }
 

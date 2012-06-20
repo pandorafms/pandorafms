@@ -983,8 +983,26 @@ $module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=e
 			. html_print_image ("images/brick.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $activeTab == "module");
 
 $onheader = array('os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'policies' => $policies_tab, 'module' => $module_tab);
-		
-ui_print_page_header (__('Tree view')." - ".__('Sort the agents by'), "images/extensions.png", false, "", false, $onheader);
+
+switch ($activeTab) {
+	case 'group':
+		$order =  __('groups');
+		break;
+	case 'module_group':
+		$order =  __('module groups');
+		break;
+	case 'policies':
+		$order =  __('policies');
+		break;
+	case 'module':
+		$order =  __('modules');
+		break;
+	case 'os':
+		$order =  __('OS');
+		break;
+}
+	
+ui_print_page_header (__('Tree view')." - ".__('Sort the agents by ').$order, "images/extensions.png", false, "", false, $onheader);
 
 
 echo "<br>";

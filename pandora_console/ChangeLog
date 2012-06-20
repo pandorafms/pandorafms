@@ -1,3 +1,7 @@
+2012-06-20  Vanessa Gil <vanessa.gil@artica.es>
+
+	* operation/tree.php: Fixed bug: Missing text in tree view title.
+
 2012-06-20 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_filemanager.php: cleaned source code style.

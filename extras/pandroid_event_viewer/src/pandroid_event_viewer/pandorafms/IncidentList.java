@@ -74,7 +74,7 @@ public class IncidentList extends ListActivity {
 		layout = (LinearLayout) findViewById(R.id.empty_list_layout);
 		layout.setVisibility(LinearLayout.GONE);
 
-		layout = (LinearLayout) findViewById(R.id.loading_layout);
+	//	layout = (LinearLayout) findViewById(R.id.loading_layout);
 
 		if (loadInProgress) {
 			layout.setVisibility(LinearLayout.VISIBLE);

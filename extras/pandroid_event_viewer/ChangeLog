@@ -1,3 +1,15 @@
+2012-06-20 Santiago Munín <burning1@gmail.com>
+	
+	* src/pandroid_event_viewer/pandorafms/API.java: New class, it will provide all API calls.
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Loading more events on scroll down.
+	* src/pandroid_event_viewer/pandorafms/Core.java: Added HTTPS connections.
+	* src/pandroid_event_viewer/pandorafms/Options.java: Added self-signed certificates check.
+	* src/pandroid_event_viewer/pandorafms/NaiveTrustManager.java: HTTPS through self-signed websites.
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java: Added ListAdapter to get events asynctask as a parameter.
+	* res/layout/list_view_layout.xml: Little UI changes.
+	* res/layout/item_list_event_layout.xml: Little UI changes.
+	* res/values/strings.xml: Added new entries.
+
 2012-06-11 Santiago Munín <burning1@gmail.com>
 
 	* src/pandroid_event_viewer/pandorafms/Core.java,

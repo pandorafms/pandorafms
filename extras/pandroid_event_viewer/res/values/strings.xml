@@ -117,5 +117,7 @@
     <string name="creating_incident">Creating new incident…</string>
     <string name="create_incident">Create incident</string>
     <string name="create_incident_group_error">There was an error creating the incident: unrecognized event group. Please, contact administrator.</string>
-
+	<string name="url_not_valid">Incorrect url. Please, insert a valid url</string>
+	<string name="certificate_not_valid">This server has a certificate not signed by a CA, do you trust it?</string>
+	<string name="options_not_saved">Options not saved.</string>
 </resources>

@@ -23,9 +23,6 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
 import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
@@ -34,6 +31,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.BaseAdapter;
 import android.widget.TabHost;
 import android.widget.Toast;
 
@@ -44,11 +42,13 @@ public class PandroidEventviewerActivity extends TabActivity implements
 
 	// Data aplication
 	public ArrayList<EventListItem> eventList;
+	public BaseAdapter adapter;
 	public long count_events;
 
 	// Flags
 	public boolean loadInProgress;
 	public boolean getNewListEvents;
+	public boolean newEvents;
 
 	// Configuration
 	public boolean show_popup_info;
@@ -283,20 +283,11 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	/**
 	 * Get events from pandora console.
 	 * 
-	 * @param newEvents
 	 */
-	private void getEvents(boolean newEvents) {
+	private void getEvents() {
 		// Get total count.
-		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
-		parameters.add(new BasicNameValuePair("op", "get"));
-		parameters.add(new BasicNameValuePair("op2", "events"));
-		parameters.add(new BasicNameValuePair("other_mode",
-				"url_encode_separator_|"));
-		parameters.add(new BasicNameValuePair("return_type", "csv"));
-		parameters.add(new BasicNameValuePair("other",
-				serializeParams2Api(true)));
-		String return_api = Core.httpGet(getApplicationContext(), parameters);
-		Log.i(TAG + " getEvents", return_api);
+		String return_api = API.getEvents(getApplicationContext(),
+				serializeParams2Api(true));
 		return_api = return_api.replace("\n", "");
 		try {
 			this.count_events = new Long(return_api).longValue();
@@ -310,16 +301,9 @@ public class PandroidEventviewerActivity extends TabActivity implements
 		}
 
 		// Get the list of events.
-		parameters = new ArrayList<NameValuePair>();
-		parameters.add(new BasicNameValuePair("op", "get"));
-		parameters.add(new BasicNameValuePair("op2", "events"));
-		parameters.add(new BasicNameValuePair("other_mode",
-				"url_encode_separator_|"));
-		parameters.add(new BasicNameValuePair("return_type", "csv"));
-		parameters.add(new BasicNameValuePair("other",
-				serializeParams2Api(false)));
-		return_api = Core.httpGet(getApplicationContext(), parameters);
-
+		return_api = API.getEvents(getApplicationContext(),
+				serializeParams2Api(false));
+		Log.d(TAG, "List of events: " + return_api);
 		Pattern pattern = Pattern
 				.compile("Unable to process XML data file '(.*)'");
 		Matcher matcher;
@@ -346,8 +330,10 @@ public class PandroidEventviewerActivity extends TabActivity implements
 		Log.i(TAG + " getEvents - return_api", return_api);
 
 		String[] lines = return_api.split("\n");
-
+		newEvents = true;
 		if (return_api.length() == 0) {
+			Log.d("WORKS?", "NEWEVENTS = FALSE");
+			newEvents = false;
 			return;
 		}
 
@@ -424,7 +410,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	 * Executes the async task of getting events.
 	 */
 	public void executeBackgroundGetEvents() {
-		new GetEventsAsyncTask().execute();
+		new GetEventsAsyncTask(adapter).execute();
 	}
 
 	/**
@@ -435,14 +421,16 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	 */
 	public class GetEventsAsyncTask extends AsyncTask<Void, Void, Void> {
 
+		private BaseAdapter adapter;
+
+		public GetEventsAsyncTask(BaseAdapter adapter) {
+			this.adapter = adapter;
+		}
+
 		@Override
 		protected Void doInBackground(Void... params) {
 			Log.i(TAG + " GetEventsAsyncTask", "doInBackground");
-			if (getNewListEvents) {
-				getEvents(true);
-			} else {
-				getEvents(false);
-			}
+			getEvents();
 
 			return null;
 		}
@@ -460,7 +448,9 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				i.putExtra("load_more", 1);
 			}
 
+			adapter.notifyDataSetChanged();
 			getApplicationContext().sendBroadcast(i);
+
 		}
 	}
 }

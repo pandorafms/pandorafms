@@ -1,3 +1,7 @@
+2012-06-120 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* index.php: Cleaned source code.
+
 2012-06-20  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/agentes/module_manager.php

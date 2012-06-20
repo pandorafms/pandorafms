@@ -113,29 +113,23 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www
 ?>
 <![endif]-->
 <!--[if IE]>																																									
-<?php  
-if ($sec2 == 'godmode/reporting/visual_console_builder' and $tab_vc == 'editor')  
+<?php 
+// Render with IE7 mode in visual console editor and preview (due to jquery drag and drop functionality doesn't work in IE9)
+if (($sec2 == 'godmode/reporting/visual_console_builder' and $tab_vc == 'editor') or ($sec2 == 'operation/visual_console/render_view')) {
 	echo '<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->'."\n";
-else 
+	echo '<meta http-equiv="X-UA-Compatible" content="IE=7" >' . "\n";
+}
+else {
 	echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
+	echo '<meta http-equiv="X-UA-Compatible" content="IE=9" >' . "\n";
+}
 
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
-?>
-<![endif]-->
-<!--[if IE]>																																									
-<?php  
 
-if ($sec2 == 'godmode/reporting/visual_console_builder' and $tab_vc == 'editor') { 
-
-	echo '<meta http-equiv="X-UA-Compatible" content="IE=7" >' . "\n"; 
-} 
-else { 
-
-	echo '<meta http-equiv="X-UA-Compatible" content="IE=9" >' . "\n"; 
-}	
 ?>
 <![endif]-->
 <?php 
+
 echo '<head>';
 
 //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head

@@ -264,3 +264,8 @@ CREATE TABLE IF NOT EXISTS tpassword_history (
 );
 CREATE SEQUENCE tpassword_history_s INCREMENT BY 1 START WITH 1;
 
+-- -----------------------------------------------------
+-- Table `tconfig`
+-- -----------------------------------------------------
+UPDATE tconfig SET value='comparation'
+WHERE token='prominent_time'

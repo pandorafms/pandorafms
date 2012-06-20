@@ -68,7 +68,7 @@ INSERT INTO tconfig (token, value) VALUES ('date_format', 'F j, Y, g:i a');
 INSERT INTO tconfig (token, value) VALUES ('event_view_hr', 8);
 INSERT INTO tconfig (token, value) VALUES ('loginhash_pwd', ' ');
 INSERT INTO tconfig (token, value) VALUES ('trap2agent', 0);
-INSERT INTO tconfig (token, value) VALUES ('prominent_time', 0);
+INSERT INTO tconfig (token, value) VALUES ('prominent_time', 'comparation');
 INSERT INTO tconfig (token, value) VALUES ('timesource', 'system');
 INSERT INTO tconfig (token, value) VALUES ('realtimestats', '1');
 INSERT INTO tconfig (token, value) VALUES ('stats_interval', '60');

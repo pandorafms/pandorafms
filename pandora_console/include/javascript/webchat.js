@@ -41,7 +41,6 @@ function get_last_global_counter() {
 		async: false,
 		success: function(data) {
 			if (data['correct'] == 1) {
-				console.log(global_counter_chat+" < "+data['global_counter']);
 				global_counter_chat = data['global_counter'];
 			}
 		}

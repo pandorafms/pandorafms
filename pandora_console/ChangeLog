@@ -1,3 +1,15 @@
+2012-06-20 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_html.php, include/functions.php: cleaned source
+	code style.
+	
+	* extensions/extension_uploader.php: fixed the upload enterprise
+	extension.
+	
+	Fixes: #3532208
+	
+	MERGED FROM 4.0.2
+
 2012-06-20  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* extensions/net_tools.php: Fixed bug: 'whereis' could find a
@@ -46,6 +58,18 @@
 	* include/functions_incidents.php: Changed a parameter
 	of the xml2array function to set it equal to recent
 	fix in 4.0.2
+
+2012-06-19 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/javascript/webchat.js, extensions/pandora_logs.php,
+	extensions/update_manager/lib/functions.php, operation/tree.php,
+	operation/agentes/stat_win.php,
+	godmode/massive/massive_delete_modules.php,
+	godmode/reporting/reporting_builder.list_items.php,
+	godmode/reporting/reporting_builder.php: a lot of changes in the
+	javascript for the crap browser ( = Micro$oft IE9) compatibility.
+	
+	MERGED FROM 4.0.2
 
 2012-06-19 Miguel de Dios <miguel.dedios@artica.es>
 	

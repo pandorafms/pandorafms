@@ -298,6 +298,7 @@ foreach ($items as $item) {
 		}
 		else {
 			$module_name_db = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+			
 			$row[3] =
 				ui_print_truncate_text(io_safe_output($module_name_db), 'module_small');
 		}
@@ -392,8 +393,6 @@ function added_ids_sorted_items_to_hidden_input() {
 	
 	$("input[name='ids_items_to_sort']").val(ids);
 	
-	console.log(ids);
-	
 	if (ids == '') {
 		alert("<?php echo __("Please select any item to order");?>");
 		
@@ -414,6 +413,5 @@ function only_numbers(name) {
 	}
 	
 	$("input[name='" + name + "']").val(value);
-	
 }
 </script>

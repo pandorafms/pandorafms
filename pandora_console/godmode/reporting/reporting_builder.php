@@ -46,7 +46,6 @@ switch ($action) {
 	case 'sort_items':
 		switch ($activeTab) {
 			case 'list_items':
-			
 				$resultOperationDB = null;
 				$position_to_sort = (int)get_parameter('position_to_sort', 1);
 				$ids_serialize = (string)get_parameter('ids_items_to_sort', '');
@@ -171,7 +170,7 @@ switch ($action) {
 				__('Successfully deleted'),
 				__('Could not be deleted'));
 		}
-	
+		
 		$own_info = get_user_info ($config['id_user']);
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 			$return_all_group = true;
@@ -229,24 +228,23 @@ switch ($action) {
 				}
 				
 				$data = array ();
-					
+				
 				if (check_acl ($config["id_user"], $report["id_group"], "AW")) {
-			
 					$data[0] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
 							$report['id_report'].'">'.$report['name'].'</a>';
-						
-				} else {
+				}
+				else {
 					$data[0] = $report['name'];
 				}
-						
-						
+				
+				
 				$data[1] = $report['description'];
 				
 				$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">' .
-						html_print_image("images/reporting.png", true) . '</a>';
+					html_print_image("images/reporting.png", true) . '</a>';
 				$data[3] = '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
-
-
+				
+				
 				//Calculate dinamically the number of the column	
 				$next = 4;
 				if (enterprise_hook ('load_custom_reporting_2') !== ENTERPRISE_NOT_HOOK) {
@@ -259,10 +257,10 @@ switch ($action) {
 						$data[$next] = __('Yes');
 					else
 						$data[$next] = __('No');
-						
+					
 					$next++;
 					
-						
+					
 					$data[$next] = ui_print_group_icon($report['id_group'], true);
 					$next++;
 					
@@ -270,7 +268,7 @@ switch ($action) {
 					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 					$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
 					$data[$next] .= '</form>';
-							
+					
 					$data[$next] .= '&nbsp;&nbsp;<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 					$data[$next] .= html_print_input_hidden ('action','delete_report', true);
@@ -280,10 +278,11 @@ switch ($action) {
 				}
 				
 				array_push ($table->data, $data);
-							
+				
 			}
 			html_print_table ($table);
-		} else {
+		}
+		else {
 			echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 		}
 		
@@ -427,7 +426,7 @@ switch ($action) {
 						
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
-
+						
 						$values['id_agent_module'] = '';
 						if (isset($values['type'])) {
 							if (($values['type'] == 'alert_report_agent') or ($values['type'] == 'event_report_agent'))
@@ -437,7 +436,7 @@ switch ($action) {
 						}
 						else
 							$values['id_agent_module'] = get_parameter('id_agent_module');
-
+						
 						$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
 						$values['monday'] = get_parameter('monday', 0);
 						$values['tuesday'] = get_parameter('tuesday', 0);
@@ -518,7 +517,7 @@ switch ($action) {
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$values['style'] = io_safe_input(json_encode($style));
-
+						
 						if ($good_format){
 							$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
 						}
@@ -582,7 +581,7 @@ switch ($action) {
 								$values['text'] = get_parameter('text');
 								$good_format = true;
 						}
-
+						
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						if (($values['type'] == 'alert_report_agent') or ($values['type'] == 'event_report_agent'))
@@ -601,9 +600,9 @@ switch ($action) {
 								}
 								else{
 									$values['only_display_wrong'] = $only_display_wrong_tmp;					
-								}														
+								}
 								break;
-						}	
+						}
 						$values['monday'] = get_parameter('monday', 0);
 						$values['tuesday'] = get_parameter('tuesday', 0);
 						$values['wednesday'] = get_parameter('wednesday', 0);
@@ -620,8 +619,8 @@ switch ($action) {
 							case "oracle":
 								$values['time_from'] = '#to_date(\'' . get_parameter('time_from') . '\',\'hh24:mi\')';
 								$values['time_to'] = '#to_date(\'' . get_parameter('time_to') . '\', \'hh24:mi\')';
-								break;		
-						}							
+								break;
+						}
 						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent',0);
 						$values['show_resume'] = get_parameter ('checkbox_show_resume',0);
 						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown',0);
@@ -833,14 +832,14 @@ switch ($action) {
 						break;
 				}
 				//db_get_value_filter('order', 'treport_content', array('id_rc' => $idItem));
-		
+				
 				switch ($dir) {
 					case 'up':
 						$newOrder = $oldOrder - 1;
 						break;
 					case 'down':
 						$newOrder = $oldOrder + 1;
-						break;	
+						break;
 				}
 				
 				db_process_sql_begin();

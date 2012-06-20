@@ -71,18 +71,18 @@ if ($create_group) {
 			$result = db_process_sql_insert('tmodule_group', array('name' => $name));
 	
 			if ($result) {
-				echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
+				ui_print_success_message(__('Group successfully created')); 
 			}
 			else {
-				echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";
+				ui_print_error_message(__('There was a problem creating group'));
 			}
 		}
 		else {
-			echo "<h3 class='error'>".__('Each module group must have a different name')."</h3>";
+			ui_print_error_message(__('Each module group must have a different name'));
 		}
 	}
 	else {
-		echo "<h3 class='error'>".__('Module group must have a name')."</h3>";
+		ui_print_error_message(__('Module group must have a name'));
 	}
 }
 
@@ -102,18 +102,18 @@ if ($update_group) {
 			$result = db_process_sql_update('tmodule_group', array('name' => $name), array('id_mg' => $id_group));
 
 			if ($result !== false) {
-				echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
+				ui_print_success_message(__('Group successfully updated'));
 			}
 			else {
-				echo "<h3 class='error'>".__('There was a problem modifying group')."</h3>";
+				ui_print_error_message(__('There was a problem modifying group'));
 			}
 		}
 		else {
-			echo "<h3 class='error'>".__('Each module group must have a different name')."</h3>";
+			ui_print_error_message(__('Each module group must have a different name'));
 		}
 	}
 	else {
-		echo "<h3 class='error'>".__('Module group must have a name')."</h3>";
+		ui_print_error_message(__('Module group must have a name'));
 	}
 }
 
@@ -123,10 +123,18 @@ if ($delete_group) {
 	
 	$result = db_process_sql_delete('tmodule_group', array('id_mg' => $id_group));
 	
+	if ($result) {
+		$result = db_process_sql_update('tagente_modulo', array('id_module_group' => 0), array('id_module_group' => $id_group));
+
+		// A group with no modules can be deleted, to avoid a message error then do the follwing
+		if ($result !== false)
+			$result = true;
+	}
+	
 	if (! $result)
-		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>"; 
+		ui_print_error_message(__('There was a problem deleting group')); 
 	else
-		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
+		ui_print_success_message(__('Group successfully deleted'));
 }
 
 $total_groups = db_get_num_rows('SELECT * FROM tmodule_group');

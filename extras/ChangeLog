@@ -1,3 +1,8 @@
+2012-06-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_update_version.sh: Merged from trunk. Update version in agent
+	  configuration files.
+
 2012-06-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Merged from trunk. Update version string in

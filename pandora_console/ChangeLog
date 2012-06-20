@@ -1,3 +1,8 @@
+2012-06-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_config.php: Added check of UM only in login 
+	time.
+
 2012-06-20  Sancho Lerena <slerena@artiac.es>
 
 	* extensions/update_manager/sql/update_manager.sql: 4.0.2 comes with a fixed

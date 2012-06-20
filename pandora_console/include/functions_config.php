@@ -819,6 +819,12 @@ function config_check () {
 			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
+	// Only check update manager login at login attemp
+	$get_login = get_parameter_get("login", 0);
+
+	if ($get_login == 1)
+		pandora_update_manager_login();	
+	
 	if (isset($_SESSION['new_update'])) {
 		if (!empty($_SESSION['return_installation_open'])) {
 			if (!$_SESSION['return_installation_open']['return']) {

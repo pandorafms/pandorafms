@@ -509,7 +509,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		if ($seconds == 0)
 			return $minutes.' ' . $minutesString;
 		$seconds = sprintf ("%02d", $seconds);
-		return $minutes.':'.$seconds.' ' . $minutesString;
+		return $minutes.' '. $minutesString . ' ' .$seconds.' ' . $secondsString;
 	}
 	
 	if ($seconds < 86400)

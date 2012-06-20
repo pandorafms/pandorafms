@@ -1,3 +1,10 @@
+2012-06-20  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions.php: Changed ambiguous time representation
+	"MM:SS minutes", that can read 'MM hours SS minute', to 
+	"MM minutes SS seconds".
+	Merged from 4.0.2
+
 2012-06-19  Sergio Martin <sergio.martin@artica.es>
 
 	* general/header.php: Add hint to explain the use of

@@ -1,5 +1,10 @@
 2012-06-20  Hirofumi Kosaka  <kosaka@rworks.jp>
 
+	* extensions/net_tools.php: Fixed bug: cannot find traceroute
+	other than /usr/sbin/traceroute.
+
+2012-06-20  Hirofumi Kosaka  <kosaka@rworks.jp>
+
 	* include/functions.php: Changed ambiguous time representation
 	"MM:SS minutes", that can read 'MM hours SS minute', to 
 	"MM minutes SS seconds".

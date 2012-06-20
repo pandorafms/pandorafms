@@ -1,4 +1,10 @@
-2012-06-120 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+2012-06-20  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/setup/setup_visuals.php: Fixed bug: Inside Visual styles menu 
+	there is an option "Timestamp or time comparation" which has not a selected
+	value by default.
+
+2012-06-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* index.php: Cleaned source code.
 

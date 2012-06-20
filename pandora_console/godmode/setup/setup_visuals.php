@@ -48,11 +48,19 @@ $table->data[1][0] = __('Date format string') . ui_print_help_icon("date_format"
 $table->data[1][1] = '<em>'.__('Example').'</em> '.date ($config["date_format"]);
 $table->data[1][1] .= html_print_input_text ('date_format', $config["date_format"], '', 30, 100, true);
 
+if($config['prominent_time'] == 'timestamp') {
+	$timestamp = true;
+	$comparation = false;
+} else {
+	$timestamp = false;
+	$comparation = true;
+}
+
 $table->data[2][0] = __('Timestamp or time comparation') . ui_print_help_icon ("time_stamp-comparation", true);
 $table->data[2][1] = __('Comparation in rollover').' ';
-$table->data[2][1] .= html_print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
+$table->data[2][1] .= html_print_radio_button ('prominent_time', "comparation", '', $comparation, true);
 $table->data[2][1] .= '<br />'.__('Timestamp in rollover').' ';
-$table->data[2][1] .= html_print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
+$table->data[2][1] .= html_print_radio_button ('prominent_time', "timestamp", '', $timestamp, true);
 
 $table->data[3][0] = __('Graph color (min)');
 $table->data[3][1] = html_print_input_text ('graph_color1', $config["graph_color1"], '', 8, 8, true);

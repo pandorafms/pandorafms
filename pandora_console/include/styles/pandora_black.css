@@ -337,3 +337,8 @@ input#text-id_parent.ac_input, input, textarea, select{
 .info_box {
 	box-shadow: 0px 5px 5px rgb(22,22,22);
 }
+
+
+.ac_results {
+	color: #000000 !important;
+}

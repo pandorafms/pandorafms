@@ -1,5 +1,12 @@
 2012-06-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/styles/pandora_black.css: Autocomplete text is visible in
+	black style.
+	
+	Merged from trunk.
+
+2012-06-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/groups/modu_group_list.php: Fixed module update when a 
 	module group is deleted.
 

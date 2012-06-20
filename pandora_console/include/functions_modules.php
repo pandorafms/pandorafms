@@ -1210,7 +1210,13 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 	$status = STATUS_MODULE_WARNING;
 	$title = "";
 
-	if ($db_status == 1) {
+	// This module is initialized ? (has real data)
+	$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
+	if ($module_init == 0) {
+		$status = STATUS_MODULE_NO_DATA;
+		$title = __('NOT INIT');
+	}
+	elseif ($db_status == 1) {
 		$status = STATUS_MODULE_CRITICAL;
 		$title = __('CRITICAL');
 	}

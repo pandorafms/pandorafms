@@ -1,3 +1,9 @@
+2012-06-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_modules.php
+	godmode/agentes/module_manager.php: Added not init status
+	in the manage modules view for bug 3533341
+
 2012-06-20 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_html.php, include/functions.php: cleaned source

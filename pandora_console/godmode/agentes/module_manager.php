@@ -492,9 +492,12 @@ foreach ($modules as $module) {
 		$data[2] = servers_show_type ($module['id_modulo']);
 	}
 
+	$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
+	
+	modules_get_status($module['id_agente_modulo'], $module_status['estado'], $module_status['datos'], $status, $title);
+	
 	// This module is initialized ? (has real data)
-	$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
-	if ($module_init == 0)
+	if ($status == STATUS_MODULE_NO_DATA)
 		$data[2] .= html_print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
 	
 	// Module type (by data type)
@@ -512,10 +515,6 @@ foreach ($modules as $module) {
 	}
 	
 	$data[5] = ui_print_truncate_text($module['descripcion'], 'description', false);
-	
-	$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
-	
-	modules_get_status($module['id_agente_modulo'], $module_status['estado'], $module_status['datos'], $status, $title);
 	
 	$data[6] = ui_print_status_image($status, $title, true);
 	

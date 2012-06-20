@@ -46,11 +46,11 @@ function main_net_tools () {
 	echo "<input name=submit type=submit class='sub next' value='".__('Execute')."'>";
 	echo "</tr></table>";
 	echo "</form>";
-
-
+	
+	
 	$operation = get_parameter ("operation",0);
 	$community = get_parameter ("community","public");
-
+	
 	switch($operation) {
 	case 1:
                         ob_start();

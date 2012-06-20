@@ -25,8 +25,8 @@ if (is_ajax ()) {
 	$get_info_alert_module_group = (bool)get_parameter('get_info_alert_module_group');
 	$module_group = (int)get_parameter('module_group');
 	$id_agent_group = (int)get_parameter('id_agent_group');
-
-	$data = false;	
+	
+	$data = false;
 	if ($get_info_alert_module_group) {
 		$agents = agents_get_group_agents($id_agent_group);
 		if (!empty($agents)) { 
@@ -67,15 +67,15 @@ if (is_ajax ()) {
 					}
 				}
 			}
-			if(!$data){
+			if (!$data) {
 				echo '<i>These module/s have no alerts or alert/s are not fired</i>';
 			}
 		}
-		else{
+		else {
 			echo '<i>No available data</i>';
 		}
 	}
-	else{
+	else {
 		echo '<i>No available data</i>';
 	}
 }
@@ -93,11 +93,11 @@ if (is_ajax ()) {
  */
 function mainModuleGroups() {
 	global $config; //the useful global var of Pandora Console, it has many data can you use
-
+	
 	require_once ('include/functions_reporting.php');
 	require_once($config['homedir'] . "/include/functions_agents.php");
 	require_once($config['homedir'] . "/include/functions_users.php");
-
+	
 	//The big query
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -121,8 +121,8 @@ function mainModuleGroups() {
 						FROM tagente_modulo
 						WHERE id_module_group = %d AND disabled = 0 AND delete_pending = 0)
 				GROUP BY estado";
-                        break;
-		case "oracle":	
+			break;
+		case "oracle":
 			$sql = "SELECT COUNT(id_agente) AS count, estado
 				FROM tagente_estado
 				WHERE utimestamp != 0 AND id_agente IN

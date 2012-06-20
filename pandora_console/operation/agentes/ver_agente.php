@@ -301,10 +301,10 @@ if (is_ajax ()) {
 		foreach($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
-			
+		
 		//Hack to translate text "any" in PHP to javascript
 		//$agent_modules['any_text'] = __('Any');
-
+		
 		echo json_encode ($agent_modules);
 		return;
 	}
@@ -317,7 +317,7 @@ if (is_ajax ()) {
 		echo '<strong>'.__('Group').':</strong> ';
 		echo html_print_image('images/groups_small/'.groups_get_icon ($agent['id_grupo']).'.png', true); 
 		echo groups_get_name ($agent['id_grupo']).'<br />';
-
+		
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
 		
@@ -679,7 +679,7 @@ foreach ($config['extensions'] as $extension) {
 		
 		$extension_tab = array('text' => '<a href="' . $url .'">' . html_print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
 		
-		$onheader = $onheader + array($id => $extension_tab);	
+		$onheader = $onheader + array($id => $extension_tab);
 	}
 }
 
@@ -717,7 +717,8 @@ switch($tab) {
 }
 
 ui_print_page_header(__('Agent') . '&nbsp;-&nbsp;' .
-	ui_print_truncate_text(agents_get_name($id_agente), 'agent_small', false) .
+	ui_print_truncate_text(agents_get_name($id_agente), 'agent_medium', false,
+	true, true, '[&hellip;]', null) .
 	$header_description, $icon, false, "", false, $onheader);
 
 

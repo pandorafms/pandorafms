@@ -213,8 +213,8 @@ if ($id_agente) {
 	$viewtab['text'] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">' 
 			. html_print_image ("images/zoom.png", true, array ("title" =>__('View')))
 			. '</a>';
-			
-	if($tab == 'view')
+	
+	if ($tab == 'view')
 		$viewtab['active'] = true;
 	else
 		$viewtab['active'] = false;
@@ -223,7 +223,7 @@ if ($id_agente) {
 	$maintab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">' 
 			. html_print_image ("images/cog.png", true, array ("title" =>__('Setup')))
 			. '</a>';
-	if($tab == 'main')
+	if ($tab == 'main')
 	
 		$maintab['active'] = true;
 	else
@@ -234,7 +234,7 @@ if ($id_agente) {
 			. html_print_image ("images/brick.png", true, array ("title" =>__('Modules')))
 			. '</a>';
 	
-	if($tab == 'module')
+	if ($tab == 'module')
 		$moduletab['active'] = true;
 	else
 		$moduletab['active'] = false;
@@ -244,11 +244,11 @@ if ($id_agente) {
 			. html_print_image ("images/bell.png", true, array ("title" =>__('Alerts')))
 			. '</a>';
 	
-	if($tab == 'alert')
+	if ($tab == 'alert')
 		$alerttab['active'] = true;
 	else
 		$alerttab['active'] = false;
-		
+	
 	/* Template tab */
 	$templatetab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">' 
 			. html_print_image ("images/network.png", true, array ("title" =>__('Module templates')))
@@ -357,7 +357,8 @@ if ($id_agente) {
 	}
 	
 	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' .
-		ui_print_truncate_text(agents_get_name ($id_agente), 'agent_small', false) .
+		ui_print_truncate_text(agents_get_name ($id_agente), 'agent_medium', false,
+		true, true, '[&hellip;]', null) .
 		' ' . $tab_description, "images/setup.png", false, "", true, $onheader);
 }
 else {

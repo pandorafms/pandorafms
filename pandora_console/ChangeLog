@@ -1,3 +1,17 @@
+2012-06-20 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_ui.php: work around into the function
+	"ui_print_truncate_text" because the PHP function "mb_strimwidth" is
+	a buggy function (overwrite the strings with only the string for
+	concat), now the concat is out this function. And in this
+	function "ui_print_truncate_text" added the posibility to set the
+	string to truncate without "span" html tag.
+	 
+	* operation/agentes/ver_agente.php,
+	godmode/agentes/configurar_agente.php: used the new form to call the
+	"ui_print_truncate_text" without "span" tag because there are some
+	css skins have problems with the "span" tag in the tittle header.
+
 2012-06-20  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_agents.php

@@ -54,7 +54,7 @@ function main_net_tools () {
 	switch($operation) {
 	case 1:
                         ob_start();
-                        system('whereis traceroute');
+                        system('which traceroute');
                         $output = ob_get_clean();
                         $result = explode(':', $output);
                         $result = trim($result[1]);
@@ -77,7 +77,7 @@ function main_net_tools () {
 
 	case 2: 
 				ob_start();
-        		system('whereis ping');
+        		system('which ping');
         		$output = ob_get_clean();
         		$result = explode(':', $output);
         		$result = trim($result[1]);
@@ -94,7 +94,7 @@ function main_net_tools () {
                 
         case 4: 
         		ob_start();
-        		system('whereis nmap');
+        		system('which nmap');
         		$output = ob_get_clean();
         		$result = explode(':', $output);
         		$result = trim($result[1]);
@@ -112,7 +112,7 @@ function main_net_tools () {
         case 5: 
         		echo "<h3>".__("Domain and IP information for "). $ip. "</h3>";
 				ob_start();
-        		system('whereis dig');
+        		system('which dig');
         		$output = ob_get_clean();
         		$result = explode(':', $output);
         		$result = trim($result[1]);
@@ -125,7 +125,7 @@ function main_net_tools () {
                 	echo "</pre>";
         		}
         		ob_start();
-        		system('whereis whois');
+        		system('which whois');
         		$output = ob_get_clean();
         		$result = explode(':', $output);
         		$result = trim($result[1]);
@@ -141,7 +141,7 @@ function main_net_tools () {
                 break;
         case 3: echo "<h3>".__("SNMP information for "). $ip. "</h3>";
                 ob_start();
-        		system('whereis snmpget');
+        		system('which snmpget');
         		$output = ob_get_clean();
         		$result = explode(':', $output);
         		$result = trim($result[1]);

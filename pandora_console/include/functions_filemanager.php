@@ -328,7 +328,7 @@ if ($create_dir) {
 $delete_file = (bool) get_parameter ('delete_file');
 if ($delete_file) {
 	global $config;
-
+	
 	$config['filemanager'] = array();
 	$config['filemanager']['delete'] = 0;
 	$config['filemanager']['message'] = null;
@@ -339,14 +339,15 @@ if ($delete_file) {
 	$testHash = md5($filename . $config['dbpass']);
 	
 	if ($hash != $testHash) {
-		 $config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
+		$config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
 	}
 	else {
 		$config['filemanager']['message'] = ui_print_success_message(__('Deleted'), '', true);
-		if (is_dir ($filename)) {		
+		if (is_dir ($filename)) {
 			rmdir ($filename);
 			$config['filemanager']['delete'] = 1;
-		} else {
+		} 
+		else {
 			unlink ($filename);
 			$config['filemanager']['delete'] = 1;
 		}

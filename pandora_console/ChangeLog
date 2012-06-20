@@ -1,3 +1,10 @@
+2012-06-20 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_filemanager.php: cleaned source code style.
+	
+	* include/functions.php: added function "copy_dir" for use in the
+	bug #3527247.
+
 2012-06-20  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/setup/setup_visuals.php: Fixed bug: Inside Visual styles menu 

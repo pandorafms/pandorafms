@@ -1,3 +1,13 @@
+2012-06-20 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/net_tools.php: cleaned source code style.
+	
+	* extensions/module_groups.php,
+	operation/agentes/status_monitor.php: fixed the lost "module group"
+	"unasigned".
+	
+	Fixes: #3532075
+
 2012-06-20  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_modules.php

@@ -1,3 +1,10 @@
+2012-06-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/functions_reporting.php: Fixed layout issues in
+	SLA reports and add ttl param to slice graphs 
+	function to pdf side
+
 2012-06-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_config.php: Added check of UM only in login 

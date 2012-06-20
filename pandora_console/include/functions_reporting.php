@@ -2321,6 +2321,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			
+			$table->colspan[0][1] = 2;
 			$table->colspan[1][0] = 3;
 			if ($content["description"] != ""){
 				$data_desc = array();
@@ -2391,11 +2392,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					if ($total_result_SLA != 'fail')
 						$total_result_SLA = 'unknown';
 				}
-				else if ($sla_value >= $sla['sla_limit']) {
-					if ($total_result_SLA == 'ok')
-						$total_result_SLA = 'ok';
-				}
-				else {
+				else if ($sla_value < $sla['sla_limit']) {
 					$total_result_SLA = 'fail';
 				}
 				
@@ -2472,21 +2469,23 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				unset($table1->data[$i][6]);
 			}
 			
-			$table->colspan[2][0] = 3;
+			$next_row = 2;
 			if ($show_graph == 0 || $show_graph == 1) {
 				$data = array();
 				$data[0] = html_print_table($table1, true);
 				array_push ($table->data, $data);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 			}
 			
-			$table->colspan[3][0] = 2;
+			$table->colspan[$next_row][0] = 2;
+			$next_row++;
 			$data = array();
 			$data_pie_graph = json_encode ($data_graph);
 			if (($show_graph == 1 || $show_graph == 2) && !empty($slas)) {
 				$data[0] = pie3d_graph(false, $data_graph,
 					500, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
-				
-				$config['fontpath'], $config['font_size']); 
+					$config['fontpath'], $config['font_size']); 
 				
 				
 				//Print resume
@@ -2505,19 +2504,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
 					$table_resume->data[0][1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #736F6E;">'.__('Unknown').'</span>';
 				}
-				$table_resume->data[0][0] .= (int)($total_SLA / count($slas));
+				$table_resume->data[0][0] .= format_numeric($total_SLA / count($slas), 2);
 				$table_resume->data[0][0] .= "%</span>";
 				
 				$data[1] = html_print_table($table_resume, true);
 				
-				
 				array_push ($table->data, $data);
-				
-				//Display horizontal bar graphs
-				$days = array ('monday' => $content['monday'], 'tuesday' => $content['tuesday'],
-				'wednesday' => $content['wednesday'], 'thursday' => $content['thursday'],
-				'friday' => $content['friday'], 'saturday' => $content['saturday'], 'sunday' => $content['sunday']);
-				$daysWeek = json_encode ($days);
 				
 				$table2->width = '99%';
 				$table2->style[0] = 'text-align: right';
@@ -2534,7 +2526,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					
 					array_push ($table2->data, $data);
 				}
-				$table->colspan[4][0] = 3;
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				$data = array();
 				$data[0] = html_print_table($table2, true);
 				array_push ($table->data, $data);

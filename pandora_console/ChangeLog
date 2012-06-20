@@ -1,5 +1,11 @@
 2012-06-20  Hirofumi Kosaka  <kosaka@rworks.jp>
 
+	* extensions/net_tools.php: Fixed bug: 'whereis' could find a
+	command regardless of whether reachable or not with $PATH
+	(and leads to fail the subsequent command execution).
+
+2012-06-20  Hirofumi Kosaka  <kosaka@rworks.jp>
+
 	* extensions/net_tools.php: Fixed bug: cannot find traceroute
 	other than /usr/sbin/traceroute.
 

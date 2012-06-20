@@ -46,24 +46,36 @@ function main_net_tools () {
 	echo "<input name=submit type=submit class='sub next' value='".__('Execute')."'>";
 	echo "</tr></table>";
 	echo "</form>";
-	
-	
+
+
 	$operation = get_parameter ("operation",0);
 	$community = get_parameter ("community","public");
-	
+
 	switch($operation) {
-		case 1:
-			if (!file_exists('/usr/sbin/traceroute')) {
-				ui_print_error_message(__('Traceroute executable does not exist.'));
-			}
-			else {
-				echo "<h3>".__("Traceroute to "). $ip. "</h3>";
-				echo "<pre>";
-				echo system ("/usr/sbin/traceroute $ip");
-				echo "</pre>";
-			}
-			break;
-			case 2: 
+	case 1:
+                        ob_start();
+                        system('whereis traceroute');
+                        $output = ob_get_clean();
+                        $result = explode(':', $output);
+                        $result = trim($result[1]);
+                        if (! empty($result)) {
+                                echo "<h3>".__("Traceroute to "). $ip. "</h3>";
+                                echo "<pre>";
+                                echo system ("traceroute $ip");
+                                echo "</pre>";
+                        }
+                        elseif (file_exists('/usr/sbin/traceroute')) {
+                                echo "<h3>".__("Traceroute to "). $ip. "</h3>";
+                                echo "<pre>";
+                                echo system ("/usr/sbin/traceroute $ip");
+                                echo "</pre>";
+                        }
+                        else {
+                                ui_print_error_message(__('Traceroute executable does not exist.'));
+                        }
+                break;
+
+	case 2: 
 				ob_start();
         		system('whereis ping');
         		$output = ob_get_clean();

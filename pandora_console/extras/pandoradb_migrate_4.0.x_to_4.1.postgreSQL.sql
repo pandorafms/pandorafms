@@ -251,3 +251,9 @@ CREATE TABLE IF NOT EXISTS "tpassword_history" (
   "date_begin" BIGINT NOT NULL default 0,
   "date_end" BIGINT NOT NULL default 0,
 );
+
+-- -----------------------------------------------------
+-- Table `tconfig`
+-- -----------------------------------------------------
+UPDATE TABLE tconfig SET "value"='comparation'
+WHERE "token"='prominent_time'

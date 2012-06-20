@@ -1,3 +1,15 @@
+2012-06-20  Vanessa Gil <vanessa.gil@artica.es>
+
+	* pandoradb_data.sql
+	  pandoradb.data.oracle.sql
+	  pandoradb.data.postgreSQL.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	  extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql
+	  godmode/setup/setup_visuals.php: Fixed bug: Inside Visual styles menu 
+	there is an option "Timestamp or time comparation" which has not a selected
+	value by default.
+
 2012-06-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/graphs/pChart/pPie.class.php: ixed a bug in pie3d graph

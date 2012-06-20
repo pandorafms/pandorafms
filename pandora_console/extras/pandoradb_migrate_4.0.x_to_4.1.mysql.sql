@@ -260,3 +260,9 @@ CREATE TABLE IF NOT EXISTS `tpassword_history` (
   `date_end` DATETIME  NOT NULL DEFAULT 0,
 PRIMARY KEY  (`id_pass`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tconfig`
+-- -----------------------------------------------------
+UPDATE tconfig SET `value`='comparation'
+WHERE `token`= 'prominent_time'

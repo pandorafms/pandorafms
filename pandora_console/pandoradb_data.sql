@@ -63,7 +63,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('event_view_hr', 8),
 ('loginhash_pwd', ''),
 ('trap2agent', 0),
-('prominent_time', 0),
+('prominent_time', 'comparation'),
 ('timesource', 'system'),
 ('realtimestats', '1'),
 ('stats_interval', '60'),

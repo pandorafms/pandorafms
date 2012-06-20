@@ -116,7 +116,7 @@ function update_pandora_administration($settings, $user_key) {
 		'</table>';
 	
 	?>
-	<div id="dialog_download" title="<?php echo __('Process packge'); ?>"
+	<div id="dialog_download" title="<?php echo __('Processing package'); ?>"
 		style="display:none;">
 		<div style="position:absolute; top:10%; text-align: center; left:0%; right:0%; width:600px;">
 			<?php

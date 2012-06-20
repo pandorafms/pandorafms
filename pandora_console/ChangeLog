@@ -1,3 +1,14 @@
+2012-06-20  Sancho Lerena <slerena@artiac.es>
+
+	* extensions/update_manager/sql/update_manager.sql: 4.0.2 comes with a fixed
+	last package installed of 412
+
+	* extensions/update_manager/load_updatemanager.php: Fixed execution
+	of keygen: now uses dbtype as last parameter in execution.
+
+	* include/functions_config.php: Avoid to check for new update on each
+	page render (BAD!)
+
 2012-06-20  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/tree.php: Fixed bug: Missing text in tree view title.

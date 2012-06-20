@@ -819,7 +819,6 @@ function config_check () {
 			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
-	pandora_update_manager_login();
 	if (isset($_SESSION['new_update'])) {
 		if (!empty($_SESSION['return_installation_open'])) {
 			if (!$_SESSION['return_installation_open']['return']) {

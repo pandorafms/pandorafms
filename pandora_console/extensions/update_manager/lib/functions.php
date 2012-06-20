@@ -463,7 +463,6 @@ function update_pandora_print_javascript_admin() {
 							'</td>' +
 							'<td style=" text-align:center; width:50px;"></td>' +
 							'</tr>';
-						console.log(row_html);
 						$("tbody", "#online_packages").append(row_html); return;
 						$("tbody", "#online_packages").append(
 							);

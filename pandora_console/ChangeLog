@@ -1,3 +1,88 @@
+2012-06-21  Sergio Martin <sergio.martin@artica.es>
+
+	* include/languages/cs.po
+	include/languages/et.mo
+	include/languages/pt_BR.po
+	include/languages/nl.mo
+	include/languages/es.po
+	include/languages/pl.mo
+	include/languages/ko.po
+	include/languages/it.mo
+	include/languages/sl.mo
+	include/languages/sk.po
+	include/languages/uk.po
+	include/languages/pt.mo
+	include/languages/ro.po
+	include/languages/en_AU.mo
+	include/languages/ast.mo
+	include/languages/bg.mo
+	include/languages/index.pot
+	include/languages/bn.po
+	include/languages/nb.po
+	include/languages/en.po
+	include/languages/ar.po
+	include/languages/cs.mo
+	include/languages/pt_BR.mo
+	include/languages/es.mo
+	include/languages/ko.mo
+	include/languages/fr.po
+	include/languages/sk.mo
+	include/languages/uk.mo
+	include/languages/ro.mo
+	include/languages/mr.po
+	include/languages/ca.po
+	include/languages/da.po
+	include/languages/tr.po
+	include/languages/sv.po
+	include/languages/de.po
+	include/languages/ja.po
+	include/languages/zh_TW.po
+	include/languages/nb.mo
+	include/languages/bn.mo
+	include/languages/he.po
+	include/languages/fi.po
+	include/languages/ar.mo
+	include/languages/en.mo
+	include/languages/hi.po
+	include/languages/zh_CN.po
+	include/languages/fr.mo
+	include/languages/te.po
+	include/languages/eu.po
+	include/languages/en_GB.po
+	include/languages/mr.mo
+	include/languages/hu.po
+	include/languages/ca.mo
+	include/languages/da.mo
+	include/languages/tr.mo
+	include/languages/de.mo
+	include/languages/sv.mo
+	include/languages/ru.po
+	include/languages/ja.mo
+	include/languages/zh_TW.mo
+	include/languages/he.mo
+	include/languages/fi.mo
+	include/languages/hi.mo
+	include/languages/zh_CN.mo
+	include/languages/el.po
+	include/languages/gl.po
+	include/languages/te.mo
+	include/languages/eu.mo
+	include/languages/en_GB.mo
+	include/languages/et.po
+	include/languages/hu.mo
+	include/languages/nl.po
+	include/languages/pl.po
+	include/languages/it.po
+	include/languages/sl.po
+	include/languages/pt.po
+	include/languages/ru.mo
+	include/languages/en_AU.po
+	include/languages/ast.po
+	include/languages/bg.po
+	include/languages/el.mo
+	include/languages/gl.mo: Update the languages
+	to v4.0.2
+
 2012-06-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/styles/pandora_black.css: Autocomplete text is visible in

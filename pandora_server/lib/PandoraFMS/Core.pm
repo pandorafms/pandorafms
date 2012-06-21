@@ -2240,9 +2240,29 @@ sub pandora_server_statistics ($$) {
 
 	# For each server, update stats: Simple.
 	foreach my $server (@servers) {
-		
+
+		# Inventory server
+		if ($server->{"server_type"} == 8) {
+			# Get modules exported by this server
+			$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente AND tagente.server_name = ?", $server->{"name"});
+
+			# Get total exported modules
+			$server->{"modules_total"} = get_db_value ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente");
+
+			# Calculate lag
+			$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory.interval) AS lag 
+					FROM tagente, tagent_module_inventory
+					WHERE utimestamp > 0
+					AND tagent_module_inventory.id_agente = tagente.id_agente
+					AND tagent_module_inventory.interval > 0
+					AND tagente.server_name = ?
+					AND (UNIX_TIMESTAMP() - utimestamp) < (tagent_module_inventory.interval * 10)
+					AND (UNIX_TIMESTAMP() - utimestamp) > tagent_module_inventory.interval", $server->{"name"});
+			$server->{"module_lag"} = $lag_row->{"module_lag"};
+			$server->{"lag"} = $lag_row->{"lag"};
+		}
 		# Export server
-		if ($server->{"server_type"} == 7) {
+		elsif ($server->{"server_type"} == 7) {
 	
 			# Get modules exported by this server
 			$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo, tserver_export WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export = tserver_export.id AND tserver_export.id_export_server = ?", $server->{"id_server"});

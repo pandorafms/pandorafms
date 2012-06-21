@@ -1,3 +1,7 @@
+2012-06-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added inventory server statistics.
+
 2012-06-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* util/pandora_xml_stress.conf

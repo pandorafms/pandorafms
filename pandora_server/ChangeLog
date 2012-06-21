@@ -1,3 +1,9 @@
+2012-06-21  Kikuchi Koichiro <koichiro@rworks.jp>
+
+	* pandora_server.redhat.spec: Small fixes: removed duplicated useradd
+	 line, don't remove pandora user after uninstall, added collections
+	 directory.
+
 2012-06-21  Sancho Lerena <slerena@artica.es>
 
         * lib/PandoraFMS/NetworkServer.pm: SNMP values starting with quotes

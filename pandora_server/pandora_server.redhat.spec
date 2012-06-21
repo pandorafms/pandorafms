@@ -19,9 +19,9 @@ Prefix:             %{_datadir}
 BuildRoot:          %{_tmppath}/%{name}-buildroot
 BuildArchitectures: noarch 
 Prereq:             /sbin/chkconfig, /sbin/service
-Prereq:             %{_sbindir}/useradd
 AutoReq:            0
 Provides:           %{name}-%{version}
+Requires(pre):      shadow-utils
 Requires:           coreutils
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
 Requires:           perl-XML-Simple perl-XML-Twig net-snmp-utils
@@ -48,6 +48,7 @@ mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/pandora/
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/conf
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/md5
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/collections
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 mkdir -p $RPM_BUILD_ROOT%{_mandir}/man1/
@@ -87,14 +88,14 @@ chmod 0755 $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/pandora_db
 rm -fr $RPM_BUILD_ROOT
 
 %pre
-/usr/sbin/useradd -d %{prefix}/pandora_server -s /bin/false -M -g 0 pandora
+getent passwd pandora >/dev/null || \
+    /usr/sbin/useradd -d %{prefix}/pandora_server -s /sbin/nologin -M -g 0 pandora
+
 if [ -e "/etc/pandora/pandora_server.conf" ]
 then
 	cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
 fi
 
-id pandora >/dev/null 2>&1 || \
-/usr/sbin/useradd -d /var/spool/pandora -s /sbin/nologin -m -g 0 pandora 2> /dev/null
 exit 0
 
 %post
@@ -126,7 +127,6 @@ fi
 /sbin/service tentacle_serverd stop &>/dev/null
 /sbin/chkconfig --del pandora_server
 /sbin/chkconfig --del tentacle_serverd
-userdel pandora
 
 exit 0
 
@@ -137,8 +137,6 @@ exit 0
 %{_sysconfdir}/rc.d/init.d/tentacle_serverd
 %{_sysconfdir}/cron.daily/pandora_db
 %config(noreplace) %{_sysconfdir}/logrotate.d/pandora_server
-
-
 
 %defattr(755,pandora,root)
 %{prefix}/pandora_server

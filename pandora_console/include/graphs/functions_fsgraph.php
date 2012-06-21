@@ -628,7 +628,7 @@ function fs_2d_column_chart ($data, $width, $height, $homeurl = '', $reduce_data
 			if ($value > 0) {
 				$empty = 0;
 			}
-			$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
+			$chart->addChartData($value, 'name=' . clean_flash_string_legend($name) . ';showName=' . $show_name . ';color=95BB04');
 		}
 	}
 	

@@ -1,3 +1,9 @@
+2012-06-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	 include/graphs/functions_fsgraph.php: Blank spaces were removed 
+	 unnecessarily on flash string graphs.
+
 2012-06-21 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/load_updatemanager.php: fixed the lost

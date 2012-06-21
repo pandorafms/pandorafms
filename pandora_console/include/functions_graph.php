@@ -1681,6 +1681,16 @@ function clean_flash_string ($string) {
 	return substr ($string, 0, 20);
 }
 
+// Variation of the function above that doesn't strip blank spaces
+// Usefull for axis values
+function clean_flash_string_legend ($string) {
+	$string = html_entity_decode ($string, ENT_QUOTES, "UTF-8");
+	$string = str_replace('&', '', $string);
+	$string = str_replace ('"', '', $string);
+	return substr ($string, 0, 20);
+}
+
+
 // Returns a Pandora FMS agent event chart
 function fs_agent_event_chart ($data, $width, $height, $step = 1) {
 	global $config;

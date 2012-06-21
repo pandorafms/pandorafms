@@ -1,3 +1,7 @@
+2012-06-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_servers.php: Added inventory server statistics.
+
 2012-06-21  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_agents.php

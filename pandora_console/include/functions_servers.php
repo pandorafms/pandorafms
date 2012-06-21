@@ -252,12 +252,41 @@ function servers_get_info ($id_server = -1) {
 			$server["lag"] = 0;
 
 			// Export server
-			if ($server["server_type"] == 7) {
+			if ($server["server_type"] == 8) {
+
+				// Get modules exported by this server
+				$server["modules"] = db_get_sql ("SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente AND tagente.server_name = '" . $server["name"] . "'");
+
+				// Get total exported modules
+				$server["modules_total"] = db_get_sql ("SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente");
+
+				// Get the module lag
+				$server["module_lag"] = db_get_sql ("SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) AS module_lag
+					FROM tagente, tagent_module_inventory
+					WHERE utimestamp > 0
+					AND tagent_module_inventory.id_agente = tagente.id_agente
+					AND tagent_module_inventory.interval > 0
+					AND tagente.server_name = '" . $server["name"] . "'
+					AND (UNIX_TIMESTAMP() - utimestamp) < (tagent_module_inventory.interval * 10)
+					AND (UNIX_TIMESTAMP() - utimestamp) > tagent_module_inventory.interval");
+
+				// Get the lag
+				$server["lag"] = db_get_sql ("SELECT AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory.interval)
+					FROM tagente, tagent_module_inventory
+					WHERE utimestamp > 0
+					AND tagent_module_inventory.id_agente = tagente.id_agente
+					AND tagent_module_inventory.interval > 0
+					AND tagente.server_name = '" . $server["name"] . "'
+					AND (UNIX_TIMESTAMP() - utimestamp) < (tagent_module_inventory.interval * 10)
+					AND (UNIX_TIMESTAMP() - utimestamp) > tagent_module_inventory.interval");
+
+			// Export server
+			} else if ($server["server_type"] == 7) {
 				
-				# Get modules exported by this server
+				// Get modules exported by this server
 				$server["modules"] = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo, tserver_export WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export = tserver_export.id AND tserver_export.id_export_server = " . $server["id_server"]);
 
-				# Get total exported modules
+				// Get total exported modules
 				$server["modules_total"] = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export != 0");
 		
 				$server["lag"] = 0;

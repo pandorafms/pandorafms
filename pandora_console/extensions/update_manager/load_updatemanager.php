@@ -73,10 +73,14 @@ function get_user_key ($settings) {
                         ' '.$config['dbuser'].' '.$config['dbpass'].
                         ' '.$config['dbname'], true); */
 	
-		$user_key = exec (escapeshellcmd ($settings->keygen_path.
+		$command_line = escapeshellcmd($settings->keygen_path.
 			' '.$settings->customer_key.' '.$config['dbhost'].
 			' '.$config['dbuser'].' '.$config['dbpass'].
-			' '.$config['dbname'].' '.$config["dbtype"]));
+			' '.$config['dbname'].' '.$config['dbtype']);
+		
+		//html_debug_print($command_line, true);
+		
+		$user_key = exec ($command_line);
 		
 		return $user_key;
 	}

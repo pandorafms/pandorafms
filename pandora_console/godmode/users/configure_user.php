@@ -78,13 +78,12 @@ if ($config['user_can_update_info']) {
 $new_user = (bool) get_parameter ('new_user');
 $create_user = (bool) get_parameter ('create_user');
 $add_profile = (bool) get_parameter ('add_profile');
-$add_profile_policy = (bool) get_parameter ('add_profile_policy');
 $delete_profile = (bool) get_parameter ('delete_profile');
 $update_user = (bool) get_parameter ('update_user');
 $status = get_parameter ('status', -1);
 
 // Reset status var if current action is not update_user
-if ($new_user || $create_user || $add_profile || $add_profile_policy || $delete_profile || $update_user){
+if ($new_user || $create_user || $add_profile || $delete_profile || $update_user){
 	$status = -1;
 }
 
@@ -275,32 +274,6 @@ if ($add_profile) {
 	ui_print_result_message ($return,
 		__('Profile added successfully'),
 		__('Profile cannot be added'));
-}
-
-if ($add_profile_policy && $enterprise_include) {
-	$id2 = (string) get_parameter ('id');
-	$profile2 = (int) get_parameter ('assign_profile');
-	$id_policy = (int) get_parameter ('policy');
-
-	if($id_policy != 0) {
-		$return = policies_create_user_policy_profile($id2, $profile2, $id_policy);
-	}
-	else {
-		$return = false;
-	}
-	
-	if($return === false) {
-		db_pandora_audit("User management",
-			"Added extra policy profile for user ".io_safe_input($id2), false, false, ' Policy: ' . $id_policy);
-	}
-	else {
-		db_pandora_audit("User management",
-			"Problem adding extra policy profile for user ".io_safe_input($id2), false, false, ' Policy: ' . $id_policy);
-	}
-		
-	ui_print_result_message ($return,
-		__('Extra policy profile added successfully'),
-		__('Extra policy profile cannot be added'));
 }
 
 if ($delete_profile) {
@@ -511,9 +484,4 @@ html_print_table ($table);
 
 unset ($table);
 
-/*
-if ($enterprise_include) {
-	policies_profile_form($id);
-}
-*/
 ?>

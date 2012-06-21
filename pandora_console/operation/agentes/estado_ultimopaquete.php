@@ -174,15 +174,8 @@ switch ($sortField) {
 		break;
 }
 
-// Get the enterprise acl sql condition
-$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agente));
-
-if($extra_sql == ENTERPRISE_NOT_HOOK) {
-	$extra_sql = '';
-}
-else if ($extra_sql != '') {
-	$extra_sql .= ' OR ';
-}
+// TODO: clean extra_sql
+$extra_sql = '';
 
 
 // Build the order sql
@@ -208,7 +201,7 @@ $offset = (int) get_parameter ('offset');
 $params = implode(',', array ('*'));
 $is_extra_sql = (int)$is_extra;
 
-$where = sprintf("(tagente_modulo.id_policy_module = 0 AND disabled = 0 AND tagente_estado.utimestamp !=0 AND tagente_modulo.id_agente = %s AND delete_pending = 0)", $id_agente);
+$where = sprintf("(disabled = 0 AND tagente_estado.utimestamp !=0 AND tagente_modulo.id_agente = %s AND delete_pending = 0)", $id_agente);
 
 $basic_where = " tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.utimestamp !=0 AND ";
 

@@ -1,5 +1,19 @@
 2012-06-21  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_agents.php
+	operation/search_modules.php
+	operation/agentes/status_monitor.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/estado_monitores.php
+	operation/search_agents.php
+	operation/search_alerts.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/modificar_agente.php
+	godmode/users/configure_user.php: Cleaned some old
+	code of policy ACL to fix and prevent important bugs
+
+2012-06-21  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/users/webchat.php: Changed a string to 
 	be translated
 

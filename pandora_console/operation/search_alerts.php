@@ -21,12 +21,9 @@ enterprise_include_once('include/functions_policies.php');
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 
-$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
-if ($extra_sql === ENTERPRISE_NOT_HOOK) {
-	$extra_sql = '';
-}else if ($extra_sql != '') {
-	$extra_sql .= ' OR ';
-}
+
+// TODO: CLEAN extra_sql
+$extra_sql = '';
 
 $searchAlerts = check_acl($config['id_user'], 0, "AR");
 

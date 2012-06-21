@@ -251,14 +251,8 @@ if ($ag_group > 0) {
 	}
 }
 else {
-	$sql_extra = enterprise_hook('policies_get_agents_sql_condition');
-
-	if($sql_extra === ENTERPRISE_NOT_HOOK) {
-		$sql_extra = '';
-	}
-	else if($sql_extra != '') {
-		$sql_extra = sprintf('OR %s', $sql_extra);
-	}
+	// CLEAN: sql_extra
+	$sql_extra = '';
 		
     // Admin user get ANY group, even if they doesnt exist
     if (check_acl ($config['id_user'], 0, "PM")) {		

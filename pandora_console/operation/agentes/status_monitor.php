@@ -33,12 +33,8 @@ require_once($config['homedir'] . '/include/functions_modules.php');
 require_once($config['homedir'] . '/include/functions_users.php');
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
-$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
-if ($extra_sql === ENTERPRISE_NOT_HOOK) {
-	$extra_sql = '';
-}else if ($extra_sql != '') {
-	$extra_sql .= ' OR ';
-}
+// TODO: CLEAN extra_sql
+$extra_sql = '';
 
 ui_print_page_header ("Monitor detail", "images/brick.png", false);
 

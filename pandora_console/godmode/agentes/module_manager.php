@@ -287,14 +287,8 @@ switch ($sortField) {
 		break;
 }
 
-// Get the enterprise acl sql condition
-$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agente));
-
-if($extra_sql == ENTERPRISE_NOT_HOOK) {
-	$extra_sql = '';
-}else if ($extra_sql != '') {
-	$extra_sql .= ' OR ';
-}
+// TODO: CLEAN extra_sql
+$extra_sql = '';
 	
 // Build the order sql
 if(!empty($order)) {
@@ -321,7 +315,7 @@ $params = implode(',', array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion
 		'disabled','max_warning', 'min_warning', 'str_warning',
 		'max_critical', 'min_critical', 'str_critical'));
 		
-$where = sprintf("id_policy_module = 0 AND delete_pending = 0 AND id_agente = %s", $id_agente);		
+$where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);		
 switch ($config["dbtype"]) {
 	case "postgresql":
 		$limit_sql = " LIMIT $limit OFFSET $offset ";

@@ -90,7 +90,7 @@ sub generate_xml_files ($$$$$$) {
 	# Read agent configuration
 	my $interval = get_conf_token ($conf, 'agent_interval', '300');
 	my $xml_version = get_conf_token ($conf, 'xml_version', '1.0');
-	my $encoding = get_conf_token ($conf, 'encoding', 'ISO-8859-1');
+	my $encoding = get_conf_token ($conf, 'encoding', 'UTF-8');
 	my $os_name = get_conf_token ($conf, 'os_name', 'Linux');
 	my $os_version = get_conf_token ($conf, 'os_version', '2.6');
 	my $temporal = get_conf_token ($conf, 'temporal', '/tmp');

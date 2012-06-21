@@ -1,3 +1,12 @@
+2012-06-21 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Restored to the previous version.
+	* src/pandroid_event_viewer/pandorafms/Core.java: Added a line which checks if the connection is secure.
+	* src/pandroid_event_viewer/pandorafms/Options.java: Made some changes in certificate checking.
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java: Now, if there are any problem parsing data received from server.
+	* res/layout/list_view_layout.xml: Restored to the previous version.
+	* res/layout/item_list_event_layout.xml: Restored to the previous version.
+	* res/values/strings.xml: Added new entries.
+
 2012-06-20 Santiago Munín <burning1@gmail.com>
 	
 	* src/pandroid_event_viewer/pandorafms/API.java: New class, it will provide all API calls.

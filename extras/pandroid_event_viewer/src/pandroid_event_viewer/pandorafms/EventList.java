@@ -31,7 +31,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,12 +38,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -57,7 +55,6 @@ public class EventList extends ListActivity {
 	private ListView lv;
 	private MyAdapter la;
 	private PandroidEventviewerActivity object;
-	private boolean moreEvents;
 
 	private BroadcastReceiver onBroadcast;
 
@@ -71,40 +68,13 @@ public class EventList extends ListActivity {
 
 		setContentView(R.layout.list_view_layout);
 
-		//this.toggleLoadingLayout();
-		moreEvents = true;
+		this.toggleLoadingLayout();
+
 		lv = (ListView) findViewById(android.R.id.list);
 
 		la = new MyAdapter(getBaseContext(), object);
-		this.object.adapter = la;
+
 		lv.setAdapter(la);
-		lv.setOnScrollListener(new OnScrollListener() {
-			private int priorFirst = -1;
-
-			@Override
-			public void onScroll(final AbsListView view, final int first,
-					final int visible, final int total) {
-				// detect if last item is visible
-				if (visible < total && (first + visible == total)) {
-					// see if we have more results
-					if (first != priorFirst) {
-						priorFirst = first;
-						Log.d("EventList", "Loading smthing");
-						if (((long) object.eventList.size()) < object.count_events) {
-							loadMoreEvents();
-							// moreEvents = true;
-						} /*
-						 * else { Log.d("eventList", "moreEvents FALSE");
-						 * moreEvents = false; }
-						 */
-					}
-				}
-			}
-
-			@Override
-			public void onScrollStateChanged(AbsListView view, int scrollState) {
-			}
-		});
 
 		onBroadcast = new BroadcastReceiver() {
 
@@ -112,26 +82,37 @@ public class EventList extends ListActivity {
 			public void onReceive(Context context, Intent intent) {
 				int load_more = intent.getIntExtra("load_more", 0);
 
+				Button button = (Button) findViewById(R.id.button_load_more_events);
+
+				if (object.eventList.size() == 0) {
+					button.setVisibility(Button.GONE);
+				} else if (((long) object.eventList.size()) >= object.count_events) {
+					button.setVisibility(Button.GONE);
+				} else {
+					button.setVisibility(Button.VISIBLE);
+				}
+
 				if (load_more == 1) {
-				/*	LinearLayout layout = (LinearLayout) findViewById(R.id.loading_layout);
-					layout.setVisibility(LinearLayout.GONE);*/
+					LinearLayout layout = (LinearLayout) findViewById(R.id.loading_layout);
+					layout.setVisibility(LinearLayout.GONE);
 					la.showLoadingEvents = false;
 				} else {
-					/*LinearLayout layout = (LinearLayout) findViewById(R.id.loading_layout);
-					layout.setVisibility(LinearLayout.GONE);*/
+					LinearLayout layout = (LinearLayout) findViewById(R.id.loading_layout);
+					layout.setVisibility(LinearLayout.GONE);
 
 					if (((int) object.count_events) == 0) {
-						LinearLayout layout = (LinearLayout) findViewById(R.id.empty_list_layout);
+						layout = (LinearLayout) findViewById(R.id.empty_list_layout);
 						layout.setVisibility(LinearLayout.VISIBLE);
 					}
 				}
+
 				la.notifyDataSetChanged();
 			}
 		};
 
 		registerReceiver(onBroadcast, new IntentFilter("eventlist.java"));
 
-		//this.toggleLoadingLayout();
+		this.toggleLoadingLayout();
 
 		if (this.object.show_popup_info) {
 			this.object.show_popup_info = false;
@@ -145,7 +126,7 @@ public class EventList extends ListActivity {
 
 		if (this.object.showOptionsFirstTime) {
 			this.object.loadInProgress = true;
-		//	toggleLoadingLayout();
+			toggleLoadingLayout();
 
 			this.object.showOptionsFirstTime = false;
 			this.object.executeBackgroundGetEvents();
@@ -157,7 +138,7 @@ public class EventList extends ListActivity {
 
 		registerReceiver(onBroadcast, new IntentFilter("eventlist.java"));
 
-		//this.toggleLoadingLayout();
+		this.toggleLoadingLayout();
 
 		if (!this.object.loadInProgress) {
 			if (((int) object.count_events) == 0) {
@@ -189,7 +170,7 @@ public class EventList extends ListActivity {
 			this.object.loadInProgress = true;
 			this.object.getNewListEvents = true;
 			this.object.eventList = new ArrayList<EventListItem>();
-		//	this.toggleLoadingLayout();
+			this.toggleLoadingLayout();
 			this.object.executeBackgroundGetEvents();
 			break;
 		case R.id.about_button_menu_options:
@@ -204,7 +185,7 @@ public class EventList extends ListActivity {
 	/**
 	 * Shows loading information.
 	 */
-	/*private void toggleLoadingLayout() {
+	private void toggleLoadingLayout() {
 		LinearLayout layout;
 
 		layout = (LinearLayout) findViewById(R.id.empty_list_layout);
@@ -217,7 +198,7 @@ public class EventList extends ListActivity {
 		} else {
 			layout.setVisibility(LinearLayout.GONE);
 		}
-	}*/
+	}
 
 	private String getImageGroupUrl(String group_icon) {
 		SharedPreferences preferences = getApplicationContext()
@@ -263,12 +244,7 @@ public class EventList extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 
-		EventListItem item;
-		try {
-			item = this.object.eventList.get(position);
-		} catch (IndexOutOfBoundsException e) {
-			return;
-		}
+		EventListItem item = this.object.eventList.get(position);
 
 		item.opened = !item.opened;
 		this.object.eventList.set(position, item);
@@ -282,7 +258,8 @@ public class EventList extends ListActivity {
 	 */
 	private void loadMoreEvents() {
 		la.showLoadingEvents = true;
-		object.offset += object.pagination;
+		la.notifyDataSetChanged();
+
 		object.executeBackgroundGetEvents();
 	}
 
@@ -327,83 +304,49 @@ public class EventList extends ListActivity {
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			view = inflater.inflate(R.layout.item_list_event_layout, null);
 
-			LinearLayout layout = (LinearLayout) view
-					.findViewById(R.id.loading_more_events);
-			// layout.setVisibility(LinearLayout.GONE);*/
 			// If the end of the list.
 			if (this.object.eventList.size() == position) {
-				if (object.newEvents) {
-					Log.d("loading", "true");
-					layout.setVisibility(LinearLayout.VISIBLE);
-					if (convertView != null) {
-						convertView.setClickable(false);
-					}
-				} else {
-					Log.d("loading", "false");
-					layout.setVisibility(LinearLayout.GONE);
-					if (convertView != null) {
-						convertView.setClickable(false);
-					}
-				}
-				this.notifyDataSetChanged();
-				// if (showLoadingEvents) {
-				/*
-				 * layout = (LinearLayout) view
-				 * .findViewById(R.id.loading_more_events);
-				 * layout.setVisibility(LinearLayout.VISIBLE);
-				 */
-				// }// else {
-				/*
-				 * LinearLayout layout = (LinearLayout) view
-				 * .findViewById(R.id.loading_more_events);
-				 * layout.setVisibility(LinearLayout.GONE);
-				 */
-				// }
 				// Show button to get more events
 				if ((!object.loadInProgress) && (object.count_events != 0)) {
+					if (showLoadingEvents) {
+						LinearLayout layout = (LinearLayout) view
+								.findViewById(R.id.loading_more_events);
+						layout.setVisibility(LinearLayout.VISIBLE);
 
+						RelativeLayout layout2 = (RelativeLayout) view
+								.findViewById(R.id.content_event_item);
+						layout2.setVisibility(RelativeLayout.GONE);
+
+						Button button = (Button) view
+								.findViewById(R.id.button_load_more_events);
+						button.setVisibility(Button.GONE);
+					} else {
+						Button button = (Button) view
+								.findViewById(R.id.button_load_more_events);
+
+						if (object.eventList.size() == 0) {
+							button.setVisibility(Button.GONE);
+						} else if (((long) object.eventList.size()) >= object.count_events) {
+							button.setVisibility(Button.GONE);
+						} else {
+							button.setVisibility(Button.VISIBLE);
+						}
+
+						button.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								object.offset += object.pagination;
+								loadMoreEvents();
+							}
+						});
+
+						RelativeLayout content_event_item = (RelativeLayout) view
+								.findViewById(R.id.content_event_item);
+						content_event_item.setVisibility(RelativeLayout.GONE);
+					}
 				}
-				/*
-				 * Log.d("error", "crash2"); LinearLayout layout =
-				 * (LinearLayout) view .findViewById(R.id.loading_more_events);
-				 * layout.setVisibility(LinearLayout.VISIBLE);
-				 * 
-				 * RelativeLayout layout2 = (RelativeLayout) view
-				 * .findViewById(R.id.content_event_item);
-				 * layout2.setVisibility(RelativeLayout.GONE);
-				 */
-
-				/*
-				 * Button button = (Button) view
-				 * .findViewById(R.id.button_load_more_events);
-				 * button.setVisibility(Button.GONE);
-				 */
-				// } else {
-				/*
-				 * Log.d("error", "crash1"); LinearLayout layout =
-				 * (LinearLayout) view .findViewById(R.id.loading_more_events);
-				 * layout.setVisibility(LinearLayout.GONE);
-				 */
-
-				/*
-				 * RelativeLayout content_event_item = (RelativeLayout) view
-				 * .findViewById(R.id.content_event_item);
-				 * content_event_item.setVisibility(RelativeLayout.GONE);
-				 */
-				// }
-				// }
 			} else {
-				/*
-				 * LinearLayout layout = (LinearLayout) view
-				 * .findViewById(R.id.loading_more_events);
-				 * layout.setVisibility(LinearLayout.GONE);
-				 */
-				final EventListItem item;
-				try {
-					item = this.object.eventList.get(position);
-				} catch (IndexOutOfBoundsException e) {
-					return view;
-				}
+				final EventListItem item = this.object.eventList.get(position);
 
 				switch (item.criticity) {
 
@@ -577,6 +520,7 @@ public class EventList extends ListActivity {
 
 									@Override
 									public void onClick(View v) {
+										// TODO
 										Intent intent = new Intent(
 												getBaseContext(),
 												CreateIncidentActivity.class);
@@ -600,7 +544,7 @@ public class EventList extends ListActivity {
 					itemLinearLayout.addView(viewEventExtended);
 				}
 			}
-			this.notifyDataSetChanged();
+
 			return view;
 		}
 
@@ -675,12 +619,7 @@ public class EventList extends ListActivity {
 
 			@Override
 			public void onClick(View arg0) {
-				EventListItem item;
-				try {
-					item = this.object.eventList.get(mPosition);
-				} catch (IndexOutOfBoundsException e) {
-					return;
-				}
+				EventListItem item = this.object.eventList.get(mPosition);
 				item.opened = !item.opened;
 				this.object.eventList.set(mPosition, item);
 				la.notifyDataSetChanged();

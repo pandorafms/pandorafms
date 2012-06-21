@@ -45,7 +45,7 @@ TRANSFER_MODE=tentacle
 SERVER_PWD=pandora123
 if [ -z "`echo $LANG | grep '\.'`" ]
 then
-	ENCODING="iso-8859-1"
+	ENCODING="UTF-8"
 else
 	ENCODING=`echo $LANG | cut -f 2 -d "."`
 fi

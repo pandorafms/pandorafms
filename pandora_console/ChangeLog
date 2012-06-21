@@ -1,3 +1,8 @@
+2012-06-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* extensions/update_manager.php: Ignore blank lines in installation SQL
+	  file.
+
 2012-06-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php

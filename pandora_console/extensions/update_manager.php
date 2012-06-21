@@ -111,6 +111,8 @@ function pandora_update_manager_install () {
 			break;
 	}
 	foreach ($sentences as $sentence) {
+		if (trim ($sentence) == "")
+			continue;
 		$success = db_process_sql ($sentence);
 		if ($success === false)
 			return;

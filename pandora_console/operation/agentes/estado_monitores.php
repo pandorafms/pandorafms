@@ -152,15 +152,8 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-// Get the enterprise acl sql condition
-$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agente));
-
-if ($extra_sql == ENTERPRISE_NOT_HOOK) {
-	$extra_sql = '';
-}
-else if ($extra_sql != '') {
-	$extra_sql = "(($extra_sql) OR id_policy_module = 0) AND";
-}
+// TODO: Clean extra_sql
+$extra_sql = '';
 
 // Get all module from agent
 switch ($config["dbtype"]) {

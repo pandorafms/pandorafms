@@ -175,15 +175,8 @@ switch ($sortField) {
 		break;
 }
 
-// Get the enterprise acl sql condition
-$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agente));
-
-if($extra_sql == ENTERPRISE_NOT_HOOK) {
-	$extra_sql = '';
-}
-else if ($extra_sql != '') {
-	$extra_sql .= ' OR ';
-}
+// TODO: clean extra_sql
+$extra_sql = '';
 
 
 // Build the order sql

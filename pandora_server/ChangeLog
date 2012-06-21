@@ -1,3 +1,9 @@
+2012-06-21  Sancho Lerena <slerena@artica.es>
+
+        * lib/PandoraFMS/NetworkServer.pm: SNMP values starting with quotes
+        are now stripped of starting/ending double quotes. This will help to
+        get numeric (float data) as strings.
+
 2012-06-12 Dario Rodriguez <dario.rodriguez@artica.es>
 
         * lib/PandoraFMS/Core.pm: Fixed an error with group_statistics agent

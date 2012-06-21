@@ -290,7 +290,13 @@ sub pandora_snmp_get_command ($$$$$$$$$) {
         }
     }
 
-    return $output;
+    # Remove starting & ending double quotes, to easily parse numeric data on String types
+    if ($output =~ /^\"(.*)\"$/){
+        return $1;
+    }
+    else {
+        return $output;
+    }
 }
 
 

@@ -192,18 +192,8 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
 
-	if(is_array($id_agent)) {
-		$extra_sql = enterprise_hook('policies_get_modules_sql_condition', array(reset($id_agent), 't3.', false));
-	}
-	else {
-		$extra_sql = '';
-	}
-	
-	if ($extra_sql === ENTERPRISE_NOT_HOOK) {
-		$extra_sql = '';
-	}else if ($extra_sql != '') {
-		$extra_sql .= ' OR ';
-	}
+	// TODO: Clean extra_sql
+	$extra_sql = '';
 	
 	$sql = sprintf ("SELECT %s
 	FROM talert_template_modules
@@ -479,17 +469,10 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 
 	$extra = false;
 
+	// TODO: CLEAN extra_sql
 	$sql_extra = '';
 	if ($all_groups){
 		$where_nogroup = '1 = 1';
-		
-		$sql_extra = enterprise_hook('policies_get_agents_sql_condition');
-		
-		if($sql_extra != ENTERPRISE_NOT_HOOK) {
-			if (!empty($sql_extra)) {
-				$extra = true;
-			}
-		}
 	}
 
 	if($extra) { 
@@ -1012,17 +995,8 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 	
 	enterprise_include_once ('include/functions_policies.php');
 	
-	if ($extra_access && $all_groups) { //if you have all group, search extra policies.
-		$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
-		if ($extra_sql === ENTERPRISE_NOT_HOOK) {
-			$extra_sql = '';
-		}else if ($extra_sql != '') {
-			$extra_sql .= ' OR ';
-		}
-	}
-	else{
-		$extra_sql = '';
-	}
+	// TODO: CLEAN extra_sql
+	$extra_sql = '';
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -1086,6 +1060,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true, $noACLs = false) {
 	global $config;
 	
+	// TODO: Clean extra_sql
 	$policy_sql = '';
 	
 	if ($id_agent === null) {
@@ -1109,17 +1084,6 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 			$temp[] = $item['id_agente'];
 		}
 		$id_agent = $temp;
-		
-		if (!empty($id_agent)) {
-			$extra_policy_sql = enterprise_hook('policies_get_modules_sql_condition', array($id_agent));
-			if ($policy_sql === ENTERPRISE_NOT_HOOK) {
-				$policy_sql = '';
-			}
-			else if ($policy_sql != '') {
-				//It is AND instead OR, because It is necesary apply the filter.
-				$policy_sql = ' OR ' . $policy_sql; 
-			}
-		}
 	}
 	
 	if (!is_array($id_agent)) {

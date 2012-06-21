@@ -1,3 +1,11 @@
+2012-06-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* util/pandora_xml_stress.conf
+	 util/pandora_xml_stress.pl: Changed XML character codification 
+	of Pandora XML stress to UTF-8.
+	
+	Merged from trunk.
+	
 2012-06-21  Kikuchi Koichiro <koichiro@rworks.jp>
 
 	* pandora_server.redhat.spec: Small fixes: removed duplicated useradd

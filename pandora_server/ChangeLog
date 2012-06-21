@@ -1,3 +1,8 @@
+2012-06-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: merged from 4.0 branch. Added inventory server
+	  statistics.
+
 2012-06-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* ChangeLog: Forgot to update ChangeLog in my last commit.

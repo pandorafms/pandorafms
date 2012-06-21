@@ -84,7 +84,7 @@ $table->data[0][1] = '<h4>' . __('Users Online') . '</h4>' .
 		overflow: auto; padding: 10px;"></div>';
 $table->data[1][0] = html_print_input_text('message_box', '', '',
 	100, 150, true);
-$table->data[1][1] = html_print_button('send', 'send', false, 'send_message()',
+$table->data[1][1] = html_print_button(__('Send message'), 'send', false, 'send_message()',
 	'class="sub next" style="width: 100%"', true);
 
 html_print_table($table);

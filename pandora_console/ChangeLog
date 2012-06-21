@@ -1,3 +1,8 @@
+2012-06-21  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/users/webchat.php: Changed a string to 
+	be translated
+
 2012-06-21 Koichio Kikuchi <koichiro@rworks.jp>
 
 	* pandora_console.redhat.spec: Changed php dependencies so that the

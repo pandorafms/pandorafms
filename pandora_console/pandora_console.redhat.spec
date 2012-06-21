@@ -5,14 +5,10 @@
 %define version     4.0.2
 %define release     1
 
-%define httpd_name      httpd
 # User and Group under which Apache is running
 %define httpd_name  httpd
 %define httpd_user  apache
 %define httpd_group apache
-
-# Evaluate PHP version
-%define phpver_lt_430 %(out=`rpm -q --queryformat='%{VERSION}' php` 2>&1 >/dev/null || out=0 ; out=`echo $out | tr . : | sed s/://g` ; if [ $out -lt 430 ] ; then out=1 ; else out=0; fi ; echo $out)
 
 Summary:            Pandora FMS Console
 Name:               %{name}
@@ -27,12 +23,12 @@ Group:              Productivity/Networking/Web/Utilities
 Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:              /var/www/html
 BuildRoot:          %{_tmppath}/%{name}
-BuildArchitectures: noarch
+BuildArch:          noarch
 AutoReq:            0
-Requires:           httpd >= 2.0.0
-Requires:           php >= 5.2.0
-Requires:           php-gd, php-snmp
-Requires:           php-mysql, php-ldap, php-mbstring, php, php-common
+Requires:           %{httpd_name} >= 2.0.0
+Requires:           mod_php >= 5.2.0
+Requires:           php-gd, php-ldap, php-snmp, php-session, php-gettext
+Requires:           php-mysql, php-mbstring, php-zip, php-zlib, php-curl
 Requires:           xorg-x11-fonts-75dpi, xorg-x11-fonts-misc
 Requires:           graphviz
 Provides:           %{name}-%{version}
@@ -70,7 +66,6 @@ else
    echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."
 fi
 
-
 %preun
 
 # Upgrading
@@ -82,7 +77,6 @@ fi
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
-
 
 %defattr(770,pandora,%{httpd_group})
 /var/spool/pandora/data_in

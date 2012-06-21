@@ -1,3 +1,9 @@
+2012-06-21 Koichio Kikuchi <koichiro@rworks.jp>
+
+	* pandora_console.redhat.spec: Changed php dependencies so that the
+	 RPM package can be installed into RHEL/CentOS 5. Also removed unused
+	 lines.
+
 2012-06-21  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* extensions/pandora_logs.php: show the last 500k bytes

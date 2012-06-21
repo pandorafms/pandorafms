@@ -1,4 +1,8 @@
 2012-06-21 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Core.java: Added a new method which checks if a website is online.
+	* src/pandroid_event_viewer/pandorafms/Options.java: Fixed a bug. The app didn't check if the url were online before checking the certificate.
+
+2012-06-21 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Restored to the previous version.
 	* src/pandroid_event_viewer/pandorafms/Core.java: Added a line which checks if the connection is secure.
 	* src/pandroid_event_viewer/pandorafms/Options.java: Made some changes in certificate checking.

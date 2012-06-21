@@ -1,3 +1,22 @@
+2012-06-21 Juan Manuel Ramon Vigo <juanmanuel.ramon@artica.es>
+
+	* unix/AIX/pandora_agent.conf
+	 unix/Linux/pandora_agent.conf
+	 unix/HP-UX/pandora_agent.conf
+	 shellscript/mac_osx/pandora_agent.conf
+	 unix/NT4/pandora_agent.conf
+	 unix/SunOS/pandora_agent.conf
+	 unix/FreeBSD/pandora_agent.conf
+	 shellscript/linux/pandora_agent.conf
+	 shellscript/openWRT/pandora_agent.conf: Changed enconding token to 
+	 UTF-8 in all Unix agents configuration files.
+       
+	* unix/pandora_agent
+	 shellscript/linux/pandora_agent
+	 shellscript/mac_osx/pandora_agent
+	 shellscript/openWRT/pandora_agent: Changed default enconding to 
+	 UTF-8 in Unix agents.
+
 2012-05-08 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* unix/Linux/pandora_agent.conf: Fixed an example module name.

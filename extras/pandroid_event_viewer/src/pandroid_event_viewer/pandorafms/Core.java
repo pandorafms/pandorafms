@@ -321,7 +321,7 @@ public class Core {
 		parameters.add(new BasicNameValuePair("user", user));
 		parameters.add(new BasicNameValuePair("pass", password));
 		parameters.addAll(additionalParameters);
-		if (url.contains("https")) {
+		if (url.toLowerCase().contains("https")) {
 			// Secure connection
 			return Core.httpsGet(url, parameters);
 		}
@@ -363,7 +363,7 @@ public class Core {
 
 		try {
 			myFileUrl = new URL(fileUrl);
-			if (fileUrl.contains("https")) {
+			if (fileUrl.toLowerCase().contains("https")) {
 				HttpsURLConnection con = (HttpsURLConnection) new URL(fileUrl)
 						.openConnection();
 				con.setHostnameVerifier(new HostnameVerifier() {

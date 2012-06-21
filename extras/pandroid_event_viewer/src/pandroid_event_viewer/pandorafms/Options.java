@@ -21,6 +21,7 @@ import java.net.URL;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -56,13 +57,15 @@ public class Options extends Activity {
 	private String password;
 	private int refreshTimeKey;
 	private TextView connectionStatus;
+	private ProgressDialog retrievingCertificate;
+	private Context context;
 
 	private PandroidEventviewerActivity object;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		this.context = this;
 		Intent i = getIntent();
 
 		setContentView(R.layout.options);
@@ -168,34 +171,10 @@ public class Options extends Activity {
 		String url = ((EditText) findViewById(R.id.url)).getText().toString();
 		if (url.contains("https")) {
 			try {
-				if (!Core.isValidCertificate(new URL(url))) {
-					// Displays confirmation dialog
-					DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							switch (which) {
-							case DialogInterface.BUTTON_NEGATIVE:
-								Toast.makeText(getApplicationContext(),
-										R.string.options_not_saved,
-										Toast.LENGTH_SHORT).show();
-								return;
-							case DialogInterface.BUTTON_POSITIVE:
-								writeChanges();
-								return;
-							}
-						}
-					};
-
-					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setMessage(
-							getString(R.string.certificate_not_valid))
-							.setPositiveButton(getString(android.R.string.yes),
-									dialogClickListener)
-							.setNegativeButton(getString(android.R.string.no),
-									dialogClickListener).show();
-				} else {
-					writeChanges();
-				}
+				retrievingCertificate = ProgressDialog.show(this, "",
+						"Loading...", true);
+				new CheckCertificateAsyncTask()
+						.execute(new URL[] { new URL(url) });
 			} catch (MalformedURLException e) {
 				Toast.makeText(getApplicationContext(), R.string.url_not_valid,
 						Toast.LENGTH_SHORT).show();
@@ -330,6 +309,47 @@ public class Options extends Activity {
 			} else {
 				connectionStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0,
 						0, R.drawable.cross);
+			}
+		}
+	}
+
+	private class CheckCertificateAsyncTask extends
+			AsyncTask<URL, Void, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(URL... arg0) {
+			return Core.isValidCertificate(arg0[0]);
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			retrievingCertificate.dismiss();
+			if (!result) {
+				DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						switch (which) {
+						case DialogInterface.BUTTON_NEGATIVE:
+							Toast.makeText(getApplicationContext(),
+									R.string.options_not_saved,
+									Toast.LENGTH_SHORT).show();
+							return;
+						case DialogInterface.BUTTON_POSITIVE:
+							writeChanges();
+							return;
+						}
+					}
+				};
+
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						context);
+				builder.setMessage(getString(R.string.certificate_not_valid))
+						.setPositiveButton(getString(android.R.string.yes),
+								dialogClickListener)
+						.setNegativeButton(getString(android.R.string.no),
+								dialogClickListener).show();
+			} else {
+				writeChanges();
 			}
 		}
 	}

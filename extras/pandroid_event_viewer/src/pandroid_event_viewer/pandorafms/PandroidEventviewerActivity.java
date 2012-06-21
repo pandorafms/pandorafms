@@ -24,7 +24,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TabActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -38,6 +42,7 @@ import android.widget.Toast;
 public class PandroidEventviewerActivity extends TabActivity implements
 		Serializable {
 	private static String TAG = "PandroidEventviewerActivity";
+	private static final int PROBLEM_NOTIFICATION_ID = 1;
 	private static final long serialVersionUID = 1L;
 
 	// Data aplication
@@ -346,61 +351,65 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				event.event = getApplication().getString(
 						R.string.unknown_event_str);
 			} else {
-				if (items[0].length() == 0) {
-					event.id_event = 0;
-				} else {
-					event.id_event = Integer.parseInt(items[0]);
-				}
-				if (items[1].length() == 0) {
-					event.id_agent = 0;
-				} else {
-					event.id_agent = Integer.parseInt(items[1]);
-				}
-				event.id_user = items[2];
-				if (items[3].length() == 0) {
-					event.id_group = 0;
-				} else {
-					event.id_group = Integer.parseInt(items[3]);
-				}
-				if (items[4].length() == 0) {
-					event.status = 0;
-				} else {
-					event.status = Integer.parseInt(items[4]);
-				}
-				event.timestamp = items[5];
-				event.event = items[6];
-				if (items[7].length() == 0) {
-					event.utimestamp = 0;
-				} else {
-					event.utimestamp = Integer.parseInt(items[7]);
-				}
-				event.event_type = items[8];
-				if (items[9].length() == 0) {
-					event.id_agentmodule = 0;
-				} else {
-					event.id_agentmodule = Integer.parseInt(items[9]);
-				}
-				if (items[10].length() == 0) {
-					event.id_alert_am = 0;
-				} else {
-					event.id_alert_am = Integer.parseInt(items[10]);
-				}
-				if (items[11].length() == 0) {
-					event.criticity = 0;
-				} else {
-					event.criticity = Integer.parseInt(items[11]);
-				}
-				event.user_comment = items[12];
-				event.tags = items[13];
-				event.agent_name = items[16];
-				event.group_name = items[17];
-				event.group_icon = items[18];
-				event.description_event = items[19];
-				event.description_image = items[20];
-				event.criticity_name = items[21];
-				event.criticity_image = items[22];
+				try {
+					if (items[0].length() == 0) {
+						event.id_event = 0;
+					} else {
+						event.id_event = Integer.parseInt(items[0]);
+					}
+					if (items[1].length() == 0) {
+						event.id_agent = 0;
+					} else {
+						event.id_agent = Integer.parseInt(items[1]);
+					}
+					event.id_user = items[2];
+					if (items[3].length() == 0) {
+						event.id_group = 0;
+					} else {
+						event.id_group = Integer.parseInt(items[3]);
+					}
+					if (items[4].length() == 0) {
+						event.status = 0;
+					} else {
+						event.status = Integer.parseInt(items[4]);
+					}
+					event.timestamp = items[5];
+					event.event = items[6];
+					if (items[7].length() == 0) {
+						event.utimestamp = 0;
+					} else {
+						event.utimestamp = Integer.parseInt(items[7]);
+					}
+					event.event_type = items[8];
+					if (items[9].length() == 0) {
+						event.id_agentmodule = 0;
+					} else {
+						event.id_agentmodule = Integer.parseInt(items[9]);
+					}
+					if (items[10].length() == 0) {
+						event.id_alert_am = 0;
+					} else {
+						event.id_alert_am = Integer.parseInt(items[10]);
+					}
+					if (items[11].length() == 0) {
+						event.criticity = 0;
+					} else {
+						event.criticity = Integer.parseInt(items[11]);
+					}
+					event.user_comment = items[12];
+					event.tags = items[13];
+					event.agent_name = items[16];
+					event.group_name = items[17];
+					event.group_icon = items[18];
+					event.description_event = items[19];
+					event.description_image = items[20];
+					event.criticity_name = items[21];
+					event.criticity_image = items[22];
 
-				event.opened = false;
+					event.opened = false;
+				} catch (NumberFormatException nfe) {
+					launchProblemParsingNotification();
+				}
 			}
 			this.eventList.add(event);
 		}
@@ -410,7 +419,11 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	 * Executes the async task of getting events.
 	 */
 	public void executeBackgroundGetEvents() {
-		new GetEventsAsyncTask(adapter).execute();
+		if (adapter != null) {
+			new GetEventsAsyncTask(adapter).execute();
+		} else {
+			new GetEventsAsyncTask(null).execute();
+		}
 	}
 
 	/**
@@ -448,9 +461,34 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				i.putExtra("load_more", 1);
 			}
 
-			adapter.notifyDataSetChanged();
+			// adapter.notifyDataSetChanged();
 			getApplicationContext().sendBroadcast(i);
 
 		}
+	}
+
+	/**
+	 * Notifies the user when there is a problem retrieving server's data.
+	 */
+	private void launchProblemParsingNotification() {
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+		int icon = R.drawable.pandorafms_logo;
+		String tickerText = getString(R.string.notification_error_parsing);
+		String title = getString(R.string.pandroid_event_viewer_str);
+
+		long when = System.currentTimeMillis();
+
+		Notification notification = new Notification(icon, tickerText, when);
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+		Context context = getApplicationContext();
+		Intent notificationIntent = new Intent(this, Options.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+				notificationIntent, 0);
+
+		notification.setLatestEventInfo(context, title, tickerText,
+				contentIntent);
+		mNotificationManager.notify(PROBLEM_NOTIFICATION_ID, notification);
 	}
 }

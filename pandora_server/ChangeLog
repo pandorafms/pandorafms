@@ -1,3 +1,13 @@
+2012-06-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* ChangeLog: Forgot to update ChangeLog in my last commit.
+
+2012-06-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* util/pandora_xml_stress.conf
+	 util/pandora_xml_stress.pl: Changed XML character codification 
+	of Pandora XML stress to UTF-8.
+
 2012-06-21  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm: SNMP values starting with quotes

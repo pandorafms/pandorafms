@@ -1,3 +1,12 @@
+2012-06-21 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager/load_updatemanager.php: fixed the lost
+	parameter for keygen, the dbtype.
+	
+	* extensions/update_manager/lib/libupdate_manager_client.php: fixed
+	when update enterprise packages maybe sometimes try to update again
+	and again and again....like spoon killer.
+
 2012-06-21  Sancho Lerena <slerena@artica.es>
 
 	* extensions/update_manager/sql/update_manager.oracle.sql,

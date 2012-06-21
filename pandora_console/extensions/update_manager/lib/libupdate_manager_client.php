@@ -115,7 +115,7 @@ function um_client_check_latest_update ($settings, $user_key) {
 	if ($result == false) {
 		return $result;
 	}
-
+	
 	$value = $result->value ();
 	
 	if ($value->kindOf () == 'scalar') {
@@ -133,14 +133,14 @@ function um_client_get_package ($settings, $user_key) {
 		new xmlrpcval ($settings->current_update, 'int'));
 	
 	$result = um_xml_rpc_client_call ($settings->update_server_host,
-			$settings->update_server_path,
-			$settings->update_server_port,
-			$settings->proxy,
-			$settings->proxy_port,
-			$settings->proxy_user,
-			$settings->proxy_pass,
-			'get_next_package', $params);
-		
+		$settings->update_server_path,
+		$settings->update_server_port,
+		$settings->proxy,
+		$settings->proxy_port,
+		$settings->proxy_user,
+		$settings->proxy_pass,
+		'get_next_package', $params);
+	
 	if ($result === false)
 		return false;
 	
@@ -501,7 +501,7 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 		return false;
 	}
 	
-	if(!$update_offline) {
+	if (!$update_offline) {
 		um_client_db_connect ($settings);
 		um_component_db_connect ();
 		foreach ($package->updates as $update) {
@@ -641,7 +641,8 @@ function um_client_upgrade_to_latest ($user_key, $force = true) {
 	do {
 		$package = um_client_get_package ($settings, $user_key);
 		
-		if ($package === false || $package === true) {
+		if ($package === false || $package === true ||
+			$package === 0 || $package === 1) {
 			break;
 		}
 		
@@ -651,7 +652,6 @@ function um_client_upgrade_to_latest ($user_key, $force = true) {
 			break;
 		
 		$settings->current_update = $package->id;
-		
 	}
 	while (1);
 	

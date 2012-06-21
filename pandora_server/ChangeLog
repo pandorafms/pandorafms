@@ -1,5 +1,16 @@
 2012-06-21  Ramon Novoa  <rnovoa@artica.es>
 
+	* DEBIAN/control,
+	  DEBIAN/make_deb_package.sh,
+	  conf/pandora_server.conf,
+	  pandora_server.spec,
+	  lib/PandoraFMS/Config.pm,
+	  pandora_server.redhat.spec,
+	  util/pandora_db.pl,
+	  util/pandora_manage.pl: Updated version strings.
+
+2012-06-21  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: merged from 4.0 branch. Added inventory server
 	  statistics.
 

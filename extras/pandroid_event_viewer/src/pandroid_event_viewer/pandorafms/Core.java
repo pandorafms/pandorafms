@@ -386,7 +386,7 @@ public class Core {
 				return img;
 			}
 		} catch (IOException e) {
-			Log.e(TAG, "Downloading image "+fileUrl+": error");
+			Log.e(TAG, "Downloading image " + fileUrl + ": error");
 		}
 		return null;
 	}
@@ -437,18 +437,38 @@ public class Core {
 	 * Finds out if the given url has a CA signed certificate.
 	 * 
 	 * @param url
-	 * @return
+	 * @return boolean
+	 * @throws IOException
+	 *             If the given url is not accessible.
 	 */
 	public static boolean isValidCertificate(URL url) {
-
 		HttpsURLConnection con;
 		try {
 			con = (HttpsURLConnection) url.openConnection();
+			con.getResponseCode();
 			con.connect();
 			con.disconnect();
 			return true;
 		} catch (IOException e) {
 			return false;
+		}
+	}
+
+	public static boolean isOnline(URL url) {
+		HttpsURLConnection con;
+		try {
+			con = (HttpsURLConnection) url.openConnection();
+			con.setHostnameVerifier(new HostnameVerifier() {
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
+			});
+			con.setSSLSocketFactory(getSocketFactory());
+			if (con.getResponseCode()!=400) {
+				return false;
+			} else return true;
+		} catch (IOException e) {
+			return true;
 		}
 	}
 
@@ -487,7 +507,7 @@ public class Core {
 			String temp;
 			while ((temp = bufferedReader.readLine()) != null) {
 				Log.d("CONTENT", temp);
-				result += temp+"\n";
+				result += temp + "\n";
 			}
 		} catch (IOException e) {
 			return "";

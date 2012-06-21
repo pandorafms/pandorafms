@@ -315,41 +315,48 @@ public class Options extends Activity {
 
 	private class CheckCertificateAsyncTask extends
 			AsyncTask<URL, Void, Boolean> {
-
+		private URL url;
 		@Override
 		protected Boolean doInBackground(URL... arg0) {
+			url = arg0[0];	
 			return Core.isValidCertificate(arg0[0]);
+				
 		}
 
 		@Override
 		protected void onPostExecute(Boolean result) {
 			retrievingCertificate.dismiss();
-			if (!result) {
-				DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						switch (which) {
-						case DialogInterface.BUTTON_NEGATIVE:
-							Toast.makeText(getApplicationContext(),
-									R.string.options_not_saved,
-									Toast.LENGTH_SHORT).show();
-							return;
-						case DialogInterface.BUTTON_POSITIVE:
-							writeChanges();
-							return;
-						}
-					}
-				};
-
-				AlertDialog.Builder builder = new AlertDialog.Builder(
-						context);
-				builder.setMessage(getString(R.string.certificate_not_valid))
-						.setPositiveButton(getString(android.R.string.yes),
-								dialogClickListener)
-						.setNegativeButton(getString(android.R.string.no),
-								dialogClickListener).show();
-			} else {
+			if (!Core.isOnline(url)) {
 				writeChanges();
+			} else {
+				if (!result) {
+					DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							switch (which) {
+							case DialogInterface.BUTTON_NEGATIVE:
+								Toast.makeText(getApplicationContext(),
+										R.string.options_not_saved,
+										Toast.LENGTH_SHORT).show();
+								return;
+							case DialogInterface.BUTTON_POSITIVE:
+								writeChanges();
+								return;
+							}
+						}
+					};
+
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							context);
+					builder.setMessage(
+							getString(R.string.certificate_not_valid))
+							.setPositiveButton(getString(android.R.string.yes),
+									dialogClickListener)
+							.setNegativeButton(getString(android.R.string.no),
+									dialogClickListener).show();
+				} else {
+					writeChanges();
+				}
 			}
 		}
 	}

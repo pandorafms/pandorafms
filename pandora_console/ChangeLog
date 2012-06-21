@@ -1,3 +1,8 @@
+2012-06-21  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* extensions/net_tools.php: Use 'whereis' to get command path
+	to execute, regardless $PATH environment.
+
 2012-06-21  Sergio Martin <sergio.martin@artica.es>
 
 	* include/languages/cs.po

@@ -48,7 +48,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('graph_res','5'),
 ('step_compact','1'),
 ('db_scheme_version','4.0.2'),
-('db_scheme_build','PD120524'),
+('db_scheme_build','PD120621'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),
@@ -176,11 +176,10 @@ UNLOCK TABLES;
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES 
 (1,'Pandora FMS Manual','https://openideas.info/wiki/index.php?title=Pandora'),
-(2,'Pandora FMS','http://pandorafms.org'),
+(2,'Pandora FMS','http://pandorafms.com'),
 (3,'Report a bug','https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852'),
 (4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855'),
-(5,'Module library','http://pandorafms.org/?sec=community&amp;sec2=repository&amp;lng=es'),
-(6,'Commercial support','http://pandorafms.com');
+(5,'Module library','http://pandorafms.com/pandora/repository/en');
 
 UNLOCK TABLES;
 
@@ -270,7 +269,7 @@ INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0
 -- Dumping data for table `tnews`
 --
 
-INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 4.0!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
+INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 4.0.2!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
 (2,'admin','New Pandora FMS Agent Features','Feel free to test our new features for both Windows and Linux agents: Proxy and Broker modes.',NOW());
 
 INSERT INTO tmodule VALUES (1,'Agent&#x20;module');
@@ -426,4 +425,8 @@ INSERT INTO `trecon_script` VALUES
 
 INSERT INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`) VALUES (1,'IPMI&#x20;Plugin','Plugin&#x20;to&#x20;get&#x20;IPMI&#x20;monitors&#x20;from&#x20;a&#x20;IPMI&#x20;Device.',0,'/usr/share/pandora_server/util/plugin/ipmi-plugin.pl','-h','','-u','-p',0),(2,'DNS&#x20;Plugin','This&#x20;plugin&#x20;is&#x20;used&#x20;to&#x20;check&#x20;if&#x20;a&#x20;specific&#x20;domain&#x20;return&#x20;a&#x20;specific&#x20;IP&#x20;address,&#x20;and&#x20;to&#x20;check&#x20;how&#x20;time&#x20;&#40;milisecs&#41;&#x20;takes&#x20;the&#x20;DNS&#x20;to&#x20;answer.&#x20;Use&#x20;IP&#x20;address&#x20;parameter&#x20;to&#x20;specify&#x20;the&#x20;IP&#x20;of&#x20;your&#x20;domain.&#x20;Use&#x20;these&#x20;custom&#x20;parameters&#x20;for&#x20;the&#x20;other&#x20;parameters:&#x0d;&#x0a;&#x0d;&#x0a;-d&#x20;domain&#x20;to&#x20;check&#x20;&#40;for&#x20;example&#x20;pandorafms.com&#41;&#x0d;&#x0a;-s&#x20;DNS&#x20;Server&#x20;to&#x20;check&#x20;&#x20;&#40;for&#x20;example&#x20;8.8.8.8&#41;&#x0d;&#x0a;&#x0d;&#x0a;Optional&#x20;parameters:&#x0d;&#x0a;&#x0d;&#x0a;-t&#x20;Do&#x20;a&#x20;DNS&#x20;time&#x20;response&#x20;check&#x20;instead&#x20;DNS&#x20;resolve&#x20;test&#x0d;&#x0a;&#x0d;&#x0a;',15,'/usr/share/pandora_server/util/plugin/dns_plugin.sh','-i','','','',0),(3,'UDP&#x20;port&#x20;check','Check&#x20;a&#x20;remote&#x20;UDP&#x20;port&#x20;&#40;by&#x20;using&#x20;NMAP&#41;.&#x20;Use&#x20;IP&#x20;address&#x20;and&#x20;Port&#x20;options.',5,'/usr/share/pandora_server/util/plugin/udp_nmap_plugin.sh','-t','-p','','',0),(4,'SMTP&#x20;Check','This&#x20;plugin&#x20;is&#x20;used&#x20;to&#x20;send&#x20;a&#x20;mail&#x20;to&#x20;a&#x20;SMTP&#x20;server&#x20;and&#x20;check&#x20;if&#x20;works.&#x20;Parameters&#x20;in&#x20;the&#x20;plugin&#x20;&#x0d;&#x0a;IP&#x20;Addres&#x20;-&#x20;SMTP&#x20;Server&#x20;IP&#x20;address&#x0d;&#x0a;User&#x20;-&#x20;AUTH&#x20;login&#x20;&#x20;&#x0d;&#x0a;Pass&#x20;-&#x20;AUTH&#x20;password&#x0d;&#x0a;Port&#x20;-&#x20;SMTP&#x20;port&#x20;&#40;optional&#41;&#x0d;&#x0a;&#x0d;&#x0a;Optional&#x20;parameters&#x20;&#x0d;&#x0a;&#x0d;&#x0a;&#x20;-d&#x20;Destination&#x20;email&#x0d;&#x0a;&#x20;-f&#x20;Email&#x20;of&#x20;the&#x20;sender&#x0d;&#x0a;&#x20;-a&#x20;Autentication&#x20;system,&#x20;could&#x20;be&#x20;LOGIN,&#x20;PLAIN,&#x20;CRAM-MD5&#x20;or&#x20;DIGEST-MD&#x0d;&#x0a;&#x0d;&#x0a;&#x0d;&#x0a;',10,'/usr/share/pandora_server/util/plugin/SMTP_check.pl','-h','-o','-u','-p',0);
 
+
+INSERT INTO `tagent_custom_fields` VALUES (1,'Serial&#x20;Number',0),(2,'Department',0),(3,'Additional&#x20;ID',0);
+
+INSERT INTO `ttag` VALUES (1,'network','Network&#x20;equipment','http://artica.es'),(2,'critical','Critical&#x20;modules',''),(3,'dmz','DMZ&#x20;Network&#x20;Zone',''),(4,'performance','Performance&#x20;anda&#x20;capacity&#x20;modules',''),(5,'configuration','','');
 

@@ -1,3 +1,19 @@
+2012-06-21  Sancho Lerena <slerena@artica.es>
+
+	* extensions/update_manager/sql/update_manager.oracle.sql,
+	extensions/update_manager/sql/update_manager.sql,
+	extensions/update_manager/sql/update_manager.postgreSQL.sql: Updated
+	some default details for update manager.
+
+	* pandoradb_data.sql: Some updates on default data load.
+
+	* include/help/es/help_main_help.php,
+	include/help/es/help_gis_setup_map_connection.php,
+        include/help/es/help_setup_gis_index.php,
+        include/help/es/help_snmp_alert_field1.php,
+        include/help/es/help_local_component.php: Missing help files for
+	spanish added.
+
 2012-06-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_servers.php: Added inventory server statistics.

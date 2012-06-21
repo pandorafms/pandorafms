@@ -1,3 +1,16 @@
+2012-06-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql,
+	  DEBIAN/control,
+	  DEBIAN/make_deb_package.sh,
+	  include/config_process.php,
+	  install.php,
+	  pandora_console.spec,
+	  pandora_console.redhat.spec: Updated version strings.
+
+	* extensions/update_manager.php: Merged from 4.0 branch. Ignore blank
+	  lines in installation SQL file.
+
 2012-06-21 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/load_updatemanager.php: fixed the lost

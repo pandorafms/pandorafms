@@ -1,3 +1,10 @@
+2012-06-21  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/users/webchat.php: Changed a string to 
+	be translated
+
+	Merged from 4.0.2
+
 2012-06-21  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* extensions/pandora_logs.php: show the last 500k bytes

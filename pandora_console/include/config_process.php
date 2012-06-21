@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC120214';
-$pandora_version = 'v5.0-dev';
+$build_version = 'PC120621';
+$pandora_version = 'v5.0dev';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();

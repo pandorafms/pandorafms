@@ -634,6 +634,13 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 }
 
 function um_client_upgrade_to_latest ($user_key, $force = true) {
+	global $config;
+	
+	require_once($config["homedir"] .
+		"/extensions/update_manager/debug.php");
+	
+	print_debug_message_trace("Init Call um_client_upgrade_to_latest function.");
+	
 	$success = false;
 	
 	$settings = um_db_load_settings ();
@@ -641,8 +648,13 @@ function um_client_upgrade_to_latest ($user_key, $force = true) {
 	do {
 		$package = um_client_get_package ($settings, $user_key);
 		
+		
 		if ($package === false || $package === true ||
 			$package === 0 || $package === 1) {
+			
+			print_debug_message_trace("Package download not is a object, it is " .
+				(int)$package . ".");
+			
 			break;
 		}
 		
@@ -651,12 +663,17 @@ function um_client_upgrade_to_latest ($user_key, $force = true) {
 		if (! $success)
 			break;
 		
+		print_debug_message_trace("Success update package " .
+			(int)$package->id . ".");
+		
 		$settings->current_update = $package->id;
 	}
 	while (1);
 	
 	/* Break on error, when there are no more packages on the server (server return true)
 		or on auth failure (server return false) */
+	
+	print_debug_message_trace("End Call um_client_upgrade_to_latest function.");
 	
 	return $success;
 }

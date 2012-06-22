@@ -56,9 +56,14 @@ function main_view() {
 function main_view_enterprise($settings, $user_key) {
 	global $config;
 	
+	require_once("debug.php");
+	
+	print_debug_message_trace("Init Call main_view_enterprise function.");
+	
 	$update_package = (bool) get_parameter_post ('update_package');
 	
 	if ($update_package) {
+		print_debug_message_trace("Enter in update package.");
 		if (enterprise_installed()) {
 			$force = (bool) get_parameter_post ('force_update');
 			
@@ -218,6 +223,8 @@ function main_view_enterprise($settings, $user_key) {
 		}
 	</script>
 	<?php
+	
+	print_debug_message_trace("End Call main_view_enterprise function.");
 }
 
 function main_view_open($settings, $user_key) {

@@ -49,7 +49,14 @@ function check_keygen ($settings) {
 function get_user_key ($settings) {
 	global $config;
 	
+	require_once($config["homedir"] .
+		"/extensions/update_manager/debug.php");
+		
+	print_debug_message_trace("Init Call get_user_key function.");
+	
 	if ($settings->customer_key != FREE_USER) {
+		print_debug_message_trace("Enter in ENTERPRISE .");
+		
 		if (! file_exists ($settings->keygen_path)) {
 			/*echo '<h3 class="error">';
 			echo __('Keygen file does not exists');
@@ -65,16 +72,18 @@ function get_user_key ($settings) {
 			return '';
 		}
 		
-		global $config;
-		
 		$command_line = escapeshellcmd($settings->keygen_path.
 			' '.$settings->customer_key.' '.$config['dbhost'].
 			' '.$config['dbuser'].' '.$config['dbpass'].
 			' '.$config['dbname'].' '.$config['dbtype']);
 		
+		print_debug_message_trace("command_line >>> " . $command_line);
 		//html_debug_print($command_line, true);
 		
 		$user_key = exec ($command_line);
+		
+		print_debug_message_trace("user_key >>> " . $user_key);
+		//html_debug_print($user_key, true);
 		
 		return $user_key;
 	}

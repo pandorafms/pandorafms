@@ -1,3 +1,14 @@
+2012-06-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php: Improved several 
+	parts of SLA reports. Add icons to criticity, etc.
+	
+	* include/functions_api.php: Fixed bug in get events
+	api function remaning function
+	
+	* godmode/reporting/graph_builder.graph_editor.php: Increase
+	the size of little combo boxes in combined graphs editor
+
 2012-06-22 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/load_updatemanager.php,

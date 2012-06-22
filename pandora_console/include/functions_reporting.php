@@ -2316,15 +2316,22 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'SLA':
 			reporting_header_content($mini, $content, $report, $table, __('S.L.A.'));
 			
-			$show_graph = $content['show_graph'];
+			$edge_interval = 10;
+			
+			// What show?
+			$show_table = $content['show_graph'] == 0 || $content['show_graph'] == 1;
+			$show_graphs = $content['show_graph'] == 1 || $content['show_graph'] == 2;
+		
 			//RUNNING
 			$table->style[1] = 'text-align: right';
 			
 			// Put description at the end of the module (if exists)
 			
 			$table->colspan[0][1] = 2;
-			$table->colspan[1][0] = 3;
+			$next_row = 1;
 			if ($content["description"] != ""){
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2332,15 +2339,17 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$slas = db_get_all_rows_field_filter ('treport_content_sla_combined',
 				'id_report_content', $content['id_rc']);
+
 			if ($slas === false) {
 				$data = array ();
-				$table->colspan[2][0] = 3;
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
 				$data[0] = __('There are no SLAs defined');
 				array_push ($table->data, $data);
 				$slas = array ();
 				break;
 			}
-			elseif ($show_graph == 0 || $show_graph == 1) {
+			elseif ($show_table) {
 				$table1->width = '99%';
 				$table1->data = array ();
 				$table1->head = array ();
@@ -2348,14 +2357,16 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table1->head[1] = __('Module');
 				$table1->head[2] = __('Max/Min Values');
 				$table1->head[3] = __('SLA Limit');
-				$table1->head[4] = __('Value');
+				$table1->head[4] = __('SLA Compliance');
 				$table1->head[5] = __('Status');
+				$table1->head[6] = __('Criticity');
 				$table1->style[0] = 'text-align: left';
 				$table1->style[1] = 'text-align: left';
 				$table1->style[2] = 'text-align: right';
 				$table1->style[3] = 'text-align: right';
 				$table1->style[4] = 'text-align: right';
 				$table1->style[5] = 'text-align: right';
+				$table1->style[6] = 'text-align: center';
 			}
 			
 			$data_graph = array ();
@@ -2373,6 +2384,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$sla_failed = false;
 			$total_SLA = 0;
 			$total_result_SLA = 'ok';
+			$sla_showed = array();
+			$sla_showed_values = array();
+			
 			foreach ($slas as $sla) {
 				$server_name = $sla ['server_name'];
 				//Metaconsole connection
@@ -2388,7 +2402,43 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
+								
+				//Do not show right modules if 'only_display_wrong' is active
+				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
+			
+				$sla_showed[] = $sla;
+				$sla_showed_values[] = $sla_value;
+			}
+			
+			// SLA items sorted descending ()
+			if ($content['top_n'] == 2){
+				arsort($sla_showed_values);
+			}
+			// SLA items sorted ascending
+			else if ($content['top_n'] == 1){
+				asort($sla_showed_values);
+			}
+			
+			// Slice graphs calculation
+			if ($show_graphs && !empty($slas)) {
+				$tableslice->width = '99%';
+				$tableslice->style[0] = 'text-align: right';
+				$tableslice->data = array ();
+			}
+			
+			foreach ($sla_showed_values as $k => $sla_value) {
+				$sla = $sla_showed[$k];
 				
+				$server_name = $sla ['server_name'];
+				//Metaconsole connection
+				if (($config ['metaconsole'] == 1) && $server_name != '') {
+					$connection = metaconsole_get_connection($server_name);
+					if (!metaconsole_load_external_db($connection)) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}	
+		
 				if ($sla_value === false) {
 					if ($total_result_SLA != 'fail')
 						$total_result_SLA = 'unknown';
@@ -2402,38 +2452,40 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$data_graph[__('Unknown')]++;
 					$data_horin_graph[__('Unknown')]['g']++;
 				}
-				else if ($sla_value <= ($sla['sla_limit']+10) && $sla_value >= ($sla['sla_limit']-10)) {
+				else if ($sla_value <= ($sla['sla_limit']+$edge_interval) && $sla_value >= ($sla['sla_limit']-$edge_interval)) {
 					$data_graph[__('On the edge')]++;
 					$data_horin_graph[__('On the edge')]['g']++;
 				}
-				else if ($sla_value > ($sla['sla_limit']+10)) {
+				else if ($sla_value > ($sla['sla_limit']+$edge_interval)) {
 					$data_graph[__('Inside limits')]++;
 					$data_horin_graph[__('Inside limits')]['g']++;
 				}
-				else if ($sla_value < ($sla['sla_limit']-10)) {
+				else if ($sla_value < ($sla['sla_limit']-$edge_interval)) {
 					$data_graph[__('Out of limits')]++;
 					$data_horin_graph[__('Out of limits')]['g']++;
 				}
-				
-				//Do not show right modules if 'only_display_wrong' is active
-				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
-				
+
 				$total_SLA += $sla_value;
 				
-				if ($show_graph == 0 || $show_graph == 1) {
+				if ($show_table) {
 					$data = array ();
 					$data[0] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
 					$data[1] = modules_get_agentmodule_name ($sla['id_agent_module']);
 					$data[2] = $sla['sla_max'].'/';
 					$data[2] .= $sla['sla_min'];
-					$data[3] = $sla['sla_limit'];
+					$data[3] = $sla['sla_limit'].'%';
 					
 					if ($sla_value === false) {
 						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
-						$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #736F6E;">'.__('Unknown').'</span>';
+						$data[5] = html_print_image('images/status_sets/default/severity_maintenance.png',true,array('title'=>__('Unknown')));
+						$data[6] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #736F6E;">'.__('Unknown').'</span>';
 					}
 					else {
-						if ($sla_value >= $sla['sla_limit']) {
+						$data[4] = '';
+						$data[5] = '';
+						$data[6] = '';
+						
+						if ($sla_value > $sla['sla_limit']) {
 							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
 							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
 						}
@@ -2442,48 +2494,56 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
 							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
 						}
+						
+						// Print icon with status including edge
+						if ($sla_value > $sla['sla_limit']+$edge_interval) {
+							$data[6] = html_print_image('images/status_sets/default/severity_normal.png',true,array('title'=>__('Inside limits')));
+						}
+						elseif ($sla_value <= $sla['sla_limit']+$edge_interval && $sla_value >= $sla['sla_limit']-$edge_interval) {
+							$data[6] = html_print_image('images/status_sets/default/severity_warning.png',true,array('title'=>__('On the edge')));
+						}
+						else {
+							$data[6] = html_print_image('images/status_sets/default/severity_critical.png',true,array('title'=>__('Out of limits')));
+						}
+						
 						$data[4] .= format_numeric ($sla_value, 2). "%";
 					}
 					$data[4] .= "</span>";
-					// This column will be used temporary for sort data
-					$data[6] = format_numeric ($sla_value, 2);
 					
 					array_push ($table1->data, $data);
 				}
+				
+				// Slice graphs calculation
+				if ($show_graphs) {
+					$dataslice = array();
+					$dataslice[0] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
+					$dataslice[0] .= "<br>";
+					$dataslice[0] .= modules_get_agentmodule_name ($sla['id_agent_module']);
+					
+					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
+						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
+						$content['time_to'], 650, 25,'');
+					
+					array_push ($tableslice->data, $dataslice);
+				}
+					
 				if ($config ['metaconsole'] == 1) {
 					//Restore db connection
 					metaconsole_restore_db();
 				}
 			} 
 			
-			// SLA items sorted descending ()
-			if ($content['top_n'] == 2){
-				usort($table1->data, "sla_value_desc_cmp");
-			}
-			// SLA items sorted ascending
-			else if ($content['top_n'] == 1){
-				usort($table1->data, "sla_value_asc_cmp");
-			}
-			
-			// Delete temporary column used to sort SLA data
-			for ($i=0; $i < count($table1->data); $i++) {
-				unset($table1->data[$i][6]);
-			}
-			
-			$next_row = 2;
-			if ($show_graph == 0 || $show_graph == 1) {
+			if ($show_table) {
 				$data = array();
 				$data[0] = html_print_table($table1, true);
-				array_push ($table->data, $data);
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;
+				array_push ($table->data, $data);
 			}
 			
-			$table->colspan[$next_row][0] = 2;
-			$next_row++;
 			$data = array();
 			$data_pie_graph = json_encode ($data_graph);
-			if (($show_graph == 1 || $show_graph == 2) && !empty($slas)) {
+			if ($show_graphs && !empty($slas)) {
 				$data[0] = pie3d_graph(false, $data_graph,
 					500, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
@@ -2491,46 +2551,34 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				//Print resume
 				$table_resume = null;
-				$table_resume->head[0] = __('Resume Value');
-				$table_resume->head[1] = __('Status');
-				if ($total_result_SLA == 'ok') {
-					$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
-					$table_resume->data[0][1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
-				}
-				if ($total_result_SLA == 'fail') {
-					$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
-					$table_resume->data[0][1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
-				}
-				if ($total_result_SLA == 'unknown') {
-					$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
-					$table_resume->data[0][1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #736F6E;">'.__('Unknown').'</span>';
-				}
-				$table_resume->data[0][0] .= format_numeric($total_SLA / count($slas), 2);
+				$table_resume->head[0] = __('Average Value');
+
+				$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
+				$table_resume->data[0][0] .= format_numeric($total_SLA / count($sla_showed), 2);
 				$table_resume->data[0][0] .= "%</span>";
-				
+
 				$data[1] = html_print_table($table_resume, true);
 				
+				$table_resume = null;
+				$table_resume->head[0] = __('SLA Compliance');
+				
+				if ($total_result_SLA == 'ok') {
+					$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
+				}
+				if ($total_result_SLA == 'fail') {
+					$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
+				}
+				if ($total_result_SLA == 'unknown') {
+					$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #736F6E;">'.__('Unknown').'</span>';
+				}
+				
+				$data[2] = html_print_table($table_resume, true);
+				$next_row++;
 				array_push ($table->data, $data);
 				
-				$table2->width = '99%';
-				$table2->style[0] = 'text-align: right';
-				$table2->data = array ();
-				foreach ($slas as $sla) {
-					$data = array();
-					$data[0] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
-					$data[0] .= "<br>";
-					$data[0] .= modules_get_agentmodule_name ($sla['id_agent_module']);
-					
-					$data[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
-						$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
-						$content['time_to'], 550, 25,'');
-					
-					array_push ($table2->data, $data);
-				}
 				$table->colspan[$next_row][0] = 3;
-				$next_row++;
 				$data = array();
-				$data[0] = html_print_table($table2, true);
+				$data[0] = html_print_table($tableslice, true);
 				array_push ($table->data, $data);
 			}
 			break;

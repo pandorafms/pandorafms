@@ -231,13 +231,28 @@ if ($update_user) {
 		$password_confirm = (string) get_parameter ('password_confirm', '');
 		if ($password_new != '') {
 			if ($password_confirm == $password_new) {
-				$res2 = update_user_password ($id, $password_new);
-				if ($res2) {
-					$res3 = save_pass_history($id, $password_new);
+				if ((!$values['is_admin'] || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+					$pass_ok = login_validate_pass($password_new, $id, true);
+					if ($pass_ok != 1) {
+						ui_print_error_message($pass_ok);
+					} else {
+						$res2 = update_user_password ($id, $password_new);
+						if ($res2) {
+							$res3 = save_pass_history($id, $password_new);
+						}
+						ui_print_result_message ($res1 || $res2,
+						__('User info successfully updated'),
+						__('Error updating user info (no change?)'));
+					}
+				} else {
+					$res2 = update_user_password ($id, $password_new);
+					if ($res2) {
+						$res3 = save_pass_history($id, $password_new);
+					}
+					ui_print_result_message ($res1 || $res2,
+						__('User info successfully updated'),
+						__('Error updating user info (no change?)'));
 				}
-				ui_print_result_message ($res1 || $res2,
-					__('User info successfully updated'),
-					__('Error updating user info (no change?)'));
 			}
 			else {
 				ui_print_error_message (__('Passwords does not match'));

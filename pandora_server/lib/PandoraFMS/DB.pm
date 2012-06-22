@@ -43,6 +43,7 @@ our @EXPORT = qw(
 		db_update
 		get_action_id
 		get_addr_id
+		get_agent_addr_id
 		get_agent_id
 		get_agent_address
 		get_agent_group
@@ -554,6 +555,17 @@ sub get_addr_id ($$) {
 
 	my $addr_id = get_db_value ($dbh, 'SELECT id_a FROM taddress WHERE ip = ?', $addr);
 	return (defined ($addr_id) ? $addr_id : -1);
+}
+
+##########################################################################
+# Return the agent address ID for the given agent ID and address ID, -1 if
+# it does not exist.
+##########################################################################
+sub get_agent_addr_id ($$$) {
+	my ($dbh, $addr_id, $agent_id) = @_;
+
+	my $agent_addr_id = get_db_value ($dbh, 'SELECT id_ag FROM taddress_agent WHERE id_a = ? AND id_agent = ?', $addr_id, $agent_id);
+	return (defined ($agent_addr_id) ? $agent_addr_id : -1);
 }
 
 ##########################################################################

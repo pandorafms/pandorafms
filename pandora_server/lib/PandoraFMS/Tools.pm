@@ -805,14 +805,11 @@ sub pandora_ping ($$) {
 	# Windows XP .. Windows 7
 	if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
 		my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
-		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-			$output = `ping -n 1 -w $ms_timeout $host`;
-			if ($output =~ /TTL/){
-				return 1;
-			}
-			sleep 1;
+		$output = `ping -n $pa_config->{'icmp_checks'} -w $ms_timeout $host`;
+		if ($output =~ /TTL/){
+			return 1;
 		}
-	return 0;
+		return 0;
 	}
 
 	elsif ($OSNAME eq "solaris"){
@@ -826,12 +823,9 @@ sub pandora_ping ($$) {
 		# 'networktimeout' is not used by ping on Solaris.
 
 		# Ping the host
-		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-			`$ping_command -s -n $host 56 1 >/dev/null 2>&1`;
-			if ($? == 0) {
-				return 1;
-			}
-			sleep 1;
+		`$ping_command -s -n $host 56 $pa_config->{'icmp_checks'} >/dev/null 2>&1`;
+		if ($? == 0) {
+			return 1;
 		}
 		return 0;
 	}
@@ -847,12 +841,9 @@ sub pandora_ping ($$) {
 		# 'networktimeout' is not used by ping6 on FreeBSD.
 
 		# Ping the host
-		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-			`$ping_command -q -n -c 1 $host >/dev/null 2>&1`;
-			if ($? == 0) {
-				return 1;
-			}
-			sleep 1;
+		`$ping_command -q -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
+		if ($? == 0) {
+			return 1;
 		}
 		return 0;
 	}
@@ -867,13 +858,11 @@ sub pandora_ping ($$) {
 		}
 
 		# Ping the host
-		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-			`$ping_command -q -W $pa_config->{'networktimeout'} -n -c 1 $host >/dev/null 2>&1`;
-				if ($? == 0) {
-					return 1;
-				}
-			sleep 1;
+		`$ping_command -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;	
+		if ($? == 0) {
+			return 1;
 		}
+		
 		return 0;
 	}
 

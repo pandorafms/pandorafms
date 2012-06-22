@@ -170,6 +170,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	get_agent_from_addr
+	get_agent_from_name
 	@ServerTypes
 	);
 
@@ -191,7 +192,19 @@ sub get_agent_from_addr ($$) {
 	                                    WHERE tagente.id_agente = taddress_agent.id_agent
 	                                    AND taddress_agent.id_a = taddress.id_a
 	                                    AND ip = ?', $ip_address);
-	return $agent
+	return $agent;
+}
+
+##########################################################################
+# Return the agent given the agent name.
+##########################################################################
+sub get_agent_from_name ($$) {
+	my ($dbh, $name) = @_;
+
+	return 0 if (! defined ($name) || $name eq '');
+
+	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', $name);
+	return $agent;
 }
 
 ##########################################################################

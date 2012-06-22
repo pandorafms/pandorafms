@@ -152,19 +152,30 @@ sub data_consumer ($$) {
 		# Get agent address
 		my $addr = $host->addr();
 		next unless ($addr ne '0');
-		
+
 		# Update the recon task or break if it does not exist anymore
 		last if (update_recon_task ($dbh, $task_id, ceil ($progress / ($total_up / 100))) eq '0E0');
-		
+
+		# Resolve hostnames
+		my $host_name = undef;
+		if ($task->{'resolve_names'} == 1){
+			$host_name = gethostbyaddr (inet_aton($addr), AF_INET);
+		}
+		$host_name = $addr unless defined ($host_name);
+
 		# Does the host already exist?
 		my $agent = get_agent_from_addr ($dbh, $addr);
+		if (! defined ($agent)) {
+			$agent = get_agent_from_name ($dbh, $host_name);
+		}		
+
 		my $agent_id = defined ($agent) ? $agent->{'id_agente'} : 0;
 		if ($agent_id > 0) {
 
-			# Skip if not in learning mode or parent detection is disabled
-			next if ($agent->{'modo'} != 1 || $task->{'parent_detection'} == 0);
+			# Skip if not in learning mode
+			next if ($agent->{'modo'} != 1);
 		}
-		
+
 		# Filter by TCP port
 		if ((defined ($task->{'recon_ports'})) && ($task->{'recon_ports'} ne "")) {
 			next unless (tcp_scan ($pa_config, $addr, $task->{'recon_ports'}) > 0);
@@ -182,7 +193,22 @@ sub data_consumer ($$) {
 		if ($task->{'parent_detection'} == 1) {
 			$parent_id = get_host_parent ($pa_config, $addr, $dbh, $task->{'id_group'}, $task->{'parent_recursion'}, $task->{'resolve_names'}, $task->{'os_detect'});
 		}
-		
+
+		# Add the new address if it does not exist
+		my $addr_id = get_addr_id ($dbh, $addr);
+		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
+		if ($addr_id <= 0) {
+			logger($pa_config, "Could not add address '$addr' for host '$host_name'.", 3);
+			next;
+		}
+
+		# Assign the new address to the agent
+		my $agent_addr_id = get_agent_addr_id ($dbh, $addr_id, $agent_id);
+		if ($agent_addr_id <= 0) {
+			db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+		                  VALUES (?, ?)', $addr_id, $agent_id);
+		}
+
 		# If the agent already exists update parent and continue
 		if ($agent_id > 0) {
 			if ($parent_id > 0) {
@@ -190,29 +216,14 @@ sub data_consumer ($$) {
 			}
 			next;
 		}
-		
-		# Resolve hostnames
-		my $host_name = undef;
-		if ($task->{'resolve_names'} == 1){
-			$host_name = gethostbyaddr (inet_aton($addr), AF_INET);
-		}
-		$host_name = $addr unless defined ($host_name);
-		
-		# Add the new address if it does not exist
-		my $addr_id = get_addr_id ($dbh, $addr);
-		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
-		if ($addr_id <= 0) {
-			logger($pa_config, "Could not add address '$addr' for host '".safe_output($host_name)."'.", 3);
-			next;
-		}
-		
-		# GIS Code -----------------------------
-		
+
+        # GIS Code -----------------------------
+
 		# If GIS is activated try to geolocate the ip address of the agent 
-		# and store also it's position.
-		
+        # and store also it's position.
+
 		if($pa_config->{'activate_gis'} == 1 && $pa_config->{'recon_reverse_geolocation_mode'} !~ m/^disabled$/i) {
-			
+
 			# Try to get aproximated positional information for the Agent.
 			my $region_info = undef;
 			if ($pa_config->{'recon_reverse_geolocation_mode'} =~ m/^sql$/i) {
@@ -262,27 +273,23 @@ sub data_consumer ($$) {
 					                                  $host_name, $addr, $task->{'id_group'},
 									  $parent_id, $id_os, '', 300, $dbh);
 		}
-		
+
 		# Check agent creation
 		if ($agent_id <= 0) {
 			logger($pa_config, "Error creating agent '$host_name'.", 3);
 			next;
 		}
-		
-		# Assign the new address to the agent
-		db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-		                  VALUES (?, ?)', $addr_id, $agent_id);
-		
+
 		# Create network profile modules for the agent
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});
-		
+
 		# Generate an event
 		pandora_event ($pa_config, "[RECON] New host [$host_name] detected on network [" . $task->{'subnet'} . ']',
 		               $task->{'id_group'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
 		
 		$added_hosts .= "$addr ";
 	}
-	
+
 	# Create an incident with totals
 	if ($added_hosts ne '' && $task->{'create_incident'} == 1) {
 		my $text = "At " . strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " ($added_hosts) new hosts were detected by Pandora FMS Recon Server running on [" . $pa_config->{'servername'} . "_Recon]. This incident has been automatically created following instructions for this recon task [" . $task->{'id_group'} . "].\n\n";
@@ -292,7 +299,7 @@ sub data_consumer ($$) {
 		$text .= "\n\nThis is the list of IP addresses found: \n\n$added_hosts";
 		pandora_create_incident ($pa_config, $dbh, "[RECON] New hosts detected", $text, 0, 0, 'Pandora FMS Recon Server', $task->{'id_group'});
 	}
-	
+
 	# Mark recon task as done
 	update_recon_task ($dbh, $task_id, -1);
 }

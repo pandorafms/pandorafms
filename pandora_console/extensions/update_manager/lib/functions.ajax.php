@@ -19,6 +19,8 @@ function check_keygen_online() {
 	
 	require_once($config["homedir"] .
 		"/extensions/update_manager/lib/functions.php");
+	require_once($config["homedir"] .
+		"/extensions/update_manager/debug.php");
 	
 	global $conf_update_pandora;
 	if (empty($conf_update_pandora))
@@ -35,6 +37,9 @@ function check_keygen_online() {
 	
 	db_clean_cache();
 	$settings = um_db_load_settings ();
+	
+	print_debug_message_trace("End Call check_keygen_online function.");
+	
 	return check_keygen ($settings);
 }
 
@@ -54,6 +59,11 @@ function update_pandora_get_packages_online_ajax($ajax = true) {
 		"/extensions/update_manager/lib/libupdate_manager.php");
 	require_once ($config["homedir"] .
 		"/extensions/update_manager/load_updatemanager.php");
+	
+	require_once($config["homedir"] .
+		"/extensions/update_manager/debug.php");
+		
+	print_debug_message_trace("Init Call update_pandora_get_packages_online_ajax function.");
 	
 	$last = get_parameter('last', 0);
 	
@@ -105,6 +115,8 @@ function update_pandora_get_packages_online_ajax($ajax = true) {
 		$return['end'] = 1;
 	}
 	
+	print_debug_message_trace("End Call update_pandora_get_packages_online_ajax function.");
+	
 	if ($ajax)
 		echo json_encode($return);
 	else
@@ -123,6 +135,11 @@ function update_pandora_download_package() {
 		"/extensions/update_manager/lib/libupdate_manager.php");
 	require_once ($config["homedir"] .
 		"/extensions/update_manager/load_updatemanager.php");
+	
+	require_once($config["homedir"] .
+		"/extensions/update_manager/debug.php");
+		
+	print_debug_message_trace("Init Call update_pandora_download_package function.");
 	
 	$dir = $config['attachment_store'] .  '/update_pandora/';
 	
@@ -229,6 +246,8 @@ function update_pandora_download_package() {
 	$return['mode'] = $conf_update_pandora['download_mode'];
 	$return['filename'] = $package;
 	
+	print_debug_message_trace("End Call update_pandora_download_package function.");
+	
 	echo json_encode($return);
 }
 
@@ -240,6 +259,11 @@ function update_pandora_check_download_package() {
 		$conf_update_pandora = update_pandora_get_conf();
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
+	
+	require_once($config["homedir"] .
+		"/extensions/update_manager/debug.php");
+		
+	print_debug_message_trace("Init Call update_pandora_check_download_package function.");
 	
 	sleep(1);
 	
@@ -304,6 +328,8 @@ function update_pandora_check_download_package() {
 		}
 	}
 	
+	print_debug_message_trace("End Call update_pandora_check_download_package function.");
+	
 	echo json_encode($return);
 }
 
@@ -312,6 +338,11 @@ function update_pandora_install_package() {
 	global $conf_update_pandora;
 	if (empty($conf_update_pandora))
 		$conf_update_pandora = update_pandora_get_conf();
+	
+	require_once($config["homedir"] .
+		"/extensions/update_manager/debug.php");
+	
+	print_debug_message_trace("Init Call update_pandora_install_package function.");
 	
 	$dir = $config['attachment_store'] .  '/update_pandora/';
 	
@@ -326,11 +357,14 @@ function update_pandora_install_package() {
 	$command = 'tar tzvf ' . $dir . $filename .
 		' --exclude="pandora_console/install.php" --exclude="pandora_console/include/config.php" | grep -v "pandora_console/$" | wc -l > /tmp/' . $package . '.info.txt';
 	exec($command, $output, $status);
+	print_debug_message_trace($command);
 	//html_debug_print($command, true);
 	
 	$command = 'tar xzvf ' . $dir . $filename .
 		' --exclude="pandora_console/install.php" --exclude="pandora_console/include/config.php" ' .
 		' --strip-components=1 -C ' . $config['homedir'] . ' 1>/tmp/' . $package . '.files.info.txt';
+	
+	print_debug_message_trace($command);
 	//html_debug_print($command, true);
 	
 	//Maybe this line run for seconds or minutes
@@ -344,12 +378,19 @@ function update_pandora_install_package() {
 	else {
 		echo json_encode(array('correct' => 0));
 	}
+	
+	print_debug_message_trace("End Call update_pandora_install_package function.");
 }
 
 function update_pandora_check_install_package() {
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
+	
+	require_once($config["homedir"] .
+		"/extensions/update_manager/debug.php");
+	
+	print_debug_message_trace("Init Call update_pandora_check_install_package function.");
 	
 	sleep(1);
 	
@@ -392,6 +433,8 @@ function update_pandora_check_install_package() {
 		unlink('/tmp/' . $package . '.info.txt');
 	}
 	
+	print_debug_message_trace("End Call update_pandora_check_install_package function.");
+	
 	echo json_encode($return);
 }
 
@@ -404,6 +447,11 @@ function checking_online_enterprise_package() {
 		"/extensions/update_manager/lib/libupdate_manager.php");
 	require_once ($config["homedir"] .
 		"/extensions/update_manager/load_updatemanager.php");
+		
+	require_once($config["homedir"] .
+		"/extensions/update_manager/debug.php");
+	
+	print_debug_message_trace("Init Call checking_online_enterprise_package function.");
 	
 	$return = array('correct' => 1, 'text' => '',
 		'enable_buttons' => false, 'details_text' => '',
@@ -458,6 +506,8 @@ function checking_online_enterprise_package() {
 			$return['details_text'] = html_entity_decode($package->description);
 		}
 	}
+	
+	print_debug_message_trace("End Call checking_online_enterprise_package function.");
 	
 	echo json_encode($return);
 }

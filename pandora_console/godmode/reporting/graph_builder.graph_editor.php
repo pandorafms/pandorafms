@@ -144,7 +144,7 @@ echo "</tr><tr>";
 		
 		$connection_result = enterprise_hook('metaconsole_load_external_db', array($connection_data)); 
 		
-		if ($connection_result != false) {
+		if ($connection_result == NOERR) {
 			$agents_tmp = agents_get_group_agents ();
 			
 			if ($agents_tmp === false)

@@ -2096,7 +2096,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	$server_name = $content ['server_name'];
 	if (($config ['metaconsole'] == 1) && $server_name != '') {
 		$connection = metaconsole_get_connection($server_name);
-		if (!metaconsole_load_external_db($connection)) {
+		if (metaconsole_load_external_db($connection) != NOERR) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
 		}
 	}

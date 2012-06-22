@@ -1,5 +1,11 @@
 2012-06-22  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_reporting.php
+	godmode/reporting/graph_builder.graph_editor.php: Fixed some
+	metaconsole connections checks merged from trunk
+
+2012-06-22  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reporting.php: Improved several 
 	parts of SLA reports. Add icons to criticity, etc.
 	

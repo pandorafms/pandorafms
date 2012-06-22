@@ -96,6 +96,8 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$dashboard = get_parameter('dashboard', '');
 	$visual_console = get_parameter('visual_console', '');
 	
+	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
+	
 	$section = io_safe_output($upd_info["section"]);
 	if (($section == 'Event list') || ($section == 'Group view') || ($section == 'Alert detail') || ($section == 'Tactical view') || ($section == 'Default')) {
 		$upd_info["data_section"] = '';
@@ -107,10 +109,26 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	
 	if ( !empty ($password_new)) {
 		if ($config["user_can_update_password"] && $password_confirm == $password_new) {
-			$return = update_user_password ($id, $password_new);
-			ui_print_result_message ($return,
-				__('Password successfully updated'),
-				__('Error updating passwords: %s', $config['auth_error']));
+			if ((!$is_admin || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+				$pass_ok = login_validate_pass($password_new, $id, true);
+				if ($pass_ok != 1) {
+					ui_print_error_message($pass_ok);
+				} else {
+					$return = update_user_password ($id, $password_new);
+					if ($return) {
+						$return2 = save_pass_history($id, $password_new);
+					}
+					ui_print_result_message ($return,
+					__('Password successfully updated'),
+					__('Error updating passwords: %s', $config['auth_error']));
+				}
+			} else {
+				$return = update_user_password ($id, $password_new);
+				ui_print_result_message ($return,
+					__('Password successfully updated'),
+					__('Error updating passwords: %s', $config['auth_error']));
+			}
+			
 		} elseif ($password_new !== "NON-INIT") {
 			ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
 		}

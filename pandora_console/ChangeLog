@@ -1,3 +1,9 @@
+2012-06-22  Vanessa Gil <vanessa.gil@artica.es>
+
+	* operation/users/user_edit.php
+	  godmode/users/configure_user.php: Apply password policy
+	on users edition.
+
 2012-06-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql,

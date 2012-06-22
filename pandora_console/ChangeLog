@@ -1,3 +1,8 @@
+2012-06-22  Sancho Lerena <slerena@artica.es>
+
+	* godmode/massive/massive_edit_modules.php: Changed label to a more
+	appropiate.
+
 2012-06-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* extensions/update_manager.php: Ignore blank lines in installation SQL

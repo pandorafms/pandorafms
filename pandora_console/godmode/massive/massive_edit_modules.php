@@ -382,7 +382,7 @@ $table->data['edit38'][2] = __('Security level');
 $table->data['edit38'][3] = html_print_select(array('noAuthNoPriv' => __('Not auth and not privacy method'),
 	'authNoPriv' => __('Auth and not privacy method'), 'authPriv' => __('Auth and privacy method')), 'custom_string_3', '', '', __('No change'), '', true);
 
-$table->data['edit4'][0] = __('Value');
+$table->data['edit4'][0] = __('Valid values');
 $table->data['edit4'][1] = '<em>'.__('Min.').'</em>';
 $table->data['edit4'][1] .= html_print_input_text ('min', '', '', 5, 15, true);
 $table->data['edit4'][1] .= '<br /><em>'.__('Max.').'</em>';

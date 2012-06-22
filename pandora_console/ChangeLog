@@ -1,3 +1,12 @@
+2012-06-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* general/error_emptyconfig.php
+	 general/error_perms.php
+	 general/error_authconfig.php
+	 general/error_noconfig.php
+	 general/error_install.php
+	 general/error_dbconfig.php: Make them IE9 compatible.
+
 2012-06-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php

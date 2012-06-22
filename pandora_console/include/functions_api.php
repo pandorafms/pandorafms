@@ -4505,7 +4505,7 @@ function api_set_validate_events($id_event, $trash1, $other, $return_type, $user
 	}
 }
 
-function api_get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_db) {
+function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db) {
 	global $config;
 	
 	//By default.
@@ -4810,7 +4810,7 @@ function api_get_events__with_user($trash1, $trash2, $other, $returnType, $user_
  */
 function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
 	if ($user_in_db !== null) {
-		get_events__with_user($trash1, $trash2, $other, $returnType, $user_in_db);
+		get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db);
 		$last_error = error_get_last();
 		if (!empty($last_error)) {
 			$errors = array(E_ERROR, E_WARNING, E_USER_ERROR,

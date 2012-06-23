@@ -445,7 +445,6 @@ public class Core {
 		HttpsURLConnection con;
 		try {
 			con = (HttpsURLConnection) url.openConnection();
-			con.getResponseCode();
 			con.connect();
 			con.disconnect();
 			return true;
@@ -454,26 +453,40 @@ public class Core {
 		}
 	}
 
+	/**
+	 * Checks if a url is online.
+	 * 
+	 * @param url
+	 * @return boolean
+	 */
 	public static boolean isOnline(URL url) {
-		HttpsURLConnection con;
 		try {
-			con = (HttpsURLConnection) url.openConnection();
+			HttpsURLConnection con = (HttpsURLConnection) url
+					.openConnection();
 			con.setHostnameVerifier(new HostnameVerifier() {
 				public boolean verify(String hostname, SSLSession session) {
 					return true;
 				}
 			});
 			con.setSSLSocketFactory(getSocketFactory());
-			if (con.getResponseCode()!=400) {
-				return false;
-			} else return true;
-		} catch (IOException e) {
+			con.setDoOutput(true);
+			con.getInputStream();
 			return true;
+		} catch (IOException e) {
+			return false;
 		}
 	}
 
-	public static String httpsGet(String url,
-			List<NameValuePair> additionalParameters) {
+	/**
+	 * Performs an secure http petition
+	 * 
+	 * @param url
+	 *            Target
+	 * @param parameters
+	 *            Petition parameters
+	 * @return Result of the petition.
+	 */
+	private static String httpsGet(String url, List<NameValuePair> parameters) {
 		String result = "";
 		try {
 			HttpsURLConnection con = (HttpsURLConnection) new URL(url)
@@ -487,7 +500,7 @@ public class Core {
 			con.setDoOutput(true);
 			String postData = "";
 			boolean first = true;
-			for (NameValuePair nameValuePair : additionalParameters) {
+			for (NameValuePair nameValuePair : parameters) {
 				postData = first ? postData : postData + "&";
 				first = false;
 				postData += URLEncoder.encode(nameValuePair.getName()) + "="

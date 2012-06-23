@@ -23,12 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
@@ -286,57 +281,6 @@ public class Main extends Activity {
 	}
 
 	/**
-	 * Get tags through an api call.
-	 * 
-	 * @return A list of groups.
-	 */
-	private List<String> getTags() {
-		ArrayList<String> array = new ArrayList<String>();
-
-		SharedPreferences preferences = getSharedPreferences(
-				this.getString(R.string.const_string_preferences),
-				Activity.MODE_PRIVATE);
-
-		String url = preferences.getString("url", "");
-		String user = preferences.getString("user", "");
-		String password = preferences.getString("password", "");
-
-		try {
-			DefaultHttpClient httpClient = new DefaultHttpClient();
-
-			HttpPost httpPost = new HttpPost(url + "/include/api.php");
-
-			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-			parameters.add(new BasicNameValuePair("user", user));
-			parameters.add(new BasicNameValuePair("pass", password));
-			parameters.add(new BasicNameValuePair("op", "get"));
-			parameters.add(new BasicNameValuePair("op2", "tags"));
-			parameters.add(new BasicNameValuePair("return_type", "csv"));
-
-			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters);
-
-			httpPost.setEntity(entity);
-
-			HttpResponse response = httpClient.execute(httpPost);
-			HttpEntity entityResponse = response.getEntity();
-
-			String return_api = Core.convertStreamToString(entityResponse
-					.getContent());
-
-			String[] lines = return_api.split("\n");
-			array.add("");
-			for (int i = 0; i < lines.length; i++) {
-				String[] tags = lines[i].split(";", 2);
-				array.add(tags[1]);
-			}
-		} catch (Exception e) {
-			Log.e(TAG, "getting tags problem");
-		}
-
-		return array;
-	}
-
-	/**
 	 * Async task which get tags.
 	 * 
 	 * @author Santiago Munín González
@@ -347,7 +291,7 @@ public class Main extends Activity {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			list = getTags();
+			list = API.getTags(getApplicationContext());
 			return null;
 		}
 

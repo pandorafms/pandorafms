@@ -113,4 +113,29 @@ public class API {
 		parameters.add(new BasicNameValuePair("other", other));
 		return Core.httpGet(context, parameters);
 	}
+
+	/**
+	 * Get tags through an api call.
+	 * 
+	 * @return A list of groups.
+	 */
+	public static List<String> getTags(Context context) {
+		ArrayList<String> array = new ArrayList<String>();
+		try {
+			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+			parameters.add(new BasicNameValuePair("op", "get"));
+			parameters.add(new BasicNameValuePair("op2", "tags"));
+			parameters.add(new BasicNameValuePair("return_type", "csv"));
+			String return_api = Core.httpGet(context, parameters);
+			String[] lines = return_api.split("\n");
+			array.add("");
+			for (int i = 0; i < lines.length; i++) {
+				String[] tags = lines[i].split(";", 2);
+				array.add(tags[1]);
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "getting tags problem");
+		}
+		return array;
+	}
 }

@@ -102,7 +102,6 @@ public class Options extends Activity {
 			@Override
 			public void onClick(View v) {
 				save_options();
-				new CheckConnectionAsyncTask().execute();
 			}
 		});
 
@@ -225,12 +224,14 @@ public class Options extends Activity {
 					this.getString(R.string.config_update_succesful_str),
 					Toast.LENGTH_SHORT);
 			toast.show();
+			new CheckConnectionAsyncTask().execute();
 		} else {
 			Toast toast = Toast.makeText(context,
 					this.getString(R.string.config_update_fail_str),
 					Toast.LENGTH_LONG);
 			toast.show();
 		}
+		
 	}
 
 	/**
@@ -316,17 +317,20 @@ public class Options extends Activity {
 	private class CheckCertificateAsyncTask extends
 			AsyncTask<URL, Void, Boolean> {
 		private URL url;
+		private boolean online;
+
 		@Override
 		protected Boolean doInBackground(URL... arg0) {
-			url = arg0[0];	
+			url = arg0[0];
+			online = Core.isOnline(url);
 			return Core.isValidCertificate(arg0[0]);
-				
+
 		}
 
 		@Override
 		protected void onPostExecute(Boolean result) {
 			retrievingCertificate.dismiss();
-			if (!Core.isOnline(url)) {
+			if (!online) {
 				writeChanges();
 			} else {
 				if (!result) {

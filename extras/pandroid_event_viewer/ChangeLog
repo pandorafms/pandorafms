@@ -1,3 +1,9 @@
+2012-06-23 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Core.java: Fixed a bug in the isOnline() function.
+	* src/pandroid_event_viewer/pandorafms/Options.java: Improved the connection checking functionality.
+	* src/pandroid_event_viewer/pandorafms/API.java: Added getTags().
+	* src/pandroid_event_viewer/pandorafms/Main.java: Now the tags are getted by API.getTags().
+
 2012-06-21 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Core.java: Added a new method which checks if a website is online.
 	* src/pandroid_event_viewer/pandorafms/Options.java: Fixed a bug. The app didn't check if the url were online before checking the certificate.

@@ -1,3 +1,8 @@
+2012-06-24 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Main.java: Added search profiles feature.
+	* res/layout/main.xml: UI changes. Added search profiles feature.
+	* res/values/strings.xml: Added new entries.
+
 2012-06-23 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Core.java: Fixed a bug in the isOnline() function.
 	* src/pandroid_event_viewer/pandorafms/Options.java: Improved the connection checking functionality.

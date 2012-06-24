@@ -19,6 +19,7 @@ package pandroid_event_viewer.pandorafms;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +28,10 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.TabActivity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -38,12 +42,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -57,9 +65,13 @@ import android.widget.Toast;
  */
 public class Main extends Activity {
 	private static String TAG = "MAIN";
+	private static String PROFILE_PREFIX = "profile:";
 	private PandroidEventviewerActivity object;
 	private HashMap<Integer, String> pandoraGroups;
 	private Spinner comboSeverity;
+	private List<String> profiles;
+	private Context context = this;
+	private boolean selectLastProfile = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -72,11 +84,10 @@ public class Main extends Activity {
 		this.pandoraGroups = new HashMap<Integer, String>();
 
 		setContentView(R.layout.main);
-
 		final Button buttonReset = (Button) findViewById(R.id.button_reset);
 		final Button buttonSearch = (Button) findViewById(R.id.button_send);
 		final Button buttonbuttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
-
+		final Button buttonSaveProfile = (Button) findViewById(R.id.button_save_profile);
 		// Check if the user preferences it is set.
 		if (object.user.length() == 0 || object.password.length() == 0
 				|| object.url.length() == 0) {
@@ -122,6 +133,33 @@ public class Main extends Activity {
 		combo.setAdapter(adapter);
 		combo.setSelection(3);
 
+		loadProfiles();
+		combo = (Spinner) findViewById(R.id.profile_combo);
+		combo.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int pos, long id) {
+				String selected = parent.getItemAtPosition(pos).toString();
+				setProfile(selected);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
+		((ImageView) findViewById(R.id.delete_profile))
+				.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						String profileName = ((Spinner) findViewById(R.id.profile_combo))
+								.getSelectedItem().toString();
+						deleteProfile(profileName);
+						loadProfiles();
+					}
+				});
+
 		combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
 		adapter = ArrayAdapter.createFromResource(this,
 				R.array.max_time_old_event_values,
@@ -152,6 +190,51 @@ public class Main extends Activity {
 						save_filter_watcher();
 					}
 				});
+		buttonSaveProfile.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				final EditText profileName = new EditText(getBaseContext());
+				DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						switch (which) {
+						case DialogInterface.BUTTON_POSITIVE:
+							/*
+							 * if (profiles.contains(profileName.getText()
+							 * .toString())) { Toast.makeText(context,
+							 * R.string.profile_already_exists,
+							 * Toast.LENGTH_SHORT).show(); break; }
+							 */
+							if (profileName.getText().toString().contains("|")) {
+								Toast.makeText(
+										context,
+										R.string.profile_name_character_not_allowed,
+										Toast.LENGTH_SHORT).show();
+								break;
+							}
+							saveProfile(profileName.getText().toString());
+							Toast.makeText(context, R.string.profile_saved,
+									Toast.LENGTH_SHORT).show();
+							loadProfiles();
+							dialog.cancel();
+							break;
+
+						case DialogInterface.BUTTON_NEGATIVE:
+							dialog.cancel();
+							break;
+						}
+					}
+				};
+				AlertDialog.Builder builder = new AlertDialog.Builder(context);
+				builder.setView(profileName);
+				builder.setMessage(R.string.profile_name)
+						.setPositiveButton(android.R.string.yes,
+								dialogClickListener)
+						.setNegativeButton(android.R.string.no,
+								dialogClickListener).show();
+			}
+		});
 		LinearLayout advancedOptions = (LinearLayout) findViewById(R.id.show_hide_layout);
 		// Show advanced options?
 		if (preferences.getBoolean("show_advanced", false)) {
@@ -526,5 +609,156 @@ public class Main extends Activity {
 		// There were changes
 		editorPreferences.putBoolean("filterChanges", true);
 		editorPreferences.commit();
+	}
+
+	/**
+	 * Saves a search profile in SharedPreferences
+	 */
+	private void saveProfile(String profileName) {
+		int group = ((Spinner) findViewById(R.id.group_combo))
+				.getSelectedItemPosition();
+		int status = ((Spinner) findViewById(R.id.status_combo))
+				.getSelectedItemPosition();
+		int tag = ((Spinner) findViewById(R.id.tag)).getSelectedItemPosition();
+		String agentName = ((EditText) findViewById(R.id.agent_name)).getText()
+				.toString();
+		String eventSearch = ((EditText) findViewById(R.id.event_search_text))
+				.getText().toString();
+		int severity = ((Spinner) findViewById(R.id.severity_combo))
+				.getSelectedItemPosition();
+		int oldestEvent = ((Spinner) findViewById(R.id.max_time_old_event_combo))
+				.getSelectedItemPosition();
+		SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editorPreferences = preferences.edit();
+		// Profile
+		editorPreferences.putString(PROFILE_PREFIX + profileName, group + "|"
+				+ status + "|" + tag + "|" + agentName + "|" + eventSearch
+				+ "|" + severity + "|" + oldestEvent);
+		// Add to profiles
+		String allProfiles = preferences.getString("allProfiles", "");
+		if (allProfiles.length() > 0) {
+			allProfiles = allProfiles + "|";
+		}
+		allProfiles = allProfiles + profileName;
+		editorPreferences.putString("allProfiles", allProfiles);
+		if (editorPreferences.commit()) {
+			selectLastProfile = true;
+			Log.i(TAG, "New search profile saved.");
+		}
+	}
+
+	/**
+	 * Gets the list of search profiles (only names).
+	 * 
+	 * @return a list with all search profiles.
+	 */
+	private List<String> getAllProfiles() {
+		SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		List<String> result = new LinkedList<String>();
+		String allProfiles = preferences.getString("allProfiles", "");
+		if (allProfiles.length() > 0) {
+			String[] profiles = allProfiles.split("\\|");
+			for (int i = 0; i < profiles.length; i++) {
+				result.add(profiles[i]);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Fill all fields with profile's options.
+	 * 
+	 * @param profileName
+	 *            Profile name.
+	 */
+	private void setProfile(String profileName) {
+		SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		String profileData = preferences.getString(
+				PROFILE_PREFIX + profileName, "");
+		String options[] = profileData.split("\\|");
+		if (options.length == 7) {
+			try {
+				Spinner spinner = (Spinner) findViewById(R.id.group_combo);
+				spinner.setSelection(Integer.valueOf(options[0]));
+				spinner = (Spinner) findViewById(R.id.status_combo);
+				spinner.setSelection(Integer.valueOf(options[1]));
+				spinner = (Spinner) findViewById(R.id.tag);
+				spinner.setSelection(Integer.valueOf(options[2]));
+				EditText editText = (EditText) findViewById(R.id.agent_name);
+				editText.setText(options[3]);
+				editText = (EditText) findViewById(R.id.event_search_text);
+				editText.setText(options[4]);
+				spinner = (Spinner) findViewById(R.id.severity_combo);
+				spinner.setSelection(Integer.valueOf(options[5]));
+				spinner = (Spinner) findViewById(R.id.max_time_old_event_combo);
+				spinner.setSelection(Integer.valueOf(options[6]));
+			} catch (NumberFormatException ne) {
+				Log.e(TAG, "NumberFormatException parsing profile");
+				return;
+			} catch (IndexOutOfBoundsException ie) {
+				Log.e(TAG,
+						"IndexOutOfBoundsException (maybe groups or tags are not correctly loaded)");
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Removes a profile.
+	 * 
+	 * @param profileName
+	 */
+	private void deleteProfile(String profileName) {
+		SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editorPreferences = preferences.edit();
+		editorPreferences.remove(PROFILE_PREFIX + profileName);
+		String profiles = preferences.getString("allProfiles", "");
+		int firstPos = profiles.indexOf(profileName);
+		int amount = profileName.length();
+		if (firstPos != 0) {
+			// Includes the separator char
+			firstPos--;
+			amount++;
+		}
+		profiles = profiles.substring(0, firstPos)
+				+ profiles.substring(firstPos + amount);
+		if (profiles.startsWith("|")) {
+			if (profiles.length() > 1) {
+				profiles = profiles.substring(1);
+			} else {
+				profiles = "";
+			}
+		}
+		editorPreferences.putString("allProfiles", profiles);
+		if (editorPreferences.commit()) {
+			Log.i(TAG, "Removed profile: " + profileName);
+		}
+	}
+
+	/**
+	 * Fetches all profiles and fills the profile combo.
+	 */
+	private void loadProfiles() {
+		profiles = new LinkedList<String>();
+		profiles.add("");
+		profiles.addAll(getAllProfiles());
+		Spinner combo = (Spinner) findViewById(R.id.profile_combo);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+				getApplicationContext(), android.R.layout.simple_spinner_item,
+				profiles);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		combo.setAdapter(adapter);
+		if (selectLastProfile) {
+			selectLastProfile = false;
+			combo.setSelection(profiles.size() - 1);
+		}
 	}
 }

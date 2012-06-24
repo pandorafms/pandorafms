@@ -38,6 +38,30 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:paddingRight="5dip"
+                    android:textStyle="bold"
+                    android:text="@string/profile_label_str" />
+
+                <Spinner
+                    android:id="@+id/profile_combo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageView 
+                    android:src="@drawable/cross"
+                    android:contentDescription="@string/profile_delete"
+                    android:id="@+id/delete_profile"
+                    />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:paddingRight="5dip"
                     android:text="@string/group_label_str" />
 
                 <Spinner
@@ -192,32 +216,49 @@
             android:layout_marginTop="10dp"
             android:background="#ffffff" />
 
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/button_reset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/reset_button_str" />
-
-            <Button
-                android:id="@+id/button_send"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/search_button_str" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/button_set_as_filter_watcher"
+        <TableLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/set_as_filter_watcher_button_str" />
+            android:stretchColumns="0,1" >
+
+            <TableRow
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/button_reset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reset_button_str" />
+
+                <Button
+                    android:id="@+id/button_send"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/search_button_str" />
+            </TableRow>
+
+            <TableRow
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/button_save_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/save_profile_button_str" />
+
+                <Button
+                    android:id="@+id/button_set_as_filter_watcher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/set_as_filter_watcher_button_str" />
+            </TableRow>
+        </TableLayout>
     </LinearLayout>
 
 </ScrollView>

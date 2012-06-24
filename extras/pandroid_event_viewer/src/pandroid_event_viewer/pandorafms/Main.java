@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.TabActivity;
@@ -289,41 +286,6 @@ public class Main extends Activity {
 	}
 
 	/**
-	 * Get groups through an api call.
-	 * 
-	 * @return A list of groups.
-	 */
-	private List<String> getGroups() {
-		ArrayList<String> array = new ArrayList<String>();
-
-		try {
-			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-			parameters.add(new BasicNameValuePair("op", "get"));
-			parameters.add(new BasicNameValuePair("op2", "groups"));
-			parameters.add(new BasicNameValuePair("other_mode",
-					"url_encode_separator_|"));
-			parameters.add(new BasicNameValuePair("return_type", "csv"));
-			parameters.add(new BasicNameValuePair("other", ";"));
-
-			String return_api = Core.httpGet(getApplicationContext(),
-					parameters);
-			String[] lines = return_api.split("\n");
-
-			for (int i = 0; i < lines.length; i++) {
-				String[] groups = lines[i].split(";", 21);
-
-				this.pandoraGroups.put(Integer.valueOf(groups[0]), groups[1]);
-
-				array.add(groups[1]);
-			}
-		} catch (Exception e) {
-			Log.e(TAG + ": getting groups", e.getMessage());
-		}
-
-		return array;
-	}
-
-	/**
 	 * Async task which get groups.
 	 * 
 	 * @author Miguel de Dios Matías
@@ -334,7 +296,8 @@ public class Main extends Activity {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			list = getGroups();
+			list = new ArrayList<String>();
+			list.addAll(API.getGroups(getApplicationContext()).values());
 			return null;
 		}
 

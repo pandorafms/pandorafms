@@ -62,14 +62,16 @@ function get_user_key ($settings) {
 			echo __('Keygen file does not exists');
 			echo '</h3>';*/
 			
-			return '';
+			return array('result' => false,
+				'message' => __('The Keygen is not in the path.'));
 		}
 		if (! is_executable ($settings->keygen_path)) {
 			/*echo '<h3 class="error">';
 			echo __('Keygen file is not executable');
 			echo '</h3>';*/
 			
-			return '';
+			return array('result' => false,
+				'message' => __('Cannot execute the Keygen.'));
 		}
 		
 		$command_line = escapeshellcmd($settings->keygen_path.

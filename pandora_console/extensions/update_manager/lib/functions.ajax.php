@@ -460,6 +460,18 @@ function checking_online_enterprise_package() {
 	$settings = um_db_load_settings();
 	$user_key = get_user_key($settings);
 	
+	if (is_array($user_key)) {
+		if (!$user_key['result']) {
+			$return['text'] = ui_print_error_message(
+				array('message' => $user_key['message'],
+				'no_close' => true), '', true);
+			
+			echo json_encode($return);
+			
+			return;
+		}
+	}
+	
 	//Disabled output error messages
 	$package = @um_client_check_latest_update ($settings, $user_key);
 	//Get error message

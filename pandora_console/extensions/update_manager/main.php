@@ -46,6 +46,11 @@ function main_view() {
 		false, "", false, $buttons);
 	
 	if (enterprise_installed()) {
+		if (is_array($user_key)) {
+			if (!$user_key['result']) {
+				ui_print_error_message($user_key['message']);
+			}
+		}
 		main_view_enterprise($settings, $user_key);
 	}
 	else {
@@ -78,6 +83,11 @@ function main_view_enterprise($settings, $user_key) {
 			
 			$settings = um_db_load_settings ();
 			$user_key = get_user_key ($settings);
+			if (is_array($user_key)) {
+				if (!$user_key['result']) {
+					ui_print_error_message($user_key['message']);
+				}
+			}
 		}
 		else {
 			ui_print_error_message(__('This is an Enterprise feature. Visit %s for more information.', '<a href="http://pandorafms.com">http://pandorafms.com</a>'));

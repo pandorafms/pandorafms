@@ -683,7 +683,7 @@ function toggle_full_value(id) {
 	value_title = $("#hidden-value_replace_module_" + id).val();
 	
 	$("#hidden-value_replace_module_" + id).val($("#value_module_text_" + id).html());
-
+	
 	$("#value_module_text_" + id).html(value_title);
 }
 </script>

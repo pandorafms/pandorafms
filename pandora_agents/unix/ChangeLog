@@ -1,3 +1,7 @@
+2012-06-25  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent: Updated version.
+
 2012-06-21  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* pandora_agent.redhat.spec: Don't create pandora user if already exists.

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-ja\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-06-20 12:13+0200\n"
-"PO-Revision-Date: 2012-06-20 13:41+0000\n"
+"PO-Revision-Date: 2012-06-25 00:42+0000\n"
 "Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-21 08:01+0000\n"
-"X-Generator: Launchpad (build 15459)\n"
+"X-Launchpad-Export-Date: 2012-06-25 00:44+0000\n"
+"X-Generator: Launchpad (build 15461)\n"
 
 #: ../../index.php:366
 msgid "Sorry! I can't find the page!"
@@ -5348,7 +5348,7 @@ msgstr "エンタープライズ ACL 設定"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:69
 msgid "Add new ACL element to profile"
-msgstr "プロフィールへの新規 ACL 追加"
+msgstr "プロファイルへの新規 ACL追加"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:74
 #: ../../enterprise/godmode/setup/setup_acl.php:109
@@ -7823,7 +7823,7 @@ msgstr "Pandora データベースバックアップ"
 
 #: ../../enterprise/extensions/cron/functions.php:128
 msgid "Not scheduled"
-msgstr "スケジュールが定義されていません。"
+msgstr "スケジュールなし"
 
 #: ../../enterprise/extensions/cron/functions.php:129
 msgid "Hourly"
@@ -12144,11 +12144,11 @@ msgstr "リモートユーザの自動作成"
 
 #: ../../godmode/setup/setup_auth.php:48
 msgid "Autocreate profile"
-msgstr "プロフィールの自動作成"
+msgstr "プロファイルの自動作成"
 
 #: ../../godmode/setup/setup_auth.php:54
 msgid "Autocreate profile group"
-msgstr "プロフィールグループの自動作成"
+msgstr "プロファイルグループの自動作成"
 
 #: ../../godmode/setup/setup_auth.php:56
 msgid "Autocreate blacklist"

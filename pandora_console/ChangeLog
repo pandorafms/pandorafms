@@ -1,3 +1,10 @@
+2012-06-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql,
+	  DEBIAN/make_deb_package.sh,
+	  include/config_process.php,
+	  install.php: Updated version strings for the 4.0.2 release.
+
 2012-06-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_graph.php, include/functions_reporting.php,

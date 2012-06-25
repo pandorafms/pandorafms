@@ -1,3 +1,16 @@
+2012-06-26 Santiago Munín <burning1@gmail.com>
+
+	* src/pandroid_event_viewer/pandorafms/API.java: Added new api calls.
+	* src/pandroid_event_viewer/pandorafms/Core.java: Now connections can throw IOExceptions.
+	* res/values/strings.xml: Added new entries.
+	* src/pandroid_event_viewer/pandorafms/Options.java,
+	  src/pandroid_event_viewer/pandorafms/CreateIncidentActivity.java,
+      src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java,
+      src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java,
+      src/pandroid_event_viewer/pandorafms/EventList.java,
+      src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java,
+      src/pandroid_event_viewer/pandorafms/Main.java: Now a toast is shown if there was any connection problem.
+
 2012-06-25 Santiago Munín <burning1@gmail.com>
 	
 	* src/pandroid_event_viewer/pandorafms/CreateIncidentActivity.java: Fixed a UI bug and refactorized the API call.

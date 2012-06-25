@@ -16,11 +16,7 @@ GNU General Public License for more details.
  */
 package pandroid_event_viewer.pandorafms;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -85,63 +81,47 @@ public class PopupValidationEvent extends Activity {
 	}
 
 	/**
-	 * Sends the validation to server.
-	 * 
-	 * @return <b>true</b> if it was done.
-	 */
-	private boolean sendValidation() {
-		boolean return_var = false;
-
-		List<NameValuePair> parameters;
-		// Set event validation.
-		parameters = new ArrayList<NameValuePair>();
-		parameters.add(new BasicNameValuePair("op", "set"));
-		parameters.add(new BasicNameValuePair("op2", "validate_events"));
-		parameters.add(new BasicNameValuePair("id", Integer.valueOf(this.id_event)
-				.toString()));
-		parameters.add(new BasicNameValuePair("other", this.comment));
-		String return_api = Core.httpGet(getApplicationContext(), parameters);
-
-		if (return_api.startsWith("Correct validation")) {
-			return_var = true;
-		}
-		return return_var;
-	}
-
-	/**
 	 * Sends a validation (async task)
 	 * 
 	 * @author Miguel de Dios Matías
 	 * 
 	 */
-	private class SendValidationAsyncTask extends AsyncTask<Void, Void, Void> {
+	private class SendValidationAsyncTask extends
+			AsyncTask<Void, Void, Boolean> {
 
-		private boolean result;
+		private boolean connectionProblem = false;
 
 		@Override
-		protected Void doInBackground(Void... params) {
-			result = sendValidation();
-
-			return null;
+		protected Boolean doInBackground(Void... params) {
+			int idEvent = Integer.valueOf(id_event);
+			try {
+				return API.validateEvent(getApplicationContext(), idEvent,
+						comment);
+			} catch (IOException e) {
+				connectionProblem = true;
+				return false;
+			}
 		}
 
 		@Override
-		protected void onPostExecute(Void unused) {
+		protected void onPostExecute(Boolean result) {
 			String text;
-
-			if (result) {
-				text = getApplicationContext().getString(
-						R.string.successful_validate_event_str);
+			if (connectionProblem) {
+				Core.showConnectionProblemToast(getApplicationContext(), true);
 			} else {
-				text = getApplicationContext().getString(
-						R.string.fail_validate_event_str);
+				if (result) {
+					text = getApplicationContext().getString(
+							R.string.successful_validate_event_str);
+				} else {
+					text = getApplicationContext().getString(
+							R.string.fail_validate_event_str);
+				}
+
+				Toast toast = Toast.makeText(getApplicationContext(), text,
+						Toast.LENGTH_SHORT);
+				toast.show();
+				destroyPopup();
 			}
-
-			Toast toast = Toast.makeText(getApplicationContext(), text,
-					Toast.LENGTH_SHORT);
-			toast.show();
-
-			destroyPopup();
 		}
 	}
 }

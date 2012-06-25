@@ -16,6 +16,7 @@ GNU General Public License for more details.
  */
 package pandroid_event_viewer.pandorafms;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -64,7 +65,10 @@ public class PandroidEventviewerService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		checkNewEvents(getApplicationContext());
+		try {
+			checkNewEvents(getApplicationContext());
+		} catch (IOException e) {
+		}
 
 	}
 
@@ -72,8 +76,10 @@ public class PandroidEventviewerService extends IntentService {
 	 * Checks if there are new events and, in that case, throw a notification.
 	 * 
 	 * @param context
+	 * @throws IOException
+	 *             If there is any connection problem.
 	 */
-	public void checkNewEvents(Context context) {
+	public void checkNewEvents(Context context) throws IOException {
 		Log.d(TAG, "Checking events at "
 				+ Calendar.getInstance().getTime().toGMTString());
 		if (this.url == null) {
@@ -97,8 +103,9 @@ public class PandroidEventviewerService extends IntentService {
 					"url_encode_separator_|"));
 			parameters.add(new BasicNameValuePair("return_type", "csv"));
 			parameters.add(new BasicNameValuePair("other", parametersAPI));
-			String return_api = Core.httpGet(getApplicationContext(),
-					parameters);
+			String return_api;
+			return_api = Core.httpGet(getApplicationContext(), parameters);
+
 			Log.i(TAG + " checkNewEvents", return_api);
 			return_api = return_api.replace("\n", "");
 			try {

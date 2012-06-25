@@ -1,5 +1,6 @@
 package pandroid_event_viewer.pandorafms;
 
+import java.io.IOException;
 import java.util.Map.Entry;
 
 import android.app.Activity;
@@ -83,8 +84,10 @@ public class CreateIncidentActivity extends Activity {
 	 * Performs the create incident petition.
 	 * 
 	 * @return <b>true</b> if it is created.
+	 * @throws IOException
+	 *             If there is a problem with the connection.
 	 */
-	private boolean sendNewIncident() {
+	private void sendNewIncident() throws IOException {
 		Log.i(TAG, "Sending new incident");
 		String incidentParams[] = new String[6];
 		incidentParams[0] = title.getText().toString();
@@ -101,11 +104,8 @@ public class CreateIncidentActivity extends Activity {
 		}
 		if (groupCode >= 0) {
 			incidentParams[5] = String.valueOf(groupCode);
-		} else {
-			return false;
 		}
 		API.createNewIncident(getApplicationContext(), incidentParams);
-		return true;
 	}
 
 	/**
@@ -119,7 +119,12 @@ public class CreateIncidentActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			return sendNewIncident();
+			try {
+				sendNewIncident();
+				return true;
+			} catch (IOException e) {
+				return false;
+			}
 		}
 
 		@Override

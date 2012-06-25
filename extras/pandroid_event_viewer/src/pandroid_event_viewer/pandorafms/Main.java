@@ -16,6 +16,7 @@ GNU General Public License for more details.
  */
 package pandroid_event_viewer.pandorafms;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -203,6 +204,8 @@ public class Main extends Activity {
 							 * R.string.profile_already_exists,
 							 * Toast.LENGTH_SHORT).show(); break; }
 							 */
+							// TODO Ask for a confirmation before rewriting the
+							// profile
 							if (profileName.getText().toString().contains("|")) {
 								Toast.makeText(
 										context,
@@ -291,38 +294,45 @@ public class Main extends Activity {
 	 * @author Miguel de Dios Matías
 	 * 
 	 */
-	private class GetGroupsAsyncTask extends AsyncTask<Void, Void, Void> {
+	private class GetGroupsAsyncTask extends AsyncTask<Void, Void, Boolean> {
 		private List<String> list;
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected Boolean doInBackground(Void... params) {
 			list = new ArrayList<String>();
-			list.addAll(API.getGroups(getApplicationContext()).values());
-			return null;
+			try {
+				list.addAll(API.getGroups(getApplicationContext()).values());
+			} catch (IOException e) {
+				return false;
+			}
+			return true;
 		}
 
 		@Override
-		protected void onPostExecute(Void unused) {
-			Spinner combo = (Spinner) findViewById(R.id.group_combo);
-
-			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-					getApplicationContext(),
-					android.R.layout.simple_spinner_item, list);
-			combo.setAdapter(spinnerArrayAdapter);
-			combo.setSelection(0);
-
+		protected void onPostExecute(Boolean result) {
 			ProgressBar loadingGroup = (ProgressBar) findViewById(R.id.loading_group);
-
 			loadingGroup.setVisibility(ProgressBar.GONE);
-			combo.setVisibility(Spinner.VISIBLE);
+			if (result) {
+				Spinner combo = (Spinner) findViewById(R.id.group_combo);
 
-			Button buttonReset = (Button) findViewById(R.id.button_reset);
-			Button buttonSearch = (Button) findViewById(R.id.button_send);
-			Button buttonbuttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
+				ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+						getApplicationContext(),
+						android.R.layout.simple_spinner_item, list);
+				combo.setAdapter(spinnerArrayAdapter);
+				combo.setSelection(0);
 
-			buttonReset.setEnabled(true);
-			buttonSearch.setEnabled(true);
-			buttonbuttonSetAsFilterWatcher.setEnabled(true);
+				Button buttonReset = (Button) findViewById(R.id.button_reset);
+				Button buttonSearch = (Button) findViewById(R.id.button_send);
+				Button buttonbuttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
+
+				buttonReset.setEnabled(true);
+				buttonSearch.setEnabled(true);
+				buttonbuttonSetAsFilterWatcher.setEnabled(true);
+			} else {
+				// Only this task will show the toast in order to prevent a
+				// message repeated.
+				Core.showConnectionProblemToast(getApplicationContext(), false);
+			}
 		}
 	}
 
@@ -332,33 +342,35 @@ public class Main extends Activity {
 	 * @author Santiago Munín González
 	 * 
 	 */
-	private class GetTagsAsyncTask extends AsyncTask<Void, Void, Void> {
+	private class GetTagsAsyncTask extends AsyncTask<Void, Void, Boolean> {
 		private List<String> list;
 
 		@Override
-		protected Void doInBackground(Void... params) {
-			list = API.getTags(getApplicationContext());
-			return null;
+		protected Boolean doInBackground(Void... params) {
+			try {
+				list = API.getTags(getApplicationContext());
+				return true;
+			} catch (IOException e) {
+				return false;
+			}
 		}
 
 		@Override
-		protected void onPostExecute(Void unused) {
-			Spinner combo = (Spinner) findViewById(R.id.tag);
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				Spinner combo = (Spinner) findViewById(R.id.tag);
 
-			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-					getApplicationContext(),
-					android.R.layout.simple_spinner_item, list);
-			combo.setAdapter(spinnerArrayAdapter);
-			combo.setSelection(0);
-
+				ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+						getApplicationContext(),
+						android.R.layout.simple_spinner_item, list);
+				combo.setAdapter(spinnerArrayAdapter);
+				combo.setSelection(0);
+			}
 			ProgressBar loadingGroup = (ProgressBar) findViewById(R.id.loading_tag);
-
 			loadingGroup.setVisibility(ProgressBar.GONE);
-			combo.setVisibility(Spinner.VISIBLE);
 		}
 	}
 
-	// For options
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -432,7 +444,7 @@ public class Main extends Activity {
 			this.object.eventTag = combo.getSelectedItem().toString();
 		}
 		this.object.getNewListEvents = true;
-		this.object.executeBackgroundGetEvents();
+		this.object.executeBackgroundGetEvents(true);
 
 		TabActivity ta = (TabActivity) this.getParent();
 		ta.getTabHost().setCurrentTab(1);

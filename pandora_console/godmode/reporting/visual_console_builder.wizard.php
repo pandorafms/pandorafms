@@ -217,8 +217,7 @@ $(document).ready (function () {
 		
 		return;
 	});
-	
-	//$("#id_agents").change (agent_changed_by_multiple_agents);
+
 	$("#id_agents").change ( function() {
 		if ($("#hidden-item_per_agent_test").val() == 0) 
 			agent_changed_by_multiple_agents();

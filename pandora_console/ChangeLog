@@ -1,5 +1,13 @@
 2012-06-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/auth/dev.php
+	 include/auth/ldap.php
+	 include/auth/mysql.php: Compatible with IE9.
+	* godmode/reporting/visual_console_builder.wizard.php: 
+	'item per agent' functionality.  
+
+2012-06-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_visual_map.php
 	 godmode/reporting/visual_console_builder.wizard.php
 	 godmode/reporting/visual_console_builder.php: Visual console 

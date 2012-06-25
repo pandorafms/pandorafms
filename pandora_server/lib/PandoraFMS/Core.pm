@@ -1352,6 +1352,9 @@ sub pandora_delete_module ($$;$) {
 	# Delete events asociated to the module
 	db_do ($dbh, 'DELETE FROM tevento WHERE id_agentmodule = ?', $module_id);
 
+	# Delete tags asociated to the module
+	db_do ($dbh, 'DELETE FROM ttag_module WHERE id_agente_modulo = ?', $module_id);
+
 	# Set pending delete the module
 	db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1, delete_pending = 1, nombre = "delete_pending" WHERE id_agente_modulo = ?', $module_id);
 

@@ -1,3 +1,8 @@
+2012-06-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added deletion of tags when a module is
+	being deleted.
+
 2012-06-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* DEBIAN/control,

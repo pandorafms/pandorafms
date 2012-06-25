@@ -6,6 +6,16 @@
 	  pandora_server.spec,
 	  lib/PandoraFMS/Config.pm,
 	  util/pandora_db.pl,
+	  util/pandora_manage.pl: Fixed version strings for the 4.0.2 release.
+
+2012-06-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* DEBIAN/control,
+	  DEBIAN/make_deb_package.sh,
+	  conf/pandora_server.conf,
+	  pandora_server.spec,
+	  lib/PandoraFMS/Config.pm,
+	  util/pandora_db.pl,
 	  util/pandora_manage.pl: Updated version strings.
 
 2012-06-22  Ramon Novoa  <rnovoa@artica.es>

@@ -45,26 +45,26 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 	if (!$id_user) {
 		$id_user = $config['id_user'];
 	}
-
- 	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
-
+	
+	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
+	
 	$all_graphs = db_get_all_rows_in_table ('tgraph', 'name');
 	if ($all_graphs === false)
 		return array ();
-
+	
 	$graphs = array ();
 	foreach ($all_graphs as $graph) {
 		if (!in_array($graph['id_group'], array_keys($groups)))
 			continue;
-
+		
 		if ($graph["id_user"] != $id_user && $graph['private'])
 			continue;
-
+		
 		if ($graph["id_group"] > 0)
 			if (!isset($groups[$graph["id_group"]])){
 				continue;
 			}
-
+		
 		if ($only_names) {
 			$graphs[$graph['id_graph']] = $graph['name'];
 		}
@@ -92,7 +92,7 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 
 function custom_graphs_print ($id_graph, $height, $width, $period, $stacked, $return = false, $date = 0) {
 	global $config;
-
+	
 	$sources = db_get_all_rows_field_filter ('tgraph_source', 'id_graph', $id_graph);
 	$modules = array ();
 	$weights = array ();

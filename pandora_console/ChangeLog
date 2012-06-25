@@ -1,3 +1,17 @@
+2012-06-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_graph.php: cleaned source code style.
+	
+	* include/functions_custom_graphs.php: fixed into the function
+	"graphic_combined_module" the show html entities in the name of
+	agents in legends, show better the legend for long size names of
+	agents and modules.
+	
+	Merged from 4.0.2
+	
+	* extensions/update_manager/debug.php: upload lost file from old
+	commit.
+
 2012-06-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php: Improved several 

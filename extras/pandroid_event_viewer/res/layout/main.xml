@@ -26,7 +26,8 @@
 
         <TableLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
 
             <TableRow
                 android:layout_width="match_parent"
@@ -38,19 +39,26 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:paddingRight="5dip"
-                    android:textStyle="bold"
-                    android:text="@string/profile_label_str" />
+                    android:text="@string/profile_label_str"
+                    android:textStyle="bold" />
 
                 <Spinner
                     android:id="@+id/profile_combo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <ImageView 
-                    android:src="@drawable/cross"
-                    android:contentDescription="@string/profile_delete"
+
+                <ImageView
                     android:id="@+id/delete_profile"
-                    />
+                    android:contentDescription="@string/profile_delete"
+                    android:src="@drawable/cross" />
             </TableRow>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="2dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="#ffffff" />
 
             <TableRow
                 android:layout_width="match_parent"

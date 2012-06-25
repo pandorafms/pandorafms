@@ -138,4 +138,22 @@ public class API {
 		}
 		return array;
 	}
+
+	/**
+	 * Creates new incident in console.
+	 * @param context Application context
+	 * @param incidentParameters Incident data
+	 */
+	public static void createNewIncident(Context context,
+			String[] incidentParameters) {
+		Log.i(TAG, "Sending new incident");
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("op", "set"));
+		parameters.add(new BasicNameValuePair("op2", "new_incident"));
+		parameters.add(new BasicNameValuePair("other_mode",
+				"url_encode_separator_|"));
+		parameters.add(new BasicNameValuePair("other", Core
+				.serializeParams2Api(incidentParameters)));
+		Core.httpGet(context, parameters);
+	}
 }

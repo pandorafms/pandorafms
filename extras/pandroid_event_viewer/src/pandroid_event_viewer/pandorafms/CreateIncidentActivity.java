@@ -1,11 +1,6 @@
 package pandroid_event_viewer.pandorafms;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map.Entry;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -86,14 +81,11 @@ public class CreateIncidentActivity extends Activity {
 
 	/**
 	 * Performs the create incident petition.
+	 * 
+	 * @return <b>true</b> if it is created.
 	 */
-	private void sendNewIncident() {
+	private boolean sendNewIncident() {
 		Log.i(TAG, "Sending new incident");
-		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-		parameters.add(new BasicNameValuePair("op", "set"));
-		parameters.add(new BasicNameValuePair("op2", "new_incident"));
-		parameters.add(new BasicNameValuePair("other_mode",
-				"url_encode_separator_|"));
 		String incidentParams[] = new String[6];
 		incidentParams[0] = title.getText().toString();
 		incidentParams[1] = description.getText().toString();
@@ -110,14 +102,10 @@ public class CreateIncidentActivity extends Activity {
 		if (groupCode >= 0) {
 			incidentParams[5] = String.valueOf(groupCode);
 		} else {
-			Toast.makeText(getApplicationContext(),
-					R.string.create_incident_group_error, Toast.LENGTH_SHORT)
-					.show();
-			finish();
+			return false;
 		}
-		parameters.add(new BasicNameValuePair("other", Core
-				.serializeParams2Api(incidentParams)));
-		Core.httpGet(getApplicationContext(), parameters);
+		API.createNewIncident(getApplicationContext(), incidentParams);
+		return true;
 	}
 
 	/**
@@ -126,20 +114,27 @@ public class CreateIncidentActivity extends Activity {
 	 * @author Santiago Munín González
 	 * 
 	 */
-	private class SetNewIncidentAsyncTask extends AsyncTask<Void, Void, Void> {
+	private class SetNewIncidentAsyncTask extends
+			AsyncTask<Void, Void, Boolean> {
 
 		@Override
-		protected Void doInBackground(Void... params) {
-			sendNewIncident();
-			return null;
+		protected Boolean doInBackground(Void... params) {
+			return sendNewIncident();
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
-			Toast.makeText(getApplicationContext(), R.string.incident_created,
-					Toast.LENGTH_SHORT).show();
-			dialog.dismiss();
-			finish();
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				Toast.makeText(getApplicationContext(),
+						R.string.incident_created, Toast.LENGTH_SHORT).show();
+				dialog.dismiss();
+				finish();
+			} else {
+				Toast.makeText(getApplicationContext(),
+						R.string.create_incident_group_error,
+						Toast.LENGTH_SHORT).show();
+				dialog.dismiss();
+			}
 		}
 	}
 }

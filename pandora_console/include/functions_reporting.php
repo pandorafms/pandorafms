@@ -3516,10 +3516,29 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			break;
 		case 'top_n':
-			reporting_header_content($mini, $content, $report, $table, __('Top').' '.$content['top_n_value']);
+			$top_n = $content['top_n'];
+			
+			switch ($top_n) {
+				//Max
+				case 1:
+					$type_top_n = __('Max');
+					break;
+				//Min
+				case 2:
+					$type_top_n = __('Min');
+					break;
+				//Nothing or Average
+				case 0: //If nothing is selected then it will be shown the average data
+				case 3:
+					$type_top_n = __('Avg');
+					break;
+			}
+			
+			reporting_header_content($mini, $content, $report, $table,
+				__('Top').' '.$content['top_n_value'] . '<br>' . $type_top_n);
 			
 			$order_uptodown = $content['order_uptodown'];
-			$top_n = $content['top_n'];
+			
 			$top_n_value = $content['top_n_value'];
 			$show_graph = $content['show_graph'];
 			

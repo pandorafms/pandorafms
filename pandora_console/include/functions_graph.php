@@ -1682,7 +1682,7 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 		} else {
 			$name = $bottom;
 		}
-
+		
 		$top = $datelimit + ($periodtime * ($i + 1));
 		$criticity = (int) db_get_value_filter ('criticity',
 			'tevento',
@@ -1847,7 +1847,8 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	
 	if (empty($unit_name)){
 		$unit = modules_get_unit($agent_module_id);
-	}else
+	}
+	else
 		$unit = $unit_name;
 
 	// Data iterator
@@ -1963,7 +1964,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		//$chart[$timestamp]['count'] = 0;
 		//$chart[$timestamp]['timestamp_bottom'] = $timestamp;
 		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
-		if (!$avg_only){		
+		if (!$avg_only) {		
 			$chart[$timestamp]['min'] = 0;
 			$chart[$timestamp]['max'] = 0;
 		}	
@@ -2259,6 +2260,7 @@ function grafico_netflow_aggregate_pie ($data) {
 		}
 		$i++;
 	}
+
 	return pie3d_graph($config['flash_charts'], $values, 320, 200,
 		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']);
@@ -2460,7 +2462,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		}
 	}
 	
-	if (empty($unit_name)){
+	if (empty($unit_name)) {
 		$unit = modules_get_unit($agent_module_id);
 	}
 	else
@@ -2684,7 +2686,8 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 				//
 				$dataset[$i]->addPoint($pivot, $y, array("x" => $x, "size" => $size, "value" => $count));
 			}
-		} else {
+		}
+		else {
 			// There's a problem when we have no data ...
 			// This was the first try.. didnt work
 			//$dataset[$i]->addPoint($now, -1, array("x" => 0, "size" => 0));

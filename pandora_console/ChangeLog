@@ -1,3 +1,12 @@
+2012-06-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_graph.php: cleaned source code style.
+	
+	* include/functions_reporting.php: added subtype into the title
+	in "Top N".
+	
+	Merged from 4.0.2
+
 2012-06-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_visual_map.php

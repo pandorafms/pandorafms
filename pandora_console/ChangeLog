@@ -1,3 +1,10 @@
+2012-06-25  Sancho Lerena <slerena@artica.es>
+
+	* operation/menu.php: Put treeview as third option. This should be
+	more used, because is more useful.
+
+	* pandoradb.sql: tmensaje size was tinytext, changed to text.
+
 2012-06-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_graph.php, include/graphs/functions_pchart.php,

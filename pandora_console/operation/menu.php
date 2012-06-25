@@ -44,6 +44,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$sub["operation/agentes/group_view"]["text"] = __('Group view');
 		$sub["operation/agentes/group_view"]["refr"] = 0;
 		
+		$sub['operation/tree']['text'] = __('Tree view');
+		$sub["operation/tree"]["refr"] = 0;
+		
 		$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
 		$sub["operation/agentes/estado_agente"]["refr"] = 0;
 		$sub["operation/agentes/estado_agente"]["subsecs"] = array(
@@ -81,10 +84,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$sub2['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
 
 		$sub["operation/snmpconsole/snmp_view"]["sub2"] = $sub2;
-		
-		$sub['operation/tree']['text'] = __('Tree view');
-		$sub["operation/tree"]["refr"] = 0;
-			
+					
 		$menu_operation["estado"]["sub"] = $sub;
 		//End of view agents
 	}

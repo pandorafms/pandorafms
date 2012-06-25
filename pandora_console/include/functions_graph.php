@@ -252,8 +252,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		if (!$projection){
 			$timestamp = $timestamp_short;
 		}
-		
-		// Data		
+		// Data
 		if($show_events) {
 			$chart[$timestamp]['event'] = $event_value;
 			$series_type['event'] = 'points';
@@ -2067,11 +2066,10 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
-	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	
-	$flash_chart = $config['flash_charts'];
 	
+	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
 	}
@@ -2115,7 +2113,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $only_im
         else { 
                 $chart_time_format = 'M d H\h';
         }
-
+	
 	// Calculate source indexes
 	$i = 0;
 	$sources = array ();
@@ -2453,11 +2451,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	//$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
-	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	
 	$flash_chart = $config['flash_charts'];
-	
 	if ($only_image) {
 		$flash_chart = false;
 	}
@@ -2668,7 +2664,8 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 				//
 				$dataset[$i]->addPoint($pivot, $y, array("x" => $x, "size" => $size, "value" => $count));
 			}
-		} else {
+		}
+		else {
 			// There's a problem when we have no data ...
 			// This was the first try.. didnt work
 			//$dataset[$i]->addPoint($now, -1, array("x" => 0, "size" => 0));

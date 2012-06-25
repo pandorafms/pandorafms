@@ -539,6 +539,111 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 }
 
 /**
+ * The function to save the new elements of agents make as wizard.
+ * 
+ * @param array $id_agents The list of id of agents.
+ * @param string $image The image to set the elements.
+ * @param integer $id_layout The id of visual console to insert the elements.
+ * @param integer $range The distance between elements.
+ * @param integer $width Width of image.
+ * @param integer $height Height of image.
+ * 
+ * @return string Return the message status to insert DB.
+ */
+function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
+	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
+	$max_value, $type_percentile, $value_show, $label_type, $type) {
+	
+	if (empty ($id_agents)) {
+		$return = ui_print_error_message (__('No agents selected'), '', true);
+		return $return;
+	}
+	
+	$id_agents = (array) $id_agents;
+	
+	$error = false;
+	$pos_y = 10;
+	$pos_x = 10;
+	
+	foreach ($id_agents as $id_agent) {
+		if ($pos_x > 600) {
+			$pos_x = 10;
+			$pos_y = $pos_y + $range;
+		}
+		
+		$value_height = $height;
+		$value_image = $image;
+		$value_type = $type;
+		$value_width = $width;
+		
+		switch ($type) {
+			case PERCENTILE_BAR:
+			case PERCENTILE_BUBBLE:
+				$value_height = $max_value;
+				$value_width = $percentileitem_width;
+				$value_image = $value_show;
+				if ($type_percentile == 'percentile') {
+					$value_type = PERCENTILE_BAR;
+				}
+				else {
+					$value_type = PERCENTILE_BUBBLE;
+				}
+				break;
+			case SIMPLE_VALUE:
+				$value_image = '';
+				switch ($process_value) {
+					case PROCESS_VALUE_NONE:
+						$value_type = SIMPLE_VALUE;
+						break;
+					case PROCESS_VALUE_MIN:
+						$value_type = SIMPLE_VALUE_MIN;
+						break;
+					case PROCESS_VALUE_MAX:
+						$value_type = SIMPLE_VALUE_MAX;
+						break;
+					case PROCESS_VALUE_AVG:
+						$value_type = SIMPLE_VALUE_AVG;
+						break;
+				}
+				break;
+		}
+		
+		switch ($label_type) {
+			case 'agent':
+				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
+				$label = $agent_label;
+				break;
+			case 'none':
+				$label = '';
+				break;
+		}
+		$label = io_safe_input($label);
+		
+		$values = array ('type' => $value_type,
+			'id_layout' => $id_layout,
+			'pos_x' => $pos_x,
+			'pos_y' => $pos_y,
+			'label' => $label,
+			'image' => $value_image,
+			'id_agent' => $id_agent,
+			'id_agente_modulo' => 0,
+			'width' => $value_width,
+			'period' => $period,
+			'height' => $value_height,
+			'label_color' => '#000000');
+		
+		db_process_sql_insert ('tlayout_data', $values);
+		
+		$pos_x = $pos_x + $range;
+	}
+	
+	$return = ui_print_success_message (__('Agents successfully added to layout'), '', true);
+	
+	return $return;
+}
+
+
+/**
  * Get the color of line between elements in the visual map.
  * 
  * @param array $layoutData The row of element in DB.

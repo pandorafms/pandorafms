@@ -34,7 +34,12 @@ $table->data = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align: text-top;';
 $table->style[1] = 'font-weight: bold; vertical-align: top;';
+$table->style[2] = 'font-weight: bold; vertical-align: top';
 $table->size = array ();
+$table->size[0] = "20%";
+$table->size[1] = "20%";
+$table->size[2] = "20%";
+$table->size[3] = "20%";
 $table->data = array ();
 
 $images_list = array ();
@@ -72,7 +77,7 @@ $table->data["all_1"][1] = html_print_input_text ('range', 50, '', 5, 5, true);
 $table->rowstyle["staticgraph_modulegraph"] = 'display: none;';
 $table->data["staticgraph_modulegraph"][0] = __('Size (px)');
 $table->data["staticgraph_modulegraph"][1] = __('Width').': '.html_print_input_text ('width', 0, '', 5, 5, true);
-$table->data["staticgraph_modulegraph"][1] .= ' ' . __('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
+$table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' . __('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
 
 $table->rowstyle["modulegraph_simplevalue"] = 'display: none;';
 $table->data["modulegraph_simplevalue"][0] = __('Period');
@@ -108,12 +113,21 @@ $table->data["all_2"][0] = __('Groups');
 $table->data["all_2"][1] = html_print_select_groups($config['id_user'], "AR", true,
 	'groups', '', '', '', 0, true); 
 
+$table->rowstyle["all_one_item_per_agent"] = 'display: none';
+$table->data["all_one_item_per_agent"][0] = __('One item per agent');
+$table->data["all_one_item_per_agent"][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('item_per_agent', 1, '', '', false, 'item_per_agent_change(1)', '', true).'&nbsp;&nbsp;';
+$table->data["all_one_item_per_agent"][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('item_per_agent', 0, '', 0, false, 'item_per_agent_change(0)', '', true);
+$table->data["all_one_item_per_agent"][1] .= html_print_input_hidden ('item_per_agent_test', 0, true);
+
 $table->rowstyle["all_3"] = 'display: none;';
 $table->data["all_3"][0] = __('Agents');
+
 $table->data["all_3"][1] = html_print_select (agents_get_group_agents (0, false, "none", false, true),
-	'id_agents[]', 0, false, '', '', true, true) .
-	' <span style="vertical-align: top;">' . __('Modules') . '</span>' .
-	html_print_select (array (), 'module[]', 0, false, __('None'), -1, true, true);
+	'id_agents[]', 0, false, '', '', true, true);
+
+$table->data["all_3"][2] =	' <span style="vertical-align: top;">' . __('Modules') . '</span>';
+
+$table->data["all_3"][3] = html_print_select (array (), 'module[]', 0, false, __('None'), -1, true, true);
 
 $table->rowstyle["all_5"] = 'display: none;';
 $table->data["all_5"][0] = __('Label');
@@ -126,8 +140,7 @@ $table->data["all_5"][1] = html_print_select ($label_type, 'label_type', 'agent_
 echo '<form method="post"
 	action="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '"
 	onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
-$table->size[0] = "20%";
-$table->size[1] = "80%";
+
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -204,7 +217,12 @@ $(document).ready (function () {
 		
 		return;
 	});
-	$("#id_agents").change (agent_changed_by_multiple_agents);
+	
+	//$("#id_agents").change (agent_changed_by_multiple_agents);
+	$("#id_agents").change ( function() {
+		if ($("#hidden-item_per_agent_test").val() == 0) 
+			agent_changed_by_multiple_agents();
+	});
 });
 
 function check_fields() {
@@ -246,5 +264,30 @@ function hidden_rows() {
 			$("tr", "#wizard_table").filter(function () {return /^.*simplevalue.*/.test(this.id); }).show();
 			break;
 	}
+}
+
+function item_per_agent_change(itemPerAgent) {
+
+	// Disable Module select
+	if (itemPerAgent == 1) {
+		$('#module').empty();
+		$('#module').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr("value", -1));
+		$('#module').attr('disabled', true);
+		$('#label_type').empty();		
+		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent') . "'"; ?>).attr('value', 'agent').attr('selected', true));
+		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr('value', 'none'));
+		
+		$('#hidden-item_per_agent_test').val(1);
+	} else {
+		$('#module').removeAttr('disabled');
+		$('#hidden-item_per_agent_test').val(0);
+		$('#label_type').empty();	
+		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent') . "'"; ?>).attr('value', 'agent'));
+		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent - Module') . "'"; ?>).attr('value', 'agent_module').attr('selected', true));
+		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Module') . "'"; ?>).attr('value', 'module'));
+		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr('value', 'none'));
+	
+	}
+	
 }
 </script>

@@ -183,56 +183,74 @@ switch ($activeTab) {
 				$type_percentile = get_parameter ("type_percentile", 'percentile');
 				$value_show = get_parameter ("value_show", 'percent');
 				$label_type = get_parameter ("label_type", 'agent_module');
+				// This var switch between creation of items, item_per_agent = 0 => item per module; item_per_agent <> 0  => item per agent
+				$item_per_agent = get_parameter ("item_per_agent", 0);
 				
 				$message = '';
 				
-				if (empty($name_modules)) {
-					$statusProcessInDB = array('flag' => true, 'message' => ui_print_error_message (__('No modules selected'), '', true));
-				}
-				else {
-					//Any module
-					if ($name_modules[0] == '0') {
-						$id_modules = array();
-						foreach ($id_agents as $id_agent) {
-							$id_modulo = agents_get_modules($id_agent, array('id_agente_modulo'));
-							if (empty($id_modulo)) $id_modulo = array();
-							
-							foreach ($id_modulo as $id) {
-								$id_modules[] = $id['id_agente_modulo'];
-							}
-						}
+				// One item per agent
+				if ($item_per_agent == 1) {
+					$id_agents_result = array();
+					foreach ($id_agents as $id_agent_key => $id_agent_id)
+						$id_agents_result[] = $id_agent_id;
+					
+					$message .= visual_map_process_wizard_add_agents($id_agents_result,
+						$image, $idVisualConsole, $range, $width, $height,
+						$period, $process_value, $percentileitem_width,
+						$max_value, $type_percentile, $value_show, $label_type, $type);	
 						
-						$message .= visual_map_process_wizard_add_modules($id_modules,
-							$image, $idVisualConsole, $range, $width, $height,
-							$period, $process_value, $percentileitem_width,
-							$max_value, $type_percentile, $value_show, $label_type, $type);
+					$statusProcessInDB = array('flag' => true, 'message' => $message);						
+					
+				} else {
+					// One item per module
+					if (empty($name_modules)) {
+						$statusProcessInDB = array('flag' => true, 'message' => ui_print_error_message (__('No modules selected'), '', true));
 					}
 					else {
-						$id_modules = array();
-						
-						foreach ($name_modules as $mod) {
-							foreach ($id_agents as $ag) {
-								$id_module = agents_get_modules($ag,
-									array('id_agente_modulo'),
-									array('nombre' => $mod));
-									
-								if (empty($id_module))
-									continue;
-								else {
-									$id_module = reset($id_module);
-									$id_module = $id_module['id_agente_modulo'];
-								}
+						//Any module
+						if ($name_modules[0] == '0') {
+							$id_modules = array();
+							foreach ($id_agents as $id_agent) {
+								$id_modulo = agents_get_modules($id_agent, array('id_agente_modulo'));
+								if (empty($id_modulo)) $id_modulo = array();
 								
-								$id_modules[] = $id_module;
+								foreach ($id_modulo as $id) {
+									$id_modules[] = $id['id_agente_modulo'];
+								}
 							}
+							
+							$message .= visual_map_process_wizard_add_modules($id_modules,
+								$image, $idVisualConsole, $range, $width, $height,
+								$period, $process_value, $percentileitem_width,
+								$max_value, $type_percentile, $value_show, $label_type, $type);
 						}
-						
-						$message .= visual_map_process_wizard_add_modules($id_modules,
-							$image, $idVisualConsole, $range, $width, $height,
-							$period, $process_value, $percentileitem_width,
-							$max_value, $type_percentile, $value_show, $label_type, $type);
+						else {
+							$id_modules = array();
+							
+							foreach ($name_modules as $mod) {
+								foreach ($id_agents as $ag) {
+									$id_module = agents_get_modules($ag,
+										array('id_agente_modulo'),
+										array('nombre' => $mod));
+										
+									if (empty($id_module))
+										continue;
+									else {
+										$id_module = reset($id_module);
+										$id_module = $id_module['id_agente_modulo'];
+									}
+									
+									$id_modules[] = $id_module;
+								}
+							}
+							
+							$message .= visual_map_process_wizard_add_modules($id_modules,
+								$image, $idVisualConsole, $range, $width, $height,
+								$period, $process_value, $percentileitem_width,
+								$max_value, $type_percentile, $value_show, $label_type, $type);
+						}
+						$statusProcessInDB = array('flag' => true, 'message' => $message);
 					}
-					$statusProcessInDB = array('flag' => true, 'message' => $message);
 				}
 				$action = 'edit';
 				break;

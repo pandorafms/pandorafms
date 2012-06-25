@@ -1,3 +1,28 @@
+2012-06-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/bin/pandora_agent.conf,
+	  win32/installer/pandora.mpi,
+	  win32/versioninfo.rc,
+	  win32/pandora.cc,
+	  unix/AIX/pandora_agent.conf,
+	  unix/DEBIAN/control,
+	  unix/DEBIAN/make_deb_package.sh,
+	  unix/pandora_agent.spec,
+	  unix/Linux/pandora_agent.conf,
+	  unix/HP-UX/pandora_agent.conf,
+	  unix/pandora_agent,
+	  unix/NT4/pandora_agent.conf,
+	  unix/SunOS/pandora_agent.conf,
+	  unix/FreeBSD/pandora_agent.conf,
+	  shellscript/linux/pandora_agent.conf,
+	  shellscript/bsd-ipso/pandora_agent.conf,
+	  shellscript/aix/pandora_agent.conf,
+	  shellscript/hp-ux/pandora_agent.conf,
+	  shellscript/mac_osx/pandora_agent.conf,
+	  shellscript/solaris/pandora_agent.conf,
+	  shellscript/openWRT/pandora_agent.conf: Updated version strings for
+	  the 4.0.2 release.
+
 2012-06-21 Juan Manuel Ramon Vigo <juanmanuel.ramon@artica.es>
 
 	* unix/AIX/pandora_agent.conf

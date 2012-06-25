@@ -16,6 +16,7 @@ GNU General Public License for more details.
  */
 package pandroid_event_viewer.pandorafms;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -231,7 +232,7 @@ public class Options extends Activity {
 					Toast.LENGTH_LONG);
 			toast.show();
 		}
-		
+
 	}
 
 	/**
@@ -284,27 +285,30 @@ public class Options extends Activity {
 	 * 
 	 */
 	private class CheckConnectionAsyncTask extends
-			AsyncTask<Void, Void, String> {
+			AsyncTask<Void, Void, Boolean> {
 
-		private boolean connectionOk = false;
+		private String version = "";
 
 		@Override
-		protected String doInBackground(Void... arg0) {
-			String version = API.getVersion(getApplicationContext());
-			if (version.length() > 0) {
-				this.connectionOk = true;
-			} else {
-				this.connectionOk = false;
+		protected Boolean doInBackground(Void... arg0) {
+			try {
+				version = API.getVersion(getApplicationContext());
+				if (version.length() > 0) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (IOException e) {
+				return false;
 			}
-			return version;
 		}
 
 		/**
-		 * Choose an image (ok or wrong)
+		 * Chooses an image (ok or wrong)
 		 */
-		protected void onPostExecute(String v) {
-			if (this.connectionOk) {
-				connectionStatus.setText(v);
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				connectionStatus.setText(version);
 				connectionStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0,
 						0, R.drawable.ok);
 			} else {
@@ -323,6 +327,12 @@ public class Options extends Activity {
 		protected Boolean doInBackground(URL... arg0) {
 			url = arg0[0];
 			online = Core.isOnline(url);
+			SharedPreferences preferences = getSharedPreferences(
+					context.getString(R.string.const_string_preferences),
+					Activity.MODE_PRIVATE);
+			SharedPreferences.Editor editorPreferences = preferences.edit();
+			editorPreferences.putBoolean("online", online);
+			editorPreferences.commit();
 			return Core.isValidCertificate(arg0[0]);
 
 		}

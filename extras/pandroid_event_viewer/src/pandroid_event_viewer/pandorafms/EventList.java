@@ -129,7 +129,7 @@ public class EventList extends ListActivity {
 			toggleLoadingLayout();
 
 			this.object.showOptionsFirstTime = false;
-			this.object.executeBackgroundGetEvents();
+			this.object.executeBackgroundGetEvents(false);
 		}
 	}
 
@@ -171,7 +171,7 @@ public class EventList extends ListActivity {
 			this.object.getNewListEvents = true;
 			this.object.eventList = new ArrayList<EventListItem>();
 			this.toggleLoadingLayout();
-			this.object.executeBackgroundGetEvents();
+			this.object.executeBackgroundGetEvents(true);
 			break;
 		case R.id.about_button_menu_options:
 			i = new Intent(this, About.class);
@@ -260,7 +260,7 @@ public class EventList extends ListActivity {
 		la.showLoadingEvents = true;
 		la.notifyDataSetChanged();
 
-		object.executeBackgroundGetEvents();
+		object.executeBackgroundGetEvents(true);
 	}
 
 	/**

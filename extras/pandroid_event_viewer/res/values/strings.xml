@@ -128,4 +128,6 @@
 	<string name="profile_already_exists">A profile with that name already exists.</string>
 	<string name="profile_name_character_not_allowed">The | character is not allowed.</string>
 	<string name="profile_delete">Delete profile</string>
+	<string name="connection_problem">There was a problem. Check your connection.</string>
+	<string name="connection_settings_problem">The operation can not be performed until you configure a correct connection.</string>
 </resources>

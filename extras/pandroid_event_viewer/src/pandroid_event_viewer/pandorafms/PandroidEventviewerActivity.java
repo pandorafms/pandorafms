@@ -17,6 +17,7 @@ GNU General Public License for more details.
 
 package pandroid_event_viewer.pandorafms;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -173,7 +174,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 			process_notification(i);
 		}
 		if (changes || this.showTabListFirstTime) {
-			executeBackgroundGetEvents();
+			executeBackgroundGetEvents(false);
 			this.showTabListFirstTime = false;
 		}
 
@@ -254,7 +255,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 			this.loadInProgress = true;
 			this.getNewListEvents = true;
 			this.eventList = new ArrayList<EventListItem>();
-			executeBackgroundGetEvents();
+			executeBackgroundGetEvents(true);
 		}
 	}
 
@@ -288,8 +289,11 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	/**
 	 * Get events from pandora console.
 	 * 
+	 * @throws IOException
+	 *             If there is any connection problem.
+	 * 
 	 */
-	private void getEvents() {
+	private void getEvents() throws IOException {
 		// Get total count.
 		String return_api = API.getEvents(getApplicationContext(),
 				serializeParams2Api(true));
@@ -417,13 +421,12 @@ public class PandroidEventviewerActivity extends TabActivity implements
 
 	/**
 	 * Executes the async task of getting events.
+	 * 
+	 * @param underDemand
+	 *            <b>true</b> if the petition was under demand.
 	 */
-	public void executeBackgroundGetEvents() {
-		if (adapter != null) {
-			new GetEventsAsyncTask(adapter).execute();
-		} else {
-			new GetEventsAsyncTask(null).execute();
-		}
+	public void executeBackgroundGetEvents(boolean underDemand) {
+		new GetEventsAsyncTask(underDemand).execute();
 	}
 
 	/**
@@ -434,22 +437,30 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	 */
 	public class GetEventsAsyncTask extends AsyncTask<Void, Void, Void> {
 
-		private BaseAdapter adapter;
+		private boolean underDemand;
+		private boolean connectionProblem = false;
 
-		public GetEventsAsyncTask(BaseAdapter adapter) {
-			this.adapter = adapter;
+		public GetEventsAsyncTask(Boolean underDemand) {
+			this.underDemand = underDemand;
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
 			Log.i(TAG + " GetEventsAsyncTask", "doInBackground");
-			getEvents();
-
+			try {
+				getEvents();
+			} catch (IOException e) {
+				connectionProblem = true;
+			}
 			return null;
 		}
 
 		@Override
-		protected void onPostExecute(Void unused) {
+		protected void onPostExecute(Void result) {
+			if (connectionProblem) {
+				Core.showConnectionProblemToast(getApplicationContext(),
+						underDemand);
+			}
 			Intent i = new Intent("eventlist.java");
 
 			if (getNewListEvents) {

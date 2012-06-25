@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
@@ -61,6 +62,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * This class provides basic functions to manage services and some received
@@ -304,9 +306,11 @@ public class Core {
 	 * @param additionalParameters
 	 *            Petition additional parameters
 	 * @return Petition result.
+	 * @throws IOException
+	 *             If there is any problem with the connection.
 	 */
 	public static String httpGet(Context context,
-			List<NameValuePair> additionalParameters) {
+			List<NameValuePair> additionalParameters) throws IOException {
 		SharedPreferences preferences = context.getSharedPreferences(
 				context.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
@@ -324,8 +328,7 @@ public class Core {
 		if (url.toLowerCase().contains("https")) {
 			// Secure connection
 			return Core.httpsGet(url, parameters);
-		}
-		try {
+		} else {
 			DefaultHttpClient httpClient = new DefaultHttpClient();
 			UrlEncodedFormEntity entity;
 			HttpPost httpPost;
@@ -340,10 +343,7 @@ public class Core {
 			return_api = Core
 					.convertStreamToString(entityResponse.getContent());
 			return return_api;
-		} catch (Exception e) {
-			Log.e(TAG + " http petition", e.getMessage());
 		}
-		return "";
 	}
 
 	/**
@@ -461,8 +461,7 @@ public class Core {
 	 */
 	public static boolean isOnline(URL url) {
 		try {
-			HttpsURLConnection con = (HttpsURLConnection) url
-					.openConnection();
+			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 			con.setHostnameVerifier(new HostnameVerifier() {
 				public boolean verify(String hostname, SSLSession session) {
 					return true;
@@ -485,12 +484,16 @@ public class Core {
 	 * @param parameters
 	 *            Petition parameters
 	 * @return Result of the petition.
+	 * @throws IOException
+	 *             If there is any problem with connection.
+	 * 
 	 */
-	private static String httpsGet(String url, List<NameValuePair> parameters) {
+	private static String httpsGet(String url, List<NameValuePair> parameters)
+			throws IOException {
 		String result = "";
+		HttpsURLConnection con;
 		try {
-			HttpsURLConnection con = (HttpsURLConnection) new URL(url)
-					.openConnection();
+			con = (HttpsURLConnection) new URL(url).openConnection();
 			con.setHostnameVerifier(new HostnameVerifier() {
 				public boolean verify(String hostname, SSLSession session) {
 					return true;
@@ -522,8 +525,9 @@ public class Core {
 				Log.d("CONTENT", temp);
 				result += temp + "\n";
 			}
-		} catch (IOException e) {
-			return "";
+		} catch (MalformedURLException e) {
+			// Can't reach here because the given url is checked when is
+			// inserted in Options activity.
 		}
 		return result;
 	}
@@ -552,5 +556,32 @@ public class Core {
 			}
 		}
 		return sslSocketFactory;
+	}
+
+	/**
+	 * Shows a toast which will show the connection problem message. Do not call
+	 * outside the UI's thread.
+	 * 
+	 * @param context
+	 *            Application context.
+	 * @param ignoreConnectionCheck
+	 *            If true it shows the toast even if the connection is not
+	 *            correctly configured.
+	 */
+	public static void showConnectionProblemToast(Context context,
+			boolean ignoreConnectionCheck) {
+		SharedPreferences preferences = context.getSharedPreferences(
+				context.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		if (preferences.getBoolean("online", false)) {
+			Toast.makeText(context, R.string.connection_problem,
+					Toast.LENGTH_SHORT).show();
+		} else {
+			if (ignoreConnectionCheck) {
+				Toast.makeText(context, R.string.connection_settings_problem,
+						Toast.LENGTH_SHORT).show();
+			}
+		}
+
 	}
 }

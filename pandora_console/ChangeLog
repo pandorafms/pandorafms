@@ -1,3 +1,7 @@
+2012-06-25  Sancho Lerena <slerena@artica.es>
+
+	* operation/menu.php: Changed order of treeview in menu.
+
 2012-06-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_graph.php: cleaned source code style.

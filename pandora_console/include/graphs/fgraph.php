@@ -246,7 +246,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		return '<img src="' . $no_data_image . '" />';
 	}
 	
-	if($flash_chart) {
+	if ($flash_chart) {
 		// Url encode the legend to avoid eliminate weird symbols like %, &...
 		if (isset($legend))
 			foreach($legend as $i => $v) {

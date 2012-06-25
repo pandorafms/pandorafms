@@ -144,40 +144,40 @@ $c = 1;
 switch($graph_type) {
 	case 'hbar':
 	case 'vbar':
-			foreach($data as $i => $values) {				
-				foreach($values as $name => $val) {
-					$data_values[$name][] = $val;
-				}				
-				
-				if (($c % $step) == 0) {
-					$data_keys[] = $i;
-				}
-				else {
-					$data_keys[] = "";
-				}
-				
-				$c++;
-			}
-			$fine_colors = array();
-
-			// If is set fine colors we store it or set default
-			if(isset($colors[reset(array_keys($data_values))]['fine'])) {
-				$fine = $colors[reset(array_keys($data_values))]['fine'];
-				if($fine === true) {
-					$fine = $default_fine_colors;
-				}
-				
-				foreach($fine as $i => $fine_color) {
-					$rgb_fine = html_html2rgb($fine_color);
-					$fine_colors[$i]['R'] = $rgb_fine[0];
-					$fine_colors[$i]['G'] = $rgb_fine[1];
-					$fine_colors[$i]['B'] = $rgb_fine[2];
-					$fine_colors[$i]['Alpha'] = 100;
-				}
-				$colors = array();
+		foreach($data as $i => $values) {
+			foreach($values as $name => $val) {
+				$data_values[$name][] = $val;
 			}
 			
-			break;
+			if (($c % $step) == 0) {
+				$data_keys[] = $i;
+			}
+			else {
+				$data_keys[] = "";
+			}
+			
+			$c++;
+		}
+		$fine_colors = array();
+		
+		// If is set fine colors we store it or set default
+		if(isset($colors[reset(array_keys($data_values))]['fine'])) {
+			$fine = $colors[reset(array_keys($data_values))]['fine'];
+			if($fine === true) {
+				$fine = $default_fine_colors;
+			}
+			
+			foreach($fine as $i => $fine_color) {
+				$rgb_fine = html_html2rgb($fine_color);
+				$fine_colors[$i]['R'] = $rgb_fine[0];
+				$fine_colors[$i]['G'] = $rgb_fine[1];
+				$fine_colors[$i]['B'] = $rgb_fine[2];
+				$fine_colors[$i]['Alpha'] = 100;
+			}
+			$colors = array();
+		}
+		
+		break;
 	case 'progress':
 	case 'area':
 	case 'stacked_area':
@@ -185,27 +185,27 @@ switch($graph_type) {
 	case 'line':
 	case 'threshold':
 	case 'scatter':
-			foreach($data as $i => $d) {
-				$data_values[] = $d;
-				
-				
-				if (($c % $step) == 0) {
-					$data_keys[] = $i;
-				}
-				else {
-					$data_keys[] = "";
-				}
-				
-				$c++;
+		foreach($data as $i => $d) {
+			$data_values[] = $d;
+			
+			
+			if (($c % $step) == 0) {
+				$data_keys[] = $i;
+			}
+			else {
+				$data_keys[] = "";
 			}
 			
-			break;
+			$c++;
+		}
+		
+		break;
 	case 'slicebar':
 	case 'polar':
 	case 'radar':
 	case 'pie3d':
 	case 'pie2d':
-			break;
+		break;
 }
 
 switch($graph_type) {
@@ -214,15 +214,15 @@ switch($graph_type) {
 	case 'radar':
 	case 'pie3d':
 	case 'pie2d':
-			break;
+		break;
 	default:
-			if(!is_array(reset($data_values))) {
-				$data_values = array($data_values);
-				if(is_array($colors) && !empty($colors)) {
-					$colors = array($colors);
-				}
+		if(!is_array(reset($data_values))) {
+			$data_values = array($data_values);
+			if(is_array($colors) && !empty($colors)) {
+				$colors = array($colors);
 			}
-			break;
+		}
+		break;
 }
 
 $rgb_color = array();
@@ -597,12 +597,12 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	if(!is_array($legend) || empty($legend)) {
 		unset($legend);
 	}
-	 /*$legend=array('pep1' => 'pep1','pep2' => 'pep2','pep3' => 'pep3','pep4' => 'pep4');
-	 $data=array(array('pep1' => 1, 'pep2' => 1, 'pep3' => 3, 'pep4' => 3), array('pep1' => 1, 'pep2' => 3, 'pep3' => 1,'pep4' => 4), array('pep1' => 3, 'pep2' => 1, 'pep3' => 1,'pep4' =>1), array('pep1' => 1, 'pep2' =>1, 'pep3' =>1,'pep4' =>0));
-	 $index=array(1,2,3,4);
-     */
-     if(is_array(reset($data))) {
-	 	$data2 = array();
+	/*$legend=array('pep1' => 'pep1','pep2' => 'pep2','pep3' => 'pep3','pep4' => 'pep4');
+	$data=array(array('pep1' => 1, 'pep2' => 1, 'pep3' => 3, 'pep4' => 3), array('pep1' => 1, 'pep2' => 3, 'pep3' => 1,'pep4' => 4), array('pep1' => 3, 'pep2' => 1, 'pep3' => 1,'pep4' =>1), array('pep1' => 1, 'pep2' =>1, 'pep3' =>1,'pep4' =>0));
+	$index=array(1,2,3,4);
+	*/
+	if(is_array(reset($data))) {
+		$data2 = array();
 		foreach($data as $i =>$values) {
 			$c = 0;
 			foreach($values as $i2 => $value) {
@@ -615,18 +615,18 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 else {
 		$data = array($data);
 	 }
-
-	 /* Create and populate the pData object */
-	 $MyData = new pData();
 	
-	 foreach($data as $i => $values) {
-		 if(isset($legend)) {
+	/* Create and populate the pData object */
+	$MyData = new pData();
+	
+	foreach($data as $i => $values) {
+		if(isset($legend)) {
 			$point_id = $legend[$i];
-		 }
-		 else {
+		}
+		else {
 			$point_id = $i;
-		 }
-
+		}
+		
 		$MyData->addPoints($values,$point_id);
 		if (!empty($rgb_color)) {
 			$MyData->setPalette($point_id, 

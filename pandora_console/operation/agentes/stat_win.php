@@ -162,7 +162,7 @@ function show_others() {
 <?php
 
 // Get input parameters
-$label = get_parameter ("label","");	
+$label = get_parameter ("label","");
 if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
 	echo "<h3 class='error'>".__('There was a problem locating the source of the graph')."</h3>";
 	exit;
@@ -189,7 +189,7 @@ $baseline = get_parameter ("baseline", 0);
 if ($zoom > 1) {
 	$height = $height * ($zoom / 2.1);
 	$width = $width * ($zoom / 1.4);
-
+	
 	echo "<script type='text/javascript'>window.resizeTo($width + 80, $height + 120);</script>";
 }
 

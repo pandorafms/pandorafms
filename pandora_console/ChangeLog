@@ -1,3 +1,14 @@
+2012-06-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_graph.php, include/graphs/functions_pchart.php,
+	include/graphs/fgraph.php, operation/agentes/stat_win.php,
+	operation/reporting/graph_viewer.php: cleaned source code style.
+	
+	* include/functions_custom_graphs.php: fixed into the function
+	"graphic_combined_module" the show html entities in the name of
+	agents in legends, show better the legend for long size names of
+	agents and modules.
+
 2012-06-25  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/languages/ja.po, include/languages/ja.mo: Changed some

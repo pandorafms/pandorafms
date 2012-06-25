@@ -1,22 +1,33 @@
+2012-06-25 Santiago Munín <burning1@gmail.com>
+	
+	* src/pandroid_event_viewer/pandorafms/CreateIncidentActivity.java: Fixed a UI bug and refactorized the API call.
+	* src/pandroid_event_viewer/pandorafms/API.java: Added create incident.
+	* res/layout/main.xml: Little UI changes.
+
 2012-06-24 Santiago Munín <burning1@gmail.com>
+	
 	* src/pandroid_event_viewer/pandorafms/Main.java: Removed getGroups function, now it calls API.getGroups().
 
 2012-06-24 Santiago Munín <burning1@gmail.com>
+	
 	* src/pandroid_event_viewer/pandorafms/Main.java: Added search profiles feature.
 	* res/layout/main.xml: UI changes. Added search profiles feature.
 	* res/values/strings.xml: Added new entries.
 
 2012-06-23 Santiago Munín <burning1@gmail.com>
+	
 	* src/pandroid_event_viewer/pandorafms/Core.java: Fixed a bug in the isOnline() function.
 	* src/pandroid_event_viewer/pandorafms/Options.java: Improved the connection checking functionality.
 	* src/pandroid_event_viewer/pandorafms/API.java: Added getTags().
 	* src/pandroid_event_viewer/pandorafms/Main.java: Now the tags are getted by API.getTags().
 
 2012-06-21 Santiago Munín <burning1@gmail.com>
+	
 	* src/pandroid_event_viewer/pandorafms/Core.java: Added a new method which checks if a website is online.
 	* src/pandroid_event_viewer/pandorafms/Options.java: Fixed a bug. The app didn't check if the url were online before checking the certificate.
 
 2012-06-21 Santiago Munín <burning1@gmail.com>
+	
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Restored to the previous version.
 	* src/pandroid_event_viewer/pandorafms/Core.java: Added a line which checks if the connection is secure.
 	* src/pandroid_event_viewer/pandorafms/Options.java: Made some changes in certificate checking.

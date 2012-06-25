@@ -2556,7 +2556,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
 				$table_resume->data[0][0] .= format_numeric($total_SLA / count($sla_showed), 2);
 				$table_resume->data[0][0] .= "%</span>";
-
+				
 				$data[1] = html_print_table($table_resume, true);
 				
 				$table_resume = null;

@@ -1,3 +1,15 @@
+2012-06-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_graph.php, include/functions_reporting.php,
+	operation/agentes/status_monitor.php: cleaned source code style.
+	
+	* extensions/update_manager/load_updatemanager.php,
+	extensions/update_manager/lib/functions.ajax.php,
+	extensions/update_manager/main.php: now the function "get_key"
+	returns more info about error to get user key from execution of
+	keygen, and the calls of this function show more info about the
+	kind errors.
+
 2012-06-25  Sancho Lerena <slerena@artica.es>
 
 	* operation/menu.php: Put treeview as third option. This should be

@@ -340,7 +340,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
 	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
-
+	
 	$legend = array();
 	$legend['sum'] = __('Avg') . ' (' . $avg_value . ') ' . $unit;
 	if($show_events) {
@@ -357,7 +357,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($only_image) {
 		$flash_chart = false;
 	}
-
+	
 	if ($flash_chart) {
 		include_flash_chart_script($homeurl);
 	}
@@ -787,6 +787,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	if ($flash_charts) {
 		include_flash_chart_script();
 	}
+	
 	
 	//Work around for fixed the agents name with huge size chars.
 	$fixed_font_size = $config['font_size'] - 1;

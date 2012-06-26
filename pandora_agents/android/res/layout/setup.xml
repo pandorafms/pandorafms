@@ -95,7 +95,15 @@
 				android:textSize="14dip"
 				android:textColor="#bbbbbb"
 			/>
-			<!--<CheckBox
+			<CheckBox
+				android:id="@+id/checksimIDReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/simIDReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+			/>
+			<CheckBox
 				android:id="@+id/checkTaskReport"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -132,7 +140,7 @@
 			    android:layout_width="fill_parent"
 			    android:layout_height="wrap_content"
 			    android:text="@string/update"
-			/>-->
+			/>
 			<Button
 				android:id="@+id/update" 
 			    android:layout_width="fill_parent"

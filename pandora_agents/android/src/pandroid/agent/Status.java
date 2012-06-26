@@ -41,7 +41,7 @@ public class Status  extends Activity {
     	super.onStart();
     	
     	h.post(new Runnable() {
-        	
+        	@Override
         	public void run() {
         		Core.loadLastValues(getApplicationContext());
         		showLastValues();
@@ -50,6 +50,7 @@ public class Status  extends Activity {
         		h.postDelayed(this, 1000);
         	}
         });
+    	//set to 1 for first contact
     }
     
     //For options
@@ -243,7 +244,7 @@ public class Status  extends Activity {
 		}
 		*/
 		
-		/*
+		
 		textView = (TextView)findViewById(R.id.task_value_str);
 		textView.setText("");
 		if (Core.taskStatus.equals("enabled") && Core.taskHumanName.length() != 0) {
@@ -256,7 +257,7 @@ public class Status  extends Activity {
 			}
 			textView.setText(text);		
 		}
-		*/
+		
 		// freeMemory
 		textView = (TextView)findViewById(R.id.memory_value_str);
 		textView.setText("");
@@ -279,16 +280,46 @@ public class Status  extends Activity {
 			textView.setText("" + Core.upTime+" Seconds");
 		}
 		// mobile operator
-		textView = (TextView)findViewById(R.id.networkoperator_value);
+		textView = (TextView)findViewById(R.id.network_operator_value);
 		textView.setText("");
 		if (Core.networkOperator != null) {
 			textView.setText("" + Core.networkOperator);
 		}
 		// SMSReceived
-		/*
 		textView = (TextView)findViewById(R.id.sms_received_value);
 		textView.setText("");
-		textView.setText("" + Core.getSMSReceived(getApplicationContext()));
-		 */
+		textView.setText("" + Core.SMSReceived);
+		/*
+		// SMSSent
+		textView = (TextView)findViewById(R.id.sms_sent_value);
+		textView.setText("");
+		textView.setText("" + Core.SMSSent);
+		*/
+		// SMSReceived
+		textView = (TextView)findViewById(R.id.network_type_value);
+		textView.setText("");
+		textView.setText("" + Core.networkType);
+		
+		textView = (TextView)findViewById(R.id.phone_type_value);
+		textView.setText("");
+		textView.setText("" + Core.phoneType);
+		
+		textView = (TextView)findViewById(R.id.signal_strength_value);
+		textView.setText("");
+		textView.setText("" + Core.signalStrength);
+		
+		textView = (TextView)findViewById(R.id.incoming_Calls_value);
+		textView.setText("");
+		textView.setText("" + Core.incomingCalls);
+		
+		textView = (TextView)findViewById(R.id.missed_Calls_value);
+		textView.setText("");
+		textView.setText("" + Core.missedCalls);
+
+		textView = (TextView)findViewById(R.id.outgoing_Calls_value);
+		textView.setText("");
+		textView.setText("" + Core.outgoingCalls);
+
+
 	}
 }

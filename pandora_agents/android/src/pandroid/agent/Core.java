@@ -24,8 +24,8 @@ public class Core {
     static volatile public String defaultServerPort = "41121";
     static volatile public int defaultInterval = 300;
     static volatile public String defaultAgentName = "pandroid";
-    static volatile public String defaultGpsStatus = "enabled"; // "disabled" or "enabled"
-    static volatile public String defaultMemoryStatus = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultGpsStatus = "disabled"; // "disabled" or "enabled"
+    static volatile public String defaultMemoryStatus = "disabled"; // "disabled" or "enabled"
     static volatile public String defaultTaskStatus = "disabled"; // "disabled" or "enabled"
     static volatile public String defaultTask = "";
     static volatile public String defaultTaskHumanName = "";
@@ -34,10 +34,18 @@ public class Core {
     static volatile public long defaultContact = 0;
     static volatile public int defaultContactError = 0;
     static volatile public String defaultSimID = "";
+    static volatile public String defaultSimIDStatus = "disabled"; // "disabled" or "enabled"
     static volatile public long defaultUpTime = 0;
     
     static volatile public int defaultSMSReceived = 0;
-    static volatile public String defaultMobileOperator = "";
+    static volatile public int defaultSMSSent = 0;
+    static volatile public String defaultNetworkOperator = "";
+    static volatile public String defaultNetworkType = "";
+    static volatile public String defaultPhoneType = "";
+    static volatile public String defaultSignalStrength = "";
+    static volatile public int defaultIncomingCalls = 0;
+    static volatile public int defaultMissedCalls = 0;
+    static volatile public int defaultOutgoingCalls = 0;
     
     static volatile public Context con = null;
     static volatile public AlarmManager am = null;
@@ -53,10 +61,20 @@ public class Core {
     static volatile public String taskStatus = defaultTaskStatus;
     static volatile public String task = defaultTask;
     static volatile public String taskHumanName = defaultTaskHumanName;
-    static volatile public String simID = "";  //fix
-    static volatile public long upTime = defaultUpTime; //mark device uptime including deep sleep
+    static volatile public String simID = "";
+    static volatile public String simIDStatus = defaultSimIDStatus;
+    static volatile public long upTime = defaultUpTime;
     static volatile public int SMSReceived = defaultSMSReceived;
-    static volatile public String networkOperator = defaultMobileOperator;
+    static volatile public int SMSSent = defaultSMSSent;
+    static volatile public String networkOperator = defaultNetworkOperator;
+    static volatile public String networkType = defaultNetworkType;
+    static volatile public String phoneType = defaultPhoneType;
+    static volatile public String signalStrength = defaultSignalStrength;
+    static volatile public int incomingCalls = defaultIncomingCalls;
+    static volatile public int missedCalls = defaultMissedCalls;
+    static volatile public int outgoingCalls = defaultOutgoingCalls;
+    
+    
     
     static volatile public float latitude = CONST_INVALID_COORDS;
     static volatile public float longitude = CONST_INVALID_COORDS;
@@ -126,7 +144,16 @@ public class Core {
 		contactError = agentPreferences.getInt("contactError", Core.defaultContactError);
 		simID = agentPreferences.getString("simID", Core.defaultSimID);
 		upTime = agentPreferences.getLong("upTime", Core.defaultUpTime);
-		networkOperator = agentPreferences.getString("networkOperator", Core.defaultMobileOperator);
+		SMSReceived = agentPreferences.getInt("SMSReceived", Core.defaultSMSReceived);
+		SMSSent = agentPreferences.getInt("SMSSent", Core.defaultSMSSent);
+		networkOperator = agentPreferences.getString("networkOperator", Core.defaultNetworkOperator);
+		networkType = agentPreferences.getString("networkType", Core.defaultNetworkType);
+		phoneType = agentPreferences.getString("phoneType", Core.defaultPhoneType);
+		signalStrength = agentPreferences.getString("signalStrength", Core.defaultSignalStrength);
+		incomingCalls = agentPreferences.getInt("incomingCalls", Core.defaultIncomingCalls);
+		missedCalls = agentPreferences.getInt("missedCalls", Core.defaultMissedCalls);
+		outgoingCalls = agentPreferences.getInt("outgoingCalls", Core.defaultOutgoingCalls);
+		
     }
     
     static public void loadConf(Context context) {
@@ -142,7 +169,7 @@ public class Core {
 		serverPort = agentPreferences.getString("serverPort", Core.defaultServerPort);
 		interval = agentPreferences.getInt("interval", Core.defaultInterval);
 		//fix agent name to mark
-		agentName = agentPreferences.getString("agentName", Core.defaultAgentName + "_mark_v");
+		agentName = agentPreferences.getString("agentName", Core.defaultAgentName);
 		gpsStatus = agentPreferences.getString("gpsStatus", Core.defaultGpsStatus);
 		memoryStatus = agentPreferences.getString("memoryStatus", Core.defaultMemoryStatus);
 		taskStatus = agentPreferences.getString("taskStatus", Core.defaultTaskStatus);
@@ -153,13 +180,17 @@ public class Core {
     
     static public boolean updateConf(Context context) {
     	return updateConf(context, serverAddr, serverPort, interval, agentName,
-    		gpsStatus, memoryStatus, taskStatus, task, taskHumanName, simID, upTime, networkOperator);
+    		gpsStatus, memoryStatus, taskStatus, task, taskHumanName, simID, upTime,
+    		networkOperator, SMSReceived, SMSSent, networkType, phoneType, signalStrength,
+    		incomingCalls, missedCalls, outgoingCalls);
     }
     
     static public boolean updateConf(Context context, String _serverAddr,
     	String _serverPort, int _interval, String _agentName, String _gpsStatus,
     	String _memoryStatus, String _taskStatus, String _task,
-    	String _taskHumanName, String _simID, long _upTime, String _networkOperator) {
+    	String _taskHumanName, String _simID, long _upTime, String _networkOperator,
+    	int _smsReceived, int _smsSent, String _networkType, String _phoneType, String _signalStrength,
+    	int _incomingCalls, int _missedCalls, int _outgoingCalls) {
     	if (con == null) {
     		con = context;
     	}
@@ -181,6 +212,14 @@ public class Core {
 		editor.putString("SimID", _simID);
 		editor.putLong("UpTime", _upTime);
 		editor.putString("networkOperator", _networkOperator);
+		editor.putInt("SMSReceived", _smsReceived);
+		editor.putInt("SMSSent", _smsSent);
+		editor.putString("networkType", _networkType);
+		editor.putString("phoneType", _phoneType);
+		editor.putString("signalStrength", _signalStrength);
+		editor.putInt("incomingCalls", _incomingCalls);
+		editor.putInt("missedCalls", _missedCalls);
+		editor.putInt("outgoingCalls", _outgoingCalls);
 		
 		if (editor.commit()) {
 			return true;

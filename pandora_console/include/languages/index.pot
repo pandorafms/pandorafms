@@ -1,18 +1,21 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-25 19:22+0200\n"
+"POT-Creation-Date: 2012-06-26 10:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-25 18:01+0000\n"
-"X-Generator: Launchpad (build 15482)\n"
 "Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: ../../include/functions_config.php:733
 msgid "Default password for \"Admin\" user has not been changed."
@@ -30,8 +33,8 @@ msgstr ""
 
 #: ../../include/functions_config.php:741
 msgid ""
-"Please check that the web server has write rights on the "
-"{HOMEDIR}/attachment directory"
+"Please check that the web server has write rights on the {HOMEDIR}/"
+"attachment directory"
 msgstr ""
 
 #: ../../include/functions_config.php:752
@@ -98,47 +101,46 @@ msgstr ""
 #: ../../include/functions_config.php:844
 msgid ""
 "There is a new update please go to menu operation and into extensions <a "
-"style=\"font-weight:bold;\" "
-"href=\"index.php?sec=extensions&sec2=extensions/update_manager\">go to "
-"Update Manager</a> for more details."
+"style=\"font-weight:bold;\" href=\"index.php?sec=extensions&sec2=extensions/"
+"update_manager\">go to Update Manager</a> for more details."
 msgstr ""
 
 #: ../../include/functions_incidents.php:29
 #: ../../include/functions_incidents.php:49
-#: ../../include/functions_graph.php:1211
+#: ../../include/functions_graph.php:1244
 msgid "Informative"
 msgstr ""
 
 #: ../../include/functions_incidents.php:30
 #: ../../include/functions_incidents.php:52
-#: ../../include/functions_graph.php:1212
+#: ../../include/functions_graph.php:1245
 msgid "Low"
 msgstr ""
 
 #: ../../include/functions_incidents.php:31
 #: ../../include/functions_incidents.php:55
-#: ../../include/functions_graph.php:1213
+#: ../../include/functions_graph.php:1246
 msgid "Medium"
 msgstr ""
 
 #: ../../include/functions_incidents.php:32
 #: ../../include/functions_incidents.php:58
-#: ../../include/functions_graph.php:1214
+#: ../../include/functions_graph.php:1247
 msgid "Serious"
 msgstr ""
 
 #: ../../include/functions_incidents.php:33
 #: ../../include/functions_incidents.php:61
-#: ../../include/functions_graph.php:1215
+#: ../../include/functions_graph.php:1248
 msgid "Very serious"
 msgstr ""
 
 #: ../../include/functions_incidents.php:34
 #: ../../include/functions_incidents.php:64
-#: ../../include/functions_graph.php:1216
-#: ../../include/functions_graph.php:1462
-#: ../../include/functions_graph.php:1463
-#: ../../include/functions_graph.php:1464 ../../include/functions.php:654
+#: ../../include/functions_graph.php:1249
+#: ../../include/functions_graph.php:1495
+#: ../../include/functions_graph.php:1496
+#: ../../include/functions_graph.php:1497 ../../include/functions.php:654
 #: ../../include/functions.php:837 ../../include/functions.php:860
 msgid "Maintenance"
 msgstr ""
@@ -261,10 +263,10 @@ msgid "Task"
 msgstr ""
 
 #: ../../include/graphs/functions_fsgraph.php:893
-#: ../../include/functions_graph.php:1033
-#: ../../include/functions_graph.php:1039
-#: ../../include/functions_graph.php:1045
-#: ../../include/functions_graph.php:1052
+#: ../../include/functions_graph.php:1066
+#: ../../include/functions_graph.php:1072
+#: ../../include/functions_graph.php:1078
+#: ../../include/functions_graph.php:1085
 msgid "Week"
 msgstr ""
 
@@ -285,10 +287,10 @@ msgid "Milestones"
 msgstr ""
 
 #: ../../include/graphs/functions_fsgraph.php:928
-#: ../../include/functions_graph.php:1032
-#: ../../include/functions_graph.php:1038
-#: ../../include/functions_graph.php:1044
-#: ../../include/functions_graph.php:1052
+#: ../../include/functions_graph.php:1065
+#: ../../include/functions_graph.php:1071
+#: ../../include/functions_graph.php:1077
+#: ../../include/functions_graph.php:1085
 msgid "Today"
 msgstr ""
 
@@ -312,9 +314,9 @@ msgstr ""
 #: ../../include/functions_visual_map.php:317
 #: ../../include/functions_visual_map.php:329
 #: ../../include/functions_visual_map.php:341
-#: ../../include/functions_visual_map.php:1070
-#: ../../include/functions_visual_map.php:1082
-#: ../../include/functions_visual_map.php:1094
+#: ../../include/functions_visual_map.php:1175
+#: ../../include/functions_visual_map.php:1187
+#: ../../include/functions_visual_map.php:1199
 #: ../../include/functions_reporting.php:2215
 #: ../../include/functions_reporting.php:2376
 #: ../../include/functions_reporting.php:2382
@@ -343,22 +345,22 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:391
 #: ../../enterprise/include/functions_reporting_pdf.php:690
 #: ../../enterprise/include/functions_reporting_pdf.php:706
-#: ../../enterprise/include/functions_reporting_pdf.php:1511
-#: ../../enterprise/include/functions_reporting_pdf.php:1539
-#: ../../enterprise/include/functions_reporting_pdf.php:1568
-#: ../../enterprise/include/functions_reporting_pdf.php:1596
-#: ../../enterprise/include/functions_reporting_pdf.php:2122
-#: ../../enterprise/include/functions_reporting_pdf.php:2150
-#: ../../enterprise/include/functions_reporting_pdf.php:2179
-#: ../../enterprise/include/functions_reporting_pdf.php:2206
-#: ../../enterprise/include/functions_reporting_pdf.php:2261
-#: ../../enterprise/include/functions_reporting_pdf.php:2267
-#: ../../enterprise/include/functions_reporting_pdf.php:2332
-#: ../../enterprise/include/functions_reporting_pdf.php:2333
-#: ../../enterprise/include/functions_reporting_pdf.php:2373
-#: ../../enterprise/include/functions_reporting_pdf.php:2376
-#: ../../enterprise/include/functions_reporting_pdf.php:2465
-#: ../../enterprise/include/functions_reporting_pdf.php:2715
+#: ../../enterprise/include/functions_reporting_pdf.php:1527
+#: ../../enterprise/include/functions_reporting_pdf.php:1555
+#: ../../enterprise/include/functions_reporting_pdf.php:1584
+#: ../../enterprise/include/functions_reporting_pdf.php:1612
+#: ../../enterprise/include/functions_reporting_pdf.php:2143
+#: ../../enterprise/include/functions_reporting_pdf.php:2171
+#: ../../enterprise/include/functions_reporting_pdf.php:2200
+#: ../../enterprise/include/functions_reporting_pdf.php:2227
+#: ../../enterprise/include/functions_reporting_pdf.php:2282
+#: ../../enterprise/include/functions_reporting_pdf.php:2288
+#: ../../enterprise/include/functions_reporting_pdf.php:2353
+#: ../../enterprise/include/functions_reporting_pdf.php:2354
+#: ../../enterprise/include/functions_reporting_pdf.php:2394
+#: ../../enterprise/include/functions_reporting_pdf.php:2397
+#: ../../enterprise/include/functions_reporting_pdf.php:2486
+#: ../../enterprise/include/functions_reporting_pdf.php:2736
 #: ../../enterprise/include/functions_reporting_csv.php:253
 #: ../../enterprise/include/functions_reporting_csv.php:366
 #: ../../enterprise/include/functions_reporting_csv.php:401
@@ -402,7 +404,7 @@ msgstr ""
 
 #: ../../include/functions_modules.php:1221
 #: ../../include/functions_modules.php:1240
-#: ../../include/functions_reporting.php:4200
+#: ../../include/functions_reporting.php:4219
 #: ../../mobile/operation/agents/monitor_status.php:197
 #: ../../mobile/operation/agents/monitor_status.php:209
 #: ../../mobile/operation/agents/view_agents.php:244
@@ -423,7 +425,7 @@ msgstr ""
 
 #: ../../include/functions_modules.php:1225
 #: ../../include/functions_modules.php:1244
-#: ../../include/functions_reporting.php:4203
+#: ../../include/functions_reporting.php:4222
 #: ../../mobile/operation/agents/monitor_status.php:200
 #: ../../mobile/operation/agents/monitor_status.php:212
 #: ../../mobile/operation/agents/view_agents.php:248
@@ -444,7 +446,7 @@ msgstr ""
 
 #: ../../include/functions_modules.php:1229
 #: ../../include/functions_modules.php:1236
-#: ../../include/functions_reporting.php:4197
+#: ../../include/functions_reporting.php:4216
 #: ../../mobile/operation/agents/monitor_status.php:194
 #: ../../mobile/operation/agents/monitor_status.php:206
 #: ../../mobile/operation/agents/view_agents.php:252
@@ -466,7 +468,7 @@ msgstr ""
 #: ../../include/functions_modules.php:1236
 #: ../../include/functions_modules.php:1240
 #: ../../include/functions_modules.php:1244
-#: ../../include/functions_reporting.php:4206
+#: ../../include/functions_reporting.php:4225
 #: ../../mobile/operation/agents/monitor_status.php:206
 #: ../../mobile/operation/agents/monitor_status.php:209
 #: ../../mobile/operation/agents/monitor_status.php:212
@@ -702,7 +704,7 @@ msgstr ""
 #: ../../include/functions_filemanager.php:550
 #: ../../extensions/update_manager/update_pandora.php:144
 #: ../../extensions/update_manager/update_pandora.php:149
-#: ../../extensions/update_manager/main.php:153
+#: ../../extensions/update_manager/main.php:163
 msgid "Close"
 msgstr ""
 
@@ -857,8 +859,8 @@ msgstr ""
 #: ../../enterprise/extensions/backup/main.php:171
 #: ../../enterprise/godmode/policies/policy_agents.php:217
 #: ../../enterprise/godmode/policies/policy_agents.php:296
-#: ../../enterprise/godmode/policies/policy_agents.php:428
-#: ../../enterprise/godmode/policies/policy_agents.php:481
+#: ../../enterprise/godmode/policies/policy_agents.php:429
+#: ../../enterprise/godmode/policies/policy_agents.php:482
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:264
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:270
 #: ../../enterprise/godmode/policies/policy_modules.php:575
@@ -933,7 +935,7 @@ msgstr ""
 #: ../../extensions/plugin_registration.php:39
 #: ../../extensions/resource_registration.php:856
 #: ../../extensions/extension_uploader.php:84
-#: ../../extensions/update_manager/main.php:170
+#: ../../extensions/update_manager/main.php:180
 #: ../../operation/incidents/incident_detail.php:444
 #: ../../operation/integria_incidents/incident_detail.php:425
 msgid "Upload"
@@ -961,32 +963,32 @@ msgid "Create text file: "
 msgstr ""
 
 #: ../../include/functions_graph.php:325
-#: ../../include/functions_graph.php:1992
+#: ../../include/functions_graph.php:2026
 #: ../../include/functions_reporting.php:2651
 #: ../../include/functions_reports.php:505
 #: ../../godmode/modules/manage_network_components_form_common.php:100
 #: ../../godmode/agentes/module_manager_editor_common.php:254
-#: ../../enterprise/include/functions_reporting_pdf.php:2174
+#: ../../enterprise/include/functions_reporting_pdf.php:2195
 #: ../../operation/reporting/reporting_xml.php:312
 msgid "Max. Value"
 msgstr ""
 
 #: ../../include/functions_graph.php:325
-#: ../../include/functions_graph.php:1992
+#: ../../include/functions_graph.php:2026
 #: ../../include/functions_reporting.php:2621
 #: ../../include/functions_reports.php:503
-#: ../../enterprise/include/functions_reporting_pdf.php:2200
+#: ../../enterprise/include/functions_reporting_pdf.php:2221
 #: ../../operation/reporting/reporting_xml.php:302
 msgid "Avg. Value"
 msgstr ""
 
 #: ../../include/functions_graph.php:325
-#: ../../include/functions_graph.php:1993
+#: ../../include/functions_graph.php:2027
 #: ../../include/functions_reporting.php:2676
 #: ../../include/functions_reports.php:507
 #: ../../godmode/modules/manage_network_components_form_common.php:98
 #: ../../godmode/agentes/module_manager_editor_common.php:250
-#: ../../enterprise/include/functions_reporting_pdf.php:2145
+#: ../../enterprise/include/functions_reporting_pdf.php:2166
 #: ../../operation/reporting/reporting_xml.php:322
 msgid "Min. Value"
 msgstr ""
@@ -995,17 +997,19 @@ msgstr ""
 msgid "Units. Value"
 msgstr ""
 
-#: ../../include/functions_graph.php:345 ../../include/functions_graph.php:720
-#: ../../include/functions_graph.php:1997 ../../include/pchart_graph.php:188
+#: ../../include/functions_graph.php:345 ../../include/functions_graph.php:750
+#: ../../include/functions_graph.php:2031 ../../include/pchart_graph.php:188
 #: ../../include/pchart_graph.php:191 ../../include/pchart_graph.php:208
 #: ../../include/pchart_graph.php:209 ../../include/pchart_graph.php:348
+#: ../../include/functions_reporting.php:3533
 #: ../../godmode/reporting/reporting_builder.item_editor.php:709
+#: ../../enterprise/include/functions_reporting_pdf.php:1299
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:173
 msgid "Avg"
 msgstr ""
 
 #: ../../include/functions_graph.php:347
-#: ../../include/functions_graph.php:1999
+#: ../../include/functions_graph.php:2033
 #: ../../include/functions_reporting.php:3200
 #: ../../include/functions_reports.php:550
 #: ../../include/functions_reports.php:552
@@ -1018,7 +1022,7 @@ msgid "Events"
 msgstr ""
 
 #: ../../include/functions_graph.php:350
-#: ../../include/functions_graph.php:2002
+#: ../../include/functions_graph.php:2036
 #: ../../include/functions_reporting.php:1629
 #: ../../include/functions_reporting.php:3189
 #: ../../include/functions_reports.php:543
@@ -1073,41 +1077,50 @@ msgstr ""
 msgid "Alerts"
 msgstr ""
 
-#: ../../include/functions_graph.php:352 ../../include/functions_graph.php:720
-#: ../../include/functions_graph.php:2004 ../../include/pchart_graph.php:189
+#: ../../include/functions_graph.php:352 ../../include/functions_graph.php:750
+#: ../../include/functions_graph.php:2038 ../../include/pchart_graph.php:189
 #: ../../include/pchart_graph.php:192 ../../include/pchart_graph.php:348
+#: ../../include/functions_reporting.php:3524
 #: ../../include/functions_ui.php:1545
 #: ../../godmode/reporting/reporting_builder.item_editor.php:425
 #: ../../godmode/reporting/reporting_builder.item_editor.php:705
+#: ../../enterprise/include/functions_reporting_pdf.php:1290
 #: ../../enterprise/include/functions_reporting_csv.php:323
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:169
 msgid "Max"
 msgstr ""
 
-#: ../../include/functions_graph.php:353 ../../include/functions_graph.php:720
-#: ../../include/functions_graph.php:2005 ../../include/pchart_graph.php:187
+#: ../../include/functions_graph.php:353 ../../include/functions_graph.php:750
+#: ../../include/functions_graph.php:2039 ../../include/pchart_graph.php:187
 #: ../../include/pchart_graph.php:190 ../../include/pchart_graph.php:348
+#: ../../include/functions_reporting.php:3528
 #: ../../include/functions_ui.php:1545
 #: ../../godmode/reporting/reporting_builder.item_editor.php:427
 #: ../../godmode/reporting/reporting_builder.item_editor.php:707
+#: ../../enterprise/include/functions_reporting_pdf.php:1294
 #: ../../enterprise/include/functions_reporting_csv.php:323
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:171
 msgid "Min"
 msgstr ""
 
 #: ../../include/functions_graph.php:354
-#: ../../include/functions_graph.php:2006
+#: ../../include/functions_graph.php:2040
 msgid "Baseline"
 msgstr ""
 
-#: ../../include/functions_graph.php:720
-#: ../../include/functions_graph.php:1993
+#: ../../include/functions_graph.php:529
+#, php-format
+msgid "projection for %s"
+msgstr ""
+
+#: ../../include/functions_graph.php:750
+#: ../../include/functions_graph.php:2027
 msgid "Units"
 msgstr ""
 
-#: ../../include/functions_graph.php:912
-#: ../../include/functions_graph.php:1321
-#: ../../include/functions_graph.php:1533 ../../include/functions.php:817
+#: ../../include/functions_graph.php:945
+#: ../../include/functions_graph.php:1354
+#: ../../include/functions_graph.php:1566 ../../include/functions.php:817
 #: ../../include/functions_events.php:425
 #: ../../mobile/operation/events/events.php:182
 #: ../../godmode/setup/setup.php:91
@@ -1120,95 +1133,95 @@ msgstr ""
 msgid "System"
 msgstr ""
 
-#: ../../include/functions_graph.php:916
-#: ../../include/functions_graph.php:1612
+#: ../../include/functions_graph.php:949
+#: ../../include/functions_graph.php:1645
 #: ../../include/functions_reporting.php:1320
 #: ../../include/functions_reporting.php:1394
 #: ../../include/functions_reporting.php:2548
-#: ../../include/functions_reporting.php:3718
-#: ../../include/functions_reporting.php:4014
+#: ../../include/functions_reporting.php:3737
+#: ../../include/functions_reporting.php:4033
 #: ../../enterprise/include/functions_reporting_pdf.php:1252
-#: ../../enterprise/include/functions_reporting_pdf.php:1449
-#: ../../enterprise/include/functions_reporting_pdf.php:2443
+#: ../../enterprise/include/functions_reporting_pdf.php:1465
+#: ../../enterprise/include/functions_reporting_pdf.php:2464
 msgid "other"
 msgstr ""
 
-#: ../../include/functions_graph.php:924 ../../include/functions_graph.php:962
+#: ../../include/functions_graph.php:957 ../../include/functions_graph.php:995
 #: ../../include/functions_reporting.php:2374
 #: ../../include/functions_reporting.php:2380
 #: ../../include/functions_reporting.php:2464
 #: ../../include/functions_reporting.php:2465
 #: ../../include/functions_reporting.php:2506
-#: ../../enterprise/include/functions_reporting_pdf.php:2259
-#: ../../enterprise/include/functions_reporting_pdf.php:2265
-#: ../../enterprise/include/functions_reporting_pdf.php:2344
-#: ../../enterprise/include/functions_reporting_pdf.php:2345
-#: ../../enterprise/include/functions_reporting_pdf.php:2407
+#: ../../enterprise/include/functions_reporting_pdf.php:2280
+#: ../../enterprise/include/functions_reporting_pdf.php:2286
+#: ../../enterprise/include/functions_reporting_pdf.php:2365
+#: ../../enterprise/include/functions_reporting_pdf.php:2366
+#: ../../enterprise/include/functions_reporting_pdf.php:2428
 msgid "Out of limits"
 msgstr ""
 
-#: ../../include/functions_graph.php:1034
-#: ../../include/functions_graph.php:1040
-#: ../../include/functions_graph.php:1046
-#: ../../include/functions_graph.php:1053
+#: ../../include/functions_graph.php:1067
+#: ../../include/functions_graph.php:1073
+#: ../../include/functions_graph.php:1079
+#: ../../include/functions_graph.php:1086
 msgid "Month"
 msgstr ""
 
-#: ../../include/functions_graph.php:1035
-#: ../../include/functions_graph.php:1041
-#: ../../include/functions_graph.php:1047
-#: ../../include/functions_graph.php:1050
-#: ../../include/functions_graph.php:1053
+#: ../../include/functions_graph.php:1068
+#: ../../include/functions_graph.php:1074
+#: ../../include/functions_graph.php:1080
+#: ../../include/functions_graph.php:1083
+#: ../../include/functions_graph.php:1086
 msgid "Months"
 msgstr ""
 
-#: ../../include/functions_graph.php:1036
-#: ../../include/functions_graph.php:1042
-#: ../../include/functions_graph.php:1048
-#: ../../include/functions_graph.php:1050
-#: ../../include/functions_graph.php:1053
+#: ../../include/functions_graph.php:1069
+#: ../../include/functions_graph.php:1075
+#: ../../include/functions_graph.php:1081
+#: ../../include/functions_graph.php:1083
+#: ../../include/functions_graph.php:1086
 msgid "Older"
 msgstr ""
 
-#: ../../include/functions_graph.php:1058
-#: ../../include/functions_graph.php:1184
-#: ../../include/functions_graph.php:1219
-#: ../../include/functions_graph.php:1254
-#: ../../include/functions_graph.php:1292
-#: ../../include/functions_graph.php:1331
-#: ../../include/functions_graph.php:1375
-#: ../../include/functions_graph.php:1426
-#: ../../include/functions_graph.php:1427
-#: ../../include/functions_graph.php:1428
-#: ../../include/functions_graph.php:1443
-#: ../../include/functions_graph.php:1494
-#: ../../include/functions_graph.php:1541
-#: ../../include/functions_graph.php:2230
+#: ../../include/functions_graph.php:1091
+#: ../../include/functions_graph.php:1217
+#: ../../include/functions_graph.php:1252
+#: ../../include/functions_graph.php:1287
+#: ../../include/functions_graph.php:1325
+#: ../../include/functions_graph.php:1364
+#: ../../include/functions_graph.php:1408
+#: ../../include/functions_graph.php:1459
+#: ../../include/functions_graph.php:1460
+#: ../../include/functions_graph.php:1461
+#: ../../include/functions_graph.php:1476
+#: ../../include/functions_graph.php:1527
+#: ../../include/functions_graph.php:1574
+#: ../../include/functions_graph.php:2265
 #: ../../operation/gis_maps/render_view.php:126
 msgid "Other"
 msgstr ""
 
-#: ../../include/functions_graph.php:1232
-#: ../../include/functions_graph.php:1244
+#: ../../include/functions_graph.php:1265
+#: ../../include/functions_graph.php:1277
 msgid "Open incident"
 msgstr ""
 
-#: ../../include/functions_graph.php:1233
-#: ../../include/functions_graph.php:1246
+#: ../../include/functions_graph.php:1266
+#: ../../include/functions_graph.php:1279
 msgid "Closed incident"
 msgstr ""
 
-#: ../../include/functions_graph.php:1234
-#: ../../include/functions_graph.php:1248
+#: ../../include/functions_graph.php:1267
+#: ../../include/functions_graph.php:1281
 msgid "Outdated"
 msgstr ""
 
-#: ../../include/functions_graph.php:1235
-#: ../../include/functions_graph.php:1250
+#: ../../include/functions_graph.php:1268
+#: ../../include/functions_graph.php:1283
 msgid "Invalid"
 msgstr ""
 
-#: ../../include/functions_graph.php:1288
+#: ../../include/functions_graph.php:1321
 #: ../../include/functions_users.php:119 ../../include/functions_users.php:124
 #: ../../include/functions.php:686 ../../include/functions.php:875
 #: ../../mobile/operation/events/events.php:55
@@ -1314,21 +1327,21 @@ msgstr ""
 msgid "All"
 msgstr ""
 
-#: ../../include/functions_graph.php:1431
+#: ../../include/functions_graph.php:1464
 #: ../../include/functions_events.php:607
 msgid "SYSTEM"
 msgstr ""
 
-#: ../../include/functions_graph.php:1468
-#: ../../include/functions_graph.php:1469
-#: ../../include/functions_graph.php:1470 ../../include/functions.php:657
+#: ../../include/functions_graph.php:1501
+#: ../../include/functions_graph.php:1502
+#: ../../include/functions_graph.php:1503 ../../include/functions.php:657
 #: ../../include/functions.php:838 ../../include/functions.php:863
 msgid "Informational"
 msgstr ""
 
-#: ../../include/functions_graph.php:1474
-#: ../../include/functions_graph.php:1475
-#: ../../include/functions_graph.php:1476
+#: ../../include/functions_graph.php:1507
+#: ../../include/functions_graph.php:1508
+#: ../../include/functions_graph.php:1509
 #: ../../include/functions_reporting.php:3165 ../../include/functions.php:660
 #: ../../include/functions.php:839 ../../include/functions.php:866
 #: ../../mobile/operation/agents/group_view.php:46
@@ -1342,9 +1355,9 @@ msgstr ""
 msgid "Normal"
 msgstr ""
 
-#: ../../include/functions_graph.php:1480
-#: ../../include/functions_graph.php:1481
-#: ../../include/functions_graph.php:1482
+#: ../../include/functions_graph.php:1513
+#: ../../include/functions_graph.php:1514
+#: ../../include/functions_graph.php:1515
 #: ../../include/functions_reporting.php:3167 ../../include/functions.php:663
 #: ../../include/functions.php:840 ../../include/functions.php:869
 #: ../../include/functions_ui.php:1545
@@ -1364,9 +1377,9 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: ../../include/functions_graph.php:1486
-#: ../../include/functions_graph.php:1487
-#: ../../include/functions_graph.php:1488
+#: ../../include/functions_graph.php:1519
+#: ../../include/functions_graph.php:1520
+#: ../../include/functions_graph.php:1521
 #: ../../include/functions_reporting.php:3166 ../../include/functions.php:666
 #: ../../include/functions.php:841 ../../include/functions.php:872
 #: ../../include/functions_ui.php:1545
@@ -1392,7 +1405,7 @@ msgstr ""
 #: ../../include/functions_groups.php:44
 #: ../../include/ajax/networkmap.ajax.php:48
 #: ../../include/functions_reporting.php:3157
-#: ../../include/functions_reporting.php:4117
+#: ../../include/functions_reporting.php:4136
 #: ../../mobile/include/functions_web.php:22
 #: ../../extensions/agents_modules.php:167
 #: ../../godmode/massive/massive_enable_disable_alerts.php:134
@@ -1407,7 +1420,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.item_editor.php:546
 #: ../../godmode/reporting/graph_builder.graph_editor.php:127
 #: ../../godmode/reporting/reporting_builder.list_items.php:138
-#: ../../godmode/reporting/visual_console_builder.wizard.php:112
+#: ../../godmode/reporting/visual_console_builder.wizard.php:123
 #: ../../enterprise/include/functions_policies.php:2766
 #: ../../enterprise/include/functions_reporting_pdf.php:516
 #: ../../enterprise/include/functions_reporting_pdf.php:693
@@ -1488,7 +1501,7 @@ msgid "Network maps"
 msgstr ""
 
 #: ../../include/functions_groups.php:668 ../../include/functions_ui.php:711
-#: ../../extensions/update_manager/main.php:131
+#: ../../extensions/update_manager/main.php:141
 #: ../../enterprise/godmode/agentes/inventory_manager.php:257
 #: ../../operation/servers/recon_view.php:81
 #: ../../operation/servers/recon_view.php:113
@@ -1683,6 +1696,7 @@ msgid "Group"
 msgstr ""
 
 #: ../../include/functions_visual_map.php:369
+#: ../../include/functions_visual_map.php:558
 #: ../../godmode/massive/massive_delete_agents.php:33
 #: ../../godmode/massive/massive_delete_alerts.php:69
 #: ../../godmode/massive/massive_delete_modules.php:58
@@ -1690,7 +1704,7 @@ msgstr ""
 #: ../../godmode/massive/massive_add_action_alerts.php:60
 #: ../../godmode/massive/massive_add_alerts.php:49
 #: ../../godmode/massive/massive_delete_action_alerts.php:55
-#: ../../enterprise/godmode/policies/policy_agents.php:478
+#: ../../enterprise/godmode/policies/policy_agents.php:479
 msgid "No agents selected"
 msgstr ""
 
@@ -1701,7 +1715,7 @@ msgstr ""
 #: ../../include/functions_visual_map.php:442
 #: ../../extensions/snmp_explorer.php:136
 #: ../../godmode/massive/massive_edit_modules.php:33
-#: ../../godmode/reporting/visual_console_builder.php:190
+#: ../../godmode/reporting/visual_console_builder.php:207
 msgid "No modules selected"
 msgstr ""
 
@@ -1709,46 +1723,50 @@ msgstr ""
 msgid "Modules successfully added to layout"
 msgstr ""
 
-#: ../../include/functions_visual_map.php:1340
-#: ../../include/functions_visual_map.php:1482
+#: ../../include/functions_visual_map.php:640
+msgid "Agents successfully added to layout"
+msgstr ""
+
+#: ../../include/functions_visual_map.php:1445
+#: ../../include/functions_visual_map.php:1587
 msgid "Static graph"
 msgstr ""
 
-#: ../../include/functions_visual_map.php:1341
-#: ../../include/functions_visual_map.php:1474
-#: ../../godmode/reporting/visual_console_builder.wizard.php:56
-#: ../../enterprise/include/functions_reporting_pdf.php:2568
+#: ../../include/functions_visual_map.php:1446
+#: ../../include/functions_visual_map.php:1579
+#: ../../godmode/reporting/visual_console_builder.wizard.php:61
+#: ../../enterprise/include/functions_reporting_pdf.php:2589
 msgid "Module graph"
 msgstr ""
 
-#: ../../include/functions_visual_map.php:1342
+#: ../../include/functions_visual_map.php:1447
 #: ../../godmode/reporting/visual_console_builder.editor.php:108
-#: ../../godmode/reporting/visual_console_builder.wizard.php:57
+#: ../../godmode/reporting/visual_console_builder.wizard.php:62
 msgid "Simple value"
 msgstr ""
 
-#: ../../include/functions_visual_map.php:1343
-#: ../../include/functions_visual_map.php:1478
+#: ../../include/functions_visual_map.php:1448
+#: ../../include/functions_visual_map.php:1583
 msgid "Percentile bar"
 msgstr ""
 
-#: ../../include/functions_visual_map.php:1487
+#: ../../include/functions_visual_map.php:1592
 #: ../../godmode/reporting/visual_console_builder.elements.php:106
 #: ../../godmode/reporting/visual_console_builder.editor.php:67
 msgid "Simple Value"
 msgstr ""
 
-#: ../../include/functions_visual_map.php:1491
+#: ../../include/functions_visual_map.php:1596
 #: ../../godmode/reporting/visual_console_builder.elements.php:54
 #: ../../godmode/reporting/visual_console_builder.elements.php:118
 #: ../../godmode/reporting/visual_console_builder.editor.php:68
 #: ../../godmode/reporting/visual_console_builder.editor.php:111
 #: ../../godmode/reporting/visual_console_builder.editor.php:118
-#: ../../godmode/reporting/visual_console_builder.wizard.php:119
+#: ../../godmode/reporting/visual_console_builder.wizard.php:133
 msgid "Label"
 msgstr ""
 
-#: ../../include/functions_visual_map.php:1495
+#: ../../include/functions_visual_map.php:1600
 #: ../../godmode/modules/module_list.php:57
 #: ../../godmode/groups/configure_group.php:80
 #: ../../godmode/groups/group_list.php:227
@@ -1813,7 +1831,7 @@ msgstr ""
 
 #: ../../include/ajax/networkmap.ajax.php:44
 #: ../../mobile/include/functions_web.php:26
-#: ../../godmode/reporting/visual_console_builder.wizard.php:107
+#: ../../godmode/reporting/visual_console_builder.wizard.php:112
 #: ../../enterprise/dashboard/widgets/events_list.php:61
 #: ../../enterprise/dashboard/widgets/groups_status.php:28
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:164
@@ -1823,7 +1841,7 @@ msgstr ""
 
 #: ../../include/ajax/networkmap.ajax.php:62
 #: ../../include/functions_reporting.php:1620
-#: ../../include/functions_reporting.php:4117
+#: ../../include/functions_reporting.php:4136
 #: ../../include/functions_reports.php:502
 #: ../../include/functions_reports.php:504
 #: ../../include/functions_reports.php:506
@@ -1845,7 +1863,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.item_editor.php:559
 #: ../../godmode/reporting/graph_builder.graph_editor.php:129
 #: ../../godmode/reporting/reporting_builder.list_items.php:140
-#: ../../godmode/reporting/visual_console_builder.wizard.php:115
+#: ../../godmode/reporting/visual_console_builder.wizard.php:128
 #: ../../enterprise/include/functions_policies.php:2701
 #: ../../enterprise/include/functions_reporting_pdf.php:516
 #: ../../enterprise/include/functions_reporting_pdf.php:710
@@ -1872,7 +1890,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask.php:263
 #: ../../godmode/reporting/visual_console_builder.editor.php:89
 #: ../../godmode/reporting/visual_console_builder.editor.php:135
-#: ../../godmode/reporting/visual_console_builder.wizard.php:141
+#: ../../godmode/reporting/visual_console_builder.wizard.php:154
 #: ../../enterprise/dashboard/widgets/events_list.php:31
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:142
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:145
@@ -1900,7 +1918,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager.php:372
 #: ../../godmode/agentes/agent_manager.php:244
 #: ../../godmode/alerts/alert_list.list.php:356
-#: ../../enterprise/include/functions_reporting_pdf.php:2247
+#: ../../enterprise/include/functions_reporting_pdf.php:2268
 #: ../../enterprise/include/functions_reporting_csv.php:323
 #: ../../enterprise/dashboard/widgets/tactical.php:33
 #: ../../enterprise/dashboard/widgets/tactical.php:82
@@ -1959,7 +1977,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:1769
 #: ../../include/functions_reporting.php:1829
 #: ../../include/functions_events.php:348
-#: ../../enterprise/include/functions_reporting_pdf.php:2070
+#: ../../enterprise/include/functions_reporting_pdf.php:2091
 #: ../../enterprise/operation/metaconsole/eventview.php:592
 #: ../../enterprise/operation/metaconsole/eventview.php:758
 #: ../../operation/events/events_list.php:393
@@ -1984,9 +2002,9 @@ msgstr ""
 #: ../../include/functions_reporting.php:1833
 #: ../../include/functions_events.php:352
 #: ../../mobile/operation/events/events.php:146
-#: ../../extensions/update_manager/lib/functions.ajax.php:498
+#: ../../extensions/update_manager/lib/functions.ajax.php:510
 #: ../../godmode/setup/news.php:143
-#: ../../enterprise/include/functions_reporting_pdf.php:2074
+#: ../../enterprise/include/functions_reporting_pdf.php:2095
 #: ../../enterprise/include/functions_reporting_csv.php:179
 #: ../../enterprise/include/functions_reporting_csv.php:211
 #: ../../enterprise/operation/metaconsole/eventview.php:597
@@ -2010,8 +2028,8 @@ msgstr ""
 #: ../../include/functions_reporting.php:2356
 #: ../../include/functions_reporting.php:3239
 #: ../../include/functions_reporting.php:3370
-#: ../../include/functions_reporting.php:3555
-#: ../../include/functions_reporting.php:3823
+#: ../../include/functions_reporting.php:3574
+#: ../../include/functions_reporting.php:3842
 #: ../../mobile/operation/events/events.php:148
 #: ../../extensions/module_groups.php:41 ../../extensions/insert_data.php:149
 #: ../../godmode/massive/massive_enable_disable_alerts.php:147
@@ -2035,7 +2053,9 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.editor.php:129
 #: ../../godmode/reporting/graph_builder.graph_editor.php:80
 #: ../../godmode/reporting/reporting_builder.list_items.php:217
-#: ../../godmode/reporting/visual_console_builder.wizard.php:122
+#: ../../godmode/reporting/visual_console_builder.wizard.php:136
+#: ../../godmode/reporting/visual_console_builder.wizard.php:276
+#: ../../godmode/reporting/visual_console_builder.wizard.php:284
 #: ../../enterprise/include/functions_inventory.php:152
 #: ../../enterprise/include/functions_inventory.php:369
 #: ../../enterprise/include/functions_inventory.php:425
@@ -2043,8 +2063,8 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:773
 #: ../../enterprise/include/functions_reporting_pdf.php:890
 #: ../../enterprise/include/functions_reporting_pdf.php:1069
-#: ../../enterprise/include/functions_reporting_pdf.php:1304
-#: ../../enterprise/include/functions_reporting_pdf.php:2362
+#: ../../enterprise/include/functions_reporting_pdf.php:1320
+#: ../../enterprise/include/functions_reporting_pdf.php:2383
 #: ../../enterprise/include/functions_reporting_csv.php:179
 #: ../../enterprise/include/functions_reporting_csv.php:211
 #: ../../enterprise/include/functions_reporting_csv.php:243
@@ -2117,8 +2137,8 @@ msgstr ""
 #: ../../include/functions_reporting.php:1139
 #: ../../include/functions_reporting.php:2357
 #: ../../include/functions_reporting.php:3240
-#: ../../include/functions_reporting.php:3556
-#: ../../include/functions_reporting.php:3824
+#: ../../include/functions_reporting.php:3575
+#: ../../include/functions_reporting.php:3843
 #: ../../mobile/operation/agents/view_alerts.php:34
 #: ../../mobile/operation/agents/view_agents.php:218
 #: ../../mobile/operation/agents/view_agents.php:319
@@ -2138,14 +2158,15 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.editor.php:134
 #: ../../godmode/reporting/graph_builder.graph_editor.php:81
 #: ../../godmode/reporting/reporting_builder.list_items.php:222
-#: ../../godmode/reporting/visual_console_builder.wizard.php:121
+#: ../../godmode/reporting/visual_console_builder.wizard.php:135
+#: ../../godmode/reporting/visual_console_builder.wizard.php:286
 #: ../../enterprise/include/functions_inventory.php:370
 #: ../../enterprise/include/functions_inventory.php:426
 #: ../../enterprise/include/functions_alert_event.php:918
 #: ../../enterprise/include/functions_reporting_pdf.php:774
 #: ../../enterprise/include/functions_reporting_pdf.php:1070
-#: ../../enterprise/include/functions_reporting_pdf.php:1305
-#: ../../enterprise/include/functions_reporting_pdf.php:2363
+#: ../../enterprise/include/functions_reporting_pdf.php:1321
+#: ../../enterprise/include/functions_reporting_pdf.php:2384
 #: ../../enterprise/include/functions_reporting_csv.php:179
 #: ../../enterprise/include/functions_reporting_csv.php:211
 #: ../../enterprise/include/functions_reporting_csv.php:243
@@ -2276,8 +2297,8 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.editor.php:177
 #: ../../godmode/reporting/reporting_builder.list_items.php:142
 #: ../../godmode/reporting/reporting_builder.list_items.php:212
-#: ../../godmode/reporting/visual_console_builder.wizard.php:61
-#: ../../godmode/reporting/visual_console_builder.wizard.php:97
+#: ../../godmode/reporting/visual_console_builder.wizard.php:66
+#: ../../godmode/reporting/visual_console_builder.wizard.php:102
 #: ../../enterprise/godmode/policies/policy_modules.php:544
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:139
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:98
@@ -2410,21 +2431,21 @@ msgstr ""
 #: ../../operation/agentes/estado_ultimopaquete.php:267
 #: ../../operation/agentes/estado_generalagente.php:132
 #: ../../operation/search_users.php:198
-#: ../../operation/reporting/graph_viewer.php:218
+#: ../../operation/reporting/graph_viewer.php:219
 #: ../../operation/reporting/custom_reporting.php:39
 msgid "Description"
 msgstr ""
 
 #: ../../include/functions_reporting.php:1483
 #: ../../include/functions_reporting.php:3241
-#: ../../include/functions_reporting.php:3557
-#: ../../include/functions_reporting.php:3825
+#: ../../include/functions_reporting.php:3576
+#: ../../include/functions_reporting.php:3844
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:76
 #: ../../godmode/alerts/configure_alert_template.php:584
 #: ../../godmode/reporting/reporting_builder.item_editor.php:714
 #: ../../enterprise/include/functions_reporting_pdf.php:775
 #: ../../enterprise/include/functions_reporting_pdf.php:1071
-#: ../../enterprise/include/functions_reporting_pdf.php:1306
+#: ../../enterprise/include/functions_reporting_pdf.php:1322
 #: ../../enterprise/include/functions_reporting_csv.php:323
 #: ../../enterprise/include/functions_reporting_csv.php:443
 #: ../../enterprise/include/functions_reporting_csv.php:474
@@ -2518,7 +2539,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:1770
 #: ../../include/functions_reporting.php:1830
 #: ../../mobile/operation/events/events.php:54
-#: ../../enterprise/include/functions_reporting_pdf.php:2071
+#: ../../enterprise/include/functions_reporting_pdf.php:2092
 #: ../../enterprise/dashboard/widgets/events_list.php:33
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:193
 #: ../../enterprise/operation/metaconsole/eventview.php:314
@@ -2530,15 +2551,15 @@ msgstr ""
 #: ../../include/functions_reporting.php:1771
 #: ../../include/functions_reporting.php:1831
 #: ../../include/functions_reporting.php:2362
-#: ../../enterprise/include/functions_reporting_pdf.php:2072
-#: ../../enterprise/include/functions_reporting_pdf.php:2248
+#: ../../enterprise/include/functions_reporting_pdf.php:2093
+#: ../../enterprise/include/functions_reporting_pdf.php:2269
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:144
 msgid "Criticity"
 msgstr ""
 
 #: ../../include/functions_reporting.php:1714
 #: ../../include/functions_reporting.php:1832
-#: ../../enterprise/include/functions_reporting_pdf.php:2073
+#: ../../enterprise/include/functions_reporting_pdf.php:2094
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:129
 #: ../../enterprise/operation/metaconsole/eventview.php:864
 #: ../../operation/events/events_list.php:694
@@ -2562,19 +2583,19 @@ msgid "Alert disabled"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2048
-#: ../../enterprise/include/functions_reporting_pdf.php:2900
+#: ../../enterprise/include/functions_reporting_pdf.php:2921
 #: ../../operation/agentes/ver_agente.php:691
 msgid "Last data"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2059
-#: ../../enterprise/include/functions_reporting_pdf.php:2847
-#: ../../enterprise/include/functions_reporting_pdf.php:2910
+#: ../../enterprise/include/functions_reporting_pdf.php:2868
+#: ../../enterprise/include/functions_reporting_pdf.php:2931
 msgid "From:"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2060
-#: ../../enterprise/include/functions_reporting_pdf.php:2911
+#: ../../enterprise/include/functions_reporting_pdf.php:2932
 msgid "To:"
 msgstr ""
 
@@ -2599,7 +2620,7 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:2224
 #: ../../include/functions_reports.php:464
-#: ../../enterprise/include/functions_reporting_pdf.php:2650
+#: ../../enterprise/include/functions_reporting_pdf.php:2671
 #: ../../operation/reporting/reporting_xml.php:205
 msgid "Simple baseline graph"
 msgstr ""
@@ -2607,7 +2628,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:2265
 #: ../../include/functions_reports.php:466
 #: ../../godmode/reporting/reporting_builder.item_editor.php:582
-#: ../../enterprise/include/functions_reporting_pdf.php:2488
+#: ../../enterprise/include/functions_reporting_pdf.php:2509
 #: ../../enterprise/dashboard/widgets/custom_graph.php:22
 #: ../../operation/reporting/reporting_xml.php:219
 msgid "Custom graph"
@@ -2615,7 +2636,7 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:2317
 #: ../../include/functions_reports.php:491
-#: ../../enterprise/include/functions_reporting_pdf.php:2230
+#: ../../enterprise/include/functions_reporting_pdf.php:2251
 #: ../../enterprise/include/functions_reporting_csv.php:314
 #: ../../operation/agentes/ver_agente.php:570
 #: ../../operation/agentes/ver_agente.php:697
@@ -2626,7 +2647,7 @@ msgid "S.L.A."
 msgstr ""
 
 #: ../../include/functions_reporting.php:2347
-#: ../../enterprise/include/functions_reporting_pdf.php:2236
+#: ../../enterprise/include/functions_reporting_pdf.php:2257
 #: ../../enterprise/include/functions_reporting_csv.php:329
 #: ../../operation/reporting/reporting_xml.php:260
 msgid "There are no SLAs defined"
@@ -2637,14 +2658,14 @@ msgid "Max/Min Values"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2359
-#: ../../enterprise/include/functions_reporting_pdf.php:2366
+#: ../../enterprise/include/functions_reporting_pdf.php:2387
 msgid "SLA Limit"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2360
 #: ../../include/functions_reporting.php:2563
-#: ../../enterprise/include/functions_reporting_pdf.php:2246
-#: ../../enterprise/include/functions_reporting_pdf.php:2456
+#: ../../enterprise/include/functions_reporting_pdf.php:2267
+#: ../../enterprise/include/functions_reporting_pdf.php:2477
 msgid "SLA Compliance"
 msgstr ""
 
@@ -2653,11 +2674,11 @@ msgstr ""
 #: ../../include/functions_reporting.php:2460
 #: ../../include/functions_reporting.php:2461
 #: ../../include/functions_reporting.php:2500
-#: ../../enterprise/include/functions_reporting_pdf.php:2258
-#: ../../enterprise/include/functions_reporting_pdf.php:2264
-#: ../../enterprise/include/functions_reporting_pdf.php:2340
-#: ../../enterprise/include/functions_reporting_pdf.php:2341
-#: ../../enterprise/include/functions_reporting_pdf.php:2401
+#: ../../enterprise/include/functions_reporting_pdf.php:2279
+#: ../../enterprise/include/functions_reporting_pdf.php:2285
+#: ../../enterprise/include/functions_reporting_pdf.php:2361
+#: ../../enterprise/include/functions_reporting_pdf.php:2362
+#: ../../enterprise/include/functions_reporting_pdf.php:2422
 msgid "Inside limits"
 msgstr ""
 
@@ -2666,11 +2687,11 @@ msgstr ""
 #: ../../include/functions_reporting.php:2456
 #: ../../include/functions_reporting.php:2457
 #: ../../include/functions_reporting.php:2503
-#: ../../enterprise/include/functions_reporting_pdf.php:2260
-#: ../../enterprise/include/functions_reporting_pdf.php:2266
-#: ../../enterprise/include/functions_reporting_pdf.php:2336
-#: ../../enterprise/include/functions_reporting_pdf.php:2337
-#: ../../enterprise/include/functions_reporting_pdf.php:2404
+#: ../../enterprise/include/functions_reporting_pdf.php:2281
+#: ../../enterprise/include/functions_reporting_pdf.php:2287
+#: ../../enterprise/include/functions_reporting_pdf.php:2357
+#: ../../enterprise/include/functions_reporting_pdf.php:2358
+#: ../../enterprise/include/functions_reporting_pdf.php:2425
 msgid "On the edge"
 msgstr ""
 
@@ -2678,8 +2699,8 @@ msgstr ""
 #: ../../include/functions_reporting.php:2566
 #: ../../include/functions_db.php:1072
 #: ../../godmode/reporting/reporting_builder.item_editor.php:726
-#: ../../enterprise/include/functions_reporting_pdf.php:2392
-#: ../../enterprise/include/functions_reporting_pdf.php:2459
+#: ../../enterprise/include/functions_reporting_pdf.php:2413
+#: ../../enterprise/include/functions_reporting_pdf.php:2480
 #: ../../enterprise/include/functions_reporting_csv.php:370
 #: ../../enterprise/dashboard/widgets/maps_status.php:72
 #: ../../enterprise/extensions/backup/main.php:108
@@ -2689,26 +2710,26 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:2495
 #: ../../include/functions_reporting.php:2569
-#: ../../enterprise/include/functions_reporting_pdf.php:2385
-#: ../../enterprise/include/functions_reporting_pdf.php:2462
+#: ../../enterprise/include/functions_reporting_pdf.php:2406
+#: ../../enterprise/include/functions_reporting_pdf.php:2483
 #: ../../enterprise/include/functions_reporting_csv.php:374
 msgid "Fail"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2554
 #: ../../include/functions_reporting.php:3505
-#: ../../include/functions_reporting.php:3758
-#: ../../include/functions_reporting.php:4034
+#: ../../include/functions_reporting.php:3777
+#: ../../include/functions_reporting.php:4053
 #: ../../enterprise/include/functions_reporting_pdf.php:1020
 #: ../../enterprise/include/functions_reporting_pdf.php:1273
-#: ../../enterprise/include/functions_reporting_pdf.php:1487
-#: ../../enterprise/include/functions_reporting_pdf.php:2454
+#: ../../enterprise/include/functions_reporting_pdf.php:1503
+#: ../../enterprise/include/functions_reporting_pdf.php:2475
 msgid "Average Value"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2587
 #: ../../include/functions_reports.php:509
-#: ../../enterprise/include/functions_reporting_pdf.php:2710
+#: ../../enterprise/include/functions_reporting_pdf.php:2731
 #: ../../operation/reporting/reporting_xml.php:287
 msgid "Monitor report"
 msgstr ""
@@ -2727,7 +2748,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:2757
 #: ../../include/functions_reports.php:537 ../../godmode/setup/news.php:115
 #: ../../godmode/reporting/reporting_builder.item_editor.php:643
-#: ../../enterprise/include/functions_reporting_pdf.php:2046
+#: ../../enterprise/include/functions_reporting_pdf.php:2062
 #: ../../enterprise/dashboard/widgets/post.php:25
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:204
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:74
@@ -2736,7 +2757,7 @@ msgid "Text"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2770
-#: ../../enterprise/include/functions_reporting_pdf.php:1917
+#: ../../enterprise/include/functions_reporting_pdf.php:1933
 #: ../../enterprise/include/functions_reporting_csv.php:552
 #: ../../enterprise/godmode/reporting/mysql_builder.php:145
 #: ../../operation/reporting/reporting_xml.php:370
@@ -2758,12 +2779,12 @@ msgid "or"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2840
-#: ../../enterprise/include/functions_reporting_pdf.php:1991
+#: ../../enterprise/include/functions_reporting_pdf.php:2007
 msgid "User defined graph"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2867
-#: ../../enterprise/include/functions_reporting_pdf.php:1873
+#: ../../enterprise/include/functions_reporting_pdf.php:1889
 #: ../../operation/reporting/reporting_xml.php:419
 msgid "Group detailed event"
 msgstr ""
@@ -2774,28 +2795,28 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:2903
 #: ../../include/functions_reports.php:544
-#: ../../enterprise/include/functions_reporting_pdf.php:1780
+#: ../../enterprise/include/functions_reporting_pdf.php:1796
 #: ../../operation/reporting/reporting_xml.php:453
 msgid "Alert report module"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2921
 #: ../../include/functions_reports.php:546
-#: ../../enterprise/include/functions_reporting_pdf.php:1737
+#: ../../enterprise/include/functions_reporting_pdf.php:1753
 #: ../../operation/reporting/reporting_xml.php:490
 msgid "Alert report agent"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2938
 #: ../../include/functions_reports.php:539
-#: ../../enterprise/include/functions_reporting_pdf.php:1693
+#: ../../enterprise/include/functions_reporting_pdf.php:1709
 #: ../../operation/reporting/reporting_xml.php:529
 msgid "Import text from URL"
 msgstr ""
 
 #: ../../include/functions_reporting.php:2960
 #: ../../include/functions_reports.php:511
-#: ../../enterprise/include/functions_reporting_pdf.php:1623
+#: ../../enterprise/include/functions_reporting_pdf.php:1639
 #: ../../operation/reporting/reporting_xml.php:541
 msgid "Serialize data"
 msgstr ""
@@ -2807,20 +2828,20 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.item_editor.php:568
 #: ../../general/logon_ok.php:175
 #: ../../enterprise/include/functions_inventory.php:371
-#: ../../enterprise/include/functions_reporting_pdf.php:1651
+#: ../../enterprise/include/functions_reporting_pdf.php:1667
 #: ../../enterprise/include/functions_reporting_csv.php:243
 #: ../../enterprise/include/functions_reporting_csv.php:1205
 #: ../../enterprise/extensions/backup/main.php:60
 #: ../../enterprise/operation/inventory/inventory.php:149
 #: ../../enterprise/operation/agentes/agent_inventory.php:62
 #: ../../operation/integria_incidents/incident.tracking.php:23
-#: ../../operation/reporting/graph_viewer.php:136
+#: ../../operation/reporting/graph_viewer.php:137
 msgid "Date"
 msgstr ""
 
 #: ../../include/functions_reporting.php:3018
 #: ../../include/functions_reports.php:480
-#: ../../enterprise/include/functions_reporting_pdf.php:1592
+#: ../../enterprise/include/functions_reporting_pdf.php:1608
 #: ../../enterprise/include/functions_reporting_csv.php:641
 #: ../../operation/reporting/reporting_xml.php:587
 msgid "TTRT"
@@ -2828,7 +2849,7 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:3046
 #: ../../include/functions_reports.php:482
-#: ../../enterprise/include/functions_reporting_pdf.php:1564
+#: ../../enterprise/include/functions_reporting_pdf.php:1580
 #: ../../enterprise/include/functions_reporting_csv.php:672
 #: ../../operation/reporting/reporting_xml.php:598
 msgid "TTO"
@@ -2836,7 +2857,7 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:3074
 #: ../../include/functions_reports.php:484
-#: ../../enterprise/include/functions_reporting_pdf.php:1535
+#: ../../enterprise/include/functions_reporting_pdf.php:1551
 #: ../../enterprise/include/functions_reporting_csv.php:702
 #: ../../operation/reporting/reporting_xml.php:609
 msgid "MTBF"
@@ -2844,7 +2865,7 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:3102
 #: ../../include/functions_reports.php:486
-#: ../../enterprise/include/functions_reporting_pdf.php:1507
+#: ../../enterprise/include/functions_reporting_pdf.php:1523
 #: ../../enterprise/include/functions_reporting_csv.php:753
 #: ../../operation/reporting/reporting_xml.php:620
 msgid "MTTR"
@@ -2896,8 +2917,8 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:3231
 #: ../../include/functions_reporting.php:3334
-#: ../../include/functions_reporting.php:3546
-#: ../../include/functions_reporting.php:3814
+#: ../../include/functions_reporting.php:3565
+#: ../../include/functions_reporting.php:3833
 #: ../../enterprise/include/functions_reporting_csv.php:800
 #: ../../enterprise/include/functions_reporting_csv.php:912
 #: ../../enterprise/include/functions_reporting_csv.php:1049
@@ -2905,26 +2926,26 @@ msgid "There are no Agent/Modules defined"
 msgstr ""
 
 #: ../../include/functions_reporting.php:3504
-#: ../../include/functions_reporting.php:3757
-#: ../../include/functions_reporting.php:4033
+#: ../../include/functions_reporting.php:3776
+#: ../../include/functions_reporting.php:4052
 #: ../../enterprise/include/functions_reporting_pdf.php:1019
 #: ../../enterprise/include/functions_reporting_pdf.php:1272
-#: ../../enterprise/include/functions_reporting_pdf.php:1486
+#: ../../enterprise/include/functions_reporting_pdf.php:1502
 msgid "Min Value"
 msgstr ""
 
 #: ../../include/functions_reporting.php:3506
-#: ../../include/functions_reporting.php:3759
-#: ../../include/functions_reporting.php:4035
+#: ../../include/functions_reporting.php:3778
+#: ../../include/functions_reporting.php:4054
 #: ../../enterprise/include/functions_reporting_pdf.php:1018
 #: ../../enterprise/include/functions_reporting_pdf.php:1271
-#: ../../enterprise/include/functions_reporting_pdf.php:1485
+#: ../../enterprise/include/functions_reporting_pdf.php:1501
 msgid "Max Value"
 msgstr ""
 
 #: ../../include/functions_reporting.php:3513
-#: ../../include/functions_reporting.php:3766
-#: ../../include/functions_reporting.php:4042
+#: ../../include/functions_reporting.php:3785
+#: ../../include/functions_reporting.php:4061
 #: ../../mobile/operation/agents/tactical.php:104
 #: ../../enterprise/dashboard/widgets/tactical.php:39
 #: ../../enterprise/dashboard/widgets/tactical.php:153
@@ -2933,18 +2954,18 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3519
+#: ../../include/functions_reporting.php:3538
 #: ../../godmode/setup/gis_step_2.php:249
-#: ../../enterprise/include/functions_reporting_pdf.php:1288
+#: ../../enterprise/include/functions_reporting_pdf.php:1304
 #: ../../enterprise/include/functions_reporting_csv.php:881
 msgid "Top"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3616
+#: ../../include/functions_reporting.php:3635
 msgid "Insuficient data"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3779
+#: ../../include/functions_reporting.php:3798
 #: ../../include/functions_reports.php:522
 #: ../../enterprise/include/functions_reporting_pdf.php:1034
 #: ../../enterprise/include/functions_reporting_csv.php:1001
@@ -2952,7 +2973,7 @@ msgstr ""
 msgid "Exception"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3782
+#: ../../include/functions_reporting.php:3801
 #: ../../godmode/reporting/reporting_builder.item_editor.php:720
 #: ../../enterprise/include/functions_reporting_pdf.php:1037
 #: ../../enterprise/include/functions_reporting_csv.php:1004
@@ -2960,8 +2981,8 @@ msgstr ""
 msgid "Everything"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3785
-#: ../../include/functions_reporting.php:3928
+#: ../../include/functions_reporting.php:3804
+#: ../../include/functions_reporting.php:3947
 #: ../../enterprise/include/functions_reporting_pdf.php:1040
 #: ../../enterprise/include/functions_reporting_pdf.php:1172
 #: ../../enterprise/include/functions_reporting_csv.php:1007
@@ -2969,8 +2990,8 @@ msgstr ""
 msgid "Modules over or equal to"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3788
-#: ../../include/functions_reporting.php:3931
+#: ../../include/functions_reporting.php:3807
+#: ../../include/functions_reporting.php:3950
 #: ../../enterprise/include/functions_reporting_pdf.php:1043
 #: ../../enterprise/include/functions_reporting_pdf.php:1175
 #: ../../enterprise/include/functions_reporting_csv.php:1010
@@ -2978,8 +2999,8 @@ msgstr ""
 msgid "Modules under"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3791
-#: ../../include/functions_reporting.php:3934
+#: ../../include/functions_reporting.php:3810
+#: ../../include/functions_reporting.php:3953
 #: ../../enterprise/include/functions_reporting_pdf.php:1046
 #: ../../enterprise/include/functions_reporting_pdf.php:1178
 #: ../../enterprise/include/functions_reporting_csv.php:1013
@@ -2987,85 +3008,85 @@ msgstr ""
 msgid "Modules at normal status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3794
+#: ../../include/functions_reporting.php:3813
 #: ../../enterprise/include/functions_reporting_pdf.php:1049
 #: ../../enterprise/include/functions_reporting_csv.php:1016
 msgid "Modules at critical or warning status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3925
+#: ../../include/functions_reporting.php:3944
 #: ../../enterprise/include/functions_reporting_pdf.php:1169
 #: ../../enterprise/include/functions_reporting_csv.php:1104
 msgid "There are no"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3937
+#: ../../include/functions_reporting.php:3956
 #: ../../enterprise/include/functions_reporting_pdf.php:1181
 #: ../../enterprise/include/functions_reporting_csv.php:1116
 msgid "Modules at critial or warning status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:3940
+#: ../../include/functions_reporting.php:3959
 #: ../../enterprise/include/functions_reporting_pdf.php:1184
 #: ../../enterprise/include/functions_reporting_csv.php:1119
 msgid "Modules under those conditions"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4048
+#: ../../include/functions_reporting.php:4067
 #: ../../include/functions_reports.php:525
 #: ../../extensions/agents_modules.php:111
 #: ../../enterprise/include/functions_reporting_pdf.php:455
 msgid "Agents/Modules"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4111
+#: ../../include/functions_reporting.php:4130
 #: ../../extensions/agents_modules.php:161
 msgid "There are no agents with modules"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4209
+#: ../../include/functions_reporting.php:4228
 #: ../../enterprise/include/functions_reporting_pdf.php:608
 msgid "ALERTS FIRED"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4227
+#: ../../include/functions_reporting.php:4246
 #: ../../extensions/module_groups.php:256
 #: ../../extensions/agents_modules.php:281
 #: ../../enterprise/include/functions_reporting_pdf.php:636
 msgid "The colours meaning:"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4231
+#: ../../include/functions_reporting.php:4250
 #: ../../extensions/agents_modules.php:285
 #: ../../enterprise/include/functions_reporting_pdf.php:640
 msgid "Orange cell when the module has fired alerts"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4235
+#: ../../include/functions_reporting.php:4254
 #: ../../extensions/agents_modules.php:289
 #: ../../enterprise/include/functions_reporting_pdf.php:646
 msgid "Red cell when the module has a critical status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4239
+#: ../../include/functions_reporting.php:4258
 #: ../../extensions/agents_modules.php:293
 #: ../../enterprise/include/functions_reporting_pdf.php:652
 msgid "Yellow cell when the module has a warning status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4243
+#: ../../include/functions_reporting.php:4262
 #: ../../extensions/agents_modules.php:297
 #: ../../enterprise/include/functions_reporting_pdf.php:658
 msgid "Green cell when the module has a normal status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4247
+#: ../../include/functions_reporting.php:4266
 #: ../../extensions/agents_modules.php:301
 #: ../../enterprise/include/functions_reporting_pdf.php:664
 msgid "Grey cell when the module has an unknown status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4257
+#: ../../include/functions_reporting.php:4276
 #: ../../include/functions_reports.php:558
 #: ../../include/functions_reports.php:559
 #: ../../include/functions_reports.php:560
@@ -3082,14 +3103,14 @@ msgstr ""
 msgid "Inventory"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4277
+#: ../../include/functions_reporting.php:4296
 #: ../../enterprise/include/functions_reporting_pdf.php:417
 #: ../../enterprise/operation/inventory/inventory.php:180
 #: ../../enterprise/operation/agentes/agent_inventory.php:203
 msgid "No data found."
 msgstr ""
 
-#: ../../include/functions_reporting.php:4285
+#: ../../include/functions_reporting.php:4304
 #: ../../include/functions_reports.php:561
 #: ../../enterprise/include/functions_reporting_pdf.php:431
 #: ../../enterprise/include/functions_reporting_csv.php:298
@@ -3097,7 +3118,7 @@ msgstr ""
 msgid "Inventory changes"
 msgstr ""
 
-#: ../../include/functions_reporting.php:4296
+#: ../../include/functions_reporting.php:4315
 #: ../../enterprise/include/functions_reporting_pdf.php:442
 msgid "No changes found."
 msgstr ""
@@ -3173,10 +3194,13 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.graph_editor.php:118
 #: ../../godmode/reporting/graph_builder.graph_editor.php:194
 #: ../../godmode/reporting/graph_builder.graph_editor.php:208
-#: ../../godmode/reporting/visual_console_builder.wizard.php:86
-#: ../../godmode/reporting/visual_console_builder.wizard.php:116
-#: ../../godmode/reporting/visual_console_builder.wizard.php:123
-#: ../../godmode/reporting/visual_console_builder.wizard.php:142
+#: ../../godmode/reporting/visual_console_builder.wizard.php:91
+#: ../../godmode/reporting/visual_console_builder.wizard.php:130
+#: ../../godmode/reporting/visual_console_builder.wizard.php:137
+#: ../../godmode/reporting/visual_console_builder.wizard.php:155
+#: ../../godmode/reporting/visual_console_builder.wizard.php:273
+#: ../../godmode/reporting/visual_console_builder.wizard.php:277
+#: ../../godmode/reporting/visual_console_builder.wizard.php:287
 #: ../../enterprise/include/functions_networkmap_enterprise.php:158
 #: ../../enterprise/include/functions_networkmap_enterprise.php:160
 #: ../../enterprise/include/functions_networkmap_enterprise.php:170
@@ -3189,7 +3213,7 @@ msgstr ""
 #: ../../enterprise/godmode/massive/massive_add_alerts_policy.php:132
 #: ../../enterprise/godmode/servers/manage_export_form.php:71
 #: ../../enterprise/godmode/policies/policy_agents.php:214
-#: ../../enterprise/godmode/policies/policy_agents.php:589
+#: ../../enterprise/godmode/policies/policy_agents.php:590
 #: ../../enterprise/godmode/policies/policy_alerts.php:395
 #: ../../enterprise/godmode/policies/policy_external_alerts.php:272
 #: ../../enterprise/godmode/agentes/module_manager_editor_prediction.php:322
@@ -3725,8 +3749,8 @@ msgstr ""
 #: ../../enterprise/dashboard/main_dashboard.php:374
 #: ../../enterprise/godmode/policies/policy_alerts.php:322
 #: ../../enterprise/godmode/policies/policy_external_alerts.php:199
-#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:74
-#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:78
+#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:75
+#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:79
 #: ../../enterprise/operation/agentes/policy_view.php:254
 #: ../../enterprise/operation/metaconsole/eventview.php:368
 #: ../../operation/users/user_edit.php:160
@@ -3755,8 +3779,7 @@ msgid "The alert would fire when the value is not <span id=\"value\"></span>"
 msgstr ""
 
 #: ../../include/functions_ui.php:877
-msgid ""
-"The alert would fire when the value matches <span id=\"value\"></span>"
+msgid "The alert would fire when the value matches <span id=\"value\"></span>"
 msgstr ""
 
 #: ../../include/functions_ui.php:880
@@ -4000,8 +4023,7 @@ msgid ""
 msgstr ""
 
 #: ../../include/functions_api.php:1808
-msgid ""
-"Error creating plugin component. This plugin component already exists."
+msgid "Error creating plugin component. This plugin component already exists."
 msgstr ""
 
 #: ../../include/functions_api.php:1842
@@ -4065,8 +4087,7 @@ msgid ""
 msgstr ""
 
 #: ../../include/functions_api.php:2021
-msgid ""
-"Error getting module value from all agents. Module name doesn't exists."
+msgid "Error getting module value from all agents. Module name doesn't exists."
 msgstr ""
 
 #: ../../include/functions_api.php:2061
@@ -4272,8 +4293,7 @@ msgid "Data policy module updated."
 msgstr ""
 
 #: ../../include/functions_api.php:2926
-msgid ""
-"Error adding network module to policy. Id_policy cannot be left blank."
+msgid "Error adding network module to policy. Id_policy cannot be left blank."
 msgstr ""
 
 #: ../../include/functions_api.php:2931
@@ -4320,8 +4340,7 @@ msgid "Error adding plugin module to policy. Id_policy cannot be left blank."
 msgstr ""
 
 #: ../../include/functions_api.php:3073
-msgid ""
-"Error adding plugin module to policy. Module_name cannot be left blank."
+msgid "Error adding plugin module to policy. Module_name cannot be left blank."
 msgstr ""
 
 #: ../../include/functions_api.php:3078
@@ -4338,8 +4357,7 @@ msgid ""
 msgstr ""
 
 #: ../../include/functions_api.php:3152
-msgid ""
-"Error updating plugin module in policy. Id_policy cannot be left blank."
+msgid "Error updating plugin module in policy. Id_policy cannot be left blank."
 msgstr ""
 
 #: ../../include/functions_api.php:3157
@@ -5077,7 +5095,7 @@ msgstr ""
 #: ../../mobile/operation/agents/view_agents.php:220
 #: ../../mobile/operation/agents/view_agents.php:411
 #: ../../extensions/insert_data.php:160 ../../extensions/insert_data.php:161
-#: ../../godmode/reporting/visual_console_builder.php:261
+#: ../../godmode/reporting/visual_console_builder.php:279
 #: ../../enterprise/include/functions_reporting_csv.php:179
 #: ../../enterprise/include/functions_reporting_csv.php:211
 #: ../../enterprise/include/functions_reporting_csv.php:779
@@ -5224,8 +5242,8 @@ msgstr ""
 msgid ""
 "This extension makes registration of server plugins more easy. Here you can "
 "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
-"refer to documentation on how to obtain and use Pandora FMS Server "
-"Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+"refer to documentation on how to obtain and use Pandora FMS Server Plugins."
+"<br><br>You can get more plugins in our <a href='%s'>Public Resource "
 "Library</a>"
 msgstr ""
 
@@ -5276,8 +5294,7 @@ msgstr ""
 
 #: ../../extensions/resource_registration.php:75
 #, php-format
-msgid ""
-"Warning create '%s' report, the name exist, the report have a name %s."
+msgid "Warning create '%s' report, the name exist, the report have a name %s."
 msgstr ""
 
 #: ../../extensions/resource_registration.php:82
@@ -5446,7 +5463,7 @@ msgid "Export"
 msgstr ""
 
 #: ../../extensions/resource_exportation.php:357
-#: ../../godmode/reporting/visual_console_builder.php:284
+#: ../../godmode/reporting/visual_console_builder.php:302
 #: ../../operation/menu.php:123
 #: ../../operation/visual_console/render_view.php:82
 msgid "Visual console"
@@ -5711,9 +5728,9 @@ msgstr ""
 #: ../../extensions/insert_data.php:140
 msgid ""
 "Please check that the directory \"/var/spool/pandora/data_in\" is writeable "
-"by the apache user. <br /><br />The CSV file format is "
-"date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in "
-"format Y/m/d H:i:s."
+"by the apache user. <br /><br />The CSV file format is date;value&lt;"
+"newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:"
+"i:s."
 msgstr ""
 
 #: ../../extensions/insert_data.php:153
@@ -6060,7 +6077,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/functions.php:417
 #: ../../extensions/update_manager/settings.php:120
-#: ../../extensions/update_manager/main.php:133
+#: ../../extensions/update_manager/main.php:143
 #: ../../godmode/users/configure_profile.php:149
 #: ../../godmode/users/configure_user.php:401
 #: ../../godmode/massive/massive_edit_agents.php:393
@@ -6138,7 +6155,7 @@ msgstr ""
 #: ../../enterprise/godmode/setup/edit_skin.php:277
 #: ../../enterprise/godmode/setup/setup_history.php:77
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:206
-#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:96
+#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:101
 #: ../../enterprise/operation/agentes/collection_view.php:92
 #: ../../enterprise/operation/agentes/policy_view.php:163
 #: ../../enterprise/operation/metaconsole/eventview.php:410
@@ -6148,7 +6165,7 @@ msgstr ""
 #: ../../operation/integria_incidents/incident.incident.php:120
 #: ../../operation/agentes/datos_agente.php:191
 #: ../../operation/reporting/reporting_viewer.php:134
-#: ../../operation/reporting/graph_viewer.php:172
+#: ../../operation/reporting/graph_viewer.php:173
 msgid "Update"
 msgstr ""
 
@@ -6212,28 +6229,28 @@ msgstr ""
 msgid "<b>Starting: </b> connect to server"
 msgstr ""
 
-#: ../../extensions/update_manager/lib/functions.ajax.php:474
+#: ../../extensions/update_manager/lib/functions.ajax.php:486
 msgid "Your system is up-to-date"
 msgstr ""
 
-#: ../../extensions/update_manager/lib/functions.ajax.php:479
+#: ../../extensions/update_manager/lib/functions.ajax.php:491
 msgid "Server authorization rejected"
 msgstr ""
 
-#: ../../extensions/update_manager/lib/functions.ajax.php:484
+#: ../../extensions/update_manager/lib/functions.ajax.php:496
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:72
 msgid "Server connection failed"
 msgstr ""
 
-#: ../../extensions/update_manager/lib/functions.ajax.php:491
+#: ../../extensions/update_manager/lib/functions.ajax.php:503
 msgid "Server unknow error"
 msgstr ""
 
-#: ../../extensions/update_manager/lib/functions.ajax.php:496
+#: ../../extensions/update_manager/lib/functions.ajax.php:508
 msgid "Id"
 msgstr ""
 
-#: ../../extensions/update_manager/lib/functions.ajax.php:502
+#: ../../extensions/update_manager/lib/functions.ajax.php:514
 msgid "There's a new update for Pandora FMS"
 msgstr ""
 
@@ -6257,7 +6274,7 @@ msgid ""
 msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:101
-#: ../../extensions/update_manager/main.php:112
+#: ../../extensions/update_manager/main.php:122
 msgid ""
 "Update Manager sends anonymous information about Pandora FMS usage (number "
 "of agents and modules running). To disable it, just delete extension or "
@@ -6265,7 +6282,7 @@ msgid ""
 msgstr ""
 
 #: ../../extensions/update_manager/update_pandora.php:105
-#: ../../extensions/update_manager/main.php:116
+#: ../../extensions/update_manager/main.php:126
 msgid "Online"
 msgstr ""
 
@@ -6356,7 +6373,7 @@ msgstr ""
 #: ../../godmode/reporting/map_builder.php:140
 #: ../../enterprise/extensions/cron/main.php:234
 #: ../../enterprise/extensions/backup/main.php:131
-#: ../../enterprise/godmode/policies/policy_agents.php:436
+#: ../../enterprise/godmode/policies/policy_agents.php:437
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:271
 #: ../../enterprise/godmode/policies/policy_modules.php:586
 #: ../../enterprise/godmode/policies/policy_queue.php:349
@@ -6417,6 +6434,14 @@ msgstr ""
 msgid ""
 "Pandora Console updates need a valid keygen file. Keygen file is not "
 "executable"
+msgstr ""
+
+#: ../../extensions/update_manager/load_updatemanager.php:66
+msgid "The Keygen is not in the path."
+msgstr ""
+
+#: ../../extensions/update_manager/load_updatemanager.php:74
+msgid "Cannot execute the Keygen."
 msgstr ""
 
 #: ../../extensions/update_manager/settings.php:39
@@ -6489,28 +6514,28 @@ msgstr ""
 msgid "Download Method"
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:74
+#: ../../extensions/update_manager/main.php:79
 msgid "Success update to the last package."
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:75
+#: ../../extensions/update_manager/main.php:80
 msgid "Error update to the last package."
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:83
+#: ../../extensions/update_manager/main.php:93
 #, php-format
 msgid "This is an Enterprise feature. Visit %s for more information."
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:94
+#: ../../extensions/update_manager/main.php:104
 msgid "You do not have installed any updates of Pandora FMS Enterprise"
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:96
+#: ../../extensions/update_manager/main.php:106
 msgid "Your Pandora FMS Enterprise version number is"
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:106
+#: ../../extensions/update_manager/main.php:116
 msgid ""
 "The new <a href=\"http://updatemanager.sourceforge.net\">Update Manager</a> "
 "client is shipped with Pandora FMS It helps system administrators to update "
@@ -6519,31 +6544,31 @@ msgid ""
 "tools for future versions) automatically."
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:109
+#: ../../extensions/update_manager/main.php:119
 msgid ""
 "Update Manager is one of the most advanced features of Pandora FMS "
-"Enterprise version, for more information visit <a "
-"href=\"http://pandorafms.com\">http://pandorafms.com</a>."
+"Enterprise version, for more information visit <a href=\"http://pandorafms."
+"com\">http://pandorafms.com</a>."
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:127
+#: ../../extensions/update_manager/main.php:137
 msgid "Checking for an update"
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:129
+#: ../../extensions/update_manager/main.php:139
 #: ../../operation/integria_incidents/incident.list.php:100
 msgid "Details"
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:144
+#: ../../extensions/update_manager/main.php:154
 msgid "Details packge"
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:163
+#: ../../extensions/update_manager/main.php:173
 msgid "Offline"
 msgstr ""
 
-#: ../../extensions/update_manager/main.php:167
+#: ../../extensions/update_manager/main.php:177
 msgid "Offline packages loader"
 msgstr ""
 
@@ -6592,7 +6617,7 @@ msgstr ""
 #: ../../operation/gis_maps/render_view.php:95
 #: ../../operation/visual_console/render_view.php:77
 #: ../../operation/reporting/reporting_viewer.php:81
-#: ../../operation/reporting/graph_viewer.php:120
+#: ../../operation/reporting/graph_viewer.php:121
 msgid "Back to normal mode"
 msgstr ""
 
@@ -6863,7 +6888,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_compound.php:399
 #: ../../godmode/setup/links.php:156 ../../godmode/setup/news.php:171
 #: ../../godmode/reporting/graph_builder.graph_editor.php:175
-#: ../../godmode/reporting/visual_console_builder.wizard.php:136
+#: ../../godmode/reporting/visual_console_builder.wizard.php:149
 #: ../../enterprise/dashboard/main_dashboard.php:392
 #: ../../enterprise/godmode/massive/massive_add_alerts_policy.php:126
 #: ../../enterprise/godmode/servers/manage_export_form.php:120
@@ -7077,6 +7102,7 @@ msgstr ""
 #: ../../godmode/setup/setup.php:100 ../../godmode/setup/setup.php:120
 #: ../../godmode/setup/setup.php:124
 #: ../../godmode/reporting/reporting_builder.php:225
+#: ../../godmode/reporting/visual_console_builder.wizard.php:118
 #: ../../enterprise/godmode/setup/setup_auth.php:51
 #: ../../enterprise/godmode/setup/setup_history.php:46
 #: ../../enterprise/godmode/setup/setup.php:32
@@ -7099,6 +7125,7 @@ msgstr ""
 #: ../../godmode/setup/setup.php:101 ../../godmode/setup/setup.php:121
 #: ../../godmode/setup/setup.php:125
 #: ../../godmode/reporting/reporting_builder.php:227
+#: ../../godmode/reporting/visual_console_builder.wizard.php:119
 #: ../../enterprise/godmode/setup/setup_auth.php:52
 #: ../../enterprise/godmode/setup/setup_history.php:47
 #: ../../enterprise/godmode/setup/setup.php:33
@@ -7251,8 +7278,7 @@ msgid "Disabled alerts"
 msgstr ""
 
 #: ../../godmode/massive/massive_delete_agents.php:52
-msgid ""
-"There was an error deleting the agent, the operation has been cancelled"
+msgid "There was an error deleting the agent, the operation has been cancelled"
 msgstr ""
 
 #: ../../godmode/massive/massive_delete_agents.php:53
@@ -8097,8 +8123,7 @@ msgid "of"
 msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:170
-msgid ""
-"Modules run by this server will stop working. Do you want to continue?"
+msgid "Modules run by this server will stop working. Do you want to continue?"
 msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:182
@@ -8115,7 +8140,7 @@ msgstr ""
 msgid "MD5 check"
 msgstr ""
 
-#: ../../godmode/servers/modificar_server.php:188 ../../operation/menu.php:67
+#: ../../godmode/servers/modificar_server.php:188 ../../operation/menu.php:70
 msgid "SNMP console"
 msgstr ""
 
@@ -9031,7 +9056,7 @@ msgstr ""
 #: ../../godmode/agentes/configurar_agente.php:214
 #: ../../godmode/agentes/modificar_agente.php:73
 #: ../../godmode/agentes/modificar_agente.php:422
-#: ../../godmode/reporting/visual_console_builder.php:273
+#: ../../godmode/reporting/visual_console_builder.php:291
 #: ../../enterprise/godmode/services/manage_services.php:73
 #: ../../enterprise/operation/agentes/policy_view.php:53
 #: ../../operation/agentes/estado_agente.php:464
@@ -9750,7 +9775,7 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.editor.php:195
 #: ../../godmode/reporting/reporting_builder.list_items.php:227
 #: ../../godmode/reporting/graph_builder.main.php:131
-#: ../../godmode/reporting/visual_console_builder.wizard.php:78
+#: ../../godmode/reporting/visual_console_builder.wizard.php:83
 #: ../../enterprise/include/functions_reporting_csv.php:322
 #: ../../enterprise/include/functions_reporting_csv.php:412
 #: ../../enterprise/include/functions_reporting_csv.php:443
@@ -9771,7 +9796,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:109
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:86
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard_sla.php:86
-#: ../../operation/reporting/graph_viewer.php:145
+#: ../../operation/reporting/graph_viewer.php:146
 msgid "Period"
 msgstr ""
 
@@ -9895,13 +9920,13 @@ msgstr ""
 msgid "The agent's name must be the same as the one defined at the console"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:155 ../../operation/menu.php:47
+#: ../../godmode/agentes/agent_manager.php:155 ../../operation/menu.php:50
 #: ../../operation/agentes/estado_agente.php:169
 msgid "Agent detail"
 msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:163
-#: ../../enterprise/godmode/policies/policy_agents.php:386
+#: ../../enterprise/godmode/policies/policy_agents.php:387
 msgid "This agent can be remotely configured"
 msgstr ""
 
@@ -10613,8 +10638,8 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:641
 msgid ""
-"The alert would fire when the value doesn't match <span id=\\\"value\\"
-"\"></span>"
+"The alert would fire when the value doesn't match <span id=\\\"value\\\"></"
+"span>"
 msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:642
@@ -10634,8 +10659,8 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:645
 msgid ""
-"The alert would fire when the value is not between <span id=\\\"min\\"
-"\"></span> and <span id=\\\"max\\\"></span>"
+"The alert would fire when the value is not between <span id=\\\"min\\\"></"
+"span> and <span id=\\\"max\\\"></span>"
 msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:646
@@ -11396,7 +11421,7 @@ msgid "Whether to use Flash charts or static PNG graphs"
 msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:107
-#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:76
+#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:77
 msgid "Custom logo"
 msgstr ""
 
@@ -11614,13 +11639,13 @@ msgstr ""
 #: ../../godmode/setup/gis_step_2.php:256
 #: ../../godmode/reporting/visual_console_builder.editor.php:161
 #: ../../godmode/reporting/graph_builder.main.php:121
-#: ../../godmode/reporting/visual_console_builder.wizard.php:74
+#: ../../godmode/reporting/visual_console_builder.wizard.php:79
 msgid "Width"
 msgstr ""
 
 #: ../../godmode/setup/gis_step_2.php:258
 #: ../../godmode/reporting/graph_builder.main.php:125
-#: ../../godmode/reporting/visual_console_builder.wizard.php:75
+#: ../../godmode/reporting/visual_console_builder.wizard.php:80
 msgid "Height"
 msgstr ""
 
@@ -11836,22 +11861,22 @@ msgstr ""
 msgid "Successfully delete."
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.php:264
+#: ../../godmode/reporting/visual_console_builder.php:282
 msgid "List elements"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.php:267
+#: ../../godmode/reporting/visual_console_builder.php:285
 #: ../../enterprise/include/functions_reporting.php:24
 msgid "Wizard"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.php:270
+#: ../../godmode/reporting/visual_console_builder.php:288
 msgid "Editor"
 msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:55
 #: ../../godmode/reporting/visual_console_builder.editor.php:122
-#: ../../godmode/reporting/visual_console_builder.wizard.php:65
+#: ../../godmode/reporting/visual_console_builder.wizard.php:70
 msgid "Image"
 msgstr ""
 
@@ -11880,7 +11905,7 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.elements.php:94
 #: ../../godmode/reporting/visual_console_builder.editor.php:64
 #: ../../godmode/reporting/visual_console_builder.editor.php:102
-#: ../../godmode/reporting/visual_console_builder.wizard.php:54
+#: ../../godmode/reporting/visual_console_builder.wizard.php:59
 msgid "Static Graph"
 msgstr ""
 
@@ -11919,19 +11944,19 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:888
 #: ../../godmode/reporting/map_builder.php:20 ../../operation/menu.php:111
 #: ../../operation/reporting/reporting_viewer.php:85
-#: ../../operation/reporting/graph_viewer.php:125
-#: ../../operation/reporting/graph_viewer.php:207
+#: ../../operation/reporting/graph_viewer.php:126
+#: ../../operation/reporting/graph_viewer.php:208
 #: ../../operation/reporting/custom_reporting.php:27
 msgid "Reporting"
 msgstr ""
 
 #: ../../godmode/reporting/graphs.php:35 ../../operation/menu.php:181
-#: ../../operation/reporting/graph_viewer.php:125
+#: ../../operation/reporting/graph_viewer.php:126
 msgid "Custom graphs"
 msgstr ""
 
 #: ../../godmode/reporting/graphs.php:71 ../../operation/search_graphs.php:62
-#: ../../operation/reporting/graph_viewer.php:217
+#: ../../operation/reporting/graph_viewer.php:218
 msgid "Graph name"
 msgstr ""
 
@@ -11941,7 +11966,7 @@ msgstr ""
 
 #: ../../godmode/reporting/graphs.php:113
 #: ../../godmode/reporting/reporting_builder.php:254
-#: ../../operation/reporting/graph_viewer.php:232
+#: ../../operation/reporting/graph_viewer.php:234
 #: ../../operation/reporting/custom_reporting.php:32
 msgid "There are no defined reportings"
 msgstr ""
@@ -12142,12 +12167,12 @@ msgid "Update item"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:789
-#: ../../enterprise/include/functions_reporting_pdf.php:2364
+#: ../../enterprise/include/functions_reporting_pdf.php:2385
 msgid "SLA Min. (value)"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:790
-#: ../../enterprise/include/functions_reporting_pdf.php:2365
+#: ../../enterprise/include/functions_reporting_pdf.php:2386
 msgid "SLA Max. (value)"
 msgstr ""
 
@@ -12205,7 +12230,7 @@ msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:65
 #: ../../godmode/reporting/visual_console_builder.editor.php:105
-#: ../../godmode/reporting/visual_console_builder.wizard.php:55
+#: ../../godmode/reporting/visual_console_builder.wizard.php:60
 msgid "Percentile Item"
 msgstr ""
 
@@ -12214,25 +12239,25 @@ msgid "Delete item"
 msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:138
-#: ../../godmode/reporting/visual_console_builder.wizard.php:82
+#: ../../godmode/reporting/visual_console_builder.wizard.php:87
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:196
 msgid "Process"
 msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:140
-#: ../../godmode/reporting/visual_console_builder.wizard.php:84
+#: ../../godmode/reporting/visual_console_builder.wizard.php:89
 msgid "Min value"
 msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:141
 #: ../../godmode/reporting/visual_console_builder.editor.php:169
-#: ../../godmode/reporting/visual_console_builder.wizard.php:85
-#: ../../godmode/reporting/visual_console_builder.wizard.php:93
+#: ../../godmode/reporting/visual_console_builder.wizard.php:90
+#: ../../godmode/reporting/visual_console_builder.wizard.php:98
 msgid "Max value"
 msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:142
-#: ../../godmode/reporting/visual_console_builder.wizard.php:86
+#: ../../godmode/reporting/visual_console_builder.wizard.php:91
 msgid "Avg value"
 msgstr ""
 
@@ -12262,7 +12287,7 @@ msgid "Height proportional"
 msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:186
-#: ../../godmode/reporting/visual_console_builder.wizard.php:102
+#: ../../godmode/reporting/visual_console_builder.wizard.php:107
 msgid "Value to show"
 msgstr ""
 
@@ -12401,22 +12426,22 @@ msgid "Stacked"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.main.php:141
-#: ../../operation/reporting/graph_viewer.php:155
+#: ../../operation/reporting/graph_viewer.php:156
 msgid "Area"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.main.php:142
-#: ../../operation/reporting/graph_viewer.php:156
+#: ../../operation/reporting/graph_viewer.php:157
 msgid "Stacked area"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.main.php:143
-#: ../../operation/reporting/graph_viewer.php:157
+#: ../../operation/reporting/graph_viewer.php:158
 msgid "Line"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.main.php:144
-#: ../../operation/reporting/graph_viewer.php:158
+#: ../../operation/reporting/graph_viewer.php:159
 msgid "Stacked line"
 msgstr ""
 
@@ -12495,31 +12520,36 @@ msgstr ""
 msgid "Group:"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.wizard.php:69
+#: ../../godmode/reporting/visual_console_builder.wizard.php:74
 msgid "Range between elements (px)"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.wizard.php:73
+#: ../../godmode/reporting/visual_console_builder.wizard.php:78
 msgid "Size (px)"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.wizard.php:89
+#: ../../godmode/reporting/visual_console_builder.wizard.php:94
 msgid "Width (px)"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.wizard.php:120
+#: ../../godmode/reporting/visual_console_builder.wizard.php:117
+msgid "One item per agent"
+msgstr ""
+
+#: ../../godmode/reporting/visual_console_builder.wizard.php:134
+#: ../../godmode/reporting/visual_console_builder.wizard.php:285
 msgid "Agent - Module"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.wizard.php:128
+#: ../../godmode/reporting/visual_console_builder.wizard.php:142
 msgid "Are you sure to add many elements\\nin visual map?"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.wizard.php:143
+#: ../../godmode/reporting/visual_console_builder.wizard.php:156
 msgid "Loading..."
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.wizard.php:216
+#: ../../godmode/reporting/visual_console_builder.wizard.php:233
 msgid "Please select any module or modules."
 msgstr ""
 
@@ -13034,9 +13064,9 @@ msgid "Automated Pandora FMS report for user defined report"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:397
-#: ../../enterprise/include/functions_reporting_pdf.php:2128
-#: ../../enterprise/include/functions_reporting_pdf.php:2156
-#: ../../enterprise/include/functions_reporting_pdf.php:2895
+#: ../../enterprise/include/functions_reporting_pdf.php:2149
+#: ../../enterprise/include/functions_reporting_pdf.php:2177
+#: ../../enterprise/include/functions_reporting_pdf.php:2916
 msgid "Period: "
 msgstr ""
 
@@ -13047,85 +13077,85 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:766
 #: ../../enterprise/include/functions_reporting_pdf.php:854
 #: ../../enterprise/include/functions_reporting_pdf.php:1062
-#: ../../enterprise/include/functions_reporting_pdf.php:1297
+#: ../../enterprise/include/functions_reporting_pdf.php:1313
 msgid "There are no Agent/Modules defined."
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:1640
-#: ../../enterprise/include/functions_reporting_pdf.php:1939
+#: ../../enterprise/include/functions_reporting_pdf.php:1656
+#: ../../enterprise/include/functions_reporting_pdf.php:1955
 #: ../../enterprise/include/functions_reporting_csv.php:1197
 msgid "There are no data."
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:1785
+#: ../../enterprise/include/functions_reporting_pdf.php:1801
 msgid "There are no alerts for this module."
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:1828
+#: ../../enterprise/include/functions_reporting_pdf.php:1844
 msgid "Modules detailed event"
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:1833
+#: ../../enterprise/include/functions_reporting_pdf.php:1849
 msgid "There are no events for this module."
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:1878
+#: ../../enterprise/include/functions_reporting_pdf.php:1894
 msgid "There are no events in group."
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2061
+#: ../../enterprise/include/functions_reporting_pdf.php:2082
 #: ../../operation/reporting/reporting_xml.php:436
 msgid "Agents detailed event"
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2066
+#: ../../enterprise/include/functions_reporting_pdf.php:2087
 msgid "There are no Events."
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2117
+#: ../../enterprise/include/functions_reporting_pdf.php:2138
 #: ../../operation/reporting/reporting_xml.php:332
 msgid "Sumatory"
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2245
+#: ../../enterprise/include/functions_reporting_pdf.php:2266
 msgid "Info"
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2723
+#: ../../enterprise/include/functions_reporting_pdf.php:2744
 msgid "Up: "
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2724
+#: ../../enterprise/include/functions_reporting_pdf.php:2745
 msgid "Down: "
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2791
+#: ../../enterprise/include/functions_reporting_pdf.php:2812
 msgid "Generated: "
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2794
+#: ../../enterprise/include/functions_reporting_pdf.php:2815
 msgid "Report date: "
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2797
+#: ../../enterprise/include/functions_reporting_pdf.php:2818
 msgid "Start date"
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2798
-#: ../../enterprise/include/functions_reporting_pdf.php:2801
+#: ../../enterprise/include/functions_reporting_pdf.php:2819
+#: ../../enterprise/include/functions_reporting_pdf.php:2822
 #: ../../operation/agentes/exportdata.php:316
 msgid "End date"
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2805
+#: ../../enterprise/include/functions_reporting_pdf.php:2826
 msgid "Description: "
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2820
+#: ../../enterprise/include/functions_reporting_pdf.php:2841
 msgid "CONTENTS"
 msgstr ""
 
-#: ../../enterprise/include/functions_reporting_pdf.php:2874
+#: ../../enterprise/include/functions_reporting_pdf.php:2895
 msgid "Untitled"
 msgstr ""
 
@@ -13456,8 +13486,7 @@ msgid "Welcome"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:36
-msgid ""
-"This is an example of a dashboard widget. A widget may contain elements"
+msgid "This is an example of a dashboard widget. A widget may contain elements"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:37
@@ -13869,8 +13898,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/resource_registration/functions.php:44
 #, php-format
-msgid ""
-"Warning create '%s' policy, the name exist, the policy have a name %s."
+msgid "Warning create '%s' policy, the name exist, the policy have a name %s."
 msgstr ""
 
 #: ../../enterprise/extensions/resource_registration/functions.php:51
@@ -14164,16 +14192,16 @@ msgstr ""
 msgid "D."
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:391
+#: ../../enterprise/godmode/policies/policy_agents.php:392
 msgid "This agent can not be remotely configured"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:415
+#: ../../enterprise/godmode/policies/policy_agents.php:416
 #: ../../enterprise/godmode/policies/policy_queue.php:165
 msgid "Add to apply queue"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:432
+#: ../../enterprise/godmode/policies/policy_agents.php:433
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:265
 #: ../../enterprise/godmode/policies/policy_modules.php:581
 #: ../../enterprise/godmode/policies/policy_alerts.php:374
@@ -14181,20 +14209,20 @@ msgstr ""
 msgid "Undo deletion"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:446
+#: ../../enterprise/godmode/policies/policy_agents.php:447
 #: ../../enterprise/operation/agentes/policy_view.php:64
 msgid "Policy applied"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:450
+#: ../../enterprise/godmode/policies/policy_agents.php:451
 msgid "Need apply"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:458
+#: ../../enterprise/godmode/policies/policy_agents.php:459
 msgid "Applying policy"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:464
+#: ../../enterprise/godmode/policies/policy_agents.php:465
 msgid "Deleting from policy"
 msgstr ""
 
@@ -15684,22 +15712,28 @@ msgstr ""
 msgid "Font family"
 msgstr ""
 
-#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:77
+#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:74
 msgid ""
-"The dir of custom logos is in your www Pandora Console in "
-"\"images/custom_logo\". You can upload more files (ONLY JPEG) in upload tool "
-"in console."
+"Please choose a unicode font as unicode.ttf when your report has other "
+"characters out the latin set."
 msgstr ""
 
-#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:83
+#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:78
+msgid ""
+"The dir of custom logos is in your www Pandora Console in \"images/"
+"custom_logo\". You can upload more files (ONLY JPEG) in upload tool in "
+"console."
+msgstr ""
+
+#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:88
 msgid "Header"
 msgstr ""
 
-#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:86
+#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:91
 msgid "First page"
 msgstr ""
 
-#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:89
+#: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:94
 msgid "Footer"
 msgstr ""
 
@@ -15792,8 +15826,8 @@ msgstr ""
 #: ../../enterprise/load_enterprise.php:259
 msgid ""
 "To continue using Pandora FMS, please disable enterprise by renaming the "
-"Enterprise directory in the console.<br><br>Or contact Artica at "
-"info@artica.es for a valid license:"
+"Enterprise directory in the console.<br><br>Or contact Artica at info@artica."
+"es for a valid license:"
 msgstr ""
 
 #: ../../enterprise/load_enterprise.php:263
@@ -15892,39 +15926,39 @@ msgstr ""
 msgid "Status: "
 msgstr ""
 
-#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:424
+#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:425
 msgid "Data: "
 msgstr ""
 
-#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:427
+#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:428
 msgid "Last contact: "
 msgstr ""
 
-#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:740
+#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:741
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:146
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:142
 msgid "Networkmap enterprise"
 msgstr ""
 
-#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:741
+#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:742
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:149
 msgid "Not found networkmap."
 msgstr ""
 
-#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:761
+#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:762
 #: ../../operation/snmpconsole/snmp_view.php:48
 #: ../../operation/agentes/networkmap.php:172
 msgid "Normal screen"
 msgstr ""
 
-#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:766
+#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:767
 #: ../../operation/events/events.php:195
 #: ../../operation/snmpconsole/snmp_view.php:52
 #: ../../operation/agentes/networkmap.php:177
 msgid "Full screen"
 msgstr ""
 
-#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:769
+#: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:770
 #, php-format
 msgid "Networkmap enterprise - %s"
 msgstr ""
@@ -17109,32 +17143,32 @@ msgstr ""
 msgid "Monitoring"
 msgstr ""
 
-#: ../../operation/menu.php:52 ../../operation/agentes/alerts_status.php:89
+#: ../../operation/menu.php:47 ../../operation/tree.php:1005
+msgid "Tree view"
+msgstr ""
+
+#: ../../operation/menu.php:55 ../../operation/agentes/alerts_status.php:89
 msgid "Alert detail"
 msgstr ""
 
-#: ../../operation/menu.php:55
+#: ../../operation/menu.php:58
 msgid "Monitor detail"
 msgstr ""
 
-#: ../../operation/menu.php:62
+#: ../../operation/menu.php:65
 msgid "Recon view"
 msgstr ""
 
-#: ../../operation/menu.php:78
+#: ../../operation/menu.php:81
 msgid "SNMP alerts"
 msgstr ""
 
-#: ../../operation/menu.php:79
+#: ../../operation/menu.php:82
 msgid "SNMP filters"
 msgstr ""
 
-#: ../../operation/menu.php:81
+#: ../../operation/menu.php:84
 msgid "SNMP trap generator"
-msgstr ""
-
-#: ../../operation/menu.php:85 ../../operation/tree.php:1005
-msgid "Tree view"
 msgstr ""
 
 #: ../../operation/menu.php:94
@@ -17810,28 +17844,28 @@ msgid "Items period before"
 msgstr ""
 
 #: ../../operation/reporting/reporting_viewer.php:167
-#: ../../operation/reporting/graph_viewer.php:200
+#: ../../operation/reporting/graph_viewer.php:201
 msgid "Invalid date selected"
 msgstr ""
 
-#: ../../operation/reporting/graph_viewer.php:154
-#: ../../operation/reporting/graph_viewer.php:164
+#: ../../operation/reporting/graph_viewer.php:155
+#: ../../operation/reporting/graph_viewer.php:165
 msgid "Graph defined"
 msgstr ""
 
-#: ../../operation/reporting/graph_viewer.php:165
+#: ../../operation/reporting/graph_viewer.php:166
 msgid "Zoom x1"
 msgstr ""
 
-#: ../../operation/reporting/graph_viewer.php:166
+#: ../../operation/reporting/graph_viewer.php:167
 msgid "Zoom x2"
 msgstr ""
 
-#: ../../operation/reporting/graph_viewer.php:167
+#: ../../operation/reporting/graph_viewer.php:168
 msgid "Zoom x3"
 msgstr ""
 
-#: ../../operation/reporting/graph_viewer.php:207
+#: ../../operation/reporting/graph_viewer.php:208
 msgid "Custom graph viewer"
 msgstr ""
 

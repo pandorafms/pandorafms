@@ -1,3 +1,14 @@
+2012-06-26  Sancho Lerena <slerena@artica.es>
+
+	* include/languages/nl.mo,
+	include/languages/pl.mo,
+	include/languages/it.mo,
+	include/languages/sl.mo,
+	include/languages/pt.mo,
+	include/languages/index.pot: Forgotten .pot update (this is the 
+	uploaded to launchpad yesterday, everything is up to date, dont worry)
+
+
 2012-06-26  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/languages/ja.po, include/languages/ja.mo: Translated some

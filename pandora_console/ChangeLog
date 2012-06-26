@@ -1,3 +1,7 @@
+2012-06-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* DEBIAN/control: added mysql-server dependency.
+
 2012-06-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/events/events.php: Url tag compatible with IE9.

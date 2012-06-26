@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-ja\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-06-25 19:22+0200\n"
-"PO-Revision-Date: 2012-06-25 00:42+0000\n"
+"PO-Revision-Date: 2012-06-26 04:15+0000\n"
 "Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-25 18:02+0000\n"
+"X-Launchpad-Export-Date: 2012-06-26 04:16+0000\n"
 "X-Generator: Launchpad (build 15482)\n"
 
 #: ../../include/functions_config.php:733
@@ -2657,7 +2657,7 @@ msgstr "SLA 制限"
 #: ../../enterprise/include/functions_reporting_pdf.php:2246
 #: ../../enterprise/include/functions_reporting_pdf.php:2456
 msgid "SLA Compliance"
-msgstr ""
+msgstr "SLA準拠"
 
 #: ../../include/functions_reporting.php:2373
 #: ../../include/functions_reporting.php:2379
@@ -7838,7 +7838,7 @@ msgstr "暗号化パスワード"
 
 #: ../../godmode/massive/massive_edit_modules.php:385
 msgid "Valid values"
-msgstr ""
+msgstr "正常値"
 
 #: ../../godmode/massive/massive_edit_modules.php:395
 #: ../../godmode/modules/manage_network_components_form_wmi.php:50
@@ -17321,23 +17321,23 @@ msgstr "エージェント詳細へ"
 
 #: ../../operation/tree.php:989
 msgid "groups"
-msgstr ""
+msgstr "グループ"
 
 #: ../../operation/tree.php:992
 msgid "module groups"
-msgstr ""
+msgstr "モジュールグループ"
 
 #: ../../operation/tree.php:995
 msgid "policies"
-msgstr ""
+msgstr "ポリシー"
 
 #: ../../operation/tree.php:998
 msgid "modules"
-msgstr ""
+msgstr "モジュール"
 
 #: ../../operation/tree.php:1005
 msgid "Sort the agents by "
-msgstr ""
+msgstr "エージェントの並び替え: "
 
 #: ../../operation/tree.php:1025
 msgid "Case sensitive"
@@ -17932,24 +17932,3 @@ msgstr "項目"
 #: ../../extras/pandora_diag.php:94
 msgid "Data value"
 msgstr "値"
-
-#~ msgid "Sort the agents by"
-#~ msgstr "以下によるエージェントの並び替え"
-
-#~ msgid "Extra policies access to this user"
-#~ msgstr "このユーザの特別ポリシー"
-
-#~ msgid "SLA result"
-#~ msgstr "SLA 結果"
-
-#~ msgid "SLA final result: "
-#~ msgstr "SLA 最終結果: "
-
-#~ msgid "Extra policy profile added successfully"
-#~ msgstr "特別ポリシープロファイルを追加しました"
-
-#~ msgid "Extra policy profile cannot be added"
-#~ msgstr "特別ポリシープロファイルの追加に失敗しました"
-
-#~ msgid "Resume Value"
-#~ msgstr "復帰値"

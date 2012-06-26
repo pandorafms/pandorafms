@@ -58,7 +58,22 @@
 	<string name="uptime_value"/>
 	<string name="sms_received">Received SMS: </string>
 	<string name="sms_received_value"/>
-	<string name="sms_activity_str">SMS</string>
-	<string name="networkoperator">Network operator:</string>
-	<string name="networkoperator_value"/>
+	<string name="sms_sent">Sent SMS: </string>
+	<string name="sms_sent_value"/>
+	<string name="network_operator">Network operator:</string>
+	<string name="network_operator_value"/>
+	<string name="simIDReport">Report Sim ID</string>
+	<string name="network_type">Network type:</string>
+	<string name="network_type_value"/>
+	<string name="phone_type">Phone type:</string>
+	<string name="phone_type_value"/>
+	<string name="signal_strength">Signal strength:</string>
+	<string name="signal_strength_value"/>
+	<string name="incoming_Calls">Incoming calls:</string>
+	<string name="incoming_Calls_value"/>
+	<string name="missed_Calls">Missed calls:</string>
+	<string name="missed_Calls_value"/>
+	<string name="outgoing_Calls">outgoing calls:</string>
+	<string name="outgoing_Calls_value"/>
+	
 </resources>

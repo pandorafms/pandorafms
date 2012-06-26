@@ -1,3 +1,37 @@
+2012-06-26 Mark Holland <mark@mark-holland.me.uk>
+	
+	* res/values/strings.xml: Added strings for 
+	smsReceived, networkType, phoneType and calls.
+	Replicated in values-en and values-es.
+
+	* res/layout/setup.xml: Added checkboxes for simID
+	and task reporting.
+
+	* res/layout/status.xml: Added textviews for new data.
+
+	* src/pandroid/agent/core.java: set simID
+	reporting as disabled by default. Added variables
+	for networkOperator, networkType, phoneType,
+	signalStrength, incoming, missed and outgoing calls.
+
+	* src/pandroid/agent/PandroidAgentListener.java: task,
+	smsReceived, networkType, phoneType and calls methods
+	and then added to XML. simID now checks whether
+	enabled in user configuration.
+
+	* src/pandroid/agent/setup.java: Added spinner for task
+	selection.
+
+	* src/pandroid/agent/SMSActivity.java: removed
+
+	* src/pandroid/agent/SMSBroadcastReceiver.java: upon
+	receiving a smsreceived intent, increments the stored
+	number of smsReceived.
+
+	* src/pandroid/agent/status.java: Added textviews for
+	new methods mentioned above.
+
+
 2012-06-19 Mark Holland <mark@mark-holland.me.uk>
 
 	* res/layout.main.xml: removed as no longer used

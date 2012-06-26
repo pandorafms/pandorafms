@@ -133,7 +133,7 @@
 					android:layout_below="@id/proximity_label_str"
 				/>-->
 			</RelativeLayout>
-			<!--<TextView
+			<TextView
 				android:id="@+id/task_label_str"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -145,7 +145,7 @@
 				android:id="@+id/task_value_str"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-			/>-->
+			/>
 			<TextView
 				android:id="@+id/memory_label_str"
 				android:layout_width="wrap_content"
@@ -186,19 +186,58 @@
 				android:layout_height="wrap_content"
 			/>
 			<TextView
-				android:id="@+id/networkoperator"
+				android:id="@+id/network_operator"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="@string/networkoperator"
+				android:text="@string/network_operator"
 				android:textSize="14dip"
 				android:textStyle="bold"
 			/>
 			<TextView
-				android:id="@+id/networkoperator_value"
+				android:id="@+id/network_operator_value"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 			/>
-			<!-- <TextView
+			<TextView
+				android:id="@+id/network_type"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/network_type"
+				android:textSize="14dip"
+				android:textStyle="bold"
+			/>
+			<TextView
+				android:id="@+id/network_type_value"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+			<TextView
+				android:id="@+id/phone_type"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/phone_type"
+				android:textSize="14dip"
+				android:textStyle="bold"
+			/>
+			<TextView
+				android:id="@+id/phone_type_value"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+			<TextView
+				android:id="@+id/signal_strength"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/signal_strength"
+				android:textSize="14dip"
+				android:textStyle="bold"
+			/>
+			<TextView
+				android:id="@+id/signal_strength_value"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+			<TextView
 				android:id="@+id/sms_received"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -211,7 +250,59 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 			/>
-			 -->
+			<TextView
+				android:id="@+id/sms_sent"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/sms_sent"
+				android:textSize="14dip"
+				android:textStyle="bold"
+			/>
+			<TextView
+				android:id="@+id/sms_sent_value"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+			<TextView
+				android:id="@+id/incoming_Calls"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/incoming_Calls"
+				android:textSize="14dip"
+				android:textStyle="bold"
+			/>
+			<TextView
+				android:id="@+id/incoming_Calls_value"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+			<TextView
+				android:id="@+id/missed_Calls"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/missed_Calls"
+				android:textSize="14dip"
+				android:textStyle="bold"
+			/>
+			<TextView
+				android:id="@+id/missed_Calls_value"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+			<TextView
+				android:id="@+id/outgoing_Calls"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/outgoing_Calls"
+				android:textSize="14dip"
+				android:textStyle="bold"
+			/>
+			<TextView
+				android:id="@+id/outgoing_Calls_value"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+			
 			<Button
 				android:id="@+id/start" 
 				android:layout_alignParentBottom="true"

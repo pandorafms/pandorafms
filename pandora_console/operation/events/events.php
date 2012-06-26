@@ -221,8 +221,8 @@ if ($config["pure"] == 0) {
 		window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=yes'); 
 	}
 	
-	function openURLTagWindow(url) {		
-		window.open(url, url,'width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
+	function openURLTagWindow(url) {
+		window.open(url, '','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
 	}	
 	
 	</script>

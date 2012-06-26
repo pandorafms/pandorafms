@@ -1,5 +1,11 @@
 2012-06-26 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* DEBIAN/control: removed the dependency for "mysql-server" because
+	the console can be in a machine without mysql server but it is
+	necesary the mysql-client for backup process.
+
+2012-06-26 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* DEBIAN/control: added mysql-server dependency.
 	
 	Merged from 4.0.2

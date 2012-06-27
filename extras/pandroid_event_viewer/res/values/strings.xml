@@ -43,6 +43,7 @@
     <string name="url_label_str">URL</string>
     <string name="user_label_str">User</string>
     <string name="password_label_str">Password</string>
+    <string name="api_password_label_str">API Password</string>
     <string name="update_button_str">Update</string>
     <string name="option_title_str">Options</string>
     <string name="load_more_events_button_str">Load more events</string>
@@ -130,4 +131,5 @@
 	<string name="profile_delete">Delete profile</string>
 	<string name="connection_problem">There was a problem. Check your connection.</string>
 	<string name="connection_settings_problem">The operation can not be performed until you configure a correct connection.</string>
+	<string name="unknown_version">Unknown version</string>
 </resources>

@@ -347,14 +347,9 @@ public class PandroidEventviewerActivity extends TabActivity implements
 		}
 
 		for (int i = 0; i < lines.length; i++) {
-			String[] items = lines[i].split(";", 23);
+			String[] items = lines[i].split(";");
 
 			EventListItem event = new EventListItem();
-
-			if (items.length != 23) {
-				event.event = getApplication().getString(
-						R.string.unknown_event_str);
-			} else {
 				try {
 					if (items[0].length() == 0) {
 						event.id_event = 0;
@@ -402,19 +397,20 @@ public class PandroidEventviewerActivity extends TabActivity implements
 					}
 					event.user_comment = items[12];
 					event.tags = items[13];
-					event.agent_name = items[16];
-					event.group_name = items[17];
-					event.group_icon = items[18];
-					event.description_event = items[19];
-					event.description_image = items[20];
-					event.criticity_name = items[21];
-					event.criticity_image = items[22];
+					event.agent_name = items[14];
+					event.group_name = items[15];
+					event.group_icon = items[16];
+					event.description_event = items[17];
+					event.description_image = items[18];
+					event.criticity_name = items[19];
+					event.criticity_image = items[20];
 
 					event.opened = false;
 				} catch (NumberFormatException nfe) {
+					event.event = getApplication().getString(
+							R.string.unknown_event_str);
 					launchProblemParsingNotification();
 				}
-			}
 			this.eventList.add(event);
 		}
 	}

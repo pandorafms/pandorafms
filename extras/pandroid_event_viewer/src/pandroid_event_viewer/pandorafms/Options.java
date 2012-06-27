@@ -53,10 +53,6 @@ import android.widget.Toast;
 public class Options extends Activity {
 	private static String TAG = "Options";
 	private static int RINGTONE_PICK_CODE = 999;
-	private String url;
-	private String user;
-	private String password;
-	private int refreshTimeKey;
 	private TextView connectionStatus;
 	private ProgressDialog retrievingCertificate;
 	private Context context;
@@ -77,18 +73,15 @@ public class Options extends Activity {
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
 		// Connection
-		url = preferences.getString("url",
-				"http://firefly.artica.es/pandora_demo");
-		user = preferences.getString("user", "demo");
-		password = preferences.getString("password", "demo");
-		refreshTimeKey = preferences.getInt("refreshTimeKey", 3);
-
 		EditText text = (EditText) findViewById(R.id.url);
-		text.setText(url);
+		text.setText(preferences.getString("url",
+				"http://firefly.artica.es/pandora_demo"));
 		text = (EditText) findViewById(R.id.user);
-		text.setText(user);
+		text.setText(preferences.getString("user", "demo"));
 		text = (EditText) findViewById(R.id.password);
-		text.setText(password);
+		text.setText(preferences.getString("password", "demo"));
+		text = (EditText) findViewById(R.id.api_password);
+		text.setText(preferences.getString("api_password", ""));
 
 		Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -96,7 +89,7 @@ public class Options extends Activity {
 				android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		combo.setAdapter(adapter);
-		combo.setSelection(refreshTimeKey);
+		combo.setSelection(preferences.getInt("refreshTimeKey", 3));
 
 		final Button button = (Button) findViewById(R.id.update_options);
 		button.setOnClickListener(new View.OnClickListener() {
@@ -205,6 +198,8 @@ public class Options extends Activity {
 		editorPreferences.putString("user", text.getText().toString());
 		text = (EditText) findViewById(R.id.password);
 		editorPreferences.putString("password", text.getText().toString());
+		text = (EditText) findViewById(R.id.api_password);
+		editorPreferences.putString("api_password", text.getText().toString());
 
 		Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
 		editorPreferences.putInt("refreshTimeKey",
@@ -293,6 +288,14 @@ public class Options extends Activity {
 		protected Boolean doInBackground(Void... arg0) {
 			try {
 				version = API.getVersion(getApplicationContext());
+				SharedPreferences preferences = getSharedPreferences(
+						getString(R.string.const_string_preferences),
+						Activity.MODE_PRIVATE);
+				SharedPreferences.Editor editorPreferences = preferences.edit();
+				editorPreferences.putString("api_version", version);
+				if (editorPreferences.commit()) {
+					Log.i(TAG, "API Version saved");
+				}
 				if (version.length() > 0) {
 					return true;
 				} else {
@@ -318,6 +321,12 @@ public class Options extends Activity {
 		}
 	}
 
+	/**
+	 * Checks (in background) if the certificate of the site is signed by a CA.
+	 * 
+	 * @author Santiago Munín González
+	 * 
+	 */
 	private class CheckCertificateAsyncTask extends
 			AsyncTask<URL, Void, Boolean> {
 		private URL url;

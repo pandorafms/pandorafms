@@ -1,3 +1,12 @@
+2012-06-27 Santiago Munín <burning1@gmail.com>
+
+	* src/pandroid_event_viewer/pandorafms/Core.java: Added "apipass" parameter to petitions.
+	* src/pandroid_event_viewer/pandorafms/Options.java: Added an API Password entry. Now, after getting the API version, it is stored in SharedPreferences.
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java: Changed event parsing.
+	* src/pandroid_event_viewer/pandorafms/API.java: Added some checks before parsing tags and groups.
+	* res/values/strings.xml: Added new entries.
+	* res/layout/options.xml: Added an API Password entry.
+
 2012-06-26 Santiago Munín <burning1@gmail.com>
 
 	* src/pandroid_event_viewer/pandorafms/API.java: Added new api calls.

@@ -1,4 +1,4 @@
-2012-06-21  Koichiro Kikuchi <koichiro@rworks.jp>
+2012-06-27  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* pandora_agent.redhat.spec: Merged from 4.0 branch. Don't create
 	 pandora user if already exists.

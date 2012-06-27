@@ -1,3 +1,11 @@
+2012-06-27 Koichio Kikuchi <koichiro@rworks.jp>
+
+	* pandora_console.redhat.spec: Changed php dependencies so that the
+	 RPM package can be installed into RHEL/CentOS 5. Also removed unused
+	 lines.
+
+	Merged from 4.0.2
+
 2012-06-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* DEBIAN/control: removed the dependency for "mysql-server" because

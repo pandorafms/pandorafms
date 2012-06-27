@@ -1,3 +1,11 @@
+2012-06-27  Kikuchi Koichiro <koichiro@rworks.jp>
+
+	* pandora_server.redhat.spec: Small fixes: removed duplicated useradd
+	 line, don't remove pandora user after uninstall, added collections
+	 directory.
+
+	Merged from 4.0 branch.
+
 2012-06-25 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added deletion of tags when a module is

@@ -318,12 +318,16 @@ public class Core {
 		String url = preferences.getString("url", "") + "/include/api.php";
 		String user = preferences.getString("user", "");
 		String password = preferences.getString("password", "");
+		String apiPassword = preferences.getString("api_password", "");
 		if (url.length() == 0 || user.length() == 0) {
 			return "";
 		}
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("user", user));
 		parameters.add(new BasicNameValuePair("pass", password));
+		if (apiPassword.length() > 0) {
+			parameters.add(new BasicNameValuePair("apipass", apiPassword));
+		}
 		parameters.addAll(additionalParameters);
 		if (url.toLowerCase().contains("https")) {
 			// Secure connection

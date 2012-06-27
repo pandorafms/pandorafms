@@ -38,10 +38,13 @@ public class API {
 
 		String return_api = Core.httpGet(context, parameters);
 		String[] lines = return_api.split("\n");
-
-		for (int i = 0; i < lines.length; i++) {
-			String[] groups = lines[i].split(";", 21);
-			result.put(Integer.valueOf(groups[0]), groups[1]);
+		try {
+			for (int i = 0; i < lines.length; i++) {
+				String[] groups = lines[i].split(";", 21);
+				result.put(Integer.valueOf(groups[0]), groups[1]);
+			}
+		} catch (NumberFormatException e) {
+			Log.e(TAG, "Problem parsing number in response");
 		}
 		return result;
 	}
@@ -89,7 +92,12 @@ public class API {
 		return_api = Core.httpGet(context, parameters);
 		// TODO wait version
 		if (return_api.contains("OK")) {
-			return "4.0.2";
+			String[] lines = return_api.split(",");
+			if (lines.length == 3) {
+				return lines[1];
+			} else {
+				return context.getString(R.string.unknown_version);
+			}
 		} else {
 			return "";
 		}
@@ -132,9 +140,13 @@ public class API {
 		String return_api = Core.httpGet(context, parameters);
 		String[] lines = return_api.split("\n");
 		array.add("");
-		for (int i = 0; i < lines.length; i++) {
-			String[] tags = lines[i].split(";", 2);
-			array.add(tags[1]);
+		try {
+			for (int i = 0; i < lines.length; i++) {
+				String[] tags = lines[i].split(";", 2);
+				array.add(tags[1]);
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			Log.e(TAG, "There was a problem getting tags: " + e.getMessage());
 		}
 		return array;
 	}

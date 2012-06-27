@@ -1,3 +1,8 @@
+2012-06-21  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_agent.redhat.spec: Merged from 4.0 branch. Don't create
+	 pandora user if already exists.
+
 2012-05-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Merged from 4.0 branch. Check for valid regular

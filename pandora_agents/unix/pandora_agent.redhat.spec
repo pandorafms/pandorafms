@@ -66,9 +66,9 @@ fi
 rm -Rf $RPM_BUILD_ROOT
 
 %pre
-/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
+getent passwd pandora >/dev/null || \
+	/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
 exit 0
-
 
 %post
 if [ ! -d /etc/pandora ] ; then

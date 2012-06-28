@@ -126,7 +126,7 @@ else {
 $config["global_block_size"] = $config["block_size"];
 $config["global_flash_charts"] = $config["flash_charts"];
 
-if (isset ($config['id_user'])){
+if (isset ($config['id_user'])) {
 	$userinfo = get_user_info ($config['id_user']);
 	
 	// Refresh the last_connect info in the user table 
@@ -140,11 +140,11 @@ if (isset ($config['id_user'])){
 		$config["block_size"] = $userinfo["block_size"];
 	
 	if ($userinfo["flash_chart"] != -1)
-		$config["flash_charts"] = $userinfo["flash_chart"];			
-
+		$config["flash_charts"] = $userinfo["flash_chart"];
+	
 	// Each user could have it's own timezone)
 	if (isset($userinfo["timezone"])) {
-		if ($userinfo["timezone"] != ""){
+		if ($userinfo["timezone"] != "") {
 			date_default_timezone_set($userinfo["timezone"]);
 		}
 	}

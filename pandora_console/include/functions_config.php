@@ -257,7 +257,7 @@ function config_update_config () {
  */
 function config_process_config () {
 	global $config;
-
+	
 	$configs = db_get_all_rows_in_table ('tconfig');
 	
 	if (empty ($configs)) {
@@ -646,13 +646,13 @@ function config_process_config () {
 				} else {
 					$view_mode = true;
 				}
-
+				
 				if (isset ($_GET["modified"]) && !$view_mode) { 
 					$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
 					$return_update_skin = update_user ($id, $upd_info);
 				}
-			}		
-					
+			}
+			
 			if (isset($config['id_user']))
 				$relative_path = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
 			else
@@ -673,11 +673,35 @@ function config_process_config () {
 		config_update_value ('refr', '');
 	}
 	
+	if (!isset($config['agent_size_text_small'])) {
+		config_update_value ('agent_size_text_small', 18);
+	}
+	
+	if (!isset($config['agent_size_text_medium'])) {
+		config_update_value ('agent_size_text_medium', 50);
+	}
+	
+	if (!isset($config['module_size_text_small'])) {
+		config_update_value ('module_size_text_small', 25);
+	}
+	
+	if (!isset($config['module_size_text_medium'])) {
+		config_update_value ('module_size_text_medium', 50);
+	}
+	
+	if (!isset($config['description_size_text'])) {
+		config_update_value ('description_size_text', 60);
+	}
+	
+	if (!isset($config['item_title_size_text'])) {
+		config_update_value ('item_title_size_text', 45);
+	}
+	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
 
-function config_check (){
+function config_check () {
 	global $config;
 	
 	// At this first version I'm passing errors using session variables, because the error management

@@ -1,3 +1,8 @@
+2012-06-28 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions.php: fixed into the function "copy_dir" when
+	pass a empty string or bad directory for source.
+
 2012-06-27 Koichio Kikuchi <koichiro@rworks.jp>
 
 	* pandora_console.redhat.spec: Changed php dependencies so that the

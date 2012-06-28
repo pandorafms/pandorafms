@@ -1,3 +1,10 @@
+2012-06-28 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions.php: fixed into the function "copy_dir" when
+	pass a empty string or bad directory for source.
+	
+	MERGED FROM THE TRUNK
+
 2012-06-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* DEBIAN/control: removed the dependency for "mysql-server" because

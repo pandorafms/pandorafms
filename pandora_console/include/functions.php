@@ -1517,18 +1517,22 @@ function get_periods () {
  * Recursive copy directory
  */
 function copy_dir($src, $dst) { 
-	$dir = opendir($src); 
+	$dir = opendir($src);
+	
+	if (!$dir)
+		return false;
+	
 	@mkdir($dst); 
-	while(false !== ( $file = readdir($dir)) ) { 
-		if (( $file != '.' ) && ( $file != '..' )) { 
-			if ( is_dir($src . '/' . $file) ) { 
+	while(false !== ( $file = readdir($dir)) ) {
+		if (( $file != '.' ) && ( $file != '..' )) {
+			if ( is_dir($src . '/' . $file) ) {
 				copy_dir($src . '/' . $file,$dst . '/' . $file); 
 			}
-			else { 
+			else {
 				copy($src . '/' . $file,$dst . '/' . $file); 
 			}
 		}
 	}
 	closedir($dir); 
-} 
+}
 ?>

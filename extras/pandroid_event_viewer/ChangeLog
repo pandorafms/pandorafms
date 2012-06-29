@@ -1,3 +1,7 @@
+2012-06-30 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Main.java: Added a check in order to prevent profile overwritings.
+	* src/pandroid_event_viewer/pandorafms/Core.java: Added method which finds a string in a list (case insensitive). 
+
 2012-06-29 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Main.java: Added a little hack to make it compatible with v4.0.2
 	* res/layout/main.xml: Added a little hack to make it compatible with v4.0.2

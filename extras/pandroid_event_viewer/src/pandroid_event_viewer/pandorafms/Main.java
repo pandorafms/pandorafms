@@ -211,14 +211,13 @@ public class Main extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						switch (which) {
 						case DialogInterface.BUTTON_POSITIVE:
-							/*
-							 * if (profiles.contains(profileName.getText()
-							 * .toString())) { Toast.makeText(context,
-							 * R.string.profile_already_exists,
-							 * Toast.LENGTH_SHORT).show(); break; }
-							 */
-							// TODO Ask for a confirmation before rewriting the
-							// profile
+							if (Core.containsIgnoreCase(profiles, profileName
+									.getText().toString())) {
+								Toast.makeText(context,
+										R.string.profile_already_exists,
+										Toast.LENGTH_SHORT).show();
+								break;
+							}
 							if (profileName.getText().toString().contains("|")) {
 								Toast.makeText(
 										context,

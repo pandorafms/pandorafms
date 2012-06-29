@@ -31,6 +31,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -586,6 +587,23 @@ public class Core {
 						Toast.LENGTH_SHORT).show();
 			}
 		}
+	}
 
+	/**
+	 * Checks if a string is inside the list (case insensitive).
+	 * 
+	 * @param list
+	 *            List of strings.
+	 * @param string
+	 *            Given value.
+	 * @return If the string is inside the list.
+	 */
+	public static boolean containsIgnoreCase(List<String> list, String string) {
+		Iterator<String> it = list.iterator();
+		while (it.hasNext()) {
+			if (it.next().equalsIgnoreCase(string))
+				return true;
+		}
+		return false;
 	}
 }

@@ -70,6 +70,8 @@ public class Main extends Activity {
 	private List<String> profiles;
 	private Context context = this;
 	private boolean selectLastProfile = false;
+	// If this version, there will be changes
+	private boolean version402 = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,13 @@ public class Main extends Activity {
 				.getSerializableExtra("object");
 
 		this.pandoraGroups = new HashMap<Integer, String>();
+		final SharedPreferences preferences = getSharedPreferences(
+				this.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+
+		if (preferences.getString("api_version", "v4.0.2").equals("v4.0.2")) {
+			version402 = true;
+		}
 
 		setContentView(R.layout.main);
 		final Button buttonReset = (Button) findViewById(R.id.button_reset);
@@ -108,12 +117,16 @@ public class Main extends Activity {
 			buttonbuttonSetAsFilterWatcher.setEnabled(false);
 
 			new GetGroupsAsyncTask().execute();
-			new GetTagsAsyncTask().execute();
+			if (version402) {
+				((EditText) findViewById(R.id.tag_text))
+						.setVisibility(View.VISIBLE);
+				((ProgressBar) findViewById(R.id.loading_tag))
+						.setVisibility(View.GONE);
+				((Spinner) findViewById(R.id.tag)).setVisibility(View.GONE);
+			} else {
+				new GetTagsAsyncTask().execute();
+			}
 		}
-
-		final SharedPreferences preferences = getSharedPreferences(
-				this.getString(R.string.const_string_preferences),
-				Activity.MODE_PRIVATE);
 
 		comboSeverity = (Spinner) findViewById(R.id.severity_combo);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -282,7 +295,9 @@ public class Main extends Activity {
 		if (preferences.getBoolean("url_changed", false)) {
 			Log.i(TAG, "Getting groups and tags");
 			new GetGroupsAsyncTask().execute();
-			new GetTagsAsyncTask().execute();
+			if (!version402) {
+				new GetTagsAsyncTask().execute();
+			}
 			editorPreferences.putBoolean("url_changed", false);
 			editorPreferences.commit();
 		}
@@ -438,10 +453,14 @@ public class Main extends Activity {
 
 		text = (EditText) findViewById(R.id.event_search_text);
 		this.object.eventSearch = text.getText().toString();
-
-		combo = (Spinner) findViewById(R.id.tag);
-		if (combo.getSelectedItem() != null) {
-			this.object.eventTag = combo.getSelectedItem().toString();
+		if (version402) {
+			text = (EditText) findViewById(R.id.tag_text);
+			this.object.eventTag = text.getText().toString();
+		} else {
+			combo = (Spinner) findViewById(R.id.tag);
+			if (combo.getSelectedItem() != null) {
+				this.object.eventTag = combo.getSelectedItem().toString();
+			}
 		}
 		this.object.getNewListEvents = true;
 		this.object.executeBackgroundGetEvents(true);
@@ -489,9 +508,13 @@ public class Main extends Activity {
 
 		combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
 		filterLastTime = combo.getSelectedItemPosition();
-
-		combo = (Spinner) findViewById(R.id.tag);
-		filterTag = combo.getSelectedItem().toString();
+		if (version402) {
+			text = (EditText) findViewById(R.id.tag_text);
+			filterTag = text.getText().toString();
+		} else {
+			combo = (Spinner) findViewById(R.id.tag);
+			filterTag = combo.getSelectedItem().toString();
+		}
 
 		text = (EditText) findViewById(R.id.event_search_text);
 		filterEventSearch = text.getText().toString();
@@ -532,8 +555,12 @@ public class Main extends Activity {
 		combo.setSelection(0);
 		combo = (Spinner) findViewById(R.id.status_combo);
 		combo.setSelection(3);
-		combo = (Spinner) findViewById(R.id.tag);
-		combo.setSelection(0);
+		if (version402) {
+			((EditText) findViewById(R.id.tag_text)).setText("");
+		} else {
+			combo = (Spinner) findViewById(R.id.tag);
+			combo.setSelection(0);
+		}
 
 		EditText text = (EditText) findViewById(R.id.agent_name);
 		text.setText("");
@@ -594,7 +621,13 @@ public class Main extends Activity {
 				.getSelectedItemPosition();
 		int status = ((Spinner) findViewById(R.id.status_combo))
 				.getSelectedItemPosition();
-		int tag = ((Spinner) findViewById(R.id.tag)).getSelectedItemPosition();
+		String tag = "";
+		if (version402) {
+			tag = ((EditText) findViewById(R.id.tag_text)).getText().toString();
+		} else {
+			tag = String.valueOf(((Spinner) findViewById(R.id.tag))
+					.getSelectedItemPosition());
+		}
 		String agentName = ((EditText) findViewById(R.id.agent_name)).getText()
 				.toString();
 		String eventSearch = ((EditText) findViewById(R.id.event_search_text))
@@ -663,8 +696,17 @@ public class Main extends Activity {
 				spinner.setSelection(Integer.valueOf(options[0]));
 				spinner = (Spinner) findViewById(R.id.status_combo);
 				spinner.setSelection(Integer.valueOf(options[1]));
-				spinner = (Spinner) findViewById(R.id.tag);
-				spinner.setSelection(Integer.valueOf(options[2]));
+				if (version402) {
+					((EditText) findViewById(R.id.tag_text))
+							.setText(options[2]);
+				} else {
+					spinner = (Spinner) findViewById(R.id.tag);
+					try {
+						spinner.setSelection(Integer.valueOf(options[2]));
+					} catch (NumberFormatException nf) {
+						spinner.setSelection(0);
+					}
+				}
 				EditText editText = (EditText) findViewById(R.id.agent_name);
 				editText.setText(options[3]);
 				editText = (EditText) findViewById(R.id.event_search_text);

@@ -1,3 +1,10 @@
+2012-07-03 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/IncidentListItem.java: Deleted, not necessary class.
+	* src/pandroid_event_viewer/pandorafms/IncidentList.java: Deleted, not necessary class.	
+	* src/pandroid_event_viewer/pandorafms/EventList.java: The event type images are now fetched from the application (not internet).
+	* src/pandroid_event_viewer/pandorafms/Core.java: Added a method which returns the event type image.
+	* res/res/drawable-ldpi/: Added some images.
+
 2012-06-30 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Main.java: Added a check in order to prevent profile overwritings.
 	* src/pandroid_event_viewer/pandorafms/Core.java: Added method which finds a string in a list (case insensitive). 

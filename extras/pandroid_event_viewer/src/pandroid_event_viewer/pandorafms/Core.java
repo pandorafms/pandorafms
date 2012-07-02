@@ -606,4 +606,71 @@ public class Core {
 		}
 		return false;
 	}
+
+	/**
+	 * Returns the corresponding image to the given severity code.
+	 * 
+	 * @param context
+	 *            Application context.
+	 * @param severityCode
+	 *            Severity code.
+	 * @return a Drawable item.
+	 */
+	public static Drawable getSeverityImage(Context context, int severityCode) {
+		switch (severityCode) {
+		case 0:
+			return context.getResources().getDrawable(
+					R.drawable.severity_maintenance);
+		case 1:
+			return context.getResources().getDrawable(
+					R.drawable.severity_informational);
+
+		case 2:
+			return context.getResources().getDrawable(
+					R.drawable.severity_normal);
+
+		case 3:
+			return context.getResources().getDrawable(
+					R.drawable.severity_warning);
+
+		case 4:
+			return context.getResources().getDrawable(
+					R.drawable.severity_critical);
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the corresponding image to the given event type.
+	 * 
+	 * @param context
+	 *            Application context.
+	 * @param eventType
+	 *            Event type.
+	 * @return Drawable
+	 */
+	public static Drawable getEventTypeImage(Context context, String eventType) {
+		eventType = eventType.toLowerCase();
+		Map<String, Integer> images = new HashMap<String, Integer>();
+		images.put("alert_recovered", R.drawable.error);
+		images.put("alert_manual_validation", R.drawable.eye);
+		images.put("going_up_warning", R.drawable.b_yellow);
+		images.put("going_up_critical", R.drawable.b_red);
+		images.put("going_down_critical", R.drawable.b_red);
+		images.put("going_up_normal", R.drawable.b_green);
+		images.put("going_down_normal", R.drawable.b_green);
+		images.put("going_down_warning", R.drawable.b_yellow);
+		images.put("alert_fired", R.drawable.bell);
+		images.put("system", R.drawable.cog);
+		images.put("recon_host_detected", R.drawable.network);
+		images.put("new_agent", R.drawable.wand);
+		images.put("unknown", R.drawable.err);
+
+		Integer code = images.get(eventType.toLowerCase());
+		if (code != null) {
+			return context.getResources().getDrawable(code);
+		} else {
+			return null;
+		}
+	}
 }

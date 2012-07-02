@@ -1,3 +1,18 @@
+2012-07-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/javascript/jquery.pandora.js: Changed size of modal 
+	windows to avoid scroll.
+
+	* include/functions_ui.php
+	 include/functions.php: Changes in autorefresh. When user is not 
+	 logged then don't autorefresh (except public url of visual console)
+	 
+	 index.php: Restrict get_parameter to post when password in renewed
+	 in login.
+	 
+	 operation/visual_console/public_console.php: Fixed jquery path in
+	 this view.
+
 2012-06-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php: added lost lines for the text sizes

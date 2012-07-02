@@ -26,9 +26,12 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>';
 
+global $vc_public_view;
+$vc_public_view = true;
 // This starts the page head. In the call back function,
 // things from $page['head'] array will be processed into the head
 ob_start ('ui_process_page_head');
+
 
 require ('include/functions_visual_map.php');
 

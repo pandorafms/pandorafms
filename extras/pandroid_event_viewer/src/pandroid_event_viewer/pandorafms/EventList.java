@@ -387,9 +387,9 @@ public class EventList extends ListActivity {
 				timestamp.setText(item.timestamp);
 
 				if (item.criticity_image.length() != 0)
-					Core.setTextViewLeftImage(
-							(TextView) view.findViewById(R.id.event_name),
-							Core.downloadImage(item.criticity_image));
+					Core.setTextViewLeftImage((TextView) view.findViewById(R.id.event_name), Core
+							.getSeverityImage(getApplicationContext(),
+									item.criticity), 16);
 
 				if (item.group_icon.length() != 0)
 					Core.setTextViewLeftImage(
@@ -471,10 +471,9 @@ public class EventList extends ListActivity {
 						text.setMovementMethod(LinkMovementMethod.getInstance());
 					}
 
-					if (item.description_image.length() != 0)
-						Core.setTextViewLeftImage((TextView) viewEventExtended
-								.findViewById(R.id.type_text),
-								item.description_image);
+					Core.setTextViewLeftImage((TextView) viewEventExtended
+							.findViewById(R.id.type_text),
+							Core.getEventTypeImage(getApplicationContext(), item.event_type), 16);
 
 					text = (TextView) viewEventExtended
 							.findViewById(R.id.type_text);
@@ -484,12 +483,10 @@ public class EventList extends ListActivity {
 						text = (TextView) viewEventExtended
 								.findViewById(R.id.severity_text);
 						text.setText(item.criticity_name);
-
-						if (item.criticity_image.length() != 0)
-							Core.setTextViewLeftImage(
-									(TextView) viewEventExtended
-											.findViewById(R.id.severity_text),
-									item.criticity_image);
+						Core.setTextViewLeftImage((TextView) viewEventExtended
+								.findViewById(R.id.severity_text), Core
+								.getSeverityImage(getApplicationContext(),
+										item.criticity), 16);
 					}
 
 					// Set the open and close the extended info event row

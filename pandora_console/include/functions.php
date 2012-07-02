@@ -25,6 +25,11 @@ require_once ('functions_html.php');
 require_once ('functions_ui.php');
 require_once('functions_io.php');
 
+/**
+ * Check referer to avoid external attacks
+ *
+ * @return bool true if all is ok, false if referer is not equal to current web page
+ */
 function check_refererer() {
 	global $config;
 	

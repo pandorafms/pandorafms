@@ -1055,14 +1055,16 @@ function ui_require_jquery_file ($name, $path = 'include/javascript/') {
  */
 function ui_process_page_head ($string, $bitfield) {
 	global $config;
+	global $vc_public_view;
 
 	if (isset ($config['ignore_callback']) && $config['ignore_callback'] == true) {
 		return;
 	}
 	
 	$output = '';
-	
-	if ($config["refr"] > 0) {
+
+	// If user is logged or displayed view is the public view of visual console
+	if ($config["refr"] > 0 && (isset($config['id_user']) || $vc_public_view == 1)) {
 		$query = ui_get_url_refresh (false);
 		
 		$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL=' . $query . '" />';
@@ -1238,7 +1240,7 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= "\n".'/* ]]> */</script>';
 		}
 		else {
-			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
+			$output .= '<script type="text/javascript" src="' . $config['homeurl'] . '/' . $filename.'"></script>'."\n\t";
 		}
 	}
 	

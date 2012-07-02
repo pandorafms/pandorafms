@@ -132,13 +132,13 @@ $sec = safe_url_extraclean ($sec);
 $process_login = false;
 
 // Update user password
-$change_pass = get_parameter('renew_password', 0);
+$change_pass = get_parameter_post('renew_password', 0);
 	
 if ($change_pass == 1) {
 	
-	$password_new = (string) get_parameter ('new_password', '');
-	$password_confirm = (string) get_parameter ('confirm_new_password', '');
-	$id = (string) get_parameter ('login', '');
+	$password_new = (string) get_parameter_post ('new_password', '');
+	$password_confirm = (string) get_parameter_post ('confirm_new_password', '');
+	$id = (string) get_parameter_post ('login', '');
 
 	$changed_pass = login_update_password_check ($password_new, $password_confirm, $id);
 }

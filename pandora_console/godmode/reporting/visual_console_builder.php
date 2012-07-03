@@ -25,8 +25,8 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 }
 
 require_once ('include/functions_visual_map.php');
-require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
+enterprise_include_once('include/functions_visual_map.php');
 
 $action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), 'new');
 $activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'editor'), 'data');
@@ -151,6 +151,11 @@ switch ($activeTab) {
 					$values['parent_item'] = get_parameter('parent_' . $id, 0);
 					$values['id_layout_linked'] = get_parameter('map_linked_' . $id, 0);
 					$values['label_color'] = get_parameter('label_color_' . $id, '#000000');
+					
+					if (enterprise_installed()) {
+						enterprise_visual_map_update_action_from_list_elements($type, $values);
+					}
+					
 					db_process_sql_update('tlayout_data', $values, array('id' => $id));
 				}
 				break;

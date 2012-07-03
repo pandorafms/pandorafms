@@ -993,8 +993,47 @@ function ui_require_javascript_file ($name, $path = 'include/javascript/') {
 	
 	if (! isset ($config['js']))
 		$config['js'] = array ();
+	
 	if (isset ($config['js'][$name]))
 		return true;
+	
+	/* We checks two paths because it may fails on enterprise */
+	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
+		return false;
+	
+	$config['js'][$name] = $filename;
+	
+	return true;
+}
+
+/**
+ * Add a enteprise javascript file to the HTML head tag.
+ *
+ * To make a javascript file available just put it in <ENTERPRISE_DIR>/include/javascript. The
+ * file name should be like "name.js". The "name" would be the value
+ * needed to pass to this function.
+ * 
+ * @param string Script name to add without the "jquery." prefix and the ".js"
+ * suffix. Example:
+ * <code>
+ * ui_require_javascript_file ('pandora');
+ * // Would include include/javascript/pandora.js
+ * </code>
+ *
+ * @return bool True if the file was added. False if the file doesn't exist.
+ */
+function ui_require_javascript_file_enterprise($name) {
+	
+	global $config;
+	
+	$filename = ENTERPRISE_DIR . '/include/javascript/' .$name.'.js';
+	
+	if (! isset ($config['js']))
+		$config['js'] = array ();
+	
+	if (isset ($config['js'][$name]))
+		return true;
+	
 	/* We checks two paths because it may fails on enterprise */
 	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
 		return false;

@@ -1,3 +1,27 @@
+2012-07-03 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* ajax.php: added support for the enterprise, because some case
+	this file can't call enterprise functions.
+	
+	* godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.php,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.elements.php,
+	godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/visual_console_builder.constans.php (delete),
+	include/functions_visual_map_editor.php,
+	include/ajax/visual_console_builder.ajax.php,
+	include/functions_visual_map.php: some parts of code had been
+	refactored because it is necesary for to add enterprise feature to
+	Visual map.
+	
+	* include/constants.php: cleaned source code style and added and
+	reordened the constants for visual maps.
+	
+	* include/functions_html.php, include/styles/pandora.css,
+	include/functions_ui.php, include/functions.php, index.php: cleaned
+	source code style.
+
 2012-07-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql

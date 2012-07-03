@@ -24,9 +24,9 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
-require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once ('include/functions_visual_map.php');
 require_once ($config['homedir'].'/include/functions_agents.php');
+enterprise_include_once('include/functions_visual_map.php');
 
 //Arrays for select box.
 $backgrounds_list = list_files('images/console/background/', "jpg", 1, 0);
@@ -40,7 +40,7 @@ foreach ($all_images as $image_file) {
 	if (strpos ($image_file, "_ok"))
 		continue;
 	if (strpos ($image_file, "_warning"))
-		continue;	
+		continue;
 	$image_file = substr ($image_file, 0, strlen ($image_file) - 4);
 	$images_list[$image_file] = $image_file;
 }
@@ -121,7 +121,12 @@ foreach ($layoutDatas as $layoutData) {
 			$table->data[$i + 1]['icon'] = html_print_image('images/photo.png', true, array('title' => __('Icon')));
 			break;
 		default:
-			$table->data[$i + 1]['icon'] = '';
+			if (enterprise_installed()) {
+				$table->data[$i + 1]['icon'] = enterprise_visual_map_print_list_element('icon', $layoutData);
+			}
+			else {
+				$table->data[$i + 1]['icon'] = '';
+			}
 			break;
 	}
 	
@@ -129,7 +134,7 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Label and color label
 	if ($layoutData['type'] != ICON) {
-		$table->data[$i + 1][0] = '<span style="width: 130px; display: block;">' .
+		$table->data[$i + 1][0] = '<span style="width: 150px; display: block;">' .
 			html_print_input_text ('label_' . $idLayoutData, $layoutData['label'], '', 10, 200, true) . 
 			html_print_input_text_extended ('label_color_' . $idLayoutData, $layoutData['label_color'], 'text-'.'label_color_' . $idLayoutData, '', 7, 7, false, '', 'style="visibility: hidden; width: 0px;" class="label_color"', true) . 
 			'</span>';
@@ -171,26 +176,50 @@ foreach ($layoutDatas as $layoutData) {
 	$table->data[$i + 2]['icon'] = '';
 	
 	//Agent
-	if (($layoutData['type'] != ICON) && ($layoutData['type'] != LABEL)) {
-		$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . 
-			html_print_input_text_extended ('agent_' . $idLayoutData, agents_get_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
-			array('class' => 'text-agent', 'style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), true);
-	}
-	else {
-		$table->data[$i + 2][0] = '';
+	switch ($layoutData['type']) {
+		case ICON:
+		case LABEL:
+			$table->data[$i + 2][0] = '';
+			break;
+		default:
+			$cell_content_enterprise = false;
+			if (enterprise_installed()) {
+				$cell_content_enterprise = enterprise_visual_map_print_list_element('agent', $layoutData);
+			}
+			if ($cell_content_enterprise === false) {
+				$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . 
+					html_print_input_text_extended ('agent_' . $idLayoutData, agents_get_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
+					array('class' => 'text-agent', 'style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), true);
+			}
+			else {
+				$table->data[$i + 2][0] = $cell_content_enterprise;
+			}
+			break;
 	}
 	
-	//Modules
-	if (($layoutData['type'] != ICON) && ($layoutData['type'] != LABEL)) {
-		$modules = agents_get_modules($layoutData['id_agent']);
-		
-		$modules = io_safe_output($modules);
-		
-		$table->data[$i + 2][1] = html_print_select($modules,
-			'module_' . $idLayoutData, $layoutData['id_agente_modulo'], '', '---', 0, true);
-	}
-	else {
-		$table->data[$i + 2][1] = '';
+	//Module
+	switch ($layoutData['type']) {
+		case ICON:
+		case LABEL:
+			$table->data[$i + 2][1] = '';
+			break;
+		default:
+			$cell_content_enterprise = false;
+			if (enterprise_installed()) {
+				$cell_content_enterprise = enterprise_visual_map_print_list_element('module', $layoutData);
+			}
+			if ($cell_content_enterprise === false) {
+				$modules = agents_get_modules($layoutData['id_agent']);
+				
+				$modules = io_safe_output($modules);
+				
+				$table->data[$i + 2][1] = html_print_select($modules,
+					'module_' . $idLayoutData, $layoutData['id_agente_modulo'], '', '---', 0, true);
+			}
+			else {
+				$table->data[$i + 2][1] = $cell_content_enterprise;
+			}
+			break;
 	}
 	
 	//Empty
@@ -260,6 +289,7 @@ ui_require_jquery_file('autocomplete');
 <script type="text/javascript">
 $(document).ready (function () {
 	$(".label_color").attachColorPicker();
+	//$(".ColorPickerDivSample").css('float', 'right');
 });
 
 var idText = $("#ip_text").html();

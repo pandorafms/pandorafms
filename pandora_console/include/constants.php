@@ -21,14 +21,20 @@
 /* Enterprise hook constant */
 define ('ENTERPRISE_NOT_HOOK', -1);
 
+
+
 /* Events state constants */
 define ('EVENT_NEW', 0);
 define ('EVENT_VALIDATE', 1);
 define ('EVENT_PROCESS', 2);
 
+
+
 /* Agents disabled status */
 define ('AGENT_ENABLED',0);
 define ('AGENT_DISABLED',1);
+
+
 
 /* Error report codes */
 define ('NOERR',11111);
@@ -43,10 +49,7 @@ define ('ERR_NOCHANGES', -60000);
 define ('ERR_NODATA', -70000);
 define ('ERR_CONNECTION', -80000);
 
-/* Visual console constants */
-define('MIN_WIDTH',300);
-define('MIN_HEIGHT',120);
-define('MIN_WIDTH_CAPTION',420);
+
 
 /* Seconds in a time unit constants */
 define('SECONDS_1MINUTE',60);
@@ -65,11 +68,15 @@ define('SECONDS_1YEAR',31104000);
 define('SECONDS_2YEARS',62208000);
 define('SECONDS_3YEARS',93312000);
 
+
+
 /* Separator constats */
 define('SEPARATOR_COLUMN', ';');
 define('SEPARATOR_ROW', chr(10)); //chr(10) = '\n'
 define('SEPARATOR_COLUMN_CSV', "#");
 define('SEPARATOR_ROW_CSV', "@\n");
+
+
 
 /* Backup paths */
 switch ($config["dbtype"]) {
@@ -84,6 +91,8 @@ switch ($config["dbtype"]) {
 		break;
 }
 
+
+
 /* Color constants */
 define('COL_CRITICAL','#cc0000');
 define('COL_WARNING','#ffcc00');
@@ -92,7 +101,34 @@ define('COL_NOTINIT','#ef2929');
 define('COL_UNKNOWN','#aaaaaa');
 define('COL_ALERTFIRED','#ff8800');
 
+
+
 /* The styles */
 /* Size of text in characters for truncate */
 define('GENERIC_SIZE_TEXT', 25);
+
+
+
+/* Visual maps contants */
+//The items kind
+define('STATIC_GRAPH', 0);
+define('PERCENTILE_BAR', 3);
+define('MODULE_GRAPH', 1);
+define('SIMPLE_VALUE', 2);
+define('LABEL', 4);
+define('ICON', 5);
+define('SIMPLE_VALUE_MAX', 6);
+define('SIMPLE_VALUE_MIN', 7);
+define('SIMPLE_VALUE_AVG', 8);
+define('PERCENTILE_BUBBLE', 9);
+define('SERVICE', 10); //Enterprise Item.
+//Some styles
+define('MIN_WIDTH',300);
+define('MIN_HEIGHT',120);
+define('MIN_WIDTH_CAPTION',420);
+//The process for simple value
+define('PROCESS_VALUE_NONE', 0);
+define('PROCESS_VALUE_MIN', 1);
+define('PROCESS_VALUE_MAX', 2);
+define('PROCESS_VALUE_AVG', 3);
 ?>

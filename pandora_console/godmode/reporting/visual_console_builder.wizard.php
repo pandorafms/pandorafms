@@ -24,7 +24,6 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
-require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once ('include/functions_visual_map.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 

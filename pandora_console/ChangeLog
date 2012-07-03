@@ -1,5 +1,17 @@
 2012-07-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Replaced 
+	 version in db scripts.
+	 
+	* extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Delete old
+	 named db scripts.
+
+2012-07-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* pandoradb_data.sql
 	 pandoradb.data.postgreSQL.sql
 	 pandoradb.data.oracle.sql

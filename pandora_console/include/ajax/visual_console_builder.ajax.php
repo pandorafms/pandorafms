@@ -24,13 +24,15 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
+
+//Fix ajax to avoid include the file, 'functions_graph.php'.
 $ajax = true;
 
 
-require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once('include/functions_visual_map.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . '/include/functions_graph.php');
+enterprise_include_once('include/functions_visual_map.php');
 
 $action = get_parameter('action');
 $type = get_parameter('type');
@@ -233,6 +235,7 @@ switch ($action) {
 			case 'module_graph':
 			case 'label':
 			case 'icon':
+			default:
 				if ($label !== null) {
 					$values['label'] = $label;
 				}
@@ -307,6 +310,11 @@ switch ($action) {
 							$values['height'] = $height;
 						}
 						break;
+					default:
+						if (enterprise_installed()) {
+							enterprise_ajax_update_values($action, $type, $values);
+						}
+						break;
 				}
 				
 				if ($action == 'move') {
@@ -371,7 +379,7 @@ switch ($action) {
 						break;
 				}
 				//Support for max, min and svg process on simple value items
-				if ($type == 'simple_value'){
+				if ($type == 'simple_value') {
 					switch ($elementFields['type']) {
 						case SIMPLE_VALUE:
 							$elementFields['process_value'] = 0;
@@ -389,6 +397,9 @@ switch ($action) {
 				}
 				$elementFields['label'] = io_safe_output($elementFields['label']);
 				echo json_encode($elementFields);
+				break;
+			default:
+				enterprise_hook("enterprise_ajax_load_values", array($type, $id_element));
 				break;
 		}
 		break;
@@ -446,6 +457,11 @@ switch ($action) {
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
+				break;
+			default:
+				if (enterprise_installed()) {
+					enterprise_ajax_insert_fill_values_insert($type, $values);
+				}
 				break;
 		}
 		$idData = db_process_sql_insert('tlayout_data', $values);

@@ -31,6 +31,11 @@ check_login ();
 
 define ('AJAX', true);
 
+/* Enterprise support */
+if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
+	include_once (ENTERPRISE_DIR."/load_enterprise.php");
+}
+
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 
 $page = (string) get_parameter ('page');

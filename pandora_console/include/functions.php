@@ -199,7 +199,8 @@ function list_files ($directory, $stringSearch, $searchHandler, $return = false)
 	}
 	if (($errorHandler == true) && (@count ($result) === 0)) {
 		echo ("<pre>\nerror: no filetype \"$fileExtension\" found!\n</pre>\n");
-	} else {
+	}
+	else {
 		asort ($result);
 		if ($return === false) {
 			echo ("<pre>\n");
@@ -237,6 +238,7 @@ function format_numeric ($number, $decimals = 1) {
 	/* If has decimals */
 	if (fmod ($number, 1) > 0)
 		return number_format ($number, $decimals, $dec_point, $thousands_sep);
+	
 	return number_format ($number, 0, $dec_point, $thousands_sep);
 }
 
@@ -944,8 +946,10 @@ function enterprise_hook ($function_name, $parameters = false) {
 	if (function_exists ($function_name)) {
 		if (!is_array ($parameters))
 			return call_user_func ($function_name);
+		
 		return call_user_func_array ($function_name, $parameters);
 	}
+	
 	return ENTERPRISE_NOT_HOOK;
 }
 
@@ -954,17 +958,22 @@ function enterprise_hook ($function_name, $parameters = false) {
  */
 function enterprise_include ($filename) {
 	global $config;
+	
 	// Load enterprise extensions
 	$filepath = realpath ($config["homedir"].'/'.ENTERPRISE_DIR.'/'.$filename);
+	
 	if ($filepath === false)
 		return ENTERPRISE_NOT_HOOK;
+	
 	if (strncmp ($config["homedir"], $filepath, strlen ($config["homedir"])) != 0){
 		return ENTERPRISE_NOT_HOOK;
 	}
+	
 	if (file_exists ($filepath)) {
 		include ($filepath);
 		return true;
 	}
+	
 	return ENTERPRISE_NOT_HOOK;
 }
 
@@ -1037,7 +1046,7 @@ if (!function_exists ("mb_strtoupper")) {
  */
 function safe_sql_string($string) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_safe_sql_string($string);

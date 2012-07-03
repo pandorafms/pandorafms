@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 
 var creationItem = null;
-var openPropertiesPanel = false;
+var is_opened_palette = false;
 var idItem = 0;
 var selectedItem = null;
 var lines = Array();
@@ -23,7 +23,7 @@ var temp_id_item = 0;
 
 var SIZE_GRID = 16; //Const the size (for width and height) of grid.
 
-function showAdvanceOptions(close) {
+function toggle_advance_options_palette(close) {
 	if ($("#advance_options").css('display') == 'none') {
 		$("#advance_options").css('display', '');
 	}
@@ -37,7 +37,7 @@ function showAdvanceOptions(close) {
 }
 
 // Main function, execute in event documentReady
-function initJavascript() {
+function visual_map_main() {
 	$(".label_color").attachColorPicker();
 	
 	eventsBackground();
@@ -50,7 +50,6 @@ function initJavascript() {
 		}
 	);
 	
-	$(".item").css('z-index', '1'); //For paint the icons over lines
 }
 
 function eventsTextAgent() {
@@ -142,13 +141,13 @@ function eventsTextAgent() {
 	$(".ui-autocomplete").css("text-align", "left");
 }
 
-function cancelAction() {
-	 if (openPropertiesPanel) {
-		 actionClick();
-	 }
+function cancel_button_palette_callback() {
+	if (is_opened_palette) {
+		toggle_item_palette();
+	}
 }
 
-function updateAction() { 
+function update_button_palette_callback() { 
 	var values = {};
 	
 	values = readFields();
@@ -255,11 +254,17 @@ function updateAction() {
 				$("#" + idItem).css('height', '');
 			}
 			break;
+		default:
+			//Maybe save in any Enterprise item.
+			if (typeof(enterprise_update_button_palette_callback) == 'function') {
+				enterprise_update_button_palette_callback(values);
+			}
+			break;
 	}
 	
 	updateDB(selectedItem, idItem , values);
 	
-	actionClick();
+	toggle_item_palette();
 }
 
 function readFields() {
@@ -286,11 +291,16 @@ function readFields() {
 	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
 	values['value_show'] = $("input[name=value_show]:checked").val();
 	
+	if (typeof(enterprise_readFields) == 'function') {
+		//The parameter is a object and the function can change or add
+		//attributes.
+		enterprise_readFields(values);
+	}
 	
 	return values;
 }
 
-function createAction() {
+function create_button_palette_callback() {
 	var values = readFields();
 	
 	//VALIDATE DATA
@@ -357,18 +367,26 @@ function createAction() {
 				validate = false;
 			}
 			break;
+		default:
+			//Maybe save in any Enterprise item.
+			if (typeof(enterprise_create_button_palette_callback) == 'function') {
+				validate = enterprise_create_button_palette_callback(values);
+			}
+			break;
 	}
 	
 	if (validate) {
 		insertDB(creationItem, values);
-		actionClick();
+		toggle_item_palette();
 	}
 }
 
-function actionClick() {
+function toggle_item_palette() {
 	var item = null;
 	
-	if (openPropertiesPanel) {
+	if (is_opened_palette) {
+		is_opened_palette = false;
+		
 		activeToolboxButton('static_graph', true);
 		activeToolboxButton('module_graph', true);
 		activeToolboxButton('simple_value', true);
@@ -376,60 +394,64 @@ function actionClick() {
 		activeToolboxButton('icon', true);
 		activeToolboxButton('percentile_item', true);
 		
+		if (typeof(enterprise_activeToolboxButton) == 'function') {
+			enterprise_activeToolboxButton(true);
+		}
+		
 		$(".item").draggable("enable");
 		$("#background").resizable('enable');
 		$("#properties_panel").hide("fast");
 		
-		showAdvanceOptions(false);
-		
-		openPropertiesPanel = false;
-		
-		return;
+		toggle_advance_options_palette(false);
 	}
-	
-	openPropertiesPanel = true;
-	
-	$(".item").draggable("disable");
-	$("#background").resizable('disable');
-	
-	activeToolboxButton('static_graph', false);
-	activeToolboxButton('module_graph', false);
-	activeToolboxButton('simple_value', false);
-	activeToolboxButton('label', false);
-	activeToolboxButton('icon', false);
-	activeToolboxButton('percentile_item', false);
-	
-	activeToolboxButton('edit_item', false);
-	activeToolboxButton('delete_item', false);
-	activeToolboxButton('show_grid', false);
-	
-	if (creationItem != null) {
-		//Create a item
+	else {
+		is_opened_palette = true;
 		
-		activeToolboxButton(creationItem, true);
-		item = creationItem;
-		$("#button_update_row").css('display', 'none');
-		$("#button_create_row").css('display', '');
-		cleanFields();
-		unselectAll();
+		$(".item").draggable("disable");
+		$("#background").resizable('disable');
+		
+		activeToolboxButton('static_graph', false);
+		activeToolboxButton('module_graph', false);
+		activeToolboxButton('simple_value', false);
+		activeToolboxButton('label', false);
+		activeToolboxButton('icon', false);
+		activeToolboxButton('percentile_item', false);
+		
+		activeToolboxButton('edit_item', false);
+		activeToolboxButton('delete_item', false);
+		activeToolboxButton('show_grid', false);
+		
+		if (typeof(enterprise_activeToolboxButton) == 'function') {
+			enterprise_activeToolboxButton(false);
+		}
+		
+		if (creationItem != null) {
+			//Create a item
+			
+			activeToolboxButton(creationItem, true);
+			item = creationItem;
+			$("#button_update_row").css('display', 'none');
+			$("#button_create_row").css('display', '');
+			cleanFields();
+			unselectAll();
+		}
+		else if (selectedItem != null) {
+			//Edit a item
+			
+			item = selectedItem;
+			toolbuttonActive = item;
+			activeToolboxButton(toolbuttonActive, true);
+			$("#button_create_row").css('display', 'none');
+			$("#button_update_row").css('display', '');
+			cleanFields();
+			
+			loadFieldsFromDB(item);
+		}
+		
+		hiddenFields(item);
+		
+		$("#properties_panel").show("fast");
 	}
-	else if (selectedItem != null) {
-		//Edit a item
-		
-		item = selectedItem;
-		toolbuttonActive = item;
-		activeToolboxButton(toolbuttonActive, true);
-		$("#button_create_row").css('display', 'none');
-		$("#button_update_row").css('display', '');
-		cleanFields();
-		
-		loadFieldsFromDB(item);
-	}
-	
-	hiddenFields(item);
-	
-	$("#properties_panel").show("fast");
-	
 }
 
 function loadFieldsFromDB(item) {
@@ -474,7 +496,8 @@ function loadFieldsFromDB(item) {
 						moduleId = val;
 						$("select[name=module]").val(val);
 					}
-					if (key == 'process_value') $("select[name=process_value]").val(val);
+					if (key == 'process_value')
+						$("select[name=process_value]").val(val);
 					if (key == 'period') {
 						var anySelected = false;
 						var periodId = $('#hidden-period').attr('class');
@@ -527,6 +550,10 @@ function loadFieldsFromDB(item) {
 						}
 					}
 				});
+				
+				if (typeof(enterprise_loadFieldsFromDB) == 'function') {
+					enterprise_loadFieldsFromDB(data);
+				}
 			}
 		});	
 }
@@ -577,7 +604,7 @@ function setAspectRatioBackground(side) {
 		}
 	});
 	
-	actionClick();
+	toggle_item_palette();
 }
 
 function hiddenFields(item) {
@@ -611,7 +638,7 @@ function hiddenFields(item) {
 	$("#module_row."  + item).css('display', '');
 	
 	$("#process_value_row").css('display', 'none');
-	$("#process_value_row."  + item).css('display', '');	
+	$("#process_value_row."  + item).css('display', '');
 	
 	$("#background_row_1").css('display', 'none');
 	$("#background_row_1."  + item).css('display', '');
@@ -1073,6 +1100,15 @@ function createItem(type, values, id_data) {
 				'</div>'
 			);
 			break;
+		default:
+			//Maybe create in any Enterprise item.
+			if (typeof(enterprise_createItem) == 'function') {
+				temp_item = enterprise_createItem(type, values, id_data);
+				if (temp_item != false) {
+					item = temp_item;
+				}
+			}
+			break;
 	}
 	
 	$("#background").append(item);
@@ -1080,9 +1116,9 @@ function createItem(type, values, id_data) {
 	
 	if (values['parent'] != 0) {
 		var line = {"id": id_data,
-				"node_begin":  values['parent'],
-				"node_end": id_data,
-				"color": visual_map_get_color_line_status(id_data) };
+			"node_begin":  values['parent'],
+			"node_end": id_data,
+			"color": visual_map_get_color_line_status(id_data) };
 		lines.push(line);
 		
 		refresh_lines(lines, 'background', true);
@@ -1117,6 +1153,7 @@ function insertDB(type, values) {
 					id = data['id_data'];
 					createItem(type, values, id);
 					addItemSelectParents(id, data['text']);
+					//Reload all events for the item and new item.
 					eventsItems();
 				}
 				else {
@@ -1167,10 +1204,10 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 						suffix = "_warning.png";
 						break;
 					case '3':
-						//Unknown
 					default:
+						//Unknown
 						suffix = ".png";
-						// Default is Grey (Other)
+						break;
 				}
 				
 				var params = [];
@@ -1264,14 +1301,14 @@ function updateDB(type, idElement , values, event) {
 	}
 	
 	parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: action});
-	parameter.push ({name: "id_visual_console", value: id_visual_console});
-	parameter.push ({name: "type", value: type});
-	parameter.push ({name: "id_element", value: idElement});
+	parameter.push({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push({name: "action", value: action});
+	parameter.push({name: "id_visual_console", value: id_visual_console});
+	parameter.push({name: "type", value: type});
+	parameter.push({name: "id_element", value: idElement});
 	
 	jQuery.each(values, function(key, val) {
-		parameter.push ({name: key, value: val});
+		parameter.push({name: key, value: val});
 	});
 	
 	if ((typeof(values['mov_left']) != 'undefined') &&
@@ -1361,7 +1398,7 @@ function activeToolboxButton(id, active) {
 	}
 }
 
-function deleteItem() {
+function click_delete_item_callback() {
 	activeToolboxButton('edit_item', false);
 	deleteDB(idItem);
 	idItem = 0;
@@ -1383,11 +1420,11 @@ function eventsItems(drag) {
 	$('.item').unbind('dragstart');
 	$(".item").draggable('destroy');
 	
-	//$(".item").resizable(); //Disable but run in ff and in ie show ungly borders
+	//$(".item").resizable(); //Disable but run in ff and in the waste (aka micro$oft IE) show ungly borders
 	
 	$('.item').bind('click', function(event, ui) {
 		event.stopPropagation();
-		if (!openPropertiesPanel) {
+		if (!is_opened_palette) {
 			divParent = $(event.target).parent();
 			unselectAll();
 			$(divParent).css('border', '2px blue dotted');
@@ -1440,14 +1477,19 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			
+			//Maybe receive a click event any Enterprise item.
+			if (typeof(enterprise_click_item_callback) == 'function') {
+				enterprise_click_item_callback(divParent);
+			}
 		}
 	});
 	
 	//Double click in the item
 	$('.item').bind('dblclick', function(event, ui) {
 		event.stopPropagation();
-		if ((!openPropertiesPanel) && (autosave)) {
-			actionClick();
+		if ((!is_opened_palette) && (autosave)) {
+			toggle_item_palette();
 		}
 	});
 	
@@ -1457,7 +1499,7 @@ function eventsItems(drag) {
 	
 	$('.item').bind('dragstart', function(event, ui) {
 		event.stopPropagation();
-		if (!openPropertiesPanel) {
+		if (!is_opened_palette) {
 			unselectAll();
 			$(event.target).css('border', '2px blue dotted');
 			
@@ -1479,6 +1521,13 @@ function eventsItems(drag) {
 			}
 			if ($(event.target).hasClass('icon')) {
 				selectedItem = 'icon';
+			}
+			
+			if (selectedItem == null) {
+				//Maybe receive a click event any Enterprise item.
+				if (typeof(enterprise_dragstart_item_callback) == 'function') {
+					selectedItem = enterprise_dragstart_item_callback(event);
+				}
 			}
 			
 			if (selectedItem != null) {
@@ -1508,13 +1557,13 @@ function eventsBackground() {
 	$("#background").resizable();
 	
 	$('#background').bind('resizestart', function(event, ui) {
-		if (!openPropertiesPanel) {
+		if (!is_opened_palette) {
 			$("#background").css('border', '2px red solid');
 		}
 	});
 	
 	$('#background').bind('resizestop', function(event, ui) {
-		if (!openPropertiesPanel) {
+		if (!is_opened_palette) {
 			unselectAll();
 			
 			var values = {};
@@ -1539,7 +1588,7 @@ function eventsBackground() {
 	// Event click for background
 	$("#background").click(function(event) {
 		event.stopPropagation();
-		if (!openPropertiesPanel) {
+		if (!is_opened_palette) {
 			unselectAll();
 			$("#background").css('border', '2px blue dotted');
 			activeToolboxButton('edit_item', true);
@@ -1554,8 +1603,8 @@ function eventsBackground() {
 	
 	$('#background').bind('dblclick', function(event, ui) {
 		event.stopPropagation();
-		if ((!openPropertiesPanel) && (autosave)) {
-			actionClick();
+		if ((!is_opened_palette) && (autosave)) {
+			toggle_item_palette();
 		}
 	});
 }
@@ -1595,35 +1644,35 @@ function click_button_toolbox(id) {
 	switch (id) {
 		case 'static_graph':
 			toolbuttonActive = creationItem = 'static_graph';
-			actionClick();
+			toggle_item_palette();
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
 			toolbuttonActive = creationItem = 'percentile_item';
-			actionClick();
+			toggle_item_palette();
 			break;
 		case 'module_graph':
 			toolbuttonActive = creationItem = 'module_graph';
-			actionClick();
+			toggle_item_palette();
 			break;
 		case 'simple_value':
 			toolbuttonActive = creationItem = 'simple_value';
-			actionClick();
+			toggle_item_palette();
 			break;
 		case 'label':
 			toolbuttonActive = creationItem = 'label';
-			actionClick();
+			toggle_item_palette();
 			break;
 		case 'icon':
 			toolbuttonActive = creationItem = 'icon';
-			actionClick();
+			toggle_item_palette();
 			break;
 			
 		case 'edit_item':
-			actionClick();
+			toggle_item_palette();
 			break;
 		case 'delete_item':
-			deleteItem();
+			click_delete_item_callback();
 			break;
 		case 'show_grid':
 			showGrid();
@@ -1696,9 +1745,15 @@ function click_button_toolbox(id) {
 				alert($('#hack_translation_correct_save').html());
 			}
 			else {
-				alert($('#hack_translation_incorrect_save').html());	
+				alert($('#hack_translation_incorrect_save').html());
 			}
 			activeToolboxButton('save', true);
+			break;
+		default:
+			//Maybe click in any Enterprise button in toolbox.
+			if (typeof(enterprise_click_button_toolbox) == 'function') {
+				enterprise_click_button_toolbox(id);
+			}
 			break;
 	}
 }
@@ -1768,10 +1823,10 @@ function showPreviewIcon(icon) {
 
 function showGrid() {
 	var display = $("#background_grid").css('display');
-	if (display == 'none'){
+	if (display == 'none') {
 		$("#background_grid").css('display', '');
 		$("#background_img").css('opacity', '0.55');
-		$("#background_img").css('filter', 'alpha(opacity=55)');		
+		$("#background_img").css('filter', 'alpha(opacity=55)');
 		$("#background_grid").css('background', 'url("images/console/background/white_boxed.jpg")');
 		
 		//Snap to grid all elements.

@@ -211,13 +211,14 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		}
 	
 	}
-		
+	
 	if (($nick_in_db !== false) && $expired_pass) { //login ok and password has expired
 		require_once ('general/login_page.php');
 		db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
 		while (@ob_end_flush ());
 		exit ("</html>");
-	} else	if (($nick_in_db !== false) && (!$expired_pass)) { //login ok and password has not expired
+	}
+	else if (($nick_in_db !== false) && (!$expired_pass)) { //login ok and password has not expired
 		$process_login = true;
 		
 		unset ($_GET["sec2"]);
@@ -263,8 +264,8 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 						$_GET["sec2"] = $res["sec2"];
 						break;
 				}
-
-			} else {
+			}
+			else {
 				$_GET["sec"] = "general/logon_ok";
 			}
 		}
@@ -302,7 +303,6 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 			while (@ob_end_flush ());
 			exit ("</html>");
 		}
-
 	}
 }
 elseif (! isset ($config['id_user'])) {
@@ -340,7 +340,7 @@ if ($process_login) {
 	//Set the initial global counter for chat.
 	users_get_last_global_counter('session');
 }
-	
+
 //Get old parameters before navigation.
 $old_sec = '';
 $old_sec2 = '';
@@ -508,8 +508,8 @@ else {
 					}
 					break;
 			}
-
-		} else {
+		}
+		else {
 			require("general/logon_ok.php");
 		}
 	}

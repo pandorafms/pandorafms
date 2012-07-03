@@ -49,11 +49,11 @@ div#main {
 	/* Set rules to fill background */
 	min-height: 100%;
 	min-width: 1024px;
-
+	
 	/* Set up proportionate scaling */
 	width: 100%;
 	height: auto;
-
+	
 	/* Set up positioning */
 	position: fixed;
 	top: 0;
@@ -157,7 +157,7 @@ p.center {
 h1#log {
 	font-size: 18px;
 	margin-bottom: 0px;
-	color: #000;	
+	color: #000;
 }
 h1#log_f {
 	color: #c00;
@@ -364,15 +364,13 @@ input.sub[disabled] {
 	color: #aaa;
 }
 
-input.next, input.upd, input.ok, input.wand, input.delete, input.cog, input.target, input.search,
-input.copy, input.add, input.graph, input.percentile, input.binary,
-input.camera, input.config, input.cancel {
+input.next, input.upd, input.ok, input.wand, input.delete, input.cog,
+input.target, input.search, input.copy, input.add, input.graph,
+input.percentile, input.binary, input.camera, input.config,
+input.cancel {
 	padding-right: 21px;
 }
-input.delete_min, input.graph_min, input.percentile_min, input.percentile_item_min, input.binary_min,
-input.camera_min, input.config_min, input.label_min, input.icon_min, input.grid_min, input.save {
-	padding-right: 25px;
-}
+
 input.next {
 	background: #e5e5e5 url(../../images/go.png) no-repeat 98% 2px;
 }
@@ -420,6 +418,14 @@ input.camera {
 }
 input.config {
 	background: #e5e5e5 url(../../images/config.png) no-repeat 98% 3px;
+}
+
+
+#toolbox {
+	margin-top: 10px;
+}
+input.visual_editor_button_toolbox {
+	padding-right: 25px;
 }
 input.delete_min {
 	background: #e5e5e5 url(../../images/cross.png) no-repeat center;
@@ -478,18 +484,25 @@ input.icon_min[disabled] {
 input.grid_min {
 	background: #e5e5e5 url(../../images/grid.png) no-repeat center;
 }
+input.grid_min[disabled] {
+	background: #e5e5e5 url(../../images/grid.disabled.png) no-repeat center;
+}
 input.save_min {
 	background: #e5e5e5 url(../../images/file.png) no-repeat center;
 }
 input.save_min[disabled] {
 	background: #e5e5e5 url(../../images/file.disabled.png) no-repeat center;
 }
-input.grid_min[disabled] {
-	background: #e5e5e5 url(../../images/grid.disabled.png) no-repeat center;
+input.service_min {
+	background: #e5e5e5 url(../../images/sitemap_color.png) no-repeat center;
 }
-#toolbox {
-	margin-top: 10px;
+input.service_min[disabled] {
+	background: #e5e5e5 url(../../images/sitemap.png) no-repeat center;
 }
+
+
+
+
 table, img {
 	border: 0px;
 }
@@ -569,7 +582,8 @@ tr.rowOdd:hover {
 	font-size: 7pt;
 	text-align: center;
 }
-.f9, .f9i, .f9b, .datos_greyf9, .datos_bluef9, .datos_greenf9, .datos_redf9, .datos_yellowf9, td.f9, td.f9i, td.datosf9, td.datos2f9 {
+.f9, .f9i, .f9b, .datos_greyf9, .datos_bluef9, .datos_greenf9,
+.datos_redf9, .datos_yellowf9, td.f9, td.f9i, td.datosf9, td.datos2f9 {
 	font-size: 6.5pt;
 }
 .f9i, .redi {
@@ -917,7 +931,7 @@ span.rmess, span.nrmess {
 #head_m {
 	position: absolute;
 	padding-top: 6px;
-	padding-left: 12em;	
+	padding-left: 12em;
 }
 span#logo_text1 {
 	font: bolder 3em Arial, Sans-serif;
@@ -1654,7 +1668,7 @@ td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yel
 }
 
 #menu_tab li.separator {
-
+	/* Empty */
 }
 
 input#text-id_parent.ac_input, input, textarea, select {

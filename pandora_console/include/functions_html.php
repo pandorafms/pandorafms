@@ -265,13 +265,14 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $size = false) {
 	
 	$output = "\n";
-
+	
 	static $idcounter = array ();
 	
 	//If duplicate names exist, it will start numbering. Otherwise it won't
 	if (isset ($idcounter[$name])) {
 		$idcounter[$name]++;
-	} else {
+	}
+	else {
 		$idcounter[$name] = 0;
 	}
 	
@@ -308,7 +309,7 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 	if ($nothing != '' || empty ($fields)) {
 		if ($nothing == '') {
 			$nothing = __('None');
-		}		
+		}
 		$output .= '<option value="'.$nothing_value.'"';
 		if ($nothing_value == $selected) {
 			$output .= ' selected="selected"';
@@ -362,12 +363,12 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 			$output .= '</optgroup>';
 		}
 	}
-
+	
 	$output .= "</select>";
-
+	
 	if ($return)
 		return $output;
-
+	
 	echo $output;
 }
 
@@ -394,7 +395,8 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false,
+function html_print_select_from_sql ($sql, $name, $selected = '',
+	$script = '', $nothing = '', $nothing_value = '0', $return = false,
 	$multiple = false, $sort = true, $disabled = false, $style = false, $size = false, $trucate_size = GENERIC_SIZE_TEXT) {
 	global $config;
 	
@@ -406,10 +408,13 @@ function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', 
 	foreach ($result as $row) {
 		$id = array_shift($row);
 		$value = array_shift($row);
-		$fields[$id] = ui_print_truncate_text($value, $trucate_size, false, true, false);
+		$fields[$id] = ui_print_truncate_text(
+			$value, $trucate_size, false, true, false);
 	}
 	
-	return html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled, $style,'', $size);
+	return html_print_select ($fields, $name, $selected, $script,
+		$nothing, $nothing_value, $return, $multiple, $sort, '',
+		$disabled, $style,'', $size);
 }
 
 /**
@@ -596,7 +601,7 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
  */
 function html_print_input_password ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
 	$output = html_print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', '', true, true);
-
+	
 	if ($return)
 		return $output;
 	echo $output;
@@ -730,7 +735,7 @@ function html_print_submit_button ($label = 'OK', $name = '', $disabled = false,
 			$attributes .= $attribute.'="'.$value.'" ';
 		}
 	}
-		
+	
 	$output = '<input type="submit" id="submit-'.$name.'" name="'.$name.'" value="'. $label .'" '. $attributes;
 	if ($disabled)
 		$output .= ' disabled="disabled"';
@@ -836,7 +841,7 @@ function html_print_textarea ($name, $rows, $columns, $value = '', $attributes =
 function html_print_table (&$table, $return = false) {
 	$output = '';
 	static $table_count = 0;
-
+	
 	$table_count++;
 	if (isset ($table->align)) {
 		foreach ($table->align as $key => $aa) {
@@ -1197,7 +1202,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 	
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-		$skin_path = enterprise_hook('skins_get_image_path',array($src));
+		$skin_path = enterprise_hook('skins_get_image_path', array($src));
 		if ($skin_path)
 			$src = $skin_path;
 	}
@@ -1230,7 +1235,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		if (isset ($options["border"])) {
 			$style .= 'border:'.$options["border"].'px;'; //Border is deprecated, use styles
 		}
-				
+		
 		if (isset ($options["hspace"])) {
 			$style .= 'margin-left:'.$options["hspace"].'px;'; //hspace is deprecated, use styles
 			$style .= 'margin-right:'.$options["hspace"].'px;';
@@ -1244,22 +1249,24 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 			$style .= 'margin-top:'.$options["vspace"].'px;'; //hspace is deprecated, use styles
 			$style .= 'margin-bottom:'.$options["vspace"].'px;';
 		}
-				
+		
 		if (isset ($options["style"])) {
 			$style .= $options["style"]; 
 		}
 		
 		//Valid attributes (invalid attributes get skipped)
-		$attrs = array ("height", "longdesc", "usemap","width","id","class","title","lang","xml:lang", 
-						"onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", 
-						"onmouseout", "onkeypress", "onkeydown", "onkeyup","pos_tree");
+		$attrs = array ("height", "longdesc", "usemap","width","id",
+			"class","title","lang","xml:lang", "onclick", "ondblclick",
+			"onmousedown", "onmouseup", "onmouseover", "onmousemove", 
+			"onmouseout", "onkeypress", "onkeydown", "onkeyup","pos_tree");
 		
 		foreach ($attrs as $attribute) {
 			if (isset ($options[$attribute])) {
 				$output .= $attribute.'="'.io_safe_input_html ($options[$attribute]).'" ';
 			}
 		}
-	} else {
+	}
+	else {
 		$options = array ();
 	}
 	
@@ -1268,12 +1275,12 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	}// elseif (!isset ($options["alt"])) {
 	//	$options["alt"] = "";
 	//}
-
+	
 	if (!empty ($style)) {
 		$output .= 'style="'.$style.'" ';
 	}
-
-	if (isset($options["alt"]))	
+	
+	if (isset($options["alt"]))
 		$output .= 'alt="'.io_safe_input_html ($options['alt']).'" />';
 	else
 		$output .= '/>';

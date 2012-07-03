@@ -47,34 +47,6 @@ function visual_map_print_item_toolbox($idDiv, $text, $float) {
 	echo '</div>';
 }
 
-function visual_map_print_button_editor($idDiv, $label, $float = 'left', $disabled = false, $class= '', $imageButton = false) {
-	if ($float == 'left') {
-		$margin = 'margin-right';
-	}
-	else {
-		$margin = 'margin-left';
-	}
-	
-	html_print_button($label, 'button_toolbox2', $disabled, "click_button_toolbox('" . $idDiv . "');", 'class="sub ' . $idDiv . ' ' . $class . '" style="float: ' . $float . ';"', false, $imageButton);
-	return;
-	
-	if (!$disabled) $disableClass = '';
-	else $disableClass = 'disabled';
-	
-	echo '<div class="button_toolbox ' . $disableClass . '" id="' . $idDiv . '"
-		style="font-weight: bolder; text-align: center; float: ' . $float . ';' .
-		'width: 80px; height: 50px; background: #e5e5e5; border: 4px outset black; ' . $margin . ': 5px;">';
-	if ($disabled) {
-		echo '<span class="label" style="color: #aaaaaa;">';
-	}
-	else {
-		echo '<span class="label" style="color: #000000;">';
-	}
-	echo $label;
-	echo '</span>';
-	echo '</div>';
-}
-
 function visual_map_print_item($layoutData) {
 	global $config;
 	
@@ -97,39 +69,7 @@ function visual_map_print_item($layoutData) {
 	
 	$text = '<span id="text_' . $id . '" class="text">' . $label . '</span>';
 	
-	// Linked to other layout ?? - Only if not module defined
-	if ($layoutData['id_layout_linked'] != 0) {
-		$status = visual_map_get_layout_status ($layoutData['id_layout_linked']);
-	
-	// Single object
-	}
-	elseif (($layoutData["type"] == 0)
-				|| ($layoutData["type"] == 3)
-				|| ($layoutData["type"] == 4)) {
-		// Status for a simple module
-		if ($layoutData['id_agente_modulo'] != 0) {
-			$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
-			$id_agent = db_get_value ("id_agente", "tagente_estado", "id_agente_modulo", $layoutData['id_agente_modulo']);
-		
-		// Status for a whole agent, if agente_modulo was == 0
-		}
-		elseif ($layoutData['id_agent'] != 0) {
-			$status = agents_get_status ($layoutData["id_agent"]);
-			if ($status == -1) // agents_get_status return -1 for unknown!
-				$status = 3; 
-			$id_agent = $layoutData["id_agent"];
-		}
-		else {
-			$status = 3;
-			$id_agent = 0;
-		}
-	}
-	else {
-		// If it's a graph, a progress bar or a data tag, ALWAYS report
-		// status OK (=0) to avoid confussions here.
-		$status = 0;
-	}
-	
+	$status = visual_map_get_status_element($layoutData);
 	switch ($status) {
 		case 1:
 			//Critical (BAD)
@@ -163,13 +103,13 @@ function visual_map_print_item($layoutData) {
 					$borderStyle ='border: 2px solid #ffa300;';
 					$img = substr_replace($img, '', 0,1);
 				}
-				$imgSizes = getimagesize($img);
 			}
+			
 			if (($width != 0) && ($height != 0)) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
-			echo '<div id="' . $id . '" class="item static_graph" style="text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
+			echo '<div id="' . $id . '" class="item static_graph" style="z-index: 1; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 				if (($width != 0) && ($height != 0)) 
 					echo html_print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
@@ -201,7 +141,7 @@ function visual_map_print_item($layoutData) {
 			else
 				$percentile = 100;
 			
-			echo '<div id="' . $id . '" class="item percentile_item" style="color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
+			echo '<div id="' . $id . '" class="item percentile_item" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			echo $text . '<br />';
 			
 			ob_start();
@@ -222,7 +162,7 @@ function visual_map_print_item($layoutData) {
 				$height, '', null, false, 1, false, 0, '', 0, 0, true, true);
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
 			
-			echo '<div id="' . $id . '" class="item module_graph" style="color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
+			echo '<div id="' . $id . '" class="item module_graph" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			echo $text . '<br />'; 
 			echo $img;
 			echo '</div>';
@@ -231,27 +171,27 @@ function visual_map_print_item($layoutData) {
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
 		case SIMPLE_VALUE_AVG:
-			echo '<div id="' . $id . '" class="item simple_value" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo '<div id="' . $id . '" class="item simple_value" style="z-index: 1; left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text;
 			$value = visual_map_get_simple_value($type, $id_module, $period);
 			echo ' <span id="simplevalue_' . $id . '" style="font-weight:bold;">' . $value . '</span>';
 			echo '</div>';
 			break;
 		case LABEL:
-			echo '<div id="' . $id . '" class="item label" style="left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
+			echo '<div id="' . $id . '" class="item label" style="z-index: 1; left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
 			echo $text;
 			echo "</div>";
 			break;
 		case ICON:
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData);
-				$imgSizes = getimagesize($img);
 			}
+			
 			if (($width != 0) && ($height != 0)) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
-			echo '<div id="' . $id . '" class="item icon" style="left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
+			echo '<div id="' . $id . '" class="item icon" style="z-index: 1; left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 				// If match with protocol://direction 
 				if (preg_match('/^(http:\/\/)((.)+)$/i', $text)){
@@ -265,6 +205,10 @@ function visual_map_print_item($layoutData) {
 				echo '<br />';
 			}
 			echo "</div>";
+			break;
+		default:
+			enterprise_hook("enterprise_visual_map_print_item",
+				array($layoutData, $status, $colorStatus));
 			break;
 	}
 	
@@ -744,33 +688,47 @@ function visual_map_get_image_status_element($layoutData) {
  * @return integer 
  */
 function visual_map_get_status_element($layoutData) {
+	enterprise_include_once('include/functions_visual_map.php');
+	
+	if (enterprise_installed()) {
+		$status = enterprise_visual_map_get_status_element($layoutData);
+		
+		//The function return value.
+		if ($status !== false) {
+			//Return this value as call of open function.
+			return $status;
+		}
+	}
+	
 	//Linked to other layout ?? - Only if not module defined
 	if ($layoutData['id_layout_linked'] != 0) {
 		$status = visual_map_get_layout_status ($layoutData['id_layout_linked']);
 	}
-	else if ($layoutData["type"] == 0) {
-		//Single object
-		
-		//Status for a simple module
-		if ($layoutData['id_agente_modulo'] != 0) {
-			$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
-		
-		//Status for a whole agent, if agente_modulo was == 0
-		}
-		else if ($layoutData['id_agent'] != 0) {
-			$status = agents_get_status ($layoutData["id_agent"]);
-			if ($status == -1) // agents_get_status return -1 for unknown!
-				$status = 3;
-		}
-		else {
-			$status = 3;
-			$id_agent = 0;
-		}
-	}
 	else {
-		//If it's a graph, a progress bar or a data tag, ALWAYS report status OK
-		//(=0) to avoid confussions here.
-		$status = 0;
+		switch ($layoutData["type"]) {
+			case STATIC_GRAPH:
+				//Status for a simple module
+				if ($layoutData['id_agente_modulo'] != 0) {
+					$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
+				
+				//Status for a whole agent, if agente_modulo was == 0
+				}
+				else if ($layoutData['id_agent'] != 0) {
+					$status = agents_get_status ($layoutData["id_agent"]);
+					if ($status == -1) // agents_get_status return -1 for unknown!
+						$status = 3;
+				}
+				else {
+					$status = 3;
+					$id_agent = 0;
+				}
+				break;
+			default:
+				//If it's a graph, a progress bar or a data tag, ALWAYS report status OK
+				//(=0) to avoid confussions here.
+				$status = 0;
+				break;
+		}
 	}
 	
 	return $status;

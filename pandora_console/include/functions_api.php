@@ -2624,7 +2624,7 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
 	// Check all policies
 	foreach ($policies as $policy){
 		$policy_alerts = array();
-		$policy_alerts = enterprise_hook('policies_get_alerts',  array($policy['id'], false, false, true));
+		$policy_alerts = enterprise_hook('policies_get_alerts',  array($policy['id'], false, false));
 	
 
 		
@@ -2747,7 +2747,7 @@ function api_set_add_agent_policy($id, $thrash1, $other, $thrash3) {
 	}	
 
 	// Check if the agent is already in the policy
-	$id_agent_policy = enterprise_hook('policies_get_agents', array($id, array('id_agent' => $other['data'][0]), 'id', true));
+	$id_agent_policy = enterprise_hook('policies_get_agents', array($id, array('id_agent' => $other['data'][0]), 'id'));
 
 	if ($id_agent_policy === ENTERPRISE_NOT_HOOK) {
 		returnError('error_add_agent_policy', __('Error adding agent to policy.'));
@@ -2798,7 +2798,7 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 	}
 	
 	// Check if the module is already in the policy
-	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name'));
 
 	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
 		returnError('error_add_data_module_policy', __('Error adding data module to policy.'));
@@ -2829,7 +2829,7 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 		}
 	}
  
-	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 1, $values, false, true)); 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 1, $values, false)); 
 	
 	if ($success)
 		//returnData('string', array('type' => 'string', 'data' => __('Data module added to policy. Is necessary to apply the policy in order to changes take effect.')));		
@@ -2868,7 +2868,7 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
 	}	
 	
 	// Check if the module exists
-	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module', true));
+	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
 
 	if ($module_policy === false) {
 		returnError('error_update_data_module_policy', __('Error updating data module in policy. Module doesn\'t exists.'));
@@ -2938,7 +2938,7 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
 	}	
 	
 	// Check if the module is already in the policy
-	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name'));
 
 	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
 		returnError('error_network_data_module_policy', __('Error adding network module to policy.'));
@@ -2974,7 +2974,7 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
 		}
 	}
  
-	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false, true)); 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false)); 
 	
 	if ($success)
 		returnData('string', array('type' => 'string', 'data' => $success));
@@ -3012,7 +3012,7 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
 	}	
 	
 	// Check if the module exists
-	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module', true));
+	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
 
 	if ($module_policy === false) {
 		returnError('error_update_network_module_policy', __('Error updating network module in policy. Module doesn\'t exists.'));
@@ -3080,7 +3080,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	}
 	
 	// Check if the module is already in the policy
-	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name'));
 
 	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
 		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy.'));
@@ -3120,7 +3120,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 		}
 	}
  
-	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 4, $values, false, true)); 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 4, $values, false)); 
 	
 	if ($success)
 		returnData('string', array('type' => 'string', 'data' => $success));
@@ -3159,7 +3159,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	}	
 	
 	// Check if the module exists
-	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module', true));
+	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
 
 	if ($module_policy === false) {
 		returnError('error_updating_plugin_module_policy', __('Error updating plugin module in policy. Module doesn\'t exists.'));
@@ -3223,7 +3223,7 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	}
 	
 	// Check if the module is already in the policy
-	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name', true));
+	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name'));
 
 	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
 		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy.'));
@@ -3316,7 +3316,7 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 		}
 	}
  
-	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false, true)); 
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false)); 
 	
 	if ($success)
 		returnData('string', array('type' => 'string', 'data' => $success));
@@ -3356,7 +3356,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	}	
 	
 	// Check if the module exists
-	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module', true));
+	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
 
 	if ($module_policy === false) {
 		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Module doesn\'t exists.'));

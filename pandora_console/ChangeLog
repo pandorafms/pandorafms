@@ -1,5 +1,15 @@
 2012-07-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* pandoradb_data.sql
+	 pandoradb.data.postgreSQL.sql
+	 pandoradb.data.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_4.1.postgreSQL.sql: Added 
+	 meta_style row in tconfig.
+	 
+2012-07-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_api.php: Removed innecesary flags in some policy
 	function calls.
 

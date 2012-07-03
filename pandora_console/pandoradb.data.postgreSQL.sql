@@ -98,7 +98,8 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('number_attempts', 5),
 ('enable_pass_policy_admin', 0),
 ('enable_pass_history', 0),
-('compare_pass', 3);
+('compare_pass', 3),
+('meta_style', 'meta_pandora');
 
 COMMIT WORK;
 

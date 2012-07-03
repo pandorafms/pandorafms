@@ -103,6 +103,7 @@ INSERT INTO tconfig (token, value) VALUES ('number_attempts', 5);
 INSERT INTO tconfig (token, value) VALUES ('enable_pass_policy_admin', 0);
 INSERT INTO tconfig (token, value) VALUES ('enable_pass_history', 0);
 INSERT INTO tconfig (token, value) VALUES ('compare_pass', 3);
+INSERT INTO tconfig (token, value) VALUES ('meta_style', 'meta_pandora');
 COMMIT;
 END;;
 

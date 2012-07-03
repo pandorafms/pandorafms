@@ -239,18 +239,18 @@ INSERT INTO talert_commands (name, command, description, internal) VALUES ('Vali
 -- Table `tconfig`
 -- -----------------------------------------------------
 
-INSERT INTO tconfig (token, value) VALUES
-('enable_pass_policy', 0),
-('pass_size', 4),
-('pass_needs_numbers', 0),
-('pass_needs_symbols', 0),
-('pass_expire', 0),
-('first_login', 0),
-('mins_fail_pass', 5),
-('number_attempts', 5),
-('enable_pass_policy_admin', 0),
-('enable_pass_history', 0),
-('compare_pass', 3);
+INSERT INTO tconfig (token, value) VALUES ('enable_pass_policy', 0);
+INSERT INTO tconfig (token, value) VALUES ('pass_size', 4);
+INSERT INTO tconfig (token, value) VALUES ('pass_needs_numbers', 0);
+INSERT INTO tconfig (token, value) VALUES ('pass_needs_symbols', 0);
+INSERT INTO tconfig (token, value) VALUES ('pass_expire', 0);
+INSERT INTO tconfig (token, value) VALUES ('first_login', 0);
+INSERT INTO tconfig (token, value) VALUES ('mins_fail_pass', 5);
+INSERT INTO tconfig (token, value) VALUES ('number_attempts', 5);
+INSERT INTO tconfig (token, value) VALUES ('enable_pass_policy_admin', 0);
+INSERT INTO tconfig (token, value) VALUES ('enable_pass_history', 0);
+INSERT INTO tconfig (token, value) VALUES ('compare_pass', 3);
+INSERT INTO tconfig (token, value) VALUES ('meta_style', 'meta_pandora');
 
 -- -----------------------------------------------------
 -- Table `tpassword_history`

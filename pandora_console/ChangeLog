@@ -1,3 +1,8 @@
+2012-07-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_api.php: Removed innecesary flags in some policy
+	function calls.
+
 2012-07-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/javascript/jquery.pandora.js: Changed size of modal 

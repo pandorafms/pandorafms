@@ -1,3 +1,13 @@
+2012-07-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_menu.php
+	operation/agentes/estado_monitores.php
+	operation/snmpconsole/snmp_view.php
+	general/header.php: Fixes of missed "sec" changes in the new
+	menus and a little hack of the classify of retrieved menus
+
+	MERGED FROM TRUNK
+
 2012-06-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions.php: fixed into the function "copy_dir" when

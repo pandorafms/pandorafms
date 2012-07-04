@@ -355,7 +355,11 @@ function menu_get_sec($with_categories = false) {
 	foreach($menu as $k => $v) {
 		if($with_categories) {
 			if(!$in_godmode && $k[0] == 'g') {
-				$in_godmode = true;
+				// Hack to dont confuse with gis activated because godmode 
+				// sec starts with g (like gismaps)
+				if($k != 'gismaps') {
+					$in_godmode = true;
+				}
 			}
 			
 			if($in_godmode) {

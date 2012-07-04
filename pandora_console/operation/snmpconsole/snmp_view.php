@@ -476,7 +476,7 @@ if ($traps !== false) {
 		
 		//User
 		if (!empty ($trap["status"])) {
-			$data[5] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
+			$data[5] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
 			if (!empty($trap["id_usuario"]))
 				$data[5] .= ui_print_help_tip(get_user_fullname($trap["id_usuario"]), true);
 		}

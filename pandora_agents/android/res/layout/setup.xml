@@ -96,7 +96,7 @@
 				android:textColor="#bbbbbb"
 			/>
 			<CheckBox
-				android:id="@+id/checksimIDReport"
+				android:id="@+id/checkSimIDReport"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/simIDReport" 
@@ -141,12 +141,8 @@
 			    android:layout_height="wrap_content"
 			    android:text="@string/update"
 			/>
-			<Button
-				android:id="@+id/update" 
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:text="@string/update"
-			/>
+			
+			
 		</LinearLayout>
     </ScrollView>
 </LinearLayout>

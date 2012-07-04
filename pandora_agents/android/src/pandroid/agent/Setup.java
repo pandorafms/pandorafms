@@ -7,6 +7,7 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -24,6 +25,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 public class Setup extends Activity {
 	
@@ -37,12 +40,24 @@ public class Setup extends Activity {
         
         listProcesses = new HashMap<String, String>();
         
-        setContentView(R.layout.setup);
-		
         Core.loadConf(getApplicationContext());
-		loadViews();
+		
+        setContentView(R.layout.setup);
+        loadViews();
 		loadInBackgroundProcessInExecution();
 		setButtonEvents();
+        
+    }
+    
+    public void onResume() {
+        super.onResume();
+        if(Core.password.equals(Core.defaultPassword))
+        {
+        	createpass();
+        }
+        else{
+    	enterpass();
+        }
     }
     
     //For options
@@ -93,7 +108,10 @@ public class Setup extends Activity {
         		
         		Core.restartAgentListener(getApplicationContext());
         	}
+        	
+        	
         });
+        
 	}
     
 	
@@ -219,7 +237,7 @@ public class Setup extends Activity {
         	Core.memoryStatus = "enabled";
         else
         	Core.memoryStatus = "disabled";
-        checkBox = (CheckBox) findViewById(R.id.checksimIDReport);
+        checkBox = (CheckBox) findViewById(R.id.checkSimIDReport);
         if (checkBox.isChecked())
         	Core.simIDStatus = "enabled";
         else
@@ -267,9 +285,141 @@ public class Setup extends Activity {
         
         checkBox = (CheckBox) findViewById(R.id.checkMemoryReport);
         checkBox.setChecked(Core.memoryStatus.equals("enabled"));
-        /*
+        
+        checkBox = (CheckBox) findViewById(R.id.checkSimIDReport);
+        checkBox.setChecked(Core.simIDStatus.equals("enabled"));
+        
         checkBox = (CheckBox) findViewById(R.id.checkTaskReport);
         checkBox.setChecked(Core.taskStatus.equals("enabled"));
-        */
+        
 	}
+	public void createpass() {
+		//set up dialog
+		final Dialog dialog = new Dialog(this);
+		dialog.setContentView(R.layout.password_create);
+		dialog.setTitle("Set Password");
+		dialog.setCancelable(false);
+		dialog.getWindow().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		//there are a lot of settings, for dialog, check them all out!
+
+		//set up text
+		final EditText text = (EditText) dialog.findViewById(R.id.password_create_field);
+		text.setText("");
+		//set up text
+		final EditText text2 = (EditText) dialog.findViewById(R.id.password_create_field_2);
+		text2.setText("");
+
+
+		//set up button
+		Button button = (Button) dialog.findViewById(R.id.password_create_button);
+		button.setOnClickListener(new OnClickListener() {
+		@Override
+		   public void onClick(View v) {
+
+		    String createpass_password = text.getText().toString().trim();
+			String createpass_password2 = text2.getText().toString().trim();
+			
+		    try
+		    {
+		        if(createpass_password.equals(createpass_password2))
+		        {
+		        	Core.password = createpass_password;
+		        	Core.updateConf(getApplicationContext());
+		        	//Core.restartAgentListener(getApplicationContext());
+		        	dialog.dismiss();
+		        }
+		       else 
+		        {
+		        	Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.password_no_match), Toast.LENGTH_SHORT);
+	        	    	toast.show();
+		        }
+		    }
+		    catch(Exception x)
+		    {       
+		    	Toast toast = Toast.makeText(getApplicationContext(),
+        	       		getString(R.string.password_error),
+        	       		Toast.LENGTH_SHORT);
+        	    	toast.show();
+		        finish();
+		    }
+
+		}
+		});
+		//now that the dialog is set up, it's time to show it   
+
+		    dialog.show();
+
+	}// end createpass
+	
+	public void enterpass() {
+		//set up dialog
+		final Dialog dialog = new Dialog(this);
+		dialog.setContentView(R.layout.password_entry);
+		dialog.setTitle("Enter Password");
+		dialog.setCancelable(false);
+		dialog.getWindow().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		//there are a lot of settings, for dialog, check them all out!
+
+		//set up text
+		final EditText text = (EditText) dialog.findViewById(R.id.password_entry_input);
+		text.setText("");
+		
+
+		//set up button
+		Button button = (Button) dialog.findViewById(R.id.password_entry_button);
+		button.setOnClickListener(new OnClickListener() {
+		@Override
+		   public void onClick(View v) {
+			
+			String password = text.getText().toString().trim();
+				
+			
+		    try
+		    {
+		        if(password.equals(Core.password))
+		        {
+		        	InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
+                    im.hideSoftInputFromWindow(text.getWindowToken(), 0);
+		        	dialog.dismiss();
+		        }
+		        else
+		        {
+		        	Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.password_no_match), Toast.LENGTH_SHORT);
+        	    	toast.show();
+        	    	//finish();
+		        }
+		      
+		    }
+		    catch(Exception x)
+		    {       
+		    	Toast toast = Toast.makeText(getApplicationContext(),
+        	       		getString(R.string.password_error),
+        	       		Toast.LENGTH_SHORT);
+        	    	toast.show();
+		        finish();
+		    }
+
+		}
+		});
+		
+		//now that the dialog is set up, it's time to show it   
+		Button backButton = (Button) dialog.findViewById(R.id.password_back_button);
+		backButton.setOnClickListener(new OnClickListener() {
+		@Override
+		   public void onClick(View v) {
+				dialog.dismiss();
+				switchTabInActivity(0);
+			
+			}
+		});
+		   
+		dialog.show();
+	
+	}// end enterpass
+	
+	public void switchTabInActivity(int indexTabToSwitchTo){
+        PandroidAgent ParentActivity;
+        ParentActivity = (PandroidAgent) this.getParent();
+        ParentActivity.switchTab(indexTabToSwitchTo);
+}
 }

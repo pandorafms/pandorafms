@@ -15,16 +15,21 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
 
 public class Status  extends Activity {
 	Handler h = new Handler();
+	public static final String LOG_TAG = "mark";
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        setContentView(R.layout.status);
+        if(Core.hasSim)
+        	setContentView(R.layout.status);
+        else
+        	setContentView(R.layout.statusnosim);
         Core.loadLastValues(getApplicationContext());
         showLastValues();
         updateLastContactInfo();
@@ -151,11 +156,9 @@ public class Status  extends Activity {
     		lastContactInfo.setTextColor(Color.parseColor("#00FF00"));
     		lastContactInfo.setText(getString(R.string.last_contact_str) + stringAgo);
         }
-    		
-    	
-    	
-        
-	}
+    		   
+	}//end updateLastContactInfo
+	
 	private void setButtonEvents() {
         // Set update button events
         Button updateButton = (Button) findViewById(R.id.start);
@@ -203,12 +206,10 @@ public class Status  extends Activity {
         	}
         });
         
-        
-        
-        
-	}
+    }//end button events
 	
 	private void showLastValues() {
+		
 		// latitude
 		TextView textView = (TextView)findViewById(R.id.latitude_value_str);
 		textView.setText("");
@@ -267,59 +268,69 @@ public class Status  extends Activity {
 			textMemory = textMemory.replaceFirst("%i", "" + Core.totalRamKb);
 			textView.setText(textMemory);
 		}
-		//  simID
-		textView = (TextView)findViewById(R.id.sim_id_value);
-		textView.setText("");
-		if (Core.simID != null) {
-			textView.setText("" + Core.simID);
-		}
 		// upTime
 		textView = (TextView)findViewById(R.id.uptime_value);
 		textView.setText("");
 		if (Core.upTime != 0) {
 			textView.setText("" + Core.upTime+" Seconds");
 		}
-		// mobile operator
-		textView = (TextView)findViewById(R.id.network_operator_value);
-		textView.setText("");
-		if (Core.networkOperator != null) {
-			textView.setText("" + Core.networkOperator);
-		}
-		// SMSReceived
-		textView = (TextView)findViewById(R.id.sms_received_value);
-		textView.setText("");
-		textView.setText("" + Core.SMSReceived);
-		/*
-		// SMSSent
-		textView = (TextView)findViewById(R.id.sms_sent_value);
-		textView.setText("");
-		textView.setText("" + Core.SMSSent);
-		*/
-		// SMSReceived
-		textView = (TextView)findViewById(R.id.network_type_value);
-		textView.setText("");
-		textView.setText("" + Core.networkType);
+		//  simID
+		//Log.v(LOG_TAG, "HERE: "+Core.hasSim);
+		if (Core.hasSim) {
+			textView = (TextView)findViewById(R.id.sim_id_value);
+			textView.setText("");
+			textView.setText("" + Core.simID);
+			
+			// mobile operator
+			textView = (TextView)findViewById(R.id.network_operator_value);
+			textView.setText("");
+			if (Core.networkOperator != null) {
+				textView.setText("" + Core.networkOperator);
+			}
+			// SMSReceived
+			textView = (TextView)findViewById(R.id.sms_received_value);
+			textView.setText("");
+			textView.setText("" + Core.SMSReceived);
 		
-		textView = (TextView)findViewById(R.id.phone_type_value);
-		textView.setText("");
-		textView.setText("" + Core.phoneType);
+			// SMSSent
+			textView = (TextView)findViewById(R.id.sms_sent_value);
+			textView.setText("");
+			textView.setText("" + Core.SMSSent);
 		
-		textView = (TextView)findViewById(R.id.signal_strength_value);
-		textView.setText("");
-		textView.setText("" + Core.signalStrength);
+			// SMSReceived
+			textView = (TextView)findViewById(R.id.network_type_value);
+			textView.setText("");
+			textView.setText("" + Core.networkType);
 		
-		textView = (TextView)findViewById(R.id.incoming_Calls_value);
-		textView.setText("");
-		textView.setText("" + Core.incomingCalls);
+			textView = (TextView)findViewById(R.id.phone_type_value);
+			textView.setText("");
+			textView.setText("" + Core.phoneType);
 		
-		textView = (TextView)findViewById(R.id.missed_Calls_value);
-		textView.setText("");
-		textView.setText("" + Core.missedCalls);
+			textView = (TextView)findViewById(R.id.signal_strength_value);
+			textView.setText("");
+			textView.setText("" + Core.signalStrength+"dB");
+		
+			textView = (TextView)findViewById(R.id.incoming_calls_value);
+			textView.setText("");
+			textView.setText("" + Core.incomingCalls);
+		
+			textView = (TextView)findViewById(R.id.missed_calls_value);
+			textView.setText("");
+			textView.setText("" + Core.missedCalls);
 
-		textView = (TextView)findViewById(R.id.outgoing_Calls_value);
-		textView.setText("");
-		textView.setText("" + Core.outgoingCalls);
-
-
+			textView = (TextView)findViewById(R.id.outgoing_calls_value);
+			textView.setText("");
+			textView.setText("" + Core.outgoingCalls);
+		
+			textView = (TextView)findViewById(R.id.receive_bytes_value);
+			textView.setText("");
+			textView.setText("" + Core.receiveBytes);
+		
+			textView = (TextView)findViewById(R.id.transmit_bytes_value);
+			textView.setText("");
+			textView.setText("" + Core.transmitBytes);
+		
+		}//end simID if
+		
 	}
 }

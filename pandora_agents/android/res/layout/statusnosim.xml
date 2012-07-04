@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details. 
+-->
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+>
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+	>
+		<LinearLayout
+			android:orientation="vertical"
+	    	android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content"
+		>
+			<TextView
+				android:id="@+id/last_values_label_str"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/last_values"
+				android:textSize="18dip"
+				android:textStyle="bold"
+				android:layout_gravity="center_horizontal"
+			/>
+			<RelativeLayout
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+			>
+				<TextView
+					android:id="@+id/lastContactInfo_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textSize="14dip"
+					android:textStyle="bold"
+				/>
+				<ImageView
+					android:id="@+id/img_logo"
+					android:layout_width="wrap_content"
+			   		android:layout_height="wrap_content"
+			   		android:padding="5px"
+			   		android:src="@drawable/logo"
+			   		android:layout_alignParentRight="true"
+				/>
+				<TextView
+					android:id="@+id/latitude_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/latitude"
+					android:textSize="14dip"
+					android:textStyle="bold"
+					android:layout_below="@id/lastContactInfo_label_str"
+				/>
+				<TextView
+					android:id="@+id/latitude_value_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/latitude_label_str"
+					
+				/>
+				<TextView
+					android:id="@+id/longitude_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/longitude"
+					android:textSize="14dip"
+					android:textStyle="bold"
+					android:layout_below="@id/latitude_value_str"
+				/>
+				<TextView
+					android:id="@+id/longitude_value_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/longitude_label_str"
+				/>
+				<TextView
+					android:id="@+id/battery_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/battery_level"
+					android:textSize="14dip"
+					android:textStyle="bold"
+					android:layout_below="@id/longitude_value_str"
+				/>
+				<TextView
+					android:id="@+id/battery_value_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/battery_label_str"
+				/>
+				<!--<TextView
+					android:id="@+id/orientation_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/orientation"
+					android:textSize="14dip"
+					android:textStyle="bold"
+					android:layout_below="@id/battery_value_str"
+				/>
+				<TextView
+					android:id="@+id/orientation_value_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/orientation_label_str"
+				/>
+				<TextView
+					android:id="@+id/proximity_label_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/proximity"
+					android:textSize="14dip"
+					android:textStyle="bold"
+					android:layout_below="@id/battery_value_str"
+				/>
+				<TextView
+					android:id="@+id/proximity_value_str"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/proximity_label_str"
+				/>-->
+			</RelativeLayout>
+			<TextView
+				android:id="@+id/task_label_str"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/task"
+				android:textSize="14dip"
+				android:textStyle="bold"
+			/>
+			<TextView
+				android:id="@+id/task_value_str"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+			<TextView
+				android:id="@+id/memory_label_str"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/memory"
+				android:textSize="14dip"
+				android:textStyle="bold"
+			/>
+			<TextView
+				android:id="@+id/memory_value_str"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+			<TextView
+		        android:id="@+id/uptime"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="@string/uptime"
+		        android:textSize="14dip"
+		        android:textStyle="bold" />
+			
+			<TextView
+				android:id="@+id/uptime_value"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			/>
+			
+			<Button
+				android:id="@+id/start" 
+				android:layout_alignParentBottom="true"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:text="@string/start"
+			/>
+			<Button
+				android:id="@+id/stop" 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:text="Stop"
+			/>
+		    <Button
+				android:id="@+id/get_xml" 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:text="Get xml"
+			/>
+			<TextView  
+				android:id="@+id/xml"
+			    android:layout_width="fill_parent" 
+			    android:layout_height="wrap_content" 
+			    android:text="..."
+			    android:gravity="left"
+		    />
+		    <Button
+				android:id="@+id/hide_xml" 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:text="Hide xml"
+			/>
+			
+		    
+		</LinearLayout>
+	</ScrollView>
+</LinearLayout>

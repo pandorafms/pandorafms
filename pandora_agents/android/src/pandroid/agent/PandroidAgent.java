@@ -22,6 +22,7 @@ package pandroid.agent;
 import android.app.TabActivity;
 //import android.content.ComponentName;
 //import android.content.Context;
+import android.content.Context;
 import android.content.Intent;
 //import android.content.SharedPreferences;
 //import android.graphics.Color;
@@ -36,10 +37,14 @@ import android.os.Handler;
 //import android.widget.Button;
 //import android.widget.CheckBox;
 //import android.widget.EditText;
+import android.telephony.TelephonyManager;
 import android.widget.TabHost;
 //import android.widget.TextView;
+import android.util.Log;
 
 public class PandroidAgent extends TabActivity {
+	
+	public static final String LOG_TAG = "mark";
 //public class PandroidAgent extends Activity {
     Handler h = new Handler();
     
@@ -55,21 +60,25 @@ public class PandroidAgent extends TabActivity {
     //boolean showLastXML = true;
     
     //String lastGpsContactDateTime = "";
-    /*
+    
     Thread thread = new Thread();
-    ComponentName service = null;
-    PendingIntent sender = null;
-    AlarmManager am = null;
-    */
+    //ComponentName service = null;
+    //PendingIntent sender = null;
+    //AlarmManager am = null;
+    
+    TabHost tabHost;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //if removed, battery -1 and agent reverts to defaults in core
         Core.restartAgentListener(getApplicationContext());
+        String serviceName = Context.TELEPHONY_SERVICE;
+		TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
+		String hasSim = ""+(telephonyManager.getSimState() != TelephonyManager.SIM_STATE_UNKNOWN);
+		Core.hasSim = Boolean.parseBoolean(hasSim);
+		Log.v(LOG_TAG, "HERE: "+Core.hasSim);
         
-        
-        
-        final TabHost tabHost = getTabHost();
+		tabHost  = getTabHost();
         
         tabHost.addTab
 		(
@@ -89,4 +98,7 @@ public class PandroidAgent extends TabActivity {
 		//tabHost.getTabWidget().getChildAt(1).getLayoutParams();
         
     }
+   public void switchTab(int tab){
+        tabHost.setCurrentTab(tab);
+    }	
 }

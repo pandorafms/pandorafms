@@ -1,3 +1,13 @@
+2012-07-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_menu.php
+	operation/agentes/estado_monitores.php
+	operation/snmpconsole/snmp_view.php
+	operation/users/user_edit.php
+	images/skin/skin_default/include/styles/pandora.css
+	general/header.php: Fixes of missed "sec" changes in the new
+	menus and a little hack of the classify of retrieved menus
+
 2012-07-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* ajax.php: added support for the enterprise, because some case

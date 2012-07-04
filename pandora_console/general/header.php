@@ -49,7 +49,7 @@ config_check();
 				else
 					html_print_image("images/user_green.png" , false, array("class" => 'bot', "alt" => 'user'));
 			?>
-			<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
+			<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
 			
 			if ($config["metaconsole"] == 0){

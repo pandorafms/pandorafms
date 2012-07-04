@@ -75,5 +75,10 @@
 	<string name="missed_Calls_value"/>
 	<string name="outgoing_Calls">Llamadas enviadas:</string>
 	<string name="outgoing_Calls_value"/>
+	<string name="receive_bytes">Bytes recibidos:</string>
+	<string name="receive_bytes_value"/>
+	<string name="transmit_bytes">Bytes transmitidos:</string>
+	<string name="transmit_bytes_value"/>
+	
 	
 </resources>

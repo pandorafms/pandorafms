@@ -1,5 +1,11 @@
 2012-07-05  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/pandora_modules.js
+	godmode/modules/manage_network_components_form_common.php: Cleaned
+	unecessary code of network components (units) merged from trunk
+
+2012-07-05  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php
 	include/javascript/pandora_modules.js
 	include/javascript/pandora.js

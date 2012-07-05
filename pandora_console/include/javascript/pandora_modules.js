@@ -162,7 +162,6 @@ function configure_modules_form () {
 				$("#text-str_critical").attr ("value", (data["str_critical"] == 0) ? 0 : data["str_critical"]);
 				$("#text-ff_event").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
 				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"])
-				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"])
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 				

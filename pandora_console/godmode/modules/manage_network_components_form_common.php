@@ -99,7 +99,4 @@ $table->data[5][0] = __('Min. Value');
 $table->data[5][1] = html_print_input_text ('min', $min, '', 5, 15, true);
 $table->data[5][2] = __('Max. Value');
 $table->data[5][3] = html_print_input_text ('max', $max, '', 5, 15, true);
-$table->data[6][0] = __('Unit');
-$table->data[6][1] = html_print_input_text ('unit', $unit, '', 12, 25, true);
-$table->data[6][2] = $table->data[6][3] = '';
 ?>

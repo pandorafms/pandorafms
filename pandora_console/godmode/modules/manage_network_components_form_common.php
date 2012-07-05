@@ -65,8 +65,8 @@ $table->data[2][0] = __('Group');
 $table->data[2][1] = html_print_select (network_components_get_groups (),
 	'id_group', $id_group, '', '', '', true, false, false);
 $table->data[2][2] = __('Interval');
-$table->data[2][3] = html_print_input_text ('module_interval', $module_interval, '',
-	5, 15, true);
+$table->data[2][3] = html_print_extended_select_for_time ('module_interval' , $module_interval, '', '', '0', false, true);
+
 
 $table->data[3][0] = __('Warning status');
 $table->data[3][1] = '<em>'.__('Min.').'</em>';

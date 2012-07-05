@@ -245,7 +245,7 @@ $table_advanced->data[1][4] = html_print_input_text ('module_ff_interval', $ff_i
 $table_advanced->data[2][0] = __('Interval').ui_print_help_tip (__('Module execution time interval.'), true);
 
 $table_advanced->colspan[2][1] = 2;
-$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true);
+$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true, false, false);
 	
 $table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
 $table_advanced->data[2][4] = html_print_input_text ('post_process',

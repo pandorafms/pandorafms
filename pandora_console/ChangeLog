@@ -1,3 +1,16 @@
+2012-07-05  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/javascript/pandora_modules.js
+	include/javascript/pandora.js
+	godmode/agentes/module_manager_editor_common.php
+	godmode/modules/manage_network_components_form_common.php: 
+	Fixed several bugs of the network/local components javascript
+	code and added new fields to local components
+	Add new code on advanced select for time to update it from
+	javascript and a workaround to do it from code loaded through 
+	ajax
+
 2012-07-04  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_menu.php

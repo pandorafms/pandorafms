@@ -139,6 +139,7 @@ CREATE INDEX "tagente_estado_last_execution_try_idx" ON "tagente_estado"("last_e
 -- 6 - WMI server
 -- 7 - WEB Server (enteprise)
 
+CREATE TYPE type_tagente_modulo_wizard_level AS ENUM ('basic','advanced','custom');
 CREATE TABLE "tagente_modulo" (
 	"id_agente_modulo" SERIAL NOT NULL PRIMARY KEY,
 	"id_agente" INTEGER NOT NULL default 0,
@@ -186,7 +187,8 @@ CREATE TABLE "tagente_modulo" (
 	"custom_string_2" text default '',
 	"custom_string_3" text default '',
 	"custom_integer_1" INTEGER default 0,
-	"custom_integer_2" INTEGER default 0
+	"custom_integer_2" INTEGER default 0,
+	"wizard_level" type_tagente_modulo_wizard_level default 'custom'
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");
@@ -478,6 +480,7 @@ CREATE TABLE "tmodule_group" (
 	"name" varchar(150) NOT NULL default ''
 );
 
+CREATE TYPE type_tlocal_component_wizard_level AS ENUM ('basic','advanced','custom');
 CREATE TABLE "tnetwork_component" (
 	"id_nc" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(80) NOT NULL,
@@ -513,7 +516,21 @@ CREATE TABLE "tnetwork_component" (
 	"custom_integer_1" INTEGER default 0,
 	"custom_integer_2" INTEGER default 0,
 	"post_process" DOUBLE PRECISION default 0,
-	"unit" text default ''
+	"unit" TEXT default '',
+	"wizard_level" type_tlocal_component_wizard_level default 'custom',
+	"only_wizard" INTEGER default '0',
+	"field1_desc" TEXT default '',
+	"field1_help" TEXT default '',
+	"field2_desc" TEXT default '',
+	"field2_help" TEXT default '',
+	"field3_desc" TEXT default '',
+	"field3_help" TEXT default '',
+	"field4_desc" TEXT default '',
+	"field4_help" TEXT default '',
+	"field5_desc" TEXT default '',
+	"field5_help" TEXT default '',
+	"field6_desc" TEXT default '',
+	"field6_help" TEXT default ''
 );
 
 CREATE TABLE "tnetwork_component_group" (
@@ -681,6 +698,7 @@ CREATE TABLE "ttrap" (
 	"severity" INTEGER NOT NULL default 2
 );
 
+CREATE TYPE type_tusuario_wizard_access AS ENUM ('basic','advanced','custom','all','only_console');
 CREATE TABLE "tusuario" (
 	"id_user" varchar(60) NOT NULL PRIMARY KEY,
 	"fullname" varchar(255) NOT NULL,
@@ -708,7 +726,8 @@ CREATE TABLE "tusuario" (
 	"last_pass_change" BIGINT NOT NULL default 0,
 	"last_failed_login" BIGINT NOT NULL default 0,
 	"failed_attempt" INTEGER NOT NULL DEFAULT 0,
-	"login_blocked" SMALLINT NOT NULL default 0
+	"login_blocked" SMALLINT NOT NULL default 0,
+	"wizard_access" type_tusuario_wizard_access default 'only_console'
 );
 
 CREATE TABLE "tusuario_perfil" (

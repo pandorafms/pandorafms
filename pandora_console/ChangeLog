@@ -1,5 +1,18 @@
 2012-07-05  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_v3.1_to_v3.2.sql
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added fields to
+	wizard access to modules, network components and users tables.
+	Remove all scripts
+
+2012-07-05  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/module_manager_editor_common.php: Fix
 	wrong sec in a link from operation to godmode
 

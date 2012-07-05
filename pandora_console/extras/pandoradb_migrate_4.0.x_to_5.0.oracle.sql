@@ -269,3 +269,38 @@ CREATE SEQUENCE tpassword_history_s INCREMENT BY 1 START WITH 1;
 -- -----------------------------------------------------
 UPDATE tconfig SET value='comparation'
 WHERE token='prominent_time'
+
+-- -----------------------------------------------------
+-- Table `tnetwork_component`
+-- -----------------------------------------------------
+
+ALTER TABLE tnetwork_component ADD (wizard_level VARCHAR2(100) default 'custom' NOT NULL);
+ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom'));
+ALTER TABLE tnetwork_component ADD (only_wizard NUMBER(5, 0) default 0 NOT NULL);
+ALTER TABLE tnetwork_component ADD (field1_desc CLOB default '');
+ALTER TABLE tnetwork_component ADD (field1_help CLOB default '');
+ALTER TABLE tnetwork_component ADD (field2_desc CLOB default '');
+ALTER TABLE tnetwork_component ADD (field2_help CLOB default '');
+ALTER TABLE tnetwork_component ADD (field3_desc CLOB default '');
+ALTER TABLE tnetwork_component ADD (field3_help CLOB default '');
+ALTER TABLE tnetwork_component ADD (field4_desc CLOB default '');
+ALTER TABLE tnetwork_component ADD (field4_help CLOB default '');
+ALTER TABLE tnetwork_component ADD (field5_desc CLOB default '');
+ALTER TABLE tnetwork_component ADD (field5_help CLOB default '');
+ALTER TABLE tnetwork_component ADD (field6_desc CLOB default '');
+ALTER TABLE tnetwork_component ADD (field6_help CLOB default '');
+
+-- -----------------------------------------------------
+-- Table `tagente_modulo`
+-- -----------------------------------------------------
+
+ALTER TABLE tagente_modulo ADD (wizard_level VARCHAR2(100) default 'custom' NOT NULL);
+ALTER TABLE tagente_modulo ADD CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom'));
+
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
+
+ALTER TABLE tusuario ADD (wizard_access VARCHAR2(100) default 'only_console' NOT NULL);
+ALTER TABLE tusuario ADD CONSTRAINT t_usuario_wizard_access_cons CHECK (wizard_access IN ('basic','advanced','custom','all','only_console'));
+

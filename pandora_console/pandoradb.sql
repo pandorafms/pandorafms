@@ -189,6 +189,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `custom_string_3` text,
   `custom_integer_1` int(10) default 0,
   `custom_integer_2` int(10) default 0,
+  `wizard_level` enum('basic','advanced','custom') default 'custom',
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
@@ -568,6 +569,20 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `custom_integer_2` int(10) default 0,
   `post_process` double(18,5) default 0,
   `unit` text,
+  `wizard_level` enum('basic','advanced','custom') default 'custom',
+  `only_wizard` tinyint(1) unsigned default '0',
+  `field1_desc` text,
+  `field1_help` text,
+  `field2_desc` text,
+  `field2_help` text,
+  `field3_desc` text,
+  `field3_help` text,
+  `field4_desc` text,
+  `field4_help` text,
+  `field5_desc` text,
+  `field5_help` text,
+  `field6_desc` text,
+  `field6_help` text,
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -784,6 +799,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `last_failed_login` DATETIME  NOT NULL DEFAULT 0,
   `failed_attempt` int(4) NOT NULL DEFAULT 0,
   `login_blocked` tinyint(1) unsigned NOT NULL default 0,
+  `wizard_access` enum('basic','advanced','custom','all','only_console') default 'only_console',
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

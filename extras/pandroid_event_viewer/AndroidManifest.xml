@@ -79,16 +79,14 @@
             android:label="@string/pandroid_event_viewer_str"
             android:theme="@android:style/Theme.Dialog" >
         </activity>
-        <!-- 
-		<activity android:name=".IncidentList"/> -->
-		<activity android:name=".CreateIncidentActivity"/>
-        <service android:name=".PandroidEventviewerService" >
-        </service>
-
-        <receiver
-            android:name=".AlarmReceiver"
-            android:process=":remote" >
+        <activity android:name=".CreateIncidentActivity" />
+        <service android:name=".PandroidEventviewerService" />
+       <receiver android:name=".OnBootLoader" 
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
         </receiver>
     </application>
-
 </manifest>

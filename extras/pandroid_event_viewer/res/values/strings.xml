@@ -62,11 +62,11 @@
     <string name="notification_criticity_2_str">There are %s events and some are in Normal state.</string>
     <string name="notification_criticity_3_str">There are %s events and some are in Warning state.</string>
     <string name="notification_criticity_4_str">There are %s events and some are in Critical state.</string>
-    <string name="loading_events_criticity_0_str">Loading the %s events and all in Maintenance state.</string>
-    <string name="loading_events_criticity_1_str">Loading the %s events and some are in Informational state.</string>
-    <string name="loading_events_criticity_2_str">Loading the %s events and some are in Normal state.</string>
-    <string name="loading_events_criticity_3_str">Loading the %s events and some are in Warning state.</string>
-    <string name="loading_events_criticity_4_str">Loading the %s events and some are in Critical state.</string>
+    <string name="loading_events_criticity_0_str">Loading events (all in Maintenance state).</string>
+    <string name="loading_events_criticity_1_str">Loading events (some are in Informational state).</string>
+    <string name="loading_events_criticity_2_str">Loading events (some are in Normal state).</string>
+    <string name="loading_events_criticity_3_str">Loading events (some are in Warning state).</string>
+    <string name="loading_events_criticity_4_str">Loading events (some are in Critical state).</string>
     <string name="successful_validate_event_str">The event validation is successful.</string>
     <string name="fail_validate_event_str">The event validation is failed.</string>
     <string name="status_label_str">Status</string>

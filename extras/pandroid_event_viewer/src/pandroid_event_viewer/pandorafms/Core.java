@@ -74,6 +74,7 @@ import android.widget.Toast;
  */
 public class Core {
 	private static String TAG = "Core";
+	private static int CONNECTION_TIMEOUT = 10000;
 	private static Map<String, Bitmap> imgCache = new HashMap<String, Bitmap>();
 	// Don't use this variable, just call getSocketFactory
 	private static SSLSocketFactory sslSocketFactory;
@@ -330,6 +331,7 @@ public class Core {
 			parameters.add(new BasicNameValuePair("apipass", apiPassword));
 		}
 		parameters.addAll(additionalParameters);
+		Log.i(TAG, "sent: "+url);
 		if (url.toLowerCase().contains("https")) {
 			// Secure connection
 			return Core.httpsGet(url, parameters);
@@ -347,6 +349,7 @@ public class Core {
 			entityResponse = response.getEntity();
 			return_api = Core
 					.convertStreamToString(entityResponse.getContent());
+			Log.i(TAG, "received: "+ return_api);
 			return return_api;
 		}
 	}
@@ -384,6 +387,7 @@ public class Core {
 				HttpURLConnection conn = (HttpURLConnection) myFileUrl
 						.openConnection();
 				conn.setDoInput(true);
+				conn.setConnectTimeout(CONNECTION_TIMEOUT);
 				conn.connect();
 				InputStream is = conn.getInputStream();
 				Bitmap img = BitmapFactory.decodeStream(is);
@@ -450,6 +454,7 @@ public class Core {
 		HttpsURLConnection con;
 		try {
 			con = (HttpsURLConnection) url.openConnection();
+			con.setConnectTimeout(CONNECTION_TIMEOUT);
 			con.connect();
 			con.disconnect();
 			return true;
@@ -472,6 +477,7 @@ public class Core {
 					return true;
 				}
 			});
+			con.setConnectTimeout(CONNECTION_TIMEOUT);
 			con.setSSLSocketFactory(getSocketFactory());
 			con.setDoOutput(true);
 			con.getInputStream();
@@ -506,6 +512,7 @@ public class Core {
 			});
 			con.setSSLSocketFactory(getSocketFactory());
 			con.setDoOutput(true);
+			con.setConnectTimeout(CONNECTION_TIMEOUT);
 			String postData = "";
 			boolean first = true;
 			for (NameValuePair nameValuePair : parameters) {

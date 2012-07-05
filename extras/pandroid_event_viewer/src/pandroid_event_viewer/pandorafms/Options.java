@@ -32,6 +32,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -53,8 +54,10 @@ import android.widget.Toast;
 public class Options extends Activity {
 	private static String TAG = "Options";
 	private static int RINGTONE_PICK_CODE = 999;
+	private static long DIALOG_TIME = 10000;
 	private TextView connectionStatus;
 	private ProgressDialog retrievingCertificate;
+	private CheckCertificateAsyncTask asyncTask;
 	private Context context;
 
 	private PandroidEventviewerActivity object;
@@ -166,8 +169,9 @@ public class Options extends Activity {
 			try {
 				retrievingCertificate = ProgressDialog.show(this, "",
 						"Loading...", true);
-				new CheckCertificateAsyncTask()
-						.execute(new URL[] { new URL(url) });
+				asyncTask = new CheckCertificateAsyncTask();
+				asyncTask.execute(new URL[] { new URL(url) });
+				removeDialog(DIALOG_TIME, retrievingCertificate);
 			} catch (MalformedURLException e) {
 				Toast.makeText(getApplicationContext(), R.string.url_not_valid,
 						Toast.LENGTH_SHORT).show();
@@ -348,7 +352,7 @@ public class Options extends Activity {
 
 		@Override
 		protected void onPostExecute(Boolean result) {
-			retrievingCertificate.dismiss();
+			retrievingCertificate.cancel();
 			if (!online) {
 				writeChanges();
 			} else {
@@ -382,5 +386,24 @@ public class Options extends Activity {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Removes a dialog after a timeout.
+	 * 
+	 * @param time
+	 * @param dialog
+	 */
+	public void removeDialog(long time, final ProgressDialog dialog) {
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			public void run() {
+				dialog.dismiss();
+				if (asyncTask.cancel(false)) {
+					Toast.makeText(getApplicationContext(),
+							"Connection timeout", Toast.LENGTH_SHORT).show();
+				}
+			}
+		}, time);
 	}
 }

@@ -32,6 +32,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.IBinder;
@@ -109,13 +110,13 @@ public class PandroidEventviewerService extends IntentService {
 			Log.i(TAG + " checkNewEvents", return_api);
 			return_api = return_api.replace("\n", "");
 			try {
-				this.count_events = new Long(return_api).longValue();
+				this.count_events = Long.valueOf(return_api);
 			} catch (NumberFormatException e) {
 				Log.e(TAG, e.getMessage());
 				return;
 			}
 
-			// Check the event more critical
+			// Check the more critical level
 			if (this.count_events != 0) {
 				Log.i(TAG, "There are new events");
 				parameters = new ArrayList<NameValuePair>();
@@ -128,8 +129,22 @@ public class PandroidEventviewerService extends IntentService {
 						serializeParams2Api(context, false, true, true)));
 				return_api = Core.httpGet(getApplicationContext(), parameters);
 				return_api = return_api.replace("\n", "");
-				this.more_criticity = Integer.valueOf(return_api).intValue();
-				notificationEvent(context);
+				try {
+					this.more_criticity = Integer.valueOf(return_api)
+							.intValue();
+				} catch (NumberFormatException e) {
+					Log.e(TAG, e.getMessage());
+					return;
+				}
+				long lastCountEvents = preferences.getLong("last_count_events", 0);
+				// Does not repeat the same notification
+				if (lastCountEvents != count_events) {
+					notificationEvent(context);
+					Editor editor = preferences.edit();
+					editor.putLong("last_count_events", count_events);
+					editor.commit();
+				}
+
 			} else {
 				this.more_criticity = -1;
 
@@ -173,21 +188,6 @@ public class PandroidEventviewerService extends IntentService {
 		Calendar c = Calendar.getInstance();
 		long now = (c.getTimeInMillis() / 1000);
 		long filterTimestamp = preferences.getLong("filterTimestamp", now);
-		if (updateTime) {
-			SharedPreferences.Editor editorPreferences = preferences.edit();
-			// Save for the next execution
-			editorPreferences.putLong("filterTimestamp", now);
-			// Save the previous for the list.
-			editorPreferences.putLong("previous_filterTimestamp",
-					filterTimestamp);
-			if (editorPreferences.commit()) {
-				Log.i(TAG + " (filter options)",
-						"Configuration changes commited (timestamp)");
-			} else {
-				Log.e(TAG + " (filter options)",
-						"Configuration changes not commited");
-			}
-		}
 		String totalStr = (total) ? "total" : "-1";
 		if (more_criticity) {
 			totalStr = "more_criticity";
@@ -231,37 +231,37 @@ public class PandroidEventviewerService extends IntentService {
 			icon = R.drawable.criticity_0;
 			tickerText = context.getString(
 					R.string.notification_criticity_0_str).replace("%s",
-					new Long(this.count_events).toString());
+					Long.valueOf(this.count_events).toString());
 			break;
 		case 1:
 			icon = R.drawable.criticity_1;
 			tickerText = context.getString(
 					R.string.notification_criticity_1_str).replace("%s",
-					new Long(this.count_events).toString());
+					Long.valueOf(this.count_events).toString());
 			break;
 		case 2:
 			icon = R.drawable.criticity_2;
 			tickerText = context.getString(
 					R.string.notification_criticity_2_str).replace("%s",
-					new Long(this.count_events).toString());
+					Long.valueOf(this.count_events).toString());
 			break;
 		case 3:
 			icon = R.drawable.criticity_3;
 			tickerText = context.getString(
 					R.string.notification_criticity_3_str).replace("%s",
-					new Long(this.count_events).toString());
+					Long.valueOf(this.count_events).toString());
 			break;
 		case 4:
 			icon = R.drawable.criticity_4;
 			tickerText = context.getString(
 					R.string.notification_criticity_4_str).replace("%s",
-					new Long(this.count_events).toString());
+					Long.valueOf(this.count_events).toString());
 			break;
 		default:
 			icon = R.drawable.criticity_default;
 			tickerText = context.getString(
 					R.string.notification_criticity_2_str).replace("%s",
-					new Long(this.count_events).toString());
+					Long.valueOf(this.count_events).toString());
 			break;
 		}
 
@@ -275,7 +275,6 @@ public class PandroidEventviewerService extends IntentService {
 		if (preferences.getBoolean("vibration", true)) {
 			Log.d(TAG, "Vibration");
 			notification.defaults |= Notification.DEFAULT_VIBRATE;
-
 		} else {
 			Log.d(TAG, "No vibration");
 			notification.vibrate = new long[] { 0, 0, 0, 0 };
@@ -300,7 +299,6 @@ public class PandroidEventviewerService extends IntentService {
 				PandroidEventviewerActivity.class);
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		notificationIntent.putExtra("count_events", this.count_events);
 		notificationIntent.putExtra("more_criticity", this.more_criticity);
 
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
@@ -311,7 +309,7 @@ public class PandroidEventviewerService extends IntentService {
 
 		notification.setLatestEventInfo(context, title, tickerText,
 				contentIntent);
-		Log.i(TAG, "Launching notification");
+		Log.i(TAG, "Launching notification, number of events: " + count_events);
 		mNotificationManager.notify(NOTIFICATION_PANDROID_EVENT_VIEWER,
 				notification);
 	}

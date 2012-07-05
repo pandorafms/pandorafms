@@ -1,3 +1,10 @@
+2012-07-05  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Fix
+	wrong sec in a link from operation to godmode
+
+	Merged from 4.0.2
+
 2012-07-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_html.php: Changed path to image in 

@@ -126,7 +126,7 @@ $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = html_print_input_text ('name', io_safe_output($name), '', 45, 100, true, $disabledBecauseInPolicy);
 
 if (!empty($id_agent_module) && isset($id_agente)) {
-	$table_simple->data[0][1] .= '&nbsp;<a href="index.php?sec=estado&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$id_agent_module.'"
+	$table_simple->data[0][1] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$id_agent_module.'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 	$table_simple->data[0][1] .= html_print_image ('images/cross.png', true,
 		array ('title' => __('Delete module')));

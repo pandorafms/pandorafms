@@ -1,3 +1,11 @@
+2012-07-05 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_html.php: Changed path to image in 
+	html_print_image function if metaconsole is being using.
+	
+	* include/javascript/jquery.pandora.js: Added checks for jquery
+	 dialog messages that avoid js warnings.
+
 2012-07-05  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php

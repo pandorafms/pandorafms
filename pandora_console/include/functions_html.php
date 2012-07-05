@@ -1207,17 +1207,25 @@ function html_print_checkbox ($name, $value, $checked = false, $return = false, 
 function html_print_image ($src, $return = false, $options = false, $return_src = false, $relative = false) {
 	global $config;
 	
-	/* Checks if user's skin is available */
-	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+	// If metaconsole is in use then don't use skins
+	if (!defined('METACONSOLE')) {
 	
-	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-		$skin_path = enterprise_hook('skins_get_image_path', array($src));
-		if ($skin_path)
-			$src = $skin_path;
+		/* Checks if user's skin is available */
+		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+		
+		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+			$skin_path = enterprise_hook('skins_get_image_path',array($src));
+			if ($skin_path)
+				$src = $skin_path;
+		}
+		
 	}
 	
 	if (!$relative) {
 		$urlImage = ui_get_full_url(false);
+		
+		if (defined('METACONSOLE'))
+			$urlImage .= ENTERPRISE_DIR . '/meta/';		
 		
 		// path to image 
 		$src = $urlImage . $src;

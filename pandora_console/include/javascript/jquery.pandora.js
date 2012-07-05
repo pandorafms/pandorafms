@@ -86,23 +86,26 @@ $(document).ready (function () {
 		return false;
 	});
 	
+	if ($('#license_error_msg_dialog').length) {
 
-	$( "#license_error_msg_dialog" ).dialog({
-				resizable: true,
-				draggable: true,
-				modal: true,
-				height: 280,
-				width: 600,
-				overlay: {
-							opacity: 0.5,
-							background: "black"
-						},
-				bgiframe: jQuery.browser.msie
-	});
+		$( "#license_error_msg_dialog" ).dialog({
+					resizable: true,
+					draggable: true,
+					modal: true,
+					height: 280,
+					width: 600,
+					overlay: {
+								opacity: 0.5,
+								background: "black"
+							},
+					bgiframe: jQuery.browser.msie
+		});
+		
+		$("#submit-hide-license-error-msg").click (function () {
+			$("#license_error_msg_dialog" ).dialog('close')
+		});
 	
-	$("#submit-hide-license-error-msg").click (function () {
-		$("#license_error_msg_dialog" ).dialog('close')
-	});
+	}
 	
 	
 	$("a#dialog_license_info").click (function () {
@@ -133,31 +136,38 @@ $(document).ready (function () {
 		return false;
 	});
 	
-	$( "#msg_change_password" ).dialog({
-				resizable: true,
-				draggable: true,
-				modal: true,
-				height: 260,
-				width: 590,
-				overlay: {
-							opacity: 0.5,
-							background: "black"
-						},
-				bgiframe: jQuery.browser.msie
-	});
+	if ($('#msg_change_password').length) {	
 	
-	$( "#login_blocked" ).dialog({
-				resizable: true,
-				draggable: true,
-				modal: true,
-				height: 180,
-				width: 400,
-				overlay: {
-							opacity: 0.5,
-							background: "black"
-						},
-				bgiframe: jQuery.browser.msie
-	});
+		$( "#msg_change_password" ).dialog({
+					resizable: true,
+					draggable: true,
+					modal: true,
+					height: 260,
+					width: 590,
+					overlay: {
+								opacity: 0.5,
+								background: "black"
+							},
+					bgiframe: jQuery.browser.msie
+		});
 	
+	}
+	
+	if ($('#login_blocked').length) {
+	
+		$( "#login_blocked" ).dialog({
+					resizable: true,
+					draggable: true,
+					modal: true,
+					height: 180,
+					width: 400,
+					overlay: {
+								opacity: 0.5,
+								background: "black"
+							},
+					bgiframe: jQuery.browser.msie
+		});
+
+	}
 
 });

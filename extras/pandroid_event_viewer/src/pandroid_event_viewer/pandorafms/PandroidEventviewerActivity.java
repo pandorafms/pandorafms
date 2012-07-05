@@ -20,6 +20,7 @@ package pandroid_event_viewer.pandorafms;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -196,66 +197,69 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	 * @param intent
 	 */
 	private void process_notification(Intent intent) {
-		long count_events = intent.getLongExtra("count_events", 0);
 		int more_criticity = intent.getIntExtra("more_criticity", -1);
 
 		CharSequence text;
 
-		if (count_events > 0) {
-			// From the notificy
-			switch (more_criticity) {
-			case 0:
-				text = getString(R.string.loading_events_criticity_0_str)
-						.replace("%s", new Long(count_events).toString());
-				break;
-			case 1:
-				text = getString(R.string.loading_events_criticity_1_str)
-						.replace("%s", new Long(count_events).toString());
-				break;
-			case 2:
-				text = getString(R.string.loading_events_criticity_2_str)
-						.replace("%s", new Long(count_events).toString());
-				break;
-			case 3:
-				text = getString(R.string.loading_events_criticity_3_str)
-						.replace("%s", new Long(count_events).toString());
-				break;
-			case 4:
-				text = getString(R.string.loading_events_criticity_4_str)
-						.replace("%s", new Long(count_events).toString());
-				break;
-			default:
-				text = getString(R.string.loading_events_criticity_2_str)
-						.replace("%s", new Long(count_events).toString());
-				break;
-			}
+		// From the notification
+		switch (more_criticity) {
+		case 0:
+			text = getString(R.string.loading_events_criticity_0_str);
+			break;
+		case 1:
+			text = getString(R.string.loading_events_criticity_1_str);
+			break;
+		case 2:
+			text = getString(R.string.loading_events_criticity_2_str);
+			break;
+		case 3:
+			text = getString(R.string.loading_events_criticity_3_str);
+			break;
+		case 4:
+			text = getString(R.string.loading_events_criticity_4_str);
+			break;
+		default:
+			text = getString(R.string.loading_events_criticity_2_str);
+			break;
+		}
 
-			Toast toast = Toast.makeText(getApplicationContext(), text,
-					Toast.LENGTH_SHORT);
-			toast.show();
+		Toast toast = Toast.makeText(getApplicationContext(), text,
+				Toast.LENGTH_SHORT);
+		toast.show();
 
-			// Set the same parameters to extract the events of the
-			// notification.
-			SharedPreferences preferences = getSharedPreferences(
-					getString(R.string.const_string_preferences),
-					Activity.MODE_PRIVATE);
-			long timestamp_notification = preferences.getLong(
-					"previous_filterTimestamp", (new Date().getTime() / 1000));
-			Log.i(TAG + " process_notification_timestamp", ""
-					+ timestamp_notification);
-			this.timestamp = timestamp_notification;
-			this.agentNameStr = preferences.getString("filterAgentName", "");
-			this.id_group = preferences.getInt("filterIDGroup", 0);
-			this.severity = preferences.getInt("filterSeverity", -1);
-			this.status = preferences.getInt("filterStatus", 3);
-			this.eventSearch = preferences.getString("filterEventSearch", "");
+		// Set the same parameters to extract the events of the
+		// notification.
+		SharedPreferences preferences = getSharedPreferences(
+				getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		long timestamp_notification = preferences.getLong("filterTimestamp",
+				(new Date().getTime() / 1000));
+		Log.i(TAG + " process_notification_timestamp", ""
+				+ timestamp_notification);
+		this.timestamp = timestamp_notification;
+		this.agentNameStr = preferences.getString("filterAgentName", "");
+		this.id_group = preferences.getInt("filterIDGroup", 0);
+		this.severity = preferences.getInt("filterSeverity", -1);
+		this.status = preferences.getInt("filterStatus", 3);
+		this.eventSearch = preferences.getString("filterEventSearch", "");
 
-			this.getTabHost().setCurrentTab(1);
+		this.getTabHost().setCurrentTab(1);
 
-			this.loadInProgress = true;
-			this.getNewListEvents = true;
-			this.eventList = new ArrayList<EventListItem>();
-			executeBackgroundGetEvents(true);
+		this.loadInProgress = true;
+		this.getNewListEvents = true;
+		this.eventList = new ArrayList<EventListItem>();
+		executeBackgroundGetEvents(true);
+		Calendar c = Calendar.getInstance();
+		long now = (c.getTimeInMillis() / 1000);
+		SharedPreferences.Editor editorPreferences = preferences.edit();
+		// Save for the next execution
+		editorPreferences.putLong("filterTimestamp", now);
+		// Save the previous for the list.
+		editorPreferences.putLong("previous_filterTimestamp",
+				timestamp_notification);
+		if (editorPreferences.commit()) {
+			Log.i(TAG + " (filter options)",
+					"Configuration changes commited (timestamp)");
 		}
 	}
 
@@ -299,7 +303,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 				serializeParams2Api(true));
 		return_api = return_api.replace("\n", "");
 		try {
-			this.count_events = new Long(return_api).longValue();
+			this.count_events = Long.valueOf(return_api);
 		} catch (NumberFormatException e) {
 			Log.e(TAG, e.getMessage());
 			return;
@@ -350,67 +354,67 @@ public class PandroidEventviewerActivity extends TabActivity implements
 			String[] items = lines[i].split(";");
 
 			EventListItem event = new EventListItem();
-				try {
-					if (items[0].length() == 0) {
-						event.id_event = 0;
-					} else {
-						event.id_event = Integer.parseInt(items[0]);
-					}
-					if (items[1].length() == 0) {
-						event.id_agent = 0;
-					} else {
-						event.id_agent = Integer.parseInt(items[1]);
-					}
-					event.id_user = items[2];
-					if (items[3].length() == 0) {
-						event.id_group = 0;
-					} else {
-						event.id_group = Integer.parseInt(items[3]);
-					}
-					if (items[4].length() == 0) {
-						event.status = 0;
-					} else {
-						event.status = Integer.parseInt(items[4]);
-					}
-					event.timestamp = items[5];
-					event.event = items[6];
-					if (items[7].length() == 0) {
-						event.utimestamp = 0;
-					} else {
-						event.utimestamp = Integer.parseInt(items[7]);
-					}
-					event.event_type = items[8];
-					if (items[9].length() == 0) {
-						event.id_agentmodule = 0;
-					} else {
-						event.id_agentmodule = Integer.parseInt(items[9]);
-					}
-					if (items[10].length() == 0) {
-						event.id_alert_am = 0;
-					} else {
-						event.id_alert_am = Integer.parseInt(items[10]);
-					}
-					if (items[11].length() == 0) {
-						event.criticity = 0;
-					} else {
-						event.criticity = Integer.parseInt(items[11]);
-					}
-					event.user_comment = items[12];
-					event.tags = items[13];
-					event.agent_name = items[14];
-					event.group_name = items[15];
-					event.group_icon = items[16];
-					event.description_event = items[17];
-					event.description_image = items[18];
-					event.criticity_name = items[19];
-					event.criticity_image = items[20];
-
-					event.opened = false;
-				} catch (NumberFormatException nfe) {
-					event.event = getApplication().getString(
-							R.string.unknown_event_str);
-					launchProblemParsingNotification();
+			try {
+				if (items[0].length() == 0) {
+					event.id_event = 0;
+				} else {
+					event.id_event = Integer.parseInt(items[0]);
 				}
+				if (items[1].length() == 0) {
+					event.id_agent = 0;
+				} else {
+					event.id_agent = Integer.parseInt(items[1]);
+				}
+				event.id_user = items[2];
+				if (items[3].length() == 0) {
+					event.id_group = 0;
+				} else {
+					event.id_group = Integer.parseInt(items[3]);
+				}
+				if (items[4].length() == 0) {
+					event.status = 0;
+				} else {
+					event.status = Integer.parseInt(items[4]);
+				}
+				event.timestamp = items[5];
+				event.event = items[6];
+				if (items[7].length() == 0) {
+					event.utimestamp = 0;
+				} else {
+					event.utimestamp = Integer.parseInt(items[7]);
+				}
+				event.event_type = items[8];
+				if (items[9].length() == 0) {
+					event.id_agentmodule = 0;
+				} else {
+					event.id_agentmodule = Integer.parseInt(items[9]);
+				}
+				if (items[10].length() == 0) {
+					event.id_alert_am = 0;
+				} else {
+					event.id_alert_am = Integer.parseInt(items[10]);
+				}
+				if (items[11].length() == 0) {
+					event.criticity = 0;
+				} else {
+					event.criticity = Integer.parseInt(items[11]);
+				}
+				event.user_comment = items[12];
+				event.tags = items[13];
+				event.agent_name = items[14];
+				event.group_name = items[15];
+				event.group_icon = items[16];
+				event.description_event = items[17];
+				event.description_image = items[18];
+				event.criticity_name = items[19];
+				event.criticity_image = items[20];
+
+				event.opened = false;
+			} catch (NumberFormatException nfe) {
+				event.event = getApplication().getString(
+						R.string.unknown_event_str);
+				launchProblemParsingNotification();
+			}
 			this.eventList.add(event);
 		}
 	}

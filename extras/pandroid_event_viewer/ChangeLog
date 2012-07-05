@@ -1,3 +1,12 @@
+2012-07-05 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/OnBootLoader.java: New BroadcastReceiver which starts the search new events service after the phone boot.
+	* src/pandroid_event_viewer/pandorafms/Core.java: Little changes.
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java: On process_notification it doesn't retrieve count_events anymore.
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java: Now the launched notification has the correct number of new events.
+	* res/values/strings.xml: Added new entries.
+	* res/values-en/*: Deleted, unnecessary files.
+	* AndroidManifest.xml: Added the new BroadcastReceiver
+	
 2012-07-03 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/IncidentListItem.java: Deleted, not necessary class.
 	* src/pandroid_event_viewer/pandorafms/IncidentList.java: Deleted, not necessary class.	

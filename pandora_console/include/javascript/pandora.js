@@ -668,6 +668,19 @@ function calculateSeconds(name) {
 
 /**
  * 
+ * Update via Javascript an advance selec for time
+ * 
+ */
+function period_select_update(name, seconds) {
+	$('#text-'+name+'_text').val(seconds);
+	adjustTextUnits(name);
+	calculateSeconds(name);			
+	$('#'+name+'_manual').show();			
+	$('#'+name+'_default').hide();
+}
+
+/**
+ * 
  * Adjust units in the advanced select for time
  * 
  */

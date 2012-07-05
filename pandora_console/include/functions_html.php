@@ -423,12 +423,13 @@ function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', 
  * @param variant Value when nothing is selected
  * @param integer $size Size of the input.
  * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param bool Wherter to assign to combo a unique name (to have more than one on same page, like dashboard)
  * 
  * @return string HTML code if return parameter is true.
  */
 
 function html_print_extended_select_for_time ($name, $selected = '', $script = '', $nothing = '',
-	$nothing_value = '0', $size = false, $return = false, $select_style = false) {
+	$nothing_value = '0', $size = false, $return = false, $select_style = false, $unique_name = true) {
 	
 	$fields = get_periods();
 	
@@ -444,7 +445,12 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 		SECONDS_1MONTH => __('months'),
 		SECONDS_1YEAR => __('years'));
 	
-	$uniq_name = uniqid($name);
+	if($unique_name === true) {
+		$uniq_name = uniqid($name);
+	}
+	else {
+		$uniq_name = $name;
+	}
 	
 	ob_start();
 	
@@ -462,16 +468,19 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 		html_print_select ($units, $uniq_name . '_units', 1, "" . $script,
 			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
 	echo '</div>';
-	
-	echo "
-	<script type='text/javascript'>
+	echo "<script type='text/javascript'>
 		$(document).ready (function () {
 			period_select_init('$uniq_name');
 			period_select_events('$uniq_name');
 		});
-	</script>
-	";
-		
+		function period_select_".$name."_update(seconds) {
+			$('#text-".$uniq_name."_text').val(seconds);
+			adjustTextUnits('".$uniq_name."');
+			calculateSeconds('".$uniq_name."');
+			$('#".$uniq_name."_manual').show();
+			$('#".$uniq_name."_default').hide();
+		}
+	</script>";
 	$returnString = ob_get_clean();
 	
 	if ($return)

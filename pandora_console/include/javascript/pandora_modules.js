@@ -131,14 +131,20 @@ function configure_modules_form () {
 				$("#id_module_type option[value="+data["type"]+"]").select (1);
 				$("#text-max").attr ("value", data["max"]);
 				$("#text-min").attr ("value", data["min"]);
-				$("#text-module_interval").attr ("value", data["module_interval"]);
+				// Workaround to update the advanced select control from html and ajax
+				if(typeof 'period_select_module_interval_update' == 'function') {
+					period_select_module_interval_update(data["module_interval"]);
+				}
+				else {
+					period_select_update('module_interval', data["module_interval"]);
+				}
 				$("#text-tcp_port").attr ("value", data["tcp_port"]);
 				$("#textarea_tcp_send").attr ("value", js_html_entity_decode (data["tcp_send"]));
 				$("#textarea_tcp_rcv").attr ("value", js_html_entity_decode (data["tcp_rcv"]));
 				$("#text-snmp_community").attr ("value", js_html_entity_decode (data["snmp_community"]));
 				$("#text-snmp_oid").attr ("value", js_html_entity_decode (data["snmp_oid"])).show ();
 				$("#oid, img#edit_oid").hide ();
-				$("#id_module_group option["+data["id_group"]+"]").select (1);
+				$("#id_module_group option[value="+data["id_module_group"]+"]").select (1);
 				$("#max_timeout").attr ("value", data["max_timeout"]);
 				$("#id_plugin option[value="+data["id_plugin"]+"]").select (1);
 				$("#text-plugin_user").attr ("value", js_html_entity_decode (data["plugin_user"]));
@@ -150,10 +156,13 @@ function configure_modules_form () {
 					$("#checkbox-history_data").uncheck ();
 				$("#text-min_warning").attr ("value", (data["min_warning"] == 0) ? 0 : data["min_warning"]);
 				$("#text-max_warning").attr ("value", (data["max_warning"] == 0) ? 0 : data["max_warning"]);
+				$("#text-str_warning").attr ("value", (data["str_warning"] == 0) ? 0 : data["str_warning"]);
 				$("#text-min_critical").attr ("value", (data["min_critical"] == 0) ? 0 : data["min_critical"]);
 				$("#text-max_critical").attr ("value", (data["max_critical"] == 0) ? 0 : data["max_critical"]);
-				$("#text-ff_threshold").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
+				$("#text-str_critical").attr ("value", (data["str_critical"] == 0) ? 0 : data["str_critical"]);
+				$("#text-ff_event").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
 				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"])
+				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"])
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 				
@@ -343,23 +352,27 @@ function configure_modules_form () {
 		return true;
 	});
 	
-	$("#prediction_id_group").pandoraSelectGroupAgent ({
-		agentSelect: "select#prediction_id_agent",
-		callbackBefore: function () {
-			$("#module_loading").show ();
-			$("#prediction_module option").remove ();
-			return true;
-		},
-		callbackAfter: function (e) {
-			if ($("#prediction_id_agent").children ().length == 0) {
-				$("#module_loading").hide ();
-				return;
+	if(typeof $("#prediction_id_group").pandoraSelectGroupAgent == 'function') {
+		$("#prediction_id_group").pandoraSelectGroupAgent ({
+			agentSelect: "select#prediction_id_agent",
+			callbackBefore: function () {
+				$("#module_loading").show ();
+				$("#prediction_module option").remove ();
+				return true;
+			},
+			callbackAfter: function (e) {
+				if ($("#prediction_id_agent").children ().length == 0) {
+					$("#module_loading").hide ();
+					return;
+				}
+				$("#prediction_id_agent").change ();
 			}
-			$("#prediction_id_agent").change ();
-		}
-	});
+		});
+	}
 	
-	$("#prediction_id_agent").pandoraSelectAgentModule ({
-		moduleSelect: "select#prediction_module"
-	});
+	if(typeof $("#prediction_id_agent").pandoraSelectAgentModule == 'function') {
+		$("#prediction_id_agent").pandoraSelectAgentModule ({
+			moduleSelect: "select#prediction_module"
+		});
+	}
 }

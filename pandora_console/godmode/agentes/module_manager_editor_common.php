@@ -241,7 +241,7 @@ $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id,
 $table_advanced->data[2][0] = __('Interval');
 
 $table_advanced->colspan[2][1] = 2;
-$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true);
+$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true, false, false);
 	
 $table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
 $table_advanced->data[2][4] = html_print_input_text ('post_process',

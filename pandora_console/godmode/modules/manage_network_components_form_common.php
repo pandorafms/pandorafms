@@ -65,8 +65,8 @@ $table->data[2][0] = __('Group');
 $table->data[2][1] = html_print_select (network_components_get_groups (),
 	'id_group', $id_group, '', '', '', true, false, false);
 $table->data[2][2] = __('Interval');
-$table->data[2][3] = html_print_input_text ('module_interval', $module_interval, '',
-	5, 15, true);
+$table->data[2][3] = html_print_extended_select_for_time ('module_interval' , $module_interval, '', '', '0', false, true);
+
 
 $table->data[3][0] = __('Warning status');
 $table->data[3][1] = '<em>'.__('Min.').'</em>';
@@ -99,4 +99,7 @@ $table->data[5][0] = __('Min. Value');
 $table->data[5][1] = html_print_input_text ('min', $min, '', 5, 15, true);
 $table->data[5][2] = __('Max. Value');
 $table->data[5][3] = html_print_input_text ('max', $max, '', 5, 15, true);
+$table->data[6][0] = __('Unit');
+$table->data[6][1] = html_print_input_text ('unit', $unit, '', 12, 25, true);
+$table->data[6][2] = $table->data[6][3] = '';
 ?>

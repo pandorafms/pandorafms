@@ -1,5 +1,13 @@
 2012-07-05  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb_data.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql: Assign to the 
+	default user (admin) the full access to 
+	wizard (new metaconsole)
+
+2012-07-05  Sergio Martin <sergio.martin@artica.es>
+
 	* pandoradb.sql
 	pandoradb.postgreSQL.sql
 	pandoradb.oracle.sql

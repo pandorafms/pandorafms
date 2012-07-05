@@ -289,8 +289,8 @@ END;;
 --
 BEGIN
 LOCK TABLE tusuario IN EXCLUSIVE MODE;
-INSERT INTO tusuario (id_user, fullname, firstname, lastname, middlename, password, comments, last_connect, registered, email, phone, is_admin, flash_chart, language, block_size, section) VALUES
-('admin', 'Pandora', 'Pandora', 'Admin', ' ', '1da7ee7d45b96d0e1f45ee4ee23da560', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1, -1, 'default', 0, 'Default');
+INSERT INTO tusuario (id_user, fullname, firstname, lastname, middlename, password, comments, last_connect, registered, email, phone, is_admin, flash_chart, language, block_size, section, wizard_access) VALUES
+('admin', 'Pandora', 'Pandora', 'Admin', ' ', '1da7ee7d45b96d0e1f45ee4ee23da560', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1, -1, 'default', 0, 'Default', 'all');
 COMMIT;
 END;;
 

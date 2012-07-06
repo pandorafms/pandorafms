@@ -115,22 +115,30 @@ public class Core {
 	 *            Application context.
 	 */
 	public static void setFetchFrequency(Context ctx) {
-		Log.i(TAG, "Setting events fetching frequency");
-		// Stops the service (if it's running)
-		ctx.stopService(new Intent(ctx, PandroidEventviewerService.class));
-		// Sets the launch frequency
-		AlarmManager alarmM = (AlarmManager) ctx
-				.getSystemService(Context.ALARM_SERVICE);
+		SharedPreferences preferences = ctx.getSharedPreferences(
+				ctx.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		if (preferences.getBoolean("configured", false)) {
+			Log.i(TAG, "Setting events fetching frequency");
+			// Stops the service (if it's running)
+			ctx.stopService(new Intent(ctx, PandroidEventviewerService.class));
+			// Sets the launch frequency
+			AlarmManager alarmM = (AlarmManager) ctx
+					.getSystemService(Context.ALARM_SERVICE);
 
-		PendingIntent pandroidService = PendingIntent.getService(ctx, 0,
-				new Intent(ctx, PandroidEventviewerService.class), 0);
+			PendingIntent pandroidService = PendingIntent.getService(ctx, 0,
+					new Intent(ctx, PandroidEventviewerService.class), 0);
 
-		int sleepTimeAlarm = convertRefreshTimeKeyToTime(ctx);
+			int sleepTimeAlarm = convertRefreshTimeKeyToTime(ctx);
 
-		Log.i(TAG, "sleepTimeAlarm = " + sleepTimeAlarm);
+			Log.i(TAG, "sleepTimeAlarm = " + sleepTimeAlarm);
 
-		alarmM.setRepeating(AlarmManager.RTC_WAKEUP,
-				System.currentTimeMillis(), sleepTimeAlarm, pandroidService);
+			alarmM.setRepeating(AlarmManager.RTC_WAKEUP,
+					System.currentTimeMillis(), sleepTimeAlarm, pandroidService);
+		} else {
+			Log.i(TAG,
+					"Service wasn't started because the options aren't configured yet");
+		}
 	}
 
 	/**
@@ -331,7 +339,7 @@ public class Core {
 			parameters.add(new BasicNameValuePair("apipass", apiPassword));
 		}
 		parameters.addAll(additionalParameters);
-		Log.i(TAG, "sent: "+url);
+		Log.i(TAG, "sent: " + url);
 		if (url.toLowerCase().contains("https")) {
 			// Secure connection
 			return Core.httpsGet(url, parameters);
@@ -349,7 +357,7 @@ public class Core {
 			entityResponse = response.getEntity();
 			return_api = Core
 					.convertStreamToString(entityResponse.getContent());
-			Log.i(TAG, "received: "+ return_api);
+			Log.i(TAG, "received: " + return_api);
 			return return_api;
 		}
 	}

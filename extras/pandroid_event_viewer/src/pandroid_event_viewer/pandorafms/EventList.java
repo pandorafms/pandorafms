@@ -18,15 +18,12 @@ package pandroid_event_viewer.pandorafms;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
@@ -200,7 +197,7 @@ public class EventList extends ListActivity {
 		}
 	}
 
-	private String getImageGroupUrl(String group_icon) {
+	/*private String getImageGroupUrl(String group_icon) {
 		SharedPreferences preferences = getApplicationContext()
 				.getSharedPreferences(
 						getApplicationContext().getString(
@@ -209,7 +206,7 @@ public class EventList extends ListActivity {
 
 		String url = preferences.getString("url", "");
 		return url + "/images/groups_small/" + group_icon + ".png";
-	}
+	}+/
 
 	/**
 	 * Sets an image to the left of group's TextView.
@@ -221,7 +218,7 @@ public class EventList extends ListActivity {
 	 * @param id
 	 *            Group's TextView id;
 	 */
-	private void setTextViewGroupImage(View view, String group_icon, int id) {
+	/*private void setTextViewGroupImage(View view, String group_icon, int id) {
 		TextView tview = (TextView) view.findViewById(id);
 		Bitmap img = null;
 
@@ -238,7 +235,7 @@ public class EventList extends ListActivity {
 		if (img != null) {
 			Core.setTextViewLeftImage(tview, img);
 		}
-	}
+	}*/
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -391,11 +388,6 @@ public class EventList extends ListActivity {
 							.getSeverityImage(getApplicationContext(),
 									item.criticity), 16);
 
-				if (item.group_icon.length() != 0)
-					Core.setTextViewLeftImage(
-							(TextView) view.findViewById(R.id.agent_name),
-							getImageGroupUrl(item.group_icon));
-
 				if (item.status == 1) {
 					Core.setTextViewLeftImage(timestamp, getResources()
 							.getDrawable(R.drawable.tick), 24);
@@ -445,13 +437,6 @@ public class EventList extends ListActivity {
 						text = (TextView) viewEventExtended
 								.findViewById(R.id.group_text);
 						text.setText(item.group_name);
-						if (item.group_icon.length() != 0)
-							setTextViewGroupImage(viewEventExtended,
-									item.group_icon, R.id.group_text);
-					} else {
-						// ALL
-						setTextViewGroupImage(viewEventExtended, "world",
-								R.id.group_text);
 					}
 
 					if (item.agent_name.length() != 0) {
@@ -517,7 +502,6 @@ public class EventList extends ListActivity {
 
 									@Override
 									public void onClick(View v) {
-										// TODO
 										Intent intent = new Intent(
 												getBaseContext(),
 												CreateIncidentActivity.class);

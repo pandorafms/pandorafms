@@ -1,3 +1,10 @@
+2012-07-06 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Core.java: Service will only start if options were configured.
+	* src/pandroid_event_viewer/pandorafms/API.java: Removed a //TODO comment.
+	* src/pandroid_event_viewer/pandorafms/Options.java: A "configured" value is saved in preferences as true if options were configured.
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Removed group images.
+	* res/layout/options.xml: Little UI changes.
+
 2012-07-05 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/OnBootLoader.java: New BroadcastReceiver which starts the search new events service after the phone boot.
 	* src/pandroid_event_viewer/pandorafms/Core.java: Little changes.

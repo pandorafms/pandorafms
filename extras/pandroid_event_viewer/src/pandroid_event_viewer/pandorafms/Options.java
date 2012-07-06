@@ -214,6 +214,7 @@ public class Options extends Activity {
 		editorPreferences.putBoolean("vibration", cb.isChecked());
 		cb = (CheckBox) findViewById(R.id.led_flash_on);
 		editorPreferences.putBoolean("led", cb.isChecked());
+		editorPreferences.putBoolean("configured", true);
 
 		Context context = this.getApplicationContext();
 

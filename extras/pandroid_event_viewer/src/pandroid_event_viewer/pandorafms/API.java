@@ -90,7 +90,6 @@ public class API {
 		parameters.add(new BasicNameValuePair("op2", "test"));
 		String return_api;
 		return_api = Core.httpGet(context, parameters);
-		// TODO wait version
 		if (return_api.contains("OK")) {
 			String[] lines = return_api.split(",");
 			if (lines.length == 3) {

@@ -650,7 +650,7 @@ CREATE TABLE tnetwork_component (
 	post_process BINARY_DOUBLE default 0.
 	unit CLOB default '',
 	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
-	only_wizard NUMBER(5, 0) default 0 NOT NULL,
+	only_metaconsole NUMBER(5, 0) default 0 NOT NULL,
 	field1_desc CLOB default '',
 	field1_help CLOB default '',
 	field2_desc CLOB default '',

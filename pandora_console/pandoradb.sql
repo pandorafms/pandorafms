@@ -570,7 +570,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `post_process` double(18,5) default 0,
   `unit` text,
   `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
-  `only_wizard` tinyint(1) unsigned default '0',
+  `only_metaconsole` tinyint(1) unsigned default '0',
   `field1_desc` text,
   `field1_help` text,
   `field2_desc` text,

@@ -265,7 +265,7 @@ WHERE "token"='prominent_time'
 
 CREATE TYPE type_tnetwork_component_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
 ALTER TABLE "tnetwork_component" ADD COLUMN "wizard_level" type_tnetwork_component_wizard_level default 'nowizard';
-ALTER TABLE "tnetwork_component" ADD COLUMN "only_wizard" INTEGER default '0';
+ALTER TABLE "tnetwork_component" ADD COLUMN "only_metaconsole" INTEGER default '0';
 ALTER TABLE "tnetwork_component" ADD COLUMN "field1_desc" TEXT default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "field1_help" TEXT default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "field2_desc" TEXT default '';

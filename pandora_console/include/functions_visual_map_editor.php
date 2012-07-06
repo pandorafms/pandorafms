@@ -43,7 +43,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 	
 	
 	echo '<div id="properties_panel" style="display: none; position: absolute; border: 2px solid #114105; padding: 5px; background: white; z-index: 90;">';
-	//----------------------------Hiden Form----------------------------------------
+	//----------------------------Hiden Form----------------------------
 	?>
 	<table class="databox" border="0" cellpadding="4" cellspacing="4" width="300">
 		<caption>

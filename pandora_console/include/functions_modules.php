@@ -1002,16 +1002,16 @@ function modules_give_agent_id_from_module_id ($id_agent_module) {
  */
 function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = false) {
 	$current_timestamp = get_system_time ();
-
+	
 	if (!$without_alerts) {
 		$times_fired = db_get_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
 		if ($times_fired > 0) {
 			return 4; // Alert fired
 		}
 	}
-
+	
 	$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
-
+	
 	return $status_row['estado'];
 }
 
@@ -1024,7 +1024,7 @@ function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = f
  */
 function modules_get_agentmodule_last_status($id_agentmodule = 0) {
 	$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
-
+	
 	return $status_row['last_status'];
 }
 

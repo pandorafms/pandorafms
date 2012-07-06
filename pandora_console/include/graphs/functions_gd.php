@@ -12,13 +12,14 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
 
-// If is called from index
-if(file_exists('include/functions.php')) {
+if (file_exists('include/functions.php')) {
+	// If is called from index
 	include_once('include/functions.php');
 	include_once('include/functions_html.php');
 	include_once('include/graphs/functions_utils.php');
-} // If is called through url
-else if(file_exists('../functions.php')) {
+}
+else if (file_exists('../functions.php')) {
+	// If is called through url
 	include_once('../functions.php');
 	include_once('../functions_html.php');
 	include_once('functions_utils.php');
@@ -45,7 +46,7 @@ if($id_graph && in_array($graph_type, $types)) {
 		$graph['fontsize'] = 6;
 	}
 	
-	switch($graph_type) {
+	switch ($graph_type) {
 		case 'histogram': 
 			gd_histogram ($graph['width'], 
 				$graph['height'], 
@@ -86,11 +87,11 @@ function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title,
 	// $title is for future use
 	$nvalues = count($data);
 	
-   	Header("Content-type: image/png");
+	Header("Content-type: image/png");
 	$image = imagecreate($width,$height);
 	$white = ImageColorAllocate($image,255,255,255);
 	imagecolortransparent ($image, $white);
-
+	
 	$black = ImageColorAllocate($image,0,0,0);
 	
 	$red = ImageColorAllocate($image,255,60,75);
@@ -98,14 +99,15 @@ function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title,
 	$green = ImageColorAllocate($image,0,120,0);
 	$magent = ImageColorAllocate($image,179,0,255);
 	$yellow = ImageColorAllocate($image,204,255,0);
-
+	
 	$colors = array($blue, $red, $green, $magent, $yellow);
 	
 	$margin_up = 2;
-
+	
 	if ($mode != 2) {
 		$size_per = ($max_value / ($width-40));
-	} else {
+	}
+	else {
 		$size_per = ($max_value / ($width));
 	}
 	
@@ -113,7 +115,7 @@ function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title,
 		$rectangle_height = ($height - 10 - 2 - $margin_up ) / $nvalues;
 	else
 		$rectangle_height = ($height - 2 - $margin_up ) / $nvalues;
-
+	
 	if ($size_per == 0)
 		$size_per = 1;
 		
@@ -125,14 +127,14 @@ function gd_histogram ($width, $height, $mode, $data, $max_value, $font, $title,
 	}
 	
 	$c = 0;
-	foreach($data as $label => $value) {	
+	foreach($data as $label => $value) {
 		ImageFilledRectangle($image, $leftmargin, $margin_up, ($value/$size_per)+$leftmargin, $margin_up+$rectangle_height -1 , $colors[$c]);
 		if ($mode != 2) {
 			ImageTTFText($image, $fontsize, 0, 0, $margin_up+8, $black, $font, $label);
 		}
 		
 		$margin_up += $rectangle_height + 1;
-
+		
 		$c++;
 		if(!isset($colors[$c])) {
 			$c = 0;

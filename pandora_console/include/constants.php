@@ -131,4 +131,19 @@ define('PROCESS_VALUE_NONE', 0);
 define('PROCESS_VALUE_MIN', 1);
 define('PROCESS_VALUE_MAX', 2);
 define('PROCESS_VALUE_AVG', 3);
+//Status
+define('VISUAL_MAP_STATUS_CRITICAL_BAD', 1);
+define('VISUAL_MAP_STATUS_CRITICAL_ALERT', 4);
+define('VISUAL_MAP_STATUS_NORMAL', 0);
+define('VISUAL_MAP_STATUS_WARNING', 2);
+define('VISUAL_MAP_STATUS_UNKNOW', 3);
+
+
+
+/* Service constants */
+//Status
+define('SERVICE_STATUS_UNKNOW', -1);
+define('SERVICE_STATUS_NORMAL', 0);
+define('SERVICE_STATUS_CRITICAL', 1);
+define('SERVICE_STATUS_WARNING', 2);
 ?>

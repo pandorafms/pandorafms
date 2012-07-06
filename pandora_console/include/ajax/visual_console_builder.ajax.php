@@ -499,6 +499,9 @@ switch ($action) {
 		
 		echo json_encode($size);
 		break;
+	default:
+		enterprise_hook("enterprise_visualmap_ajax");
+		break;
 }
 
 /* visual map element status check  */

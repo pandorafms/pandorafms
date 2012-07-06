@@ -42,7 +42,7 @@ function check_refererer() {
 	// This is done due to problems with HTTP_REFERER var when metarefresh is performed
 	if ($config["refr"] > 0) 
 		return true;
-		
+	
 	//Check if the referer have a port (for example when apache run in other port to 80)
 	if (preg_match('/http(s?):\/\/.*:[0-9]*/', $referer) == 1) {
 		$url = $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $config["homeurl"];
@@ -50,7 +50,7 @@ function check_refererer() {
 	else {
 		$url = $_SERVER['SERVER_NAME'] . $config["homeurl"];
 	}
-
+	
 	// Remove protocol from referer
 	$referer = preg_replace('/http(s?):\/\//','',$referer);
 	
@@ -118,15 +118,15 @@ function output_clean_strict ($string) {
  * @return string Cleaned string
  */
 function safe_url_extraclean ($string, $default_string = '') {
-
+	
 	/* Strip the string to 125 characters */
 	$string = substr ($string, 0, 125);
-
+	
 	/* Search for unwanted characters */
 	if (preg_match ('/[^a-zA-Z0-9_\/\.\-]|(\/\/)|(\.\.)/', $string)) {
 		return $default_string;
 	}
-
+	
 	return $string;
 }
 
@@ -136,6 +136,7 @@ function safe_url_extraclean ($string, $default_string = '') {
  */
 function no_permission () {
 	require ("config.php");
+	
 	echo "<h3 class='error'>".__('You don\'t have access')."</h3>";
 	echo html_print_image('images/noaccess.png', true, array("alt" => 'No access', "width" => '120')) . "<br /><br />";
 	echo "<table width=550>";
@@ -144,6 +145,7 @@ function no_permission () {
 	echo "</table>";
 	echo "<tr><td><td><td><td>";
 	include "general/footer.php";
+	
 	exit;
 }
 
@@ -155,6 +157,7 @@ function no_permission () {
  */
 function unmanaged_error ($error = "") {
 	require_once ("config.php");
+	
 	echo "<h3 class='error'>".__('Unmanaged error')."</h3>";
 	echo html_print_image('images/error.png', true, array("alt" => 'error')) . "<br /><br />";
 	echo "<table width=550>";
@@ -165,6 +168,7 @@ function unmanaged_error ($error = "") {
 	echo "</table>";
 	echo "<tr><td><td><td><td>";
 	include "general/footer.php";
+	
 	exit;
 }
 
@@ -310,7 +314,7 @@ function human_time_comparation ($timestamp, $units = 'large') {
 	}
 	
 	$seconds = get_system_time () - $timestamp;
-
+	
 	return human_time_description_raw($seconds, false, $units);
 }
 
@@ -344,16 +348,16 @@ function get_system_time () {
  */
 function get_user_language ($id_user = false) {
 	global $config;
-
+	
 	$quick_language = get_parameter('quick_language_change', 0);
-
+	
 	if($quick_language) {
 		$language = get_parameter('language', 0);
 		
 		if($language === 'default') {
 			return $config['language'];
 		}
-
+		
 		if($language !== 0) {
 			return $language;
 		}
@@ -379,10 +383,10 @@ function get_user_language ($id_user = false) {
 function set_user_language() {
 	global $config;
 	global $l10n;
-
+	
 	$l10n = NULL;
 	$user_language = get_user_language ();
-
+	
 	if (file_exists ('./include/languages/'.$user_language.'.mo')) {
 		$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
 		$l10n->load_tables();
@@ -421,7 +425,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 			$nowString = __('N');
 			break;
 	}
-
+	
 	if (empty ($seconds)) {
 		return $nowString; 
 		// slerena 25/03/09
@@ -447,7 +451,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 			
 			$returnDate .= "$months $monthsString ";
 		}
-
+		
 		$days = floor($seconds / 86400);
 		
 		if($days != 0) {
@@ -457,7 +461,7 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		}
 		
 		$returnTime = '';
-
+		
 		$hours = floor($seconds / 3600);
 		
 		if($hours != 0) {
@@ -610,10 +614,10 @@ function get_parameter ($name, $default = '') {
 	// POST has precedence
 	if (isset($_POST[$name]))
 		return get_parameter_post ($name, $default);
-
+	
 	if (isset($_GET[$name]))
 		return get_parameter_get ($name, $default);
-
+	
 	return $default;
 }
 
@@ -628,7 +632,7 @@ function get_parameter ($name, $default = '') {
 function get_parameter_get ($name, $default = "") {
 	if ((isset ($_GET[$name])) && ($_GET[$name] != ""))
 		return io_safe_input ($_GET[$name]);
-
+	
 	return $default;
 }
 
@@ -643,7 +647,7 @@ function get_parameter_get ($name, $default = "") {
 function get_parameter_post ($name, $default = "") {
 	if ((isset ($_POST[$name])) && ($_POST[$name] != ""))
 		return io_safe_input ($_POST[$name]);
-
+	
 	return $default;
 }
 
@@ -656,29 +660,31 @@ function get_parameter_post ($name, $default = "") {
  */
 function get_alert_priority ($priority = 0) {
 	global $config;
+	
 	switch ($priority) {
-	case 0: 
-		return __('Maintenance');
-		break;
-	case 1:
-		return __('Informational');
-		break;
-	case 2:
-		return __('Normal');
-		break;
-	case 3:
-		return __('Warning');
-		break;
-	case 4:
-		return __('Critical');
-		break;
-	case 5:
-		return __('Minor');
-		break;
-	case 6:
-		return __('Major');
-		break;
+		case 0: 
+			return __('Maintenance');
+			break;
+		case 1:
+			return __('Informational');
+			break;
+		case 2:
+			return __('Normal');
+			break;
+		case 3:
+			return __('Warning');
+			break;
+		case 4:
+			return __('Critical');
+			break;
+		case 5:
+			return __('Minor');
+			break;
+		case 6:
+			return __('Major');
+			break;
 	}
+	
 	return '';
 }
 
@@ -692,12 +698,13 @@ function get_alert_priority ($priority = 0) {
 function get_alert_days ($row) {
 	global $config;
 	$days_output = "";
-
+	
 	$check = $row["monday"] + $row["tuesday"] + $row["wednesday"] + $row["thursday"] + $row["friday"] + $row["saturday"] + $row["sunday"];
 	
 	if ($check == 7) {
 		return __('All');
-	} elseif ($check == 0) {
+	}
+	elseif ($check == 0) {
 		return __('None');
 	} 
 	
@@ -716,7 +723,7 @@ function get_alert_days ($row) {
 	if ($row["sunday"] != 0)
 		$days_output .= __('Sun');
 	
-	if ($check > 1) {	
+	if ($check > 1) {
 		return str_replace (" ",", ",$days_output);
 	}
 	
@@ -731,19 +738,21 @@ function get_alert_days ($row) {
  * @return string A string with the concatenated values
  */
 function get_alert_times ($row2) {
-	if ($row2["time_from"]){
+	if ($row2["time_from"]) {
 		$time_from_table = $row2["time_from"];
-	} else {
+	}
+	else {
 		$time_from_table = __('N/A');
 	}
-	if ($row2["time_to"]){
+	if ($row2["time_to"]) {
 		$time_to_table = $row2["time_to"];
-	} else {
+	}
+	else {
 		$time_to_table = __('N/A');
 	}
 	if ($time_to_table == $time_from_table)
 		return __('N/A');
-		
+	
 	return substr ($time_from_table, 0, 5)." - ".substr ($time_to_table, 0, 5);
 }
 
@@ -960,12 +969,12 @@ function enterprise_include ($filename) {
 	global $config;
 	
 	// Load enterprise extensions
-	$filepath = realpath ($config["homedir"].'/'.ENTERPRISE_DIR.'/'.$filename);
+	$filepath = realpath ($config["homedir"] . '/' . ENTERPRISE_DIR . '/' . $filename);
 	
 	if ($filepath === false)
 		return ENTERPRISE_NOT_HOOK;
 	
-	if (strncmp ($config["homedir"], $filepath, strlen ($config["homedir"])) != 0){
+	if (strncmp ($config["homedir"], $filepath, strlen ($config["homedir"])) != 0) {
 		return ENTERPRISE_NOT_HOOK;
 	}
 	
@@ -1188,9 +1197,9 @@ function array_key_to_offset($array, $key) {
  * @return array SNMP result.
  */
 function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_auth_user = '',
-				$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
-				$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0, $base_oid = "", $snmp_port = '') {
-					
+	$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
+	$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0, $base_oid = "", $snmp_port = '') {
+	
 	snmp_set_quick_print ($quick_print);
 	
 	// Fix for snmp port
@@ -1250,9 +1259,9 @@ function string2image($string, $width, $height, $fontsize = 3,
 	$padding_left = 4, $padding_top = 1, $home_url = '') {
 	
 	global $config;
-
+	
 	$string = str_replace('#','',$string);
-
+	
 	//Set the size of image from the size of text
 	if ($width === false) {
 		$size = calculateTextBox($fontsize, 0, $config['fontpath'], $string);
@@ -1301,7 +1310,7 @@ function string2image($string, $width, $height, $fontsize = 3,
 
 function check_sql ($sql) {
 	// We remove "*" to avoid things like SELECT * FROM tusuario
-
+	
 	//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
 	
 	if (preg_match("/\*|delete[^_]|drop|alter|modify|union|password|pass|insert|update/i", $sql)) {
@@ -1401,7 +1410,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 	if ($id_group != 0) {
 		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
 		$parents = groups_get_parents($group['parent'], true);
-
+		
 		foreach ($parents as $parent) {
 			$parents_id[] = $parent['id_grupo'];
 		}
@@ -1435,12 +1444,12 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 				AND (tusuario_perfil.id_grupo IN (%s)
 				OR tusuario_perfil.id_grupo = 0)", $id_user, implode(', ', $parents_id));
 	}
-
+	
 	$rowdup = db_get_all_rows_sql ($query);
 	
 	if (empty ($rowdup))
 		return 0;
-
+	
 	$result = 0;
 	foreach ($rowdup as $row) {
 		// For each profile for this pair of group and user do...
@@ -1481,7 +1490,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 	if ($result >= 1) {
 		return 1;
 	}
-
+	
 	return 0;
 }
 

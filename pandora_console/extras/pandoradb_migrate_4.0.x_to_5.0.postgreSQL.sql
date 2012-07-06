@@ -263,8 +263,8 @@ WHERE "token"='prominent_time'
 -- Table `tnetwork_component`
 -- -----------------------------------------------------
 
-CREATE TYPE type_tnetwork_component_wizard_level AS ENUM ('basic','advanced','custom');
-ALTER TABLE "tnetwork_component" ADD COLUMN "wizard_level" type_tnetwork_component_wizard_level default 'custom';
+CREATE TYPE type_tnetwork_component_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
+ALTER TABLE "tnetwork_component" ADD COLUMN "wizard_level" type_tnetwork_component_wizard_level default 'nowizard';
 ALTER TABLE "tnetwork_component" ADD COLUMN "only_wizard" INTEGER default '0';
 ALTER TABLE "tnetwork_component" ADD COLUMN "field1_desc" TEXT default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "field1_help" TEXT default '';
@@ -283,12 +283,12 @@ ALTER TABLE "tnetwork_component" ADD COLUMN "field6_help" TEXT default '';
 -- Table `tagente_modulo`
 -- -----------------------------------------------------
 
-CREATE TYPE type_tagente_modulo_wizard_level AS ENUM ('basic','advanced','custom');
-ALTER TABLE "tagente_modulo" ADD COLUMN "wizard_level" type_tagente_modulo_wizard_level default 'custom';
+CREATE TYPE type_tagente_modulo_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
+ALTER TABLE "tagente_modulo" ADD COLUMN "wizard_level" type_tagente_modulo_wizard_level default 'nowizard';
 
 -- -----------------------------------------------------
 -- Table `tusuario`
 -- -----------------------------------------------------
 
-CREATE TYPE type_tusuario_wizard_access AS ENUM ('basic','advanced','custom','all','only_console');
-ALTER TABLE "tusuario" ADD COLUMN "wizard_access" type_tusuario_wizard_access default 'only_console';
+CREATE TYPE type_tusuario_metaconsole_access AS ENUM ('basic','advanced','custom','all','only_console');
+ALTER TABLE "tusuario" ADD COLUMN "metaconsole_access" type_tusuario_metaconsole_access default 'only_console';

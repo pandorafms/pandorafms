@@ -208,8 +208,8 @@ CREATE TABLE tagente_modulo (
 	custom_string_3 CLOB default '',
 	custom_integer_1 NUMBER(10, 0) default 0,
 	custom_integer_2 NUMBER(10, 0) default 0,
-	wizard_level VARCHAR2(100) default 'custom' NOT NULL,
-	CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom'))
+	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
+	CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'))
 );
 CREATE INDEX tagente_modulo_id_agente_idx ON tagente_modulo(id_agente);
 CREATE INDEX tagente_modulo_id_t_mod_idx ON tagente_modulo(id_tipo_modulo);
@@ -649,7 +649,7 @@ CREATE TABLE tnetwork_component (
 	custom_integer_2 INTEGER default 0,
 	post_process BINARY_DOUBLE default 0.
 	unit CLOB default '',
-	wizard_level VARCHAR2(100) default 'custom' NOT NULL,
+	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
 	only_wizard NUMBER(5, 0) default 0 NOT NULL,
 	field1_desc CLOB default '',
 	field1_help CLOB default '',
@@ -663,7 +663,7 @@ CREATE TABLE tnetwork_component (
 	field5_help CLOB default '',
 	field6_desc CLOB default '',
 	field6_help CLOB default '',
-	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom'))
+	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'))
 );
 
 CREATE SEQUENCE tnetwork_component_s INCREMENT BY 1 START WITH 1;
@@ -896,8 +896,8 @@ CREATE TABLE tusuario (
 	last_failed_login TIMESTAMP default 0,
 	failed_attempt NUMBER(5,0) default 0 NOT NULL,
 	login_blocked NUMBER(5,0) default 0 NOT NULL,
-	wizard_access VARCHAR2(100) default 'only_console' NOT NULL,
-	CONSTRAINT t_usuario_wizard_access_cons CHECK (wizard_access IN ('basic','advanced','custom','all','only_console'))
+	metaconsole_access VARCHAR2(100) default 'only_console' NOT NULL,
+	CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced','custom','all','only_console'))
 );
 
 CREATE TABLE tusuario_perfil (

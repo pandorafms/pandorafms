@@ -130,9 +130,10 @@ if ($create_user) {
 	$values['block_size'] = (int) get_parameter ('block_size', $config["block_size"]);
 	$values['flash_chart'] = (int) get_parameter ('flash_charts', $config["flash_charts"]);
 	
-	if (defined('PANDORA_ENTERPRISE')) {
+	if (enterprise_installed()) {
 		$values['force_change_pass'] = 1;
 		$values['last_pass_change'] = date ("Y/m/d H:i:s", get_system_time());
+		$values['wizard_access'] = get_parameter ('wizard_access');
 	}
 	
 	if ($id == '') {
@@ -224,6 +225,10 @@ if ($update_user) {
 	$values['block_size'] = get_parameter ('block_size', $config["block_size"]);
 	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
 
+	if(enterprise_installed()) {
+		$values['wizard_access'] = get_parameter ('wizard_access');
+	}
+	
 	$res1 = update_user ($id, $values);
 	
 	if ($config['user_can_update_password']) {
@@ -268,6 +273,10 @@ if ($update_user) {
 			
 			if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 				$info .= ' Skin: ' . $values['id_skin'];
+			}
+			
+			if(enterprise_installed()) {
+				$info .= ' Wizard access: ' . $values['wizard_access'];
 			}
 			
 			db_pandora_audit("User management", "Updated user ".io_safe_input($id),
@@ -412,6 +421,16 @@ $table->data[12][1] = html_print_input_text ('block_size', $user_info["block_siz
 
 if($id == $config['id_user']) {
 	$table->data[12][1] .= html_print_input_hidden('quick_language_change', 1, true);
+}
+
+if(enterprise_installed()) {
+	$table->data[12][0] = __('Wizard access');
+	$wizard_accesses = array('only_console' => __('No wizard access (Only normal console)'),
+							'basic' => __('Basic wizard'),
+							'advanced' => __('Advanced wizard'),
+							'custom' => __('Custom wizard'),
+							'all' => __('Full access (Custom wizard and normal console)'));
+	$table->data[12][1] = html_print_select($wizard_accesses,'wizard_access',$user_info["wizard_access"],'','',-1,true, false, false);
 }
 
 echo '<form method="post" autocomplete="off">';

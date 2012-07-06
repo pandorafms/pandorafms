@@ -58,7 +58,9 @@ if (isset ($id)) {
 		$history_data = $component["history_data"];
 		$post_process = $component["post_process"];
 		$unit = $component["unit"];
-		
+		$wizard_level = $component["wizard_level"];
+		$only_metaconsole = $component["only_metaconsole"];
+
 		
 		if ($type >= 15 && $type <= 18) {
 			// New support for snmp v3
@@ -98,6 +100,8 @@ if (isset ($id)) {
 		$history_data = true;
 		$post_process = 0;
 		$unit = '';
+		$wizard_level = 'nowizard';
+		$only_metaconsole = 0;
 		
 		$snmp_version = 1;
 		$snmp3_auth_user = '';

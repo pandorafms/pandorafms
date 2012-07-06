@@ -41,11 +41,23 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->style[2] = 'font-weight: bold';
 $table->colspan = array ();
-$table->colspan[0][1] = 3;
+if(!enterprise_installed()) {
+	$table->colspan[0][1] = 3;
+}
 $table->data = array ();
 
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 55, 255, true);
+if(enterprise_installed()) {
+	$table->data[0][2] = __('Wizard level');
+	$wizard_levels = array('nowizard' => __('No wizard'),
+							'basic' => __('Basic'),
+							'advanced' => __('Advanced'),
+							//'custom' => __('Custom'),
+							);
+	$table->data[0][3] = html_print_select($wizard_levels,'wizard_level',$wizard_level,'','',-1,true, false, false);
+	$table->data[0][3] .= html_print_checkbox('only_metaconsole',1,(int)$only_metaconsole,true).__('Only for metaconsole');
+}
 
 $table->data[1][0] = __('Type') . ' ' . ui_print_help_icon ('module_type', true);
 $sql = sprintf ('SELECT id_tipo, descripcion

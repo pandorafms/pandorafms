@@ -1,5 +1,12 @@
 2012-07-06  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_network_components_form_common.php
+	godmode/modules/manage_network_components.php: Added wizard level
+	and flag for "only metaconsole" in network components editor
+
+2012-07-06  Sergio Martin <sergio.martin@artica.es>
+
 	* pandoradb.sql
 	pandoradb.postgreSQL.sql
 	pandoradb.oracle.sql

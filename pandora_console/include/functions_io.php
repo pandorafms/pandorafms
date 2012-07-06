@@ -153,7 +153,8 @@ function io_ascii_to_html($num) {
 	
 	if ($num <= 15) {
 		return "&#x0".dechex($num).";";
-	} else {
+	}
+	else {
 		return "&#x".dechex($num).";";
 	}
 }

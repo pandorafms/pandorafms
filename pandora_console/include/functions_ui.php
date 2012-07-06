@@ -19,7 +19,7 @@
  * @subpackage UI
  */
 
-require_once($config['homedir'].'/include/functions_agents.php');
+require_once($config['homedir'] . '/include/functions_agents.php');
 require_once($config['homedir'] . '/include/functions_modules.php');
 require_once($config['homedir'] . '/include/functions.php');
 require_once($config['homedir'] . '/include/functions_groups.php');
@@ -1101,7 +1101,7 @@ function ui_process_page_head ($string, $bitfield) {
 	}
 	
 	$output = '';
-
+	
 	// If user is logged or displayed view is the public view of visual console
 	if ($config["refr"] > 0 && (isset($config['id_user']) || $vc_public_view == 1)) {
 		$query = ui_get_url_refresh (false);

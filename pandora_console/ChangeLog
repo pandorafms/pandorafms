@@ -1,3 +1,23 @@
+2012-07-06 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.elements.php,
+	include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php,
+	include/functions_visual_map_editor.php: uploaded some fixes and
+	changes for the visualmap, for example refactored some part of
+	print the visualmap in operation.
+	
+	* include/functions_html.php: fixed when included from standarlone
+	file from enterprise structure directory.
+	
+	* include/constants.php: added constants for avoid magic numbers
+	into the code of Visualmaps.
+	
+	* include/graphs/functions_gd.php, include/functions.php,
+	include/functions_io.php, include/functions_modules.php,
+	include/functions_ui.php: cleaned source code style.
+
 2012-07-06  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.sql

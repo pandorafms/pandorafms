@@ -45,9 +45,6 @@ foreach ($all_images as $image_file) {
 	$images_list[$image_file] = $image_file;
 }
 
-$layoutDataTypes = visual_map_get_layout_data_types();
-
-
 $table->width = '100%';
 $table->head = array ();
 $table->head['icon'] = '';

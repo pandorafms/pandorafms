@@ -28,6 +28,11 @@ if (!isset($config)) {
 			require_once(str_repeat("../", $i) . "config.php");
 			break; // Skip config.php loading after load the first one
 		}
+		else if(file_exists(str_repeat("../", $i) . 'include/config.php')) {
+			//For path from the enterprise structure dirs.
+			require_once(str_repeat("../", $i) . "include/config.php");
+			break; // Skip config.php loading after load the first one
+		}
 	}
 }
 

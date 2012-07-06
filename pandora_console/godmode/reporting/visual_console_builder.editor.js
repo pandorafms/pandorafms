@@ -49,7 +49,6 @@ function visual_map_main() {
 			draw_lines(lines, 'background', true);
 		}
 	);
-	
 }
 
 function eventsTextAgent() {
@@ -681,6 +680,10 @@ function hiddenFields(item) {
 	
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row."  + item).css('display', '');
+	
+	if (typeof(enterprise_hiddenFields) == 'function') {
+		enterprise_hiddenFields(item);
+	}
 }
 
 function cleanFields() {

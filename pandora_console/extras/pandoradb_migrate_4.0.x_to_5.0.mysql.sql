@@ -272,7 +272,7 @@ WHERE `token`= 'prominent_time'
 -- Table `tnetwork_component`
 -- -----------------------------------------------------
 
-ALTER TABLE tnetwork_component ADD `wizard_level` enum('basic','advanced','custom') default 'custom';
+ALTER TABLE tnetwork_component ADD `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard';
 ALTER TABLE tnetwork_component ADD `only_wizard` tinyint(1) unsigned default '0';
 ALTER TABLE tnetwork_component ADD `field1_desc` text;
 ALTER TABLE tnetwork_component ADD `field1_help` text;
@@ -291,10 +291,10 @@ ALTER TABLE tnetwork_component ADD `field6_help` text;
 -- Table `tagente_modulo`
 -- -----------------------------------------------------
 
-ALTER TABLE tagente_modulo ADD `wizard_level` enum('basic','advanced','custom') default 'custom';
+ALTER TABLE tagente_modulo ADD `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard';
 
 -- -----------------------------------------------------
 -- Table `tusuario`
 -- -----------------------------------------------------
 
-ALTER TABLE tusuario ADD `wizard_access` enum('basic','advanced','custom','all','only_console') default 'only_console';
+ALTER TABLE tusuario ADD `metaconsole_access` enum('basic','advanced','custom','all','only_console') default 'only_console';

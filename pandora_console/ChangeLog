@@ -1,5 +1,17 @@
 2012-07-06  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	godmode/users/configure_user.php: Changed some last fields
+	of the wizard level, metaconsole access etc. And interface
+	strings for metaconsole access in user edition
+
+2012-07-06  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/users/configure_user.php: Added wizard access 
 	option to users editor
 

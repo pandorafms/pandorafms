@@ -275,7 +275,7 @@ WHERE token='prominent_time'
 -- -----------------------------------------------------
 
 ALTER TABLE tnetwork_component ADD (wizard_level VARCHAR2(100) default 'custom' NOT NULL);
-ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom'));
+ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
 ALTER TABLE tnetwork_component ADD (only_wizard NUMBER(5, 0) default 0 NOT NULL);
 ALTER TABLE tnetwork_component ADD (field1_desc CLOB default '');
 ALTER TABLE tnetwork_component ADD (field1_help CLOB default '');
@@ -294,13 +294,13 @@ ALTER TABLE tnetwork_component ADD (field6_help CLOB default '');
 -- Table `tagente_modulo`
 -- -----------------------------------------------------
 
-ALTER TABLE tagente_modulo ADD (wizard_level VARCHAR2(100) default 'custom' NOT NULL);
-ALTER TABLE tagente_modulo ADD CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom'));
+ALTER TABLE tagente_modulo ADD (wizard_level VARCHAR2(100) default 'nowizard' NOT NULL);
+ALTER TABLE tagente_modulo ADD CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
 
 -- -----------------------------------------------------
 -- Table `tusuario`
 -- -----------------------------------------------------
 
-ALTER TABLE tusuario ADD (wizard_access VARCHAR2(100) default 'only_console' NOT NULL);
-ALTER TABLE tusuario ADD CONSTRAINT t_usuario_wizard_access_cons CHECK (wizard_access IN ('basic','advanced','custom','all','only_console'));
+ALTER TABLE tusuario ADD (metaconsole_access VARCHAR2(100) default 'only_console' NOT NULL);
+ALTER TABLE tusuario ADD CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced','custom','all','only_console'));
 

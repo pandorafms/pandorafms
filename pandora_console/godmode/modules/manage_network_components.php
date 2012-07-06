@@ -60,6 +60,8 @@ $history_data = (bool) get_parameter ('history_data');
 $post_process = (float) get_parameter('post_process');
 $unit = (string) get_parameter('unit');
 $id = (int) get_parameter ('id');
+$wizard_level = get_parameter ('wizard_level');
+$only_metaconsole = get_parameter ('only_metaconsole');
 
 $snmp_version = (string) get_parameter('snmp_version');
 $snmp3_auth_user = (string) get_parameter('snmp3_auth_user');
@@ -140,7 +142,9 @@ if ($create_component) {
 				'custom_string_2' => $custom_string_2,
 				'custom_string_3' => $custom_string_3,
 				'post_process' => $post_process,
-				'unit' => $unit));
+				'unit' => $unit,
+				'wizard_level' => $wizard_level,
+				'only_metaconsole' => $only_metaconsole));
 	}
 	else {
 	$id = '';
@@ -207,7 +211,9 @@ if ($update_component) {
 				'custom_string_2' => $custom_string_2,
 				'custom_string_3' => $custom_string_3,
 				'post_process' => $post_process,
-				'unit' => $unit));
+				'unit' => $unit,
+				'wizard_level' => $wizard_level,
+				'only_metaconsole' => $only_metaconsole));
 	}
 	else {
 		$result = '';

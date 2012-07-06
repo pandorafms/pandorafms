@@ -518,7 +518,7 @@ CREATE TABLE "tnetwork_component" (
 	"post_process" DOUBLE PRECISION default 0,
 	"unit" TEXT default '',
 	"wizard_level" type_tlocal_component_wizard_level default 'nowizard',
-	"only_wizard" INTEGER default '0',
+	"only_metaconsole" INTEGER default '0',
 	"field1_desc" TEXT default '',
 	"field1_help" TEXT default '',
 	"field2_desc" TEXT default '',

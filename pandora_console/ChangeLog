@@ -1,3 +1,13 @@
+2012-07-06  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Changed flag
+	only_wizard by only_enterprise
+
 2012-07-06 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/visual_console_builder.editor.js,

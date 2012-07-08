@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS "tpassword_history" (
 -- Table `tconfig`
 -- -----------------------------------------------------
 UPDATE TABLE tconfig SET "value"='comparation'
-WHERE "token"='prominent_time'
+WHERE "token"='prominent_time';
 
 -- -----------------------------------------------------
 -- Table `tnetwork_component`

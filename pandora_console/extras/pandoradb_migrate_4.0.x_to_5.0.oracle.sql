@@ -268,7 +268,7 @@ CREATE SEQUENCE tpassword_history_s INCREMENT BY 1 START WITH 1;
 -- Table `tconfig`
 -- -----------------------------------------------------
 UPDATE tconfig SET value='comparation'
-WHERE token='prominent_time'
+WHERE token='prominent_time';
 
 -- -----------------------------------------------------
 -- Table `tnetwork_component`

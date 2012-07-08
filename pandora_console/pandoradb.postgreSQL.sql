@@ -1320,7 +1320,7 @@ CREATE TABLE "ttimezone" (
 -- -----------------------------------------------------
 -- Table `tpassword_history`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS "tpassword_history" (
+CREATE TABLE "tpassword_history" (
   "id_pass"  INTEGER NOT NULL PRIMARY KEY,
   "id_user" varchar(60) NOT NULL,
   "password" varchar(45) default NULL,

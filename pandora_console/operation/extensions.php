@@ -55,12 +55,6 @@ foreach ($config['extensions'] as $extension) {
 		continue;
 	if ($extension['operation_menu'] == null)
 		continue;
-
-	// If metaconsole is activated skip extensions without fatherID in menu array (this sections and extensions are filtered in metaconsole mode)
-	if ($config['metaconsole'] == 1) {
-		if (!empty($extension['operation_menu']['fatherId']) and !array_key_exists($extension['operation_menu']['fatherId'], $operation_menu_array))
-			continue;
-	}
 	
 	$data = array ();
 	$data[0] = $extension['operation_menu']['name'];

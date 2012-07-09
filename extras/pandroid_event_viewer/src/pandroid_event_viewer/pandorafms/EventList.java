@@ -277,23 +277,19 @@ public class EventList extends ListActivity {
 			this.object = object;
 			showLoadingEvents = false;
 		}
-
-		@Override
+		
 		public int getCount() {
 			return this.object.eventList.size() + 1;
 		}
-
-		@Override
+		
 		public Object getItem(int position) {
 			return null;
 		}
-
-		@Override
+		
 		public long getItemId(int position) {
 			return 0;
 		}
-
-		@Override
+		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view;
 
@@ -330,7 +326,7 @@ public class EventList extends ListActivity {
 						}
 
 						button.setOnClickListener(new View.OnClickListener() {
-							@Override
+							
 							public void onClick(View v) {
 								object.offset += object.pagination;
 								loadMoreEvents();
@@ -499,8 +495,7 @@ public class EventList extends ListActivity {
 						((Button) viewEventExtended
 								.findViewById(R.id.create_incident_button))
 								.setOnClickListener(new OnClickListener() {
-
-									@Override
+									
 									public void onClick(View v) {
 										Intent intent = new Intent(
 												getBaseContext(),
@@ -597,8 +592,7 @@ public class EventList extends ListActivity {
 				mPosition = position;
 				this.object = object;
 			}
-
-			@Override
+			
 			public void onClick(View arg0) {
 				EventListItem item = this.object.eventList.get(mPosition);
 				item.opened = !item.opened;
@@ -615,8 +609,7 @@ public class EventList extends ListActivity {
 		 */
 		private class OnClickListenerButtonValidate implements OnClickListener {
 			public int id_event;
-
-			@Override
+			
 			public void onClick(View v) {
 				Intent i = new Intent(getApplicationContext(),
 						PopupValidationEvent.class);

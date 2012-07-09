@@ -52,8 +52,7 @@ public class CreateIncidentActivity extends Activity {
 
 		((Button) findViewById(R.id.incident_create_button))
 				.setOnClickListener(new OnClickListener() {
-
-					@Override
+					
 					public void onClick(View v) {
 						if (title != null && title.length() > 0) {
 							dialog = ProgressDialog

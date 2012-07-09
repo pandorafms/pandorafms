@@ -1,3 +1,14 @@
+2012-07-09  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* src/pandroid_event_viewer/pandorafms/About.java,
+	src/pandroid_event_viewer/pandorafms/Options.java,
+	src/pandroid_event_viewer/pandorafms/EventList.java,
+	src/pandroid_event_viewer/pandorafms/CreateIncidentActivity.java,
+	src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java,
+	src/pandroid_event_viewer/pandorafms/Main.java: erased the
+	preprocesor "@Override" for to avoid error messages in a compiler
+	with default configs.
+
 2012-07-06 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Core.java: Service will only start if options were configured.
 	* src/pandroid_event_viewer/pandorafms/API.java: Removed a //TODO comment.

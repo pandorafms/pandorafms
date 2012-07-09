@@ -96,7 +96,6 @@ public class Options extends Activity {
 
 		final Button button = (Button) findViewById(R.id.update_options);
 		button.setOnClickListener(new View.OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				save_options();
 			}
@@ -125,7 +124,6 @@ public class Options extends Activity {
 		this.setNewRingtone(notificationSound, defaultSoundUri);
 
 		notificationSound.setOnClickListener(new OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				Log.i(TAG, "Selecting ringtone");
 				Intent intent = new Intent(
@@ -359,7 +357,7 @@ public class Options extends Activity {
 			} else {
 				if (!result) {
 					DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-						@Override
+						
 						public void onClick(DialogInterface dialog, int which) {
 							switch (which) {
 							case DialogInterface.BUTTON_NEGATIVE:

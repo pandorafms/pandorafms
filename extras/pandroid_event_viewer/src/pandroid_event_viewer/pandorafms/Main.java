@@ -147,22 +147,19 @@ public class Main extends Activity {
 		loadProfiles();
 		combo = (Spinner) findViewById(R.id.profile_combo);
 		combo.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
+			
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int pos, long id) {
 				String selected = parent.getItemAtPosition(pos).toString();
 				setProfile(selected);
 			}
-
-			@Override
+			
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
 		((ImageView) findViewById(R.id.delete_profile))
 				.setOnClickListener(new OnClickListener() {
-
-					@Override
+					
 					public void onClick(View v) {
 						String profileName = ((Spinner) findViewById(R.id.profile_combo))
 								.getSelectedItem().toString();
@@ -180,14 +177,12 @@ public class Main extends Activity {
 		combo.setSelection(preferences.getInt("filterLastTime", 6));
 
 		buttonReset.setOnClickListener(new View.OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				reset_form();
 			}
 		});
 
 		buttonSearch.setOnClickListener(new View.OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				search_form();
 			}
@@ -195,19 +190,16 @@ public class Main extends Activity {
 
 		buttonbuttonSetAsFilterWatcher
 				.setOnClickListener(new View.OnClickListener() {
-
-					@Override
+					
 					public void onClick(View v) {
 						save_filter_watcher();
 					}
 				});
 		buttonSaveProfile.setOnClickListener(new OnClickListener() {
-
-			@Override
+			
 			public void onClick(View v) {
 				final EditText profileName = new EditText(getBaseContext());
 				DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						switch (which) {
 						case DialogInterface.BUTTON_POSITIVE:
@@ -260,7 +252,7 @@ public class Main extends Activity {
 		cb.setChecked(preferences.getBoolean("show_advanced", false));
 		cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-			@Override
+			
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				LinearLayout advancedOptions = (LinearLayout) findViewById(R.id.show_hide_layout);

@@ -49,7 +49,6 @@ public class PopupValidationEvent extends Activity {
 		final Button button = (Button) findViewById(R.id.button_validate_event);
 
 		button.setOnClickListener(new View.OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				validateEvent();
 			}

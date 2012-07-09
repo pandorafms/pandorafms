@@ -33,7 +33,7 @@ import android.widget.TextView;
  */
 public class About extends Activity {
 
-	@Override
+	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -47,7 +47,6 @@ public class About extends Activity {
 		CheckBox check_show = (CheckBox) findViewById(R.id.dont_show_again_extended);
 
 		check_show.setOnClickListener(new View.OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				CheckBox check_show = (CheckBox) v;
 				if (check_show.isChecked()) {

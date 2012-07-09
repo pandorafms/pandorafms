@@ -1,3 +1,17 @@
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details. 
+
 package pandroid.agent;
 
 import java.util.ArrayList;
@@ -27,8 +41,13 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.text.TextUtils;
+import android.util.Log;
 
 public class Setup extends Activity {
+	
+	//log
+	public static final String LOG_TAG = "mark";
 	
 	private HashMap<String, String> listProcesses;
 	
@@ -42,7 +61,10 @@ public class Setup extends Activity {
         
         Core.loadConf(getApplicationContext());
 		
-        setContentView(R.layout.setup);
+        if(Core.hasSim)
+        	setContentView(R.layout.setup);
+        else
+        	setContentView(R.layout.setupnosim);
         loadViews();
 		loadInBackgroundProcessInExecution();
 		setButtonEvents();
@@ -51,12 +73,14 @@ public class Setup extends Activity {
     
     public void onResume() {
         super.onResume();
+        Log.v(LOG_TAG,"password check resume"+Core.passwordCheck);
         if(Core.password.equals(Core.defaultPassword))
         {
-        	createpass();
+        	if(Core.passwordCheck.equals("enabled"))
+        		passwordChoose();
         }
         else{
-    	enterpass();
+        	enterpass();
         }
     }
     
@@ -95,7 +119,7 @@ public class Setup extends Activity {
         		
         		if (result) {
         			Toast toast = Toast.makeText(getApplicationContext(),
-        	       		getString(R.string.correct_update),
+        	       		getString(R.string.config_saved),
         	       		Toast.LENGTH_SHORT);
         	    	toast.show();
         		}
@@ -112,7 +136,19 @@ public class Setup extends Activity {
         	
         });
         
-	}
+        Button passwordButton = (Button) findViewById(R.id.set_password);
+        
+        passwordButton.setOnClickListener(new OnClickListener() {
+        	public void onClick(View view) {
+        		
+        		createPass();
+        		
+        	}
+        	
+        	
+        });
+        
+	}// end setButtonEvents
     
 	
 	
@@ -194,17 +230,18 @@ public class Setup extends Activity {
 		    
 		    combo.setVisibility(Spinner.VISIBLE);
 		    
-		    CheckBox checkbox = (CheckBox)findViewById(R.id.checkTaskReport);
-		    checkbox.setEnabled(true);
+		    /*CheckBox checkbox = (CheckBox)findViewById(R.id.checkTaskReport);
+		    checkbox.setEnabled(true);*/
 		    
 		    Button button = (Button)findViewById(R.id.update);
 		    button.setEnabled(true);
 		    
+		    button = (Button)findViewById(R.id.set_password);
+		    button.setEnabled(true);
+		    
 		}
-    	
-    	
-    	
-    }
+       	
+    }// end onPostExecute
 	
 
 
@@ -221,7 +258,7 @@ public class Setup extends Activity {
 		Core.serverPort = editText.getText().toString();
         
 		editText = (EditText) findViewById(R.id.intervalInput);
-		Core.interval = new Integer(editText.getText().toString()).intValue();
+		Core.interval = Integer.valueOf(editText.getText().toString()).intValue();
         
 		editText = (EditText) findViewById(R.id.agentNameInput);
 		Core.agentName = editText.getText().toString();
@@ -232,16 +269,18 @@ public class Setup extends Activity {
         else
         	Core.gpsStatus = "disabled";
         
+        checkBox = (CheckBox) findViewById(R.id.checkBatteryLevelReport);
+        if (checkBox.isChecked())
+        	Core.BatteryLevelReport = "enabled";
+        else
+        	Core.BatteryLevelReport = "disabled";
+        
         checkBox = (CheckBox) findViewById(R.id.checkMemoryReport);
         if (checkBox.isChecked())
         	Core.memoryStatus = "enabled";
         else
         	Core.memoryStatus = "disabled";
-        checkBox = (CheckBox) findViewById(R.id.checkSimIDReport);
-        if (checkBox.isChecked())
-        	Core.simIDStatus = "enabled";
-        else
-        	Core.simIDStatus = "disabled";
+        
         
         
         checkBox = (CheckBox) findViewById(R.id.checkTaskReport);
@@ -261,6 +300,94 @@ public class Setup extends Activity {
         	Core.taskHumanName = "";
         }
         
+        checkBox = (CheckBox) findViewById(R.id.checkDeviceUpTimeReport);
+        if (checkBox.isChecked())
+        	Core.DeviceUpTimeReport = "enabled";
+        else
+        	Core.DeviceUpTimeReport = "disabled";
+
+        if (Core.hasSim) {
+        	
+        	checkBox = (CheckBox) findViewById(R.id.checkSimIDReport);
+            if (checkBox.isChecked())
+            	Core.simIDReport = "enabled";
+            else
+            	Core.simIDReport = "disabled";
+            
+        	checkBox = (CheckBox) findViewById(R.id.checkNetworkOperatorReport);
+        	if (checkBox.isChecked())
+        		Core.NetworkOperatorReport = "enabled";
+        	else
+        		Core.NetworkOperatorReport = "disabled";
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkNetworkTypeReport);
+        	if (checkBox.isChecked())
+        		Core.NetworkTypeReport = "enabled";
+        	else
+        		Core.NetworkTypeReport = "disabled";
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkPhoneTypeReport);
+        	if (checkBox.isChecked())
+        		Core.PhoneTypeReport = "enabled";
+        	else
+        		Core.PhoneTypeReport = "disabled";
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkSignalStrengthReport);
+        	if (checkBox.isChecked())
+        		Core.SignalStrengthReport = "enabled";
+        	else
+        		Core.SignalStrengthReport = "disabled";
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkReceivedSMSReport);
+        	if (checkBox.isChecked())
+        		Core.ReceivedSMSReport = "enabled";
+        	else
+        		Core.ReceivedSMSReport = "disabled";
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkSentSMSReport);
+        	if (checkBox.isChecked())
+        		Core.SentSMSReport = "enabled";
+        	else
+        		Core.SentSMSReport = "disabled";
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkIncomingCallsReport);
+        	if (checkBox.isChecked())
+        		Core.IncomingCallsReport = "enabled";
+        	else
+        		Core.IncomingCallsReport = "disabled";
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkMissedCallsReport);
+        	if (checkBox.isChecked())
+        		Core.MissedCallsReport = "enabled";
+        	else
+        		Core.MissedCallsReport = "disabled";
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkOutgoingCallsReport);
+        	if (checkBox.isChecked())
+        		Core.OutgoingCallsReport = "enabled";
+        	else
+        		Core.OutgoingCallsReport = "disabled";
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkBytesReceivedReport);
+        	if (checkBox.isChecked())
+        		Core.BytesReceivedReport = "enabled";
+        	else
+        		Core.BytesReceivedReport = "disabled";
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkBytesSentReport);
+        	if (checkBox.isChecked())
+        		Core.BytesSentReport = "enabled";
+        	else
+        		Core.BytesSentReport = "disabled";
+        }// end if sim card
+        
+        checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
+        if (checkBox.isChecked())
+        	Core.HelloSignalReport = "enabled";
+        else
+        	Core.HelloSignalReport = "disabled";
+        
+        Core.updateConf(getApplicationContext());
     }
     
 	private void loadViews(){
@@ -283,21 +410,123 @@ public class Setup extends Activity {
         checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
         checkBox.setChecked(Core.gpsStatus.equals("enabled"));
         
+        checkBox = (CheckBox) findViewById(R.id.checkBatteryLevelReport);
+        checkBox.setChecked(Core.BatteryLevelReport.equals("enabled"));
+       
         checkBox = (CheckBox) findViewById(R.id.checkMemoryReport);
-        checkBox.setChecked(Core.memoryStatus.equals("enabled"));
-        
-        checkBox = (CheckBox) findViewById(R.id.checkSimIDReport);
-        checkBox.setChecked(Core.simIDStatus.equals("enabled"));
+        checkBox.setChecked(Core.memoryStatus.equals("enabled"));   
         
         checkBox = (CheckBox) findViewById(R.id.checkTaskReport);
         checkBox.setChecked(Core.taskStatus.equals("enabled"));
         
+        checkBox = (CheckBox) findViewById(R.id.checkDeviceUpTimeReport);
+        checkBox.setChecked(Core.DeviceUpTimeReport.equals("enabled"));
+
+        if (Core.hasSim) {
+        	
+        	checkBox = (CheckBox) findViewById(R.id.checkSimIDReport);
+            checkBox.setChecked(Core.simIDReport.equals("enabled"));
+            
+        	checkBox = (CheckBox) findViewById(R.id.checkNetworkOperatorReport);
+        	checkBox.setChecked(Core.NetworkOperatorReport.equals("enabled"));
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkNetworkTypeReport);
+        	checkBox.setChecked(Core.NetworkTypeReport.equals("enabled"));
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkPhoneTypeReport);
+        	checkBox.setChecked(Core.PhoneTypeReport.equals("enabled"));
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkSignalStrengthReport);
+        	checkBox.setChecked(Core.SignalStrengthReport.equals("enabled"));
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkReceivedSMSReport);
+        	checkBox.setChecked(Core.ReceivedSMSReport.equals("enabled"));
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkSentSMSReport);
+        	checkBox.setChecked(Core.SentSMSReport.equals("enabled"));
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkIncomingCallsReport);
+        	checkBox.setChecked(Core.IncomingCallsReport.equals("enabled"));
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkMissedCallsReport);
+        	checkBox.setChecked(Core.MissedCallsReport.equals("enabled"));
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkOutgoingCallsReport);
+        	checkBox.setChecked(Core.OutgoingCallsReport.equals("enabled"));
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkBytesReceivedReport);
+        	checkBox.setChecked(Core.BytesReceivedReport.equals("enabled"));
+        
+        	checkBox = (CheckBox) findViewById(R.id.checkBytesSentReport);
+        	checkBox.setChecked(Core.BytesSentReport.equals("enabled"));
+        }//end if sim card
+        
+        checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
+        checkBox.setChecked(Core.HelloSignalReport.equals("enabled"));
+        
+        
 	}
-	public void createpass() {
+	
+	public void passwordChoose() {
+		//set up dialog
+		final Dialog dialog = new Dialog(this);
+		dialog.setContentView(R.layout.password_choose);
+		dialog.setTitle(getString(R.string.password_choose_text));
+		dialog.setCancelable(false);
+		
+		//CheckBox cB = (CheckBox) dialog.findViewById(R.id.password_checkbox);
+		
+		//cB.setChecked(Core.passwordCheck.equals("disabled"));
+        
+	
+		Button yes = (Button) dialog.findViewById(R.id.yes_button);
+		yes.setOnClickListener(new OnClickListener() {
+		@Override
+		   public void onClick(View v) {
+			Core.passwordCheck = "disabled";
+			Core.updateConf(getApplicationContext());
+			dialog.dismiss();
+			createPass();
+			
+		   			    
+		   } // end onClick
+		
+		
+		});//end clickListener
+		
+		Button no = (Button) dialog.findViewById(R.id.no_button);
+		no.setOnClickListener(new OnClickListener() {
+		@Override
+		   public void onClick(View v) {
+			
+			CheckBox cB = (CheckBox) dialog.findViewById(R.id.password_checkbox);
+			if (cB.isChecked())
+	        	Core.passwordCheck = "disabled";
+	        else
+	        	Core.passwordCheck = "enabled";	
+			Core.updateConf(getApplicationContext());
+			//Log.v(LOG_TAG,"password check"+Core.passwordCheck);
+			dialog.dismiss();
+			
+		   			    
+		   } // end onClick
+
+
+	    });//end clickListener
+		
+		
+		//now that the dialog is set up, it's time to show it   
+
+		    dialog.show();
+		
+		
+		
+	}
+	public void createPass() {
 		//set up dialog
 		final Dialog dialog = new Dialog(this);
 		dialog.setContentView(R.layout.password_create);
-		dialog.setTitle("Set Password");
+		//dialog.setTitle(getString(R.string.password_set));
 		dialog.setCancelable(false);
 		dialog.getWindow().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		//there are a lot of settings, for dialog, check them all out!
@@ -321,17 +550,49 @@ public class Setup extends Activity {
 			
 		    try
 		    {
-		        if(createpass_password.equals(createpass_password2))
+		    	if(TextUtils.isEmpty(createpass_password))
+		    	{
+		    		Core.password = Core.defaultPassword;
+		    		Core.updateConf(getApplicationContext());
+		    		InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
+                    im.hideSoftInputFromWindow(text.getWindowToken(), 0);
+		    		dialog.dismiss();
+		    		
+		    		Toast toast = Toast.makeText(getApplicationContext(),
+	        	       		getString(R.string.password_removed),
+	        	       		Toast.LENGTH_SHORT);
+	        	    	toast.show();
+	        	    	
+		    		return;
+		    	}
+		    	else if(createpass_password.length() < 6) 
+				{ 
+					text.setError(getString(R.string.password_length)); 
+					text2.setError(getString(R.string.password_length)); 
+					return; 
+				}
+		    	
+		    	else if(createpass_password.equals(createpass_password2))
 		        {
 		        	Core.password = createpass_password;
 		        	Core.updateConf(getApplicationContext());
 		        	//Core.restartAgentListener(getApplicationContext());
+		        	InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
+                    im.hideSoftInputFromWindow(text.getWindowToken(), 0);
+                  
 		        	dialog.dismiss();
-		        }
-		       else 
-		        {
-		        	Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.password_no_match), Toast.LENGTH_SHORT);
+		        	
+		        	Toast toast = Toast.makeText(getApplicationContext(),
+	        	       		getString(R.string.password_created),
+	        	       		Toast.LENGTH_SHORT);
 	        	    	toast.show();
+		        	
+		        	return;
+		        }
+		    	else 
+		        {
+		    	   text2.setError(getString(R.string.password_no_match));
+	        	   return; 	
 		        }
 		    }
 		    catch(Exception x)
@@ -342,20 +603,23 @@ public class Setup extends Activity {
         	    	toast.show();
 		        finish();
 		    }
+		   } // end onClick
+			
 
-		}
-		});
+
+	    });//end clickListener
+			
 		//now that the dialog is set up, it's time to show it   
 
 		    dialog.show();
 
-	}// end createpass
+	}// end createPass
 	
 	public void enterpass() {
 		//set up dialog
 		final Dialog dialog = new Dialog(this);
 		dialog.setContentView(R.layout.password_entry);
-		dialog.setTitle("Enter Password");
+		dialog.setTitle(getString(R.string.password_enter));
 		dialog.setCancelable(false);
 		dialog.getWindow().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		//there are a lot of settings, for dialog, check them all out!
@@ -384,9 +648,7 @@ public class Setup extends Activity {
 		        }
 		        else
 		        {
-		        	Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.password_no_match), Toast.LENGTH_SHORT);
-        	    	toast.show();
-        	    	//finish();
+		        	text.setError(getString(R.string.password_incorrect)); 
 		        }
 		      
 		    }
@@ -415,8 +677,12 @@ public class Setup extends Activity {
 		   
 		dialog.show();
 	
-	}// end enterpass
+	}// end enterPass
 	
+	/**
+	 * Allows this activity to switch the parent tab
+	 * @param indexTabToSwitchTo
+	 */
 	public void switchTabInActivity(int indexTabToSwitchTo){
         PandroidAgent ParentActivity;
         ParentActivity = (PandroidAgent) this.getParent();

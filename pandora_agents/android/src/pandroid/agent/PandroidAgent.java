@@ -61,7 +61,7 @@ public class PandroidAgent extends TabActivity {
     
     //String lastGpsContactDateTime = "";
     
-    Thread thread = new Thread();
+    //Thread thread = new Thread();
     //ComponentName service = null;
     //PendingIntent sender = null;
     //AlarmManager am = null;
@@ -72,12 +72,20 @@ public class PandroidAgent extends TabActivity {
         super.onCreate(savedInstanceState);
         //if removed, battery -1 and agent reverts to defaults in core
         Core.restartAgentListener(getApplicationContext());
+        
+        //Check whether device has a sim card, phone without a sim card present
+        //return SIM_STATE_ABSENT but tablets only return SIM_STATE_UNKNOWN
+        
         String serviceName = Context.TELEPHONY_SERVICE;
 		TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
 		String hasSim = ""+(telephonyManager.getSimState() != TelephonyManager.SIM_STATE_UNKNOWN);
+		if(hasSim.equals("true"))
+			hasSim = ""+(telephonyManager.getSimState() != TelephonyManager.SIM_STATE_ABSENT);
 		Core.hasSim = Boolean.parseBoolean(hasSim);
-		Log.v(LOG_TAG, "HERE: "+Core.hasSim);
-        
+		
+		
+		
+        //Create layout with 2 tabs
 		tabHost  = getTabHost();
         
         tabHost.addTab
@@ -98,7 +106,18 @@ public class PandroidAgent extends TabActivity {
 		//tabHost.getTabWidget().getChildAt(1).getLayoutParams();
         
     }
-   public void switchTab(int tab){
+    
+    //Sets hello signal to 1(first connect since pandroid was closed)
+    public void onResume(){
+    	super.onResume();
+    	Log.v(LOG_TAG, "hello signal: "+Core.helloSignal);
+    	if(Core.helloSignal == 0)
+    		Core.helloSignal = 1;
+    	Core.updateConf(getApplicationContext());
+    }
+    
+    // Called from activity to allow tab switching
+    public void switchTab(int tab){
         tabHost.setCurrentTab(tab);
     }	
 }

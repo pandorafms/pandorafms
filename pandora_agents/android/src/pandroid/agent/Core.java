@@ -1,3 +1,17 @@
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details. 
+
 package pandroid.agent;
 
 import android.app.Activity;
@@ -7,10 +21,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-
-import android.util.Log;
+//import android.util.Log;
 
 public class Core {
+	
+	//																	//
+	//								CONSTANTS							//
+	//																	//
+	
 	//The 181 is the first invalid value between 180 and -180 values.
 	static final float CONST_INVALID_COORDS = 181;
 	static final int CONST_INVALID_BATTERY_LEVEL = -1;
@@ -20,25 +38,48 @@ public class Core {
 	static final long CONST_INVALID_CONTACT = -1;
 	static final int CONST_CONTACT_ERROR = 0;
 	
-    static volatile public String defaultServerAddr = "192.168.2.20";  //master address
+	//																	//
+	//					  DEFAULT CONFIGURATION MODULES					//
+	//																	//
+	
+    static volatile public String defaultServerAddr = "firefly.artica.es";  //master address
     static volatile public String defaultServerPort = "41121";
     static volatile public int defaultInterval = 300;
     static volatile public String defaultAgentName = "pandroid";
-    static volatile public String defaultGpsStatus = "disabled"; // "disabled" or "enabled"
-    static volatile public String defaultMemoryStatus = "disabled"; // "disabled" or "enabled"
+    static volatile public String defaultGpsStatus = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultBatteryLevelReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultMemoryStatus = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultTaskStatus = "disabled"; // "disabled" or "enabled"
+    static volatile public String defaultSimIDReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultPasswordCheck = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultDeviceUpTimeReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultNetworkOperatorReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultNetworkTypeReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultPhoneTypeReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultSignalStrengthReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultReceivedSMSReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultSentSMSReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultIncomingCallsReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultMissedCallsReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultOutgoingCallsReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultBytesReceivedReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultBytesSentReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultHelloSignalReport = "enabled"; // "disabled" or "enabled"
+    
+    static volatile public boolean defaultHasSim = false;
+    
+    //																	//
+    //						DEFAULT MODULE VALUES						//
+    //																	//
+    
     static volatile public String defaultTask = "";
     static volatile public String defaultTaskHumanName = "";
     static volatile public String defaultTaskRun = "false";
     static volatile public long defaultRam = 0;
     static volatile public long defaultContact = 0;
     static volatile public int defaultContactError = 0;
-    static volatile public String defaultSimID = "";
-    static volatile public String defaultSimIDStatus = "disabled"; // "disabled" or "enabled"
     static volatile public long defaultUpTime = 0;
-    static volatile public long defaultReceiveBytes = 0;
-    static volatile public long defaultTransmitBytes = 0;
-    
+    static volatile public String defaultSimID = "";
     static volatile public int defaultSMSReceived = 0;
     static volatile public int defaultSMSSent = 0;
     static volatile public String defaultNetworkOperator = "";
@@ -48,12 +89,23 @@ public class Core {
     static volatile public int defaultIncomingCalls = 0;
     static volatile public int defaultMissedCalls = 0;
     static volatile public int defaultOutgoingCalls = 0;
-    static volatile public String defaultPassword = "password";
+    static volatile public long defaultReceiveBytes = 0;
+    static volatile public long defaultTransmitBytes = 0;
+    static volatile public int defaultHelloSignal = 2;
+    
+    
+    //Temporary
+    static volatile public String defaultPassword = "";
+    
     
     static volatile public Context con = null;
     static volatile public AlarmManager am = null;
     static volatile public PendingIntent sender = null;
     static volatile public boolean alarmEnabled = false;
+    
+    //																//
+    //                   CONFIGURATION VALUES						//
+    //																//
     
     static volatile public String serverAddr = defaultServerAddr;
     static volatile public String serverPort  = defaultServerPort;
@@ -64,8 +116,40 @@ public class Core {
     static volatile public String taskStatus = defaultTaskStatus;
     static volatile public String task = defaultTask;
     static volatile public String taskHumanName = defaultTaskHumanName;
-    static volatile public String simID = "";
-    static volatile public String simIDStatus = defaultSimIDStatus;
+    static volatile public String simIDReport = defaultSimIDReport;
+    static volatile public String passwordCheck = defaultPasswordCheck;
+    static volatile public String DeviceUpTimeReport = defaultDeviceUpTimeReport;
+    static volatile public String NetworkOperatorReport = defaultNetworkOperatorReport;
+    static volatile public String NetworkTypeReport = defaultNetworkTypeReport;
+    static volatile public String PhoneTypeReport = defaultPhoneTypeReport;
+    static volatile public String SignalStrengthReport = defaultSignalStrengthReport;
+    static volatile public String ReceivedSMSReport = defaultReceivedSMSReport;
+    static volatile public String SentSMSReport = defaultSentSMSReport;
+    static volatile public String IncomingCallsReport = defaultIncomingCallsReport;
+    static volatile public String MissedCallsReport = defaultMissedCallsReport;
+    static volatile public String OutgoingCallsReport = defaultOutgoingCallsReport;
+    static volatile public String BytesReceivedReport = defaultBytesReceivedReport;
+    static volatile public String BytesSentReport = defaultBytesSentReport;
+    static volatile public String HelloSignalReport = defaultHelloSignalReport;
+    static volatile public String BatteryLevelReport = defaultHelloSignalReport;
+    static volatile public boolean hasSim = defaultHasSim;
+    
+    //temporary
+    static volatile public String password = defaultPassword;
+    
+    //																//
+    //						 MODULES VALUES							//
+    //																//
+    
+    static volatile public float latitude = CONST_INVALID_COORDS;
+    static volatile public float longitude = CONST_INVALID_COORDS;
+    static volatile public int batteryLevel = CONST_INVALID_BATTERY_LEVEL;
+    static volatile public float orientation = CONST_INVALID_ORIENTATION;
+    static volatile public float proximity = CONST_INVALID_PROXIMITY;
+    static volatile public String taskRun = defaultTaskRun;
+    static volatile public long availableRamKb = defaultRam;
+    static volatile public long totalRamKb = defaultRam;
+    static volatile public String simID = defaultSimID;
     static volatile public long upTime = defaultUpTime;
     static volatile public int SMSReceived = defaultSMSReceived;
     static volatile public int SMSSent = defaultSMSSent;
@@ -78,25 +162,16 @@ public class Core {
     static volatile public int outgoingCalls = defaultOutgoingCalls;
     static volatile public long receiveBytes = defaultReceiveBytes;
     static volatile public long transmitBytes = defaultTransmitBytes;
-    static volatile public boolean hasSim = false;
-    static volatile public String password = defaultPassword;
-    
-    
-    static volatile public float latitude = CONST_INVALID_COORDS;
-    static volatile public float longitude = CONST_INVALID_COORDS;
-    static volatile public int batteryLevel = CONST_INVALID_BATTERY_LEVEL;
-    static volatile public float orientation = CONST_INVALID_ORIENTATION;
-    static volatile public float proximity = CONST_INVALID_PROXIMITY;
-    static volatile public String taskRun = defaultTaskRun;
-    static volatile public long availableRamKb = defaultRam;
-    static volatile public long totalRamKb = defaultRam;
+    static volatile public int helloSignal = defaultHelloSignal;
     
     static volatile public long lastContact = CONST_INVALID_CONTACT;
     static volatile public int contactError = CONST_CONTACT_ERROR;
     
+    //log
     public static final String LOG_TAG = "mark";
     
     public Core() {
+    	
     }
     
     static public void startAgentListener(Context context) {
@@ -108,15 +183,17 @@ public class Core {
 		Intent intentReceiver = new Intent(con, EventReceiver.class);
 		sender = PendingIntent.getBroadcast(con, 0, intentReceiver, 0);
 	        
-		am = (AlarmManager)con.getSystemService(con.ALARM_SERVICE);
+		am = (AlarmManager)con.getSystemService(Context.ALARM_SERVICE);
     	
     	alarmEnabled = true;
     	am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), (interval * 1000), sender);
     	
-    }
+    	
+    
+    }// end startAgentListener
     
     static public void stopAgentListener() {
-    	if (am != null) {
+    	if (am != null){
     		am.cancel(sender);
     		alarmEnabled = false;
     	}
@@ -143,31 +220,33 @@ public class Core {
     	batteryLevel = agentPreferences.getInt("batteryLevel", CONST_INVALID_BATTERY_LEVEL);
     	orientation = agentPreferences.getFloat("orientation", CONST_INVALID_ORIENTATION);
     	proximity = agentPreferences.getFloat("proximity", CONST_INVALID_PROXIMITY);
-    	taskStatus = agentPreferences.getString("taskStatus", Core.defaultTaskStatus);
-		task = agentPreferences.getString("task", Core.defaultTask);
-		taskHumanName = agentPreferences.getString("taskHumanName", Core.defaultTaskHumanName);
-		taskRun = agentPreferences.getString("taskRun", Core.defaultTaskRun);
-		memoryStatus = agentPreferences.getString("memoryStatus", Core.defaultMemoryStatus);
-		availableRamKb = agentPreferences.getLong("availableRamKb", Core.defaultRam);
-		totalRamKb = agentPreferences.getLong("totalRamKb", Core.defaultRam);
-		lastContact = agentPreferences.getLong("lastContact", Core.defaultContact);
-		contactError = agentPreferences.getInt("contactError", Core.defaultContactError);
-		simID = agentPreferences.getString("simID", Core.defaultSimID);
-		simIDStatus = agentPreferences.getString("simIDStatus", Core.defaultSimIDStatus);
-		upTime = agentPreferences.getLong("upTime", Core.defaultUpTime);
-		SMSReceived = agentPreferences.getInt("SMSReceived", Core.defaultSMSReceived);
-		SMSSent = agentPreferences.getInt("SMSSent", Core.defaultSMSSent);
-		networkOperator = agentPreferences.getString("networkOperator", Core.defaultNetworkOperator);
-		networkType = agentPreferences.getString("networkType", Core.defaultNetworkType);
-		phoneType = agentPreferences.getString("phoneType", Core.defaultPhoneType);
-		signalStrength = agentPreferences.getInt("signalStrength", Core.defaultSignalStrength);
-		incomingCalls = agentPreferences.getInt("incomingCalls", Core.defaultIncomingCalls);
-		missedCalls = agentPreferences.getInt("missedCalls", Core.defaultMissedCalls);
-		outgoingCalls = agentPreferences.getInt("outgoingCalls", Core.defaultOutgoingCalls);
-		receiveBytes = agentPreferences.getLong("receiveBytes", Core.defaultReceiveBytes);
-		transmitBytes = agentPreferences.getLong("transmitBytes", Core.defaultTransmitBytes);
+    	taskStatus = agentPreferences.getString("taskStatus", defaultTaskStatus);
+		task = agentPreferences.getString("task", defaultTask);
+		taskHumanName = agentPreferences.getString("taskHumanName", defaultTaskHumanName);
+		taskRun = agentPreferences.getString("taskRun", defaultTaskRun);
+		memoryStatus = agentPreferences.getString("memoryStatus", defaultMemoryStatus);
+		availableRamKb = agentPreferences.getLong("availableRamKb", defaultRam);
+		totalRamKb = agentPreferences.getLong("totalRamKb", defaultRam);
+		lastContact = agentPreferences.getLong("lastContact", defaultContact);
+		contactError = agentPreferences.getInt("contactError", defaultContactError);
+		simID = agentPreferences.getString("simID", defaultSimID);
 		
-    }
+		upTime = agentPreferences.getLong("upTime", Core.defaultUpTime);
+		SMSReceived = agentPreferences.getInt("SMSReceived", defaultSMSReceived);
+		SMSSent = agentPreferences.getInt("SMSSent", defaultSMSSent);
+		networkOperator = agentPreferences.getString("networkOperator", defaultNetworkOperator);
+		networkType = agentPreferences.getString("networkType", defaultNetworkType);
+		phoneType = agentPreferences.getString("phoneType", defaultPhoneType);
+		signalStrength = agentPreferences.getInt("signalStrength", defaultSignalStrength);
+		incomingCalls = agentPreferences.getInt("incomingCalls", defaultIncomingCalls);
+		missedCalls = agentPreferences.getInt("missedCalls", defaultMissedCalls);
+		outgoingCalls = agentPreferences.getInt("outgoingCalls", defaultOutgoingCalls);
+		receiveBytes = agentPreferences.getLong("receiveBytes", defaultReceiveBytes);
+		transmitBytes = agentPreferences.getLong("transmitBytes", defaultTransmitBytes);
+		helloSignal = agentPreferences.getInt("helloSignal", defaultHelloSignal);
+		
+		
+    }// end loadLastValues
     
     static public void loadConf(Context context) {
     	if (con == null) {
@@ -178,34 +257,60 @@ public class Core {
     		con.getString(R.string.const_string_preferences),
     		Activity.MODE_PRIVATE);
     		
-		serverAddr = agentPreferences.getString("serverAddr", Core.defaultServerAddr);
-		serverPort = agentPreferences.getString("serverPort", Core.defaultServerPort);
-		interval = agentPreferences.getInt("interval", Core.defaultInterval);
+		serverAddr = agentPreferences.getString("serverAddr", defaultServerAddr);
+		serverPort = agentPreferences.getString("serverPort", defaultServerPort);
+		interval = agentPreferences.getInt("interval", defaultInterval);
 		//fix agent name to mark
-		agentName = agentPreferences.getString("agentName", Core.defaultAgentName+"MARK");
-		gpsStatus = agentPreferences.getString("gpsStatus", Core.defaultGpsStatus);
-		memoryStatus = agentPreferences.getString("memoryStatus", Core.defaultMemoryStatus);
-		taskStatus = agentPreferences.getString("taskStatus", Core.defaultTaskStatus);
-		task = agentPreferences.getString("task", Core.defaultTask);
-		taskHumanName = agentPreferences.getString("taskHumanName", Core.defaultTaskHumanName);
-		taskRun = agentPreferences.getString("taskRun", Core.defaultTaskRun);
-		password = agentPreferences.getString("password", Core.defaultPassword);
-		Log.v(LOG_TAG, password);
-    }
+		agentName = agentPreferences.getString("agentName", defaultAgentName+"_"+Installation.id(context));
+		gpsStatus = agentPreferences.getString("gpsStatus", defaultGpsStatus);
+		memoryStatus = agentPreferences.getString("memoryStatus", defaultMemoryStatus);
+		taskStatus = agentPreferences.getString("taskStatus", defaultTaskStatus);
+		task = agentPreferences.getString("task", defaultTask);
+		taskHumanName = agentPreferences.getString("taskHumanName", defaultTaskHumanName);
+		taskRun = agentPreferences.getString("taskRun", defaultTaskRun);
+		password = agentPreferences.getString("password", defaultPassword);
+		passwordCheck = agentPreferences.getString("passwordCheck", defaultPasswordCheck);
+		simIDReport = agentPreferences.getString("simIDReport", defaultSimIDReport);
+		DeviceUpTimeReport = agentPreferences.getString("DeviceUpTimeReport", defaultDeviceUpTimeReport);
+	    NetworkOperatorReport = agentPreferences.getString("NetworkOperatorReport", defaultNetworkOperatorReport);
+	    NetworkTypeReport = agentPreferences.getString("NetworkTypeReport", defaultNetworkTypeReport);
+	    PhoneTypeReport = agentPreferences.getString("PhoneTypeReport", defaultPhoneTypeReport);
+	    SignalStrengthReport = agentPreferences.getString("SignalStrengthReport", defaultSignalStrengthReport);
+	    ReceivedSMSReport = agentPreferences.getString("ReceivedSMSReport", defaultReceivedSMSReport);
+	    SentSMSReport = agentPreferences.getString("SentSMSReport", defaultSentSMSReport);
+	    IncomingCallsReport = agentPreferences.getString("IncomingCallsReport", defaultIncomingCallsReport);
+	    MissedCallsReport = agentPreferences.getString("MissedCallsReport", defaultMissedCallsReport);
+	    OutgoingCallsReport = agentPreferences.getString("OutgoingCallsReport", defaultOutgoingCallsReport);
+	    BytesReceivedReport = agentPreferences.getString("BytesReceivedReport", defaultBytesReceivedReport);
+	    BytesSentReport = agentPreferences.getString("BytesSentReport", defaultBytesSentReport);
+	    HelloSignalReport = agentPreferences.getString("HelloSignalReport", defaultHelloSignalReport);
+	    BatteryLevelReport = agentPreferences.getString("BatteryLevelReport", defaultBatteryLevelReport);
+	    
+	    
+    }// end loadConf
     
     static public boolean updateConf(Context context) {
     	return updateConf(context, serverAddr, serverPort, interval, agentName,
-    		gpsStatus, memoryStatus, taskStatus, task, taskHumanName, simID, simIDStatus, upTime,
+    		gpsStatus, memoryStatus, taskStatus, task, taskHumanName, simID, simIDReport, upTime,
     		networkOperator, SMSReceived, SMSSent, networkType, phoneType, signalStrength,
-    		incomingCalls, missedCalls, outgoingCalls, receiveBytes, transmitBytes, password);
+    		incomingCalls, missedCalls, outgoingCalls, receiveBytes, transmitBytes, password, helloSignal,
+    		passwordCheck, DeviceUpTimeReport, NetworkOperatorReport, NetworkTypeReport, PhoneTypeReport,
+    		SignalStrengthReport, ReceivedSMSReport, SentSMSReport, IncomingCallsReport, MissedCallsReport,
+    		OutgoingCallsReport, BytesReceivedReport, BytesSentReport, HelloSignalReport, BatteryLevelReport
+    		);
     }
     
     static public boolean updateConf(Context context, String _serverAddr,
     	String _serverPort, int _interval, String _agentName, String _gpsStatus,
     	String _memoryStatus, String _taskStatus, String _task,
-    	String _taskHumanName, String _simID, String _simIDStatus, long _upTime, String _networkOperator,
+    	String _taskHumanName, String _simID, String _simIDReport, long _upTime, String _networkOperator,
     	int _smsReceived, int _smsSent, String _networkType, String _phoneType, int _signalStrength,
-    	int _incomingCalls, int _missedCalls, int _outgoingCalls, long _receiveBytes, long _transmitBytes, String _password) {
+    	int _incomingCalls, int _missedCalls, int _outgoingCalls, long _receiveBytes, long _transmitBytes,
+    	String _password, int _helloSignal, String _passwordCheck, String _DeviceUpTimeReport, String _NetworkOperatorReport,
+    	String _NetworkTypeReport, String _PhoneTypeReport, String _SignalStrengthReport, String _ReceivedSMSReport,
+    	String _SentSMSReport, String _IncomingCallsReport, String _MissedCallsReport, String _OutgoingCallsReport, String _BytesReceivedReport,
+    	String _BytesSentReport, String _HelloSignalReport, String _BatteryLevelReport) {
+    	
     	if (con == null) {
     		con = context;
     	}
@@ -225,7 +330,7 @@ public class Core {
 		editor.putString("task", _task);
 		editor.putString("taskHumanName", _taskHumanName);
 		editor.putString("simID", _simID);
-		editor.putString("simIDStatus", _simIDStatus);
+		editor.putString("simIDReport", _simIDReport);
 		editor.putLong("UpTime", _upTime);
 		editor.putString("networkOperator", _networkOperator);
 		editor.putInt("SMSReceived", _smsReceived);
@@ -239,10 +344,25 @@ public class Core {
 		editor.putLong("receiveBytes", _receiveBytes);
 		editor.putLong("transmitBytes", _transmitBytes);
 		editor.putString("password", _password);
-		
+		editor.putString("passwordCheck", _passwordCheck);
+		editor.putInt("helloSignal", _helloSignal);
+		editor.putString("DeviceUpTimeReport", _DeviceUpTimeReport); 
+		editor.putString("NetworkOperatorReport", _NetworkOperatorReport); 
+		editor.putString("NetworkTypeReport", _NetworkTypeReport); 
+		editor.putString("PhoneTypeReport", _PhoneTypeReport); 
+		editor.putString("SignalStrengthReport", _SignalStrengthReport);
+		editor.putString("ReceivedSMSReport", _ReceivedSMSReport);
+		editor.putString("SentSMSReport", _SentSMSReport);
+		editor.putString("IncomingCallsReport", _IncomingCallsReport); 
+		editor.putString("MissedCallsReport", _MissedCallsReport); 
+		editor.putString("OutgoingCallsReport", _OutgoingCallsReport); 
+		editor.putString("BytesReceivedReport", _BytesReceivedReport); 
+		editor.putString("BytesSentReport", _BytesSentReport); 
+		editor.putString("HelloSignalReport", _HelloSignalReport); 
+		editor.putString("BatteryLevelReport", _BatteryLevelReport);
 		if (editor.commit()) {
 			return true;
 		}
 		return false;
-	}
+	}// end updateConf
 }

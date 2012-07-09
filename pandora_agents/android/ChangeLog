@@ -1,13 +1,128 @@
+2012-07-09 Mark Holland <mark@mark-holland.me.uk>
+	
+	* AndroidManifest.xml: Added Pandora FMS 
+	comment to header.
+
+	* res/layout/About.xml: Swapped hardcoded
+	text for strings.
+
+	* res/layout/help.xml: Added scrollview.
+
+	* res/layout/password_choose.xml: View for dialog
+	when choosing whether to have a password.
+
+	* res/layout/password_create.xml: Added textviews
+	with instructions.
+
+	* res/layout/password_entry.xml: Swapped hardcoded
+	text for strings.
+
+	* res/layout/setup.xml: Added checkboxes for all
+	modules.
+
+	* res/layout/setupnosim.xml: View that only
+	shows checkboxes for modules that don't need a sim
+	card present.
+
+	* res/values/strings.xml: Updated help string
+	(english only). Lots of new strings, also
+	added to strings-en and strings-es.
+
+	* src/pandroid/agent/About.java: Added Pandora FMS 
+	comment to header.
+
+	* src/pandroid/agent/core.java: Added Pandora FMS 
+	comment to header. Added variable for hello signal.
+	Added reporting variables for all modules. Changed 
+	alarm to be accessed in a static way. changed agent
+	identifier from pandroid plus simID to pandroid plus
+	install uid.
+
+	* src/pandroid/agent/Help.java:	Added Pandora FMS 
+	comment to header.
+
+	* src/pandroid/agent/Installation.java: Calculates a
+	unique installation uid.
+
+	* src/pandroid/agent/PandroidAgent.java: hasSim now 
+	works whether phone without sim and also tablet without
+	capability for sim card. On resume sets hello signal to 1.
+	
+	* src/pandroid/agent/PandroidAgentListener.java: Removed
+	unnecessary variables, all defaults come from Core.java.
+	Ensure Hello signal changed to 0 after every connection.
+	Variables for all module reporting, data only added to xml
+	if enabled in setup.
+
+	* src/pandroid/agent/setup.java: Added Pandora FMS 
+	comment to header. Different views loaded depending
+	on whether sim card is present. Added button for changing
+	password. Added checkboxes for all modules. Added dialog
+	for choosing whether to set a password. Added minimum
+	password length and empty to remove password. Keyboard 
+	dismissed upon completing dialogs.
+
+	* src/pandroid/agent/SMSBroadcastReceiver.java: Added 
+	Pandora FMS comment to header.
+
+	* src/pandroid/agent/status.java: Added Pandora FMS 
+	comment to header. Remove incorrect toast message
+	when pressing start button.
+
+
+2012-07-04 Mark Holland <mark@mark-holland.me.uk>
+	
+	* AndroidManifest.xml: Added permissions read_contacts
+	and read_sms
+
+	* res/layout/password_create.xml: Created view for
+	password creation dialogue
+
+	* res/layout/password_entry.xml: Created view for
+	password entry dialogue
+
+	* res/layout/status.xml: Converted most of data 
+	into a table layout
+
+	* res/layout/statusnosim.xml: Created status view
+	only showing the data avaliable when device has
+	no sim card
+
+	* res/values/strings.xml: Added strings for bytes
+	sent/received and password dialogues
+
+	* src/pandroid/agent/core.java: added variables for
+	bytes sent/received, hasSim and password. Changed 
+	signal strength to integer.
+
+	* src/pandroid/agent/PAndroidAgent.java: Added check
+	if sim card present. Method for switching tabs from
+	activities.
+
+	* src/pandroid/agent/PandroidAgentListener.java: Added
+	variables for bytes sent/received. Now if no sim card
+	present SimID, NetworkOperator, SMSSent, NetworkType,
+        PhoneType, SignalStrength, Calls, DataBytes modules aren't 		used or sent.
+
+	* src/pandroid/agent/setup.java: Added methods for
+	creating password and entering password when switching
+	to setup tab(not completed). Added checkbox for simId
+	and task reporting
+
+	* src/pandroid/agent/status.java: Checks if sim present
+	and displays view accordingly.
+
+
 2012-06-26 Mark Holland <mark@mark-holland.me.uk>
 	
-	* res/values/strings.xml: Added strings for 
-	smsReceived, networkType, phoneType and calls.
-	Replicated in values-en and values-es.
-
 	* res/layout/setup.xml: Added checkboxes for simID
 	and task reporting.
 
 	* res/layout/status.xml: Added textviews for new data.
+
+	* res/values/strings.xml: Added strings for 
+	smsReceived, networkType, phoneType and calls.
+	Replicated in values-en and values-es.
 
 	* src/pandroid/agent/core.java: set simID
 	reporting as disabled by default. Added variables

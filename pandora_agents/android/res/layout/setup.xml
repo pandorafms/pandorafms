@@ -79,6 +79,7 @@
 			    android:layout_height="wrap_content"
 			    android:singleLine="true"
 			/>
+
 			<CheckBox
 				android:id="@+id/checkGpsReport"
 				android:layout_width="wrap_content"
@@ -86,6 +87,24 @@
 				android:text="@string/gpsReport"
 				android:textSize="14dip"
 				android:textColor="#bbbbbb"
+			/>
+			<CheckBox
+				android:id="@+id/checkBatteryLevelReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/BatteryLevelReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkTaskReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/taskReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
 			/>
 			<CheckBox
 				android:id="@+id/checkMemoryReport"
@@ -103,15 +122,125 @@
 				android:textSize="14dip"
 				android:textColor="#bbbbbb"
 			/>
+			
 			<CheckBox
-				android:id="@+id/checkTaskReport"
+				android:id="@+id/checkDeviceUpTimeReport"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="@string/taskReport" 
+				android:text="@string/uptimeReport" 
 				android:textSize="14dip"
 				android:textColor="#bbbbbb"
-				android:enabled="false"
+				
 			/>
+			<CheckBox
+				android:id="@+id/checkNetworkOperatorReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/NetworkOperatorReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkNetworkTypeReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/NetworkTypeReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkPhoneTypeReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/PhoneTypeReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkSignalStrengthReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/SignalStrengthReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkReceivedSMSReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/ReceivedSMSReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>			
+			<CheckBox
+				android:id="@+id/checkSentSMSReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/SentSMSReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkIncomingCallsReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/IncomingCallsReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkMissedCallsReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/MissedCallsReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkOutgoingCallsReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/OutgoingCallsReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkBytesReceivedReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/BytesReceivedReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkBytesSentReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/BytesSentReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			<CheckBox
+				android:id="@+id/checkHelloSignalReport"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/HelloSignalReport" 
+				android:textSize="14dip"
+				android:textColor="#bbbbbb"
+				
+			/>
+			
 			<TextView  
 				android:id="@+id/field5"
 			    android:layout_width="fill_parent" 
@@ -136,11 +265,18 @@
 				/>
 			</LinearLayout>
 			<Button
+				android:id="@+id/set_password" 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:text="@string/set_password"
+			/>
+			<Button
 				android:id="@+id/update" 
 			    android:layout_width="fill_parent"
 			    android:layout_height="wrap_content"
 			    android:text="@string/update"
 			/>
+			
 			
 			
 		</LinearLayout>

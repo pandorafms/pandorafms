@@ -1,3 +1,17 @@
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details. 
+
 package pandroid.agent;
 
 import java.util.Date;
@@ -15,7 +29,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.util.Log;
+
+//import android.util.Log;
 
 public class Status  extends Activity {
 	Handler h = new Handler();
@@ -37,7 +52,7 @@ public class Status  extends Activity {
         //connect automatically
         //Core.restartAgentListener(getApplicationContext());
         setButtonEvents();
-        // Update the UI each second
+        
         
         
     }
@@ -45,13 +60,14 @@ public class Status  extends Activity {
     public void onStart(){
     	super.onStart();
     	
+    	// Update the UI each second 
     	h.post(new Runnable() {
         	@Override
         	public void run() {
         		Core.loadLastValues(getApplicationContext());
         		showLastValues();
         		updateLastContactInfo();
-        		
+        		       		
         		h.postDelayed(this, 1000);
         	}
         });
@@ -161,7 +177,7 @@ public class Status  extends Activity {
 	
 	private void setButtonEvents() {
         // Set update button events
-        Button updateButton = (Button) findViewById(R.id.start);
+        Button start = (Button) findViewById(R.id.start);
         Button xml = (Button) findViewById(R.id.get_xml);
         Button hidexml = (Button) findViewById(R.id.hide_xml);
         Button stop = (Button) findViewById(R.id.stop);
@@ -185,13 +201,13 @@ public class Status  extends Activity {
         	}
         });
         
-        updateButton.setOnClickListener(new OnClickListener() {
+        start.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
-        		boolean result = Core.updateConf(getApplicationContext());
-        		
+        		//boolean result = Core.updateConf(getApplicationContext());
+        		/*
         		if (result) {
         			Toast toast = Toast.makeText(getApplicationContext(),
-        	       		getString(R.string.correct_start),
+        	       		getString(R.string.config_saved),
         	       		Toast.LENGTH_SHORT);
         	    	toast.show();
         		}
@@ -201,7 +217,7 @@ public class Status  extends Activity {
             	       	Toast.LENGTH_SHORT);
             	    	toast.show();
         		}
-        		
+        		*/
         		Core.restartAgentListener(getApplicationContext());
         	}
         });

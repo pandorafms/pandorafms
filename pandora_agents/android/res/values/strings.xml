@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details. 
+-->
 <resources>
 	<string name="const_string_preferences">PANDROID_DATA</string>
 
@@ -37,6 +52,8 @@
 	<string name="licensed_under_gpl_str">Licensed under GPL v2</string>
 	<string name="develop_team_str">Developer: Sergio M. Zarzuelo, Miguel de Dios</string>
 	<string name="pandroid_agent_str">Pandroid Agent</string>
+	<string name="pandroid_agent_copyright">Copyright (c) 2011 Artica</string>
+	<string name="about_desc">Pandroid Agent logo</string>
 	<string name="help_str">Help</string>
 	<string name="memory_avaliable_str" formatted="false">Avaliable: &#37;iKb Total: &#37;iKb</string>
 	<string name="never_str">Never.</string>
@@ -46,10 +63,15 @@
 	<string name="last_contact_str">Last Contact:\n</string>
 	<string name="help_text_str">
 		Pandroid Agent is an Android Pandora FMS agent for Pandora FMS. &lt;p&gt;
-		Pandora FMS is a general purpose monitoring system. With android agent you can get GPS information of your device, know how much battery left, memory on device. This could be expanded in the future to report if a given process is running, very useful to use the agent on embedded devices on tablets to report to a central server. Also can be expanded to get information given by the user for other app and stored in the device or doing a lot of things more. Complete source code is provided.&lt;p&gt;See more about Pandora FMS at &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
+		Pandora FMS is a general purpose monitoring system. With the android agent you can get all sorts of information from your device,
+		 the gps location, how much battery is left, available memory on the device, monitoring if a process is acvtive, the time since the device was turned on, a HELLO signal for monitoring installations of the app
+		  aswell as information for android phones with a sim card; the sim card ID, the number of SMS sent/received, the number of calls
+		   incoming/missed/outgoing, the network operator and type, the phone type, the mobile signal strength, the number of bytes sent/received 
+		   over the mobile network. Complete source code is provided.&lt;p&gt;See more about Pandora FMS at &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
 	</string>
 	<string name="start">Start</string>
 	<string name="correct_start">Connection successful</string>
+	<string name="config_saved">Configuration saved successfully</string>
 	<string name="contact_stopped_str">Agent Stopped</string>
 	<string name="sim_id">Sim ID:</string>
 	<string name="sim_id_value"/>
@@ -73,7 +95,7 @@
 	<string name="incoming_calls_value"/>
 	<string name="missed_calls">Missed calls:</string>
 	<string name="missed_calls_value"/>
-	<string name="outgoing_calls">outgoing calls:</string>
+	<string name="outgoing_calls">Outgoing calls:</string>
 	<string name="outgoing_calls_value"/>
 	<string name="receive_bytes">Bytes received:</string>
 	<string name="receive_bytes_value"/>
@@ -84,5 +106,35 @@
 	<string name="password_error">error</string>
 	<string name="password">password</string>
 	<string name="password_length">password must be longer than 6 characters!</string>
+	<string name="password_incorrect">Wrong password</string>
+	<string name="password_set">Set Password(leave blank for none)</string>
+	<string name="password_enter">Enter Password</string>
+	<string name="password_repeat">Repeat Password</string>
+	<string name="password_choose_text">Do you want to set a password?</string>
+	<string name="password_checkbox">Dont ask again</string>
+	<string name="password_created">Password sucessfully created</string>
+	<string name="password_removed">No password set</string>
+	<string name="set_password">Create/Change password</string>
+	<string name="enter">enter</string>
+	<string name="back">back</string>
+	<string name="yes">yes</string>
+	<string name="no">no</string>
+	
+	<string name="uptimeReport">Report device up time</string>
+	<string name="NetworkOperatorReport">Report network operator</string>
+	<string name="NetworkTypeReport">Report network type</string>
+	<string name="PhoneTypeReport">Report phone type</string>
+	<string name="SignalStrengthReport">Report signal strength</string>
+	<string name="ReceivedSMSReport">Report number of received SMS</string>
+	<string name="SentSMSReport">Report number of sent SMS</string>
+	<string name="IncomingCallsReport">Report number of incoming calls</string>
+	<string name="MissedCallsReport">Report number of missed calls</string>
+	<string name="OutgoingCallsReport">Report number of outgoing calls</string>
+	<string name="BytesReceivedReport">Report amount of received mobile data</string>
+	<string name="BytesSentReport">Report amount of sent mobile data</string>
+	<string name="HelloSignalReport">Report Hello Signal</string>
+	<string name="BatteryLevelReport">Report battery level</string>
+	
+	
 	
 </resources>

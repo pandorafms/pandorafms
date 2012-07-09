@@ -25,15 +25,16 @@
 		android:layout_weight="0"
 		android:id="@+id/img_logo_about"
 		android:layout_width="wrap_content"
-   		android:layout_height="wrap_content"
+   		android:layout_height="0dp"
    		android:layout_gravity="center"
-   		android:padding="5px"
+   		android:padding="5dp"
+   		android:contentDescription="@string/about_desc"
    		android:src="@drawable/pandorafms_logo"
 	/>
 	<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Copyright (c) 2011 Artica"
+		android:text="@string/pandroid_agent_copyright"
 	/>
 	<TextView
 		android:layout_width="wrap_content"

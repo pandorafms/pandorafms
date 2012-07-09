@@ -197,7 +197,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 
 	
 	//INI GIS Maps
-	if ($config['activate_gis'] and ($config['metaconsole'] == 0)) {
+	if ($config['activate_gis']) {
 		$menu_operation["gismaps"]["text"] = __('GIS Maps');
 		$menu_operation["gismaps"]["sec2"] = "operation/gis_maps/index";
 		$menu_operation["gismaps"]["refr"] = 0;
@@ -236,7 +236,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 }
 
 // Rest of options, all with AR privilege (or should events be with incidents?)
-if (check_acl ($config['id_user'], 0, "AR") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "AR")) {
 	// Events
 	$menu_operation["eventos"]["text"] = __('View events'); 
 	$menu_operation["eventos"]["refr"] = 0;
@@ -339,7 +339,7 @@ $menu_operation["workspace"]["sub"] = $sub;
 
 //End Workspace
 
-if (check_acl ($config['id_user'], 0, "IR") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "IR")) {
 	if ($config['activate_netflow']) {
 		$menu_operation["netf"]["text"] = __('Netflow');
 		$menu_operation["netf"]["sec2"] = "operation/netflow/nf_reporting";

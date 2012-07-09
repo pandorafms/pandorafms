@@ -257,14 +257,6 @@ foreach ($extensions as $file => $extension) {
 		$data[] = '<a title="' . __('Delete') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&delete='.$file.'" class="mn">' . html_print_image("images/cross.png", true) . '</a>' .
 			' <a title="' . __('Disable') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&disabled='.$file.'" class="mn">' . html_print_image("images/lightbulb.png", true) . '</a>';
 	}
-	
-	// Filter operation and godmode extensions not included in metaconsole
-	if ($config['metaconsole'] == 1) {
-		if (!empty($config['extensions'][$file]['operation_menu']['fatherId']) and !array_key_exists($config['extensions'][$file]['operation_menu']['fatherId'], $operation_menu_array))
-			continue;
-		if (!empty($config['extensions'][$file]['godmode_menu']['fatherId']) and !array_key_exists($config['extensions'][$file]['godmode_menu']['fatherId'], $menu))
-			continue;
-	}
 
 	$table->data[] = $data;
 }

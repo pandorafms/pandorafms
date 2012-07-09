@@ -24,7 +24,7 @@ require_once ('include/functions_menu.php');
 $menu_godmode = array ();
 $menu_godmode['class'] = 'godmode';
 
-if (check_acl ($config['id_user'], 0, "AW") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "AW")) {
 	$menu_godmode["gagente"]["text"] = __('Manage monitoring');
 	$menu_godmode["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
 	$menu_godmode["gagente"]["id"] = "god-agents";
@@ -47,7 +47,7 @@ if (check_acl ($config['id_user'], 0, "AW") and ($config['metaconsole'] == 0)) {
 	$menu_godmode["gagente"]["sub"] = $sub;
 }
 
-if (check_acl ($config['id_user'], 0, "AW") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "AW")) {
 	$menu_godmode["gmassive"]["text"] = __('Massive operations');
 	$menu_godmode["gmassive"]["sec2"] = "godmode/massive/massive_operations";
 	$menu_godmode["gmassive"]["id"] = "god-massive";
@@ -70,7 +70,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 }
 */
 
-if (check_acl ($config['id_user'], 0, "PM") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["gmodules"]["text"] = __('Manage modules');
 	$menu_godmode["gmodules"]["sec2"] = "godmode/modules/manage_network_templates";
 	$menu_godmode["gmodules"]["id"] = "god-modules";
@@ -91,7 +91,7 @@ if (check_acl ($config['id_user'], 0, "PM") and ($config['metaconsole'] == 0)) {
 	$menu_godmode["gmodules"]["sub"] = $sub;
 }
 
-if (check_acl ($config['id_user'], 0, "LM") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "LM")) {
 	$menu_godmode["galertas"]["text"] = __('Manage alerts');
 	$menu_godmode["galertas"]["sec2"] = "godmode/alerts/alert_list";
 	$menu_godmode["galertas"]["id"] = "god-alerts";
@@ -110,11 +110,11 @@ if (check_acl ($config['id_user'], 0, "LM") and ($config['metaconsole'] == 0)) {
 	$menu_godmode["galertas"]["sub"] = $sub;
 }
 
-if (check_acl ($config['id_user'], 0, "AW") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "AW")) {
 	enterprise_hook ('policies_menu');
 }
 
-if (check_acl ($config['id_user'], 0, "UM") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "UM")) {
 	$menu_godmode["gusuarios"]["text"] = __('Manage users');
 	$menu_godmode["gusuarios"]["sec2"] = "godmode/users/user_list";
 	$menu_godmode["gusuarios"]["id"] = "god-users";
@@ -126,7 +126,7 @@ if (check_acl ($config['id_user'], 0, "UM") and ($config['metaconsole'] == 0)) {
 }
 
 // GIS
-if (check_acl ($config['id_user'], 0, "IW") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "IW")) {
 	
 	if ($config['activate_gis']) {
 		$menu_godmode["godgismaps"]["text"] = __('GIS Maps builder');
@@ -141,7 +141,7 @@ if (check_acl ($config['id_user'], 0, "IW") and ($config['metaconsole'] == 0)) {
 	}
 }
 
-if (check_acl ($config['id_user'], 0, "IW") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "IW")) {
 	// Manage events
 	$menu_godmode["geventos"]["text"] = __('Manage events');
 	$menu_godmode["geventos"]["sec2"] = "godmode/events/events&amp;section=filter";
@@ -154,7 +154,7 @@ if (check_acl ($config['id_user'], 0, "IW") and ($config['metaconsole'] == 0)) {
 	$menu_godmode["geventos"]["sub"] = $sub;
 }
 
-if (check_acl ($config['id_user'], 0, "AW") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "AW")) {
 
 	// Servers
 	$menu_godmode["gservers"]["text"] = __('Manage servers');
@@ -176,7 +176,7 @@ if (check_acl ($config['id_user'], 0, "AW") and ($config['metaconsole'] == 0)) {
 	$menu_godmode["gservers"]["sub"] = $sub;
 }
 
-if (check_acl ($config['id_user'], 0, "LW") and ($config['metaconsole'] == 0)) {	
+if (check_acl ($config['id_user'], 0, "LW")) {	
 	enterprise_hook ('snmpconsole_menu');
 }
 
@@ -212,7 +212,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["gsetup"]["sub"] = $sub;
 }
 
-if (check_acl ($config['id_user'], 0, "AW") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "AW")) {
 	if ($config['activate_netflow']) {
 		//Netflow
 		$menu_godmode["netf"]["text"] = __('Netflow');
@@ -227,7 +227,7 @@ if (check_acl ($config['id_user'], 0, "AW") and ($config['metaconsole'] == 0)) {
 	}
 }
 
-if (check_acl ($config['id_user'], 0, "DM") and ($config['metaconsole'] == 0)) {
+if (check_acl ($config['id_user'], 0, "DM")) {
 	$menu_godmode["gdbman"]["text"] = __('DB maintenance');
 	$menu_godmode["gdbman"]["sec2"] = "godmode/db/db_main";
 	$menu_godmode["gdbman"]["id"] = "god-dbmaint";
@@ -270,8 +270,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 			} else {
 						
 				if (array_key_exists('fatherId',$extmenu)) {
-					// Check that extension father ID exists previously on the menu (only if metaconsole is activated)
-					if (strlen($extmenu['fatherId']) > 0 and (($config['metaconsole'] == 0) or (array_key_exists($extension_menu['fatherId'], $menu_godmode)))) {
+					if (strlen($extmenu['fatherId']) > 0) {
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
 						if ($extmenu["name"] != 'DB interface'){
 							if (!empty($config['refr'])){

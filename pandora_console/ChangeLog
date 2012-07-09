@@ -1,3 +1,11 @@
+2012-07-09  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/extensions.php
+	operation/menu.php
+	godmode/extensions.php
+	godmode/menu.php: Show the hidded menus and 
+	extensions when metaconsole is enabled
+
 2012-07-09 Vanessa Gil <vanessa.gil@artica.es>
 
 	* clock2.png: Add image.

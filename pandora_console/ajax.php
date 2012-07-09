@@ -45,6 +45,10 @@ $config["id_user"] = $_SESSION["id_usuario"];
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK)
 	$config["relative_path"] = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
+
+// Not cool way of know if we are executing from metaconsole or normal console
+if (strpos($_SERVER['HTTP_REFERER'], ENTERPRISE_DIR . '/meta/') !== false)
+	define ('METACONSOLE', true);
 session_write_close ();
 if (file_exists ($page)) {
 	require_once ($page);

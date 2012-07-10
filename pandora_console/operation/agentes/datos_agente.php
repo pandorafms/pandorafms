@@ -74,45 +74,48 @@ $datetime_to = strtotime ($date_to.' '.$time_to);
 if ($moduletype_name == "log4x") {
 	$table->width = "100%";
 	$sql_freestring = '%' . $freestring . '%';
-
+	
 	if ($selection_mode == "fromnow") {
 		$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND message like '%s' AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, get_system_time () - $period);
-	} else {
+	}
+	else {
 		$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND message like '%s' AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, $datetime_from, $datetime_to);
 	}
-
+	
 	$columns = array(
-		
-		"Timestamp" => array("utimestamp",				"modules_format_timestamp", 	"align" => "center" ),
-		"Sev" 		=> array("severity", 				"modules_format_data", 			"align" => "center", "width" => "70px"),
-		"Message"	=> array("message", 				"modules_format_verbatim",		"align" => "left", "width" => "45%"),
-		"StackTrace" 		=> array("stacktrace",				"modules_format_verbatim", 			"align" => "left", "width" => "50%")
+		"Timestamp" => array("utimestamp", "modules_format_timestamp", "align" => "center" ),
+		"Sev" => array("severity", "modules_format_data", "align" => "center", "width" => "70px"),
+		"Message"=> array("message", "modules_format_verbatim", "align" => "left", "width" => "45%"),
+		"StackTrace" => array("stacktrace", "modules_format_verbatim", "align" => "left", "width" => "50%")
 	);
-
-} else if (preg_match ("/string/", $moduletype_name)) {
+}
+else if (preg_match ("/string/", $moduletype_name)) {
 	$sql_freestring = '%' . $freestring . '%';
 	if ($selection_mode == "fromnow") {
 		$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND datos like '%s' AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, get_system_time () - $period);
-	} else {
+	}
+	else {
 		$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND datos like '%s' AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, $datetime_from, $datetime_to);
 	}
-
+	
 	$columns = array(
-		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 		"align" => "left"),
-		"Data" 		=> array("datos", 				"modules_format_data", 				"align" => "left"),
-		"Time" 		=> array("utimestamp", 			"modules_format_time", 				"align" => "center")
+		"Timestamp" => array("utimestamp", 			"modules_format_timestamp", 		"align" => "left"),
+		"Data" => array("datos", 				"modules_format_data", 				"align" => "left"),
+		"Time" => array("utimestamp", 			"modules_format_time", 				"align" => "center")
 	);
-} else {
+}
+else {
 	if ($selection_mode == "fromnow") {
 		$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
-	} else {
+	}
+	else {
 		$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
 	}
-
+	
 	$columns = array(
-		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 	"align" => "left"),
-		"Data" 		=> array("datos", 				"modules_format_data", 			"align" => "left"),
-		"Time" 		=> array("utimestamp", 			"modules_format_time", 			"align" => "center")
+		"Timestamp" => array("utimestamp", 			"modules_format_timestamp", 	"align" => "left"),
+		"Data" => array("datos", 				"modules_format_data", 			"align" => "left"),
+		"Time" => array("utimestamp", 			"modules_format_time", 			"align" => "center")
 	);
 }
 
@@ -136,7 +139,7 @@ switch ($config["dbtype"]) {
 		$set['limit'] = $block_size;
 		$set['offset'] = $offset;
 		$sql = oracle_recode_query ($sql, $set);
-		break;		 
+		break;
 }
 
 $result = db_get_all_rows_sql ($sql, true);
@@ -146,7 +149,7 @@ if ($result === false) {
 
 if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 	for ($i=0; $i < count($result); $i++) {
-		unset($result[$i]['rnum']);		
+		unset($result[$i]['rnum']);
 	}
 }
 
@@ -181,8 +184,8 @@ $formtable->data[1][2] .= html_print_input_text ('date_to', $date_to, '', 10, 10
 $formtable->data[1][2] .= html_print_input_text ('time_to', $time_to, '', 7, 7, true);
 
 if (preg_match ("/string/", $moduletype_name) || $moduletype_name == "log4x") {
-      $formtable->data[2][0] = __('Free text for search');
-      $formtable->data[2][1] = html_print_input_text ("freestring", $freestring, '', 20,30, true);
+	$formtable->data[2][0] = __('Free text for search');
+	$formtable->data[2][1] = html_print_input_text ("freestring", $freestring, '', 20,30, true);
 }
 
 html_print_table ($formtable);
@@ -205,17 +208,17 @@ foreach($columns as $col => $attr) {
 	
 	if (isset($attr["width"]))
 		$table->size[$index] = $attr["width"];
-
+	
 	$index++;
 }
 
 foreach ($result as $row) {
 	$data = array ();
-
+	
 	foreach($columns as $col => $attr) {
 		$data[] = $attr[1] ($row[$attr[0]]);
 	}
-
+	
 	array_push ($table->data, $data);
 	if (count($table->data) > 200) break;
 }
@@ -235,12 +238,12 @@ ui_require_jquery_file ('timeentry');
 <script language="javascript" type="text/javascript">
 
 $(document).ready (function () {
-        $("#text-time_from, #text-time_to").timeEntry ({
-                spinnerImage: 'images/time-entry.png',
-                spinnerSize: [20, 20, 0]
-                });
-        $("#text-date_from, #text-date_to").datepicker ();
-        $.datepicker.regional["<?php echo $config['language']; ?>"];        
+	$("#text-time_from, #text-time_to").timeEntry ({
+		spinnerImage: 'images/time-entry.png',
+		spinnerSize: [20, 20, 0]
+		});
+	$("#text-date_from, #text-date_to").datepicker ();
+	$.datepicker.regional["<?php echo $config['language']; ?>"];
 });
 </script>
 

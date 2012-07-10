@@ -44,10 +44,10 @@ if ($row !== false && is_array($row)) {
 		case 3:
 			$ops_json = enterprise_hook('modules_get_synthetic_operations', array($id_agente_modulo));
 			$ops = json_decode($ops_json, true);
-
+			
 			$first_op = explode('_', reset(array_keys($ops)));
 			
-			if(isset($first_op[1]) && $first_op[1] == 'avg') {
+			if (isset($first_op[1]) && $first_op[1] == 'avg') {
 				$is_synthetic_avg = true;
 			}
 			else {
@@ -63,6 +63,7 @@ if ($row !== false && is_array($row)) {
 			break;
 		default:
 			$prediction_module = $custom_integer_1;
+			break;
 	}
 }
 else {
@@ -102,7 +103,7 @@ $sql = "SELECT id_agente, nombre FROM tagente";
 //Image src with skins
 $src_code = html_print_image('images/lightning.png', true, false, true); 
 $data[1] .= html_print_input_text_extended ('agent_name',$agent_name, 'text_agent_name', '', 30, 100, $is_service, '',
-                            array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true, false);
+	array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true, false);
 $data[1] .= '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>&nbsp; <br/>';
 $data[1] .= html_print_label(__("Module"),'prediction_module',true);
 if($id_agente) {
@@ -132,9 +133,9 @@ push_table_simple ($data, 'prediction_module');
 $selector_form = enterprise_hook('get_selector_form', array($custom_integer_1));
 if ($selector_form !== ENTERPRISE_NOT_HOOK) {
 	$data = array();
-    $data[0] = '';
-    $data[1] = $selector_form;
-    
+	$data[0] = '';
+	$data[1] = $selector_form;
+	
 	$table_simple->colspan['service_module'][1] = 3;
 	push_table_simple ($data, 'service_module');
 }
@@ -173,5 +174,4 @@ $(document).ready(function() {
 		enterprise_hook('setup_services_synth', array($is_service, $is_synthetic, $is_synthetic_avg, $is_netflow, $ops));
 	?>
 });
-	
 </script>

@@ -134,11 +134,11 @@ if (isset($_GET["update"])) {
 			$result = db_process_sql_update('trecon_task', $values, $where);
 		else  {
 			$result = false; 
-        }
+		}
 	}
 	else
 		$result = false;
-		
+	
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Successfully updated recon task').'</h3>';
 	}
@@ -173,20 +173,20 @@ if (isset($_GET["create"])) {
 		'parent_detection' => $parent_detection,
 		'parent_recursion' => $parent_recursion
 		);
-
-    $reason = "";
+	
+	$reason = "";
 	if ($name != "") {
 		if (($id_recon_script == 'NULL') && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 		{
 			$result = db_process_sql_insert('trecon_task', $values);
-            $reason = __("Network provided is not correct");
+			$reason = __("Network provided is not correct");
 		}
 		elseif ($id_recon_script != 'NULL') {
 			$result = db_process_sql_insert('trecon_task', $values);
 		}
 		else {
 			$result = false;
-        }
+		}
 	}
 	else
 		$result = false;
@@ -196,7 +196,7 @@ if (isset($_GET["create"])) {
 	}
 	else {
 		echo '<h3 class="error">'.__('Error creating recon task').'</h3>';
-        echo $reason;
+		echo $reason;
 	}
 }
 
@@ -205,12 +205,15 @@ if (isset($_GET["create"])) {
 // --------------------------------
 //Pandora Admin must see all columns
 if (! check_acl ($config['id_user'], 0, "PM")) {
-	$sql = sprintf('SELECT * FROM trecon_task RT, tusuario_perfil UP WHERE 
-					UP.id_usuario = "%s" AND UP.id_grupo = RT.id_group', 
-					$config['id_user']);
-					
+	$sql = sprintf('SELECT *
+		FROM trecon_task RT, tusuario_perfil UP
+		WHERE 
+			UP.id_usuario = "%s" AND UP.id_grupo = RT.id_group', 
+		$config['id_user']);
+	
 	$result = db_get_all_rows_sql ($sql);
-} else {
+}
+else {
 	$result = db_get_all_rows_in_table('trecon_task');
 }
 $color=1;
@@ -226,31 +229,32 @@ if ($result !== false) {
 	$table->style[8] = 'text-align: center;';
 	
 	foreach ($result as $row) {
-		
 		$data = array();
 		$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&crt=update&update='.$row["id_rt"].'&upd='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>';
-
+		
 		if ($row["id_recon_script"] == 0)
 			$data[1] = $row["subnet"];
 		else
 			$data[1] =__("N/A");
-			
-			
-		if ($row["id_recon_script"] == 0){
-		// Network recon task
+		
+		
+		if ($row["id_recon_script"] == 0) {
+			// Network recon task
 			$data[2] = html_print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
 			$data[2] .= network_profiles_get_name ($row["id_network_profile"]);
-		} else {
+		}
+		else {
 			// APP recon task
 			$data[2] = html_print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
 			$data[2] .= db_get_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $row["id_recon_script"]));
-		}	
-			
+		}
+		
 		
 		// GROUP
-		if ($row["id_recon_script"] == 0){
+		if ($row["id_recon_script"] == 0) {
 			$data[3] = ui_print_group_icon ($row["id_group"], true);
-		}  else {
+		}
+		else {
 			$data[3] = "-";
 		}
 		
@@ -258,9 +262,10 @@ if ($result !== false) {
 		$data[4] = (($row["create_incident"] == 1) ? __('Yes') : __('No'));
 		
 		// OS
-		if ($row["id_recon_script"] == 0){
+		if ($row["id_recon_script"] == 0) {
 			$data[5] =(($row["id_os"] > 0) ? ui_print_os_icon ($row["id_os"], false, true) : __('Any'));
-		} else {
+		}
+		else {
 			$data[5] = "-";
 		}
 		// INTERVAL
@@ -270,9 +275,10 @@ if ($result !== false) {
 			$data[6] =human_time_description_raw($row["interval_sweep"]);
 		
 		// PORTS
-		if ($row["id_recon_script"] == 0){
+		if ($row["id_recon_script"] == 0) {
 			$data[7] =	substr($row["recon_ports"],0,15);
-		} else {
+		}
+		else {
 			$data[7] = "-";
 		}
 		
@@ -292,7 +298,8 @@ if ($result !== false) {
 	
 	html_print_table ($table);
 	unset ($table);
-} else {
+}
+else {
 	echo '<div class="nf">'.__('There are no recon task configured').'</div>';
 }
 
@@ -301,5 +308,4 @@ echo '<form method="post" action="index.php?sec=gservers&sec2=godmode/servers/ma
 echo html_print_submit_button (__('Create'),"crt",false,'class="sub next"',true);
 echo '</form>';
 echo "</div>";
-
 ?>

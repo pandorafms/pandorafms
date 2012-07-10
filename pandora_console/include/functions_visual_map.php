@@ -943,7 +943,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				}
 				
 				$borderStyle = '';
-				if(substr($img,0,1) == '4') {
+				if (substr($img,0,1) == '4') {
 					$img_style['border'] ='2px solid #ffa300;';
 					$img = substr_replace($img, '', 0,1);
 				}
@@ -1314,7 +1314,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				break;
 			default:
 				enterprise_hook("enterprise_visual_map_print_item",
-					array($layout_data, $status, $colorStatus));
+					array($layout_data, $status, $colorStatus, 'operation'));
 				break;
 		}
 		
@@ -1385,14 +1385,14 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	else
 		$groups = users_get_groups ($id_user, 'IR', false);
 	
-	if(!empty($groups)) {
+	if (!empty($groups)) {
 		if ($where != '') {
 			$where .= ' AND ';
 		}
 		$where .= sprintf ('id_group IN (%s)', implode (",", array_keys ($groups)));
 	}
 	
-	if($where == '') {
+	if ($where == '') {
 		$where = array();
 	}
 	

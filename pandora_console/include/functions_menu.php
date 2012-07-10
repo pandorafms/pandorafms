@@ -393,6 +393,7 @@ function menu_get_sec_pages($sec,$menu_hash = false) {
 	else {
 		$menu = json_decode(base64_decode($menu_hash),true);
 	}
+	
 	// Get the sec2 of the main section
 	$sec2_array[$menu[$sec]['sec2']] = $menu[$sec]['text'];
 

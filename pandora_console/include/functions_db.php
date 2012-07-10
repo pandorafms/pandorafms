@@ -398,8 +398,8 @@ function db_get_row_filter($table, $filter, $fields = false, $where_join = 'AND'
 function db_get_sql ($sql, $field = 0, $search_history_db = false) {
 	$result = db_get_all_rows_sql ($sql, $search_history_db);
 	
-	if($result === false)
-	return false;
+	if ($result === false)
+		return false;
 	
 	$ax = 0;
 	foreach ($result[0] as $f){

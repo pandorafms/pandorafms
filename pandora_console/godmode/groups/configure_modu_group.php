@@ -42,16 +42,17 @@ if ($id_group) {
 	$group = db_get_row ('tmodule_group', 'id_mg', $id_group);
 	if ($group) {
 		$name = $group["name"];
-	} else {
+	}
+	else {
 		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
-		echo "</table>"; 
-		echo '</div>';                          
-                echo '<div style="clear:both">&nbsp;</div>';
-                echo '</div>';
-                echo '<div id="foot">';
-                require ("general/footer.php");
-                echo '</div>';
-                echo '</div>';
+		echo "</table>";
+		echo '</div>';
+		echo '<div style="clear:both">&nbsp;</div>';
+		echo '</div>';
+		echo '<div id="foot">';
+		require ("general/footer.php");
+		echo '</div>';
+		echo '</div>';
 		exit;
 	}
 }
@@ -71,11 +72,11 @@ if ($id_group) {
 	html_print_input_hidden ('update_group', 1);
 	html_print_input_hidden ('id_group', $id_group);
 	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('create_group', 1);
 	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 }
 echo '</div>';
 echo '</form>';
 ?>
-

@@ -36,7 +36,7 @@ $buttons = array(
 		'active' => false,
 		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile">' . 
 			html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
-			
+
 $buttons[$tab]['active'] = true;
 
 // Header
@@ -65,16 +65,17 @@ if ($id_profile || $new_profile) {
 	}
 	else {
 		$profile = db_get_row ('tperfil', 'id_perfil', $id_profile);
-	
+		
 		if ($profile === false) {
 			echo '<h3 class="error">'.__('There was a problem loading profile').'</h3></table>';
-			echo '</div>';                          
-                        echo '<div style="clear:both">&nbsp;</div>';
-                        echo '</div>';
-                        echo '<div id="foot">';
-                        require ("general/footer.php");
-                        echo '</div>';
-                        echo '</div>'; 
+			echo '</div>';
+			echo '<div style="clear:both">&nbsp;</div>';
+			echo '</div>';
+			echo '<div id="foot">';
+			require ("general/footer.php");
+			echo '</div>';
+			echo '</div>';
+			
 			exit;
 		}
 		
@@ -143,12 +144,12 @@ if ($id_profile || $new_profile) {
 	if ($new_profile) {
 		html_print_submit_button (__('Add'), "crt", false, 'class="sub wand"');
 		html_print_input_hidden ('create_profile', 1);
-	} else {
+	}
+	else {
 		html_print_input_hidden ('id', $id_profile);
 		html_print_input_hidden ('update_profile', 1);
 		html_print_submit_button (__('Update'), "upd", false, 'class="sub upd"');
 	}
 	echo "</div></form>";
-
 }
 ?>

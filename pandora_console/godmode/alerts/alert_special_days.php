@@ -50,29 +50,29 @@ if ($create_special_day) {
 	$date = (string) get_parameter ('date');
 	$same_day = (string) get_parameter ('same_day');
 	$description = (string) get_parameter ('description');
-
+	
 	list($year, $month, $day) = explode("-", $date);
-        if ($year == '*') {
+	if ($year == '*') {
 		# '0001' means every year.
-                $year = '0001';
-                $date = $year . '-' . $month . '-' . $day;
-        }
-
-        if (!checkdate ($month, $day, $year)) {
+		$year = '0001';
+		$date = $year . '-' . $month . '-' . $day;
+	}
+	
+	if (!checkdate ($month, $day, $year)) {
 		$result = '';
 	}
 	else {
 		$date_check = db_get_value ('date', 'talert_special_days', 'date
-', $date);
-                if ($date_check == $date) {
-                        $result = '';
-                }
+			', $date);
+		if ($date_check == $date) {
+			$result = '';
+		}
 		else {
 			$result = alerts_create_alert_special_day ($date, $same_day, array ('description' => $description));
 			$info = 'Date: ' . $date . ' Same day of the week: ' . $same_day . ' Description: ' . $description;
 		}
 	}
-
+	
 	if ($result) {
 		db_pandora_audit("Command management", "Create special day " . $result, false, false, $info);
 	}
@@ -91,7 +91,7 @@ if ($update_special_day) {
 	$date = (string) get_parameter ('date');
 	$same_day = (string) get_parameter ('same_day');
 	$description = (string) get_parameter ('description');
-
+	
 	list($year, $month, $day) = explode("-", $date);
 	if ($year == '*') {
 		# '0001' means every year.
@@ -103,7 +103,7 @@ if ($update_special_day) {
 	$values['date'] = $date;
 	$values['same_day'] = $same_day;
 	$values['description'] = $description;
-
+	
 	if (!checkdate ($month, $day, $year)) {
 		$result = '';
 	}
@@ -111,7 +111,7 @@ if ($update_special_day) {
 		$result = alerts_update_alert_special_day ($id, $values);
 		$info = 'Date: ' . $date . ' Same day of the week: ' . $same_day . ' Description: ' . $description;
 	}
-
+	
 	if ($result) {
 		db_pandora_audit("Command management", "Update special day " . $id, false, false, $info);
 	}
@@ -168,7 +168,7 @@ foreach ($special_days as $special_day) {
 	$data[0] = '<span style="font-size: 7.5pt">';
 	# '0001' means every year.
 	$data[0] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_special_days&id='.$special_day['id'].'">'.
-                        str_replace('0001', '*', $special_day['date']) . '</a>';
+		str_replace('0001', '*', $special_day['date']) . '</a>';
 	$data[0] .= '</span>';
 	switch ($special_day['same_day']) {
 		case 'monday':

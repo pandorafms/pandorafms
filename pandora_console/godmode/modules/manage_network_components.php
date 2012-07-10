@@ -99,7 +99,7 @@ if ($create_component) {
 	$custom_string_1 = '';
 	$custom_string_2 = '';
 	$custom_string_3 = '';
-        $name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
+	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	if ($type >= 15 && $type <= 18) {
 		// New support for snmp v3
 		$tcp_send = $snmp_version;
@@ -109,7 +109,7 @@ if ($create_component) {
 		$custom_string_1 = $snmp3_privacy_method;
 		$custom_string_2 = $snmp3_privacy_pass;
 		$custom_string_3 = $snmp3_security_level;
-                $name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
+			$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	}
 	if ($name && !$name_check) {
 	
@@ -147,7 +147,7 @@ if ($create_component) {
 				'only_metaconsole' => $only_metaconsole));
 	}
 	else {
-	$id = '';
+		$id = '';
 	}
 	if ($id === false || !$id) {
 		db_pandora_audit("Module management", "Fail try to create network component");
@@ -166,7 +166,8 @@ if ($update_component) {
 	$custom_string_1 = '';
 	$custom_string_2 = '';
 	$custom_string_3 = '';
-        //$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
+	
+	//$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	if ($type >= 15 && $type <= 18) {
 		// New support for snmp v3
 		$tcp_send = $snmp_version;
@@ -238,9 +239,10 @@ if ($delete_component) {
 	
 	if ($result) {
 		db_pandora_audit( "Module management", "Delete network component #$id");
-	} else {
+	}
+	else {
 		db_pandora_audit( "Module management", "Fail try to delete network component #$id");
-	}	
+	}
 	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
@@ -265,14 +267,15 @@ if ($multiple_delete) {
 	$str_ids = implode (',', $ids);
 	if ($result) {
 		db_pandora_audit( "Module management", "Multiple delete network component: $str_ids");
-	} else {
+	}
+	else {
 		db_pandora_audit( "Module management", "Fail try to delete network component: $str_ids");
-	}	
+	}
 	
 	if ($result !== false) {
 		db_process_sql_commit();
 	}
-		
+	
 	ui_print_result_message ($result,
 		__('Successfully multiple deleted'),
 		__('Not deleted. Error deleting multiple data'));
@@ -407,7 +410,7 @@ foreach ($components as $component) {
 	array_push ($table->data, $data);
 }
 
-if(isset($data)) {
+if (isset($data)) {
 	echo "<form method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&search_id_group=0search_string='>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);

@@ -136,14 +136,14 @@ $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= html_print_image("images/spinner.png", true);
 $table->data[1][0] .= '</span>';
 $table->data[1][1] = html_print_select (agents_get_group_agents ($id_group, false, "none"),
-        'id_agents[]', 0, false, '', '', true, true);
+	'id_agents[]', 0, false, '', '', true, true);
 
 $table->data[2][0] = __('Alert template');
 $table->data[2][0] .= '<span id="template_loading" class="invisible">';
 $table->data[2][0] .= html_print_image("images/spinner.png", true);
 $table->data[2][0] .= '</span>';
 $table->data[2][1] = html_print_select ('',  'id_alert_templates[]', '', '', '', '', true, true, true, '', true);
-	
+
 $table->data[3][0] = __('Enabled alerts').ui_print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
 $table->data[3][0] .= '<span id="alerts_loading" class="invisible">';
 $table->data[3][0] .= html_print_image("images/spinner.png", true);
@@ -181,21 +181,21 @@ ui_require_jquery_file ('pandora.controls');
 /* <![CDATA[ */
 $(document).ready (function () {
 	clear_alert_fields();
-
+	
 	var recursion;
 	$("#checkbox-recursion").click(function (){
 		recursion = this.checked ? 1 : 0;
 		$("#id_group").trigger("change");
 	});
-
+	
 	$("#id_group").pandoraSelectGroupAgent ({
-                agentSelect: "select#id_agents",
+		agentSelect: "select#id_agents",
 		recursion: function() {return recursion},
 		callbackPost: function () {
 			clear_alert_fields();
-                }
+		}
 	});
-
+	
 	$("#id_agents").change (function () {
 		clear_alert_fields();
 		update_alert_templates();
@@ -205,7 +205,8 @@ $(document).ready (function () {
 		if (this.value != 0) {
 			$("#id_enabled_alerts").enable ();
 			$("#id_disabled_alerts").enable ();
-		} else {
+		}
+		else {
 			$("#id_enabled_alerts").disable ();
 			$("#id_disabled_alerts").disable ();
 		}
@@ -217,11 +218,11 @@ $(document).ready (function () {
 		jQuery.each ($("#id_agents option:selected"), function (i, val) {
 			idAgents.push($(val).val());
 		});
-                $("#template_loading").show();
-
+		$("#template_loading").show();
+		
 		var $select_template = $("#id_alert_templates").disable ();
 		$("option", $select_template).remove ();
-
+		
 		jQuery.post ("ajax.php",
 				{"page" : "godmode/massive/massive_enable_disable_alerts",
 				"get_alerts" : 1,
@@ -249,8 +250,8 @@ $(document).ready (function () {
 		var idAlertTemplates = Array();
 		jQuery.each ($("#id_alert_templates option:selected"), function (i, val) {
 			idAlertTemplates.push($(val).val());
-                });
-
+		});
+		
 		var $select = $("#id_enabled_alerts").disable ();
 		var $select2 = $("#id_disabled_alerts").disable ();
 		$("#alerts_loading").show ();
@@ -298,16 +299,15 @@ $(document).ready (function () {
 			"json"
 		);
 	}
-
-	function clear_alert_fields() {
-                var $select_template = $("#id_alert_templates").disable ();
-                var $select_enabled = $("#id_enabled_alerts").disable ();
-                var $select_disabled = $("#id_disabled_alerts").disable ();
-                $("option", $select_template).remove ();
-                $("option", $select_enabled).remove ();
-                $("option", $select_disabled).remove ();
-        }
 	
+	function clear_alert_fields() {
+		var $select_template = $("#id_alert_templates").disable ();
+		var $select_enabled = $("#id_enabled_alerts").disable ();
+		var $select_disabled = $("#id_disabled_alerts").disable ();
+		$("option", $select_template).remove ();
+		$("option", $select_enabled).remove ();
+		$("option", $select_disabled).remove ();
+	}
 });
 /* ]]> */
 </script>

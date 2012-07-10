@@ -66,8 +66,9 @@ if ($update) {
 	$parent = (int) get_parameter ('parent');
 	
 	if ($name == '') {
-                ui_print_error_message (__('Not updated. Blank name'));
-        } else {
+		ui_print_error_message (__('Not updated. Blank name'));
+	}
+	else {
 		$result = db_process_sql_update ('tnetwork_component_group',
 			array ('name' => $name,
 				'parent' => $parent),
@@ -87,19 +88,20 @@ if ($update) {
 if ($delete) {
 	$result = db_process_sql_delete ('tnetwork_component_group',
 		array ('id_sg' => $id));
-
+	
 	$result1 = db_process_sql_update('tnetwork_component_group', array('parent' => 0), array('parent' => $id));
-
-		
+	
+	
 	if (($result !== false) and ($result1 !== false)) $result = true;
 	else $result = false;
 	
 	if ($result) {
-			db_pandora_audit( "Module management", "Delete component group #$id");
-		} else {
-			db_pandora_audit( "Module management", "Fail try to delete component group #$id");
-		}
-		
+		db_pandora_audit( "Module management", "Delete component group #$id");
+	}
+	else {
+		db_pandora_audit( "Module management", "Fail try to delete component group #$id");
+	}
+	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));
@@ -113,9 +115,9 @@ if ($multiple_delete) {
 	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tnetwork_component_group',
 			array ('id_sg' => $id));
-
+		
 		$result1 = db_process_sql_update('tnetwork_component_group', array('parent' => 0), array('parent' => $id));	
-	
+		
 		if (($result === false) or ($result1 === false)) {
 			db_process_sql_rollback();
 			break;
@@ -132,9 +134,10 @@ if ($multiple_delete) {
 	$str_ids = implode (',', $ids);
 	if ($result) {
 		db_pandora_audit( "Module management", "Multiple delete component group: $str_ids");
-	} else {
+	}
+	else {
 		db_pandora_audit( "Module management", "Fail try to delete component group: $str_ids");
-	}	
+	}
 	ui_print_result_message ($result,
 		__('Successfully multiple deleted'),
 		__('Not deleted. Error deleting multiple data'));
@@ -162,7 +165,7 @@ $filter['limit'] = (int) $config['block_size'];
 $groups = db_get_all_rows_filter ('tnetwork_component_group', $filter);
 if ($groups === false)
 	$groups = array ();
-	
+
 $table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Name');

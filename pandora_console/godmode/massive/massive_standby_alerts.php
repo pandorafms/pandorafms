@@ -129,7 +129,7 @@ $table->data[0][0] = '<form method="post" id="form_alerts" action="index.php?sec
 $table->data[0][0] .= html_print_input_hidden('id_alert_template_not_standby', $id_alert_templates, true);
 $table->data[0][0] .= __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group,
-        '', '', '', true, false, true, '');
+	'', '', '', true, false, true, '');
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
 
@@ -138,14 +138,14 @@ $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= html_print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
 $table->data[1][1] = html_print_select (agents_get_group_agents ($id_group, false, "none"),
-        'id_agents[]', 0, false, '', '', true, true);
+	'id_agents[]', 0, false, '', '', true, true);
 
 $table->data[2][0] = __('Alert template');
 $table->data[2][0] .= '<span id="template_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
 $table->data[2][1] = html_print_select ('',  'id_alert_templates[]', '', '', '', '', true, true, true, '', true);
-	
+
 $table->data[3][0] = __('Not standby alerts').ui_print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
 $table->data[3][0] .= '<span id="alerts_loading" class="invisible">';
 $table->data[3][0] .= html_print_image('images/spinner.png', true);
@@ -183,13 +183,13 @@ ui_require_jquery_file ('pandora.controls');
 /* <![CDATA[ */
 $(document).ready (function () {
 	clear_alert_fields();
-
+	
 	var recursion;
 	$("#checkbox-recursion").click(function (){
 		recursion = this.checked ? 1 : 0;
 		$("#id_group").trigger("change");
 	});
-
+	
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents",
 		recursion: function() {return recursion},
@@ -197,7 +197,7 @@ $(document).ready (function () {
 			clear_alert_fields();
 		}
 	});
-
+	
 	$("#id_agents").change (function () {
 		clear_alert_fields();
 		update_alert_templates();
@@ -220,10 +220,10 @@ $(document).ready (function () {
 			idAgents.push($(val).val());
 		});
 		$("#template_loading").show();
-
+		
 		var $select_template = $("#id_alert_templates").disable ();
 		$("option", $select_template).remove ();
-
+		
 		jQuery.post ("ajax.php",
 				{"page" : "godmode/massive/massive_standby_alerts",
 				"get_alerts" : 1,
@@ -252,7 +252,7 @@ $(document).ready (function () {
 		jQuery.each ($("#id_alert_templates option:selected"), function (i, val) {
 			idAlertTemplates.push($(val).val());
 		});
-
+		
 		var $select = $("#id_not_standby_alerts").disable ();
 		var $select2 = $("#id_standby_alerts").disable ();
 		$("#alerts_loading").show ();
@@ -309,7 +309,6 @@ $(document).ready (function () {
 		$("option", $select_not_standby).remove ();
 		$("option", $select_standby).remove ();
 	}
-
 });
 /* ]]> */
 </script>

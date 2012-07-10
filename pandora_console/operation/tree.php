@@ -641,13 +641,12 @@ if (is_ajax ())
 					html_print_image ("operation/tree/leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "1" ));
 				else
 					html_print_image ("operation/tree/last_leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "2" ));
-		
+				
 				// This line checks for (non-initialized) asyncronous modules
 				if ($row["estado"] == 0 AND $row["utimestamp"] == 0 AND ($row["id_tipo_modulo"] >= 21 AND $row["id_tipo_modulo"] <= 23)){
 					$status = STATUS_MODULE_NO_DATA;
-                                        $title = __('UNKNOWN');
-
-				} // Else checks module status				
+					$title = __('UNKNOWN');
+				} // Else checks module status
 				elseif ($row["estado"] == 1) {
 					$status = STATUS_MODULE_CRITICAL;
 					$title = __('CRITICAL');
@@ -671,11 +670,11 @@ if (is_ajax ())
 				else {
 					$title .= " : " . substr(io_safe_output($row["datos"]),0,42);
 				}
-			
+				
 				echo str_replace('.png' ,'_ball.png', 
 					str_replace('img', 'img style="vertical-align: middle;"', ui_print_status_image($status, $title,true))
 					);
-				echo " ";	
+				echo " ";
 				echo str_replace('img', 'img style="vertical-align: middle;"', servers_show_type ($row['id_modulo']));
 				echo " ";
 				$graph_type = return_graphtype ($row["id_tipo_modulo"]);

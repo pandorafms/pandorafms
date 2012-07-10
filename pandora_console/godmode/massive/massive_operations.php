@@ -33,9 +33,9 @@ $tab = (string) get_parameter ('tab', 'massive_agents');
 $option = (string) get_parameter ('option', '');
 
 $options_alerts = array('add_alerts' => __('Massive alerts addition'), 'delete_alerts' => __('Massive alerts deletion'), 
-			'add_action_alerts' => __('Massive alert actions addition'), 'delete_action_alerts' => __('Massive alert actions deletion'),
-			'enable_disable_alerts' => __('Massive alert enable/disable'), 'standby_alerts' => __('Massive alert setting standby'));
-			
+	'add_action_alerts' => __('Massive alert actions addition'), 'delete_action_alerts' => __('Massive alert actions deletion'),
+	'enable_disable_alerts' => __('Massive alert enable/disable'), 'standby_alerts' => __('Massive alert setting standby'));
+
 $options_agents = array('edit_agents' => __('Massive agents edition'), 'delete_agents' => __('Massive agents deletion'));
 
 if (check_acl ($config['id_user'], 0, "PM")) {
@@ -45,8 +45,9 @@ else {
 	$options_users = array();
 }
 
-$options_modules = array('delete_modules' => __('Massive modules deletion'), 'edit_modules' => __('Massive modules edition'), 
-				'copy_modules' => __('Massive modules copy'));
+$options_modules = array('delete_modules' => __('Massive modules deletion'),
+	'edit_modules' => __('Massive modules edition'), 
+	'copy_modules' => __('Massive modules copy'));
 
 $options_policies = array();
 
@@ -99,27 +100,27 @@ if ($option == '') {
 }
 
 $alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
-		. html_print_image ('images/bell.png', true, array ('title' => __('Alerts operations')))
-		. '</a>', 'active' => $tab == 'massive_alerts');
-		
+	. html_print_image ('images/bell.png', true, array ('title' => __('Alerts operations')))
+	. '</a>', 'active' => $tab == 'massive_alerts');
+
 $userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
-		. html_print_image ('images/group.png', true, array ('title' => __('Users operations')))
-		. '</a>', 'active' => $tab == 'massive_users');
-	
+	. html_print_image ('images/group.png', true, array ('title' => __('Users operations')))
+	. '</a>', 'active' => $tab == 'massive_users');
+
 $agentstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
-		. html_print_image ('images/bricks.png', true, array ('title' => __('Agents operations')))
-		. '</a>', 'active' => $tab == 'massive_agents');
-			
+	. html_print_image ('images/bricks.png', true, array ('title' => __('Agents operations')))
+	. '</a>', 'active' => $tab == 'massive_agents');
+
 $modulestab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'
-		. html_print_image ('images/brick.png', true, array ('title' => __('Modules operations')))
-		. '</a>', 'active' => $tab == 'massive_modules');
-	
+	. html_print_image ('images/brick.png', true, array ('title' => __('Modules operations')))
+	. '</a>', 'active' => $tab == 'massive_modules');
+
 /* Collection */
 $policiestab = enterprise_hook('massive_policies_tab');
 
 if ($policiestab == -1)
 	$policiestab = "";
-				
+
 $onheader = array();
 $onheader['massive_agents'] = $agentstab;
 $onheader['massive_modules'] = $modulestab;
@@ -133,9 +134,9 @@ ui_print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], 
 
 // Checks if the PHP configuration is correctly
 if ((get_cfg_var("max_execution_time") != 0) or (get_cfg_var("max_input_time") != -1)){
-        echo '<div id="notify_conf" class="notify">';
-        echo __("In order to perform massive operations, PHP needs a correct configuration in timeout parameters. Please, open your PHP configuration file (php.ini) for example: <i>sudo vi /etc/php5/apache2/php.ini;</i><br> And set your timeout parameters to a correct value: <br><i> max_execution_time = 0</i> and <i>max_input_time = -1</i>");
-        echo '</div>';
+	echo '<div id="notify_conf" class="notify">';
+	echo __("In order to perform massive operations, PHP needs a correct configuration in timeout parameters. Please, open your PHP configuration file (php.ini) for example: <i>sudo vi /etc/php5/apache2/php.ini;</i><br> And set your timeout parameters to a correct value: <br><i> max_execution_time = 0</i> and <i>max_input_time = -1</i>");
+	echo '</div>';
 }
 
 // Catch all submit operations in this view to display Wait banner
@@ -159,9 +160,8 @@ echo '</div>';
 <script language="javascript" type="text/javascript">
 
 
-$(document).ready (function (){	
-
-	$('#manage_config_form').submit( function(){
+$(document).ready (function () {
+	$('#manage_config_form').submit( function() {
 		confirm = confirm(" <?php echo __('Are you sure?'); ?> ");
 		if (confirm)
 			$("#loading").css("display", "");
@@ -169,7 +169,7 @@ $(document).ready (function (){
 			return false;
 	});
 	
-	$('#form_edit').submit( function(){
+	$('#form_edit').submit( function() {
 		confirm = confirm(" <?php echo __('Are you sure?'); ?> ");
 		if (confirm)
 			$("#loading").css("display", "");
@@ -177,14 +177,14 @@ $(document).ready (function (){
 			return false;	
 	});
 	
-	$('[id^=form]').submit( function(){
+	$('[id^=form]').submit( function() {
 		confirm = confirm(" <?php echo __('Are you sure?'); ?> ");
 		if (confirm)
 			$("#loading").css("display", "");
 		else
 			return false;
 	});
-
+	
 	$("#loading").css("display", "none");
 });
 
@@ -199,7 +199,7 @@ html_print_select($options, 'option', $option, 'this.form.submit()', '', 0, fals
 if($option == 'edit_agents' || $option == 'edit_modules') 
 	echo '<a href="#" class="tip">&nbsp;<span>' . __("The blank fields will not be updated") . '</span></a>';
 echo '</td></tr></table>';
-echo '</form>';			
+echo '</form>';
 
 switch ($option) {
 	case 'delete_alerts':

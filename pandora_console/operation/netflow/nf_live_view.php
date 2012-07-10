@@ -48,16 +48,16 @@ if (is_ajax()){
 			$type = 1;
 		
 		echo $type;
-	}	
+	}
 	
 	// Get values of the current netflow filter
 	if ($get_filter_values){
 		$id = get_parameter('id');
 		
 		$filter_values = db_get_row_filter ('tnetflow_filter', array('id_sg' => $id));
-
+		
 		echo json_encode($filter_values);
-	}		
+	}
 	
 	return;
 }
@@ -98,15 +98,16 @@ ui_print_page_header (__('Netflow live view'), "images/networkmap/so_cisco_new.p
 
 // Save user defined filter
 if ($save != '' && check_acl ($config["id_user"], 0, "AW")) {
-
+	
 	// Save filter args
 	$filter['filter_args'] = netflow_get_filter_arguments ($filter);
-
+	
 	$filter_id = db_process_sql_insert ('tnetflow_filter', $filter);
 	if ($filter_id === false) {
 		$filter_id = 0;
-        	echo '<h3 class="error">'.__ ('Error creating filter').'</h3>';
-	} else {
+		echo '<h3 class="error">'.__ ('Error creating filter').'</h3>';
+	}
+	else {
 		echo '<h3 class="suc">'.__ ('Filter created successfully').'</h3>';
 	}
 }
@@ -119,7 +120,7 @@ else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 	
 	// Save filter args
 	$filter_copy['filter_args'] = netflow_get_filter_arguments ($filter_copy);
-
+	
 	$result = db_process_sql_update ('tnetflow_filter', $filter_copy, array ('id_sg' => $filter_id));
 	ui_print_result_message ($result, __('Filter updated successfully'), __('Error updating filter'));
 } 
@@ -129,19 +130,19 @@ else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 $filter['id_name'] = '';
 
 echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_live_view">';
-
+	
 	// Chart options table
 	$table->width = '100%';
 	$table->border = 0;
 	$table->class = "databox_color";
 	$table->style[0] = 'vertical-align: top;';
 	$table->data = array ();
-
+	
 	$table->data[0][0] = '<b>'.__('Date').'</b>';
 	$table->data[0][1] = html_print_input_text ('date', $date, false, 10, 10, true);
 	$table->data[0][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-date'),this);"));
 	$table->data[0][1] .= html_print_input_text ('time', $time, false, 10, 5, true);
-
+	
 	$table->data[0][2] = '<b>'.__('Interval').'</b>';
 	$table->data[0][3] = html_print_select (netflow_get_valid_intervals (), 'period', $period, '', '', 0, true, false, false);
 	$table->data[0][4] = '<b>'.__('Type').'</b>';
@@ -156,9 +157,9 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	);
 	$table->data[0][6] = '<b>'.__('Max. values').'</b>';
 	$table->data[0][7] = html_print_select ($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true);
-
+	
 	html_print_table ($table);
-
+	
 	// Filter options table
 	$table->width = '100%';
 	$table->border = 0;
@@ -166,10 +167,10 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	$table->style[0] = 'vertical-align: top;';
 	$table->size[0] = '15%';
 	$table->data = array ();
-		
+	
 	$table->data[0][0] = ui_print_error_message ('Define a name for the filter and click on Save as new filter again', '', true);
 	$table->colspan[0][0] = 4;
-
+	
 	$table->data[1][0] = '<span id="filter_name_color"><b>'.__('Name').'</b></span>';
 	$table->data[1][1] = html_print_input_text ('name', $filter['id_name'], false, 20, 80, true);
 	$own_info = get_user_info ($config['id_user']);

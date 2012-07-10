@@ -40,13 +40,13 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$sub = array ();
 		$sub["operation/agentes/tactical"]["text"] = __('Tactical view');
 		$sub["operation/agentes/tactical"]["refr"] = 0;
-			
+		
 		$sub["operation/agentes/group_view"]["text"] = __('Group view');
 		$sub["operation/agentes/group_view"]["refr"] = 0;
-
-                $sub['operation/tree']['text'] = __('Tree view');
-                $sub["operation/tree"]["refr"] = 0;
-
+		
+		$sub['operation/tree']['text'] = __('Tree view');
+		$sub["operation/tree"]["refr"] = 0;
+		
 		$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
 		$sub["operation/agentes/estado_agente"]["refr"] = 0;
 		$sub["operation/agentes/estado_agente"]["subsecs"] = array(
@@ -82,14 +82,14 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$sub2['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');	
 		enterprise_hook ('snmpconsole_submenu');	
 		$sub2['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
-
+		
 		$sub["operation/snmpconsole/snmp_view"]["sub2"] = $sub2;
 		
 		$menu_operation["estado"]["sub"] = $sub;
 		//End of view agents
 	}
 	
-	if ($config['metaconsole'] == 0) {	
+	if ($config['metaconsole'] == 0) {
 		//Start network view
 		
 		$menu_operation["network"]["text"] = __('Network View');
@@ -115,11 +115,11 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$menu_operation["reporting"]["refr"] = 60;
 	
 	$sub = array ();
-
+	
 	$sub["godmode/reporting/reporting_builder"]["text"] = __('Custom reporting');
 	//Set godomode path
 	$sub["godmode/reporting/reporting_builder"]["subsecs"] = array("godmode/reporting/reporting_builder",
-																"operation/reporting/reporting_viewer");
+		"operation/reporting/reporting_viewer");
 	//Visual console
 	$sub["godmode/reporting/map_builder"]["text"] = __('Visual console');
 	//Set godomode path
@@ -127,13 +127,13 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		"godmode/reporting/map_builder",
 		"godmode/reporting/visual_console_builder");
 	
-	if (!empty($config['vc_refr'])){
+	if (!empty($config['vc_refr'])) {
 		$sub["godmode/reporting/map_builder"]["refr"] = $config['vc_refr'];
 	}
-	else if (!empty($config['refr'])){
+	else if (!empty($config['refr'])) {
 		$sub["godmode/reporting/map_builder"]["refr"] = $config['refr'];
 	}	
-	else{
+	else {
 		$sub["godmode/reporting/map_builder"]["refr"] = 60;
 	}
 	

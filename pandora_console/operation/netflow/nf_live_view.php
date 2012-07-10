@@ -180,7 +180,8 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	// Read filter type
 	if ($filter['advanced_filter'] != '') {
 		$filter_type = 1;
-	} else {
+	}
+	else {
 		$filter_type = 0;
 	}
 	
@@ -191,13 +192,13 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	$user_groups = users_get_groups ($config['id_user'], "AR", $own_info['is_admin'], true);
 	$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
 	$table->data[2][3] = html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('none'), 0, true);
-
+	
 	
 	$table->data[3][0] = __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true);
 	$table->data[3][1] = html_print_input_text ('ip_dst', $filter['ip_dst'], false, 40, 80, true);
 	$table->data[3][2] = __('Src Ip'). ui_print_help_tip (__("Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true);
 	$table->data[3][3] = html_print_input_text ('ip_src', $filter['ip_src'], false, 40, 80, true);
-		
+	
 	$table->data[4][0] = __('Dst Port'). ui_print_help_tip (__("Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true);
 	$table->data[4][1] = html_print_input_text ('dst_port', $filter['dst_port'], false, 40, 80, true);
 	$table->data[4][2] = __('Src Port'). ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true);
@@ -206,94 +207,91 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	$table->data[5][0] = ui_print_help_icon ('pcap_filter', true);
 	$table->data[5][1] = html_print_textarea ('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px;'", true);
 	$table->colspan[5][1] = 3;
-		
+	
 	$table->data[6][0] = '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true);
-
+	
 	$aggregate_list = array();
 	$aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
 	$table->data[6][1] = html_print_select ($aggregate_list, "aggregate", $filter['aggregate'], '', '', 0, true, false, true, '', false);
-		
+	
 	$table->data[6][2] = '<b>'.__('Output format').'</b>';
 	$show_output = array();
 	$show_output = array ('packets' => __('Packets'), 'bytes' => __('Bytes'), 'flows' =>__('Flows'));
 	$table->data[6][3] = html_print_select ($show_output, 'output', $filter['output'], '', '', 0, true, false, true, '', false);
-
+	
 	html_print_table ($table);
-
+	
 	html_print_submit_button (__('Draw'), 'draw_button', false, 'class="sub upd"');
 	if (check_acl ($config["id_user"], 0, "AW")) {
 		html_print_submit_button (__('Save as new filter'), 'save_button', false, 'class="sub upd" onClick="return defineFilterName();"');
-
-			html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
-
+		
+		html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
 	}
 echo'</form>';
 
 if  ($draw != '') {
-
 	// Get the command to call nfdump
 	$command = netflow_get_command ($filter);
-
+	
 	// Build a unique id for the cache
 	$unique_id = 'live_view__' . ($end_date - $start_date);
-
+	
 	// Draw
 	netflow_draw_item ($start_date, $end_date, $chart_type, $filter, $command, $filter, $max_aggregates, $unique_id);
 }
-
 ?>
 
 <script type="text/javascript">
-
 	// Hide the normal filter and display the advanced filter
 	function displayAdvancedFilter () {
-
 		// Erase the normal filter
 		document.getElementById("text-ip_dst").value = '';
 		document.getElementById("text-ip_src").value = '';
 		document.getElementById("text-dst_port").value = '';
 		document.getElementById("text-src_port").value = '';
-
+		
 		// Hide the normal filter
 		document.getElementById("table2-3").style.display = 'none';
 		document.getElementById("table2-4").style.display = 'none';
-
+		
 		// Show the advanced filter
 		document.getElementById("table2-5").style.display = '';
 	};
-
+	
 	// Hide the advanced filter and display the normal filter
 	function displayNormalFilter () {
-
 		// Erase the advanced filter
 		document.getElementById("textarea_advanced_filter").value = '';
-
+		
 		// Hide the advanced filter
 		document.getElementById("table2-5").style.display = 'none';
-
+		
 		// Show the normal filter
 		document.getElementById("table2-3").style.display = '';
 		document.getElementById("table2-4").style.display = '';
 	};
-
+	
 	// Ask the user to define a name for the filter in order to save it
 	function defineFilterName () {
 		if (document.getElementById("text-name").value == '') {
 			document.getElementById("table2-0").style.display = '';
 			document.getElementById("table2-1").style.display = '';
+			
 			return false;
 		}
+		
 		return true;
 	};
-
+	
 	// Display the appropriate filter
 	var filter_type = <?php echo $filter_type ?>;
 	if (filter_type == 0) {
 		displayNormalFilter ();
-	} else {
+	}
+	else {
 		displayAdvancedFilter ();
 	}
-
+	
 	// Hide filter name and group
 	document.getElementById("table2-0").style.display = 'none';
 	document.getElementById("table2-1").style.display = 'none';
@@ -306,7 +304,7 @@ if  ($draw != '') {
 		$("#table2-1").css('display', 'none');
 		
 		// Clean fields
-		if ($("#filter_id").val() == 0){
+		if ($("#filter_id").val() == 0) {
 			//displayNormalFilter ();
 			$("#table2-3").css('display', '');
 			$("#table2-4").css('display', '');
@@ -315,7 +313,7 @@ if  ($draw != '') {
 			// Check right filter type
 			$("#radiobtn0001").attr("checked", "checked");
 			$("#radiobtn0002").attr("checked", "");			
-
+			
 			$("#text-ip_dst").val('');
 			$("#text-ip_src").val('');
 			$("#text-dst_port").val('');
@@ -326,8 +324,11 @@ if  ($draw != '') {
 			
 			// Hide update filter button
 			$("#submit-update_button").css("visibility", "hidden");	
-		// Load fields from DB
-		} else {
+			
+		}
+		else {
+			// Load fields from DB
+			
 			// Get filter type
 			jQuery.post ("ajax.php",
 				{"page" : "operation/netflow/nf_live_view",
@@ -345,7 +346,8 @@ if  ($draw != '') {
 						// Check right filter type
 						$("#radiobtn0001").attr("checked", "checked");
 						$("#radiobtn0002").attr("checked", "");
-					} else {
+					}
+					else {
 						$("#table2-3").css('display', 'none');
 						$("#table2-4").css('display', 'none');
 						$("#table2-5").css('display', '');
@@ -353,7 +355,7 @@ if  ($draw != '') {
 						// Check right filter type
 						$("#radiobtn0001").attr("checked", "");
 						$("#radiobtn0002").attr("checked", "checked");					
-					}			
+					}
 				});	
 				
 			// Shows update filter button
@@ -381,9 +383,9 @@ if  ($draw != '') {
 						$("#aggregate").val(val);
 					  if (i == 'output')
 						$("#output").val(val);
-				  });					
+				  });
 				},
-				"json");				
+				"json");
 		}
 		
 	});
@@ -399,7 +401,7 @@ if  ($draw != '') {
 		
 		// Change color of name and group if save button has been pushed
 		$("#submit-save_button").click(function () {
-			if ($("#text-name").val() == ""){
+			if ($("#text-name").val() == "") {
 				$('#filter_name_color').css('color', '#CC0000');
 				$('#filter_group_color').css('color', '#CC0000');			
 			}
@@ -407,8 +409,6 @@ if  ($draw != '') {
 				$('#filter_name_color').css('color', '#000000');
 				$('#filter_group_color').css('color', '#000000');				
 			}
-		});	
-		
+		});
 	});
-
 </script>

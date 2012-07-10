@@ -182,7 +182,7 @@ function compare_flows ($a, $b) {
  *
  */
 function sort_netflow_data (&$netflow_data) {
-     usort($netflow_data, "compare_flows");
+	usort($netflow_data, "compare_flows");
 }
 
 function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
@@ -207,7 +207,8 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 			$values[$agg] = $data[$j]['data'];
 			$table->data[$x][0] = $agg;
 			$table->data[$x][1] = format_numeric ($data[$j]['data']);
-		} else {
+		}
+		else {
 			$values[$agg] += $data[$j]['data'];
 			$table->data[$x][0] = $agg;
 			$table->data[$x][1] = format_numeric ($data[$j]['data']);
@@ -215,7 +216,7 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 		$j++;
 		$x++;
 	}
-
+	
 	html_print_table($table);
 }
 

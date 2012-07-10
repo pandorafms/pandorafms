@@ -300,11 +300,11 @@ foreach ($modules as $module) {
 		}
 		else {
 			$data[1] = "";
-		}	
+		}
 	}
-
+	
 	$data[2] = servers_show_type ($module['id_modulo']) . '&nbsp;';
-
+	
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
 	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
 	  
@@ -340,7 +340,7 @@ foreach ($modules as $module) {
 	else {
 		if (is_numeric($module["datos"])){
 			$salida = format_numeric($module["datos"]);
-
+			
 			// Show units ONLY in numeric data types
 			if (isset($module["unit"])){
 				$salida .= "&nbsp;" . '<i>'. io_safe_output($module["unit"]) . '</i>';
@@ -361,21 +361,21 @@ foreach ($modules as $module) {
 			}
 		}
 	}
-
+	
 	$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]);
-
+	
 	$data[7] = $salida;
 	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
-
+	
 	$data[8] = " ";
 	if ($module['history_data'] == 1){
 		$nombre_tipo_modulo = modules_get_moduletype_name ($module["id_tipo_modulo"]);
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
-
+		
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".base64_encode($module["nombre"])."&amp;refresh=600','day_".$win_handle."')";
-
+		
 	//	if ($nombre_tipo_modulo != "log4x")
 			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 		$data[8] .= "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => '0', "alt" => "")) . "</a>"; 

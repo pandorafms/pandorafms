@@ -302,10 +302,11 @@ function agents_get_alerts_compound ($id_agent = false, $filter = '', $options =
  * @param array Fields to get.
  * @param string Access needed in the agents groups.
  * @param array $order The order of agents, by default is upward for field nombre.
+ * @param bool $return Whether to return array with agents or false, or sql string statement
  * 
  * @return mixed An array with all alerts defined for an agent or false in case no allowed groups are specified.
  */
-function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC')) {
+function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC'), $return = false) {
     global $config;
 	
 	if (! is_array ($filter)) {
@@ -335,30 +336,30 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		$normal_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
 				WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 0 
-				AND (utimestamp != 0 OR tagente_modulo.id_tipo_modulo IN (21,22,23)) 
+				AND tagente_modulo.disabled = 0 AND estado = 0
+				AND (utimestamp != 0)' /*OR tagente_modulo.id_tipo_modulo IN (21,22,23)) 
 				AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
-				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';
+				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))'*/;
 				
 		$warning_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
 				WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 2 
-				AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
-				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';
+				AND tagente_modulo.disabled = 0 AND estado = 2 AND tagente_estado.utimestamp != 0';
+			/*	AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
+				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';*/
 				
 		$critical_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
 				WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 1 
-				AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
-				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';
+				AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.utimestamp != 0';
+			/*	AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
+				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';	*/
 				
 		$unknown_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
 				WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) 
-				AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2)) AND utimestamp != 0';
+				AND tagente_modulo.disabled = 0 AND estado = 3 AND utimestamp != 0' /*AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) 
+				AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2)) AND utimestamp != 0'*/;
 				
 		$notinit_modules = 'SELECT tagente_estado.id_agente FROM tagente_estado, tagente, tagente_modulo 
 				WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
@@ -374,12 +375,12 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($unknown_modules)"; //&& id_agente NOT IN ($notinit_modules)";
 				break;
 			// Warning
-			case 1:
+			case 2:
 				$status_sql = "id_agente IN ($warning_modules) &&
 				 id_agente NOT IN ($critical_modules)"; //&& id_agente NOT IN ($notinit_modules)";
 				break;
 			// Critical
-			case 2: 
+			case 1: 
 				$status_sql = "id_agente IN ($critical_modules)";
 				break;
 			// Unknown
@@ -489,8 +490,11 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				$limit_sql = " LIMIT $offset, $limit "; 
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
-
-			$agents = db_get_all_rows_sql($sql);
+			
+			if ($return)
+				return $sql;
+			else
+				$agents = db_get_all_rows_sql($sql);
 			break;
 		case "postgresql":
 			$limit_sql = '';
@@ -499,7 +503,10 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
 
-			$agents = db_get_all_rows_sql($sql);
+			if ($return)
+				return $sql;
+			else
+				$agents = db_get_all_rows_sql($sql);
 			break;
 		case "oracle":	
 			$set = array();
@@ -508,7 +515,10 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				$set['offset'] = $offset;
 			}
 
-			$agents = oracle_recode_query ($sql, $set, 'AND', false);
+			if ($return)
+				return $sql;
+			else
+				$agents = oracle_recode_query ($sql, $set, 'AND', false);
 			break;
 	}
 	

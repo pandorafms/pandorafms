@@ -1,3 +1,14 @@
+2012-07-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_agents.php
+	 operation/agentes/estado_agente.php: Modified changed 
+	 agents_get_agents function to accomplish agent status general 
+	 conditions (like in functions_groups.php). Also status constants
+	 where changed to standard.
+
+	* operation/menu.php: Don't hide any menu entry when metaconsole is
+	activated (new metaconsole has a different entry point).
+
 2012-07-10 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/constants.php: added more constants into the constants

@@ -200,8 +200,8 @@ echo '</td><td style="white-space:nowrap;">';
 
 $fields = array ();
 $fields[0] = __('Normal'); 
-$fields[1] = __('Warning');
-$fields[2] = __('Critical');
+$fields[2] = __('Warning');
+$fields[1] = __('Critical');
 $fields[3] = __('Unknown');
 $fields[4] = __('Not normal'); 
 $fields[5] = __('Not init');

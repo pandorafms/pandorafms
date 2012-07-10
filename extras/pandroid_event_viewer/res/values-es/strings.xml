@@ -15,25 +15,12 @@
 // GNU General Public License for more details. 
 -->
 <resources>
-	<string name="item_tab_main_text">Filtro</string>
-	<string name="item_tab_event_list_text">Lista de eventos</string>
-	
-    <string name="main_text">main text (value spanish)</string>
-    <string name="list_text">list (value spanish)</string>
-    
-    <string name="system_str">Sistema</string>
-    
-    <string name="empty_str">- Vacio -</string>
+
     <string name="all_str">Todo</string>
-    
     <string name="tags_label_str">Etiquetas</string>
     <string name="comments_label_str">Comentarios</string>
     <string name="group_label_str">Grupos</string>
     <string name="agent_label_str">Nombre del agente</string>
-    <string name="type_label_str">Tipo</string>
-    <string name="severity_label_str">Severidad</string>
-    <string name="date_label_str">Fecha</string>
-    <string name="number_events_label_str">Número de eventos</string>
     <string name="reset_button_str">Reseteo</string>
     <string name="search_button_str">Buscar</string>
     <string name="loading_label_str">Cargando</string>
@@ -50,36 +37,29 @@
     <string name="refresh_time_label_str">Refresco scanner eventos</string>
     <string name="set_as_filter_watcher_button_str">Filtro por defecto</string>
     <string name="validate_event_button_str">Validar Evento</string>
-    
     <string name="config_update_succesful_str">Configuración guardada correctamente.</string>
     <string name="config_update_fail_str">Configuración no ha podido guardarse..</string>
     <string name="please_set_preferences_str">Por favor configure sus preferencias, como la API URL, usuario y contraseña de su Pandora FMS.</string>
     <string name="preferences_set_demo_pandora_str">Pandroid Event Viewer esta conectando con la demo pública, por favor cambia en las preferencias para tu Pandora FMS.</string>
     <string name="filter_update_succesful_str">Actualizado filtro correctamente.</string>
     <string name="filter_update_fail_str">Actualización filtro no ha podido guardarse.</string>
-    
     <string name="notification_criticity_0_str">Hay %s eventos y todos son de Mantenimiento.</string>
     <string name="notification_criticity_1_str">Hay %s eventos y algunos son Información.</string>
     <string name="notification_criticity_2_str">Hay %s eventos y algunos son Normales.</string>
     <string name="notification_criticity_3_str">Hay %s eventos y algunos son Aviso.</string>
     <string name="notification_criticity_4_str">Hay %s eventos y algunos son Criticos.</string>
-    
     <string name="loading_events_criticity_0_str">Cargando eventos (todos son de Mantenimiento).</string>
     <string name="loading_events_criticity_1_str">Cargando eventos (algunos son Información).</string>
     <string name="loading_events_criticity_2_str">Cargando eventos (algunos son Normales).</string>
     <string name="loading_events_criticity_3_str">Cargando eventos (algunos son Aviso).</string>
     <string name="loading_events_criticity_4_str">Cargando eventos (algunos son Criticos).</string>
-    
     <string name="successful_validate_event_str">Validación del evento correcta.</string>
     <string name="fail_validate_event_str">Validación del evento incorrecta.</string>
-    
     <string name="status_label_str">Estado</string>
     <string name="event_search_label_str">Buscar evento</string>
     <string name="max_time_old_event_str">Máx tiempo de antiguedad</string>
-    
     <string name="licensed_under_gpl_str">Licenciado bajo GPL v2</string>
     <string name="develop_team_str">Desarrollado por: Miguel de Dios</string>
-    
     <string name="alert_recovered_str">Alerta recuperada</string>
     <string name="alert_manual_validation_str">Alerta validada manualmente</string>
     <string name="going_up_warning_str">Cayendo de crítico a advertencia</string>
@@ -87,14 +67,12 @@
     <string name="going_up_normal_str">Subiendo a estado normal</string>
     <string name="going_down_warning_str">Cayendo a advertencia</string>
     <string name="alert_fired_str">Alerta lanzada</string>
-    <string name="recon_host_detected_str">El servidor recon detectó un equipo nuevo</string>
     <string name="new_agent_str">Agente nuevo creado</string>
     <string name="unknown_str">Tipo desconocido:</string>
     <string name="unknown_event_str">Evento desconocido</string>
-    
     <string name="validate_event_label_str">Evento validado</string>
     <string name="pandroid_event_viewer_description_str">Visor de eventos para Pandora FMS.</string>
     <string name="pandroid_info_txt"><b>Bienvenido al visor de eventos de Pandora FMS para Android</b></string>
-    <string name="pandroid_info_long_txt"><p>Esta aplicación se usa para ver de forma autónoma y cómoda, el estado de los eventos resportados por un servidor de monitorización Pandora FMS. Desde esta aplicación podrá ver en tiempo real los eventos, e incluso validar o filtrarlos.</p>
-        <p>La configuración por defecto apunta al servidor de demo de Pandora FMS en firefly.artica.es. Cambie la configuración para que apunte a su propio servidor de Pandora FMS.</p></string>
+    <string name="pandroid_info_long_txt"><p>Esta aplicación se usa para ver de forma autónoma y cómoda, el estado de los eventos resportados por un servidor de monitorización Pandora FMS. Desde esta aplicación podrá ver en tiempo real los eventos, e incluso validar o filtrarlos.</p><p>La configuración por defecto apunta al servidor de demo de Pandora FMS en firefly.artica.es. Cambie la configuración para que apunte a su propio servidor de Pandora FMS.</p></string>
+
 </resources>

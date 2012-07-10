@@ -15,26 +15,18 @@
 // GNU General Public License for more details. 
 -->
 <resources>
-	<string name="item_tab_main_text">フィルター</string>
-	<string name="item_tab_event_list_text">イベント一覧</string>
-	
-    <string name="main_text">メインテキスト (値)</string>
-    <string name="list_text">一覧 (値)</string>
-    
+
+    <string name="item_tab_main_text">フィルター</string>
+    <string name="item_tab_event_list_text">イベント一覧</string>
     <string name="system_str">システム</string>
-    
-    <string name="empty_str">- 空 -</string>
     <string name="all_str">全て</string>
-    
     <string name="tags_label_str">タグ</string>
     <string name="comments_label_str">コメント</string>
     <string name="group_label_str">グループ</string>
     <string name="agent_label_str">エージェント名</string>
     <string name="type_label_str">タイプ</string>
     <string name="severity_label_str">重要度</string>
-    <string name="date_label_str">日時</string>
-    <string name="number_events_label_str">イベント数</string>
-	<string name="reset_button_str">リセット</string>
+    <string name="reset_button_str">リセット</string>
     <string name="search_button_str">検索</string>
     <string name="loading_label_str">読み込み</string>
     <string name="options_label_str">オプション</string>
@@ -49,36 +41,29 @@
     <string name="empty_label_str">イベントがありません</string>
     <string name="refresh_time_label_str">更新時間</string>
     <string name="set_as_filter_watcher_button_str">デフォルトのフィルタ</string>
-    
     <string name="config_update_succesful_str">設定を更新しました。</string>
     <string name="config_update_fail_str">設定の更新に失敗しました。</string>
     <string name="please_set_preferences_str">Pandora FMS の API URL、ユーザ、パスワードを設定してください。</string>
     <string name="filter_update_succesful_str">フィルタを更新しました。</string>
     <string name="filter_update_fail_str">フィルタの更新に失敗しました。</string>
     <string name="validate_event_button_str">イベントの承諾</string>
-    
-	<string name="notification_criticity_0_str">%s 個のイベントがあり、すべてがメンテナンス状態です。</string>
+    <string name="notification_criticity_0_str">%s 個のイベントがあり、すべてがメンテナンス状態です。</string>
     <string name="notification_criticity_1_str">%s 個のイベントがあり、いくつかが情報の状態です。</string>
     <string name="notification_criticity_2_str">%s 個のイベントがあり、いくつかが正常状態です。</string>
     <string name="notification_criticity_3_str">%s 個のイベントがあり、いくつかが警告状態です。</string>
     <string name="notification_criticity_4_str">%s 個のイベントがあり、いくつかが障害状態です。</string>
-    
     <string name="loading_events_criticity_0_str">%s 個のイベントを読み込み、全てがメンテナンス状態です。</string>
     <string name="loading_events_criticity_1_str">%s 個のイベントを読み込み、いくつかが情報の状態です。</string>
     <string name="loading_events_criticity_2_str">%s 個のイベントを読み込み、いくつかが正常状態です。</string>
     <string name="loading_events_criticity_3_str">%s 個のイベントを読み込み、いくつかが警告状態です。</string>
     <string name="loading_events_criticity_4_str">%s 個のイベントを読み込み、いくつかが障害状態です。</string>
-    
     <string name="successful_validate_event_str">イベントを承諾しました。</string>
     <string name="fail_validate_event_str">イベントの承諾に失敗しました。</string>
-    
     <string name="status_label_str">状態</string>
     <string name="event_search_label_str">イベント検索</string>
     <string name="max_time_old_event_str">最も古いイベント</string>
-    
     <string name="licensed_under_gpl_str">GPLv2 ライセンス</string>
     <string name="develop_team_str">開発者: Miguel de Dios</string>
-    
     <string name="alert_recovered_str">アラート復旧</string>
     <string name="alert_manual_validation_str">アラートの手動承諾</string>
     <string name="going_up_warning_str">障害状態から警告状態に変化</string>
@@ -86,11 +71,10 @@
     <string name="going_up_normal_str">正常状態に変化</string>
     <string name="going_down_warning_str">警告状態に変化</string>
     <string name="alert_fired_str">アラート発生</string>
-    <string name="recon_host_detected_str">自動検出サーバが新たなホストを検出</string>
     <string name="new_agent_str">新たなエージェント作成</string>
     <string name="unknown_str">不明なタイプ:</string>
     <string name="unknown_event_str">不明なイベント</string>
-    
     <string name="validate_event_label_str">承諾済イベント</string>
     <string name="pandroid_event_viewer_description_str">Pandora FMS リアルタイムイベントビューワ</string>
+
 </resources>

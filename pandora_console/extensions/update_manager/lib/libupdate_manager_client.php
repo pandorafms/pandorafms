@@ -505,7 +505,7 @@ function um_client_upgrade_to_package ($package, $settings, $force = true, $upda
 		um_client_db_connect ($settings);
 		um_component_db_connect ();
 		foreach ($package->updates as $update) {
-			$success = um_client_apply_update ($update, $settings, $force);	
+			$success = um_client_apply_update ($update, $settings, $force);
 			if (! $success) {
 				echo '<p /><strong>Failed</strong> on:<br />';
 				um_client_print_update ($update, $settings);

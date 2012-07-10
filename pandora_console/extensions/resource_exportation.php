@@ -103,7 +103,7 @@ function output_xml_report($id) {
 			echo "<description>" . io_safe_output($item['description']) . "</description>\n";
 			echo "<period>" . io_safe_output($item['period']) . "</period>\n";
 			if ($item['id_agent'] != 0) {
-				$agent = agents_get_name($item['id_agent']);			
+				$agent = agents_get_name($item['id_agent']);
 			}
 			if ($item['id_agent_module'] != 0) {
 				$module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $item['id_agent_module']);
@@ -118,7 +118,7 @@ function output_xml_report($id) {
 			switch (io_safe_output($item['type'])) {
 				case 1:
 				case 'simple_graph':
-					break;	
+					break;
 				case 'simple_baseline_graph':
 					break;
 				case 2:

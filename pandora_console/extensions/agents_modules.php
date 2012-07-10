@@ -163,9 +163,9 @@ function mainAgentsModules() {
 	}
 	
 	echo '<table cellpadding="4" cellspacing="4" border="0" width=98%>';
-
-	echo "<th width='140px' height='25px'>".__("Agents")." / ".__("Modules")."</th>";	
-
+	
+	echo "<th width='140px' height='25px'>".__("Agents")." / ".__("Modules")."</th>";
+	
 	if($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
 		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".html_print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
@@ -185,7 +185,7 @@ function mainAgentsModules() {
 		$new_hor_offset = $hor_offset+$block;
 		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".html_print_image("images/darrowright.png",true, array('title' => __('More modules')))."</a> </th>";
 	}
-
+	
 	$filter_agents = false;
 	if($group_id > 0) {
 		$filter_agents = array('id_grupo' => $group_id);
@@ -193,11 +193,11 @@ function mainAgentsModules() {
 	// Prepare pagination
 	ui_pagination ((int)count(agents_get_agents ($filter_agents)));
 	echo "<br>";
-
+	
 	foreach ($agents as $agent) {
 		// Get stats for this group
 		$agent_status = agents_get_status($agent['id_agente']);
-
+		
 		switch($agent_status) {
 			case 4: // Alert fired status
 				$rowcolor = 'group_view_alrm';

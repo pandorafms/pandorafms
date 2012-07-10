@@ -23,7 +23,7 @@ class System {
 	private $db;
 	
 	function __construct() {
-		$this->loadConfig();	
+		$this->loadConfig();
 		$this->db = new DB($this, $this->getConfig('db_engine', 'mysql'));
 		
 		session_start();

@@ -49,8 +49,8 @@ if ($create_command) {
 	$name = (string) get_parameter ('name');
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
-        $name_check = db_get_value ('name', 'talert_commands', 'name', $name);
-
+	$name_check = db_get_value ('name', 'talert_commands', 'name', $name);
+	
 	if (!$name_check) {
 		$result = alerts_create_alert_command ($name, $command,
 			array ('description' => $description));
@@ -60,7 +60,7 @@ if ($create_command) {
 	else {
 		$result = '';
 	}
-
+	
 	if ($result) {
 		db_pandora_audit("Command management", "Create alert command #" . $result, false, false, $info);
 	}
@@ -89,7 +89,7 @@ if ($update_command) {
 	$values['name'] = $name;
 	$values['command'] = $command;
 	$values['description'] = $description;
-        $name_check = db_get_value ('name', 'talert_commands', 'name', $name);
+	$name_check = db_get_value ('name', 'talert_commands', 'name', $name);
 	
 	if (!$name || !$name_check) {
 		$result = '';
@@ -98,7 +98,7 @@ if ($update_command) {
 		$result = alerts_update_alert_command ($id, $values);
 		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
 	}
-
+	
 	if ($result) {
 		db_pandora_audit("Command management", "Update alert command #" . $id, false, false, $info);
 	}

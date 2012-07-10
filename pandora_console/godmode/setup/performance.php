@@ -80,14 +80,14 @@ $table_other->data[1][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
 $table_other->data[1][1] = html_print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
 $intervals = array ();
-$intervals[3600] = "1 ".__('hour');
-$intervals[43200] = "12 ".__('hours');
-$intervals[86400] = __('Last day');
-$intervals[172800] = "2 ". __('days');
-$intervals[864000] = "10 ". __('days');
-$intervals[604800] = __('Last week');
-$intervals[1209600] = "2 " . __('weeks');
-$intervals[2592000] = __('Last month');
+$intervals[SECONDS_1HOUR] = __('1 hour');
+$intervals[SECONDS_12HOURS] = __('12 hours');
+$intervals[SECONDS_1DAY] = __('Last day');
+$intervals[SECONDS_2DAY] = __('2 days');
+$intervals[SECONDS_10DAY] = __('10 days');
+$intervals[SECONDS_1WEEK] = __('Last week');
+$intervals[SECONDS_2WEEK] = __('2 weeks');
+$intervals[SECONDS_1MONTH] = __('Last month');
 
 $table_other->data[2][0] = __('SLA period (seconds)') . ui_print_help_tip(__('You can see this in SLA agent tab.'), true);
 $table_other->data[2][1] = html_print_select ($intervals, 'sla_period', $config["sla_period"], '', '', '0', true);

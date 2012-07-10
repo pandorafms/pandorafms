@@ -108,7 +108,7 @@ class EventsView {
 		if ($search != "")
 			$sqlFreeSearch .= " AND evento LIKE '%".$search."%'";
 		
-		$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
+		$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR); //Put hours in seconds
 		$sqlTimestamp = " AND utimestamp > ".$unixtime;
 		
 		$sql  = 'SELECT *

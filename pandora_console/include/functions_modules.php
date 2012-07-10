@@ -1057,22 +1057,21 @@ function modules_get_last_value ($id_agentmodule) {
 function modules_get_previous_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 	if (empty ($utimestamp))
 		$utimestamp = time ();
-
+	
 	if ($string == 1) {
 		$table = 'tagente_datos_string';
 	}
 	else {
 		$table = 'tagente_datos';
 	}
-
-	// 172800 = 60×60×24*2 Search up to 2 days before utimestamp
+	
 	$sql = sprintf ('SELECT *
 		FROM ' . $table . '
 		WHERE id_agente_modulo = %d
 			AND utimestamp <= %d 
 			AND utimestamp >= %d 
 		ORDER BY utimestamp DESC',
-		$id_agent_module, $utimestamp, $utimestamp - 172800);
+		$id_agent_module, $utimestamp, $utimestamp - SECONDS_2DAY);
 
 	return db_get_row_sql ($sql, true);
 }

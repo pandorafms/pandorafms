@@ -113,17 +113,17 @@ if ($id_event != -1)
 	
 $timestamp_filter = '';	
 if ($event_view_hr > 0) {
-	$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
+	$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR); //Put hours in seconds
 	$timestamp_filter = " AND (utimestamp > 	$unixtime OR estado = 2)";
 }
 
 if ($id_user_ack != "0")
 	$filter['id_usuario'] = $id_user_ack;
-	
+
 //Search by tag
 if ($tag != "") {
 	$filter['tags'] = "%".io_safe_input($tag)."%";
-}	
+}
 
 //$filter['order'] = 'timestamp DESC';
 $now = date ("Y-m-d");
@@ -150,7 +150,7 @@ $new = true;
 while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	$new = false;
 	if (!check_acl($config["id_user"], $event["id_grupo"], "AR") ||
-	(!check_acl($config["id_user"], 0, "PM") && $event["event_type"] == 'system'))
+		(!check_acl($config["id_user"], 0, "PM") && $event["event_type"] == 'system'))
 		continue;
 	
 	echo $event["timestamp"];

@@ -3,11 +3,11 @@
  * @package Include/help/en
  */
 ?>
-      <p class="para">
-       The format of the outputted date string. See the formatting
-       options below.
-      </p>
-      <p class="para">
+	<p class="para">
+		The format of the outputted date string. See the formatting
+		options below.
+	</p>
+	<p class="para">
 
        </p><table border="5">
         <caption><b>The following characters are recognized in the

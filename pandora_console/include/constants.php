@@ -109,6 +109,15 @@ define('GENERIC_SIZE_TEXT', 25);
 
 
 
+/* Agent module status */
+define('AGENT_MODULE_STATUS_CRITICAL_BAD', 1);
+define('AGENT_MODULE_STATUS_CRITICAL_ALERT', 4);
+define('AGENT_MODULE_STATUS_NORMAL', 0);
+define('AGENT_MODULE_STATUS_WARNING', 2);
+define('AGENT_MODULE_STATUS_UNKNOW', 3);
+
+
+
 /* Visual maps contants */
 //The items kind
 define('STATIC_GRAPH', 0);
@@ -146,4 +155,27 @@ define('SERVICE_STATUS_UNKNOW', -1);
 define('SERVICE_STATUS_NORMAL', 0);
 define('SERVICE_STATUS_CRITICAL', 1);
 define('SERVICE_STATUS_WARNING', 2);
+
+
+
+/* Status images */
+//For modules
+define ('STATUS_MODULE_OK', 'module_ok.png');
+define ('STATUS_MODULE_CRITICAL', 'module_critical.png');
+define ('STATUS_MODULE_WARNING', 'module_warning.png');
+define ('STATUS_MODULE_NO_DATA', 'module_no_data.png');
+define ('STATUS_MODULE_UNKNOWN', 'module_unknown.png');
+//For agents
+define ('STATUS_AGENT_CRITICAL', 'agent_critical.png');
+define ('STATUS_AGENT_WARNING', 'agent_warning.png');
+define ('STATUS_AGENT_DOWN', 'agent_down.png');
+define ('STATUS_AGENT_OK', 'agent_ok.png');
+define ('STATUS_AGENT_NO_DATA', 'agent_no_data.png');
+//For alerts
+define ('STATUS_ALERT_FIRED', 'alert_fired.png');
+define ('STATUS_ALERT_NOT_FIRED', 'alert_not_fired.png');
+define ('STATUS_ALERT_DISABLED', 'alert_disabled.png');
+//For servers
+define ('STATUS_SERVER_OK', 'server_ok.png');
+define ('STATUS_SERVER_DOWN', 'server_down.png');
 ?>

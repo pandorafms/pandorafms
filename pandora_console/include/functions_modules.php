@@ -1006,7 +1006,7 @@ function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = f
 	if (!$without_alerts) {
 		$times_fired = db_get_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
 		if ($times_fired > 0) {
-			return 4; // Alert fired
+			return AGENT_MODULE_STATUS_CRITICAL_ALERT; // Alert fired
 		}
 	}
 	

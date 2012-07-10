@@ -1,5 +1,17 @@
 2012-07-10 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_ui.php: moved the constants for the status
+	images to contants file.
+	
+	* include/constants.php: added the contants for the
+	"Agent module status" and added contants for the "Status images"
+	from functions_ui.php.
+	
+	* include/functions_modules.php: killed a unicorn (magic number)
+	into the function "modules_get_agentmodule_status".
+
+2012-07-10 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_networkmap.php, include/functions_netflow.php,
 	extensions/snmp_explorer.php, operation/netflow/nf_live_view.php,
 	operation/agentes/estado_monitores.php,

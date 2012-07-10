@@ -64,11 +64,11 @@
     <string name="notification_criticity_3_str">Hay %s eventos y algunos son Aviso.</string>
     <string name="notification_criticity_4_str">Hay %s eventos y algunos son Criticos.</string>
     
-    <string name="loading_events_criticity_0_str">Cargando los %s eventos y todos son de Mantenimiento.</string>
-    <string name="loading_events_criticity_1_str">Cargando los %s eventos y algunos son Información.</string>
-    <string name="loading_events_criticity_2_str">Cargando los %s eventos y algunos son Normales.</string>
-    <string name="loading_events_criticity_3_str">Cargando los %s eventos y algunos son Aviso.</string>
-    <string name="loading_events_criticity_4_str">Cargando los %s eventos y algunos son Criticos.</string>
+    <string name="loading_events_criticity_0_str">Cargando eventos (todos son de Mantenimiento).</string>
+    <string name="loading_events_criticity_1_str">Cargando eventos (algunos son Información).</string>
+    <string name="loading_events_criticity_2_str">Cargando eventos (algunos son Normales).</string>
+    <string name="loading_events_criticity_3_str">Cargando eventos (algunos son Aviso).</string>
+    <string name="loading_events_criticity_4_str">Cargando eventos (algunos son Criticos).</string>
     
     <string name="successful_validate_event_str">Validación del evento correcta.</string>
     <string name="fail_validate_event_str">Validación del evento incorrecta.</string>

@@ -17,7 +17,7 @@ public class OnBootLoader extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.i(TAG, "onReceive: starting service");
-		Core.setFetchFrequency(context);
+		Core.setBackgroundServiceFetchFrequency(context);
 	}
 
 }

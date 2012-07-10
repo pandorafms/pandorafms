@@ -64,6 +64,8 @@ import android.widget.Toast;
 public class Main extends Activity {
 	private static String TAG = "MAIN";
 	private static String PROFILE_PREFIX = "profile:";
+	private static String DEFAULT_PROFILE_NAME = "Default";
+	private static String DEFAULT_PROFILE = "0|3||||0|6";
 	private PandroidEventviewerActivity object;
 	private HashMap<Integer, String> pandoraGroups;
 	private Spinner comboSeverity;
@@ -204,7 +206,13 @@ public class Main extends Activity {
 						switch (which) {
 						case DialogInterface.BUTTON_POSITIVE:
 							if (Core.containsIgnoreCase(profiles, profileName
-									.getText().toString())) {
+									.getText().toString())
+									|| profileName
+											.getText()
+											.toString()
+											.toLowerCase()
+											.equals(DEFAULT_PROFILE_NAME
+													.toLowerCase())) {
 								Toast.makeText(context,
 										R.string.profile_already_exists,
 										Toast.LENGTH_SHORT).show();
@@ -524,7 +532,7 @@ public class Main extends Activity {
 		editorPreferences.putInt("filterLastTime", filterLastTime);
 
 		if (editorPreferences.commit()) {
-			Core.setFetchFrequency(getApplicationContext());
+			Core.setBackgroundServiceFetchFrequency(getApplicationContext());
 			Toast toast = Toast.makeText(getApplicationContext(),
 					this.getString(R.string.filter_update_succesful_str),
 					Toast.LENGTH_SHORT);
@@ -632,6 +640,9 @@ public class Main extends Activity {
 				Activity.MODE_PRIVATE);
 		SharedPreferences.Editor editorPreferences = preferences.edit();
 		// Profile
+		Log.i(TAG, "Saved: " + PROFILE_PREFIX + profileName + group + "|"
+				+ status + "|" + tag + "|" + agentName + "|" + eventSearch
+				+ "|" + severity + "|" + oldestEvent);
 		editorPreferences.putString(PROFILE_PREFIX + profileName, group + "|"
 				+ status + "|" + tag + "|" + agentName + "|" + eventSearch
 				+ "|" + severity + "|" + oldestEvent);
@@ -675,11 +686,16 @@ public class Main extends Activity {
 	 *            Profile name.
 	 */
 	private void setProfile(String profileName) {
-		SharedPreferences preferences = getSharedPreferences(
-				this.getString(R.string.const_string_preferences),
-				Activity.MODE_PRIVATE);
-		String profileData = preferences.getString(
-				PROFILE_PREFIX + profileName, "");
+		String profileData = "";
+		if (profileName.equals(DEFAULT_PROFILE_NAME)) {
+			profileData = DEFAULT_PROFILE;
+		} else {
+			SharedPreferences preferences = getSharedPreferences(
+					this.getString(R.string.const_string_preferences),
+					Activity.MODE_PRIVATE);
+			profileData = preferences.getString(PROFILE_PREFIX + profileName,
+					"");
+		}
 		String options[] = profileData.split("\\|");
 		if (options.length == 7) {
 			try {
@@ -756,7 +772,7 @@ public class Main extends Activity {
 	 */
 	private void loadProfiles() {
 		profiles = new LinkedList<String>();
-		profiles.add("");
+		profiles.add(DEFAULT_PROFILE_NAME);
 		profiles.addAll(getAllProfiles());
 		Spinner combo = (Spinner) findViewById(R.id.profile_combo);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(

@@ -50,6 +50,9 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -114,7 +117,7 @@ public class Core {
 	 * @param ctx
 	 *            Application context.
 	 */
-	public static void setFetchFrequency(Context ctx) {
+	public static void setBackgroundServiceFetchFrequency(Context ctx) {
 		SharedPreferences preferences = ctx.getSharedPreferences(
 				ctx.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
@@ -139,6 +142,16 @@ public class Core {
 			Log.i(TAG,
 					"Service wasn't started because the options aren't configured yet");
 		}
+	}
+
+	public static void cancelBackgroundService(Context ctx) {
+		AlarmManager alarmM = (AlarmManager) ctx
+				.getSystemService(Context.ALARM_SERVICE);
+		PendingIntent pandroidService = PendingIntent.getService(ctx, 0,
+				new Intent(ctx, PandroidEventviewerService.class), 0);
+		Log.i(TAG, "Background service cancelled");
+		alarmM.cancel(pandroidService);
+
 	}
 
 	/**
@@ -344,7 +357,11 @@ public class Core {
 			// Secure connection
 			return Core.httpsGet(url, parameters);
 		} else {
-			DefaultHttpClient httpClient = new DefaultHttpClient();
+			HttpParams params = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(params,
+					CONNECTION_TIMEOUT);
+			HttpConnectionParams.setSoTimeout(params, CONNECTION_TIMEOUT);
+			DefaultHttpClient httpClient = new DefaultHttpClient(params);
 			UrlEncodedFormEntity entity;
 			HttpPost httpPost;
 			HttpResponse response;

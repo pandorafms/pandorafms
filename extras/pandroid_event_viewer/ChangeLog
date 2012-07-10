@@ -1,3 +1,17 @@
+2012-07-10 Santiago Munín <burning1@gmail.com>
+	* res/layout/item_list_incident_layout.xml: Deleted file, no longer needed.
+	* res/layout/main.xml: Little changes.
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Removed some commented lines.
+	* src/pandroid_event_viewer/pandorafms/Core.java: Set HTTP request timeout.
+	* src/pandroid_event_viewer/pandorafms/Main.java: Set default profile.
+	* src/pandroid_event_viewer/pandorafms/OnBootLoader.java,
+	  src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java.
+	* src/pandroid_event_viewer/pandorafms/Core.java: Added a method to cancel the background service.
+	* src/pandroid_event_viewer/pandorafms/Options.java: Now users can choose if they want the program to check events periodically in background.
+	* res/layout/options.xml: New checkbox and textview.
+	* res/values/strings.xml,
+	  res/values-es/strings.xml: Added and modified some entries.
+	
 2012-07-09  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* src/pandroid_event_viewer/pandorafms/About.java,

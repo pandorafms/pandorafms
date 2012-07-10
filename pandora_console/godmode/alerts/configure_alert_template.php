@@ -336,9 +336,9 @@ if ($create_template) {
 	$matches = (bool) get_parameter ('matches_value');
 	$priority = (int) get_parameter ('priority');
 	$id_group = get_parameter ("id_group");
-        $name_check = db_get_value ('name', 'talert_templates', 'name', $name);
-
-	switch ($config['dbtype']){
+	$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
+	
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
 			$values = array ('description' => $description,
@@ -511,7 +511,8 @@ if ($step == 2) {
 	$table->data[4][1] = html_print_select_from_sql ($sql_query,
 		'default_action', $default_action, '', __('None'), 0,
 		true, false, false).ui_print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
-} else if ($step == 3) {
+}
+else if ($step == 3) {
 	/* Alert recover */
 	if (! $recovery_notify) {
 		$table->rowstyle = array ();
@@ -531,7 +532,8 @@ if ($step == 2) {
 	$table->data['field3'][0] = __('Field 3');
 	$table->data['field3'][1] = html_print_textarea ('field3_recovery', 10, 30,
 		$field3_recovery, '', true);
-} else {
+}
+else {
 	/* Step 1 by default */
 	$table->size = array ();
 	$table->size[0] = '20%';
@@ -543,39 +545,39 @@ if ($step == 2) {
 	
 	$show_matches = false;
 	switch ($type) {
-	case "equal":
-	case "not_equal":
-	case "regex":
-		$show_matches = true;
-		$table->rowstyle['value'] = '';
-		break;
-	case "max_min":
-		$show_matches = true;
-	case "max":
-		$table->rowstyle['max'] = '';
-		if ($type == 'max')
+		case "equal":
+		case "not_equal":
+		case "regex":
+			$show_matches = true;
+			$table->rowstyle['value'] = '';
 			break;
-	case "min":
-		$table->rowstyle['min'] = '';
-		break;
-	case "onchange":
-		$show_matches = true;
-		break;
+		case "max_min":
+			$show_matches = true;
+		case "max":
+			$table->rowstyle['max'] = '';
+			if ($type == 'max')
+				break;
+		case "min":
+			$table->rowstyle['min'] = '';
+			break;
+		case "onchange":
+			$show_matches = true;
+			break;
 	}
-
+	
 	$table->data[0][0] = __('Name');
 	$table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
-
+	
 	$table->data[0][1] .= "&nbsp;&nbsp;". __("Group");
 	$groups = users_get_groups ();
 	$own_info = get_user_info($config['id_user']);
 	// Only display group "All" if user is administrator or has "PM" privileges
 	if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 		$display_all_group = true;
-	else	
+	else
 		$display_all_group = false;
 	$table->data[0][1] .= "&nbsp;".html_print_select_groups(false, "AR", $display_all_group, 'id_group', $id_group, '', '', 0, true);
-
+	
 	$table->data[1][0] = __('Description');
 	$table->data[1][1] =  html_print_textarea ('description', 10, 30,
 		$description, '', true);
@@ -592,7 +594,7 @@ if ($step == 2) {
 	$table->data[3][1] .= html_print_label (__('Trigger when matches the value'),
 		'checkbox-matches_value', true);
 	$table->data[3][1] .= '</span>';
-
+	
 	$table->data['value'][0] = __('Value');
 	$table->data['value'][1] = html_print_input_text ('value', $value, '',
 		35, 255, true);
@@ -606,7 +608,7 @@ if ($step == 2) {
 			'id' => 'regex_bad',
 			'title' => __('The regular expression is not valid')));
 	$table->data['value'][1] .= '</span>';
-
+	
 	//Min first, then max, that's more logical
 	$table->data['min'][0] = __('Min.');
 	$table->data['min'][1] = html_print_input_text ('min', $min, '', 5, 255, true);
@@ -621,7 +623,8 @@ if ($step == 2) {
 /* If it's the last step it will redirect to template lists */
 if ($step >= LAST_STEP) {
 	echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_templates">';
-} else {
+}
+else {
 	echo '<form method="post">';
 }
 html_print_table ($table);
@@ -630,13 +633,15 @@ echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
 	html_print_input_hidden ('id', $id);
 	html_print_input_hidden ('update_template', 1);
-} else {
+}
+else {
 	html_print_input_hidden ('create_template', 1);
 }
 
 if ($step >= LAST_STEP) {
 	html_print_submit_button (__('Finish'), 'finish', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('step', $step + 1);
 	html_print_submit_button (__('Next'), 'next', false, 'class="sub next"');
 }
@@ -685,7 +690,8 @@ function render_example () {
 	vmax = parseInt ($("input#text-max").attr ("value"));
 	if (isNaN (vmax) || vmax == "") {
 		$("span#max").empty ().append ("0");
-	} else {
+	}
+	else {
 		$("span#max").empty ().append (vmax);
 	}
 	
@@ -693,7 +699,8 @@ function render_example () {
 	vmin = parseInt ($("input#text-min").attr ("value"));
 	if (isNaN (vmin) || vmin == "") {
 		$("span#min").empty ().append ("0");
-	} else {
+	}
+	else {
 		$("span#min").empty ().append (vmin);
 	}
 	
@@ -701,7 +708,8 @@ function render_example () {
 	vvalue = $("input#text-value").attr ("value");
 	if (vvalue == "") {
 		$("span#value").empty ().append ("<em><?php echo __('Empty');?></em>");
-	} else {
+	}
+	else {
 		$("span#value").empty ().append (vvalue);
 	}
 }

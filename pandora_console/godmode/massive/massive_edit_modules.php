@@ -310,7 +310,7 @@ $groups[0] = __('All');
 $table->colspan[2][1] = 2;
 $table->data[2][1] = html_print_select ($groups, 'groups_select',
 	'', true, __('Select'), -1, true, false, true).
-        ' '.__('Group recursion').' '.html_print_checkbox ("recursion", 1, false, true, false);
+	' '.__('Group recursion').' '.html_print_checkbox ("recursion", 1, false, true, false);
 $table->data[2][3] = __('Select all modules of this group').' '.html_print_checkbox_extended ("force_group", 'group', '', '', false, '', 'style="margin-right: 40px;"', true);
 
 $table->rowstyle[3] = 'vertical-align: top;';
@@ -325,13 +325,13 @@ $table->data[3][2] .= html_print_select (array('common' => __('Show common agent
 	'common', false, '', '', true);
 $table->data[3][3] = html_print_select (array(), 'agents[]',
 	$agents_select, false, __('None'), 0, true, true, false);
-	
+
 $table->rowstyle[4] = 'vertical-align: top;';
 $table->rowclass[4] = 'select_agents_row select_agents_row_2';
 $table->data[4][0] = __('Agents');
 $table->data[4][1] = html_print_select ($agents, 'id_agents[]',
 	$agents_id, false, '', '', true, true, false);
-	
+
 $table->data[4][2] = __('When select agents');
 $table->data[4][2] .= '<br>';
 $table->data[4][2] .= html_print_select (array('common' => __('Show common modules'), 'all' => __('Show all modules')), 'modules_selection_mode',

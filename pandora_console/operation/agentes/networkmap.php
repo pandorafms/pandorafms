@@ -39,7 +39,7 @@ $update_networkmap = get_parameter ('update_networkmap', 0);
 $recenter_networkmap = get_parameter ('recenter_networkmap', 0);
 $hidden_options = get_parameter ('hidden_options', 1);
 
-if($delete_networkmap) {
+if ($delete_networkmap) {
 	$result = networkmap_delete_networkmap($id_networkmap);
 	$message = ui_print_result_message ($result,
 		__('Network map deleted successfully'),
@@ -50,7 +50,7 @@ if($delete_networkmap) {
 	$id_networkmap = 0;
 }
 
-if($add_networkmap) {
+if ($add_networkmap) {
 	// Load variables
 	$layout = 'radial';
 	$depth = 'all';
@@ -77,9 +77,9 @@ if($add_networkmap) {
 	}
 	else {
 		$id_networkmap = networkmap_create_networkmap($name, $activeTab, $layout, $nooverlap, $simple, $regen, $font_size, $group, $module_group, $depth, $modwithalerts, $hidepolicymodules, $zoom, $ranksep, $center);
-                $message = ui_print_result_message ($id_networkmap,
-                        __('Network map created successfully'),
-                        __('Could not create network map'), '', true);
+		$message = ui_print_result_message ($id_networkmap,
+			__('Network map created successfully'),
+			__('Could not create network map'), '', true);
 	}
 }
 
@@ -103,7 +103,7 @@ if($save_networkmap || $update_networkmap) {
 	$check = db_get_value('name', 'tnetwork_map', 'name', $name);
 	$subcheck = db_get_value('name', 'tnetwork_map', 'id_networkmap', $id_networkmap);
 	
-	if($save_networkmap){
+	if($save_networkmap) {
 		if (!$check || $subcheck == $name) {
 			$result = networkmap_update_networkmap($id_networkmap, array('name' => $name, 'type' => $activeTab, 'layout' => $layout, 
 							'nooverlap' => $nooverlap, 'simple' => $simple, 'regenerate' => $regen, 'font_size' => $font_size, 
@@ -185,11 +185,11 @@ if($config['enterprise_installed']) {
 $buttons['groups'] = array('active' => $activeTab == 'groups',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=groups&amp;pure='.$pure.'">' . 
 			html_print_image("images/group.png", true, array ("title" => __('Groups view'))) .'</a>');
-			
+
 $buttons['topology'] = array('active' => $activeTab == 'topology',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
 			html_print_image("images/recon.png", true, array ("title" => __('Topology view'))) .'</a>');
-			
+
 $buttons['separator'] = array('separator' => '');
 
 $combolist = '<form name="query_sel" method="post" action="index.php?sec=network&sec2=operation/agentes/networkmap">';
@@ -206,11 +206,11 @@ $buttons['addmap'] = array('active' => $activeTab == false,
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;add_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
 			html_print_image("images/add.png", true, array ("title" => __('Add map'))) .'</a>');
 
-if(!$nomaps && $id_networkmap != 0) {			
+if (!$nomaps && $id_networkmap != 0) {
 	$buttons['deletemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;delete_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
 				html_print_image("images/cross.png", true, array ("title" => __('Delete map'))) .'</a>');
-
+	
 	$buttons['savemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;save_networkmap=1
 					&amp;tab='.$activeTab.'&amp;save_networkmap=1&amp;name='.$name.'&amp;group='.$group.'

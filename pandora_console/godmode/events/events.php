@@ -41,20 +41,24 @@ $buttons = array(
 			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields">' .
 			html_print_image("images/god6.png", true, array ("title" => __('Custom fields'))) . '</a>'),
 	);
-	
-switch ($section){
-	case 'filter':      $buttons['filter']['active'] = true;
-						$subpage = ' - ' . __('Filters');
-						break;
-	case 'fields': 		$buttons['fields']['active'] = true;
-						$subpage = ' - ' . __('Custom fields');
-						break;
-	case 'view':   		$buttons['view']['active'] = true;
-						break;
-	default: 	   		$buttons['filter']['active'] = true;
-						$subpage = ' - ' . __('Filters');
-						break;
-}	
+
+switch ($section) {
+	case 'filter':
+		$buttons['filter']['active'] = true;
+		$subpage = ' - ' . __('Filters');
+		break;
+	case 'fields':
+		$buttons['fields']['active'] = true;
+		$subpage = ' - ' . __('Custom fields');
+		break;
+	case 'view':
+		$buttons['view']['active'] = true;
+		break;
+	default:
+		$buttons['filter']['active'] = true;
+		$subpage = ' - ' . __('Filters');
+		break;
+}
 
 ui_print_page_header (__("Manage events") . $subpage, "images/lightning_go.png", false, "", true, $buttons);
 

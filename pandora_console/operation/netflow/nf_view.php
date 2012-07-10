@@ -46,7 +46,8 @@ if($update_date){
 	$date = get_parameter_post ('date');
 	$time = get_parameter_post ('time');
 	$interval = get_parameter('period','86400');
-} else {
+}
+else {
 	$date = date ("Y/m/d", get_system_time ());
 	$time = date ("H:i:s", get_system_time ());
 	$interval ='86400';
@@ -55,9 +56,9 @@ $end_date = strtotime ($date . " " . $time);
 $start_date = $end_date - $interval;
 
 $buttons['report_list'] = '<a href="index.php?sec=netf&sec2=operation/netflow/nf_reporting">'
-		. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
-		. '</a>';
-		
+	. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
+	. '</a>';
+
 //Header
 ui_print_page_header (__('Netflow'), "images/networkmap/so_cisco_new.png", false, "", false, $buttons);
 

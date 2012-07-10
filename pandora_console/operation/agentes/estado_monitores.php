@@ -260,12 +260,12 @@ foreach ($modules as $module) {
 		if ($module["id_policy_module"] != 0) {
 			$linked = policies_is_module_linked($module['id_agente_modulo']);
 			$id_policy = db_get_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
-
-            if ($id_policy != "")
-                $name_policy = db_get_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
-            else
-                $name_policy = __("Unknown");
-
+			
+			if ($id_policy != "")
+				$name_policy = db_get_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
+			else
+				$name_policy = __("Unknown");
+			
 			$policyInfo = policies_info_module_policy($module["id_policy_module"]);
 			
 			$adopt = false;
@@ -293,7 +293,7 @@ foreach ($modules as $module) {
 					$title = __('(Unlinked) ') . $name_policy;
 				}
 			}
-
+			
 			$data[1] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $id_policy . '">' . 
 				html_print_image($img,true, array('title' => $title)) .
 				'</a>';

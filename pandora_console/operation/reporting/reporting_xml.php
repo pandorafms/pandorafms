@@ -109,10 +109,11 @@ check_login ();
 
 $id_report = (int) get_parameter ('id');
 
-if (! $id_report) {
+if (!$id_report) {
 	db_pandora_audit("HACK Attempt",
-			  "Trying to access graph viewer without valid ID");
+		"Trying to access graph viewer without valid ID");
 	require ("general/noaccess.php");
+	
 	exit;
 }
 
@@ -184,9 +185,9 @@ foreach ($contents as $content) {
 	$data["period"] = human_time_description_raw ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
-
-    $session_id = session_id();
-
+	
+	$session_id = session_id();
+	
 	switch ($content["type"]) {
 		case 1:
 		case 'simple_graph':	
@@ -201,13 +202,13 @@ foreach ($contents as $content) {
 			$data["objdata"]["img"] = $url; 
 			
 			break;
-		case 'simple_baseline_graph':	
+		case 'simple_baseline_graph':
 			$data["title"] = __('Simple baseline graph');
 			
 			$img = grafico_modulo_sparse($content['id_agent_module'],
 				$content['period'], 0, 720,
 				230, '', null, false, true, false, ($datetime + $content['period']), '', true, 0, true, true);
-				
+			
 			preg_match("/src='(.*)'/", $img, $matches);
 			$url = "<![CDATA[".$matches[1]."]]>";
 			
@@ -218,15 +219,15 @@ foreach ($contents as $content) {
 			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 			$data["title"] = __('Custom graph');
 			$data["objdata"]["img_name"] = $graph["name"];
-	
+			
 			$result = db_get_all_rows_field_filter ("tgraph_source","id_graph",$content['id_gs']);
 			$modules = array ();
 			$weights = array ();
-		
+			
 			if ($result === false) {
 				$result = array();
 			}
-	
+			
 			foreach ($result as $content2) {
 				array_push ($modules, $content2['id_agent_module']);
 				array_push ($weights, $content2["weight"]);
@@ -247,20 +248,20 @@ foreach ($contents as $content) {
 			
 			preg_match("/src='(.*)'/", $img, $matches);
 			$url = "<![CDATA[".$matches[1]."]]>";
-				
+			
 			$data["objdata"]["img"] = $url;
 			
 			break;
 		case 3:
 		case 'SLA':
 			$data["title"] = __('S.L.A.');
-	
+			
 			$slas = db_get_all_rows_field_filter ('treport_content_sla_combined','id_report_content', $content['id_rc']);
 			if ($slas === false) {
 				$data["objdata"]["error"] = __('There are no SLAs defined');
 				$slas = array ();
 			}
-	
+			
 			$data["objdata"]["sla"] = array ();
 			$sla_failed = false;
 			
@@ -273,7 +274,8 @@ foreach ($contents as $content) {
 				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'], $sla['sla_min'], $sla['sla_max'], $datetime, $content, $content['time_from'], $content['time_to']);
 				if ($sla_value === false) {
 					$sla_data["error"] = __('Unknown');
-				} else {
+				}
+				else {
 					if ($sla_value < $sla['sla_limit']) {
 						$sla_data["failed"] = true;
 					}
@@ -288,7 +290,8 @@ foreach ($contents as $content) {
 			$monitor_value = reporting_get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime);
 			if ($monitor_value === false) {
 				$monitor_value = __('Unknown');
-			} else {
+			}
+			else {
 				$monitor_value = format_numeric ($monitor_value);
 			}
 			$data["objdata"]["good"] = $monitor_value;
@@ -303,7 +306,8 @@ foreach ($contents as $content) {
 			$data["objdata"] = reporting_get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime);
 			if ($data["objdata"] === false) {
 				$data["objdata"] = __('Unknown');
-			} else {
+			}
+			else {
 				$data["objdata"] = format_numeric ($data["objdata"]);
 			}
 			break;
@@ -313,7 +317,8 @@ foreach ($contents as $content) {
 			$data["objdata"] = reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime);
 			if ($data["objdata"] === false) {
 				$data["objdata"] = __('Unknown');
-			} else {
+			}
+			else {
 				$data["objdata"] = format_numeric ($data["objdata"]);
 			}
 			break;
@@ -323,7 +328,8 @@ foreach ($contents as $content) {
 			$data["objdata"] = reporting_get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $datetime);
 			if ($data["objdata"] === false) {
 				$data["objdata"] = __('Unknown');
-			} else {
+			}
+			else {
 				$data["objdata"] = format_numeric ($data["objdata"]);
 			}
 			break;
@@ -333,7 +339,8 @@ foreach ($contents as $content) {
 			$data["objdata"] = reporting_get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime);
 			if ($data["objdata"] === false) {
 				$data["objdata"] = __('Unknown');
-			} else {
+			}
+			else {
 				$data["objdata"] = format_numeric ($data["objdata"]);
 			}
 			break;
@@ -527,14 +534,14 @@ foreach ($contents as $content) {
 			break;
 		case 'url':
 			$data["title"] = __('Import text from URL');
-				
+			
 			$curlObj = curl_init();
 			
 			curl_setopt($curlObj, CURLOPT_URL, $content['external_source']);
 			curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
-	        $output = curl_exec($curlObj);
+			$output = curl_exec($curlObj);
 			curl_close($curlObj);
-	        
+			
 			$data["objdata"] = $output;
 			break;
 		case 'database_serialized':
@@ -580,10 +587,11 @@ foreach ($contents as $content) {
 			$ttr = reporting_get_agentmodule_ttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($ttr === false) {
 				$ttr = __('Unknown');
-			} else if ($ttr != 0) {
+			}
+			else if ($ttr != 0) {
 				$ttr = human_time_description_raw ($ttr);
 			}
-
+			
 			$data["title"] = __('TTRT');
 			$data["objdata"] = $ttr;
 			break;
@@ -591,10 +599,11 @@ foreach ($contents as $content) {
 			$tto = reporting_get_agentmodule_tto ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($tto === false) {
 				$tto = __('Unknown');
-			} else if ($tto != 0) {
+			}
+			else if ($tto != 0) {
 				$tto = human_time_description_raw ($tto);
 			}
-				
+			
 			$data["title"] =  __('TTO');
 			$data["objdata"] = $tto;
 			break;
@@ -602,10 +611,11 @@ foreach ($contents as $content) {
 			$mtbf = reporting_get_agentmodule_mtbf ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($mtbf === false) {
 				$mtbf = __('Unknown');
-			} else if ($mtbf != 0) {
+			}
+			else if ($mtbf != 0) {
 				$mtbf = human_time_description_raw ($mtbf);
 			}
-				
+			
 			$data["title"] = __('MTBF');
 			$data["objdata"] = $mtbf;
 			break;
@@ -613,10 +623,11 @@ foreach ($contents as $content) {
 			$mttr = reporting_get_agentmodule_mttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($mttr === false) {
 				$mttr = __('Unknown');
-			} else if ($mttr != 0) {
+			}
+			else if ($mttr != 0) {
 				$mttr = human_time_description_raw ($mttr);
 			}
-				
+			
 			$data["title"] = __('MTTR');
 			$data["objdata"] = $mttr;
 			break;
@@ -629,7 +640,7 @@ foreach ($contents as $content) {
 			$id_agent = $es['id_agents'];
 			$module_name = $es['inventory_modules'];
 			$date = $es['date'];
-
+			
 			$data["objdata"]["inventory"] = inventory_get_data((array)$id_agent,(array)$module_name,$date,'',false, 'array');
 			break;
 		case 'inventory_changes':
@@ -640,9 +651,9 @@ foreach ($contents as $content) {
 			
 			$id_agent = $es['id_agents'];
 			$module_name = $es['inventory_modules'];
-
+			
 			$data["objdata"]["inventory_changes"] = inventory_get_changes($id_agent, $module_name, $report["datetime"] - $content['period'], $report["datetime"], 'array');
-
+			
 			break;
 	}
 	xml_array ($data);

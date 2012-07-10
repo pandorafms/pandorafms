@@ -93,7 +93,7 @@ if ($add) {
 							$results = false;
 					}
 				}
-			
+				
 				db_pandora_audit("Masive management", "Add alert action " . json_encode($id_agents), false, false, 'Agents: ' . 
 					json_encode($id_agents) . ' Alerts : ' . json_encode($agent_alerts) .
 					' Fires Min: ' . $fires_min . ' Fires Max: ' . $fires_max . ' Actions: ' . implode(',',$actions));
@@ -204,44 +204,45 @@ $(document).ready (function () {
 			$("option", $select_template).remove ();
 		}
 	});
-
+	
 	$("#id_agents").change (function () {
 		update_alerts();
 	});
-
+	
 	function update_alerts() {
 		var idAgents = Array();
 		jQuery.each ($("#id_agents option:selected"), function (i, val) {
 			idAgents.push($(val).val());
-                });
+		});
 		$("#template_loading").show();
-
+		
 		var $select_template = $("#id_alert_templates").disable ();
 		$("option", $select_template).remove ();
 		
 		jQuery.post ("ajax.php",
-				{"page" : "godmode/massive/massive_add_action_alerts",
+			{
+				"page" : "godmode/massive/massive_add_action_alerts",
 				"get_alerts" : 1,
 				"id_agents[]" : idAgents
-                                },
-				function (data, status) {
-					options = "";
-					jQuery.each (data, function (id, value) {
-							options += "<option value=\""+id+"\">"+value+"</option>";
-					});
-					
-					if(options == "") {
-						options += "<option><?php echo __('None'); ?></option>";
-					}
-					
-					$("#id_alert_templates").append (options);
-					$("#template_loading").hide ();
-					$select_template.enable ();
-				},
-				"json"
-			);
+			},
+			function (data, status) {
+				options = "";
+				jQuery.each (data, function (id, value) {
+						options += "<option value=\""+id+"\">"+value+"</option>";
+				});
+				
+				if (options == "") {
+					options += "<option><?php echo __('None'); ?></option>";
+				}
+				
+				$("#id_alert_templates").append (options);
+				$("#template_loading").hide ();
+				$select_template.enable ();
+			},
+			"json"
+		);
 	}
-
+	
 	$("a.show_advanced_actions").click (function () {
 		/* It can be done in two different sites, so it must use two different selectors */
 		actions = $(this).parents ("form").children ("span.advanced_actions");
@@ -249,6 +250,7 @@ $(document).ready (function () {
 			actions = $(this).parents ("div").children ("span.advanced_actions")
 		$("#advanced_actions").removeClass("advanced_actions invisible");
 		$(this).remove ();
+		
 		return false;
 	});
 	

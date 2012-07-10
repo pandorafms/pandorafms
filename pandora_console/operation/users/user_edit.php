@@ -113,7 +113,8 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 				$pass_ok = login_validate_pass($password_new, $id, true);
 				if ($pass_ok != 1) {
 					ui_print_error_message($pass_ok);
-				} else {
+				}
+				else {
 					$return = update_user_password ($id, $password_new);
 					if ($return) {
 						$return2 = save_pass_history($id, $password_new);
@@ -122,45 +123,39 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 					__('Password successfully updated'),
 					__('Error updating passwords: %s', $config['auth_error']));
 				}
-			} else {
+			}
+			else {
 				$return = update_user_password ($id, $password_new);
 				ui_print_result_message ($return,
 					__('Password successfully updated'),
 					__('Error updating passwords: %s', $config['auth_error']));
 			}
 			
-		} elseif ($password_new !== "NON-INIT") {
+		}
+		elseif ($password_new !== "NON-INIT") {
 			ui_print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
 		}
 	}
-
+	
 	// No need to display "error" here, because when no update is needed (no changes in data) 
 	// SQL function returns	0 (FALSE), but is not an error, just no change. Previous error
 	// message could be confussing to the user.
-
+	
 	$return = update_user ($id, $upd_info);
 	if ($return > 0) {
 		ui_print_result_message ($return,
 			__('User info successfully updated'),
 			__('Error updating user info'));
 	}
-
-	// Reload page to update skin
-       /* if ($return){
-                header ('location:' . $config['homeurl'] . '/index.php?sec=workspace&sec2=operation/users/user_edit&status=1');
-        }
-        else{
-                header ('location:' . $config['homeurl'] . '/index.php?sec=workspace&sec2=operation/users/user_edit&status=0');
-        }*/
-
+	
 	$user_info = $upd_info;
 }
 
 // Prints action status for current message 
-if ($status != -1){
+if ($status != -1) {
 	ui_print_result_message ($status,
-       		__('User info successfully updated'),
-             	__('Error updating user info'));
+		__('User info successfully updated'),
+		__('Error updating user info'));
 }
 
 

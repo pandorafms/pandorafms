@@ -242,7 +242,7 @@ $groups[0] = __('All');
 $table->colspan[2][1] = 2;
 $table->data[2][1] = html_print_select ($groups, 'groups_select',
 	'', true, __('Select'), -1, true, false, true, '', false, 'width:100%').
-        ' '.__('Group recursion').' '.html_print_checkbox ("recursion", 1, false, true, false);
+	' ' . __('Group recursion') . ' ' . html_print_checkbox ("recursion", 1, false, true, false);
 $table->data[2][3] = __('Select all modules of this group').' '.html_print_checkbox_extended ("force_group", 'group', '', '', false, '', 'style="margin-right: 40px;"', true);
 
 $table->rowstyle[3] = 'vertical-align: top;';
@@ -257,7 +257,7 @@ $table->data[3][2] .= html_print_select (array('common' => __('Show common agent
 	'common', false, '', '', true, false, true, '', false);
 $table->data[3][3] = html_print_select (array(), 'agents[]',
 	$agents_select, false, __('None'), 0, true, true, false, '', false, 'width:100%');
-	
+
 $table->rowstyle[4] = 'vertical-align: top;';
 $table->rowclass[4] = 'select_agents_row select_agents_row_2';
 $table->data[4][0] = __('Agents');
@@ -303,10 +303,10 @@ $(document).ready (function () {
 	$("#module_name").change(module_changed_by_multiple_modules);
 	
 	clean_lists();
-
+	
 	$(".select_modules_row").css('display', '<?php echo $modules_row?>');
 	$(".select_agents_row").css('display', '<?php echo $agents_row?>');
-
+	
 	// Trigger change to refresh selection when change selection mode
 	$("#agents_selection_mode").change (function() {
 		$("#module_name").trigger('change');
@@ -337,7 +337,7 @@ $(document).ready (function () {
 		else {
 			filter = "id_tipo_modulo="+this.value;
 		}
-
+		
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
 		$("#module_name").attr ("disabled", "disabled")

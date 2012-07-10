@@ -1565,7 +1565,7 @@ function chooseType() {
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			break;
-        case 'sql_graph_vbar':
+		case 'sql_graph_vbar':
 			$("#row_description").show();
 			$("#row_query").show();
 			$("#row_custom").show();

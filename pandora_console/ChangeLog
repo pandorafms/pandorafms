@@ -1,5 +1,38 @@
 2012-07-10 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* install.php, operation/reporting/reporting_xml.php,
+	operation/netflow/nf_live_view.php, operation/netflow/nf_view.php,
+	operation/tree.php, operation/agentes/gis_view.php,
+	operation/agentes/estado_monitores.php,
+	operation/agentes/networkmap.php,
+	operation/agentes/datos_agente.php,
+	operation/agentes/alerts_status.php, operation/menu.php,
+	operation/snmpconsole/snmp_view.php, operation/users/user_edit.php,
+	godmode/groups/configure_group.php,
+	godmode/groups/configure_modu_group.php,
+	godmode/agentes/module_manager_editor_prediction.php,
+	godmode/servers/manage_recontask.php,
+	godmode/alerts/alert_compounds.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/alerts/alert_special_days.php, godmode/setup/links.php,
+	godmode/setup/os.php, godmode/users/configure_profile.php,
+	godmode/events/events.php,
+	godmode/massive/massive_delete_modules.php,
+	godmode/massive/massive_edit_modules.php,
+	godmode/massive/massive_standby_alerts.php,
+	godmode/massive/massive_add_action_alerts.php,
+	godmode/massive/massive_enable_disable_alerts.php,
+	godmode/massive/massive_operations.php,
+	godmode/massive/massive_delete_profiles.php,
+	godmode/modules/manage_network_components.php,
+	godmode/modules/manage_nc_groups.php,
+	godmode/reporting/graph_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	include/functions_menu.php, include/functions_visual_map.php,
+	include/functions_db.php: cleaned source code style.
+
+2012-07-10 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* extensions/agents_alerts.php, extensions/net_tools.php,
 	extensions/ssh_gateway.php,
 	extensions/update_manager/lib/libupdate_manager_components.php,

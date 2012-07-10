@@ -187,13 +187,13 @@ if (isset($name))
 
 // Header
 $tab = get_parameter("tab", ""); 
-switch ($tab){
+switch ($tab) {
 	case "main": 
 		ui_print_page_header ($head, "", false, "graph_builder", true, $buttons);
 		break;
 	case "graph_editor":
 		ui_print_page_header ($head, "", false, "graph_editor", true, $buttons);
-                break;
+		break;
 	default:
 		ui_print_page_header ($head, "", false, "graph_builder", true, $buttons);
 		break;
@@ -209,7 +209,7 @@ if ($update_graph)
 	ui_print_result_message($success, __("Update the graph"), __("Bad update the graph"));
 
 if ($delete_module) {
-		ui_print_result_message($result, __('Graph deleted successfully'), __('There was a problem deleting Graph'));
+	ui_print_result_message($result, __('Graph deleted successfully'), __('There was a problem deleting Graph'));
 }
 
 // Parse CHUNK information into showable information

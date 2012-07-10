@@ -91,7 +91,7 @@ switch ($action) {
 			$values['icon_name'] = $icon;
 		}
 		$result = false;
-                if ($name != '')
+		if ($name != '')
 			$result = db_process_sql_update('tconfig_os', $values, array('id_os' => $idOS));
 		
 		$message = ui_print_result_message($result, __('Success updatng OS'), __('Error updating OS'), '', true);
@@ -101,7 +101,7 @@ switch ($action) {
 		else {
 			$tab = 'builder';
 			$os = db_get_row_filter('tconfig_os', array('id_os' => $idOS));
-		        $name = $os['name'];
+			$name = $os['name'];
 		}
 		$actionHidden = 'update';
 		$textButton = __('Update');
@@ -133,7 +133,6 @@ $buttons = array(
 		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=builder">' . 
 			html_print_image ("images/config.png", true, array ("title" => __('Builder OS'))) .'</a>'));
 
-			
 $buttons[$tab]['active'] = true;
 
 // Header

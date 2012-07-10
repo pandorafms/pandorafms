@@ -432,7 +432,7 @@ if ($traps !== false) {
 		$data = array ();
 		if (empty($trap["description"])){
 			$trap["description"]="";
-		}		
+		}
 		$severity = enterprise_hook ('get_severity', array ($trap));
 		if ($severity === ENTERPRISE_NOT_HOOK) {
 			$severity = $trap["alerted"] == 1 ? $trap["priority"] : 1;
@@ -441,10 +441,11 @@ if ($traps !== false) {
 		//Status
 		if ($trap["status"] == 0) {
 			$data[0] = html_print_image("images/pixel_red.png", true, array("title" => __('Not validated'), "width" => "20", "height" => "20"));
-		} else {
+		}
+		else {
 			$data[0] = html_print_image("images/pixel_green.png", true, array("title" => __('Validated'), "width" => "20", "height" => "20"));
 		}
-	
+		
 		// Agent matching source address
 		$agent = agents_get_agent_with_ip ($trap['source']);
 		if ($agent === false) {
@@ -452,7 +453,8 @@ if ($traps !== false) {
 				continue;
 			}
 			$data[1] = '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap["source"].'" title="'.__('Create agent').'">'.$trap["source"].'</a>';	
-		} else {
+		}
+		else {
 			if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 				continue;
 			}
@@ -532,35 +534,42 @@ if ($traps !== false) {
 		$string = '<table style="border:solid 1px #D3D3D3;" width="90%" class="toggle">
 			<tr><td align="left" valign="top" width="15%" ><b>' . __('Custom data:') . '</b></td><td align="left" >' . $trap['oid_custom'] . '</td></tr>'
 			 . '<tr><td align="left" valign="top">' . '<b>' . __('OID:') . '</td><td align="left"> ' . $trap['oid'] . '</td></tr>';
-
-        if ($trap["description"] != ""){
-            $string .= '<tr><td align="left" valign="top">' . '<b>' . __('Description:') . '</td><td align="left">' . $trap['description'] . '</td></tr>';
-        }
-        
-        if ($trap["type"] != ""){
-$trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
-
-			switch ($trap["type"]){
-				case -1: $desc_trap_type = __('None');
-						 break;
-				case 0: $desc_trap_type = __('Cold start (0)');
-						 break;
-				case 1: $desc_trap_type = __('Warm start (1)');
-						 break;
-				case 2: $desc_trap_type = __('Link down (2)');
-						 break;
-				case 3: $desc_trap_type = __('Link up (3)');
-						 break;
-				case 4: $desc_trap_type = __('Authentication failure (4)');
-						 break;	
-				default: $desc_trap_type = __('Other');
-						 break;	
+		
+		if ($trap["description"] != "") {
+			$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Description:') . '</td><td align="left">' . $trap['description'] . '</td></tr>';
+		}
+		
+		if ($trap["type"] != "") {
+			$trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
+			
+			switch ($trap["type"]) {
+				case -1:
+					$desc_trap_type = __('None');
+					break;
+				case 0:
+					$desc_trap_type = __('Cold start (0)');
+					break;
+				case 1:
+					$desc_trap_type = __('Warm start (1)');
+					break;
+				case 2:
+					$desc_trap_type = __('Link down (2)');
+					break;
+				case 3:
+					$desc_trap_type = __('Link up (3)');
+					break;
+				case 4:
+					$desc_trap_type = __('Authentication failure (4)');
+					break;
+				default:
+					$desc_trap_type = __('Other');
+					 break;	
 			}
-            $string .= '<tr><td align="left" valign="top">' . '<b>' . __('Type:') . '</td><td align="left">' . $desc_trap_type . '</td></tr>';
-        }        
-
-        $string .=  '</table>';
-
+			$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Type:') . '</td><td align="left">' . $desc_trap_type . '</td></tr>';
+		}
+		
+		$string .=  '</table>';
+		
 		$data = array($string); //$data = array($trap['description']);
 		$idx++;
 		$table->rowclass[$idx] = 'trap_info_' . $trap['id_trap'];
@@ -575,7 +584,8 @@ $trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm s
 // No matching traps
 if ($idx == 0) {
 	echo '<div class="nf">'.__('No matching traps found').'</div>';
-} else {
+}
+else {
 	html_print_table ($table);	
 }
 
@@ -641,7 +651,7 @@ function toggleDiv (divid){
 
 function toggleVisibleExtendedInfo(id_trap) {
 	display = $('.trap_info_' + id_trap).css('display');
-
+	
 	if (display != 'none') {
 		$('.trap_info_' + id_trap).css('display', 'none');
 	}

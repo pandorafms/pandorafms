@@ -49,7 +49,7 @@ if ($delete_profiles) {
 	$profiles_id = get_parameter ('profiles_id', -1);
 	$groups_id = get_parameter ('groups_id', -1);
 	$users_id = get_parameter ('users_id', -1);
-
+	
 	if($profiles_id == -1 || $groups_id == -1 || $users_id == -1){
 		$result = false;
 	}
@@ -57,19 +57,18 @@ if ($delete_profiles) {
 		foreach($profiles_id as $profile) {
 			foreach($groups_id as $group) {
 				foreach($users_id as $id_up) {
-					 if ($id_up == 0){
+					 if ($id_up == 0) {
 						echo '<h3 class="error">'.__('Not deleted. You must select an existing user').'</h3>';
 						$result="";
-                                        }
-					else{
+					}
+					else {
 						$user = (string) db_get_value_filter ('id_usuario', 'tusuario_perfil', array('id_up' => $id_up));
-
+						
 						db_pandora_audit("User management",
 							"Deleted profile for user ".io_safe_input($user));
-
+						
 						$result = profile_delete_user_profile ($user, $id_up);
 					}
-					
 				}
 			}
 		}
@@ -120,7 +119,7 @@ $data[2] .= '</span>';
 $users_profiles = "";
 
 $data[2] .= html_print_select (array(), 'users_id[]', '', '', '', 
-    '', true, true, true, '', false, 'width: 100%');
+	'', true, true, true, '', false, 'width: 100%');
 
 
 array_push ($table->data, $data);
@@ -168,7 +167,7 @@ $(document).ready (function () {
 			"json"
 		);
 	}
-
+	
 	$("#groups_id").change (function () {
 		update_users();
 	});

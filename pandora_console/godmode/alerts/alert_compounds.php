@@ -56,16 +56,16 @@ ui_print_page_header (__('Alerts').' &raquo; '.__('Correlated alerts'), "images/
 
 if ($update_compound) {
 	$id = (int) get_parameter ('id');
-        
+	
 	$recovery_notify = (bool) get_parameter ('recovery_notify');
 	$field2_recovery = (string) get_parameter ('field2_recovery');
 	$field3_recovery = (string) get_parameter ('field3_recovery');
-
+	
 	$result = alerts_update_alert_compound ($id,
 		array ('recovery_notify' => $recovery_notify,
 			'field2_recovery' => $field2_recovery,
 			'field3_recovery' => $field3_recovery));
-
+	
 	ui_print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
@@ -193,7 +193,7 @@ if (count($agents)) {
 		case "oracle":
 			$set = array();
 			$set['offset'] = get_parameter ('offset');
-			$set['limit'] = $config['block_size'];			
+			$set['limit'] = $config['block_size'];
 			$sql = sprintf ('SELECT id FROM talert_compound
 				WHERE id_agent in (%s)%s',
 				implode (',', array_keys ($agents)), $where);
@@ -201,12 +201,12 @@ if (count($agents)) {
 			break;
 	}
 	$id_alerts = db_get_all_rows_sql ($sql);
-
+	
 	if (($config["dbtype"] == 'oracle') && ($id_alerts !== false)) {
 		for ($i=0; $i < count($id_alerts); $i++) {
-			unset($id_alerts[$i]['rnum']);		
+			unset($id_alerts[$i]['rnum']);
 		}
-	}		
+	}
 }
 
 if ($id_alerts === false)
@@ -223,7 +223,8 @@ foreach ($id_alerts as $alert) {
 	if ($alert['disabled']) {
 		$data[0] .= html_print_input_image ('enable', 'images/lightbulb_off.png', 1, '', true);
 		$data[0] .= html_print_input_hidden ('enable_alert', 1, true);
-	} else {
+	}
+	else {
 		$data[0] .= html_print_input_image ('disable', 'images/lightbulb.png', 1, '', true);
 		$data[0] .= html_print_input_hidden ('disable_alert', 1, true);
 	}
@@ -244,7 +245,8 @@ foreach ($id_alerts as $alert) {
 
 if (isset($data)){
 	html_print_table ($table);
-} else {
+}
+else {
 	echo "<div class='nf'>".__('No alerts found')."</div>";
 }
 

@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 ui_print_page_header (__('Link management'), "images/extensions.png", false, "", false, "" );
 
 
-if (isset($_POST["create"])){ // If create
+if (isset($_POST["create"])) { // If create
 	$name = get_parameter_post ("name");
 	$link = get_parameter_post ("link");
 	
@@ -43,13 +43,13 @@ if (isset($_POST["create"])){ // If create
 	}
 }
 
-if (isset($_POST["update"])){ // if update
+if (isset($_POST["update"])) { // if update
 	$id_link = io_safe_input($_POST["id_link"]);
 	$name = io_safe_input($_POST["name"]);
 	$link = io_safe_input($_POST["link"]);
-
+	
 	$result = false;
-        if ($name != '')
+	if ($name != '')
 		$result = db_process_sql_update("tlink", array('name' => $name, 'link' => $link), array('id_link' => $id_link));
 	
 	if (! $result)
@@ -57,8 +57,8 @@ if (isset($_POST["update"])){ // if update
 	else
 		echo "<h3 class='suc'>".__('Successfully updated')."</h3>";
 }
-	
-if (isset($_GET["borrar"])){ // if delete
+
+if (isset($_GET["borrar"])) { // if delete
 	$id_link = io_safe_input($_GET["borrar"]);
 	
 	$result = db_process_sql_delete("tlink", array("id_link" => $id_link));
@@ -71,8 +71,8 @@ if (isset($_GET["borrar"])){ // if delete
 }
 
 // Main form view for Links edit
-if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
-	if (isset($_GET["form_edit"])){
+if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))) {
+	if (isset($_GET["form_edit"])) {
 		$creation_mode = 0;
 			$id_link = io_safe_input($_GET["id_link"]);
 			
@@ -81,7 +81,7 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 			if ($row !== false) {
 				$nombre = $row["name"];
 				$link = $row["link"];
-        	}
+			}
 			else echo "<h3 class='error'>".__('Name error')."</h3>";
 	}
 	else { // form_add
@@ -125,15 +125,15 @@ else {  // Main list view for Links editor
 	if ($rows === false) {
 		$rows = array();
 	}
-
+	
 	if (empty($rows)) {
 		echo '<div class="nf">'.__("There isn't links").'</div>';
-	
-	} else {
+	}
+	else {
 		echo "<table cellpadding='4' cellspacing='4' class='databox' style='width:98%'>";
 		echo "<th width='180px'>".__('Link name')."</th>";
 		echo "<th width='80px'>".__('Delete')."</th>";
-	
+		
 		$color=1;
 		foreach ($rows as $row) {
 			if ($color == 1){
@@ -149,7 +149,7 @@ else {  // Main list view for Links editor
 		}
 		echo "</table>";
 	}
-
+	
 	echo "<table width='98%'>";
 	echo "<tr><td align='right'>";
 	echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";

@@ -287,10 +287,12 @@ function print_alerts_summary_modal_window($id, $alerts) {
 		if ($alert["times_fired"] > 0) {
 			$status = STATUS_ALERT_FIRED;
 			$title = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
-		} elseif ($alert["disabled"] > 0) {
+		}
+		elseif ($alert["disabled"] > 0) {
 			$status = STATUS_ALERT_DISABLED;
 			$title = __('Alert disabled');
-		} else {
+		}
+		else {
 			$status = STATUS_ALERT_NOT_FIRED;
 			$title = __('Alert not fired');
 		}
@@ -301,7 +303,7 @@ function print_alerts_summary_modal_window($id, $alerts) {
 	}
 	
 	$content = html_print_table($table,true);
-
+	
 	$agent = modules_get_agentmodule_agent_name($alerts[0]['id_agent_module']);
 	$template = alerts_get_alert_template_name($alerts[0]['id_alert_template']);
 	
@@ -317,7 +319,6 @@ ui_require_jquery_file('pandora');
 
 <script type="text/javascript">
 	function show_alerts_details(id) {
-
 		$("#alerts_details_"+id).dialog({
 			resizable: true,
 			draggable: true,
@@ -325,9 +326,9 @@ ui_require_jquery_file('pandora');
 			height: 280,
 			width: 800,
 			overlay: {
-						opacity: 0.5,
-						background: "black"
-					},
+				opacity: 0.5,
+				background: "black"
+			},
 			bgiframe: jQuery.browser.msie
 		});
 	}

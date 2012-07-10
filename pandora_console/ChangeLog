@@ -1,3 +1,12 @@
+2012-07-10 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/agents_alerts.php, extensions/net_tools.php,
+	extensions/ssh_gateway.php,
+	extensions/update_manager/lib/libupdate_manager_components.php,
+	extensions/update_manager/lib/libupdate_manager_updates.php,
+	general/main_menu.php: cleaned source code style and added into some
+	strings the call to translation.
+
 2012-07-09  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/extensions.php

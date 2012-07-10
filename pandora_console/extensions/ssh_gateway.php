@@ -17,34 +17,32 @@
 extensions_add_opemode_tab_agent ('ssh_gateway','SSH Gateway','extensions/ssh_gateway/secure_console.png',"ssh_gateway");
 
 function ssh_gateway () {
-
+	
 	$SERVER_ADDR = $_SERVER['SERVER_ADDR'];
-
+	
 	$HOST = get_parameter ("host", "");
 	$USER = get_parameter ("user", "");
-
+	
 	// TODO: Put aditional filtering for ";" and "&" characters in user & host for security
 	// because these params are passed to server exec() call :)
-
+	
 	$COMMIT = get_parameter ("commit", 0);
 	$MODE = get_parameter ("mode", "ssh");
-
+	
 	if ($MODE == "telnet")
 		$USER = "<auto>";
-
+	
 	$id_agente = get_parameter ("id_agente");
-        $ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
-
-	if ($HOST == "")	
+		$ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
+	
+	if ($HOST == "")
 		$HOST = $ip;
-
-	if (($HOST == "") OR ($USER == "")){
-
-		if ($COMMIT == 1){
+	
+	if (($HOST == "") OR ($USER == "")) {
+		if ($COMMIT == 1) {
 			echo "<h3 class=error>".__("You need to specify a user and a host address")."</h3>";
-
 		}
-
+		
 		echo "<form method=post>";
 		echo "<table class=databox cellspacing=4 cellpadding=4>";
 		echo "<td>".__("Host address")."<td><input type=text size=25 value='$HOST' name=host>";
@@ -52,29 +50,28 @@ function ssh_gateway () {
 		echo "<td>".__("User")."<td><input type=text size=25 value='$USER' name=user>";
 		echo "<tr><td>";
 		echo __("Connect mode")."<td><select name=mode>";
-		if ($MODE == "telnet"){
+		if ($MODE == "telnet") {
 			echo "<option>telnet";
 			echo "<option>ssh";
-		} else {
+		}
+		else {
 			echo "<option>ssh";
 			echo "<option>telnet";
-		}	
+		}
 		echo "</select>";
-	
+		
 		echo "&nbsp;&nbsp;&nbsp;<input type=submit name=connect class='sub upd' value=".__("Connect").">";
 		echo "<td><input type=hidden name=commit value=1>";
 		echo "</form></table>";
 	}
-
+	
 	else {
 		if ($MODE == "ssh")
 			echo "<iframe style='border: 0px' src='http://".$SERVER_ADDR.":8022/anyterm.html?param=$USER@$HOST' width='100%' height=550>";
 		else
 			echo "<iframe style='border: 0px' src='http://".$SERVER_ADDR.":8023/anyterm.html?param=$HOST' width='100%' height=550>";
-
-	        echo "</iframe>";
+		
+		echo "</iframe>";
 	}
-
 }
-
 ?>

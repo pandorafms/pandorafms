@@ -144,57 +144,58 @@ function um_db_create_update ($type, $component_name, $id_package, $update, $db_
 					'component' => $component_name,
 					'id_update_package' => $id_package);
 	switch ($type) {
-	case 'code':
-		$filepath = realpath ($component->path.'/'.$update->filename);
-		$values['svn_version'] = um_file_get_svn_revision ($filepath);
-	case 'binary':
-		$last_update = um_update_get_last_from_filename ($component_name, $update->filename);
-		$filepath = realpath ($component->path.'/'.$update->filename);
-		$values['checksum'] = md5_file ($filepath);
-		if ($last_update && $last_update->checksum == $values['checksum']) {
+		case 'code':
+			$filepath = realpath ($component->path.'/'.$update->filename);
+			$values['svn_version'] = um_file_get_svn_revision ($filepath);
+		case 'binary':
+			$last_update = um_update_get_last_from_filename ($component_name, $update->filename);
+			$filepath = realpath ($component->path.'/'.$update->filename);
+			$values['checksum'] = md5_file ($filepath);
+			if ($last_update && $last_update->checksum == $values['checksum']) {
+				return false;
+			}
+			
+			/* Add relative path if has one */
+			if ($component->relative_path != '') {
+				$values['filename'] = $component->relative_path.$update->filename;
+			}
+			else {
+				$values['filename'] = $update->filename;
+			}
+			$values['data'] = um_file_uuencode ($filepath);
+			if ($last_update && $last_update->checksum != '')
+				$values['previous_checksum'] = $last_update->checksum;
+			
+			break;
+		case 'db_data':
+			if ($db_data === NULL)
+				return false;
+			$component_db = um_db_get_component_db ($update->id_component_db);
+			$field = $component_db->field_name;
+			$values['db_field_value'] = $db_data->$field;
+			$values['id_component_db'] = $update->id_component_db;
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$values['data'] = um_data_encode('INSERT INTO `'.$component_db->table_name.'` (`'.implode('`,`', array_keys (get_object_vars ($db_data))).'`) VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
+					break;
+				case "postgresql":
+					$values['data'] = um_data_encode('INSERT INTO "'.$component_db->table_name.'" ("'.implode('", "', array_keys (get_object_vars ($db_data))).'") VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
+					break;
+				case "oracle":
+					$values['data'] = um_data_encode('INSERT INTO '.$component_db->table_name.' ('.implode(', ', array_keys (get_object_vars ($db_data))).') VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
+					break;
+			}
+			break;
+		case 'db_schema':
+			$values['data'] = um_data_encode($update->data);
+			break;
+		default:
 			return false;
-		}
-		
-		/* Add relative path if has one */
-		if ($component->relative_path != '') {
-			$values['filename'] = $component->relative_path.$update->filename;
-		} else {
-			$values['filename'] = $update->filename;
-		}
-		$values['data'] = um_file_uuencode ($filepath);
-		if ($last_update && $last_update->checksum != '')
-			$values['previous_checksum'] = $last_update->checksum;
-		
-		break;
-	case 'db_data':
-		if ($db_data === NULL)
-			return false;
-		$component_db = um_db_get_component_db ($update->id_component_db);
-		$field = $component_db->field_name;
-		$values['db_field_value'] = $db_data->$field;
-		$values['id_component_db'] = $update->id_component_db;
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$values['data'] = um_data_encode('INSERT INTO `'.$component_db->table_name.'` (`'.implode('`,`', array_keys (get_object_vars ($db_data))).'`) VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
-				break;
-			case "postgresql":
-				$values['data'] = um_data_encode('INSERT INTO "'.$component_db->table_name.'" ("'.implode('", "', array_keys (get_object_vars ($db_data))).'") VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
-				break;
-			case "oracle":
-				$values['data'] = um_data_encode('INSERT INTO '.$component_db->table_name.' ('.implode(', ', array_keys (get_object_vars ($db_data))).') VALUES (\''.implode('\',\'', get_object_vars ($db_data)).'\')');
-				break;
-		}
-		break;
-	case 'db_schema':
-		$values['data'] = um_data_encode($update->data);
-		
-		break;
-	default:
-		return false;
+			break;
 	}
 	
 	$result = db_process_sql_insert(DB_PREFIX.'tupdate', $values);
-
+	
 	if ($result === false) {
 		echo '<strong>Error creating update</strong> <br />';
 		return false;

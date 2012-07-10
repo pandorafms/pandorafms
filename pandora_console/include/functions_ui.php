@@ -1644,40 +1644,21 @@ function ui_format_filesize ($bytes) {
  */
 function ui_get_status_images_path () {
 	global $config;
-
+	
 	$imageset = $config["status_images_set"];
-
+	
 	if (strpos ($imageset, ",") === false) 
 		$imageset .= ",40x18";
 	list ($imageset, $sizes) = preg_split ("/\,/", $imageset);
-
+	
 	if (strpos ($sizes, "x") === false)
 		$sizes .= "x18";
 	list ($imagewidth, $imageheight) = preg_split ("/x/", $sizes);
-
+	
 	$imagespath = 'images/status_sets/'.$imageset;
-
+	
 	return array ($imagespath);
 }
-
-define ('STATUS_MODULE_OK', 'module_ok.png');
-define ('STATUS_MODULE_CRITICAL', 'module_critical.png');
-define ('STATUS_MODULE_WARNING', 'module_warning.png');
-define ('STATUS_MODULE_NO_DATA', 'module_no_data.png');
-define ('STATUS_MODULE_UNKNOWN', 'module_unknown.png');
-
-define ('STATUS_AGENT_CRITICAL', 'agent_critical.png');
-define ('STATUS_AGENT_WARNING', 'agent_warning.png');
-define ('STATUS_AGENT_DOWN', 'agent_down.png');
-define ('STATUS_AGENT_OK', 'agent_ok.png');
-define ('STATUS_AGENT_NO_DATA', 'agent_no_data.png');
-
-define ('STATUS_ALERT_FIRED', 'alert_fired.png');
-define ('STATUS_ALERT_NOT_FIRED', 'alert_not_fired.png');
-define ('STATUS_ALERT_DISABLED', 'alert_disabled.png');
-
-define ('STATUS_SERVER_OK', 'server_ok.png');
-define ('STATUS_SERVER_DOWN', 'server_down.png');
 
 /**
  * Prints an image representing a status.
@@ -1712,7 +1693,7 @@ function ui_print_ui_agents_list ($options = false, $filter = false, $return = f
 	global $config;
 	
 	$output = '';
-
+	
 	$group_filter = true;
 	$text_filter = true;
 	$access = 'AR';

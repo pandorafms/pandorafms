@@ -148,7 +148,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="60dp"
-                        android:text="@string/enable_background_service" />
+                        android:text="@string/enable_background_service"
+                        android:textColor="#ffffff" />
 
                     <CheckBox
                         android:id="@+id/background_service_on"

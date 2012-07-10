@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.TabActivity;
@@ -61,6 +62,7 @@ import android.widget.Toast;
  * @author Miguel de Dios Matías
  * 
  */
+@SuppressLint("UseSparseArrays")
 public class Main extends Activity {
 	private static String TAG = "MAIN";
 	private static String PROFILE_PREFIX = "profile:";

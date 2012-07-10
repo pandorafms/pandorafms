@@ -21,10 +21,7 @@
     <string name="const_string_preferences">PANDROID_EVENT_VIEWER_PREFERENCES</string>
     <string name="item_tab_main_text">Filter</string>
     <string name="item_tab_event_list_text">Event list</string>
-    <string name="main_text">main text (value)</string>
-    <string name="list_text">list (value)</string>
     <string name="system_str">System</string>
-    <string name="empty_str">- Empty -</string>
     <string name="all_str">All</string>
     <string name="tags_label_str">Tags</string>
     <string name="comments_label_str">Comments</string>
@@ -32,8 +29,6 @@
     <string name="agent_label_str">Agent name</string>
     <string name="type_label_str">Type</string>
     <string name="severity_label_str">Severity</string>
-    <string name="date_label_str">Date</string>
-    <string name="number_events_label_str">Number of events</string>
     <string name="reset_button_str">Reset</string>
     <string name="search_button_str">Search</string>
     <string name="loading_label_str">Loading</string>
@@ -81,7 +76,6 @@
     <string name="going_up_normal_str">Going to normal status</string>
     <string name="going_down_warning_str">Going down to warning</string>
     <string name="alert_fired_str">Alert fired</string>
-    <string name="recon_host_detected_str">Recon server detected a new host</string>
     <string name="new_agent_str">New agent created</string>
     <string name="unknown_str">Unknown type:</string>
     <string name="unknown_event_str">Unknown event</string>
@@ -100,19 +94,12 @@
     <string name="tag_label_str">Tag</string>
     <string name="advanced_options">Show advanced search options</string>
     <string name="empty">- Empty -</string>
-    <string name="img_severity">Severity image</string>
-    <string name="img_group">Group image</string>
-    <string name="img_type">Type image</string>
     <string name="artica_copyright">Copyright (©) 2011 Artica</string>
     <string name="dont_show_again">Don\'t show again</string>
     <string name="pandorafms_logo_description">PandoraFMS\'s logo</string>
     <string name="description">Description</string>
-    <string name="incident_close_button">Close incident</string>
-    <string name="incidents_label_str">Incidents</string>
     <string name="title">Title</string>
-    <string name="priority">Priority</string>
     <string name="create">Create</string>
-    <string name="source">Source</string>
     <string name="incident_created">Incident created</string>
     <string name="title_empty">Sorry, you must provide a title</string>
     <string name="creating_incident">Creating new incident…</string>

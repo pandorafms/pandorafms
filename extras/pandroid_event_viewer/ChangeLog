@@ -1,3 +1,14 @@
+2012-07-11 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/API.java,
+	  src/pandroid_event_viewer/pandorafms/Main.java: Added some SupressWarning annotations.
+	* res/layout/options.xml: Textview 
+	* res/drawable-ldpi/incident.png,
+	  res/drawable-ldpi/house.png,
+	  res/drawable-ldpi/lightning_go.png: Removed, no longer needed.
+	* res/values/strings.xml,
+	  res/values-es/strings.xml,
+	  res/values-ja/strings.xml: Removed some entries.
+
 2012-07-10 Santiago Munín <burning1@gmail.com>
 	* res/layout/item_list_incident_layout.xml: Deleted file, no longer needed.
 	* res/layout/main.xml: Little changes.

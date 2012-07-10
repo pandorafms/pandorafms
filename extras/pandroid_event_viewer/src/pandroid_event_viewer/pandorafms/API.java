@@ -9,9 +9,11 @@ import java.util.Map;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
+@SuppressLint("UseSparseArrays")
 public class API {
 
 	private static String TAG = "API";

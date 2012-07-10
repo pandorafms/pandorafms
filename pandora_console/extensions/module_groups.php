@@ -49,7 +49,7 @@ if (is_ajax ()) {
 							FROM talert_template_module_actions AS t1
 								INNER JOIN talert_actions AS t2 ON t1.id_alert_action = t2.id
 							WHERE t1.id_alert_template_module = ' . $template['id'] . '
-								OR t2.id = ' . $template['id_alert_action'] . ';';			
+								OR t2.id = ' . $template['id_alert_action'] . ';';
 						$actions = db_get_all_rows_sql($sql);
 						if ($actions === false) {
 							$actions = array();

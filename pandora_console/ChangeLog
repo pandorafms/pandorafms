@@ -1,5 +1,22 @@
 2012-07-10 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/constants.php: added more constants into the constants
+	block of time conversion to seconds.
+	
+	* godmode/alerts/alert_commands.php, godmode/setup/performance.php,
+	include/help/en/help_date_format.php, include/functions_netflow.php,
+	include/functions_tags.php, include/graphs/functions_pchart.php,
+	include/functions_modules.php, extensions/agents_modules.php,
+	extensions/update_manager.php, extensions/resource_exportation.php,
+	extensions/module_groups.php,
+	extensions/update_manager/lib/libupdate_manager_client.php,
+	extensions/system_info.php, operation/events/events_rss.php,
+	operation/events/export_csv.php, mobile/operation/events/events.php,
+	mobile/include/system.class.php: used the new constants time instead
+	the magic numbers, and cleaned source code style.
+
+2012-07-10 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_ui.php: moved the constants for the status
 	images to contants file.
 	

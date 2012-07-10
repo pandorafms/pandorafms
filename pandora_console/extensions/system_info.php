@@ -190,7 +190,7 @@ function getLastLog($numLines = 2000) {
 	show_logfile("/etc/mysql/my.cnf", $numLines);
 	show_logfile($config["homedir"]."/include/config.php", $numLines);
 	show_logfile("/etc/pandora/pandora_server.conf", $numLines);
-	show_logfile("/var/log/syslog", $numLines);	
+	show_logfile("/var/log/syslog", $numLines);
 }
 
 function show_array($title, $anchor, $array = array()) {
@@ -238,7 +238,7 @@ function show_array($title, $anchor, $array = array()) {
 
 function mainSystemInfo() {
 	global $config;
-
+	
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
@@ -324,9 +324,9 @@ function mainSystemInfo() {
 		@unlink($zipArchive);
 		
 		$url_zip = ui_get_full_url(false);
-
+		
 		$url = '<a href="' .$url_zip . 'attachment/last_info.zip">' . __('System info file zipped') . '</a>';
-
+		
 		if($log_info || $system_info || $pandora_diag) {
 			echo '<b>' . __('File:') . '</b> ' . $url . '<br />';
 			echo '<b>' . __('Location:') . '</b> ' . $zipArchive;

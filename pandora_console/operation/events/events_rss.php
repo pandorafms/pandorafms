@@ -77,7 +77,7 @@ $event_view_hr = (int) get_parameter ("event_view_hr", 0);
 $sql_post = "";
 
 if ($event_view_hr > 0) {
-	$unixtime = (int) (get_system_time () - ($event_view_hr * 3600)); //Put hours in seconds
+	$unixtime = (int) (get_system_time () - ($event_view_hr * SECONDS_1HOUR)); //Put hours in seconds
 	$sql_post .= " AND tevento.utimestamp > ".$unixtime;
 }
 if ($ev_group > 1)
@@ -95,7 +95,7 @@ switch($status) {
 		break;
 }
 
-	
+
 if ($search != "")
 	$sql_post .= " AND tevento.evento LIKE '%$search%'";
 if ($event_type != "") {
@@ -117,7 +117,7 @@ if ($severity != -1)
 
 if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
-
+	
 	switch ($text_agent)
 	{
 		case __('All'):

@@ -744,17 +744,17 @@ function netflow_save_cache ($data, $cache_file) {
  */
 function netflow_load_cache (&$data, $cache_file, $start_date, $end_date, $aggregate) {
 	global $config;
-
+	
 	// Open cache file
 	$cache_data = @file_get_contents ($cache_file);
 	$cache_data = @unserialize ($cache_data);
-
+	
 	// Calculate the number of intervals
 	$num_intervals = $config['graph_res'] * 50;
 	$period = $end_date - $start_date;
 	$interval_length = (int) ($period / $num_intervals);
 	$last_timestamp = $start_date;
-
+	
 	// Initializa chart data
 	if ($aggregate == 'none') {
 		if ($cache_data === FALSE) {
@@ -772,29 +772,32 @@ function netflow_load_cache (&$data, $cache_file, $start_date, $end_date, $aggre
 						$last_timestamp = $cache_timestamp;
 					}
 					unset ($cache_data[$cache_timestamp]);
-				} else {
+				}
+				else {
 					break;
 				}
 			}
-	
+			
 			if ($interval_count > 0) {
 				$data[$timestamp]['data'] = (int) ($interval_total / $interval_count);
-			} else {
+			}
+			else {
 				$data[$timestamp]['data'] = 0;
 			}
 		}
-	} else {
-               for ($i = 0; $i < $num_intervals; $i++) {
-                        $timestamp = $start_date + ($interval_length * $i);
-                        $interval_count = array ();
-                        $interval_total = array ();
-
-                        foreach ($data['sources'] as $source => $null) {
-                                $data['data'][$timestamp][$source] = 0;
-                        }
-                }
 	}
-
+	else {
+		for ($i = 0; $i < $num_intervals; $i++) {
+			$timestamp = $start_date + ($interval_length * $i);
+			$interval_count = array ();
+			$interval_total = array ();
+			
+			foreach ($data['sources'] as $source => $null) {
+				$data['data'][$timestamp][$source] = 0;
+			}
+		}
+	}
+	
 	return $last_timestamp;
 }
 
@@ -805,43 +808,42 @@ function netflow_load_cache (&$data, $cache_file, $start_date, $end_date, $aggre
  *
  */
 function netflow_get_chart_types () {
-
+	
 	return array(
-	               __('Area graph'),
-	               __('Pie graph'),
-	               __('Data table'),
-	               __('Statistics table')
-	);
+		__('Area graph'),
+		__('Pie graph'),
+		__('Data table'),
+		__('Statistics table'));
 }
 
 /**
  * Gets valid intervals for a netflow chart in the format:
  *
- *     interval_length => interval_description
+ * interval_length => interval_description
  *
  * @return Array of valid intervals.
  *
  */
 function netflow_get_valid_intervals () {
-        return array ('600' => __('10 mins'),
-                      '900' => __('15 mins'),
-                      '1800' => __('30 mins'),
-                      '3600' => __('1 hour'),
-                      '7200' => __('2 hours'),
-                      '18000' => __('5 hours'),
-                      '43200' => __('12 hours'),
-                      '86400' => __('1 day'),
-                      '172800' => __('2 days'),
-                      '432000' => __('5 days'),
-                      '1296000' => __('15 days'),
-                      '604800' => __('Last week'),
-                      '2592000' => __('Last month'),
-                      '5184000' => __('2 months'),
-                      '7776000' => __('3 months'),
-                      '15552000' => __('6 months'),
-                      '31104000' => __('Last year'),
-                      '62208000' => __('2 years')
-	);
+	return array (
+		(string)SECONDS_10MINUTES => __('10 mins'),
+		(string)SECONDS_15MINUTES => __('15 mins'),
+		(string)SECONDS_30MINUTES => __('30 mins'),
+		(string)SECONDS_1HOUR => __('1 hour'),
+		(string)SECONDS_2HOUR => __('2 hours'),
+		(string)SECONDS_5HOUR => __('5 hours'),
+		(string)SECONDS_12HOURS => __('12 hours'),
+		(string)SECONDS_1DAY => __('1 day'),
+		(string)SECONDS_2DAY => __('2 days'),
+		(string)SECONDS_5DAY => __('5 days'),
+		(string)SECONDS_15DAYS => __('15 days'),
+		(string)SECONDS_1WEEK => __('Last week'),
+		(string)SECONDS_1MONTH => __('Last month'),
+		(string)SECONDS_2MONTHS => __('2 months'),
+		(string)SECONDS_3MONTHS => __('3 months'),
+		(string)SECONDS_6MONTHS => __('6 months'),
+		(string)SECONDS_1YEAR => __('Last year'),
+		(string)SECONDS_2YEARS => __('2 years'));
 }
 
 /**
@@ -857,18 +859,19 @@ function netflow_get_valid_intervals () {
  *
  */
 function netflow_draw_item ($start_date, $end_date, $type, $filter, $command, $filter, $max_aggregates, $unique_id) {
-
+	
 	$aggregate = $filter['aggregate'];
 	$unit = $filter['output'];
 	$interval = $end_date - $start_date;
-
+	
 	// Process item
-	switch ($type){
+	switch ($type) {
 		case '0':
 			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
 			if ($aggregate != 'none') {
 				echo graph_netflow_aggregate_area($data, $interval, 660, 320, 0);
-			} else {
+			}
+			else {
 				echo graph_netflow_total_area($data, $interval, 660, 320, 0);
 			}
 			break;

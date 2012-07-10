@@ -1,5 +1,14 @@
 2012-07-10 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_networkmap.php, include/functions_netflow.php,
+	extensions/snmp_explorer.php, operation/netflow/nf_live_view.php,
+	operation/agentes/estado_monitores.php,
+	operation/agentes/networkmap.php,
+	godmode/netflow/nf_report_form.php,
+	godmode/netflow/nf_edit_form.php: cleaned source code style.
+
+2012-07-10 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* install.php, operation/reporting/reporting_xml.php,
 	operation/netflow/nf_live_view.php, operation/netflow/nf_view.php,
 	operation/tree.php, operation/agentes/gis_view.php,

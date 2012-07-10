@@ -91,8 +91,9 @@ if ($update) {
 	$advanced_filter = get_parameter('advanced_filter','');
 	
 	if ($name == '') {
-                ui_print_error_message (__('Not updated. Blank name'));
-        } else {
+		ui_print_error_message (__('Not updated. Blank name'));
+	}
+	else {
 		$values = array ('id_sg' => $id,
 			'id_name' => $name,
 			'id_group' => $assign_group,
@@ -104,19 +105,19 @@ if ($update) {
 			'advanced_filter' => $advanced_filter,
 			'output' => $output
 		);
-
+		
 		// Save filter args
 		$values['filter_args'] = netflow_get_filter_arguments ($values);
-
+		
 		$result = db_process_sql_update ('tnetflow_filter', $values, array ('id_sg' => $id));
-			
+		
 		ui_print_result_message ($result,
 			__('Successfully updated'),
 			__('Not updated. Error updating data'));
 	}
 }
 
-if ($create){
+if ($create) {
 	$name = (string) get_parameter ('name');
 	$assign_group = (int) get_parameter ('assign_group');
 	$aggregate = get_parameter('aggregate','none');
@@ -126,7 +127,7 @@ if ($create){
 	$dst_port = get_parameter('dst_port','');
 	$src_port = get_parameter('src_port','');
 	$advanced_filter = (string) get_parameter('advanced_filter', '');
-
+	
 	$values = array (
 			'id_name'=>$name,
 			'id_group' => $assign_group,
@@ -141,11 +142,12 @@ if ($create){
 	
 	// Save filter args
 	$values['filter_args'] = netflow_get_filter_arguments ($values);
-
+	
 	$id = db_process_sql_insert('tnetflow_filter', $values);
 	if ($id === false) {
 		ui_print_error_message ('Error creating filter');
-	} else {
+	}
+	else {
 		ui_print_success_message ('Filter created successfully');
 	}
 }
@@ -158,19 +160,20 @@ $table->class = "databox_color";
 $table->style[0] = 'vertical-align: top;';
 
 $table->data = array ();
-	
+
 $table->data[0][0] = '<b>'.__('Name').'</b>';
 $table->data[0][1] = html_print_input_text ('name', $name, false, 20, 80, true);
 
 $own_info = get_user_info ($config['id_user']);
 $table->data[1][0] = '<b>'.__('Group').'</b>';
 $table->data[1][1] = html_print_select_groups($config['id_user'], "IW",
-		$own_info['is_admin'], 'assign_group', $assign_group, '', '', -1, true,
-		false, false);
-	
+	$own_info['is_admin'], 'assign_group', $assign_group, '', '', -1, true,
+	false, false);
+
 if ($advanced_filter != '') {
 	$filter_type = 1;
-} else {
+}
+else {
 	$filter_type = 0;
 }
 
@@ -192,13 +195,13 @@ $table->data[6][1] = html_print_input_text ('src_port', $src_port, false, 40, 80
 
 $table->data[7][0] = ui_print_help_icon ('pcap_filter', true);
 $table->data[7][1] = html_print_textarea ('advanced_filter', 4, 40, $advanced_filter, '', true);
-	
+
 $table->data[8][0] = '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true);
 $aggregate_list = array();
 $aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
 
 $table->data[8][1] = html_print_select ($aggregate_list, "aggregate", $aggregate, '', '', 0, true, false, true, '', false);
-	
+
 $table->data[9][0] = '<b>'.__('Output format').'</b>';
 $show_output = array();
 $show_output = array ('packets' => __('Packets'), 'bytes' => __('Bytes'), 'flows' =>__('Flows'));
@@ -211,7 +214,8 @@ if ($id) {
 	html_print_input_hidden ('update', 1);
 	html_print_input_hidden ('id', $id);
 	html_print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('create', 1);
 	html_print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
 }
@@ -220,15 +224,13 @@ echo '</form>';
 ?>
 
 <script type="text/javascript">
-
 	function displayAdvancedFilter () {
-	
 		// Erase the normal filter
 		document.getElementById("text-ip_dst").value = '';
 		document.getElementById("text-ip_src").value = '';
 		document.getElementById("text-dst_port").value = '';
 		document.getElementById("text-src_port").value = '';
-
+		
 		// Hide the normal filter
 		document.getElementById("table1-3").style.display = 'none';
 		document.getElementById("table1-4").style.display = 'none';
@@ -238,30 +240,26 @@ echo '</form>';
 		// Show the advanced filter
 		document.getElementById("table1-7").style.display = '';
 	};
-
-	function displayNormalFilter () {
 	
+	function displayNormalFilter () {
 		// Erase the advanced filter
 		document.getElementById("textarea_advanced_filter").value = '';
-
+		
 		// Hide the advanced filter
 		document.getElementById("table1-7").style.display = 'none';
-	
+		
 		// Show the normal filter
 		document.getElementById("table1-3").style.display = '';
 		document.getElementById("table1-4").style.display = '';
 		document.getElementById("table1-5").style.display = '';
 		document.getElementById("table1-6").style.display = '';
 	};
-
+	
 	var filter_type = <?php echo $filter_type ?>;
 	if (filter_type == 0) {
 		displayNormalFilter ();
-	} else {
+	}
+	else {
 		displayAdvancedFilter ();
 	}
-
 </script>
-
-
-

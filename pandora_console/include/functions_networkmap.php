@@ -42,9 +42,10 @@ function networkmap_is_descendant ($node, $ascendant, $parents) {
 }
 
 // Generate a dot graph definition for graphviz
-function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12,
-	$layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0,
-	$regen = 1, $pure = 0, $id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
+function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0,
+	$font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1,
+	$ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
+	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
 	$relative = false) {
 	
 	$parents = array();
@@ -136,7 +137,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 			continue;
 		}
 		
-		switch($node['type']){
+		switch ($node['type']) {
 			case 'agent':
 				$graph .= networkmap_create_agent_node ($node , $simple, $font_size, $cut_names, $relative)."\n\t\t";
 				$stats['agents'][] = $node['id_agente'];
@@ -195,7 +196,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 				$groups[] = db_get_row ('tgrupo', 'id_grupo', $id_group);
 			}
 		}
-				
+		
 		$filter['id_grupo'] = $id_groups;
 	}
 	else {
@@ -231,18 +232,19 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 		// Save node parent information to define edges later
 		if ($node_group['parent'] != "0" && $node_group['id_grupo'] != $group) {
 			$parents[$node_count] = $nodes_groups[$node_group['parent']]['id_node'];
-		} else {
+		}
+		else {
 			$orphans[$node_count] = 1;
 		}
 		
-		$nodes[$node_count] = $node_group;	
+		$nodes[$node_count] = $node_group;
 	}
 	
-	if($depth != 'group') {
+	if ($depth != 'group') {
 		// Get agents data
 		$agents = agents_get_agents ($filter,
 			array ('id_grupo, nombre, id_os, id_agente'));
-			
+		
 		if ($agents === false)
 			$agents = array();
 		
@@ -252,13 +254,13 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 			$node_count ++;
 			// Save node parent information to define edges later
 			$parents[$node_count] = $agent['parent'] = $nodes_groups[$agent['id_grupo']]['id_node'];
-		
+			
 			$agent['id_node'] = $node_count;
 			$agent['type'] = 'agent';
 			// Add node
 			$nodes[$node_count] = $nodes_agents[$agent['id_agente']] = $agent;
 			
-			if($depth == 'agent'){
+			if ($depth == 'agent') {
 				continue;
 			}
 			
@@ -269,35 +271,37 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 				$node_count ++;
 				$agent_module = modules_get_agentmodule($key);
 				$alerts_module = db_get_sql('SELECT count(*) as num
-					FROM talert_template_modules WHERE id_agent_module = '.$key);
+					FROM talert_template_modules
+					WHERE id_agent_module = ' . $key);
 				
-				if($alerts_module == 0 && $modwithalerts){
+				if ($alerts_module == 0 && $modwithalerts) {
 					continue;
 				}
 				
-				if($agent_module['id_module_group'] != $module_group && $module_group != 0){
+				if ($agent_module['id_module_group'] != $module_group &&
+					$module_group != 0) {
 					continue;
 				}
 				
-				if($hidepolicymodules && $config['enterprise_installed']){
+				if ($hidepolicymodules && $config['enterprise_installed']) {
 					enterprise_include_once('include/functions_policies.php');
-					if(policies_is_module_in_policy($key)) {
+					if (policies_is_module_in_policy($key)) {
 						continue;
 					}
 				}
-									
+				
 				// Save node parent information to define edges later
 				$parents[$node_count] = $agent_module['parent'] = $agent['id_node'];
-					
+				
 				$agent_module['id_node'] = $node_count;
-
+				
 				$agent_module['type'] = 'module';
 				// Add node
 				$nodes[$node_count] = $agent_module;
 			}
 		}
 	}
-
+	
 	if (empty ($nodes)) {
 		return false;
 	}
@@ -309,7 +313,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 			unset ($nodes[$node_id]);
 			continue;
 		}
-		switch($node['type']){
+		switch ($node['type']) {
 			case 'group':
 				$graph .= networkmap_create_group_node ($node , $simple, $font_size)."\n\t\t";
 				$stats['groups'][] = $node['id_grupo'];
@@ -329,16 +333,17 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 		// Verify that the parent is in the graph
 		if (isset ($nodes[$parent_id])) {
 			$graph .= networkmap_create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'groups', $id_networkmap);
-		} else {
+		}
+		else {
 			$orphans[$node] = 1;
 		}
 	}
-
+	
 	// Create a central node if orphan nodes exist
 	if (count ($orphans)) {
 		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
 	}
-
+	
 	// Define edges for orphan nodes
 	foreach (array_keys($orphans) as $node) {
 		$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'groups', $id_networkmap);
@@ -550,7 +555,7 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $fo
 	$size_y = 5.4;
 	$size = '';
 	
-			
+	
 	if ($layout == 'radial') {
 		$overlap = 'true';
 	}
@@ -560,7 +565,7 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $fo
 			$overlap = 'scalexy';
 		}
 	}
-
+	
 	if ($zoom > 0) {
 		$size_x *= $zoom;
 		$size_y *= $zoom;
@@ -577,7 +582,7 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $fo
 	$head .= "ratio=fill;";
 	$head .= "root=0;";
 	$head .= "size=\"$size\";";
-
+	
 	return $head;
 }
 
@@ -588,19 +593,25 @@ function networkmap_close_graph () {
 
 // Returns the filter used to achieve the desired layout
 function networkmap_get_filter ($layout) {
-	switch($layout) {
-	case 'flat':
-		return 'dot';
-	case 'radial':
-		return 'twopi';
-	case 'circular':
-		return 'circo';
-	case 'spring1':
-		return 'neato';
-	case 'spring2':
-		return 'fdp';
-	default:
-		return 'twopi';
+	switch ($layout) {
+		case 'flat':
+			return 'dot';
+			break;
+		case 'radial':
+			return 'twopi';
+			break;
+		case 'circular':
+			return 'circo';
+			break;
+		case 'spring1':
+			return 'neato';
+			break;
+		case 'spring2':
+			return 'fdp';
+			break;
+		default:
+			return 'twopi';
+			break;
 	}
 }
 

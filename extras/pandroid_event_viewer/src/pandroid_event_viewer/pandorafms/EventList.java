@@ -197,55 +197,18 @@ public class EventList extends ListActivity {
 		}
 	}
 
-	/*private String getImageGroupUrl(String group_icon) {
-		SharedPreferences preferences = getApplicationContext()
-				.getSharedPreferences(
-						getApplicationContext().getString(
-								R.string.const_string_preferences),
-						Activity.MODE_PRIVATE);
-
-		String url = preferences.getString("url", "");
-		return url + "/images/groups_small/" + group_icon + ".png";
-	}+/
-
-	/**
-	 * Sets an image to the left of group's TextView.
-	 * 
-	 * @param view
-	 *            Parent view.
-	 * @param group_icon
-	 *            Icon name.
-	 * @param id
-	 *            Group's TextView id;
-	 */
-	/*private void setTextViewGroupImage(View view, String group_icon, int id) {
-		TextView tview = (TextView) view.findViewById(id);
-		Bitmap img = null;
-
-		SharedPreferences preferences = getApplicationContext()
-				.getSharedPreferences(
-						getApplicationContext().getString(
-								R.string.const_string_preferences),
-						Activity.MODE_PRIVATE);
-
-		String url = preferences.getString("url", "");
-		img = Core.downloadImage(url + "/images/groups_small/" + group_icon
-				+ ".png");
-
-		if (img != null) {
-			Core.setTextViewLeftImage(tview, img);
-		}
-	}*/
-
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 
+		try {
 		EventListItem item = this.object.eventList.get(position);
-
 		item.opened = !item.opened;
 		this.object.eventList.set(position, item);
 		la.notifyDataSetChanged();
+		} catch (IndexOutOfBoundsException e) {
+			
+		}
 	}
 
 	/**

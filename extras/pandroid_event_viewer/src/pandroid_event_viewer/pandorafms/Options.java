@@ -71,7 +71,7 @@ public class Options extends Activity {
 		setContentView(R.layout.options);
 		connectionStatus = (TextView) findViewById(R.id.check_connection_status);
 		new CheckConnectionAsyncTask().execute();
-
+		
 		SharedPreferences preferences = getSharedPreferences(
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
@@ -85,7 +85,7 @@ public class Options extends Activity {
 		text.setText(preferences.getString("password", "demo"));
 		text = (EditText) findViewById(R.id.api_password);
 		text.setText(preferences.getString("api_password", ""));
-
+		
 		Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this, R.array.refresh_combo,
@@ -93,7 +93,7 @@ public class Options extends Activity {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		combo.setAdapter(adapter);
 		combo.setSelection(preferences.getInt("refreshTimeKey", 3));
-
+		((CheckBox) findViewById(R.id.background_service_on)).setChecked(true);
 		final Button button = (Button) findViewById(R.id.update_options);
 		button.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -217,7 +217,6 @@ public class Options extends Activity {
 		Context context = this.getApplicationContext();
 
 		if (editorPreferences.commit()) {
-			Core.setFetchFrequency(getApplicationContext());
 			Log.i(TAG, "Settings saved");
 			Toast toast = Toast.makeText(context,
 					this.getString(R.string.config_update_succesful_str),
@@ -229,6 +228,12 @@ public class Options extends Activity {
 					this.getString(R.string.config_update_fail_str),
 					Toast.LENGTH_LONG);
 			toast.show();
+		}
+		// Enable or disable background checking
+		if (((CheckBox) findViewById(R.id.background_service_on)).isChecked()) {
+			Core.setBackgroundServiceFetchFrequency(getApplicationContext());
+		} else {
+			Core.cancelBackgroundService(getApplicationContext());
 		}
 
 	}

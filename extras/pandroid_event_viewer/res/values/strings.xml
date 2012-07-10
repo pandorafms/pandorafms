@@ -118,18 +118,20 @@
     <string name="creating_incident">Creating new incident…</string>
     <string name="create_incident">Create incident</string>
     <string name="create_incident_group_error">There was an error creating the incident: unrecognized event group. Please, contact administrator.</string>
-	<string name="url_not_valid">Incorrect url. Please, insert a valid url</string>
-	<string name="certificate_not_valid">This server has a certificate not signed by a CA, do you trust it?</string>
-	<string name="options_not_saved">Options not saved.</string>
-	<string name="notification_error_parsing">There was an error retrieving data from server.</string>
-	<string name="save_profile_button_str">Save profile</string>
-	<string name="profile_label_str">Profile</string>
-	<string name="profile_name">Insert the profile\'s name</string>
-	<string name="profile_saved">Profile saved</string>
-	<string name="profile_already_exists">A profile with that name already exists.</string>
-	<string name="profile_name_character_not_allowed">The | character is not allowed.</string>
-	<string name="profile_delete">Delete profile</string>
-	<string name="connection_problem">There was a problem. Check your connection.</string>
-	<string name="connection_settings_problem">The operation can not be performed until you configure a correct connection.</string>
-	<string name="unknown_version">Unknown version</string>
+    <string name="url_not_valid">Incorrect url. Please, insert a valid url</string>
+    <string name="certificate_not_valid">This server has a certificate not signed by a CA, do you trust it?</string>
+    <string name="options_not_saved">Options not saved.</string>
+    <string name="notification_error_parsing">There was an error retrieving data from server.</string>
+    <string name="save_profile_button_str">Save profile</string>
+    <string name="profile_label_str">Profile</string>
+    <string name="profile_name">Insert the profile\'s name</string>
+    <string name="profile_saved">Profile saved</string>
+    <string name="profile_already_exists">A profile with that name already exists.</string>
+    <string name="profile_name_character_not_allowed">The | character is not allowed.</string>
+    <string name="profile_delete">Delete profile</string>
+    <string name="connection_problem">There was a problem. Check your connection.</string>
+    <string name="connection_settings_problem">The operation can not be performed until you configure a correct connection.</string>
+    <string name="unknown_version">Unknown version</string>
+    <string name="enable_background_service">Check events in background</string>
+
 </resources>

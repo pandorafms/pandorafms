@@ -1,3 +1,16 @@
+2012-07-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+		* include/functions_modules.php
+		 include/functions_groups.php
+		 include/functions_os.php
+		 include/functions_tags.php
+		 operation/tree.php: Fixes in tree view counts.
+		 
+		* operation/agentes/status_monitor.php: Fixed module group 
+		filter.
+		 
+		 Pending to port to branches.
+
 2012-07-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_agents.php

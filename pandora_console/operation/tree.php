@@ -242,7 +242,7 @@ if (is_ajax ())
 			$countRows = 0;
 			
 			if (!empty($avariableGroupsIds)) {
-				$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
+				$extra_sql = '';
 				if($extra_sql != '') {
 					$extra_sql .= ' OR';
 				}
@@ -256,45 +256,125 @@ if (is_ajax ())
 				
 				//Extract all rows of data for each type
 				switch ($type) {
-					case 'group':
-						$sql = sprintf('SELECT * FROM tagente 
-								WHERE id_grupo = %s AND (%s id_grupo IN (%s))', $id, $extra_sql, $groups_sql);
+					case 'group':								
+
+						$sql = agents_get_agents(array (
+						'order' => 'nombre COLLATE utf8_general_ci ASC',
+						'id_grupo' => $id,
+						'disabled' => 0,
+						'status' => $statusSel,
+						'search' => $search_sql),
+
+						array ('*'),
+						'AR',
+						false,
+						true);	
+						
+						// Skip agents without modules
+						$sql .= ' AND id_agente IN
+										(SELECT tagente.id_agente
+										FROM tagente, tagente_modulo 
+										WHERE tagente.id_agente = tagente_modulo.id_agente
+										AND tagente.id_grupo = ' . $id . ' AND tagente.disabled = 0 
+										AND tagente_modulo.disabled = 0
+										group by tagente.id_agente
+										having COUNT(*) > 0)';							
+	
 						break;
 					case 'os':
-						$sql = sprintf('SELECT * FROM tagente 
-								WHERE id_os = %s AND (%s id_grupo IN (%s))', $id, $extra_sql, $groups_sql);
+						$sql = agents_get_agents(array (
+						'order' => 'nombre COLLATE utf8_general_ci ASC',
+						'id_os' => $id,
+						'disabled' => 0,
+						'status' => $statusSel,
+						'search' => $search_sql),
+
+						array ('*'),
+						'AR',
+						false,
+						true);	
+						
+						// Skip agents without modules
+						$sql .= ' AND id_agente IN
+										(SELECT tagente.id_agente
+										FROM tagente, tagente_modulo 
+										WHERE tagente.id_agente = tagente_modulo.id_agente
+										AND tagente.id_os = ' . $id . ' AND tagente.disabled = 0 
+										AND tagente_modulo.disabled = 0
+										group by tagente.id_agente
+										having COUNT(*) > 0)';	
 						break;
 					case 'module_group':
-						$extra_sql = substr($extra_sql,1);
-						$extra_sql = "tagente_modulo.".$extra_sql;  
-						$sql = sprintf('SELECT * FROM tagente 
-								WHERE id_agente IN (SELECT tagente_modulo.id_agente FROM tagente_modulo, tagente_estado
-								WHERE tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_estado.utimestamp !=0 AND 
-								tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
-								AND id_module_group = %s 
-								AND ((%s id_grupo IN (%s)))', $id, $extra_sql, $groups_sql);					
+						
+						$sql = agents_get_agents(array (
+						'order' => 'nombre COLLATE utf8_general_ci ASC',
+						'disabled' => 0,
+						'status' => $statusSel,
+						'search' => $search_sql),
+
+						array ('*'),
+						'AR',
+						false,
+						true);	
+						
+						// Skip agents without modules
+						$sql .= ' AND id_agente IN
+										(SELECT tagente.id_agente
+										FROM tagente, tagente_modulo 
+										WHERE tagente.id_agente = tagente_modulo.id_agente
+										AND id_module_group = ' . $id . ' AND tagente.disabled = 0 
+										AND tagente_modulo.disabled = 0
+										group by tagente.id_agente
+										having COUNT(*) > 0)';	
+			
 						break;
 					case 'policies':
 					
 						$sql = "";
 						
+						$sql = agents_get_agents(array (
+						'order' => 'nombre COLLATE utf8_general_ci ASC',
+						'disabled' => 0,
+						'status' => $statusSel,
+						'search' => $search_sql),
+
+						array ('*'),
+						'AR',
+						false,
+						true);	
+						
 						if ($id == 0) {
-							$queryWhere = 'id_agente NOT IN (SELECT id_agent FROM tpolicy_agents)';
 							
-							$sql = sprintf('SELECT DISTINCT tagente.id_agente as id_agente, tagente.nombre as nombre FROM tagente, tagente_modulo, tagente_estado WHERE 
-							tagente_estado.id_agente = tagente.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND
-							tagente_modulo.id_policy_module = 0 AND tagente_estado.utimestamp != 0 AND
-							tagente.id_agente IN (SELECT id_agente FROM tagente WHERE %s AND ( %s id_grupo IN (%s)))', 
-							$queryWhere, $extra_sql, $groups_sql);
-								
+							// Skip agents without modules
+							$sql .= ' AND tagente.id_agente IN
+										(SELECT tagente.id_agente
+										FROM tagente, tagente_modulo, tagente_estado
+										WHERE tagente.id_agente = tagente_modulo.id_agente
+										AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+										AND tagente.disabled = 0 
+										AND tagente_modulo.disabled = 0
+										AND tagente_estado.utimestamp != 0
+										AND tagente_modulo.id_policy_module = 0
+										AND tagente.id_agente NOT IN (SELECT id_agent FROM tpolicy_agents)
+										group by tagente.id_agente
+										having COUNT(*) > 0)';
+	
 						} else {
-							$queryWhere = sprintf('id_agente IN (SELECT id_agent FROM tpolicy_agents WHERE id_policy = %s)',$id);
 							
-							$sql = sprintf('SELECT DISTINCT tagente.id_agente as id_agente, tagente.nombre as nombre FROM tagente, tagente_modulo, tagente_estado, tpolicy_modules WHERE 
-							tagente_estado.id_agente = tagente.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tpolicy_modules.id = tagente_modulo.id_policy_module AND
-							tpolicy_modules.id_policy = %s AND tagente_modulo.id_policy_module != 0 AND tagente_estado.utimestamp != 0 AND
-							tagente.id_agente IN (SELECT id_agente FROM tagente WHERE %s AND ( %s id_grupo IN (%s)))', 
-							$id, $queryWhere, $extra_sql, $groups_sql);
+							// Skip agents without modules
+							$sql .= ' AND tagente.id_agente IN
+										(SELECT tagente.id_agente
+										FROM tagente, tagente_modulo, tagente_estado
+										WHERE tagente.id_agente = tagente_modulo.id_agente
+										AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+										AND tagente.disabled = 0 
+										AND tagente_modulo.disabled = 0
+										AND tagente_estado.utimestamp != 0
+										AND tagente_modulo.id_policy_module != 0
+										AND tagente.id_agente IN (SELECT id_agent FROM tpolicy_agents)
+										group by tagente.id_agente
+										having COUNT(*) > 0)';							
+							
 						}
 
 						break;
@@ -307,14 +387,24 @@ if (is_ajax ())
 						
 						$name = io_safe_input($name);
 						
-						$sql = sprintf('SELECT *
-							FROM tagente
-							WHERE id_agente IN (
+					
+						$sql = agents_get_agents(array (
+						'order' => 'nombre COLLATE utf8_general_ci ASC',
+						'disabled' => 0,
+						'status' => $statusSel,
+						'search' => $search_sql),
+
+						array ('*'),
+						'AR',
+						false,
+						true);		
+
+						$sql .= sprintf('AND  id_agente IN (
 									SELECT id_agente
 									FROM tagente_modulo
 									WHERE nombre = \'%s\'
 								)
-								AND (%s id_grupo IN (%s))', $name, $extra_sql, $groups_sql);
+								', $name);
 						
 						break;
 				}
@@ -446,21 +536,7 @@ if (is_ajax ())
 						break;
 				}
 
-				if ($statusSel == ALL) {
-				}
-				else if ($statusSel == NORMAL) {
-					if ($agent_info['status'] != 'agent_ok.png')
-						continue;
-				} else if ($statusSel == WARNING) {
-					if ($agent_info['status'] != 'agent_warning.png')
-						continue;
-				} else if ($statusSel  == CRITICAL) {
-					if ($agent_info['status'] != 'agent_critical.png')
-						continue;
-				} else if ($statusSel  == UNKNOWN) {
-					if ($agent_info['status'] != 'agent_down.png')
-						continue;
-				}
+
 			
 				$less = $lessBranchs;
 				if ($count != $countRows)
@@ -750,18 +826,105 @@ function printTree_($type) {
 	if($avariableGroupsIds == ''){
 		$avariableGroupsIds == -1;
 	}
+	
+	// Filter groups by agent status
+	switch ($select_status) {
+		case NORMAL:
+
+			foreach ($avariableGroups as $group_name) {
+				$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+
+				$num_ok = groups_agent_ok($id_group);
+
+				if ($num_ok <= 0)
+					unset($avariableGroups[$id_group]);
+			}
+			break;
+
+		case WARNING:
+		
+			foreach ($avariableGroups as $group_name) {
+				$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+
+				$num_warning = groups_agent_warning($id_group);
+
+				if ($num_warning <= 0)
+					unset($avariableGroups[$id_group]);
+			}				
+			break;
+			
+		case CRITICAL:
+		
+			foreach ($avariableGroups as $group_name) {
+				$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+
+				$num_critical = groups_agent_critical($id_group);
+
+				if ($num_critical <= 0)
+					unset($avariableGroups[$id_group]);
+			}				
+			break;	
+		
+		case UNKNOWN:
+		
+			foreach ($avariableGroups as $group_name) {
+				$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+
+				$num_unknown = groups_agent_unknown($id_group);
+
+				if ($num_unknown <= 0)
+					unset($avariableGroups[$id_group]);
+			}				
+			break;	
+
+	}
+	
+	// If there are not groups display error and return
+	if (empty($avariableGroups)) {
+		ui_print_error_message("There aren't agents in this agrupation");
+		return;
+	}			
+	
+	if ($search_free != '') {
+		$sql_search = " AND id_grupo IN (SELECT id_grupo FROM tagente
+						WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
+	} else {
+		$sql_search ='';
+	}	
+	
+	
 	switch ($type) {
 		default:
 		case 'os':
-			if ($search_free != '') {
-				$sql = "SELECT * FROM tconfig_os 
-						WHERE id_os IN (SELECT id_os FROM tagente 
-									WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
-				$list = db_get_all_rows_sql($sql);
-			} else {
-				$list = db_get_all_rows_sql("SELECT DISTINCT (tagente.id_os), tconfig_os.name FROM tagente, tconfig_os WHERE tagente.id_os = tconfig_os.id_os");
-			}
+
+			$sql = agents_get_agents(array (
+			'order' => 'nombre COLLATE utf8_general_ci ASC',
+			'disabled' => 0,
+			'status' => $select_status,
+			'search' => $sql_search),
+
+			array ('tagente.id_os'),
+			'AR',
+			false,
+			true);	
+			echo $sql;
+			echo "<br>";
+			// Skip agents without modules
+			$sql .= ' AND id_agente IN
+							(SELECT tagente.id_agente
+							FROM tagente, tagente_modulo 
+							WHERE tagente.id_agente = tagente_modulo.id_agente
+							AND tagente.disabled = 0 
+							AND tagente_modulo.disabled = 0
+							group by tagente.id_agente
+							having COUNT(*) > 0)';			
+
+			$sql_os = sprintf("SELECT * FROM tconfig_os WHERE id_os IN (%s)", $sql);
+
+			$list = db_get_all_rows_sql($sql_os);
+			
 			break;
+
 		case 'group':
 			$stringAvariableGroups = (
 					implode(', ',
@@ -770,12 +933,7 @@ function printTree_($type) {
 							)
 						)
 				);
-				if ($search_free != '') {
-					$sql_search = " AND id_grupo IN (SELECT id_grupo FROM tagente
-									WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
-				} else {
-					$sql_search ='';
-				}
+
 			switch ($config["dbtype"]) {
 				case "mysql":
 				case "postgresql":
@@ -786,49 +944,84 @@ function printTree_($type) {
 					break;				
 			}
 			break;
+
 		case 'module_group':
-			if ($search_free != '') {
-				$sql = "SELECT * FROM tmodule_group
-						WHERE id_mg IN (SELECT id_module_group FROM tagente_modulo 
-										WHERE id_agente IN (SELECT id_agente FROM tagente
-														WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%'))";
-				$list = db_get_all_rows_sql($sql);
-			} else {
-				$list = db_get_all_rows_sql("SELECT distinct id_mg, name FROM tmodule_group, tagente_modulo WHERE tmodule_group.id_mg = tagente_modulo.id_module_group");
-				if ($list !== false)
-					array_push($list, array('id_mg' => 0, 'name' => 'Not assigned'));
-			}
+		
+			$sql = agents_get_agents(array (
+			'order' => 'nombre COLLATE utf8_general_ci ASC',
+			'disabled' => 0,
+			'status' => $select_status,
+			'search' => $sql_search),
+
+			array ('id_agente'),
+			'AR',
+			false,
+			true);	
+		
+			// Skip agents without modules
+			$sql .= ' AND id_agente IN
+							(SELECT tagente.id_agente
+							FROM tagente, tagente_modulo 
+							WHERE tagente.id_agente = tagente_modulo.id_agente
+							AND tagente.disabled = 0 
+							AND tagente_modulo.disabled = 0
+							group by tagente.id_agente
+							having COUNT(*) > 0)';		
+
+			$sql_module_groups = sprintf("SELECT * FROM tmodule_group
+					WHERE id_mg IN (SELECT id_module_group FROM tagente_modulo WHERE id_agente IN (%s))", $sql);			
+		
+
+			$list = db_get_all_rows_sql($sql_module_groups);
+			
+			if ($list !== false)
+				array_push($list, array('id_mg' => 0, 'name' => 'Not assigned'));		
+
 			break;
+
 		case 'policies':
 			$groups_id = array_keys($avariableGroups);
 			$groups = implode(',',$groups_id);
 			
 			if ($search_free != '') {
 
-				$sql = "SELECT * FROM tpolicies
-						WHERE id_group IN ($groups) 
-						AND id IN (SELECT id_policy FROM tpolicy_agents
-								WHERE id_agent IN (SELECT id_agente FROM tagente
-											WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%'))";
+				$sql = "SELECT DISTINCT tpolicies.id, tpolicies.name FROM tpolicies, tpolicy_modules, tagente_estado, tagente, tagente_modulo WHERE 
+				tagente.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND 
+				tagente_estado.utimestamp != 0 AND tagente_modulo.id_policy_module != 0 AND tpolicy_modules.id = tagente_modulo.id_policy_module AND tpolicies.id = tpolicy_modules.id_policy AND
+				tpolicies.id_group IN  ($groups) AND tagente.nombre LIKE '%$search_free%'";
+				
 				$list = db_get_all_rows_sql($sql);
+				
+				if ($list !== false)
+					array_push($list, array('id' => 0, 'name' => 'No policy'));				
 			} else {
 				
 				$list = db_get_all_rows_sql("SELECT DISTINCT tpolicies.id, tpolicies.name FROM tpolicies, tpolicy_modules, tagente_estado, tagente, tagente_modulo WHERE 
 				tagente.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND 
 				tagente_estado.utimestamp != 0 AND tagente_modulo.id_policy_module != 0 AND tpolicy_modules.id = tagente_modulo.id_policy_module AND tpolicies.id = tpolicy_modules.id_policy AND
 				tpolicies.id_group IN  ($groups)");
-				
+
 				if ($list !== false)
 					array_push($list, array('id' => 0, 'name' => 'No policy'));
 			}
 			break;
+
 		case 'module':
+			$avariableGroupsIds = implode(',',array_keys($avariableGroups));
+			if($avariableGroupsIds == ''){
+				$avariableGroupsIds == -1;
+			}		
+		
 			if ($search_free != '') {
 					$sql_search = " AND t1.id_agente IN (SELECT id_agente FROM tagente
 									WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
-				} else {
-					$sql_search ='';
-				}
+			} else {
+					$sql_search = '';
+			}
+			
+			if ($select_status != -1)
+				$sql_search .= " AND estado = " . $select_status . " ";
+
 			switch ($config["dbtype"]) {
 				case "mysql":
 				case "postgresql":
@@ -845,7 +1038,9 @@ function printTree_($type) {
 						AND t3.utimestamp !=0 GROUP BY dbms_lob.substr(t1.nombre,4000,1) ORDER BY dbms_lob.substr(t1.nombre,4000,1) ASC');
 					break;
 			}		
+
 			break;
+
 	}
 	
 	if ($list === false) {
@@ -1004,8 +1199,8 @@ ui_print_page_header (__('Tree view')." - ".__('Sort the agents by ') .$order, "
 
 
 echo "<br>";
-echo '<form id="tree_search" method="post" action="index.php??extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'">';
-echo "<b>" . __('Monitor status') . "</b>";
+echo '<form id="tree_search" method="post" action="index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'">';
+echo "<b>" . __('Agent status') . "</b>";
 
 $search_free = get_parameter('search_free', '');
 $select_status = get_parameter('status', -1);
@@ -1020,7 +1215,7 @@ $fields[UNKNOWN] = __('Unknown');
 html_print_select ($fields, "status", $select_status);
 
 echo "&nbsp;&nbsp;&nbsp;";
-echo "<b>" . __('Search agent') .  ui_print_help_tip (__('Case sensitive'))."</b>";
+echo "<b>" . __('Search agent') . "</b>";
 echo "&nbsp;";
 html_print_input_text ("search_free", $search_free, '', 40,30, false);
 echo "&nbsp;&nbsp;&nbsp;";

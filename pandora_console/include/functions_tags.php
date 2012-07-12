@@ -18,6 +18,123 @@
  * @package Include
  * @subpackage TAGS
  */
+
+ /**
+ * Get critical agents by using the status code in modules by filtering by id_tag.
+ * 
+ * @param int $id_tag Id of the tag to search module with critical state
+ * 
+ * @return mixed Returns count of agents in critical status or false if they aren't.
+ */
+function tags_agent_critical ($id_tag) {
+	 
+	if (empty($id_tag))
+		return false;
+		
+	//TODO REVIEW ORACLE AND POSTGRES
+
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) 
+						FROM tagente_estado, tagente, tagente_modulo 
+						WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 
+						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+						AND tagente_modulo.disabled = 0 
+						AND estado = 1 
+						AND tagente_estado.id_agente = tagente.id_agente 
+						AND tagente.id_agente IN (SELECT id_agente 
+												  FROM tagente_modulo, ttag_module 
+												  WHERE tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+												  AND ttag_module.id_tag = $id_tag)");
+}
+
+ /**
+ * Get unknown agents by using the status code in modules by filtering by id_tag.
+ * 
+ * @param int $id_tag Id of the tag to search module with unknown state
+ * 
+ * @return mixed Returns count of agents in unknown status or false if they aren't.
+ */
+function tags_agent_unknown ($id_tag) {
+	 
+	if (empty($id_tag))
+		return false;
+		
+	//TODO REVIEW ORACLE AND POSTGRES
+
+	return db_get_sql ("SELECT COUNT(min_estado) 
+						FROM (SELECT MIN(tagente_estado.estado) as min_estado 
+								FROM tagente_estado, tagente, tagente_modulo 
+								WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 
+								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+								AND tagente_modulo.disabled = 0 
+								AND tagente_estado.id_agente = tagente.id_agente 
+								AND tagente_estado.estado != 0 
+								AND tagente.id_agente IN (SELECT id_agente
+														  FROM tagente_modulo, ttag_module
+														  WHERE tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+														  AND ttag_module.id_tag = $id_tag)
+								GROUP BY tagente.id_agente HAVING min_estado = 3
+							) AS S1");
+
+}
+
+ /**
+ * Get normal agents by using the status code in modules by filtering by id_tag.
+ * 
+ * @param int $id_tag Id of the tag to search module with normal state
+ * 
+ * @return mixed Returns count of agents in normal status or false if they aren't.
+ */
+function tags_agent_ok ($id_tag) {
+	 
+	if (empty($id_tag))
+		return false;
+		
+	//TODO REVIEW ORACLE AND POSTGRES
+
+	return db_get_sql ("SELECT COUNT(max_estado) 
+						FROM (SELECT MAX(tagente_estado.estado) as max_estado 
+								FROM tagente_estado, tagente, tagente_modulo 
+								WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 
+								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+								AND tagente_modulo.disabled = 0 
+								AND tagente_estado.id_agente = tagente.id_agente 
+								AND tagente.id_agente IN (SELECT id_agente
+														  FROM tagente_modulo, ttag_module
+														  WHERE tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+														  AND ttag_module.id_tag = $id_tag) 
+								GROUP BY tagente.id_agente HAVING max_estado = 0) AS S1");
+
+}
+
+ /**
+ * Get warning agents by using the status code in modules by filtering by id_tag.
+ * 
+ * @param int $id_tag Id of the tag to search module with warning state
+ * 
+ * @return mixed Returns count of agents in warning status or false if they aren't.
+ */
+function tags_agent_warning ($id_tag) {
+	 
+	if (empty($id_tag))
+		return false;
+		
+	//TODO REVIEW ORACLE AND POSTGRES
+
+	return db_get_sql ("SELECT COUNT(min_estado) 
+						FROM (SELECT MAX(tagente_estado.estado) as min_estado 
+								FROM tagente_estado, tagente, tagente_modulo 
+								WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 
+								AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+								AND tagente_modulo.disabled = 0 
+
+								AND tagente_estado.id_agente = tagente.id_agente 
+								AND tagente.id_agente IN (SELECT id_agente
+														  FROM tagente_modulo, ttag_module
+														  WHERE tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+														  AND ttag_module.id_tag = $id_tag) 
+								GROUP BY tagente.id_agente HAVING min_estado = 2) AS S1");
+
+}
  
  /**
  * Find a tag searching by tag's or description name. 

@@ -68,7 +68,7 @@
     <string name="event_search_label_str">Event search</string>
     <string name="max_time_old_event_str">Oldest event</string>
     <string name="licensed_under_gpl_str">Licensed under GPL v2</string>
-    <string name="develop_team_str">Developer: Miguel de Dios</string>
+    <string name="develop_team_str">Developers:\nMiguel de Dios and Santiago Munín</string>
     <string name="alert_recovered_str">Alert recovered</string>
     <string name="alert_manual_validation_str">Alert manually validated</string>
     <string name="going_up_warning_str">Going from critical to warning</string>
@@ -120,5 +120,6 @@
     <string name="connection_settings_problem">The operation can not be performed until you configure a correct connection.</string>
     <string name="unknown_version">Unknown version</string>
     <string name="enable_background_service">Check events in background</string>
+    <string name="default_profile_can_not_remove">Default profile can not be removed</string>
 
 </resources>

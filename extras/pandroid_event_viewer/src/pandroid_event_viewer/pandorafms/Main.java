@@ -151,19 +151,19 @@ public class Main extends Activity {
 		loadProfiles();
 		combo = (Spinner) findViewById(R.id.profile_combo);
 		combo.setOnItemSelectedListener(new OnItemSelectedListener() {
-			
+
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int pos, long id) {
 				String selected = parent.getItemAtPosition(pos).toString();
 				setProfile(selected);
 			}
-			
+
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
 		((ImageView) findViewById(R.id.delete_profile))
 				.setOnClickListener(new OnClickListener() {
-					
+
 					public void onClick(View v) {
 						String profileName = ((Spinner) findViewById(R.id.profile_combo))
 								.getSelectedItem().toString();
@@ -194,13 +194,13 @@ public class Main extends Activity {
 
 		buttonbuttonSetAsFilterWatcher
 				.setOnClickListener(new View.OnClickListener() {
-					
+
 					public void onClick(View v) {
 						save_filter_watcher();
 					}
 				});
 		buttonSaveProfile.setOnClickListener(new OnClickListener() {
-			
+
 			public void onClick(View v) {
 				final EditText profileName = new EditText(getBaseContext());
 				DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -262,7 +262,6 @@ public class Main extends Activity {
 		cb.setChecked(preferences.getBoolean("show_advanced", false));
 		cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-			
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				LinearLayout advancedOptions = (LinearLayout) findViewById(R.id.show_hide_layout);
@@ -744,28 +743,36 @@ public class Main extends Activity {
 		SharedPreferences preferences = getSharedPreferences(
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
+		if (profileName.equals(DEFAULT_PROFILE_NAME)) {
+			Toast.makeText(getApplicationContext(),
+					R.string.default_profile_can_not_remove, Toast.LENGTH_SHORT)
+					.show();
+			return;
+		}
 		SharedPreferences.Editor editorPreferences = preferences.edit();
 		editorPreferences.remove(PROFILE_PREFIX + profileName);
 		String profiles = preferences.getString("allProfiles", "");
 		int firstPos = profiles.indexOf(profileName);
 		int amount = profileName.length();
-		if (firstPos != 0) {
-			// Includes the separator char
-			firstPos--;
-			amount++;
-		}
-		profiles = profiles.substring(0, firstPos)
-				+ profiles.substring(firstPos + amount);
-		if (profiles.startsWith("|")) {
-			if (profiles.length() > 1) {
-				profiles = profiles.substring(1);
-			} else {
-				profiles = "";
+		if (profiles.length() > 0) {
+			if (firstPos > 0) {
+				// Includes the separator char
+				firstPos--;
+				amount++;
 			}
-		}
-		editorPreferences.putString("allProfiles", profiles);
-		if (editorPreferences.commit()) {
-			Log.i(TAG, "Removed profile: " + profileName);
+			profiles = profiles.substring(0, firstPos)
+					+ profiles.substring(firstPos + amount);
+			if (profiles.startsWith("|")) {
+				if (profiles.length() > 1) {
+					profiles = profiles.substring(1);
+				} else {
+					profiles = "";
+				}
+			}
+			editorPreferences.putString("allProfiles", profiles);
+			if (editorPreferences.commit()) {
+				Log.i(TAG, "Removed profile: " + profileName);
+			}
 		}
 	}
 

@@ -27,7 +27,8 @@
         <TableLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" >
+            android:layout_marginTop="10dp"
+            android:stretchColumns="0" >
 
             <TableRow
                 android:layout_width="match_parent"
@@ -44,12 +45,15 @@
                 <Spinner
                     android:id="@+id/profile_combo"
                     android:layout_width="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp" />
 
                 <ImageView
                     android:id="@+id/delete_profile"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="10dp"
                     android:contentDescription="@string/profile_delete"
                     android:src="@drawable/cross" />
             </TableRow>
@@ -130,7 +134,8 @@
                 <ProgressBar
                     android:id="@+id/loading_tag"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right" />
             </TableRow>
         </TableLayout>
 

@@ -1,7 +1,18 @@
+2012-07-13 Santiago Munín <burning1@gmail.com>
+	* ChangeLog: Fixed a line.
+	* src/pandroid_event_viewer/pandorafms/Main.java: Fixed a bug. Default profile can't be deleted.
+	* res/layout/main.xml,
+	  res/layout/item_list_event_layout.xml,
+	  res/layout/about.xml,
+	  res/layout/item_list_event_extended.xml,
+	  res/layout/options.xml,
+	  res/values/styles.xml: UI improvements.
+	* res/values/strings.xml
+
 2012-07-11 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/API.java,
 	  src/pandroid_event_viewer/pandorafms/Main.java: Added some SupressWarning annotations.
-	* res/layout/options.xml: Textview 
+	* res/layout/options.xml: Textview color changed.
 	* res/drawable-ldpi/incident.png,
 	  res/drawable-ldpi/house.png,
 	  res/drawable-ldpi/lightning_go.png: Removed, no longer needed.

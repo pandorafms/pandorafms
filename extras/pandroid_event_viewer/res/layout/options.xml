@@ -118,9 +118,8 @@
 
                         <Spinner
                             android:id="@+id/refresh_combo"
-                            android:layout_width="150dp"
-                            android:layout_height="wrap_content"
-                            android:gravity="left" />
+                            android:layout_width="155dp"
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -133,7 +132,9 @@
                             android:id="@+id/check_connection_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginRight="20dp"
                             android:drawableBottom="@drawable/help"
+                            android:gravity="center_horizontal"
                             android:text="@string/check_connection"
                             android:textColor="#ffffff" />
                     </LinearLayout>

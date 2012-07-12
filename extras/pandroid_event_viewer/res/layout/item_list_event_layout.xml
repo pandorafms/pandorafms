@@ -18,14 +18,16 @@
     android:id="@+id/item_linear_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingBottom="5dp"
     android:orientation="vertical" >
 
     <RelativeLayout
         android:id="@+id/content_event_item"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="1dp" >
 
         <TextView
             android:id="@+id/event_name"
@@ -50,6 +52,7 @@
                 android:textColor="#000"
                 android:textColorHighlight="#000"
                 android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/timestamp"
                 android:layout_width="wrap_content"

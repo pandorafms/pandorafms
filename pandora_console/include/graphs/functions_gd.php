@@ -253,11 +253,11 @@ function gd_progress_bubble ($width, $height, $progress, $title, $font, $out_of_
 // ***************************************************************************
 
 function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim_str, $out_of_lim_image, $mode = 1, $fontsize=10, $value_text = '', $colorRGB = '') {
-	if($out_of_lim_str === false) {
+	if ($out_of_lim_str === false) {
 		$out_of_lim_str = "Out of limits";
 	}
 	
-	if($out_of_lim_image === false) {
+	if ($out_of_lim_image === false) {
 		$out_of_lim_image = "images_graphs/outlimits.png";
 	}
 	
@@ -273,7 +273,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 	function drawRating($rating, $width, $height, $font, $out_of_lim_str, $mode, $fontsize, $value_text, $color) {
 		global $config;
 		global $REMOTE_ADDR;
-				
+		
 		// Round corners defined in global setup
 		if ($config["round_corner"] != 0) {
 			$radius = ($height > 18) ? 8 : 0;
@@ -281,7 +281,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		else {
 			$radius = 0;
 		}
-			
+		
 		if ($width == 0) {
 			$width = 150;
 		}
@@ -352,7 +352,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 						$x2 = $ratingbar30;
 					}
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius,$blue);
-				}	
+				}
 				
 				if ($rating > 50)
 					if ($rating > 100)
@@ -397,8 +397,6 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		
 		imagePNG($image);
 		imagedestroy($image);
-		
-		
 	}
 	
 	function ImageRectangleWithRoundedCorners(&$im, $x1, $y1, $x2, $y2, $radius, $color)
@@ -406,7 +404,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 		// Draw rectangle without corners
 		ImageFilledRectangle($im, $x1+$radius, $y1, $x2-$radius, $y2, $color);
 		ImageFilledRectangle($im, $x1, $y1+$radius, $x2, $y2-$radius, $color);
-
+		
 		// Draw circled corners
 		ImageFilledEllipse($im, $x1+$radius, $y1+$radius, $radius*2, $radius*2, $color);
 		ImageFilledEllipse($im, $x2-$radius, $y1+$radius, $radius*2, $radius*2, $color);
@@ -427,7 +425,7 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 				$imgPng = imageCreateFromPng($out_of_lim_image);
 				imageAlphaBlending($imgPng, true);
 				imageSaveAlpha($imgPng, true);
-				imagePng($imgPng); 
+				imagePng($imgPng);
 			}
 			else 
 				drawRating($progress, $width, $height, $font, $out_of_lim_str, $mode, 6,  $value_text, $color);

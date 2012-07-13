@@ -1,3 +1,18 @@
+2012-07-13 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/snmpconsole/snmp_alert.php,
+	godmode/servers/manage_recontask_form.php,
+	include/functions_filemanager.php, include/functions_networkmap.php,
+	include/constants.php, include/graphs/functions_gd.php,
+	include/graphs/functions_pchart.php,
+	operation/events/events_list.php, operation/agentes/graphs.php,
+	operation/agentes/networkmap.php, operation/agentes/stat_win.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/networkmap.topology.php,
+	operation/agentes/networkmap.groups.php,
+	operation/gis_maps/render_view.php: cleaned source code style and
+	change magic numbers for time constants.
+
 2012-07-13  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql: Fixed missed column name change

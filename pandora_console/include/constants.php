@@ -53,6 +53,7 @@ define ('ERR_CONNECTION', -80000);
 
 /* Seconds in a time unit constants */
 define('SECONDS_1MINUTE', 60);
+define('SECONDS_2MINUTES', 120);
 define('SECONDS_5MINUTES', 300);
 define('SECONDS_10MINUTES', 600);
 define('SECONDS_15MINUTES', 900);

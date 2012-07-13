@@ -164,7 +164,7 @@ $fields['recon_script'] = __("Custom script");
 $table->data[2][0] = "<b>".__('Mode')."</b>";
 $table->data[2][1] = html_print_select ($fields, "mode", $mode, '', '', 0, true);
 
-		
+
 // Network 
 $table->data[3][0] = "<b>".__('Network');
 $table->data[3][1] = html_print_input_text ('network', $network, '', 25, 0, true);
@@ -172,15 +172,15 @@ $table->data[3][1] = html_print_input_text ('network', $network, '', 25, 0, true
 // Interval
 $values = array ();
 $values[0] = __('Manual');
-$values[3600] = __('%d hour', 1);
-$values[7200] = __('%d hours', 2);
-$values[21600] = __('%d hours', 6);
-$values[43200] = __('%d hours', 12);
-$values[86400] = __('%d day', 1);
-$values[432000] = __('%d days', 5);
-$values[604800] = __('%d week', 1);
-$values[1209600] = __('%d weeks', 2);
-$values[2592000] = __('%d month', 1);
+$values[SECONDS_1HOUR] = __('%d hour', 1);
+$values[SECONDS_2HOUR] = __('%d hours', 2);
+$values[SECONDS_6HOURS] = __('%d hours', 6);
+$values[SECONDS_12HOURS] = __('%d hours', 12);
+$values[SECONDS_1DAY] = __('%d day', 1);
+$values[SECONDS_5DAY] = __('%d days', 5);
+$values[SECONDS_1WEEK] = __('%d week', 1);
+$values[SECONDS_2WEEK] = __('%d weeks', 2);
+$values[SECONDS_1MONTH] = __('%d month', 1);
 
 $table->data[4][0] = "<b>".__('Interval');
 $table->data[4][1] = html_print_select ($values, "interval", $interval, '', '', '', true);
@@ -285,25 +285,25 @@ echo "</form>";
 /* <![CDATA[ */
 $(document).ready (function () {
 	if($('#mode').val() == 'recon_script') {
-			$(".recon_script").attr ('style', '');
-			$(".network_sweep").attr ('style', 'display:none');
+		$(".recon_script").attr ('style', '');
+		$(".network_sweep").attr ('style', 'display:none');
 	}
 	else if($('#mode').val() == 'network_sweep') {
-			$(".network_sweep").attr ('style', '');
-			$(".recon_script").attr ('style', 'display:none');
+		$(".network_sweep").attr ('style', '');
+		$(".recon_script").attr ('style', 'display:none');
 	}
-			
+	
 	$('#mode').change(function() {
 		if(this.value == 'recon_script') {
-				$(".recon_script").attr ('style', '');
-				$(".network_sweep").attr ('style', 'display:none');
-				$("#textarea_explanation").css('display', 'none');
-				$("#spinner_layour").css('display', '');
-				get_explanation_recon_script($("#id_recon_script").val());
+			$(".recon_script").attr ('style', '');
+			$(".network_sweep").attr ('style', 'display:none');
+			$("#textarea_explanation").css('display', 'none');
+			$("#spinner_layour").css('display', '');
+			get_explanation_recon_script($("#id_recon_script").val());
 		}
 		else if(this.value == 'network_sweep') {
-				$(".network_sweep").attr ('style', '');
-				$(".recon_script").attr ('style', 'display:none');
+			$(".network_sweep").attr ('style', '');
+			$(".recon_script").attr ('style', 'display:none');
 		}
 	});
 });

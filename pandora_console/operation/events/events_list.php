@@ -220,7 +220,7 @@ if ($id_user_ack != "0")
 
 
 if ($event_view_hr > 0) {
-	$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
+	$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR);
 	$sql_post .= " AND (utimestamp > ".$unixtime . " OR estado = 2)";
 }
 

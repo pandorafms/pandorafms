@@ -478,7 +478,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 // Returns a module node definition
 function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
 	$status = modules_get_agentmodule_status($module['id_agente_modulo']);
-				
+	
 	// Set node status
 	switch($status) {
 		case 0: 
@@ -497,7 +497,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
 				$status_color = '#BBBBBB'; // Unknown monitor
 			break;
 	}
-
+	
 	
 	if ($simple == 0){
 		$node = $module['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . ui_print_moduletype_icon ($module['id_tipo_modulo'], true, true, false). '</TD></TR>
@@ -524,7 +524,7 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	
 	$node = '0 [ color="#364D1F", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.8, height=0.6, label=<'.$label.'>,
 		shape="ellipse", tooltip="ajax.php?page=include/ajax/networkmap.ajax&action=get_networkmap_summary&stats='.$stats_json.'", URL="index.php?sec=estado&sec2=operation/agentes/group_view" ];';
-
+	
 	return $node;
 }
 

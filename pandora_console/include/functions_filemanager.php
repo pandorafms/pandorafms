@@ -436,21 +436,21 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$("#main_buttons").css("display", "none");
 		$("#create_folder").css("display", "");
 	}
-
+	
 	function show_upload_file() {
 		$("#table1-1").css('display', '');
 		
 		$("#main_buttons").css("display", "none");
 		$("#upload_file").css("display", "");
 	}
-
+	
 	function show_create_text_file() {
 		$("#table1-1").css('display', '');
 		
 		$("#main_buttons").css("display", "none");
 		$("#create_text_file").css("display", "");
 	}
-
+	
 	function show_main_buttons_folder() {
 		//$("#main_buttons").css("display", "");
 		$("#table1-1").css('display', 'none');
@@ -609,13 +609,13 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			$data[4] .= html_print_input_hidden ('filename', $fileinfo['realpath'], true);
 			$data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'] . $config['dbpass']), true);
 			$data[4] .= html_print_input_hidden ('delete_file', 1, true);
-
+			
 			$relative_dir = str_replace($config['homedir'], '', dirname($fileinfo['realpath']));
 			if ($relative_dir[0] == '/') {
 				$relative_dir = substr($relative_dir, 1);
 			}
 			$hash2 = md5($relative_dir . $config['dbpass']);
-
+			
 			$data[4] .= html_print_input_hidden ('directory', $relative_dir, true);
 			$data[4] .= html_print_input_hidden ('hash2', $hash2, true);
 			$data[4] .= '</form>';
@@ -672,7 +672,8 @@ function filemanager_box_upload_file_complex($real_directory, $relative_director
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
-	} else {
+	}
+	else {
 		$table->data[1][0] = __('Upload') . ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] = html_print_input_file ('file', true, false);
 		$table->data[1][2] = html_print_radio_button('zip_or_file', 'zip', __('Multiple files zipped'), false, true);
@@ -709,7 +710,8 @@ function filemanager_box_upload_file_explorer($real_directory, $relative_directo
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
-	} else {
+	}
+	else {
 		$table->data[1][0] = __('Upload file');
 		$table->data[1][1] = html_print_input_file ('file', true, false);
 		$table->data[1][2] = html_print_submit_button (__('Go'), 'go', false,
@@ -744,7 +746,8 @@ function filemanager_box_upload_zip_explorer($real_directory, $relative_director
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
-	} else {
+	}
+	else {
 		$table->data[1][0] = __('Upload zip file: ') . ui_print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] = html_print_input_file ('file', true, false);
 		$table->data[1][2] = html_print_submit_button (__('Go'), 'go', false,
@@ -779,7 +782,8 @@ function filemanager_box_create_text_explorer($real_directory, $relative_directo
 		echo '<p>';
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
-	} else {
+	}
+	else {
 		$table->data[1][0] = __('Create text file: ');
 		$table->data[1][1] = html_print_input_text('name_file', '', '', 30, 50, true);
 		$table->data[1][2] = html_print_submit_button (__('Create'), 'create', false,
@@ -854,7 +858,7 @@ function filemanager_is_writable_dir ($dirpath, $force = false) {
 	if (filemanager_is_writable_dir (realpath ($dirpath.'/..')))
 		return true;
 	else if (! $force)
-			return is_writable ($dirpath);
+		return is_writable ($dirpath);
 	
 	return (is_writable ($dirpath) || @chmod ($dirpath, 0755));
 }
@@ -891,11 +895,14 @@ function filemanager_get_file_info ($filepath) {
 		$info['mime'] = MIME_DIR;
 		$info['is_dir'] = true;
 		$info['size'] = 0;
-	} else if (strpos ($info['mime_extend'], 'image') !== false) {
+	}
+	else if (strpos ($info['mime_extend'], 'image') !== false) {
 		$info['mime'] = MIME_IMAGE;
-	} else if (in_array ($info['mime_extend'], $zip_mimes)) {
+	}
+	else if (in_array ($info['mime_extend'], $zip_mimes)) {
 		$info['mime'] = MIME_ZIP;
-	} else if (strpos ($info['mime_extend'], 'text') !== false) {
+	}
+	else if (strpos ($info['mime_extend'], 'text') !== false) {
 		$info['mime'] = MIME_TEXT;
 	}
 	
@@ -921,7 +928,8 @@ function filemanager_list_dir ($dirpath) {
 		$info = filemanager_get_file_info ($dirpath.'/'.$file);
 		if ($info['is_dir']) {
 			$dirs[$file] = $info;
-		} else {
+		}
+		else {
 			$files[$file] = $info;
 		}
 	}

@@ -847,7 +847,7 @@ function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $font
 	$settings = array("Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayValues"=>$show_values,"DisplayZeroValues"=>FALSE,"DisplayR"=>100,"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE);
 	$myPicture->drawSplineChart($settings);
 	$myPicture->setShadow(FALSE);
-	
+
 	if($show_legend) {
 		/* Write the chart legend */ 
 		$myPicture->drawLegend(643,210,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL)); 

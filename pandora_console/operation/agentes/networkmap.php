@@ -68,7 +68,7 @@ if ($add_networkmap) {
 	$name = $activeTab;
 	$check = db_get_value('name', 'tnetwork_map', 'name', $name);
 	$sql = db_get_value_filter('COUNT(name)', 'tnetwork_map', array('name' => "%$name"));
-
+	
 	if ($check) {
 		$id_networkmap = networkmap_create_networkmap("($sql) ".$name, $activeTab, $layout, $nooverlap, $simple, $regen, $font_size, $group, $module_group, $depth, $modwithalerts, $hidepolicymodules, $zoom, $ranksep, $center);
 		$message = ui_print_result_message ($id_networkmap,
@@ -106,11 +106,11 @@ if($save_networkmap || $update_networkmap) {
 	if($save_networkmap) {
 		if (!$check || $subcheck == $name) {
 			$result = networkmap_update_networkmap($id_networkmap, array('name' => $name, 'type' => $activeTab, 'layout' => $layout, 
-							'nooverlap' => $nooverlap, 'simple' => $simple, 'regenerate' => $regen, 'font_size' => $font_size, 
-							'id_group' => $group, 'id_module_group' => $module_group, 'depth' => $depth, 'only_modules_with_alerts' => $modwithalerts, 
-							'hide_policy_modules' => $hidepolicymodules, 'zoom' => $zoom, 'distance_nodes' => $ranksep, 'center' => $center, 
-							'show_snmp_modules' => (int)$show_snmp_modules));
-							
+				'nooverlap' => $nooverlap, 'simple' => $simple, 'regenerate' => $regen, 'font_size' => $font_size, 
+				'id_group' => $group, 'id_module_group' => $module_group, 'depth' => $depth, 'only_modules_with_alerts' => $modwithalerts, 
+				'hide_policy_modules' => $hidepolicymodules, 'zoom' => $zoom, 'distance_nodes' => $ranksep, 'center' => $center, 
+				'show_snmp_modules' => (int)$show_snmp_modules));
+				
 			$message = ui_print_result_message ($result,
 				__('Network map saved successfully'),
 				__('Could not save network map'), '', true);
@@ -169,26 +169,26 @@ if($recenter_networkmap) {
 if ($pure == 1) {
 	$buttons['screen'] = array('active' => false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab='.$activeTab.'">' . 
-				html_print_image("images/normalscreen.png", true, array ('title' => __('Normal screen'))) .'</a>');
-			
-} else {
+			html_print_image("images/normalscreen.png", true, array ('title' => __('Normal screen'))) .'</a>');
+}
+else {
 	$buttons['screen'] = array('active' => false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;pure=1&amp;tab='.$activeTab.'">' . 
-				html_print_image("images/fullscreen.png", true, array ('title' => __('Full screen'))) .'</a>');
+			html_print_image("images/fullscreen.png", true, array ('title' => __('Full screen'))) .'</a>');
 }
-if($config['enterprise_installed']) {
+if ($config['enterprise_installed']) {
 	$buttons['policies'] = array('active' => $activeTab == 'policies',
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=policies&amp;pure='.$pure.'">' . 
-				html_print_image("images/policies.png", true, array ("title" => __('Policies view'))) .'</a>');
+			html_print_image("images/policies.png", true, array ("title" => __('Policies view'))) .'</a>');
 }
 
 $buttons['groups'] = array('active' => $activeTab == 'groups',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=groups&amp;pure='.$pure.'">' . 
-			html_print_image("images/group.png", true, array ("title" => __('Groups view'))) .'</a>');
+		html_print_image("images/group.png", true, array ("title" => __('Groups view'))) .'</a>');
 
 $buttons['topology'] = array('active' => $activeTab == 'topology',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
-			html_print_image("images/recon.png", true, array ("title" => __('Topology view'))) .'</a>');
+		html_print_image("images/recon.png", true, array ("title" => __('Topology view'))) .'</a>');
 
 $buttons['separator'] = array('separator' => '');
 
@@ -204,22 +204,22 @@ $buttons['combolist'] = $combolist;
 
 $buttons['addmap'] = array('active' => $activeTab == false,
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;add_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
-			html_print_image("images/add.png", true, array ("title" => __('Add map'))) .'</a>');
+		html_print_image("images/add.png", true, array ("title" => __('Add map'))) .'</a>');
 
 if (!$nomaps && $id_networkmap != 0) {
 	$buttons['deletemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;delete_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
-				html_print_image("images/cross.png", true, array ("title" => __('Delete map'))) .'</a>');
+			html_print_image("images/cross.png", true, array ("title" => __('Delete map'))) .'</a>');
 	
 	$buttons['savemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;save_networkmap=1
-					&amp;tab='.$activeTab.'&amp;save_networkmap=1&amp;name='.$name.'&amp;group='.$group.'
-					&amp;layout='.$layout.'&amp;nooverlap='.$nooverlap.'&amp;simple='.$simple.'&amp;regen='.$regen.'
-					&amp;zoom='.$zoom.'&amp;ranksep='.$ranksep.'&amp;fontsize='.$font_size.'&amp;depth='.$depth.'
-					&amp;modwithalerts='.$modwithalerts.'&amp;hidepolicymodules='.$hidepolicymodules.'
-					&amp;module_group='.$module_group.'&amp;pure='.$pure.'&amp;hidden_options='.(int)$hidden_options.'
-					&amp;show_snmp_modules='.(int)$show_snmp_modules.'">' . 
-				html_print_image("images/file.png", true, array ("title" => __('Save map'))) .'</a>');
+			&amp;tab='.$activeTab.'&amp;save_networkmap=1&amp;name='.$name.'&amp;group='.$group.'
+			&amp;layout='.$layout.'&amp;nooverlap='.$nooverlap.'&amp;simple='.$simple.'&amp;regen='.$regen.'
+			&amp;zoom='.$zoom.'&amp;ranksep='.$ranksep.'&amp;fontsize='.$font_size.'&amp;depth='.$depth.'
+			&amp;modwithalerts='.$modwithalerts.'&amp;hidepolicymodules='.$hidepolicymodules.'
+			&amp;module_group='.$module_group.'&amp;pure='.$pure.'&amp;hidden_options='.(int)$hidden_options.'
+			&amp;show_snmp_modules='.(int)$show_snmp_modules.'">' . 
+			html_print_image("images/file.png", true, array ("title" => __('Save map'))) .'</a>');
 }
 
 $title = '';

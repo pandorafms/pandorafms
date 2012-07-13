@@ -27,10 +27,9 @@ if (! check_acl ($config['id_user'], $id_grupo, "AR")) {
 
 require_once ($config["homedir"] . '/include/functions_graph.php');
 
-$period = get_parameter ( "period", 3600);
 $draw_alerts = get_parameter("draw_alerts", 0);
 $avg_only = get_parameter ("avg_only", 1);
-$period = get_parameter ("period", 3600);
+$period = get_parameter ("period", SECONDS_1HOUR);
 $width = get_parameter ("width", 555);
 $height = get_parameter ("height", 245);
 $label = get_parameter ("label", "");

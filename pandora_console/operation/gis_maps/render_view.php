@@ -97,19 +97,19 @@ else {
 
 if (check_acl ($config["id_user"], $map['group_id'], "IW"))
 	$buttons [] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='. $idMap.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
-	
+
 $buttonsString = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' . html_print_image("images/bricks.png", true, array("class" => "top", "border" => '0')) . '&nbsp; Agent&nbsp;-&nbsp;test_gis1</a></li></ul></div><div id="menu_tab"><ul class="mn"><li class="nomn"><a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente=3">' . html_print_image("images/setup.png", true, array("class" => "top", "title" => "Manage", "border" => "0", "width" => "16", "title" => "Manage")) . '&nbsp;</a></li><li class="nomn_high"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' . html_print_image("images/monitor.png", true, array("class" => "top", "title" => "Main", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=data">' . html_print_image("images/lightbulb.png", true, array("class" => "top", "title" => "Data", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=alert">' . html_print_image("images/bell.png", true, array("class" => "top", "title" => "Alerts", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=sla&amp;id_agente=3">' . html_print_image("images/images.png", true, array("class" => "top", "title" => "S.L.A.", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;group_id=2">' . html_print_image("images/agents_group.png", true, array("class" => "top", "title" => "Group", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=inventory&amp;id_agente=3">' . html_print_image("images/page_white_text.png", true, array("class" => "top", "title" => "Inventory", "border" => "0", "width" => "16")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente=3">' . html_print_image("images/world.png", array("class" => "top", "title" => "GIS data", "border" => "0")) . '&nbsp;</a>';
 
 $times = array(
-	5 => 5 . ' ' . __('seconds'),
-	10 => 10 . ' ' . __('seconds'),
-	30 => 30 . ' ' . __('seconds'),
-	60 => 1 . ' ' . __('minute'),
-	120 => 2 . ' ' . __('minutes'),
-	300 => 5 . ' ' . __('minutes'),
-	600 => 10 . ' ' . __('minutes'),
-	3600 => 1 . ' ' . __('hour'),
-	7200 => 2 . ' ' . __('hours')
+	5 => __('5 seconds'),
+	10 => __('10 seconds'),
+	30 => __('30 seconds'),
+	SECONDS_1MINUTE => __('1 minute'),
+	SECONDS_2MINUTE => __('2 minutes'),
+	SECONDS_5MINUTES => __('5 minutes'),
+	SECONDS_10MINUTES => __('10 minutes'),
+	SECONDS_1HOUR => __('1 hour'),
+	SECONDS_2HOUR => __('2 hours')
 	);
 
 $buttons[] = '&nbsp;' . __('Refresh: ') . html_print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false) . "&nbsp;";
@@ -148,7 +148,7 @@ if ($layers != false) {
 		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer'], array('nombre'));
 		
 		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer);
-
+		
 		foreach ($agentNames as $agentName) {
 			$idAgent = agents_get_agent_id($agentName);
 			$coords = gis_get_data_last_position_agent($idAgent);
@@ -172,7 +172,7 @@ if ($layers != false) {
 		}
 	}
 	gis_add_parent_lines();
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$timestampLastOperation = db_get_value_sql("SELECT UNIX_TIMESTAMP()");
@@ -191,29 +191,28 @@ if ($layers != false) {
 
 // Resize GIS map on fullscreen
 if ($config["pure"] != 0) {
-?>
-	<script type="text/javascript">
-		$().ready(function(){
-			
-			var new_height = $(document).height();
-			$("#map").css("height", new_height - 60);
-			
-		});
-	</script>
-<?php
+	?>
+		<script type="text/javascript">
+			$().ready(function(){
+				
+				var new_height = $(document).height();
+				$("#map").css("height", new_height - 60);
+				
+			});
+		</script>
+	<?php
 }
 else {
 	// Resize GIS map on normalview
-?>
-	<script type="text/javascript">
-		$().ready(function(){
-			
-			var new_height = $("#menu").height();
-			$("#map").css("height", new_height - 20);
-			
-		});
-		
-	</script>
-<?php	
+	?>
+		<script type="text/javascript">
+			$().ready(function(){
+				
+				var new_height = $("#menu").height();
+				$("#map").css("height", new_height - 20);
+				
+			});
+		</script>
+	<?php
 }
 ?>

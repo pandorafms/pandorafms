@@ -461,15 +461,19 @@ foreach ($modules as $module) {
 		echo "<td class=".$tdcolor." width='78'>";
 		$graph_label = io_safe_output($module["nombre"]);
 		
-		echo "<a href='javascript:winopeng(\"operation/agentes/stat_win.php?type=$graph_type&period=2419200&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=180000\", \"month_".$win_handle."\")'>" . html_print_image('images/grafica_m.png' , true, array("border" => '0', "alt" => '')) . "</a>&nbsp;";
+		echo "<a href='javascript:" . 
+			"winopeng(\"operation/agentes/stat_win.php?type=$graph_type&period=" . (28 * SECONDS_1DAY) . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=180000\", \"month_".$win_handle."\")'>" . html_print_image('images/grafica_m.png' , true, array("border" => '0', "alt" => '')) . "</a>&nbsp;";
 		
-		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=604800&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=6000','week_".$win_handle."')";
+		$link ="winopeng(" .
+			"'operation/agentes/stat_win.php?type=$graph_type&period=" . SECONDS_1WEEK . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=6000','week_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'">' . html_print_image("images/grafica_w.png", true, array("border" => '0', "alt" => '')) . '</a>&nbsp;';
 		
-		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=600','day_".$win_handle."')";
+		$link ="winopeng(" .
+			"'operation/agentes/stat_win.php?type=$graph_type&period=" . SECONDS_1DAY . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=600','day_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'">' . html_print_image("images/grafica_d.png", true, array("border" => '0', "alt" => '')) . '</a>&nbsp;';
-
-		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=3600&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=60','hour_".$win_handle."')";
+		
+		$link ="winopeng(" .
+			"'operation/agentes/stat_win.php?type=$graph_type&period=" . SECONDS_1HOUR . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=60','hour_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'">' . html_print_image("images/grafica_h.png", true, array("border" => '0', "alt" => "")) . '</a>';
 	}
 	
@@ -484,7 +488,7 @@ foreach ($modules as $module) {
 	else {
 		echo "<td class=".$tdcolor."></td>";
 	}
-
+	
 	echo "<td class='".$tdcolor."f9'>";
 	if ($module["utimestamp"] != 0){ 
 		$seconds = get_system_time () - $module["utimestamp"];

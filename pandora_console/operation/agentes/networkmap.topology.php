@@ -66,7 +66,8 @@ else {
 	$fh = @fopen ($filename_dot, 'w');
 	if ($fh === false) {
 		$result = false;
-	} else {
+	}
+	else {
 		fwrite ($fh, $graph);
 		$cmd = "$filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img." ".$filename_dot;
 		$result = system ($cmd);

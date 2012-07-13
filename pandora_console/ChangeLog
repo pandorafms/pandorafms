@@ -1,3 +1,7 @@
+2012-07-13  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql: Fixed missed column name change
+
 2012-07-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 		* include/functions_modules.php

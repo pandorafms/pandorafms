@@ -1,4 +1,7 @@
 2012-07-14 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java: Now uses the new getEvents() method in API class.
+
+2012-07-14 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java: Now uses the new getEvents() method in API class.
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java: Little changes.
 	* src/pandroid_event_viewer/pandorafms/API.java: Now the getEvents() method accepts all parameters of get_events petition in Pandora API.

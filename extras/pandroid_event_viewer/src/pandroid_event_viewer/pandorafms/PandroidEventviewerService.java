@@ -17,12 +17,7 @@ GNU General Public License for more details.
 package pandroid_event_viewer.pandorafms;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.app.IntentService;
@@ -87,22 +82,21 @@ public class PandroidEventviewerService extends IntentService {
 		long now = (c.getTimeInMillis() / 1000);
 		long old_previous_filterTimestamp = preferences.getLong(
 				"previous_filterTimestamp", now);
+		String filterAgentName = preferences.getString("filterAgentName", "");
 
-		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-		String parametersAPI = serializeParams2Api(context, true, false, false);
+		int idGroup = preferences.getInt("filterIDGroup", 0);
+		int filterSeverity = preferences.getInt("filterSeverity", -1);
+		int filterStatus = preferences.getInt("filterStatus", 3);
+		String filterEventSearch = preferences.getString("filterEventSearch",
+				"");
+		String filterTag = preferences.getString("filterTag", "");
 
-		// Get total count.
-		parameters = new ArrayList<NameValuePair>();
-		parameters.add(new BasicNameValuePair("op", "get"));
-		parameters.add(new BasicNameValuePair("op2", "events"));
-		parameters.add(new BasicNameValuePair("other_mode",
-				"url_encode_separator_|"));
-		parameters.add(new BasicNameValuePair("return_type", "csv"));
-		parameters.add(new BasicNameValuePair("other", parametersAPI));
-		String return_api;
-		return_api = Core.httpGet(getApplicationContext(), parameters);
-
-		Log.i(TAG + " checkNewEvents", return_api);
+		c = Calendar.getInstance();
+		now = (c.getTimeInMillis() / 1000);
+		long filterTimestamp = preferences.getLong("filterTimestamp", now);
+		String return_api = API.getEvents(this, filterAgentName, idGroup,
+				filterSeverity, filterStatus, filterEventSearch, filterTag,
+				filterTimestamp, 20, 0, true, false);
 		return_api = return_api.replace("\n", "");
 		try {
 			this.count_events = Long.valueOf(return_api);
@@ -114,15 +108,9 @@ public class PandroidEventviewerService extends IntentService {
 		// Check the more critical level
 		if (this.count_events != 0) {
 			Log.i(TAG, "There are new events");
-			parameters = new ArrayList<NameValuePair>();
-			parameters.add(new BasicNameValuePair("op", "get"));
-			parameters.add(new BasicNameValuePair("op2", "events"));
-			parameters.add(new BasicNameValuePair("other_mode",
-					"url_encode_separator_|"));
-			parameters.add(new BasicNameValuePair("return_type", "csv"));
-			parameters.add(new BasicNameValuePair("other", serializeParams2Api(
-					context, false, true, true)));
-			return_api = Core.httpGet(getApplicationContext(), parameters);
+			return_api = API.getEvents(this, filterAgentName, idGroup,
+					filterSeverity, filterStatus, filterEventSearch, filterTag,
+					filterTimestamp, 20, 0, false, true);
 			return_api = return_api.replace("\n", "");
 			try {
 				this.more_criticity = Integer.valueOf(return_api).intValue();
@@ -131,7 +119,7 @@ public class PandroidEventviewerService extends IntentService {
 				return;
 			}
 			long lastCountEvents = preferences.getLong("last_count_events", 0);
-			// Does not repeat the same notification
+			// Don't repeat the same notification
 			if (lastCountEvents != count_events) {
 				notificationEvent(context);
 				Editor editor = preferences.edit();
@@ -150,58 +138,6 @@ public class PandroidEventviewerService extends IntentService {
 		}
 		Log.d(TAG, "Check finished at "
 				+ Calendar.getInstance().getTime().toGMTString());
-	}
-
-	/**
-	 * Builds an api call from all filter parameters
-	 * 
-	 * @param context
-	 * @param total
-	 *            Activate if you want don't want to get details, but a count.
-	 * @param more_criticity
-	 *            Activate if you want to get the more critical level of events.
-	 *            <b>NOTE:</b> Only one can be activated at once.
-	 * @return
-	 */
-	public String serializeParams2Api(Context context, boolean total,
-			boolean more_criticity, boolean updateTime) {
-		SharedPreferences preferences = context.getSharedPreferences(
-				context.getString(R.string.const_string_preferences),
-				Activity.MODE_PRIVATE);
-
-		String filterAgentName = preferences.getString("filterAgentName", "");
-
-		int idGroup = preferences.getInt("filterIDGroup", 0);
-		int filterSeverity = preferences.getInt("filterSeverity", -1);
-		int filterStatus = preferences.getInt("filterStatus", 3);
-		String filterEventSearch = preferences.getString("filterEventSearch",
-				"");
-		String filterTag = preferences.getString("filterTag", "");
-
-		Calendar c = Calendar.getInstance();
-		long now = (c.getTimeInMillis() / 1000);
-		long filterTimestamp = preferences.getLong("filterTimestamp", now);
-		String totalStr = (total) ? "total" : "-1";
-		if (more_criticity) {
-			totalStr = "more_criticity";
-		}
-		return Core.serializeParams2Api(new String[] { ";", // Separator for the
-															// csv
-				Integer.toString(filterSeverity), // Criticity or severity
-				filterAgentName, // The agent name
-				"", // Name of module
-				"", // Name of alert template
-				"", // Id user
-				Long.toString(filterTimestamp), // The minimun timestamp
-				"", // The maximum timestamp
-				String.valueOf(filterStatus), // The status
-				filterEventSearch, // The free search in the text event
-									// description.
-				Integer.toString(20), // The pagination of list events
-				Long.toString(0), // The offset of list events
-				totalStr, // Count or show
-				Integer.toString(idGroup), // Group ID
-				filterTag }); // Tag
 	}
 
 	/**

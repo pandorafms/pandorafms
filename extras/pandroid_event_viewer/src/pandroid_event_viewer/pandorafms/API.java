@@ -105,22 +105,52 @@ public class API {
 	}
 
 	/**
-	 * Get events from pandora console.
+	 * Performs a get_events API call.
 	 * 
-	 * @param newEvents
+	 * @param context
+	 *            Application context.
+	 * @param filterAgentName
+	 *            Agent name.
+	 * @param idGroup
+	 *            Group id.
+	 * @param filterSeverity
+	 *            Severity.
+	 * @param filterStatus
+	 *            Status.
+	 * @param filterEventSearch
+	 *            Text in event title.
+	 * @param filterTag
+	 *            Tag.
+	 * @param filterTimestamp
+	 *            Events after this time.
+	 * @param itemsPerPage
+	 *            Number of items retrieved per list in each call.
+	 * @param offset
+	 *            List offset.
+	 * @param total
+	 *            Retrieve number of events instead of events info.
+	 * @param more_criticity
+	 *            Retrieve maximum criticity instead of events info.
+	 * @return API call result.
 	 * @throws IOException
-	 *             If there is a problem with the connection.
+	 *             if there was any problem.
 	 */
-	public static String getEvents(Context context, String other)
-			throws IOException {
-		// Get total count.
+	public static String getEvents(Context context, String filterAgentName,
+			int idGroup, int filterSeverity, int filterStatus,
+			String filterEventSearch, String filterTag, long filterTimestamp,
+			long itemsPerPage, long offset, boolean total,
+			boolean more_criticity) throws IOException {
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("op", "get"));
 		parameters.add(new BasicNameValuePair("op2", "events"));
 		parameters.add(new BasicNameValuePair("other_mode",
 				"url_encode_separator_|"));
 		parameters.add(new BasicNameValuePair("return_type", "csv"));
-		parameters.add(new BasicNameValuePair("other", other));
+		parameters.add(new BasicNameValuePair("other",
+				serializeEventsParamsToAPI(filterAgentName, idGroup,
+						filterSeverity, filterStatus, filterEventSearch,
+						filterTag, filterTimestamp, itemsPerPage, offset,
+						total, more_criticity)));
 		return Core.httpGet(context, parameters);
 	}
 
@@ -206,5 +236,61 @@ public class API {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Serialize parameters to api.
+	 * 
+	 * @param filterAgentName
+	 *            Agent name.
+	 * @param idGroup
+	 *            Group id.
+	 * @param filterSeverity
+	 *            Severity.
+	 * @param filterStatus
+	 *            Status.
+	 * @param filterEventSearch
+	 *            Text in event title.
+	 * @param filterTag
+	 *            Tag.
+	 * @param filterTimestamp
+	 *            Events after this time.
+	 * @param itemsPerPage
+	 *            Number of items retrieved per list in each call.
+	 * @param offset
+	 *            List offset.
+	 * @param total
+	 *            Retrieve number of events instead of events info.
+	 * @param more_criticity
+	 *            Retrieve maximum criticity instead of events info.
+	 * @return Serialized parameters.
+	 */
+	private static String serializeEventsParamsToAPI(String filterAgentName,
+			int idGroup, int filterSeverity, int filterStatus,
+			String filterEventSearch, String filterTag, long filterTimestamp,
+			long itemsPerPage, long offset, boolean total,
+			boolean more_criticity) {
+
+		String totalStr = (total) ? "total" : "-1";
+		if (more_criticity) {
+			totalStr = "more_criticity";
+		}
+		return Core.serializeParams2Api(new String[] { ";", // Separator for the
+															// csv
+				Integer.toString(filterSeverity), // criticity or severity
+				filterAgentName, // The agent name
+				"", // Name of module
+				"", // Name of alert template
+				"", // Id user
+				Long.toString(filterTimestamp), // The minimum timestamp
+				"", // The maximum timestamp
+				String.valueOf(filterStatus), // The status
+				filterEventSearch, // The free search in the text event
+									// description.
+				Integer.toString(20), // The pagination of list events
+				Long.toString(0), // The offset of list events
+				totalStr, // Count or show
+				Integer.toString(idGroup), // Group ID
+				filterTag }); // Tag
 	}
 }

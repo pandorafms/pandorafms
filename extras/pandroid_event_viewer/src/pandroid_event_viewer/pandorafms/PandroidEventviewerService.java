@@ -48,10 +48,6 @@ public class PandroidEventviewerService extends IntentService {
 
 	private static String TAG = "PandroidEventviewerService";
 	private static final int NOTIFICATION_PANDROID_EVENT_VIEWER = 666;
-	public String url;
-	public String user;
-	public String password;
-
 	public long count_events;
 	public int more_criticity;
 
@@ -69,6 +65,7 @@ public class PandroidEventviewerService extends IntentService {
 		try {
 			checkNewEvents(getApplicationContext());
 		} catch (IOException e) {
+			Log.e(TAG, "OnHandleIntent: " + e.getMessage());
 		}
 
 	}
@@ -83,77 +80,73 @@ public class PandroidEventviewerService extends IntentService {
 	public void checkNewEvents(Context context) throws IOException {
 		Log.d(TAG, "Checking events at "
 				+ Calendar.getInstance().getTime().toGMTString());
-		if (this.url == null) {
-			SharedPreferences preferences = context.getSharedPreferences(
-					context.getString(R.string.const_string_preferences),
-					Activity.MODE_PRIVATE);
-			Calendar c = Calendar.getInstance();
-			long now = (c.getTimeInMillis() / 1000);
-			long old_previous_filterTimestamp = preferences.getLong(
-					"previous_filterTimestamp", now);
+		SharedPreferences preferences = context.getSharedPreferences(
+				context.getString(R.string.const_string_preferences),
+				Activity.MODE_PRIVATE);
+		Calendar c = Calendar.getInstance();
+		long now = (c.getTimeInMillis() / 1000);
+		long old_previous_filterTimestamp = preferences.getLong(
+				"previous_filterTimestamp", now);
 
-			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-			String parametersAPI = serializeParams2Api(context, true, false,
-					false);
+		List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		String parametersAPI = serializeParams2Api(context, true, false, false);
 
-			// Get total count.
+		// Get total count.
+		parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("op", "get"));
+		parameters.add(new BasicNameValuePair("op2", "events"));
+		parameters.add(new BasicNameValuePair("other_mode",
+				"url_encode_separator_|"));
+		parameters.add(new BasicNameValuePair("return_type", "csv"));
+		parameters.add(new BasicNameValuePair("other", parametersAPI));
+		String return_api;
+		return_api = Core.httpGet(getApplicationContext(), parameters);
+
+		Log.i(TAG + " checkNewEvents", return_api);
+		return_api = return_api.replace("\n", "");
+		try {
+			this.count_events = Long.valueOf(return_api);
+		} catch (NumberFormatException e) {
+			Log.e(TAG, e.getMessage());
+			return;
+		}
+
+		// Check the more critical level
+		if (this.count_events != 0) {
+			Log.i(TAG, "There are new events");
 			parameters = new ArrayList<NameValuePair>();
 			parameters.add(new BasicNameValuePair("op", "get"));
 			parameters.add(new BasicNameValuePair("op2", "events"));
 			parameters.add(new BasicNameValuePair("other_mode",
 					"url_encode_separator_|"));
 			parameters.add(new BasicNameValuePair("return_type", "csv"));
-			parameters.add(new BasicNameValuePair("other", parametersAPI));
-			String return_api;
+			parameters.add(new BasicNameValuePair("other", serializeParams2Api(
+					context, false, true, true)));
 			return_api = Core.httpGet(getApplicationContext(), parameters);
-
-			Log.i(TAG + " checkNewEvents", return_api);
 			return_api = return_api.replace("\n", "");
 			try {
-				this.count_events = Long.valueOf(return_api);
+				this.more_criticity = Integer.valueOf(return_api).intValue();
 			} catch (NumberFormatException e) {
 				Log.e(TAG, e.getMessage());
 				return;
 			}
-
-			// Check the more critical level
-			if (this.count_events != 0) {
-				Log.i(TAG, "There are new events");
-				parameters = new ArrayList<NameValuePair>();
-				parameters.add(new BasicNameValuePair("op", "get"));
-				parameters.add(new BasicNameValuePair("op2", "events"));
-				parameters.add(new BasicNameValuePair("other_mode",
-						"url_encode_separator_|"));
-				parameters.add(new BasicNameValuePair("return_type", "csv"));
-				parameters.add(new BasicNameValuePair("other",
-						serializeParams2Api(context, false, true, true)));
-				return_api = Core.httpGet(getApplicationContext(), parameters);
-				return_api = return_api.replace("\n", "");
-				try {
-					this.more_criticity = Integer.valueOf(return_api)
-							.intValue();
-				} catch (NumberFormatException e) {
-					Log.e(TAG, e.getMessage());
-					return;
-				}
-				long lastCountEvents = preferences.getLong("last_count_events", 0);
-				// Does not repeat the same notification
-				if (lastCountEvents != count_events) {
-					notificationEvent(context);
-					Editor editor = preferences.edit();
-					editor.putLong("last_count_events", count_events);
-					editor.commit();
-				}
-
-			} else {
-				this.more_criticity = -1;
-
-				// Restore timestamp
-				SharedPreferences.Editor editorPreferences = preferences.edit();
-				editorPreferences.putLong("previous_filterTimestamp",
-						old_previous_filterTimestamp);
-				editorPreferences.commit();
+			long lastCountEvents = preferences.getLong("last_count_events", 0);
+			// Does not repeat the same notification
+			if (lastCountEvents != count_events) {
+				notificationEvent(context);
+				Editor editor = preferences.edit();
+				editor.putLong("last_count_events", count_events);
+				editor.commit();
 			}
+
+		} else {
+			this.more_criticity = -1;
+
+			// Restore timestamp
+			SharedPreferences.Editor editorPreferences = preferences.edit();
+			editorPreferences.putLong("previous_filterTimestamp",
+					old_previous_filterTimestamp);
+			editorPreferences.commit();
 		}
 		Log.d(TAG, "Check finished at "
 				+ Calendar.getInstance().getTime().toGMTString());

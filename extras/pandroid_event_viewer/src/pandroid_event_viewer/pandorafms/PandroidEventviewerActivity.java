@@ -264,33 +264,6 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	}
 
 	/**
-	 * Serializes all parameters.
-	 * 
-	 * @param total
-	 *            True if only want the count
-	 * @return All parameters in a string.
-	 */
-	private String serializeParams2Api(boolean total) {
-		String totalStr = (total) ? "total" : "-1";
-
-		return Core.serializeParams2Api(new String[] { ";", // Separator
-				Integer.toString(this.severity), // Severity
-				this.agentNameStr, // Agent name
-				"", // Module
-				"", // Alert template
-				"", // Id user
-				Long.toString(this.timestamp), // Minimum timestamp,
-				"", // Maximum timestamp
-				String.valueOf(this.status), // Status
-				this.eventSearch, // Search in event description
-				String.valueOf(this.pagination), // Pagination
-				String.valueOf(this.offset), // Event list offset
-				totalStr, // Count or show
-				String.valueOf(this.id_group), // Group id
-				this.eventTag });
-	}
-
-	/**
 	 * Get events from pandora console.
 	 * 
 	 * @throws IOException
@@ -300,8 +273,10 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	private void getEvents() throws IOException {
 		// Get total count.
 		String return_api = API.getEvents(getApplicationContext(),
-				serializeParams2Api(true));
+				agentNameStr, id_group, severity, status, eventSearch,
+				eventTag, timestamp, pagination, offset, true, false);
 		return_api = return_api.replace("\n", "");
+
 		try {
 			this.count_events = Long.valueOf(return_api);
 		} catch (NumberFormatException e) {
@@ -314,8 +289,9 @@ public class PandroidEventviewerActivity extends TabActivity implements
 		}
 
 		// Get the list of events.
-		return_api = API.getEvents(getApplicationContext(),
-				serializeParams2Api(false));
+		return_api = API.getEvents(getApplicationContext(), agentNameStr,
+				id_group, severity, status, eventSearch, eventTag, timestamp,
+				pagination, offset, false, false);
 		Log.d(TAG, "List of events: " + return_api);
 		Pattern pattern = Pattern
 				.compile("Unable to process XML data file '(.*)'");

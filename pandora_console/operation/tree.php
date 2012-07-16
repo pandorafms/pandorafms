@@ -437,7 +437,7 @@ if (is_ajax ())
 				switch ($type) {
 					case 'group':
 					case 'os':
-						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"]);
+						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], array("disabled" => 0));
 						
 						$agent_info["monitor_critical"] = agents_monitor_critical ($row["id_agente"]);
 						$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"]);
@@ -460,6 +460,8 @@ if (is_ajax ())
 						if ($id) {
 							$filter = "tagente_modulo.id_policy_module != 0";
 						}
+						
+						$filter .= " AND disabled = 0";
 					
 						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], $filter);
 						
@@ -478,7 +480,7 @@ if (is_ajax ())
 						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
 						break;
 					case 'module_group':
-						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], "id_module_group = $id");
+						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], "id_module_group = $id AND disabled = 0");
 						
 						$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], "tagente_modulo.id_module_group = $id");
 						$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], "tagente_modulo.id_module_group = $id");
@@ -498,7 +500,7 @@ if (is_ajax ())
 					case 'module':
 						switch ($config["dbtype"]) {
 							case "mysql":
-								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
+								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '" AND disabled = 0');
 								$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
 								$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
 								$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
@@ -517,7 +519,7 @@ if (is_ajax ())
 							case "postgresql":
 							case "oracle":
 								//TODO REVIEW ORACLE AND POSTGRESQL
-								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
+								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\' AND disabled = 0');
 								$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
 								$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
 								$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');

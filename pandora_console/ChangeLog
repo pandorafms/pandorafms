@@ -1,3 +1,8 @@
+2012-07-16 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/tree.php: Fixed all views: deleted alert fired
+	when module is disabled.
+
 2012-07-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/tree.php: Fixed module view: agents and modules disabled

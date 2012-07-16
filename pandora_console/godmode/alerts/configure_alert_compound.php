@@ -236,7 +236,7 @@ $field2 = '';
 $field3 = '';
 $min_alerts = 0;
 $max_alerts = 1;
-$threshold = 300;
+$threshold = SECONDS_5MINUTES;
 $recovery_notify = false;
 $field2_recovery = '';
 $field3_recovery = '';
@@ -287,7 +287,8 @@ if ($create_compound) {
 	/* Go to previous step in case of error */
 	if ($result === false) {
 		$step = $step - 1;
-	} else {
+	}
+	else {
 		$id = $result;
 		$alerts = (array) get_parameter ('conditions');
 		$operations = (array) get_parameter ('operations');
@@ -329,7 +330,8 @@ if ($step == 2) {
 		$table->style['other_label'] = 'display:none; font-weight: bold';
 		$table->style['other_input'] = 'display:none';
 		$threshold_selected = $threshold;
-	} else {
+	}
+	else {
 		$table->style['other_label'] = 'font-weight: bold';
 		$threshold_selected = -1;
 	}
@@ -364,7 +366,7 @@ if ($step == 2) {
 	$table->data[0][1] .= html_print_checkbox ('saturday', 1, $saturday, true);
 	$table->data[0][1] .= __('Sun');
 	$table->data[0][1] .= html_print_checkbox ('sunday', 1, $sunday, true);
-
+	
 	$table->data[0][2] = __('Use special days list');
 	$table->data[0][3] = html_print_checkbox ('special_day', 1, $special_day, true);
 	
@@ -581,7 +583,7 @@ echo '</form>';
 
 /* Show alert search when we're on the first step */
 if ($step == 1) {
-	echo '<h3>'.__('Add condition').'</h3>';
+	echo '<h3>'. __('Add condition') . '</h3>';
 	
 	$id_group = (int) get_parameter ('id_group');
 	

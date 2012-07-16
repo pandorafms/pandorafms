@@ -24,7 +24,7 @@ function mainAgentsModules() {
 	// Load global vars
 	require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
-
+	
 	check_login ();
 	// ACL Check
 	if (! check_acl ($config['id_user'], 0, "AR")) {
@@ -33,7 +33,7 @@ function mainAgentsModules() {
 		require ("general/noaccess.php");
 		exit;
 	}
-
+	
 	// Update network modules for this group
 	// Check for Network FLAG change request
 	// Made it a subquery, much faster on both the database and server side
@@ -50,8 +50,8 @@ function mainAgentsModules() {
 			exit;
 		}
 	}
-
-
+	
+	
 	if ($config["realtimestats"] == 0) {
 		$updated_info = __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 	}
@@ -60,17 +60,17 @@ function mainAgentsModules() {
 	}
 	
 	$updated_time = html_print_image ("images/information.png", true, array ("title" => __('Last update'), "style" => 'margin: 5px 3px 0px 10px')).$updated_info;
-
+	
 	$modulegroup = get_parameter('modulegroup', 0);
 	$refr = get_parameter('refr', 30); // By default 30 seconds
-
+	
 	$group_id = get_parameter('group_id', 0);
 	$offset = get_parameter('offset', 0);
 	$hor_offset = get_parameter('hor_offset', 0);
 	$block = 20;
-
+	
 	$groups = users_get_groups ();
-
+	
 	$filter_module_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
 	$filter_module_groups .= '<b>'.__('Module group').'</b>';
 	$filter_module_groups .= html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
@@ -84,7 +84,13 @@ function mainAgentsModules() {
 	
 	$comborefr = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
 	$comborefr .= '<b>'.__('Refresh').'</b>';
-	$comborefr .= html_print_select (array('30' => '30 '.__('seconds'), '60' => '1 '.__('minute'), '120' => '2 '.__('minutes'), '300' => '5 '.__('minutes'), '600' => '10 '.__('minutes')) , 'refr', $config['refr'], $script = 'this.form.submit()', '', 0, true, false, false, '', false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
+	$comborefr .= html_print_select (
+		array('30' => '30 '.__('seconds'),
+			(string)SECONDS_1MINUTE => __('1 minute'),
+			(string)SECONDS_2MINUTES => __('2 minutes'),
+			(string)SECONDS_5MINUTES => __('5 minutes'),
+			(string)SECONDS_10MINUTES => __('10 minutes')),
+			'refr', $config['refr'], $script = 'this.form.submit()', '', 0, true, false, false, '', false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
 	$comborefr .= "</form>";
 	
 	if ($config["pure"] == 0) {
@@ -100,37 +106,37 @@ function mainAgentsModules() {
 	}
 	
 	$onheader = array('updated_time' => $updated_time, 'fullscreen' => $fullscreen, 
-					'combo_module_groups' => $filter_module_groups,
-					'combo_groups' => $filter_groups);
+		'combo_module_groups' => $filter_module_groups,
+		'combo_groups' => $filter_groups);
 	
-	if($config['pure'] == 1) {
+	if ($config['pure'] == 1) {
 		$onheader['combo_refr'] = $comborefr;
 	}
-
+	
 	// Header
 	ui_print_page_header (__("Agents/Modules"), "images/bricks.png", false, "", false, $onheader);
-
+	
 	// Old style table, we need a lot of special formatting,don't use table function
 	// Prepare old-style table
-
+	
 	$agents = '';
-	if($group_id > 0) {
+	if ($group_id > 0) {
 		$agents = agents_get_group_agents($group_id);
 		$agents = array_keys($agents);
 	}
 	
 	$filter_module_groups = false;
 	
-	if($modulegroup > 0) {
+	if ($modulegroup > 0) {
 		$filter_module_groups['id_module_group'] = $modulegroup;
 	}
 	
 	$all_modules = agents_get_modules($agents, false, $filter_module_groups, true, false);
-
+	
 	$modules_by_name = array();
 	$name = '';
 	$cont = 0;
-
+	
 	foreach($all_modules as $key => $module) {
 		if($module == $name) {
 			$modules_by_name[$cont-1]['id'][] = $key;
@@ -146,10 +152,10 @@ function mainAgentsModules() {
 	if($config["pure"] == 1) {
 		$block = count($modules_by_name);
 	}
-
+	
 	$filter_groups = array ('offset' => (int) $offset,
-				'limit' => (int) $config['block_size']);
-				
+		'limit' => (int) $config['block_size']);
+	
 	if($group_id > 0) {
 		$filter_groups['id_grupo'] = $group_id;
 	}
@@ -171,10 +177,10 @@ function mainAgentsModules() {
 		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".html_print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
 	}
 	$nmodules = 0;
-	foreach($modules_by_name as $module) {
+	foreach ($modules_by_name as $module) {
 		$nmodules++;
 		
-		if($nmodules <= $hor_offset || $nmodules > ($hor_offset+$block)) {
+		if ($nmodules <= $hor_offset || $nmodules > ($hor_offset+$block)) {
 			continue;
 		}
 		
@@ -265,9 +271,9 @@ function mainAgentsModules() {
 					echo '</a>';
 					echo "</td>";
 					$match = true;
-				}		
+				}
 			}
-						
+			
 			if(!$match) {
 				echo "<td></td>";
 			}
@@ -275,7 +281,7 @@ function mainAgentsModules() {
 		
 		echo "</tr>";
 	}
-
+	
 	echo "</table>";
 	
 	echo "<br><br><p>" . __("The colours meaning:") .
@@ -308,4 +314,3 @@ extensions_add_operation_menu_option(__("Agents/Modules view"), 'estado', 'agent
 extensions_add_main_function('mainAgentsModules');
 
 ?>
-

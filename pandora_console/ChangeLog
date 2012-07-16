@@ -1,3 +1,21 @@
+2012-07-16 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/agents_modules.php, extensions/users_connected.php,
+	extensions/agents_alerts.php,
+	operation/visual_console/render_view.php,
+	operation/visual_console/public_console.php,
+	operation/agentes/networkmap.groups.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/networkmap.topology.php, general/header.php,
+	godmode/db/db_refine.php, godmode/agentes/configurar_agente.php,
+	godmode/alerts/configure_alert_compound.php,
+	godmode/setup/setup_visuals.php, godmode/snmpconsole/snmp_alert.php,
+	godmode/modules/manage_network_components_form_wmi.php,
+	include/functions_config.php, include/functions_api.php,
+	include/functions_agents.php, include/functions_forecast.php:
+	cleaned source code style and change magic numbers for time
+	constants.
+
 2012-07-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/tree.php: Removed trace.

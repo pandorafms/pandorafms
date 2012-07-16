@@ -86,14 +86,15 @@ html_print_select ($modules, "origen_modulo[]", $module_selected, '', '', '0', f
 
 echo '</div>'; //Left div
 
-echo '<div style="float:left; width:\'98%\'; margin-left:20% "><b>'.__('Purge data out of these limits').'</b><br /><br />';
+echo '<div style="float:left; width:\'98%\'; margin-left:20% ">
+	<b>'.__('Purge data out of these limits').'</b><br /><br />';
 echo '<table><tr><td>';
 echo __('Minimum').': ';
 echo '</td><td>';
 html_print_input_text ("min", 0, __('Minimum'), 4, 0, false);
 echo '</td></tr>';
 echo '<tr><td>';
-echo __('Maximum').': 	';
+echo __('Maximum').': ';
 echo '</td><td>';
 html_print_input_text ("max", 0, __('Maximum'), 4, 0, false);
 echo '</td></tr>';

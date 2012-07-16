@@ -51,7 +51,8 @@ $table->data[1][1] .= html_print_input_text ('date_format', $config["date_format
 if($config['prominent_time'] == 'comparation') {
 	$timestamp = false;
 	$comparation = true;
-} else if ($config['prominent_time'] == 'timestamp') {
+}
+else if ($config['prominent_time'] == 'timestamp') {
 	$timestamp = true;
 	$comparation = false;
 }
@@ -111,11 +112,11 @@ $table->data[14][1] = html_print_select (list_files ('images/custom_logo', "png"
 $values = array ();
 $values[5] = human_time_description_raw (5);
 $values[30] = human_time_description_raw (30);
-$values[60] = human_time_description_raw (60);
-$values[120] = human_time_description_raw (120);
-$values[300] = human_time_description_raw (300);
-$values[600] = human_time_description_raw (600);
-$values[1800] = human_time_description_raw (1800);
+$values[SECONDS_1MINUTE] = human_time_description_raw(SECONDS_1MINUTE);
+$values[SECONDS_2MINUTES] = human_time_description_raw(SECONDS_2MINUTES);
+$values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
+$values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
+$values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
 
 $table->data[15][0] = __('Global default interval for refresh') . ui_print_help_tip(__('This interval will affect all pages'), true);
 $table->data[15][1] = html_print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);

@@ -63,7 +63,7 @@ push_table_row($data, 'field_process');
 return;
 // Update an existing component
 if (! $id) {
-	$module_interval = 300;
+	$module_interval = SECONDS_5MINUTES;
 	$tcp_port = "";
 	$tcp_rcv = "";
 	$tcp_send = "";

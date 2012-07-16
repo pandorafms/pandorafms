@@ -1,5 +1,14 @@
 2012-07-16 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* include/functions_groups.php: Included void agents on
+	normal status.
+	include/functions_os.php: Included void agents on
+	normal status.
+	operation/tree.php: Fixed OS, groups and included void agents
+	in groups and OS views.
+
+2012-07-16 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* operation/tree.php: Fixed all views: deleted alert fired
 	when module is disabled.
 

@@ -330,36 +330,45 @@ if (is_ajax ())
 			
 						break;
 					case 'policies':
-					
-						$sql = "";
 						
 						$sql = agents_get_agents(array (
 						'order' => 'nombre COLLATE utf8_general_ci ASC',
 						'disabled' => 0,
-						'status' => $statusSel,
 						'search' => $search_sql),
 
 						array ('*'),
 						'AR',
 						false,
 						true);	
-						
-						 if ($id != 0) {
-							
+
+						if ($id != 0) {
+
 							// Skip agents without modules
 							$sql .= ' AND tagente.id_agente IN
 										(SELECT tagente.id_agente
-										FROM tagente, tagente_modulo, tagente_estado
+										FROM tagente, tagente_modulo, tagente_estado, tpolicy_modules
 										WHERE tagente.id_agente = tagente_modulo.id_agente
 										AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+										AND tagente_modulo.id_policy_module = tpolicy_modules.id 
 										AND tagente.disabled = 0 
 										AND tagente_modulo.disabled = 0
 										AND tagente_estado.utimestamp != 0
 										AND tagente_modulo.id_policy_module != 0
-										AND tagente.id_agente IN (SELECT id_agent FROM tpolicy_agents WHERE id_policy = ' . $id . ')
+										AND tpolicy_modules.id_policy = ' . $id . '
 										group by tagente.id_agente
-										having COUNT(*) > 0)';							
+										having COUNT(*) > 0)';						
 							
+						}
+						else if ($statusSel == 0) {
+							
+							// If status filter is NORMAL add void agents
+							$sql .= " UNION SELECT * FROM tagente 
+									WHERE tagente.disabled = 0
+									AND tagente.id_agente NOT IN (SELECT tagente_estado.id_agente 
+																	FROM tagente_estado)";
+																	
+																	
+
 						}
 
 						break;
@@ -523,8 +532,27 @@ if (is_ajax ())
 						break;
 				}
 
+				// Filter by status (only in policy view)
+				if ($type == 'policies') {
+					
+					if ($statusSel == NORMAL) {
+						if (strpos($agent_info["status_img"], 'ok') === false)
+							continue;
+					}
+					else if ($statusSel == WARNING) {
+						if (strpos($agent_info["status_img"], 'warning') === false)
+							continue;
+					}
+					else if ($statusSel == CRITICAL) {
+						if (strpos($agent_info["status_img"], 'critical') === false)
+							continue;
+					}
+					else if ($statusSel == UNKNOWN) {
+						if (strpos($agent_info["status_img"], 'down') === false)
+							continue;
+					}	
+				}
 
-			
 				$less = $lessBranchs;
 				if ($count != $countRows)
 					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"], "pos_tree" => "2"));
@@ -827,65 +855,68 @@ function printTree_($type) {
 		$avariableGroupsIds == -1;
 	}
 	
-	// Filter groups by agent status
-	switch ($select_status) {
-		case NORMAL:
+	if ($type !== 'policies') {
+		// Filter groups by agent status
+		switch ($select_status) {
+			case NORMAL:
+				foreach ($avariableGroups as $group_name) {
+					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
 
-			foreach ($avariableGroups as $group_name) {
-				$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
-
-				$num_ok = groups_agent_ok($id_group);
-
-				if ($num_ok <= 0)
-					unset($avariableGroups[$id_group]);
-			}
-			break;
-
-		case WARNING:
-		
-			foreach ($avariableGroups as $group_name) {
-				$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
-
-				$num_warning = groups_agent_warning($id_group);
-
-				if ($num_warning <= 0)
-					unset($avariableGroups[$id_group]);
-			}				
-			break;
+					$num_ok = groups_agent_ok($id_group);	
 			
-		case CRITICAL:
-		
-			foreach ($avariableGroups as $group_name) {
-				$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+					if ($num_ok <= 0)
+						unset($avariableGroups[$id_group]);
+				
+				}
+				
+				break;
 
-				$num_critical = groups_agent_critical($id_group);
+			case WARNING:
+			
+				foreach ($avariableGroups as $group_name) {
+					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
 
-				if ($num_critical <= 0)
-					unset($avariableGroups[$id_group]);
-			}				
-			break;	
-		
-		case UNKNOWN:
-		
-			foreach ($avariableGroups as $group_name) {
-				$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+					$num_warning = groups_agent_warning($id_group);
 
-				$num_unknown = groups_agent_unknown($id_group);
+					if ($num_warning <= 0)
+						unset($avariableGroups[$id_group]);
+				}				
+				break;
+				
+			case CRITICAL:
+			
+				foreach ($avariableGroups as $group_name) {
+					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
 
-				if ($num_unknown <= 0)
-					unset($avariableGroups[$id_group]);
-			}				
-			break;	
+					$num_critical = groups_agent_critical($id_group);
 
-	}
-	
-	// If there are not groups display error and return
-	if (empty($avariableGroups)) {
-		ui_print_error_message("There aren't agents in this agrupation");
-		echo '</td></tr>';
-		echo '</table>';		
-		return;
-	}			
+					if ($num_critical <= 0)
+						unset($avariableGroups[$id_group]);
+				}				
+				break;	
+			
+			case UNKNOWN:
+
+				foreach ($avariableGroups as $group_name) {
+					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+
+					$num_unknown = groups_agent_unknown($id_group);
+
+					if ($num_unknown <= 0)
+						unset($avariableGroups[$id_group]);
+				}	
+				break;	
+
+		}
+
+		// If there are not groups display error and return
+		if (empty($avariableGroups)) {
+			ui_print_error_message("There aren't agents in this agrupation");
+			echo '</td></tr>';
+			echo '</table>';		
+			return;
+		}	
+	}		
 	
 	if ($search_free != '') {
 		$sql_search = " AND id_grupo IN (SELECT id_grupo FROM tagente
@@ -984,6 +1015,8 @@ function printTree_($type) {
 			break;
 
 		case 'policies':
+			$avariableGroups = users_get_groups ();
+			
 			$groups_id = array_keys($avariableGroups);
 			$groups = implode(',',$groups_id);
 			
@@ -995,6 +1028,57 @@ function printTree_($type) {
 				tagente.id_grupo IN  ($groups) AND tagente.nombre LIKE '%$search_free%' AND tagente.disabled = 0 AND tagente_modulo.disabled = 0";
 				
 				$list = db_get_all_rows_sql($sql);
+
+				if ($list === false)
+					$list = array();
+
+				$element = 0;
+				switch ($select_status) {
+					case NORMAL:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_ok = policies_agents_ok($policy_element['id']);
+							
+							if ($policy_agents_ok <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}
+						break;
+					case CRITICAL:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_critical = policies_agents_critical($policy_element['id']);
+							
+							if ($policy_agents_critical <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;
+					case WARNING:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_warning = policies_agents_warning($policy_element['id']);
+							
+							if ($policy_agents_warning <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;
+					case UNKNOWN:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_unknown = policies_agents_unknown($policy_element['id']);
+							
+							if ($policy_agents_unknown <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;												
+				}
 				
 				if ($list === false)
 					$list = array();
@@ -1006,7 +1090,55 @@ function printTree_($type) {
 				tagente.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND 
 				tagente_estado.utimestamp != 0 AND tagente_modulo.id_policy_module != 0 AND tpolicy_modules.id = tagente_modulo.id_policy_module AND tpolicies.id = tpolicy_modules.id_policy AND
 				tagente.id_grupo IN ($groups) AND tagente.disabled = 0 AND tagente_modulo.disabled = 0");
-
+				
+				$element = 0;
+				switch ($select_status) {
+					case NORMAL:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_ok = policies_agents_ok($policy_element['id']);
+							
+							if ($policy_agents_ok <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}
+						break;
+					case CRITICAL:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_critical = policies_agents_critical($policy_element['id']);
+							
+							if ($policy_agents_critical <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;
+					case WARNING:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_warning = policies_agents_warning($policy_element['id']);
+							
+							if ($policy_agents_warning <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;
+					case UNKNOWN:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_unknown = policies_agents_unknown($policy_element['id']);
+							
+							if ($policy_agents_unknown <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;												
+				}
+					
 				if ($list === false)
 					$list = array();
 
@@ -1015,6 +1147,7 @@ function printTree_($type) {
 			break;
 
 		case 'module':
+
 			$avariableGroupsIds = implode(',',array_keys($avariableGroups));
 			if($avariableGroupsIds == ''){
 				$avariableGroupsIds == -1;

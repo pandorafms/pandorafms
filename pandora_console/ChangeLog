@@ -1,3 +1,9 @@
+2012-07-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_agents.php
+	 operation/tree.php: Fixed some bugs in policy tree view. 
+	 And cleaned source code.
+
 2012-07-16  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_modules.php: Added a function to get the

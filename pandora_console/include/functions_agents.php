@@ -341,32 +341,26 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 AND estado = 0
-				AND (utimestamp != 0)' /*OR tagente_modulo.id_tipo_modulo IN (21,22,23)) 
-				AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
-				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))'*/;
+				AND (utimestamp != 0)';
 		
 		$warning_modules = 'SELECT tagente.id_agente
 			FROM tagente_estado, tagente, tagente_modulo 
 			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 AND estado = 2 AND tagente_estado.utimestamp != 0';
-			/*	AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
-				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';*/
+
 		
 		$critical_modules = 'SELECT tagente.id_agente
 			FROM tagente_estado, tagente, tagente_modulo 
 			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.utimestamp != 0';
-			/*	AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
-				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';	*/
-		
+
 		$unknown_modules = 'SELECT tagente.id_agente
 			FROM tagente_estado, tagente, tagente_modulo 
 			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 3 AND utimestamp != 0' /*AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) 
-				AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2)) AND utimestamp != 0'*/;
+				AND tagente_modulo.disabled = 0 AND estado = 3 AND utimestamp != 0';
 		
 		$notinit_modules = 'SELECT tagente_estado.id_agente
 			FROM tagente_estado, tagente, tagente_modulo 

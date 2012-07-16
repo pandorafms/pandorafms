@@ -1,3 +1,8 @@
+2012-07-16 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Fixed a bug
+	with variable allocation.
+
 2012-07-16 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/agents_modules.php, extensions/users_connected.php,

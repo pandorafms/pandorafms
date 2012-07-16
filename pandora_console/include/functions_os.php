@@ -75,6 +75,12 @@ function os_agents_ok($id_os) {
 						AND tagente.id_os = $id_os
 						group by tagente.id_agente";
 	
+	// Agents without modules has a normal status					
+	$void_agents = "SELECT id_agente FROM tagente 
+						WHERE disabled = 0
+						AND id_os = $id_os
+						AND id_agente NOT IN (SELECT id_agente FROM tagente_estado)";		
+						
 	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
 						FROM tagente, tagente_modulo, tagente_estado 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
@@ -84,7 +90,8 @@ function os_agents_ok($id_os) {
 						AND tagente.id_agente NOT IN ($agents_critical)
 						AND tagente.id_agente NOT IN ($agents_warning)
 						AND tagente.id_agente NOT IN ($agents_unknown)
-						AND tagente.id_agente IN ($agents_ok) ) AS t");	
+						AND tagente.id_agente IN ($agents_ok)
+						UNION $void_agents) AS t");	
 
 }
 

@@ -962,6 +962,12 @@ function groups_agent_ok ($group_array) {
 						AND tagente_estado.utimestamp != 0
 						AND tagente.id_grupo IN $group_clause
 						group by tagente.id_agente";
+						
+	// Agents without modules has a normal status
+	$void_agents = "SELECT tagente.id_agente FROM tagente 
+						WHERE tagente.disabled = 0
+						AND tagente.id_grupo IN $group_clause
+						AND tagente.id_agente NOT IN (SELECT tagente_estado.id_agente FROM tagente_estado)";
 	
 	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
 						FROM tagente, tagente_modulo, tagente_estado 
@@ -972,7 +978,7 @@ function groups_agent_ok ($group_array) {
 						AND tagente.id_agente NOT IN ($agents_critical)
 						AND tagente.id_agente NOT IN ($agents_warning)
 						AND tagente.id_agente NOT IN ($agents_unknown)
-						AND tagente.id_agente IN ($agents_ok) ) AS t");	
+						AND tagente.id_agente IN ($agents_ok) UNION $void_agents) AS t");	
 
 }
 

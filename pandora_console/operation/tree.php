@@ -256,7 +256,12 @@ if (is_ajax ())
 				
 				//Extract all rows of data for each type
 				switch ($type) {
-					case 'group':								
+					case 'group':			
+					
+						//Skip agents which only have not init modules
+
+						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
+										tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";					
 
 						$sql = agents_get_agents(array (
 						'order' => 'nombre COLLATE utf8_general_ci ASC',
@@ -272,6 +277,13 @@ if (is_ajax ())
 						
 						break;
 					case 'os':
+					
+						//Skip agents which only have not init modules
+
+						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
+										tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
+					
+					
 						$sql = agents_get_agents(array (
 						'order' => 'nombre COLLATE utf8_general_ci ASC',
 						'id_os' => $id,
@@ -283,9 +295,17 @@ if (is_ajax ())
 						'AR',
 						false,
 						true);	
-						
+											
 						break;
 					case 'module_group':
+					
+						//Skip agents which only have not init modules
+
+						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM tagente_estado 
+																WHERE id_agente_modulo IN 
+																(SELECT id_agente_modulo FROM tagente_modulo 
+																WHERE id_module_group = $id) 
+																GROUP BY id_agente HAVING SUM(utimestamp) = 0)";	
 						
 						$sql = agents_get_agents(array (
 						'order' => 'nombre COLLATE utf8_general_ci ASC',
@@ -878,7 +898,12 @@ function printTree_($type) {
 	switch ($type) {
 		default:
 		case 'os':
-
+		
+			//Skip agent with all modules in not init status
+			
+			$sql_search .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
+										tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
+		
 			$sql = agents_get_agents(array (
 			'order' => 'nombre COLLATE utf8_general_ci ASC',
 			'disabled' => 0,
@@ -917,6 +942,11 @@ function printTree_($type) {
 			break;
 
 		case 'module_group':
+		
+			//Skip agents which only have not init modules
+
+			$sql_search .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
+							tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";	
 		
 			$sql = agents_get_agents(array (
 			'order' => 'nombre COLLATE utf8_general_ci ASC',
@@ -1032,6 +1062,7 @@ function printTree_($type) {
 
 		$first = true;
 		foreach ($list as $item) {
+			
 			$iconImg = '';
 			switch ($type) {
 				default:

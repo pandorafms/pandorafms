@@ -895,15 +895,15 @@ if ($create_module) {
 	if (is_error($id_agent_module)) {
 		switch($id_agent_module) {
 			case ERR_EXIST:
-				$msg __('There was a problem adding module. Another module already exists with the same name.');
+				$msg = __('There was a problem adding module. Another module already exists with the same name.');
 				break;
 			case ERR_INCOMPLETE:
-				$msg __('There was a problem adding module. Some required fields are missed : (name)');
+				$msg = __('There was a problem adding module. Some required fields are missed : (name)');
 				break;
 			case ERR_DB:
 			case ERR_GENERIC:
 			default:
-				$msg __('There was a problem adding module. Processing error');
+				$msg = __('There was a problem adding module. Processing error');
 				break;
 		}
 		$id_agent_module = false;

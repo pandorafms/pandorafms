@@ -402,7 +402,7 @@ if (is_ajax ())
 						$sql .= sprintf('AND  id_agente IN (
 									SELECT id_agente
 									FROM tagente_modulo
-									WHERE nombre = \'%s\'
+									WHERE nombre = \'%s\' AND disabled = 0
 								)
 								', $name);
 						
@@ -882,6 +882,8 @@ function printTree_($type) {
 	// If there are not groups display error and return
 	if (empty($avariableGroups)) {
 		ui_print_error_message("There aren't agents in this agrupation");
+		echo '</td></tr>';
+		echo '</table>';		
 		return;
 	}			
 	
@@ -1027,6 +1029,7 @@ function printTree_($type) {
 					$list = db_get_all_rows_sql('SELECT t1.nombre
 						FROM tagente_modulo t1, tagente t2, tagente_estado t3
 						WHERE t1.id_agente = t2.id_agente AND t1.id_agente_modulo = t3.id_agente_modulo
+						AND t2.disabled = 0 AND t1.disabled = 0
 						AND t3.utimestamp !=0 AND t2.id_grupo in (' . $avariableGroupsIds . ')' .$sql_search.'
 						GROUP BY t1.nombre ORDER BY t1.nombre');
 					break;
@@ -1034,7 +1037,7 @@ function printTree_($type) {
 					$list = db_get_all_rows_sql('SELECT dbms_lob.substr(t1.nombre,4000,1) as nombre
 						FROM tagente_modulo t1, tagente t2, tagente_estado t3
 						WHERE t1.id_agente = t2.id_agente AND t2.id_grupo in (' . $avariableGroupsIds . ') AND t1.id_agente_modulo = t3.id_agente_modulo
-						AND t3.utimestamp !=0 GROUP BY dbms_lob.substr(t1.nombre,4000,1) ORDER BY dbms_lob.substr(t1.nombre,4000,1) ASC');
+						AND t2.disabled = 0 AND t1.disabled = 0 AND t3.utimestamp !=0 GROUP BY dbms_lob.substr(t1.nombre,4000,1) ORDER BY dbms_lob.substr(t1.nombre,4000,1) ASC');
 					break;
 			}		
 
@@ -1044,7 +1047,8 @@ function printTree_($type) {
 	
 	if ($list === false) {
 		ui_print_error_message("There aren't agents in this agrupation");
-
+		echo '</td></tr>';
+		echo '</table>';
 	}
 	else {
 		echo "<ul style='margin: 0; margin-top: 20px; padding: 0;'>\n";

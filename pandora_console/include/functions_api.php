@@ -4643,7 +4643,8 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 		$sql_post .= " AND utimestamp <= " . $utimestamp_bottom;
 	
 	if ($event_view_hr > 0) {
-		$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
+		//Put hours in seconds
+		$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR);
 		$sql_post .= " AND (utimestamp > " . $unixtime . " OR estado = 2)";
 	}
 	

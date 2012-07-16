@@ -39,7 +39,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 		return false;
 	if (empty ($ip_address))
 		return false;
-	$interval = safe_int ($interval,1, 300);
+	$interval = safe_int ($interval,1, SECONDS_5MINUTES);
 	if (empty ($interval))
 		return false;
 	if (! is_array ($values))
@@ -76,16 +76,16 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	}
 	
 	$result = db_process_sql_insert ('tagente_estado', 
-			array ('id_agente_modulo' => $id_agent_module,
-				'datos' => '',
-				'timestamp' => 0,
-				'estado' => 0,
-				'id_agente' => $id_agent,
-				'last_try' => 0,
-				'utimestamp' => 0,
-				'current_interval' => 0,
-				'running_by' => 0,
-				'last_execution_try' => 0));
+		array ('id_agente_modulo' => $id_agent_module,
+			'datos' => '',
+			'timestamp' => 0,
+			'estado' => 0,
+			'id_agente' => $id_agent,
+			'last_try' => 0,
+			'utimestamp' => 0,
+			'current_interval' => 0,
+			'running_by' => 0,
+			'last_execution_try' => 0));
 	
 	if ($result === false) {
 		db_process_sql_rollback ();
@@ -95,7 +95,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	db_process_sql_commit ();
 	
 	db_pandora_audit ("Agent management", "New agent '$name' created");
-
+	
 	return $id_agent;
 }
 
@@ -115,7 +115,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', 
 	$allModules = false, $orderby = false, $idGroup = false, $count = false) {
 	global $config;
-
+	
 	if (is_array($filter)) {
 		$disabled = $filter['disabled'];
 		if (isset($filter['standby'])) {
@@ -129,7 +129,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$filter = '';
 		$disabled = $filter;
 	}
-
+	
 	switch ($disabled) {
 		case "notfired":
 			$filter .= ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
@@ -145,8 +145,9 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			break;
 		default:
 			$filter .= '';
+			break;
 	}
-
+	
 	if (is_array ($options)) {
 		$filter .= db_format_array_where_clause_sql ($options);
 	}
@@ -176,7 +177,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		
 		$subQuery = implode (",", $id_modules);
 	}
-
+	
 	$orderbyText = '';
 	if ($orderby !== false) {
 		if (is_array($orderby)) {
@@ -191,26 +192,26 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
-
+	
 	// TODO: Clean extra_sql
 	$extra_sql = '';
 	
 	$sql = sprintf ("SELECT %s
-	FROM talert_template_modules
-		INNER JOIN tagente_modulo t2
-			ON talert_template_modules.id_agent_module = t2.id_agente_modulo
-		INNER JOIN tagente t3
-			ON t2.id_agente = t3.id_agente
-		INNER JOIN talert_templates t4
-			ON talert_template_modules.id_alert_template = t4.id
-	WHERE (%s id_agent_module in (%s)) %s %s %s",
+		FROM talert_template_modules
+			INNER JOIN tagente_modulo t2
+				ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+			INNER JOIN tagente t3
+				ON t2.id_agente = t3.id_agente
+			INNER JOIN talert_templates t4
+				ON talert_template_modules.id_alert_template = t4.id
+		WHERE (%s id_agent_module in (%s)) %s %s %s",
 	$selectText, $extra_sql, $subQuery, $where, $filter, $orderbyText);
 	
 	$alerts = db_get_all_rows_sql ($sql);
 	
 	if ($alerts === false)
 		return array ();
-		
+	
 	if ($count !== false) {
 		return $alerts[0]['count'];
 	}
@@ -254,7 +255,8 @@ function agents_get_alerts_compound ($id_agent = false, $filter = '', $options =
 	
 	if (($id_agent !== false) && ($idGroup !== false)) {
 		if ($idGroup != 0) { //All group
-			$subQuery = 'SELECT id_agente FROM tagente WHERE id_grupo = ' . $idGroup;
+			$subQuery = 'SELECT id_agente
+				FROM tagente WHERE id_grupo = ' . $idGroup;
 		}
 		else {
 			$subQuery = 'SELECT id_agente FROM tagente';
@@ -275,7 +277,8 @@ function agents_get_alerts_compound ($id_agent = false, $filter = '', $options =
 		$selectText = 'COUNT(id) AS count';
 	}
 	
-	$sql = sprintf ("SELECT %s FROM talert_compound
+	$sql = sprintf ("SELECT %s
+		FROM talert_compound
 		WHERE id_agent IN (%s) %s %s",
 		$selectText, $subQuery, $where, $filter);
 	
@@ -307,67 +310,72 @@ function agents_get_alerts_compound ($id_agent = false, $filter = '', $options =
  * @return mixed An array with all alerts defined for an agent or false in case no allowed groups are specified.
  */
 function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC'), $return = false) {
-    global $config;
+	global $config;
 	
 	if (! is_array ($filter)) {
 		$filter = array ();
 	}
-
-	if(isset($filter['search'])) {
+	
+	if (isset($filter['search'])) {
 		$search = $filter['search'];
 		unset($filter['search']);
 	}
-	else{
+	else {
 		$search = '';
 	}
 	
-	if(isset($filter['offset'])) {
+	if (isset($filter['offset'])) {
 		$offset = $filter['offset'];
 		unset($filter['offset']);
 	}
 	
-	if(isset($filter['limit'])) {
+	if (isset($filter['limit'])) {
 		$limit = $filter['limit'];
 		unset($filter['limit']);
 	}
 	
 	$status_sql = ' 1 = 1';
-	if(isset($filter['status'])) {
-		$normal_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
-				WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
+	if (isset($filter['status'])) {
+		$normal_modules = 'SELECT tagente.id_agente
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 AND estado = 0
 				AND (utimestamp != 0)' /*OR tagente_modulo.id_tipo_modulo IN (21,22,23)) 
 				AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
 				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))'*/;
-				
-		$warning_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
-				WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
+		
+		$warning_modules = 'SELECT tagente.id_agente
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 AND estado = 2 AND tagente_estado.utimestamp != 0';
 			/*	AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
 				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';*/
-				
-		$critical_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
-				WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
+		
+		$critical_modules = 'SELECT tagente.id_agente
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.utimestamp != 0';
 			/*	AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
 				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';	*/
-				
-		$unknown_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
-				WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
+		
+		$unknown_modules = 'SELECT tagente.id_agente
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 AND estado = 3 AND utimestamp != 0' /*AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) 
 				AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2)) AND utimestamp != 0'*/;
-				
-		$notinit_modules = 'SELECT tagente_estado.id_agente FROM tagente_estado, tagente, tagente_modulo 
-				WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
+		
+		$notinit_modules = 'SELECT tagente_estado.id_agente
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 
 				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23) 
 				AND utimestamp = 0';
-				
+		
 		switch ($filter['status']) {
 			// Normal
 			case 0: 
@@ -384,7 +392,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				$status_sql = "id_agente IN ($critical_modules)";
 				break;
 			// Unknown
-			case 3:	
+			case 3:
 				$status_sql = "id_agente IN ($unknown_modules) &&
 				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($warning_modules)";
 				break;
@@ -399,19 +407,18 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				$status_sql = "id_agente NOT IN ($warning_modules) &&
 				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($unknown_modules) && id_agente NOT IN ($normal_modules)";
 				break;
-
 		}
 		unset($filter['status']);
 	} 
-
+	
 	
 	unset($filter['order']);
-
+	
 	$filter_nogroup = $filter;
 	
 	//Get user groups
 	$groups = array_keys (users_get_groups ($config["id_user"], $access, false));
-
+	
 	//If no group specified, get all user groups
 	if (empty ($filter['id_grupo'])) {
 		$all_groups = true;
@@ -461,32 +468,35 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	}
 	
 	$where = db_format_array_where_clause_sql ($filter, 'AND', '');
-
+	
 	$where_nogroup = db_format_array_where_clause_sql ($filter_nogroup, 'AND', '');
 	
 	if ($where_nogroup == '') {
 		$where_nogroup = '1 = 1';
 	}
-
+	
 	$extra = false;
-
+	
 	// TODO: CLEAN extra_sql
 	$sql_extra = '';
-	if ($all_groups){
+	if ($all_groups) {
 		$where_nogroup = '1 = 1';
 	}
-
+	
 	if($extra) { 
 		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s', $sql_extra, $where, $where_nogroup, $status_sql, $search);	
-	} else {			
+	}
+	else {
 		$where = sprintf('%s AND %s AND (%s) %s', $where, $where_nogroup, $status_sql, $search);
 	}
-	$sql = sprintf('SELECT %s FROM tagente WHERE %s %s', implode(',',$fields), $where, $order);
-
+	$sql = sprintf('SELECT %s
+		FROM tagente
+		WHERE %s %s', implode(',',$fields), $where, $order);
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$limit_sql = '';
-			if(isset($offset) && isset($limit)) {
+			if (isset($offset) && isset($limit)) {
 				$limit_sql = " LIMIT $offset, $limit "; 
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
@@ -498,7 +508,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 			break;
 		case "postgresql":
 			$limit_sql = '';
-			if(isset($offset) && isset($limit)) {
+			if (isset($offset) && isset($limit)) {
 				$limit_sql = " OFFSET $offset LIMIT $limit ";
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
@@ -510,7 +520,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 			break;
 		case "oracle":	
 			$set = array();
-			if(isset($offset) && isset($limit)) {
+			if (isset($offset) && isset($limit)) {
 				$set['limit'] = $limit;
 				$set['offset'] = $offset;
 			}
@@ -556,7 +566,7 @@ function agents_get_alerts ($id_agent = false, $filter = false, $options = false
  */
 function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modules = false, $copy_alerts = false, $target_modules = false, $target_alerts = false) {
 	global $config;
-
+	
 	if (empty ($source_id_agent)) {
 		echo '<h3 class="error">'.__('No source agent to copy').'</h3>';
 		return false;
@@ -588,7 +598,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 	
 	if (empty ($target_modules)) {
 		if (! $copy_alerts) {
-			echo '<h3 class="error">'.__('No modules have been selected').'</h3>';
+			ui_print_error_message(__('No modules have been selected'));
 			return false;
 		}
 		$target_modules = array ();
@@ -615,30 +625,28 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 			break;
 	}
 	$error = false;
-
+	
 	$repeated_modules = array();
 	foreach ($destiny_id_agents as $id_destiny_agent) {
 		foreach ($target_modules as $id_agent_module) {
-			
 			// Check the module name exists in target
 			$module = modules_get_agentmodule ($id_agent_module);
 			if ($module === false)
 				return false;
-				
+			
 			$modules = agents_get_modules ($id_destiny_agent, false,
 				array ('nombre' => $module['nombre'], 'disabled' => false));
-
+			
 			// Keep all modules repeated
 			if (! empty ($modules)) {
 				$modules_repeated = array_pop (array_keys ($modules));
 				$result = $modules_repeated;
-				$repeated_modules[] = $modules_repeated;		
+				$repeated_modules[] = $modules_repeated;
 			}
 			else {
-			
 				$result = modules_copy_agent_module_to_agent ($id_agent_module,
 					$id_destiny_agent);
-
+				
 				if ($result === false) {
 					$error = true;
 					break;
@@ -694,7 +702,8 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 	}
 	
 	if ($error) {
-		echo '<h3 class="error">'.__('There was an error copying the agent configuration, the copy has been cancelled').'</h3>';
+		ui_print_error_message(
+			__('There was an error copying the agent configuration, the copy has been cancelled'));
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
@@ -704,8 +713,9 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 				db_process_sql_rollback();
 				break;
 		}
-	} else {
-		echo '<h3 class="suc">'.__('Successfully copied').'</h3>';
+	}
+	else {
+		ui_print_success_message(__('Successfully copied'));
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
@@ -725,8 +735,9 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 }
 
 function agents_get_next_contact($idAgent, $maxModules = false) {
-	
-	$agent = db_get_row_sql("SELECT * FROM tagente WHERE id_agente = " . $idAgent);
+	$agent = db_get_row_sql("SELECT *
+		FROM tagente
+		WHERE id_agente = " . $idAgent);
 	
 	
 	$difference = get_system_time () - strtotime ($agent["ultimo_contacto"]);
@@ -734,7 +745,9 @@ function agents_get_next_contact($idAgent, $maxModules = false) {
 	
 	$max = $agent["intervalo"];
 	if ($maxModules) {
-		$sql = sprintf ("SELECT MAX(module_interval) FROM tagente_modulo WHERE id_agente = %d", $id_agente);
+		$sql = sprintf ("SELECT MAX(module_interval)
+			FROM tagente_modulo
+			WHERE id_agente = %d", $id_agente);
 		$maxModules = (int) db_get_sql ($sql);
 		if ($maxModules > 0)
 			$max = $maxModules;
@@ -775,7 +788,7 @@ function agents_get_next_contact($idAgent, $maxModules = false) {
  */
 function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	$id_agent = safe_int ($id_agent, 1);
-
+	
 	$where = '';
 	if (! empty ($id_agent)) {
 		$where = sprintf (' WHERE t2.id_agent_module = t1.id_agente_modulo AND delete_pending = 0
@@ -851,17 +864,17 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
  */
 function agents_common_modules ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	$id_agent = safe_int ($id_agent, 1);
-
+	
 	$where = '';
 	if (! empty ($id_agent)) {
 		$where = sprintf (' WHERE delete_pending = 0 AND id_agente IN (%s)
-				AND (
-					SELECT count(nombre)
-					FROM tagente_modulo t2
-					WHERE delete_pending = 0 AND t1.nombre = t2.nombre
-						AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
+			AND (
+				SELECT count(nombre)
+				FROM tagente_modulo t2
+				WHERE delete_pending = 0 AND t1.nombre = t2.nombre
+					AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
 	}
-		
+	
 	if (! empty ($filter)) {
 		$where .= ' AND ';
 		if (is_array ($filter)) {
@@ -913,10 +926,10 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
  */
 function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false, $childGroups = false, $extra_access = true) {
 	global $config;
-
+	
 	if (!$noACL) {
 		$id_group = groups_safe_acl($config["id_user"], $id_group, "AR");
-
+		
 		if (empty ($id_group)) {
 			//An empty array means the user doesn't have access
 			return array ();
@@ -934,7 +947,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 		}
 		$id_group = array_keys(users_get_groups(false, "AR", true, false, (array)$id_group));
 	}
-
+	
 	if (is_array($id_group)) {
 		$all_groups = false;
 		$search_group_sql = sprintf ('id_grupo IN (%s)', implode (",", $id_group));
@@ -947,7 +960,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 		$all_groups = false;
 		$search_group_sql = sprintf ('id_grupo = %d', $id_group);
 	}
-
+	
 	$search_sql = '1 = 1';
 	
 	if ($search === true) {
@@ -974,10 +987,10 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 					$search_sql .= ' AND (UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR direccion LIKE upper(\'%'.$string.'%\'))';
 					break;
 			}
-				
+			
 			unset ($search["string"]);
 		}
-
+		
 		if (isset ($search["name"])) {
 			$name = io_safe_input ($search["name"]);
 			switch ($config["dbtype"]) {
@@ -1152,7 +1165,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 						$operatorDistin = true;
 					}
 				}
-
+				
 				if ($value[0] == '%') {
 					switch ($config['dbtype']){
 						case "mysql":
@@ -1266,14 +1279,14 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	}
 	
 	$result = db_get_all_rows_sql ($sql);
-
+	
 	if (empty ($result)) {
 		return array ();
 	}
-
+	
 	if (! $indexed)
 		return $result;
-
+	
 	$modules = array ();
 	foreach ($result as $module) {
 		if ($get_not_init_modules || modules_get_agentmodule_is_init($module['id_agente_modulo'])) {
@@ -1337,6 +1350,7 @@ function agents_get_name ($id_agent, $case = "none") {
 		case "none":
 		default:
 			return ($agent);
+			break;
 	}
 }
 
@@ -1352,17 +1366,17 @@ function agents_get_name ($id_agent, $case = "none") {
  */
 function agents_get_modules_data_count ($id_agent = 0) {
 	$id_agent = safe_int ($id_agent, 1);
-
+	
 	if (empty ($id_agent)) {
 		$id_agent = array ();
 	}
 	else {
 		$id_agent = (array) $id_agent;
 	}
-
+	
 	$count = array ();
 	$count["total"] = 0;
-
+	
 	$query[0] = "SELECT COUNT(*) FROM tagente_datos";
 	
 	foreach ($id_agent as $agent_id) {
@@ -1378,7 +1392,7 @@ function agents_get_modules_data_count ($id_agent = 0) {
 		//Add total agent count to total count
 		$count["total"] += $count[$agent_id];
 	}
-
+	
 	if ($count["total"] == 0) {
 		foreach ($query as $sql) {
 			$count["total"] += (int) db_get_sql ($sql, 0, true);
@@ -1401,7 +1415,7 @@ function agents_check_alert_fired ($id_agent) {
 		WHERE talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
 			AND times_fired > 0 AND id_agente = %d",
 	$id_agent);
-
+	
 	$value = db_get_sql ($sql);
 	if ($value > 0)
 		return true;
@@ -1450,7 +1464,7 @@ function agents_give_agentmodule_flag ($id_agent_module) {
  */
 function agents_add_address ($id_agent, $ip_address) {
 	global $config;
-
+	
 	// Check if already is attached to agent
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -1468,15 +1482,15 @@ function agents_add_address ($id_agent, $ip_address) {
 	$current_address = db_get_sql ($sql);
 	if ($current_address > 0)
 		return;
-
+	
 	// Look for a record with this IP Address
 	$id_address = (int) db_get_value ('id_a', 'taddress', 'ip', $ip_address);
-
+	
 	if ($id_address === 0) {
 		// Create IP address in tadress table		
 		$id_address = db_process_sql_insert('taddress', array('ip' => $ip_address));
 	}
-
+	
 	// Add address to agent
 	$values = array('id_a' => $id_address, 'id_agent' => $id_agent);
 	db_process_sql_insert('taddress_agent', $values);
@@ -1490,8 +1504,9 @@ function agents_add_address ($id_agent, $ip_address) {
  */
 function agents_delete_address ($id_agent, $ip_address) {
 	global $config;
-
-	$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress
+	
+	$sql = sprintf ("SELECT id_ag
+		FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a AND ip = '%s'
 		AND id_agent = %d", $ip_address, $id_agent);
 	$id_ag = db_get_sql ($sql);
@@ -1501,7 +1516,7 @@ function agents_delete_address ($id_agent, $ip_address) {
 	$agent_name = agents_get_name($id_agent, "");
 	db_pandora_audit("Agent management",
 		"Deleted IP $ip_address from agent '$agent_name'");
-
+	
 	// Need to change main address?
 	if (agents_get_address ($id_agent) == $ip_address) {
 		$new_ips = agents_get_addresses ($id_agent);
@@ -1550,7 +1565,7 @@ function agents_get_agent_with_ip ($ip_address) {
 					AND ip = \'%s\'', $ip_address);
 			break;
 	}
-
+	
 	return db_get_row_sql ($sql);
 }
 
@@ -1566,18 +1581,18 @@ function agents_get_addresses ($id_agent) {
 		FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a
 			AND id_agent = %d", $id_agent);
-
+	
 	$ips = db_get_all_rows_sql ($sql);
-
+	
 	if ($ips === false) {
 		$ips = array ();
 	}
-
+	
 	$ret_arr = array ();
 	foreach ($ips as $row) {
 		$ret_arr[$row["ip"]] = $row["ip"];
 	}
-
+	
 	return $ret_arr;
 }
 
@@ -1593,7 +1608,7 @@ function agents_get_addresses ($id_agent) {
 function agents_get_status($id_agent = 0, $noACLs = false) {
 	global $config;
 	
-	if (!$noACLs){
+	if (!$noACLs) {
 		$modules = agents_get_modules ($id_agent, 'id_agente_modulo', array('disabled' => 0), true, false);
 	}
 	else{
@@ -1602,29 +1617,29 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		$filter_modules['delete_pending'] = 0;
 		// Get all non disabled modules of the agent
 		$all_modules = db_get_all_rows_filter('tagente_modulo', $filter_modules, 'id_agente_modulo'); 
-
+		
 		$result_modules = array(); 
 		// Skip non init modules
 		foreach ($all_modules as $module){
 			if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
 				$modules[] = $module['id_agente_modulo'];
-			}	
+			}
 		}
 	}
-
+	
 	$modules_status = array();
 	$modules_async = 0;
 	foreach($modules as $module) {
 		$modules_status[] = modules_get_agentmodule_status($module);
-
+		
 		$module_type = modules_get_agentmodule_type($module);
 		if(($module_type >= 21 && $module_type <= 23) || $module_type == 100) {
 			$modules_async++;
 		}
-	}	
-
+	}
+	
 	// If all the modules are asynchronous or keep alive, the group cannot be unknown
-	if($modules_async < count($modules)) {
+	if ($modules_async < count($modules)) {
 		$time = get_system_time ();
 		
 		switch ($config["dbtype"]) {
@@ -1647,26 +1662,26 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 						'ceil((to_date(ultimo_contacto, \'YYYY-MM-DD HH24:MI:SS\') - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)) > ' . $time));
 				break;
 		}
-			
+		
 		if (! $status)
 			return -1;
 	}
-
+	
 	// Status is 0 for normal, 1 for critical, 2 for warning and 3 for unknown. 4 for alert fired
 	// Checking if any module has alert fired (4)
-	if(is_int(array_search(4,$modules_status))){
+	if (is_int(array_search(4,$modules_status))) {
 		return 4;
 	}
 	// Checking if any module has critical status (1)
-	elseif(is_int(array_search(1,$modules_status))){
+	elseif (is_int(array_search(1,$modules_status))) {
 		return 1;
 	}
 	// Checking if any module has warning status (2)
-	elseif(is_int(array_search(2,$modules_status))){
+	elseif (is_int(array_search(2,$modules_status))) {
 		return 2;
 	}
 	// Checking if any module has unknown status (3)
-	elseif(is_int(array_search(3,$modules_status))){
+	elseif (is_int(array_search(3,$modules_status))) {
 		return 3;
 	}
 	else {
@@ -1685,34 +1700,34 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
  */
 function agents_delete_agent ($id_agents, $disableACL = false) {
 	global $config;
-
+	
 	$error = false;
-
+	
 	//Convert single values to an array
 	if (! is_array ($id_agents))
 	$id_agents = (array) $id_agents;
-
+	
 	//Start transaction
 	db_process_sql_begin ();
-
+	
 	foreach ($id_agents as $id_agent) {
 		$id_agent = (int) $id_agent; //Cast as integer
 		if ($id_agent < 1)
 		continue;
-
+		
 		$agent_name = agents_get_name($id_agent, "");
-
+		
 		/* Check for deletion permissions */
 		$id_group = agents_get_agent_group ($id_agent);
 		if ((! check_acl ($config['id_user'], $id_group, "AW")) && !$disableACL) {
 			db_process_sql_rollback ();
 			return false;
 		}
-
+		
 		//A variable where we store that long subquery thing for
 		//modules
 		$where_modules = "ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$id_agent.")";
-
+		
 		//IP address
 		$sql = sprintf ("SELECT id_ag
 			FROM taddress_agent, taddress
@@ -1720,68 +1735,68 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 				AND id_agent = %d",
 		$id_agent);
 		$addresses = db_get_all_rows_sql ($sql);
-
+		
 		if ($addresses === false) {
 			$addresses = array ();
 		}
 		foreach ($addresses as $address) {
 			db_process_delete_temp ("taddress_agent", "id_ag", $address["id_ag"]);
 		}
-
+		
 		// We cannot delete tagente_datos and tagente_datos_string here
 		// because it's a huge ammount of time. tagente_module has a special
 		// field to mark for delete each module of agent deleted and in
 		// daily maintance process, all data for that modules are deleted
-
+		
 		//Alert
 		db_process_delete_temp ("talert_compound", "id_agent", $id_agent);
 		db_process_delete_temp ("talert_template_modules", "id_agent_module", $where_modules);
-
+		
 		//Events (up/down monitors)
 		// Dont delete here, could be very time-exausting, let the daily script
 		// delete them after XXX days
 		// db_process_delete_temp ("tevento", "id_agente", $id_agent);
-
+		
 		//Graphs, layouts & reports
 		db_process_delete_temp ("tgraph_source", "id_agent_module", $where_modules);
 		db_process_delete_temp ("tlayout_data", "id_agente_modulo", $where_modules);
 		db_process_delete_temp ("treport_content", "id_agent_module", $where_modules);
-
+		
 		//Planned Downtime
 		db_process_delete_temp ("tplanned_downtime_agents", "id_agent", $id_agent);
-
+		
 		//The status of the module
 		db_process_delete_temp ("tagente_estado", "id_agente", $id_agent);
-
+		
 		//The actual modules, don't put anything based on
 		// DONT Delete this, just mark for deletion
 		// db_process_delete_temp ("tagente_modulo", "id_agente", $id_agent);
-
+		
 		db_process_sql_update ('tagente_modulo',
 		array ('delete_pending' => 1, 'disabled' => 1, 'nombre' => 'pendingdelete'),
 			'id_agente = '. $id_agent);
-
+		
 		// Access entries
 		// Dont delete here, this records are deleted in daily script
 		// db_process_delete_temp ("tagent_access", "id_agent", $id_agent);
-
+		
 		// Delete agent policies
 		enterprise_hook('policies_delete_agent', array($id_agent));
-
+		
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script
 		// db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules);
-
+		
 		// Delete remote configuration
 		if (isset ($config["remote_config"])) {
 			$agent_md5 = md5 ($agent_name, FALSE);
-				
+			
 			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
 				// Agent remote configuration editor
 				$file_name = $config["remote_config"]."/conf/".$agent_md5.".conf";
 				
 				$error = !@unlink ($file_name);
-
+				
 				if (!$error) {
 					$file_name = $config["remote_config"]."/md5/".$agent_md5.".md5";
 					$error = !@unlink ($file_name);
@@ -1793,19 +1808,19 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 				}
 			}
 		}
-
+		
 		//And at long last, the agent
 		db_process_delete_temp ("tagente", "id_agente", $id_agent);
-
+		
 		db_pandora_audit( "Agent management",
 		"Deleted agent '$agent_name'");
-
-
+		
+		
 		/* Break the loop on error */
 		if ($error)
 			break;
 	}
-
+	
 	if ($error) {
 		db_process_sql_rollback ();
 		return false;
@@ -1909,18 +1924,19 @@ function agents_get_alerts_fired ($id_agent, $filter="") {
 		return 0;
 	}
 	
-	$mod_clause = "(".implode(",", $modules_agent).")";	
-
+	$mod_clause = "(".implode(",", $modules_agent).")";
+	
 	return db_get_sql ("SELECT COUNT(times_fired) FROM talert_template_modules WHERE times_fired != 0 AND id_agent_module IN ".$mod_clause);
 }
 
 //Returns the alert image to display tree view
 
 function agents_tree_view_alert_img ($alert_fired) {
-
+	
 	if ($alert_fired) {
 		return ui_print_status_image (STATUS_ALERT_FIRED, __('Alert fired'), true);
-	} else {
+	}
+	else {
 		return ui_print_status_image (STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
 	}
 }
@@ -1940,8 +1956,6 @@ function agetns_tree_view_status_img ($critical, $warning, $unknown) {
 	}
 	else {
 		return ui_print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
-	}	
-}		
-
-	
+	}
+}
 ?>

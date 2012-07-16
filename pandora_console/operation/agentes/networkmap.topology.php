@@ -37,6 +37,7 @@ $graph = networkmap_generate_dot (__('Pandora FMS'), $group, $simple, $font_size
 if ($graph === false) {
 	ui_print_error_message (__('Map could not be generated'));
 	echo '<div class="nf">' . __('No agents found') . '</div>';
+	
 	return;
 }
 
@@ -59,7 +60,8 @@ $filename_map .= "_".$id_networkmap.".map";
 $filename_img .= "_".$id_networkmap.".png";
 $filename_dot .= "_".$id_networkmap.".dot";
 
-if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > get_system_time () - 300) {
+if ($regen != 1 && file_exists ($filename_img) &&
+	filemtime ($filename_img) > get_system_time () - SECONDS_5MINUTES) {
 	$result = true;
 }
 else {
@@ -83,6 +85,7 @@ if ($result !== false) {
 		echo "<div class='warn'>Apparently something went wrong reading the output.</div>";
 		echo "<br />Is ".$config["attachment_store"]." readable by the webserver process?";
 		echo "<br /><br /> Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver process?";
+		
 		return;
 	}
 	html_print_image ($filename_img, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
@@ -95,6 +98,7 @@ else {
 	echo "<br />Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver process?";
 	echo "<br /><br /> Is your webserver restricted from executing command line tools through the <code>system()</code> call (PHP Safe Mode or SELinux)";
 	echo "<br /><br /> Is ".$config["attachment_store"]." writeable by the webserver process? To change this do the following (POSIX-based systems): chown &lt;apache user&gt; ".$config["attachment_store"];
+	
 	return;
 }
 

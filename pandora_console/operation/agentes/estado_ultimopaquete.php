@@ -20,10 +20,10 @@ check_login();
 if (isset($_GET["id_agente"])){
 	$id_agente = $_GET["id_agente"];
 }
-		
+
 include_once($config['homedir'] . "/include/functions_modules.php");
-	
-// View last data packet		
+
+// View last data packet
 // Get timestamp of last packet
 $agent = db_get_row ('tagente', 'id_agente', $id_agente,
 	array ('ultimo_contacto_remoto',
@@ -180,12 +180,12 @@ $extra_sql = '';
 
 
 // Build the order sql
-if(!empty($order)) {
+if (!empty($order)) {
 	$order_sql = ' ORDER BY ';
 }
 $first = true;
-foreach($order as $ord) {
-	if($first) {
+foreach ($order as $ord) {
+	if ($first) {
 		$first = false;
 	}
 	else {
@@ -232,20 +232,20 @@ switch ($config["dbtype"]) {
 	case "postgresql":
 		$limit_sql = " LIMIT $limit OFFSET $offset ";
 	case "mysql":
-		if(!isset($limit_sql)) {
+		if (!isset($limit_sql)) {
 			$limit_sql = " LIMIT $offset, $limit ";
 		}
-
+		
 		$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
-
+		
 		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s (%s %s) %s %s", 
-					$params, $basic_where, $extra_sql, $where, $order_sql, $limit_sql);
-
+			$params, $basic_where, $extra_sql, $where, $order_sql, $limit_sql);
+		
 		$modules = db_get_all_rows_sql($sql);
 		break;
 	case "oracle":	
 		$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'ASC');
-
+		
 		$set = array();
 		$set['limit'] = $limit;
 		$set['offset'] = $offset;	
@@ -276,16 +276,16 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	echo "<th><span title='" . __('Policy') . "'>".__('P.')."</span></th>";
 }
 echo "<th>".__('Module name') . ' ' .
-			'<a href="' . $url . '&amp;sort_field=name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up")) . '</a>' .
-			'<a href="' . $url . '&amp;sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+	'<a href="' . $url . '&amp;sort_field=name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&amp;sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 echo "</th>";
 echo "<th>".__('Type') . ' ' .
-			'<a href="' . $url . '&amp;sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up")) . '</a>' .
-			'<a href="' . $url . '&amp;sort_field=type&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
+	'<a href="' . $url . '&amp;sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&amp;sort_field=type&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
 echo "</th>";
 echo "<th>".__('int') . ' ' .
-			'<a href="' . $url . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up")) . '</a>' .
-			'<a href="' . $url . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
+	'<a href="' . $url . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
 echo "</th>";
 echo "<th>".__('Description') . "</th>";
 echo "<th>".__('Data') . ' ' .
@@ -303,7 +303,7 @@ $color = 1;
 $write = check_acl ($config['id_user'], $agent['id_grupo'], "AW");
 foreach ($modules as $module) {
 	// Calculate table line color
-	if ($color == 1){
+	if ($color == 1) {
 		$tdcolor = "datos";
 		$color = 0;
 	}
@@ -312,7 +312,7 @@ foreach ($modules as $module) {
 		$color = 1;
 	}
 
-	if ($module["id_module_group"] != $last_modulegroup ){
+	if ($module["id_module_group"] != $last_modulegroup ) {
 		// Render module group names (fixed code)
 		$nombre_grupomodulo = modules_get_modulegroup_name ($module["id_module_group"]);
 		$last_modulegroup = $module["id_module_group"];
@@ -338,7 +338,7 @@ foreach ($modules as $module) {
 	echo "</td>";
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		if($module["id_policy_module"] != 0) {
+		if ($module["id_policy_module"] != 0) {
 			$linked = policies_is_module_linked($module['id_agente_modulo']);
 			$id_policy = db_get_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
 			$name_policy = db_get_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
@@ -382,7 +382,7 @@ foreach ($modules as $module) {
 		}
 	}
 	$nombre_grupomodulo = modules_get_modulegroup_name ($module["id_module_group"]);
-	if ($nombre_grupomodulo != ""){
+	if ($nombre_grupomodulo != "") {
 		if (($label_group == 0) || ($last_label != $nombre_grupomodulo)){	// Show label module group
 			$label_group = -1;
 			$last_label = $nombre_grupomodulo;
@@ -416,7 +416,7 @@ foreach ($modules as $module) {
 		echo ui_print_truncate_text(io_safe_output($module["descripcion"]), 'description', false);
 		echo "</td>";
 	}
-	else{
+	else {
 		echo "<td></td>";
 	}
 	
@@ -454,7 +454,7 @@ foreach ($modules as $module) {
 			io_safe_output(io_safe_output($module["datos"]), 45, false);
 		}
 		echo "</td>";
-			
+		
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));

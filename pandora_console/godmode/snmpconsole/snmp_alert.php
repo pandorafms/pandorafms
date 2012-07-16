@@ -43,7 +43,7 @@ else if (isset ($_GET["submit"])) {
 	$description = (string) get_parameter_post ("description");
 	$oid = (string) get_parameter_post ("oid");
 	$custom_value = (string) get_parameter_post ("custom_value");
-	$time_threshold = (int) get_parameter_post ("time_threshold", 300);
+	$time_threshold = (int) get_parameter_post ("time_threshold", SECONDS_5MINUTES);
 	$time_other = (int) get_parameter_post ("time_other", -1);
 	$al_field1 = (string) get_parameter_post ("al_field1");
 	$al_field2 = (string) get_parameter_post ("al_field2");
@@ -91,33 +91,39 @@ else if (isset ($_GET["submit"])) {
 		
 		if (!$result) {
 			db_pandora_audit("SNMP management", "Fail try to create snmp alert");
-			echo '<h3 class="error">'.__('There was a problem creating the alert').'</h3>';
+			ui_print_error_message(__('There was a problem creating the alert'));
 		}
 		else {
 			db_pandora_audit("SNMP management", "Create snmp alert #$result");
-			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
+			ui_print_success_message(__('Successfully created'));
 		}
 		
 	}
 	else {
 		$sql = sprintf ("UPDATE talert_snmp SET
-			priority = %d, id_alert = %d, al_field1 = '%s', al_field2 = '%s', al_field3 = '%s', description = '%s', agent = '%s', custom_oid = '%s',
-			oid = '%s', time_threshold = %d, max_alerts = %d, min_alerts = %d, _snmp_f1_ = '%s', _snmp_f2_ = '%s', _snmp_f3_ = '%s', _snmp_f4_ = '%s',
-			_snmp_f5_ = '%s', _snmp_f6_ = '%s', trap_type = %d, single_value = '%s'   
-			 WHERE id_as = %d",
-			$priority, $alert_type, $al_field1, $al_field2, $al_field3, $description, $source_ip, $custom_value,
-			$oid, $time_threshold, $max_alerts, $min_alerts, $custom_oid_data_1, $custom_oid_data_2, $custom_oid_data_3,
-			$custom_oid_data_4, $custom_oid_data_5, $custom_oid_data_6, $trap_type, $single_value, $id_as);
+			priority = %d, id_alert = %d, al_field1 = '%s',
+			al_field2 = '%s', al_field3 = '%s', description = '%s',
+			agent = '%s', custom_oid = '%s', oid = '%s',
+			time_threshold = %d, max_alerts = %d, min_alerts = %d,
+			_snmp_f1_ = '%s', _snmp_f2_ = '%s', _snmp_f3_ = '%s',
+			_snmp_f4_ = '%s', _snmp_f5_ = '%s', _snmp_f6_ = '%s',
+			trap_type = %d, single_value = '%s' 
+			WHERE id_as = %d",
+			$priority, $alert_type, $al_field1, $al_field2, $al_field3,
+			$description, $source_ip, $custom_value, $oid, $time_threshold,
+			$max_alerts, $min_alerts, $custom_oid_data_1, $custom_oid_data_2,
+			$custom_oid_data_3, $custom_oid_data_4, $custom_oid_data_5,
+			$custom_oid_data_6, $trap_type, $single_value, $id_as);
 		
 		$result = db_process_sql ($sql);
 		
 		if (!$result) {
 			db_pandora_audit("SNMP management", "Fail try to update snmp alert #$id_as");
-			echo '<h3 class="error">'.__('There was a problem updating the alert').'</h3>';
+			ui_print_error_message(__('There was a problem updating the alert'));
 		}
 		else {
 			db_pandora_audit("SNMP management", "Update snmp alert #$id_as");
-			echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
+			ui_print_success_message(__('Successfully updated'));
 		}
 	}
 }
@@ -160,7 +166,7 @@ elseif (isset ($_GET["update_alert"])) {
 	$description = "";
 	$oid = "";
 	$custom_value = "";
-	$time_threshold = 300;
+	$time_threshold = SECONDS_5MINUTES;
 	$al_field1 = "";
 	$al_field2 = "";
 	$al_field3 = "";
@@ -187,11 +193,11 @@ if (isset ($_GET["delete_alert"])) { // Delete alert
 	$result = db_process_sql_delete('talert_snmp', array('id_as' => $alert_delete));
 	if ($result === false) {
 		db_pandora_audit("SNMP management", "Fail try to delete snmp alert #$alert_delete");
-		echo '<h3 class="error">'.__('There was a problem deleting the alert').'</h3>';
+		ui_print_error_message(__('There was a problem deleting the alert'));
 	}
 	else {
 		db_pandora_audit("SNMP management", "Delete snmp alert #$alert_delete");
-		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+		ui_print_success_message(__('Successfully deleted'));
 	}
 }
 

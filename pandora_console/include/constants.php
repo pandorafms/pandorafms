@@ -183,6 +183,7 @@ define ('STATUS_AGENT_WARNING', 'agent_warning.png');
 define ('STATUS_AGENT_DOWN', 'agent_down.png');
 define ('STATUS_AGENT_OK', 'agent_ok.png');
 define ('STATUS_AGENT_NO_DATA', 'agent_no_data.png');
+define ('STATUS_AGENT_NO_MONITORS', 'agent_no_monitors.png');
 //For alerts
 define ('STATUS_ALERT_FIRED', 'alert_fired.png');
 define ('STATUS_ALERT_NOT_FIRED', 'alert_not_fired.png');

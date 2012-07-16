@@ -1,3 +1,9 @@
+2012-07-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/constants.php
+	 operation/tree.php: Fixed filters, counts and info displayed
+	 in monitor and policy tree view. 
+
 2012-07-16 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_groups.php: Included void agents on

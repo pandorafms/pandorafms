@@ -1,3 +1,7 @@
+2012-07-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/tree.php: Removed trace.
+
 2012-07-13 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/snmpconsole/snmp_alert.php,

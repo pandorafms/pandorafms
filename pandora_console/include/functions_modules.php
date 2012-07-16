@@ -660,6 +660,38 @@ function modules_get_agentmodule_type ($id_agentmodule) {
 }
 
 /**
+ * Get the module kind (dataserver, networkserver...) of an agent module.
+ *
+ * @param int $id_agentmodule Agent module id.
+ *
+ * @return string Module kind of the given agent module.
+ */
+function modules_get_agentmodule_kind($id_agentmodule) {
+	$id_modulo = (int) db_get_value ('id_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+
+	switch($id_modulo) {
+		case 1:
+			return 'dataserver';
+			break;
+		case 2:
+			return 'networkserver';
+			break;
+		case 4:
+			return 'pluginserver';
+			break;
+		case 5:
+			return 'predictionserver';
+			break;
+		case 6:
+			return 'wmiserver';
+			break;
+		default:
+			return 'other';
+			break;
+	}
+}
+
+/**
  * Get the unit of an agent module.
  *
  * @param int $id_agente_module Agent module id.

@@ -324,6 +324,24 @@ if (is_ajax ())
 						false,
 						true);	
 						
+						 if ($id != 0) {
+							
+							// Skip agents without modules
+							$sql .= ' AND tagente.id_agente IN
+										(SELECT tagente.id_agente
+										FROM tagente, tagente_modulo, tagente_estado
+										WHERE tagente.id_agente = tagente_modulo.id_agente
+										AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+										AND tagente.disabled = 0 
+										AND tagente_modulo.disabled = 0
+										AND tagente_estado.utimestamp != 0
+										AND tagente_modulo.id_policy_module != 0
+										AND tagente.id_agente IN (SELECT id_agent FROM tpolicy_agents WHERE id_policy = ' . $id . ')
+										group by tagente.id_agente
+										having COUNT(*) > 0)';							
+							
+						}
+
 						break;
 					case 'module':
 						//Replace separator token "articapandora_32_pandoraartica_" for " "
@@ -405,10 +423,10 @@ if (is_ajax ())
 						$filter = "tagente_modulo.id_policy_module = 0";
 						
 						if ($id) {
-							$filter = "tagente_modulo.id_policy_module != 0";
+							$filter = "tagente_modulo.id_policy_module = " . $id . " ";
 						}
-						
-						$filter .= " AND disabled = 0";
+
+						$filter .=  " AND tagente_modulo.disabled = 0 ";
 					
 						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], $filter);
 						
@@ -579,6 +597,8 @@ if (is_ajax ())
 					if ($id_father != 0)
 						$whereQuery = ' AND t1.id_policy_module IN 
 							(SELECT id FROM tpolicy_modules WHERE id_policy = ' . $id_father . ')';
+					else
+						$whereQuery = ' AND t1.id_policy_module = 0 '; 
 					
 					$sql = 'SELECT * 
 						FROM tagente_modulo AS t1 
@@ -777,8 +797,10 @@ function printTree_($type) {
 		$fgroups[$fg['id_grupo']] = "";
 	}
 
-	//We only want groups with agents, so we need the intesect of both arrays.
-	$avariableGroups = array_intersect_key($avariableGroups, $fgroups);
+	// We only want groups with agents, so we need the intesect of both arrays.
+	// Not for policies, we need all groups
+	if ($type != 'policies')
+		$avariableGroups = array_intersect_key($avariableGroups, $fgroups);
 	
 	$avariableGroupsIds = implode(',',array_keys($avariableGroups));
 	if($avariableGroupsIds == ''){
@@ -940,21 +962,25 @@ function printTree_($type) {
 				$sql = "SELECT DISTINCT tpolicies.id, tpolicies.name FROM tpolicies, tpolicy_modules, tagente_estado, tagente, tagente_modulo WHERE 
 				tagente.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND 
 				tagente_estado.utimestamp != 0 AND tagente_modulo.id_policy_module != 0 AND tpolicy_modules.id = tagente_modulo.id_policy_module AND tpolicies.id = tpolicy_modules.id_policy AND
-				tpolicies.id_group IN  ($groups) AND tagente.nombre LIKE '%$search_free%'";
+				tagente.id_grupo IN  ($groups) AND tagente.nombre LIKE '%$search_free%' AND tagente.disabled = 0 AND tagente_modulo.disabled = 0";
 				
 				$list = db_get_all_rows_sql($sql);
 				
-				if ($list !== false)
-					array_push($list, array('id' => 0, 'name' => 'No policy'));				
+				if ($list === false)
+					$list = array();
+								
+				array_push($list, array('id' => 0, 'name' => 'No policy'));				
 			} else {
 				
 				$list = db_get_all_rows_sql("SELECT DISTINCT tpolicies.id, tpolicies.name FROM tpolicies, tpolicy_modules, tagente_estado, tagente, tagente_modulo WHERE 
 				tagente.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND 
 				tagente_estado.utimestamp != 0 AND tagente_modulo.id_policy_module != 0 AND tpolicy_modules.id = tagente_modulo.id_policy_module AND tpolicies.id = tpolicy_modules.id_policy AND
-				tpolicies.id_group IN  ($groups)");
+				tagente.id_grupo IN ($groups) AND tagente.disabled = 0 AND tagente_modulo.disabled = 0");
 
-				if ($list !== false)
-					array_push($list, array('id' => 0, 'name' => 'No policy'));
+				if ($list === false)
+					$list = array();
+
+				array_push($list, array('id' => 0, 'name' => 'No policy'));
 			}
 			break;
 

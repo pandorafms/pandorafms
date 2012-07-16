@@ -907,8 +907,7 @@ function printTree_($type) {
 			'AR',
 			false,
 			true);	
-			echo $sql;
-			echo "<br>";
+
 			// Skip agents without modules
 			$sql .= ' AND id_agente IN
 							(SELECT tagente.id_agente

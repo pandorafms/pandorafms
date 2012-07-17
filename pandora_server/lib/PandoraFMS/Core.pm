@@ -2436,8 +2436,49 @@ sub pandora_group_statistics ($$) {
 
 		# NOTICE - Calculations done here MUST BE the same than used in PHP code to have
 		# the same criteria. PLEASE, double check any changes here and in functions_group.php
+		
+		my $agents_critical_query = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 1 
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_grupo = $group
+						group by tagente.id_agente";		
 
-		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(min_estado) FROM (SELECT MIN(tagente_estado.estado) as min_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado != 0 AND tagente.id_grupo = $group GROUP BY tagente.id_agente HAVING min_estado = 3) AS S1");
+		my $agents_warning_query = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 2 
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_grupo = $group
+						group by tagente.id_agente";
+	
+		my $agents_unknown_query = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 3
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_grupo = $group
+						group by tagente.id_agente";
+								
+		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
+						FROM tagente, tagente_modulo, tagente_estado 
+						WHERE tagente.id_agente = tagente_modulo.id_agente
+						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+
+						AND tagente.id_grupo = $group 
+						AND tagente.id_agente NOT IN ($agents_critical_query)
+						AND tagente.id_agente NOT IN ($agents_warning_query)
+						AND tagente.id_agente IN ($agents_unknown_query) ) AS t");
 		
 		$agents_unknown = 0 unless defined ($agents_unknown);
 

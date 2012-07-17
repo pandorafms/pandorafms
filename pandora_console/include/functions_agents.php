@@ -305,68 +305,67 @@ function agents_get_alerts_compound ($id_agent = false, $filter = '', $options =
  * 
  * @return mixed An array with all alerts defined for an agent or false in case no allowed groups are specified.
  */
-function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC')) {
-    global $config;
+function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC'), $return = false) {
+	global $config;
 	
 	if (! is_array ($filter)) {
 		$filter = array ();
 	}
-
-	if(isset($filter['search'])) {
+	
+	if (isset($filter['search'])) {
 		$search = $filter['search'];
 		unset($filter['search']);
 	}
-	else{
+	else {
 		$search = '';
 	}
 	
-	if(isset($filter['offset'])) {
+	if (isset($filter['offset'])) {
 		$offset = $filter['offset'];
 		unset($filter['offset']);
 	}
 	
-	if(isset($filter['limit'])) {
+	if (isset($filter['limit'])) {
 		$limit = $filter['limit'];
 		unset($filter['limit']);
 	}
 	
 	$status_sql = ' 1 = 1';
-	if(isset($filter['status'])) {
-		$normal_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
-				WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
+	if (isset($filter['status'])) {
+		$normal_modules = 'SELECT tagente.id_agente
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 0 
-				AND (utimestamp != 0 OR tagente_modulo.id_tipo_modulo IN (21,22,23)) 
-				AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
-				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';
-				
-		$warning_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
-				WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
+				AND tagente_modulo.disabled = 0 AND estado = 0
+				AND (utimestamp != 0)';
+		
+		$warning_modules = 'SELECT tagente.id_agente
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 2 
-				AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
-				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';
-				
-		$critical_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
-				WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
+				AND tagente_modulo.disabled = 0 AND estado = 2 AND tagente_estado.utimestamp != 0';
+
+		
+		$critical_modules = 'SELECT tagente.id_agente
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 1 
-				AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) 
-				OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))';
-				
-		$unknown_modules = 'SELECT tagente.id_agente FROM tagente_estado, tagente, tagente_modulo 
-				WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
+				AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.utimestamp != 0';
+
+		$unknown_modules = 'SELECT tagente.id_agente
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) 
-				AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2)) AND utimestamp != 0';
-				
-		$notinit_modules = 'SELECT tagente_estado.id_agente FROM tagente_estado, tagente, tagente_modulo 
-				WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
+				AND tagente_modulo.disabled = 0 AND estado = 3 AND utimestamp != 0';
+		
+		$notinit_modules = 'SELECT tagente_estado.id_agente
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 
 				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23) 
 				AND utimestamp = 0';
-				
+		
 		switch ($filter['status']) {
 			// Normal
 			case 0: 
@@ -374,16 +373,16 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($unknown_modules)"; //&& id_agente NOT IN ($notinit_modules)";
 				break;
 			// Warning
-			case 1:
+			case 2:
 				$status_sql = "id_agente IN ($warning_modules) &&
 				 id_agente NOT IN ($critical_modules)"; //&& id_agente NOT IN ($notinit_modules)";
 				break;
 			// Critical
-			case 2: 
+			case 1: 
 				$status_sql = "id_agente IN ($critical_modules)";
 				break;
 			// Unknown
-			case 3:	
+			case 3:
 				$status_sql = "id_agente IN ($unknown_modules) &&
 				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($warning_modules)";
 				break;
@@ -398,19 +397,18 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				$status_sql = "id_agente NOT IN ($warning_modules) &&
 				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($unknown_modules) && id_agente NOT IN ($normal_modules)";
 				break;
-
 		}
 		unset($filter['status']);
 	} 
-
+	
 	
 	unset($filter['order']);
-
+	
 	$filter_nogroup = $filter;
 	
 	//Get user groups
 	$groups = array_keys (users_get_groups ($config["id_user"], $access, false));
-
+	
 	//If no group specified, get all user groups
 	if (empty ($filter['id_grupo'])) {
 		$all_groups = true;
@@ -460,55 +458,67 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	}
 	
 	$where = db_format_array_where_clause_sql ($filter, 'AND', '');
-
+	
 	$where_nogroup = db_format_array_where_clause_sql ($filter_nogroup, 'AND', '');
 	
 	if ($where_nogroup == '') {
 		$where_nogroup = '1 = 1';
 	}
-
+	
 	$extra = false;
-
+	
 	// TODO: CLEAN extra_sql
 	$sql_extra = '';
-	if ($all_groups){
+	if ($all_groups) {
 		$where_nogroup = '1 = 1';
 	}
-
+	
 	if($extra) { 
 		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s', $sql_extra, $where, $where_nogroup, $status_sql, $search);	
-	} else {			
+	}
+	else {
 		$where = sprintf('%s AND %s AND (%s) %s', $where, $where_nogroup, $status_sql, $search);
 	}
-	$sql = sprintf('SELECT %s FROM tagente WHERE %s %s', implode(',',$fields), $where, $order);
-
+	$sql = sprintf('SELECT %s
+		FROM tagente
+		WHERE %s %s', implode(',',$fields), $where, $order);
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$limit_sql = '';
-			if(isset($offset) && isset($limit)) {
+			if (isset($offset) && isset($limit)) {
 				$limit_sql = " LIMIT $offset, $limit "; 
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
-
-			$agents = db_get_all_rows_sql($sql);
+			
+			if ($return)
+				return $sql;
+			else
+				$agents = db_get_all_rows_sql($sql);
 			break;
 		case "postgresql":
 			$limit_sql = '';
-			if(isset($offset) && isset($limit)) {
+			if (isset($offset) && isset($limit)) {
 				$limit_sql = " OFFSET $offset LIMIT $limit ";
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
 
-			$agents = db_get_all_rows_sql($sql);
+			if ($return)
+				return $sql;
+			else
+				$agents = db_get_all_rows_sql($sql);
 			break;
 		case "oracle":	
 			$set = array();
-			if(isset($offset) && isset($limit)) {
+			if (isset($offset) && isset($limit)) {
 				$set['limit'] = $limit;
 				$set['offset'] = $offset;
 			}
 
-			$agents = oracle_recode_query ($sql, $set, 'AND', false);
+			if ($return)
+				return $sql;
+			else
+				$agents = oracle_recode_query ($sql, $set, 'AND', false);
 			break;
 	}
 	

@@ -242,7 +242,8 @@ if (is_ajax ())
 			$countRows = 0;
 			
 			if (!empty($avariableGroupsIds)) {
-				$extra_sql = enterprise_hook('policies_get_agents_sql_condition');
+				//TODO CHANGE POLICY ACL FOR TAG ACL
+				$extra_sql = '';
 				if($extra_sql != '') {
 					$extra_sql .= ' OR';
 				}
@@ -256,45 +257,119 @@ if (is_ajax ())
 				
 				//Extract all rows of data for each type
 				switch ($type) {
-					case 'group':
-						$sql = sprintf('SELECT * FROM tagente 
-								WHERE id_grupo = %s AND (%s id_grupo IN (%s))', $id, $extra_sql, $groups_sql);
+					case 'group':			
+					
+						//Skip agents which only have not init modules
+
+						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
+										tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";					
+
+						$sql = agents_get_agents(array (
+						'order' => 'nombre COLLATE utf8_general_ci ASC',
+						'id_grupo' => $id,
+						'disabled' => 0,
+						'status' => $statusSel,
+						'search' => $search_sql),
+
+						array ('*'),
+						'AR',
+						false,
+						true);	
+						
 						break;
 					case 'os':
-						$sql = sprintf('SELECT * FROM tagente 
-								WHERE id_os = %s AND (%s id_grupo IN (%s))', $id, $extra_sql, $groups_sql);
+					
+						//Skip agents which only have not init modules
+
+						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
+										tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
+					
+					
+						$sql = agents_get_agents(array (
+						'order' => 'nombre COLLATE utf8_general_ci ASC',
+						'id_os' => $id,
+						'disabled' => 0,
+						'status' => $statusSel,
+						'search' => $search_sql),
+
+						array ('*'),
+						'AR',
+						false,
+						true);	
+											
 						break;
 					case 'module_group':
-						$extra_sql = substr($extra_sql,1);
-						$extra_sql = "tagente_modulo.".$extra_sql;  
-						$sql = sprintf('SELECT * FROM tagente 
-								WHERE id_agente IN (SELECT tagente_modulo.id_agente FROM tagente_modulo, tagente_estado
-								WHERE tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_estado.utimestamp !=0 AND 
-								tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
-								AND id_module_group = %s 
-								AND ((%s id_grupo IN (%s)))', $id, $extra_sql, $groups_sql);					
+					
+						//Skip agents which only have not init modules
+
+						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM tagente_estado 
+																WHERE id_agente_modulo IN 
+																(SELECT id_agente_modulo FROM tagente_modulo 
+																WHERE id_module_group = $id) 
+																GROUP BY id_agente HAVING SUM(utimestamp) = 0)";	
+						
+						$sql = agents_get_agents(array (
+						'order' => 'nombre COLLATE utf8_general_ci ASC',
+						'disabled' => 0,
+						'status' => $statusSel,
+						'search' => $search_sql),
+
+						array ('*'),
+						'AR',
+						false,
+						true);	
+						
+						// Skip agents without modules
+						$sql .= ' AND id_agente IN
+									(SELECT tagente.id_agente
+									FROM tagente, tagente_modulo 
+									WHERE tagente.id_agente = tagente_modulo.id_agente
+									AND id_module_group = ' . $id . ' AND tagente.disabled = 0 
+									AND tagente_modulo.disabled = 0
+									group by tagente.id_agente
+									having COUNT(*) > 0)';
+			
 						break;
 					case 'policies':
-					
-						$sql = "";
 						
-						if ($id == 0) {
-							$queryWhere = 'id_agente NOT IN (SELECT id_agent FROM tpolicy_agents)';
+						$sql = agents_get_agents(array (
+						'order' => 'nombre COLLATE utf8_general_ci ASC',
+						'disabled' => 0,
+						'search' => $search_sql),
+
+						array ('*'),
+						'AR',
+						false,
+						true);	
+
+						if ($id != 0) {
+
+							// Skip agents without modules
+							$sql .= ' AND tagente.id_agente IN
+										(SELECT tagente.id_agente
+										FROM tagente, tagente_modulo, tagente_estado, tpolicy_modules
+										WHERE tagente.id_agente = tagente_modulo.id_agente
+										AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+										AND tagente_modulo.id_policy_module = tpolicy_modules.id 
+										AND tagente.disabled = 0 
+										AND tagente_modulo.disabled = 0
+										AND tagente_estado.utimestamp != 0
+										AND tagente_modulo.id_policy_module != 0
+										AND tpolicy_modules.id_policy = ' . $id . '
+										group by tagente.id_agente
+										having COUNT(*) > 0)';						
 							
-							$sql = sprintf('SELECT DISTINCT tagente.id_agente as id_agente, tagente.nombre as nombre FROM tagente, tagente_modulo, tagente_estado WHERE 
-							tagente_estado.id_agente = tagente.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND
-							tagente_modulo.id_policy_module = 0 AND tagente_estado.utimestamp != 0 AND
-							tagente.id_agente IN (SELECT id_agente FROM tagente WHERE %s AND ( %s id_grupo IN (%s)))', 
-							$queryWhere, $extra_sql, $groups_sql);
-								
-						} else {
-							$queryWhere = sprintf('id_agente IN (SELECT id_agent FROM tpolicy_agents WHERE id_policy = %s)',$id);
+						}
+						else if ($statusSel == 0) {
 							
-							$sql = sprintf('SELECT DISTINCT tagente.id_agente as id_agente, tagente.nombre as nombre FROM tagente, tagente_modulo, tagente_estado, tpolicy_modules WHERE 
-							tagente_estado.id_agente = tagente.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tpolicy_modules.id = tagente_modulo.id_policy_module AND
-							tpolicy_modules.id_policy = %s AND tagente_modulo.id_policy_module != 0 AND tagente_estado.utimestamp != 0 AND
-							tagente.id_agente IN (SELECT id_agente FROM tagente WHERE %s AND ( %s id_grupo IN (%s)))', 
-							$id, $queryWhere, $extra_sql, $groups_sql);
+							// If status filter is NORMAL add void agents
+							$sql .= " UNION SELECT * FROM tagente 
+									WHERE tagente.disabled = 0
+									AND tagente.id_agente NOT IN (SELECT tagente_estado.id_agente 
+																	FROM tagente_estado)";
+																	
+																	
+
 						}
 
 						break;
@@ -307,14 +382,24 @@ if (is_ajax ())
 						
 						$name = io_safe_input($name);
 						
-						$sql = sprintf('SELECT *
-							FROM tagente
-							WHERE id_agente IN (
+					
+						$sql = agents_get_agents(array (
+						'order' => 'nombre COLLATE utf8_general_ci ASC',
+						'disabled' => 0,
+						'status' => $statusSel,
+						'search' => $search_sql),
+
+						array ('*'),
+						'AR',
+						false,
+						true);		
+
+						$sql .= sprintf('AND  id_agente IN (
 									SELECT id_agente
 									FROM tagente_modulo
-									WHERE nombre = \'%s\'
+									WHERE nombre = \'%s\' AND disabled = 0
 								)
-								AND (%s id_grupo IN (%s))', $name, $extra_sql, $groups_sql);
+								', $name);
 						
 						break;
 				}
@@ -347,7 +432,7 @@ if (is_ajax ())
 				switch ($type) {
 					case 'group':
 					case 'os':
-						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"]);
+						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], array("disabled" => 0));
 						
 						$agent_info["monitor_critical"] = agents_monitor_critical ($row["id_agente"]);
 						$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"]);
@@ -368,8 +453,10 @@ if (is_ajax ())
 						$filter = "tagente_modulo.id_policy_module = 0";
 						
 						if ($id) {
-							$filter = "tagente_modulo.id_policy_module != 0";
+							$filter = "tagente_modulo.id_policy_module = " . $id . " ";
 						}
+
+						$filter .=  " AND tagente_modulo.disabled = 0 ";
 					
 						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], $filter);
 						
@@ -388,7 +475,7 @@ if (is_ajax ())
 						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
 						break;
 					case 'module_group':
-						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], "id_module_group = $id");
+						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], "id_module_group = $id AND disabled = 0");
 						
 						$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], "tagente_modulo.id_module_group = $id");
 						$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], "tagente_modulo.id_module_group = $id");
@@ -408,7 +495,7 @@ if (is_ajax ())
 					case 'module':
 						switch ($config["dbtype"]) {
 							case "mysql":
-								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
+								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '" AND disabled = 0');
 								$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
 								$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
 								$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
@@ -427,7 +514,7 @@ if (is_ajax ())
 							case "postgresql":
 							case "oracle":
 								//TODO REVIEW ORACLE AND POSTGRESQL
-								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
+								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\' AND disabled = 0');
 								$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
 								$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
 								$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
@@ -446,22 +533,27 @@ if (is_ajax ())
 						break;
 				}
 
-				if ($statusSel == ALL) {
+				// Filter by status (only in policy view)
+				if ($type == 'policies') {
+					
+					if ($statusSel == NORMAL) {
+						if (strpos($agent_info["status_img"], 'ok') === false)
+							continue;
+					}
+					else if ($statusSel == WARNING) {
+						if (strpos($agent_info["status_img"], 'warning') === false)
+							continue;
+					}
+					else if ($statusSel == CRITICAL) {
+						if (strpos($agent_info["status_img"], 'critical') === false)
+							continue;
+					}
+					else if ($statusSel == UNKNOWN) {
+						if (strpos($agent_info["status_img"], 'down') === false)
+							continue;
+					}	
 				}
-				else if ($statusSel == NORMAL) {
-					if ($agent_info['status'] != 'agent_ok.png')
-						continue;
-				} else if ($statusSel == WARNING) {
-					if ($agent_info['status'] != 'agent_warning.png')
-						continue;
-				} else if ($statusSel  == CRITICAL) {
-					if ($agent_info['status'] != 'agent_critical.png')
-						continue;
-				} else if ($statusSel  == UNKNOWN) {
-					if ($agent_info['status'] != 'agent_down.png')
-						continue;
-				}
-			
+
 				$less = $lessBranchs;
 				if ($count != $countRows)
 					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"], "pos_tree" => "2"));
@@ -554,6 +646,8 @@ if (is_ajax ())
 					if ($id_father != 0)
 						$whereQuery = ' AND t1.id_policy_module IN 
 							(SELECT id FROM tpolicy_modules WHERE id_policy = ' . $id_father . ')';
+					else
+						$whereQuery = ' AND t1.id_policy_module = 0 '; 
 					
 					$sql = 'SELECT * 
 						FROM tagente_modulo AS t1 
@@ -641,13 +735,12 @@ if (is_ajax ())
 					html_print_image ("operation/tree/leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "1" ));
 				else
 					html_print_image ("operation/tree/last_leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "2" ));
-		
+				
 				// This line checks for (non-initialized) asyncronous modules
 				if ($row["estado"] == 0 AND $row["utimestamp"] == 0 AND ($row["id_tipo_modulo"] >= 21 AND $row["id_tipo_modulo"] <= 23)){
 					$status = STATUS_MODULE_NO_DATA;
-                                        $title = __('UNKNOWN');
-
-				} // Else checks module status				
+					$title = __('UNKNOWN');
+				} // Else checks module status
 				elseif ($row["estado"] == 1) {
 					$status = STATUS_MODULE_CRITICAL;
 					$title = __('CRITICAL');
@@ -671,11 +764,11 @@ if (is_ajax ())
 				else {
 					$title .= " : " . substr(io_safe_output($row["datos"]),0,42);
 				}
-			
+				
 				echo str_replace('.png' ,'_ball.png', 
 					str_replace('img', 'img style="vertical-align: middle;"', ui_print_status_image($status, $title,true))
 					);
-				echo " ";	
+				echo " ";
 				echo str_replace('img', 'img style="vertical-align: middle;"', servers_show_type ($row['id_modulo']));
 				echo " ";
 				$graph_type = return_graphtype ($row["id_tipo_modulo"]);
@@ -736,7 +829,16 @@ function printTree_($type) {
 	
 	//Get all groups with agents
 	$full_groups = db_get_all_rows_sql("SELECT DISTINCT tagente.id_grupo FROM tagente, tagente_estado WHERE 
-					tagente.id_agente = tagente_estado.id_agente AND tagente_estado.utimestamp != 0");
+					tagente.id_agente = tagente_estado.id_agente AND tagente_estado.utimestamp != 0 
+					UNION SELECT tagente.id_grupo FROM tagente 
+							WHERE disabled = 0 
+							AND id_agente NOT IN (SELECT tagente.id_agente
+												FROM tagente, tagente_modulo 
+												WHERE tagente.id_agente = tagente_modulo.id_agente
+												AND tagente.disabled = 0 
+												AND tagente_modulo.disabled = 0
+												group by tagente.id_agente
+												having COUNT(*) > 0)");
 	
 	$fgroups = array();
 	
@@ -744,25 +846,113 @@ function printTree_($type) {
 		$fgroups[$fg['id_grupo']] = "";
 	}
 
-	//We only want groups with agents, so we need the intesect of both arrays.
-	$avariableGroups = array_intersect_key($avariableGroups, $fgroups);
+	// We only want groups with agents, so we need the intesect of both arrays.
+	// Not for policies, we need all groups
+	if ($type != 'policies')
+		$avariableGroups = array_intersect_key($avariableGroups, $fgroups);
 	
 	$avariableGroupsIds = implode(',',array_keys($avariableGroups));
 	if($avariableGroupsIds == ''){
 		$avariableGroupsIds == -1;
 	}
+	
+	if ($type !== 'policies') {
+		// Filter groups by agent status
+		switch ($select_status) {
+			case NORMAL:
+				foreach ($avariableGroups as $group_name) {
+					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+
+					$num_ok = groups_agent_ok($id_group);	
+			
+					if ($num_ok <= 0)
+						unset($avariableGroups[$id_group]);
+				
+				}
+				
+				break;
+
+			case WARNING:
+			
+				foreach ($avariableGroups as $group_name) {
+					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+
+					$num_warning = groups_agent_warning($id_group);
+
+					if ($num_warning <= 0)
+						unset($avariableGroups[$id_group]);
+				}				
+				break;
+				
+			case CRITICAL:
+			
+				foreach ($avariableGroups as $group_name) {
+					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+
+					$num_critical = groups_agent_critical($id_group);
+
+					if ($num_critical <= 0)
+						unset($avariableGroups[$id_group]);
+				}				
+				break;	
+			
+			case UNKNOWN:
+
+				foreach ($avariableGroups as $group_name) {
+					$id_group = db_get_value_sql('SELECT id_grupo FROM tgrupo where nombre ="' . $group_name . '"');
+
+					$num_unknown = groups_agent_unknown($id_group);
+
+					if ($num_unknown <= 0)
+						unset($avariableGroups[$id_group]);
+				}	
+				break;	
+
+		}
+
+		// If there are not groups display error and return
+		if (empty($avariableGroups)) {
+			ui_print_error_message("There aren't agents in this agrupation");
+			echo '</td></tr>';
+			echo '</table>';		
+			return;
+		}	
+	}		
+	
+	if ($search_free != '') {
+		$sql_search = " AND id_grupo IN (SELECT id_grupo FROM tagente
+						WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
+	} else {
+		$sql_search ='';
+	}	
+	
+	
 	switch ($type) {
 		default:
 		case 'os':
-			if ($search_free != '') {
-				$sql = "SELECT * FROM tconfig_os 
-						WHERE id_os IN (SELECT id_os FROM tagente 
-									WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
-				$list = db_get_all_rows_sql($sql);
-			} else {
-				$list = db_get_all_rows_sql("SELECT DISTINCT (tagente.id_os), tconfig_os.name FROM tagente, tconfig_os WHERE tagente.id_os = tconfig_os.id_os");
-			}
+		
+			//Skip agent with all modules in not init status
+			
+			$sql_search .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
+										tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
+		
+			$sql = agents_get_agents(array (
+			'order' => 'nombre COLLATE utf8_general_ci ASC',
+			'disabled' => 0,
+			'status' => $select_status,
+			'search' => $sql_search),
+
+			array ('tagente.id_os'),
+			'AR',
+			false,
+			true);	
+
+			$sql_os = sprintf("SELECT * FROM tconfig_os WHERE id_os IN (%s)", $sql);
+
+			$list = db_get_all_rows_sql($sql_os);
+			
 			break;
+
 		case 'group':
 			$stringAvariableGroups = (
 					implode(', ',
@@ -771,12 +961,7 @@ function printTree_($type) {
 							)
 						)
 				);
-				if ($search_free != '') {
-					$sql_search = " AND id_grupo IN (SELECT id_grupo FROM tagente
-									WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
-				} else {
-					$sql_search ='';
-				}
+
 			switch ($config["dbtype"]) {
 				case "mysql":
 				case "postgresql":
@@ -787,55 +972,205 @@ function printTree_($type) {
 					break;				
 			}
 			break;
+
 		case 'module_group':
-			if ($search_free != '') {
-				$sql = "SELECT * FROM tmodule_group
-						WHERE id_mg IN (SELECT id_module_group FROM tagente_modulo 
-										WHERE id_agente IN (SELECT id_agente FROM tagente
-														WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%'))";
-				$list = db_get_all_rows_sql($sql);
-			} else {
-				$list = db_get_all_rows_sql("SELECT distinct id_mg, name FROM tmodule_group, tagente_modulo WHERE tmodule_group.id_mg = tagente_modulo.id_module_group");
-				if ($list !== false)
-					array_push($list, array('id_mg' => 0, 'name' => 'Not assigned'));
+		
+			//Skip agents which only have not init modules
+
+			$sql_search .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
+							tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";	
+		
+			$sql = agents_get_agents(array (
+			'order' => 'nombre COLLATE utf8_general_ci ASC',
+			'disabled' => 0,
+			'status' => $select_status,
+			'search' => $sql_search),
+
+			array ('id_agente'),
+			'AR',
+			false,
+			true);	
+		
+			// Skip agents without modules
+			$sql .= ' AND id_agente IN
+							(SELECT tagente.id_agente
+							FROM tagente, tagente_modulo 
+							WHERE tagente.id_agente = tagente_modulo.id_agente
+							AND tagente.disabled = 0 
+							AND tagente_modulo.disabled = 0
+							group by tagente.id_agente
+							having COUNT(*) > 0)';
+
+			$sql_module_groups = sprintf("SELECT * FROM tmodule_group
+					WHERE id_mg IN (SELECT id_module_group FROM tagente_modulo WHERE id_agente IN (%s))", $sql);			
+		
+
+			$list = db_get_all_rows_sql($sql_module_groups);
+			
+			if ($list == false) {
+				$list = array();
 			}
+				
+				array_push($list, array('id_mg' => 0, 'name' => 'Not assigned'));		
+
 			break;
+
 		case 'policies':
+			$avariableGroups = users_get_groups ();
+			
 			$groups_id = array_keys($avariableGroups);
 			$groups = implode(',',$groups_id);
 			
 			if ($search_free != '') {
 
-				$sql = "SELECT * FROM tpolicies
-						WHERE id_group IN ($groups) 
-						AND id IN (SELECT id_policy FROM tpolicy_agents
-								WHERE id_agent IN (SELECT id_agente FROM tagente
-											WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%'))";
+				$sql = "SELECT DISTINCT tpolicies.id, tpolicies.name FROM tpolicies, tpolicy_modules, tagente_estado, tagente, tagente_modulo WHERE 
+				tagente.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND 
+				tagente_estado.utimestamp != 0 AND tagente_modulo.id_policy_module != 0 AND tpolicy_modules.id = tagente_modulo.id_policy_module AND tpolicies.id = tpolicy_modules.id_policy AND
+				tagente.id_grupo IN  ($groups) AND tagente.nombre LIKE '%$search_free%' AND tagente.disabled = 0 AND tagente_modulo.disabled = 0";
+				
 				$list = db_get_all_rows_sql($sql);
+
+				if ($list === false)
+					$list = array();
+
+				$element = 0;
+				switch ($select_status) {
+					case NORMAL:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_ok = policies_agents_ok($policy_element['id']);
+							
+							if ($policy_agents_ok <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}
+						break;
+					case CRITICAL:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_critical = policies_agents_critical($policy_element['id']);
+							
+							if ($policy_agents_critical <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;
+					case WARNING:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_warning = policies_agents_warning($policy_element['id']);
+							
+							if ($policy_agents_warning <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;
+					case UNKNOWN:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_unknown = policies_agents_unknown($policy_element['id']);
+							
+							if ($policy_agents_unknown <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;												
+				}
+				
+				if ($list === false)
+					$list = array();
+								
+				array_push($list, array('id' => 0, 'name' => 'No policy'));				
 			} else {
 				
 				$list = db_get_all_rows_sql("SELECT DISTINCT tpolicies.id, tpolicies.name FROM tpolicies, tpolicy_modules, tagente_estado, tagente, tagente_modulo WHERE 
 				tagente.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND 
 				tagente_estado.utimestamp != 0 AND tagente_modulo.id_policy_module != 0 AND tpolicy_modules.id = tagente_modulo.id_policy_module AND tpolicies.id = tpolicy_modules.id_policy AND
-				tpolicies.id_group IN  ($groups)");
+				tagente.id_grupo IN ($groups) AND tagente.disabled = 0 AND tagente_modulo.disabled = 0");
 				
-				if ($list !== false)
-					array_push($list, array('id' => 0, 'name' => 'No policy'));
+				$element = 0;
+				switch ($select_status) {
+					case NORMAL:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_ok = policies_agents_ok($policy_element['id']);
+							
+							if ($policy_agents_ok <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}
+						break;
+					case CRITICAL:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_critical = policies_agents_critical($policy_element['id']);
+							
+							if ($policy_agents_critical <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;
+					case WARNING:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_warning = policies_agents_warning($policy_element['id']);
+							
+							if ($policy_agents_warning <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;
+					case UNKNOWN:
+						foreach ($list as $policy_element) {
+							
+							$policy_agents_unknown = policies_agents_unknown($policy_element['id']);
+							
+							if ($policy_agents_unknown <= 0)
+								unset($list[$element]);
+	
+							$element++;
+						}					
+						break;												
+				}
+					
+				if ($list === false)
+					$list = array();
+
+				array_push($list, array('id' => 0, 'name' => 'No policy'));
 			}
 			break;
+
 		case 'module':
+
+			$avariableGroupsIds = implode(',',array_keys($avariableGroups));
+			if($avariableGroupsIds == ''){
+				$avariableGroupsIds == -1;
+			}		
+		
 			if ($search_free != '') {
 					$sql_search = " AND t1.id_agente IN (SELECT id_agente FROM tagente
 									WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
-				} else {
-					$sql_search ='';
-				}
+			} else {
+					$sql_search = '';
+			}
+			
+			if ($select_status != -1)
+				$sql_search .= " AND estado = " . $select_status . " ";
+
 			switch ($config["dbtype"]) {
 				case "mysql":
 				case "postgresql":
 					$list = db_get_all_rows_sql('SELECT t1.nombre
 						FROM tagente_modulo t1, tagente t2, tagente_estado t3
 						WHERE t1.id_agente = t2.id_agente AND t1.id_agente_modulo = t3.id_agente_modulo
+						AND t2.disabled = 0 AND t1.disabled = 0
 						AND t3.utimestamp !=0 AND t2.id_grupo in (' . $avariableGroupsIds . ')' .$sql_search.'
 						GROUP BY t1.nombre ORDER BY t1.nombre');
 					break;
@@ -843,21 +1178,25 @@ function printTree_($type) {
 					$list = db_get_all_rows_sql('SELECT dbms_lob.substr(t1.nombre,4000,1) as nombre
 						FROM tagente_modulo t1, tagente t2, tagente_estado t3
 						WHERE t1.id_agente = t2.id_agente AND t2.id_grupo in (' . $avariableGroupsIds . ') AND t1.id_agente_modulo = t3.id_agente_modulo
-						AND t3.utimestamp !=0 GROUP BY dbms_lob.substr(t1.nombre,4000,1) ORDER BY dbms_lob.substr(t1.nombre,4000,1) ASC');
+						AND t2.disabled = 0 AND t1.disabled = 0 AND t3.utimestamp !=0 GROUP BY dbms_lob.substr(t1.nombre,4000,1) ORDER BY dbms_lob.substr(t1.nombre,4000,1) ASC');
 					break;
 			}		
+
 			break;
+
 	}
 	
 	if ($list === false) {
 		ui_print_error_message("There aren't agents in this agrupation");
-
+		echo '</td></tr>';
+		echo '</table>';
 	}
 	else {
 		echo "<ul style='margin: 0; margin-top: 20px; padding: 0;'>\n";
 
 		$first = true;
 		foreach ($list as $item) {
+			
 			$iconImg = '';
 			switch ($type) {
 				default:
@@ -1001,13 +1340,12 @@ switch ($activeTab) {
 		$order =  __('OS');
 		break;
 }
-	
-ui_print_page_header (__('Tree view')." - ".__('Sort the agents by ').$order, "images/extensions.png", false, "", false, $onheader);
+ui_print_page_header (__('Tree view')." - ".__('Sort the agents by ') .$order, "images/extensions.png", false, "", false, $onheader);
 
 
 echo "<br>";
-echo '<form id="tree_search" method="post" action="index.php??extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'">';
-echo "<b>" . __('Monitor status') . "</b>";
+echo '<form id="tree_search" method="post" action="index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'">';
+echo "<b>" . __('Agent status') . "</b>";
 
 $search_free = get_parameter('search_free', '');
 $select_status = get_parameter('status', -1);
@@ -1022,7 +1360,7 @@ $fields[UNKNOWN] = __('Unknown');
 html_print_select ($fields, "status", $select_status);
 
 echo "&nbsp;&nbsp;&nbsp;";
-echo "<b>" . __('Search agent') .  ui_print_help_tip (__('Case sensitive'))."</b>";
+echo "<b>" . __('Search agent') . "</b>";
 echo "&nbsp;";
 html_print_input_text ("search_free", $search_free, '', 40,30, false);
 echo "&nbsp;&nbsp;&nbsp;";

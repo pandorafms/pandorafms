@@ -26,33 +26,111 @@ function os_agents_critical ($id_os) {
 // Get ok agents by using the status code in modules.
 
 function os_agents_ok($id_os) {
+		
+	// Agent of OS X and critical status
+	$agents_critical = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 1 
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_os = $id_os 
+						group by tagente.id_agente";		
+
+	// Agent of OS X and warning status	
+	$agents_warning = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 2 
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_os = $id_os 
+						group by tagente.id_agente";
+
+	// Agent of OS X and unknown status		
+	$agents_unknown = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 3
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_os = $id_os 
+						group by tagente.id_agente";
+						
+	// Agent of OS X and ok status		
+	$agents_ok = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 0
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_os = $id_os
+						group by tagente.id_agente";
 	
-	//!!!Query explanation!!!
-	//An agent is OK if all its modules are OK
-	//The status values are: 0 OK; 1 Critical; 2 Warning; 3 Unkown
-	//This query grouped all modules by agents and select the MAX value for status which has the value 0 
-	//If MAX(estado) is 0 it means all modules has status 0 => OK
-	//Then we count the agents of the group selected to know how many agents are in OK status
-	
-	//TODO REVIEW ORACLE AND POSTGRES
-	
-	return db_get_sql ("SELECT COUNT(max_estado) FROM (SELECT MAX(tagente_estado.estado) as max_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_os = $id_os GROUP BY tagente.id_agente HAVING max_estado = 0) AS S1");
+	// Agents without modules has a normal status					
+	$void_agents = "SELECT id_agente FROM tagente 
+						WHERE disabled = 0
+						AND id_os = $id_os
+						AND id_agente NOT IN (SELECT id_agente FROM tagente_estado)";		
+						
+	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
+						FROM tagente, tagente_modulo, tagente_estado 
+						WHERE tagente.id_agente = tagente_modulo.id_agente
+						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+
+						AND tagente.id_os = $id_os 
+						AND tagente.id_agente NOT IN ($agents_critical)
+						AND tagente.id_agente NOT IN ($agents_warning)
+						AND tagente.id_agente NOT IN ($agents_unknown)
+						AND tagente.id_agente IN ($agents_ok)
+						UNION $void_agents) AS t");	
+
 }
 
 // Get warning agents by using the status code in modules.
 
 function os_agents_warning ($id_os) {
 	
-	//!!!Query explanation!!!
-	//An agent is Warning when has at least one module in warning status and nothing more in critical status
-	//The status values are: 0 OK; 1 Critical; 2 Warning; 3 Unkown
-	//This query grouped all modules by agents and select the MIN value for status which has the value 0 
-	//If MIN(estado) is 2 it means at least one module is warning and there is no critical modules
-	//Then we count the agents of the group selected to know how many agents are in warning status
+	// Agent of OS X and critical status
+	$agents_critical = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 1 
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_os = $id_os 
+						group by tagente.id_agente";
+
+	// Agent of OS X and warning status	
+	$agents_warning = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 2 
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_os = $id_os 
+						group by tagente.id_agente";
 	
-	//TODO REVIEW ORACLE AND POSTGRES
-	
-	return db_get_sql ("SELECT COUNT(min_estado) FROM (SELECT MIN(tagente_estado.estado) as min_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_os = $id_os GROUP BY tagente.id_agente HAVING min_estado = 2) AS S1");
+	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
+						FROM tagente, tagente_modulo, tagente_estado 
+						WHERE tagente.id_agente = tagente_modulo.id_agente
+						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+
+						AND tagente.id_os = $id_os
+						AND tagente.id_agente NOT IN ($agents_critical)
+						AND tagente.id_agente IN ($agents_warning) ) AS t");	
 	
 }
 
@@ -60,9 +138,51 @@ function os_agents_warning ($id_os) {
 
 function os_agents_unknown ($id_os) {
 	
-	//TODO REVIEW ORACLE AND POSTGRES
-		
-	return db_get_sql ("SELECT COUNT(min_estado) FROM (SELECT MIN(tagente_estado.estado) as min_estado FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado != 0 AND tagente.id_os = $id_os GROUP BY tagente.id_agente HAVING min_estado = 3) AS S1");
+	// Agent of module group X and critical status
+	$agents_critical = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 1 
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_os = $id_os 
+						group by tagente.id_agente";		
+
+	// Agent of module group X and warning status	
+	$agents_warning = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 2 
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_os = $id_os 
+						group by tagente.id_agente";
+
+	// Agent of module group X and unknown status		
+	$agents_unknown = "SELECT tagente.id_agente 
+						FROM tagente_estado, tagente, tagente_modulo
+						WHERE tagente_estado.id_agente = tagente.id_agente
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND estado = 3
+						AND tagente_estado.utimestamp != 0
+						AND tagente.id_os = $id_os 
+						group by tagente.id_agente";	
+
+	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
+						FROM tagente, tagente_modulo, tagente_estado 
+						WHERE tagente.id_agente = tagente_modulo.id_agente
+						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+
+						AND tagente.id_os = $id_os 
+						AND tagente.id_agente NOT IN ($agents_critical)
+						AND tagente.id_agente NOT IN ($agents_warning)
+						AND tagente.id_agente IN ($agents_unknown) ) AS t");
 	
 }
 

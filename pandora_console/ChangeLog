@@ -1,3 +1,11 @@
+2012-07-17 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_modules.php
+	include/functions_agents.php
+	include/functions_os.php
+	include/functions_groups.php
+	operation/tree.php: Backport tree view fixes from trunk.
+
 2012-07-05  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_modules.js

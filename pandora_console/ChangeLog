@@ -1,5 +1,10 @@
 2012-07-17 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* operation/agentes/group_view.php: Backport of aesthetic bugfix
+	of group view indentation.
+
+2012-07-17 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* include/functions_modules.php
 	include/functions_agents.php
 	include/functions_os.php

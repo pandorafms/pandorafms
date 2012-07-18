@@ -1,3 +1,21 @@
+2012-07-18 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/javascript/pandora.js, include/functions_agents.php,
+	include/functions_db.php, include/functions_html.php,
+	include/db/postgresql.php, include/db/mysql.php,
+	include/db/oracle.php: cleaned source code style and killed some
+	unicorns and magical numbers.
+	
+	* operation/agentes/stat_win.php: a lot fixes, cleaned source code
+	style, added magical widget for times for refresh. And yes I fixed
+	the bug with jquery that failed with new graphs.
+	
+	Fixes: #3520966
+	
+	* operation/agentes/estado_ultimopaquete.php: fixed the links to
+	window graph popup, now all the links have 10 minutes for the
+	refresh.
+
 2012-07-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/jquery.scrollTo.js: Added jquery 

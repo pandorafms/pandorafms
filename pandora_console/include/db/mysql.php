@@ -27,7 +27,7 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 		$pass = $config["dbpass"];
 	if ($port === null)
 		$port = $config["dbport"];
-
+	
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to mysql_pconnect(). 
 	$connect_id = mysql_connect($host . ":" . $port, $user, $pass);
@@ -43,16 +43,16 @@ function mysql_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = t
 	global $config;
 	
 	$history = array ();
-
+	
 	if ($dbconnection === false) {
 		$dbconnection = $config['dbconnection'];
 	}
-
+	
 	// To disable globally SQL cache depending on global variable.
 	// Used in several critical places like Metaconsole trans-server queries
 	if (isset($config["dbcache"]))
 		$cache = $config["dbcache"];
-
+	
 	// Read from the history DB if necessary
 	if ($search_history_db && $config['history_db_enabled'] == 1) {
 		$cache = false;
@@ -74,14 +74,14 @@ function mysql_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = t
 	if ($return === false) {
 		$return = array ();
 	}
-
+	
 	// Append result to the history DB data
 	if (! empty ($return)) {
 		foreach ($return as $row) {
 			array_push ($history, $row);
 		}
 	}
-
+	
 	if (! empty ($history))
 		return $history;
 	//Return false, check with === or !==
@@ -450,13 +450,13 @@ function mysql_db_get_value_filter ($field, $table, $filter, $where_join = 'AND'
  * clause of an SQL sentence.
  */
 function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix = false) {
-
+	
 	$fields = array ();
-
+	
 	if (! is_array ($values)) {
 		return '';
 	}
-
+	
 	$query = '';
 	$limit = '';
 	$offset = '';
@@ -466,12 +466,12 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 		$limit = sprintf (' LIMIT %d', $values['limit']);
 		unset ($values['limit']);
 	}
-
+	
 	if (isset ($values['offset'])) {
 		$offset = sprintf (' OFFSET %d', $values['offset']);
 		unset ($values['offset']);
 	}
-
+	
 	if (isset ($values['order'])) {
 		if (is_array($values['order'])) {
 			if (!isset($values['order']['order'])) {
@@ -490,12 +490,12 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 		}
 		unset ($values['order']);
 	}
-
+	
 	if (isset ($values['group'])) {
 		$group = sprintf (' GROUP BY %s', $values['group']);
 		unset ($values['group']);
 	}
-
+	
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
@@ -509,13 +509,13 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 			$i++;
 			continue;
 		}
-
+		
 		if ($field[0] != "`") {
 			//If the field is as <table>.<field>, don't scape.
 			if (strstr($field, '.') === false)
 				$field = "`".$field."`";
 		}
-
+		
 		if (is_null ($value)) {
 			$query .= sprintf ("%s IS NULL", $field);
 		}
@@ -529,12 +529,12 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 			$query .= sprintf ('%s IN ("%s")', $field, implode ('", "', $value));
 		}
 		else {
-			if ($value[0] == ">"){
+			if ($value[0] == ">") {
 				$value = substr($value,1,strlen($value)-1);
 				$query .= sprintf ("%s > '%s'", $field, $value);
 			}
-			else if ($value[0] == "<"){
-				if ($value[1] == ">"){
+			else if ($value[0] == "<") {
+				if ($value[1] == ">") {
 					$value = substr($value,2,strlen($value)-2);
 					$query .= sprintf ("%s <> '%s'", $field, $value);
 				}
@@ -550,13 +550,13 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 				$query .= sprintf ("%s = '%s'", $field, $value);
 			}
 		}
-
+		
 		if ($i < $max) {
 			$query .= ' '.$join.' ';
 		}
 		$i++;
 	}
-
+	
 	return (! empty ($query) ? $prefix: '').$query.$group.$order.$limit.$offset;
 }
 
@@ -571,10 +571,10 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 function mysql_db_get_value_sql($sql, $dbconnection = false) {	
 	$sql .= " LIMIT 1";
 	$result = mysql_db_get_all_rows_sql ($sql, false, true, $dbconnection);
-
+	
 	if($result === false)
 		return false;
-
+	
 	foreach ($result[0] as $f)
 		return $f;
 }
@@ -589,10 +589,10 @@ function mysql_db_get_value_sql($sql, $dbconnection = false) {
 function mysql_db_get_row_sql ($sql, $search_history_db = false) {
 	$sql .= " LIMIT 1";
 	$result = db_get_all_rows_sql ($sql, $search_history_db);
-
+	
 	if($result === false)
 		return false;
-
+	
 	return $result[0];
 }
 
@@ -626,11 +626,11 @@ function mysql_db_get_row_filter ($table, $filter, $fields = false, $where_join 
 	}
 	else {
 		if (is_array ($fields))
-		$fields = implode (',', $fields);
+			$fields = implode (',', $fields);
 		else if (! is_string ($fields))
-		return false;
+			return false;
 	}
-
+	
 	if (is_array ($filter))
 		$filter = db_format_array_where_clause_sql ($filter, $where_join, ' WHERE ');
 	else if (is_string ($filter))
@@ -639,7 +639,7 @@ function mysql_db_get_row_filter ($table, $filter, $fields = false, $where_join 
 		$filter = '';
 	
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
-
+	
 	return db_get_row_sql ($sql);
 }
 
@@ -689,8 +689,9 @@ function mysql_db_get_all_rows_filter ($table, $filter = array(), $fields = fals
 	else {
 		$filter = '';
 	}
-
-	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
+	
+	$sql = sprintf ('SELECT %s
+		FROM %s %s', $fields, $table, $filter);
 	
 	if ($returnSQL)
 		return $sql;
@@ -706,7 +707,7 @@ function mysql_db_get_all_rows_filter ($table, $filter = array(), $fields = fals
  */
 function mysql_db_get_num_rows ($sql) {
 	$result = mysql_query($sql);
-
+	
 	return mysql_num_rows($result);
 }
 
@@ -730,10 +731,10 @@ function mysql_db_get_all_rows_field_filter ($table, $field, $condition, $order_
 	else {
 		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%s'", $table, $field, $condition);
 	}
-
+	
 	if ($order_field != "")
 		$sql .= sprintf (" ORDER BY %s", $order_field);
-
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -751,10 +752,10 @@ function mysql_db_get_all_fields_in_table ($table, $field = '', $condition = '',
 	if ($condition != '') {
 		$sql .= sprintf (" WHERE `%s` = '%s'", $field, $condition);
 	}
-
+	
 	if ($order_field != "")
 		$sql .= sprintf (" ORDER BY %s", $order_field);
-
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -783,7 +784,7 @@ function mysql_db_get_all_fields_in_table ($table, $field = '', $condition = '',
  */
 function mysql_db_format_array_to_update_sql ($values) {
 	$fields = array ();
-
+	
 	foreach ($values as $field => $value) {
 		if (is_numeric ($field)) {
 			array_push ($fields, $value);
@@ -792,7 +793,7 @@ function mysql_db_format_array_to_update_sql ($values) {
 		else if ($field[0] == "`") {
 			$field = str_replace('`', '', $field);
 		}
-
+		
 		if ($value === NULL) {
 			$sql = sprintf ("`%s` = NULL", $field);
 		}
@@ -812,7 +813,7 @@ function mysql_db_format_array_to_update_sql ($values) {
 		}
 		array_push ($fields, $sql);
 	}
-
+	
 	return implode (", ", $fields);
 }
 
@@ -842,9 +843,9 @@ function mysql_db_format_array_to_update_sql ($values) {
  */
 function mysql_db_process_sql_update($table, $values, $where = false, $where_join = 'AND') {
 	$query = sprintf ("UPDATE `%s` SET %s",
-	$table,
-	db_format_array_to_update_sql ($values));
-
+		$table,
+		db_format_array_to_update_sql ($values));
+	
 	if ($where) {
 		if (is_string ($where)) {
 			// No clean, the caller should make sure all input is clean, this is a raw function
@@ -890,9 +891,9 @@ function mysql_db_process_sql_delete($table, $where, $where_join = 'AND') {
 	if (empty ($where))
 		/* Should avoid any mistake that lead to deleting all data */
 		return false;
-
+	
 	$query = sprintf ("DELETE FROM `%s` WHERE ", $table);
-
+	
 	if ($where) {
 		if (is_string ($where)) {
 			/* FIXME: Should we clean the string for sanity?
@@ -920,7 +921,7 @@ function mysql_db_process_sql_delete($table, $where, $where_join = 'AND') {
 function mysql_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) {
 	if ($new == true)
 		$result = mysql_query($sql);
-
+	
 	return mysql_fetch_assoc($result);
 }
 
@@ -1019,16 +1020,16 @@ function mysql_db_get_type_field_table($table, $field) {
  */
 function mysql_db_get_table_count($sql, $search_history_db = false) {
 	global $config;
-
+	
 	$history_count = 0;
 	$count = mysql_db_get_value_sql ($sql);
 	if ($count === false) {
 		$count = 0;
 	}
-
+	
 	// Search the history DB for matches
 	if ($search_history_db && $config['history_db_enabled'] == 1) {
-
+		
 		// Connect to the history DB
 		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
 			$config['history_db_connection'] = mysql_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
@@ -1040,10 +1041,9 @@ function mysql_db_get_table_count($sql, $search_history_db = false) {
 			}
 		}
 	}
-
+	
 	$count += $history_count;
-
+	
 	return $count;
 }
-
 ?>

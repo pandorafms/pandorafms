@@ -532,13 +532,13 @@ function oracle_db_get_value_filter ($field, $table, $filter, $where_join = 'AND
  * clause of an SQL sentence.
  */
 function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix = false) {
-
+	
 	$fields = array ();
-
+	
 	if (! is_array ($values)) {
 		return '';
 	}
-
+	
 	$query = '';
 	$limit = '';
 	$order = '';
@@ -546,12 +546,12 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 	if (isset($values['offset'])) {
 		return '';
 	}
-
+	
 	if (isset ($values['limit'])) {
 		$limit = sprintf (' AND rownum <= %d', $values['limit']);
 		unset ($values['limit']);
 	}
-
+	
 	if (isset ($values['order'])) {
 		if (is_array($values['order'])) {
 			if (!isset($values['order']['order'])) {
@@ -570,31 +570,30 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 		}
 		unset ($values['order']);
 	}
-
+	
 	if (isset ($values['group'])) {
 		$group = sprintf (' GROUP BY %s', $values['group']);
 		unset ($values['group']);
 	}
-
+	
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) { 
 		if ($i == 1) {
 			$query .= ' ( ';
-		}	
+		}
 		if ($field == '1' AND $value == '1'){
 			$query .= sprintf("'%s' = '%s'", $field, $value);
-
+			
 			if ($i < $max) {
-                                $query .= ' '.$join.' ';
-                        }
-                        if ($i == $max) {
-                                $query .= ' ) ';
-                        }                       
-                        $i++; 
-                        continue;
-
-		}	
+				$query .= ' '.$join.' ';
+			}
+			if ($i == $max) {
+				$query .= ' ) ';
+			}                       
+			$i++; 
+			continue;
+		}
 		else if (is_numeric ($field)) {
 			/* User provide the exact operation to do */
 			$query .= $value;
@@ -604,11 +603,11 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 			}
 			if ($i == $max) {
 				$query .= ' ) ';
-			}			
+			}
 			$i++;
 			continue;
 		}
-
+		
 		if (is_null ($value)) {
 			$query .= sprintf ("%s IS NULL", $field);
 		}
@@ -643,7 +642,7 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 				$query .= sprintf ("%s = '%s'", $field, $value);
 			}
 		}
-
+		
 		if ($i < $max) {
 			$query .= ' '.$join.' ';
 		}

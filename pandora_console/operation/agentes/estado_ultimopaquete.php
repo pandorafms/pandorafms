@@ -462,18 +462,18 @@ foreach ($modules as $module) {
 		$graph_label = io_safe_output($module["nombre"]);
 		
 		echo "<a href='javascript:" . 
-			"winopeng(\"operation/agentes/stat_win.php?type=$graph_type&period=" . (28 * SECONDS_1DAY) . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=180000\", \"month_".$win_handle."\")'>" . html_print_image('images/grafica_m.png' , true, array("border" => '0', "alt" => '')) . "</a>&nbsp;";
+			"winopeng(\"operation/agentes/stat_win.php?type=$graph_type&period=" . SECONDS_1MONTH . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=" . SECONDS_10MINUTES . "\", \"month_".$win_handle."\")'>" . html_print_image('images/grafica_m.png' , true, array("border" => '0', "alt" => '')) . "</a>&nbsp;";
 		
 		$link ="winopeng(" .
-			"'operation/agentes/stat_win.php?type=$graph_type&period=" . SECONDS_1WEEK . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=6000','week_".$win_handle."')";
+			"'operation/agentes/stat_win.php?type=$graph_type&period=" . SECONDS_1WEEK . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=" . SECONDS_10MINUTES . "','week_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'">' . html_print_image("images/grafica_w.png", true, array("border" => '0', "alt" => '')) . '</a>&nbsp;';
 		
 		$link ="winopeng(" .
-			"'operation/agentes/stat_win.php?type=$graph_type&period=" . SECONDS_1DAY . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=600','day_".$win_handle."')";
+			"'operation/agentes/stat_win.php?type=$graph_type&period=" . SECONDS_1DAY . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=" . SECONDS_10MINUTES . "','day_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'">' . html_print_image("images/grafica_d.png", true, array("border" => '0', "alt" => '')) . '</a>&nbsp;';
 		
 		$link ="winopeng(" .
-			"'operation/agentes/stat_win.php?type=$graph_type&period=" . SECONDS_1HOUR . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=60','hour_".$win_handle."')";
+			"'operation/agentes/stat_win.php?type=$graph_type&period=" . SECONDS_1HOUR . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($graph_label)."&refresh=" . SECONDS_10MINUTES . "','hour_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'">' . html_print_image("images/grafica_h.png", true, array("border" => '0', "alt" => "")) . '</a>';
 	}
 	

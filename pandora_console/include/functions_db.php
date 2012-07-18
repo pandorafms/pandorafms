@@ -461,7 +461,7 @@ function db_get_all_rows_sql($sql, $search_history_db = false, $cache = true) {
  */
 function db_get_all_rows_filter($table, $filter = array(), $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_all_rows_filter($table, $filter, $fields, $where_join, $search_history_db, $returnSQL);
@@ -487,7 +487,7 @@ function db_get_all_rows_filter($table, $filter = array(), $fields = false, $whe
  */
 function db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_all_row_by_steps_sql($new, $result, $sql);
@@ -509,7 +509,7 @@ function db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) {
  */
 function db_get_num_rows($sql) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_num_rows($sql);
@@ -533,16 +533,16 @@ function db_get_num_rows($sql) {
  */
 function db_sql_error_handler ($errno, $errstr) {
 	global $config;
-
+	
 	/* If debug is activated, this will also show the backtrace */
 	if (ui_debug ($errstr))
 		return false;
-
+	
 	if (error_reporting () <= $errno)
 		return false;
-
+	
 	echo "<strong>SQL error</strong>: ".$errstr."<br />\n";
-
+	
 	return true;
 }
 
@@ -810,7 +810,7 @@ function db_format_array_to_update_sql($values) {
  */
 function db_format_array_where_clause_sql ($values, $join = 'AND', $prefix = false) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_format_array_where_clause_sql($values, $join, $prefix);
@@ -836,22 +836,23 @@ function db_format_array_where_clause_sql ($values, $join = 'AND', $prefix = fal
 function db_process_delete_temp ($table, $row, $value) {
 	global $error; //Globalize the errors variable
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
 			$result = db_process_sql_delete ($table, $row.' = '.$value);
 			break;
 		case "oracle":
-			if (is_int ($value) || is_bool ($value) || is_float ($value) || is_double ($value)) {
+			if (is_int ($value) || is_bool ($value) ||
+				is_float ($value) || is_double ($value)) {
 				$result = oracle_db_process_sql_delete_temp ($table, $row . ' = ' . $value);
-			}	
+			}
 			else {
 				$result = oracle_db_process_sql_delete_temp ($table, $row . " = '" . $value . "'");
 			}
-			break;			
+			break;
 	}
-
+	
 	if ($result === false) {
 		$error = true;
 	}
@@ -872,7 +873,7 @@ function db_process_delete_temp ($table, $row, $value) {
  */
 function db_process_sql_insert($table, $values, $autocommit = true) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_process_sql_insert($table, $values);
@@ -913,7 +914,7 @@ function db_process_sql_insert($table, $values, $autocommit = true) {
  */
 function db_process_sql_update($table, $values, $where = false, $where_join = 'AND', $autocommit = true) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_process_sql_update($table, $values, $where, $where_join);
@@ -957,7 +958,7 @@ function db_process_sql_update($table, $values, $where = false, $where_join = 'A
  */
 function db_process_sql_delete($table, $where, $where_join = 'AND') {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_process_sql_delete($table, $where, $where_join);
@@ -976,7 +977,7 @@ function db_process_sql_delete($table, $where, $where_join = 'AND') {
  */
 function db_process_sql_begin() {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_process_sql_begin();
@@ -995,7 +996,7 @@ function db_process_sql_begin() {
  */
 function db_process_sql_commit() {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_process_sql_commit();
@@ -1014,7 +1015,7 @@ function db_process_sql_commit() {
  */
 function db_process_sql_rollback() {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_process_sql_rollback();
@@ -1035,12 +1036,12 @@ function db_process_sql_rollback() {
  */
 function db_print_database_debug () {
 	global $config;
-
+	
 	if (! isset ($config['debug']))
-	return '';
-
+		return '';
+	
 	echo '<div class="database_debug_title">'.__('Database debug').'</div>';
-
+	
 	$table->id = 'database_debug';
 	$table->cellpadding = '0';
 	$table->width = '95%';
@@ -1060,28 +1061,28 @@ function db_print_database_debug () {
 	$table->head[3] = __('Rows');
 	$table->head[4] = __('Saved');
 	$table->head[5] = __('Time (ms)');
-
+	
 	if (! isset ($config['db_debug']))
-	$config['db_debug'] = array ();
+		$config['db_debug'] = array ();
 	$i = 1;
 	foreach ($config['db_debug'] as $debug) {
 		$data = array ();
-
+		
 		$data[0] = $i++;
 		$data[1] = $debug['sql'];
 		$data[2] = (empty ($debug['result']) ? __('OK') : $debug['result']);
 		$data[3] = $debug['affected'];
 		$data[4] = $debug['saved'];
 		$data[5] = (isset ($debug['extra']['time']) ? format_numeric ($debug['extra']['time'] * 1000, 0) : '');
-
+		
 		array_push ($table->data, $data);
-
+		
 		if (($i % 100) == 0) {
 			html_print_table ($table);
 			$table->data = array ();
 		}
 	}
-
+	
 	html_print_table ($table);
 }
 
@@ -1092,7 +1093,7 @@ function db_print_database_debug () {
  */
 function db_get_last_error() {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_last_error();
@@ -1116,7 +1117,7 @@ function db_get_last_error() {
  */
 function db_get_type_field_table($table, $field) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_type_field_table($table, $field);
@@ -1139,7 +1140,7 @@ function db_get_type_field_table($table, $field) {
  */
 function db_get_table_count($table, $search_history_db = false) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			return mysql_db_get_table_count($table, $search_history_db);
@@ -1152,6 +1153,4 @@ function db_get_table_count($table, $search_history_db = false) {
 			break;
 	}
 }
-
-
 ?>

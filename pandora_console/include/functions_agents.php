@@ -1658,28 +1658,27 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		}
 		
 		if (! $status)
-			return -1;
+			return AGENT_MODULE_STATUS_UNKNOW;
 	}
 	
-	// Status is 0 for normal, 1 for critical, 2 for warning and 3 for unknown. 4 for alert fired
-	// Checking if any module has alert fired (4)
-	if (is_int(array_search(4,$modules_status))) {
-		return 4;
+	// Checking if any module has alert fired
+	if (is_int(array_search(AGENT_MODULE_STATUS_CRITICAL_ALERT, $modules_status))) {
+		return AGENT_MODULE_STATUS_CRITICAL_ALERT;
 	}
-	// Checking if any module has critical status (1)
-	elseif (is_int(array_search(1,$modules_status))) {
-		return 1;
+	// Checking if any module has critical status
+	elseif (is_int(array_search(AGENT_MODULE_STATUS_CRITICAL_BAD, $modules_status))) {
+		return AGENT_MODULE_STATUS_CRITICAL_BAD;
 	}
-	// Checking if any module has warning status (2)
-	elseif (is_int(array_search(2,$modules_status))) {
-		return 2;
+	// Checking if any module has warning status
+	elseif (is_int(array_search(AGENT_MODULE_STATUS_WARNING,$modules_status))) {
+		return AGENT_MODULE_STATUS_WARNING;
 	}
-	// Checking if any module has unknown status (3)
-	elseif (is_int(array_search(3,$modules_status))) {
-		return 3;
+	// Checking if any module has unknown status
+	elseif (is_int(array_search(AGENT_MODULE_STATUS_UNKNOW, $modules_status))) {
+		return AGENT_MODULE_STATUS_UNKNOW;
 	}
 	else {
-		return 0;
+		return AGENT_MODULE_STATUS_NORMAL;
 	}
 
 }

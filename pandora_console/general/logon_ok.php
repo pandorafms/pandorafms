@@ -180,19 +180,19 @@ switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = sprintf ("SELECT id_usuario,accion,fecha,ip_origen,descripcion
 			FROM tsesion
-			WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - 604800) 
+			WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - " . SECONDS_1WEEK . ") 
 				AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 10", $config["id_user"]);
 		break;
 	case "postgresql":
 		$sql = sprintf ("SELECT \"id_usuario\", accion, fecha, \"ip_origen\", descripcion
 			FROM tsesion
-			WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - 604800) 
+			WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - " . SECONDS_1WEEK . ") 
 				AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 10", $config["id_user"]);
 		break;
 	case "oracle":
 		$sql = sprintf ("SELECT id_usuario, accion, fecha, ip_origen, descripcion
 			FROM tsesion
-			WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) - 604800) 
+			WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) - " . SECONDS_1WEEK . ") 
 				AND id_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC", $config["id_user"]);
 		break;
 }

@@ -405,6 +405,10 @@ function set_user_language() {
  */
 function human_time_description_raw ($seconds, $exactly = false, $units = 'large') {
 	
+	//Miguel: I think that I can kill this unicorns and magical numbers
+	//		because this function may call without loaded the
+	//		constants.php file.
+	
 	switch ($units) {
 		case 'large':
 			$secondsString = __('seconds');

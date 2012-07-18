@@ -479,11 +479,11 @@ foreach ($modules as $module) {
 	
 	
 	if ($module['history_data'] == 1) {
-	// RAW Table data
+		// RAW Table data
 		echo "<td class=".$tdcolor." width=70>";
-		echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data_view&amp;period=2592000&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/data_m.png', true, array("border" => '0', "alt" => '')) . "</a>&nbsp;&nbsp;";
-		echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data_view&amp;period=604800&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/data_w.png', true, array("border" => '0', "alt" => '')) . "</a>&nbsp;&nbsp;";
-		echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/data_d.png', true, array("border" => '0', "alt" => '')) . "</a>";
+		echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data_view&amp;period=" . SECONDS_1MONTH . "&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/data_m.png', true, array("border" => '0', "alt" => '')) . "</a>&nbsp;&nbsp;";
+		echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data_view&amp;period=" . SECONDS_1WEEK . "&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/data_w.png', true, array("border" => '0', "alt" => '')) . "</a>&nbsp;&nbsp;";
+		echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data_view&amp;period=" . SECONDS_1DAY ."&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/data_d.png', true, array("border" => '0', "alt" => '')) . "</a>";
 	}
 	else {
 		echo "<td class=".$tdcolor."></td>";
@@ -494,7 +494,8 @@ foreach ($modules as $module) {
 		$seconds = get_system_time () - $module["utimestamp"];
 		if ($module['id_tipo_modulo'] < 21 && $module["module_interval"] > 0 && $module["utimestamp"] > 0 && $seconds >= ($module["module_interval"] * 2)) {
 			echo '<span class="redb">';
-		} else {
+		}
+		else {
 			echo '<span>';
 		}
 	}
@@ -503,5 +504,4 @@ foreach ($modules as $module) {
 	echo "</td></tr>";
 }
 echo '</table>';
-
 ?>

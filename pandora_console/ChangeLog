@@ -1,5 +1,15 @@
 2012-07-18 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* general/logon_ok.php, godmode/db/db_event.php,
+	godmode/db/db_purge.php, include/functions_config.php,
+	include/functions_ui.php, include/functions_netflow.php,
+	include/functions.php, include/constants.php,
+	include/functions_graph.php,
+	operation/agentes/estado_ultimopaquete.php: clean source code style
+	and kill some unicorns and magical numbers.
+
+2012-07-18 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/javascript/pandora.js, include/functions_agents.php,
 	include/functions_db.php, include/functions_html.php,
 	include/db/postgresql.php, include/db/mysql.php,

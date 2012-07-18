@@ -295,7 +295,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config["sla_period"]) || empty ($config["sla_period"])) {
-		config_update_value ('sla_period', 604800);
+		config_update_value ('sla_period', SECONDS_1WEEK);
 	}
 	
 	if (!isset ($config["prominent_time"])) {

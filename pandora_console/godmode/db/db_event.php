@@ -71,12 +71,12 @@ echo '<table width="98%" cellpadding="4" cellspacing="4" class="databox">
 
 $time = get_system_time ();
 $fields = array ();
-$fields[$time - 7776000] = __('Purge event data over 90 days');
-$fields[$time - 2592000] = __('Purge event data over 30 days');
-$fields[$time - 1209600] = __('Purge event data over 14 days');
-$fields[$time - 604800] = __('Purge event data over 7 days');
-$fields[$time - 259200] = __('Purge event data over 3 days');
-$fields[$time - 86400] = __('Purge event data over 1 day');
+$fields[$time - SECONDS_3MONTHS] = __('Purge event data over 90 days');
+$fields[$time - SECONDS_1MONTH] = __('Purge event data over 30 days');
+$fields[$time - SECONDS_2WEEK] = __('Purge event data over 14 days');
+$fields[$time - SECONDS_1WEEK] = __('Purge event data over 7 days');
+$fields[$time - (SECONDS_1WEEK * 3)] = __('Purge event data over 3 days');
+$fields[$time - SECONDS_1DAY] = __('Purge event data over 1 day');
 $fields[$time] = __('Purge all event data');
 
 html_print_select ($fields, "date_purge", '', '', '', '0', false, false, false, "w255");

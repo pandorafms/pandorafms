@@ -270,7 +270,8 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 	
 	if ($return)
 		return $output;
-	echo $output;
+	else
+		echo $output;
 }
 
 /** 
@@ -342,7 +343,9 @@ function ui_print_result_message ($result, $good = '', $bad = '', $attributes = 
 	if (empty ($result)) {
 		return ui_print_error_message ($bad, $attributes, $return, $tag);
 	}
-	return ui_print_success_message ($good, $attributes, $return, $tag);
+	else {
+		return ui_print_success_message ($good, $attributes, $return, $tag);
+	}
 }
 
 /**
@@ -472,7 +475,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 	
 	if($style == '')
 		$style = 'width: 16px; height: 16px;';
-		
+	
 	$output = '';
 	if ($link) 
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
@@ -508,7 +511,7 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
 	
 	if($style == '')
 		$style = 'width: 16px; height: 16px;';
-		
+	
 	$output = '';
 	if ($link) 
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
@@ -823,7 +826,8 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false, $fontsi
 	$string2 = io_safe_output ($string);
 	if (mb_strlen($string2, "UTF-8") >  $cutoff){
 		$string3 = "...";
-	} else {
+	}
+	else {
 		$string3 = "";
 	}
 	
@@ -1298,7 +1302,8 @@ function ui_process_page_head ($string, $bitfield) {
 	$output .= $string;
 	
 	if (!empty ($config["compact_header"])) {
-		$output = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $output);
+		$output = str_replace(array("\r\n", "\r", "\n", "\t", '  ',
+			'    ', '    '), '', $output);
 	}
 	
 	return $output;
@@ -1315,7 +1320,8 @@ function ui_process_page_head ($string, $bitfield) {
 function ui_process_page_body ($string, $bitfield) {
 	global $config;
 	
-	if (isset ($config['ignore_callback']) && $config['ignore_callback'] == true) {
+	if (isset ($config['ignore_callback']) &&
+		$config['ignore_callback'] == true) {
 		return;
 	}
 	
@@ -1326,12 +1332,13 @@ function ui_process_page_body ($string, $bitfield) {
 		require_once ($config["homedir"]."/include/htmlawed.php");
 		$htmLawedconfig = array ("valid_xhtml" => 1, "tidy" => -1);
 		$output .= htmLawed ($string, $htmLawedconfig);
-	} else {
+	}
+	else {
 		$output .= $string;
 	}
-
+	
 	$output .= '</body>';
-
+	
 	return $output;
 }
 
@@ -1433,7 +1440,8 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		$output .= '<a class="pagination" href="'.$url.'&amp;'.$offset_name.'='.$inicio_bloque.'">';
 		if ($inicio_bloque == $offset) {
 			$output .= "<b>[ $i ]</b>";
-		} else {
+		}
+		else {
 			$output .= "[ $i ]";
 		}
 		$output .= '</a></span>';
@@ -1512,7 +1520,7 @@ function ui_debug ($var, $backtrace = true) {
 		unset ($traces[0]);
 		foreach ($traces as $trace) {
 			$trace_id++;
-		
+			
 			/* Many classes are used to allow better customization. 
 			Please, do not remove them */
 			echo '<li>';
@@ -1527,7 +1535,8 @@ function ui_debug ($var, $backtrace = true) {
 				echo ' - <span class="filename">';
 				echo str_replace ($config['homedir'].'/', '', $trace['file']);
 				echo ':'.$trace['line'].'</span>';
-			} else {
+			}
+			else {
 				echo ' - <span class="filename"><em>Unknown file</em></span>';
 			}
 			echo '<pre id="args-'.$trace_id.'" class="invisible">';
@@ -1550,6 +1559,7 @@ function ui_debug ($var, $backtrace = true) {
 	echo '<pre class="debug">';
 	print_r ($var);
 	echo '</pre>';
+	
 	return true;
 }
 
@@ -1576,14 +1586,14 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = 
 	if (! file_exists ($config['homedir'].'/'.$imagepath))
 		$imagepath = ENTERPRISE_DIR.'/'.$imagepath;
 	
-	if ($options){
+	if ($options) {
 		return html_print_image ($imagepath, $return,
 			array ("border" => 0,
 				"title" => $type["descripcion"]), false, $relative);
 	}
-	else{
-                return html_print_image ($imagepath, $return,
-                        false, false, $relative);
+	else {
+		return html_print_image ($imagepath, $return,
+			false, false, $relative);
 	}
 }
 
@@ -1599,15 +1609,15 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = 
  */
 function ui_print_module_warn_value ($max_warning, $min_warning, $str_warning, $max_critical, $min_critical, $str_critical) {
 	$data = "<span style='font-size: 8px' title='" . __("Warning") . ": " . __("Max") . $max_warning . "/" . __("Min") . $min_warning . " - " . __("Critical") . ": " . __("Max") . $max_critical . "/" . __("Min") . $min_critical . "'>";
-
+	
 	if ($max_warning != $min_warning) {
 		$data .= format_for_graph($max_warning) ."/". format_for_graph ($min_warning);
 	} else {
 		$data .= __("N/A");
 	} 
-
+	
 	$data .= " - ";
-
+	
 	if ($max_critical != $min_critical){
 		$data .= format_for_graph($max_critical) ."/". format_for_graph ($min_critical);
 	} else {
@@ -1672,7 +1682,7 @@ function ui_get_status_images_path () {
 function ui_print_status_image ($type, $title = "", $return = false, $options = false) {
 	list ($imagepath) = ui_get_status_images_path ();
 	
-	$imagepath .= "/".$type;
+	$imagepath .= "/" . $type;
 	
 	if($options === false) {
 		$options = array();
@@ -1749,7 +1759,7 @@ function ui_print_ui_agents_list ($options = false, $filter = false, $return = f
  */
 function ui_get_include_contents ($filename, $params = false) {
 	global $config;
-
+	
 	ob_start ();
 	
 	if (is_array ($params)) {
@@ -1760,7 +1770,7 @@ function ui_get_include_contents ($filename, $params = false) {
 	if (strncmp ($config["homedir"], $filename, strlen ($config["homedir"])) != 0) {
 		return false;
 	}
-
+	
 	$result = include ($filename);
 	if ($result === false) {
 		ob_end_clean ();

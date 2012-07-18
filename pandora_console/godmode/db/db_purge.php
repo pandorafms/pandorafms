@@ -43,25 +43,19 @@ echo '<h4>'.__('Get data from agent').'</h4>';
 
 // All data (now)
 $time["all"] = get_system_time ();
-
 // 1 day ago
-$time["1day"] = $time["all"]-86400;
-
+$time["1day"] = $time["all"] - SECONDS_1DAY;
 // 3 days ago
-$time["3day"] = $time["all"] - 259200;
-
+$time["3day"] = $time["all"] - SECONDS_1DAY * 3;
 // 1 week ago
-$time["1week"] = $time["all"] - 604800;
-
+$time["1week"] = $time["all"] - SECONDS_1WEEK;
 // 2 weeks ago
-$time["2week"] = $time["all"] - 1209600;
-
+$time["2week"] = $time["all"] - SECONDS_1WEEK * 2;
 // 1 month ago
-$time["1month"] = $time["all"] - 2592000;
-
+$time["1month"] = $time["all"] - SECONDS_1MONTH;
 // Three months ago
-$time["3month"] = $time["all"] - 7776000;
-	
+$time["3month"] = $time["all"] - SECONDS_3MONTHS;
+
 //Init data
 $data["1day"] = 0;
 $data["3day"] = 0;
@@ -102,7 +96,7 @@ if (isset($_POST["purgedb"])) {
 				$errors++;
 			else
 				$affected += $result;
-
+			
 			if ($errors == 0) {
 				$result = db_process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $row["id_agente_modulo"], 'utimestamp' => '< ' . $from_date));
 				
@@ -134,10 +128,11 @@ if (isset($_POST["purgedb"])) {
 		}
 		else {
 			db_process_sql_commit ();
-
+			
 			echo __('Total records deleted: ') . $affected;
 		}
-	} else {
+	}
+	else {
 		//All agents
 		echo __('Deleting records for all agents');
 		flush ();
@@ -166,7 +161,8 @@ echo '</noscript><br />';
 
 if ($id_agent > 0) {
 	$title = __('Information on agent %s in the database', agents_get_name ($id_agent));
-} else {
+}
+else {
 	$title = __('Information on all agents in the database');
 }
 
@@ -182,13 +178,13 @@ else {
 	$query = "";
 }
 
-$data["1day"]    = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query));
-$data["3day"]    = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3day"], $query));
-$data["1week"]   = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query));
-$data["2week"]   = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["2week"], $query));
-$data["1month"]  = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query));
-$data["3month"]  = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query));
-$data["total"]   = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE 1=1 %s", $query));
+$data["1day"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query));
+$data["3day"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3day"], $query));
+$data["1week"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query));
+$data["2week"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["2week"], $query));
+$data["1month"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query));
+$data["3month"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query));
+$data["total"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE 1=1 %s", $query));
 
 $data["1day"]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["1day"], $query));
 $data["3day"]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["3day"], $query));

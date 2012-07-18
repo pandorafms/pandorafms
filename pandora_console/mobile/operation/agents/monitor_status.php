@@ -96,7 +96,7 @@ class MonitorStatus {
 			$sqlStatus = " AND tagente_estado.estado = 1 AND utimestamp > 0";
 		}
 		elseif ($status == 1) { //Warning
-			$sqlStatus = " AND tagente_estado.estado = 2 AND utimestamp > 0";	
+			$sqlStatus = " AND tagente_estado.estado = 2 AND utimestamp > 0";
 		}
 		elseif ($status == 4) { //Not normal
 			$sqlStatus = " AND tagente_estado.estado <> 0";
@@ -105,7 +105,8 @@ class MonitorStatus {
 			$sqlStatus = " AND tagente_estado.estado = 3";
 		}
 		elseif ($status == 5) { //Not init
-			$sqlStatus = " AND tagente_estado.utimestamp = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";	
+			$sqlStatus = " AND tagente_estado.utimestamp = 0
+				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";
 		}
 		
 		
@@ -160,16 +161,16 @@ class MonitorStatus {
 				$set['limit'] = $this->system->getPageSize();
 				$set['offset'] = $this->offset;
 				$rows = oracle_recode_query ($selectSQL . $sql, $set, 'AND', true);
-				break;	
+				break;
 		}
 		
 		if ($rows === false) $rows = array();
-	
+		
 		if ($config["dbtype"] == 'oracle') {
 			for ($i=0; $i < count($rows); $i++) {
-				unset($rows[$i]['rnum']);		
+				unset($rows[$i]['rnum']);
 			}
-		} 	
+		}
 		
 		$table = null;
 		$table->width = '100%';
@@ -225,7 +226,7 @@ class MonitorStatus {
 			else
 				$data[] = "<span title='".$row['datos']."' style='white-space: nowrap;'>" .
 					substr(io_safe_output($row["datos"]),0,12)."</span>";
-				
+			
 			$data[] = ui_print_timestamp ($row["utimestamp"], true, array('units' => 'tiny'));
 			
 			$table->data[] = $data;
@@ -236,12 +237,12 @@ class MonitorStatus {
 		$pagination = pagination ($total,
 			ui_get_url_refresh (array ()),
 			0, 0, true);
-			
+		
 		$pagination = str_replace('images/go_first.png', '../images/go_first.png', $pagination);
 		$pagination = str_replace('images/go_previous.png', '../images/go_previous.png', $pagination);
 		$pagination = str_replace('images/go_next.png', '../images/go_next.png', $pagination);
 		$pagination = str_replace('images/go_last.png', '../images/go_last.png', $pagination);
-			
+		
 		echo $pagination;
 	}
 }

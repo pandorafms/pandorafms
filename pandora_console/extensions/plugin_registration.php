@@ -117,7 +117,7 @@ function pluginreg_extension_main () {
 	
 	for ($ax=1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++){
 		$label = "module".$ax;
-
+		
 		$values = array(
 			'name' => io_safe_input ($ini_array[$label]["name"]),
 			'description' => io_safe_input ($ini_array[$label]["description"]),
@@ -142,14 +142,14 @@ function pluginreg_extension_main () {
 			'min_ff_event' => isset($ini_array[$label]["min_ff_event"]) ? $ini_array[$label]["min_ff_event"] : '',
 			'tcp_port' => isset($ini_array[$label]["tcp_port"]) ? $ini_array[$label]["tcp_port"] : '',
 			'id_plugin' => $create_id);
-
+		
 		db_process_sql_insert('tnetwork_component', $values);
 		
 		echo "<h3 class=suc>".__("Module plugin registered"). " : ". $ini_array[$label]["name"] ."</h2>";
 	}
 	
 	echo "<h2 class=suc>".__("Plugin"). " ". $ini_array["plugin_definition"]["name"] . " ". __("Registered successfully")."</h2>";
-	unlink ($config["attachment_store"] . "/plugin_definition.ini");	
+	unlink ($config["attachment_store"] . "/plugin_definition.ini");
 
 }
 

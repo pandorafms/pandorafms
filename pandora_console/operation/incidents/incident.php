@@ -294,7 +294,7 @@ if ($count < 1) {
 	$table->data = array ();
 	$table->size = array ();
 	$table->align = array ();
-
+	
 	$table->head[0] = __('ID');
 	$table->head[1] = __('Status');
 	$table->head[2] = __('Incident');
@@ -324,7 +324,7 @@ if ($count < 1) {
 		$iterator++;
 		
 		$data = array();
-
+		
 		$data[0] = '<a href="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';
 		$attach = incidents_get_attach ($row["id_incidencia"]);
 		

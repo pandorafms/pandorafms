@@ -168,7 +168,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			switch ($item['type']) {
 				case 1:
 				case 'simple_graph':
-					break;	
+					break;
 				case 'simple_baseline_graph':
 					break;
 				case 2:

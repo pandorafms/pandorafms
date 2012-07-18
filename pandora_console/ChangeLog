@@ -1,5 +1,16 @@
 2012-07-18 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* extensions/resource_registration.php,
+	extensions/update_manager/lib/libupdate_manager.php,
+	extensions/plugin_registration.php,
+	operation/incidents/incident.php,
+	mobile/operation/agents/monitor_status.php,
+	mobile/operation/agents/view_agents.php: cleaned source code style.
+
+	* operation/tree.php: improve the code for to set more readble.
+
+2012-07-18 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* general/logon_ok.php, godmode/db/db_event.php,
 	godmode/db/db_purge.php, include/functions_config.php,
 	include/functions_ui.php, include/functions_netflow.php,

@@ -209,7 +209,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
 	$name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
 	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $id_group = false) {
 	global $config;
-		
+	
 	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, true);
 	
 	if ($id_group !== false) {
@@ -219,8 +219,8 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
 		}
 		unset($user_groups[$id_group]);
 	}
-
-	if(empty($user_groups)) {
+	
+	if (empty($user_groups)) {
 		$user_groups_tree = array();
 	}
 	else {
@@ -266,8 +266,10 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
-	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $size = false) {
+function html_print_select ($fields, $name, $selected = '', $script = '',
+	$nothing = '', $nothing_value = 0, $return = false, $multiple = false,
+	$sort = true, $class = '', $disabled = false, $style = false,
+	$option_style = false, $size = false) {
 	
 	$output = "\n";
 	
@@ -308,9 +310,9 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 	else {
 		$styleText = 'style="' .$style . '"';
 	}
-
+	
 	$output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.' ' . $styleText . '>';
-
+	
 	if ($nothing != '' || empty ($fields)) {
 		if ($nothing == '') {
 			$nothing = __('None');
@@ -321,7 +323,7 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 		}
 		$output .= '>'.$nothing.'</option>';
 	}
-
+	
 	if (is_array($fields) && !empty ($fields)) {
 		if ($sort !== false) {
 			asort ($fields);
@@ -331,8 +333,8 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 			$optlabel = $label;
 			if(is_array($label)) {
 				if (isset($label['optgroup'])) {
-					if($label['optgroup'] != $lastopttype) {
-						if($lastopttype != '') {
+					if ($label['optgroup'] != $lastopttype) {
+						if ($lastopttype != '') {
 							$output .=  '</optgroup>';
 						}
 						$output .=  '<optgroup label="'.$label['optgroup'].'">';
@@ -346,7 +348,8 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 			if (is_array ($selected) && in_array ($value, $selected)) {
 				$output .= ' selected="selected"';
 			}
-			elseif (is_numeric ($value) && is_numeric ($selected) && $value == $selected) {
+			elseif (is_numeric ($value) && is_numeric ($selected) &&
+				$value == $selected) {
 				//This fixes string ($value) to int ($selected) comparisons 
 				$output .= ' selected="selected"';
 			}
@@ -354,7 +357,8 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 				//Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
 				$output .= ' selected="selected"';
 			}
-			if (is_array ($option_style) && in_array ($value, array_keys($option_style))) {
+			if (is_array ($option_style) &&
+				in_array ($value, array_keys($option_style))) {
 				$output .= ' style="'.$option_style[$value].'"';
 			}
 			if ($optlabel === '') {
@@ -364,7 +368,7 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 				$output .= '>'.$optlabel."</option>";
 			}
 		}
-		if(is_array($label)){
+		if (is_array($label)) {
 			$output .= '</optgroup>';
 		}
 	}
@@ -455,7 +459,7 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 		SECONDS_1MONTH => __('months'),
 		SECONDS_1YEAR => __('years'));
 	
-	if($unique_name === true) {
+	if ($unique_name === true) {
 		$uniq_name = uniqid($name);
 	}
 	else {
@@ -524,16 +528,19 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 		
 	if ($size == 0)
 		$size = 10;
-
+	
 	++$idcounter;
 	
-	$valid_attrs = array ("accept", "disabled", "maxlength", "name", "readonly", "size", "value",
-		"accesskey", "class", "dir", "id", "lang", "style", "tabindex", "title", "xml:lang",
-		"onfocus", "onblur", "onselect", "onchange", "onclick", "ondblclick", "onmousedown", 
-		"onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup");
-
+	$valid_attrs = array ("accept", "disabled", "maxlength",
+		"name", "readonly", "size", "value", "accesskey",
+		"class", "dir", "id", "lang", "style", "tabindex",
+		"title", "xml:lang", "onfocus", "onblur", "onselect",
+		"onchange", "onclick", "ondblclick", "onmousedown",
+		"onmouseup", "onmouseover", "onmousemove", "onmouseout",
+		"onkeypress", "onkeydown", "onkeyup");
+	
 	$output = '<input '.($password ? 'type="password" ' : 'type="text" ');
-
+	
 	if ($disabled && (!is_array ($attributes) || !array_key_exists ("disabled", $attributes))) {
 		$output .= 'readonly="readonly" ';
 	}
@@ -680,9 +687,10 @@ function html_print_input_image ($name, $src, $value, $style = '', $return = fal
 	$output = '<input id="image-'.$name.$idcounter.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image"';
 	
 	//Valid attributes (invalid attributes get skipped)
-	$attrs = array ("alt", "accesskey", "lang", "tabindex", "title", "xml:lang",
-		"onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", 
-		"onmouseout", "onkeypress", "onkeydown", "onkeyup");
+	$attrs = array ("alt", "accesskey", "lang", "tabindex",
+		"title", "xml:lang", "onclick", "ondblclick", "onmousedown",
+		"onmouseup", "onmouseover", "onmousemove", "onmouseout",
+		"onkeypress", "onkeydown", "onkeyup");
 	
 	foreach ($attrs as $attribute) {
 		if (isset ($options[$attribute])) {
@@ -777,7 +785,7 @@ function html_print_submit_button ($label = 'OK', $name = '', $disabled = false,
  */
 function html_print_button ($label = 'OK', $name = '', $disabled = false, $script = '', $attributes = '', $return = false, $imageButton = false) {
 	$output = '';
-
+	
 	$alt = $title = '';
 	if ($imageButton) {
 		$alt = $title = $label;
@@ -790,7 +798,7 @@ function html_print_button ($label = 'OK', $name = '', $disabled = false, $scrip
 	$output .= ' />';
 	if ($return)
 		return $output;
-
+	
 	echo $output;
 }
 
@@ -816,6 +824,7 @@ function html_print_textarea ($name, $rows, $columns, $value = '', $attributes =
 	
 	if ($return)
 		return $output;
+	
 	echo $output;
 }
 
@@ -861,7 +870,8 @@ function html_print_table (&$table, $return = false) {
 		foreach ($table->align as $key => $aa) {
 			if ($aa) {
 				$align[$key] = ' text-align:'. $aa.';';
-			} else {
+			}
+			else {
 				$align[$key] = '';
 			}
 		}
@@ -879,7 +889,8 @@ function html_print_table (&$table, $return = false) {
 		foreach ($table->size as $key => $ss) {
 			if ($ss) {
 				$size[$key] = ' width:'. $ss .';';
-			} else {
+			}
+			else {
 				$size[$key] = '';
 			}
 		}
@@ -888,7 +899,8 @@ function html_print_table (&$table, $return = false) {
 		foreach ($table->style as $key => $st) {
 			if ($st) {
 				$style[$key] = ' '. $st .';';
-			} else {
+			}
+			else {
 				$style[$key] = '';
 			}
 		}
@@ -914,7 +926,7 @@ function html_print_table (&$table, $return = false) {
 			}
 		}
 	}
-
+	
 	if (isset ($table->rowspan)) {
 		foreach ($table->rowspan as $keyrow => $rspan) {
 			foreach ($rspan as $key => $span) {
@@ -922,8 +934,8 @@ function html_print_table (&$table, $return = false) {
 			}
 		}
 	}
-
-
+	
+	
 	if (empty ($table->width)) {
 		//$table->width = '80%';
 	}
@@ -934,18 +946,19 @@ function html_print_table (&$table, $return = false) {
 	
 	if (empty ($table->tablealign) || $table->tablealign != 'left' || $table->tablealign != 'right') {
 		$table->tablealign = '';
-	} else {
+	}
+	else {
 		$table->tablealign = 'style="float:'.$table->tablealign.';"'; //Align is deprecated. Use float instead
 	}
-
+	
 	if (!isset ($table->cellpadding)) {
 		$table->cellpadding = '4';
 	}
-
+	
 	if (!isset ($table->cellspacing)) {
 		$table->cellspacing = '4';
 	}
-
+	
 	if (empty ($table->class)) {
 		$table->class = 'databox';
 	}
@@ -955,7 +968,7 @@ function html_print_table (&$table, $return = false) {
 	}
 	
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;
-
+	
 	if (!empty($table->width)) {
 		$output .= '<table style="' . $styleTable . '" width="'.$table->width.'"'.$table->tablealign;
 	}
@@ -1002,7 +1015,7 @@ function html_print_table (&$table, $return = false) {
 		}
 		$output .= '</tr></thead>'."\n";
 	}
-
+	
 	$output .= '<tbody>'."\n";
 	if (!empty ($table->data)) {
 		$oddeven = 1;
@@ -1022,10 +1035,10 @@ function html_print_table (&$table, $return = false) {
 				$output .= '<td colspan="'. $countcols .'"><div class="tabledivider"></div></td>';
 				continue;
 			}
-
+			
 			if (!is_array($row))
 				$row = (array)$row;
-	
+			
 			/* It's a normal row */
 			foreach ($row as $key => $item) {
 				if (!isset ($size[$key])) {
@@ -1056,7 +1069,7 @@ function html_print_table (&$table, $return = false) {
 		}
 	}
 	$output .= '</tbody></table>'."\n";
-
+	
 	if ($return) 
 		return $output;
 	
@@ -1081,21 +1094,21 @@ function html_print_table (&$table, $return = false) {
  */
 function html_print_radio_button_extended ($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return = false) {
 	static $idcounter = 0;
-
+	
 	$output = '';
 	
 	$output = '<input type="radio" name="'.$name.'" value="'.$value.'"';
 	$htmlid = 'radiobtn'.sprintf ('%04d', ++$idcounter);
 	$output .= ' id="'.$htmlid.'"';
-
+	
 	if ($value == $checkedvalue) {
-		 $output .= ' checked="checked"';
+		$output .= ' checked="checked"';
 	}
 	if ($disabled) {
-		 $output .= ' disabled="disabled"';
+		$output .= ' disabled="disabled"';
 	}
 	if ($script != '') {
-		 $output .= ' onClick="'. $script . '"';
+		$output .= ' onClick="'. $script . '"';
 	}
 	$output .= ' ' . $attributes ;
 	$output .= ' />';
@@ -1106,7 +1119,7 @@ function html_print_radio_button_extended ($name, $value, $label, $checkedvalue,
 	
 	if ($return)
 		return $output;
-
+	
 	echo $output;
 }
 
@@ -1150,21 +1163,22 @@ function html_print_checkbox_extended ($name, $value, $checked, $disabled, $scri
 	//If duplicate names exist, it will start numbering. Otherwise it won't
 	if (isset ($idcounter[$name])) {
 		$idcounter[$name]++;
-	} else {
+	}
+	else {
 		$idcounter[$name] = 0;
 	}
 	
 	$id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
-			
+	
 	$output = '<input name="'.$name.'" type="checkbox" value="'.$value.'" '. ($checked ? 'checked="checked"': '');
 	$output .= ' id="checkbox-'.$id.'"';
 	
 	if ($script != '') {
-		 $output .= ' onclick="'. $script . '"';
+		$output .= ' onclick="'. $script . '"';
 	}
 	
 	if ($disabled) {
-		 $output .= ' disabled="disabled"';
+		$output .= ' disabled="disabled"';
 	}
 	
 	$output .= ' ' . $attributes ;
@@ -1230,7 +1244,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		$urlImage = ui_get_full_url(false);
 		
 		if (defined('METACONSOLE'))
-			$urlImage .= ENTERPRISE_DIR . '/meta/';		
+			$urlImage .= ENTERPRISE_DIR . '/meta/';
 		
 		// path to image 
 		$src = $urlImage . $src;
@@ -1341,7 +1355,7 @@ function html_print_input_file ($name, $return = false, $options = false) {
 	}
 	
 	$output .= ' />';
-
+	
 	if ($return)
 		return $output;
 	echo $output;
@@ -1392,7 +1406,7 @@ function html_html2rgb($htmlcolor)
 	if ($htmlcolor[0] == '#') {
 		$htmlcolor = substr($htmlcolor, 1);
 	}
-
+	
 	if (strlen($htmlcolor) == 6) {
 		$r = hexdec($htmlcolor[0].$htmlcolor[1]);
 		$g = hexdec($htmlcolor[2].$htmlcolor[3]);
@@ -1486,7 +1500,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 		return div.innerHTML;
 	}
 	
-		$(document).ready (function () {		
+		$(document).ready (function () {
 			$("#text-<?php echo $name; ?>").autocomplete(
 				"ajax.php",
 				{
@@ -1512,7 +1526,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 					delay: 200
 				}
 			);
-
+			
 			$("#text-<?php echo $name; ?>").result (
 				<?php echo $scriptResult; ?>
 			);
@@ -1523,7 +1537,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 	html_print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
 		array('style' => 'background: url(images/lightning_blue.png) no-repeat right;'));
 	ui_print_help_tip(__('Type at least two characters to search the module.'), false);
-
+	
 	$output = ob_get_clean();
 	
 	if ($return) {

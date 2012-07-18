@@ -491,13 +491,13 @@ function postgresql_db_get_value_filter ($field, $table, $filter, $where_join = 
  * clause of an SQL sentence.
  */
 function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix = false) {
-
+	
 	$fields = array ();
-
+	
 	if (! is_array ($values)) {
 		return '';
 	}
-
+	
 	$query = '';
 	$limit = '';
 	$offset = '';
@@ -507,12 +507,12 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
 		$limit = sprintf (' LIMIT %d', $values['limit']);
 		unset ($values['limit']);
 	}
-
+	
 	if (isset ($values['offset'])) {
 		$offset = sprintf (' OFFSET %d', $values['offset']);
 		unset ($values['offset']);
 	}
-
+	
 	if (isset ($values['order'])) {
 		if (is_array($values['order'])) {
 			if (!isset($values['order']['order'])) {
@@ -531,7 +531,7 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
 		}
 		unset ($values['order']);
 	}
-
+	
 	if (isset ($values['group'])) {
 		$group = sprintf (' GROUP BY %s', $values['group']);
 		unset ($values['group']);
@@ -556,7 +556,7 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
 			if (strstr($field, '.') === false)
 				$field = "\"".$field."\"";
 		}
-
+		
 		if (is_null ($value)) {
 			$query .= sprintf ("%s IS NULL", $field);
 		}
@@ -570,12 +570,12 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
 			$query .= sprintf ("%s IN ('%s')", $field, implode ("', '", $value));
 		}
 		else {
-			if ($value[0] == ">"){
+			if ($value[0] == ">") {
 				$value = substr($value,1,strlen($value)-1);
 				$query .= sprintf ("%s > '%s'", $field, $value);
 			}
-			else if ($value[0] == "<"){
-				if ($value[1] == ">"){
+			else if ($value[0] == "<") {
+				if ($value[1] == ">") {
 					$value = substr($value,2,strlen($value)-2);
 					$query .= sprintf ("%s <> '%s'", $field, $value);
 				}
@@ -591,7 +591,7 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
 				$query .= sprintf ("%s = '%s'", $field, $value);
 			}
 		}
-
+		
 		if ($i < $max) {
 			$query .= ' '.$join.' ';
 		}

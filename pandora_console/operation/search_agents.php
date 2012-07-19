@@ -273,12 +273,13 @@ else {
 			$time_style = '<b><span style="color: #ff0000">'.$time.'</span></b>';
 		
 		$manage_agent = '';
-
+		
 		if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
-			$manage_agent = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='. $agent["id_agente"] . '">' .
+			$url_manage = 'index.php?sec=estado&sec2=godmode/agentes/configurar_agente&id_agente='. $agent["id_agente"];
+			$manage_agent = '<a href="' . $url_manage . '">' .
 				html_print_image("images/setup.png", true, array("title" => __('Manage'), "alt" => __('Manage'))) . '</a>';
 		}
-	
+		
 		array_push($table->data, array(
 			$cellName,
 			ui_print_os_icon ($agent["id_os"], false, true),

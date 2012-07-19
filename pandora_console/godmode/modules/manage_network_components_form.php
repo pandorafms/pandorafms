@@ -478,4 +478,97 @@ $(document).ready (function () {
 type_change ();
 <?php endif; ?>
 //-->
+
+// Functions to add and remove dynamic fields for macros 
+function delete_macro() {
+	var next_row = parseInt($('#next_row').html());
+	$('#next_row').html(next_row-2);
+	var next_number = parseInt($('#next_macro').html());
+	$('#next_macro').html(next_number-1);
+
+	var nrow1 = next_row - 2;
+	var nrow2 = next_row - 1;
+	
+	var $row1 = $('#network_component-plugin_'+nrow1).remove();
+	var $row2 = $('#network_component-plugin_'+nrow2).remove();
+}
+
+function new_macro() {
+	var next_row = parseInt($('#next_row').html());
+
+	$('#next_row').html(next_row+2);
+	var nrow1 = next_row - 2;
+	var nrow2 = next_row - 1;
+	var nrow3 = next_row;
+	var nrow4 = next_row + 1;
+	
+	var next_number = parseInt($('#next_macro').html());
+	$('#next_macro').html(next_number+1);
+	var current_number = next_number - 1;
+	
+	// Clone two last rows
+	var $row1 = $('#network_component-plugin_'+nrow1).clone(true);
+	var $row2 = $('#network_component-plugin_'+nrow2).clone(true);
+
+	// Change the tr ID
+	$row1.attr('id','network_component-plugin_'+(nrow3));
+	$row2.attr('id','network_component-plugin_'+(nrow4));
+	// Change the td ID
+	$row1.find('td').attr('id', changeTdId);
+	$row2.find('td').attr('id', changeTdId);
+	
+	// Insert after last field
+	$row2.insertAfter('#network_component-plugin_'+nrow2);
+	$row1.insertAfter('#network_component-plugin_'+nrow2);
+	
+	// Change labels
+	for(i=0;i<=3;i++) {
+		var label1 = $("#network_component-plugin_"+nrow3+"-"+i).html();
+		var exp_reg = new RegExp('field'+current_number, 'g'); 
+		label1 = label1.replace(exp_reg,'field'+next_number);
+		$("#network_component-plugin_"+nrow3+"-"+i).html(label1);
+	}
+	
+	for(i=0;i<=1;i++) {
+		var label2 = $("#network_component-plugin_"+nrow4+"-"+i).html();
+		var exp_reg = new RegExp('field'+current_number, 'g'); 
+		label2 = label2.replace(exp_reg,'field'+next_number);
+		$("#network_component-plugin_"+nrow4+"-"+i).html(label2);
+	}
+	
+	// Empty the text inputs
+	$('#text-field'+next_number+'_desc').val('');
+	$('#text-field'+next_number+'_help').val('');
+	$('#text-field'+next_number+'_value').val('');
+	
+	function changeTdId() {
+		switch(this.id) {
+			case 'network_component-plugin_'+(nrow1)+'-0':
+				return 'network_component-plugin_'+(nrow3)+'-0';
+				break;
+			case 'network_component-plugin_'+(nrow1)+'-1':
+				return 'network_component-plugin_'+(nrow3)+'-1';
+				break;
+			case 'network_component-plugin_'+(nrow1)+'-2':
+				return 'network_component-plugin_'+(nrow3)+'-2';
+				break;
+			case 'network_component-plugin_'+(nrow1)+'-3':
+				return 'network_component-plugin_'+(nrow3)+'-3';
+				break;
+			case 'network_component-plugin_'+(nrow2)+'-0':
+				return 'network_component-plugin_'+(nrow4)+'-0';
+				break;
+			case 'network_component-plugin_'+(nrow2)+'-1':
+				return 'network_component-plugin_'+(nrow4)+'-1';
+				break;
+			case 'network_component-plugin_'+(nrow2)+'-2':
+				return 'network_component-plugin_'+(nrow4)+'-2';
+				break;
+			case 'network_component-plugin_'+(nrow2)+'-3':
+				return 'network_component-plugin_'+(nrow4)+'-3';
+				break;
+		}
+	}
+	
+}
 </script>

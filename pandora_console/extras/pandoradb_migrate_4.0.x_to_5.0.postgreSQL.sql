@@ -266,18 +266,7 @@ WHERE "token"='prominent_time';
 CREATE TYPE type_tnetwork_component_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
 ALTER TABLE "tnetwork_component" ADD COLUMN "wizard_level" type_tnetwork_component_wizard_level default 'nowizard';
 ALTER TABLE "tnetwork_component" ADD COLUMN "only_metaconsole" INTEGER default '0';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field1_desc" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field1_help" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field2_desc" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field2_help" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field3_desc" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field3_help" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field4_desc" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field4_help" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field5_desc" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field5_help" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field6_desc" TEXT default '';
-ALTER TABLE "tnetwork_component" ADD COLUMN "field6_help" TEXT default '';
+ALTER TABLE "tnetwork_component" ADD COLUMN "macros" TEXT default '';
 
 -- -----------------------------------------------------
 -- Table `tagente_modulo`

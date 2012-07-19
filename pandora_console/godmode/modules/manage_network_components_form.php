@@ -47,6 +47,7 @@ if (isset ($id)) {
 		$plugin_user = $component["plugin_user"];
 		$plugin_pass = $component["plugin_pass"];
 		$plugin_parameter = $component["plugin_parameter"];
+		$macros = $component["macros"];
 		$max_timeout = $component["max_timeout"];
 		$min_warning = $component["min_warning"];
 		$max_warning = $component["max_warning"];

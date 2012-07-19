@@ -274,18 +274,7 @@ WHERE `token`= 'prominent_time';
 
 ALTER TABLE tnetwork_component ADD `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard';
 ALTER TABLE tnetwork_component ADD `only_metaconsole` tinyint(1) unsigned default '0';
-ALTER TABLE tnetwork_component ADD `field1_desc` text;
-ALTER TABLE tnetwork_component ADD `field1_help` text;
-ALTER TABLE tnetwork_component ADD `field2_desc` text;
-ALTER TABLE tnetwork_component ADD `field2_help` text;
-ALTER TABLE tnetwork_component ADD `field3_desc` text;
-ALTER TABLE tnetwork_component ADD `field3_help` text;
-ALTER TABLE tnetwork_component ADD `field4_desc` text;
-ALTER TABLE tnetwork_component ADD `field4_help` text;
-ALTER TABLE tnetwork_component ADD `field5_desc` text;
-ALTER TABLE tnetwork_component ADD `field5_help` text;
-ALTER TABLE tnetwork_component ADD `field6_desc` text;
-ALTER TABLE tnetwork_component ADD `field6_help` text;
+ALTER TABLE tnetwork_component ADD `macros` text;
 
 -- -----------------------------------------------------
 -- Table `tagente_modulo`

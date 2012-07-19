@@ -46,6 +46,28 @@ $id_group = (int) get_parameter ('id_group');
 $plugin_user = (string) get_parameter ('plugin_user');
 $plugin_pass = (string) get_parameter ('plugin_pass');
 $plugin_parameter = (string) get_parameter ('plugin_parameter');
+
+$i = 1;
+$macros = array();
+while(1) {
+	$macro = (string)get_parameter ('field'.$i.'_macro');
+	if($macro == '') {
+		break;
+	}
+	
+	$desc = (string)get_parameter ('field'.$i.'_desc');
+	$help = (string)get_parameter ('field'.$i.'_help');
+	$value = (string)get_parameter ('field'.$i.'_value');
+
+	$macros[$i]['macro'] = $macro;
+	$macros[$i]['desc'] = $desc;
+	$macros[$i]['help'] = $help;
+	$macros[$i]['value'] = $value;
+	$i++;
+}
+
+$macros = json_encode($macros);
+
 $max_timeout = (int) get_parameter ('max_timeout');
 $id_modulo = (int) get_parameter ('id_component_type');
 $id_plugin = (int) get_parameter ('id_plugin');
@@ -129,6 +151,7 @@ if ($create_component) {
 				'plugin_user' => $plugin_user,
 				'plugin_pass' => $plugin_pass,
 				'plugin_parameter' => $plugin_parameter,
+				'macros' => $macros,
 				'max_timeout' => $max_timeout,
 				'history_data' => $history_data,
 				'min_warning' => $min_warning,
@@ -199,6 +222,7 @@ if ($update_component) {
 				'plugin_user' => $plugin_user,
 				'plugin_pass' => $plugin_pass,
 				'plugin_parameter' => $plugin_parameter,
+				'macros' => $macros,
 				'max_timeout' => $max_timeout,
 				'history_data' => $history_data,
 				'min_warning' => $min_warning,
@@ -312,6 +336,7 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'plugin_user' => false,
 	'plugin_pass' => false,
 	'plugin_parameter' => false,
+	'macros' => false,
 	'max_timeout' => false,
 	'id_modulo' => false,
 	'id_plugin' => false,

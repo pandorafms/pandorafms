@@ -1,3 +1,16 @@
+2012-07-19  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_network_components.php
+	godmode/modules/manage_network_components_form_plugin.php: Added
+	to plugin components the macro fields and modify database schemma
+
 2012-07-19 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/javascript/pandora.js: fixed the doc header for the

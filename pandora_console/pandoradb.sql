@@ -190,6 +190,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `custom_integer_1` int(10) default 0,
   `custom_integer_2` int(10) default 0,
   `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
+  `macros` text,
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
@@ -571,18 +572,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `unit` text,
   `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
   `only_metaconsole` tinyint(1) unsigned default '0',
-  `field1_desc` text,
-  `field1_help` text,
-  `field2_desc` text,
-  `field2_help` text,
-  `field3_desc` text,
-  `field3_help` text,
-  `field4_desc` text,
-  `field4_help` text,
-  `field5_desc` text,
-  `field5_help` text,
-  `field6_desc` text,
-  `field6_help` text,
+  `macros` text,
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

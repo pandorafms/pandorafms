@@ -481,10 +481,14 @@ type_change ();
 
 // Functions to add and remove dynamic fields for macros 
 function delete_macro() {
-	var next_row = parseInt($('#next_row').html());
-	$('#next_row').html(next_row-2);
 	var next_number = parseInt($('#next_macro').html());
+	// Is not possible delete first macro
+	if(next_number == 3) {
+		$('#delete_macro_button').hide();
+	}
+	var next_row = parseInt($('#next_row').html());
 	$('#next_macro').html(next_number-1);
+	$('#next_row').html(next_row-2);
 
 	var nrow1 = next_row - 2;
 	var nrow2 = next_row - 1;
@@ -494,6 +498,8 @@ function delete_macro() {
 }
 
 function new_macro() {
+	$('#delete_macro_button').show();
+
 	var next_row = parseInt($('#next_row').html());
 
 	$('#next_row').html(next_row+2);

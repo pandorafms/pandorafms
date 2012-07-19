@@ -557,12 +557,12 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
  * Autocomplete Agent box functions.
  * 
  * This function has all the necesary javascript to use the box with to autocomplete
- * an agent name, and store it's id on a hidden field and fill a selector with the 
- * modules from that agent.
+ * an agent name, and store it's id on a hidden field and fill a hidden field with
+ * the server.
  * 
  * @param id_agent_name id of the agent name box
+ * @param id_server_name id of the hidden field to store the server but if you put false don't save.
  * @param id_agent_id id of the hidden field to store the agent id
- * @param id_agent_module_selector id of the selector for the modules of the agent.
  */
 function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
 	//Check exist the field with id in the var id_agent_name.
@@ -606,7 +606,8 @@ function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
 			}
 			
 			//Put the server
-			if (typeof(id_server_name) != "undefined") {
+			if (typeof(id_server_name) != "undefined"
+				|| typeof(id_server_name) != "boolean") {
 				$(id_server_name).val(server_name);
 			}
 			
@@ -627,7 +628,7 @@ function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
 			.append(text)
 			.appendTo(ul);
 	};
-		
+	
 	//Force the size of autocomplete
 	$(".ui-autocomplete").css("max-height", "100px");
 	$(".ui-autocomplete").css("overflow-y", "auto");

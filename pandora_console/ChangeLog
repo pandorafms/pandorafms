@@ -1,3 +1,17 @@
+2012-07-19 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/javascript/pandora.js: fixed the doc header for the
+	function "agent_autocomplete" that was very wrong, and now in this
+	function when call with the id_server_name equal to false, the
+	function doesn't save the id_server in hidden input.
+	
+	* include/functions_agents.php: added function
+	"agents_check_agent_exists" that check if any agent exists into the
+	DB (of course you can check if exist and it is enabled).
+	
+	* operation/search_agents.php: fixed the link to manage the agents
+	show in the search.
+
 2012-07-18 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/resource_registration.php,

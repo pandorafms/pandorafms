@@ -209,6 +209,7 @@ CREATE TABLE tagente_modulo (
 	custom_integer_1 NUMBER(10, 0) default 0,
 	custom_integer_2 NUMBER(10, 0) default 0,
 	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
+	macros CLOB default '',
 	CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'))
 );
 CREATE INDEX tagente_modulo_id_agente_idx ON tagente_modulo(id_agente);
@@ -651,18 +652,7 @@ CREATE TABLE tnetwork_component (
 	unit CLOB default '',
 	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
 	only_metaconsole NUMBER(5, 0) default 0 NOT NULL,
-	field1_desc CLOB default '',
-	field1_help CLOB default '',
-	field2_desc CLOB default '',
-	field2_help CLOB default '',
-	field3_desc CLOB default '',
-	field3_help CLOB default '',
-	field4_desc CLOB default '',
-	field4_help CLOB default '',
-	field5_desc CLOB default '',
-	field5_help CLOB default '',
-	field6_desc CLOB default '',
-	field6_help CLOB default '',
+	macros CLOB default '',
 	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'))
 );
 

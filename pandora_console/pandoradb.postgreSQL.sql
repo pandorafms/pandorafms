@@ -188,7 +188,8 @@ CREATE TABLE "tagente_modulo" (
 	"custom_string_3" text default '',
 	"custom_integer_1" INTEGER default 0,
 	"custom_integer_2" INTEGER default 0,
-	"wizard_level" type_tagente_modulo_wizard_level default 'nowizard'
+	"wizard_level" type_tagente_modulo_wizard_level default 'nowizard',
+	"macros" TEXT default ''
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");
@@ -519,18 +520,7 @@ CREATE TABLE "tnetwork_component" (
 	"unit" TEXT default '',
 	"wizard_level" type_tlocal_component_wizard_level default 'nowizard',
 	"only_metaconsole" INTEGER default '0',
-	"field1_desc" TEXT default '',
-	"field1_help" TEXT default '',
-	"field2_desc" TEXT default '',
-	"field2_help" TEXT default '',
-	"field3_desc" TEXT default '',
-	"field3_help" TEXT default '',
-	"field4_desc" TEXT default '',
-	"field4_help" TEXT default '',
-	"field5_desc" TEXT default '',
-	"field5_help" TEXT default '',
-	"field6_desc" TEXT default '',
-	"field6_help" TEXT default ''
+	"macros" TEXT default ''
 );
 
 CREATE TABLE "tnetwork_component_group" (

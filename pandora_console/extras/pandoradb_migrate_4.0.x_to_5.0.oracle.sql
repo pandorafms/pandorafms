@@ -277,18 +277,8 @@ WHERE token='prominent_time';
 ALTER TABLE tnetwork_component ADD (wizard_level VARCHAR2(100) default 'custom' NOT NULL);
 ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
 ALTER TABLE tnetwork_component ADD (only_metaconsole NUMBER(5, 0) default 0 NOT NULL);
-ALTER TABLE tnetwork_component ADD (field1_desc CLOB default '');
-ALTER TABLE tnetwork_component ADD (field1_help CLOB default '');
-ALTER TABLE tnetwork_component ADD (field2_desc CLOB default '');
-ALTER TABLE tnetwork_component ADD (field2_help CLOB default '');
-ALTER TABLE tnetwork_component ADD (field3_desc CLOB default '');
-ALTER TABLE tnetwork_component ADD (field3_help CLOB default '');
-ALTER TABLE tnetwork_component ADD (field4_desc CLOB default '');
-ALTER TABLE tnetwork_component ADD (field4_help CLOB default '');
-ALTER TABLE tnetwork_component ADD (field5_desc CLOB default '');
-ALTER TABLE tnetwork_component ADD (field5_help CLOB default '');
-ALTER TABLE tnetwork_component ADD (field6_desc CLOB default '');
-ALTER TABLE tnetwork_component ADD (field6_help CLOB default '');
+ALTER TABLE tnetwork_component ADD (macros CLOB default '');
+
 
 -- -----------------------------------------------------
 -- Table `tagente_modulo`

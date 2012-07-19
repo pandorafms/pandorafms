@@ -63,7 +63,11 @@ push_table_row ($data, 'plugin_4');
 $macros = json_decode($macros,true);
 // The next row number is plugin_5
 $next_name_number = 5;
-for($i=1;$i<=6;$i++) {
+$i = 1;
+while(1) {
+	if(!isset($macros[$i]) || $macros[$i]['desc'] == '') {
+		break;
+	}
 	$macro_desc_name = 'field'.$i.'_desc';
 	$macro_desc_value = '';
 	$macro_help_name = 'field'.$i.'_help';
@@ -97,7 +101,7 @@ for($i=1;$i<=6;$i++) {
 	push_table_row ($data, 'plugin_'.$next_name_number);
 	$next_name_number++;
 	
-	$table->colspan['plugin_'.$next_name_number][1] = 3;
+	$table->colspan['plugin_'.$next_name_number][1] = 2;
 
 	$data = array ();
 	$data[0] = sprintf(__('Macro %s help'),$macro_name);
@@ -106,7 +110,18 @@ for($i=1;$i<=6;$i++) {
 
 	push_table_row ($data, 'plugin_'.$next_name_number);
 	$next_name_number++;
+	$i++;
 }
 
+	$table->colspan['plugin_n'][2] = 2;
+
+	$data = array ();
+	$data[0] = '';
+	$data[1] = __('Add macro').' <a href="javascript:new_macro()">'.html_print_image('images/add.png',true).'</a>';
+	$data[1] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
+	$data[1] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
+	$data[2] = __('Delete macro').' <a href="javascript:delete_macro()">'.html_print_image('images/cancel.png',true).'</a>';
+
+	push_table_row ($data, 'plugin_n');
 ?>
 

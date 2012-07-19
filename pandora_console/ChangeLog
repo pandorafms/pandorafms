@@ -1,5 +1,12 @@
 2012-07-19  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_network_components_form_plugin.php: Add 
+	first version of dynamic macros in network components of type
+	plug-in
+
+2012-07-19  Sergio Martin <sergio.martin@artica.es>
+
 	* pandoradb.sql
 	pandoradb.postgreSQL.sql
 	pandoradb.oracle.sql

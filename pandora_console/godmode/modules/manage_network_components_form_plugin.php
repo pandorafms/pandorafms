@@ -65,7 +65,8 @@ $macros = json_decode($macros,true);
 $next_name_number = 5;
 $i = 1;
 while(1) {
-	if(!isset($macros[$i]) || $macros[$i]['desc'] == '') {
+	// Always print at least one macro
+	if((!isset($macros[$i]) || $macros[$i]['desc'] == '') && $i > 1) {
 		break;
 	}
 	$macro_desc_name = 'field'.$i.'_desc';
@@ -120,7 +121,7 @@ while(1) {
 	$data[1] = __('Add macro').' <a href="javascript:new_macro()">'.html_print_image('images/add.png',true).'</a>';
 	$data[1] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
 	$data[1] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
-	$data[2] = __('Delete macro').' <a href="javascript:delete_macro()">'.html_print_image('images/cancel.png',true).'</a>';
+	$data[2] = '<div id="delete_macro_button" style="display:none;">'.__('Delete macro').' <a href="javascript:delete_macro()">'.html_print_image('images/cancel.png',true).'</a></div>';
 
 	push_table_row ($data, 'plugin_n');
 ?>

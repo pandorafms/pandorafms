@@ -1248,9 +1248,16 @@ function groups_monitor_fired_alerts ($group_array) {
 					
 }
 
-// Total agents in a group, except disabled ones
-
-function groups_total_agents ($group_array) {
+/**
+ *  Total agents in a group, (by default except disabled ones)
+ *
+ * @param mixed Array or (comma separated) string with groups
+ * @param bool Whether to count disabled agents
+ *
+ * @return mixed Return group count or false if something goes wrong
+ * 
+ */
+function groups_total_agents ($group_array, $disabled = false) {
 	
 	if (empty ($group_array)) {
 		return 0;
@@ -1262,8 +1269,39 @@ function groups_total_agents ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE id_grupo IN $group_clause AND disabled = 0");
+	$sql = "SELECT COUNT(*) FROM tagente WHERE id_grupo IN $group_clause";
+	
+	if (!$disabled)
+		$sql .= " AND disabled = 0";
+	html_debug_print($sql, "/tmp/pp");
+	return db_get_sql ($sql);
 					
+}
+
+/**
+ *  Number of disabled agents in a group
+ *
+ * @param mixed Array or (comma separated) string with groups
+ *
+ * @return mixed Return group count or false if something goes wrong
+ * 
+ */
+function groups_agent_disabled ($group_array) {
+	
+	if (empty ($group_array)) {
+		return 0;
+		
+	} else if (!is_array ($group_array)){
+		$group_array = array($group_array);
+	}
+			
+	$group_clause = implode (",", $group_array);
+	$group_clause = "(" . $group_clause . ")";
+	
+	$sql = "SELECT COUNT(*) FROM tagente WHERE id_grupo IN $group_clause AND disabled = 1";
+	
+	return db_get_sql ($sql);	
+	
 }
 
 ?>

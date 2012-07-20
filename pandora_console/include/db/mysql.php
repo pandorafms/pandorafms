@@ -1046,4 +1046,5 @@ function mysql_db_get_table_count($sql, $search_history_db = false) {
 	
 	return $count;
 }
+
 ?>

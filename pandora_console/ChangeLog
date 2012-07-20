@@ -1,3 +1,11 @@
+2012-07-20  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+        * index.php: bug fix: 'Enforce https' led to wrong URL to
+	cause "error 310: too many redirects".
+	* include/functions_ui.php: bug fix: ui_get_full_url() had
+	returned URL with unnecessary wrong port specifier ":80",
+	when switching 'http' to 'https' by 'enforce https'.
+
 2012-07-19  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/modules/manage_network_components_form.php

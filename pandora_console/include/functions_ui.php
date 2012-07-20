@@ -1880,27 +1880,33 @@ function ui_get_url_refresh ($params = false, $relative = true, $add_post = true
  */
 function ui_get_full_url ($url = '') {
 	global $config;
+	$port = null;   // null means 'use the starndard port'
 	
-	if ($config['https']) {
-		//When $config["https"] is set, always force https
+	if (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')) {
 		$protocol = 'https';
-		$ssl = true;
+		if ( $_SERVER['SERVER_PORT'] != 443) {
+			$port = $_SERVER['SERVER_PORT'];
+		}
 	}
-	elseif (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')) {
+	elseif ($config['https']) {
+		//When $config["https"] is set, enforce https
 		$protocol = 'https';
-		$ssl = true;
 	}
 	else {
 		$protocol = 'http';
-		$ssl = false;
+
+		if ( $_SERVER['SERVER_PORT'] != 80) {
+			$port = $_SERVER['SERVER_PORT'];
+		}
 	}
 	
 	$fullurl = $protocol.'://' . $_SERVER['SERVER_NAME'];
 	
-	if ((!$ssl && $_SERVER['SERVER_PORT'] != 80) || ($ssl && $_SERVER['SERVER_PORT'] != 443)) {
-		$fullurl .= ":".$_SERVER['SERVER_PORT'];
+	// using a different port than the standard
+	if ( $port != null ) {
+		$fullurl .= ":".$port;
 	}
-	
+
 	if ($url === '') {
 		$url = $_SERVER['REQUEST_URI'];
 	}

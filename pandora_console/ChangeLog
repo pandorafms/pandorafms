@@ -1,3 +1,13 @@
+2012-07-20  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+        * index.php: bug fix: 'Enforce https' led to wrong URL to
+	cause "error 310: too many redirects".
+	* include/functions_ui.php: bug fix: ui_get_full_url() had
+	returned URL with unnecessary wrong port specifier ":80",
+	when switching 'http' to 'https' by 'enforce https'.
+
+	Merged from trunk
+
 2012-07-17 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/agentes/group_view.php: Backport of aesthetic bugfix

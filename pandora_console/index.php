@@ -89,7 +89,7 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	// http://en.wikipedia.org/wiki/HTTP_response_splitting
 	$url = str_replace ("\n", "", $url);
 	
-	header ('Location: '.$query);
+	header ('Location: '.$url);
 	exit; //Always exit after sending location headers
 }
 

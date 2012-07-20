@@ -1,3 +1,10 @@
+2012-07-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/db/mysql.php
+	 include/functions_groups.php
+	 include/functions_agents.php: Added functions to count global 
+	 elements (groups or agents), counting disabled elements too. 
+
 2012-07-20  Hirofumi Kosaka  <kosaka@rworks.jp>
 
         * index.php: bug fix: 'Enforce https' led to wrong URL to

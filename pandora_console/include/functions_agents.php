@@ -1882,9 +1882,14 @@ function agents_get_count_incidents ($id_agent) {
 	return db_get_value('count(*)', 'tincidencia', 'id_agent', $id_agent);
 }
 
-
-// Get critical monitors by using the status code in modules.
-
+/**
+ * Get critical monitors by using the status code in modules.
+ *
+ * @param int The agent id
+ * @param string Additional filters
+ *
+ * @return mixed The incidents attached or false
+ */
 function agents_monitor_critical ($id_agent, $filter="") {
 	
 	if ($filter) {
@@ -1925,6 +1930,34 @@ function agents_monitor_ok ($id_agent, $filter="") {
 	}
 	
 	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente.id_agente = $id_agent".$filter);
+}
+
+/**
+ * Get all monitors of an specific agent.
+ *
+ * @param int The agent id
+ * @param string Additional filters
+ * @param bool Whether to retrieve disabled modules or not
+ *
+ * @return mixed Total module count or false
+ */
+function agents_monitor_total ($id_agent, $filter = '', $disabled = false) {
+	
+	if ($filter) {
+		$filter = " AND ".$filter;
+	}
+	
+	$sql = "SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo) 
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE " . //tagente_estado.utimestamp != 0 AND 
+			"tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+			AND tagente_estado.id_agente = tagente.id_agente 
+			AND tagente.id_agente = $id_agent".$filter;
+	
+	if (!$disabled)
+		$sql .= " AND tagente.disabled = 0 AND tagente_modulo.disabled = 0";
+	
+	return db_get_sql ($sql);
 }
 
 //Get alert fired for this agent

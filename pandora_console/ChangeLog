@@ -1,3 +1,11 @@
+2012-07-23 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor_prediction.php,
+	include/functions_modules.php,
+	include/functions_agents.php, operation/tree.php,
+	operation/agentes/estado_agente.php: fixed typo bug in the name of
+	"agetns_tree_view_status_img" for "agents_tree_view_status_img".
+
 2012-07-20 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/db/mysql.php

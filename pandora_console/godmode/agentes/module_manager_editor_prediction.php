@@ -109,8 +109,9 @@ $data[1] .= html_print_label(__("Module"),'prediction_module',true);
 if($id_agente) {
 	$sql = "SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
-		WHERE delete_pending = 0 AND history_data = 1 AND id_agente =  ".$id_agente;
-    $data[1] .= html_print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true);
+		WHERE delete_pending = 0
+			AND history_data = 1 AND id_agente =  ".$id_agente;
+	$data[1] .= html_print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true);
 }
 else {
 	$data[1] .= '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';

@@ -425,7 +425,7 @@ if (is_ajax ())
 						
 						$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
 						
-						$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
+						$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
 							$agent_info["monitor_warning"],
 							$agent_info["monitor_unknown"]);
 						
@@ -451,7 +451,7 @@ if (is_ajax ())
 						
 						$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
 						
-						$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
+						$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
 							$agent_info["monitor_warning"],
 							$agent_info["monitor_unknown"]);
 						
@@ -468,7 +468,7 @@ if (is_ajax ())
 						
 						$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
 						
-						$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
+						$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
 							$agent_info["monitor_warning"],
 							$agent_info["monitor_unknown"]);
 						
@@ -487,7 +487,7 @@ if (is_ajax ())
 								
 								$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
 								
-								$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
+								$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
 									$agent_info["monitor_warning"],
 									$agent_info["monitor_unknown"]);
 								
@@ -506,7 +506,7 @@ if (is_ajax ())
 								
 								$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
 								
-								$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
+								$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
 									$agent_info["monitor_warning"],
 									$agent_info["monitor_unknown"]);
 								

@@ -37,17 +37,17 @@ include_once($config['homedir'] . '/include/functions_tags.php');
  */
 function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $forced_name = false) {
 	global $config;
-
+	
 	$module = modules_get_agentmodule ($id_agent_module);
 	if ($module === false)
 		return false;
 	
-	if($forced_name !== false)
+	if ($forced_name !== false)
 		$module['nombre'] = $forced_name;
-		
+	
 	$modules = agents_get_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => false));
-
+	
 	// These are the modules that exists in the target 
 	if (! empty ($modules))
 		return array_pop (array_keys ($modules));
@@ -119,7 +119,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 			case "oracle":
 				$id_new_module = db_process_sql_insert ('tagente_modulo',
 					$new_module, false);
-				break;				
+				break;
 		}
 		if ($id_new_module === false) {
 			return false;
@@ -130,10 +130,10 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	}
 	
 	$values['id_agente'] = $id_destiny_agent;
-
+	
 	switch ($config['dbtype']) {
 		case "mysql":
-		case "postgresql":	
+		case "postgresql":
 			$result = db_process_sql_insert ('tagente_estado', $values);
 			break;
 		case "oracle":
@@ -195,9 +195,9 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
  * @return True if the module was deleted. False if not.
  */
 function modules_delete_agent_module ($id_agent_module) {
-	if(!$id_agent_module) 
+	if (!$id_agent_module) 
 		return false;
-		
+	
 	$where = array ('id_agent_module' => $id_agent_module);
 	
 	enterprise_hook('config_agents_delete_module_in_conf', array(modules_get_agentmodule_agent($id_agent_module), modules_get_agentmodule_name($id_agent_module)));
@@ -230,7 +230,7 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 	if (!is_array ($values) || empty ($values)) {
 		return ERR_GENERIC;
 	}
-		
+	
 	if (isset ($values['nombre'])) {
 		if(empty ($values['nombre'])) {
 			return ERR_INCOMPLETE;
@@ -239,7 +239,7 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 		$id_agent = modules_get_agentmodule_agent($id);
 		
 		$exists = (bool)db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('nombre' => $values['nombre'], 'id_agente' => $id_agent, 'id_agente_modulo' => "<>$id"));
-
+		
 		if($exists) {
 			return ERR_EXIST;
 		}
@@ -249,19 +249,19 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 	if ($tags !== false) {
 		$return_tag = tags_update_module_tag ($id, $tags);
 	}
-
+	
 	if ($return_tag === false){
-			return ERR_DB;
+		return ERR_DB;
 	}
-		
+	
 	$where = array();
 	$where['id_agente_modulo'] = $id;
 	if ($onlyNoDeletePending) {
 		$where['delete_pending'] = 0;
-	}	
+	}
 	
 	$result = @db_process_sql_update ('tagente_modulo', $values, $where);
-
+	
 	if($result === false) {
 		return ERR_DB;
 	}
@@ -284,12 +284,12 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 function modules_create_agent_module ($id_agent, $name, $values = false, $disableACL = false,
 	$tags = false) {
 	global $config;
-
+	
 	if (!$disableACL) {
 		if (empty ($id_agent) || ! users_access_to_agent ($id_agent, 'AW'))
 			return false;
 	}
-
+	
 	if (empty ($name)) {
 		return ERR_INCOMPLETE;
 	}
@@ -300,7 +300,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	$values['id_agente'] = (int) $id_agent;
 	
 	$exists = (bool)db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('nombre' => $name, 'id_agente' => (int)$id_agent));
-
+	
 	if($exists) {
 		return ERR_EXIST;
 	}
@@ -309,18 +309,18 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	
 	if ($id_agent_module === false)
 		return ERR_DB;
-
+	
 	$return_tag = true;
 	if (($tags !== false) || (empty($tags)))
 		$return_tag = tags_insert_module_tag ($id_agent_module, $tags);
-
+	
 	if ($return_tag === false){
 		db_process_sql_delete ('tagente_modulo',
 			array ('id_agente_modulo' => $id_agent_module));
-
+	
 		return ERR_DB;
 	}
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$result = db_process_sql_insert ('tagente_estado',
@@ -422,7 +422,8 @@ function modules_format_data($data)
 {
 	if (is_numeric ($data)) {
 		$data = format_numeric($data, 2);
-	} else {
+	}
+	else {
 		$data = io_safe_input ($data);
 	}
 	return $data;
@@ -452,7 +453,7 @@ function modules_format_verbatim($data){
 function modules_format_timestamp($ts)
 {
 	global $config;
-
+	
 	// This returns data with absolute user-defined timestamp format
 	// and numeric by data managed with 2 decimals, and not using Graph format 
 	// (replacing 1000 by K and 1000000 by G, like version 2.x
@@ -469,9 +470,9 @@ function modules_format_timestamp($ts)
 function modules_format_delete($id)
 {
 	global $period, $module_id, $config, $group;
-
+	
 	$txt = "";
-
+	
 	if (check_acl ($config['id_user'], $group, "AW") ==1) {
 		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	}
@@ -488,9 +489,9 @@ function modules_format_delete($id)
 function modules_format_delete_string($id)
 {
 	global $period, $module_id, $config, $group;
-
+	
 	$txt = "";
-
+	
 	if (check_acl ($config['id_user'], $group, "AW") ==1) {
 		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	}
@@ -507,9 +508,9 @@ function modules_format_delete_string($id)
 function modules_format_delete_log4x($id)
 {
 	global $period, $module_id, $config, $group;
-
+	
 	$txt = "";
-
+	
 	if (check_acl ($config['id_user'], $group, "AW") ==1) {
 		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	}
@@ -525,8 +526,8 @@ function modules_format_delete_log4x($id)
  */
 function modules_get_agentmodule ($id_agentmodule) {
 	global $config;
-		
-	switch ($config['dbtype']){
+	
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql": 
 			return db_get_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
@@ -579,7 +580,7 @@ function modules_get_agentmodule_is_init ($id_agentmodule) {
 function modules_get_agent_modules_count ($id_agent = 0) {
 	//Make sure we're all int's and filter out bad stuff
 	$id_agent = safe_int ($id_agent, 1);
-
+	
 	if (empty ($id_agent)) {
 		//If the array proved empty or the agent is less than 1 (eg. -1)
 		$filter = '';
@@ -587,7 +588,7 @@ function modules_get_agent_modules_count ($id_agent = 0) {
 	else {
 		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",", (array) $id_agent));
 	}
-
+	
 	return (int) db_get_sql ("SELECT COUNT(*) FROM tagente_modulo" . $filter);
 }
 
@@ -668,7 +669,7 @@ function modules_get_agentmodule_type ($id_agentmodule) {
  */
 function modules_get_agentmodule_kind($id_agentmodule) {
 	$id_modulo = (int) db_get_value ('id_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
-
+	
 	switch($id_modulo) {
 		case 1:
 			return 'dataserver';
@@ -718,7 +719,7 @@ function modules_get_monitor_downs_in_period ($id_agent_module, $period, $date =
 		$date = get_system_time ();
 	}
 	$datelimit = $date - $period;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE
@@ -745,7 +746,7 @@ function modules_get_monitor_downs_in_period ($id_agent_module, $period, $date =
 				$id_agent_module, $datelimit, $date);
 			break;
 	}
-
+	
 	return db_get_sql ($sql);
 }
 
@@ -760,7 +761,7 @@ function modules_get_monitor_downs_in_period ($id_agent_module, $period, $date =
  */
 function modules_get_last_down_timestamp_in_period ($id_agent_module, $period, $date = 0) {
 	global $config;	
-
+	
 	if ($date == 0) {
 		$date = get_system_time ();
 	}
@@ -768,31 +769,34 @@ function modules_get_last_down_timestamp_in_period ($id_agent_module, $period, $
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = sprintf ("SELECT MAX(`timestamp`) FROM `tevento` WHERE
-				event_type = 'monitor_down' 
-				AND `id_agentmodule` = %d 
-				AND `utimestamp` > %d 
-				AND `utimestamp` <= %d",
+			$sql = sprintf ("SELECT MAX(`timestamp`)
+				FROM `tevento`
+				WHERE event_type = 'monitor_down' 
+					AND `id_agentmodule` = %d 
+					AND `utimestamp` > %d 
+					AND `utimestamp` <= %d",
 				$id_agent_module, $datelimit, $date);
 			break;
 		case "postgresql":
-			$sql = sprintf ("SELECT MAX(\"timestamp\") FROM \"tevento\" WHERE
-				event_type = 'monitor_down' 
-				AND \"id_agentmodule\" = %d 
-				AND \"utimestamp\" > %d 
-				AND \"utimestamp\" <= %d",
+			$sql = sprintf ("SELECT MAX(\"timestamp\")
+				FROM \"tevento\"
+				WHERE event_type = 'monitor_down' 
+					AND \"id_agentmodule\" = %d 
+					AND \"utimestamp\" > %d 
+					AND \"utimestamp\" <= %d",
 				$id_agent_module, $datelimit, $date);
 			break;
 		case "oracle":
-			$sql = sprintf ("SELECT MAX(timestamp) FROM tevento WHERE
-				event_type = 'monitor_down' 
-				AND id_agentmodule = %d 
-				AND utimestamp > %d 
-				AND utimestamp <= %d",
+			$sql = sprintf ("SELECT MAX(timestamp)
+				FROM tevento
+				WHERE event_type = 'monitor_down' 
+					AND id_agentmodule = %d 
+					AND utimestamp > %d 
+					AND utimestamp <= %d",
 				$id_agent_module, $datelimit, $date);
 			break;
 	}
-
+	
 	return db_get_sql ($sql);
 }
 
@@ -811,29 +815,33 @@ function modules_get_monitors_in_group ($id_group) {
 		global $config;
 		$id_group = array_keys (users_get_groups ($config['id_user']));
 	}
-
+	
 	if (is_array ($id_group)) {
 		$id_group = implode (",",$id_group);
 	}
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = sprintf ("SELECT `tagente_modulo`.* FROM `tagente_modulo`, `ttipo_modulo`, `tagente` WHERE
-					`id_tipo_modulo` = `id_tipo` 
+			$sql = sprintf ("SELECT `tagente_modulo`.*
+				FROM `tagente_modulo`, `ttipo_modulo`, `tagente`
+				WHERE `id_tipo_modulo` = `id_tipo` 
 					AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente` 
 					AND `ttipo_modulo`.`nombre` LIKE '%%_proc' 
-					AND `tagente`.`id_grupo` IN (%s) ORDER BY `tagente`.`nombre`", $id_group);
+					AND `tagente`.`id_grupo` IN (%s)
+				ORDER BY `tagente`.`nombre`", $id_group);
 			break;
 		case "postgresql":
 		case "oracle":
-			$sql = sprintf ("SELECT tagente_modulo.* FROM tagente_modulo, ttipo_modulo, tagente WHERE
-					id_tipo_modulo = id_tipo 
+			$sql = sprintf ("SELECT tagente_modulo.*
+				FROM tagente_modulo, ttipo_modulo, tagente
+				WHERE id_tipo_modulo = id_tipo 
 					AND tagente.id_agente = tagente_modulo.id_agente 
 					AND ttipo_modulo.nombre LIKE '%%_proc' 
-					AND tagente.id_grupo IN (%s) ORDER BY tagente.nombre", $id_group);
+					AND tagente.id_grupo IN (%s)
+				ORDER BY tagente.nombre", $id_group);
 			break;
 	}
-				
+	
 	return db_get_all_rows_sql ($sql);
 }
 

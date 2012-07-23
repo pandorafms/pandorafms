@@ -40,7 +40,7 @@ if (is_ajax ()) {
 	
 	if ($get_actions_alert_template) {
 		$id_template = get_parameter("id_template");
-
+		
 		$own_info = get_user_info ($config['id_user']);
 		$usr_groups = array();
 		$usr_groups = users_get_groups($config['id_user'], 'LW', true);
@@ -152,12 +152,12 @@ $onheader = array();
 if (check_acl ($config['id_user'], 0, "AW")) {
 	// Prepare the tab system to the future
 	$tab = 'setup';
-
+	
 	/* Setup tab */
 	$setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">' 
-			. html_print_image ("images/setup.png", true, array ("title" =>__('Setup')))
-			. '</a>';
-			
+		. html_print_image ("images/setup.png", true, array ("title" =>__('Setup')))
+		. '</a>';
+	
 	if($tab == 'setup')
 		$setuptab['active'] = true;
 	else
@@ -174,7 +174,7 @@ if (isset($result_delete)) {
 		ui_print_success_message(__("Sucessfully deleted agent"));
 	else
 		ui_print_error_message(__("There was an error message deleting the agent"));
-}	
+}
 
 echo '<form method="post" action="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '">';
 
@@ -437,9 +437,9 @@ foreach ($agents as $agent) {
 		$table->rowclass[$iterator] = 'rowOdd';
 	$rowPair = !$rowPair;
 	$iterator++;
-		
+	
 	$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($agent["id_agente"]);
-						
+	
 	$agent_info["monitor_critical"] = agents_monitor_critical ($agent["id_agente"]);
 	$agent_info["monitor_warning"] = agents_monitor_warning ($agent["id_agente"]);
 	$agent_info["monitor_unknown"] = agents_monitor_unknown ($agent["id_agente"]);
@@ -447,10 +447,9 @@ foreach ($agents as $agent) {
 	
 	$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
 	
-	$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
-															$agent_info["monitor_warning"],
-															$agent_info["monitor_unknown"]);
-															
+	$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
+		$agent_info["monitor_warning"], $agent_info["monitor_unknown"]);
+	
 	//Count all modules
 	$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
 	

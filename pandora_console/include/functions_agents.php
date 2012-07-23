@@ -1240,7 +1240,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 			$where .= $filter;
 		}
 	}
-
+	
 	if (empty ($details)) {
 		$details = "nombre";
 	}
@@ -1630,11 +1630,12 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		$filter_modules['disabled'] = 0;
 		$filter_modules['delete_pending'] = 0;
 		// Get all non disabled modules of the agent
-		$all_modules = db_get_all_rows_filter('tagente_modulo', $filter_modules, 'id_agente_modulo'); 
+		$all_modules = db_get_all_rows_filter('tagente_modulo',
+			$filter_modules, 'id_agente_modulo'); 
 		
 		$result_modules = array(); 
 		// Skip non init modules
-		foreach ($all_modules as $module){
+		foreach ($all_modules as $module) {
 			if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
 				$modules[] = $module['id_agente_modulo'];
 			}
@@ -1647,7 +1648,8 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		$modules_status[] = modules_get_agentmodule_status($module);
 		
 		$module_type = modules_get_agentmodule_type($module);
-		if(($module_type >= 21 && $module_type <= 23) || $module_type == 100) {
+		if (($module_type >= 21 && $module_type <= 23) ||
+			$module_type == 100) {
 			$modules_async++;
 		}
 	}
@@ -1700,7 +1702,6 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 	else {
 		return AGENT_MODULE_STATUS_NORMAL;
 	}
-
 }
 
 /**
@@ -1989,8 +1990,7 @@ function agents_tree_view_alert_img ($alert_fired) {
 
 //Returns the status image to display tree view
 
-function agetns_tree_view_status_img ($critical, $warning, $unknown) {
-	
+function agents_tree_view_status_img ($critical, $warning, $unknown) {
 	if ($critical > 0) {
 		return ui_print_status_image (STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'), true);
 	}

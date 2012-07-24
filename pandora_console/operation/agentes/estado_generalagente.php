@@ -180,20 +180,21 @@ echo " / ";
 
 if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") { 
 	echo __('Never');
-} else {
+}
+else {
 	echo $agent["ultimo_contacto_remoto"];
 }
 echo '</td></tr>';
 
 // Timezone Offset
 if ($agent['timezone_offset'] != 0) {
-	echo '<tr><td class="datos2"><b>'.__('Timezone Offset'). '</b></td>';
-	echo '<td class="datos2" colspan="2">'.$agent["timezone_offset"].'</td></tr>';
+	echo '<tr><td class="datos2"><b>' . __('Timezone Offset') . '</b></td>';
+	echo '<td class="datos2" colspan="2">' . $agent["timezone_offset"] . '</td></tr>';
 }
 // Next contact (agent)
 $progress = agents_get_next_contact($id_agente);
 
-echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
+echo '<tr><td class="datos"><b>' . __('Next agent contact') . '</b></td>';
 echo '<td class="datos f9" colspan="2">' . progress_bar($progress, 200, 20) . '</td></tr>';
 
 // Custom fields

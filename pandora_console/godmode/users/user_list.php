@@ -235,7 +235,8 @@ foreach ($info as $user_id => $user_info) {
 		$data[3] = html_print_image ("images/user_suit.png", true,
 			array ("alt" => __('Admin'),
 				"title" => __('Administrator'))).'&nbsp;';
-	} else {
+	}
+	else {
 		$data[3] = html_print_image ("images/user_green.png", true,
 			array ("alt" => __('User'),
 				"title" => __('Standard User'))).'&nbsp;';
@@ -250,7 +251,8 @@ foreach ($info as $user_id => $user_info) {
 			$data[3] .= groups_get_name ($row["id_grupo"]);
 			$data[3] .= "<br />";
 		}
-	} else {
+	}
+	else {
 		$data[3] .= __('The user doesn\'t have any assigned profile/group');
 	}
 	$data[3] .= "</span></a>";
@@ -266,7 +268,8 @@ foreach ($info as $user_id => $user_info) {
 	$data[5] .= '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, array('title' => __('Edit'))).'</a>';
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
 		$data[5] .= "&nbsp;&nbsp;<a href='index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
-	} else {
+	}
+	else {
 		$data[5] .= ''; //Delete button not in this mode
 	}
 	array_push ($table->data, $data);

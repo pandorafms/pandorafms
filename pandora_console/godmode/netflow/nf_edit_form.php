@@ -66,8 +66,8 @@ if ($id) {
 	$aggregate = $filter['aggregate'];
 	$output = $filter['output'];
 	$advanced_filter = $filter['advanced_filter'];
-
-} else {
+}
+else {
 	$name = '';
 	$assign_group = '';
 	$ip_dst = '';

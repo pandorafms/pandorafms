@@ -28,78 +28,6 @@ require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . "/include/functions_groups.php");
 require_once($config['homedir'] . '/include/functions_users.php');
 
-function process_manage_edit ($module_name, $agents_select = null) {
-	if (is_int ($module_name) && $module_name <= 0) {
-		echo '<h3 class="error">'.__('No modules selected').'</h3>';
-		return false;
-	}
-	
-	/* List of fields which can be updated */
-	$fields = array ('min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'module_interval',
-		'disabled', 'post_process', 'unit', 'snmp_community', 'tcp_send', 'custom_string_1', 'plugin_parameter', 
-		'custom_string_2', 'custom_string_3', 'min', 'max', 'id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
-	$values = array ();
-
-	// Specific snmp reused fields
-	if(get_parameter ('tcp_send', '') == 3) {
-		$plugin_user_snmp = get_parameter ('plugin_user_snmp', '');
-		if($plugin_user_snmp != '') {
-			$values['plugin_user'] = $plugin_user_snmp;
-		}
-		$plugin_pass_snmp = get_parameter ('plugin_pass_snmp', '');
-		if($plugin_pass_snmp != '') {
-			$values['plugin_pass'] = $plugin_pass_snmp;
-		}
-	}
-	
-	foreach ($fields as $field) {
-		$value = get_parameter ($field, '');
-		if ($value != '') {
-			$values[$field] = $value;
-		}
-	}
-	
-	if (strlen(get_parameter('history_data')) > 0) {
-		$values['history_data'] = get_parameter('history_data');
-	}
-
-	// Whether to update module tag info
-	$update_tags = get_parameter('id_tag', false);
-	
-
-	
-if (array_search(0, $agents_select) !== false) {
-	$modules = db_get_all_rows_filter ('tagente_modulo',
-		array ('nombre' => $module_name),
-		array ('id_agente_modulo'));
-}
-else {
-	$modules = db_get_all_rows_filter ('tagente_modulo',
-		array ('id_agente' => $agents_select,
-			'nombre' => $module_name),
-		array ('id_agente_modulo'));
-}
-	
-	db_process_sql_begin ();
-	
-	if ($modules === false)
-		return false;
-	
-	foreach ($modules as $module) {
-		$result = modules_update_agent_module ($module['id_agente_modulo'], $values, true, $update_tags);
-		
-		if (is_error($result)) {
-			db_process_sql_rollback ();
-			
-			return false;
-		}
-	}
-	
-	db_process_sql_commit ();
-	
-	return true;
-}
-
 $module_type = (int) get_parameter ('module_type');
 $idGroupMassive = (int) get_parameter('id_group_massive');
 $idAgentMassive = (int) get_parameter('id_agent_massive');
@@ -116,22 +44,22 @@ $update = (bool) get_parameter_post ('update');
 
 if ($update) {
 	$agents_ = '';
-	if($selection_mode == 'modules') {	
+	if ($selection_mode == 'modules') {
 		$force = get_parameter('force_type', false);
 		
-		if($agents_select == false) {
+		if ($agents_select == false) {
 			$agents_select = array();
 			$agents_ = array();
 		}
-
-		foreach($agents_select as $agent_name) {
+		
+		foreach ($agents_select as $agent_name) {
 			$agents_[] = agents_get_agent_id($agent_name);
 		}
 		$modules_ = $module_name;
 	}
-	else if($selection_mode == 'agents') {
+	else if ($selection_mode == 'agents') {
 		$force = get_parameter('force_group', false);
-
+		
 		$agents_ = $agents_id;
 		$modules_ = $modules_select;
 	}
@@ -139,13 +67,13 @@ if ($update) {
 	$success = 0;
 	$count = 0;
 	
-	if($agents_ == false) {
+	if ($agents_ == false) {
 		$agents_ = array();
 	}
 	
 	// If the option to select all of one group or module type is checked
-	if($force) {
-		if($force == 'type') {
+	if ($force) {
+		if ($force == 'type') {
 			$condition = '';
 			if($module_type != 0)
 				$condition = ' AND t2.id_tipo_modulo = '.$module_type;
@@ -153,24 +81,24 @@ if ($update) {
 			$agents_ = db_get_all_rows_sql('SELECT DISTINCT(t1.id_agente)
 				FROM tagente t1, tagente_modulo t2
 				WHERE t1.id_agente = t2.id_agente');
-			foreach($agents_ as $id_agent) {
+			foreach ($agents_ as $id_agent) {
 				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type),'nombre');
-
-				if($module_name == false) {
+				
+				if ($module_name == false) {
 					$module_name = array();
 				}
-				foreach($module_name as $mod_name) {
+				foreach ($module_name as $mod_name) {
 					$result = process_manage_edit ($mod_name['nombre'], $id_agent['id_agente']);
 					$count ++;
 					$success += (int)$result;
 				}
 			}
 		}
-		else if($force == 'group') {
+		else if ($force == 'group') {
 			$agents_ = array_keys (agents_get_group_agents ($group_select, false, "none"));
-			foreach($agents_ as $id_agent) {
+			foreach ($agents_ as $id_agent) {
 				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent),'nombre');
-				if($module_name == false) {
+				if ($module_name == false) {
 					$module_name = array();
 				}
 				foreach($module_name as $mod_name) {
@@ -184,13 +112,13 @@ if ($update) {
 		// We empty the agents array to skip the standard procedure
 		$agents_ = array();
 	}
-
+	
 	foreach($agents_ as $agent_) {
 		
 		if($modules_ == false) {
 			$modules_ = array();
 		}
-	
+		
 		foreach($modules_ as $module_) {
 			$result = process_manage_edit ($module_, $agents_);
 			$count ++;
@@ -423,7 +351,7 @@ $table->data['edit8'][3] = html_print_select_from_sql ('SELECT id_tag, name FROM
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit">';
 html_print_table ($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_input_hidden ('update', 1);
 html_print_submit_button (__('Update'), 'go', false, 'class="sub upd"');
 echo '</div>';
@@ -452,10 +380,10 @@ $(document).ready (function () {
 	$("#module_name").change(module_changed_by_multiple_modules);
 	
 	clean_lists();
-
+	
 	$(".select_modules_row").css('display', '<?php echo $modules_row?>');
 	$(".select_agents_row").css('display', '<?php echo $agents_row?>');
-
+	
 	// Trigger change to refresh selection when change selection mode
 	$("#agents_selection_mode").change (function() {
 		$("#module_name").trigger('change');
@@ -486,7 +414,7 @@ $(document).ready (function () {
 		else {
 			filter = "id_tipo_modulo="+this.value;
 		}
-
+		
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
 		$("#module_name").attr ("disabled", "disabled")
@@ -529,7 +457,7 @@ $(document).ready (function () {
 	}
 	
 	$('input[type=checkbox]').change (
-		function () {			
+		function () {
 			if(this.id == "checkbox-force_type"){
 				if(this.checked) {
 					$(".select_modules_row_2").css('display', 'none');
@@ -571,7 +499,7 @@ $(document).ready (function () {
 	$("#form_edit input[name=selection_mode]").change (function () {
 		selector = this.value;
 		clean_lists();
-
+		
 		if(selector == 'agents') {
 			$(".select_modules_row").css('display', 'none');
 			$(".select_agents_row").css('display', '');
@@ -593,7 +521,7 @@ $(document).ready (function () {
 	
 	$("#groups_select").change (
 		function () {
-
+			
 			if (this.value < 0) {
 				clean_lists();
 				$(".select_agents_row_2").css('display', 'none');
@@ -616,7 +544,7 @@ $(document).ready (function () {
 				},
 				function (data, status) {
 					$("#id_agents").html('');
-				
+					
 					jQuery.each (data, function (id, value) {
 						option = $("<option></option>").attr ("value", value["id_agente"]).html (value["nombre"]);
 						$("#id_agents").append (option);
@@ -629,3 +557,84 @@ $(document).ready (function () {
 });
 /* ]]> */
 </script>
+<?php
+function process_manage_edit ($module_name, $agents_select = null) {
+	if (is_int ($module_name) && $module_name < 0) {
+		echo '<h3 class="error">'.__('No modules selected').'</h3>';
+		
+		return false;
+	}
+	
+	/* List of fields which can be updated */
+	$fields = array ('min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'module_interval',
+		'disabled', 'post_process', 'unit', 'snmp_community', 'tcp_send', 'custom_string_1', 'plugin_parameter', 
+		'custom_string_2', 'custom_string_3', 'min', 'max', 'id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
+	$values = array ();
+	
+	// Specific snmp reused fields
+	if(get_parameter ('tcp_send', '') == 3) {
+		$plugin_user_snmp = get_parameter ('plugin_user_snmp', '');
+		if($plugin_user_snmp != '') {
+			$values['plugin_user'] = $plugin_user_snmp;
+		}
+		$plugin_pass_snmp = get_parameter ('plugin_pass_snmp', '');
+		if($plugin_pass_snmp != '') {
+			$values['plugin_pass'] = $plugin_pass_snmp;
+		}
+	}
+	
+	foreach ($fields as $field) {
+		$value = get_parameter ($field, '');
+		if ($value != '') {
+			$values[$field] = $value;
+		}
+	}
+	
+	if (strlen(get_parameter('history_data')) > 0) {
+		$values['history_data'] = get_parameter('history_data');
+	}
+	
+	// Whether to update module tag info
+	$update_tags = get_parameter('id_tag', false);
+	
+	if (array_search(0, $agents_select) !== false) {
+		//Apply at All agents.
+		$modules = db_get_all_rows_filter ('tagente_modulo',
+			array ('nombre' => $module_name),
+			array ('id_agente_modulo'));
+	}
+	else {
+		if ($module_name == 0) {
+			//Any module
+			$modules = db_get_all_rows_filter ('tagente_modulo',
+				array ('id_agente' => $agents_select),
+				array ('id_agente_modulo'));
+		}
+		else {
+			$modules = db_get_all_rows_filter ('tagente_modulo',
+				array ('id_agente' => $agents_select,
+					'nombre' => $module_name),
+				array ('id_agente_modulo'));
+		}
+	}
+	
+	db_process_sql_begin ();
+	
+	if ($modules === false)
+		return false;
+	
+	foreach ($modules as $module) {
+		$result = modules_update_agent_module ($module['id_agente_modulo'], $values, true, $update_tags);
+		
+		if (is_error($result)) {
+			db_process_sql_rollback ();
+			
+			return false;
+		}
+	}
+	
+	db_process_sql_commit ();
+	
+	return true;
+}
+?>

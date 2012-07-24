@@ -45,13 +45,14 @@ if ($delete) {
 		
 	$result2 = db_process_sql_delete ('tnetflow_report_content',
 		array ('id_filter' => $id_filter));
-
+	
 	if ($result !== false) {
 		$result = true;
-	} else {
+	}
+	else {
 		$result = false;
 	}
-		
+	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));

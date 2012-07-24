@@ -61,7 +61,8 @@ if ($id_rc) {
 	$max_val = $item['max'];
 	$show_graph = $item['show_graph'];
 	
-} else {
+}
+else {
 	$name_filter = '';
 	$max_val = '';
 	$show_graph = '';
@@ -99,7 +100,8 @@ if ($create){
 	$order = $result['max_order'];
 	if ($order == '') {
 		$order = 0;
-	} else {
+	}
+	else {
 		$order++;
 	}
 	
@@ -113,11 +115,12 @@ if ($create){
 	$id_rc = db_process_sql_insert('tnetflow_report_content', $values);
 	if ($id_rc === false) {
 		echo '<h3 class="error">'.__ ('Error creating item').'</h3>';
-	} else {
+	}
+	else {
 		echo '<h3 class="suc">'.__ ('Item created successfully').'</h3>';
 	}
 }
-	
+
 $table->width = '70%';
 $table->border = 0;
 $table->cellspacing = 3;
@@ -168,11 +171,11 @@ if ($id_rc) {
 	html_print_input_hidden ('update', 1);
 	html_print_input_hidden ('id_rc', $id_rc);
 	html_print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('create', 1);
 	html_print_submit_button (__('Create item'), 'crt', false, 'class="sub wand"');
 }
 echo '</div>';
 echo '</form>';
-
 ?>

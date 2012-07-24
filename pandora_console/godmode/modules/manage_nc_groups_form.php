@@ -33,7 +33,8 @@ if ($id) {
 	$group = network_components_get_group ($id);
 	$name = $group['name'];
 	$parent = $group['parent'];
-} else {
+}
+else {
 	$name = '';
 	$parent = '';
 }
@@ -57,7 +58,8 @@ if ($id) {
 	html_print_input_hidden ('update', 1);
 	html_print_input_hidden ('id', $id);
 	html_print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('create', 1);
 	html_print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
 }

@@ -39,7 +39,8 @@ $options_alerts = array('add_alerts' => __('Massive alerts addition'), 'delete_a
 $options_agents = array('edit_agents' => __('Massive agents edition'), 'delete_agents' => __('Massive agents deletion'));
 
 if (check_acl ($config['id_user'], 0, "PM")) {
-	$options_users = array('add_profiles' => __('Massive profiles addition'), 'delete_profiles' => __('Massive profiles deletion'));
+	$options_users = array('add_profiles' => __('Massive profiles addition'),
+		'delete_profiles' => __('Massive profiles deletion'));
 }
 else {
 	$options_users = array();
@@ -151,43 +152,38 @@ $submit_add = get_parameter('crtbutton');
 
 echo '<div id="loading" display="none">';
 echo html_print_image("images/wait.gif", true, array("border" => '0')) . '<br />';
-echo '<strong>'.__('Please wait').'...</strong>';
+echo '<strong>' . __('Please wait...') . '</strong>';
 echo '</div>';
-
-
 ?>
 
 <script language="javascript" type="text/javascript">
-
-
-$(document).ready (function () {
-	$('#manage_config_form').submit( function() {
-		confirm = confirm(" <?php echo __('Are you sure?'); ?> ");
-		if (confirm)
-			$("#loading").css("display", "");
-		else
-			return false;
+	$(document).ready (function () {
+		$('#manage_config_form').submit( function() {
+			confirm_status = confirm(" <?php echo __('Are you sure?'); ?> ");
+			if (confirm_status)
+				$("#loading").css("display", "");
+			else
+				return false;
+		});
+		
+		$('#form_edit').submit( function() {
+			confirm_status = confirm(" <?php echo __('Are you sure?'); ?> ");
+			if (confirm_status)
+				$("#loading").css("display", "");
+			else
+				return false;	
+		});
+		
+		$('[id^=form]').submit( function() {
+			confirm_status = confirm(" <?php echo __('Are you sure?'); ?> ");
+			if (confirm_status)
+				$("#loading").css("display", "");
+			else
+				return false;
+		});
+		
+		$("#loading").css("display", "none");
 	});
-	
-	$('#form_edit').submit( function() {
-		confirm = confirm(" <?php echo __('Are you sure?'); ?> ");
-		if (confirm)
-			$("#loading").css("display", "");
-		else
-			return false;	
-	});
-	
-	$('[id^=form]').submit( function() {
-		confirm = confirm(" <?php echo __('Are you sure?'); ?> ");
-		if (confirm)
-			$("#loading").css("display", "");
-		else
-			return false;
-	});
-	
-	$("#loading").css("display", "none");
-});
-
 </script>
 
 <?php

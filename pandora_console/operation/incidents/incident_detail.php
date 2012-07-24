@@ -237,7 +237,8 @@ echo '<tr><td class="datos"><b>'.__('Incident').'</b></td><td colspan="3" class=
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_input_text ("titulo", $titulo,'', 70);
-} else {
+}
+else {
 	html_print_input_text_extended ("titulo", $titulo, "", "", 70, "", false, "", "readonly"); 
 }
 
@@ -250,14 +251,16 @@ echo '<tr><td class="datos"><b>'.__('Owner').'</b></td><td class="datos">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select (users_get_info (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135");
-} else {
+}
+else {
 	html_print_select (users_get_info (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135", true);
 }
 echo '</td><td class="datos"><b>'.__('Status').'</b></td><td class="datos">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select (incidents_get_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135');
-} else {
+}
+else {
 	html_print_select (incidents_get_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135', true);
 }
 echo '</td></tr>';
@@ -276,7 +279,8 @@ foreach ($return as $row) {
 // Only owner could change source or user with Incident management privileges
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select ($fields, "origen_form", $origen, '', '', '', false, false, false, 'w135');
-} else {
+}
+else {
 	html_print_select ($fields, "origen_form", $origen, '', '', '', false, false, false, 'w135', true);
 }
 echo '</td><td class="datos2"><b>'.__('Group').'</b></td><td class="datos2">';
@@ -284,7 +288,8 @@ echo '</td><td class="datos2"><b>'.__('Group').'</b></td><td class="datos2">';
 // Group combo
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select_groups($config["id_user"], "IR", true, "grupo_form", $id_grupo, '', '', '', false, false, false, 'w135');
-} else {
+}
+else {
 	html_print_select_groups($config["id_user"], "IR", true, "grupo_form", $id_grupo, '', '', '', false, false, true, 'w135', true);
 }
 
@@ -300,7 +305,8 @@ else {
 echo '</td><td class="datos"><b>'.__('Creator').'</b></td><td class="datos">';
 if (empty ($id_creator)) {
 	echo 'SYSTEM';
-} else {
+}
+else {
 	echo $id_creator.' (<i>'.get_user_fullname($id_creator).'</i>)';
 }
 
@@ -336,9 +342,11 @@ echo '</td></tr></table><div style="width: 98%; text-align:right;">';
 // Only if user is the used who opened incident or (s)he is admin
 if (isset ($id_inc) AND ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"]))) {
 	html_print_submit_button (__('Update incident'), "accion", false, 'class="sub upd"');
-} elseif (check_acl ($config["id_user"], $id_grupo, "IW")) {
+}
+elseif (check_acl ($config["id_user"], $id_grupo, "IW")) {
 	html_print_submit_button (__('Create'), "accion", false, 'class="sub wand"');
-} else {
+}
+else {
 	html_print_submit_button (__('Submit'), "accion", true, 'class="sub upd"');
 }
 echo "</div></form>";
@@ -350,7 +358,7 @@ if (isset ($id_inc)) {
 	// ********************************************************************
 	
 	echo '<div>';
-
+	
 	echo '<a class="note_control" href="#">';
 	echo html_print_image ('images/add.png', true);
 	echo __('Add note');
@@ -361,7 +369,7 @@ if (isset ($id_inc)) {
 		<tr><td class="datos2"><textarea name="nota" rows="5" cols="70" style="height: 100px;"></textarea></td>
 		<td valign="bottom"><input name="addnote" type="submit" class="sub wand" value="'.__('Add').'"></td></tr>
 		</table></form></div><div>';
-
+	
 	$result = incidents_get_notes ($id_inc);
 	
 	$table->cellpadding = 4;
@@ -394,34 +402,34 @@ if (isset ($id_inc)) {
 	}
 	unset ($table);
 	
-
+	
 	// ************************************************************
 	// Files attached to this incident
 	// ************************************************************
-
+	
 	$result = incidents_get_attach ($id_inc);
-
+	
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->class = "databox";
 	$table->width = '98%';
 	$table->head = array ();
 	$table->data = array ();
-
+	
 	$table->head[0] = __('Filename');
 	$table->head[1] = __('Description');
 	$table->head[2] = __('Size');
 	$table->head[3] = __('Delete');
-
+	
 	$table->align[2] = "center";
 	$table->align[3] = "center";
-
+	
 	foreach ($result as $row) {
 		if (file_exists($config['homedir'] . '/attachment/pand'.$row["id_attachment"].'_'.io_safe_output($row["filename"]). ".zip"))
 			$url = 'attachment/pand'.$row["id_attachment"].'_'.io_safe_output($row["filename"]). ".zip";
 		else
 			$url = 'attachment/pand'.$row["id_attachment"].'_'.io_safe_output($row["filename"]);
-				
+		
 		$data[0] = html_print_image("images/disk.png", true, array("border" => '0', "align" => "top")) .
 			'&nbsp;&nbsp;<a target="_new" href="' . $url . '"><b>'.$row["filename"].'</b></a>';
 		$data[1] = $row["description"];
@@ -434,7 +442,7 @@ if (isset ($id_inc)) {
 		}
 		array_push ($table->data, $data);
 	}
-
+	
 	if (!empty ($table->data)) {
 		echo "<h4>".__('Attached files')."</h4>";
 		echo '<form method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&id='.$id_inc.'">';
@@ -442,22 +450,22 @@ if (isset ($id_inc)) {
 		echo '</form>';
 	}
 	unset ($table);
-
+	
 	// ************************************************************
 	// Upload control
 	// ************************************************************
-
-
+	
+	
 	// Upload control
 	if ((check_acl($config["id_user"], $id_grupo, "IW")==1)) {
-
+		
 		echo '<div>';
 		echo '<a class="attachment" href="#">';
 		echo html_print_image ('images/add.png', true);
 		echo __('Add attachment');
 		echo '</a>';
 		echo '</div>';
-
+		
 		echo '<div><form method="post" id="file_control" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data"><h4>'.__('Add attachment').'</h4>';
 		echo '<table cellpadding="4" cellspacing="3" class="databox" width="98%">
 			<tr><td class="datos">'.__('Filename').'</td><td class="datos"><input type="file" name="userfile" value="userfile" class="sub" size="40" /></td></tr>
@@ -467,7 +475,6 @@ if (isset ($id_inc)) {
 	}
 }
 ?>
-
 <script>
 $(document).ready (function () {
 	agent_autocomplete('#text-agent', '#hidden-server_name', '#hidden-id_agent');

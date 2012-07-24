@@ -85,10 +85,11 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 			
 			if ($result) {
 				db_pandora_audit("Module management", "Update module template #$id_np");
-			} else {
+			}
+			else {
 				db_pandora_audit("Module management", "Fail try to update module template #$id_np");
 			}
-	
+			
 			ui_print_result_message ($result !== false,
 				__('Successfully updated network profile'),
 				__('Error updating network profile'));
@@ -100,7 +101,8 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 			
 			if ($result) {
 				db_pandora_audit("Module management", "Create module template #$result");
-			} else {
+			}
+			else {
 				db_pandora_audit("Module management", "Fail try to create module template");
 			}
 			
@@ -109,9 +111,10 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 				__('Error adding network profile'));
 			$id_np = (int) $result; //Will return either 0 (in case of error) or an int
 		}
-	} else {
+	}
+	else {
 		ui_print_result_message(false, "", _("Cannot create a template without name"));
-	}	
+	}
 
 }
 elseif ($id_np > 0) {

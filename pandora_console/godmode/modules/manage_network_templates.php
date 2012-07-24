@@ -141,7 +141,8 @@ if ($export_profile) {
 	foreach ($components[0] as $row_name => $detail) {
 		if (is_numeric ($row_name)) {
 			$inv_names[] = $row_name;
-		} else {
+		}
+		else {
 			$row_names[] = $row_name;
 		}
 	}

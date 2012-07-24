@@ -263,12 +263,13 @@ echo '</form>';
 
 if ($count < 1) {
 	echo '<div class="nf">'.__('No incidents match your search filter').'</div><br />';
-} else {
+}
+else {
 	// TOTAL incidents
 	$url = "index.php?sec=workspace&amp;sec2=operation/incidents/incident";
-
+	
 	$estado = -1;
-
+	
 	// add form filter values for group, priority, state, and search fields: user and text
 	if ($grupo != -1)
 		$url .= "&amp;grupo=".$grupo;
@@ -280,7 +281,7 @@ if ($count < 1) {
 		$url .= "&amp;usuario=".$usuario;
 	if ($texto != '')
 		$url .= "&amp;texto=".$texto;
-
+	
 	// Show pagination
 	ui_pagination ($count, $url, $offset, 0, false);	//($count + $offset) it's real count of incidents because it's use LIMIT $offset in query.
 	echo '<br />';
@@ -342,7 +343,8 @@ if ($count < 1) {
 		
 		if (check_acl ($config["id_user"], $row["id_grupo"], "IM") || $config["id_user"] == $row["id_usuario"] || $config["id_user"] == $row["id_creator"]) {
 			$data[8] = html_print_checkbox ("id_inc[]", $row["id_incidencia"], false, true);
-		} else {
+		}
+		else {
 			$data[8] = '';
 		}
 		
@@ -356,7 +358,7 @@ if ($count < 1) {
 	if (check_acl ($config["id_user"], 0, "IW")) {
 		html_print_submit_button (__('Delete incidents'), 'delete_btn', false, 'class="sub delete"');
 	}
-
+	
 	if (check_acl ($config["id_user"], 0, "IM")) {
 		html_print_submit_button (__('Become owner'), 'own_btn', false, 'class="sub upd"');
 	}

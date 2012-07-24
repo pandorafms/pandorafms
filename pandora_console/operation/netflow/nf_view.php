@@ -42,7 +42,7 @@ if ($id) {
 
 $period = get_parameter('period', '86400');
 $update_date = get_parameter('update_date', 0);
-if($update_date){
+if ($update_date) {
 	$date = get_parameter_post ('date');
 	$time = get_parameter_post ('time');
 	$interval = get_parameter('period','86400');
@@ -72,19 +72,19 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_v
 	$table->cellpadding = 5;
 	$table->class = "databox_color";
 	$table->style[0] = 'vertical-align: top;';
-
+	
 	$table->data = array ();
-
+	
 	$table->data[0][0] = '<b>'.__('Date').'</b>';
-
+	
 	$table->data[0][1] = html_print_input_text ('date', $date, false, 10, 10, true);
 	$table->data[0][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-date'),this);"));
 	$table->data[0][1] .= html_print_input_text ('time', $time, false, 10, 5, true);
-
+	
 	$table->data[1][0] = '<b>'.__('Interval').'</b>';
 	$table->data[1][1] = html_print_select (netflow_get_valid_intervals (), 'period', $period, '', '', 0, true, false, false);
 	html_print_table ($table);
-
+	
 	echo '<div class="action-buttons" style="width:60%;">';
 	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 	html_print_input_hidden ('update_date', 1);
@@ -107,7 +107,7 @@ if (empty ($all_rcs)) {
 
 // Process report items
 for ($x = 0; isset($all_rcs[$x]['id_rc']); $x++) {
-
+	
 	// Get report item
 	$report_id = $all_rcs[$x]['id_rc'];
 	$content_report = db_get_row_sql("SELECT * FROM tnetflow_report_content WHERE id_rc='$report_id'");
@@ -120,21 +120,18 @@ for ($x = 0; isset($all_rcs[$x]['id_rc']); $x++) {
 	
 	// Get the command to call nfdump
 	$command = netflow_get_command ($filter);
-
+	
 	if ($filter['aggregate'] != 'none') {
 		echo '<h4>' . $filter['id_name'] . ' (' . __($filter['aggregate']) . '/' . __($filter['output']) . ')</h4>';
-	} else {
+	}
+	else {
 		echo '<h4>' . $filter['id_name'] . ' (' . __($filter['output']) . ')</h4>';
 	}
-
+	
 	// Build a unique id for the cache
 	$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
-
+	
 	// Draw
 	netflow_draw_item ($start_date, $end_date, $type, $filter, $command, $filter, $max_aggregates, $unique_id);
-
 }
-
 ?>
-
-

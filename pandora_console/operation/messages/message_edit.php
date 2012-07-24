@@ -50,7 +50,8 @@ if ($read_message) {
 	$message_id = (int) get_parameter ("id_message");
 	if ($show_sent) {
 		$message = messages_get_message_sent ($message_id);
-	} else {
+	}
+	else {
 		$message = messages_get_message ($message_id);
 		messages_process_read ($message_id);
 	}
@@ -88,11 +89,12 @@ if ($read_message) {
 	
 	$table->data[3][0] = __('Message');
 	$table->data[3][1] = html_print_textarea ("message", 15, 255, $message["mensaje"], 'readonly', true);
-
+	
 	//Prevent RE: RE: RE:
 	if (strstr ($message["subject"], "RE:")) {
 		$new_subj = $message["subject"];
-	} else {
+	}
+	else {
 		$new_subj = "RE: ".$message["subject"];
 	}
 	
@@ -100,11 +102,11 @@ if ($read_message) {
 	$new_msg = "\n\n\nOn ".date ($config["date_format"], $message["timestamp"]).' '.$user_name.' '.__('wrote').":\n\n".$message["mensaje"];
 	
 	echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1&amp;delete_message=1&amp;id='.$message_id.'">';
-		html_print_table($table);	
+		html_print_table($table);
 		echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
 			html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 		echo "</div>";
-	echo "</form>";	
+	echo "</form>";
 	
 	echo '<form method="post" action="index.php?sec=workspace&sec2=operation/messages/message_edit&amp;new_msg=1&amp;reply=1">';
 		html_print_input_hidden ("dst_user", $message["id_usuario_origen"]);

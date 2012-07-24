@@ -401,15 +401,16 @@ if ($autorefresh_toogle == 'false'){
 } 
 else{
 	// Keeps state with pagination
-	if ($autorefresh_toogle == 'no'){
+	if ($autorefresh_toogle == 'no') {
 		html_print_input_hidden('toogle_filter', 'false');
-	} else {
+	}
+	else {
 		
 		// If update button has been pushed then don't collapse filter
-		if ($update_pressed == 'false'){
+		if ($update_pressed == 'false') {
 			html_print_input_hidden('toogle_filter', 'false');
 		} // Else collapse filter
-		else{
+		else {
 			html_print_input_hidden('toogle_filter', 'true');
 		}
 	}
@@ -629,9 +630,11 @@ foreach ($result as $event) {
 	if ($group_rep != 0) {
 		if ($event["max_estado"] == 2) {
 			$estado = 2;
-		} else if ($event["min_estado"] == 0) {
+		}
+		else if ($event["min_estado"] == 0) {
 			$estado = 0;
-		} else {
+		}
+		else {
 			$estado = 1;
 		}
 	}
@@ -639,7 +642,7 @@ foreach ($result as $event) {
 	else {
 		$estado = $event["estado"];
 	}
-	// Colored box	
+	// Colored box
 	switch($estado) {
 		case 0:
 			$img_st = "images/star.png";
@@ -689,7 +692,7 @@ foreach ($result as $event) {
 			$img_sev = "images/status_sets/default/severity_critical.png";
 			break;
 	}
-		
+	
 	if (in_array('evento', $show_fields)) {
 		// Event description
 		$data[$i] = '<span title="'.$event["evento"].'" class="f9">';
@@ -698,7 +701,7 @@ foreach ($result as $event) {
 		$data[$i] .= '</a></span>';
 		$i++;
 		
-	}	
+	}
 	
 	if (in_array('id_agente', $show_fields)) {
 		$data[$i] = '<span style="color: #000000">';
@@ -945,7 +948,8 @@ foreach ($result as $event) {
 	$string .= '<b>' . __('Agent name') . '</b></td><td align="left">';
 	if ($event["id_agente"] != 0) {
 		$string .= ui_print_agent_name ($event["id_agente"], true);
-	} else {
+	}
+	else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 	}
 	$string .= '</td></tr><tr class="'. $odd .'">';
@@ -1013,7 +1017,8 @@ foreach ($result as $event) {
 		
 		$odd = ($odd == '')? 'rowOdd' : '';
 		
-	} else {
+	}
+	else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 		$string .= '</a></td></tr><tr class="' . $odd . '">';
 		$odd = ($odd == '')? 'rowOdd' : '';
@@ -1042,7 +1047,8 @@ foreach ($result as $event) {
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Comments') . '</td><td id="comment_row_' . $event['id_evento'] . '" align="left">';
 	if($event["user_comment"] != '') {
 		$string .= $event["user_comment"];
-	} else {
+	}
+	else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 	}
 	$string .= '</td></tr>';
@@ -1073,7 +1079,8 @@ foreach ($result as $event) {
 		$string .= $event["source"];
 		$string .= '</td></tr><tr>';
 		$odd = ($odd == '')? 'rowOdd' : '';
-	} else {
+	}
+	else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 		$odd = ($odd == '')? 'rowOdd' : '';
 	}
@@ -1083,7 +1090,8 @@ foreach ($result as $event) {
 		$string .= $event["id_extra"];
 		$string .= '</td></tr><tr>';
 		$odd = ($odd == '')? 'rowOdd' : '';
-	} else {
+	}
+	else {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 	}
 	$string .= '</td></tr>';

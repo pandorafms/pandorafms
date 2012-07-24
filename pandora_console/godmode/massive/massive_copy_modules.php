@@ -243,7 +243,8 @@ $(document).ready (function () {
 			function (data, status) {
 				if (data.length == 0) {
 					no_modules = true;
-				} else {
+				}
+				else {
 					jQuery.each (data, function (i, val) {
 						option = $("<option></option>")
 							.attr ("value", val["id_agente_modulo"])

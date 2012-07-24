@@ -87,7 +87,8 @@ if ($show_sent) { //sent view
 		echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.' '.__('sent message(s)').'.</p>';
 	}
 	$messages = messages_get_overview_sent ('', 'DESC');
-} else { //messages received
+}
+else { //messages received
 	$num_messages = messages_get_count ($config["id_user"]);
 	if ($num_messages > 0 && !is_ajax()) {
 		echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.' '.__('unread message(s)').'.</p>';
@@ -97,7 +98,8 @@ if ($show_sent) { //sent view
 
 if (empty ($messages)) {
 	echo '<div class="nf">'.__('There are no messages').'</div>';
-} else {
+}
+else {
 	$table->width = "98%";
 	$table->class = "databox";
 	$table->cellpadding = 4;
@@ -135,17 +137,20 @@ if (empty ($messages)) {
 				$data[0] .= '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
 				$data[0] .= html_print_image ("images/email_open.png", true, array ("border" => 0, "title" => __('Click to read')));
 				$data[0] .= '</a>';
-			} else { 
+			}
+			else { 
 				$data[0] .= '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_list&amp;mark_unread=1&amp;id_message='.$message_id.'">';
 				$data[0] .= html_print_image ("images/email_open.png", true, array ("border" => 0, "title" => __('Mark as unread')));
 				$data[0] .= '</a>';
 			}
-		} else {
+		}
+		else {
 			if ($show_sent) {
 				$data[0] .= '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
 				$data[0] .= html_print_image ("images/email.png", true, array ("border" => 0, "title" => __('Message unread - click to read')));
 				$data[0] .= '</a>';
-			} else {
+			}
+			else {
 				$data[0] .= '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id.'">';
 				$data[0] .= html_print_image ("images/email.png", true, array ("border" => 0, "title" => __('Message unread - click to read')));
 				$data[0] .= '</a>';
@@ -158,7 +163,8 @@ if (empty ($messages)) {
 				$dest_user = $message["dest"];
 			}
 			$data[1] = $dest_user;
-		} else {
+		}
+		else {
 			$orig_user = get_user_fullname ($message["sender"]);
 			if (!$orig_user) {
 				$orig_user = $message["sender"];
@@ -168,12 +174,14 @@ if (empty ($messages)) {
 		
 		if ($show_sent) {
 			$data[2] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&amp;read_message=1&show_sent=1&amp;id_message='.$message_id.'">';
-		} else {
+		}
+		else {
 			$data[2] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id.'">';
 		}
 		if ($message["subject"] == "") {
 			$data[2] .= __('No Subject');
-		} else {
+		}
+		else {
 			$data[2] .= $message["subject"];
 		}
 		$data[2] .= '</a>';
@@ -185,7 +193,8 @@ if (empty ($messages)) {
 						onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 						html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'.
 						html_print_checkbox_extended ('delete_multiple[]', $message_id, false, false, '', 'class="check_delete"', true);
-		} else {
+		}
+		else {
 			$data[4] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_list&delete_message=1&id='.$message_id.'"
 						onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 						html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'.

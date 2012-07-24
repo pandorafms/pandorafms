@@ -49,13 +49,13 @@ if (is_ajax ()){
 	$shortcut_update = get_parameter("shortcut_update", 0);
 	
 	// Update of user to show/don't show shortcut bar	
-	if ($shortcut_update){
-	
+	if ($shortcut_update) {
+		
 		// First we get the actual state
 		$shortcut_value = db_get_value_filter('shortcut', 'tusuario', array('id_user' => $id));
 		
 		//Deactivate shorcut var
-		if ($shortcut_value == 1){
+		if ($shortcut_value == 1) {
 			db_process_sql_update('tusuario', array('shortcut' => 0), array('id_user' => $id));
 		}
 		// Activate shortcut var
@@ -64,7 +64,7 @@ if (is_ajax ()){
 		}
 	
 	}
-
+	
 	return;
 }
 
@@ -198,7 +198,8 @@ if ($view_mode === false) {
 		html_print_input_text_extended ("password_new", "", '', '', '15', '25', $view_mode, '', 'class="input"', false, true);
 		echo '</td></tr><tr><td class="datos">'.__('Password confirmation').'</td><td class="datos">';
 		html_print_input_text_extended ("password_conf", "", '', '', '15', '25', $view_mode, '', 'class="input"', false, true);
-	} else {
+	}
+	else {
 		echo '<i>'.__('You can not change your password from Pandora FMS under the current authentication scheme').'</i>';
 	}
 }
@@ -221,7 +222,7 @@ $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$display_all_group = true;
 else
-	$display_all_group = false;		
+	$display_all_group = false;
 
 $usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 $id_usr = $config['id_user'];
@@ -265,7 +266,8 @@ $dashboards = get_user_dashboards ($config['id_user']);
 $dashboards_aux = array();
 if ($dashboards === false) {
 	$dashboards = array('None'=>'None');
-} else {
+}
+else {
 	foreach ($dashboards as $key=>$dashboard) {
 		$dashboards_aux[$dashboard['name']] = $dashboard['name'];
 	}
@@ -276,7 +278,8 @@ $layouts = visual_map_get_user_layouts ($config['id_user'], true);
 $layouts_aux = array();
 if ($layouts === false) {
 	$layouts_aux = array('None'=>'None');
-} else {
+}
+else {
 	foreach ($layouts as $layout) {
 		$layouts_aux[$layout] = $layout;
 	}
@@ -290,7 +293,8 @@ echo '</td></tr></table>';
 echo '<div style="width:90%; text-align:right;">';
 if (!$config["user_can_update_info"]) {
 	echo '<i>'.__('You can not change your user info from Pandora FMS under the current authentication scheme').'</i>';
-} else {
+}
+else {
 	html_print_submit_button (__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
 }
 echo '</div></form>';
@@ -324,7 +328,8 @@ foreach ($result as $profile) {
 
 if (!empty ($table->data)) {
 	html_print_table ($table);
-} else {
+}
+else {
 	echo '<div class="nf">'.__('This user doesn\'t have any assigned profile/group').'</div>'; 
 }
 ?>

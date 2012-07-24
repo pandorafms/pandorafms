@@ -102,9 +102,9 @@ if ($view_graph) {
 		include ("general/noaccess.php");
 		exit;
 	}
-
+	
 	$url = "index.php?sec=reporting&sec2=operation/reporting/graph_viewer&id=$id_graph&view_graph=1";
-
+	
 	if (check_acl ($config['id_user'], 0, "IW")) {
 		$options['setup'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=$id_graph'>"
 				. html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
@@ -115,15 +115,16 @@ if ($view_graph) {
 		$options['screen'] = "<a href='$url&pure=1'>"
 			. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
-	} else {
+	}
+	else {
 		$options['screen'] = "<a href='$url&pure=0'>"
 			. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
 	}
-
+	
 	// Header
 	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom graphs')." - ".$graph['name'], "images/reporting.png", false, "", false, $options);
-
+	
 	echo "<table class='databox_frame' cellpadding='0' cellspacing='0' width='98%'>";
 	echo "<tr><td>";
 	custom_graphs_print ($id_graph, $height, $width, $period, $stacked, false, $unixdate);
@@ -145,9 +146,9 @@ if ($view_graph) {
 	echo "<b>".__('Period')."</b>";
 	echo "</td>";
 	echo "<td class='datos'>";
-		
+	
 	echo html_print_extended_select_for_time ('period', $period, '', '', '0', 10, true);
-
+	
 	echo "</td>";
 	echo "<td class='datos'>";
 	$stackeds = array ();

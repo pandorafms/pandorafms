@@ -169,7 +169,7 @@ else {
 echo '</div>';
 echo '</form>';
 
-ui_require_javascript_file_enterprise('pandora_local_components');
+ui_require_javascript_file('pandora_modules');
 ?>
 <script language="JavaScript" type="text/javascript">
 <!--

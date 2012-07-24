@@ -89,7 +89,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 	
 	foreach ($agents as $agent) {
 		// Save node parent information to define edges later
-		if ($agent['id_parent'] != "0") {
+		if ($agent['id_parent'] != "0" && array_key_exists($agent['id_parent'], $node_ref)) {
 			$parents[$node_count] = $node_ref[$agent['id_parent']];
 		}
 		else {
@@ -672,9 +672,14 @@ function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = f
 	$filter['id_networkmap'] = $id_networkmap;
 	
 	if($check_user) {
-		$filter['id_user'] = $config['id_user'];
-	}
+		//If hte user has admin flag don't filter by user	
+		$user_info = users_get_user_by_id($config['id_user']);
 
+		if (!$user_info['is_admin']) {
+			$filter['id_user'] = $config['id_user'];
+		}
+	}
+	
 	$networkmap = db_get_row_filter ('tnetwork_map', $filter, $fields);
 		
 	return $networkmap;

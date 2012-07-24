@@ -110,6 +110,14 @@ if ($group_search != '0')
 if ($type_search != '0')
 	$where['type'] = $type_search;
 
+//Check for maps only visible for this user
+$user_info = users_get_user_by_id($config['id_user']);
+
+//If the user is not admin only user map are shown.
+if (!$user_info['is_admin']) {
+	$where['id_user'] = $config['id_user'];
+}
+
 $network_maps = db_get_all_rows_filter('tnetwork_map',
 	$where);
 

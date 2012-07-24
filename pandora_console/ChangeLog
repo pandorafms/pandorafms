@@ -1,3 +1,11 @@
+2012-07-24 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_networkmap.php,
+	operation/agentes/networkmap.groups.php,
+	operation/agentes/networkmap_list.php: Fixed several problems with
+	network maps
+
+
 2012-07-20  Hirofumi Kosaka  <kosaka@rworks.jp>
 
         * index.php: bug fix: 'Enforce https' led to wrong URL to

@@ -31,6 +31,7 @@ require_once ('include/functions_networkmap.php');
 // Set filter
 $filter = networkmap_get_filter ($layout);
 
+
 // Generate dot file
 $graph = networkmap_generate_dot_groups (__('Pandora FMS'), $group, $simple, $font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen, $pure, $modwithalerts, $module_group, $hidepolicymodules, $depth, $id_networkmap);
 

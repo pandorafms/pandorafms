@@ -296,16 +296,19 @@ function incidents_delete_note ($id_note, $transact = true) {
 			$errors++;
 		}
 	}
-
+	
 	if ($transact == true && $errors > 0) {
 		db_process_sql_rollback ();
 		return false;
-	} elseif ($transact == true) {
+	}
+	elseif ($transact == true) {
 		db_process_sql_commit ();
 		return true;
-	} elseif ($errors > 0) {
+	}
+	elseif ($errors > 0) {
 		return false;
-	} else {
+	}
+	else {
 		return true;
 	}
 }

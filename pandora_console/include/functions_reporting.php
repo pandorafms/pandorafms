@@ -1023,7 +1023,8 @@ function reporting_get_group_stats ($id_group = 0) {
 function reporting_event_reporting ($id_group, $period, $date = 0, $return = false) {
 	if (empty ($date)) {
 		$date = get_system_time ();
-	} elseif (!is_numeric ($date)) {
+	}
+	elseif (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
 	
@@ -1049,7 +1050,7 @@ function reporting_event_reporting ($id_group, $period, $date = 0, $return = fal
 		$data[3] = $event["timestamp"];
 		array_push ($table->data, $data);
 	}
-
+	
 	if (empty ($return))
 		html_print_table ($table);
 	return $table;
@@ -1066,7 +1067,7 @@ function reporting_event_reporting ($id_group, $period, $date = 0, $return = fal
 function reporting_get_fired_alerts_table ($alerts_fired) {
 	$agents = array ();
 	global $config;
-
+	
 	require_once ($config["homedir"].'/include/functions_alerts.php');
 	
 	foreach (array_keys ($alerts_fired) as $id_alert) {
@@ -1238,7 +1239,7 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 		FROM talert_template_modules AS t1
 			INNER JOIN talert_templates AS t2 ON t1.id_alert_template = t2.id
 		WHERE id_agent_module = ' . $id_agent_module);
-
+	
 	if ($alerts === false) {
 		$alerts = array();
 	}
@@ -1311,7 +1312,7 @@ function reporting_alert_reporting ($id_group, $period = 0, $date = 0, $return =
 	if (sizeof ($alerts) > 0)
 		$fired_percentage = round (sizeof ($alerts_fired) / sizeof ($alerts) * 100, 2);
 	$not_fired_percentage = 100 - $fired_percentage;
-		
+	
 	$data = array ();
 	$data[__('Alerts fired')] = $fired_percentage;
 	$data[__('Alerts not fired')] = $not_fired_percentage;
@@ -1319,13 +1320,14 @@ function reporting_alert_reporting ($id_group, $period = 0, $date = 0, $return =
 	$output .= pie3d_graph(false, $data, 280, 150,
 		__("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']); 
-		
+	
 	$output .= '<strong>'.__('Alerts fired').': '.sizeof ($alerts_fired).'</strong><br />';
 	$output .= '<strong>'.__('Total alerts monitored').': '.sizeof ($alerts).'</strong><br />';
-
+	
 	if (! sizeof ($alerts_fired)) {
 		if (!$return)
 			echo $output;
+		
 		return $output;
 	}
 	$table = reporting_get_fired_alerts_table ($alerts_fired);
@@ -1340,6 +1342,7 @@ function reporting_alert_reporting ($id_group, $period = 0, $date = 0, $return =
 	
 	if (!$return)
 		echo $output;
+	
 	return $output;
 }
 
@@ -1359,7 +1362,7 @@ function reporting_alert_reporting ($id_group, $period = 0, $date = 0, $return =
 function reporting_monitor_health ($id_group, $period = 0, $date = 0, $return = false) {
 	if (empty ($date)) //If date is 0, false or empty
 		$date = get_system_time ();
-		
+	
 	$datelimit = $date - $period;
 	$output = '';
 	
@@ -1435,13 +1438,15 @@ function reporting_get_monitors_down_table ($monitors_down) {
 					$data[0] = '';
 				if ($monitor['descripcion'] != '') {
 					$data[1] = $monitor['descripcion'];
-				} else {
+				}
+				else {
 					$data[1] = $monitor['nombre'];
 				}
 				array_push ($table->data, $data);
 			}
 		}
 	}
+	
 	return $table;
 }
 
@@ -1457,11 +1462,13 @@ function reporting_get_monitors_down_table ($monitors_down) {
  */
 function reporting_print_group_reporting ($id_group, $return = false) {
 	$agents = agents_get_group_agents ($id_group, false, "none");
-	$output = '<strong>'.__('Agents in group').': '.count ($agents).'</strong><br />';
+	$output = '<strong>' .
+		sprintf(__('Agents in group: %s'), count($agents)) .
+		'</strong><br />';
 	
 	if ($return === false)
 		echo $output;
-		
+	
 	return $output;
 }
 
@@ -1532,6 +1539,7 @@ function reporting_get_agent_alerts_table ($id_agent, $period = 0, $date = 0) {
 		
 		array_push ($table->data, $data);
 	}
+	
 	return $table;
 }
 
@@ -1612,11 +1620,12 @@ function reporting_get_agent_modules_table ($id_agent, $period = 0, $date = 0) {
  */
 function reporting_get_agent_detailed ($id_agent, $period = 0, $date = 0, $return = false) {
 	$output = '';
-	$n_a_string = __('N/A').'(*)';
+	$n_a_string = __('N/A(*)');
 	
 	/* Show modules in agent */
 	$output .= '<div class="agent_reporting">';
-	$output .= '<h3 style="text-decoration: underline">'.__('Agent').' - '.agents_get_name ($id_agent).'</h3>';
+	$output .= '<h3 style="text-decoration: underline">' .
+		__('Agent') . ' - ' . agents_get_name ($id_agent) . '</h3>';
 	$output .= '<h4>'.__('Modules').'</h3>';
 	$table_modules = reporting_get_agent_modules_table ($id_agent, $period, $date);
 	$table_modules->width = '99%';

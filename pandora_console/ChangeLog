@@ -1,3 +1,17 @@
+2012-07-24 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/servers/manage_recontask_form.php,
+	godmode/alerts/configure_alert_compound.php,
+	godmode/modules/manage_network_components.php,
+	include/functions_ui.php, include/functions_incidents.php,
+	include/functions_agents.php, include/functions_alerts.php,
+	include/functions_messages.php, include/db/mysql.php,
+	include/functions_reporting.php, include/functions_filemanager.php,
+	include/auth/ldap.php, operation/events/events.php,
+	operation/incidents/incident_detail.php, operation/tree.php,
+	operation/agentes/estado_agente.php, operation/agentes/sla_view.php,
+	operation/users/user_edit.php: cleaned source code style.
+
 2012-07-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager_editor_prediction.php,

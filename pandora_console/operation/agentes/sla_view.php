@@ -71,31 +71,35 @@ foreach ($modules as $module_id => $module) {
 	if ($loc < $offset) {
 		$loc++;
 		continue; //Skip offset
-	} elseif ($loc >= $offset + $config["block_size"]) {
+	}
+	elseif ($loc >= $offset + $config["block_size"]) {
 		continue;
 	}
 	$data = array ();
 	$data[0] = ui_print_moduletype_icon ($module["id_tipo_modulo"], true);
 	$data[1] = ui_print_string_substr ($module["nombre"], 25, true);
-	if ($module["min_critical"] != 0){
+	if ($module["min_critical"] != 0) {
 		$sla_min = $module["min_critical"];
 		$data[2] = format_numeric (reporting_get_agentmodule_sla ($module_id, $config["sla_period"], $sla_min));
 		$data[2] = 100 - $data[2]. "%";
-	} else {
+	}
+	else {
 		$data[2] = format_numeric (reporting_get_agentmodule_sla ($module_id, $config["sla_period"], 1)).'%';
 	}
 
 	//TODO: Make this work for all new status
 	$status = modules_get_agentmodule_status ($module_id);
-	if ($status == 1){
+	if ($status == 1) {
 		$data[3] = html_print_image ("images/pixel_red.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Down')));
-	} else {
+	}
+	else {
 		$data[3] = html_print_image ("images/pixel_green.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Up')));
 	}
-			
+	
 	if ($module["module_interval"] > 0) {
 		$data[4] = $module["module_interval"];
-	} else {
+	}
+	else {
 		$data[4] = $interval;
 	}
 	array_push ($table->data, $data);

@@ -455,7 +455,7 @@ foreach ($agents as $agent) {
 	
 	$data = array ();
 	
-	$data[0] = '';		
+	$data[0] = '';
 	$data[0] .= '<span class="left">';
 	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:6.5pt !important;', true);
 	$data[0] .= '</span>';
@@ -468,12 +468,6 @@ foreach ($agents as $agent) {
 		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
 	}
 	$data[0] .= '</div>';
-	
-	/*if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
-		$data[0] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">';
-		$data[0] .= html_print_image ("images/setup.png", true, array ("border" => 0, "width" => 16));
-		$data[0] .= '</a>&nbsp;';
-	}*/
 	
 	$data[1] = ui_print_truncate_text($agent["description"], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
 	
@@ -494,15 +488,15 @@ foreach ($agents as $agent) {
 	$data[5] .= $agent_info["modules"];
 
 	if ($agent_info["monitor_alertsfired"] > 0)
-		$data[5] .= ' : <span class="orange">'.$agent_info["monitor_alertsfired"].'</span>';
+		$data[5] .= ' : <span class="orange">' . $agent_info["monitor_alertsfired"] . '</span>';
 	if ($agent_info["monitor_critical"] > 0)
-		$data[5] .= ' : <span class="red">'.$agent_info["monitor_critical"].'</span>';
+		$data[5] .= ' : <span class="red">' . $agent_info["monitor_critical"] . '</span>';
 	if ($agent_info["monitor_warning"] > 0)
-		$data[5] .= ' : <span class="yellow">'.$agent_info["monitor_warning"].'</span>';
+		$data[5] .= ' : <span class="yellow">' . $agent_info["monitor_warning"] . '</span>';
 	if ($agent_info["monitor_unknown"] > 0)
-		$data[5] .= ' : <span class="grey">'.$agent_info["monitor_unknown"].'</span>';
+		$data[5] .= ' : <span class="grey">' . $agent_info["monitor_unknown"] . '</span>';
 	if ($agent_info["monitor_normal"] > 0)
-		$data[5] .= ' : <span class="green">'.$agent_info["monitor_normal"].'</span>';
+		$data[5] .= ' : <span class="green">' . $agent_info["monitor_normal"] . '</span>';
 	$data[5] .= '</b>';
 	
 	$data[6] = $agent_info["status_img"];
@@ -519,7 +513,7 @@ foreach ($agents as $agent) {
 		$data[8] = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
 	else
 		$data[8] = $time;
-
+	
 	// This old code was returning "never" on agents without modules, BAD !!
 	// And does not print outdated agents in red. WRONG !!!!
 	// $data[7] = ui_print_timestamp ($agent_info["last_contact"], true);
@@ -534,8 +528,8 @@ foreach ($agents as $agent) {
 			$data[9] = "<a href='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>".
 			html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
 		}
-	
-		$data[10] = 	"<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&
+		
+		$data[10] = "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&
 			borrar_agente=".$agent["id_agente"]."&group_id=$group_id&recursion=$recursion&search=$search&offset=$offset&sort_field=$sortField&sort=$sort'".
 			' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, array("border" => '0')) ."</a></td>";
 	}
@@ -550,19 +544,6 @@ if (!empty ($table->data)) {
 } else {
 	echo '<div class="nf">'.__('There are no defined agents').'</div>';
 }
-
-/* Godmode controls SHOULD NOT BE HERE 
-
-if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0, "AW")
-		|| check_acl ($config['id_user'], 0, "PM") || check_acl ($config['id_user'], 0, "DM")
-		|| check_acl ($config['id_user'], 0, "UM")) {
-	
-	echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente">';
-		html_print_input_hidden ('new_agent', 1);
-		html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
-	echo '</form>';
-}
-*/
 ?>
 
 <script type="text/javascript">
@@ -573,16 +554,15 @@ $(document).ready (function () {
 		},
 		function () {
 			$(".actions", this).css ("visibility", "hidden");
-	});		
-		
+	});
+	
 	$("#group_id").click (
 	function () {
 		$(this).css ("width", "auto"); 
 	});
-			
+	
 	$("#group_id").blur (function () {
 		$(this).css ("width", "180px"); 
 	});
-		
 });
 </script>

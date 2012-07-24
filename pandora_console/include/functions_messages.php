@@ -74,7 +74,8 @@ function messages_create_group ($usuario_origen, $dest_group, $subject, $mensaje
 	if (! array_key_exists ($usuario_origen, $users)) {
 		//Users don't exist in the system
 		return false;
-	} elseif (empty ($group_users)) {
+	}
+	elseif (empty ($group_users)) {
 		//There are no users in the group, so it hasn't failed although it hasn't done anything.
 		return true;
 	}
@@ -90,7 +91,7 @@ function messages_create_group ($usuario_origen, $dest_group, $subject, $mensaje
 			}
 		}
 	}
-
+	
 	foreach ($group_user as $user) {
 		$return = messages_create_message ($usuario_origen, get_user_id ($user), $subject, $mensaje);
 		if ($return === false) {

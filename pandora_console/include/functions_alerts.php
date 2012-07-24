@@ -1523,7 +1523,8 @@ function alerts_validate_alert_compound ($id_alert_compound) {
 				$group_id, $agent_id, 1, $config["id_user"],
 				"alert_manual_validation", 1, $alert["id"],
 				$id);
-		} elseif ($result === false) {
+		}
+		elseif ($result === false) {
 			return false;
 		}
 	}

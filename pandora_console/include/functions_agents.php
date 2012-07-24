@@ -1702,6 +1702,7 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 	else {
 		return AGENT_MODULE_STATUS_NORMAL;
 	}
+
 }
 
 /**
@@ -1947,6 +1948,7 @@ function agents_monitor_unknown ($id_agent, $filter="") {
 }
 
 // Get ok monitors by using the status code in modules.
+
 function agents_monitor_ok ($id_agent, $filter="") {
 	
 	if ($filter) {
@@ -1962,6 +1964,47 @@ function agents_monitor_ok ($id_agent, $filter="") {
 			AND estado = 0
 			AND tagente_estado.id_agente = tagente.id_agente
 			AND tagente.id_agente = $id_agent" . $filter);
+}
+
+/**
+ * Get all monitors disabled of an specific agent.
+ *
+ * @param int The agent id
+ * @param string Additional filters
+ *
+ * @return mixed Total module count or false
+ */
+function agents_monitor_disabled ($id_agent, $filter="") {
+	
+	if ($filter) {
+		$filter = " AND ".$filter;
+	}
+
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo WHERE tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 1 AND tagente.id_agente = $id_agent".$filter);
+}
+
+/**
+ * Get all monitors notinit of an specific agent.
+ *
+ * @param int The agent id
+ * @param string Additional filters
+ *
+ * @return mixed Total module count or false
+ */
+function agents_monitor_notinit ($id_agent, $filter="") {
+	
+	if (!empty($filter)) {
+		$filter = " AND ".$filter;
+	}
+						
+	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente_modulo )
+			FROM tagente_estado, tagente, tagente_modulo 
+			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
+				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+				AND tagente_modulo.disabled = 0 
+				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23) 
+				AND utimestamp = 0
+				AND tagente.id_agente = $id_agent ".$filter);
 }
 
 /**

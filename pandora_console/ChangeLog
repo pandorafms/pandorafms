@@ -1,5 +1,12 @@
 2012-07-24  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/pandora_modules.js
+	godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_network_components_form_plugin.php: Put back the
+	dynamic macros to open version
+
+2012-07-24  Sergio Martin <sergio.martin@artica.es>
+
 	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
 	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
 	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added 

@@ -398,3 +398,104 @@ function configure_modules_form () {
 		});
 	}
 }
+
+
+// Functions to add and remove dynamic fields for macros
+function delete_macro(prefix) {
+	var next_number = parseInt($('#next_macro').html());
+	// Is not possible delete first macro
+	if(next_number == 3) {
+		$('#delete_macro_button').hide();
+	}
+	var next_row = parseInt($('#next_row').html());
+	$('#next_macro').html(next_number-1);
+	$('#next_row').html(next_row-2);
+
+	var nrow1 = next_row - 2;
+	var nrow2 = next_row - 1;
+	
+	var $row1 = $('#'+prefix+nrow1).remove();
+	var $row2 = $('#'+prefix+nrow2).remove();
+}
+
+function new_macro(prefix) {
+	$('#delete_macro_button').show();
+
+	var next_row = parseInt($('#next_row').html());
+
+	$('#next_row').html(next_row+2);
+	var nrow1 = next_row - 2;
+	var nrow2 = next_row - 1;
+	var nrow3 = next_row;
+	var nrow4 = next_row + 1;
+	
+	var next_number = parseInt($('#next_macro').html());
+	$('#next_macro').html(next_number+1);
+	var current_number = next_number - 1;
+	
+	// Clone two last rows
+	var $row1 = $('#'+prefix+nrow1).clone(true);
+	var $row2 = $('#'+prefix+nrow2).clone(true);
+
+	// Change the tr ID
+	$row1.attr('id',prefix+(nrow3));
+	$row2.attr('id',prefix+(nrow4));
+	// Change the td ID
+	$row1.find('td').attr('id', changeTdId);
+	$row2.find('td').attr('id', changeTdId);
+	
+	// Insert after last field
+	$row2.insertAfter('#'+prefix+nrow2);
+	$row1.insertAfter('#'+prefix+nrow2);
+	
+	// Change labels
+	for(i=0;i<=3;i++) {
+		var label1 = $("#"+prefix+nrow3+"-"+i).html();
+		var exp_reg = new RegExp('field'+current_number, 'g'); 
+		label1 = label1.replace(exp_reg,'field'+next_number);
+		$("#"+prefix+nrow3+"-"+i).html(label1);
+	}
+	
+	for(i=0;i<=1;i++) {
+		var label2 = $("#"+prefix+nrow4+"-"+i).html();
+		var exp_reg = new RegExp('field'+current_number, 'g'); 
+		label2 = label2.replace(exp_reg,'field'+next_number);
+		$("#"+prefix+nrow4+"-"+i).html(label2);
+	}
+	
+	// Empty the text inputs
+	$('#text-field'+next_number+'_desc').val('');
+	$('#text-field'+next_number+'_help').val('');
+	$('#text-field'+next_number+'_value').val('');
+	
+	function changeTdId() {
+		switch(this.id) {
+			case prefix+(nrow1)+'-0':
+				return prefix+(nrow3)+'-0';
+				break;
+			case prefix+(nrow1)+'-1':
+				return prefix+(nrow3)+'-1';
+				break;
+			case prefix+(nrow1)+'-2':
+				return prefix+(nrow3)+'-2';
+				break;
+			case prefix+(nrow1)+'-3':
+				return prefix+(nrow3)+'-3';
+				break;
+			case prefix+(nrow2)+'-0':
+				return prefix+(nrow4)+'-0';
+				break;
+			case prefix+(nrow2)+'-1':
+				return prefix+(nrow4)+'-1';
+				break;
+			case prefix+(nrow2)+'-2':
+				return prefix+(nrow4)+'-2';
+				break;
+			case prefix+(nrow2)+'-3':
+				return prefix+(nrow4)+'-3';
+				break;
+		}
+	}
+	
+}
+

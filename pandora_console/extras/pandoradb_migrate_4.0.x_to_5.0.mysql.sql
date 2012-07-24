@@ -281,6 +281,7 @@ ALTER TABLE tnetwork_component ADD `macros` text;
 -- -----------------------------------------------------
 
 ALTER TABLE tagente_modulo ADD `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard';
+ALTER TABLE tagente_modulo ADD `macros` text;
 
 -- -----------------------------------------------------
 -- Table `tusuario`

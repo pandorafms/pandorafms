@@ -274,6 +274,7 @@ ALTER TABLE "tnetwork_component" ADD COLUMN "macros" TEXT default '';
 
 CREATE TYPE type_tagente_modulo_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
 ALTER TABLE "tagente_modulo" ADD COLUMN "wizard_level" type_tagente_modulo_wizard_level default 'nowizard';
+ALTER TABLE "tagente_modulo" ADD COLUMN "macros" TEXT default '';
 
 -- -----------------------------------------------------
 -- Table `tusuario`

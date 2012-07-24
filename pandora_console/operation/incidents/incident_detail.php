@@ -226,7 +226,8 @@ if (isset ($id_inc)) { //If $id_inc is set (when $_GET["id"] is set, not $_GET["
 	ui_print_page_header (__('Incident details'). ' #'.$id_inc, "images/book_edit.png", false, "", false, "");
 	echo '<form name="accion_form" method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident&action=update">';
 	echo '<input type="hidden" name="id_inc" value="'.$id_inc.'">';
-} else {
+}
+else {
 	ui_print_page_header (__('Create incident'), "images/book_edit.png", false, "", false, "");
 	echo '<form name="accion_form" method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident&action=insert">';
 }

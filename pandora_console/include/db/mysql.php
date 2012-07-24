@@ -367,22 +367,22 @@ function mysql_escape_string_sql($string) {
 function mysql_db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
 	if (! is_array ($filter) || empty ($filter))
 		return false;
-
+	
 	/* Avoid limit and offset if given */
 	unset ($filter['limit']);
 	unset ($filter['offset']);
-
+	
 	$sql = sprintf ("SELECT %s FROM %s WHERE %s LIMIT 1",
 		$field, $table,
 		db_format_array_where_clause_sql ($filter, $where_join));
 	
 	$result = db_get_all_rows_sql ($sql);
-
+	
 	if ($result === false)
 		return false;
-
+	
 	$fieldClean = str_replace('`', '', $field);
-
+	
 	return $result[0][$fieldClean];
 }
 
@@ -1046,5 +1046,4 @@ function mysql_db_get_table_count($sql, $search_history_db = false) {
 	
 	return $count;
 }
-
 ?>

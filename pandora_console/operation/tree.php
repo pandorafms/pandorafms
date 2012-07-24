@@ -132,14 +132,15 @@ if (is_ajax ())
 		ui_print_timestamp ($agent["ultimo_contacto"]);
 
 		echo " / ";
-
+		
 		if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") { 
 			echo __('Never');
-		} else {
+		}
+		else {
 			echo $agent["ultimo_contacto_remoto"];
 		}
 		echo '</td></tr>';
-
+		
 		// Timezone Offset
 		if ($agent['timezone_offset'] != 0) {
 			echo '<tr><td class="datos2"><b>'.__('Timezone Offset'). '</b></td>';

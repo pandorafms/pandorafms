@@ -123,7 +123,8 @@ function update_compound ($step) {
 		}
 		
 		alerts_set_alerts_compound_disable ($id, false);
-	} elseif ($step == 2) {
+	}
+	elseif ($step == 2) {
 		$monday = (bool) get_parameter ('monday');
 		$tuesday = (bool) get_parameter ('tuesday');
 		$wednesday = (bool) get_parameter ('wednesday');
@@ -189,21 +190,23 @@ function update_compound ($step) {
 				alerts_delete_alert_compound_action ($key);
 			}
 		}
-
+		
 		foreach ($add_actions as $id_action) {
 			/* TODO: fires_min and fires_max missing */
 			alerts_add_alert_compound_action ($id, (int) $id_action);
 		}
-	} elseif ($step == 3) {
+	}
+	elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
 		$field2_recovery = (bool) get_parameter ('field2_recovery');
 		$field3_recovery = (bool) get_parameter ('field3_recovery');
-	
+		
 		$result = alerts_update_alert_compound ($id,
 			array ('recovery_notify' => $recovery_notify,
 				'field2_recovery' => $field2_recovery,
 				'field3_recovery' => $field3_recovery));
-	} else {
+	}
+	else {
 		return false;
 	}
 	

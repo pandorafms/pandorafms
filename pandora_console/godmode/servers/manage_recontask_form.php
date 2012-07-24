@@ -86,16 +86,16 @@ if (isset ($_GET["update"]) or (isset($_GET["crt"]))) { // Edit mode
 		$parent_detection = $row["parent_detection"];
 		$parent_recursion = $row["parent_recursion"];
 	}
-	
-} elseif (isset ($_GET["create"]) or isset($_GET["crt"])) {
+}
+elseif (isset ($_GET["create"]) or isset($_GET["crt"])) {
 	$create_recon = true;
-	if (isset ($_GET["crt"])){
-		if ($_GET["crt"] != "Create"){
+	if (isset ($_GET["crt"])) {
+		if ($_GET["crt"] != "Create") {
 			$create_recon = false;
 		}
 	}
-
-	if ($create_recon){
+	
+	if ($create_recon) {
 		$id_rt = -1;
 		$name = "";
 		$network = "";

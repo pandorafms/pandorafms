@@ -1953,7 +1953,7 @@ function ui_get_full_url ($url = '') {
 	if ( $port != null ) {
 		$fullurl .= ":".$port;
 	}
-
+	
 	if ($url === '') {
 		$url = $_SERVER['REQUEST_URI'];
 	}

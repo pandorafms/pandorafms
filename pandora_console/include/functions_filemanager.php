@@ -90,16 +90,18 @@ if (!function_exists ('mime_content_type')) {
 			'odt' => 'application/vnd.oasis.opendocument.text',
 			'ods' => 'application/vnd.oasis.opendocument.spreadsheet'
 		);
-
+		
 		$ext = strtolower (array_pop (explode ('.', $filename)));
 		if (array_key_exists ($ext, $mime_types)) {
 			return $mime_types[$ext];
-		} elseif (function_exists ('finfo_open')) {
+		}
+		elseif (function_exists ('finfo_open')) {
 			$finfo = finfo_open (FILEINFO_MIME);
 			$mimetype = finfo_file ($finfo, $filename);
 			finfo_close ($finfo);
 			return $mimetype;
-		} else {
+		}
+		else {
 			$temp = exec ("file ".$filename);
 			if (isset($temp) && $temp != '')
 				return $temp;

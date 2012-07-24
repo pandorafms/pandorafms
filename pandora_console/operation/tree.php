@@ -242,6 +242,7 @@ if (is_ajax ())
 			$countRows = 0;
 			
 			if (!empty($avariableGroupsIds)) {
+				//TODO CHANGE POLICY ACL FOR TAG ACL
 				$extra_sql = '';
 				if($extra_sql != '') {
 					$extra_sql .= ' OR';

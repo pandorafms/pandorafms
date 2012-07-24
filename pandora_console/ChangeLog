@@ -1,3 +1,8 @@
+2012-07-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_agents.php
+	 include/functions_tags.php: Support for metaconsole tree counts.
+
 2012-07-24  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_modules.js

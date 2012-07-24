@@ -20,7 +20,9 @@ package PandoraFMS::DB;
 use strict;
 use warnings;
 use DBI;
-use PandoraFMS::Tools;	
+use PandoraFMS::Tools;
+
+#use Data::Dumper;
 
 require Exporter;
 
@@ -73,6 +75,9 @@ our @EXPORT = qw(
 		get_user_exists
 		is_agent_address
 		is_group_disabled
+		get_agent_status
+		get_agent_modules
+		get_agentmodule_status
 	);
 
 ##########################################################################
@@ -81,7 +86,7 @@ our @EXPORT = qw(
 my $RDBMS = '';
 sub db_connect ($$$$$$) {
 	my ($rdbms, $db_name, $db_host, $db_port, $db_user, $db_pass) = @_;
-
+	
 	if ($rdbms eq 'mysql') {
 		$RDBMS = 'mysql';
 		
@@ -91,12 +96,13 @@ sub db_connect ($$$$$$) {
 		
 		# Enable auto reconnect
 		$dbh->{'mysql_auto_reconnect'} = 1;
-
+		
 		# Enable character semantics
 		$dbh->{'mysql_enable_utf8'} = 1;
-
+		
 		return $dbh;
-	} elsif ($rdbms eq 'postgresql') {
+	}
+	elsif ($rdbms eq 'postgresql') {
 		$RDBMS = 'postgresql';
 		
 		# Connect to PostgreSQL
@@ -188,55 +194,169 @@ sub get_os_id ($$) {
 sub get_agent_group ($$) {
 	my ($dbh, $agent_id) = @_;
 	
-	my $group_id = get_db_value ($dbh, "SELECT id_grupo FROM tagente WHERE id_agente = ?", $agent_id);
+	my $group_id = get_db_value ($dbh, "SELECT id_grupo
+		FROM tagente
+		WHERE id_agente = ?", $agent_id);
 	return 0 unless defined ($group_id);
 	
 	return $group_id;
 }
 
-##########################################################################
+########################################################################
 ## SUB get_agent_name (agent_id)
 ## Return agent name, given "agent_id"
-##########################################################################
+########################################################################
 sub get_agent_name ($$) {
 	my ($dbh, $agent_id) = @_;
 	
-	return get_db_value ($dbh, "SELECT nombre FROM tagente WHERE id_agente = ?", $agent_id);
+	return get_db_value ($dbh, "SELECT nombre
+		FROM tagente
+		WHERE id_agente = ?", $agent_id);
 }
 
-##########################################################################
+########################################################################
+## SUB agents_get_modules (agent_id, fields, filters)
+## Return the list of modules, given "agent_id"
+########################################################################
+sub get_agent_modules ($$$$$) {
+	my ($pa_config, $dbh, $agent_id, $fields, $filters) = @_;
+	
+	my $str_filter = '';
+	
+	foreach my $key (keys $filters) {
+		$str_filter .= ' AND ' . $key . " = " . $filters->{$key};
+	}
+	
+	my @rows = get_db_rows($dbh, "SELECT *
+		FROM tagente_modulo
+		WHERE id_agente = ?" . $str_filter, $agent_id);
+	
+	return @rows;
+}
+
+########################################################################
+## SUB get_agentmodule_status (agent_module_id)
+## Return agent module status. given "agent_module_id"
+########################################################################
+sub get_agentmodule_status($$$) {
+	my ($pa_config, $dbh, $agent_module_id) = @_;
+	
+	my $status = get_db_value($dbh, 'SELECT estado
+			FROM tagente_estado
+			WHERE id_agente_modulo = ?', $agent_module_id);
+	
+	return $status;
+}
+
+########################################################################
+## SUB get_get_status (agent_id)
+## Return agent status, given "agent_id"
+########################################################################
+sub get_agent_status ($$$) {
+	my ($pa_config, $dbh, $agent_id) = @_;
+	
+	my @modules = get_agent_modules ($pa_config, $dbh,
+		$agent_id, 'id_agente_modulo', {'disabled' => 0});
+	#logger($pa_config, Dumper(@modules), 5);
+	
+	# The status are:
+	#  3 -> AGENT_MODULE_STATUS_UNKNOW
+	#  4 -> AGENT_MODULE_STATUS_CRITICAL_ALERT
+	#  1 -> AGENT_MODULE_STATUS_CRITICAL_BAD
+	#  2 -> AGENT_MODULE_STATUS_WARNING
+	#  0 -> AGENT_MODULE_STATUS_NORMAL
+	
+	my $module_status = 3;
+	my $modules_async = 0;
+	foreach my $module (@modules) {
+		my $m_status = get_agentmodule_status($pa_config, $dbh,
+			$module->{'id_agente_modulo'});
+		
+		#This is the order to check
+		# AGENT_MODULE_STATUS_CRITICAL_ALERT
+		# AGENT_MODULE_STATUS_CRITICAL_BAD
+		# AGENT_MODULE_STATUS_WARNING
+		# AGENT_MODULE_STATUS_UNKNOW
+		# AGENT_MODULE_STATUS_NORMAL
+		if ($m_status == 4) {
+			$module_status = 4;
+		}
+		elsif ($module_status != 4) {
+			if ($m_status == 1) {
+				$module_status = 1;
+			}
+			elsif ($module_status != 1) {
+				if ($m_status == 2) {
+					$module_status = 2;
+				}
+				else {
+					if ($m_status == 0) {
+						$module_status = 0;
+					}
+				}
+			}
+		}
+		
+		my $module_type = get_db_value($dbh, 'SELECT id_tipo_modulo
+			FROM tagente_modulo
+			WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
+		
+		if (($module_type >= 21 && $module_type <= 23) ||
+			$module_type == 100) {
+			$modules_async++;
+		}
+	}
+	
+	my $count_modules = scalar(@modules);
+	
+	# If all the modules are asynchronous or keep alive, the group cannot be unknown
+	if ($modules_async < $count_modules) {
+		my $last_contact = get_db_value($dbh,
+			'SELECT (UNIX_TIMESTAMP(ultimo_contacto) + (intervalo * 2)) AS last_contact
+			FROM tagente WHERE id_agente = ?', $agent_id);
+		
+		if ($last_contact < time ()) {
+			return 3;
+		}
+	}
+	
+	return $module_status;
+}
+
+
+########################################################################
 ## SUB get_module_agent_id (agent_module_id)
 ## Return agent id, given "agent_module_id"
-##########################################################################
+########################################################################
 sub get_module_agent_id ($$) {
 	my ($dbh, $agent_module_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo = ?", $agent_module_id);
 }
 
-##########################################################################
+########################################################################
 ## SUB get_agent_address (id_agente)
 ## Return agent address, given "agent_id"
-##########################################################################
+########################################################################
 sub get_agent_address ($$) {
 	my ($dbh, $agent_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT direccion FROM tagente WHERE id_agente = ?", $agent_id);
 }
 
-##########################################################################
+########################################################################
 ## SUB get_module_name(module_id)
 ## Return the module name, given "module_id"
-##########################################################################
+########################################################################
 sub get_module_name ($$) {
 	my ($dbh, $module_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ?", $module_id);
 }
 
-##########################################################################
+########################################################################
 ## Return module id given the module name and agent id.
-##########################################################################
+########################################################################
 sub get_agent_module_id ($$$) {
 	my ($dbh, $module_name, $agent_id) = @_;
 	
@@ -269,7 +389,7 @@ sub get_template_module_id ($$$) {
 ##########################################################################
 sub is_group_disabled ($$) {
 	my ($dbh, $group_id) = @_;
-
+	
 	return get_db_value ($dbh, "SELECT disabled FROM tgrupo WHERE id_grupo = ?", $group_id);
 }
 
@@ -278,7 +398,7 @@ sub is_group_disabled ($$) {
 ##########################################################################
 sub get_module_id ($$) {
 	my ($dbh, $module_name) = @_;
-
+	
 	my $rc = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", safe_input($module_name));
 	return defined ($rc) ? $rc : -1;
 }
@@ -288,7 +408,7 @@ sub get_module_id ($$) {
 ##########################################################################
 sub get_user_disabled ($$) {
 	my ($dbh, $user_id) = @_;
-
+	
 	my $rc = get_db_value ($dbh, "SELECT disabled FROM tusuario WHERE id_user = ?", safe_input($user_id));
 	return defined ($rc) ? $rc : -1;
 }
@@ -298,7 +418,7 @@ sub get_user_disabled ($$) {
 ##########################################################################
 sub get_user_exists ($$) {
 	my ($dbh, $user_id) = @_;
-
+	
 	my $rc = get_db_value ($dbh, "SELECT id_user FROM tusuario WHERE id_user = ?", safe_input($user_id));
 	return defined ($rc) ? 1 : -1;
 }
@@ -308,7 +428,7 @@ sub get_user_exists ($$) {
 ##########################################################################
 sub get_plugin_id ($$) {
 	my ($dbh, $plugin_name) = @_;
-
+	
 	my $rc = get_db_value ($dbh, "SELECT id FROM tplugin WHERE name = ?", safe_input($plugin_name));
 	return defined ($rc) ? $rc : -1;
 }
@@ -318,8 +438,8 @@ sub get_plugin_id ($$) {
 ##########################################################################
 sub get_module_group_id ($$) {
 	my ($dbh, $module_group_name) = @_;
-
-	if(!defined($module_group_name) || $module_group_name eq '') {
+	
+	if (!defined($module_group_name) || $module_group_name eq '') {
 		return 0;
 	}
 	
@@ -332,7 +452,7 @@ sub get_module_group_id ($$) {
 ##########################################################################
 sub get_module_group_name ($$) {
 	my ($dbh, $module_group_id) = @_;
-
+	
 	return get_db_value ($dbh, "SELECT name FROM tmodule_group WHERE id_mg = ?", $module_group_id);
 }
 
@@ -350,7 +470,7 @@ sub get_nc_profile_name ($$) {
 ##########################################################################
 sub get_profile_id ($$) {
 	my ($dbh, $profile_name) = @_;
-
+	
 	my $rc = get_db_value ($dbh, "SELECT id_perfil FROM tperfil WHERE name = ?", safe_input($profile_name));
 	return defined ($rc) ? $rc : -1;
 }
@@ -364,26 +484,27 @@ sub get_group_name ($$) {
 	return get_db_value ($dbh, "SELECT nombre FROM tgrupo WHERE id_grupo = ?", $group_id);
 }
 
-##########################################################################
+########################################################################
 ## Get a single column returned by an SQL query as a hash reference.
-##########################################################################
+########################################################################
 sub get_db_value ($$;@) {
-		my ($dbh, $query, @values) = @_;
-		my @rows;
-
-		# Cache statements
-		my $sth = $dbh->prepare_cached($query);
-
-		$sth->execute(@values);
-
-		# Save returned rows
-		while (my $row = $sth->fetchrow_arrayref()) {
-			$sth->finish();
-			return defined ($row->[0]) ? $row->[0] : undef;
-		}
-
+	my ($dbh, $query, @values) = @_;
+	#my @rows;
+	
+	# Cache statements
+	my $sth = $dbh->prepare_cached($query);
+	
+	$sth->execute(@values);
+	
+	# Save returned rows
+	while (my $row = $sth->fetchrow_arrayref()) {
 		$sth->finish();
-		return undef;
+		return defined ($row->[0]) ? $row->[0] : undef;
+	}
+	
+	$sth->finish();
+	
+	return undef;
 }
 
 ##########################################################################
@@ -391,48 +512,50 @@ sub get_db_value ($$;@) {
 ## -1 on error.
 ##########################################################################
 sub get_db_single_row ($$;@) {
-		my ($dbh, $query, @values) = @_;
-		my @rows;
-
-		# Cache statements
-		my $sth = $dbh->prepare_cached($query);
-
-		$sth->execute(@values);
-
-		# Save returned rows
-		while (my $row = $sth->fetchrow_hashref()) {
-			$sth->finish();
-			return {map { lc ($_) => $row->{$_} } keys (%{$row})} if ($RDBMS eq 'oracle');
-			return $row;
-		}
-
+	my ($dbh, $query, @values) = @_;
+	#my @rows;
+	
+	# Cache statements
+	my $sth = $dbh->prepare_cached($query);
+	
+	$sth->execute(@values);
+	
+	# Save returned rows
+	while (my $row = $sth->fetchrow_hashref()) {
 		$sth->finish();
-		return undef;
+		return {map { lc ($_) => $row->{$_} } keys (%{$row})} if ($RDBMS eq 'oracle');
+		return $row;
+	}
+	
+	$sth->finish();
+	
+	return undef;
 }
 
 ##########################################################################
 ## Get all rows returned by an SQL query as a hash reference array.
 ##########################################################################
 sub get_db_rows ($$;@) {
-		my ($dbh, $query, @values) = @_;
-		my @rows;
-
-		# Cache statements
-		my $sth = $dbh->prepare_cached($query);
-
-		$sth->execute(@values);
-
-		# Save returned rows
-		while (my $row = $sth->fetchrow_hashref()) {
-			if ($RDBMS eq 'oracle') {
-				push (@rows, {map { lc ($_) => $row->{$_} } keys (%{$row})});
-			} else {
-				push (@rows, $row);
-			}
+	my ($dbh, $query, @values) = @_;
+	my @rows;
+	
+	# Cache statements
+	my $sth = $dbh->prepare_cached($query);
+	
+	$sth->execute(@values);
+	
+	# Save returned rows
+	while (my $row = $sth->fetchrow_hashref()) {
+		if ($RDBMS eq 'oracle') {
+			push (@rows, {map { lc ($_) => $row->{$_} } keys (%{$row})});
 		}
-
-		$sth->finish();
-		return @rows;
+		else {
+			push (@rows, $row);
+		}
+	}
+	
+	$sth->finish();
+	return @rows;
 }
 
 ##########################################################################
@@ -441,7 +564,7 @@ sub get_db_rows ($$;@) {
 sub db_insert ($$$;@) {
 	my ($dbh, $index, $query, @values) = @_;
 	my $insert_id = undef;
-
+	
 	# MySQL
 	if ($RDBMS eq 'mysql') {
 		$dbh->do($query, undef, @values);
@@ -460,7 +583,7 @@ sub db_insert ($$$;@) {
 		$sth->bind_param_inout($#values + 2, \$insert_id, 99);
 		$sth->execute ();
 	}
-
+	
 	return $insert_id;
 }
 
@@ -480,7 +603,7 @@ sub db_update ($$;@) {
 ##########################################################################
 sub get_alert_template_module_id ($$$) {
 	my ($dbh, $id_module, $id_template) = @_;
-
+	
 	my $rc = get_db_value ($dbh, "SELECT id FROM talert_template_modules WHERE id_agent_module = ? AND id_alert_template = ?", $id_module, $id_template);
 	return defined ($rc) ? $rc : -1;
 }
@@ -490,11 +613,11 @@ sub get_alert_template_module_id ($$$) {
 ##########################################################################
 sub db_process_insert($$$$;@) {
 	my ($dbh, $index, $table, $parameters, @values) = @_;
-		
+	
 	my @columns_array = keys %$parameters;
 	my @values_array = values %$parameters;
-
-	if(!defined($table) || $#columns_array == -1) {
+	
+	if (!defined($table) || $#columns_array == -1) {
 		return -1;
 		exit;
 	}
@@ -502,20 +625,20 @@ sub db_process_insert($$$$;@) {
 	# Generate the '?' simbols to the Query like '(?,?,?,?,?)'
 	my $wildcards = '';
 	for (my $i=0; $i<=$#values_array; $i++) {
-		if(!defined($values_array[$i])) {
+		if (!defined($values_array[$i])) {
 			$values_array[$i] = '';
 		}
-		if($i > 0 && $i <= $#values_array) {
+		if ($i > 0 && $i <= $#values_array) {
 			$wildcards = $wildcards.',';
 		}
 		$wildcards = $wildcards.'?';
-	}	
+	}
 	$wildcards = '('.$wildcards.')';
-			
+	
 	my $columns_string = join('`,`',@columns_array);
 	
 	my $res = db_insert ($dbh, $index, "INSERT INTO $table (`".$columns_string."`) VALUES ".$wildcards, @values_array);
-
+	
 	return $res;
 }
 
@@ -524,30 +647,30 @@ sub db_process_insert($$$$;@) {
 ##########################################################################
 sub db_process_update($$$$$;@) {
 	my ($dbh, $table, $parameters, $where_column, $where_value, @values) = @_;
-		
+	
 	my @columns_array = keys %$parameters;
 	my @values_array = values %$parameters;
-
-	if(!defined($table) || $#columns_array == -1) {
+	
+	if (!defined($table) || $#columns_array == -1) {
 		return -1;
 		exit;
 	}
 	
 	my $fields = '';
 	for (my $i=0; $i<=$#values_array; $i++) {
-		if(!defined($values_array[$i])) {
+		if (!defined($values_array[$i])) {
 			$values_array[$i] = '';
 		}
-		if($i > 0 && $i <= $#values_array) {
+		if ($i > 0 && $i <= $#values_array) {
 			$fields = $fields.',';
 		}
 		$fields = $fields." `$columns_array[$i]` = ?";
-	}	
+	}
 	
 	push(@values_array, $where_value);
-			
+	
 	my $res = db_update ($dbh, "UPDATE $table SET$fields WHERE $where_column = ?", @values_array);
-
+	
 	return $res;
 }
 
@@ -567,7 +690,7 @@ sub add_new_address_agent ($$$) {
 	my ($dbh, $addr_id, $agent_id) = @_;
 	
 	db_do ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-				  VALUES (?, ?)', $addr_id, $agent_id);
+		VALUES (?, ?)', $addr_id, $agent_id);
 }
 
 ##########################################################################
@@ -575,8 +698,12 @@ sub add_new_address_agent ($$$) {
 ##########################################################################
 sub get_addr_id ($$) {
 	my ($dbh, $addr) = @_;
-
-	my $addr_id = get_db_value ($dbh, 'SELECT id_a FROM taddress WHERE ip = ?', $addr);
+	
+	my $addr_id = get_db_value ($dbh,
+		'SELECT id_a
+		FROM taddress
+		WHERE ip = ?', $addr);
+	
 	return (defined ($addr_id) ? $addr_id : -1);
 }
 
@@ -586,8 +713,12 @@ sub get_addr_id ($$) {
 ##########################################################################
 sub get_agent_addr_id ($$$) {
 	my ($dbh, $addr_id, $agent_id) = @_;
-
-	my $agent_addr_id = get_db_value ($dbh, 'SELECT id_ag FROM taddress_agent WHERE id_a = ? AND id_agent = ?', $addr_id, $agent_id);
+	
+	my $agent_addr_id = get_db_value ($dbh,
+		'SELECT id_ag
+		FROM taddress_agent
+		WHERE id_a = ?
+			AND id_agent = ?', $addr_id, $agent_id);
 	return (defined ($agent_addr_id) ? $agent_addr_id : -1);
 }
 
@@ -596,9 +727,9 @@ sub get_agent_addr_id ($$$) {
 ##########################################################################
 sub db_do ($$;@) {
 	my ($dbh, $query, @values) = @_;
-
+	
 	#DBI->trace( 3, '/tmp/dbitrace.log' );
-
+	
 	$dbh->do($query, undef, @values);
 }
 
@@ -607,11 +738,12 @@ sub db_do ($$;@) {
 ##########################################################################
 sub is_agent_address ($$$) {
 	my ($dbh, $id_agent, $id_addr) = @_;
-
-	my $id_ag = get_db_value ($dbh, 'SELECT id_ag FROM taddress_agent 
-	                                    WHERE id_a = ?
-	                                    AND id_agent = ?', $id_addr, $id_agent);
-	                                    
+	
+	my $id_ag = get_db_value ($dbh, 'SELECT id_ag
+		FROM taddress_agent 
+		WHERE id_a = ?
+			AND id_agent = ?', $id_addr, $id_agent);
+	
 	return (defined ($id_ag)) ? $id_ag : 0;
 }
 
@@ -623,7 +755,7 @@ sub db_reserved_word ($) {
 	
 	# MySQL
 	return '`' . $reserved_word . '`' if ($RDBMS eq 'mysql');
-
+	
 	# PostgreSQL
 	return '"' . $reserved_word . '"' if ($RDBMS eq 'postgresql' || $RDBMS eq 'oracle');
 	
@@ -671,8 +803,8 @@ sub db_concat ($$) {
 	my ($element1, $element2) = @_;
 	
 	return " concat(" . $element1 . ", ' '," . $element2 . ") " if ($RDBMS eq 'mysql');
-	return " " . $element1 . " || ' ' || " . $element2 . " " if ($RDBMS eq 'oracle' or $RDBMS eq 'postgresql');
 	
+	return " " . $element1 . " || ' ' || " . $element2 . " " if ($RDBMS eq 'oracle' or $RDBMS eq 'postgresql');
 }
 
 ##########################################################################
@@ -681,25 +813,25 @@ sub db_concat ($$) {
 sub get_priority_name ($) {
 	my ($priority_id) = @_;
 	
-	if($priority_id == 0) {
+	if ($priority_id == 0) {
 		return 'Maintenance';
 	}
-	elsif($priority_id == 1) {
+	elsif ($priority_id == 1) {
 		return 'Informational';
 	}
-	elsif($priority_id == 2) {
+	elsif ($priority_id == 2) {
 		return 'Normal';
 	}
-	elsif($priority_id == 3) {
+	elsif ($priority_id == 3) {
 		return 'Warning';
 	}
-	elsif($priority_id == 4) {
+	elsif ($priority_id == 4) {
 		return 'Critical';
 	}
-	elsif($priority_id == 5) {
+	elsif ($priority_id == 5) {
 		return 'Minor';
 	}
-	elsif($priority_id == 6) {
+	elsif ($priority_id == 6) {
 		return 'Major';
 	}
 	

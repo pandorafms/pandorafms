@@ -1,3 +1,11 @@
+2012-07-24 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/Tools.pm,
+	lib/PandoraFMS/PredictionServer.pm: cleaned source code style.
+	
+	* lib/PandoraFMS/DB.pm: added functions "get_agent_status",
+		"get_agent_modules" and "get_agentmodule_status".
+
 2012-07-16 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Updated statistic queries from php code

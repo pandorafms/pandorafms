@@ -1,3 +1,37 @@
+2012-07-24 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/setup/file_manager.php, godmode/setup/news.php,
+	godmode/users/configure_user.php, godmode/users/user_list.php,
+	godmode/massive/massive_copy_modules.php,
+	godmode/massive/massive_enable_disable_alerts.php,
+	godmode/massive/massive_delete_action_alerts.php,
+	godmode/massive/massive_delete_alerts.php,
+	godmode/modules/manage_network_templates_form.php,
+	godmode/modules/manage_nc_groups.php,
+	godmode/modules/manage_nc_groups_form.php,
+	godmode/modules/manage_network_templates.php,
+	godmode/netflow/nf_edit.php, godmode/netflow/nf_edit_form.php,
+	godmode/netflow/nf_item_list.php,
+	godmode/netflow/nf_report_item.php, godmode/netflow/nf.php,
+	operation/incidents/incident.php,
+	operation/incidents/incident_detail.php,
+	operation/agentes/estado_agente.php, operation/agentes/sla_view.php,
+	operation/agentes/tactical.php,
+	operation/agentes/estado_generalagente.php,
+	operation/snmpconsole/snmp_view.php, operation/users/user_edit.php,
+	operation/integria_incidents/incident_detail.php,
+	operation/gis_maps/index.php, operation/events/events_list.php,
+	operation/events/events.php, operation/messages/message_edit.php,
+	operation/messages/message_list.php,
+	operation/reporting/graph_viewer.php, operation/search_reports.php,
+	operation/netflow/nf_view.php: cleaned source code.
+	
+	* godmode/massive/massive_operations.php,
+	godmode/massive/massive_edit_modules.php: fixed the massive edition
+	of "any" module in agents.
+	
+	Fixes: #3543484
+
 2012-07-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_agents.php

@@ -65,10 +65,11 @@ if ($delete) {
 					$alerts_agent_modules = array_merge($alerts_agent_modules, alerts_get_alerts_agent_module ($agent_alert['id_agent_module'], true, false, 'id'));
 				}
 			}
-
+			
 			if (empty($alerts_agent_modules)) {
 				ui_print_result_message (false, '', __('Could not be deleted').". ".__('No alerts selected'));
-			} else {
+			}
+			else {
 				$results = true;
 				$agent_module_actions = array();
 			
@@ -137,7 +138,8 @@ $table->data[1][1] = html_print_select (array(),'id_agents[]', 0, false, '', '',
 
 if (empty($id_agents)) {
 	$alert_templates = '';
-} else {
+}
+else {
 	$alert_templates = agents_get_alerts_simple ($id_agents);
 }
 $table->data[2][0] = __('Alert templates');

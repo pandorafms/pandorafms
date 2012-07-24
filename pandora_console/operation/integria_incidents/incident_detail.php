@@ -178,7 +178,8 @@ elseif (isset ($_GET["insert_form"])) {
 	}
 	$prioridad = 0;
 	$id_grupo = 0;
-} else {
+}
+else {
 	db_pandora_audit("HACK","Trying to get to incident details in an unusual way");
 	require ("general/noaccess.php");
 	exit;
@@ -212,7 +213,8 @@ if (isset ($id_inc)) { //If $id_inc is set (when $_GET["id"] is set, not $_GET["
 	ui_print_page_header (__('Incident details'). ' #'.$id_inc, "images/book_edit.png", false, "", false, "");
 	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=update">';
 	echo '<input type="hidden" name="id_inc" value="'.$id_inc.'">';
-} else {
+}
+else {
 	ui_print_page_header (__('Create incident'), "images/book_edit.png", false, "", false, "");
 	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=insert">';
 }
@@ -222,7 +224,8 @@ echo '<tr><td class="datos"><b>'.__('Incident').'</b></td><td colspan="3" class=
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_input_text ("titulo", $titulo,'', 70);
-} else {
+}
+else {
 	html_print_input_text_extended ("titulo", $titulo, "", "", 70, "", false, "", "readonly"); 
 }
 
@@ -235,7 +238,8 @@ echo '<tr><td class="datos"><b>'.__('Owner').'</b></td><td class="datos">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select (users_get_info (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135");
-} else {
+}
+else {
 	html_print_select (users_get_info (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135", true);
 }
 echo '</td><td class="datos"><b>'.__('Status').'</b></td><td class="datos">';
@@ -271,7 +275,8 @@ echo '</td><td class="datos2"><b>'.__('Group').'</b></td><td class="datos2">';
 // Group combo
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select_groups($config["id_user"], "IR", true, "grupo_form", $id_grupo, '', '', '', false, false, false, 'w135');
-} else {
+}
+else {
 	html_print_select_groups($config["id_user"], "IR", true, "grupo_form", $id_grupo, '', '', '', false, false, true, 'w135', true);
 }
 
@@ -279,14 +284,16 @@ echo '</td></tr><tr><td class="datos"><b>'.__('Priority').'</b></td><td class="d
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select (incidents_get_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135');
-} else {
+}
+else {
 	html_print_select (incidents_get_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135', true);
 }
 
 echo '</td><td class="datos"><b>'.__('Creator').'</b></td><td class="datos">';
 if (empty ($id_creator)) {
 	echo 'SYSTEM';
-} else {
+}
+else {
 	echo $id_creator.' (<i>'.get_user_fullname($id_creator).'</i>)';
 }
 
@@ -294,7 +301,8 @@ echo '</td></tr><tr><td class="datos2" colspan="4">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_textarea ("descripcion", 15, 80, $texto, 'style="height:200px;"');
-} else {
+}
+else {
 	html_print_textarea ("descripcion", 15, 80, $texto, 'style="height:200px;" disabled');
 }
 
@@ -303,9 +311,11 @@ echo '</td></tr></table><div style="width: 650px; text-align:right;">';
 // Only if user is the used who opened incident or (s)he is admin
 if (isset ($id_inc) AND ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"]))) {
 	html_print_submit_button (__('Update incident'), "accion", false, 'class="sub upd"');
-} elseif (check_acl ($config["id_user"], $id_grupo, "IW")) {
+}
+elseif (check_acl ($config["id_user"], $id_grupo, "IW")) {
 	html_print_submit_button (__('Create'), "accion", false, 'class="sub wand"');
-} else {
+}
+else {
 	html_print_submit_button (__('Submit'), "accion", true, 'class="sub upd"');
 }
 echo "</div></form>";
@@ -389,12 +399,13 @@ if (isset ($id_inc)) {
 		$data[2] = format_for_graph ($row["size"])."B";
 		if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 			$data[3] = html_print_input_image ("delete_file", "images/cross.png", $row["id_attachment"], 'border:0px;" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;', true);
-		} else {
+		}
+		else {
 			$data[3] = '';
 		}
 		array_push ($table->data, $data);
 	}
-
+	
 	if (!empty ($table->data)) {
 		echo "<h3>".__('Attached files')."</h3>";
 		echo '<form method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'">';
@@ -402,22 +413,22 @@ if (isset ($id_inc)) {
 		echo '</form>';
 	}
 	unset ($table);
-
+	
 	// ************************************************************
 	// Upload control
 	// ************************************************************
-
-
+	
+	
 	// Upload control
 	if ((check_acl($config["id_user"], $id_grupo, "IW")==1)) {
-
+		
 		echo '<div>';
 		echo '<a class="attachment" href="#">';
 		echo html_print_image ('images/add.png', true);
 		echo __('Add attachment');
 		echo '</a>';
 		echo '</div>';
-
+		
 		echo '<div><form method="post" id="file_control" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data"><h3>'.__('Add attachment').'</h3>';
 		echo '<table cellpadding="4" cellspacing="3" class="databox" width="400">
 			<tr><td class="datos">'.__('Filename').'</td><td class="datos"><input type="file" name="userfile" value="userfile" class="sub" size="40" /></td></tr>

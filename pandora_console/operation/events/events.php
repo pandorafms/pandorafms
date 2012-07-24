@@ -445,7 +445,8 @@ $(document).ready( function() {
 		$option = $('#select_validate').val();
 		if ($option == 2) {
 			$(".standby_alert_checkbox").css('display', '');
-		} else {
+		}
+		else {
 			$(".standby_alert_checkbox").css('display', 'none');
 		}
 	});
@@ -453,10 +454,10 @@ $(document).ready( function() {
 	$("#tgl_event_control").click (function () {
 		$("#event_control").toggle ();
 		// Trick to don't collapse filter if autorefresh button has been pushed
-		if ($("#hidden-toogle_filter").val() == 'true'){
+		if ($("#hidden-toogle_filter").val() == 'true') {
 			$("#hidden-toogle_filter").val('false');
 		}
-		else{
+		else {
 			$("#hidden-toogle_filter").val('true');
 		}
 		return false;
@@ -470,12 +471,12 @@ $(document).ready( function() {
 		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process, 3 add comment
 		var checkbox_standby_alert = $('#checkbox-standby-alert-'+id).attr('checked');
 		var similars = $('#group_rep').val();
-
-		if(!select_validate) {
+		
+		if (!select_validate) {
 			select_validate = 1;
 		}
 		
-		if(checkbox_standby_alert) {
+		if (checkbox_standby_alert) {
 			jQuery.post ("ajax.php",
 				{"page" : "operation/events/events",
 				"standby_alert" : 1,
@@ -516,8 +517,8 @@ $(document).ready( function() {
 							"get_comment" : 1,
 							"id" : id
 							},
-							function (data, status) {						
-								$("#comment_row_"+id).html(data);								
+							function (data, status) {
+								$("#comment_row_"+id).html(data);
 							});
 							
 						// Get event comment in header
@@ -527,8 +528,8 @@ $(document).ready( function() {
 							"id" : id
 							},
 							function (data, status) {
-								$("#comment_header_"+id).html(data);								
-							});							
+								$("#comment_header_"+id).html(data);
+							});
 						
 						// Change state image
 						$("#validate-"+id).css("display", "none");
@@ -538,12 +539,12 @@ $(document).ready( function() {
 						
 						// Remove row due to new state
 						if (($("#status").val() == 2) || ($("#status").val() == 0) || ($("#status").val() == 3)){
-
+							
 							$.each($tr, function(index, value){
 								row = value;
-
+								
 								if ($(row).attr('id') != ''){
-
+									
 									row_id_name = $(row).attr('id').split('-').shift();
 									row_id_number = $(row).attr('id').split('-').pop() - 1;
 									row_id_number_next = parseInt($(row).attr('id').split('-').pop()) + 1;
@@ -557,8 +558,8 @@ $(document).ready( function() {
 									$("#"+selected_row_id).css('display', 'none');
 									$("#"+next_row_id).css('display', 'none');
 								}
-							});	
-						}							
+							});
+						}
 						
 					} // In process
 					else if (select_validate == 2){
@@ -572,10 +573,10 @@ $(document).ready( function() {
 							"get_comment" : 1,
 							"id" : id
 							},
-							function (data, status) {						
-								$("#comment_row_"+id).html(data);								
-							});	
-					
+							function (data, status) {
+								$("#comment_row_"+id).html(data);
+							});
+						
 						// Get event comment in header
 						jQuery.post ("ajax.php",
 							{"page" : "operation/events/events",
@@ -583,16 +584,16 @@ $(document).ready( function() {
 							"id" : id
 							},
 							function (data, status) {
-								$("#comment_header_"+id).html(data);								
-							});						
-
+								$("#comment_header_"+id).html(data);
+							});
+						
 						// Remove delete link (if event is not grouped and there is more than one event)
-						if ($("#group_rep").val() == 1){
-							if (parseInt($("#count_event_group_"+id).text()) <= 1){
+						if ($("#group_rep").val() == 1) {
+							if (parseInt($("#count_event_group_"+id).text()) <= 1) {
 								$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="images/cross.disabled.png">');
 							}
 						}
-						else{ // Remove delete link (if event is not grouped)
+						else { // Remove delete link (if event is not grouped)
 							$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="images/cross.disabled.png">');
 						}
 						
@@ -600,22 +601,22 @@ $(document).ready( function() {
 						$("#status_img_"+id).attr ("src", "images/hourglass.png");
 						$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event in process') . "'"; ?>);
 						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);		
-												
+						
 						// Remove row due to new state
 						if (($("#status").val() == 0) || ($("#status").val() == 1)){
-
+							
 							$.each($tr, function(index, value){
 								row = value;
 								
 								if ($(row).attr('id') != ''){
-
+									
 									row_id_name = $(row).attr('id').split('-').shift();
 									row_id_number = $(row).attr('id').split('-').pop() - 1;
 									row_id_number_next = parseInt($(row).attr('id').split('-').pop()) + 1;
 									previous_row_id = $(row).attr('id');
 									current_row_id = row_id_name + "-" + row_id_number;
 									selected_row_id = row_id_name + "-" + row_id_number + "-0";
-									next_row_id = row_id_name + '-' + row_id_number_next;								
+									next_row_id = row_id_name + '-' + row_id_number_next;
 
 									$("#"+previous_row_id).css('display', 'none');
 									$("#"+current_row_id).css('display', 'none');
@@ -645,11 +646,12 @@ $(document).ready( function() {
 							},
 							function (data, status) {
 								$("#comment_header_"+id).html(data);								
-							});								
+							});
 					}
 					
 					//location.reload();
-				} else {
+				}
+				else {
 					$("#result")
 						.showMessage ("<?php echo __('Could not be validated')?>")
 						.addClass ("error");
@@ -689,7 +691,8 @@ $(document).ready( function() {
 	function toggleDiv (divid){
 		if (document.getElementById(divid).style.display == 'none'){
 			document.getElementById(divid).style.display = 'block';
-		} else {
+		}
+		else {
 			document.getElementById(divid).style.display = 'none';
 		}
 	}
@@ -704,11 +707,12 @@ $(document).ready( function() {
 			$option = $('#select_validate_' + id_event).val();
 			if ($option == 2) {
 				$("#standby_alert_checkbox_" + id_event).css('display', '');
-			} else {
+			}
+			else {
 				$("#standby_alert_checkbox_" + id_event).css('display', 'none');
 			}
 		});
-	
+		
 		if (display != 'none') {
 			$('.event_form_' + id_event).css('display', 'none');
 			// Hide All showed rows

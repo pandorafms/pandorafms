@@ -171,17 +171,20 @@ $sql = "SELECT id_rc FROM tnetflow_report_content where `order`= (select max(`or
 $item_max = db_get_row_sql($sql);
 $last_item = $item_max['id_rc'];
 
- foreach ($reports_item as $item) {
-
+foreach ($reports_item as $item) {
+	
 	$data = array ();
 	if (($item['id_rc'] == $first_item) && ($item['id_rc'] == $last_item)){
 		$data[0] = '<span style="display: block; float: left; width: 16px;">&nbsp;</span>';
-	} else if (($item['id_rc'] == $first_item) && ($item['id_rc'] != $last_item)){
+	}
+	else if (($item['id_rc'] == $first_item) && ($item['id_rc'] != $last_item)){
 		$data[0] = '<span style="display: block; float: left; width: 16px;">&nbsp;</span>';
 		$data[0] .= '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
-	} else if (($item['id_rc'] == $last_item) && ($item['id_rc'] != $first_item)){
+	}
+	else if (($item['id_rc'] == $last_item) && ($item['id_rc'] != $first_item)){
 		$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
-	} else {
+	}
+	else {
 		$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
 		$data[0] .= '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
 	}
@@ -214,7 +217,7 @@ $last_item = $item_max['id_rc'];
 	array_push ($table->data, $data);
 }
 
-if(isset($data)) {
+if (isset($data)) {
 	echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">';
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
@@ -222,7 +225,8 @@ if(isset($data)) {
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
 	echo "</form>";
-}else {
+}
+else {
 	echo "<div class='nf'>".__('There are no defined items')."</div>";
 }
 

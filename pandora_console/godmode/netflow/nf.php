@@ -53,10 +53,11 @@ if ($update) {
 	
 	if (db_get_value('token', 'tconfig', 'token', 'netflow_path') === false) {
 		config_create_value('netflow_path', $config['netflow_path']);
-	} else {
+	}
+	else {
 		db_process_sql_update ('tconfig', 
-				array ('value' => $config['netflow_path']),
-				array ('token' => 'netflow_path'));
+			array ('value' => $config['netflow_path']),
+			array ('token' => 'netflow_path'));
 	}
 }
 

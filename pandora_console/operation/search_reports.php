@@ -83,7 +83,8 @@ else {
 	foreach ($reports as $report) {
 		if($linkReport) {
 			$reportstring = "<a href='?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report=" . $report['id_report'] . "' title='" . __("Edit") . "'>" . $report['name'] . "</a>";
-		} else {
+		}
+		else {
 			$reportstring = $report['name'];
 		}
 		$data = array(
@@ -96,7 +97,7 @@ else {
 		
 		array_push($table->data, $data);
 	}
-		
+	
 	echo "<br />";ui_pagination ($totalReports);
 	html_print_table ($table); unset($table);
 	ui_pagination ($totalReports);

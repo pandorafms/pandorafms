@@ -274,30 +274,36 @@ if($is_admin) {
 		
 		if ($server["status"] == 0){
 			$data[2] = ui_print_status_image (STATUS_SERVER_DOWN, '', true);
-		} else {
+		}
+		else {
 			$data[2] = ui_print_status_image (STATUS_SERVER_OK, '', true);
 		}
 		
 		if ($server["type"] != "snmp") {
-			$data[3] = progress_bar($server["load"], 80, 20);	
-
+			$data[3] = progress_bar($server["load"], 80, 20);
+			
 			if ($server["type"] != "recon"){
 				$data[4] = $server["lag_txt"];
-			} else {
+			}
+			else {
 				$data[4] = __("N/A");
 			}
-		} else {
+		}
+		else {
 			$data[3] = "";
 			$data[4] = __("N/A");
 		}
-
+		
 		array_push ($table->data, $data);
 	}
-
+	
 	if (!empty ($table->data)) {
 		html_print_table ($table);
-	} else {
-		echo '<div class="nf">'.__('There are no servers configured in the database').'</div>';
+	}
+	else {
+		echo '<div class="nf">' .
+			__('There are no servers configured in the database') .
+			'</div>';
 	}
 	unset ($table);
 }

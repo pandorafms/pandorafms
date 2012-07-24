@@ -192,7 +192,8 @@ $(document).ready (function () {
 		if (this.value != 0) {
 			$("#id_agents").enable ();
 			$("#id_group").enable ().change ();
-		} else {
+		}
+		else {
 			$("#id_group, #id_agents").disable ();
 		}
 	});

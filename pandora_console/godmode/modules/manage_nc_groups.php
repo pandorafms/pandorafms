@@ -46,13 +46,15 @@ if ($create) {
 		ui_print_error_message (__('Could not be created. Blank name'));
 		require_once ('manage_nc_groups_form.php');
 		return;
-	} else {
+	}
+	else {
 		$result = db_process_sql_insert ('tnetwork_component_group',
 			array ('name' => $name,
 				'parent' => $parent));
 		if ($result) {
 			db_pandora_audit( "Module management", "Create component group #$result");
-		} else {
+		}
+		else {
 			db_pandora_audit( "Module management", "Fail try to create component group");
 		}
 		ui_print_result_message ($result,
@@ -75,7 +77,8 @@ if ($update) {
 			array ('id_sg' => $id));
 		if ($result) {
 			db_pandora_audit( "Module management", "Update component group #$id");
-		} else {
+		}
+		else {
 			db_pandora_audit( "Module management", "Fail try to update component group #$id");
 		}
 		

@@ -85,18 +85,20 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 			$text = $result["text"];
 			$author = $result["author"];
 			$timestamp = $result["timestamp"];
-		} else {
+		}
+		else {
 			echo "<h3 class='error'>".__('Name error')."</h3>";
 		}
-	} else { // form_add
+	}
+	else { // form_add
 		$creation_mode = 1;
 		$text = "";
 		$subject = "";
 		$author = $config['id_user'];
 	}
-
+	
 	// Create news
-
+	
 	echo '<table class="databox" cellpadding="4" cellspacing="4" width="98%">';   
 	echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/news">';
 	if ($creation_mode == 1)

@@ -473,20 +473,13 @@ foreach ($agents as $agent) {
 	
 	$data[2] = ui_print_os_icon ($agent["id_os"], false, true);
 	
-	//The interval we are thinking that it must be the agent interval in this
-	//cell and it'snt the interval of modules.
-//	if ($agent_info["interval"] > $agent["intervalo"]) {
-//		$data[2] = '<span class="green">'.$agent_info["interval"].'</span>';
-//	} else {
-//		$data[2] = $agent["intervalo"];
-//	}
 	$data[3] = human_time_description_raw($agent["intervalo"]);
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	
 	$data[5] = '<b>';
 	$data[5] .= $agent_info["modules"];
-
+	
 	if ($agent_info["monitor_alertsfired"] > 0)
 		$data[5] .= ' : <span class="orange">' . $agent_info["monitor_alertsfired"] . '</span>';
 	if ($agent_info["monitor_critical"] > 0)
@@ -541,14 +534,15 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 	ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
 	unset ($table);
-} else {
+}
+else {
 	echo '<div class="nf">'.__('There are no defined agents').'</div>';
 }
 ?>
 
 <script type="text/javascript">
 $(document).ready (function () {
-		
+	
 	$("table#table1 tr").hover (function () {
 			$(".actions", this).css ("visibility", "");
 		},

@@ -71,7 +71,8 @@ ui_print_page_header (__('User detail editor'), "images/god3.png", false, "", tr
 
 if ($config['user_can_update_info']) {
 	$view_mode = false;
-} else {
+}
+else {
 	$view_mode = true;
 }
 
@@ -240,7 +241,8 @@ if ($update_user) {
 					$pass_ok = login_validate_pass($password_new, $id, true);
 					if ($pass_ok != 1) {
 						ui_print_error_message($pass_ok);
-					} else {
+					}
+					else {
 						$res2 = update_user_password ($id, $password_new);
 						if ($res2) {
 							$res3 = save_pass_history($id, $password_new);
@@ -249,7 +251,8 @@ if ($update_user) {
 						__('User info successfully updated'),
 						__('Error updating user info (no change?)'));
 					}
-				} else {
+				}
+				else {
 					$res2 = update_user_password ($id, $password_new);
 					if ($res2) {
 						$res3 = save_pass_history($id, $password_new);

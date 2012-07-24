@@ -134,9 +134,10 @@ if ($result !== false) {
 		$data[1] .= "(".$sla_data["sla_min"]." / ".$sla_data["sla_max"]." / ".$sla_data["sla_limit"].")";
 		$data[2] = format_numeric (reporting_get_agentmodule_sla ($sla_data["id_agent_module"], $config["sla_period"], 1)).'%';
 		$status = modules_get_agentmodule_status ($sla_data["id_agent_module"]);
-		if ($status == 1){
+		if ($status == 1) {
 			$data[3] = html_print_image ("images/pixel_red.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Down')));
-		} else {
+		}
+		else {
 			$data[3] = html_print_image ("images/pixel_green.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Up')));
 		}
 		array_push ($table->data, $data);

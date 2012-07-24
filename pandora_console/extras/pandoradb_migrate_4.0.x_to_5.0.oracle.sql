@@ -286,6 +286,7 @@ ALTER TABLE tnetwork_component ADD (macros CLOB default '');
 
 ALTER TABLE tagente_modulo ADD (wizard_level VARCHAR2(100) default 'nowizard' NOT NULL);
 ALTER TABLE tagente_modulo ADD CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
+ALTER TABLE tagente_modulo ADD (macros CLOB default '');
 
 -- -----------------------------------------------------
 -- Table `tusuario`

@@ -1,3 +1,16 @@
+2012-07-24  Sergio Martin <sergio.martin@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added 
+	missed field to migrate scripts
+
+	* godmode/agentes/module_manager_editor.php
+	godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_network_components_form_plugin.php: 
+	Improve code of dinamic macros and encapsulate it on enterprise
+	side
+
 2012-07-24 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/tree.php: Added comment to insert tag based

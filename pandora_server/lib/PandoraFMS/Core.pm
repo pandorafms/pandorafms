@@ -872,8 +872,12 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my ($pa_config, $data_object, $agent, $module, $module_type,
 		$timestamp, $utimestamp, $server_id, $dbh, $extra_macros) = @_;
 	
-	logger($pa_config, "Processing module '" . safe_output($module->{'nombre'}) . "' for agent " . (defined ($agent) && $agent ne '' ? "'" . safe_output($agent->{'nombre'}) . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
-
+	logger($pa_config,
+		"Processing module '" . safe_output($module->{'nombre'}) .
+		"' for agent " .
+		(defined ($agent) && $agent ne '' ? "'" . safe_output($agent->{'nombre'}) . "'" : 'ID ' . $module->{'id_agente'}) . ".",
+		1);
+	
 	# Get agent information
 	if (! defined ($agent) || $agent eq '') {
 		$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
@@ -883,7 +887,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			return;
 		}
 	}
-
+	
 	# Get module type
 	if (! defined ($module_type) || $module_type eq '') {
 		$module_type = get_db_value ($dbh, 'SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?', $module->{'id_tipo_modulo'});

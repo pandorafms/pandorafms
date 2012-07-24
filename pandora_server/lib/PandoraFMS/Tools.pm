@@ -1,8 +1,8 @@
 package PandoraFMS::Tools;
-##########################################################################
+########################################################################
 # Tools Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
-##########################################################################
+########################################################################
 # Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@ use warnings;
 use Time::Local;
 use POSIX qw(setsid strftime);
 use POSIX;
-use PandoraFMS::Sendmail;	
+use PandoraFMS::Sendmail;
 use HTML::Entities;
 use Encode;
 
@@ -68,33 +68,33 @@ our @EXPORT = qw(
 	safe_output
 );
 
-##########################################################################
+########################################################################
 ## SUB pandora_trash_ascii 
 # Generate random ascii strings with variable lenght
-##########################################################################
+########################################################################
 
 sub pandora_trash_ascii {
 	my $config_depth = $_[0];
 	my $a;
 	my $output;
-
+	
 	for ($a=0;$a<$config_depth;$a++){
 		$output = $output.chr(int(rand(25)+97));
 	}
 	return $output
 }
 
-##########################################################################
+########################################################################
 ## Convert the $value encode in html entity to clear char string.
-##########################################################################
+########################################################################
 sub safe_input($) {
 	my $value = shift;
-
+	
 	$value = encode_entities ($value, "'<>&");
-		
+	
 	#//Replace the character '\' for the equivalent html entitie
 	$value =~ s/\\/&#92;/gi;
-
+	
 	#// First attempt to avoid SQL Injection based on SQL comments
 	#// Specific for MySQL.
 	$value =~ s/\/\*/&#47;&#42;/gi;
@@ -110,15 +110,15 @@ sub safe_input($) {
 	for (my $i=0;$i<33;$i++) {
 		my $pattern = chr($i);
 		my $hex = ascii_to_html($i);
-		$value =~ s/$pattern/$hex/gi;		
+		$value =~ s/$pattern/$hex/gi;
 	}
 	
 	for (my $i=128;$i<191;$i++) {
 		my $pattern = chr($i);
 		my $hex = ascii_to_html($i);
-		$value =~ s/$pattern/$hex/gi;		
+		$value =~ s/$pattern/$hex/gi;
 	}
-
+	
 	#//Replace characteres for tildes and others
 	my $trans = get_html_entities();
 	
@@ -131,17 +131,17 @@ sub safe_input($) {
 	return $value;
 }
 
-##########################################################################
+########################################################################
 ## Convert the html entities to value encode to rebuild char string.
-##########################################################################
+########################################################################
 sub safe_output($) {
 	my $value = shift;
-
+	
 	$value = decode_entities ($value);
-		
+	
 	#//Replace the character '\' for the equivalent html entitie
 	$value =~ s/&#92;/\\/gi;
-
+	
 	#// First attempt to avoid SQL Injection based on SQL comments
 	#// Specific for MySQL.
 	$value =~ s/&#47;&#42;/\/\*/gi;
@@ -151,21 +151,21 @@ sub safe_output($) {
 	$value =~ s/&#40;/\(/gi;
 	
 	#//Replace ( for the html entitie
-	$value =~ s/&#41;/\)/gi;	
+	$value =~ s/&#41;/\)/gi;
 	
 	#//Replace some characteres for html entities
 	for (my $i=0;$i<33;$i++) {
 		my $pattern = chr($i);
 		my $hex = ascii_to_html($i);
-		$value =~ s/$hex/$pattern/gi;		
+		$value =~ s/$hex/$pattern/gi;
 	}
 	
 	for (my $i=128;$i<191;$i++) {
 		my $pattern = chr($i);
 		my $hex = ascii_to_html($i);
-		$value =~ s/$hex/$pattern/gi;	
+		$value =~ s/$hex/$pattern/gi;
 	}
-		
+	
 	#//Replace characteres for tildes and others
 	my $trans = get_html_entities();
 	
@@ -213,10 +213,10 @@ sub get_html_entities {
 	
 	return \%trans;
 }
-##########################################################################
+########################################################################
 # SUB ascii_to_html (string)
 # Convert an ascii string to hexadecimal
-##########################################################################
+########################################################################
 
 sub ascii_to_html($) {
 	my $ascii = shift;
@@ -225,86 +225,86 @@ sub ascii_to_html($) {
 }
 
 
-##########################################################################
+########################################################################
 # SUB pandora_get_os (string)
 # Detect OS using a string, and return id_os
-##########################################################################
+########################################################################
 
 sub pandora_get_os ($) {
 	my $command = $_[0];
-	if (defined($command) && $command ne ""){
-		if ($command =~ m/Windows/i){
+	if (defined($command) && $command ne "") {
+		if ($command =~ m/Windows/i) {
 			return 9;
 		}
-		elsif ($command =~ m/Cisco/i){
+		elsif ($command =~ m/Cisco/i) {
 			return 7;
 		}
-		elsif ($command =~ m/SunOS/i){
+		elsif ($command =~ m/SunOS/i) {
 			return 2;
 		}
-		elsif ($command =~ m/Solaris/i){
+		elsif ($command =~ m/Solaris/i) {
 			return 2;
 		}
-		elsif ($command =~ m/AIX/i){
+		elsif ($command =~ m/AIX/i) {
 			return 3;
 		}
-		elsif ($command =~ m/HP\-UX/i){
+		elsif ($command =~ m/HP\-UX/i) {
 			return 5;
 		}
-		elsif ($command =~ m/Apple/i){
+		elsif ($command =~ m/Apple/i) {
 			return 8;
 		}
-		elsif ($command =~ m/Linux/i){
+		elsif ($command =~ m/Linux/i) {
 			return 1;
 		}
-		elsif ($command =~ m/Enterasys/i){
+		elsif ($command =~ m/Enterasys/i) {
 			return 11;
 		}
-		elsif ($command =~ m/3com/i){
+		elsif ($command =~ m/3com/i) {
 			return 11;
 		}
-		elsif ($command =~ m/Octopods/i){
+		elsif ($command =~ m/Octopods/i) {
 			return 13;
 		}
-		elsif ($command =~ m/embedded/i){
+		elsif ($command =~ m/embedded/i) {
 			return 14;
 		}
-		elsif ($command =~ m/android/i){
+		elsif ($command =~ m/android/i) {
 			return 15;
 		}
-		elsif ($command =~ m/BSD/i){
+		elsif ($command =~ m/BSD/i) {
 			return 4;
 		}
 		else {
 			return 10; # Unknown / Other
 		}
-	} else {
+	}
+	else {
 		return 10;
 	}
 }
 
-##########################################################################
+########################################################################
 # Sub daemonize ()
 # Put program in background (for daemon mode)
-##########################################################################
+########################################################################
 
 sub pandora_daemonize {
 	my $pa_config = $_[0];
-	open STDIN, '/dev/null'     or die "Can't read /dev/null: $!";
-	open STDOUT, '>>/dev/null'  or die "Can't write to /dev/null: $!";
-	open STDERR, '>>/dev/null'  or die "Can't write to /dev/null: $!";
-	chdir '/tmp'                or die "Can't chdir to /tmp: $!";
-	defined(my $pid = fork)     or die "Can't fork: $!";
+	open STDIN, '/dev/null'		or die "Can't read /dev/null: $!";
+	open STDOUT, '>>/dev/null'	or die "Can't write to /dev/null: $!";
+	open STDERR, '>>/dev/null'	or die "Can't write to /dev/null: $!";
+	chdir '/tmp'					or die "Can't chdir to /tmp: $!";
+	defined(my $pid = fork)		or die "Can't fork: $!";
 	exit if $pid;
-	setsid                      or die "Can't start a new session: $!";
-
+	setsid							or die "Can't start a new session: $!";
+	
 	# Store PID of this process in file presented by config token
-	if ($pa_config->{'PID'} ne ""){
-
+	if ($pa_config->{'PID'} ne "") {
 		if ( -e $pa_config->{'PID'} && open (FILE, $pa_config->{'PID'})) {
 			$pid = <FILE> + 0;
 			close FILE;
-
+			
 			# check if pandora_server is running
 			if (kill (0, $pid)) {
 				die "[FATAL] pandora_server already running, pid: $pid.";
@@ -325,14 +325,14 @@ sub pandora_daemonize {
 # -------------------------------------------+
 
 
-##########################################################################
+########################################################################
 # SUB pandora_sendmail
 # Send a mail, connecting directly to MTA
 # param1 - config hash
 # param2 - Destination email addres
 # param3 - Email subject
 # param4 - Email Message body
-##########################################################################
+########################################################################
 
 sub pandora_sendmail {
 	
@@ -340,39 +340,39 @@ sub pandora_sendmail {
 	my $to_address = $_[1];
 	my $subject = $_[2];
 	my $message = $_[3];
-
+	
 	$subject = decode_entities ($subject);
 	$message = decode_entities ($message);
-
-	my %mail = ( To   => $to_address,
-			  Message => $message,
-			  Subject => encode('MIME-Header', $subject),
-			  'X-Mailer' => "Pandora FMS",
-			  Smtp    => $pa_config->{"mta_address"},
-			  Port    => $pa_config->{"mta_port"},
-			  From    => $pa_config->{"mta_from"},
+	
+	my %mail = ( To	=> $to_address,
+		Message		=> $message,
+		Subject		=> encode('MIME-Header', $subject),
+		'X-Mailer'	=> "Pandora FMS",
+		Smtp		=> $pa_config->{"mta_address"},
+		Port		=> $pa_config->{"mta_port"},
+		From		=> $pa_config->{"mta_from"},
 	);
-
+	
 	# Check if message has non-ascii chars.
 	# non-ascii chars should be encoded in UTF-8.
 	if ($message =~ /[^[:ascii:]]/o) {
 		$mail{Message} = encode("UTF-8", $mail{Message});
 		$mail{'Content-Type'} = 'text/plain; charset="UTF-8"';
 	}
-
+	
 	if ($pa_config->{"mta_user"} ne ""){
 		$mail{auth} = {user=>$pa_config->{"mta_user"}, password=>$pa_config->{"mta_pass"}, method=>$pa_config->{"mta_auth"}, required=>1 };
 	}
 
 	if (sendmail %mail) { 
 		return;
-	} else {
+	}
+	else {
 		logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
 		if (defined($Mail::Sendmail::error)){
 			logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
 		}
 	}
-
 }
 
 ##########################################################################
@@ -394,7 +394,8 @@ sub is_numeric {
 	my $NUMBER = qr{ ($SIGN?) ($DIGITS) }xms;
 	if ( $val !~ /^${NUMBER}$/ ) {
 		return 0;   #Non-numeric
-	} else {
+	}
+	else {
 		return 1;   #Numeric
 	}
 }
@@ -429,16 +430,17 @@ sub md5check {
 	if ($buf =~ /$buf2/ ) {
 		#print "MD5 Correct";
 		return 1;
-	} else {
+	}
+	else {
 		#print "MD5 Incorrect";
 		return 0;
 	}
 }
 
-##########################################################################
+########################################################################
 # SUB logger (pa_config, message, level)
 # Log to file
-##########################################################################
+########################################################################
 sub logger ($$;$) {
 	my ($pa_config, $message, $level) = @_;
 	
@@ -451,15 +453,15 @@ sub logger ($$;$) {
 	if (-e $file && (stat($file))[7] > $pa_config->{'max_log_size'}) {
 		rename ($file, $file.'.old');
 	}
-			
+	
 	open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
 	print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . $pa_config->{'servermode'} . " [V". $level ."] " . $message . "\n";
 	close (FILE);
 }
 
-##########################################################################
+########################################################################
 # limpia_cadena (string) - Purge a string for any forbidden characters (esc, etc)
-##########################################################################
+########################################################################
 sub limpia_cadena {
 	my $micadena;
 	$micadena = $_[0];
@@ -467,14 +469,15 @@ sub limpia_cadena {
 		$micadena =~ s/[^\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]//g;
 		$micadena =~ s/[\n\l\f]//g;
 		return $micadena;
-	} else {
+	}
+	else {
 		return "";
 	}
 }
 
-##########################################################################
+########################################################################
 # clean_blank (string) - Purge a string for any blank spaces in it
-##########################################################################
+########################################################################
 sub clean_blank {
 	my $input = $_[0];
 	$input =~ s/\s//g;
@@ -512,9 +515,9 @@ sub float_equal {
 ##########################################################################
 sub enterprise_load ($) {
 	my $pa_config = shift;
-
+	
 	# Check dependencies
-
+	
 	# Already loaded
 	#return 1 if (is_loaded ('PandoraFMS::Enterprise'));
 	
@@ -553,12 +556,12 @@ sub enterprise_hook ($$) {
 	return $output;
 }
 
-##########################################################################
+########################################################################
 # Prints a message to STDOUT at the given log level.
-##########################################################################
+########################################################################
 sub print_message ($$$) {
 	my ($pa_config, $message, $log_level) = @_;
-
+	
 	print STDOUT $message . "\n" if ($pa_config->{'verbosity'} >= $log_level);
 }
 
@@ -568,32 +571,32 @@ sub print_message ($$$) {
 ##########################################################################
 sub get_tag_value ($$$) {
 	my ($hash_ref, $tag, $def_value) = @_;
-
+	
 	return $def_value unless defined ($hash_ref->{$tag}) and ref ($hash_ref->{$tag});
-
+	
 	# Return the first found value
 	foreach my $value (@{$hash_ref->{$tag}}) {
 		
 		# If the tag is defined but has no value a ref to an empty hash is returned by XML::Simple
 		return $value unless ref ($value);
 	}
-
+	
 	return $def_value;
 }
 
-###############################################################################
+########################################################################
 # Initialize some variables needed by the MD5 algorithm.
 # See http://en.wikipedia.org/wiki/MD5#Pseudocode.
-###############################################################################
+########################################################################
 my (@R, @K);
 sub md5_init () {
-
+	
 	# R specifies the per-round shift amounts
 	@R = (7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
 		  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
 		  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
 		  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21);
-
+	
 	# Use binary integer part of the sines of integers (radians) as constants
 	for (my $i = 0; $i < 64; $i++) {
 		$K[$i] = floor(abs(sin($i + 1)) * MOD232);

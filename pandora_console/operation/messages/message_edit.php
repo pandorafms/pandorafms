@@ -156,7 +156,8 @@ $table->data[0][0] = __('Sender');
 
 if (!empty($own_info['fullname'])) {
 	$table->data[0][1] = $own_info['fullname'];
-} else {
+}
+else {
 	$table->data[0][1] = $config['id_user'];
 }
 
@@ -170,9 +171,9 @@ foreach ($users_full as $user_id => $user_info) {
 
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$return_all_groups = true;
-else	
+else
 	$return_all_groups = false;	
-		
+
 $groups = users_get_groups ($config["id_user"], "AR"); //Get a list of all groups
 
 $table->data[1][1] = html_print_select ($users, "dst_user", $dst_user, '', __('Select user'), false, true, false, '', false);

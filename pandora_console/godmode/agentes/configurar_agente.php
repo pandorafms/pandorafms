@@ -977,7 +977,7 @@ if ($delete_module) { // DELETE agent module !
 	$result = db_process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_borrar_modulo));	
 	if ($result === false)
 		$error++;
-
+	
 	if (alerts_delete_alert_agent_module($id_borrar_modulo) === false)
 		$error++;
 	

@@ -1,5 +1,20 @@
 2012-07-24 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/messages/message_edit.php,
+	operation/reporting/reporting_xml.php,
+	operation/reporting/graph_viewer.php,
+	operation/agentes/exportdata.php, operation/agentes/group_view.php,
+	operation/agentes/status_monitor.php,
+	godmode/agentes/configurar_agente.php, include/functions_agents.php:
+	cleaned source code style.
+	
+	* godmode/agentes/module_manager.php: fixed the messages for to
+	delete multiple modules.
+	
+	Fixes: #3543532
+
+2012-07-24 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/setup/file_manager.php, godmode/setup/news.php,
 	godmode/users/configure_user.php, godmode/users/user_list.php,
 	godmode/massive/massive_copy_modules.php,

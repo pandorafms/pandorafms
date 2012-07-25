@@ -1702,7 +1702,6 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 	else {
 		return AGENT_MODULE_STATUS_NORMAL;
 	}
-
 }
 
 /**
@@ -1948,7 +1947,6 @@ function agents_monitor_unknown ($id_agent, $filter="") {
 }
 
 // Get ok monitors by using the status code in modules.
-
 function agents_monitor_ok ($id_agent, $filter="") {
 	
 	if ($filter) {

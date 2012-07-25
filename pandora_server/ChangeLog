@@ -1,3 +1,7 @@
+2012-07-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/DB.pm: cleaned source code style.
+
 2012-07-24 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/Tools.pm,

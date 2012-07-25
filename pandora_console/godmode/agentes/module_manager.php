@@ -76,13 +76,14 @@ echo "</table>";
 
 if (! isset ($id_agente))
 	return;
-	
+
 
 $multiple_delete = (bool) get_parameter('multiple_delete');
 
 if ($multiple_delete) {
 	$id_agent_modules_delete = (array)get_parameter('id_delete');
 	
+	$count_correct_delete_modules = 0;
 	foreach($id_agent_modules_delete as $id_agent_module_del) {
 		$id_grupo = (int) agents_get_agent_group($id_agente);
 		
@@ -96,7 +97,7 @@ if ($multiple_delete) {
 		if ($id_agent_module_del < 1) {
 			db_pandora_audit("HACK Attempt",
 			"Expected variable from form is not correct");
-			die ("Nice try buddy");
+			die (__("Nice try buddy"));
 			exit;
 		}
 		
@@ -114,14 +115,14 @@ if ($multiple_delete) {
 		if (db_process_sql("UPDATE tagente_modulo
 			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del, "affected_rows", '', true, $status, false) === false)
 			$error++;
-	
+		
 		switch ($config["dbtype"]) {
 			case "mysql":
-			case "postgresql":		
+			case "postgresql":
 				$result = db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agent_module_del)); 
 				if ($result === false)
 					$error++;
-		
+				
 				$result = db_process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_agent_module_del));
 				if ($result === false)
 					$error++;
@@ -134,8 +135,7 @@ if ($multiple_delete) {
 				if ($result === false)
 					$error++;
 				break;
-				
-		}	
+		}
 		
 		// Trick to detect if we are deleting a synthetic module (avg or arithmetic)
 		// If result is empty then module doesn't have this type of submodules
@@ -161,22 +161,38 @@ if ($multiple_delete) {
 						$update_orders = false;
 					$result = enterprise_hook('modules_delete_synthetic_operations', array($id_target_module, $id_agent_module_del, $update_orders));
 					if ($result === false)
-						$error++;				
+						$error++;
 					$count_components++;
 					$last_target_module = $id_target_module;
 				}
 			}
-		}		
-	
+		}
+		
 		
 		//Check for errors
 		if ($error != 0) {
 			db_process_sql_rollback ();
-			ui_print_error_message (__('There was a problem deleting the module'));
 		}
 		else {
 			db_process_sql_commit ();
-			ui_print_success_message (__('Module deleted succesfully'));
+			$count_correct_delete_modules++;
+		}
+	}
+	
+	$count_modules_to_delete = count($id_agent_modules_delete);
+	if ($count_correct_delete_modules == 0) {
+		ui_print_error_message(
+			sprintf(__('There was a problem deleting %s modules, none deleted.'),
+			$count_modules_to_delete));
+	}
+	else {
+		if ($count_correct_delete_modules == $count_modules_to_delete) {
+			ui_print_success_message (__('All Modules deleted succesfully'));
+		}
+		else {
+			ui_print_error_message(
+			sprintf(__('There was a problem only deleted %s modules of %s total.'),
+				count_correct_delete_modules, $count_modules_to_delete));
 		}
 	}
 }

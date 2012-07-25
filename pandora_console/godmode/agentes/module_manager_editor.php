@@ -73,11 +73,17 @@ if (is_ajax ()) {
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
-						$component['type'] = db_get_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE "' . $typeName . '"');
+				$component['type'] = db_get_value_sql('
+					SELECT id_tipo
+					FROM ttipo_modulo
+					WHERE nombre LIKE "' . $typeName . '"');
 				break;
 			case "postgresql":
 			case "oracle":
-						$component['type'] = db_get_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE \'' . $typeName . '\'');
+				$component['type'] = db_get_value_sql('
+					SELECT id_tipo
+					FROM ttipo_modulo
+					WHERE nombre LIKE \'' . $typeName . '\'');
 				break;
 		}
 		
@@ -104,11 +110,12 @@ if (is_ajax ()) {
 		$snmp3_privacy_method = get_parameter('snmp3_privacy_method');
 		$snmp3_privacy_pass = get_parameter('snmp3_privacy_pass');
 		$snmp_port = get_parameter('snmp_port');
-
-		$snmpwalk = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
-					$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-					$snmp3_privacy_method, $snmp3_privacy_pass, 1, "", $snmp_port);
-
+		
+		$snmpwalk = get_snmpwalk($ip_target, $snmp_version, $snmp_community,
+			$snmp3_auth_user, $snmp3_security_level, $snmp3_auth_method,
+			$snmp3_auth_pass, $snmp3_privacy_method, $snmp3_privacy_pass,
+			1, "", $snmp_port);
+		
 		if ($snmpwalk === false) {
 			echo json_encode ($snmpwalk);
 			return;
@@ -152,19 +159,19 @@ if ($id_agent_module) {
 	$tcp_rcv = $module['tcp_rcv'];
 	$snmp_community = $module['snmp_community'];
 	$snmp_oid = $module['snmp_oid'];
-
+	
 	// New support for snmp v3
 	$snmp_version = $module['tcp_send'];
 	$snmp3_auth_user = $module["plugin_user"];
 	$snmp3_auth_pass = $module["plugin_pass"];
-
+	
 	// Auth method could be MD5 or SHA
 	$snmp3_auth_method = $module["plugin_parameter"];
-
+	
 	// Privacy method could be DES or AES
 	$snmp3_privacy_method = $module["custom_string_1"];
 	$snmp3_privacy_pass = $module["custom_string_2"];
-
+	
 	// Security level Could be noAuthNoPriv | authNoPriv | authPriv
 	$snmp3_security_level = $module["custom_string_3"];
 	
@@ -217,7 +224,7 @@ else {
 		$tcp_send = '';
 		$tcp_rcv = '';
 		$tcp_port = '';
-	
+		
 		if ($moduletype == "wmiserver")
 			$snmp_community = '';
 		else
@@ -236,7 +243,7 @@ else {
 		$max_critical = 0;
 		$str_critical = '';
 		$ff_event = 0;
-
+		
 		// New support for snmp v3
 		$snmp_version = 1;
 		$snmp3_auth_user = "";
@@ -253,11 +260,11 @@ $is_function_policies = enterprise_include_once('include/functions_policies.php'
 if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 	$relink_policy = get_parameter('relink_policy', 0);
 	$unlink_policy = get_parameter('unlink_policy', 0);
-
+	
 	if($relink_policy) {
 		$policy_info = policies_info_module_policy($id_agent_module);
 		$policy_id = $policy_info['id_policy'];
-
+		
 		if($relink_policy && policies_get_policy_queue_status ($policy_id) == STATUS_IN_QUEUE_APPLYING) {
 			ui_print_error_message(__('This policy is applying and cannot be modified'));
 		}
@@ -268,14 +275,13 @@ if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 			db_pandora_audit("Agent management", "Re-link module " . $id_agent_module);
 		}
 	}
-
+	
 	if($unlink_policy) {
 		$result = policies_unlink_module($id_agent_module);
 		ui_print_result_message($result, __('Module will be unlinked in the next application'));
 		
 		db_pandora_audit("Agent management", "Unlink module " . $id_agent_module);
 	}
-
 }
 global $__code_from;
 $__code_from = 'modules';
@@ -336,12 +342,13 @@ switch ($moduletype) {
 	/* WARNING: type 7 is reserved on enterprise */
 	default:
 		if (enterprise_include ('godmode/agentes/module_manager_editor.php') === ENTERPRISE_NOT_HOOK) {
-			echo '<h3 class="error">DEBUG: Invalid module type specified in '.__FILE__.':'.__LINE__.'</h3>';
-			echo 'Most likely you have recently upgraded from an earlier version of Pandora and either <br />
+			echo '<h3 class="error">';
+			echo sprintf(__('DEBUG: Invalid module type specified in %s:%s'), __FILE__, __LINE__);
+			echo '</h3>';
+			echo __('Most likely you have recently upgraded from an earlier version of Pandora and either <br />
 				1) forgot to use the database converter<br />
 				2) used a bad version of the database converter (see Bugreport #2124706 for the solution)<br />
-				3) found a new bug - please report a way to duplicate this error';
-			
+				3) found a new bug - please report a way to duplicate this error');
 			return;
 		}
 		break;
@@ -416,36 +423,44 @@ var no_plugin_lang = "<?php echo __('No plug-in provided') ?>";
 
 $(document).ready (function () {
 	configure_modules_form ();
-
+	
 	$("#module_form").submit(function() {
-		if (check_remote_conf) {
-			//Check the name
-			name = $("#text-name").val();
-			remote_config = $("#textarea_configuration_data").val();
-
-			regexp_name = new RegExp('module_name\\s*' + name+"\n");
-			
-			regexp_plugin = new RegExp('^module_plugin\\s*');
-			
-			if (remote_config == '' || remote_config.match(regexp_name) || remote_config.match(regexp_plugin) || $("#id_module_type").val()==100 || $("#hidden-id_module_type_hidden").val()==100) return true;
-			else {
-				alert("<?php echo __("Error, The field name and name in module_name in data configuration are different.");?>");
-				return false;
+		if (typeof(check_remote_conf) != 'undefined') { 
+			if (check_remote_conf) {
+				//Check the name
+				name = $("#text-name").val();
+				remote_config = $("#textarea_configuration_data").val();
+				
+				regexp_name = new RegExp('module_name\\s*' + name+"\n");
+				
+				regexp_plugin = new RegExp('^module_plugin\\s*');
+				
+				if (remote_config == '' || remote_config.match(regexp_name) ||
+					remote_config.match(regexp_plugin) ||
+					$("#id_module_type").val()==100 ||
+					$("#hidden-id_module_type_hidden").val()==100) {
+					return true;
+				}
+				else {
+					alert("<?php echo __("Error, The field name and name in module_name in data configuration are different.");?>");
+					return false;
+				}
 			}
 		}
-
+		
 		return true;
 	});
 	
 	function checkKeepaliveModule() {
 		// keepalive modules have id = 100
-		if($("#id_module_type").val()==100 || $("#hidden-id_module_type_hidden").val()==100) {
-				$("#simple-configuration_data").hide();
+		if ($("#id_module_type").val()==100 ||
+			$("#hidden-id_module_type_hidden").val()==100) {
+			$("#simple-configuration_data").hide();
 		}
 		else {
-				$("#simple-configuration_data").show();
+			$("#simple-configuration_data").show();
 		}
-
+		
 	}
 	
 	checkKeepaliveModule();

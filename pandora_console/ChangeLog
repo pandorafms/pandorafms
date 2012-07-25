@@ -1,5 +1,11 @@
 2012-07-24 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/module_manager_editor.php: fixed the javascript
+	error when the module have "remote config" and set to translate
+	some strings that were not translated.
+
+2012-07-24 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/messages/message_edit.php,
 	operation/reporting/reporting_xml.php,
 	operation/reporting/graph_viewer.php,

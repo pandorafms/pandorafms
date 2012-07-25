@@ -328,9 +328,9 @@ switch ($sortField) {
 // Begin Build SQL sentences
 $sql = " FROM tagente, tagente_modulo, tagente_estado 
 	WHERE $sql_extra (tagente.id_agente = tagente_modulo.id_agente 
-	AND tagente_modulo.disabled = 0 
-	AND tagente.disabled = 0 
-	AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
+		AND tagente_modulo.disabled = 0 
+		AND tagente.disabled = 0 
+		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
 
 // Agent group selector
 if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
@@ -453,7 +453,7 @@ switch ($config["dbtype"]) {
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
 			tagente_modulo.extended_info,
-			tagente_estado.utimestamp AS utimestamp".$sql;
+			tagente_estado.utimestamp AS utimestamp" . $sql;
 		$sql = oracle_recode_query ($sql, $set);
 		break;
 }
@@ -469,7 +469,7 @@ if ($result === false) {
 
 if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 	for ($i=0; $i < count($result); $i++) {
-		unset($result[$i]['rnum']);		
+		unset($result[$i]['rnum']);
 	}
 }
 
@@ -568,7 +568,7 @@ foreach ($result as $row) {
 					$title = __('(Unlinked) ') . $policyInfo['name_policy'];
 				}
 			}
-				
+			
 			$data[0] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id_policy'] . '">' . 
 				html_print_image($img,true, array('title' => $title)) .
 				'</a>';
@@ -625,18 +625,18 @@ foreach ($result as $row) {
 		$handle = "stat".$nombre_tipo_modulo."_".$row["id_agente_modulo"];
 		$url = 'include/procesos.php?agente='.$row["id_agente_modulo"];
 		$win_handle=dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
-
+		
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["module_name"])."&refresh=600','day_".$win_handle."')";
-
+		
 		$data[6] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
 		$data[6] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
 	}
-
+	
 	$data[7] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);
-
+	
 	if (is_numeric($row["datos"])){
 		$salida = format_numeric($row["datos"]);
-
+		
 		// Show units ONLY in numeric data types
 		if (isset($row["unit"])){
 			$salida .= "&nbsp;" . '<i>'. io_safe_output($row["unit"]) . '</i>';
@@ -659,9 +659,9 @@ foreach ($result as $row) {
 				title='". $module_value ."' style='white-space: nowrap;'>" . 
 				'<span id="value_module_text_' . $row["id_agente_modulo"] . '">' . $sub_string . '</span> ' .
 				"<a href='javascript: toggle_full_value(" . $row["id_agente_modulo"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</span>";
-		}			
+		}
 	}
-
+	
 	$data[8] = $salida;
 	
 	if ($row["module_interval"] > 0)
@@ -671,7 +671,8 @@ foreach ($result as $row) {
 	
 	if ($row['estado'] == 3){
 		$option = array ("html_attr" => 'class="redb"');
-	} else {
+	}
+	else {
 		$option = array ();
 	}
 	$data[9] = ui_print_timestamp ($row["utimestamp"], true, $option);
@@ -680,8 +681,11 @@ foreach ($result as $row) {
 }
 if (!empty ($table->data)) {
 	html_print_table ($table);
-} else {
-	echo '<div class="nf">'.__('This group doesn\'t have any monitor').'</div>';
+}
+else {
+	echo '<div class="nf">' .
+		__('This group doesn\'t have any monitor') .
+		'</div>';
 }
 ?>
 <script type="text/javascript">

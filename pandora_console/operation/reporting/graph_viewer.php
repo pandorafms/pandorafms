@@ -158,7 +158,7 @@ if ($view_graph) {
 	$stackeds[2] = __('Line');
 	$stackeds[3] = __('Stacked line');
 	html_print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
-
+	
 	echo "</td>";
 	echo "<td class='datos'>";
 	$zooms = array();
@@ -167,21 +167,21 @@ if ($view_graph) {
 	$zooms[2] = __('Zoom x2');
 	$zooms[3] = __('Zoom x3');
 	html_print_select ($zooms, 'zoom', $zoom , '', '', 0);
-
+	
 	echo "</td>";
 	echo "<td class='datos'>";
-	echo "<input type=submit value='".__('Update')."' class='sub upd'>";
+	echo "<input type=submit value='" . __('Update') . "' class='sub upd'>";
 	echo "</td>";
 	echo "</tr>";
 	echo "</table>";
-	echo "</form>";	
+	echo "</form>";
 	/* We must add javascript here. Otherwise, the date picker won't 
-   work if the date is not correct because php is returning. */
-
+	work if the date is not correct because php is returning. */
+	
 	ui_require_jquery_file ('timeentry');
 	?>
 	<script language="javascript" type="text/javascript">
-
+	
 	$(document).ready (function () {
 		$("#loading").slideUp ();
 		$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
@@ -189,13 +189,14 @@ if ($view_graph) {
 		$("#text-date").datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
 	});
 	</script>
-
+	
 	<?php
 	$datetime = strtotime ($date.' '.$time);
 	$report["datetime"] = $datetime;
-
+	
 	if ($datetime === false || $datetime == -1) {
-		echo '<h3 class="error">'.__('Invalid date selected').'</h3>';
+		echo '<h3 class="error">' . __('Invalid date selected') .
+			'</h3>';
 		return;
 	}
 	return;
@@ -226,8 +227,8 @@ if (! empty ($graphs)) {
 		array_push ($table->data, $data);
 	}
 	html_print_table ($table);
-} else {
+}
+else {
 	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 }
-
 ?>

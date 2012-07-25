@@ -22,13 +22,15 @@ function xml_array ($array) {
 		if (is_int ($name)) {
 			echo "<object id=\"".$name."\">";
 			$name = "object";
-		} else {
+		}
+		else {
 			echo "<".$name.">";
 		}
 		
 		if (is_array ($value)) {
 			xml_array ($value);
-		} else {
+		}
+		else {
 			echo $value;
 		}
 		
@@ -46,7 +48,7 @@ if (isset ($_GET["direct"])) {
 	
 	Although it's not recommended, you can put your login and password
 	in a GET request (append &nick=<yourlogin>&password=<password>). 
-	 	 
+	 
 	You SHOULD put it in a POST but some programs
 	might not be able to handle it without extensive re-programming
 	Either way, you should have a read-only user for getting reports

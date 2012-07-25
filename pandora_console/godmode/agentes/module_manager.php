@@ -31,7 +31,8 @@ $search_string = io_safe_output(urldecode(trim(get_parameter ("search_string", "
 echo '<form id="create_module_type" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
 echo '<table width="98%" cellpadding="2" cellspacing="2" class="databox" >';
 echo "<tr><td class='datos' style='width:25%'>";
-echo __('Search').' '.html_print_input_text ('search_string', $search_string, '', 15, 255, true);
+echo __('Search') . ' ' .
+	html_print_input_text ('search_string', $search_string, '', 15, 255, true);
 echo "</td>";
 echo "<td class='datos' style='width:25%'>";
 html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"');
@@ -92,13 +93,14 @@ echo "</table>";
 
 if (! isset ($id_agente))
 	return;
-	
+
 
 $multiple_delete = (bool) get_parameter('multiple_delete');
 
 if ($multiple_delete) {
 	$id_agent_modules_delete = (array)get_parameter('id_delete');
 	
+	$count_correct_delete_modules = 0;
 	foreach($id_agent_modules_delete as $id_agent_module_del) {
 		$id_grupo = (int) agents_get_agent_group($id_agente);
 		
@@ -112,7 +114,7 @@ if ($multiple_delete) {
 		if ($id_agent_module_del < 1) {
 			db_pandora_audit("HACK Attempt",
 			"Expected variable from form is not correct");
-			die ("Nice try buddy");
+			die (__("Nice try buddy"));
 			exit;
 		}
 		
@@ -130,14 +132,14 @@ if ($multiple_delete) {
 		if (db_process_sql("UPDATE tagente_modulo
 			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del, "affected_rows", '', true, $status, false) === false)
 			$error++;
-	
+		
 		switch ($config["dbtype"]) {
 			case "mysql":
-			case "postgresql":		
+			case "postgresql":
 				$result = db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_agent_module_del)); 
 				if ($result === false)
 					$error++;
-		
+				
 				$result = db_process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_agent_module_del));
 				if ($result === false)
 					$error++;
@@ -150,8 +152,7 @@ if ($multiple_delete) {
 				if ($result === false)
 					$error++;
 				break;
-				
-		}	
+		}
 		
 		// Trick to detect if we are deleting a synthetic module (avg or arithmetic)
 		// If result is empty then module doesn't have this type of submodules
@@ -177,22 +178,38 @@ if ($multiple_delete) {
 						$update_orders = false;
 					$result = enterprise_hook('modules_delete_synthetic_operations', array($id_target_module, $id_agent_module_del, $update_orders));
 					if ($result === false)
-						$error++;				
+						$error++;
 					$count_components++;
 					$last_target_module = $id_target_module;
 				}
 			}
-		}		
-	
+		}
+		
 		
 		//Check for errors
 		if ($error != 0) {
 			db_process_sql_rollback ();
-			ui_print_error_message (__('There was a problem deleting the module'));
 		}
 		else {
 			db_process_sql_commit ();
-			ui_print_success_message (__('Module deleted succesfully'));
+			$count_correct_delete_modules++;
+		}
+	}
+	
+	$count_modules_to_delete = count($id_agent_modules_delete);
+	if ($count_correct_delete_modules == 0) {
+		ui_print_error_message(
+			sprintf(__('There was a problem deleting %s modules, none deleted.'),
+			$count_modules_to_delete));
+	}
+	else {
+		if ($count_correct_delete_modules == $count_modules_to_delete) {
+			ui_print_success_message (__('All Modules deleted succesfully'));
+		}
+		else {
+			ui_print_error_message(
+			sprintf(__('There was a problem only deleted %s modules of %s total.'),
+				count_correct_delete_modules, $count_modules_to_delete));
 		}
 	}
 }
@@ -224,7 +241,7 @@ switch ($sortField) {
 				$selectNameUp = $selected;
 				switch ($config["dbtype"]) {
 					case "mysql":
-					case "postgresql":				
+					case "postgresql":
 						$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
 						break;
 					case "oracle":
@@ -242,7 +259,7 @@ switch ($sortField) {
 					case "oracle":	
 						$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'DESC');
 						break;
-				}		
+				}
 				break;
 		}
 		break;
@@ -305,13 +322,13 @@ switch ($sortField) {
 
 // TODO: CLEAN extra_sql
 $extra_sql = '';
-	
+
 // Build the order sql
-if(!empty($order)) {
+if (!empty($order)) {
 	$order_sql = ' ORDER BY ';
 }
 $first = true;
-foreach($order as $ord) {
+foreach ($order as $ord) {
 	if($first) {
 		$first = false;
 	}
@@ -326,12 +343,13 @@ foreach($order as $ord) {
 $limit = (int) $config["block_size"];
 $offset = (int) get_parameter ('offset');
 
-$params = implode(',', array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'nombre',
-		'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
-		'disabled','max_warning', 'min_warning', 'str_warning',
-		'max_critical', 'min_critical', 'str_critical'));
-		
-$where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);		
+$params = implode(',', array ('id_agente_modulo', 'id_tipo_modulo',
+	'descripcion', 'nombre', 'max', 'min', 'module_interval',
+	'id_modulo', 'id_module_group', 'disabled','max_warning',
+	'min_warning', 'str_warning', 'max_critical', 'min_critical',
+	'str_critical'));
+	
+$where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);
 
 $search_string_entities = io_safe_input($search_string);
 
@@ -344,26 +362,32 @@ switch ($config["dbtype"]) {
 		if(!isset($limit_sql)) {
 			$limit_sql = " LIMIT $offset, $limit ";
 		}
-		$sql = sprintf("SELECT %s FROM tagente_modulo WHERE %s (%s %s) %s %s", 
-					$params, $basic_where, $extra_sql, $where, $order_sql, $limit_sql);
-
+		$sql = sprintf("SELECT %s
+			FROM tagente_modulo
+			WHERE %s (%s %s) %s %s", 
+			$params, $basic_where, $extra_sql, $where, $order_sql, $limit_sql);
+		
 		$modules = db_get_all_rows_sql($sql);
 		break;
 	case "oracle":	
 		$set = array();
 		$set['limit'] = $limit;
-		$set['offset'] = $offset;	
-		$sql = sprintf("SELECT %s FROM tagente_modulo WHERE %s (%s %s) %s", 
-					$params, $basic_where, $extra_sql, $where, $order_sql);
+		$set['offset'] = $offset;
+		$sql = sprintf("SELECT %s
+			FROM tagente_modulo
+			WHERE %s (%s %s) %s", 
+			$params, $basic_where, $extra_sql, $where, $order_sql);
 		$modules = oracle_recode_query ($sql, $set, 'AND', false);
 		break;
 }
-	
-$sql_total_modules = sprintf("SELECT count(*) FROM tagente_modulo WHERE %s (%s %s)", $basic_where, $extra_sql, $where);
+
+$sql_total_modules = sprintf("SELECT count(*)
+	FROM tagente_modulo
+	WHERE %s (%s %s)", $basic_where, $extra_sql, $where);
 
 $total_modules = db_get_value_sql($sql_total_modules);
 
-$total_modules = isset ($total_modules) ? $total_modules : 0;	
+$total_modules = isset ($total_modules) ? $total_modules : 0;
 
 if ($modules === false) {
 	echo "<div class='nf'>".__('No available data to show')."</div>";
@@ -421,11 +445,11 @@ foreach($tempRows as $row) {
 
 foreach ($modules as $module) {
 	$is_extra = enterprise_hook('policies_is_module_extra_policy', array($module["id_agente_modulo"]));
-
+	
 	if($is_extra === ENTERPRISE_NOT_HOOK) {
 		$is_extra = false;
 	}
-
+	
 	if (! check_acl ($config["id_user"], $group, "AW", $id_agente) && !$is_extra) {
 		continue;
 	}

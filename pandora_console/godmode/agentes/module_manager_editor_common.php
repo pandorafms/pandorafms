@@ -134,7 +134,7 @@ if (!empty($id_agent_module) && isset($id_agente)) {
 }
 
 $disabled_enable = 0;
-$policy_link = db_get_value('id_policy_module', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+$policy_link = db_get_value('policy_linked', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 if ($policy_link != 0) {
 	$disabled_enable = 1;
 }

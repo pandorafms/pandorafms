@@ -1,3 +1,9 @@
+2012-07-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php: Change the sort function
+	of the html_print_select to use natural order (merging 
+	lower and upper case chars)
+
 2012-07-26  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* godmode/agentes/module_manager_editor_common.php:

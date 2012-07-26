@@ -207,7 +207,8 @@ $(document).ready (function () {
 		if (this.value != 0) {
 			$("#id_not_standby_alerts").enable ();
 			$("#id_standby_alerts").enable ();
-		} else {
+		}
+		else {
 			$("#id_group, #id_not_standby_alerts").disable ();
 			$("#id_group, #id_standby_alerts").disable ();
 		}

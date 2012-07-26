@@ -35,16 +35,18 @@ $fields_selected = explode (',', $config['event_fields']);
 if ($default != 0) {
 	$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
 	$fields_selected = explode (',', $event_fields);
-} else if ($update != '') {
+}
+else if ($update != '') {
 	$fields_selected = (array)get_parameter('fields_selected');
 	
 	if ($fields_selected[0] == '') {
 		$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
 		$fields_selected = explode (',', $event_fields);
-	} else {
+	}
+	else {
 		$event_fields = implode (',', $fields_selected);
 	}
-
+	
 	$values = array(
 		'token' => 'event_fields',
 		'value' => $event_fields
@@ -156,7 +158,7 @@ $table->data[1][0] =  '<b>' . __('Fields available').'</b>';
 $table->data[1][1] = html_print_select ($fields_available, 'fields_available[]', true, '', '', '', true, true, false, '', false, 'width: 200px');
 $table->data[1][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add fields to select'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table->data[1][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete fields to select'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
-	
+
 $table->data[1][3] = '<b>' . __('Fields selected') . '</b>';
 $table->data[1][4] =  html_print_select($result_selected, 'fields_selected[]', true, '', '', '', true, true, false, '', false, 'width: 200px');	
 
@@ -164,7 +166,7 @@ echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-		html_print_submit_button (__('Update'), 'upd_button', false, 'class="sub upd"');
+	html_print_submit_button (__('Update'), 'upd_button', false, 'class="sub upd"');
 echo '</form>';
 echo '</div>';
 ?>
@@ -181,9 +183,9 @@ $(document).ready (function () {
 				$("select[name='fields_selected[]']").append($("<option></option>").html(field_name).attr("value", id_field));
 				$("#fields_available").find("option[value='" + id_field + "']").remove();
 			}
-		});			
+		});
 	});
-
+	
 	$("#left").click (function () {
 		jQuery.each($("select[name='fields_selected[]'] option:selected"), function (key, value) {
 				field_name = $(value).html();
@@ -192,15 +194,13 @@ $(document).ready (function () {
 					$("select[name='fields_available[]']").append($("<option></option>").val(field_name).html('<i>' + id_field + '</i>'));
 					$("#fields_selected").find("option[value='" + id_field + "']").remove();
 				}
-		});			
+		});
 	});
 	
 	$("#submit-upd_button").click(function () {
-		$('#fields_selected option').map(function(){
+		$('#fields_selected option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});
 });
-
 </script>
-

@@ -265,7 +265,8 @@ $(document).ready (function () {
 						module_alerts = Array ();
 						if (! data) {
 							no_alerts = true;
-						} else {
+						}
+						else {
 							jQuery.each (data, function (i, val) {
 								module_name = $("<em></em>").append (val["module_name"]);
 								option = $("<option></option>")
@@ -287,12 +288,14 @@ $(document).ready (function () {
 							
 							$("span.without_modules, span.without_alerts").show ();
 							$("span.with_modules, span.with_alerts, #target_table-operations").hide ();
-						} else {
+						}
+						else {
 							if (no_modules) {
 								$("span.without_modules").show ();
 								$("span.with_modules").hide ();
 								$("#checkbox-copy_modules").uncheck ();
-							} else {
+							}
+							else {
 								$("span.without_modules").hide ();
 								$("span.with_modules").show ();
 								$("#checkbox-copy_modules").check ();
@@ -302,7 +305,8 @@ $(document).ready (function () {
 								$("span.without_alerts").show ();
 								$("span.with_alerts").hide ();
 								$("#checkbox-copy_alerts").uncheck ();
-							} else {
+							}
+							else {
 								$("span.without_alerts").hide ();
 								$("span.with_alerts").show ();
 								$("#checkbox-copy_alerts").check ();

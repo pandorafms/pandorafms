@@ -102,9 +102,11 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$section = io_safe_output($upd_info["section"]);
 	if (($section == 'Event list') || ($section == 'Group view') || ($section == 'Alert detail') || ($section == 'Tactical view') || ($section == 'Default')) {
 		$upd_info["data_section"] = '';
-	} else if ($section == 'Dashboard') {
+	}
+	else if ($section == 'Dashboard') {
 		$upd_info["data_section"] = $dashboard;
-	} else if ($section == 'Visual console') {
+	}
+	else if ($section == 'Visual console') {
 		$upd_info["data_section"] = $visual_console;
 	}
 	

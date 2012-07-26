@@ -147,7 +147,7 @@ if ($searchModules) {
 }
 
 if (!$modules) {
-		echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
+	echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
 }
 else {
 	$totalModules = db_get_all_rows_sql("SELECT COUNT(t1.id_agente_modulo) AS count_modules " . $chunk_sql);
@@ -202,7 +202,11 @@ else {
 		
 		$intervalCell = modules_get_interval ($module['id_agente_modulo']);
 		
-		if($module['utimestamp'] == 0 && (($module['module_type'] < 21 || $module['module_type'] > 23) && $module['module_type'] != 100)){
+		if ($module['utimestamp'] == 0 &&
+			(
+				($module['id_tipo_modulo'] < 21 || $module['id_tipo_modulo'] > 23) &&
+				$module['id_tipo_modulo'] != 100)
+			) {
 			$statusCell = ui_print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
 		}
 		elseif ($module["estado"] == 0) {
@@ -230,17 +234,17 @@ else {
 		}
 		
 		$graphCell = "";
-		if ($module['history_data'] == 1){
-	
+		if ($module['history_data'] == 1) {
+			
 			$graph_type = return_graphtype ($module["id_tipo_modulo"]);
-	
+			
 			$name_module_type = modules_get_moduletype_name ($module["id_tipo_modulo"]);
 			$handle = "stat" . $name_module_type . "_" . $module["id_agente_modulo"];
 			$url = 'include/procesos.php?agente=' . $module["id_agente_modulo"];
 			$win_handle = dechex(crc32($module["id_agente_modulo"] . $module["module_name"]));
-	
+			
 			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module["id_agente_modulo"]."&label=".base64_encode($module["module_name"])."&refresh=600','day_".$win_handle."')";
-	
+			
 			$graphCell = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => 0, "alt" => "")) . '</a>';
 			$graphCell .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$module["id_agente"]."&amp;tab=data_view&period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => "0", "alt" => "")) . "</a>";
 		}
@@ -250,7 +254,7 @@ else {
 		else
 			$dataCell = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($module["datos"]),0,12)."</span>";
 		
-		if ($module['estado'] == 3){
+		if ($module['estado'] == 3) {
 			$option = array ("html_attr" => 'class="redb"');
 		}
 		else {
@@ -275,5 +279,5 @@ else {
 	html_print_table ($table);
 	unset($table);
 	ui_pagination ($totalModules);
-}	
+}
 ?>

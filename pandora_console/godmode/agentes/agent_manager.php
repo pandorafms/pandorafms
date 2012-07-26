@@ -14,9 +14,9 @@
 // GNU General Public License for more details.
 
 if (is_ajax ()) {
-
+	
 	global $config;
-
+	
 	$search_parents = (bool) get_parameter ('search_parents');
 	$search_parents_2 = (bool) get_parameter ('search_parents_2');
 	
@@ -48,52 +48,52 @@ if (is_ajax ()) {
 		}
 		
 		return;
- 	}
- 	
- 	if ($search_parents_2) {
- 		require_once ('include/functions_agents.php');
- 	
- 		$id_agent = (int) get_parameter ('id_agent');
- 		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
- 	
- 		$filter = array ();
- 	
- 		switch ($config['dbtype']){
- 			case "mysql":
- 			case "postgresql":
- 				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
- 				break;
- 			case "oracle":
- 				$filter[] = '(upper(nombre) LIKE upper("%'.$string.'%") OR upper(direccion) LIKE upper("%'.$string.'%") OR upper(comentarios) LIKE upper("%'.$string.'%"))';
- 				break;
- 		}
- 		$filter[] = 'id_agente != '.$id_agent;
- 	
- 		$agents = agents_get_agents ($filter, array ('id_agente', 'nombre', 'direccion'));
- 		if ($agents === false)
- 			$agents = array();
- 		
- 		$data = array();
- 		foreach ($agents as $agent) {
- 			$data[] = array('id' => $agent['id_agente'],
- 				'name' => io_safe_output($agent['nombre']),
- 				'ip' => io_safe_output($agent['direccion']));
- 		}
- 		
- 		echo json_encode($data);
- 	
- 		return;
- 	}
- 	
+	}
+	
+	if ($search_parents_2) {
+		require_once ('include/functions_agents.php');
+		
+		$id_agent = (int) get_parameter ('id_agent');
+		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
+		
+		$filter = array ();
+		
+		switch ($config['dbtype']){
+			case "mysql":
+			case "postgresql":
+				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+				break;
+			case "oracle":
+				$filter[] = '(upper(nombre) LIKE upper("%'.$string.'%") OR upper(direccion) LIKE upper("%'.$string.'%") OR upper(comentarios) LIKE upper("%'.$string.'%"))';
+				break;
+		}
+		$filter[] = 'id_agente != '.$id_agent;
+		
+		$agents = agents_get_agents ($filter, array ('id_agente', 'nombre', 'direccion'));
+		if ($agents === false)
+			$agents = array();
+		
+		$data = array();
+		foreach ($agents as $agent) {
+			$data[] = array('id' => $agent['id_agente'],
+				'name' => io_safe_output($agent['nombre']),
+				'ip' => io_safe_output($agent['direccion']));
+		}
+		
+		echo json_encode($data);
+		
+		return;
+	}
+	
 	$get_modules_json_for_multiple_snmp = (bool) get_parameter("get_modules_json_for_multiple_snmp", 0);
 	if ($get_modules_json_for_multiple_snmp) {
 		require_once ('include/graphs/functions_utils.php');
-
+		
 		$idSNMP = get_parameter('id_snmp');
 		
 		$id_snmp_serialize = get_parameter('id_snmp_serialize');
 		$snmp = unserialize_in_temp($id_snmp_serialize, false);
-
+		
 		$oid_snmp = array();
 		$out = false;
 		foreach($idSNMP as $id) {
@@ -103,24 +103,24 @@ if (is_ajax ()) {
 				if (! preg_match  ( "/if/", $key)) {
 					continue;
 				}
-
+				
 				$oid_snmp[$value['oid']] = $key;
 			}
-
+			
 			if($out === false){
 				$out = $oid_snmp;
 			}
 			else{
 				$out = array_intersect($out,$oid_snmp);
 			}
-
+			
 			$oid_snmp = array();
 		}
-
+		
 		echo json_encode($out);
 	}
-	    
- 	return;
+	
+	return;
 }
 // Load global vars
 enterprise_include ('godmode/agentes/agent_manager.php');
@@ -185,8 +185,7 @@ $table->data[0][0] = __('Agent name') .
 $table->data[0][1] = html_print_input_text ('agente', $nombre_agente, '', 50, 100,true); 
 
 if ($id_agente) {
-
-    $table->data[0][1] .= "&nbsp;<b>".__("ID")."</b>&nbsp; $id_agente &nbsp;";
+	$table->data[0][1] .= "&nbsp;<b>".__("ID")."</b>&nbsp; $id_agente &nbsp;";
 	$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
 	$table->data[0][1] .= html_print_image ("images/lupa.png", true, array ("border" => 0, "title" => __('Agent detail')));
 	$table->data[0][1] .= '</a>';
@@ -213,7 +212,7 @@ if ($id_agente) {
 	$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
 	
 	$ip_all = agents_get_addresses ($id_agente);
-		
+	
 	$table->data[1][1] .= html_print_select ($ip_all, "address_list", $direccion_agente, '', '', 0, true);
 	$table->data[1][1] .= "&nbsp;". html_print_checkbox ("delete_ip", 1, false, true).__('Delete selected');	
 }

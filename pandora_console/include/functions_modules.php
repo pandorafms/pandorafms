@@ -1128,14 +1128,14 @@ function modules_get_previous_data ($id_agent_module, $utimestamp = 0, $string =
 function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 	if (empty ($utimestamp))
 		$utimestamp = time ();
-
+	
 	if ($string == 1) {
 		$table = 'tagente_datos_string';
 	}
 	else {
 		$table = 'tagente_datos';
 	}
-
+	
 	$interval = modules_get_interval ($id_agent_module);
 	$sql = sprintf ('SELECT *
 		FROM tagente_datos
@@ -1144,7 +1144,7 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
 			AND utimestamp >= %d
 		ORDER BY utimestamp ASC',
 		$id_agent_module, $utimestamp + $interval, $utimestamp);
-
+	
 	return db_get_row_sql ($sql, true);
 }
 
@@ -1161,32 +1161,32 @@ function modules_get_agentmodule_data ($id_agent_module, $period, $date = 0) {
 	if ($date < 1) {
 		$date = get_system_time ();
 	}
-
+	
 	$datelimit = $date - $period;
-
+	
 	$sql = sprintf ("SELECT datos AS data, utimestamp
 		FROM tagente_datos
 		WHERE id_agente_modulo = %d
 			AND utimestamp > %d AND utimestamp <= %d
 		ORDER BY utimestamp ASC",
 	$id_agent_module, $datelimit, $date);
-
+	
 	$values = db_get_all_rows_sql ($sql, true, false);
-
+	
 	if ($values === false) {
 		return array ();
 	}
-
+	
 	$module_name = modules_get_agentmodule_name ($id_agent_module);
 	$agent_id = modules_get_agentmodule_agent ($id_agent_module);
 	$agent_name = modules_get_agentmodule_agent_name ($id_agent_module);
-
+	
 	foreach ($values as $key => $data) {
 		$values[$key]["module_name"] = $module_name;
 		$values[$key]["agent_id"] = $agent_id;
 		$values[$key]["agent_name"] = $agent_name;
 	}
-
+	
 	return $values;
 }
 

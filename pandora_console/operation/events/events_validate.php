@@ -101,7 +101,8 @@ $string .= '<td align="left" width="200px">';
 $string .= '<div style="text-align:center;">';
 if ($event["estado"] == 0 ) {
 	$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process'), '3' => __('Add comment')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
-} else if ($event["estado"] == 2 ) {
+}
+else if ($event["estado"] == 2 ) {
 	$string .= html_print_select(array('1' => __('Validate'), '3' => __('Add comment')), 'select_validate', '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
 }
 

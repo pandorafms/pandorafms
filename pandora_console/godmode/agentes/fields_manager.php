@@ -42,9 +42,11 @@ if ($create_field) {
 	/*Check if name field is empty*/
 	if ($name == ""){
 		echo "<h3 class='error'>".__('The name must not be empty')."</h3>";
-	} else if ($name == db_get_value ('name', 'tagent_custom_fields', 'name', $name)) {
+	}
+	else if ($name == db_get_value ('name', 'tagent_custom_fields', 'name', $name)) {
 		echo "<h3 class='error'>".__('The name must be unique')."</h3>";
-	} else {
+	}
+	else {
 		$result = db_process_sql_insert('tagent_custom_fields', array('name' => $name, 'display_on_front' => $display_on_front));
 		echo "<h3 class='suc'>".__('Field successfully created')."</h3>";
 	}
@@ -71,7 +73,7 @@ if ($update_field) {
 }
 
 /* Delete field */
-if ($delete_field) {	
+if ($delete_field) {
 	$result = db_process_sql_delete('tagent_custom_fields', array('id_field' => $id_field));
 	
 	if (!$result)
@@ -82,7 +84,7 @@ if ($delete_field) {
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
-	$table->width = '98%';
+$table->width = '98%';
 if ($fields) {
 	$table->head = array ();
 	$table->head[0] = __('Field');
@@ -102,14 +104,14 @@ if($fields === false) $fields = array();
 foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
-
+	
 	if($field['display_on_front']) {
 		$data[1] = html_print_image('images/tick.png', true);
 	}
 	else {
 		$data[1] = html_print_image('images/delete.png', true);
 	}
-		
+	
 	$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0')) . '</a>';
 	$data[2] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "title" => __('Delete'), "border" => '0')) . '</a>';
 	

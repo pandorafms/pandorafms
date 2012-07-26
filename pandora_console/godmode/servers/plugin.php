@@ -41,7 +41,7 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 $view = get_parameter ("view", "");
 $create = get_parameter ("create", "");
 
-if ($view != ""){
+if ($view != "") {
 	$form_id = $view;
 	$plugin = db_get_row ("tplugin", "id", $form_id);
 	$form_name = $plugin["name"];
@@ -54,7 +54,7 @@ if ($view != ""){
 	$form_pass_opt = $plugin ["pass_opt"];
 	$form_plugin_type = $plugin ["plugin_type"];
 } 
-if ($create != ""){
+if ($create != "") {
 	$form_name = "";
 	$form_description = "";
 	$form_max_timeout = "";
@@ -69,7 +69,7 @@ if ($create != ""){
 // SHOW THE FORM
 // =================================================================
 
-if (($create != "") OR ($view != "")){
+if (($create != "") OR ($view != "")) {
 	
 	if ($create != "")
 		ui_print_page_header (__('Plugin creation') . ui_print_help_icon("plugin_definition", true), "", false, "", true);
@@ -77,70 +77,72 @@ if (($create != "") OR ($view != "")){
 		ui_print_page_header (__('Plugin update') . ui_print_help_icon("plugin_definition", true), "", false, "", true);
 		$plugin_id = get_parameter ("view","");
 	}
-
-
+	
+	
 	if ($create == "") 
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&update_plugin=$plugin_id'>";
 	else
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create_plugin=1'>";
-
+	
 	echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox_color">';
 	
-	echo '<tr><td class="datos">'.__('Name');
+	echo '<tr><td class="datos">'.__('Name') . '</td>';
 	echo '<td class="datos">';
 	echo '<input type="text" name="form_name" size=100 value="'.$form_name.'"></td>';
 	
-	echo '<tr><td class="datos2">'.__('Plugin command');
+	echo '<tr><td class="datos2">'.__('Plugin command') . '</td>';
 	echo '<td class="datos2">';
 	echo '<input type="text" name="form_execute" size=45 value="'.$form_execute.'"></td>';
-
-	echo '<tr><td class="datos2">'.__('Plugin type');
+	
+	echo '<tr><td class="datos2">'.__('Plugin type') . '</td>';
 	echo '<td class="datos2">';
 	$fields[0]= __("Standard");
 	$fields[1]= __("Nagios");
 	html_print_select ($fields, "form_plugin_type", $form_plugin_type);
 	
-	echo '<tr><td class="datos">'.__('Max. timeout');
+	echo '<tr><td class="datos">'.__('Max. timeout') . '</td>';
 	echo '<td class="datos">';
 	echo '<input type="text" name="form_max_timeout" size=5 value="'.$form_max_timeout.'"></td>';
-
-	echo '<tr><td class="datos2">'.__('IP address option');
+	
+	echo '<tr><td class="datos2">'.__('IP address option') . '</td>';
 	echo '<td class="datos2">';
 	echo '<input type="text" name="form_net_dst_opt" size=15 value="'.$form_net_dst_opt.'"></td>';
-
-	echo '<tr><td class="datos">'.__('Port option');
+	
+	echo '<tr><td class="datos">'.__('Port option') . '</td>';
 	echo '<td class="datos">';
 	echo '<input type="text" name="form_net_port_opt" size=5 value="'.$form_net_port_opt.'"></td>';
-
-
-	echo '<tr><td class="datos2">'.__('User option');
+	
+	
+	echo '<tr><td class="datos2">'.__('User option') . '</td>';
 	echo '<td class="datos2">';
 	echo '<input type="text" name="form_user_opt" size=15 value="'.$form_user_opt.'"></td>';
-
-	echo '<tr><td class="datos">'.__('Password option');
+	
+	echo '<tr><td class="datos">'.__('Password option') . '</td>';
 	echo '<td class="datos">';
 	echo '<input type="text" name="form_pass_opt" size=15 value="'.$form_pass_opt.'"></td>';
-
+	
 	echo '<tr><td class="datos2">'.__('Description').'</td>';
 	echo '<td class="datos2"><textarea name="form_description" cols="50" rows="4">';
 	echo $form_description;
 	echo '</textarea></td></tr>';
-
+	
 	echo '</table>';
 	echo '<table width="98%">';
 	echo '<tr><td align="right">';
 	
 	if ($create != ""){
-		echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
-	} else {
-		echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+		echo "<input name='crtbutton' type='submit' class='sub wand' value='" .
+			__('Create') . "'>";
+	}
+	else {
+		echo "<input name='uptbutton' type='submit' class='sub upd' value='" .
+			__('Update') . "'>";
 	}
 	echo '</form></table>';
 }
-
 else {
 	ui_print_page_header (__('Plugins registered in Pandora FMS'), "", false, "", true);
-
+	
 	// Update plugin
 	if (isset($_GET["update_plugin"])){ // if modified any parameter
 		$plugin_id = get_parameter ("update_plugin", 0);

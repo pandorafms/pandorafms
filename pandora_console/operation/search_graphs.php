@@ -25,15 +25,16 @@ $graphs = false;
 if ($searchGraphs) {
 	//Check ACL
 	$usergraphs = custom_graphs_get_user($config['id_user'], true);
-
+	
 	$usergraphs_id = array_keys($usergraphs);
 	
 	if(!$usergraphs_id){
 		$graphs_condition = " AND 1<>1";
-	}else {
+	}
+	else {
 		$graphs_condition = " AND id_graph IN (".implode(',',$usergraphs_id).")";
 	}
-
+	
 	$sql = "SELECT id_graph, name, description
 		FROM tgraph
 		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$graphs_condition ."
@@ -50,7 +51,7 @@ if ($searchGraphs) {
 }
 
 if ($graphs === false) {
-		echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
+	echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
 }
 else {
 	$table->cellpadding = 4;

@@ -72,11 +72,12 @@ ui_print_page_header (__('Tags configuration'), "images/setup.png", false, "", t
 // Delete action: This will delete a tag
 if ($delete != 0) {
 	$return_delete = tags_delete_tag ($delete);
-
+	
 	if ($return_delete === false) {
 		db_pandora_audit("Tag management", "Fail try to delete tag #$delete");
 		echo '<h3 class="error">'.__('Error deleting tag').'</h3>';
-	} else {
+	}
+	else {
 		db_pandora_audit("Tag management", "Delete tag #$delete");
 		echo '<h3 class="suc">'.__('Successfully deleted tag').'</h3>';
 	}
@@ -94,7 +95,7 @@ $result = false;
 if ($search != 0) {
 	$result = tags_search_tag($tag_name, $filter);
 }
-else{
+else {
 	$result = tags_search_tag(false, $filter);
 }
 
@@ -103,6 +104,7 @@ echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 echo "<tr>";
 echo "<td>";
 	echo '<b>' . __("Name") . "/" . __("Description") . '</b>';
+echo "</td>";
 echo "<td align=center>";
 	echo '<form method=post action="index.php?sec=gmodules&sec2=godmode/tag/tag&delete_tag=0">';
 	html_print_input_hidden ("search_tag", "1");
@@ -110,11 +112,14 @@ echo "<td align=center>";
 	echo "&nbsp;&nbsp;&nbsp;";
 	html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"');
 	echo "</form>";
+echo "</td>";
 echo "<td align=right>";
 	echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=new">';
 	html_print_input_hidden ("create_tag", "1", true);
 	html_print_submit_button (__('Create tag'), 'create_button', false, 'class="sub next"');
 	echo "</form>";
+echo "</td>";
+echo "</tr>";
 echo "</table>";
 
 // Prepare pagination
@@ -124,7 +129,7 @@ ui_pagination ($total_tags, $url);
 $rowPair = true;
 $iterator = 0;
 
-if (!empty($result)){
+if (!empty($result)) {
 	
 	$table->width = '98%';
 	$table->data = array ();

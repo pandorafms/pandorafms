@@ -58,17 +58,18 @@ if ($delete){
 	else {
 		$result = db_process_sql_delete ('tevent_filter', array ('id_filter' => $id));
 	}
-		
+	
 	if ($result !== false) {
 		$result = true;
-	} else {
+	}
+	else {
 		$result = false;
 	}
 	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));
-			
+	
 }
 
 if ($multiple_delete) {
@@ -79,7 +80,7 @@ if ($multiple_delete) {
 	foreach ($ids as $id) {	
 		$result = db_process_sql_delete ('tevent_filter',
 			array ('id_filter' => $id));
-	
+		
 		if ($result === false) {
 			db_process_sql_rollback();
 			break;
@@ -92,7 +93,7 @@ if ($multiple_delete) {
 	
 	if ($result !== false) $result = true;
 	else $result = false;
-		
+	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));

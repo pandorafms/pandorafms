@@ -40,7 +40,8 @@ if (isset ($_POST["template_id"])) {
 		$os_version = $row["os_version"];
 		$agent_version = $row["agent_version"];
 		$disabled= $row["disabled"];
-	} else {
+	}
+	else {
 		return;
 	}
 	
@@ -55,7 +56,7 @@ if (isset ($_POST["template_id"])) {
 		if ($nc === false) {
 			$nc = array ();
 		}
-		foreach ($nc as $row2) {	
+		foreach ($nc as $row2) {
 			// Insert each module from tnetwork_component into agent
 			$values = array(
 				'id_agente' => $id_agente,
@@ -142,16 +143,22 @@ echo '</form>';
 // ==========================
 // MODULE VISUALIZATION TABLE
 // ==========================
-
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$sql = sprintf ("SELECT * FROM tagente_modulo WHERE id_agente = %d AND delete_pending = false ORDER BY id_module_group, nombre", $id_agente);
-			break;
-		case "oracle":
-			$sql = sprintf ("SELECT * FROM tagente_modulo WHERE id_agente = %d AND (delete_pending <> 1 AND delete_pending IS NOT NULL) ORDER BY id_module_group, dbms_lob.substr(nombre,4000,1)", $id_agente);
-			break;
-	}
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$sql = sprintf ("SELECT *
+			FROM tagente_modulo
+			WHERE id_agente = %d AND delete_pending = false
+			ORDER BY id_module_group, nombre", $id_agente);
+		break;
+	case "oracle":
+		$sql = sprintf ("SELECT *
+			FROM tagente_modulo
+			WHERE id_agente = %d
+				AND (delete_pending <> 1 AND delete_pending IS NOT NULL)
+			ORDER BY id_module_group, dbms_lob.substr(nombre,4000,1)", $id_agente);
+		break;
+}
 $result = db_get_all_rows_sql ($sql);
 if ($result === false) {
 	$result = array ();
@@ -179,7 +186,8 @@ foreach ($result as $row) {
 	$data[0] = '<span style="font-size: 7.2pt">' . $row["nombre"];
 	if ($row["id_tipo_modulo"] > 0) {
 		$data[1] = html_print_image("images/" . modules_show_icon_type ($row["id_tipo_modulo"]), true, array("border" => "0"));
-	} else {
+	}
+	else {
 		$data[1] = '';
 	}
 	$data[2] = mb_substr ($row["descripcion"], 0, 60);
@@ -194,8 +202,8 @@ foreach ($result as $row) {
 if (!empty ($table->data)) {
 	html_print_table ($table);
 	unset ($table);
-} else {
+}
+else {
 	echo '<div class="nf">No modules</div>';
 }
-
 ?>

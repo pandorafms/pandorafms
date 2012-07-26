@@ -41,10 +41,10 @@ $id = (int) get_parameter ('id');
 if ($delete) {
 	$result = db_process_sql_delete ('tnetflow_report',
 		array ('id_report' => $id));
-		
+	
 	if ($result !== false) $result = true;
 	else $result = false;
-		
+	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));
@@ -59,7 +59,7 @@ if ($multiple_delete) {
 	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tnetflow_report',
 			array ('id_report' => $id));
-	
+		
 		if ($result === false) {
 			db_process_sql_rollback();
 			break;
@@ -72,7 +72,7 @@ if ($multiple_delete) {
 	
 	if ($result !== false) $result = true;
 	else $result = false;
-		
+	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));
@@ -92,7 +92,7 @@ $sql = "SELECT * FROM tnetflow_report WHERE id_group IN (".implode(',',$groups_i
 $reports = db_get_all_rows_sql($sql);
 if ($reports === false)
 	$reports = array();
-	
+
 $table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Report name');
@@ -100,7 +100,7 @@ $table->head[1] = __('Description');
 $table->head[2] = __('Group');
 $table->head[3] = __('Action') .
 	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
-	
+
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
@@ -118,8 +118,7 @@ $total_reports = $total_reports[0]['total'];
 
 //ui_pagination ($total_reports, $url);
 
- foreach ($reports as $report) {
-
+foreach ($reports as $report) {
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_form&id='.$report['id_report'].'">'.$report['id_name'].'</a>';
 	
@@ -138,7 +137,7 @@ $total_reports = $total_reports[0]['total'];
 	array_push ($table->data, $data);
 }
 
-if(isset($data)) {
+if (isset($data)) {
 	echo "<form method='post' action='index.php?sec=netf&sec2=godmode/netflow/nf_report'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
@@ -146,7 +145,8 @@ if(isset($data)) {
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
 	echo "</form>";
-}else {
+}
+else {
 	echo "<div class='nf'>".__('There are no defined reports')."</div>";
 }
 
@@ -159,7 +159,6 @@ echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_rep
 ?>
 
 <script type="text/javascript">
-
 function check_all_checkboxes() {
 	if ($("input[name=all_delete]").attr('checked')) {
 		$(".check_delete").attr('checked', true);
@@ -168,5 +167,4 @@ function check_all_checkboxes() {
 		$(".check_delete").attr('checked', false);
 	}
 }
-
 </script>

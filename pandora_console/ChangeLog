@@ -1,3 +1,20 @@
+2012-07-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/users/user_edit.php,
+	operation/events/events_validate.php, operation/search_graphs.php,
+	godmode/events/event_filter.php, godmode/events/custom_events.php,
+	godmode/massive/massive_standby_alerts.php,
+	godmode/massive/massive_copy_modules.php, godmode/tag/tag.php,
+	godmode/netflow/nf_report.php, godmode/agentes/configure_field.php,
+	godmode/agentes/agent_manager.php,
+	godmode/agentes/agent_template.php,
+	godmode/agentes/fields_manager.php,
+	godmode/servers/recon_script.php, godmode/servers/plugin.php,
+	include/functions_modules.php: improved the source structure.
+	
+	* operation/search_modules.php: fixed the search when the modules
+	haven't inicialiced.
+
 2012-07-26  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php: Change the sort function

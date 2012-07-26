@@ -34,7 +34,8 @@ if ($id_field) {
 	$name = $field['name'];
 	$display_on_front = $field['display_on_front'];
 	ui_print_page_header (__("Update agent custom field"), "images/note.png", false, "", true, "");
-} else {
+}
+else {
 	ui_print_page_header (__("Create agent custom field"), "images/note.png", false, "", true, "");
 }
 
@@ -54,7 +55,8 @@ if ($id_field) {
 	html_print_input_hidden ('update_field', 1);
 	html_print_input_hidden ('id_field', $id_field);
 	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('create_field', 1);
 	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 }

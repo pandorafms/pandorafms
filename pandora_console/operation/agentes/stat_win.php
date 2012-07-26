@@ -28,6 +28,18 @@ require_once ($config['homedir'] . '/include/functions_reporting.php');
 require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 
+// Hash login process
+if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
+	$loginhash_data = get_parameter("loginhash_data", "");
+	$loginhash_user = get_parameter("loginhash_user", "");
+	
+	if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
+		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
+		$_SESSION['id_usuario'] = $loginhash_user;
+		$config["id_user"] = $loginhash_user;
+	}
+}
+
 check_login ();
 
 $user_language = get_user_language ($config['id_user']);

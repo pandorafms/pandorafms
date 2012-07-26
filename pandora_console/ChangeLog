@@ -1,3 +1,8 @@
+2012-07-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/stat_win.php: Added hash login to graph module
+	popup.
+
 2012-07-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/users/user_edit.php,

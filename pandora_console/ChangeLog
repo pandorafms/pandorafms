@@ -1,3 +1,11 @@
+2012-07-26  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* godmode/agentes/module_manager_editor_common.php:
+	bug fix for enterprise version. 'Disable' checkbox was not
+	enabled when you unlinked modules from policies.
+
+	Merged from 4.0.2
+
 2012-07-24 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager_editor.php: fixed the javascript

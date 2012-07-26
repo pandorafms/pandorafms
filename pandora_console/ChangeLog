@@ -1,5 +1,10 @@
 2012-07-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/agentes/stat_win.php: Fixed bug when popup is updated
+	from hash connection.
+
+2012-07-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/agentes/stat_win.php: Added hash login to graph module
 	popup.
 

@@ -29,7 +29,7 @@ require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 
 // Hash login process
-if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
+if (! isset ($config['id_user']) && get_parameter("loginhash", 0)) {
 	$loginhash_data = get_parameter("loginhash_data", "");
 	$loginhash_user = get_parameter("loginhash_user", "");
 	
@@ -37,7 +37,10 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;
+	
+		$hash_connection_data = true;	
 	}
+	
 }
 
 check_login ();
@@ -269,8 +272,19 @@ $label = base64_decode(get_parameter('label', ''));
 			echo __('Please, make your changes and apply with the <i>Reload</i> button');
 			?>
 			<div style="float: left; width: 80%;">
-				<form method="get" action="stat_win.php">
-					<?php
+				
+			<form method="get" action="stat_win.php">
+			<?php
+					html_print_input_hidden ("id", $id);
+					html_print_input_hidden ("label", $label);
+
+					if (isset($hash_connection_data)) {
+
+							html_print_input_hidden("loginhash", "auto");
+							html_print_input_hidden("loginhash_data", $loginhash_data);
+							html_print_input_hidden("loginhash_user", $loginhash_user);
+					}
+					
 					html_print_input_hidden ("id", $id);
 					html_print_input_hidden ("label", $label);
 					

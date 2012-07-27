@@ -112,10 +112,11 @@ if ($maps){
 		$table->data[] = $table_info;
 	}
 }
-	
+
 if (!empty ($table->data)) {
 	html_print_table($table);
-} else {
+}
+else {
 	echo '<div class="nf">'.('No maps defined').'</div>';
 }
 

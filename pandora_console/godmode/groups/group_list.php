@@ -165,17 +165,19 @@ $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
 			$result = db_process_sql_insert('tgrupo', $values);
 			if ($result) {
 				echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
-			} else {
+			}
+			else {
 				echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";
 			}
-		} else {
+		}
+		else {
 			echo "<h3 class='error'>".__('Each group must have a different name')."</h3>";
 		}
-	} else {
+	}
+	else {
 		//$result = false;
 		echo "<h3 class='error'>".__('Group must have a name')."</h3>";
 	}
-
 }
 
 /* Update group */
@@ -188,32 +190,34 @@ if ($update_group) {
 	$custom_id = (string) get_parameter ('custom_id');
 	$propagate = (bool) get_parameter('propagate');
 	$skin = (string) get_parameter ('skin');
-
+	
 	/*Check if name field is empty*/
 	if( $name != "") {	
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
-						icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d
-						WHERE id_grupo = %d',
-						$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
+					icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d
+					WHERE id_grupo = %d',
+					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
 				break;
 			case "postgresql":
 			case "oracle":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = \'%s\',
-						icon = \'%s\', disabled = %d, parent = %d, custom_id = \'%s\', propagate = %d, id_skin = %d
-						WHERE id_grupo = %d',
-						$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
+					icon = \'%s\', disabled = %d, parent = %d, custom_id = \'%s\', propagate = %d, id_skin = %d
+					WHERE id_grupo = %d',
+					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
 				break;
-		}		
+		}
 		$result = db_process_sql ($sql);
-	} else {
+	}
+	else {
 		$result = false;
 	}
 	
 	if ($result !== false) {
 		echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
-	} else {
+	}
+	else {
 		echo "<h3 class='error'>".__('There was a problem modifying group')."</h3>";
 	}
 }
@@ -221,7 +225,7 @@ if ($update_group) {
 /* Delete group */
 if ($delete_group) {
 	$id_group = (int) get_parameter ('id_group');
-
+	
 	$usedGroup = groups_check_used($id_group);
 	
 	if (!$usedGroup['return']) {
@@ -245,13 +249,12 @@ if ($delete_group) {
 	else {
 		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>";
 	}
-		 
 }
 db_clean_cache();
 $groups = users_get_groups_tree ($config['id_user'], "AR", true); 
 $table->width = '98%';
 
-if(!empty($groups)) {
+if (!empty($groups)) {
 	$table->head = array ();
 	$table->head[0] = __('Name');
 	$table->head[1] = __('ID');
@@ -262,7 +265,7 @@ if(!empty($groups)) {
 	$table->align[2] = 'center';
 	$table->align[4] = 'center';
 	$table->data = array ();
-
+	
 	$iterator = 0;
 
 	foreach ($groups as $id_group => $group) {

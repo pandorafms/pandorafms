@@ -296,7 +296,7 @@ if (!$new_agent) {
 }
 else
 	$table->data[3][1] = '<em>'.__('Not available').'</em>';
-	
+
 $listIcons = gis_get_array_list_icons();
 
 $arraySelectIcon = array();
@@ -322,18 +322,23 @@ else {
 	$path_warning = $path . $icon_path . ".warning.png";
 }
 
-$table->data[4][1] = html_print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-
-	'&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .
-
-	'&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) .
-
-	'&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
+$table->data[4][1] = html_print_select($arraySelectIcon, "icon_path",
+	$icon_path, "changeIcons();", __('None'), '', true) .
+	'&nbsp;' . html_print_image($path_ok, true,
+		array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .
+	'&nbsp;' . html_print_image($path_bad, true,
+		array("id" => "icon_bad", "style" => "display:".$display_icons.";")) .
+	'&nbsp;' . html_print_image($path_warning, true,
+		array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
 
 if ($config['activate_gis']) {
 	$table->data[5][0] = __('Ignore new GIS data:');
-	$table->data[5][1] = __('Disabled').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-	$table->data[5][1] .= __('Enabled').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] = __('Disabled') . ' ' .
+		html_print_radio_button_extended ("update_gis_data", 1, '',
+			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] .= __('Enabled') . ' ' .
+		html_print_radio_button_extended ("update_gis_data", 0, '',
+			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
 $table->data[6][0] = __('Url address:');
@@ -378,7 +383,8 @@ if ($id_agente) {
 	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 	html_print_input_hidden ('update_agent', 1);
 	html_print_input_hidden ('id_agente', $id_agente);
-} else {
+}
+else {
 	html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	html_print_input_hidden ('create_agent', 1);
 }
@@ -390,11 +396,11 @@ ui_require_jquery_file ('bgiframe');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
-	
+
 //Use this function for change 3 icons when change the selectbox
 function changeIcons() {
 	icon = $("#icon_path :selected").val();
-
+	
 	$("#icon_without_status").attr("src", "images/spinner.png");
 	$("#icon_default").attr("src", "images/spinner.png");
 	$("#icon_ok").attr("src", "images/spinner.png");

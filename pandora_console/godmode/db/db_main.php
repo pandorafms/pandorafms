@@ -179,15 +179,16 @@ echo '<tr class="rowPair"><td>';
 echo __('Last time on DB maintance');
 echo '<td>';
 
-if (!isset($config['db_maintance'])){
+if (!isset($config['db_maintance'])) {
 	echo "<b><font size=12px>".__("Never")."</font></b>";
-} else {
+}
+else {
 	$seconds = time()-$config['db_maintance'];
 	if ($seconds > 90000)  //(1,1 days)
 		echo "<b><font color='#ff0000' size=12px>";
 	else
 		echo "<font><b>";
-
+	
 	echo human_time_description_raw($seconds);
 	echo " *";
 }

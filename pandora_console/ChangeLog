@@ -1,5 +1,12 @@
 2012-07-27 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/gis_maps/index.php, godmode/groups/group_list.php,
+	godmode/db/db_main.php, godmode/agentes/agent_manager.php,
+	godmode/agentes/module_manager_editor_common.php: cleaned source
+	code style.
+
+2012-07-27 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/Image/Graph/*, include/Image/Graph.php,
 	include/Image/Canvas/*, include/Image/Canvas.php,
 	include/Image/Color.php: deleted unused old code.

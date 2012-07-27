@@ -64,7 +64,11 @@ sub new ($$;$) {
 		}
 	}
 		
-	if (system ($config->{'snmp_trapd'} . ' -t -On -n -a -Lf ' . $config->{'snmp_logfile'} . ' -p ' . $pid_file . ' -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%a[**]%N[**]%w[**]%W[**]%q[**]%v\\\n >/dev/null 2>&1') != 0) {
+	my $snmptrapd_args = ' -t -On -n -a -Lf ' . $config->{'snmp_logfile'} . ' -p ' . $pid_file;
+	$snmptrapd_args .=  ' --format1=SNMPv1[**]%4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%a[**]%N[**]%w[**]%W[**]%q[**]%v\\\n';
+	$snmptrapd_args .=  ' --format2=SNMPv2[**]%4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%b[**]%v\\\n';
+
+	if (system ($config->{'snmp_trapd'} . $snmptrapd_args . ' >/dev/null 2>&1') != 0) {
 		logger ($config, " [E] Could not start snmptrapd.", 1);
 		print_message ($config, " [E] Could not start snmptrapd.", 1);
 		return undef;
@@ -138,26 +142,52 @@ sub pandora_snmptrapd {
 				print INDEXFILE $last_line . ' ' . $last_size;
 				close INDEXFILE;
 
-				# Skip Headers
-				next if ($line =~ m/NET-SNMP/);
+				# Skip lines other than SNMP Trap logs
+				next unless ($line =~ m/^SNMPv[12]\[\*\*\]/);
 
-				# Unknown data
-				next if ($line !~ m/\[\*\*\]/ || matches_filter ($dbh, $pa_config, $line) == 1);
+				(my $trap_ver, $line) = split(/\[\*\*\]/, $line, 2);
+
+				# Process SNMP filter
+				next if (matches_filter ($dbh, $pa_config, $line) == 1);
 
 				logger($pa_config, "Reading trap '$line'", 10);
 				my ($date, $time, $source, $oid, $type, $type_desc, $value, $data) = ('', '', '', '', '', '', '', '');
-				($date, $time, $source, $oid, $type, $type_desc, $value, $data) = split(/\[\*\*\]/, $line);
+
+				if ($trap_ver eq "SNMPv1") {
+					($date, $time, $source, $oid, $type, $type_desc, $value, $data) = split(/\[\*\*\]/, $line, 8);
+
+					$value = limpia_cadena ($value);
+
+					# Try to save as much information as possible if the trap could not be parsed
+					$oid = $type_desc if ($oid eq '' || $oid eq '.');
+
+				} elsif ($trap_ver eq "SNMPv2") {
+					($date, $time, $source, $data) = split(/\[\*\*\]/, $line, 4);
+					my @data = split(/\t/, $data);
+
+					# extract IP address from %b part:
+					#  * destination part appears in Net-SNMP > 5.3
+					#  * protocol name part and bracketted IP addr w/ port number appear in
+					#    Net-SNMP > 5.1 (Net-SNMP 5.1 has IP addr only).
+					#  * port number is signed in Net-SNMP 5.2
+					$source =~ s/(?:(?:TCP|UDP):\s*)?\[?([^] ]+)\]?(?::-?\d+)?(?:\s*->.*)?$/$1/;
+
+					shift @data; # Drop unused 1st data.
+					$oid = shift @data;
+
+					if (!defined($oid)) {
+						logger($pa_config, "[W] snmpTrapOID not found (Illegal SNMPv2 trap?)", 1);
+						next;
+					}
+					$oid =~ s/.* = OID: //;
+					$data = join("\t", @data);
+				}
 
 				my $timestamp = $date . ' ' . $time;
-				$value = limpia_cadena ($value);
-
 				my ($custom_oid, $custom_type, $custom_value) = ('', '', '');
 
-                # custom_type, custom_value is not used since 4.0 version, all custom data goes on custom_oid
-                $custom_oid = $data;
-
-				# Try to save as much information as possible if the trap could not be parsed
-				$oid = $type_desc if ($oid eq '' || $oid eq '.');
+				# custom_type, custom_value is not used since 4.0 version, all custom data goes on custom_oid
+				$custom_oid = $data;
 
 				# Insert the trap into the DB
 				if (! defined(enterprise_hook ('snmp_insert_trap', [$pa_config, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, $timestamp, $self->getServerID (), $dbh]))) {

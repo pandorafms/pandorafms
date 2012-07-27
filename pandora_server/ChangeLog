@@ -1,5 +1,11 @@
 2012-07-27  KIKUCHI Koichiro <koichiro@rworks.jp>
 
+	* lib/PandoraFMS/SNMPServer.pm: Added SNMPv2 support.
+
+	Merged from trunk r5489.
+
+2012-07-27  KIKUCHI Koichiro <koichiro@rworks.jp>
+
 	* lib/PandoraFMS/Core.pm: fixed bug: added missing decode_entities for
 	 SNMP alert evaluation. Also cleaned source code style.
 

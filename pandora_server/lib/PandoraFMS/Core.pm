@@ -432,7 +432,7 @@ sub pandora_process_alert ($$$$$$$$;$) {
 					$alert->{'name'} . ")", $agent->{'id_grupo'},
 					$agent->{'id_agente'}, $alert->{'priority'}, $id,
 					(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0),
-			        "alert_ceased", 0, $dbh);
+					"alert_ceased", 0, $dbh);
 		}
 		return;
 	}
@@ -618,7 +618,7 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	# Simple alert
 	if (defined ($alert->{'id_template_module'})) {
 		@actions = get_db_rows ($dbh, 'SELECT *, talert_template_module_actions.id AS id_alert_template_module_actions
-		            FROM talert_template_module_actions, talert_actions, talert_commands
+					FROM talert_template_module_actions, talert_actions, talert_commands
 					WHERE talert_template_module_actions.id_alert_action = talert_actions.id
 					AND talert_actions.id_alert_command = talert_commands.id
 					AND talert_template_module_actions.id_alert_template_module = ?
@@ -796,8 +796,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 	# Internal event
 	} elsif ($action->{'name'} eq "Pandora FMS Event") {
-        $field1 = subst_alert_macros ($field1, \%macros);
-    	pandora_event ($pa_config, $field1, (defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $alert->{'priority'}, 0, 0, "alert_fired", 0, $dbh);
+		$field1 = subst_alert_macros ($field1, \%macros);
+		pandora_event ($pa_config, $field1, (defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $alert->{'priority'}, 0, 0, "alert_fired", 0, $dbh);
 
 	# Unknown
 	} else {
@@ -1226,9 +1226,9 @@ Delete all actions of policy template module.
 =cut
 ##########################################################################
 sub pandora_delete_all_template_module_actions ($$) {
-        my ($dbh, $template_module_id) = @_;
+	my ($dbh, $template_module_id) = @_;
 
-        return db_do ($dbh, 'DELETE FROM talert_template_module_actions WHERE id_alert_template_module = ?', $template_module_id);
+	return db_do ($dbh, 'DELETE FROM talert_template_module_actions WHERE id_alert_template_module = ?', $template_module_id);
 }
 
 ##########################################################################
@@ -1654,59 +1654,59 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			($alert->{'times_fired'}, $alert->{'internal_counter'}, $alert->{'alert_type'});
 
 		# OID
-        # Decode first, could be a complex regexp !
-        $alert->{'oid'} = decode_entities($alert->{'oid'});
+		# Decode first, could be a complex regexp !
+		$alert->{'oid'} = decode_entities($alert->{'oid'});
 		my $oid = $alert->{'oid'};
 		if ($oid ne '') {
 			next if ($trap_oid !~ m/^$oid$/i && $trap_oid_text !~ m/^$oid$/i);
 			$alert_data .= "OID: $oid ";
 		}
 
-        # Specific SNMP Trap alert macros for regexp selectors in trap info
-        my $snmp_f1 = "";
-        my $snmp_f2 = "";
-        my $snmp_f3 = "";
+		# Specific SNMP Trap alert macros for regexp selectors in trap info
+		my $snmp_f1 = "";
+		my $snmp_f2 = "";
+		my $snmp_f3 = "";
 
 		# Custom OID/value
-        # Decode first, this could be a complex regexp !
+		# Decode first, this could be a complex regexp !
 
-        $alert->{'custom_oid'} = decode_entities($alert->{'custom_oid'});
+		$alert->{'custom_oid'} = decode_entities($alert->{'custom_oid'});
 		my $custom_oid = $alert->{'custom_oid'};
 
 		if ($custom_oid ne '') {
-            if ($trap_custom_oid =~ m/^$custom_oid$/i){
-                $alert_data .= " Custom: $trap_custom_oid";
+			if ($trap_custom_oid =~ m/^$custom_oid$/i){
+				$alert_data .= " Custom: $trap_custom_oid";
 
-                # Let's capture some data using regexp selectors !
+				# Let's capture some data using regexp selectors !
 
-                if (defined($1)){
-                    $snmp_f1 = $1;
-                }
-                if (defined($2)){
-                    $snmp_f2 = $2;
-                }
-                if (defined($3)){
-                    $snmp_f3 = $3;
-                }
+				if (defined($1)){
+					$snmp_f1 = $1;
+				}
+				if (defined($2)){
+					$snmp_f2 = $2;
+				}
+				if (defined($3)){
+					$snmp_f3 = $3;
+				}
 
-            } else {
-                next;
-            }
+			} else {
+				next;
+			}
 		}
 
-        # SANCHO DEBUG
+		# SANCHO DEBUG
 
-        my %macros;
-        $macros{_snmp_f1_} = $snmp_f1;
-        $macros{_snmp_f2_} = $snmp_f2;
-        $macros{_snmp_f3_} = $snmp_f3;
+		my %macros;
+		$macros{_snmp_f1_} = $snmp_f1;
+		$macros{_snmp_f2_} = $snmp_f2;
+		$macros{_snmp_f3_} = $snmp_f3;
 
-        $alert->{'al_field1'} = subst_alert_macros ($alert->{'al_field1'}, \%macros);
-        $alert->{'al_field2'} = subst_alert_macros ($alert->{'al_field2'}, \%macros);
-        $alert->{'al_field3'} = subst_alert_macros ($alert->{'al_field3'}, \%macros);
+		$alert->{'al_field1'} = subst_alert_macros ($alert->{'al_field1'}, \%macros);
+		$alert->{'al_field2'} = subst_alert_macros ($alert->{'al_field2'}, \%macros);
+		$alert->{'al_field3'} = subst_alert_macros ($alert->{'al_field3'}, \%macros);
 
 		# Agent IP
-		my $agent = $alert->{'agent'};
+		my $agent = decode_entities($alert->{'agent'});
 		if ($agent ne '') {
 			next if ($trap_agent !~ m/^$agent$/i );
 			$alert_data .= "AGENT: $agent";
@@ -1744,27 +1744,27 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				'priority' => $alert->{'priority'},
 			);
 
-            my %agent;
+			my %agent;
 
-            my $this_agent = get_agent_from_addr ($dbh, $trap_agent);
-            if (defined($this_agent)){
-                %agent = ( 
-    				'nombre' => $this_agent->{'nombre'},
-    				'id_agente' => $this_agent->{'id_agente'},
-    				'direccion' => $trap_agent,
-    				'id_grupo' => $this_agent->{'id_grupo'},
-    				'comentarios' => ''
-    			);
-            } else {
-    			%agent = (
-    				'nombre' => $trap_agent,
-    				'direccion' => $trap_agent,
-    				'comentarios' => '',
-                    'id_agente' =>  0,
-                    'id_grupo' => 0
-    			);
-            }            
-            
+			my $this_agent = get_agent_from_addr ($dbh, $trap_agent);
+			if (defined($this_agent)){
+				%agent = ( 
+					'nombre' => $this_agent->{'nombre'},
+					'id_agente' => $this_agent->{'id_agente'},
+					'direccion' => $trap_agent,
+					'id_grupo' => $this_agent->{'id_grupo'},
+					'comentarios' => ''
+				);
+			} else {
+				%agent = (
+					'nombre' => $trap_agent,
+					'direccion' => $trap_agent,
+					'comentarios' => '',
+					'id_agente' =>  0,
+					'id_grupo' => 0
+				);
+			}
+			
 
 			# Execute alert
 			my $action = get_db_single_row ($dbh, 'SELECT *
@@ -1777,10 +1777,10 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh, $timestamp) if (defined ($action));
 
 			# Generate an event, ONLY if our alert action is different from generate an event.
-            if ($action->{'id_alert_command'} != 3){
-    			pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+			if ($action->{'id_alert_command'} != 3){
+				pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
 					0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
-           }
+		   }
 
 			# Update alert status
 			db_do ($dbh, 'UPDATE talert_snmp SET times_fired = ?, last_fired = ?, internal_counter = ? WHERE id_as = ?',
@@ -2519,7 +2519,7 @@ sub pandora_group_statistics ($$) {
 		$non_init = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado)
 				FROM tagente_estado, tagente, tagente_modulo
 				WHERE tagente.id_grupo = $group AND tagente.disabled = 0 
-				    AND tagente.id_agente = tagente_estado.id_agente
+					AND tagente.id_agente = tagente_estado.id_agente
 					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 					AND tagente_modulo.disabled = 0
 					AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24) AND utimestamp = 0");

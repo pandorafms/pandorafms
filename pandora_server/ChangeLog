@@ -1,3 +1,10 @@
+2012-07-27  KIKUCHI Koichiro <koichiro@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: fixed bug: added missing decode_entities for
+	 SNMP alert evaluation. Also cleaned source code style.
+
+	Merged from trunk r6818.
+
 2012-07-17 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Backport of bugfix in group statistic

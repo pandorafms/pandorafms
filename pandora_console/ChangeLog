@@ -1,3 +1,19 @@
+2012-07-27  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/setup/setup.php: Changed to use DateTimeZone instead of
+	'ttimezone' table for timezone setting.
+
+	* include/function_config.php: Fixed that timezone is changed to
+	default (Europe/Berlin) when update button is clicked without any
+	changes in setup window.
+
+	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql,
+	pandoradb_data.sql, pandoradb.data.postgreSQL.sql, 
+	pandoradb.data.oracle.sql, pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	pandoradb_migrate_4.0.x_to_5.0.oracle.sql, 
+	pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Removed 'ttimezone'
+	table and its data.
+
 2012-07-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/stat_win.php: Fixed bug when popup is updated

@@ -206,17 +206,6 @@ ALTER TABLE `tmensajes` MODIFY COLUMN `mensaje` TEXT NOT NULL;
 ALTER TABLE `talert_compound` ADD COLUMN `special_day` tinyint(1) DEFAULT '0';
 
 -- -----------------------------------------------------
--- Table `ttimezone`
--- -----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS `ttimezone` (
-  `id_tz`  int(10) unsigned NOT NULL auto_increment,
-  `zone` varchar(60) NOT NULL,
-  `timezone` varchar(60) NOT NULL,
-PRIMARY KEY  (`id_tz`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- -----------------------------------------------------
 -- Table `tusuario`
 -- -----------------------------------------------------
 

@@ -1600,19 +1600,6 @@ CREATE TABLE tevent_filter (
 );
 
 -- -----------------------------------------------------
--- Table `ttimezone`
--- -----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS ttimezone (
-  id_tz  NUMBER(10,0) NOT NULL PRIMARY KEY,
-  zone VARCHAR2(60) NOT NULL,
-  timezone VARCHAR2(60) NOT NULL
-);
-
-CREATE SEQUENCE ttimezone_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER ttimezone_inc BEFORE INSERT ON ttimezone REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttimezone_s.nextval INTO :NEW.ID_TZ FROM dual; END ttimezone_inc;;
-
--- -----------------------------------------------------
 -- Table `tpassword_history`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS tpassword_history (

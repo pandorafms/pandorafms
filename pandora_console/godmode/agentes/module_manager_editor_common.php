@@ -286,32 +286,34 @@ if ($__code_from == 'modules') {
 	$__id_where = 'b.id_agente_modulo';
 	$__id = (int)$id_agent_module;
 // Code comes from policy module editor
-}else {
+}
+else {
 	global $__id_pol_mod;
 	$__table_modules= 'ttag_policy_module';
 	$__id_where = 'b.id_policy_module';
 	$__id = $__id_pol_mod;
 }
 
-$table_advanced->data[6][1] = html_print_select_from_sql ("SELECT id_tag, name
-										FROM ttag 
-										WHERE id_tag NOT IN (
-											SELECT a.id_tag
-											FROM ttag a, $__table_modules b 
-											WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
-											ORDER BY name",
-	'id_tag_available[]', $id_tag, '','','', true, true, false, false, 'width: 200px', '5');
+$table_advanced->data[6][1] = html_print_select_from_sql (
+	"SELECT id_tag, name
+	FROM ttag 
+	WHERE id_tag NOT IN (
+		SELECT a.id_tag
+		FROM ttag a, $__table_modules b 
+		WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
+		ORDER BY name", 'id_tag_available[]', $id_tag, '','','',
+	true, true, false, false, 'width: 200px', '5');
 $table_advanced->data[6][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table_advanced->data[6][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete tags to module'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
-	
-$table_advanced->data[6][3] = '<b>' . __('Tags selected') . '</b>';
-$table_advanced->data[6][4] =  html_print_select_from_sql ("SELECT a.id_tag, name 
-										FROM ttag a, $__table_modules b
-										WHERE a.id_tag = b.id_tag AND $__id_where = $__id
-										ORDER BY name",
-	'id_tag_selected[]', $id_tag, '','','', true, true, false, false, 'width: 200px', '5');
-//$table_advanced->data[6][4] .= html_print_input_hidden('id_tag_serialize', '');
 
+$table_advanced->data[6][3] = '<b>' . __('Tags selected') . '</b>';
+$table_advanced->data[6][4] =  html_print_select_from_sql (
+	"SELECT a.id_tag, name 
+	FROM ttag a, $__table_modules b
+	WHERE a.id_tag = b.id_tag AND $__id_where = $__id
+	ORDER BY name",
+	'id_tag_selected[]', $id_tag, '','','', true, true, false,
+	false, 'width: 200px', '5');
 ?>
 
 <script type="text/javascript">
@@ -325,7 +327,7 @@ $(document).ready (function () {
 				$("select[name='id_tag_selected[]']").append($("<option></option>").val(id_tag).html('<i>' + tag_name + '</i>'));
 				$("#id_tag_available").find("option[value='" + id_tag + "']").remove();
 			}
-		});			
+		});
 	});
 	$("#left").click (function () {
 		jQuery.each($("select[name='id_tag_selected[]'] option:selected"), function (key, value) {
@@ -335,7 +337,7 @@ $(document).ready (function () {
 					$("select[name='id_tag_available[]']").append($("<option>").val(id_tag).html('<i>' + tag_name + '</i>'));
 					$("#id_tag_selected").find("option[value='" + id_tag + "']").remove();
 				}
-		});			
+		});
 	});
 	$("#submit-updbutton").click(function () {
 		$('#id_tag_selected option').map(function(){

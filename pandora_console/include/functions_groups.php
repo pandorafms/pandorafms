@@ -1273,7 +1273,7 @@ function groups_total_agents ($group_array, $disabled = false) {
 	
 	if (!$disabled)
 		$sql .= " AND disabled = 0";
-	html_debug_print($sql, "/tmp/pp");
+
 	return db_get_sql ($sql);
 					
 }

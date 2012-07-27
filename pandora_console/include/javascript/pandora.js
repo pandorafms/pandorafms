@@ -563,12 +563,18 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
  * @param id_agent_name id of the agent name box
  * @param id_server_name id of the hidden field to store the server but if you put false don't save.
  * @param id_agent_id id of the hidden field to store the agent id
+ * @param metaconsole_exec If defined then path of ajax.php call will be modified
  */
-function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
+function agent_autocomplete (id_agent_name, id_server_name, id_agent_id, metaconsole_exec ) {
 	//Check exist the field with id in the var id_agent_name.
 	if ($(id_agent_name).length == 0)
 		return;
-	
+
+	// Correction over ajax call for metaconsole
+	ajax_path = '';
+	if (metaconsole_exec != undefined)
+		ajax_path = '../../';
+
 	$(id_agent_name).autocomplete({
 		minLength: 2,
 		source: function( request, response ) {
@@ -582,7 +588,7 @@ function agent_autocomplete (id_agent_name, id_server_name, id_agent_id ) {
 				data: data_params,
 				async: false,
 				type: 'POST',
-				url: action="ajax.php",
+				url: action= ajax_path + "ajax.php",
 				timeout: 10000,
 				dataType: 'json',
 				success: function (data) {

@@ -1,3 +1,10 @@
+2012-07-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_groups.php:Removed trace.
+	
+    * include/javascript/pandora.js: Added modification to ajax call
+	  when it's called form metaconsole.
+	 
 2012-07-27 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/gis_maps/index.php, godmode/groups/group_list.php,

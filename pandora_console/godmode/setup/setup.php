@@ -31,17 +31,45 @@ if (is_ajax ()) {
 	if ($select_timezone) {
 		$zone = get_parameter('zone');
 		
-		$timezones = db_get_all_rows_sql ("SELECT timezone FROM ttimezone WHERE zone='$zone'");
-		if ($timezones === false)
-			$timezones = array();
-			
-		foreach ($timezones as $timezone) {
-			foreach ($timezone as $key=>$name_tz) {
-				if ($key == 'timezone')
-					$timezone_name[$name_tz] = $name_tz;
-			}
+		switch ($zone) {
+			case 'Africa':
+				$timezones = timezone_identifiers_list(DateTimeZone::AFRICA);
+				break;
+			case 'America':
+				$timezones = timezone_identifiers_list(DateTimeZone::AMERICA);
+				break;
+			case 'Antarctica':
+				$timezones = timezone_identifiers_list(DateTimeZone::ANTARCTICA);
+				break;
+			case 'Arctic':
+				$timezones = timezone_identifiers_list(DateTimeZone::ARCTIC);
+				break;
+			case 'Asia':
+				$timezones = timezone_identifiers_list(DateTimeZone::ASIA);
+				break;
+			case 'Atlantic':
+				$timezones = timezone_identifiers_list(DateTimeZone::ATLANTIC);
+				break;
+			case 'Australia':
+				$timezones = timezone_identifiers_list(DateTimeZone::AUSTRALIA);
+				break;
+			case 'Europe':
+				$timezones = timezone_identifiers_list(DateTimeZone::EUROPE);
+				break;
+			case 'Indian':
+				$timezones = timezone_identifiers_list(DateTimeZone::INDIAN);
+				break;
+			case 'Pacific':
+				$timezones = timezone_identifiers_list(DateTimeZone::PACIFIC);
+				break;
+			case 'UTC':
+				$timezones = timezone_identifiers_list(DateTimeZone::UTC);
+				break;
+			default:
+				$timezones = array();
+				break;
 		}
-		echo json_encode($timezone_name);
+		echo json_encode($timezones);
 	}
 	return;
 }
@@ -71,8 +99,8 @@ ui_print_page_header (__('General configuration'), "", false, "", true);
 $table->width = '100%';
 $table->data = array ();
 $table->size = array();
-$table->size[0] = '45%';
-$table->size[1] = '55%';
+$table->size[0] = '30%';
+$table->size[1] = '70%';
 
 // Current config["language"] could be set by user, not taken from global setup !
 
@@ -207,22 +235,59 @@ if ($config["integria_enabled"]) {
 	$table->data[22][1] = html_print_select($inventories, 'integria_inventory', $config["integria_inventory"], '', '', '', true);
 }
 
-$zones = db_get_all_rows_sql("SELECT DISTINCT(zone) FROM ttimezone");
-if ($zones === false) {
-	$zones = array();
-}
-foreach ($zones as $zone) {
-	foreach ($zone as $key=>$name) {
-		$zone_name[$name] = $name;
+$zone_name = array('Africa' => __('Africa'), 'America' => __('America'), 'Antarctica' => __('Antarctica'), 'Arctic' => __('Arctic'), 'Asia' => __('Asia'), 'Atlantic' => __('Atlantic'), 'Australia' => __('Australia'), 'Europe' => __('Europe'), 'Indian' => __('Indian'), 'Pacific' => __('Pacific'), 'UTC' => __('UTC'));
+
+$zone_selected = get_parameter('zone');
+if ($zone_selected == "") {
+	if ($config["timezone"] != "") {
+		list($zone) = split("/", $config["timezone"]);
+		$zone_selected = $zone;
+	}
+	else {
+		$zone_selected = 'Europe';
 	}
 }
-$zone_selected = get_parameter('zone', 'Europe');
-$timezones = db_get_all_rows_sql ("SELECT timezone FROM ttimezone WHERE zone='$zone_selected'");
+
+switch ($zone_selected) {
+	case 'Africa':
+		$timezones = timezone_identifiers_list(DateTimeZone::AFRICA);
+		break;
+	case 'America':
+		$timezones = timezone_identifiers_list(DateTimeZone::AMERICA);
+		break;
+	case 'Antarctica':
+		$timezones = timezone_identifiers_list(DateTimeZone::ANTARCTICA);
+		break;
+	case 'Arctic':
+		$timezones = timezone_identifiers_list(DateTimeZone::ARCTIC);
+		break;
+	case 'Asia':
+		$timezones = timezone_identifiers_list(DateTimeZone::ASIA);
+		break;
+	case 'Atlantic':
+		$timezones = timezone_identifiers_list(DateTimeZone::ATLANTIC);
+		break;
+	case 'Australia':
+		$timezones = timezone_identifiers_list(DateTimeZone::AUSTRALIA);
+		break;
+	case 'Europe':
+		$timezones = timezone_identifiers_list(DateTimeZone::EUROPE);
+		break;
+	case 'Indian':
+		$timezones = timezone_identifiers_list(DateTimeZone::INDIAN);
+		break;
+	case 'Pacific':
+		$timezones = timezone_identifiers_list(DateTimeZone::PACIFIC);
+		break;
+	case 'UTC':
+		$timezones = timezone_identifiers_list(DateTimeZone::UTC);
+		break;
+	default:
+		$timezones = array();
+		break;
+}
 foreach ($timezones as $timezone) {
-	foreach ($timezone as $key=>$name_tz) {
-		if ($key == 'timezone')
-			$timezone_n[$name_tz] = $name_tz;
-	}
+	$timezone_n[$timezone] = $timezone;
 }
 
 $table->data[23][0] = __('Timezone setup');

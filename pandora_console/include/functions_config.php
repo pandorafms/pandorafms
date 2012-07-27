@@ -103,7 +103,10 @@ function config_update_config () {
 			config_update_value ('integria_inventory', get_parameter ('integria_inventory'));
 			config_update_value ('integria_api_password', get_parameter ('integria_api_password'));
 			config_update_value ('integria_url', get_parameter ('integria_url'));
-			config_update_value ('timezone', (string) get_parameter ('timezone'));
+			$timezone = (string) get_parameter ('timezone');
+			if ($timezone != "") {
+				config_update_value ('timezone', $timezone);
+			}
 			config_update_value ('sound_alert', get_parameter('sound_alert'));
 			config_update_value ('sound_critical', get_parameter('sound_critical'));
 			config_update_value ('sound_warning', get_parameter('sound_warning'));

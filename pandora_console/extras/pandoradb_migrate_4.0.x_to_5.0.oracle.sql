@@ -201,19 +201,6 @@ ALTER TABLE tmensajes MODIFY mensaje VARCHAR2(255) NOT NULL DEFAULT '';
 alter table talert_compound add (special_day NUMBER(5,0) default 0);
 
 -- -----------------------------------------------------
--- Table `ttimezone`
--- -----------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS ttimezone (
-  id_tz  NUMBER(10,0) NOT NULL PRIMARY KEY,
-  zone VARCHAR2(60) NOT NULL,
-  timezone VARCHAR2(60) NOT NULL
-);
-
-CREATE SEQUENCE ttimezone_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER ttimezone_inc BEFORE INSERT ON ttimezone REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttimezone_s.nextval INTO :NEW.ID_TZ FROM dual; END ttimezone_inc;;
-
--- -----------------------------------------------------
 -- Table `tnetwork_component`
 -- -----------------------------------------------------
 

@@ -78,6 +78,7 @@ our @EXPORT = qw(
 		get_agent_status
 		get_agent_modules
 		get_agentmodule_status
+		get_agentmodule_data
 	);
 
 ##########################################################################
@@ -230,6 +231,37 @@ sub get_agent_modules ($$$$$) {
 	my @rows = get_db_rows($dbh, "SELECT *
 		FROM tagente_modulo
 		WHERE id_agente = ?" . $str_filter, $agent_id);
+	
+	return @rows;
+}
+
+########################################################################
+## SUB get_agentmodule_data (id_agent_module, period, date)
+## Return The data for module in a period of time.
+########################################################################
+
+sub get_agentmodule_data ($$$$$) {
+	my ($pa_config, $dbh, $id_agent_module, $period, $date) = @_;
+	if ($date < 1) {
+		# Get current timestamp
+		$date = time ();
+	}
+	
+	my $datelimit = $date - $period;
+	
+	my @rows = get_db_rows($dbh,
+		"SELECT datos AS data, utimestamp
+		FROM tagente_datos
+		WHERE id_agente_modulo = ?
+			AND utimestamp > ? AND utimestamp <= ?
+		ORDER BY utimestamp ASC",
+		$id_agent_module, $datelimit, $date);
+	
+	#logger($pa_config, "SELECT datos AS data, utimestamp
+	#	FROM tagente_datos
+	#	WHERE id_agente_modulo = " . $id_agent_module . "
+	#		AND utimestamp > " . $datelimit . " AND utimestamp <= " . $date . "
+	#	ORDER BY utimestamp ASC", 1);
 	
 	return @rows;
 }

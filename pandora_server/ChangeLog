@@ -1,3 +1,7 @@
+2012-07-29  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/DB.pm: Added missing '%'.
+
 2012-07-27 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* lib/PandoraFMS/DB.pm: added function "get_agentmodule_data" to

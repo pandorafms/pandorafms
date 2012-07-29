@@ -224,7 +224,7 @@ sub get_agent_modules ($$$$$) {
 	
 	my $str_filter = '';
 	
-	foreach my $key (keys $filters) {
+	foreach my $key (keys %$filters) {
 		$str_filter .= ' AND ' . $key . " = " . $filters->{$key};
 	}
 	

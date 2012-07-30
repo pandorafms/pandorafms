@@ -267,8 +267,8 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 			if ($extension['godmode_menu']["fatherId"] == '') {	
 				$sub[$extmenu["sec2"]]["text"] = $extmenu["name"];
 				$sub[$extmenu["sec2"]]["refr"] = 0;
-			} else {
-						
+			}
+			else {
 				if (array_key_exists('fatherId',$extmenu)) {
 					if (strlen($extmenu['fatherId']) > 0) {
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
@@ -279,7 +279,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 							else{
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 60;
 							}
-						}	
+						}
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;
@@ -290,7 +290,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 				}
 			}
 		}
-	
+		
 		$menu_godmode["gextensions"]["sub"] = $sub;
 	}
 }

@@ -66,7 +66,8 @@ if ($update_tag && $id_tag != 0) {
 	if ($result === false) {
 		db_pandora_audit("Tag management", "Fail try to update tag #$id_tag");
 		echo '<h3 class="error">'.__('Error updating tag').'</h3>';
-	} else {
+	}
+	else {
 		db_pandora_audit("Tag management", "Update tag #$id_tag");
 		echo '<h3 class="suc">'.__('Successfully updated tag').'</h3>';
 	}
@@ -74,7 +75,7 @@ if ($update_tag && $id_tag != 0) {
 
 // Create tag: creates a new tag 
 if ($create_tag) {
-
+	
 	$return_create = true;
 	
 	// Erase comma characters on tag name
@@ -89,13 +90,14 @@ if ($create_tag) {
 	$return_create = false;
 	if ($data['name'] != '')
 		$return_create = tags_create_tag ($data);
-
+	
 	if ($return_create === false) {
 		db_pandora_audit("Tag management", "Fail try to create tag");
 		echo '<h3 class="error">'.__('Error creating tag').'</h3>';
 		$action = "new";
 	// If create action ends successfully then current action is update
-	} else {
+	}
+	else {
 		db_pandora_audit("Tag management", "Create tag #$return_create");
 		echo '<h3 class="suc">'.__('Successfully created tag').'</h3>';
 		$id_tag = $return_create;
@@ -116,7 +118,7 @@ else {
 	$description_tag = "";
 	$url_tag = "";
 }
-	
+
 // Create/Update tag form 
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=' . $action . '&id_tag=' . $id_tag . '" enctype="multipart/form-data">';
 

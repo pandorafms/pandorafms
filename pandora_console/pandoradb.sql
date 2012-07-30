@@ -17,117 +17,134 @@
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them
 -- and fails creating database !!!
--- -----------------------------------------------------------
--- Pandora FMS official tables for 3.2 version              --
--- -----------------------------------------------------------
 
+-- -----------------------------------------------------
+-- Table `taddress`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `taddress` (
-  `id_a` int(10) unsigned NOT NULL auto_increment,
-  `ip` varchar(60) NOT NULL default '',
-  `ip_pack` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_a`),
-  KEY `ip` (`ip`)
+	`id_a` int(10) unsigned NOT NULL auto_increment,
+	`ip` varchar(60) NOT NULL default '',
+	`ip_pack` int(10) unsigned NOT NULL default '0',
+	PRIMARY KEY  (`id_a`),
+	KEY `ip` (`ip`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `taddress_agent`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `taddress_agent` (
-  `id_ag` bigint(20) unsigned NOT NULL auto_increment,
-  `id_a` bigint(20) unsigned NOT NULL default '0',
-  `id_agent` mediumint(8) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_ag`)
+	`id_ag` bigint(20) unsigned NOT NULL auto_increment,
+	`id_a` bigint(20) unsigned NOT NULL default '0',
+	`id_agent` mediumint(8) unsigned NOT NULL default '0',
+	PRIMARY KEY  (`id_ag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `tagente`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente` (
-  `id_agente` int(10) unsigned NOT NULL auto_increment,
-  `nombre` varchar(600) BINARY NOT NULL default '',
-  `direccion` varchar(100) default NULL,
-  `comentarios` varchar(255) default '',
-  `id_grupo` int(10) unsigned NOT NULL default '0',
-  `ultimo_contacto` datetime NOT NULL default '1970-01-01 00:00:00',
-  `modo` tinyint(1) NOT NULL default '0',
-  `intervalo` int(11) unsigned NOT NULL default '300',
-  `id_os` int(10) unsigned default '0',
-  `os_version` varchar(100) default '',
-  `agent_version` varchar(100) default '',
-  `ultimo_contacto_remoto` datetime default '1970-01-01 00:00:00',
-  `disabled` tinyint(2) NOT NULL default '0',
-  `id_parent` int(10) unsigned default '0',
-  `custom_id` varchar(255) default '',
-  `server_name` varchar(100) default '',
-  `cascade_protection` tinyint(2) NOT NULL default '0',
-  `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'nuber of hours of diference with the server timezone' ,
-  `icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
-  `update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and don\'t update it' ,
-  `url_address` mediumtext NULL,
-  PRIMARY KEY  (`id_agente`),
-  KEY `nombre` (`nombre`),
-  KEY `direccion` (`direccion`),
-  KEY `disabled` (`disabled`),
-  KEY `id_grupo` (`id_grupo`)
+	`id_agente` int(10) unsigned NOT NULL auto_increment,
+	`nombre` varchar(600) BINARY NOT NULL default '',
+	`direccion` varchar(100) default NULL,
+	`comentarios` varchar(255) default '',
+	`id_grupo` int(10) unsigned NOT NULL default '0',
+	`ultimo_contacto` datetime NOT NULL default '1970-01-01 00:00:00',
+	`modo` tinyint(1) NOT NULL default '0',
+	`intervalo` int(11) unsigned NOT NULL default '300',
+	`id_os` int(10) unsigned default '0',
+	`os_version` varchar(100) default '',
+	`agent_version` varchar(100) default '',
+	`ultimo_contacto_remoto` datetime default '1970-01-01 00:00:00',
+	`disabled` tinyint(2) NOT NULL default '0',
+	`id_parent` int(10) unsigned default '0',
+	`custom_id` varchar(255) default '',
+	`server_name` varchar(100) default '',
+	`cascade_protection` tinyint(2) NOT NULL default '0',
+	`timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'nuber of hours of diference with the server timezone' ,
+	`icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
+	`update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and do not update it' ,
+	`url_address` mediumtext NULL,
+	PRIMARY KEY  (`id_agente`),
+	KEY `nombre` (`nombre`),
+	KEY `direccion` (`direccion`),
+	KEY `disabled` (`disabled`),
+	KEY `id_grupo` (`id_grupo`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
+-- -----------------------------------------------------
+-- Table `tagente_datos`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos` (
-  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
-  `datos` double(18,2) default NULL,
-  `utimestamp` bigint(20) default '0',
-  KEY `data_index1` (`id_agente_modulo`),
-  KEY `idx_utimestamp` USING BTREE (`utimestamp`)
+	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
+	`datos` double(18,2) default NULL,
+	`utimestamp` bigint(20) default '0',
+	KEY `data_index1` (`id_agente_modulo`),
+	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
+-- -----------------------------------------------------
+-- Table `tagente_datos_inc`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
-  `id_adi` int(10) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
-  `datos` double(18,2) default NULL,
-  `utimestamp` int(20) unsigned default '0',
-  PRIMARY KEY  (`id_adi`),
-  KEY `data_inc_index_1` (`id_agente_modulo`)
+	`id_adi` int(10) unsigned NOT NULL auto_increment,
+	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
+	`datos` double(18,2) default NULL,
+	`utimestamp` int(20) unsigned default '0',
+	PRIMARY KEY  (`id_adi`),
+	KEY `data_inc_index_1` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `tagente_datos_string`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
-  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
-  `datos` text NOT NULL,
-  `utimestamp` int(20) unsigned NOT NULL default 0,
-  KEY `data_string_index_1` (`id_agente_modulo`),
-  KEY `idx_utimestamp` USING BTREE (`utimestamp`)
+	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
+	`datos` text NOT NULL,
+	`utimestamp` int(20) unsigned NOT NULL default 0,
+	KEY `data_string_index_1` (`id_agente_modulo`),
+	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tagente_datos_log4x`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
-  `id_tagente_datos_log4x` bigint(20) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
-
-  `severity` text NOT NULL,
-  `message` text NOT NULL,
-  `stacktrace` text NOT NULL,
-
-  `utimestamp` int(20) unsigned NOT NULL default 0,
-  PRIMARY KEY  (`id_tagente_datos_log4x`),
-  KEY `data_log4x_index_1` (`id_agente_modulo`)
+	`id_tagente_datos_log4x` bigint(20) unsigned NOT NULL auto_increment,
+	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
+	
+	`severity` text NOT NULL,
+	`message` text NOT NULL,
+	`stacktrace` text NOT NULL,
+	
+	`utimestamp` int(20) unsigned NOT NULL default 0,
+	PRIMARY KEY  (`id_tagente_datos_log4x`),
+	KEY `data_log4x_index_1` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- delete "cambio" not used anymore
+-- -----------------------------------------------------
+-- Table `tagente_estado`
+-- -----------------------------------------------------
 CREATE TABLE `tagente_estado` (
-  `id_agente_estado` int(10) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(10) NOT NULL default '0',
-  `datos` text NOT NULL,
-  `timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
-  `estado` int(4) NOT NULL default '0',
-  `id_agente` int(10) NOT NULL default '0',
-  `last_try` datetime default NULL,
-  `utimestamp` bigint(20) NOT NULL default '0',
-  `current_interval` int(8) unsigned NOT NULL default '0',
-  `running_by` smallint(4) unsigned default '0',
-  `last_execution_try` bigint(20) NOT NULL default '0',
-  `status_changes` tinyint(4) default 0,
-  `last_status` tinyint(4) default 0,
-  PRIMARY KEY  (`id_agente_estado`),
-  KEY `status_index_1` (`id_agente_modulo`),
-  KEY `idx_agente` (`id_agente`),
-  KEY `idx_status` (`estado`),
-  KEY `current_interval` (`current_interval`),
-  KEY `running_by` (`running_by`),
-  KEY `last_execution_try` (`last_execution_try`)
+	`id_agente_estado` int(10) unsigned NOT NULL auto_increment,
+	`id_agente_modulo` int(10) NOT NULL default '0',
+	`datos` text NOT NULL,
+	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
+	`estado` int(4) NOT NULL default '0',
+	`id_agente` int(10) NOT NULL default '0',
+	`last_try` datetime default NULL,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	`current_interval` int(8) unsigned NOT NULL default '0',
+	`running_by` smallint(4) unsigned default '0',
+	`last_execution_try` bigint(20) NOT NULL default '0',
+	`status_changes` tinyint(4) default 0,
+	`last_status` tinyint(4) default 0,
+	PRIMARY KEY  (`id_agente_estado`),
+	KEY `status_index_1` (`id_agente_modulo`),
+	KEY `idx_agente` (`id_agente`),
+	KEY `idx_status` (`estado`),
+	KEY `current_interval` (`current_interval`),
+	KEY `running_by` (`running_by`),
+	KEY `last_execution_try` (`last_execution_try`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- Probably last_execution_try index is not useful and loads more than benefits
@@ -849,7 +866,7 @@ CREATE TABLE IF NOT EXISTS `treport` (
   `first_page` MEDIUMTEXT,
   `footer` MEDIUMTEXT,
   `custom_font` varchar(200) default NULL,
-  `id_template` INTEGER UNSIGNED DEFAULT 0,	
+  `id_template` INTEGER UNSIGNED DEFAULT 0,
   PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

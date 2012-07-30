@@ -71,26 +71,34 @@ if ($create_alert) {
 		FROM talert_template_modules
 		WHERE id_agent_module = " . $id_agent_module . "
 			AND id_alert_template = " . $id_alert_template) > 0) {
-		$messageAction = ui_print_result_message (false, '', __('Already added'), '', true);
+		
+		$messageAction = ui_print_result_message (false, '',
+			__('Already added'), '', true);
 	}
 	else {
 		$id = alerts_create_alert_agent_module ($id_agent_module, $id_alert_template);
-
-		$alert_template_name = db_get_value ("name", "talert_templates","id", $id_alert_template);
-		$module_name = db_get_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
-		$agent_name = agents_get_name (db_get_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
+		
+		$alert_template_name = db_get_value ("name",
+			"talert_templates","id", $id_alert_template);
+		$module_name = db_get_value ("nombre",
+			"tagente_modulo","id_agente_modulo", $id_agent_module);
+		$agent_name = agents_get_name (db_get_value ("id_agente",
+			"tagente_modulo","id_agente_modulo", $id_agent_module)); 
 		
 		// Audit the creation only when the alert creation is correct
-		if($id) {
+		if ($id) {
 			db_pandora_audit("Alert management",
-				"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'", false, false, 'ID: ' . $id);
+				"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'",
+				false, false, 'ID: ' . $id);
 		}
 		else {
 			db_pandora_audit("Alert management",
 				"Fail Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 		}
-
-		$messageAction = ui_print_result_message ($id, __('Successfully created'), __('Could not be created'), '', true);
+		
+		$messageAction = ui_print_result_message ($id,
+			__('Successfully created'), __('Could not be created'), '', true);
+		
 		if ($id !== false) {
 			$action_select = get_parameter('action_select');
 			
@@ -98,7 +106,8 @@ if ($create_alert) {
 				$values = array();
 				$values['fires_min'] = get_parameter ('fires_min');
 				$values['fires_max'] = get_parameter ('fires_max');
-				$values['module_action_threshold'] = (int) get_parameter ('module_action_threshold');
+				$values['module_action_threshold'] =
+					(int)get_parameter ('module_action_threshold');
 				
 				alerts_add_alert_agent_module_action ($id, $action_select, $values);
 			}

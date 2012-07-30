@@ -101,13 +101,15 @@ if ($edit_filter > -2) {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	if ($edit_filter > -1) {
 		html_print_submit_button (__('Update'), 'submit_button', false, 'class="sub upd"');
-	} else {
+	}
+	else {
 		html_print_submit_button (__('Create'), 'submit_button', false, 'class="sub upd"');
 	}
 	echo '</div>';
 	echo '</form>';
 // Overview
-} else {
+}
+else {
 	$result = db_get_all_rows_in_table ("tsnmp_filter");
 	if ($result === false) {
 		$result = array ();
@@ -122,24 +124,24 @@ if ($edit_filter > -2) {
 	$table->width = "98%";
 	$table->class= "databox";
 	$table->align = array ();
-
+	
 	$table->head[0] = __('Description');	
 	$table->head[1] = __('Filter');
 	$table->head[2] = __('Action');
 	$table->size[2] = "50px";
 	$table->align[2] = 'center';
-
+	
 	foreach ($result as $row) {
 		$data = array ();
 		$data[0] = '<a href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' . $row['description'] . '</a>';
 		$data[1] = $row['filter'];
 		$data[2] = '<a href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' .
-				html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
-				'&nbsp;&nbsp;<a onclick="if (confirm(\'' . __('Are you sure?') . '\')) return true; else return false;" href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$row['id_snmp_filter'].'">' .
-				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
+			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
+			'&nbsp;&nbsp;<a onclick="if (confirm(\'' . __('Are you sure?') . '\')) return true; else return false;" href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$row['id_snmp_filter'].'">' .
+			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
 		array_push ($table->data, $data);
 	}
-
+	
 	if (!empty ($table->data)) {
 		html_print_table ($table);
 	}
@@ -151,5 +153,4 @@ if ($edit_filter > -2) {
 	html_print_submit_button (__('Create'), 'submit_button', false, 'class="sub next"');
 	echo '</form></div>';
 }
-
 ?>

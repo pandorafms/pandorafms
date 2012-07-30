@@ -232,8 +232,8 @@ public class PandroidEventviewerActivity extends TabActivity implements
 		SharedPreferences preferences = getSharedPreferences(
 				getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
-		long timestamp_notification = preferences.getLong("filterTimestamp",
-				(new Date().getTime() / 1000));
+		long timestamp_notification = preferences.getLong(
+				"new_events_last_timestamp", (new Date().getTime() / 1000));
 		Log.i(TAG + " process_notification_timestamp", ""
 				+ timestamp_notification);
 		this.timestamp = timestamp_notification;
@@ -252,11 +252,9 @@ public class PandroidEventviewerActivity extends TabActivity implements
 		Calendar c = Calendar.getInstance();
 		long now = (c.getTimeInMillis() / 1000);
 		SharedPreferences.Editor editorPreferences = preferences.edit();
-		// Save for the next execution
-		editorPreferences.putLong("filterTimestamp", now);
-		// Save the previous for the list.
-		editorPreferences.putLong("previous_filterTimestamp",
-				timestamp_notification);
+
+		editorPreferences.putLong("new_events_last_timestamp",
+				now);
 		if (editorPreferences.commit()) {
 			Log.i(TAG + " (filter options)",
 					"Configuration changes commited (timestamp)");

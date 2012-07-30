@@ -18,6 +18,7 @@ package pandroid_event_viewer.pandorafms;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.IntentService;
@@ -78,10 +79,22 @@ public class PandroidEventviewerService extends IntentService {
 		SharedPreferences preferences = context.getSharedPreferences(
 				context.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
-		Calendar c = Calendar.getInstance();
-		long now = (c.getTimeInMillis() / 1000);
-		long old_previous_filterTimestamp = preferences.getLong(
-				"previous_filterTimestamp", now);
+		
+		long new_events_filterTimestamp = preferences.getLong(
+				"new_events_last_timestamp", 0);
+		Editor editor;
+		// Sets a default time
+		if (new_events_filterTimestamp == 0) {
+			editor = preferences.edit();
+			new_events_filterTimestamp = Calendar.getInstance()
+					.getTimeInMillis() / 1000;
+			editor.putLong("new_events_last_timestamp",
+					new_events_filterTimestamp);
+			editor.commit();
+
+		}
+		Log.d(TAG, "Retrieve events since: "
+				+ new Date(new_events_filterTimestamp * 1000).toString());
 		String filterAgentName = preferences.getString("filterAgentName", "");
 
 		int idGroup = preferences.getInt("filterIDGroup", 0);
@@ -90,13 +103,9 @@ public class PandroidEventviewerService extends IntentService {
 		String filterEventSearch = preferences.getString("filterEventSearch",
 				"");
 		String filterTag = preferences.getString("filterTag", "");
-
-		c = Calendar.getInstance();
-		now = (c.getTimeInMillis() / 1000);
-		long filterTimestamp = preferences.getLong("filterTimestamp", now);
 		String return_api = API.getEvents(this, filterAgentName, idGroup,
 				filterSeverity, filterStatus, filterEventSearch, filterTag,
-				filterTimestamp, 20, 0, true, false);
+				new_events_filterTimestamp, 20, 0, true, false);
 		return_api = return_api.replace("\n", "");
 		try {
 			this.count_events = Long.valueOf(return_api);
@@ -110,7 +119,7 @@ public class PandroidEventviewerService extends IntentService {
 			Log.i(TAG, "There are new events");
 			return_api = API.getEvents(this, filterAgentName, idGroup,
 					filterSeverity, filterStatus, filterEventSearch, filterTag,
-					filterTimestamp, 20, 0, false, true);
+					new_events_filterTimestamp, 20, 0, false, true);
 			return_api = return_api.replace("\n", "");
 			try {
 				this.more_criticity = Integer.valueOf(return_api).intValue();
@@ -122,19 +131,13 @@ public class PandroidEventviewerService extends IntentService {
 			// Don't repeat the same notification
 			if (lastCountEvents != count_events) {
 				notificationEvent(context);
-				Editor editor = preferences.edit();
+				editor = preferences.edit();
 				editor.putLong("last_count_events", count_events);
 				editor.commit();
 			}
 
 		} else {
 			this.more_criticity = -1;
-
-			// Restore timestamp
-			SharedPreferences.Editor editorPreferences = preferences.edit();
-			editorPreferences.putLong("previous_filterTimestamp",
-					old_previous_filterTimestamp);
-			editorPreferences.commit();
 		}
 		Log.d(TAG, "Check finished at "
 				+ Calendar.getInstance().getTime().toGMTString());

@@ -143,7 +143,7 @@ if ($view_graph) {
 	echo html_print_input_text ('time', $time, '', 7, 7, true). ' ';
 	echo "</td>";
 	echo "<td class='datos'>";
-	echo "<b>".__('Period')."</b>";
+	echo "<b>".__('Time range')."</b>";
 	echo "</td>";
 	echo "<td class='datos'>";
 	

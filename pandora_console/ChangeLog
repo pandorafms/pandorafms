@@ -1,3 +1,11 @@
+2012-07-30  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* operation/reporting/graph_viewer.php: replace 'Period' with
+	'Time range' to be translated. This is for consistency of
+	labels between single graphs and custom graphs.
+
+	Merged from 4.0.2
+
 2012-07-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_groups.php:Removed trace.

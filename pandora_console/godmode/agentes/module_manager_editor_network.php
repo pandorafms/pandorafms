@@ -20,9 +20,7 @@ $disabledTextBecauseInPolicy = '';
 $page = get_parameter('page', '');
 if (strstr($page, "policy_modules") === false) {
 	if ($config['enterprise_installed']) {
-		
 		$disabledBecauseInPolicy = policies_is_module_in_policy($id_agent_module) && policies_is_module_linked($id_agent_module);
-		
 	}
 	else
 		$disabledBecauseInPolicy = false;
@@ -59,9 +57,7 @@ $data = array ();
 $data[0] = __('SNMP community');
 $adopt = false;
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module)) {
-	
 	$adopt = policies_is_module_adopt($id_agent_module);
-	
 }
 if (!$adopt) {
 	$data[1] = html_print_input_text ('snmp_community', $snmp_community, '', 15, 60, true, $disabledBecauseInPolicy);
@@ -75,7 +71,8 @@ $data[2] = _('SNMP version');
 if ($id_module_type >= 15 && $id_module_type <= 18) {
 	$data[3] = html_print_select ($snmp_versions, 'snmp_version', $snmp_version,
 		'', '', '', true, false, false, '', $disabledBecauseInPolicy);
-} else {
+}
+else {
 	$data[3] = html_print_select ($snmp_versions, 'snmp_version', 0, '', '',
 		'', true, false, false, '', $disabledBecauseInPolicy);
 }
@@ -221,11 +218,11 @@ $(document).ready (function () {
 	function () {
 		$(this).css ("width", "auto"); 
 		$(this).css ("min-width", "180px"); 
-	});	
+	});
 	
 	$("#id_module_type").blur (function () {
 		$(this).css ("width", "180px"); 
-	});		
+	});
 	
 });
 </script>

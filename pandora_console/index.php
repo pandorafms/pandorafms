@@ -297,7 +297,8 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 			db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
 			while (@ob_end_flush ());
 			exit ("</html>");
-		} else {
+		}
+		else {
 			require_once ('general/login_page.php');
 			db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
 			while (@ob_end_flush ());
@@ -502,7 +503,8 @@ else {
 						if (!file_exists ($file)) {
 							unset($_GET['sec2']);
 							require('general/logon_ok.php');
-						} else {
+						}
+						else {
 							require($file);
 						}
 					}

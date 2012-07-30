@@ -1,3 +1,13 @@
+2012-07-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/alerts/alert_list.php, godmode/menu.php,
+	godmode/snmpconsole/snmp_filters.php, godmode/tag/edit_tag.php,
+	include/functions_alerts.php, include/functions_html.php,
+	pandoradb.sql, index.php: cleaned source code style.
+
 2012-07-30  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* operation/reporting/graph_viewer.php: replace 'Period' with

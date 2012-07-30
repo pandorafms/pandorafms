@@ -116,7 +116,8 @@ function html_print_select_style ($fields, $name, $selected = '', $style='', $sc
 	//If duplicate names exist, it will start numbering. Otherwise it won't
 	if (isset ($idcounter[$name])) {
 		$idcounter[$name]++;
-	} else {
+	}
+	else {
 		$idcounter[$name] = 0;
 	}
 	
@@ -881,7 +882,8 @@ function html_print_table (&$table, $return = false) {
 		foreach ($table->valign as $key => $aa) {
 			if ($aa) {
 				$valign[$key] = ' vertical-align:'. $aa.';';
-			} else {
+			}
+			else {
 				$valign[$key] = '';
 			}
 		}
@@ -1309,9 +1311,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	
 	if (!isset ($options["alt"]) && isset ($options["title"])) {
 		$options["alt"] = io_safe_input_html($options["title"]); //Set alt to title if it's not set
-	}// elseif (!isset ($options["alt"])) {
-	//	$options["alt"] = "";
-	//}
+	}
 	
 	if (!empty ($style)) {
 		$output .= 'style="'.$style.'" ';

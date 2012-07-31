@@ -40,7 +40,7 @@ import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.TabHost;
 import android.widget.Toast;
-
+//FIXME grey buttons doesn't become white when connection is correctly set
 public class PandroidEventviewerActivity extends TabActivity implements
 		Serializable {
 	private static String TAG = "PandroidEventviewerActivity";
@@ -95,7 +95,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 
 		this.loadInProgress = false;
 
-		// Check if the preferences is setted, if not show the option activity.
+		// Check if the preferences are set, if not show the option activity.
 		if ((user.length() == 0) && (password.length() == 0)
 				&& (url.length() == 0)) {
 			startActivity(new Intent(this, Options.class));

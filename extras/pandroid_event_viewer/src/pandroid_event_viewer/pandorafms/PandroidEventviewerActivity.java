@@ -198,7 +198,7 @@ public class PandroidEventviewerActivity extends TabActivity implements
 	 */
 	private void process_notification(Intent intent) {
 		int more_criticity = intent.getIntExtra("more_criticity", -1);
-
+		//TODO retrieve time
 		CharSequence text;
 
 		// From the notification

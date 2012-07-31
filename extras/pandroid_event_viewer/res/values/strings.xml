@@ -119,7 +119,7 @@
     <string name="connection_problem">There was a problem. Check your connection.</string>
     <string name="connection_settings_problem">The operation can not be performed until you configure a correct connection.</string>
     <string name="unknown_version">Unknown version</string>
-    <string name="enable_background_service">Check events in background</string>
+    <string name="enable_background_service">Check in background</string>
     <string name="default_profile_can_not_remove">Default profile can not be removed</string>
 
 </resources>

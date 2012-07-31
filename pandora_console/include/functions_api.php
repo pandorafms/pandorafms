@@ -3220,13 +3220,39 @@ function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data
 		exit;
 	}
 	
-	$result = config_agents_add_module_in_conf($id_agent, $new_configuration_data);
-	
-	if($result) {
+	$result = enterprise_hook('config_agents_add_module_in_conf', array($id_agent, $new_configuration_data));
+		
+	if($result && $result !== ENTERPRISE_NOT_HOOK) {
 		returnData('string', array('type' => 'string', 'data' => 'Successfully added module to conf.'));		
 	}
 	else {
 		returnError('error_adding_module_conf', 'Error adding module to conf file.');
+	}
+}
+
+
+/**
+ * Get module data configuration from agent configuration file
+ * 
+ * @param string $id_agent Id of the agent
+ * @param string $module_name
+ * @param $thrash2 Don't use
+ * @param $thrash3 Don't use
+ * 
+ * Call example:
+ * 
+ *  api.php?op=get&op2=module_from_conf&user=admin&pass=pandora&id=9043&id2=example_name
+ * 
+ * @return string success or error message
+ */
+function api_get_module_from_conf($id_agent, $module_name, $thrash2, $thrash3) {	
+	$result = enterprise_hook('config_agents_get_module_from_conf', array($id_agent, $module_name));
+		
+	if($result !== ENTERPRISE_NOT_HOOK) {
+		returnData('string', array('type' => 'string', 'data' => $result));		
+	}
+	else {
+		returnError('error_adding_module_conf', 'Error getting module from conf file.');
 	}
 }
 
@@ -3247,7 +3273,9 @@ function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data
 function api_set_delete_module_in_conf($id_agent, $module_name, $thrash2, $thrash3) {
 	$result = config_agents_delete_module_in_conf($id_agent, $module_name);
 	
-	if($result) {
+	$result = enterprise_hook('config_agents_delete_module_in_conf', array($id_agent, $module_name));
+		
+	if($result && $result !== ENTERPRISE_NOT_HOOK) {
 		returnData('string', array('type' => 'string', 'data' => 'Successfully deleted module from conf.'));		
 	}
 	else {
@@ -3286,10 +3314,10 @@ function api_set_update_module_in_conf($id_agent, $module_name, $configuration_d
 		echo "No change";
 		exit;
 	}
-	
-	$result = config_agents_update_module_in_conf($id_agent, $old_configuration_data, $new_configuration_data);
-	
-	if($result) {
+		
+	$result = enterprise_hook('config_agents_update_module_in_conf', array($id_agent, $old_configuration_data, $new_configuration_data));
+		
+	if($result && $result !== ENTERPRISE_NOT_HOOK) {
 		returnData('string', array('type' => 'string', 'data' => 'Successfully updated module in conf.'));		
 	}
 	else {

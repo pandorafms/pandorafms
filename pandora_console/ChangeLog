@@ -1,5 +1,15 @@
 2012-07-31  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_api.php: Added API function to 
+	get the module data info from the agent conf file
+
+2012-07-31  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_api.php: Change the API calls to
+	hooks
+
+2012-07-31  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_api.php: Fix a unclosed key
 
 2012-07-30  Sergio Martin <sergio.martin@artica.es>

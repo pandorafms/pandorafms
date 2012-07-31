@@ -1,5 +1,10 @@
 2012-07-31  Sergio Martin <sergio.martin@artica.es>
 
+	* pandora_console/include/functions_api.php: Added 
+	a safe_input to fix entities problems in last feature
+
+2012-07-31  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_api.php: Added API function to 
 	get the module data info from the agent conf file
 

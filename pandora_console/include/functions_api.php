@@ -3246,7 +3246,7 @@ function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data
  * @return string success or error message
  */
 function api_get_module_from_conf($id_agent, $module_name, $thrash2, $thrash3) {	
-	$result = enterprise_hook('config_agents_get_module_from_conf', array($id_agent, $module_name));
+	$result = enterprise_hook('config_agents_get_module_from_conf', array($id_agent, io_safe_output($module_name)));
 		
 	if($result !== ENTERPRISE_NOT_HOOK) {
 		returnData('string', array('type' => 'string', 'data' => $result));		

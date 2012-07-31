@@ -1,4 +1,9 @@
 2012-08-01 Santiago Munín <burning1@gmail.com>
+	* res/layout/create_incident.xml: UI changes.
+	* AndroidManifest.xml: Removed some comments and removed header from all activities.
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java: FIXME added.
+
+2012-08-01 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java: TODO added.
 	* res/layout/options.xml: UI changes.
 	* res/values/strings.xml: Changed an entry.

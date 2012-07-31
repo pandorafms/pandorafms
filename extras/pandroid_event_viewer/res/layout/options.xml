@@ -27,6 +27,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:orientation="vertical" >
 
             <TextView
@@ -39,7 +40,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="5dp"
                 android:orientation="vertical" >
 
                 <TextView
@@ -98,65 +98,68 @@
                     android:inputType="textPassword"
                     android:singleLine="true" />
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
+                <TableLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:orientation="horizontal" >
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:stretchColumns="0,1" >
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" >
+                    <TableRow android:layout_marginTop="10dp" >
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/refresh_time_label_str"
-                            android:textColor="#ffffff" />
+                            android:gravity="left"
+                            android:orientation="vertical" >
 
-                        <Spinner
-                            android:id="@+id/refresh_combo"
-                            android:layout_width="155dp"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="2dp"
+                                android:text="@string/refresh_time_label_str"
+                                android:textColor="#ffffff" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:orientation="vertical" >
+                            <Spinner
+                                android:id="@+id/refresh_combo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/check_connection_status"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="20dp"
-                            android:drawableBottom="@drawable/help"
                             android:gravity="center_horizontal"
-                            android:text="@string/check_connection"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/check_connection_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableBottom="@drawable/help"
+                                android:text="@string/check_connection"
+                                android:textColor="#ffffff" />
+                        </LinearLayout>
+                    </TableRow>
+
+                    <TableRow android:layout_marginTop="10dp" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left|center_vertical"
+                            android:paddingLeft="2dp"
+                            android:text="@string/enable_background_service"
                             android:textColor="#ffffff" />
-                    </LinearLayout>
-                </RelativeLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="60dp"
-                        android:text="@string/enable_background_service"
-                        android:textColor="#ffffff" />
-
-                    <CheckBox
-                        android:id="@+id/background_service_on"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
+                        <CheckBox
+                            android:id="@+id/background_service_on"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center" />
+                    </TableRow>
+                </TableLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -181,9 +184,7 @@
 
                 <TableRow>
 
-                    <TextView
-                        style="@style/options_entry_text"
-                        android:text="@string/vibration" />
+                    <TextView android:text="@string/vibration" />
 
                     <CheckBox
                         android:id="@+id/vibration_on"
@@ -193,9 +194,7 @@
 
                 <TableRow>
 
-                    <TextView
-                        style="@style/options_entry_text"
-                        android:text="@string/led_flash" />
+                    <TextView android:text="@string/led_flash" />
 
                     <CheckBox
                         android:id="@+id/led_flash_on"
@@ -208,14 +207,12 @@
 
                     <TextView
                         android:id="@+id/textView1"
-                        style="@style/options_entry_text"
                         android:text="@string/sound" />
 
                     <Button
                         android:id="@+id/sound_button"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp" />
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content" />
                 </TableRow>
             </TableLayout>
         </LinearLayout>
@@ -228,9 +225,11 @@
 
         <Button
             android:id="@+id/update_options"
-            android:layout_width="200dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:text="@string/update_button_str" />
     </LinearLayout>
 

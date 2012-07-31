@@ -1,3 +1,8 @@
+2012-08-01 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java: TODO added.
+	* res/layout/options.xml: UI changes.
+	* res/values/strings.xml: Changed an entry.
+
 2012-07-30 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java, 
 	  src/pandroid_event_viewer/pandorafms/PandroidEventviewerService.java: Changed time measurement in the background check events.

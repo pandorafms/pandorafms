@@ -3295,7 +3295,7 @@ function api_set_update_module_in_conf($id_agent, $module_name, $configuration_d
 	else {
 		returnError('error_editing_module_conf', 'Error editing module in conf file.');
 	}
-
+}
 
 /**
  * Add SNMP module to policy. And return id from new module.

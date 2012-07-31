@@ -1,3 +1,8 @@
+2012-07-30  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_api.php: Added to API the actions:
+	add, update and delete module in agent config file
+
 2012-07-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager_editor_plugin.php,
@@ -79,6 +84,7 @@
 	* operation/search_modules.php: fixed the search when the modules
 	haven't inicialiced.
 
+>>>>>>> .r6830
 2012-07-26  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php: Change the sort function

@@ -1,3 +1,8 @@
+2012-07-31  Junichi Satoh  <junichi@rworks.jp>
+
+	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Removed sql to update
+	'tlocal_componet' table. It's an enterprise table.
+
 2012-07-30  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* operation/reporting/graph_viewer.php: replace 'Period' with

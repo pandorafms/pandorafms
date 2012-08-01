@@ -50,7 +50,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -95,9 +94,9 @@ public class Main extends Activity {
 		}
 
 		setContentView(R.layout.main);
-		final Button buttonReset = (Button) findViewById(R.id.button_reset);
+		final Button buttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
 		final Button buttonSearch = (Button) findViewById(R.id.button_send);
-		final Button buttonbuttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
+		final Button buttonDeleteProfile = (Button) findViewById(R.id.button_delete_profile);
 		final Button buttonSaveProfile = (Button) findViewById(R.id.button_save_profile);
 		// Check if the user preferences it is set.
 		if (object.user.length() == 0 || object.password.length() == 0
@@ -107,9 +106,9 @@ public class Main extends Activity {
 					Toast.LENGTH_SHORT);
 			toast.show();
 
-			buttonReset.setEnabled(false);
+			buttonSetAsFilterWatcher.setEnabled(false);
 			buttonSearch.setEnabled(false);
-			buttonbuttonSetAsFilterWatcher.setEnabled(false);
+			buttonDeleteProfile.setEnabled(false);
 		} else if (object.user.equals("demo") || object.password.equals("demo")) {
 			Toast toast = Toast.makeText(this.getApplicationContext(),
 					this.getString(R.string.preferences_set_demo_pandora_str),
@@ -117,8 +116,8 @@ public class Main extends Activity {
 			toast.show();
 		} else {
 			buttonSearch.setEnabled(false);
-			buttonReset.setEnabled(false);
-			buttonbuttonSetAsFilterWatcher.setEnabled(false);
+			buttonSetAsFilterWatcher.setEnabled(false);
+			buttonDeleteProfile.setEnabled(false);
 
 			new GetGroupsAsyncTask().execute();
 			if (version402) {
@@ -161,16 +160,6 @@ public class Main extends Activity {
 			public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
-		((ImageView) findViewById(R.id.delete_profile))
-				.setOnClickListener(new OnClickListener() {
-
-					public void onClick(View v) {
-						String profileName = ((Spinner) findViewById(R.id.profile_combo))
-								.getSelectedItem().toString();
-						deleteProfile(profileName);
-						loadProfiles();
-					}
-				});
 
 		combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
 		adapter = ArrayAdapter.createFromResource(this,
@@ -180,9 +169,9 @@ public class Main extends Activity {
 		combo.setAdapter(adapter);
 		combo.setSelection(preferences.getInt("filterLastTime", 6));
 
-		buttonReset.setOnClickListener(new View.OnClickListener() {
+		buttonSetAsFilterWatcher.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				reset_form();
+				save_filter_watcher();
 			}
 		});
 
@@ -192,13 +181,15 @@ public class Main extends Activity {
 			}
 		});
 
-		buttonbuttonSetAsFilterWatcher
-				.setOnClickListener(new View.OnClickListener() {
+		buttonDeleteProfile.setOnClickListener(new View.OnClickListener() {
 
-					public void onClick(View v) {
-						save_filter_watcher();
-					}
-				});
+			public void onClick(View v) {
+				String profileName = ((Spinner) findViewById(R.id.profile_combo))
+						.getSelectedItem().toString();
+				deleteProfile(profileName);
+				loadProfiles();
+			}
+		});
 		buttonSaveProfile.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
@@ -336,13 +327,15 @@ public class Main extends Activity {
 				combo.setAdapter(spinnerArrayAdapter);
 				combo.setSelection(0);
 
-				Button buttonReset = (Button) findViewById(R.id.button_reset);
+				Button buttonSaveAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
 				Button buttonSearch = (Button) findViewById(R.id.button_send);
-				Button buttonbuttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
+				Button buttonDeleteProfile = (Button) findViewById(R.id.button_delete_profile);
+				Button buttonSaveProfile = (Button) findViewById(R.id.button_save_profile);
 
-				buttonReset.setEnabled(true);
+				buttonSaveAsFilterWatcher.setEnabled(true);
 				buttonSearch.setEnabled(true);
-				buttonbuttonSetAsFilterWatcher.setEnabled(true);
+				buttonDeleteProfile.setEnabled(true);
+				buttonSaveProfile.setEnabled(true);
 			} else {
 				// Only this task will show the toast in order to prevent a
 				// message repeated.
@@ -544,36 +537,6 @@ public class Main extends Activity {
 					Toast.LENGTH_SHORT);
 			toast.show();
 		}
-	}
-
-	/**
-	 * Resets the filter form.
-	 * 
-	 */
-	private void reset_form() {
-		Spinner combo = (Spinner) findViewById(R.id.group_combo);
-		combo.setSelection(0);
-		combo = (Spinner) findViewById(R.id.status_combo);
-		combo.setSelection(3);
-		if (version402) {
-			((EditText) findViewById(R.id.tag_text)).setText("");
-		} else {
-			combo = (Spinner) findViewById(R.id.tag);
-			combo.setSelection(0);
-		}
-
-		EditText text = (EditText) findViewById(R.id.agent_name);
-		text.setText("");
-
-		combo = (Spinner) findViewById(R.id.severity_combo);
-		combo.setSelection(0);
-
-		combo = (Spinner) findViewById(R.id.max_time_old_event_combo);
-		combo.setSelection(6);
-
-		text = (EditText) findViewById(R.id.event_search_text);
-		text.setText("");
-
 	}
 
 	/**

@@ -184,29 +184,38 @@
 
                 <TableRow>
 
-                    <TextView android:text="@string/vibration" />
+                    <TextView
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/vibration" />
 
                     <CheckBox
                         android:id="@+id/vibration_on"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" />
+
                 </TableRow>
 
                 <TableRow>
 
-                    <TextView android:text="@string/led_flash" />
+                    <TextView
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/led_flash" />
 
                     <CheckBox
                         android:id="@+id/led_flash_on"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:layout_marginRight="63dp" />
+
                 </TableRow>
 
                 <TableRow>
 
                     <TextView
                         android:id="@+id/textView1"
+                        android:layout_gravity="center_vertical"
                         android:text="@string/sound" />
 
                     <Button

@@ -38,24 +38,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:paddingRight="5dip"
                     android:text="@string/profile_label_str"
                     android:textStyle="bold" />
 
                 <Spinner
                     android:id="@+id/profile_combo"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp" />
-
-                <ImageView
-                    android:id="@+id/delete_profile"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginRight="10dp"
-                    android:contentDescription="@string/profile_delete"
-                    android:src="@drawable/cross" />
+                    android:layout_height="wrap_content" />
             </TableRow>
 
             <LinearLayout
@@ -248,10 +237,10 @@
                 android:layout_height="wrap_content" >
 
                 <Button
-                    android:id="@+id/button_reset"
+                    android:id="@+id/button_set_as_filter_watcher"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/reset_button_str" />
+                    android:text="@string/set_as_filter_watcher_button_str" />
 
                 <Button
                     android:id="@+id/button_send"
@@ -273,11 +262,11 @@
                     android:text="@string/save_profile_button_str" />
 
                 <Button
-                    android:id="@+id/button_set_as_filter_watcher"
+                    android:id="@+id/button_delete_profile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/set_as_filter_watcher_button_str" />
+                    android:text="@string/profile_delete" />
             </TableRow>
         </TableLayout>
     </LinearLayout>

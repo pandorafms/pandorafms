@@ -1,3 +1,7 @@
+2012-08-01  Sergio Martin <sergio.martin@artica.es>
+
+	* pandora_agent: Add the macros support in module_exec
+
 2012-06-27  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* pandora_agent.redhat.spec: Merged from 4.0 branch. Don't create

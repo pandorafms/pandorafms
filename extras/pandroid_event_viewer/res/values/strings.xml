@@ -44,7 +44,7 @@
     <string name="load_more_events_button_str">Load more events</string>
     <string name="empty_label_str">Empty list events</string>
     <string name="refresh_time_label_str">Refresh time</string>
-    <string name="set_as_filter_watcher_button_str">Default</string>
+    <string name="set_as_filter_watcher_button_str">Set background check filter</string>
     <string name="validate_event_button_str">Validate Event</string>
     <string name="config_update_succesful_str">Update configuration successful.</string>
     <string name="config_update_fail_str">Update configuration is failed.</string>

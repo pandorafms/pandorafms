@@ -3243,16 +3243,16 @@ function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data
  * 
  *  api.php?op=get&op2=module_from_conf&user=admin&pass=pandora&id=9043&id2=example_name
  * 
- * @return string 0 when success, -1 when error
+ * @return string Module data when success, empty when error
  */
 function api_get_module_from_conf($id_agent, $module_name, $thrash2, $thrash3) {	
 	$result = enterprise_hook('config_agents_get_module_from_conf', array($id_agent, io_safe_output($module_name)));
 		
 	if($result !== ENTERPRISE_NOT_HOOK) {
-		returnData('string', array('type' => 'string', 'data' => '0'));		
+		returnData('string', array('type' => 'string', 'data' => $result));		
 	}
 	else {
-		returnError('error_adding_module_conf', '-1');
+		returnError('error_adding_module_conf', '');
 	}
 }
 

@@ -1,5 +1,10 @@
 2012-08-02  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_api.php: Fixed broken return of
+	the get module from conf function
+
+2012-08-02  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_api.php: Change the return of the
 	functions recently added to numeric values to be 
 	easily checkable

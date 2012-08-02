@@ -3206,7 +3206,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
  * 
  *  api.php?op=set&op2=add_module_in_conf&user=admin&pass=pandora&id=9043&id2=example_name&other=bW9kdWxlX2JlZ2luCm1vZHVsZV9uYW1lIGV4YW1wbGVfbmFtZQptb2R1bGVfdHlwZSBnZW5lcmljX2RhdGEKbW9kdWxlX2V4ZWMgZWNobyAxOwptb2R1bGVfZW5k
  * 
- * @return string 0 when success, -1 when error
+ * @return string 0 when success, -1 when error, -2 if already exist
  */
 function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data, $thrash3) {
 	$new_configuration_data = base64_decode($configuration_data['data']);
@@ -3216,7 +3216,7 @@ function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data
 	
 	// If exists a module with same name, abort
 	if(!empty($old_configuration_data)) {
-		echo "Already exist";
+		returnError('error_adding_module_conf', '-2');
 		exit;
 	}
 	
@@ -3295,7 +3295,7 @@ function api_set_delete_module_in_conf($id_agent, $module_name, $thrash2, $thras
  * 
  *  api.php?op=set&op2=update_module_in_conf&user=admin&pass=pandora&id=9043&id2=example_name&other=bW9kdWxlX2JlZ2luCm1vZHVsZV9uYW1lIGV4YW1wbGVfbmFtZQptb2R1bGVfdHlwZSBnZW5lcmljX2RhdGEKbW9kdWxlX2V4ZWMgZWNobyAxOwptb2R1bGVfZW5k
  * 
- * @return string success or error message
+ * @return string 0 when success, 1 when no changes, -1 when error, -2 if doesnt exist
  */
 function api_set_update_module_in_conf($id_agent, $module_name, $configuration_data_serialized, $thrash3) {
 	$new_configuration_data = base64_decode($configuration_data_serialized['data']);
@@ -3305,23 +3305,23 @@ function api_set_update_module_in_conf($id_agent, $module_name, $configuration_d
 	
 	// If not exists
 	if(empty($old_configuration_data)) {
-		echo "Module doesnt exist";
+		returnError('error_editing_module_conf', '-2');
 		exit;
 	}
 	
 	// If current configuration and new configuration are equal, abort
 	if($new_configuration_data == $old_configuration_data) {
-		echo "No change";
+		returnData('string', array('type' => 'string', 'data' => '1'));		
 		exit;
 	}
 		
 	$result = enterprise_hook('config_agents_update_module_in_conf', array($id_agent, $old_configuration_data, $new_configuration_data));
 		
 	if($result && $result !== ENTERPRISE_NOT_HOOK) {
-		returnData('string', array('type' => 'string', 'data' => 'Successfully updated module in conf.'));		
+		returnData('string', array('type' => 'string', 'data' => '0'));		
 	}
 	else {
-		returnError('error_editing_module_conf', 'Error editing module in conf file.');
+		returnError('error_editing_module_conf', '-1');
 	}
 }
 

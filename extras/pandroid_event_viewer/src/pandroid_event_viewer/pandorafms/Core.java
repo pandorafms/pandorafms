@@ -77,7 +77,7 @@ import android.widget.Toast;
  */
 public class Core {
 	private static String TAG = "Core";
-	private static int CONNECTION_TIMEOUT = 10000;
+	private static int CONNECTION_TIMEOUT = 5000;
 	private static Map<String, Bitmap> imgCache = new HashMap<String, Bitmap>();
 	// Don't use this variable, just call getSocketFactory
 	private static SSLSocketFactory sslSocketFactory;

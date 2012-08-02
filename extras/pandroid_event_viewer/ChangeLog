@@ -1,3 +1,7 @@
+2012-08-02 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Core.java: Changed timeout from 10 to 5 seconds.
+	* res/layout/item_list_event_layout.xml: Increased drawablePadding of timestamp textview.
+
 2012-08-01 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Main.java: Changed some buttons.
 	* res/layout/options.xml,

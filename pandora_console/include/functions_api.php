@@ -3206,7 +3206,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
  * 
  *  api.php?op=set&op2=add_module_in_conf&user=admin&pass=pandora&id=9043&id2=example_name&other=bW9kdWxlX2JlZ2luCm1vZHVsZV9uYW1lIGV4YW1wbGVfbmFtZQptb2R1bGVfdHlwZSBnZW5lcmljX2RhdGEKbW9kdWxlX2V4ZWMgZWNobyAxOwptb2R1bGVfZW5k
  * 
- * @return string success or error message
+ * @return string 0 when success, -1 when error
  */
 function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data, $thrash3) {
 	$new_configuration_data = base64_decode($configuration_data['data']);
@@ -3223,10 +3223,10 @@ function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data
 	$result = enterprise_hook('config_agents_add_module_in_conf', array($id_agent, $new_configuration_data));
 		
 	if($result && $result !== ENTERPRISE_NOT_HOOK) {
-		returnData('string', array('type' => 'string', 'data' => 'Successfully added module to conf.'));		
+		returnData('string', array('type' => 'string', 'data' => '0'));		
 	}
 	else {
-		returnError('error_adding_module_conf', 'Error adding module to conf file.');
+		returnError('error_adding_module_conf', '-1');
 	}
 }
 
@@ -3243,16 +3243,16 @@ function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data
  * 
  *  api.php?op=get&op2=module_from_conf&user=admin&pass=pandora&id=9043&id2=example_name
  * 
- * @return string success or error message
+ * @return string 0 when success, -1 when error
  */
 function api_get_module_from_conf($id_agent, $module_name, $thrash2, $thrash3) {	
 	$result = enterprise_hook('config_agents_get_module_from_conf', array($id_agent, io_safe_output($module_name)));
 		
 	if($result !== ENTERPRISE_NOT_HOOK) {
-		returnData('string', array('type' => 'string', 'data' => $result));		
+		returnData('string', array('type' => 'string', 'data' => '0'));		
 	}
 	else {
-		returnError('error_adding_module_conf', 'Error getting module from conf file.');
+		returnError('error_adding_module_conf', '-1');
 	}
 }
 
@@ -3268,7 +3268,7 @@ function api_get_module_from_conf($id_agent, $module_name, $thrash2, $thrash3) {
  * 
  *  api.php?op=set&op2=delete_module_in_conf&user=admin&pass=pandora&id=9043&id2=example_name
  * 
- * @return string success or error message
+ * @return string 0 when success, -1 when error
  */
 function api_set_delete_module_in_conf($id_agent, $module_name, $thrash2, $thrash3) {
 	$result = config_agents_delete_module_in_conf($id_agent, $module_name);
@@ -3276,10 +3276,10 @@ function api_set_delete_module_in_conf($id_agent, $module_name, $thrash2, $thras
 	$result = enterprise_hook('config_agents_delete_module_in_conf', array($id_agent, $module_name));
 		
 	if($result && $result !== ENTERPRISE_NOT_HOOK) {
-		returnData('string', array('type' => 'string', 'data' => 'Successfully deleted module from conf.'));		
+		returnData('string', array('type' => 'string', 'data' => '0'));		
 	}
 	else {
-		returnError('error_deleting_module_conf', 'Error deleting module from conf file.');
+		returnError('error_deleting_module_conf', '-1');
 	}
 }
 

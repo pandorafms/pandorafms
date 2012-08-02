@@ -58,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:drawablePadding="5dp"
+                android:drawablePadding="10dp"
                 android:textColor="#000"
                 android:textColorHighlight="#000"
                 android:textSize="10sp" />

@@ -239,7 +239,7 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 	    
 			// Retrieve the event description
 			getEventDescription (pevlr, description);
-			if (description == "") {
+			if (description[0] == '\0') {
 				strcpy (description, "N/A");
 			}
 
@@ -401,7 +401,7 @@ Pandora_Module_Logevent::filterEvent (PEVENTLOGRECORD pevlr, string description)
     LPCSTR source_name;
 
     // Event ID filter
-    if (this->id > 0 && this->id != pevlr->EventID) {
+    if (this->id > 0 && this->id != (pevlr->EventID & 0x3FFFFFFF)) {
         return -1;
     }
 

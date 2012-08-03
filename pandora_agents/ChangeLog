@@ -1,3 +1,15 @@
+2012-08-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/modules/pandora_module_logevent.cc: Merged from trunk. Get the
+	  EventID from the InstanceID. Seems like Microsoft replaced Eventid
+	  with InstanceID at some point
+
+	* unix/tentacle_client,
+	  shellscript/linux/tentacle_client,
+	  shellscript/mac_osx/tentacle_client: Merged from trunk. Specify the
+	  socket type. On some OSs (like certain versions of Solaris) it can't
+	  be guessed and results in an error.
+
 2012-06-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/bin/pandora_agent.conf,

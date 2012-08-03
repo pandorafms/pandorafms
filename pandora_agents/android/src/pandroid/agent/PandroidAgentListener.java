@@ -53,7 +53,6 @@ import android.os.SystemClock;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
-
 import android.util.Log;
 
 public class PandroidAgentListener extends Service {
@@ -191,6 +190,8 @@ public class PandroidAgentListener extends Service {
 		String receiveBytes = getSharedData("PANDROID_DATA", "receiveBytes", ""+Core.defaultReceiveBytes, "long");
 		String transmitBytes = getSharedData("PANDROID_DATA", "transmitBytes", ""+Core.defaultTransmitBytes, "long");
 		String helloSignal = getSharedData("PANDROID_DATA", "helloSignal", ""+Core.defaultHelloSignal, "integer");
+		String roaming = getSharedData("PANDROID_DATA", "roaming", ""+Core.defaultRoaming, "integer");
+		
 		String SimIDReport = getSharedData("PANDROID_DATA", "SimIDReport", Core.defaultSimIDReport, "string");
 		String DeviceUpTimeReport = getSharedData("PANDROID_DATA", "DeviceUpTimeReport", Core.defaultDeviceUpTimeReport, "string");
 		String NetworkOperatorReport = getSharedData("PANDROID_DATA", "NetworkOperatorReport", Core.defaultNetworkOperatorReport, "string");
@@ -206,6 +207,7 @@ public class PandroidAgentListener extends Service {
 		String BytesSentReport = getSharedData("PANDROID_DATA", "BytesSentReport", Core.defaultBytesSentReport, "string");
 		String HelloSignalReport = getSharedData("PANDROID_DATA", "HelloSignalReport", Core.defaultHelloSignalReport, "string");
 		String BatteryLevelReport = getSharedData("PANDROID_DATA", "BatteryLevelReport", Core.defaultBatteryLevelReport, "string");
+		String RoamingReport = getSharedData("PANDROID_DATA", "RoamingReport", Core.defaultRoamingReport, "string");
 		
 		if (BatteryLevelReport.equals("enabled")) 
 			buffer += buildmoduleXML("battery_level", "The current Battery level", "generic_data", batteryLevel);	
@@ -267,6 +269,8 @@ public class PandroidAgentListener extends Service {
 				buffer += buildmoduleXML("receiveBytes","Bytes received(mobile)", "generic_data", receiveBytes);
 			if (BytesSentReport.equals("enabled"))
 				buffer += buildmoduleXML("transmitBytes","Bytes transmitted(mobile)", "generic_data", transmitBytes);
+			if (RoamingReport.equals("enabled"))
+				buffer += buildmoduleXML("roaming","Device is roaming", "generic_data", roaming);
 		}// end if sim card
 		if (HelloSignalReport.equals("enabled"))
 			buffer += buildmoduleXML("helloSignal","Hello Signal", "generic_data", helloSignal);
@@ -472,6 +476,7 @@ public class PandroidAgentListener extends Service {
         	getSignalStrength();
         	getCalls();
         	getDataBytes();
+        	getRoaming();
         }
 	}
 	
@@ -786,6 +791,18 @@ public class PandroidAgentListener extends Service {
 			putSharedData("PANDROID_DATA", "transmitBytes", ""+transmitBytes, "long" );
 		}
 			
+	}
+	
+	public void getRoaming()
+	{
+		TelephonyManager telephone 	= 	(TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		boolean roaming = telephone.isNetworkRoaming();
+		
+		if(roaming)
+			putSharedData("PANDROID_DATA", "roaming", "1", "integer" );
+		else
+			putSharedData("PANDROID_DATA", "roaming", "0", "integer" );
+				
 	}
 	
 	

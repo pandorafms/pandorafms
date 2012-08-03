@@ -25,24 +25,27 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.text.TextUtils;
-import android.util.Log;
 
 public class Setup extends Activity {
 	
@@ -60,28 +63,47 @@ public class Setup extends Activity {
         listProcesses = new HashMap<String, String>();
         
         Core.loadConf(getApplicationContext());
-		
-        if(Core.hasSim)
-        	setContentView(R.layout.setup);
-        else
-        	setContentView(R.layout.setupnosim);
-        loadViews();
-		loadInBackgroundProcessInExecution();
-		setButtonEvents();
+        
         
     }
     
     public void onResume() {
         super.onResume();
-        Log.v(LOG_TAG,"password check resume"+Core.passwordCheck);
+        
+        if(Core.hasSim)
+        	setContentView(R.layout.setup);
+        else
+        	setContentView(R.layout.setupnosim);
+        
+     	
+        loadViews();
+        
+		loadInBackgroundProcessInExecution();
+		
+		setButtonEvents();
+       
         if(Core.password.equals(Core.defaultPassword))
         {
         	if(Core.passwordCheck.equals("enabled"))
         		passwordChoose();
-        }
-        else{
+        	
+        }else{
+        	
+        	LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+        	View view=inflater.inflate(R.layout.setup, null);
+        	RelativeLayout setup = (RelativeLayout)view.findViewById(R.id.setup);
+        	setContentView(setup);
+        	setup.setVisibility(RelativeLayout.INVISIBLE);
+        	
         	enterpass();
+        	
+        	
+            
         }
+        
+        
+        
+        
     }
     
     //For options
@@ -142,6 +164,20 @@ public class Setup extends Activity {
         	public void onClick(View view) {
         		
         		createPass();
+        		
+        	}
+        	
+        	
+        });
+        
+        Button webButton = (Button) findViewById(R.id.goToWebButton);
+        
+        webButton.setOnClickListener(new OnClickListener() {
+        	public void onClick(View view) {
+        		
+        		 Uri uri = Uri.parse(Core.webName);
+        		 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        		 startActivity(intent);
         		
         	}
         	
@@ -239,6 +275,9 @@ public class Setup extends Activity {
 		    button = (Button)findViewById(R.id.set_password);
 		    button.setEnabled(true);
 		    
+		    button = (Button)findViewById(R.id.goToWebButton);
+		    button.setEnabled(true);
+		    
 		}
        	
     }// end onPostExecute
@@ -262,6 +301,9 @@ public class Setup extends Activity {
         
 		editText = (EditText) findViewById(R.id.agentNameInput);
 		Core.agentName = editText.getText().toString();
+		
+		editText = (EditText) findViewById(R.id.webNameInput);
+		Core.webName = editText.getText().toString();
         
         checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
         if (checkBox.isChecked())
@@ -379,6 +421,12 @@ public class Setup extends Activity {
         		Core.BytesSentReport = "enabled";
         	else
         		Core.BytesSentReport = "disabled";
+        	
+        	checkBox = (CheckBox) findViewById(R.id.checkRoamingReport);
+        	if (checkBox.isChecked())
+        		Core.RoamingReport = "enabled";
+        	else
+        		Core.RoamingReport = "disabled";
         }// end if sim card
         
         checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
@@ -406,6 +454,9 @@ public class Setup extends Activity {
         
 		editText = (EditText) findViewById(R.id.agentNameInput);
 		editText.setText(Core.agentName);
+		
+		editText = (EditText) findViewById(R.id.webNameInput);
+		editText.setText(Core.webName);
         
         checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
         checkBox.setChecked(Core.gpsStatus.equals("enabled"));
@@ -459,6 +510,9 @@ public class Setup extends Activity {
         
         	checkBox = (CheckBox) findViewById(R.id.checkBytesSentReport);
         	checkBox.setChecked(Core.BytesSentReport.equals("enabled"));
+        	
+        	checkBox = (CheckBox) findViewById(R.id.checkRoamingReport);
+        	checkBox.setChecked(Core.RoamingReport.equals("enabled"));
         }//end if sim card
         
         checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
@@ -617,11 +671,12 @@ public class Setup extends Activity {
 	
 	public void enterpass() {
 		//set up dialog
-		final Dialog dialog = new Dialog(this);
+		final Dialog dialog = new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
 		dialog.setContentView(R.layout.password_entry);
 		dialog.setTitle(getString(R.string.password_enter));
 		dialog.setCancelable(false);
 		dialog.getWindow().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		dialog.getWindow().setFlags(LayoutParams.FLAG_FULLSCREEN, LayoutParams.FLAG_FULLSCREEN);
 		//there are a lot of settings, for dialog, check them all out!
 
 		//set up text
@@ -645,6 +700,29 @@ public class Setup extends Activity {
 		        	InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
                     im.hideSoftInputFromWindow(text.getWindowToken(), 0);
 		        	dialog.dismiss();
+		        	
+		            if(Core.hasSim){
+		            	LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+		            	View view=inflater.inflate(R.layout.setup, null);
+		            	RelativeLayout setup = (RelativeLayout)view.findViewById(R.id.setup);
+		            	setContentView(setup);
+		            	loadViews();
+			    		loadInBackgroundProcessInExecution();
+			    		setButtonEvents();
+			        	setup.setVisibility(RelativeLayout.VISIBLE);
+		            }
+		            else{
+		            	LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+		            	View view=inflater.inflate(R.layout.setupnosim, null);
+		            	RelativeLayout setupnosim = (RelativeLayout)view.findViewById(R.id.setupnosim);
+		            	setContentView(setupnosim);
+		            	loadViews();
+			    		loadInBackgroundProcessInExecution();
+			    		setButtonEvents();
+			        	setupnosim.setVisibility(RelativeLayout.VISIBLE);
+		            }
+		            	
+		            
 		        }
 		        else
 		        {
@@ -676,7 +754,7 @@ public class Setup extends Activity {
 		});
 		   
 		dialog.show();
-	
+		
 	}// end enterPass
 	
 	/**

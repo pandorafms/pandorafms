@@ -17,7 +17,8 @@ package pandroid.agent;
 import java.util.Date;
 
 import android.app.Activity;
-import android.content.*;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,7 +29,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 //import android.util.Log;
 
@@ -71,7 +71,7 @@ public class Status  extends Activity {
         		h.postDelayed(this, 1000);
         	}
         });
-    	//set to 1 for first contact
+    	
     }
     
     //For options
@@ -345,6 +345,10 @@ public class Status  extends Activity {
 			textView = (TextView)findViewById(R.id.transmit_bytes_value);
 			textView.setText("");
 			textView.setText("" + Core.transmitBytes);
+			
+			textView = (TextView)findViewById(R.id.roaming_value);
+			textView.setText("");
+			textView.setText("" + Core.roaming);
 		
 		}//end simID if
 		

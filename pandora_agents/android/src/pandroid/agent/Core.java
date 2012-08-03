@@ -46,6 +46,7 @@ public class Core {
     static volatile public String defaultServerPort = "41121";
     static volatile public int defaultInterval = 300;
     static volatile public String defaultAgentName = "pandroid";
+    static volatile public String defaultWebName = "firefly.artica.es/pandora_console/mobile";
     static volatile public String defaultGpsStatus = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultBatteryLevelReport = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultMemoryStatus = "enabled"; // "disabled" or "enabled"
@@ -65,6 +66,7 @@ public class Core {
     static volatile public String defaultBytesReceivedReport = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultBytesSentReport = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultHelloSignalReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultRoamingReport = "enabled"; // "disabled" or "enabled"
     
     static volatile public boolean defaultHasSim = false;
     
@@ -92,7 +94,7 @@ public class Core {
     static volatile public long defaultReceiveBytes = 0;
     static volatile public long defaultTransmitBytes = 0;
     static volatile public int defaultHelloSignal = 2;
-    
+    static volatile public int defaultRoaming = 0;
     
     //Temporary
     static volatile public String defaultPassword = "";
@@ -110,7 +112,8 @@ public class Core {
     static volatile public String serverAddr = defaultServerAddr;
     static volatile public String serverPort  = defaultServerPort;
     static volatile public int interval = defaultInterval;
-    static volatile public String agentName = defaultAgentName;
+    static volatile public String agentName = defaultWebName;
+    static volatile public String webName = defaultAgentName;
     static volatile public String gpsStatus = defaultGpsStatus;
     static volatile public String memoryStatus = defaultMemoryStatus;
     static volatile public String taskStatus = defaultTaskStatus;
@@ -132,6 +135,8 @@ public class Core {
     static volatile public String BytesSentReport = defaultBytesSentReport;
     static volatile public String HelloSignalReport = defaultHelloSignalReport;
     static volatile public String BatteryLevelReport = defaultHelloSignalReport;
+    static volatile public String RoamingReport = defaultRoamingReport;
+    
     static volatile public boolean hasSim = defaultHasSim;
     
     //temporary
@@ -163,6 +168,7 @@ public class Core {
     static volatile public long receiveBytes = defaultReceiveBytes;
     static volatile public long transmitBytes = defaultTransmitBytes;
     static volatile public int helloSignal = defaultHelloSignal;
+    static volatile public int roaming = defaultRoaming;
     
     static volatile public long lastContact = CONST_INVALID_CONTACT;
     static volatile public int contactError = CONST_CONTACT_ERROR;
@@ -244,7 +250,7 @@ public class Core {
 		receiveBytes = agentPreferences.getLong("receiveBytes", defaultReceiveBytes);
 		transmitBytes = agentPreferences.getLong("transmitBytes", defaultTransmitBytes);
 		helloSignal = agentPreferences.getInt("helloSignal", defaultHelloSignal);
-		
+		roaming = agentPreferences.getInt("roaming", defaultRoaming);
 		
     }// end loadLastValues
     
@@ -262,6 +268,7 @@ public class Core {
 		interval = agentPreferences.getInt("interval", defaultInterval);
 		//fix agent name to mark
 		agentName = agentPreferences.getString("agentName", defaultAgentName+"_"+Installation.id(context));
+		webName = agentPreferences.getString("webName", defaultWebName);
 		gpsStatus = agentPreferences.getString("gpsStatus", defaultGpsStatus);
 		memoryStatus = agentPreferences.getString("memoryStatus", defaultMemoryStatus);
 		taskStatus = agentPreferences.getString("taskStatus", defaultTaskStatus);
@@ -285,7 +292,7 @@ public class Core {
 	    BytesSentReport = agentPreferences.getString("BytesSentReport", defaultBytesSentReport);
 	    HelloSignalReport = agentPreferences.getString("HelloSignalReport", defaultHelloSignalReport);
 	    BatteryLevelReport = agentPreferences.getString("BatteryLevelReport", defaultBatteryLevelReport);
-	    
+	    RoamingReport = agentPreferences.getString("RoamingReport", defaultRoamingReport);
 	    
     }// end loadConf
     
@@ -296,7 +303,8 @@ public class Core {
     		incomingCalls, missedCalls, outgoingCalls, receiveBytes, transmitBytes, password, helloSignal,
     		passwordCheck, DeviceUpTimeReport, NetworkOperatorReport, NetworkTypeReport, PhoneTypeReport,
     		SignalStrengthReport, ReceivedSMSReport, SentSMSReport, IncomingCallsReport, MissedCallsReport,
-    		OutgoingCallsReport, BytesReceivedReport, BytesSentReport, HelloSignalReport, BatteryLevelReport
+    		OutgoingCallsReport, BytesReceivedReport, BytesSentReport, HelloSignalReport, BatteryLevelReport,
+    		RoamingReport, roaming, webName
     		);
     }
     
@@ -309,7 +317,7 @@ public class Core {
     	String _password, int _helloSignal, String _passwordCheck, String _DeviceUpTimeReport, String _NetworkOperatorReport,
     	String _NetworkTypeReport, String _PhoneTypeReport, String _SignalStrengthReport, String _ReceivedSMSReport,
     	String _SentSMSReport, String _IncomingCallsReport, String _MissedCallsReport, String _OutgoingCallsReport, String _BytesReceivedReport,
-    	String _BytesSentReport, String _HelloSignalReport, String _BatteryLevelReport) {
+    	String _BytesSentReport, String _HelloSignalReport, String _BatteryLevelReport, String _RoamingReport, int _roaming, String _webName) {
     	
     	if (con == null) {
     		con = context;
@@ -346,6 +354,7 @@ public class Core {
 		editor.putString("password", _password);
 		editor.putString("passwordCheck", _passwordCheck);
 		editor.putInt("helloSignal", _helloSignal);
+		editor.putInt("roaming", _roaming);
 		editor.putString("DeviceUpTimeReport", _DeviceUpTimeReport); 
 		editor.putString("NetworkOperatorReport", _NetworkOperatorReport); 
 		editor.putString("NetworkTypeReport", _NetworkTypeReport); 
@@ -360,6 +369,9 @@ public class Core {
 		editor.putString("BytesSentReport", _BytesSentReport); 
 		editor.putString("HelloSignalReport", _HelloSignalReport); 
 		editor.putString("BatteryLevelReport", _BatteryLevelReport);
+		editor.putString("RoamingReport", _RoamingReport);
+		editor.putString("webName", _webName);
+		
 		if (editor.commit()) {
 			return true;
 		}

@@ -119,6 +119,10 @@
 	<string name="back">back</string>
 	<string name="yes">yes</string>
 	<string name="no">no</string>
+	<string name="roaming_value"/>
+	<string name="roaming">Roaming:</string>
+	<string name="webname">Mobile server url:</string>
+	<string name="go_to_web">View Mobile site</string>
 	
 	<string name="uptimeReport">Report device up time</string>
 	<string name="NetworkOperatorReport">Report network operator</string>
@@ -134,7 +138,7 @@
 	<string name="BytesSentReport">Report amount of sent mobile data</string>
 	<string name="HelloSignalReport">Report Hello Signal</string>
 	<string name="BatteryLevelReport">Report battery level</string>
-	
+	<string name="RoamingReport">Report if roaming</string>
 	
 	
 </resources>

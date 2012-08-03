@@ -104,5 +104,10 @@
 	<string name="password">password</string>
 	<string name="password_length">password must be longer than 6 characters!</string>
 	<string name="password_incorrect">Wrong password!</string>
+	<string name="roaming">Roaming:</string>
+	<string name="roaming_value"/>
+	<string name="RoamingReport">Report if Roaming</string>
+	<string name="webname">Mobile server url:</string>
+	<string name="go_to_web">View Mobile site</string>
 	
 </resources>

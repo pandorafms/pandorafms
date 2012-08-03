@@ -82,7 +82,7 @@
 	<string name="network_type_value"/>
 	<string name="phone_type">Tipo movil:</string>
 	<string name="phone_type_value"/>
-	<string name="signal_strength">Potencia senyal:</string>
+	<string name="signal_strength">Potencia señal:</string>
 	<string name="signal_strength_value"/>
 	<string name="incoming_Calls">Llamadas recibidas:</string>
 	<string name="incoming_Calls_value"/>
@@ -94,20 +94,20 @@
 	<string name="receive_bytes_value"/>
 	<string name="transmit_bytes">Bytes transmitidos:</string>
 	<string name="transmit_bytes_value"/>
-	<string name="alert_dialog_password">Introducir contrasenya</string>
-	<string name="password_no_match">Las contrasenyas son diferentes!</string>
+	<string name="alert_dialog_password">Introducir contraseña</string>
+	<string name="password_no_match">Las contraseñas son diferentes!</string>
 	<string name="password_error">error</string>
-	<string name="password">contrasenya</string>
-	<string name="password_length">La contrasenya debe contener mas de 6 caracteres!</string>
-	<string name="password_incorrect">Contrasenya incorrecta</string>
-	<string name="password_set">Crear contrasenya</string>
-	<string name="password_enter">Introducir contrasenya</string>
-	<string name="password_repeat">Repetir contrasenya</string>
-	<string name="password_choose_text">Quieres poner una contrasenya?</string>
+	<string name="password">contraseña</string>
+	<string name="password_length">La contraseña debe contener mas de 6 caracteres!</string>
+	<string name="password_incorrect">Contraseña incorrecta</string>
+	<string name="password_set">Crear contraseña</string>
+	<string name="password_enter">Introducir contraseña</string>
+	<string name="password_repeat">Repetir contraseña</string>
+	<string name="password_choose_text">Quieres poner una contraseña?</string>
 	<string name="password_checkbox">No vuelkves a preguntar</string>
-	<string name="password_created">Contrasenya creada</string>
-	<string name="password_removed">Sin contrasenya</string>
-	<string name="set_password">Crear/Cambiar contrasenya</string>
+	<string name="password_created">Contraseña creada</string>
+	<string name="password_removed">Sin contraseña</string>
+	<string name="set_password">Crear/Cambiar contraseña</string>
 	<string name="enter">Intro</string>
 	<string name="back">Volver</string>
 	
@@ -119,7 +119,7 @@
 	<string name="NetworkOperatorReport">Reporta operador de red</string>
 	<string name="NetworkTypeReport">Reporta tipo de red</string>
 	<string name="PhoneTypeReport">Reporta tipo de movil</string>
-	<string name="SignalStrengthReport">Reporta potencia de senyal</string>
+	<string name="SignalStrengthReport">Reporta potencia de señal</string>
 	<string name="ReceivedSMSReport">Reporta numero de SMS recibido</string>
 	<string name="SentSMSReport">Reporta numero de SMS enviado</string>
 	<string name="IncomingCallsReport">Reporta numero de llamadas recibidas</string>
@@ -127,6 +127,6 @@
 	<string name="OutgoingCallsReport">Reporta numero de llamadas salientes</string>
 	<string name="BytesReceivedReport">Reporta bytes recibidos</string>
 	<string name="BytesSentReport">Reporta bytes enviados</string>
-	<string name="HelloSignalReport">Reporta senyal de saludo</string>
+	<string name="HelloSignalReport">Reporta señal de saludo</string>
 	
 </resources>

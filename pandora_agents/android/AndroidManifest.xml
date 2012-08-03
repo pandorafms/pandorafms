@@ -66,6 +66,7 @@
 	<uses-permission android:name="android.permission.READ_CONTACTS"/>
 	<uses-permission android:name="android.permission.READ_SMS"/>
 	
+	
 	<uses-feature android:name="android.hardware.sensor.light" />
 	<uses-feature android:name="android.hardware.location" />
 	

@@ -14,271 +14,282 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
 -->
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
->
-	<ScrollView
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-	>
-		<LinearLayout
-			android:orientation="vertical"
-	    	android:layout_width="fill_parent"
-	    	android:layout_height="wrap_content"
-		>
-			<TextView  
-				android:id="@+id/field1"
-			    android:layout_width="fill_parent" 
-			    android:layout_height="wrap_content" 
-			    android:text="@string/serverAddr"
-			    android:paddingTop="5dp"
-		    />
-			<EditText
-				android:id="@+id/serverAddrInput" 
-			    android:layout_width="fill_parent" 
-			    android:layout_height="wrap_content"
-			    android:singleLine="true"
-		    />
-			<TextView  
-				android:id="@+id/field2"
-			    android:layout_width="fill_parent" 
-			    android:layout_height="wrap_content" 
-			    android:text="@string/serverPort"
-			/>
-			<EditText
-				android:id="@+id/serverPortInput" 
-			    android:layout_width="fill_parent" 
-			    android:layout_height="wrap_content"
-			    android:singleLine="true"
-			    android:inputType="number"
-			/>
-			<TextView  
-				android:id="@+id/field3"
-			    android:layout_width="fill_parent" 
-			    android:layout_height="wrap_content" 
-			    android:text="@string/interval"
-			/>
-			<EditText
-				android:id="@+id/intervalInput" 
-			    android:layout_width="fill_parent" 
-			    android:layout_height="wrap_content" 
-			    android:singleLine="true"
-			    android:inputType="number"
-			/>
-			<TextView  
-				android:id="@+id/field4"
-			    android:layout_width="fill_parent" 
-			    android:layout_height="wrap_content" 
-			    android:text="@string/agent"
-			/>
-			<EditText
-				android:id="@+id/agentNameInput" 
-			    android:layout_width="fill_parent" 
-			    android:layout_height="wrap_content"
-			    android:singleLine="true"
-			/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/setup"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" 
+    >
 
-			<CheckBox
-				android:id="@+id/checkGpsReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/gpsReport"
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-			/>
-			<CheckBox
-				android:id="@+id/checkBatteryLevelReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/BatteryLevelReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkTaskReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/taskReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkMemoryReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/memoryReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-			/>
-			<CheckBox
-				android:id="@+id/checkSimIDReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/simIDReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-			/>
-			
-			<CheckBox
-				android:id="@+id/checkDeviceUpTimeReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/uptimeReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkNetworkOperatorReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/NetworkOperatorReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkNetworkTypeReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/NetworkTypeReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkPhoneTypeReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/PhoneTypeReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkSignalStrengthReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/SignalStrengthReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkReceivedSMSReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/ReceivedSMSReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>			
-			<CheckBox
-				android:id="@+id/checkSentSMSReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/SentSMSReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkIncomingCallsReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/IncomingCallsReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkMissedCallsReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/MissedCallsReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkOutgoingCallsReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/OutgoingCallsReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkBytesReceivedReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/BytesReceivedReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkBytesSentReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/BytesSentReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			<CheckBox
-				android:id="@+id/checkHelloSignalReport"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/HelloSignalReport" 
-				android:textSize="14dip"
-				android:textColor="#bbbbbb"
-				
-			/>
-			
-			<TextView  
-				android:id="@+id/field5"
-			    android:layout_width="fill_parent" 
-			    android:layout_height="wrap_content" 
-			    android:text="@string/task"
-			/>
-			<LinearLayout
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-			>
-				<ProgressBar
-					android:id="@+id/loading_task_anim"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-				/>
-				<Spinner
-					android:id="@+id/processes_combo"
-					android:layout_width="fill_parent"
-					android:layout_height="wrap_content"
-					android:visibility="gone"
-				/>
-			</LinearLayout>
-			<Button
-				android:id="@+id/set_password" 
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:text="@string/set_password"
-			/>
-			<Button
-				android:id="@+id/update" 
-			    android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:text="@string/update"
-			/>
-			
-			
-			
-		</LinearLayout>
-    </ScrollView>
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/field1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dp"
+                    android:text="@string/serverAddr" />
+
+                <EditText
+                    android:id="@+id/serverAddrInput"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:id="@+id/field2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/serverPort" />
+
+                <EditText
+                    android:id="@+id/serverPortInput"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:id="@+id/field3"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/interval" />
+
+                <EditText
+                    android:id="@+id/intervalInput"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:id="@+id/field4"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/agent" />
+
+                <EditText
+                    android:id="@+id/agentNameInput"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
+                
+                <TextView
+                    android:id="@+id/field5"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/webname" />
+
+                <EditText
+                    android:id="@+id/webNameInput"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/goToWebButton"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/go_to_web" />
+                
+                <CheckBox
+                    android:id="@+id/checkGpsReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gpsReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkBatteryLevelReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/BatteryLevelReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkTaskReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/taskReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkMemoryReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/memoryReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkSimIDReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/simIDReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkDeviceUpTimeReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/uptimeReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkNetworkOperatorReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/NetworkOperatorReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkNetworkTypeReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/NetworkTypeReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkPhoneTypeReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/PhoneTypeReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkSignalStrengthReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/SignalStrengthReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkReceivedSMSReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ReceivedSMSReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkSentSMSReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/SentSMSReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkIncomingCallsReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/IncomingCallsReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkMissedCallsReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/MissedCallsReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkOutgoingCallsReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/OutgoingCallsReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkBytesReceivedReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/BytesReceivedReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkBytesSentReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/BytesSentReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <CheckBox
+                    android:id="@+id/checkHelloSignalReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/HelloSignalReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+                
+                <CheckBox
+                    android:id="@+id/checkRoamingReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/RoamingReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+
+                <TextView
+                    android:id="@+id/field5"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/task" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <ProgressBar
+                        android:id="@+id/loading_task_anim"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <Spinner
+                        android:id="@+id/processes_combo"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/set_password"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/set_password" />
+
+                <Button
+                    android:id="@+id/update"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/update" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -468,6 +468,28 @@
 		        		android:layout_height="wrap_content" 
 		        	/>
 		        </TableRow>
+		        
+		        <TableRow
+		            android:id="@+id/tableRow13"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content" 
+		        >
+		    		<TextView
+		      	  		android:id="@+id/roaming"
+		       	 		android:layout_width="wrap_content"
+		       	 		android:layout_height="wrap_content"
+		       	 		android:text="@string/roaming"
+		       	 		android:textSize="14dip"
+		       	 		android:textStyle="bold" 
+		       	 	/>
+
+		    		<TextView
+		        		android:id="@+id/roaming_value"
+		        		android:layout_width="wrap_content"
+		        		android:layout_height="wrap_content" 
+		        	/>
+		            
+		        </TableRow>
 		    </TableLayout>
 
 	

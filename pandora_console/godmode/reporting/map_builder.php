@@ -158,24 +158,24 @@ else
 
 if (!$maps) {
 	echo '<div class="nf">'.('No maps defined').'</div>';
-} else {
-	foreach ($maps as $map) {			
+}
+else {
+	foreach ($maps as $map) {
 		
 		$data = array ();
-				
+		
 		$data[0] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.
-					$map['id'].'&amp;refr=' . $refr . '">'.$map['name'].'</a>';
+			$map['id'].'&amp;refr=' . $refr . '">'.$map['name'].'</a>';
 		
 		$data[1] = ui_print_group_icon ($map['id_group'], true);
 		$data[2] = db_get_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
-			
-		if (check_acl ($config['id_user'], 0, "IW")) {
 		
+		if (check_acl ($config['id_user'], 0, "IW")) {
+			
 			$data[3] = '<a href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
 			$data[4] = '<a href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
 		}
 		array_push ($table->data, $data);
-		
 	}
 	html_print_table ($table);
 }

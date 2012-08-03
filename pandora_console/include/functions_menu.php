@@ -59,7 +59,8 @@ function menu_print_menu (&$menu) {
 		
 		if (! isset ($main['id'])) {
 			$id = 'menu_'.++$idcounter;
-		} else {
+		}
+		else {
 			$id = $main['id'];
 		}
 		
@@ -74,7 +75,8 @@ function menu_print_menu (&$menu) {
 		
 		if (($sec == $mainsec) && ($showSubsection)) {
 			$classes[] = 'selected';
-		} else {
+		}
+		else {
 			$classes[] = 'not_selected';
 			if ($extensionInMenuParameter == $mainsec)
 				$classes[] = 'selected';
@@ -135,21 +137,25 @@ function menu_print_menu (&$menu) {
 					foreach ($sub['subsecs'] as $god_path) {
 						
 						if (strpos($sec2, $god_path) !== false) {
-							$selected_submenu2=true;	
+							$selected_submenu2=true;
 							break;
 						}
 					} 
-				} else {
+				}
+				else {
 					//If there is only a string just compare
 					if (strpos($sec2, $sub['subsecs']) !== false) {
-							$selected_submenu2=true;	
+						$selected_submenu2=true;
 					}
 				}
 			}
-
+			
 			//Set class
-			if (($sec2 == $subsec2 || $allsec2 == $subsec2 || $selected_submenu2) && isset ($sub[$subsec2]["options"])
-				&& (get_parameter_get ($sub[$subsec2]["options"]["name"]) == $sub[$subsec2]["options"]["value"])) {
+			if (($sec2 == $subsec2 || $allsec2 == $subsec2 ||
+				$selected_submenu2) && isset ($sub[$subsec2]["options"])
+				&& (
+					get_parameter_get ($sub[$subsec2]["options"]["name"]) == $sub[$subsec2]["options"]["value"])
+				) {
 				//If the subclass is selected and there are options and that options value is true
 				$class .= 'submenu_selected selected';
 				$selected = true;
@@ -158,7 +164,7 @@ function menu_print_menu (&$menu) {
 			elseif (($sec2 == $subsec2 || $allsec2 == $subsec2|| $selected_submenu2) && !isset ($sub[$subsec2]["options"])) {
 				$class .= 'submenu_selected selected';
 				$selected = true;
-
+				
 				$hasExtensions = (array_key_exists('hasExtensions',$main)) ? $main['hasExtensions'] : false;
 				if (($extensionInMenuParameter != '') && ($hasExtensions))
 					$visible = true;
@@ -204,7 +210,7 @@ function menu_print_menu (&$menu) {
 						if (isset($sub['enterprise'])) {
 							$icon_enterprise = (bool)$sub['enterprise'];
 						}
-					
+						
 						if ($icon_enterprise) {
 							$imageIcon ='enterprise/extensions/'.$sub["icon"];
 						}
@@ -224,7 +230,8 @@ function menu_print_menu (&$menu) {
 				
 				
 				$secExtension = null;
-				if (array_key_exists('sec',$sub)) $secExtension = $sub["sec"];
+				if (array_key_exists('sec',$sub))
+					$secExtension = $sub["sec"];
 				if (strlen($secExtension) > 0) {
 					$secUrl = $secExtension;
 					$extensionInMenu = 'extension_in_menu='.$mainsec.'&amp;';
@@ -236,19 +243,20 @@ function menu_print_menu (&$menu) {
 				
 				if (isset ($sub["text"]) || $selected) {
 					$title = ' title="' . $sub["text"] . ' "';
-				} else {
+				}
+				else {
 					$title = '';
 				}
 				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
 				
-				if(isset($sub['sub2'])) {
+				if (isset($sub['sub2'])) {
 					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
 				}
 			
 			}
-		
+			
 			//Print second level submenu
-			if(isset($sub['sub2'])) {
+			if (isset($sub['sub2'])) {
 				
 				//Display if father is selected
 				$display = "style='display:none'";
@@ -278,17 +286,17 @@ function menu_print_menu (&$menu) {
 				$submenu_output .= $submenu2_list;
 				$submenu_output .= "</ul>";
 			}
-	
+			
 			//Submenu close list!
-			$submenu_output .= '</li>';		
+			$submenu_output .= '</li>';
 		}
 		
 		// Choose valid section (sec)
-
+		
 		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $main["sec2"])) == false){
 			continue;
 		} 
-
+		
 		//Print out the first level
 		$output .= '<li class="'.implode (" ", $classes).'" id="icon_'.$id.'">';
 		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a>' . html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
@@ -345,11 +353,11 @@ function menu_get_full_sec() {
 function menu_get_sec($with_categories = false) {
 	$menu = menu_get_full_sec();
 	unset($menu['class']);
-
+	
 	$in_godmode = false;
 	foreach($menu as $k => $v) {
-		if($with_categories) {
-			if(!$in_godmode && $k[0] == 'g') {
+		if ($with_categories) {
+			if (!$in_godmode && $k[0] == 'g') {
 				// Hack to dont confuse with gis activated because godmode 
 				// sec starts with g (like gismaps)
 				if($k != 'gismaps') {
@@ -357,7 +365,7 @@ function menu_get_sec($with_categories = false) {
 				}
 			}
 			
-			if($in_godmode) {
+			if ($in_godmode) {
 				$category = __('Administration');
 			}
 			else {
@@ -371,7 +379,7 @@ function menu_get_sec($with_categories = false) {
 			$sec_array[$k] = $v['text'];
 		}
 	}
-
+	
 	return $sec_array;
 }
 
@@ -387,7 +395,7 @@ function menu_get_sec($with_categories = false) {
  * @return array Sections list
  */
 function menu_get_sec_pages($sec,$menu_hash = false) {
-	if($menu_hash === false) {
+	if ($menu_hash === false) {
 		$menu = menu_get_full_sec();
 	}
 	else {
@@ -396,9 +404,9 @@ function menu_get_sec_pages($sec,$menu_hash = false) {
 	
 	// Get the sec2 of the main section
 	$sec2_array[$menu[$sec]['sec2']] = $menu[$sec]['text'];
-
+	
 	// Get the sec2 of the subsections
-	foreach($menu[$sec]['sub'] as $k => $v) {
+	foreach ($menu[$sec]['sub'] as $k => $v) {
 		// Avoid special cases of standalone windows
 		if(preg_match('/^javascript:/',$k) || preg_match('/\.php/',$k)) {
 			continue;
@@ -410,7 +418,7 @@ function menu_get_sec_pages($sec,$menu_hash = false) {
 		
 		$sec2_array[$k] = $v['text'];
 	}
-
+	
 	return $sec2_array;
 }
 
@@ -424,16 +432,15 @@ function menu_get_sec_pages($sec,$menu_hash = false) {
  */
 function menu_sec2_in_sec($sec,$sec2) {	
 	$sec2_array = menu_get_sec_pages($sec);
-
+	
 	// If this value has various parameters, we only get the first
 	$sec2 = explode('&',$sec2);
 	$sec2 = $sec2[0];
-		
-	if($sec2_array != null && in_array($sec2,array_keys($sec2_array))) {
+	
+	if ($sec2_array != null && in_array($sec2,array_keys($sec2_array))) {
 		return true;
 	}
 	
-	return false;	
+	return false;
 }
-
 ?>

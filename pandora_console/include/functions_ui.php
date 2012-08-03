@@ -1612,7 +1612,8 @@ function ui_print_module_warn_value ($max_warning, $min_warning, $str_warning, $
 	
 	if ($max_warning != $min_warning) {
 		$data .= format_for_graph($max_warning) ."/". format_for_graph ($min_warning);
-	} else {
+	}
+	else {
 		$data .= __("N/A");
 	} 
 	
@@ -1620,7 +1621,8 @@ function ui_print_module_warn_value ($max_warning, $min_warning, $str_warning, $
 	
 	if ($max_critical != $min_critical){
 		$data .= format_for_graph($max_critical) ."/". format_for_graph ($min_critical);
-	} else {
+	}
+	else {
 		$data .= __("N/A");
 	}
 	$data .= "</span>";
@@ -1793,50 +1795,50 @@ function ui_get_include_contents ($filename, $params = false) {
  */
 
 function ui_toggle($code, $name, $title = '', $hidde_default = true) {
-// Generate unique Id
-$uniqid = uniqid('');
-
-// Options
-if($hidde_default) {
-	$style = 'display:none';
-	$toggle_a = "$('#tgl_div_".$uniqid."').show();";
-	$toggle_b = "$('#tgl_div_".$uniqid."').hide();";
-	$image_a = html_print_image("images/go.png", true, false, true);
-	$image_b = html_print_image("images/down.png", true, false, true);
-	$original = "images/down.png";
-}else {
-	$style = '';
-	$toggle_a = "$('#tgl_div_".$uniqid."').hide();";
-	$toggle_b = "$('#tgl_div_".$uniqid."').show();";
-	$image_a = html_print_image("images/down.png", true, false, true);
-	$image_b = html_print_image("images/go.png", true, false, true);
-	$original = "images/go.png";
-}
-
-// Link to toggle
-echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br /><br />';
-
-// Code into a div
-echo "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
-echo $code;
-echo "</div>";
-
-// JQuery Toggle
-
-echo '<script type="text/javascript">';
-echo '/* <![CDATA[ */';
-echo "$(document).ready (function () {";
-
-	echo "$('#tgl_ctrl_".$uniqid."').toggle(function() {";
-		echo $toggle_a;
-		echo "$('#image_".$uniqid."').attr({src: '".$image_a."'});";
-		echo "}, function() {";
-		echo $toggle_b;
-		echo "$('#image_".$uniqid."').attr({src: '".$image_b."'});";
+	// Generate unique Id
+	$uniqid = uniqid('');
+	
+	// Options
+	if ($hidde_default) {
+		$style = 'display:none';
+		$toggle_a = "$('#tgl_div_".$uniqid."').show();";
+		$toggle_b = "$('#tgl_div_".$uniqid."').hide();";
+		$image_a = html_print_image("images/go.png", true, false, true);
+		$image_b = html_print_image("images/down.png", true, false, true);
+		$original = "images/down.png";
+	}
+	else {
+		$style = '';
+		$toggle_a = "$('#tgl_div_".$uniqid."').hide();";
+		$toggle_b = "$('#tgl_div_".$uniqid."').show();";
+		$image_a = html_print_image("images/down.png", true, false, true);
+		$image_b = html_print_image("images/go.png", true, false, true);
+		$original = "images/go.png";
+	}
+	
+	// Link to toggle
+	echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br /><br />';
+	
+	// Code into a div
+	echo "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
+	echo $code;
+	echo "</div>";
+	
+	// JQuery Toggle
+	
+	echo '<script type="text/javascript">';
+	echo '/* <![CDATA[ */';
+	echo "$(document).ready (function () {";
+		echo "$('#tgl_ctrl_".$uniqid."').toggle(function() {";
+			echo $toggle_a;
+			echo "$('#image_".$uniqid."').attr({src: '".$image_a."'});";
+			echo "}, function() {";
+			echo $toggle_b;
+			echo "$('#image_".$uniqid."').attr({src: '".$image_b."'});";
+		echo "});";
 	echo "});";
-echo "});";
-echo '/* ]]> */';
-echo '</script>';
+	echo '/* ]]> */';
+	echo '</script>';
 }
 
 /**

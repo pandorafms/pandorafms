@@ -44,9 +44,10 @@ function config_create_value ($token, $value) {
 function config_update_value ($token, $value) {
 	global $config;
 	
-	if ($token == 'list_ACL_IPs_for_API')
+	if ($token == 'list_ACL_IPs_for_API') {
 		$value = str_replace(array("\r\n", "\r", "\n"), ";", io_safe_output($value));
-
+	}
+	
 	if (!isset ($config[$token])) {
 		$config[$token] = $value;
 		return (bool) config_create_value ($token, $value);
@@ -143,7 +144,7 @@ function config_update_config () {
 				config_update_value ('enable_pass_policy_admin', get_parameter('enable_pass_policy_admin'));
 				config_update_value ('enable_pass_history', get_parameter('enable_pass_history'));
 				config_update_value ('compare_pass', get_parameter('compare_pass'));
-			}			
+			}
 			/////////////
 			break;
 		case 'godmode/setup/setup_auth':
@@ -247,7 +248,7 @@ function config_update_config () {
 			///////////////
 			break;
 	}
-		
+	
 	enterprise_include_once('include/functions_policies.php');
 	$enterprise = enterprise_include_once ('include/functions_skins.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
@@ -391,7 +392,9 @@ function config_process_config () {
 	 */
 	$temp_list_ACL_IPs_for_API = array();
 	if (isset($config['list_ACL_IPs_for_API'])) {
-		$temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
+		if (!empty($config['list_ACL_IPs_for_API'])) {
+			$temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
+		}
 	}
 	$config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
 	$keysConfig = array_keys($config);
@@ -631,8 +634,9 @@ function config_process_config () {
 		config_update_value( 'api_password', '');
 	}
 	
-	if (!isset ($config['relative_path']) && (isset ($_POST['nick']) || isset ($config['id_user'])) && isset($config['enterprise_installed'])) {
-	
+	if (!isset ($config['relative_path']) && (isset ($_POST['nick'])
+		|| isset ($config['id_user'])) && isset($config['enterprise_installed'])) {
+		
 		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			
@@ -712,7 +716,7 @@ function config_check () {
 
 	// Check default password for "admin"
 	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
-	if ($is_admin) {	
+	if ($is_admin) {
 		$hashpass = db_get_sql ("SELECT password FROM tusuario WHERE id_user = 'admin'");
 		if ($hashpass == "1da7ee7d45b96d0e1f45ee4ee23da560"){
 			$config["alert_cnt"]++;
@@ -722,7 +726,7 @@ function config_check () {
 		}
 	}
 	
-	if (!is_writable ("attachment")){
+	if (!is_writable ("attachment")) {
 		$config["alert_cnt"]++;
 		$_SESSION["alert_msg"] .= ui_print_error_message(
 			array('message' => __('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory'),

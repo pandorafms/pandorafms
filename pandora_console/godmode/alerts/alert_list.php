@@ -124,7 +124,7 @@ if ($delete_alert) {
 	$alert_template_name = db_get_value ("name", "talert_templates","id", $id_alert_template);
 	$module_name = db_get_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
 	$agent_name = agents_get_name (db_get_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
-
+	
 	$result = alerts_delete_alert_agent_module ($id_alert_agent_module);
 	
 	if ($result) {
@@ -136,7 +136,8 @@ if ($delete_alert) {
 			"Fail to deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 	}
 	
-	$messageAction = ui_print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);
+	$messageAction = ui_print_result_message ($result,
+		__('Successfully deleted'), __('Could not be deleted'), '', true);
 }
 
 if ($add_action) {
@@ -160,7 +161,8 @@ if ($add_action) {
 		db_pandora_audit("Alert management", 'Fail to add action ' . $id_action . ' in alert ' . $id_alert_module);
 	}
 	
-	$messageAction = ui_print_result_message ($result, __('Successfully added'), __('Could not be added'), '', true);
+	$messageAction = ui_print_result_message ($result,
+		__('Successfully added'), __('Could not be added'), '', true);
 }
 
 if ($delete_action) {
@@ -176,7 +178,8 @@ if ($delete_action) {
 		db_pandora_audit("Alert management", 'Fail to delete action ' . $id_action . ' in alert ' . $id_alert);
 	}
 	
-	$messageAction = ui_print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);
+	$messageAction = ui_print_result_message ($result,
+		__('Successfully deleted'), __('Could not be deleted'), '', true);
 }
 
 if ($enable_alert) {
@@ -191,7 +194,8 @@ if ($enable_alert) {
 		db_pandora_audit("Alert management", 'Fail to enable ' . $id_alert);
 	}
 	
-	$messageAction = ui_print_result_message ($result, __('Successfully enabled'), __('Could not be enabled'), '', true);
+	$messageAction = ui_print_result_message ($result,
+		__('Successfully enabled'), __('Could not be enabled'), '', true);
 }
 
 if ($disable_alert) {
@@ -206,7 +210,8 @@ if ($disable_alert) {
 		db_pandora_audit("Alert management", 'Fail to disable ' . $id_alert);
 	}
 	
-	$messageAction = ui_print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'), '', true);
+	$messageAction = ui_print_result_message ($result,
+		__('Successfully disabled'), __('Could not be disabled'), '', true);
 }
 
 if ($standbyon_alert) {
@@ -221,7 +226,8 @@ if ($standbyon_alert) {
 		db_pandora_audit("Alert management", 'Fail to standby ' . $id_alert);
 	}
 	
-	$messageAction = ui_print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'), '', true);
+	$messageAction = ui_print_result_message ($result,
+		__('Successfully set standby'), __('Could not be set standby'), '', true);
 }
 
 if ($standbyoff_alert) {
@@ -236,7 +242,8 @@ if ($standbyoff_alert) {
 		db_pandora_audit("Alert management", 'Fail to standbyoff ' . $id_alert);
 	}
 	
-	$messageAction = ui_print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'), '', true);
+	$messageAction = ui_print_result_message ($result,
+		__('Successfully set off standby'), __('Could not be set off standby'), '', true);
 }
 
 if ($id_agente) {
@@ -267,15 +274,16 @@ else {
 				html_print_image ("images/config.png", true, array ("title" => __('Builder alert'))) .'</a>'));
 	
 	$buttons[$tab]['active'] = true;
-
+	
 	if ($tab == 'list') {
 		ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
-	} else {
+	}
+	else {
 		ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
 	}
 	
 	echo $messageAction;
-
+	
 	switch ($tab) {
 		case 'list':
 			if ($group == 0) {

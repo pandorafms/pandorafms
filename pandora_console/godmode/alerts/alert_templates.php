@@ -137,7 +137,7 @@ if ($update_template) {
 if ($delete_template) {
 	$id = get_parameter ('id');
 	$al_template = alerts_get_alert_template($id);
-
+	
 	if ($al_template !== false){
 		// If user tries to delete a template with group=ALL then must have "PM" access privileges
 		if ($al_template['id_group'] == 0){
@@ -169,11 +169,13 @@ if ($delete_template) {
 				require ("general/noaccess.php");
 				exit;
 			}
-		}	
-	} else
+		}
+	}
+	else {
 		// Header
 		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
-
+	}
+	
 	$result = alerts_delete_alert_template ($id);
 	
 	if ($result) {
@@ -261,10 +263,10 @@ foreach ($templates as $template) {
 	
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'">'.
 		$template['name'].'</a>';
-
+	
 	$data[1] = ui_print_group_icon ($template["id_group"], true);
 	$data[3] = alerts_get_alert_templates_type_name ($template['type']);
-
+	
 	$data[4] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
 	$data[4] .= html_print_input_hidden ('duplicate_template', 1, true);
 	$data[4] .= html_print_input_hidden ('source_id', $template['id'], true);
@@ -281,9 +283,10 @@ foreach ($templates as $template) {
 }
 
 ui_pagination ($total_templates, $url);
-if (isset($data)){
+if (isset($data)) {
 	html_print_table ($table);
-} else {
+}
+else {
 	echo "<div class='nf'>".__('No alert templates defined')."</div>";
 }
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -292,5 +295,4 @@ html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 html_print_input_hidden ('create_alert', 1);
 echo '</form>';
 echo '</div>';
-
 ?>

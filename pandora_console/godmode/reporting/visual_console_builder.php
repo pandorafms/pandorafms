@@ -210,7 +210,8 @@ switch ($activeTab) {
 						
 					$statusProcessInDB = array('flag' => true, 'message' => $message);						
 					
-				} else {
+				}
+				else {
 					// One item per module
 					if (empty($name_modules)) {
 						$statusProcessInDB = array('flag' => true, 'message' => ui_print_error_message (__('No modules selected'), '', true));
@@ -305,7 +306,7 @@ if ($action == 'new' || $idVisualConsole === false){
 	$action = 'new';
 	$visualConsoleName = "";
 }
-	
+
 $buttons[$activeTab]['active'] = true;
  
 ui_print_page_header(__('Visual console') . " &raquo; " . $visualConsoleName, "images/reporting_edit.png", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);

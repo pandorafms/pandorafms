@@ -62,7 +62,7 @@ if ($al_action !== false){
 			"Trying to access Alert Management");
 			require ("general/noaccess.php");
 			exit;
-		}	
+		}
 	}
 }
 else
@@ -104,7 +104,7 @@ $own_info = get_user_info ($config['id_user']);
 // Only display group "All" if user is administrator or has "PM" privileges
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$display_all_group = true;
-else	
+else
 	$display_all_group = false;
 $table->data[1][1] = html_print_select_groups(false, "LW", $display_all_group, 'group', $group, '', '', 0, true);
 
@@ -142,7 +142,8 @@ if ($id) {
 	html_print_input_hidden ('id', $id);
 	html_print_input_hidden ('update_action', 1);
 	html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('create_action', 1);
 	html_print_submit_button (__('Create'), 'create', false, 'class="sub wand"');
 }
@@ -154,16 +155,22 @@ ui_require_javascript_file ('pandora_alerts');
 
 <script type="text/javascript">
 $(document).ready (function () {
-<?php if ($id_command) : ?>
-	original_command = "<?php $command = alerts_get_alert_command_command ($id_command);
-								$command = io_safe_output($command);
-								echo addslashes($command);
-		?>";
-	render_command_preview ();
-	command_description = "<?php echo str_replace("\r\n","<br>",addslashes(io_safe_output(alerts_get_alert_command_description ($id_command)))); ?>";
-	
-	render_command_description(command_description);
-<?php endif; ?>
+	<?php
+	if ($id_command)
+	{
+	?>
+		original_command = "<?php
+			$command = alerts_get_alert_command_command ($id_command);
+			$command = io_safe_output($command);
+			echo addslashes($command);
+			?>";
+		render_command_preview ();
+		command_description = "<?php echo str_replace("\r\n","<br>",addslashes(io_safe_output(alerts_get_alert_command_description ($id_command)))); ?>";
+		
+		render_command_description(command_description);
+	<?php
+	}
+	?>
 	$("#id_command").change (function () {
 		values = Array ();
 		values.push ({name: "page",

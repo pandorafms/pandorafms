@@ -122,7 +122,8 @@ if ($multiple_delete) {
 	$str_ids = implode (',', $ids);
 	if ($result) {
 		db_pandora_audit("Report management", "Multiple delete graph: $str_ids");
-	} else {
+	}
+	else {
 		db_pandora_audit("Report management", "Fail try to delete graphs: $str_ids");
 	}
 	
@@ -135,7 +136,7 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$return_all_group = true;
 else
 	$return_all_group = false;
-	
+
 $graphs = custom_graphs_get_user ($config['id_user'], false, $return_all_group, "IW");
 
 if (! empty ($graphs)) {

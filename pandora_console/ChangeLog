@@ -1,3 +1,28 @@
+2012-08-02 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* pandoradb_data.sql, pandoradb.data.postgreSQL.sql,
+	pandoradb.data.oracle.sql, include/functions_config.php: fixed the
+	"list_ACL_IPs_for_API" update.
+	
+	* operation/events/events_marquee.php, godmode/setup/setup.php,
+	godmode/reporting/graph_builder.php,
+	godmode/reporting/map_builder.php, godmode/reporting/graphs.php,
+	godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.php,
+	godmode/alerts/configure_alert_compound.php,
+	godmode/alerts/alert_list.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/configure_alert_action.php,
+	godmode/alerts/configure_alert_command.php,
+	godmode/alerts/alert_actions.php,
+	godmode/alerts/alert_list.builder.php,
+	godmode/alerts/configure_alert_special_days.php,
+	include/functions_api.php, include/functions_ui.php,
+	include/functions_netflow.php, include/functions_alerts.php,
+	include/functions_menu.php, include/functions_messages.php: cleaned
+	source code style.
+
 2012-08-02  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_api.php: Improve returns of 

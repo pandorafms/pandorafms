@@ -216,7 +216,7 @@ $(document).ready (function () {
 		
 		return;
 	});
-
+	
 	$("#id_agents").change ( function() {
 		if ($("#hidden-item_per_agent_test").val() == 0) 
 			agent_changed_by_multiple_agents();
@@ -265,7 +265,7 @@ function hidden_rows() {
 }
 
 function item_per_agent_change(itemPerAgent) {
-
+	
 	// Disable Module select
 	if (itemPerAgent == 1) {
 		$('#module').empty();
@@ -276,7 +276,8 @@ function item_per_agent_change(itemPerAgent) {
 		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr('value', 'none'));
 		
 		$('#hidden-item_per_agent_test').val(1);
-	} else {
+	}
+	else {
 		$('#module').removeAttr('disabled');
 		$('#hidden-item_per_agent_test').val(0);
 		$('#label_type').empty();	
@@ -286,6 +287,5 @@ function item_per_agent_change(itemPerAgent) {
 		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr('value', 'none'));
 	
 	}
-	
 }
 </script>

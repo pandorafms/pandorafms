@@ -299,7 +299,8 @@ sub start_client {
 	# Connect to server
 	$t_socket = IO::Socket::INET->new (
 	       	PeerAddr => $t_address,
-			PeerPort => $t_port,
+		PeerPort => $t_port,
+		Type     => SOCK_STREAM
 	);
 
 	if (! defined ($t_socket)) {

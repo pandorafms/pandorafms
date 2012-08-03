@@ -240,7 +240,7 @@ $zone_name = array('Africa' => __('Africa'), 'America' => __('America'), 'Antarc
 $zone_selected = get_parameter('zone');
 if ($zone_selected == "") {
 	if ($config["timezone"] != "") {
-		list($zone) = split("/", $config["timezone"]);
+		list($zone) = explode("/", $config["timezone"]);
 		$zone_selected = $zone;
 	}
 	else {

@@ -87,7 +87,7 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('netflow_interval', '300'),
 ('netflow_daemon', '/usr/bin/nfcapd'),
 ('event_fields', 'evento,id_agente,estado,timestamp'),
-('list_ACL_IPs_for_API_0', '127.0.0.1'),
+('list_ACL_IPs_for_API', '127.0.0.1'),
 ('enable_pass_policy', 0),
 ('pass_size', 4),
 ('pass_needs_numbers', 0),

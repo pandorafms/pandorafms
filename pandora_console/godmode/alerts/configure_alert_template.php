@@ -817,19 +817,24 @@ $(document).ready (function () {
 		if (type == "regex") {
 			if (enabled) {
 				$("span#example").empty ().append (matches);
-			} else {
+			}
+			else {
 				$("span#example").empty ().append (matches_not);
 			}
-		} else if (type == "max_min") {
+		}
+		else if (type == "max_min") {
 			if (enabled) {
 				$("span#example").empty ().append (between);
-			} else {
+			}
+			else {
 				$("span#example").empty ().append (between_not);
 			}
-		} else if (type == "onchange") {
+		}
+		else if (type == "onchange") {
 			if (enabled) {
 				$("span#example").empty ().append (onchange);
-			} else {
+			}
+			else {
 				$("span#example").empty ().append (onchange_not);
 			}
 		} 
@@ -849,7 +854,8 @@ $(document).ready (function () {
 			$("#text-other_threshold").attr ("value", "");
 			$("#template-threshold-other_label").show ();
 			$("#template-threshold-other_input").show ();
-		} else {
+		}
+		else {
 			$("#template-threshold-other_label").hide ();
 			$("#template-threshold-other_input").hide ();
 		}
@@ -858,7 +864,8 @@ $(document).ready (function () {
 	$("#recovery_notify").change (function () {
 		if (this.value == 1) {
 			$("#template-field2, #template-field3").show ();
-		} else {
+		}
+		else {
 			$("#template-field2, #template-field3").hide ();
 		}
 	});

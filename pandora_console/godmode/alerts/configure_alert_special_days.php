@@ -83,7 +83,8 @@ if ($id) {
 	html_print_input_hidden ('id', $id);
 	html_print_input_hidden ('update_special_day', 1);
 	html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('create_special_day', 1);
 	html_print_submit_button (__('Create'), 'create', false, 'class="sub wand"');
 }

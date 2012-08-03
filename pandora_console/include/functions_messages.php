@@ -51,7 +51,8 @@ function messages_create_message ($usuario_origen, $usuario_destino, $subject, $
 	
 	if ($return === false) {
 		return false;
-	} else {
+	}
+	else {
 		return true;
 	}
 }
@@ -204,14 +205,16 @@ function messages_get_count ($user = false, $incl_read = false) {
 		global $config;
 		$user = $config["id_user"];
 	}
+	
 	if (empty ($incl_read)) {
 		$filter = "AND estado = 0";
-	} else {
+	}
+	else {
 		$filter = "";
 	}
 	$sql = sprintf("SELECT COUNT(*)
 		FROM tmensajes WHERE id_usuario_destino='%s' %s", $user, $filter);
-    
+	
 	return (int) db_get_sql ($sql);
 }
 
@@ -229,7 +232,7 @@ function messages_get_count_sent ($user = false) {
 	}
 	$sql = sprintf("SELECT COUNT(*)
 		FROM tmensajes WHERE id_usuario_origen='%s'", $user);
-    
+	
 	return (int) db_get_sql ($sql);
 }
 
@@ -250,7 +253,7 @@ function messages_get_overview ($order = "status", $order_dir = "ASC") {
 		case "timestamp":
 		case "sender":
 		case "subject":
-		break;
+			break;
 		case "status":
 		default:
 			$order = "estado, timestamp";
@@ -294,7 +297,7 @@ function messages_get_overview_sent ($order = "timestamp", $order_dir = "ASC") {
 		case "timestamp":
 		case "sender":
 		case "subject":
-		break;
+			break;
 		case "status":
 		default:
 			$order = "estado, timestamp";

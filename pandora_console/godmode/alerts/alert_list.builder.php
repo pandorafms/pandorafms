@@ -216,7 +216,7 @@ $(document).ready (function () {
 			.data("item.autocomplete", item)
 			.append(text)
 			.appendTo(ul);
-	};	
+	};
 	
 	//Force the size of autocomplete
 	$(".ui-autocomplete").css("max-height", "100px");
@@ -257,17 +257,17 @@ $(document).ready (function () {
 			}).click (function () {
 				return false;
 			});
-
+			
 		$("#action_loading").show ();
 	});
-
+	
 	$("#action_select").change(function () {
 			if ($("#action_select").attr ("value") != '0') {
 				$('#advanced_action').show();
 			}
 			else {
 				$('#advanced_action').hide();
-			} 	
+			}
 		}
 	);
 	
@@ -283,9 +283,11 @@ $(document).ready (function () {
 			function (data, status) {
 				if (data === false) {
 					$("#value", $value).append ("<em><?php echo __('Unknown') ?></em>");
-				} else if (data == "") {
+				}
+				else if (data == "") {
 					$("#value", $value).append ("<em><?php echo __('Empty') ?></em>");
-				} else {
+				}
+				else {
 					$("#value", $value).append (data);
 				}
 				$loading.hide ();

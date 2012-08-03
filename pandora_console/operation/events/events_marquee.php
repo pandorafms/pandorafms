@@ -42,8 +42,8 @@ check_login ();
 session_write_close (); 
 
 
-if(!isInACL($_SERVER['REMOTE_ADDR'])){
-    db_pandora_audit("ACL Violation",
+if (!isInACL($_SERVER['REMOTE_ADDR'])) {
+	db_pandora_audit("ACL Violation",
 		"Trying to access marquee without ACL Access");
 	require ("../../general/noaccess.php");
 	exit;
@@ -51,7 +51,7 @@ if(!isInACL($_SERVER['REMOTE_ADDR'])){
 
 $groups = users_get_groups ($config["id_user"], "AR");
 //Otherwise select all groups the user has rights to.
-if(!empty($groups)) {
+if (!empty($groups)) {
 	$sql_group_filter = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
 }
 else {
@@ -65,13 +65,24 @@ if (!check_acl ($config["id_user"], 0, "PM")) {
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$sql = "SELECT evento, timestamp, id_agente FROM tevento WHERE 1=1 $sql_group_filter ORDER BY utimestamp DESC LIMIT 0 , $MAX_MARQUEE_EVENTS";
+		$sql = "SELECT evento, timestamp, id_agente
+			FROM tevento
+			WHERE 1=1 $sql_group_filter
+			ORDER BY utimestamp DESC
+			LIMIT 0 , $MAX_MARQUEE_EVENTS";
 		break;
 	case "postgresql":
-		$sql = "SELECT evento, timestamp, id_agente FROM tevento WHERE 1=1 $sql_group_filter ORDER BY utimestamp DESC LIMIT $MAX_MARQUEE_EVENTS OFFSET 0";
+		$sql = "SELECT evento, timestamp, id_agente
+			FROM tevento
+			WHERE 1=1 $sql_group_filter
+			ORDER BY utimestamp DESC
+			LIMIT $MAX_MARQUEE_EVENTS OFFSET 0";
 		break;
 	case "oracle":
-		$sql = "SELECT evento, timestamp, id_agente FROM tevento WHERE (1=1 $sql_group_filter ) AND rownum <= $MAX_MARQUEE_EVENTS ORDER BY utimestamp DESC";
+		$sql = "SELECT evento, timestamp, id_agente
+			FROM tevento
+			WHERE (1=1 $sql_group_filter ) AND rownum <= $MAX_MARQUEE_EVENTS
+			ORDER BY utimestamp DESC";
 		break;
 }
 
@@ -79,7 +90,9 @@ $result = db_get_all_rows_sql ($sql);
 foreach ($result as $row) {
 	$agente = "";
 	if ($row["id_agente"] != 0){
-		$agente = db_get_sql ("SELECT nombre FROM tagente WHERE id_agente = ". $row["id_agente"]);
+		$agente = db_get_sql ("SELECT nombre
+			FROM tagente
+			WHERE id_agente = ". $row["id_agente"]);
 		$agente = $agente . " : ";
 	}
 	$output .= strtoupper($agente) . $row["evento"]. " , ". human_time_comparation($row["timestamp"]);

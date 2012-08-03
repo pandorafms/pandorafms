@@ -311,7 +311,8 @@ foreach ($actions as $action) {
 }
 if (isset($data)){
 	html_print_table ($table);
-} else {
+}
+else {
 	echo "<div class='nf'>".__('No alert actions configured')."</div>";
 }
 

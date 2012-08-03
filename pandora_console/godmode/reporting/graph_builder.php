@@ -85,10 +85,11 @@ if ($add_graph) {
 			db_pandora_audit("Report management", "Create graph #$id_graph");
 		else
 			db_pandora_audit("Report management", "Fail try to create graph");
-	} else {
+	}
+	else {
 		$id_graph = false;
 	}
-
+	
 	if(!$id_graph)
 		$edit_graph = false;
 }
@@ -104,9 +105,9 @@ if ($update_graph) {
 	$stacked = get_parameter('stacked');
 	$events = get_parameter('events');
 	$alerts = get_parameter('alerts'); 
-
+	
 	if (trim($name) != "") {
-
+		
 		$success = db_process_sql_update('tgraph', 
 			array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'events' => $events), 
 			array('id_graph' => $id_graph));
@@ -114,8 +115,9 @@ if ($update_graph) {
 			db_pandora_audit("Report management", "Update graph #$id_graph");
 		else
 			db_pandora_audit("Report management", "Fail try to update graph #$id_graph");
-			
-	} else {
+		
+	}
+	else {
 		$success = false;
 	}
 }
@@ -130,13 +132,13 @@ if ($add_module) {
 	$id_modules = get_parameter('module');
 	$id_agents = get_parameter('id_agents');
 	$weight = get_parameter('weight');
-
+	
 	$id_agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (".
 		implode(',', $id_agents).
 		") AND nombre IN ('".
 		implode("','", $id_modules).
 		"')");
-
+	
 	if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
 		foreach($id_agent_modules as $id_agent_module)
 			$result = db_process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
@@ -150,7 +152,7 @@ if ($delete_module) {
 	$result = db_process_sql_delete('tgraph_source', array('id_gs' => $deleteGraph));
 }
 
-if($change_weight){
+if ($change_weight) {
 	$weight = get_parameter ('weight');
 	$id_gs = get_parameter ('graph');
 	db_process_sql_update('tgraph_source', 
@@ -158,7 +160,7 @@ if($change_weight){
 		array('id_gs' => $id_gs));
 }
 
-if($edit_graph) {
+if ($edit_graph) {
 	$buttons = array(
 		'main' => array('active' => false,
 			'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id=' . $id_graph . '">' . 
@@ -199,10 +201,10 @@ switch ($tab) {
 		break;
 }
 
-if($add_graph)
+if ($add_graph)
 	ui_print_result_message($id_graph, __('Graph stored successfully'), __('There was a problem storing Graph'));
 
-if($add_module)
+if ($add_module)
 	ui_print_result_message($result, __('Module added successfully'), __('There was a problem adding Module'));
 
 if ($update_graph) 

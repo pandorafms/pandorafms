@@ -48,7 +48,8 @@ function print_alert_compound_steps ($step, $id) {
 		echo __('Step').' 1 &raquo; ';
 		echo '<span>'.__('Conditions').'</span>';
 		echo '</a>';
-	} else {
+	}
+	else {
 		echo __('Step').' 1 &raquo; ';
 		echo '<span>'.__('Conditions').'</span>';
 	}
@@ -67,7 +68,8 @@ function print_alert_compound_steps ($step, $id) {
 		echo __('Step').' 2 &raquo; ';
 		echo '<span>'.__('Firing').'</span>';
 		echo '</a>';
-	} else {
+	}
+	else {
 		echo __('Step').' 2 &raquo; ';
 		echo '<span>'.__('Firing').'</span>';
 	}
@@ -85,7 +87,8 @@ function print_alert_compound_steps ($step, $id) {
 		echo __('Step').' 3 &raquo; ';
 		echo '<span>'.__('Recovery').'</span>';
 		echo '</a>';
-	} else {
+	}
+	else {
 		echo __('Step').' 3 &raquo; ';
 		echo '<span>'.__('Recovery').'</span>';
 	}
@@ -96,7 +99,7 @@ function print_alert_compound_steps ($step, $id) {
 
 function update_compound ($step) {
 	global $config;
-
+	
 	$id = (int) get_parameter ('id');
 	
 	if (empty ($id))
@@ -142,10 +145,10 @@ function update_compound ($step) {
 		$min_alerts = (int) get_parameter ('min_alerts');
 		if ($threshold == -1)
 			$threshold = (int) get_parameter ('other_threshold');
-
+		
 		switch ($config['dbtype']){
 			case "mysql":
-			case "postgresql":		
+			case "postgresql":
 				$values = array ('monday' => $monday,
 					'tuesday' => $tuesday,
 					'wednesday' => $wednesday,
@@ -177,14 +180,14 @@ function update_compound ($step) {
 					'min_alerts' => $min_alerts
 					);
 				break;
-		}				
+		}
 		
 		$result = alerts_update_alert_compound ($id, $values);
 		
 		/* Update actions */
 		$remove_actions = alerts_get_alert_compound_actions ($id);
 		$add_actions = (array) get_parameter ('actions');
-
+		
 		if (!empty ($remove_actions)) {
 			foreach ($remove_actions as $key => $action) {
 				alerts_delete_alert_compound_action ($key);
@@ -266,6 +269,7 @@ if ($id && ! $create_compound) {
 	$field3_recovery = $compound['field3_recovery'];
 	$id_agent = $compound['id_agent'];
 	$id_group = agents_get_agent_group ($id_agent);
+	
 	if (! check_acl ($config['id_user'], $id_group, "AW")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
@@ -541,7 +545,8 @@ else {
 			$data[3] = alerts_get_alert_template_name ($alert['id_alert_template']);
 			if ($condition['operation'] == 'NOP') {
 				$data[4] = html_print_input_hidden ('operations['.$alert['id'].']', 'NOP', true);
-			} else {
+			}
+			else {
 				$data[4] = html_print_select (alerts_compound_operations (),
 					'operations['.$alert['id'].']', $condition['operation'], '', '', '', true);
 			}
@@ -683,12 +688,20 @@ ui_require_jquery_file ('timeentry');
 var block_size = <?php echo $config['block_size']; ?>;
 var alerts;
 var compound_alerts;
-<?php if ($id_agent && isset ($alerts) && $alerts) : ?>
+<?php
+if ($id_agent && isset ($alerts) && $alerts) {
+?>
 	alerts = Array ();
-	<?php foreach ($alerts as $alert) : ?>
-	alerts[<?php echo $alert['id'] ?>] = eval ("("+'<?php echo json_encode ($alert); ?>'+")");
-	<?php endforeach; ?>
-<?php endif; ?>
+	<?php
+	foreach ($alerts as $alert) {
+	?>
+		alerts[<?php echo $alert['id'] ?>] = eval ("("+'<?php echo json_encode ($alert); ?>'+")");
+	<?php
+	}
+	?>
+<?php
+}
+?>
 
 function remove_alert () {
 	$(this).parents ("tr:first").remove ();
@@ -701,7 +714,8 @@ function remove_alert () {
 			.attr ("name", "operations["+id+"]")
 			.attr ("value", "NOP");
 		$("td:last", tr).append (input);
-	} else if (len == 0) {
+	}
+	else if (len == 0) {
 		$("#conditions_list").hide ();
 	}
 	return false;
@@ -722,7 +736,8 @@ function add_alert () {
 			.attr ("name", "operations["+id+"]")
 			.attr ("value", "NOP");
 		$(td).append (input);
-	} else {
+	}
+	else {
 		$(td).append ($("select#operations:last").clone ()
 				.show ()
 				.attr ("name", "operations["+id+"]")
@@ -905,7 +920,8 @@ $(document).ready (function () {
 			$("#text-other_threshold").attr ("value", "");
 			$("#compound-threshold-other_label").show ();
 			$("#compound-threshold-other_input").show ();
-		} else {
+		}
+		else {
 			$("#compound-threshold-other_label").hide ();
 			$("#compound-threshold-other_input").hide ();
 		}
@@ -933,7 +949,8 @@ $(document).ready (function () {
 	$("#recovery_notify").change (function () {
 		if (this.value == 1) {
 			$("#compound-field2, #compound-field3").show ();
-		} else {
+		}
+		else {
 			$("#compound-field2, #compound-field3").hide ();
 		}
 	});

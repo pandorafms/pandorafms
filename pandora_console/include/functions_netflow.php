@@ -280,7 +280,8 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate) {
 		for ($j = 0; $j < $source_count; $j++) {
 			if (isset ($values[$source_index[$j]])) {
 				$table->data[$i][$j+1] = format_numeric ($values[$source_index[$j]]);
-			} else {
+			}
+			else {
 				$table->data[$i][$j+1] = 0;
 			}
 		}
@@ -368,7 +369,7 @@ function netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggreg
 	if ($aggregate == 'none') {
 		netflow_save_cache ($values, $cache_file);
 	}
-
+	
 	return $values;
 }
 
@@ -390,13 +391,13 @@ function netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max, 
 	$command .= " -s $aggregate/$unit -n $max -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 	exec($command, $string);
 	
-	if(! is_array($string)){
+	if (! is_array($string)) {
 		return array ();
 	}
 	
 	$i = 0;
 	$values = array();
-	foreach($string as $line){
+	foreach ($string as $line) {
 		if ($line == '') {
 			break;
 		}
@@ -477,7 +478,7 @@ function netflow_get_filter_arguments ($filter) {
 	}
 	
 	// Normal filter
-	if ($filter['ip_dst'] != ''){
+	if ($filter['ip_dst'] != '') {
 		$filter_args .= ' "(';
 		$val_ipdst = explode(',', $filter['ip_dst']);
 		for($i = 0; $i < count ($val_ipdst); $i++){
@@ -494,7 +495,7 @@ function netflow_get_filter_arguments ($filter) {
 		}
 		$filter_args .=  ')';
 	}
-	if ($filter['ip_src'] != ''){
+	if ($filter['ip_src'] != '') {
 		if ($filter_args == '') {
 			$filter_args .= ' "(';
 		}
@@ -502,7 +503,7 @@ function netflow_get_filter_arguments ($filter) {
 			$filter_args .= ' and (';
 		}
 		$val_ipsrc = explode(',', $filter['ip_src']);
-		for($i = 0; $i < count ($val_ipsrc); $i++){
+		for ($i = 0; $i < count ($val_ipsrc); $i++) {
 			if ($i > 0) {
 				$filter_args .= ' or ';
 			}
@@ -524,7 +525,7 @@ function netflow_get_filter_arguments ($filter) {
 			$filter_args .= ' and (';
 		}
 		$val_dstport = explode(',', $filter['dst_port']);
-		for($i = 0; $i < count ($val_dstport); $i++){
+		for ($i = 0; $i < count ($val_dstport); $i++) {
 			if ($i > 0) {
 				$filter_args .= ' or ';
 			}
@@ -540,7 +541,7 @@ function netflow_get_filter_arguments ($filter) {
 			$filter_args .= ' and (';
 		}
 		$val_srcport = explode(',', $filter['src_port']);
-		for($i = 0; $i < count ($val_srcport); $i++){
+		for ($i = 0; $i < count ($val_srcport); $i++) {
 			if ($i > 0) {
 				$filter_args .= ' or ';
 			}

@@ -565,7 +565,7 @@ function alerts_get_alert_template ($id_alert_template) {
 	if (empty ($id_alert_template))
 		return false;
 	
-	switch ($config['dbtype']){
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
 			return db_get_row ('talert_templates', 'id', $id_alert_template);

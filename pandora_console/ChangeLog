@@ -1,3 +1,12 @@
+2012-08-06  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_users.php
+	include/functions_html.php
+	include/constants.php
+	godmode/modules/manage_network_components_form_plugin.php: order 
+	functions to use from enterprise side, fix little interface bug in
+	components form
+
 2012-08-02 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* pandoradb_data.sql, pandoradb.data.postgreSQL.sql,

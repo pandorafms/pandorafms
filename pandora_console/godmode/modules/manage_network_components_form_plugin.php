@@ -117,7 +117,11 @@ while(1) {
 	$data[1] = __('Add macro').' <a href="javascript:new_macro(\'network_component-plugin_\')">'.html_print_image('images/add.png',true).'</a>';
 	$data[1] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
 	$data[1] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
-	$data[2] = '<div id="delete_macro_button" style="display:none;">'.__('Delete macro').' <a href="javascript:delete_macro(\'network_component-plugin_\')">'.html_print_image('images/cancel.png',true).'</a></div>';
+	$delete_macro_style = '';
+	if($i <= 2) {
+		$delete_macro_style = 'display:none;';
+	}
+	$data[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'network_component-plugin_\')">'.html_print_image('images/cancel.png',true).'</a></div>';
 
 	push_table_row ($data, 'plugin_n');
 }

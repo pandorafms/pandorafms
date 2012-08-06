@@ -1,5 +1,10 @@
 2012-08-06  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/modules/manage_network_components_form_plugin.php: 
+	Fixed a bug where print the add/delete macro
+
+2012-08-06  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_users.php
 	include/functions_html.php
 	include/constants.php

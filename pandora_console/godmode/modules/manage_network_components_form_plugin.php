@@ -109,22 +109,22 @@ while(1) {
 	push_table_row ($data, 'plugin_'.$next_name_number);
 	$next_name_number++;
 	$i++;
-
-	$table->colspan['plugin_n'][2] = 2;
-
-	$data = array ();
-	$data[0] = '';
-	$data[1] = __('Add macro').' <a href="javascript:new_macro(\'network_component-plugin_\')">'.html_print_image('images/add.png',true).'</a>';
-	$data[1] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
-	$data[1] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
-	$delete_macro_style = '';
-	if($i <= 2) {
-		$delete_macro_style = 'display:none;';
-	}
-	$data[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'network_component-plugin_\')">'.html_print_image('images/cancel.png',true).'</a></div>';
-
-	push_table_row ($data, 'plugin_n');
 }
+
+$table->colspan['plugin_n'][2] = 2;
+
+$data = array ();
+$data[0] = '';
+$data[1] = __('Add macro').' <a href="javascript:new_macro(\'network_component-plugin_\')">'.html_print_image('images/add.png',true).'</a>';
+$data[1] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
+$data[1] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
+$delete_macro_style = '';
+if($i <= 2) {
+	$delete_macro_style = 'display:none;';
+}
+$data[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'network_component-plugin_\')">'.html_print_image('images/cancel.png',true).'</a></div>';
+
+push_table_row ($data, 'plugin_n');
 
 ?>
 

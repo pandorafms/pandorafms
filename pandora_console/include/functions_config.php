@@ -822,7 +822,7 @@ function config_check () {
 	// Only check update manager login at login attemp
 	$get_login = get_parameter_get("login", 0);
 
-	if ($get_login == 1)
+	if ($get_login == 1 && function_exists('pandora_update_manager_login'))
 		pandora_update_manager_login();	
 	
 	if (isset($_SESSION['new_update'])) {

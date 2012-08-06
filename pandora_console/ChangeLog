@@ -1,3 +1,8 @@
+2012-08-06  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/functions_config.php: Fixed that blank page is shown after
+	login when update_manager is disabled.
+
 2012-07-31  Junichi Satoh  <junichi@rworks.jp>
 
 	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Removed sql to update

@@ -211,34 +211,8 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
 	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $id_group = false) {
 	global $config;
 	
-	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, true);
-	
-	if ($id_group !== false) {
-		$childrens = groups_get_childrens($id_group);
-		foreach ($childrens as $child) {
-			unset($user_groups[$child['id_grupo']]);
-		}
-		unset($user_groups[$id_group]);
-	}
-	
-	if (empty($user_groups)) {
-		$user_groups_tree = array();
-	}
-	else {
-		// First group it's needed to retrieve its parent group
-		$first_group = array_slice($user_groups, 0, 1);
-		$parent_group = $first_group[0]['parent'];
-		
-		$user_groups_tree = groups_get_groups_tree_recursive($user_groups, $parent_group);
-	}
-	
-	$fields = array();
-	foreach ($user_groups_tree as $group) {
-		$groupName = ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false);
-		
-		$fields[$group['id_grupo']] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
-	}
-	
+	$fields = users_get_groups_for_select($id_user, $privilege, $returnAllGroup, true, $id_group);
+
 	$output = html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value,
 		$return, $multiple, false, $class, $disabled, $style, $option_style);
 	

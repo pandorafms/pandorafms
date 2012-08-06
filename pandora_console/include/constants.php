@@ -48,6 +48,7 @@ define ('ERR_FILE', -50000);
 define ('ERR_NOCHANGES', -60000);
 define ('ERR_NODATA', -70000);
 define ('ERR_CONNECTION', -80000);
+define ('ERR_DISABLED', -90000);
 
 
 

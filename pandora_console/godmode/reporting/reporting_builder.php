@@ -134,6 +134,61 @@ switch ($action) {
 				break;
 			}
 		break;
+	case 'delete_items':
+		$resultOperationDB = null;	
+		$ids_serialize = (string)get_parameter('ids_items_to_delete', '');
+	
+		if (!empty($ids_serialize)) {
+			$sql = "DELETE FROM treport_content WHERE id_rc IN ($ids_serialize)";
+			$resultOperationDB = db_process_sql($sql);
+		} else {
+			$resultOperationDB = false;
+		}
+
+		break;
+	case 'delete_items_pos':
+		$resultOperationDB = null;
+		$position_to_delete = (int)get_parameter('position_to_delete', 1);
+		$pos_delete = (string)get_parameter('delete_m', 'below');
+	
+		$countItems = db_get_sql('SELECT COUNT(id_rc)
+					FROM treport_content WHERE id_report = ' . $idReport);
+				
+		if (($countItems < $position_to_delete) || ($position_to_delete < 1)) {
+			$resultOperationDB = false;
+		} else {
+			$sql = "SELECT id_rc FROM treport_content WHERE id_report=$idReport ORDER BY '`order`'";
+			$items = db_get_all_rows_sql($sql);
+			switch ($pos_delete) {
+				case 'below':
+					if ($position_to_delete == 1) {
+						$resultOperationDB = false;
+					} else {
+						$i = 1;
+						foreach ($items as $key => $item) {
+							if ($i < $position_to_delete) {
+								$resultOperationDB = db_process_sql_delete('treport_content', array('id_rc' => $item['id_rc']));
+							}
+							$i++;
+						}
+					}
+					break;
+				case 'above':
+					if ($position_to_delete == $countItems) {
+						$resultOperationDB = false;
+					} else {
+						$i = 1;
+						foreach ($items as $key => $item) {
+							if ($i > $position_to_delete) {
+								$resultOperationDB = db_process_sql_delete('treport_content', array('id_rc' => $item['id_rc']));
+							}
+							$i++;
+						}
+					}
+					break;
+			}
+		}		
+		break;
 	case 'delete_report':
 	case 'list':
 		$buttons = array(

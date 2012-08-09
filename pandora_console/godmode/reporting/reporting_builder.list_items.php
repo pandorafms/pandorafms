@@ -205,7 +205,7 @@ if ($items) {
 	$table->size[0] = '5px';
 	$table->size[1] = '15%';
 	$table->size[4] = '8%';
-	$table->size[6] = '50px';
+	$table->size[6] = '60px';
 	$table->size[7] = '30px';
 	
 	$table->head[0] = '<span title="' . __('Position') . '">' . __('P.') . '</span>';
@@ -323,6 +323,7 @@ foreach ($items as $item) {
 	$row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
 	$row[6] .= '&nbsp;&nbsp;';
 	$row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
+	$row[6] .= html_print_checkbox_extended ('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
 	
 	$row[7] = '';
 	//You can sort the items if the filter is not enable.
@@ -339,6 +340,14 @@ foreach ($items as $item) {
 ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 html_print_table($table);
 ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+
+echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
+	method='post' onclick='return message_check_delete_items();' onsubmit='return added_ids_deleted_items_to_hidden_input();'>";
+	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	html_print_input_hidden('ids_items_to_delete', '');
+	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+	echo "</div>";
+echo "</form>";
 
 $table = null;
 $table->width = '60%';
@@ -357,6 +366,25 @@ echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_bui
 	method='post' onsubmit='return added_ids_sorted_items_to_hidden_input();'>";
 html_print_table($table);
 echo "</form>";
+
+$table = null;
+$table->width = '60%';
+$table->colspan[0][0] = 3;
+$table->data[0][0] = "<b>". __("Delete items") . "</b>";
+$table->data[1][0] = __('Delete selected items from position: ');
+$table->data[1][1] = html_print_select_style(
+	array('above' => __('Delete above to'), 'below' => __('Delete below to')), 'delete_m',
+	'', '', '', '', 0, true);
+$table->data[1][2] = html_print_input_text_extended('position_to_delete', 1,
+	'text-position_to_delete', '', 3, 10, false, "only_numbers('position_to_delete');", '', true);
+$table->data[1][2] .= html_print_input_hidden('ids_items_to_delete', '', true);
+$table->data[1][3] = html_print_submit_button(__('Delete'), 'delete_submit', false, 'class="sub upd"', true);
+
+echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items_pos&id_report=" . $idReport . "'
+	method='post'>";
+html_print_table($table);
+echo "</form>";
+
 ?>
 <script type="text/javascript">
 function toggleFormFilter() {
@@ -413,5 +441,38 @@ function only_numbers(name) {
 	}
 	
 	$("input[name='" + name + "']").val(value);
+}
+
+
+function message_check_delete_items() {
+	var return_value = false;
+	
+	return_value = confirm("<?php echo __("Are you sure to delete the items into the report?\\n"); ?>");
+	
+	return return_value;
+}
+
+function added_ids_deleted_items_to_hidden_input() {
+	var ids = '';
+	var first = true;
+	
+	$("input.check_delete:checked").each(function(i, val) {
+		if (!first)
+			ids = ids + ',';
+		first = false;
+		
+		ids = ids + $(val).val();
+	});
+
+	$("input[name='ids_items_to_delete']").val(ids);
+	
+	if (ids == '') {
+		alert("<?php echo __("Please select any item to delete");?>");
+		
+		return false;
+	}
+	else {
+		return true;
+	}
 }
 </script>

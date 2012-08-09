@@ -1,3 +1,10 @@
+2012-08-09  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/reporting/reporting_builer.list_items.php
+	  godmode/reporting/reporting_builer.php: Added button to masively 
+	delete all the selected report items and massively delete these 
+	items from position X and above/below.
+
 2012-08-06  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/modules/manage_network_components_form_plugin.php: 

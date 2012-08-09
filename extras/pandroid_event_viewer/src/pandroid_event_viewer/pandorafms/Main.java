@@ -114,22 +114,10 @@ public class Main extends Activity {
 					this.getString(R.string.preferences_set_demo_pandora_str),
 					Toast.LENGTH_LONG);
 			toast.show();
-		} else {
-			buttonSearch.setEnabled(false);
-			buttonSetAsFilterWatcher.setEnabled(false);
-			buttonDeleteProfile.setEnabled(false);
-
-			new GetGroupsAsyncTask().execute();
-			if (version402) {
-				((EditText) findViewById(R.id.tag_text))
-						.setVisibility(View.VISIBLE);
-				((ProgressBar) findViewById(R.id.loading_tag))
-						.setVisibility(View.GONE);
-				((Spinner) findViewById(R.id.tag)).setVisibility(View.GONE);
-			} else {
-				new GetTagsAsyncTask().execute();
-			}
 		}
+		buttonSearch.setEnabled(false);
+		buttonSetAsFilterWatcher.setEnabled(false);
+		buttonDeleteProfile.setEnabled(false);
 
 		comboSeverity = (Spinner) findViewById(R.id.severity_combo);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -277,20 +265,18 @@ public class Main extends Activity {
 		}
 	}
 
-	public void onRestart() {
-		super.onRestart();
-		SharedPreferences preferences = getSharedPreferences(
-				this.getString(R.string.const_string_preferences),
-				Activity.MODE_PRIVATE);
-		SharedPreferences.Editor editorPreferences = preferences.edit();
-		if (preferences.getBoolean("url_changed", false)) {
-			Log.i(TAG, "Getting groups and tags");
-			new GetGroupsAsyncTask().execute();
-			if (!version402) {
-				new GetTagsAsyncTask().execute();
-			}
-			editorPreferences.putBoolean("url_changed", false);
-			editorPreferences.commit();
+	public void onResume() {
+		super.onResume();
+		Log.i(TAG, "Getting groups and tags");
+		new GetGroupsAsyncTask().execute();
+		if (version402) {
+			((EditText) findViewById(R.id.tag_text))
+					.setVisibility(View.VISIBLE);
+			((ProgressBar) findViewById(R.id.loading_tag))
+					.setVisibility(View.GONE);
+			((Spinner) findViewById(R.id.tag)).setVisibility(View.GONE);
+		} else {
+			new GetTagsAsyncTask().execute();
 		}
 	}
 

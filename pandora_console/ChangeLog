@@ -1,3 +1,11 @@
+2012-08-09  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_modules.php
+	include/functions_groups.php
+	include/javascript/pandora.js: Fix minor issues
+	in the select for time advanced control. Improve some
+	functions to use from metaconsole
+
 2012-08-09  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/reporting/reporting_builer.list_items.php

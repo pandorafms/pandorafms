@@ -686,6 +686,9 @@ function modules_get_agentmodule_kind($id_agentmodule) {
 		case 6:
 			return 'wmiserver';
 			break;
+		case 7:
+			return 'webserver';
+			break;
 		default:
 			return 'other';
 			break;

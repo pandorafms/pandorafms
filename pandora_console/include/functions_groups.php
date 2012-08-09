@@ -470,7 +470,7 @@ function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
 	$return = array();
 
 	foreach ($groups as $key => $group) {
-		if (($key == 0) && ($parent == 0)) { //When the groups is the all group
+		if (($key === 0 || $key === __('All')) && ($parent === 0 || $parent === __('All'))) { //When the groups is the all group
 			$group['deep'] = $deep;
 			$group['hash_branch'] = true;
 			$deep ++;

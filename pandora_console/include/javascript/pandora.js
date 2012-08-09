@@ -662,6 +662,8 @@ function period_select_init(name) {
 	// If the text input is empty, we put on it 5 minutes by default
 	if($('#text-'+name+'_text').val() == '') {
 		$('#text-'+name+'_text').val(300);
+		// Set the value in the hidden field too
+		$('.'+name).val(300);
 		if($('#'+name+'_select option:eq(0)').val() == 0) {
 			$('#'+name+'_select option:eq(2)').attr('selected', 'selected');
 		}
@@ -671,6 +673,8 @@ function period_select_init(name) {
 	}
 	else if($('#text-'+name+'_text').val() == 0) {
 		$('#'+name+'_units option:last').removeAttr('selected');
+		$('#'+name+'_manual').show();
+		$('#'+name+'_default').hide();
 	}
 
 }

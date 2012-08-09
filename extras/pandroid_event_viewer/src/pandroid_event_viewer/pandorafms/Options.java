@@ -84,7 +84,7 @@ public class Options extends Activity {
 		text = (EditText) findViewById(R.id.password);
 		text.setText(preferences.getString("password", "demo"));
 		text = (EditText) findViewById(R.id.api_password);
-		text.setText(preferences.getString("api_password", ""));
+		text.setText(preferences.getString("api_password", "doreik0"));
 		
 		Spinner combo = (Spinner) findViewById(R.id.refresh_combo);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -193,9 +193,6 @@ public class Options extends Activity {
 			url = url.substring(0, url.length() - 1);
 		}
 		editorPreferences.putString("url", url);
-		// MainActivity uses this to know if it has to check tags and groups
-		// again
-		editorPreferences.putBoolean("url_changed", true);
 		text = (EditText) findViewById(R.id.user);
 		editorPreferences.putString("user", text.getText().toString());
 		text = (EditText) findViewById(R.id.password);

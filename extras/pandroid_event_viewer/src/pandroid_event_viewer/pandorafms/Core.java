@@ -88,7 +88,7 @@ public class Core {
 	 * @param is
 	 * @return A string with all data read.
 	 */
-	public static String convertStreamToString(InputStream is) {
+	private static String convertStreamToString(InputStream is) {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is),
 				8 * 1024);
 		StringBuilder sb = new StringBuilder();

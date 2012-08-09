@@ -1,3 +1,8 @@
+2012-08-10 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Options.java: Removed url_changed in SharedPreferences.
+	* src/pandroid_event_viewer/pandorafms/Main.java: Tags and groups are loading onResume. Also, they are always loaded (url_changed isn't used anymore).
+	* src/pandroid_event_viewer/pandorafms/Core.java: Changed method visibility.
+
 2012-08-02 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Core.java: Changed timeout from 10 to 5 seconds.
 	* res/layout/item_list_event_layout.xml: Increased drawablePadding of timestamp textview.

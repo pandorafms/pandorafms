@@ -1,3 +1,9 @@
+2012-08-10 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/PredictionServer.pm: changed for the SLA service
+	calculate alone instead before it was calculate for the module
+	service.
+
 2012-07-29  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/DB.pm: Added missing '%'.

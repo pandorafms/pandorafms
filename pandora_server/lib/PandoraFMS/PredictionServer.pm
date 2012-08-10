@@ -157,11 +157,16 @@ sub exec_prediction_module ($$$$) {
 	# Service modules
 	if ($agent_module->{'prediction_module'} == 2) {
 		if ($agent_module->{'custom_string_1'} eq 'SLA') {
-			# Do none because the modules for SLA service
-			# are filled in the service with same id.
+			logger ($pa_config, "Executing service module SLA " .
+				$agent_module->{'id_agente_modulo'} . " " .
+				$agent_module->{'nombre'}, 5);
+			enterprise_hook ('exec_service_module_sla', [$pa_config, $agent_module, $server_id, $dbh]);
+			logger ($pa_config, "End execution", 5);
 		}
 		else {
-			logger ($pa_config, "Executing service module " . $agent_module->{'nombre'}, 5);
+			logger ($pa_config, "Executing service module " .
+				$agent_module->{'id_agente_modulo'} . " " .
+				$agent_module->{'nombre'}, 5);
 			enterprise_hook ('exec_service_module', [$pa_config, $agent_module, $server_id, $dbh]);
 			logger ($pa_config, "End execution", 5);
 		}

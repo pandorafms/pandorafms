@@ -1,5 +1,10 @@
 2012-08-10  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_api.php: Force the static graphs in the 
+	last added function to api
+
+2012-08-10  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_api.php: Add the missed function api_get_graph_module_data
 	and update it to work with last graph system
 

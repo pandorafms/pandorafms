@@ -3661,6 +3661,9 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	
 	$homeurl = '../';
 	$ttl = 1;
+				
+	global $config;
+	$config['flash_charts'] = 0;
 
 	$image = grafico_modulo_sparse ($id, $period, $draw_events,
 				$width, $height , '',null,
@@ -3672,7 +3675,7 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	preg_match("/src='([^']*)'/i",$image, $match);
 			
 	if(empty($match[1])) {
-		echo "No data retrieved";
+		echo "Error getting graph";
 	}
 	else {
 		header('Content-type: image/png');

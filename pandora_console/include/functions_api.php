@@ -23,6 +23,7 @@ require_once('functions_modules.php');
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . "/include/functions.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
+include_once($config['homedir'] . "/include/functions_graph.php");
 include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . "/include/functions_network_components.php");
@@ -3629,6 +3630,54 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 		returnError('error_query_module_data', 'Error in the query of module data.');
 	else
 		returnData('csv', $data, $separator);
+}
+
+/**
+ * Return a image file of sparse graph of module data in a period time.
+ * 
+ * @param integer $id id of a module data.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <period>;<width>;<height>;<label>;<start_date>; in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=graph_module_data&id=17&other=604800|555|245|pepito|2009-12-07&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash2 Don't use.
+ */
+function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
+	
+	$period = $other['data'][0];
+	$width = $other['data'][1];
+	$height = $other['data'][2];
+	$graph_type = 'sparse';
+	$draw_alerts = 0;
+	$draw_events = 0;
+	$zoom = 1;
+	$label = $other['data'][3];
+	$avg_only = 0;
+	$start_date = $other['data'][4];
+	$date = strtotime($start_date);
+	
+	$homeurl = '../';
+	$ttl = 1;
+
+	$image = grafico_modulo_sparse ($id, $period, $draw_events,
+				$width, $height , '',null,
+				$draw_alerts, $avg_only, false,
+				$date, '', 0, 0,true,
+				false, $homeurl, $ttl);
+		
+	// Extract url of the image from img tag			
+	preg_match("/src='([^']*)'/i",$image, $match);
+			
+	if(empty($match[1])) {
+		echo "No data retrieved";
+	}
+	else {
+		header('Content-type: image/png');
+		header('Location: ' . $match[1]);
+	}
 }
 
 /**

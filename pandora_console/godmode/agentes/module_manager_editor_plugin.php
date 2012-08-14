@@ -15,6 +15,8 @@
 
 enterprise_include_once('include/functions_policies.php');
 
+$macros = $module['macros'];
+
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
 $page = get_parameter('page', '');
@@ -43,6 +45,8 @@ $data = array ();
 $data[0] = __('Plugin');
 $data[1] = html_print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',
 	'id_plugin', $id_plugin, 'changePluginSelect();', __('None'), 0, true, false, false, $disabledBecauseInPolicy);
+// Store the macros in base64 into a hidden control to move between pages
+$data[1] .= html_print_input_hidden('macros',base64_encode($macros),true);
 $table_simple->colspan['plugin_1'][2] = 2;
 
 if (!empty($id_plugin)) {
@@ -75,17 +79,37 @@ $data[3] = html_print_input_password ('plugin_pass', $plugin_pass, '', 15, 60, t
 
 push_table_simple ($data, 'plugin_2');
 
+// A hidden "model row" to clone it from javascript to add fields dynamicly
 $data = array ();
-$data[0] = __('Plugin parameters');
-$data[0] .= ui_print_help_icon ('plugin_parameters', true);
-$data[1] = html_print_input_text ('plugin_parameter', $plugin_parameter, '', 255, '', true, $disabledBecauseInPolicy);
-$table_simple->colspan['plugin_3'][1] = 3;
+$data[0] = 'macro_desc';
+$data[0] .= ui_print_help_tip ('macro_help', true);
+$data[1] = html_print_input_text ('macro_name', 'macro_value', '', 15, 60, true);
+$table_simple->colspan['macro_field'][1] = 3;
+$table_simple->rowstyle['macro_field'] = 'display:none';
 
-push_table_simple ($data, 'plugin_3');
+push_table_simple ($data, 'macro_field');
+
+// If there are $macros, we create the form fields
+if(!empty($macros)) {
+	$macros = json_decode($macros, true);
+
+	foreach($macros as $k => $m) {		
+		$data = array ();
+		$data[0] = $m['desc'];
+		if(!empty($m['help'])) {
+			$data[0] .= ui_print_help_tip ($m['help'], true);
+		}
+		$data[1] = html_print_input_text($m['macro'], $m['value'], '', 15, 60, true);
+		$table_simple->colspan['macro'.$m['macro']][1] = 3;
+		$table_simple->rowclass['macro'.$m['macro']] = 'macro_field';
+
+		push_table_simple ($data, 'macro'.$m['macro']);
+	}
+}
+
 ?>
 <script type="text/javascript">
 function changePluginSelect() {
-//	alert($("#id_plugin").val());
 	jQuery.post ("ajax.php",
 		{"page" : "godmode/servers/plugin",
 		"get_plugin_description" : 1,
@@ -95,5 +119,7 @@ function changePluginSelect() {
 			$("#plugin_description").html(data);
 		}
 	);
+	
+	load_plugin_macros_fields('simple-macro');
 }
 </script>

@@ -30,8 +30,11 @@ push_table_row ($data, 'plugin_0');
 $data = array ();
 $data[0] = __('Plugin');
 $data[1] = html_print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',
-	'id_plugin', $id_plugin, '', __('None'), 0, true, false, false);
-$table->colspan['plugin_1'][1] = 3;
+	'id_plugin', $id_plugin, 'javascript: load_plugin_macros_fields(\'network_component-macro\')', __('None'), 0, true, false, false);
+// Store the macros in base64 into a hidden control to move between pages
+$data[1] .= html_print_input_hidden('macros',base64_encode($macros),true);
+$data[2] = __('Post process') . ' ' . ui_print_help_icon ('postprocess', true);
+$data[3] = html_print_input_text ('post_process', $post_process, '', 12, 25, true);
 
 push_table_row ($data, 'plugin_1');
 
@@ -43,88 +46,33 @@ $data[3] = html_print_input_password ('plugin_pass', $plugin_pass, '', 15, 60, t
 
 push_table_row ($data, 'plugin_2');
 
+// A hidden "model row" to clone it from javascript to add fields dynamicly
 $data = array ();
-$data[0] = __('Plugin parameters');
-$data[0] .= ui_print_help_icon ('plugin_parameters', true);
-$data[1] = html_print_input_text ('plugin_parameter', $plugin_parameter, '', 30, 255, true);
-$data[2] = __('Post process') . ' ' . ui_print_help_icon ('postprocess', true);
-$data[3] = html_print_input_text ('post_process', $post_process, '', 12, 25, true);
+$data[0] = 'macro_desc';
+$data[0] .= ui_print_help_tip ('macro_help', true);
+$data[1] = html_print_input_text ('macro_name', 'macro_value', '', 15, 60, true);
+$table->colspan['macro_field'][1] = 3;
+$table->rowstyle['macro_field'] = 'display:none';
 
-push_table_row ($data, 'plugin_3');
+push_table_row ($data, 'macro_field');
 
-// Dynamic macros 
-$data = array ();
-$data[0] = __('Plugin macros');
-$data[0] .= ui_print_help_icon ('plugin', true);
-$data[1] = $data[2] = $data[3] = '';
+// If there are $macros, we create the form fields
+if(!empty($macros)) {
+	$macros = json_decode($macros, true);
 
-push_table_row ($data, 'plugin_4');
+	foreach($macros as $k => $m) {		
+		$data = array ();
+		$data[0] = $m['desc'];
+		if(!empty($m['help'])) {
+			$data[0] .= ui_print_help_tip ($m['help'], true);
+		}
+		$data[1] = html_print_input_text($m['macro'], $m['value'], '', 15, 60, true);
+		$table->colspan['macro'.$m['macro']][1] = 3;
+		$table->rowclass['macro'.$m['macro']] = 'macro_field';
 
-$macros = json_decode($macros,true);
-// The next row number is plugin_5
-$next_name_number = 5;
-$i = 1;
-while(1) {
-	// Always print at least one macro
-	if((!isset($macros[$i]) || $macros[$i]['desc'] == '') && $i > 1) {
-		break;
+		push_table_row ($data, 'macro'.$m['macro']);
 	}
-	$macro_desc_name = 'field'.$i.'_desc';
-	$macro_desc_value = '';
-	$macro_help_name = 'field'.$i.'_help';
-	$macro_help_value = '';
-	$macro_value_name = 'field'.$i.'_value';
-	$macro_value_value = '';
-	$macro_name_name = 'field'.$i.'_macro';
-	$macro_name = '_field'.$i.'_';
-	
-	if(isset($macros[$i]['desc'])) {
-		$macro_desc_value = $macros[$i]['desc'];
-	}
-	
-	if(isset($macros[$i]['help'])) {
-		$macro_help_value = $macros[$i]['help'];
-	}
-	
-	if(isset($macros[$i]['value'])) {
-		$macro_value_value = $macros[$i]['value'];
-	}
-	
-	$data = array ();
-	$data[0] = sprintf(__('Macro %s description'),$macro_name);
-	$data[0] .= html_print_input_hidden($macro_name_name, $macro_name, true);
-	$data[1] = html_print_input_text ($macro_desc_name, $macro_desc_value, '', 30, 255, true);
-	$data[2] = sprintf(__('Macro %s default value'),$macro_name);
-	$data[3] = html_print_input_text ($macro_value_name, $macro_value_value, '', 30, 255, true);
-
-	push_table_row ($data, 'plugin_'.$next_name_number);
-	$next_name_number++;
-	
-	$table->colspan['plugin_'.$next_name_number][1] = 2;
-
-	$data = array ();
-	$data[0] = sprintf(__('Macro %s help'),$macro_name);
-	$data[1] = html_print_input_text ($macro_help_name, $macro_help_value, '', 100, 255, true);
-
-	push_table_row ($data, 'plugin_'.$next_name_number);
-	$next_name_number++;
-	$i++;
 }
-
-$table->colspan['plugin_n'][2] = 2;
-
-$data = array ();
-$data[0] = '';
-$data[1] = __('Add macro').' <a href="javascript:new_macro(\'network_component-plugin_\')">'.html_print_image('images/add.png',true).'</a>';
-$data[1] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
-$data[1] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
-$delete_macro_style = '';
-if($i <= 2) {
-	$delete_macro_style = 'display:none;';
-}
-$data[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'network_component-plugin_\')">'.html_print_image('images/cancel.png',true).'</a></div>';
-
-push_table_row ($data, 'plugin_n');
 
 ?>
 

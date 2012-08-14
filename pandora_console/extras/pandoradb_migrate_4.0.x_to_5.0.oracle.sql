@@ -282,3 +282,9 @@ ALTER TABLE tagente_modulo ADD (macros CLOB default '');
 ALTER TABLE tusuario ADD (metaconsole_access VARCHAR2(100) default 'only_console' NOT NULL);
 ALTER TABLE tusuario ADD CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced','custom','all','only_console'));
 
+-- -----------------------------------------------------
+-- Table `tplugin`
+-- -----------------------------------------------------
+
+ALTER TABLE tplugin ADD (macros CLOB default '');
+ALTER TABLE tplugin ADD (parameters CLOB default '');

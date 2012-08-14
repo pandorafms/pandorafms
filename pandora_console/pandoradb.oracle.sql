@@ -1104,7 +1104,9 @@ CREATE TABLE tplugin (
   	net_port_opt VARCHAR2(50) default '',
   	user_opt VARCHAR2(50) default '',
   	pass_opt VARCHAR2(50) default '',
-  	plugin_type NUMBER(5, 0) default 0 NOT NULL
+  	plugin_type NUMBER(5, 0) default 0 NOT NULL,
+  	macros CLOB default '',
+	parameters CLOB default ''
 ); 
 
 CREATE SEQUENCE tplugin_s INCREMENT BY 1 START WITH 1;

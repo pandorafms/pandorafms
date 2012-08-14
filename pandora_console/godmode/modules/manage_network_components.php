@@ -47,26 +47,17 @@ $plugin_user = (string) get_parameter ('plugin_user');
 $plugin_pass = (string) get_parameter ('plugin_pass');
 $plugin_parameter = (string) get_parameter ('plugin_parameter');
 
-$i = 1;
-$macros = array();
-while(1) {
-	$macro = (string)get_parameter ('field'.$i.'_macro');
-	if($macro == '') {
-		break;
+$macros = (string) get_parameter ('macros');
+
+if(!empty($macros)) {
+	$macros = json_decode(base64_decode($macros), true);
+
+	foreach($macros as $k => $m) {
+		$macros[$k]['value'] = get_parameter($m['macro'], '');
 	}
-	
-	$desc = (string)get_parameter ('field'.$i.'_desc');
-	$help = (string)get_parameter ('field'.$i.'_help');
-	$value = (string)get_parameter ('field'.$i.'_value');
 
-	$macros[$i]['macro'] = $macro;
-	$macros[$i]['desc'] = $desc;
-	$macros[$i]['help'] = $help;
-	$macros[$i]['value'] = $value;
-	$i++;
+	$macros = json_encode($macros);
 }
-
-$macros = json_encode($macros);
 
 $max_timeout = (int) get_parameter ('max_timeout');
 $id_modulo = (int) get_parameter ('id_component_type');
@@ -167,7 +158,8 @@ if ($create_component) {
 				'post_process' => $post_process,
 				'unit' => $unit,
 				'wizard_level' => $wizard_level,
-				'only_metaconsole' => $only_metaconsole));
+				'only_metaconsole' => $only_metaconsole,
+				'macros' => $macros));
 	}
 	else {
 		$id = '';
@@ -238,7 +230,8 @@ if ($update_component) {
 				'post_process' => $post_process,
 				'unit' => $unit,
 				'wizard_level' => $wizard_level,
-				'only_metaconsole' => $only_metaconsole));
+				'only_metaconsole' => $only_metaconsole,
+				'macros' => $macros));
 	}
 	else {
 		$result = '';

@@ -32,4 +32,17 @@ if ($search_modules) {
 		echo io_safe_output($module) . "\n";
 	}
 }
+
+$get_plugin_macros = get_parameter('get_plugin_macros');
+if($get_plugin_macros) {
+	$plugin_macros = db_get_value('macros','tplugin','id',get_parameter('id_plugin',0));
+	
+	$macros = array();
+	
+	$macros['base64'] = base64_encode($plugin_macros);
+	$macros['array'] = json_decode($plugin_macros,true);
+	
+	echo json_encode($macros);
+}
+
 ?>

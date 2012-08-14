@@ -880,7 +880,9 @@ CREATE TABLE "tplugin" (
   	"net_port_opt" varchar(50) default '',
   	"user_opt" varchar(50) default '',
   	"pass_opt" varchar(50) default '',
-  	"plugin_type" SMALLINT NOT NULL default 0
+  	"plugin_type" SMALLINT NOT NULL default 0,
+  	"macros" TEXT default '',
+  	"parameters" TEXT default ''
 ); 
 
 CREATE TABLE "tmodule" (

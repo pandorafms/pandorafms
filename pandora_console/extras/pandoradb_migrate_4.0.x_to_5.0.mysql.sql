@@ -277,3 +277,10 @@ ALTER TABLE tagente_modulo ADD `macros` text;
 -- -----------------------------------------------------
 
 ALTER TABLE tusuario ADD `metaconsole_access` enum('basic','advanced','custom','all','only_console') default 'only_console';
+
+-- -----------------------------------------------------
+-- Table `tplugin`
+-- -----------------------------------------------------
+
+ALTER TABLE tplugin ADD `macros` text;
+ALTER TABLE tplugin ADD `parameters` text;

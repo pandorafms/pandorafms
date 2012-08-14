@@ -272,3 +272,9 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "macros" TEXT default '';
 
 CREATE TYPE type_tusuario_metaconsole_access AS ENUM ('basic','advanced','custom','all','only_console');
 ALTER TABLE "tusuario" ADD COLUMN "metaconsole_access" type_tusuario_metaconsole_access default 'only_console';
+-- -----------------------------------------------------
+-- Table `tplugin`
+-- -----------------------------------------------------
+
+ALTER TABLE "tplugin" ADD COLUMN "macros" TEXT default '';
+ALTER TABLE "tplugin" ADD COLUMN "parameters" TEXT default '';

@@ -48,22 +48,19 @@ if ($view != "") {
 	$form_description = $plugin["description"];
 	$form_max_timeout = $plugin ["max_timeout"];
 	$form_execute = $plugin ["execute"];
-	$form_net_dst_opt = $plugin ["net_dst_opt"];
-	$form_net_port_opt = $plugin ["net_port_opt"];
-	$form_user_opt = $plugin ["user_opt"];
-	$form_pass_opt = $plugin ["pass_opt"];
 	$form_plugin_type = $plugin ["plugin_type"];
+	$macros = $plugin ["macros"];
+	$parameters = $plugin ["parameters"];
 } 
 if ($create != "") {
 	$form_name = "";
 	$form_description = "";
 	$form_max_timeout = "";
 	$form_execute = "";
-	$form_net_dst_opt = "";
-	$form_net_port_opt = "";
-	$form_user_opt = "";
-	$form_pass_opt = "";
 	$form_plugin_type = 0;
+	$form_parameters = "";
+	$macros = "";
+	$parameters = "";
 }
 
 // SHOW THE FORM
@@ -84,49 +81,137 @@ if (($create != "") OR ($view != "")) {
 	else
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create_plugin=1'>";
 	
-	echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox_color">';
+	$table->width = '98%';
+	$table->id = 'table-form';
+	$table->class = 'databox_color';
+	$table->style = array ();
+	$table->style[0] = 'font-weight: bold';
+	$table->style[2] = 'font-weight: bold';
+	$table->data = array ();
+
+	$data = array();
+	$data[0] = __('Name');
+	$data[1] = '<input type="text" name="form_name" size=100 value="'.$form_name.'">';
+	$table->colspan['plugin_name'][1] = 3;
+	$table->data['plugin_name'] = $data;
 	
-	echo '<tr><td class="datos">'.__('Name') . '</td>';
-	echo '<td class="datos">';
-	echo '<input type="text" name="form_name" size=100 value="'.$form_name.'"></td>';
-	
-	echo '<tr><td class="datos2">'.__('Plugin command') . '</td>';
-	echo '<td class="datos2">';
-	echo '<input type="text" name="form_execute" size=45 value="'.$form_execute.'"></td>';
-	
-	echo '<tr><td class="datos2">'.__('Plugin type') . '</td>';
-	echo '<td class="datos2">';
+	$data = array();
+	$data[0] = __('Plugin type');
 	$fields[0]= __("Standard");
 	$fields[1]= __("Nagios");
-	html_print_select ($fields, "form_plugin_type", $form_plugin_type);
+	$data[1] = html_print_select ($fields, "form_plugin_type", $form_plugin_type, '', '', 0, true);
+	$data[2] = __('Max. timeout');
+	$data[3] = '<input type="text" name="form_max_timeout" size=5 value="'.$form_max_timeout.'">';
+	$data[3] = html_print_extended_select_for_time ('form_max_timeout', $form_max_timeout, '', '', '0', false, true);
+	$table->data['plugin_type_timeout'] = $data;
 	
-	echo '<tr><td class="datos">'.__('Max. timeout') . '</td>';
-	echo '<td class="datos">';
-	echo '<input type="text" name="form_max_timeout" size=5 value="'.$form_max_timeout.'"></td>';
+	$data = array();
+	$data[0] = __('Description');
+	$data[1] = '<textarea name="form_description" cols="50" rows="4">'.$form_description.'</textarea>';
+	$table->colspan['plugin_desc'][1] = 3;
+	$table->data['plugin_desc'] = $data;
 	
-	echo '<tr><td class="datos2">'.__('IP address option') . '</td>';
-	echo '<td class="datos2">';
-	echo '<input type="text" name="form_net_dst_opt" size=15 value="'.$form_net_dst_opt.'"></td>';
+	echo '<fieldset style="width:96%"><legend>'.__('General').'</legend>';
+	html_print_table($table);
+	echo '</fieldset>';
 	
-	echo '<tr><td class="datos">'.__('Port option') . '</td>';
-	echo '<td class="datos">';
-	echo '<input type="text" name="form_net_port_opt" size=5 value="'.$form_net_port_opt.'"></td>';
+	$table->data = array();
+
+	$data = array();
+	$data[0] = __('Plugin command');
+	$data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component" size=100 value="'.$form_execute.'">';
+	$table->data['plugin_command'] = $data;
 	
+	$data = array();
+	$data[0] = __('Plug-in parameters').ui_print_help_icon ('plugin_parameters', true);
+	$data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component" size=100 value="'.$parameters.'">';
+	$table->data['plugin_parameters'] = $data;
 	
-	echo '<tr><td class="datos2">'.__('User option') . '</td>';
-	echo '<td class="datos2">';
-	echo '<input type="text" name="form_user_opt" size=15 value="'.$form_user_opt.'"></td>';
+	$data = array();
+	$data[0] = __('Command preview');
+	$data[1] = '<div id="command_preview" style="font-style:italic"></div>';
+	$table->data['plugin_preview'] = $data;
+
+	echo '<fieldset style="width:96%"><legend>'.__('Command').'</legend>';
+	html_print_table($table);
+	echo '</fieldset>';
+
+	$data = array();
 	
-	echo '<tr><td class="datos">'.__('Password option') . '</td>';
-	echo '<td class="datos">';
-	echo '<input type="text" name="form_pass_opt" size=15 value="'.$form_pass_opt.'"></td>';
+	$table->data = array ();
 	
-	echo '<tr><td class="datos2">'.__('Description').'</td>';
-	echo '<td class="datos2"><textarea name="form_description" cols="50" rows="4">';
-	echo $form_description;
-	echo '</textarea></td></tr>';
+	$macros = json_decode($macros,true);
 	
-	echo '</table>';
+	// The next row number is plugin_9
+	$next_name_number = 9;
+	$i = 1;
+	while(1) {
+		// Always print at least one macro
+		if((!isset($macros[$i]) || $macros[$i]['desc'] == '') && $i > 1) {
+			break;
+		}
+		$macro_desc_name = 'field'.$i.'_desc';
+		$macro_desc_value = '';
+		$macro_help_name = 'field'.$i.'_help';
+		$macro_help_value = '';
+		$macro_value_name = 'field'.$i.'_value';
+		$macro_value_value = '';
+		$macro_name_name = 'field'.$i.'_macro';
+		$macro_name = '_field'.$i.'_';
+		
+		if(isset($macros[$i]['desc'])) {
+			$macro_desc_value = $macros[$i]['desc'];
+		}
+		
+		if(isset($macros[$i]['help'])) {
+			$macro_help_value = $macros[$i]['help'];
+		}
+		
+		if(isset($macros[$i]['value'])) {
+			$macro_value_value = $macros[$i]['value'];
+		}
+		
+		$datam = array ();
+		$datam[0] = __('Description')."<span style='font-weight: normal'> ($macro_name)</span>";
+		$datam[0] .= html_print_input_hidden($macro_name_name, $macro_name, true);
+		$datam[1] = html_print_input_text ($macro_desc_name, $macro_desc_value, '', 30, 255, true);
+		$datam[2] = __('Default value')."<span style='font-weight: normal'> ($macro_name)</span>";
+		$datam[3] = html_print_input_text_extended ($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, false, '', "class='command_component'", true);
+	
+		$table->data['plugin_'.$next_name_number] = $datam;
+
+		$next_name_number++;
+		
+		$table->colspan['plugin_'.$next_name_number][1] = 3;
+
+		$datam = array ();
+		$datam[0] = __('Help')."<span style='font-weight: normal'> ($macro_name)</span><br><br><br>";
+		$datam[1] = html_print_input_text ($macro_help_name, $macro_help_value, '', 100, 255, true)."<br><br><br>";
+
+		$table->data['plugin_'.$next_name_number] = $datam;
+		$next_name_number++;
+		$i++;
+	}
+	
+	$datam = array ();
+	$datam[0] = '<span style="font-weight: bold">'.__('Add macro').'</span> <a href="javascript:new_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/add.png',true).'</a>';
+	$datam[0] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
+	$datam[0] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
+	$delete_macro_style = '';
+	if($i <= 2) {
+		$delete_macro_style = 'display:none;';
+	}
+	$datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/cancel.png',true).'</a></div>';
+	
+	$table->colspan['plugin_action'][0] = 2;
+	$table->rowstyle['plugin_action'] = 'text-align:center';
+	$table->colspan['plugin_action'][2] = 2;
+	$table->data['plugin_action'] = $datam;
+	
+	echo '<fieldset style="width:96%"><legend>'.__('Parameters macros').ui_print_help_icon ('macros', true).'</legend>';
+	html_print_table($table);
+	echo '</fieldset>';
+	
 	echo '<table width="98%">';
 	echo '<tr><td align="right">';
 	
@@ -150,22 +235,39 @@ else {
 		$plugin_description = get_parameter ("form_description", "");
 		$plugin_max_timeout = get_parameter ("form_max_timeout", "");
 		$plugin_execute = get_parameter ("form_execute", "");
-		$plugin_net_dst_opt = get_parameter ("form_net_dst_opt", "");
-		$plugin_net_port_opt = get_parameter ("form_net_port_opt", "");
-		$plugin_user_opt = get_parameter ("form_user_opt", "");
-		$plugin_pass_opt = get_parameter ("form_pass_opt", "");
 		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
-	
+		$parameters = get_parameter ("form_parameters", "");
+
+		// Get macros
+		$i = 1;
+		$macros = array();
+		while(1) {
+			$macro = (string)get_parameter ('field'.$i.'_macro');
+			if($macro == '') {
+				break;
+			}
+			
+			$desc = (string)get_parameter ('field'.$i.'_desc');
+			$help = (string)get_parameter ('field'.$i.'_help');
+			$value = (string)get_parameter ('field'.$i.'_value');
+
+			$macros[$i]['macro'] = $macro;
+			$macros[$i]['desc'] = $desc;
+			$macros[$i]['help'] = $help;
+			$macros[$i]['value'] = $value;
+			$i++;
+		}
+
+		$macros = json_encode($macros);
+
 		$values = array(
 			'name' => $plugin_name,  
 			'description' => $plugin_description, 
 			'max_timeout' => $plugin_max_timeout, 
 			'execute' => $plugin_execute, 
-			'net_dst_opt' => $plugin_net_dst_opt, 
-			'net_port_opt' => $plugin_net_port_opt, 
-			'user_opt' => $plugin_user_opt, 
 			'plugin_type' => $plugin_plugin_type,
-			'pass_opt' => $plugin_pass_opt); 
+			'parameters' => $parameters,
+			'macros' => $macros); 
 		
 		$result = false;
 		if ($values['name'] != '' && $values['execute'] != '')
@@ -185,21 +287,14 @@ else {
 		$plugin_description = get_parameter ("form_description", "");
 		$plugin_max_timeout = get_parameter ("form_max_timeout", "");
 		$plugin_execute = get_parameter ("form_execute", "");
-		$plugin_net_dst_opt = get_parameter ("form_net_dst_opt", "");
-		$plugin_net_port_opt = get_parameter ("form_net_port_opt", "");
-		$plugin_user_opt = get_parameter ("form_user_opt", "");
-		$plugin_pass_opt = get_parameter ("form_pass_opt", "");
 		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
+		$plugin_parameters = get_parameter ("form_parameters", "0");
 		
 		$values = array(
 			'name' => $plugin_name,
 			'description' => $plugin_description,
 			'max_timeout' => $plugin_max_timeout,
 			'execute' => $plugin_execute,
-			'net_dst_opt' => $plugin_net_dst_opt,
-			'net_port_opt' => $plugin_net_port_opt,
-			'user_opt' => $plugin_user_opt,
-			'pass_opt' => $plugin_pass_opt,
 			'plugin_type' => $plugin_plugin_type);
 		
 		$result = false;
@@ -280,4 +375,39 @@ else {
 	echo "</td></tr></table>";
 }
 
+ui_require_javascript_file('pandora_modules');
+
 ?>
+
+<script type="text/javascript">
+	
+$(document).ready(function() {
+	function update_preview() {
+		var command = $('#form_execute').val();
+		var parameters = $('#form_parameters').val();
+		
+		var i = 1;
+		
+		while(1) {
+			if($('#text-field'+i+'_value').val() == undefined) {
+				break;
+			}
+			
+			if($('#text-field'+i+'_value').val() != '') {
+				parameters = parameters.replace('_field'+i+'_',$('#text-field'+i+'_value').val());
+			}
+			
+			i++;
+		}
+		
+		$('#command_preview').html(command+' '+parameters);
+	}
+
+	update_preview();
+	
+	$('.command_component').live( 'keyup', function() {
+		update_preview();
+	});
+
+});
+</script>

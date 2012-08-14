@@ -1,3 +1,24 @@
+2012-08-14  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_modules.js
+	include/ajax/module.php
+	pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	godmode/agentes/module_manager_editor_plugin.php
+	godmode/agentes/configurar_agente.php
+	godmode/servers/plugin.php
+	godmode/modules/manage_network_components.php
+	godmode/modules/manage_network_components_form_plugin.php: Change all the
+	manage plugins form adding the dynamic macros in this side. Change the 
+	network components form to put the macro fields in this side.
+
+	* operation/users/user_edit.php: Change the "Flash chart" string
+	by "Interactive chart"
+
 2012-08-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_api.php: Force the static graphs in the 

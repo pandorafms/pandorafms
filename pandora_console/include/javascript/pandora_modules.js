@@ -188,6 +188,21 @@ function configure_modules_form () {
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 				
+				// Delete macro fields
+				$('.macro_field').remove();
+				
+				$('#hidden-macros').val('');
+
+				// If exist macros, load the fields
+				if(data["macros"] != '') {
+					$('#hidden-macros').val(Base64.encode(data["macros"]));
+					
+					var obj = jQuery.parseJSON(data["macros"]);
+					$.each(obj, function(k,macro) {
+						add_macro_field(macro, 'simple-macro');
+					});
+				}
+				
 				if (data["type"] >= 15 && data["type"] <= 18) {
 					$("#snmp_version option[value="+data["tcp_send"]+"]").select(1);
 					$("#text-snmp3_auth_user").val(data["plugin_user"]);
@@ -497,5 +512,71 @@ function new_macro(prefix) {
 		}
 	}
 	
+}
+
+function add_macro_field(macro, row_model_id) {
+	var macro_desc = macro['desc'];
+	var macro_help = macro['help'];
+	var macro_macro = macro['macro'];
+	var macro_value = macro['value'];
+		
+	var row_id = row_model_id + macro_macro;
+	
+	var $macro_field = $('#'+ row_model_id +'_field').clone(true);
+	
+	// Change attributes to be unique and with identificable class
+	$macro_field.attr('id',row_id);
+	$macro_field.attr('class','macro_field');
+		
+	// Assign values
+	$macro_field.insertAfter('#'+ row_model_id +'_field');
+	
+	// Change the label
+	if(macro_help == '') {
+		$('#'+row_id).children().eq(0).html(macro_desc);
+	}
+	else {
+		var field_desc = $('#'+row_id).children().eq(0).html();
+		field_desc = field_desc.replace('macro_desc',macro_desc);
+		field_desc = field_desc.replace('macro_help',macro_help);
+		$('#'+row_id).children().eq(0).html(field_desc);
+	}
+	
+	// Change the text box id and value
+	$('#'+row_id).children().eq(1).children().attr('id','text-'+macro_macro);
+	$('#'+row_id).children().eq(1).children().attr('name',macro_macro);
+	$('#'+row_id).children().eq(1).children().val(macro_value);
+
+		
+	$('#'+row_id).show();
+}
+
+function load_plugin_macros_fields(row_model_id) {
+	// Get plugin macros when selected and load macros fields
+	var id_plugin = $('#id_plugin').val();
+	
+	var params = [];
+	params.push("page=include/ajax/module");
+	params.push("get_plugin_macros=1");
+	params.push("id_plugin="+id_plugin);
+	jQuery.ajax ({
+		data: params.join ("&"),
+		type: 'POST',
+		url: action="ajax.php",
+		async: false,
+		timeout: 10000,
+		dataType: 'json',
+		success: function (data) {
+			// Delete all the macro fields
+			$('.macro_field').remove();
+
+			if(data['array'] != null) {
+				$('#hidden-macros').val(data['base64']);
+				jQuery.each (data['array'], function (i, macro) {
+					add_macro_field(macro, row_model_id);
+				});
+			}
+		}
+	});	
 }
 

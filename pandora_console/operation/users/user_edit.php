@@ -239,7 +239,7 @@ if (count($usr_groups) > 1){
 	}
 }
 
-echo '</td></tr><tr><td class="datos">'.__('Flash charts').'</td><td class="datos2">';
+echo '</td></tr><tr><td class="datos">'.__('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true).'</td><td class="datos2">';
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
 echo html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
 echo '</td></tr><tr><td class="datos">'.__('Block size for pagination'). ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true) . '</td><td class="datos2">';

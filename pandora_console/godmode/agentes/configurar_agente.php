@@ -21,6 +21,7 @@ enterprise_include ('godmode/agentes/configurar_agente.php');
 enterprise_include ('include/functions_policies.php');
 enterprise_include ('include/functions_modules.php');
 include_once($config['homedir'] . "/include/functions_agents.php");
+ui_require_javascript_file('encode_decode_base64');
 
 check_login ();
 
@@ -123,6 +124,7 @@ $unit = "";
 $id_tag = array();
 $tab_description = '';
 $url_description = '';
+$macros = '';
 
 $create_agent = (bool) get_parameter ('create_agent');
 
@@ -144,7 +146,6 @@ if ($create_agent) {
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
-	
 	
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
@@ -670,6 +671,19 @@ if ($update_module || $create_module) {
 	$custom_integer_1 = (int) get_parameter ('prediction_module');
 	$custom_integer_2 = (int) get_parameter ('custom_integer_2');
 	
+	// Get macros
+	$macros = (string) get_parameter ('macros');
+
+	if(!empty($macros)) {
+		$macros = json_decode(base64_decode($macros), true);
+
+		foreach($macros as $k => $m) {
+			$macros[$k]['value'] = get_parameter($m['macro'], '');
+		}
+
+		$macros = json_encode($macros);
+	}
+	
 	// Services are an enterprise feature, 
 	// so we got the parameters using this function.
 	
@@ -776,7 +790,8 @@ if ($update_module) {
 		'custom_integer_1' => $custom_integer_1,
 		'custom_integer_2' => $custom_integer_2,
 		'min_ff_event' => $ff_event,
-		'unit' => $unit);
+		'unit' => $unit,
+		'macros' => $macros);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$result = false;
@@ -883,7 +898,8 @@ if ($create_module) {
 		'custom_integer_1' => $custom_integer_1,
 		'custom_integer_2' => $custom_integer_2,
 		'min_ff_event' => $ff_event,
-		'unit' => $unit);
+		'unit' => $unit,
+		'macros' => $macros);
 	
 	if($prediction_module == 3 && $serialize_ops == '') {
 		$id_agent_module = false;

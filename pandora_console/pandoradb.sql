@@ -989,6 +989,8 @@ CREATE TABLE IF NOT EXISTS `tplugin` (
     `user_opt` varchar(50) default '',
     `pass_opt` varchar(50) default '',
     `plugin_type` int(2) UNSIGNED NOT NULL default 0,
+    `macros` text,
+    `parameters` text,
     PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8; 
 

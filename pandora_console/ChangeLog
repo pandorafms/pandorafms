@@ -1,3 +1,10 @@
+2012-08-14  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/reporting/reporting_builder.php
+	  include/functions_reports.php: Added filter to report list.
+
+	* godmode/agentes/module_manager.php: Fixed warning.
+
 2012-08-14  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_modules.js

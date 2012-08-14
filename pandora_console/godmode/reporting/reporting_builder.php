@@ -225,16 +225,62 @@ switch ($action) {
 				__('Successfully deleted'),
 				__('Could not be deleted'));
 		}
+
+		$id_group = (int) get_parameter ("id_group", 0);
+		$search = trim(get_parameter ("search", ""));
+		
+		$search_sql = '';
+		if ($search != ""){
+			$search_name = "%$search%' OR description LIKE '%$search%";
+		}
+		
+		$table_aux->width = '98%';
+		$table_aux->colspan[0][0] = 4;
+		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
+		
+		$table_aux->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:150px');
+		
+		$table_aux->data[0][2] = "<b>". __("Free text for search: ") . "</b>";
+		$table_aux->data[0][3] = html_print_input_text ("search", $search, '', 30, '', true);
+
+		$table_aux->data[0][6] = html_print_submit_button(__('Search'), 'search_submit', false, 'class="sub upd"', true);
+
+		echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group='.$id_group'
+			method='post'>";
+			html_print_table($table_aux);
+		echo "</form>";
+		
+		ui_require_jquery_file ('pandora.controls');
+		ui_require_jquery_file ('ajaxqueue');
+		ui_require_jquery_file ('bgiframe');
+		ui_require_jquery_file ('autocomplete');
+
+
+		// Show only selected groups	
+		if ($id_group > 0) {
+			$group = array("$id_group" => $id_group);
+		} else {
+			$group = false;
+		}
 		
 		$own_info = get_user_info ($config['id_user']);
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 			$return_all_group = true;
 		else
 			$return_all_group = false;
-		
-		$reports = reports_get_reports (array ('order' => 'name'),
-			array ('name', 'id_report', 'description', 'private', 'id_user', 'id_group'), $return_all_group, 'IR');
-		
+		if ($search != "") {
+			$filter = array (
+				'name' => $search_name, 
+				'order' => 'name'
+			);
+		} else {
+			$filter = array (
+				'order' => 'name'
+			);
+		}		
+
+		$reports = reports_get_reports ($filter,
+			array ('name', 'id_report', 'description', 'private', 'id_user', 'id_group'), $return_all_group, 'IR', $group);		
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';

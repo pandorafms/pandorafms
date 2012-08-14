@@ -17,6 +17,8 @@
 if (isset ($id_agente)) {
 	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
 
+} else {
+	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module';
 }
 
 enterprise_include ('godmode/agentes/module_manager.php');
@@ -28,7 +30,8 @@ require_once ('include/functions_servers.php');
 $search_string = io_safe_output(urldecode(trim(get_parameter ("search_string", ""))));
 
 // Search string filter form
-echo '<form id="create_module_type" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
+//echo '<form id="create_module_type" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
+echo '<form id="create_module_type" method="post" action="'.$url.'">';
 echo '<table width="98%" cellpadding="2" cellspacing="2" class="databox" >';
 echo "<tr><td class='datos' style='width:25%'>";
 echo __('Search') . ' ' .

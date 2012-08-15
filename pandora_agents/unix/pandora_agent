@@ -39,19 +39,6 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-# Load thread support
-eval {
-	local $SIG{__DIE__};
-	require threads;
-	require threads::shared;
-	require Thread::Semaphore;
-};
-if (!$@) {
-	$Sem = Thread::Semaphore->new;
-	threads::shared::share (\$Xml);
-	threads::shared::share (\$Sem);
-}	
-
 use constant AGENT_VERSION => '4.0.2';
 use constant AGENT_BUILD => '120625';
 
@@ -1724,6 +1711,27 @@ $Conf{'temporal'} = fix_directory ($Conf{'temporal'});
 error ("Temporal directory '" . $Conf{'temporal'} . "' does not exist.") unless (-d "$Conf{'temporal'}");
 $Conf{'server_path'} = fix_directory ($Conf{'server_path'});
 $Conf{'secondary_server_path'} = fix_directory ($Conf{'secondary_server_path'});
+
+# Load thread support if agent_threads is greater than 1.
+if ($Conf{'agent_threads'} > 1) {
+	eval {
+		local $SIG{__DIE__};
+		require threads;
+		require threads::shared;
+		require Thread::Semaphore;
+	};
+	if (!$@) {
+		$Sem = Thread::Semaphore->new;
+		threads::shared::share (\$Xml);
+		threads::shared::share (\$Sem);
+		log_message ('log', 'Using thread library.');
+	} else {
+		log_message ('log', 'Thread library is not available. agent_threads is set to 1 (disabled).');
+		$Conf{'agent_threads'} = 1;
+	}
+} else {
+	log_message ('log', 'Thread is disabled.');
+}
 
 # Startup delay
 log_message ('log', 'Sleeping for ' . $Conf{'delayed_startup'} . ' seconds.') if ($Conf{'delayed_startup'} > 0);

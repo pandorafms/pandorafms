@@ -1,3 +1,9 @@
+2012-08-15  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent: Changed not to use thread library when agent_threads
+	is set to 1 or undefined. This change is to avoid RHEL/CentOS 5 perl
+	thread library bug.
+
 2012-08-01  Sergio Martin <sergio.martin@artica.es>
 
 	* pandora_agent: Add the macros support in module_exec

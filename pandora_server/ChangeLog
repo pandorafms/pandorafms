@@ -1,3 +1,8 @@
+2012-08-16 Vanessa Gil <vanessa.gil@artica.es>
+	
+	* util/recon_scripts/snmpdevices.pl: Added several communities
+	to recon scripts.
+
 2012-08-10 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* lib/PandoraFMS/PredictionServer.pm: changed for the SLA service

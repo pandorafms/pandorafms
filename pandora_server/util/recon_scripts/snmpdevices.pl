@@ -205,11 +205,21 @@ for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 	
 	$resp = "";
 	
-	# Obtain SNMP response
-	$resp = get_snmp_response ($target_timeout, $target_community, $addr);
+	my @community_list = split (",", $target_community);
+	my $community_validate = 0;
+	my $community;
+	
+	foreach $community (@community_list) {
+		$resp = get_snmp_response ($target_timeout, $community, $addr);
+		
+		if ($resp ne "") {
+			$community_validate = 1;
+			$target_community = $community;
+			last;
+		}
+	}
 
-	# No valid SNMP response.
-	if ($resp eq ""){
+	if ($community_validate eq 0) {
 		next;
 	}
 

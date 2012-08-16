@@ -288,3 +288,9 @@ ALTER TABLE tusuario ADD CONSTRAINT t_usuario_metaconsole_access_cons CHECK (met
 
 ALTER TABLE tplugin ADD (macros CLOB default '');
 ALTER TABLE tplugin ADD (parameters CLOB default '');
+
+-- -----------------------------------------------------
+-- Table `trecon_task`
+-- -----------------------------------------------------
+ALTER TABLE trecon_task MODIFY subnet TEXT NOT NULL;
+ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL;

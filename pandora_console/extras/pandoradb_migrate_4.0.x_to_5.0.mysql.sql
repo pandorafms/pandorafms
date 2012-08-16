@@ -291,3 +291,9 @@ ALTER TABLE tplugin ADD `parameters` text;
 
 UPDATE trecon_script SET `description`='This&#x20;script&#x20;is&#x20;used&#x20;to&#x20;automatically&#x20;detect&#x20;SNMP&#x20;Interfaces&#x20;on&#x20;devices,&#x20;used&#x20;as&#x20;Recon&#x20;Custom&#x20;Script&#x20;in&#x20;the&#x20;recon&#x20;task.&#x20;Parameters&#x20;used&#x20;are:&#x0d;&#x0a;&#x0d;&#x0a;*&#x20;custom_field1&#x20;=&#x20;network.&#x20;i.e.:&#x20;192.168.100.0/24&#x0d;&#x0a;*&#x20;custom_field2&#x20;=&#x20;several&#x20;communities&#x20;separated&#x20;by&#x20;comma.&#x20;For&#x20;example:&#x20;snmp_community,public,private&#x20;&#x0d;&#x0a;*&#x20;custom_field3&#x20;=&#x20;optative&#x20;parameter&#x20;to&#x20;force&#x20;process&#x20;downed&#x20;interfaces&#x20;&#40;use:&#x20;&#039;-a&#039;&#41;.&#x20;Only&#x20;up&#x20;interfaces&#x20;are&#x20;processed&#x20;by&#x20;default&#x20;&#x0d;&#x0a;&#x0d;&#x0a;See&#x20;documentation&#x20;for&#x20;more&#x20;information.'
 WHERE id_recon_script=1;
+
+-- -----------------------------------------------------
+-- Table `trecon_task
+-- -----------------------------------------------------
+ALTER TABLE trecon_task MODIFY subnet TEXT NOT NULL DEFAULT '';
+ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL DEFAULT '';

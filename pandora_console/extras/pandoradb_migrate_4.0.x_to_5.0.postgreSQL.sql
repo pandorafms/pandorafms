@@ -278,3 +278,9 @@ ALTER TABLE "tusuario" ADD COLUMN "metaconsole_access" type_tusuario_metaconsole
 
 ALTER TABLE "tplugin" ADD COLUMN "macros" TEXT default '';
 ALTER TABLE "tplugin" ADD COLUMN "parameters" TEXT default '';
+
+-- -----------------------------------------------------
+-- Table `trecon_task`
+-- -----------------------------------------------------
+ALTER TABLE "trecon_task" ALTER COLUMN "subnet" TYPE TEXT;
+ALTER TABLE "trecon_task" ALTER COLUMN "field1" TYPE TEXT;

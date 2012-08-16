@@ -1,3 +1,12 @@
+2012-08-16  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/PluginServer.pm: Adapted the plugin server to
+	new macros system and add check to timeout == 0
+
+	* util/pandora_migrate_plugins.pl: Add a new migration script 
+	MANDATORY when upgrade Pandora FMS 4.0.x to 5.0 to adapt the 
+	existing plugins to new macros system
+
 2012-08-16 Vanessa Gil <vanessa.gil@artica.es>
 	
 	* util/recon_scripts/snmpdevices.pl: Added several communities

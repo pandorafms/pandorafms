@@ -26,6 +26,7 @@ use Thread::Semaphore;
 
 use POSIX qw(strftime);
 use HTML::Entities;
+use JSON qw(decode_json);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -144,27 +145,41 @@ sub data_consumer ($$) {
 	my $timeout = ($plugin->{'max_timeout'} < $pa_config->{'plugin_timeout'}) ?
 				   $plugin->{'max_timeout'} : $pa_config->{'plugin_timeout'};
 
+	# Setting default timeout if is invalid
+	if($timeout <= 0) {
+		$timeout = 15;
+	}
+	
 	# Build command to execute
 	my $command = $plugin->{'execute'};
-	if ($plugin->{'net_dst_opt'} ne ''){
-		$command .= ' ' . $plugin->{'net_dst_opt'} . ' ' . $module->{'ip_target'};
-	} 
-	if ($plugin->{'net_port_opt'} ne '') {
-		$command .= ' ' . $plugin->{'net_port_opt'} . ' ' . $module->{'tcp_port'};
+	
+	my $parameters = $plugin->{'parameters'};
+	
+	# Macros
+	eval {
+		if ($module->{'macros'} ne '') {
+			logger ($pa_config, "Decoding json macros from # $module_id plugin command '$command'", 10);
+			my $macros = decode_json($module->{'macros'});
+			my %macros = %{$macros};
+			if(ref($macros) eq "HASH") {
+				foreach my $macro_id (keys(%macros))
+				{
+					logger ($pa_config, "Replacing macro ".$macros{$macro_id}{'macro'}." by '".$macros{$macro_id}{'value'}."' in AM # $module_id ", 10);
+					$parameters =~ s/$macros{$macro_id}{'macro'}/$macros{$macro_id}{'value'}/g;
+				}
+			}
+		}
+	};
+	
+	# If something went wrong with macros, we log it
+	if ($@) {
+		logger ($pa_config, "Error reading macros from module # $module_id. Probably malformed json", 10);
 	}
-	if ($plugin->{'user_opt'} ne '') {
-		$command .= ' ' . $plugin->{'user_opt'} . ' ' . $module->{'plugin_user'};
-	}
-	if ($plugin->{'pass_opt'} ne '') {
-		$command .= ' ' . $plugin->{'pass_opt'} . ' ' . $module->{'plugin_pass'};
-	}
-
-	# Extra parameter
-	if ($module->{'plugin_parameter'} ne '') {
-		$command .= ' ' . $module->{'plugin_parameter'};
-	}
+	
+	$command .= ' ' . $parameters;
 
 	$command = decode_entities($command);
+
 	logger ($pa_config, "Executing AM # $module_id plugin command '$command'", 9);
 
 	# Execute command
@@ -175,7 +190,6 @@ sub data_consumer ($$) {
 		$module_data = `$command`;
 	};
 	my $ReturnCode = ($? >> 8) & 0xff;
-
 
 	if ($plugin->{'plugin_type'} == 1) {
 

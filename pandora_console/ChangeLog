@@ -1,3 +1,11 @@
+2012-08-16 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/gis_maps/ajax.php, operation/gis_maps/render_view.php,
+	include/functions_gis.php, include/javascript/openlayers.pandora.js:
+	added the feature to hidden the names of agents in the map, and
+	when it is set the default icon in the setup and the agent haven't
+	the icon, then this is show in the map.
+
 2012-08-16  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_config.php,

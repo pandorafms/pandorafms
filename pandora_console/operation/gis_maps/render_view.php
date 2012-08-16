@@ -97,8 +97,9 @@ else {
 
 if (check_acl ($config["id_user"], $map['group_id'], "IW"))
 	$buttons [] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='. $idMap.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
-	
-$buttonsString = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' . html_print_image("images/bricks.png", true, array("class" => "top", "border" => '0')) . '&nbsp; Agent&nbsp;-&nbsp;test_gis1</a></li></ul></div><div id="menu_tab"><ul class="mn"><li class="nomn"><a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente=3">' . html_print_image("images/setup.png", true, array("class" => "top", "title" => "Manage", "border" => "0", "width" => "16", "title" => "Manage")) . '&nbsp;</a></li><li class="nomn_high"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' . html_print_image("images/monitor.png", true, array("class" => "top", "title" => "Main", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=data">' . html_print_image("images/lightbulb.png", true, array("class" => "top", "title" => "Data", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=alert">' . html_print_image("images/bell.png", true, array("class" => "top", "title" => "Alerts", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=sla&amp;id_agente=3">' . html_print_image("images/images.png", true, array("class" => "top", "title" => "S.L.A.", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;group_id=2">' . html_print_image("images/agents_group.png", true, array("class" => "top", "title" => "Group", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=inventory&amp;id_agente=3">' . html_print_image("images/page_white_text.png", true, array("class" => "top", "title" => "Inventory", "border" => "0", "width" => "16")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente=3">' . html_print_image("images/world.png", array("class" => "top", "title" => "GIS data", "border" => "0")) . '&nbsp;</a>';
+
+$buttonsString = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' .
+	html_print_image("images/bricks.png", true, array("class" => "top", "border" => '0')) . '&nbsp; Agent&nbsp;-&nbsp;test_gis1</a></li></ul></div><div id="menu_tab"><ul class="mn"><li class="nomn"><a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente=3">' . html_print_image("images/setup.png", true, array("class" => "top", "title" => "Manage", "border" => "0", "width" => "16", "title" => "Manage")) . '&nbsp;</a></li><li class="nomn_high"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' . html_print_image("images/monitor.png", true, array("class" => "top", "title" => "Main", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=data">' . html_print_image("images/lightbulb.png", true, array("class" => "top", "title" => "Data", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=alert">' . html_print_image("images/bell.png", true, array("class" => "top", "title" => "Alerts", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=sla&amp;id_agente=3">' . html_print_image("images/images.png", true, array("class" => "top", "title" => "S.L.A.", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;group_id=2">' . html_print_image("images/agents_group.png", true, array("class" => "top", "title" => "Group", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=inventory&amp;id_agente=3">' . html_print_image("images/page_white_text.png", true, array("class" => "top", "title" => "Inventory", "border" => "0", "width" => "16")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente=3">' . html_print_image("images/world.png", array("class" => "top", "title" => "GIS data", "border" => "0")) . '&nbsp;</a>';
 
 $times = array(
 	5 => 5 . ' ' . __('seconds'),
@@ -148,7 +149,7 @@ if ($layers != false) {
 		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer'], array('nombre'));
 		
 		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer);
-
+		
 		foreach ($agentNames as $agentName) {
 			$idAgent = agents_get_agent_id($agentName);
 			$coords = gis_get_data_last_position_agent($idAgent);
@@ -172,16 +173,18 @@ if ($layers != false) {
 		}
 	}
 	gis_add_parent_lines();
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$timestampLastOperation = db_get_value_sql("SELECT UNIX_TIMESTAMP()");
 			break;
 		case "postgresql":
-			$timestampLastOperation = db_get_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP))");
+			$timestampLastOperation = db_get_value_sql(
+				"SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP))");
 			break;
 		case "oracle":
-			$timestampLastOperation = db_get_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) from dual");
+			$timestampLastOperation = db_get_value_sql(
+				"SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) FROM dual");
 			break;
 	}
 	
@@ -214,6 +217,6 @@ else {
 		});
 		
 	</script>
-<?php	
+<?php
 }
 ?>

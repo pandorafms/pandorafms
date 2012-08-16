@@ -122,13 +122,13 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 	var option = {
 			controls: controlsList,
 			projection: new OpenLayers.Projection("EPSG:900913"),
-            displayProjection: new OpenLayers.Projection("EPSG:4326"),
-            units: "m",
-            numZoomLevels: 18,
-            maxResolution: 156543.0339,
+			displayProjection: new OpenLayers.Projection("EPSG:4326"),
+			units: "m",
+			numZoomLevels: 18,
+			maxResolution: 156543.0339,
 			maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34)
 		};
-
+	
 	map = new OpenLayers.Map(id_div, option);
 	
 	var baseLayer = null;
@@ -203,10 +203,10 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 						),
 						new OpenLayers.Size(objBaseLayers[baselayerIndex]['image_width'], objBaseLayers[baselayerIndex]['image_height']),
 						{projection: new OpenLayers.Projection("EPSG:4326"),
-		            		numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels']
+							numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels']
 						}
 					);
-		            map.addLayer(baseLayer);
+					map.addLayer(baseLayer);
 					break;
 			}
 		}
@@ -214,7 +214,7 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 	
 	var lonLat = new OpenLayers.LonLat(center_longitude, center_latitude)
 		.transform(map.displayProjection, map.getProjectionObject());
-
+	
 	map.setCenter (lonLat, initial_zoom);
 }
 
@@ -500,10 +500,10 @@ function showHideLayer(name, action) {
 function js_addAgentPoint(layerName, pointName, lon, lat, id, type_string, statusAgent, idParent) {
 	var point = new OpenLayers.Geometry.Point(lon, lat)
 		.transform(map.displayProjection, map.getProjectionObject());
-
+	
 	var layer = map.getLayersByName(layerName);
 	layer = layer[0];
-
+	
 	feature = new OpenLayers.Feature.Vector(point,{id_parent: idParent, status: statusAgent, nombre: pointName, id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) });
 	
 	if (isHideFeatureByStatus(statusAgent)) {

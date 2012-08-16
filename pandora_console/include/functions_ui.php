@@ -1483,7 +1483,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
  * @return string HTML code if return parameter is true.
  */
 function ui_print_help_tip ($text, $return = false, $img = 'images/tip.png') {
-	$output = '<a href="javascript:" class="tip" >' . html_print_image ($img, true) . '<span>'.$text.'</span></a>';
+	$output = '<a href="javascript:" class="tip" >' . html_print_image ($img, true) . '<span style="text-align:center">'.$text.'</span></a>';
 	
 	if ($return)
 		return $output;

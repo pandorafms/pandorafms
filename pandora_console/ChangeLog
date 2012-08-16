@@ -1,3 +1,15 @@
+2012-08-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php: Improve help tip centering the text
+
+	* general/login_help_dialog.php: Fix a typo
+
+	* godmode/agentes/module_manager_editor_plugin.php
+	godmode/servers/plugin.php
+	godmode/modules/manage_network_components_form_plugin.php: Clean plugin forms
+	of unecessary fields and improve the plugin editor form locking the command 
+	configuration when a plugin is used by any modules
+
 2012-08-16  Vanessa Gil <vanessa.gil@artica.es>
 
 	* pandoradb.data.oracle.sql

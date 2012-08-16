@@ -38,7 +38,7 @@ if (is_ajax()) {
 echo '<div id="login_help_dialog" title="' . __('Welcome to Pandora FMS') . '" style="">';
 
 	echo '<div style="position:absolute; top:30px; left: 10px; text-align: left; right:0%; height:70px; width:560px; margin: 0 auto; border: 1px solid #FFF; line-height: 19px;">';
-		echo '<span style="font-size: 15px;">' . __('If this is your first time with Pandora FMS, we propose you a few links to learn more about Pandora FMS. Monitoring could be overhelm, but take your time to learn how to use the power of Pandora!') . '</span>';
+		echo '<span style="font-size: 15px;">' . __('If this is your first time with Pandora FMS, we propose you a few links to learn more about Pandora FMS. Monitoring could be overwhelm, but take your time to learn how to use the power of Pandora!') . '</span>';
 	echo '</div>';	
 	
 	echo '<div style="position:absolute; top:110px; text-align: center; left:0%; right:0%; height:210px; width:580px; margin: 0 auto; border: 1px solid #FFF">';

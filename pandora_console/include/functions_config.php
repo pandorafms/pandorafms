@@ -254,6 +254,9 @@ function config_update_config () {
 			config_update_value ('module_size_text_medium', get_parameter('module_size_text_medium'));
 			config_update_value ('description_size_text', get_parameter('description_size_text'));
 			config_update_value ('item_title_size_text', get_parameter('item_title_size_text'));
+			config_update_value ('gis_label', get_parameter ('gis_label'));
+                        config_update_value ('gis_default_icon', get_parameter ('gis_default_icon'));
+
 			/////////////
 			break;
 		case 'enterprise/godmode/setup/setup_history':
@@ -712,7 +715,15 @@ function config_process_config () {
 	if (!isset($config['item_title_size_text'])) {
 		config_update_value ('item_title_size_text', 45);
 	}
-	
+
+        if (!isset($config['gis_label'])) {
+                config_update_value ('gis_label', 0);
+        }
+
+        if (!isset($config['gis_default_icon'])) {
+                config_update_value ('gis_default_icon', "marker");
+        }
+
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }

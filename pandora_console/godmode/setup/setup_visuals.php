@@ -37,6 +37,7 @@ enterprise_include ('godmode/setup/setup_visuals.php');
 */
 
 require_once ('include/functions_themes.php');
+require_once ('include/functions_gis.php');
 
 // Header
 ui_print_page_header (__('Visual configuration'), "", false, "", true);
@@ -138,9 +139,47 @@ $table->data[20][0] = __('Item title size text') . ui_print_help_tip(__('When th
 $table->data[20][1] = html_print_input_text ('item_title_size_text', $config["item_title_size_text"], '', 3, 3, true);
 
 
+$table->data[21][0] = __('GIS Labels') . ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
+$table->data[21][1] = __('Yes').'&nbsp;'.html_print_radio_button ('gis_label', 1, '', $config["gis_label"], true).'&nbsp;&nbsp;';
+$table->data[21][1] .= __('No').'&nbsp;'.html_print_radio_button ('gis_label', 0, '', $config["gis_label"], true);
+
+
+$listIcons = gis_get_array_list_icons();
+
+$arraySelectIcon = array();
+foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
+
+$path = 'images/gis_map/icons/'; //TODO set better method the path
+
+$table->data[22][0] = __('Default icon in GIS') . ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
+
+$gis_default_icon = $config["gis_default_icon"];
+
+if($gis_default_icon == '') {
+        $display_icons = 'none';
+        // Hack to show no icon. Use any given image to fix not found image errors
+        $path_without = "images/spinner.png";
+        $path_default = "images/spinner.png";
+        $path_ok = "images/spinner.png";
+        $path_bad = "images/spinner.png";
+        $path_warning = "images/spinner.png";
+}
+else {
+        $display_icons = '';
+        $path_without = $path . $gis_default_icon . ".default.png";
+        $path_default = $path . $gis_default_icon . ".default.png";
+        $path_ok = $path . $gis_default_icon . ".ok.png";
+        $path_bad = $path . $gis_default_icon . ".bad.png";
+        $path_warning = $path . $gis_default_icon . ".warning.png";
+}
+
+$table->data[22][1] = html_print_select($arraySelectIcon, "gis_default_icon", $gis_default_icon, "changeIcons();", __('None'), '', true) .  '&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .  '&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) . '&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
+
+
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);
 html_print_table ($table);
+
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';
@@ -166,6 +205,41 @@ function load_fonts() {
 }
 ?>
 <script language="javascript" type="text/javascript">
+
+//Use this function for change 3 icons when change the selectbox
+function changeIcons() {
+        icon = $("#gis_default_icon :selected").val();
+
+        $("#icon_without_status").attr("src", "images/spinner.png");
+        $("#icon_default").attr("src", "images/spinner.png");
+        $("#icon_ok").attr("src", "images/spinner.png");
+        $("#icon_bad").attr("src", "images/spinner.png");
+        $("#icon_warning").attr("src", "images/spinner.png");
+
+        if (icon.length == 0) {
+                $("#icon_without_status").attr("style", "display:none;");
+                $("#icon_default").attr("style", "display:none;");
+                $("#icon_ok").attr("style", "display:none;");
+                $("#icon_bad").attr("style", "display:none;");
+                $("#icon_warning").attr("style", "display:none;");
+        }
+        else {
+                $("#icon_without_status").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
+                $("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
+                $("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + ".ok.png");
+                $("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + ".bad.png");
+                $("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + ".warning.png");
+                $("#icon_without_status").attr("style", "");
+                $("#icon_default").attr("style", "");
+                $("#icon_ok").attr("style", "");
+                $("#icon_bad").attr("style", "");
+                $("#icon_warning").attr("style", "");
+        }
+
+        //$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
+}
+
+
 $(document).ready (function () {
 	$("#form_setup #text-graph_color1").attachColorPicker();
 	$("#form_setup #text-graph_color2").attachColorPicker();

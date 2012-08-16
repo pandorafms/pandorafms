@@ -1,3 +1,11 @@
+2012-08-16  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_config.php,
+	godmode/setup/setup_visuals.php: Support for hide label in GIS maps,
+	and use by default an icon agent, instead group icons. 
+
+	Setup is working, need code in javascript/GIS to implement it (miguel!).
+
 2012-08-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_api.php: Force the static graphs in the 

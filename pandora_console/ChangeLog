@@ -1,3 +1,11 @@
+2012-08-16  Vanessa Gil <vanessa.gil@artica.es>
+
+	* pandoradb.data.oracle.sql
+	  pandoradb.data.postgreSQL.sql
+	  pandoradb.data.sql
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql: Added example:
+	 several communities to recon task.
+
 2012-08-14  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/reporting/reporting_builder.php

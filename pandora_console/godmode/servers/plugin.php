@@ -55,7 +55,7 @@ if ($view != "") {
 if ($create != "") {
 	$form_name = "";
 	$form_description = "";
-	$form_max_timeout = "";
+	$form_max_timeout = 15;
 	$form_execute = "";
 	$form_plugin_type = 0;
 	$form_parameters = "";
@@ -100,7 +100,7 @@ if (($create != "") OR ($view != "")) {
 	$fields[0]= __("Standard");
 	$fields[1]= __("Nagios");
 	$data[1] = html_print_select ($fields, "form_plugin_type", $form_plugin_type, '', '', 0, true);
-	$data[2] = __('Max. timeout');
+	$data[2] = __('Max. timeout').ui_print_help_tip (__('This value only will be applied if is minor than the server general configuration plugin timeout').'. <br><br>'.__('If you set a 0 seconds timeout, the server plugin timeout will be used'), true);
 	$data[3] = '<input type="text" name="form_max_timeout" size=5 value="'.$form_max_timeout.'">';
 	$data[3] = html_print_extended_select_for_time ('form_max_timeout', $form_max_timeout, '', '', '0', false, true);
 	$table->data['plugin_type_timeout'] = $data;
@@ -117,14 +117,42 @@ if (($create != "") OR ($view != "")) {
 	
 	$table->data = array();
 
+	$plugin_id = get_parameter ("view", 0);
+	
+	$locked = true;
+	
+	// If we have plugin id (update mode) and this plugin used by any module or component
+	// The command configuration will be locked
+	if($plugin_id > 0) {
+		$modules_using_plugin = db_get_value_filter('count(*)','tagente_modulo', array('delete_pending' => 0, 'id_plugin' => $plugin_id));	
+		$components_using_plugin = db_get_value_filter('count(*)','tnetwork_component', array('id_plugin' => $plugin_id));	
+		if(($components_using_plugin + $modules_using_plugin) == 0) {
+			$locked = false;
+		}
+	}
+	else {
+		$locked = false;
+	}
+		
+	$disabled = '';
+	if($locked) {
+		$disabled = 'readonly="readonly"';
+	}
+	
 	$data = array();
 	$data[0] = __('Plugin command');
-	$data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component" size=100 value="'.$form_execute.'">';
+	$data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf" size=100 value="'.$form_execute.'" '.$disabled.'>';
+	if($locked) {
+		$data[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
+	}
 	$table->data['plugin_command'] = $data;
 	
 	$data = array();
 	$data[0] = __('Plug-in parameters').ui_print_help_icon ('plugin_parameters', true);
-	$data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component" size=100 value="'.$parameters.'">';
+	$data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf" size=100 value="'.$parameters.'" '.$disabled.'>';
+	if($locked) {
+		$data[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
+	}
 	$table->data['plugin_parameters'] = $data;
 	
 	$data = array();
@@ -174,10 +202,17 @@ if (($create != "") OR ($view != "")) {
 		$datam = array ();
 		$datam[0] = __('Description')."<span style='font-weight: normal'> ($macro_name)</span>";
 		$datam[0] .= html_print_input_hidden($macro_name_name, $macro_name, true);
-		$datam[1] = html_print_input_text ($macro_desc_name, $macro_desc_value, '', 30, 255, true);
+		$datam[1] = html_print_input_text_extended ($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, $locked, '', "class='command_advanced_conf'", true);
+		if($locked) {
+			$datam[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
+		}
+		
 		$datam[2] = __('Default value')."<span style='font-weight: normal'> ($macro_name)</span>";
-		$datam[3] = html_print_input_text_extended ($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, false, '', "class='command_component'", true);
-	
+		$datam[3] = html_print_input_text_extended ($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, $locked, '', "class='command_component command_advanced_conf'", true);
+		if($locked) {
+			$datam[3] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
+		}
+		
 		$table->data['plugin_'.$next_name_number] = $datam;
 
 		$next_name_number++;
@@ -186,27 +221,33 @@ if (($create != "") OR ($view != "")) {
 
 		$datam = array ();
 		$datam[0] = __('Help')."<span style='font-weight: normal'> ($macro_name)</span><br><br><br>";
-		$datam[1] = html_print_input_text ($macro_help_name, $macro_help_value, '', 100, 255, true)."<br><br><br>";
-
+		$datam[1] = html_print_input_text_extended ($macro_help_name, $macro_help_value, 'text-'.$macro_help_name, '', 100, 255, $locked, '', "class='command_advanced_conf'", true);
+		if($locked) {
+			$datam[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
+		}
+		$datam[1] .= "<br><br><br>";
+		
 		$table->data['plugin_'.$next_name_number] = $datam;
 		$next_name_number++;
 		$i++;
 	}
 	
-	$datam = array ();
-	$datam[0] = '<span style="font-weight: bold">'.__('Add macro').'</span> <a href="javascript:new_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/add.png',true).'</a>';
-	$datam[0] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
-	$datam[0] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
-	$delete_macro_style = '';
-	if($i <= 2) {
-		$delete_macro_style = 'display:none;';
+	if(!$locked) {
+		$datam = array ();
+		$datam[0] = '<span style="font-weight: bold">'.__('Add macro').'</span> <a href="javascript:new_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/add.png',true).'</a>';
+		$datam[0] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
+		$datam[0] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
+		$delete_macro_style = '';
+		if($i <= 2) {
+			$delete_macro_style = 'display:none;';
+		}
+		$datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/cancel.png',true).'</a></div>';
+		
+		$table->colspan['plugin_action'][0] = 2;
+		$table->rowstyle['plugin_action'] = 'text-align:center';
+		$table->colspan['plugin_action'][2] = 2;
+		$table->data['plugin_action'] = $datam;
 	}
-	$datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/cancel.png',true).'</a></div>';
-	
-	$table->colspan['plugin_action'][0] = 2;
-	$table->rowstyle['plugin_action'] = 'text-align:center';
-	$table->colspan['plugin_action'][2] = 2;
-	$table->data['plugin_action'] = $datam;
 	
 	echo '<fieldset style="width:96%"><legend>'.__('Parameters macros').ui_print_help_icon ('macros', true).'</legend>';
 	html_print_table($table);
@@ -290,12 +331,36 @@ else {
 		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
 		$plugin_parameters = get_parameter ("form_parameters", "0");
 		
+		// Get macros
+		$i = 1;
+		$macros = array();
+		while(1) {
+			$macro = (string)get_parameter ('field'.$i.'_macro');
+			if($macro == '') {
+				break;
+			}
+			
+			$desc = (string)get_parameter ('field'.$i.'_desc');
+			$help = (string)get_parameter ('field'.$i.'_help');
+			$value = (string)get_parameter ('field'.$i.'_value');
+
+			$macros[$i]['macro'] = $macro;
+			$macros[$i]['desc'] = $desc;
+			$macros[$i]['help'] = $help;
+			$macros[$i]['value'] = $value;
+			$i++;
+		}
+
+		$macros = json_encode($macros);
+		
 		$values = array(
 			'name' => $plugin_name,
 			'description' => $plugin_description,
 			'max_timeout' => $plugin_max_timeout,
 			'execute' => $plugin_execute,
-			'plugin_type' => $plugin_plugin_type);
+			'plugin_type' => $plugin_plugin_type,
+			'parameters' => $plugin_parameters,
+			'macros' => $macros);
 		
 		$result = false;
 		if ($values['name'] != '' && $values['execute'] != '')
@@ -410,4 +475,15 @@ $(document).ready(function() {
 	});
 
 });
+
+<?php 
+	if($locked) {
+?>
+		$('.command_advanced_conf').click(function() {
+			alert('<?php echo __("The plugin command cannot be updated because some modules or components are using the plugin."); ?>');
+		});
+<?php
+	}
+?>
+
 </script>

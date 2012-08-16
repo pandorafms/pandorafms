@@ -62,23 +62,6 @@ $data[2] = '<span style="font-weight: normal;" id="plugin_description">'.$preloa
 
 push_table_simple ($data, 'plugin_1');
 
-$data = array ();
-$data[0] = __('Target IP');
-$data[1] = html_print_input_text ('ip_target', $ip_target, '', 50, 60, true);
-$data[2] = __('Port');
-$data[3] = html_print_input_text ('tcp_port', $tcp_port, '', 15, 20, true);
-
-push_table_simple ($data, 'target_ip');
-
-$data = array ();
-$data[0] = __('Username');
-$data[1] = html_print_input_text ('plugin_user', $plugin_user, '', 30, 60, true);
-
-$data[2] = __('Password');
-$data[3] = html_print_input_password ('plugin_pass', $plugin_pass, '', 15, 60, true);
-
-push_table_simple ($data, 'plugin_2');
-
 // A hidden "model row" to clone it from javascript to add fields dynamicly
 $data = array ();
 $data[0] = 'macro_desc';

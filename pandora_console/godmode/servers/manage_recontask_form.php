@@ -232,11 +232,11 @@ $table->data[12][1] = "<span id='spinner_layour' style='display: none;'>" . html
 
 
 // Field1
-$table->data[13][0] = "<b>".__('Script field #1');
+$table->data[13][0] = "<b>".__('Script field #1').ui_print_help_tip(__("several networks separated by comma. For example: 192.168.100.0/24,192.168.50.0/24"), true);
 $table->data[13][1] =  html_print_input_text ('field1', $field1, '', 40, 0, true);
 
 // Field2
-$table->data[14][0] = "<b>".__('Script field #2');
+$table->data[14][0] = "<b>".__('Script field #2').ui_print_help_tip(__("several communities separated by comma. For example: snmp_community,public,private "), true);
 $table->data[14][1] =  html_print_input_text ('field2', $field2, '', 40, 0, true);
 
 // Field3

@@ -1,3 +1,10 @@
+2012-08-17  Sergio Martin <sergio.martin@artica.es>
+
+	* util/plugin/EU_10yrspread.pl
+	util/pandora_migrate_plugins.pl: Add plugin to 
+	get the 10 year spread of several european countries
+	and fix some bugs of the plugin migrate tool
+
 2012-08-16 Vanessa Gil <vanessa.gil@artica.es>
 	
 	* util/recon_scripts/snmpdevices.pl: Added several networks and ips

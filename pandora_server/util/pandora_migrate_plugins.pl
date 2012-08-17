@@ -142,7 +142,7 @@ sub pandora_migrate_plugins_main ($) {
 	
 	print "\n[*] Migrating plugins.\n\n";
 	
-	my @plugins = get_db_rows ($dbh, "SELECT * FROM tplugin WHERE macros = ''");
+	my @plugins = get_db_rows ($dbh, "SELECT * FROM tplugin WHERE macros = '' OR macros IS NULL");
 
 	$migrated_plugins = $#plugins + 1;
 	

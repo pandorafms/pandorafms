@@ -4987,8 +4987,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	$data['data'] = $result;
 	
 	returnData($returnType, $data, $separator);
-	
-	return;
+	if (empty($result))
+		return false;
+	return true;
 }
 
 /**
@@ -5001,9 +5002,10 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
  */
 function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
 	if ($user_in_db !== null) {
-		get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db);
+		$correct = get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db);
+		
 		$last_error = error_get_last();
-		if (!empty($last_error)) {
+		if (!$correct && !empty($last_error)) {
 			$errors = array(E_ERROR, E_WARNING, E_USER_ERROR,
 				E_USER_WARNING);
 			if (in_array($last_error['type'], $errors)) {

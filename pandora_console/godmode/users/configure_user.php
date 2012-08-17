@@ -48,7 +48,7 @@ if (! check_acl ($config['id_user'], 0, "UM")) {
 if (!check_refererer()) {
 	require ("general/noaccess.php");
 	
-	return;	
+	return;
 }
 
 $tab = get_parameter('tab', 'user');
@@ -62,7 +62,7 @@ $buttons = array(
 		'active' => false,
 		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile">' . 
 			html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
-			
+
 $buttons[$tab]['active'] = true;
 
 // Header
@@ -84,7 +84,8 @@ $update_user = (bool) get_parameter ('update_user');
 $status = get_parameter ('status', -1);
 
 // Reset status var if current action is not update_user
-if ($new_user || $create_user || $add_profile || $delete_profile || $update_user){
+if ($new_user || $create_user || $add_profile ||
+	$delete_profile || $update_user) {
 	$status = -1;
 }
 
@@ -184,13 +185,13 @@ if ($create_user) {
 				if ($result) {
 					$res = db_process_sql('/INSERT INTO tpassword_history (id_user, password, date_begin) VALUES (\'' . $id . '\',\'' . md5($password_new) . '\',\'' . date ("Y/m/d H:i:s", get_system_time()) . '\')');		
 				}
-				break;		
+				break;
 		}
-			
-
+		
+		
 		db_pandora_audit("User management",
 			"Created user ".io_safe_input($id), false, false, $info);
-
+		
 		ui_print_result_message ($result,
 			__('Successfully created'),
 			__('Could not be created'));
@@ -225,7 +226,7 @@ if ($update_user) {
 	}
 	$values['block_size'] = get_parameter ('block_size', $config["block_size"]);
 	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
-
+	
 	if(enterprise_installed()) {
 		$values['metaconsole_access'] = get_parameter ('metaconsole_access');
 	}
@@ -284,7 +285,7 @@ if ($update_user) {
 			
 			db_pandora_audit("User management", "Updated user ".io_safe_input($id),
 				false, false, $info);
-		
+			
 			ui_print_result_message ($res1,
 				__('User info successfully updated'),
 				__('Error updating user info (no change?)'));
@@ -328,7 +329,7 @@ if ($delete_profile) {
 		
 	db_pandora_audit("User management",
 		"Deleted profile for user ".io_safe_input($id2), false, false, 'The profile with id ' . $id_perfil . ' in the group ' . $perfilUser['id_grupo']);
-
+	
 	$return = profile_delete_user_profile ($id2, $id_up);
 	ui_print_result_message ($return,
 		__('Successfully deleted'),
@@ -399,7 +400,7 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else
 	$display_all_group = false;
 
-if ($new_user) {		
+if ($new_user) {
 	$usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 	$id_usr = $config['id_user'];
 }
@@ -409,7 +410,7 @@ else {
 }
 
 // User only can change skins if has more than one group 
-if (count($usr_groups) > 1){
+if (count($usr_groups) > 1) {
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$table->data[10][0] = __('Skin');
 		$table->data[10][1] = skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
@@ -422,18 +423,24 @@ $table->data[11][1] = html_print_select($values, 'flash_charts', $user_info["fla
 $table->data[12][0] = __('Block size for pagination');
 $table->data[12][1] = html_print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
 
-if($id == $config['id_user']) {
+if ($id == $config['id_user']) {
 	$table->data[12][1] .= html_print_input_hidden('quick_language_change', 1, true);
 }
 
-if(enterprise_installed()) {
+if (enterprise_installed()) {
+	$user_info_metaconsole_access = 'only_console';
+	if (isset($user_info["metaconsole_access"])) {
+		$user_info_metaconsole_access = $user_info["metaconsole_access"];
+	}
 	$table->data[12][0] = __('Metaconsole access');
 	$metaconsole_accesses = array('only_console' => __('No access'),
-							'basic' => __('Basic (Only Metaconsole)'),
-							'advanced' => __('Advanced (Only Metaconsole)'),
-							//'custom' => __('Custom access (Only Metaconsole)'),
-							'all' => __('Full (Metaconsole and normal console)'));
-	$table->data[12][1] = html_print_select($metaconsole_accesses,'metaconsole_access',$user_info["metaconsole_access"],'','',-1,true, false, false);
+		'basic' => __('Basic (Only Metaconsole)'),
+		'advanced' => __('Advanced (Only Metaconsole)'),
+		//'custom' => __('Custom access (Only Metaconsole)'),
+		'all' => __('Full (Metaconsole and normal console)'));
+	$table->data[12][1] = html_print_select($metaconsole_accesses,
+		'metaconsole_access', $user_info_metaconsole_access,
+		'','',-1,true, false, false);
 }
 
 echo '<form method="post" autocomplete="off">';
@@ -442,7 +449,7 @@ html_print_table ($table);
 
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
 if ($new_user) {
-	if ($config['admin_can_add_user']){
+	if ($config['admin_can_add_user']) {
 		html_print_input_hidden ('create_user', 1);
 		html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	}
@@ -461,7 +468,7 @@ echo '<br />';
 if (empty ($id) || $new_user)
 	return;
 
-echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
+echo '<h4>'. __('Profiles/Groups assigned to this user') . '</h4>';
 
 $table->width = '98%';
 $table->data = array ();
@@ -507,33 +514,30 @@ foreach ($result as $profile) {
 	array_push ($table->data, $data);
 }
 
-	$data = array ();
-	
-	$data[0] = '<form method="post">';
-	if (check_acl ($config['id_user'], 0, "PM")) {
-		$data[0] .= html_print_select (profile_get_profiles (), 'assign_profile', 0, '',
-			__('None'), 0, true, false, false);
-	}
-	else {
-		$data[0] .= html_print_select (profile_get_profiles (array ('pandora_management' => '<> 1',
-			'db_management' => '<> 1')), 'assign_profile', 0, '', __('None'), 0,
-			true, false, false);
-	}
-	
-	$data[1] = html_print_select_groups($config['id_user'], "UM",
-		$own_info['is_admin'], 'assign_group', -1, '', __('None'), -1, true,
-		false, false);
-	
-	$data[2] = html_print_input_image ('add', 'images/add.png', 1, '', true);
-	$data[2] .= html_print_input_hidden ('id', $id, true);
-	$data[2] .= html_print_input_hidden ('add_profile', 1, true);
-	$data[2] .= '</form>';
+$data = array ();
+
+$data[0] = '<form method="post">';
+if (check_acl ($config['id_user'], 0, "PM")) {
+	$data[0] .= html_print_select (profile_get_profiles (), 'assign_profile', 0, '',
+		__('None'), 0, true, false, false);
+}
+else {
+	$data[0] .= html_print_select (profile_get_profiles (array ('pandora_management' => '<> 1',
+		'db_management' => '<> 1')), 'assign_profile', 0, '', __('None'), 0,
+		true, false, false);
+}
+
+$data[1] = html_print_select_groups($config['id_user'], "UM",
+	$own_info['is_admin'], 'assign_group', -1, '', __('None'), -1, true,
+	false, false);
+
+$data[2] = html_print_input_image ('add', 'images/add.png', 1, '', true);
+$data[2] .= html_print_input_hidden ('id', $id, true);
+$data[2] .= html_print_input_hidden ('add_profile', 1, true);
+$data[2] .= '</form>';
 
 array_push ($table->data, $data);
 
 html_print_table ($table);
-
-
 unset ($table);
-
 ?>

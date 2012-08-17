@@ -83,22 +83,27 @@ function reports_get_reports ($filter = false, $fields = false, $returnAllGroup 
 	
 	$reports = array ();
 	$all_reports = @db_get_all_rows_filter ('treport', $filter, $fields);
+	
 	if (empty($all_reports))
 		$all_reports = array();
 	
 	if ($group) {
 		$groups = $group;
-	} else {
+	}
+	else {
 		//Recheck in all reports if the user have permissions to see each report.
 		$groups = users_get_groups ($config['id_user'], $privileges, $returnAllGroup);
 	}
-
+	
 	foreach ($all_reports as $report) {
-		if (!in_array($report['id_group'], array_keys($groups)))
-			continue;
-		if ($config['id_user'] != $report['id_user']
-			&& ! check_acl ($config['id_user'], $report['id_group'], 'AR'))
-			continue;
+		//If the report is not in all group.
+		if ($report['id_group'] != 0) {
+			if (!in_array($report['id_group'], array_keys($groups)))
+				continue;
+			if ($config['id_user'] != $report['id_user']
+				&& ! check_acl ($config['id_user'], $report['id_group'], 'AR'))
+				continue;
+		}
 		array_push ($reports, $report);
 	}
 	

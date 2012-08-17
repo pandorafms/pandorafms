@@ -1,0 +1,19 @@
+------------How to Install----------------
+
+Before start installation highly recommand to read the section under "Firefox extension proxy file" in the following URL 
+(https://developer.mozilla.org/en-US/docs/Setting_up_extension_development_environment).
+
+1. Open the trunk location (source code location) of the "firefox_extension" folder. 
+2. Copy the 'hareesan@pandorafms.org' file to the firefox extensions directory.
+3. Edit the file 'hareesan@pandorafms.org' file and set the path to ur "firefox_extension" directory. 
+4. Restart firefox and view 'add-on tool bar' by using shortcut "Ctrl+/", you can see the icon of pandora eventviewer in one corner.
+
+
+
+-------------Short Cuts-------------------
+
+1. Ctrl+Shift+Alt+L  : open options page of extension.
+2. Ctrl+Shift+L      : open extensions sidebar to view events.
+3. Ctrl+/            : open add-on toolbar to view latest events and number of new events. 
+
+

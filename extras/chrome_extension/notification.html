@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <title>Wicket Alert</title>
+        <style type="text/css">
+            body { margin:0; font-family:arial; font-size:10pt }
+            h1 { font-weight:bold; font-size:16px; margin:2px 0 2px 4px; color:#0068C4; font-family:arial; }
+
+            a { color: #035BAC; text-decoration:none; }
+            a:hover { text-decoration:underline; }
+            a:visited { color: #035BAC; text-decoration:none; }
+            a:visited:hover { text-decoration:underline; }
+        </style>
+    </head>
+    <body>
+        <h1>Event Alert</h1>
+        <div id="e" style="background:url('images/icon.png') no-repeat 0% 50%; margin:0 4px; padding-left:50px; min-height:48px;">
+            <script type="text/javascript">
+                var url = window.location.href;
+                var re = /\?event=(\d+)/;
+                if(re.exec(url)) {
+                    if(!isNaN(RegExp.$1)) {
+                        var eventId = RegExp.$1;
+                        document.write(chrome.extension.getBackgroundPage().getNotification(eventId));
+                    }
+                }
+                window.onload = function () {
+                    setTimeout(function() {
+                        window.close();
+                    }, 10000);	
+                }
+            </script>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://pandorasidebar/locale/pandorasidebar.dtd">
+<overlay id="pandoraSidebarOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+ 
+    <script src="chrome://pandorasidebar/content/js/jquery-1.3.2.min.js" />
+    <script src="chrome://pandorasidebar/content/js/main.js" />
+    <script src="chrome://pandorasidebar/content/js/sound.js"/>
+ 
+    <menupopup id="viewSidebarMenu">
+        <menuitem key="key_openPandoraSidebar" observes="viewPandoraSidebar"  />
+    </menupopup>
+
+    <menupopup id="menu_ToolsPopup">
+        <menuseparator />
+        <menuitem label="Pandora FMS Event Viewer Options..." key="PandoraMenu" oncommand="PandoraChrome.fn.displayDialog();" accesskey="e"/>
+    </menupopup>
+
+    <keyset id="mainKeyset">
+        <key id="PandoraMenu" modifiers="accel alt shift" key="L" oncommand="PandoraChrome.fn.displayDialog();"/>
+        <key id="key_openPandoraSidebar" command="viewPandoraSidebar"
+             key="&openPandoraSidebar.commandkey;" 
+             modifiers="&openPandoraSidebar.modifierskey;" />
+    </keyset>
+  
+    <broadcasterset id="mainBroadcasterSet"> 
+        <broadcaster id="viewPandoraSidebar" 
+                     label="&pandorasidebar.title;"
+                     autoCheck="false"
+                     type="checkbox"
+                     group="sidebar"
+                     sidebarurl="chrome://pandorasidebar/content/pandorasidebar.xul"
+                     sidebartitle="&pandorasidebar.title;"
+                     oncommand="PandoraChrome.fn.displaySideBar();" />
+    </broadcasterset>
+    <popupset>
+        <menupopup id="PandoraContextMenu">
+            <menuitem label="Pandora FMS Event Viewer Options..." oncommand="PandoraChrome.fn.displayDialog();"/>
+        </menupopup>
+    </popupset>
+    <statusbar id="status-bar" style="cursor:pointer;" hidden="false">
+
+        <statusbarpanel id="newEvent"
+                        tooltiptext="New event Occured:"
+                        style="cursor:pointer; display:none;"
+                        onclick="PandoraChrome.fn.displaySideBar();">
+        </statusbarpanel>
+        <statusbarpanel id="pandoraStatusBar"
+                        context="PandoraContextMenu"
+                        label="Pandora FMS"
+                        tooltiptext="Pandora FMS"
+                        style="cursor:pointer;"
+                        onclick="PandoraChrome.fn.displaySideBar();">
+            <image style="width: 16px; height: 16px" src="chrome://pandorasidebar/content/icons/icon16.png" id="ciIcon" />
+            <label style="cursor:pointer; font-size:11px; color:#123863; font-weight:bold; display:none;" id="updateCount"></label>
+        </statusbarpanel>
+        <statusbarpanel id="temp"
+                        tooltiptext="New Events"
+                        style="cursor:pointer; display:none;"
+                        onclick="">
+        </statusbarpanel>
+    </statusbar>
+</overlay>

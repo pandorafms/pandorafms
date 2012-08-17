@@ -1,0 +1,239 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+ 
+<prefwindow id="pandorafms-prefs"
+            title="Pandora FMS EventViewer Options Page"
+            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script src="chrome://pandorasidebar/content/js/options.js"/>
+    <script src="chrome://pandorasidebar/content/js/sound.js"/>
+    <prefpane id="pandorafms-pane" label="Event Viewer Settings">
+        <preferences>
+            <preference id="ipaddress" name="pandora.ip_address" type="string"/>
+            <preference id="apipass" name="pandora.api_pass" type="string"/>
+            <preference id="username" name="pandora.user_name" type="string"/>
+            <preference id="passw" name="pandora.pass" type="string"/>
+            <preference id="critical" name="pandora.critical" type="int"/>
+            <preference id="informational" name="pandora.informational" type="int"/>
+            <preference id="maintenance" name="pandora.maintenance" type="int"/>
+            <preference id="normal" name="pandora.normal" type="int"/>
+            <preference id="warning" name="pandora.warning" type="int"/>
+            <preference id="events_disp" name="pandora.events" type="int"/>
+            <preference id="refresh_time" name="pandora.refresh" type="int"/>
+            <preference id="sound_alerts" name="pandora.sound_alert" type="bool"/>
+        </preferences>
+ 
+        <tabbox id="myTabList" selectedIndex="0">
+            <tabs>
+                <tab label="General Parameters"/>
+                <tab label="Sound Settings"/>
+                <tab label="Other Settings"/>
+            </tabs>
+            <tabpanels>
+        
+                <tabpanel>
+                    <groupbox>
+                    
+                        <grid>
+                            <columns>
+                                <column flex="1"/>
+                                <column flex="2" style="width:400px;"/>
+                            </columns>
+                            <rows>
+                                <caption label="General Parameters" />
+                                <row>
+                                    <label control="ipaddress" value="Enter IP Address:"/>
+                                    <textbox id="ip_address" preference="ipaddress"/>
+                                </row>
+                                <row>
+                                    <label control="apipass" value="Enter API Password:"/>
+                                    <textbox id="api_pass" type="password" preference="apipass"/>
+                                </row>
+                                <row>
+                                    <label control="username" value="Enter User Name:"/>
+                                    <textbox id="user_name" preference="username"/>
+                                </row>
+                                <row>
+                                    <label control="passw" value="Enter Password:"/>
+                                    <textbox id="pass" type="password" preference="passw"/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </groupbox>
+                </tabpanel>
+            
+            
+                <tabpanel>
+                    <groupbox>
+                        <grid>
+                            <columns>
+                                <column flex="1"/>
+                                <column flex="2" style="width:100px;"/>
+                            </columns>
+                            <rows>
+                                <caption label="Sound Alert Settings" />
+                                <row>
+                                    <label value="Sound Alerts:"/>
+                                    <radiogroup preference="sound_alerts">
+                                        <radio id="sound_alert_o" label="On" accesskey="R" selected="true" value="true" oncommand="OptionsListener.onChangeSound(true)"/>
+                                        <radio id="sound_alert_f" label="Off"  accesskey="G" value="false" oncommand="OptionsListener.onChangeSound(false)"/>
+                                    </radiogroup>
+                                </row>
+                            </rows>
+                        </grid>
+                                
+                        <grid>
+                            <columns>
+                                <column flex="1"/>
+                                <column flex="2" style="width:400px;"/>
+                            </columns>
+                            <rows>
+                                <row>
+                                    <caption label="Severity" />
+                                    <caption label="Sound Type" />
+                                </row>
+                                <row>
+                                    <label value="Critical" />
+                                    <menulist id="critical" preference="critical" >
+                                        <menupopup>
+                                            <menuitem label="Air Craft Alarm" value="1" oncommand="Sounds.playSound(1)"/>
+                                            <menuitem label="Air Shock Alarm" value="2" oncommand="Sounds.playSound(2)"/>
+                                            <menuitem label="Alien Alarm" value="3" oncommand="Sounds.playSound(3)"/>
+                                            <menuitem label="Alien Beacon" value="4" oncommand="Sounds.playSound(4)"/>
+                                            <menuitem label="Bell Ringing" value="5" oncommand="Sounds.playSound(5)"/>
+                                            <menuitem label="Door Alarm" value="6" oncommand="Sounds.playSound(6)"/>
+                                            <menuitem label="EAS Beep" value="7" oncommand="Sounds.playSound(7)"/>
+                                            <menuitem label="Fire Warner" value="8" oncommand="Sounds.playSound(8)"/>
+                                            <menuitem label="Hard PCM Alarm" value="9" oncommand="Sounds.playSound(9)"/>
+                                            <menuitem label="Negative Beep" value="10" oncommand="Sounds.playSound(10)"/>
+                                            <menuitem label="Star Trek Emergency Alarm" value="11" oncommand="Sounds.playSound(11)"/>
+                                        </menupopup>
+                                    </menulist>
+                                </row>
+                                <row>
+                                    <label value="Informational" />
+                                    <menulist id="informational" preference="informational">
+                                        <menupopup>
+                                            <menuitem label="Air Craft Alarm" value="1" oncommand="Sounds.playSound(1)"/>
+                                            <menuitem label="Air Shock Alarm" value="2" oncommand="Sounds.playSound(2)"/>
+                                            <menuitem label="Alien Alarm" value="3" oncommand="Sounds.playSound(3)"/>
+                                            <menuitem label="Alien Beacon" value="4" oncommand="Sounds.playSound(4)"/>
+                                            <menuitem label="Bell Ringing" value="5" oncommand="Sounds.playSound(5)"/>
+                                            <menuitem label="Door Alarm" value="6" oncommand="Sounds.playSound(6)"/>
+                                            <menuitem label="EAS Beep" value="7" oncommand="Sounds.playSound(7)"/>
+                                            <menuitem label="Fire Warner" value="8" oncommand="Sounds.playSound(8)"/>
+                                            <menuitem label="Hard PCM Alarm" value="9" oncommand="Sounds.playSound(9)"/>
+                                            <menuitem label="Negative Beep" value="10" oncommand="Sounds.playSound(10)"/>
+                                            <menuitem label="Star Trek Emergency Alarm" value="11" oncommand="Sounds.playSound(11)"/>
+                                        </menupopup>
+                                    </menulist>
+                                </row>
+                                <row>
+                                    <label value="Maintenance" />
+                                    <menulist id="maintenance" preference="maintenance">
+                                        <menupopup>
+                                            <menuitem label="Air Craft Alarm" value="1" oncommand="Sounds.playSound(1)"/>
+                                            <menuitem label="Air Shock Alarm" value="2" oncommand="Sounds.playSound(2)"/>
+                                            <menuitem label="Alien Alarm" value="3" oncommand="Sounds.playSound(3)"/>
+                                            <menuitem label="Alien Beacon" value="4" oncommand="Sounds.playSound(4)"/>
+                                            <menuitem label="Bell Ringing" value="5" oncommand="Sounds.playSound(5)"/>
+                                            <menuitem label="Door Alarm" value="6" oncommand="Sounds.playSound(6)"/>
+                                            <menuitem label="EAS Beep" value="7" oncommand="Sounds.playSound(7)"/>
+                                            <menuitem label="Fire Warner" value="8" oncommand="Sounds.playSound(8)"/>
+                                            <menuitem label="Hard PCM Alarm" value="9" oncommand="Sounds.playSound(9)"/>
+                                            <menuitem label="Negative Beep" value="10" oncommand="Sounds.playSound(10)"/>
+                                            <menuitem label="Star Trek Emergency Alarm" value="11" oncommand="Sounds.playSound(11)"/>
+                                        </menupopup>
+                                    </menulist>
+                                </row>
+                                <row>
+                                    <label value="Normal" />
+                                    <menulist id="normal" preference="normal">
+                                        <menupopup>
+                                            <menuitem label="Air Craft Alarm" value="1" oncommand="Sounds.playSound(1)"/>
+                                            <menuitem label="Air Shock Alarm" value="2" oncommand="Sounds.playSound(2)"/>
+                                            <menuitem label="Alien Alarm" value="3" oncommand="Sounds.playSound(3)"/>
+                                            <menuitem label="Alien Beacon" value="4" oncommand="Sounds.playSound(4)"/>
+                                            <menuitem label="Bell Ringing" value="5" oncommand="Sounds.playSound(5)"/>
+                                            <menuitem label="Door Alarm" value="6" oncommand="Sounds.playSound(6)"/>
+                                            <menuitem label="EAS Beep" value="7" oncommand="Sounds.playSound(7)"/>
+                                            <menuitem label="Fire Warner" value="8" oncommand="Sounds.playSound(8)"/>
+                                            <menuitem label="Hard PCM Alarm" value="9" oncommand="Sounds.playSound(9)"/>
+                                            <menuitem label="Negative Beep" value="10" oncommand="Sounds.playSound(10)"/>
+                                            <menuitem label="Star Trek Emergency Alarm" value="11" oncommand="Sounds.playSound(11)"/>
+                                        </menupopup>
+                                    </menulist>
+                                </row>
+                                <row>
+                                    <label value="Warning" />
+                                    <menulist id="warning" preference="warning">
+                                        <menupopup>
+                                            <menuitem label="Air Craft Alarm" value="1" oncommand="Sounds.playSound(1)"/>
+                                            <menuitem label="Air Shock Alarm" value="2" oncommand="Sounds.playSound(2)"/>
+                                            <menuitem label="Alien Alarm" value="3" oncommand="Sounds.playSound(3)"/>
+                                            <menuitem label="Alien Beacon" value="4" oncommand="Sounds.playSound(4)"/>
+                                            <menuitem label="Bell Ringing" value="5" oncommand="Sounds.playSound(5)"/>
+                                            <menuitem label="Door Alarm" value="6" oncommand="Sounds.playSound(6)"/>
+                                            <menuitem label="EAS Beep" value="7" oncommand="Sounds.playSound(7)"/>
+                                            <menuitem label="Fire Warner" value="8" oncommand="Sounds.playSound(8)"/>
+                                            <menuitem label="Hard PCM Alarm" value="9" oncommand="Sounds.playSound(9)"/>
+                                            <menuitem label="Negative Beep" value="10" oncommand="Sounds.playSound(10)"/>
+                                            <menuitem label="Star Trek Emergency Alarm" value="11" oncommand="Sounds.playSound(11)"/>
+                                        </menupopup>
+                                    </menulist>
+                                </row>
+                            </rows>  
+                        </grid>
+                    </groupbox>
+                </tabpanel>
+            
+                <tabpanel>
+                    <groupbox>
+                    
+                        <grid>
+                            <columns>
+                                <column flex="1"/>
+                                <column flex="2" style="width:200px;"/>
+                            </columns>
+                            <rows>
+                                <caption label="Other Settings" />
+                                <row>
+                                    <label value="Auto Refresh Time:" />
+                                    <menulist id="refresh" preference="refresh_time">
+                                        <menupopup>
+                                            <menuitem label="5 Seconds" value="5"/>
+                                            <menuitem label="10 Seconds" value="10"/>
+                                            <menuitem label="15 Seconds" value="15"/>
+                                            <menuitem label="30 Seconds" value="30"/>
+                                            <menuitem label="1 minute" value="60"/>
+                                            <menuitem label="2 minutes" value="120"/>
+                                            <menuitem label="5 minutes" value="300"/>
+                                            <menuitem label="15 minutes" value="900"/>
+                                            <menuitem label="30 minutes" value="1800"/>
+                                            <menuitem label="1 hour" value="3600"/>
+                                        </menupopup>
+                                    </menulist>
+                                </row>
+                                <row>
+                                    <label value="Number of events to be displayed in pop up window" />
+                                    <menulist id="events" preference="events_disp">
+                                        <menupopup>
+                                            <menuitem label="5" value="5"/>
+                                            <menuitem label="10" value="10"/>
+                                            <menuitem label="12" value="12"/>
+                                            <menuitem label="14" value="14"/>
+                                            <menuitem label="16" value="16"/>
+                                            <menuitem label="18" value="18"/>
+                                            <menuitem label="20" value="20"/>
+                                        </menupopup>
+                                    </menulist>
+                                </row>
+                            </rows>
+                        </grid>
+                    </groupbox>
+                </tabpanel>
+            </tabpanels>
+        </tabbox>
+    </prefpane>
+ 
+</prefwindow>

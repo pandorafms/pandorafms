@@ -1,3 +1,11 @@
+2012-08-17  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb.sql
+        pandoradb.postgreSQL.sql
+        pandoradb.oracle.sql
+        extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql:New fields for
+ 	tagente_modulo.
+
 2012-08-17 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/users/configure_user.php: fixed when the metaconsole is

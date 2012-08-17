@@ -276,7 +276,7 @@ if ($result !== false) {
 		
 		// PORTS
 		if ($row["id_recon_script"] == 0) {
-			$data[7] =	substr($row["recon_ports"],0,15);
+			$data[7] = substr($row["recon_ports"],0,15);
 		}
 		else {
 			$data[7] = "-";

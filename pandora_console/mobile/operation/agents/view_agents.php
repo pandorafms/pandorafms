@@ -31,7 +31,7 @@ class ViewAgents {
 		$this->user = $user;
 		$this->system = $system;
 		$this->filterText = $this->system->getRequest('filter_text', '');
-		$this->filterGroup = $this->system->getRequest('filter_group', 0);;
+		$this->filterGroup = $this->system->getRequest('filter_group', 0);
 	}
 	
 	private function showForm() {
@@ -48,7 +48,7 @@ class ViewAgents {
 	public function show() {
 		$this->showForm();
 		
-		// Show only selected groups	
+		// Show only selected groups
 		if ($this->filterGroup > 0) {
 			$groups = $this->filterGroup;
 			$agent_names = agents_get_group_agents ($this->filterGroup, array('string' => $this->filterText), "upper");
@@ -286,12 +286,30 @@ class ViewAgent {
 			
 			if ($module["id_tipo_modulo"] == 24) { // log4x
 				switch($module["datos"]) {
-				case 10: $salida = "TRACE"; $style="font-weight:bold; color:darkgreen;"; break;
-				case 20: $salida = "DEBUG"; $style="font-weight:bold; color:darkgreen;"; break;
-				case 30: $salida = "INFO";  $style="font-weight:bold; color:darkgreen;"; break;
-				case 40: $salida = "WARN";  $style="font-weight:bold; color:darkorange;"; break;
-				case 50: $salida = "ERROR"; $style="font-weight:bold; color:red;"; break;
-				case 60: $salida = "FATAL"; $style="font-weight:bold; color:red;"; break;
+					case 10:
+						$salida = "TRACE";
+						$style="font-weight:bold; color:darkgreen;";
+						break;
+					case 20:
+						$salida = "DEBUG";
+						$style="font-weight:bold; color:darkgreen;";
+						break;
+					case 30:
+						$salida = "INFO";
+						$style="font-weight:bold; color:darkgreen;";
+						break;
+					case 40:
+						$salida = "WARN";
+						$style="font-weight:bold; color:darkorange;";
+						break;
+					case 50:
+						$salida = "ERROR";
+						$style="font-weight:bold; color:red;";
+						break;
+					case 60:
+						$salida = "FATAL";
+						$style="font-weight:bold; color:red;";
+						break;
 				}
 				$salida = "<span style='$style'>$salida</span>";
 			}
@@ -428,10 +446,10 @@ class viewGraph {
 			
 			$columns = array(
 				
-				//"Timestamp" => array("utimestamp",				"modules_format_timestamp", 	"align" => "center" ),
-				"Sev" 		=> array("severity", 				"format_data", 			"align" => "center", "width" => "70px"),
-				"Message"	=> array("message", 				"modules_format_verbatim",		"align" => "left", "width" => "45%"),
-				"StackTrace" 		=> array("stacktrace",				"modules_format_verbatim", 			"align" => "left", "width" => "50%")
+				//"Timestamp" => array("utimestamp", "modules_format_timestamp", "align" => "center" ),
+				"Sev" => array("severity", "format_data", "align" => "center", "width" => "70px"),
+				"Message" => array("message", "modules_format_verbatim", "align" => "left", "width" => "45%"),
+				"StackTrace" => array("stacktrace", "modules_format_verbatim", "align" => "left", "width" => "50%")
 			);
 		}
 		else if (preg_match ("/string/", $moduletype_name)) {
@@ -439,9 +457,9 @@ class viewGraph {
 				WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $this->idAgentModule, (get_system_time () - $this->period));
 			
 			$columns = array(
-				//"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 		"align" => "center"),
-				"Data" 		=> array("datos", 				"format_data", 				"align" => "center"),
-				"Time" 		=> array("utimestamp", 			"modules_format_time", 				"align" => "center")
+				//"Timestamp" => array("utimestamp", "modules_format_timestamp", "align" => "center"),
+				"Data" => array("datos", "format_data", "align" => "center"),
+				"Time" => array("utimestamp", "modules_format_time", "align" => "center")
 			);
 		}
 		else {
@@ -450,8 +468,8 @@ class viewGraph {
 				ORDER BY utimestamp DESC", $this->idAgentModule, (get_system_time () - $this->period));
 			
 			$columns = array(
-				"Data" 		=> array("datos", 				"format_data", 			"align" => "center"),
-				"Time" 		=> array("utimestamp", 			"modules_format_time", 			"align" => "center")
+				"Data" => array("datos", "format_data", "align" => "center"),
+				"Time" => array("utimestamp", "modules_format_time", "align" => "center")
 			);
 		}
 		

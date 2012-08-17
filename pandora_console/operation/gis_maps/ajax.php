@@ -18,6 +18,8 @@ require_once ("include/config.php");
 
 check_login ();
 
+global $config;
+
 require_once ('include/functions_gis.php');
 require_once ('include/functions_ui.php');
 require_once ('include/functions_agents.php');
@@ -30,7 +32,8 @@ switch ($opt) {
 		$returnJSON['correct'] = 1;
 		$idConection = get_parameter('id_conection');
 		
-		$row = db_get_row_filter('tgis_map_connection', array('id_tmap_connection' => $idConection));
+		$row = db_get_row_filter('tgis_map_connection',
+			array('id_tmap_connection' => $idConection));
 		
 		$returnJSON['content'] = $row;
 		
@@ -113,6 +116,9 @@ switch ($opt) {
 		foreach ($agentsGISStatus as $row) {
 			$status = agents_get_status($row['tagente_id_agente']);
 			
+			if (!$config['gis_label'])
+				$row['nombre'] = '';
+			
 			$agents[$row['tagente_id_agente']] = array(
 				'icon_path' => gis_get_agent_icon_map($row['tagente_id_agente'], true, $status),
 				'name' => $row['nombre'],
@@ -158,19 +164,19 @@ switch ($opt) {
 		else 
 		{
 			$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_altitude'] . ') <br />';
-		}		
+		}
 		$agent_ip_address = agents_get_address ($id_agente);
 		if ($agent_ip_address || $agent_ip_address != '') {
 			$returnJSON['content'] .= __('IP Address').': '.agents_get_address ($id_agente).'<br />';
 		}
 		$returnJSON['content'] .= __('OS').': ' . ui_print_os_icon($row['id_os'], true, true);
-
+		
 		$osversion_offset = strlen($row["os_version"]);
 		if ($osversion_offset > 15) {
-    		$osversion_offset = $osversion_offset - 15;
+			$osversion_offset = $osversion_offset - 15;
 		}
 		else {
-		    $osversion_offset = 0;
+			$osversion_offset = 0;
 		}
 		$returnJSON['content'] .= '&nbsp;( <i><span title="'.$row["os_version"].'">'.substr($row["os_version"],$osversion_offset,15).'</span></i>)<br />';
 		$agent_description = $row['comentarios'];
@@ -181,7 +187,7 @@ switch ($opt) {
 		$returnJSON['content'] .= __('Agent Version').': '.$row["agent_version"].'<br />';
 		$returnJSON['content'] .= __('Last contact') . ": ";
 		if ($row["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") {
-    		$returnJSON['content'] .=__('Never') ." <br />";
+			$returnJSON['content'] .=__('Never') ." <br />";
 		}
 		else {
  			$returnJSON['content'] .= $row["ultimo_contacto_remoto"] ." <br />";
@@ -189,13 +195,12 @@ switch ($opt) {
 		$returnJSON['content'] .= __('Remote').': '. $row["ultimo_contacto"];
 		
 		echo json_encode($returnJSON);
-		
 		break;
 	case 'get_map_connection_data':
 		$idConnection = get_parameter('id_connection');
 		
 		$returnJSON = array();
-
+		
 		$returnJSON['correct'] = 1;
 		
 		$returnJSON['content'] = db_get_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnection);

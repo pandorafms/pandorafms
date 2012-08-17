@@ -36,7 +36,6 @@ function gis_add_parent_lines() {
 		js_refreshParentLines('" . __('Hierarchy of agents') . "');
 	});";
 	echo "</script>";
-	
 }
 
 /**
@@ -358,6 +357,10 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null) {
 
 function gis_add_agent_point($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
 	$height = 20, $point_id = '', $status = -1, $type_string = '', $idParent = 0) {
+		
+	global $config;
+	if (!$config['gis_label'])
+		$pointName = '';
 	?>
 	<script type="text/javascript">
 	$(document).ready (
@@ -458,10 +461,18 @@ function gis_get_layers($idMap) {
 }
 
 function gis_get_agent_icon_map($idAgent, $state = false, $status = null) {
-	$row = db_get_row_sql('SELECT id_grupo, icon_path FROM tagente WHERE id_agente = ' . $idAgent);
+	global $config;
+	
+	$row = db_get_row_sql('SELECT id_grupo, icon_path
+		FROM tagente WHERE id_agente = ' . $idAgent);
 	
 	if (($row['icon_path'] === null) || (strlen($row['icon_path']) == 0)) {
-		$icon = "images/groups_small/" . groups_get_icon($row['id_grupo']);
+		if ($config['gis_default_icon'] != "") {
+			$icon = "images/gis_map/icons/" . $config['gis_default_icon'];
+		}
+		else {
+			$icon = "images/groups_small/" . groups_get_icon($row['id_grupo']);
+		}
 	}
 	else {
 		$icon = "images/gis_map/icons/" . $row['icon_path'];

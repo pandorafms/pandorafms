@@ -232,6 +232,9 @@ function config_update_config () {
 			config_update_value ('module_size_text_medium', get_parameter('module_size_text_medium'));
 			config_update_value ('description_size_text', get_parameter('description_size_text'));
 			config_update_value ('item_title_size_text', get_parameter('item_title_size_text'));
+			config_update_value ('gis_label', get_parameter ('gis_label'));
+			config_update_value ('gis_default_icon', get_parameter ('gis_default_icon'));
+			
 			/////////////
 			break;
 		case 'enterprise/godmode/setup/setup_history':
@@ -271,13 +274,13 @@ function config_process_config () {
 	
 	/* Compatibility fix */
 	foreach ($configs as $c) {
-			$config[$c['token']] = $c['value'];
+		$config[$c['token']] = $c['value'];
 	}
 	
 	if (!isset ($config['language'])) {
 		config_update_value ('language', 'en');
 	}
-
+	
 	if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
 		$config['homeurl'] = '/'.$config['homeurl'];
 	}
@@ -703,7 +706,15 @@ function config_process_config () {
 	if (!isset($config['item_title_size_text'])) {
 		config_update_value ('item_title_size_text', 45);
 	}
+
+	if (!isset($config['gis_label'])) {
+		config_update_value ('gis_label', 0);
+	}
 	
+	if (!isset($config['gis_default_icon'])) {
+		config_update_value ('gis_default_icon', "marker");
+	}
+
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
@@ -713,7 +724,7 @@ function config_check () {
 	
 	// At this first version I'm passing errors using session variables, because the error management
 	// is done by an AJAX request. Better solutions could be implemented in the future :-)
-
+	
 	// Check default password for "admin"
 	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 	if ($is_admin) {

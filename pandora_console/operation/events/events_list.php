@@ -99,21 +99,21 @@ if (is_ajax()) {
 		$values['tag'] = get_parameter('tag');
 		$values['filter_only_alert'] = get_parameter('filter_only_alert');
 		$values['id_group_filter'] = get_parameter('id_group_filter');
-
+		
 		$result = db_process_sql_update('tevent_filter', $values, array('id_filter' => $id));		
-	
+		
 		if ($result === false){
 			echo 'error';
 		}
 		else {
 			echo 'ok';
-		}		
+		}
 	}
 	
-	if ($get_event_filters){
+	if ($get_event_filters) {
 		$event_filter = events_get_event_filter_select();
 		
-		echo json_encode($event_filter);		
+		echo json_encode($event_filter);
 	}
 		
 	return;
@@ -433,12 +433,14 @@ if ($group_rep == 0) {
 		case "mysql":
 			$sql = "SELECT *
 				FROM tevento
-				WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+				WHERE 1=1 ".$sql_post."
+				ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 			break;
 		case "postgresql":
 			$sql = "SELECT *
 				FROM tevento
-				WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
+				WHERE 1=1 ".$sql_post."
+				ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
 			break;
 		case "oracle":
 			$set = array();
@@ -446,7 +448,8 @@ if ($group_rep == 0) {
 			$set['offset'] = $offset;
 			$sql = "SELECT *
 				FROM tevento
-				WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC"; 
+				WHERE 1=1 ".$sql_post."
+				ORDER BY utimestamp DESC"; 
 			$sql = oracle_recode_query ($sql, $set);
 			break;
 	}
@@ -455,8 +458,11 @@ else {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
-			$sql = "SELECT *, MAX(id_evento) AS id_evento, GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-					MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
+			$sql = "SELECT *, MAX(id_evento) AS id_evento,
+					GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
+					MIN(estado) AS min_estado,
+					MAX(estado) AS max_estado,
+					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				GROUP BY evento, id_agentmodule

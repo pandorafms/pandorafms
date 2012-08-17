@@ -170,7 +170,7 @@ if (is_ajax ()) {
 			echo '';
 		else
 			echo ui_print_truncate_text(strip_tags($event["user_comment"]));
-	}	
+	}
 	
 	return;
 }
@@ -214,7 +214,7 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 if ($config["pure"] == 0) {
 	$pss = get_user_info($config['id_user']);
 	$hashup = md5($config['id_user'] . $pss['password']);
-			
+	
 	// Fullscreen
 	$fullscreen['active'] = false;		
 	$fullscreen['text'] = '<a href="'.$url.'&amp;pure=1">' . 
@@ -279,7 +279,7 @@ if ($config["pure"] == 0) {
 	
 	function openURLTagWindow(url) {
 		window.open(url, '','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
-	}	
+	}
 	
 	</script>
 	<?php
@@ -617,15 +617,15 @@ $(document).ready( function() {
 									current_row_id = row_id_name + "-" + row_id_number;
 									selected_row_id = row_id_name + "-" + row_id_number + "-0";
 									next_row_id = row_id_name + '-' + row_id_number_next;
-
+									
 									$("#"+previous_row_id).css('display', 'none');
 									$("#"+current_row_id).css('display', 'none');
 									$("#"+selected_row_id).css('display', 'none');
 									$("#"+next_row_id).css('display', 'none');
 								}
-							});		
-
-						}					
+							});
+							
+						}
 					} // Add comment
 					else if (select_validate == 3){
 						// Get event comment

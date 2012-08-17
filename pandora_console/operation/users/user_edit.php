@@ -397,7 +397,6 @@ function show_data_section () {
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-	}	
+	}
 }
-
 </script>

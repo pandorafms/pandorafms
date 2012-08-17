@@ -1,15 +1,31 @@
-2012-08-16  Vanessa Gil <vanessa.gil@artica.es>
+2012-08-17 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the error messages althought you
+	have event data.
 
-	* pandoradb.oracle.sql
-	  pandoradb.postgreSQL.sql
-	  pandoradb.sql
-	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
-	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
-	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Changed
-	type 'subnet' and 'field1' to trecon_task table.
-
-	* godmode/servers/manage_recontask_form.php: Added help tip:
-	several networks to recon task.
+2012-08-16 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/plugin_registration.php, extensions/insert_data.php,
+	operation/users/user_edit.php, operation/events/events_list.php,
+	operation/events/events.php, operation/events/export_csv.php,
+	operation/incidents/incident_detail.php,
+	operation/visual_console/render_view.php, extras/pandora_diag.php,
+	mobile/operation/agents/view_agents.php,
+	godmode/servers/manage_recontask.php,
+	godmode/reporting/visual_console_builder.wizard.php,
+	include/functions_api.php: cleaned source code style.
+	
+	* godmode/setup/setup_visuals.php, operation/gis_maps/ajax.php,
+	operation/gis_maps/index.php, operation/gis_maps/render_view.php,
+	include/functions_config.php, include/functions_gis.php,
+	include/javascript/openlayers.pandora.js: added the feature to
+	hidden the names of agents in the map, and when it is set the
+	default icon in the setup and the agent haven't the icon, then this
+	is show in the map. Some code from the files "functions_config.php"
+	and "setup_visuals.php" are modifications of Sancho Lerena from the
+	branch 4.0.
+	
+	MERGED FROM BRANCH PANDORA 4.0
 
 2012-08-16  Sergio Martin <sergio.martin@artica.es>
 

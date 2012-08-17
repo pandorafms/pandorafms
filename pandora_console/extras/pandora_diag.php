@@ -52,7 +52,7 @@ if (!isset($argc))
 	
 if ($console_mode == 1) {
 	echo "\nPandora FMS PHP diagnostic tool v3.2 (c) Artica ST 2009-2010 \n";
-
+	
 	if ($argc == 1 || in_array($argv[1], array('--help', '-help', '-h', '-?'))) {
 		echo "\nThis command line script gives information about Pandora FMS database. 
 This program only can be executed from console, and need a parameter, the
@@ -76,9 +76,9 @@ full path to Pandora FMS 'config.php' file.
 else {
 	if (file_exists("../include/config.php"))
 		include "../include/config.php";
-
+	
 	global $config;
-		
+	
 	// Not from console, this is a web session
 	if ((!isset($config["id_user"])) OR (!check_acl ($config["id_user"], 0, "PM"))) {
 		echo "<h2>You don't have privileges to use diagnostic tool</h2>";
@@ -121,43 +121,90 @@ render_info ("tsesion");
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		render_info_data ("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_version'", "DB Schema Version");
-		render_info_data ("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_build'", "DB Schema Build");
-		render_info_data ("SELECT `value` FROM tconfig WHERE `token` = 'enterprise_installed'", "Enterprise installed");
-		render_row ( date ("Y/m/d H:i:s",db_get_sql ("SELECT `value` FROM tconfig WHERE `token` = 'db_maintance'")), "PandoraDB Last run");
+		render_info_data ("SELECT `value`
+			FROM tconfig
+			WHERE `token` = 'db_scheme_version'", "DB Schema Version");
+		render_info_data ("SELECT `value`
+			FROM tconfig
+			WHERE `token` = 'db_scheme_build'", "DB Schema Build");
+		render_info_data ("SELECT `value`
+			FROM tconfig
+			WHERE `token` = 'enterprise_installed'", "Enterprise installed");
+		render_row ( date ("Y/m/d H:i:s",
+			db_get_sql ("SELECT `value`
+				FROM tconfig
+				WHERE `token` = 'db_maintance'")), "PandoraDB Last run");
 		
-		render_info_data ("SELECT value FROM tupdate_settings WHERE `key` = 'customer_key';", "Update Key");
-		render_info_data ("SELECT value FROM tupdate_settings WHERE `key` = 'updating_code_path'", "Updating code path");
-		render_info_data ("SELECT value FROM tupdate_settings WHERE `key` = 'keygen_path'", "Keygen path");
-		render_info_data ("SELECT value FROM tupdate_settings WHERE `key` = 'current_update'", "Current Update #");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE `key` = 'customer_key';", "Update Key");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE `key` = 'updating_code_path'", "Updating code path");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE `key` = 'keygen_path'", "Keygen path");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE `key` = 'current_update'", "Current Update #");
 		break;
 	case "postgresql":
-		render_info_data ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_scheme_version'", "DB Schema Version");
-		render_info_data ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_scheme_build'", "DB Schema Build");
-		render_info_data ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'enterprise_installed'", "Enterprise installed");
-		render_row ( date ("Y/m/d H:i:s",db_get_sql ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_maintance'")), "PandoraDB Last run");
+		render_info_data ("SELECT \"value\"
+			FROM tconfig
+			WHERE \"token\" = 'db_scheme_version'", "DB Schema Version");
+		render_info_data ("SELECT \"value\"
+			FROM tconfig
+			WHERE \"token\" = 'db_scheme_build'", "DB Schema Build");
+		render_info_data ("SELECT \"value\"
+			FROM tconfig
+			WHERE \"token\" = 'enterprise_installed'", "Enterprise installed");
+		render_row ( date ("Y/m/d H:i:s",
+			db_get_sql ("SELECT \"value\"
+				FROM tconfig WHERE \"token\" = 'db_maintance'")), "PandoraDB Last run");
 		
-		render_info_data ("SELECT value FROM tupdate_settings WHERE \"key\" = 'customer_key';", "Update Key");
-		render_info_data ("SELECT value FROM tupdate_settings WHERE \"key\" = 'updating_code_path'", "Updating code path");
-		render_info_data ("SELECT value FROM tupdate_settings WHERE \"key\" = 'keygen_path'", "Keygen path");
-		render_info_data ("SELECT value FROM tupdate_settings WHERE \"key\" = 'current_update'", "Current Update #");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE \"key\" = 'customer_key';", "Update Key");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE \"key\" = 'updating_code_path'", "Updating code path");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE \"key\" = 'keygen_path'", "Keygen path");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE \"key\" = 'current_update'", "Current Update #");
 		break;
 	case "oracle":
-		render_info_data ("SELECT value FROM tconfig WHERE token = 'db_scheme_version'", "DB Schema Version");
-		render_info_data ("SELECT value FROM tconfig WHERE token = 'db_scheme_build'", "DB Schema Build");
-		render_info_data ("SELECT value FROM tconfig WHERE token = 'enterprise_installed'", "Enterprise installed");
-		render_row (db_get_sql ("SELECT value FROM tconfig WHERE token = 'db_maintance'"), "PandoraDB Last run");
+		render_info_data ("SELECT value
+			FROM tconfig
+			WHERE token = 'db_scheme_version'", "DB Schema Version");
+		render_info_data ("SELECT value
+			FROM tconfig
+			WHERE token = 'db_scheme_build'", "DB Schema Build");
+		render_info_data ("SELECT value
+			FROM tconfig
+			WHERE token = 'enterprise_installed'", "Enterprise installed");
+		render_row (db_get_sql ("SELECT value
+			FROM tconfig
+			WHERE token = 'db_maintance'"), "PandoraDB Last run");
 		
-		render_info_data ("SELECT value FROM tupdate_settings WHERE key = 'customer_key'", "Update Key");
-		render_info_data ("SELECT value FROM tupdate_settings WHERE key = 'updating_code_path'", "Updating code path");
-		render_info_data ("SELECT value FROM tupdate_settings WHERE key = 'keygen_path'", "Keygen path");
-		render_info_data ("SELECT value FROM tupdate_settings WHERE key = 'current_update'", "Current Update #");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE key = 'customer_key'", "Update Key");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE key = 'updating_code_path'", "Updating code path");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE key = 'keygen_path'", "Keygen path");
+		render_info_data ("SELECT value
+			FROM tupdate_settings
+			WHERE key = 'current_update'", "Current Update #");
 		break;
 }
 
 if ($console_mode == 0) {
 	echo "</table>";
 }
-
-
 ?>

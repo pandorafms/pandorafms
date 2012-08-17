@@ -191,7 +191,10 @@ function mainInsertData() {
 					page: "operation/agentes/exportdata",
 					"search_agents_2": 1,
 					"q": term,
-					id_group: function() { return $("#id_group").val(); }};
+					id_group: function() {
+						return $("#id_group").val();
+					}
+				};
 				
 				jQuery.ajax ({
 					data: data_params,

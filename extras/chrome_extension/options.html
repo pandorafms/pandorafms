@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Pandora FMS extension</title>
+        <link rel="stylesheet" href="css/popup.css" type="text/css" /> 
+        <script src="js/jquery-1.7.2.min.js"></script>
+        <script src="js/sound.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                
+                document.getElementById('ip_address').value = localStorage["ip_address"];
+                document.getElementById('api_pass').value = localStorage["api_pass"];
+                document.getElementById('user_name').value = localStorage["user_name"];
+                
+                document.getElementById('pass').value = localStorage["pass"]; 
+                document.getElementById('critical').value = localStorage["critical"]; 
+                document.getElementById('informational').value = localStorage["informational"]; 
+                document.getElementById('maintenance').value = localStorage["maintenance"]; 
+                document.getElementById('normal').value = localStorage["normal"]; 
+                document.getElementById('warning').value = localStorage["warning"];
+                document.getElementById('refresh').value = localStorage["refresh"];
+                document.getElementById('events').value = localStorage["events"];
+                if(localStorage["sound_alert"]=="on"){
+                    disable(false);
+                    document.getElementById('sound_alert_o').checked=true;
+                }
+                if(localStorage["sound_alert"]=="off"){
+                    disable(true);
+                    document.getElementById('sound_alert_f').checked=true;
+                }
+                   
+                $("#demo [title]").tooltip();
+                
+            });
+            
+            function change(value, id){
+                playSound(value);
+                if(id=="critical"){
+                    localStorage["critical"]=value;
+                }
+                if(id=="informational"){
+                    localStorage["informational"]=value;
+                }
+                if(id=="maintenance"){
+                    localStorage["maintenance"]=value;
+                }
+                if(id=="normal"){
+                    localStorage["normal"]=value;
+                }
+                if(id=="warning"){
+                    localStorage["warning"]=value;
+                }
+            }
+            
+            function change_o(value, id){
+                if(id=="refresh"){
+                    localStorage["refresh"]=value;
+                }
+                if(id=="events"){
+                    localStorage["events"]=value;
+                }
+            }
+            
+            function change_global(value,id){
+                bg=chrome.extension.getBackgroundPage();
+                bg.location.reload();
+                if(id=="ip_address"){
+                    localStorage["ip_address"]=value;
+                }
+                if(id=="api_pass"){
+                    localStorage["api_pass"]=value;
+                }
+                if(id=="user_name"){
+                    localStorage["user_name"]=value;
+                }
+                if(id=="pass"){
+                    localStorage["pass"]=value;
+                }
+                if(id=="sound_alert"){
+                    localStorage["sound_alert"]=value;
+                    if(localStorage["sound_alert"]=="off"){
+                        disable(true);
+                    }
+                    if(localStorage["sound_alert"]=="on"){
+                        disable(false);
+                    }
+                }
+            }
+            function disable(state){
+                if(state){
+                    document.getElementById("critical").disabled=true;
+                    document.getElementById("informational").disabled=true;
+                    document.getElementById("maintenance").disabled=true;
+                    document.getElementById("normal").disabled=true;
+                    document.getElementById("warning").disabled=true;
+                }
+                if(!state){
+                    document.getElementById("critical").disabled=false;
+                    document.getElementById("informational").disabled=false;
+                    document.getElementById("maintenance").disabled=false;
+                    document.getElementById("normal").disabled=false;
+                    document.getElementById("warning").disabled=false;
+                }
+            }
+                
+        </script>
+
+    <div id="demo">
+        <div class="options_header">
+            <img src="images/pandora.jpg">
+        </div> 
+        <div class="options_divider"><h2>Options Menu</h2></div>
+
+        <div class="options_textarea">
+            <table width=450px>
+                <caption><h3>Global Parameters</h3></caption>
+                <tr>
+                    <td  title="IP address of server eg: http://127.0.0.1/pandora_console" style="cursor:help">IP Address</td>
+                    <td><input type="text" size=50px name="ip_address" id="ip_address" onChange="change_global(this.value, 'ip_address');"> </td>
+                </tr>
+                <tr>
+                    <td title="API password of the server" style="cursor:help">API Password</td>
+                    <td><input type="password" size=50px name="api_pass" id="api_pass" onChange="change_global(this.value, 'api_pass');" ></td>
+                </tr>
+                <tr>
+                    <td title="A valid user name" style="cursor:help">User name</td>
+                    <td> <input type="text" size=50px name="user_name" id="user_name" onChange="change_global(this.value, 'user_name');"> </td>
+                </tr>
+                <tr>
+                    <td title="Password" style="cursor:help">Password</td>
+                    <td> <input type="password" size=50px name="pass" id="pass" onChange="change_global(this.value, 'pass');"> </td>
+                </tr>
+            </table>
+
+
+            <table width=450px>
+                <caption><h3>Event Alert Sounds Configuration</h3></caption>
+                <tr>
+                    <td title="All sound alerts of notifications on/off" style="cursor:help">Sound Alerts </td>
+                    <td>
+                        <input type="radio" id="sound_alert_o" name="sound_alert" value="on" onChange="change_global(this.value, 'sound_alert');"/> On
+                        <input type="radio" id="sound_alert_f" name="sound_alert" value="off" onChange="change_global(this.value, 'sound_alert');"/> Off
+
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Severity</b></td>
+                    <td ><b>Sound Type</b></td>
+                </tr>
+                <tr>
+                    <td>Critical</td>
+                    <td>
+                        <select id="critical" onChange="change(this.options[selectedIndex].value, 'critical');">
+                            <option value="1">Air Craft Alarm</option>
+                            <option value="2">Air Shock Alarm</option>
+                            <option value="3">Alien Alarm</option>
+                            <option value="4">Alien Beacon</option>
+                            <option value="5">Bell Ringing</option>
+                            <option value="6">Door Alarm</option>
+                            <option value="7">EAS Beep</option>
+                            <option value="8">Fire Warner</option>
+                            <option value="9">Hard PCM Alarm</option>
+                            <option value="10">Negative Beep</option>
+                            <option value="11">Star Trek Emergency Alarm</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Informational</td>
+                    <td>
+                        <select id="informational" onChange="change(this.options[selectedIndex].value, 'informational');">
+                            <option value="1">Air Craft Alarm</option>
+                            <option value="2">Air Shock Alarm</option>
+                            <option value="3">Alien Alarm</option>
+                            <option value="4">Alien Beacon</option>
+                            <option value="5">Bell Ringing</option>
+                            <option value="6">Door Alarm</option>
+                            <option value="7">EAS Beep</option>
+                            <option value="8">Fire Warner</option>
+                            <option value="9">Hard PCM Alarm</option>
+                            <option value="10">Negative Beep</option>
+                            <option value="11">Star Trek Emergency Alarm</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Maintenance</td>
+                    <td>
+                        <select id="maintenance" onChange="change(this.options[selectedIndex].value, 'maintenance');">
+                            <option value="1">Air Craft Alarm</option>
+                            <option value="2">Air Shock Alarm</option>
+                            <option value="3">Alien Alarm</option>
+                            <option value="4">Alien Beacon</option>
+                            <option value="5">Bell Ringing</option>
+                            <option value="6">Door Alarm</option>
+                            <option value="7">EAS Beep</option>
+                            <option value="8">Fire Warner</option>
+                            <option value="9">Hard PCM Alarm</option>
+                            <option value="10">Negative Beep</option>
+                            <option value="11">Star Trek Emergency Alarm</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Normal</td>
+                    <td>
+                        <select id="normal" onChange="change(this.options[selectedIndex].value, 'normal');">
+                            <option value="1">Air Craft Alarm</option>
+                            <option value="2">Air Shock Alarm</option>
+                            <option value="3">Alien Alarm</option>
+                            <option value="4">Alien Beacon</option>
+                            <option value="5">Bell Ringing</option>
+                            <option value="6">Door Alarm</option>
+                            <option value="7">EAS Beep</option>
+                            <option value="8">Fire Warner</option>
+                            <option value="9">Hard PCM Alarm</option>
+                            <option value="10">Negative Beep</option>
+                            <option value="11">Star Trek Emergency Alarm</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Warning</td>
+                    <td>
+                        <select id="warning" onChange="change(this.options[selectedIndex].value,'warning');">
+                            <option value="1">Air Craft Alarm</option>
+                            <option value="2">Air Shock Alarm</option>
+                            <option value="3">Alien Alarm</option>
+                            <option value="4">Alien Beacon</option>
+                            <option value="5">Bell Ringing</option>
+                            <option value="6">Door Alarm</option>
+                            <option value="7">EAS Beep</option>
+                            <option value="8">Fire Warner</option>
+                            <option value="9">Hard PCM Alarm</option>
+                            <option value="10">Negative Beep</option>
+                            <option value="11">Star Trek Emergency Alarm</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td title="Automatic Refresh time to fetch new events" style="cursor:help">Auto Refresh Time</td>
+                    <td>
+                        <select id="refresh" onChange="change_o(this.options[selectedIndex].value,'refresh');">
+                            <option value="5">5 seconds</option>
+                            <option value="10">10 seconds</option>
+                            <option value="15">15 seconds</option>
+                            <option value="30">30 seconds</option>
+                            <option value="60">1 minute</option>
+                            <option value="120">2 minutes</option>
+                            <option value="300">5 minutes</option>
+                            <option value="900">15 minutes</option>
+                            <option value="1800">30 minutes</option>
+                            <option value="3600">1 hour</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td title="Number of events to be displayed in pop up window" style="cursor:help">Number of events</td>
+                    <td>
+                        <select id="events" onChange="change_o(this.options[selectedIndex].value,'events');">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="12">12</option>
+                            <option value="14">14</option>
+                            <option value="16">16</option>
+                            <option value="18">18</option>
+                            <option value="20">20</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <button type="button" onclick="window.close()"><h3>Close</h3></button>
+        </div>
+
+        <script src="js/popup.js"></script>
+    </head>
+    <body>

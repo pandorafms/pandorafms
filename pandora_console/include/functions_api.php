@@ -162,7 +162,7 @@ function isInACL($ip) {
 	// If the IP is not in the list, we check one by one, all the wildcard registers
 	foreach($config['list_ACL_IPs_for_API'] as $acl_ip) {
 		if(preg_match('/\*/', $acl_ip)) {
-						
+			
 			// Scape for protection
 			$acl_ip = str_replace('.','\.',$acl_ip);
 			
@@ -784,7 +784,7 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
-
+	
 	$where = '';
 
 	if (isset($other['data'][0])){
@@ -795,22 +795,22 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	}
 	if (isset($other['data'][1])){	
 		// Filter by group
-		if ($other['data'][1] != ""){
+		if ($other['data'][1] != "") {
 			$where .= " AND id_grupo = " . $other['data'][1];
 		}
 	}
-	if (isset($other['data'][3])){	
+	if (isset($other['data'][3])) {
 		// Filter by name
 		if ($other['data'][3] != ""){
 			$where .= " AND nombre LIKE ('%" . $other['data'][3] . "%')";
-		}	
+		}
 	}
-	if (isset($other['data'][4])){	
+	if (isset($other['data'][4])) {
 		// Filter by policy
-		if ($other['data'][4] != ""){
+		if ($other['data'][4] != "") {
 			$filter_by_policy = enterprise_hook('policies_get_filter_by_agent', array($other['data'][4]));
 			if ($filter_by_policy !== ENTERPRISE_NOT_HOOK){
-				$where .= $filter_by_policy;	
+				$where .= $filter_by_policy;
 			}
 		}
 	}
@@ -824,9 +824,9 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	$result_agents = array();
 	// Filter by state
 	$sql = "SELECT id_agente, nombre, direccion, comentarios, tconfig_os.name, url_address FROM tagente, tconfig_os WHERE tagente.id_os = tconfig_os.id_os AND disabled = 0 " . $where;
-
-	$all_agents = db_get_all_rows_sql($sql);	
-
+	
+	$all_agents = db_get_all_rows_sql($sql);
+	
 	// Filter by status: unknown, warning, critical, without modules 
 	if (isset($other['data'][2])){
 		if ($other['data'][2] != "") {
@@ -837,12 +837,12 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 				$modules = db_get_all_rows_filter('tagente_modulo', $filter_modules, 'id_agente_modulo'); 
 				$result_modules = array(); 
 				// Skip non init modules
-				foreach ($modules as $module){
+				foreach ($modules as $module) {
 					if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
 						$result_modules[] = $module;
-					}	
+					}
 				}
-
+				
 				// Without modules NO_MODULES
 				if ($other['data'][2] == 'no_modules'){
 					if (empty($result_modules) and $other['data'][2] == 'no_modules'){
@@ -853,27 +853,27 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 				else {
 					$status = agents_get_status($agent['id_agente'], true);
 					// Filter by status
-					switch ($other['data'][2]){
+					switch ($other['data'][2]) {
 						case 'warning':
-							if ($status == 2){
+							if ($status == 2) {
 								$result_agents[] = $agent;
 							}
-							break;		
+							break;
 						case 'critical':
-							if ($status == 1){
+							if ($status == 1) {
 								$result_agents[] = $agent;
 							}
 							break;
 						case 'unknown':
-							if ($status == 3){
-								$result_agents[] = $agent;					
+							if ($status == 3) {
+								$result_agents[] = $agent;
 							}
 							break;
 						case 'normal':
-							if ($status == 0){
-								$result_agents[] = $agent;					
+							if ($status == 0) {
+								$result_agents[] = $agent;
 							}
-							break;					
+							break;
 					}
 				}
 			}
@@ -886,13 +886,13 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 		$result_agents = $all_agents;
 	}
 	
-	if (count($result_agents) > 0 and $result_agents !== false){
+	if (count($result_agents) > 0 and $result_agents !== false) {
 		$data = array('type' => 'array', 'data' => $result_agents);
 		
-		returnData('csv', $data, $separator);	
+		returnData('csv', $data, $separator);
 	}
 	else {
-		returnError('error_all_agents', 'No agents retrieved.');			
+		returnError('error_all_agents', 'No agents retrieved.');
 	}
 }
 
@@ -910,13 +910,15 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
-
+	
 	$sql = sprintf("SELECT id_agente, id_agente_modulo, nombre 
-	FROM tagente_modulo WHERE id_agente = %d AND disabled = 0 AND delete_pending = 0", $other['data'][0]);
-
-	$all_modules = db_get_all_rows_sql($sql);	
-
-	if (count($all_modules) > 0 and $all_modules !== false){
+		FROM tagente_modulo
+		WHERE id_agente = %d AND disabled = 0
+			AND delete_pending = 0", $other['data'][0]);
+	
+	$all_modules = db_get_all_rows_sql($sql);
+	
+	if (count($all_modules) > 0 and $all_modules !== false) {
 		$data = array('type' => 'array', 'data' => $all_modules);
 		
 		returnData('csv', $data, ';');
@@ -940,14 +942,16 @@ function api_get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_group_agent($thrash1, $thrash2, $other, $thrash3) {
-
+	
 	$sql = sprintf("SELECT groups.nombre nombre 
-	FROM tagente agents, tgrupo groups WHERE id_agente = %d AND agents.disabled = 0 AND groups.disabled = 0
-	AND agents.id_grupo = groups.id_grupo", $other['data'][0]);
-
-	$group_names = db_get_all_rows_sql($sql);	
-
-	if (count($group_names) > 0 and $group_names !== false){
+		FROM tagente agents, tgrupo groups
+		WHERE id_agente = %d AND agents.disabled = 0
+			AND groups.disabled = 0
+			AND agents.id_grupo = groups.id_grupo", $other['data'][0]);
+	
+	$group_names = db_get_all_rows_sql($sql);
+	
+	if (count($group_names) > 0 and $group_names !== false) {
 		$data = array('type' => 'array', 'data' => $group_names);
 		
 		returnData('csv', $data, ';');
@@ -971,21 +975,23 @@ function api_get_group_agent($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_policies($thrash1, $thrash2, $other, $thrash3) {
-
+	
 	$where = '';
-
-	if ($other['data'][0] != ""){
+	
+	if ($other['data'][0] != "") {
 		$where .= ' AND id_agent = ' . $other['data'][0];
 		
-		$sql = sprintf("SELECT policy.id, name, id_agent FROM tpolicies policy, tpolicy_agents pol_agents 
-		WHERE policy.id = pol_agents.id %s", $where);		
-	} else {
-		$sql = "SELECT id, name FROM tpolicies policy";		
+		$sql = sprintf("SELECT policy.id, name, id_agent
+			FROM tpolicies policy, tpolicy_agents pol_agents 
+			WHERE policy.id = pol_agents.id %s", $where);
+	}
+	else {
+		$sql = "SELECT id, name FROM tpolicies policy";
 	}
 	
-	$policies = db_get_all_rows_sql($sql);	
-
-	if (count($policies) > 0 and $policies !== false){
+	$policies = db_get_all_rows_sql($sql);
+	
+	if (count($policies) > 0 and $policies !== false) {
 		$data = array('type' => 'array', 'data' => $policies);
 		
 		returnData('csv', $data, ';');
@@ -1012,14 +1018,15 @@ function api_get_policy_modules($thrash1, $thrash2, $other, $thrash3) {
 	
 	$where = '';
 	
-	if ($other['data'][0] == ""){
+	if ($other['data'][0] == "") {
 		returnError('error_policy_modules', 'Error retrieving policy modules. Id_policy cannot be left blank.');	
 		return;	
 	}
 	
-	$policies = enterprise_hook('policies_get_modules_api', array($other['data'][0], $other['data'][1]));
+	$policies = enterprise_hook('policies_get_modules_api',
+		array($other['data'][0], $other['data'][1]));
 	
-	if ($policies === ENTERPRISE_NOT_HOOK){
+	if ($policies === ENTERPRISE_NOT_HOOK) {
 		returnError('error_policy_modules', 'Error retrieving policy modules.');	
 		return;	
 	}
@@ -1291,7 +1298,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3){
 		}
 	}
 	
-	$plugin_module_fields =	array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
+	$plugin_module_fields = array('id_agente', 'disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 
 		'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'ip_target',
 		'tcp_port', 'snmp_community', 'snmp_oid', 'module_interval', 'post_process', 'min', 'max',
 		'custom_id', 'descripcion', 'id_plugin', 'plugin_user', 'plugin_pass', 'plugin_parameter');	
@@ -1696,49 +1703,49 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
  */
 function api_set_new_network_component($id, $thrash1, $other, $thrash2) {
 
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_set_new_network_component', __('Error creating network component. Network component name cannot be left blank.'));
-		return;				
+		return;
 	}
 	
-	if ($other['data'][0] < 6 or $other['data'][0] > 18){
+	if ($other['data'][0] < 6 or $other['data'][0] > 18) {
 		returnError('error_set_new_network_component', __('Error creating network component. Incorrect value for Network component type field.'));
-		return;			
+		return;
 	}
 	
-	if ($other['data'][17] == ""){
+	if ($other['data'][17] == "") {
 		returnError('error_set_new_network_component', __('Error creating network component. Network component group cannot be left blank.'));
-		return;			
-	}	
+		return;
+	}
 	
 	$values = array ( 
-			'description' => $other['data'][1],
-			'module_interval' => $other['data'][2],
-			'max' => $other['data'][3],
-			'min' => $other['data'][4],
-			'snmp_community' => $other['data'][5],
-			'id_module_group' => $other['data'][6],
-			'id_modulo' => 2,
-			'max_timeout' => $other['data'][7],
-			'history_data' => $other['data'][8],
-			'min_warning' => $other['data'][9],
-			'max_warning' => $other['data'][10],
-			'str_warning' => $other['data'][11],
-			'min_critical' => $other['data'][12],
-			'max_critical' => $other['data'][13],
-			'str_critical' => $other['data'][14],
-			'min_ff_event' => $other['data'][15],
-			'post_process' => $other['data'][16]);	
+		'description' => $other['data'][1],
+		'module_interval' => $other['data'][2],
+		'max' => $other['data'][3],
+		'min' => $other['data'][4],
+		'snmp_community' => $other['data'][5],
+		'id_module_group' => $other['data'][6],
+		'id_modulo' => 2,
+		'max_timeout' => $other['data'][7],
+		'history_data' => $other['data'][8],
+		'min_warning' => $other['data'][9],
+		'max_warning' => $other['data'][10],
+		'str_warning' => $other['data'][11],
+		'min_critical' => $other['data'][12],
+		'max_critical' => $other['data'][13],
+		'str_critical' => $other['data'][14],
+		'min_ff_event' => $other['data'][15],
+		'post_process' => $other['data'][16]);
 	
 	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
 	
-	if ($name_check !== false){
+	if ($name_check !== false) {
 		returnError('error_set_new_network_component', __('Error creating network component. This network component already exists.'));
-		return;			
+		return;
 	}
 	
 	$id = network_components_create_network_component ($id, $other['data'][0], $other['data'][17], $values);
-
+	
 	if (!$id)
 		returnError('error_set_new_network_component', 'Error creating network component.');
 	else
@@ -1764,54 +1771,54 @@ function api_set_new_network_component($id, $thrash1, $other, $thrash2) {
 
  */
 function api_set_new_plugin_component($id, $thrash1, $other, $thrash2) {
-
-	if ($id == ""){
+	
+	if ($id == "") {
 		returnError('error_set_new_plugin_component', __('Error creating plugin component. Plugin component name cannot be left blank.'));
-		return;				
+		return;
 	}
 	
-	if ($other['data'][7] == ""){
+	if ($other['data'][7] == "") {
 		returnError('error_set_new_plugin_component', __('Error creating plugin component. Incorrect value for Id plugin.'));
-		return;			
+		return;
 	}
-
-	if ($other['data'][21] == ""){
+	
+	if ($other['data'][21] == "") {
 		returnError('error_set_new_plugin_component', __('Error creating plugin component. Plugin component group cannot be left blank.'));
-		return;			
-	}	
+		return;
+	}
 	
 	$values = array ( 
-			'description' => $other['data'][1],
-			'module_interval' => $other['data'][2],
-			'max' => $other['data'][3],
-			'min' => $other['data'][4],
-			'tcp_port' => $other['data'][5],
-			'id_module_group' => $other['data'][6],
-			'id_modulo' => 4,
-			'id_plugin' => $other['data'][7],
-			'plugin_user' => $other['data'][8],	
-			'plugin_pass' => $other['data'][9],	
-			'plugin_parameter' => $other['data'][10],	
-			'max_timeout' => $other['data'][11],
-			'history_data' => $other['data'][12],
-			'min_warning' => $other['data'][13],
-			'max_warning' => $other['data'][14],
-			'str_warning' => $other['data'][15],
-			'min_critical' => $other['data'][16],
-			'max_critical' => $other['data'][17],
-			'str_critical' => $other['data'][18],
-			'min_ff_event' => $other['data'][19],
-			'post_process' => $other['data'][20]);	
+		'description' => $other['data'][1],
+		'module_interval' => $other['data'][2],
+		'max' => $other['data'][3],
+		'min' => $other['data'][4],
+		'tcp_port' => $other['data'][5],
+		'id_module_group' => $other['data'][6],
+		'id_modulo' => 4,
+		'id_plugin' => $other['data'][7],
+		'plugin_user' => $other['data'][8],
+		'plugin_pass' => $other['data'][9],
+		'plugin_parameter' => $other['data'][10],
+		'max_timeout' => $other['data'][11],
+		'history_data' => $other['data'][12],
+		'min_warning' => $other['data'][13],
+		'max_warning' => $other['data'][14],
+		'str_warning' => $other['data'][15],
+		'min_critical' => $other['data'][16],
+		'max_critical' => $other['data'][17],
+		'str_critical' => $other['data'][18],
+		'min_ff_event' => $other['data'][19],
+		'post_process' => $other['data'][20]);
 	
 	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $id);
 	
-	if ($name_check !== false){
+	if ($name_check !== false) {
 		returnError('error_set_new_plugin_component', __('Error creating plugin component. This plugin component already exists.'));
-		return;			
+		return;
 	}
 	
 	$id = network_components_create_network_component ($id, $other['data'][0], $other['data'][21], $values);
-
+	
 	if (!$id)
 		returnError('error_set_new_plugin_component', 'Error creating plugin component.');
 	else
@@ -1838,40 +1845,40 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2) {
 
  */
 function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
-
-	if ($id == ""){
+	
+	if ($id == "") {
 		returnError('error_set_new_snmp_component', __('Error creating SNMP component. SNMP component name cannot be left blank.'));
-		return;				
+		return;
 	}
 	
-	if ($other['data'][0] < 15 or $other['data'][0] > 17){
+	if ($other['data'][0] < 15 or $other['data'][0] > 17) {
 		returnError('error_set_new_snmp_component', __('Error creating SNMP component. Incorrect value for Snmp component type field.'));
-		return;			
+		return;
 	}
-
-	if ($other['data'][25] == ""){
+	
+	if ($other['data'][25] == "") {
 		returnError('error_set_new_snmp_component', __('Error creating SNMP component. Snmp component group cannot be left blank.'));
-		return;			
-	}	
+		return;
+	}
 	
 	# SNMP version 3
-	if ($other['data'][16] == "3"){
+	if ($other['data'][16] == "3") {
 		
-		if ($other['data'][22] != "AES" and $other['data'][22] != "DES"){
+		if ($other['data'][22] != "AES" and $other['data'][22] != "DES") {
 			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
 			return;	
 		}
 		
 		if ($other['data'][25] != "authNoPriv" and $other['data'][25] != "authPriv" and $other['data'][25] != "noAuthNoPriv"){
 			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
-			return;	
-		}		
+			return;
+		}
 		
-		if ($other['data'][24] != "MD5" and $other['data'][24] != "SHA"){
+		if ($other['data'][24] != "MD5" and $other['data'][24] != "SHA") {
 			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
-			return;	
-		}		
-	
+			return;
+		}
+		
 		$values = array ( 
 				'description' => $other['data'][1],
 				'module_interval' => $other['data'][2],
@@ -3661,10 +3668,10 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	
 	$homeurl = '../';
 	$ttl = 1;
-				
+	
 	global $config;
 	$config['flash_charts'] = 0;
-
+	
 	$image = grafico_modulo_sparse ($id, $period, $draw_events,
 				$width, $height , '',null,
 				$draw_alerts, $avg_only, false,
@@ -4848,8 +4855,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	$data['data'] = $result;
 	
 	returnData($returnType, $data, $separator);
-	
-	return;
+	if (empty($result))
+		return false;
+	return true;
 }
 
 /**
@@ -4862,9 +4870,10 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
  */
 function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = null) {
 	if ($user_in_db !== null) {
-		get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db);
+		$correct = get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db);
+		
 		$last_error = error_get_last();
-		if (!empty($last_error)) {
+		if (!$correct && !empty($last_error)) {
 			$errors = array(E_ERROR, E_WARNING, E_USER_ERROR,
 				E_USER_WARNING);
 			if (in_array($last_error['type'], $errors)) {
@@ -4874,7 +4883,7 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = nul
 		
 		return;
 	}
-
+	
 	if ($other['type'] == 'string') {
 		if ($other['data'] != '') {
 			returnError('error_parameter', 'Error in the parameters.');
@@ -4886,18 +4895,20 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = nul
 	}
 	else if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
-
+		
 		$filterString = otherParameter2Filter($other);
 	}
-
+	
 	$dataRows = db_get_all_rows_filter('tevento', $filterString);
 	$last_error = error_get_last();
-	if (!empty($last_error)) {
-		returnError('ERROR_API_PANDORAFMS', $returnType);
-
-		return;
+	if (empty($dataRows)) {
+		if (!empty($last_error)) {
+			returnError('ERROR_API_PANDORAFMS', $returnType);
+			
+			return;
+		}
 	}
-
+	
 	$data['type'] = 'array';
 	$data['data'] = $dataRows;
 	

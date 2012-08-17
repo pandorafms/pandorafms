@@ -1,3 +1,8 @@
+2012-08-17 Miguel de Dios <miguel.dedios@artica.es>
+	
+	*  include/functions_api.php: fixed the confused error messages when
+	there is data events.
+
 2012-08-16 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/gis_maps/ajax.php, operation/gis_maps/render_view.php,

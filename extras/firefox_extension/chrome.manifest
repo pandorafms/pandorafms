@@ -1,0 +1,4 @@
+content     pandorasidebar    chrome/content/ contentaccessible=yes
+locale	pandorasidebar	en-US	chrome/locale/en-US/
+skin	pandorasidebar	classic/1.0	chrome/skin/
+overlay	chrome://browser/content/browser.xul	chrome://pandorasidebar/content/firefoxOverlay.xul

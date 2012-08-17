@@ -1,3 +1,13 @@
+2012-08-17  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_modules.js
+	godmode/agentes/module_manager_editor_plugin.php
+	godmode/modules/manage_network_components_form_plugin.php: Fix some
+	little issues in the interface of new plugin system
+
+	* include/functions_visual_map.php: Fix a problem that the simple
+	values didnt appear in view screen
+
 2012-08-17 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the error messages althought you

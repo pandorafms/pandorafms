@@ -35,7 +35,7 @@ push_table_row ($data, 'plugin_1');
 $data = array ();
 $data[0] = 'macro_desc';
 $data[0] .= ui_print_help_tip ('macro_help', true);
-$data[1] = html_print_input_text ('macro_name', 'macro_value', '', 15, 60, true);
+$data[1] = html_print_input_text ('macro_name', 'macro_value', '', 100, 255, true);
 $table->colspan['macro_field'][1] = 3;
 $table->rowstyle['macro_field'] = 'display:none';
 

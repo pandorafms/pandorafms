@@ -66,7 +66,7 @@ push_table_simple ($data, 'plugin_1');
 $data = array ();
 $data[0] = 'macro_desc';
 $data[0] .= ui_print_help_tip ('macro_help', true);
-$data[1] = html_print_input_text ('macro_name', 'macro_value', '', 15, 60, true);
+$data[1] = html_print_input_text ('macro_name', 'macro_value', '', 100, 255, true);
 $table_simple->colspan['macro_field'][1] = 3;
 $table_simple->rowstyle['macro_field'] = 'display:none';
 

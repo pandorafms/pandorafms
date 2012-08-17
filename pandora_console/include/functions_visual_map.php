@@ -984,8 +984,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				break;
 			case MODULE_GRAPH:
 				break;
-			case SIMPLE_VALUE:
-				break;
+
 			case LABEL:
 				$z_index = 4;
 				if ($resizedMap)

@@ -1,0 +1,65 @@
+body {
+    min-width:425px;
+    min-height:540px;
+    margin:5px;
+    font-family:Tahoma, Geneva, Arial;
+    font-size:10pt;
+}
+h1 { font-weight: bold; font-size:16px; margin:2px 0px 2px 0px; color:#0068C4; font-family:arial }
+h2{
+    color : blue;
+}
+
+
+label { color: #035BAC; text-decoration:none; }
+label:hover { text-decoration:underline; }
+label:visited { color: #035BAC; text-decoration:none; }
+label:visited:hover { text-decoration:underline; }
+
+span.res { font-size:80%; color:#555; }
+
+image.pm { margin-right:3px;cursor:pointer; margin-top:0px; }
+.main{
+    background-color : white;
+    height: 500px;
+    width: 400px;
+}
+.textarea{
+    background-color : #D5DED5;
+    width :100%
+}
+vbox.e{ text-align:right; font-size:8pt; }
+vbox.b { background-color:white; border:1px solid #BABABA; margin:5px; padding:4px;   }
+vbox.b description label { font-size: 10pt; }
+vbox.b description { margin:2px 0px 4px 0px;  color:#333; font-size:9pt; }
+vbox.b vbox.items description {
+    margin:2px 0px 8px 0px; color:#333; width:355px;float:left; display:block;
+}
+vbox.b vbox.items description image {
+    float:left;margin:0px 3px 0px 0px;
+}
+
+
+.tooltip {
+    display:none;
+    font-size:12px;
+    height:70px;
+    width:160px;
+    padding:25px;
+    color:#eee;
+}
+
+.spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px; /* half width of the spinner gif */
+    margin-top: -50px; /* half height of the spinner gif */
+    text-align:center;
+    z-index:1234;
+    overflow: auto;
+    width: 100px; /* width of the spinner gif */
+    height: 102px; /*hight of the spinner gif +2px to fix IE8 issue */
+}
+
+

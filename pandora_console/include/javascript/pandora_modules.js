@@ -573,7 +573,9 @@ function load_plugin_macros_fields(row_model_id) {
 			if(data['array'] != null) {
 				$('#hidden-macros').val(data['base64']);
 				jQuery.each (data['array'], function (i, macro) {
-					add_macro_field(macro, row_model_id);
+					if(macro['desc'] != '') {
+						add_macro_field(macro, row_model_id);
+					}
 				});
 			}
 		}

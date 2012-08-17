@@ -189,7 +189,10 @@ CREATE TABLE "tagente_modulo" (
 	"custom_integer_1" INTEGER default 0,
 	"custom_integer_2" INTEGER default 0,
 	"wizard_level" type_tagente_modulo_wizard_level default 'nowizard',
-	"macros" TEXT default ''
+	"macros" TEXT default '',
+	"critical_instructions" TEXT default '',
+    "warning_instructions" TEXT default '',
+    "unknown_instructions" TEXT default ''
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");

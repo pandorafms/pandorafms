@@ -208,6 +208,10 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `custom_integer_2` int(10) default 0,
   `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
   `macros` text,
+  `critical_instructions` text,
+  `warning_instructions` text,
+  `unknown_instructions` text,
+  
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),

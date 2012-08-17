@@ -297,3 +297,11 @@ WHERE id_recon_script=1;
 -- -----------------------------------------------------
 ALTER TABLE trecon_task MODIFY subnet TEXT NOT NULL DEFAULT '';
 ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL DEFAULT '';
+
+
+
+ALTER TABLE tagente_modulo ADD `critical_instructions` text;
+ALTER TABLE tagente_modulo ADD `warning_instructions` text;
+ALTER TABLE tagente_modulo ADD `unknown_instructions` text;
+
+

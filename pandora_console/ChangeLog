@@ -1,3 +1,18 @@
+2012-08-17 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/users/configure_user.php: fixed when the metaconsole is
+	not set.
+	
+	* godmode/reporting/reporting_builder.php: cleaned source code
+	style.
+	
+	* include/functions_reports.php: fixed into the function
+	"reports_get_reports" to get reports in All group for users of
+	others groups.
+	
+	* include/functions_api.php: fixed the confused error messages when
+	there is data events.
+
 2012-08-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_modules.js

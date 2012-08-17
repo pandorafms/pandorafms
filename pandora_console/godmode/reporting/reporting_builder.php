@@ -137,26 +137,28 @@ switch ($action) {
 	case 'delete_items':
 		$resultOperationDB = null;	
 		$ids_serialize = (string)get_parameter('ids_items_to_delete', '');
-	
+		
 		if (!empty($ids_serialize)) {
 			$sql = "DELETE FROM treport_content WHERE id_rc IN ($ids_serialize)";
 			$resultOperationDB = db_process_sql($sql);
-		} else {
+		}
+		else {
 			$resultOperationDB = false;
 		}
-
+		
 		break;
 	case 'delete_items_pos':
 		$resultOperationDB = null;
 		$position_to_delete = (int)get_parameter('position_to_delete', 1);
 		$pos_delete = (string)get_parameter('delete_m', 'below');
-	
+		
 		$countItems = db_get_sql('SELECT COUNT(id_rc)
 					FROM treport_content WHERE id_report = ' . $idReport);
-				
+		
 		if (($countItems < $position_to_delete) || ($position_to_delete < 1)) {
 			$resultOperationDB = false;
-		} else {
+		}
+		else {
 			$sql = "SELECT id_rc FROM treport_content WHERE id_report=$idReport ORDER BY '`order`'";
 			$items = db_get_all_rows_sql($sql);
 			switch ($pos_delete) {
@@ -187,7 +189,7 @@ switch ($action) {
 					}
 					break;
 			}
-		}		
+		}
 		break;
 	case 'delete_report':
 	case 'list':
@@ -195,22 +197,23 @@ switch ($action) {
 			'list_reports' => array('active' => false,
 				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">' . 
 					html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
-			);	
-
+			);
+		
 		if ($enterpriseEnable){
 			$buttons = reporting_enterprise_add_main_Tabs($buttons);
 		}
 		
 		$subsection = '';
-		switch ($activeTab){
-
-			case 'main':			$buttons['list_reports']['active'] = true;
-									$subsection = ' &raquo; '.__('Custom reporting');
-									break;
-			default:				$subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);
-									break;
+		switch ($activeTab) {
+			case 'main':
+				$buttons['list_reports']['active'] = true;
+				$subsection = ' &raquo; '.__('Custom reporting');
+				break;
+			default:
+				$subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);
+				break;
 		}
-	
+		
 		// Report LIST
 		ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting.png", false, "",false, $buttons);
 		
@@ -220,17 +223,17 @@ switch ($action) {
 				db_pandora_audit("Report management", "Delete report #$idReport");
 			else
 				db_pandora_audit("Report management", "Fail try to delete report #$idReport");
-				
+			
 			ui_print_result_message ($result,
 				__('Successfully deleted'),
 				__('Could not be deleted'));
 		}
-
+		
 		$id_group = (int) get_parameter ("id_group", 0);
 		$search = trim(get_parameter ("search", ""));
 		
 		$search_sql = '';
-		if ($search != ""){
+		if ($search != "") {
 			$search_name = "%$search%' OR description LIKE '%$search%";
 		}
 		
@@ -242,9 +245,9 @@ switch ($action) {
 		
 		$table_aux->data[0][2] = "<b>". __("Free text for search: ") . "</b>";
 		$table_aux->data[0][3] = html_print_input_text ("search", $search, '', 30, '', true);
-
+		
 		$table_aux->data[0][6] = html_print_submit_button(__('Search'), 'search_submit', false, 'class="sub upd"', true);
-
+		
 		echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group='.$id_group'
 			method='post'>";
 			html_print_table($table_aux);
@@ -254,12 +257,13 @@ switch ($action) {
 		ui_require_jquery_file ('ajaxqueue');
 		ui_require_jquery_file ('bgiframe');
 		ui_require_jquery_file ('autocomplete');
-
-
-		// Show only selected groups	
+		
+		
+		// Show only selected groups
 		if ($id_group > 0) {
 			$group = array("$id_group" => $id_group);
-		} else {
+		}
+		else {
 			$group = false;
 		}
 		
@@ -273,14 +277,16 @@ switch ($action) {
 				'name' => $search_name, 
 				'order' => 'name'
 			);
-		} else {
+		}
+		else {
 			$filter = array (
 				'order' => 'name'
 			);
-		}		
-
+		}
+		
 		$reports = reports_get_reports ($filter,
-			array ('name', 'id_report', 'description', 'private', 'id_user', 'id_group'), $return_all_group, 'IR', $group);		
+			array ('name', 'id_report', 'description', 'private',
+				'id_user', 'id_group'), $return_all_group, 'IR', $group);		
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';
@@ -332,7 +338,7 @@ switch ($action) {
 				
 				if (check_acl ($config["id_user"], $report["id_group"], "AW")) {
 					$data[0] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
-							$report['id_report'].'">'.$report['name'].'</a>';
+						$report['id_report'].'">'.$report['name'].'</a>';
 				}
 				else {
 					$data[0] = $report['name'];
@@ -991,26 +997,26 @@ switch ($action) {
 				'list_reports' => array('active' => false,
 					'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">' . 
 						html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
-				);	
-
+				);
+			
 			$buttons = reporting_enterprise_add_main_Tabs($buttons);
-	
+			
 			$subsection = '';
-			switch ($activeTab){
-
-				case 'main':			$buttons['list_reports']['active'] = true;
-										$subsection = ' &raquo; '.__('Custom reporting');
-										break;
-				default:				$subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);
-										break;
+			switch ($activeTab) {
+				case 'main':
+					$buttons['list_reports']['active'] = true;
+					$subsection = ' &raquo; '.__('Custom reporting');
+					break;
+				default:
+					$subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);
+					break;
 			}
-		
+			
 			// Report LIST
 			ui_print_page_header (__('Reporting') . $subsection, "images/reporting_edit.png", false, "", true, $buttons);
-
-			reporting_enterprise_select_main_tab($action);		
+			
+			reporting_enterprise_select_main_tab($action);
 		}
-		
 		return;
 		break;
 }
@@ -1040,7 +1046,7 @@ if ($enterpriseEnable) {
 
 $buttons['view'] = array('active' => false,
 	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $idReport . '">' . 
-			html_print_image("images/reporting.png", true, array ("title" => __('View report'))) .'</a>');
+		html_print_image("images/reporting.png", true, array ("title" => __('View report'))) .'</a>');
 	
 $buttons[$activeTab]['active'] = true;
 
@@ -1075,5 +1081,4 @@ switch ($activeTab) {
 		reporting_enterprise_select_tab($activeTab);
 		break;
 }
-
 ?>

@@ -57,14 +57,14 @@ if (! check_acl ($config["id_user"], $id_group, "AR")) {
 $options = array();
 
 if (check_acl ($config["id_user"], $id_group, "AW")) {
-
+	
 	$hash = md5($config["dbpass"]. $id_layout. $config["id_user"]);
-
+	
 	$options['public_link']['text'] = '<a href="'.$config["homeurl"].'/operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"].'">'.
 	
 	html_print_image ("images/camera.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
 	$options['public_link']['active'] = false;
-
+	
 	$options['setup']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=editor&action=edit&id_visual_console='.$id_layout.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 	$options['setup']['active'] = false;
 }
@@ -146,8 +146,11 @@ $(document).ready (function () {
 	?>
 		t = new Date();
 		t.setTime (t.getTime() + <?php echo $config["refr"] * 1000; ?>);
-		$("#countdown").countdown({until: t, format: 'MS', description: '<?php echo __('Until refresh'); ?>'});
-	
+		$("#countdown").countdown({
+			until: t,
+			format: 'MS',
+			description: '<?php echo __('Until refresh'); ?>'
+			});
 	<?php
 	}
 	?>

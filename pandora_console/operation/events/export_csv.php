@@ -51,12 +51,9 @@ $tag = get_parameter("tag", "");
 $filter = array ();
 if ($ev_group > 1)
 	$filter['id_grupo'] = $ev_group;
-/*if ($status == 1)
-	$filter['estado'] = 1;
-if ($status == 0)
-	$filter['estado'] = 0; */
+
 $filter_state = '';
-switch($status) {
+switch ($status) {
 	case 0:
 	case 1:
 	case 2:
@@ -65,14 +62,14 @@ switch($status) {
 	case 3:
 		$filter_state = " AND (estado = 0 OR estado = 2)";
 		break;
-}		
+}
 if ($search != "")
 	$filter[] = 'evento LIKE "%'.io_safe_input($search).'%"';
 if (($event_type != "all") OR ($event_type != 0))
 	$filter['event_type'] = $event_type;	
 if ($severity != -1)
 	$filter[] = 'criticity >= '.$severity;
-	
+
 if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
 
@@ -103,14 +100,14 @@ else {
 			break;
 	}
 }
-	
-	
+
+
 if ($id_agent != -1)
 	$filter['id_agente'] = $id_agent;
-	
+
 if ($id_event != -1)
 	$filter['id_evento'] = $id_event;	
-	
+
 $timestamp_filter = '';	
 if ($event_view_hr > 0) {
 	$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR); //Put hours in seconds
@@ -138,7 +135,7 @@ echo chr (13);
 $fields = array ('id_grupo', 'id_agente', 'evento', 'estado', 'id_usuario',
 	'event_type', 'criticity', 'timestamp');
 
-$sql = db_get_all_rows_filter ('tevento', $filter, $fields, 'AND', true, true);
+$sql = db_get_all_rows_filter('tevento', $filter, $fields, 'AND', true, true);
 
 // If filter is empty and there are others filters not empty append "WHERE" clause
 if (empty($filter) and (!empty($filter_state) or !empty($timestamp_filter)))
@@ -171,4 +168,3 @@ while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	echo chr (13);
 }
 ?>
-

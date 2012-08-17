@@ -124,7 +124,7 @@ $table->data["all_3"][0] = __('Agents');
 $table->data["all_3"][1] = html_print_select (agents_get_group_agents (0, false, "none", false, true),
 	'id_agents[]', 0, false, '', '', true, true);
 
-$table->data["all_3"][2] =	' <span style="vertical-align: top;">' . __('Modules') . '</span>';
+$table->data["all_3"][2] = ' <span style="vertical-align: top;">' . __('Modules') . '</span>';
 
 $table->data["all_3"][3] = html_print_select (array (), 'module[]', 0, false, __('None'), -1, true, true);
 

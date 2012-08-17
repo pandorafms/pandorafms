@@ -220,7 +220,8 @@ echo "<script type=\"text/javascript\">
 			$('#add_note').slideDown('slow');
 			return false;
 		});
-	});</script>";
+	});
+	</script>";
 
 if (isset ($id_inc)) { //If $id_inc is set (when $_GET["id"] is set, not $_GET["insert_form"]
 	ui_print_page_header (__('Incident details'). ' #'.$id_inc, "images/book_edit.png", false, "", false, "");
@@ -233,21 +234,31 @@ else {
 }
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
-echo '<tr><td class="datos"><b>'.__('Incident').'</b></td><td colspan="3" class="datos">';
+echo '<tr>
+		<td class="datos"><b>'.__('Incident').'</b></td>
+		<td colspan="3" class="datos">';
 
-if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR
+	($usuario == $config["id_user"])) {
 	html_print_input_text ("titulo", $titulo,'', 70);
 }
 else {
 	html_print_input_text_extended ("titulo", $titulo, "", "", 70, "", false, "", "readonly"); 
 }
 
-echo '</td></tr>';
+echo '</td>
+	</tr>';
 
-echo '<tr><td class="datos2"><b>'.__('Opened at').'</b></td><td class="datos2"><i>'.date ($config['date_format'], $inicio).'</i></td>';
-echo '<td class="datos2"><b>'.__('Updated at').'</b><td class="datos2"><i>'.date ($config['date_format'], $actualizacion).'</i></td></tr>';
+echo '<tr>
+		<td class="datos2"><b>'.__('Opened at').'</b></td>
+		<td class="datos2"><i>'.date ($config['date_format'], $inicio).'</i></td>
+		<td class="datos2"><b>'.__('Updated at').'</b></td>
+		<td class="datos2"><i>'.date ($config['date_format'], $actualizacion).'</i></td>
+	</tr>';
 
-echo '<tr><td class="datos"><b>'.__('Owner').'</b></td><td class="datos">';
+echo '<tr>
+	<td class="datos"><b>'.__('Owner').'</b></td>
+	<td class="datos">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select (users_get_info (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135");
@@ -255,7 +266,9 @@ if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $conf
 else {
 	html_print_select (users_get_info (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135", true);
 }
-echo '</td><td class="datos"><b>'.__('Status').'</b></td><td class="datos">';
+echo '</td>
+	<td class="datos"><b>'.__('Status').'</b></td>
+	<td class="datos">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_select (incidents_get_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135');
@@ -263,9 +276,12 @@ if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $conf
 else {
 	html_print_select (incidents_get_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135', true);
 }
-echo '</td></tr>';
+echo '</td>
+	</tr>';
 
-echo '<tr><td class="datos2"><b>'.__('Source').'</b></td><td class="datos2">';
+echo '<tr>
+		<td class="datos2"><b>'.__('Source').'</b></td>
+		<td class="datos2">';
 
 $fields = array ();
 $return = db_get_all_rows_sql ("SELECT origen FROM torigen ORDER BY origen");

@@ -89,9 +89,9 @@ function pluginreg_extension_main () {
 		unlink ($config["attachment_store"] . "/plugin_definition.ini");
 		return;
 	}
-
+	
 	// Verify if a plugin with the same name is already registered
-
+	
 	$sql0 = "SELECT COUNT(*) FROM tplugin WHERE name = '" . io_safe_input ($ini_array["plugin_definition"]["name"]) . "'";
 	$result = db_get_sql ($sql0);
 	
@@ -99,9 +99,9 @@ function pluginreg_extension_main () {
 	if ($result> 0) {
 		echo "<h2 class=error>".__("Plugin already registered. Aborting!")."</h2>";
 		unlink ($config["attachment_store"] . "/plugin_definition.ini");
-		return;;
+		return;
 	}
-
+	
 	$values = array(
 		'name' => io_safe_input ($ini_array["plugin_definition"]["name"]),
 		'description' => io_safe_input ($ini_array["plugin_definition"]["description"]),

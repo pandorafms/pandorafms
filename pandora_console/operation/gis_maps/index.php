@@ -43,7 +43,7 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$own_groups = array_keys(users_get_groups($config['id_user'], "IR"));
 else
 	$own_groups = array_keys(users_get_groups($config['id_user'], "IR", false));
-
+			
 if ($maps !== false) {
 	foreach ($maps as $map) {
 		if ($rowPair)

@@ -36,18 +36,16 @@ import android.util.Log;
 	        			int defaultSMSReceived = 0;
 	        			int mode = Activity.MODE_PRIVATE;
 	        			
-	        						
 	        			SharedPreferences pref = context.getSharedPreferences("PANDROID_DATA", mode);
-	        			int a = pref.getInt("SMSReceived", defaultSMSReceived);
+	        			int sms = pref.getInt("SMSReceived", defaultSMSReceived);
 	        			
-	        			a++;
+	        			sms++;
 	        			
 	        			SharedPreferences.Editor editor = pref.edit();
-	        			editor.putInt("SMSReceived", a);
+	        			editor.putInt("SMSReceived", sms);
 	        			editor.commit();
 	        		
-	            
-                    }//end if
+	                }//end if
        
 	        }//end onRecieve
 }//end class

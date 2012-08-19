@@ -1,3 +1,107 @@
+2012-08-19 Mark Holland <mark@mark-holland.me.uk>
+
+	* res/layout/drawable-hdpi: Added help and about icons
+	from sdk	
+
+	* res/layout/drawable-ldpi: Added new vector images.
+	Added help and about icons from sdk.
+
+	* res/layout/drawable-mdpi:Added help and about icons
+	from sdk.
+
+	* res/layout/drawable-xhdpi: Added new higher
+	resolution images. Added help and about icons from sdk
+
+	* res/layout/password_choose.xml: UI tweak
+
+	* res/layout/password_create.xml: UI tweak
+
+	* res/layout/setup.xml: Changed webURL id, moved position
+	of task spinner.
+
+	* res/layout/setupnosim.xml: Changed webURL id, moved
+	position of task spinner.
+
+	* res/layout/status.xml: Removed start, stop, show and 
+	hide xml buttons.
+
+	* res/layout/statusnosim.xml: Removed start, stop, show 
+	and hide xml buttons.
+
+	* res/layout/welcome.xml: Added splash screen view with
+	pandroid logo and version 3.0 text.
+
+	* res/values/strings.xml: Changed order of strings to be
+	more structured, removed unused correct_update string,
+	fixed the "..." in loading string, fixed copyright symbol,
+	added strings for seconds, runnning and stopped that were
+	previously hardcoded, fixed apostrophe in don't.
+
+	* res/values-de/strings.xml: Added strings for German locale
+
+	* res/values-es/strings.xml: Added strings for Spanish locale
+	
+	* res/values-fr/strings.xml: Added strings for French locale
+
+	* res/values-it/strings.xml: Added strings for Italian locale
+
+	* res/values-ja/strings.xml: Added strings for Japanese locale
+
+	* res/values-pt/strings.xml: Added strings for Portuguese locale
+
+	* res/values-zh/strings.xml: Added strings for Chinese(simplified)
+	locale
+
+	* src/pandroid/agent/About.java: Changed URL to pandorafms.com from
+	.org
+
+	* src/pandroid/agent/core.java: Changed mobile url variable, 
+
+	* src/pandroid/agent/Installation.java: Added comment explaining class.
+
+	* src/pandroid/agent/PandroidAgent.java: Added splash screen dialog
+	
+	* src/pandroid/agent/PandroidAgentListener.java: Added loading toast on
+	connect, moved contact into an asynctask, added application inventory to
+	xml(app name;version;package name), fixed battery level to work on first
+	connect, made all get methods private.
+
+	* src/pandroid/agent/setup.java: Auto add http:// to mobile web url.
+
+	* src/pandroid/agent/SMSBroadcastReceiver.java: Changed variable name.
+
+	* src/pandroid/agent/status.java: swapped hardcoded strings to ones from
+	res.	
+
+
+2012-08-03 Mark Holland <mark@mark-holland.me.uk>
+
+	* res/layout/password_entry.xml: UI tweaks
+
+	* res/layout/setup.xml: Added mobile console
+	textview and button
+
+	* res/layout/setupnosim.xml: Added mobile console
+	textview and button
+
+	* res/layout/status.xml: Added roaming view
+
+	* res/values/strings.xml: string for roaming, 
+	roaming report, mobile site
+
+	* src/pandroid/agent/core.java: Added variables
+	for roaming and mobile site url
+
+	* src/pandroid/agent/PandroidAgentListener.java: 
+ 	Added roaming report method and variables then add
+	to xml
+
+	* src/pandroid/agent/setup.java: Added mobile site
+	view and full screen password input
+
+	* src/pandroid/agent/status.java: Added roaming view
+
+
 2012-07-09 Mark Holland <mark@mark-holland.me.uk>
 	
 	* AndroidManifest.xml: Added Pandora FMS 

@@ -46,7 +46,7 @@ public class Core {
     static volatile public String defaultServerPort = "41121";
     static volatile public int defaultInterval = 300;
     static volatile public String defaultAgentName = "pandroid";
-    static volatile public String defaultWebName = "firefly.artica.es/pandora_console/mobile";
+    static volatile public String defaultmobileWebURL = "firefly.artica.es/pandora_demo/mobile";
     static volatile public String defaultGpsStatus = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultBatteryLevelReport = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultMemoryStatus = "enabled"; // "disabled" or "enabled"
@@ -96,10 +96,9 @@ public class Core {
     static volatile public int defaultHelloSignal = 2;
     static volatile public int defaultRoaming = 0;
     
-    //Temporary
+    
     static volatile public String defaultPassword = "";
-    
-    
+       
     static volatile public Context con = null;
     static volatile public AlarmManager am = null;
     static volatile public PendingIntent sender = null;
@@ -112,8 +111,8 @@ public class Core {
     static volatile public String serverAddr = defaultServerAddr;
     static volatile public String serverPort  = defaultServerPort;
     static volatile public int interval = defaultInterval;
-    static volatile public String agentName = defaultWebName;
-    static volatile public String webName = defaultAgentName;
+    static volatile public String agentName = defaultmobileWebURL;
+    static volatile public String mobileWebURL = defaultAgentName;
     static volatile public String gpsStatus = defaultGpsStatus;
     static volatile public String memoryStatus = defaultMemoryStatus;
     static volatile public String taskStatus = defaultTaskStatus;
@@ -139,7 +138,6 @@ public class Core {
     
     static volatile public boolean hasSim = defaultHasSim;
     
-    //temporary
     static volatile public String password = defaultPassword;
     
     //																//
@@ -172,10 +170,7 @@ public class Core {
     
     static volatile public long lastContact = CONST_INVALID_CONTACT;
     static volatile public int contactError = CONST_CONTACT_ERROR;
-    
-    //log
-    public static final String LOG_TAG = "mark";
-    
+        
     public Core() {
     	
     }
@@ -194,8 +189,6 @@ public class Core {
     	alarmEnabled = true;
     	am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), (interval * 1000), sender);
     	
-    	
-    
     }// end startAgentListener
     
     static public void stopAgentListener() {
@@ -210,9 +203,7 @@ public class Core {
 		startAgentListener(context);
 	}
 	
-	
-    
-    static public void loadLastValues(Context context) {
+	static public void loadLastValues(Context context) {
     	if (con == null) {
     		con = context;
     	}
@@ -236,7 +227,6 @@ public class Core {
 		lastContact = agentPreferences.getLong("lastContact", defaultContact);
 		contactError = agentPreferences.getInt("contactError", defaultContactError);
 		simID = agentPreferences.getString("simID", defaultSimID);
-		
 		upTime = agentPreferences.getLong("upTime", Core.defaultUpTime);
 		SMSReceived = agentPreferences.getInt("SMSReceived", defaultSMSReceived);
 		SMSSent = agentPreferences.getInt("SMSSent", defaultSMSSent);
@@ -266,9 +256,8 @@ public class Core {
 		serverAddr = agentPreferences.getString("serverAddr", defaultServerAddr);
 		serverPort = agentPreferences.getString("serverPort", defaultServerPort);
 		interval = agentPreferences.getInt("interval", defaultInterval);
-		//fix agent name to mark
 		agentName = agentPreferences.getString("agentName", defaultAgentName+"_"+Installation.id(context));
-		webName = agentPreferences.getString("webName", defaultWebName);
+		mobileWebURL = agentPreferences.getString("mobileWebURL", defaultmobileWebURL);
 		gpsStatus = agentPreferences.getString("gpsStatus", defaultGpsStatus);
 		memoryStatus = agentPreferences.getString("memoryStatus", defaultMemoryStatus);
 		taskStatus = agentPreferences.getString("taskStatus", defaultTaskStatus);
@@ -304,9 +293,10 @@ public class Core {
     		passwordCheck, DeviceUpTimeReport, NetworkOperatorReport, NetworkTypeReport, PhoneTypeReport,
     		SignalStrengthReport, ReceivedSMSReport, SentSMSReport, IncomingCallsReport, MissedCallsReport,
     		OutgoingCallsReport, BytesReceivedReport, BytesSentReport, HelloSignalReport, BatteryLevelReport,
-    		RoamingReport, roaming, webName
+    		RoamingReport, roaming, mobileWebURL
     		);
-    }
+    	
+    }// end updateConf
     
     static public boolean updateConf(Context context, String _serverAddr,
     	String _serverPort, int _interval, String _agentName, String _gpsStatus,
@@ -317,7 +307,7 @@ public class Core {
     	String _password, int _helloSignal, String _passwordCheck, String _DeviceUpTimeReport, String _NetworkOperatorReport,
     	String _NetworkTypeReport, String _PhoneTypeReport, String _SignalStrengthReport, String _ReceivedSMSReport,
     	String _SentSMSReport, String _IncomingCallsReport, String _MissedCallsReport, String _OutgoingCallsReport, String _BytesReceivedReport,
-    	String _BytesSentReport, String _HelloSignalReport, String _BatteryLevelReport, String _RoamingReport, int _roaming, String _webName) {
+    	String _BytesSentReport, String _HelloSignalReport, String _BatteryLevelReport, String _RoamingReport, int _roaming, String _mobileWebURL) {
     	
     	if (con == null) {
     		con = context;
@@ -370,7 +360,7 @@ public class Core {
 		editor.putString("HelloSignalReport", _HelloSignalReport); 
 		editor.putString("BatteryLevelReport", _BatteryLevelReport);
 		editor.putString("RoamingReport", _RoamingReport);
-		editor.putString("webName", _webName);
+		editor.putString("mobileWebURL", _mobileWebURL);
 		
 		if (editor.commit()) {
 			return true;

@@ -1,0 +1,143 @@
+<!--
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details. 
+--><resources>
+	<string name="const_string_preferences">"PANDROID_DATA"</string>
+
+	<string name="status_str">"*状态*"</string>
+	<string name="setup_str">"设置"</string>
+	<string name="app_name">"Pandroid代理"</string>
+	<string name="interval">"周期"</string>
+	<string name="update">"更新配置。"</string>
+	<string name="reset">"设置默认值"</string>
+	<string name="serverAddr">"服务器地址："</string>
+	<string name="serverPort">"服务器端口："</string>
+	<string name="confTitle">"Pandroid代理配置"</string>
+	<string name="agent">"机构名称："</string>
+	<string name="gpsMode">"GPS模式"</string>
+	<string name="gpsCurrent">"当前位置（电池成本高）"</string>
+	<string name="summary">"配置："</string>
+	<string name="starStop">"重新启动(Restart)"</string>
+	<string name="gpsLast">"最后已知的位置"</string>
+	<string name="loading">"载入中..."</string>
+	<string name="last_values">"最后一个值"</string>
+	<string name="latitude">"纬度"</string>
+	<string name="longitude">"经度"</string>
+	<string name="battery_level">"电池电量："</string>
+	<string name="orientation">"位置和方向"</string>
+	<string name="proximity">"n.接近,接近度"</string>
+	<string name="incorrect_update">"无法更新选项。"</string>
+	<string name="task">"人物"</string>
+	<string name="memory">"内存"</string>
+	<string name="help_label_str">"愿意帮助"</string>
+	<string name="about_label_str">"关于"</string>
+	<string name="licensed_under_gpl_str">"根据GPL v2的许可"</string>
+	<string name="develop_team_str">"开发商：Sergio M. Zarzuelo, Miguel de Dios, Mark Holland"</string>
+	<string name="pandroid_agent_str">"Pandroid代理"</string>
+	<string name="pandroid_agent_copyright">"版权所有 © 2011 Artica"</string>
+	<string name="about_desc">"Pandroid代理标志"</string>
+	<string name="help_str">"愿意帮助"</string>
+	<string formatted="false" name="memory_avaliable_str">"可供选择：%iKb 总计：%iKb"</string>
+	<string name="never_str">"从来没有。"</string>
+	<string name="now_str">"现在，。"</string>
+	<string name="seconds_str">"秒前。"</string>
+	<string name="conctact_error_str">"联系错误"</string>
+	<string name="last_contact_str">"最后联系方式\n"</string>
+	<string name="help_text_str">"Pandroid代理是一个Android潘多拉潘多拉柔性制造系统FMS代理。 &lt;P&gt;潘多拉FMS是一个通用的监控系统。随着Android代理，你可以得到各种信息设备，GPS定位，电池留多少，可用内存设备，监控，如果一个进程处于活动状态的时间，因为该装置被打开，一个HELLO信号监测装置的应用程序，清点所有已安装的应用程序以及Android手机的SIM卡的SIM卡ID的信息，发送/接收的短信数量，呼叫来电/未接/输出，网络运营商和类型，手机类型，在手机信号强度，通过移动网络发送/接收的字节数。提供完整的源代码。&lt;p&gt;查看更多关于潘多拉FMS &lt;a href=\"http://pandorafms.com\"&gt; http://pandoraFMS.com &lt;/a&gt; &lt;/p&gt;"</string>
+	<string name="start">"开始"</string>
+	<string name="correct_start">"连接成功"</string>
+	<string name="config_saved">"配置保存成功"</string>
+	<string name="contact_stopped_str">"代理停止"</string>
+	<string name="seconds">"秒"</string>
+	<string name="running">"运行"</string>
+	<string name="stopped">"已停止"</string>
+	
+	
+	
+	<string name="sim_id">"辛ID："</string>
+	<string name="sim_id_value">""</string>
+	<string name="uptime">"设备时间："</string>
+	<string name="uptime_value">""</string>
+	<string name="sms_received">"收到短信："</string>
+	<string name="sms_received_value">""</string>
+	<string name="sms_sent">"发送短信："</string>
+	<string name="sms_sent_value">""</string>
+	<string name="network_operator">"网络运营商："</string>
+	<string name="network_operator_value">""</string>
+	<string name="network_type">"网络类型："</string>
+	<string name="network_type_value">""</string>
+	<string name="phone_type">"手机类型："</string>
+	<string name="phone_type_value">""</string>
+	<string name="signal_strength">"信号强度："</string>
+	<string name="signal_strength_value">""</string>
+	<string name="incoming_calls">"来电："</string>
+	<string name="incoming_calls_value">""</string>
+	<string name="missed_calls">"未接来电："</string>
+	<string name="missed_calls_value">""</string>
+	<string name="outgoing_calls">"拨出电话："</string>
+	<string name="outgoing_calls_value">""</string>
+	<string name="receive_bytes">"接收的字节数："</string>
+	<string name="receive_bytes_value">""</string>
+	<string name="transmit_bytes">"传输字节数："</string>
+	<string name="transmit_bytes_value">""</string>
+	<string name="roaming">"漫游："</string>
+	<string name="roaming_value">""</string>
+	
+	
+	<string name="alert_dialog_password">"“输入密码”；
+"</string>
+	<string name="password_no_match">"“密码不相符”；"</string>
+	<string name="password_error">"錯誤"</string>
+	<string name="password">"密码"</string>
+	<string name="password_length">"密码长度必须大于6个字符！"</string>
+	<string name="password_incorrect">"密码错误"</string>
+	<string name="password_set">"设置密码（留空为空）"</string>
+	<string name="password_enter">"输入密码"</string>
+	<string name="password_repeat">"密码重复"</string>
+	<string name="password_choose_text">"你要设置的密码？"</string>
+	<string name="password_checkbox">"不要再问"</string>
+	<string name="password_created">"成功地创建密码"</string>
+	<string name="password_removed">"没有设置密码"</string>
+	<string name="set_password">"创建/更改密码"</string>
+	
+	<string name="mobileWebURL">"Mobile服务器的URL："</string>
+	<string name="go_to_web">"查看手机网站"</string>
+	
+	<string name="enter">"进入"</string>
+	<string name="back">"背面"</string>
+	<string name="yes">"是"</string>
+	<string name="no">"没有"</string>
+	
+	<string name="simIDReport">"报告SIM卡ID"</string>
+	<string name="gpsReport">"报告GPS数据"</string>
+	<string name="memoryReport">"报告可用内存"</string>
+	<string name="taskReport">"报告任务"</string>
+	<string name="uptimeReport">"报告设备的正常运行时间"</string>
+	<string name="NetworkOperatorReport">"报告网络运营商"</string>
+	<string name="NetworkTypeReport">"报告网络类型"</string>
+	<string name="PhoneTypeReport">"举报电话类型"</string>
+	<string name="SignalStrengthReport">"报告的信号强度"</string>
+	<string name="ReceivedSMSReport">"报告数收到的短信"</string>
+	<string name="SentSMSReport">"报告编号发送短信"</string>
+	<string name="IncomingCallsReport">"报告的来电"</string>
+	<string name="MissedCallsReport">"报告的未接来电"</string>
+	<string name="OutgoingCallsReport">"报告编号拨出电话"</string>
+	<string name="BytesReceivedReport">"收到的移动台的数据的量是"</string>
+	<string name="BytesSentReport">"报告发送的移动数据量"</string>
+	<string name="HelloSignalReport">"报告hello信号"</string>
+	<string name="BatteryLevelReport">"报告电池电量"</string>
+	<string name="RoamingReport">"报告如果漫游"</string>
+	
+	
+</resources>

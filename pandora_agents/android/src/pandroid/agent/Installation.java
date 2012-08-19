@@ -21,6 +21,12 @@ import java.util.UUID;
 
 import android.content.Context;
 
+/**
+ * This is a class for providing unique installation identifiers for use with the pandroid agent name
+ * @author mark
+ *
+ */
+
 public class Installation {
     private static String sID = null;
     private static final String INSTALLATION = "INSTALLATION";

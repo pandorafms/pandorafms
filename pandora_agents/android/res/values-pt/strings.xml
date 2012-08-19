@@ -1,0 +1,144 @@
+<!--
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details. 
+--><resources>
+	<string name="const_string_preferences">"PANDROID_DATA"</string>
+
+	<string name="status_str">"Estado"</string>
+	<string name="setup_str">"Configuração:"</string>
+	<string name="app_name">"Agente Pandroid"</string>
+	<string name="interval">"Intervalo"</string>
+	<string name="update">"Atualizar a configuração."</string>
+	<string name="reset">"Definir padrão"</string>
+	<string name="serverAddr">"Endereço do Servidor:"</string>
+	<string name="serverPort">"Porta do Servidor:"</string>
+	<string name="confTitle">"Configuração do agente Pandroid"</string>
+	<string name="agent">"Nome do agente:"</string>
+	<string name="gpsMode">"Modo de GPS"</string>
+	<string name="gpsCurrent">"Posição atual (custo de baterias de alta)"</string>
+	<string name="summary">"Configuração atual:"</string>
+	<string name="starStop">"Reiniciar"</string>
+	<string name="gpsLast">"Última posição conhecida"</string>
+	<string name="loading">"A carregar..."</string>
+	<string name="last_values">"Os últimos valores"</string>
+	<string name="latitude">"Latitude"</string>
+	<string name="longitude">"Longitude"</string>
+	<string name="battery_level">"Nível de Bateria"</string>
+	<string name="orientation">"Orientação"</string>
+	<string name="proximity">"Proximidade"</string>
+	<string name="incorrect_update">"Não foi possível atualizar opções."</string>
+	<string name="task">"Funções:"</string>
+	<string name="memory">"Memória"</string>
+	<string name="help_label_str">"Help (Ajuda)"</string>
+	<string name="about_label_str">"Acerca de"</string>
+	<string name="licensed_under_gpl_str">"Licenciado sob a GPL v2"</string>
+	<string name="develop_team_str">"Desenvolvedores: Sergio M. Zarzuelo, Miguel de Dios, Marcos Holanda"</string>
+	<string name="pandroid_agent_str">"Agente Pandroid"</string>
+	<string name="pandroid_agent_copyright">"Copyright © 2011 Artica"</string>
+	<string name="about_desc">"Logotipo Agente Pandroid"</string>
+	<string name="help_str">"Help (Ajuda)"</string>
+	<string formatted="false" name="memory_avaliable_str">"Avaliable: %iKb Total: %iKb"</string>
+	<string name="never_str">"Nunca."</string>
+	<string name="now_str">"Ja! "</string>
+	<string name="seconds_str">"segundo atrás."</string>
+	<string name="conctact_error_str">"Fale erro"</string>
+	<string name="last_contact_str">"Último Contato:\n"</string>
+	<string name="help_text_str">"
+		Agente Pandroid é um Android Pandora agente de Pandora. &lt;p&gt; Pandora FMS é um sistema de monitoramento de propósito geral. Com o agente Android você pode obter todos os tipos de informações do seu dispositivo, a localização GPS, o quanto de bateria é deixado de memória, disponível no dispositivo de monitorização, se um processo está ativo, o tempo desde que o dispositivo foi ligado, um sinal OLÁ para monitorar as instalações do app, um inventário com todos os aplicativos instalados aswell como informação para telefones Android com um cartão SIM, a identificação do cartão SIM, o número de SMS enviadas / recebidas, o número de chamadas recebidas / perdidas / saída, a rede operador e do tipo, o tipo de telefone, a intensidade do sinal celular, o número de bytes enviados / recebidos através da rede móvel. Código-fonte completo é fornecido. &lt;p&gt; Veja mais sobre Pandora em &lt;a href=\"http://pandorafms.com\"&gt; http://pandoraFMS.com &lt;/a&gt; &lt;/p&gt;
+	"</string>
+	<string name="start">"Início"</string>
+	<string name="correct_start">"Conexão bem-sucedida"</string>
+	<string name="config_saved">"Configuração salva com sucesso"</string>
+	<string name="contact_stopped_str">"Agente Parado"</string>
+	<string name="seconds">"Segundos"</string>
+	<string name="running">"Executar"</string>
+	<string name="stopped">"Parado"</string>
+	
+	
+	
+	<string name="sim_id">"Sim ID:"</string>
+	<string name="sim_id_value">""</string>
+	<string name="uptime">"Dispositivo o tempo:"</string>
+	<string name="uptime_value">""</string>
+	<string name="sms_received">"SMS recebidos: "</string>
+	<string name="sms_received_value">""</string>
+	<string name="sms_sent">"SMS enviado: "</string>
+	<string name="sms_sent_value">""</string>
+	<string name="network_operator">"Operador de rede:"</string>
+	<string name="network_operator_value">""</string>
+	<string name="network_type">"Tipo de rede:"</string>
+	<string name="network_type_value">""</string>
+	<string name="phone_type">"Tipo de telefone:"</string>
+	<string name="phone_type_value">""</string>
+	<string name="signal_strength">"Intensidade do sinal"</string>
+	<string name="signal_strength_value">""</string>
+	<string name="incoming_calls">"As chamadas recebidas:"</string>
+	<string name="incoming_calls_value">""</string>
+	<string name="missed_calls">"Chamadas perdidas:"</string>
+	<string name="missed_calls_value">""</string>
+	<string name="outgoing_calls">"Chamadas de saída:"</string>
+	<string name="outgoing_calls_value">""</string>
+	<string name="receive_bytes">"Bytes recebidos:"</string>
+	<string name="receive_bytes_value">""</string>
+	<string name="transmit_bytes">"Bytes transmitidos:"</string>
+	<string name="transmit_bytes_value">""</string>
+	<string name="roaming">"Roaming:"</string>
+	<string name="roaming_value">""</string>
+	
+	
+	<string name="alert_dialog_password">"Digite a passe"</string>
+	<string name="password_no_match">"As senhas não combinam!"</string>
+	<string name="password_error">"error"</string>
+	<string name="password">"Palavra-passe: "</string>
+	<string name="password_length">"senha deve ter mais de 6 caracteres!"</string>
+	<string name="password_incorrect">"Passe errada"</string>
+	<string name="password_set">"Definir senha (deixe em branco para nenhum)"</string>
+	<string name="password_enter">"Digite a passe"</string>
+	<string name="password_repeat">"Repita Senha"</string>
+	<string name="password_choose_text">"Você quer definir uma senha?"</string>
+	<string name="password_checkbox">"Não pergunte novamente"</string>
+	<string name="password_created">"Senha com sucesso criado"</string>
+	<string name="password_removed">"Nenhum conjunto senha"</string>
+	<string name="set_password">"Criar / Alterar senha"</string>
+	
+	<string name="mobileWebURL">"URL do servidor móvel:"</string>
+	<string name="go_to_web">"Veja o site móvel"</string>
+	
+	<string name="enter">"Enter"</string>
+	<string name="back">"voltar"</string>
+	<string name="yes">"SIM"</string>
+	<string name="no">"não"</string>
+	
+	<string name="simIDReport">"Relatório Sim ID"</string>
+	<string name="gpsReport">"Relatório de dados GPS"</string>
+	<string name="memoryReport">"Relatório memória disponível"</string>
+	<string name="taskReport">"Tarefa de relatório"</string>
+	<string name="uptimeReport">"Relatório dispositivo o tempo"</string>
+	<string name="NetworkOperatorReport">"Relatório operador de rede"</string>
+	<string name="NetworkTypeReport">"Tipo de rede relatório"</string>
+	<string name="PhoneTypeReport">"Tipo de telefone relatório"</string>
+	<string name="SignalStrengthReport">"Relatam a intensidade do sinal"</string>
+	<string name="ReceivedSMSReport">"Número do relatório de SMS recebidas"</string>
+	<string name="SentSMSReport">"Número do relatório de SMS enviados"</string>
+	<string name="IncomingCallsReport">"Número do relatório de chamadas recebidas"</string>
+	<string name="MissedCallsReport">"Número do relatório de chamadas não atendidas"</string>
+	<string name="OutgoingCallsReport">"Número do relatório de chamadas de saída"</string>
+	<string name="BytesReceivedReport">"Relatório do montante recebido dados móveis"</string>
+	<string name="BytesSentReport">"Relatório do montante enviado dados móveis"</string>
+	<string name="HelloSignalReport">"Relatório Olá sinal"</string>
+	<string name="BatteryLevelReport">"Relatório de nível da bateria"</string>
+	<string name="RoamingReport">"Relatar se de roaming"</string>
+	
+	
+</resources>

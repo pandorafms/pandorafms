@@ -49,22 +49,14 @@ import android.widget.Toast;
 
 public class Setup extends Activity {
 	
-	//log
-	public static final String LOG_TAG = "mark";
-	
 	private HashMap<String, String> listProcesses;
 	
-	
-	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         listProcesses = new HashMap<String, String>();
-        
         Core.loadConf(getApplicationContext());
-        
-        
     }
     
     public void onResume() {
@@ -75,35 +67,23 @@ public class Setup extends Activity {
         else
         	setContentView(R.layout.setupnosim);
         
-     	
-        loadViews();
-        
-		loadInBackgroundProcessInExecution();
-		
+     	loadViews();
+        loadInBackgroundProcessInExecution();
 		setButtonEvents();
        
         if(Core.password.equals(Core.defaultPassword))
         {
         	if(Core.passwordCheck.equals("enabled"))
         		passwordChoose();
-        	
-        }else{
-        	
+        }
+        else{
         	LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         	View view=inflater.inflate(R.layout.setup, null);
         	RelativeLayout setup = (RelativeLayout)view.findViewById(R.id.setup);
         	setContentView(setup);
         	setup.setVisibility(RelativeLayout.INVISIBLE);
-        	
-        	enterpass();
-        	
-        	
-            
+        	enterPass();
         }
-        
-        
-        
-        
     }
     
     //For options
@@ -126,12 +106,10 @@ public class Setup extends Activity {
             	startActivity(i);
             	break;
         }
-        
         return true;
     }
     
 	private void setButtonEvents() {
-        // Set update button events
         Button updateButton = (Button) findViewById(R.id.update);
         
         updateButton.setOnClickListener(new OnClickListener() {
@@ -151,44 +129,31 @@ public class Setup extends Activity {
             	       	Toast.LENGTH_SHORT);
             	    	toast.show();
         		}
-        		
         		Core.restartAgentListener(getApplicationContext());
         	}
-        	
-        	
         });
         
         Button passwordButton = (Button) findViewById(R.id.set_password);
-        
         passwordButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
-        		
         		createPass();
-        		
         	}
-        	
-        	
         });
         
         Button webButton = (Button) findViewById(R.id.goToWebButton);
-        
         webButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
-        		
-        		 Uri uri = Uri.parse(Core.webName);
+        		 getDataFromView();
+        		 Core.updateConf(getApplicationContext());
+        		 Uri uri = Uri.parse(Core.mobileWebURL);
         		 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         		 startActivity(intent);
-        		
         	}
-        	
-        	
         });
         
 	}// end setButtonEvents
     
-	
-	
-    private void loadInBackgroundProcessInExecution() {
+	private void loadInBackgroundProcessInExecution() {
     	new GetProcessInExecutionAsyncTask().execute();
     }
     
@@ -197,7 +162,6 @@ public class Setup extends Activity {
 		@Override
 		protected Void doInBackground(Void... params) {
 			getProcess();
-			
 			return null;
 		}
 		
@@ -224,11 +188,9 @@ public class Setup extends Activity {
 			}
 		}
 		
-		
 		@Override
 		protected void onPostExecute(Void unused)
 		{
-			
 			Spinner combo = (Spinner)findViewById(R.id.processes_combo);
 			ArrayList<String> listProcess = new ArrayList<String>(listProcesses.keySet());
 			ArrayList<String> listProcessHuman = new ArrayList<String>(listProcesses.values());
@@ -246,7 +208,7 @@ public class Setup extends Activity {
 		    	if (position == -1) {
 		    		listProcesses.put(Core.task, text);
 		    		
-		    		//The asociative array is reordened, and need to extract th subarrays again.
+		    		//The asociative array is reordened, and need to extract the sub arrays again.
 		    		listProcess = new ArrayList<String>(listProcesses.keySet());
 					listProcessHuman = new ArrayList<String>(listProcesses.values());
 		    		
@@ -254,8 +216,7 @@ public class Setup extends Activity {
 		    	}
 		    }
 		    
-			
-	    	ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
+			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
 		    	android.R.layout.simple_spinner_item, listProcessHuman);
 		    combo.setAdapter(spinnerArrayAdapter);
 		    
@@ -265,10 +226,7 @@ public class Setup extends Activity {
 		    progressBar.setVisibility(ProgressBar.GONE);
 		    
 		    combo.setVisibility(Spinner.VISIBLE);
-		    
-		    /*CheckBox checkbox = (CheckBox)findViewById(R.id.checkTaskReport);
-		    checkbox.setEnabled(true);*/
-		    
+		    		    
 		    Button button = (Button)findViewById(R.id.update);
 		    button.setEnabled(true);
 		    
@@ -277,13 +235,9 @@ public class Setup extends Activity {
 		    
 		    button = (Button)findViewById(R.id.goToWebButton);
 		    button.setEnabled(true);
-		    
 		}
-       	
     }// end onPostExecute
 	
-
-
     private void getDataFromView() {
         // Init form values
 		EditText editText;
@@ -302,8 +256,8 @@ public class Setup extends Activity {
 		editText = (EditText) findViewById(R.id.agentNameInput);
 		Core.agentName = editText.getText().toString();
 		
-		editText = (EditText) findViewById(R.id.webNameInput);
-		Core.webName = editText.getText().toString();
+		editText = (EditText) findViewById(R.id.mobileWebURLInput);
+		Core.mobileWebURL = "http://"+editText.getText().toString();
         
         checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
         if (checkBox.isChecked())
@@ -322,8 +276,6 @@ public class Setup extends Activity {
         	Core.memoryStatus = "enabled";
         else
         	Core.memoryStatus = "disabled";
-        
-        
         
         checkBox = (CheckBox) findViewById(R.id.checkTaskReport);
         if (checkBox.isChecked()) {
@@ -379,7 +331,7 @@ public class Setup extends Activity {
         		Core.SignalStrengthReport = "enabled";
         	else
         		Core.SignalStrengthReport = "disabled";
-        
+        	        
         	checkBox = (CheckBox) findViewById(R.id.checkReceivedSMSReport);
         	if (checkBox.isChecked())
         		Core.ReceivedSMSReport = "enabled";
@@ -455,8 +407,8 @@ public class Setup extends Activity {
 		editText = (EditText) findViewById(R.id.agentNameInput);
 		editText.setText(Core.agentName);
 		
-		editText = (EditText) findViewById(R.id.webNameInput);
-		editText.setText(Core.webName);
+		editText = (EditText) findViewById(R.id.mobileWebURLInput);
+		editText.setText(Core.mobileWebURL);
         
         checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
         checkBox.setChecked(Core.gpsStatus.equals("enabled"));
@@ -518,34 +470,23 @@ public class Setup extends Activity {
         checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
         checkBox.setChecked(Core.HelloSignalReport.equals("enabled"));
         
-        
-	}
+    }
 	
 	public void passwordChoose() {
-		//set up dialog
 		final Dialog dialog = new Dialog(this);
 		dialog.setContentView(R.layout.password_choose);
 		dialog.setTitle(getString(R.string.password_choose_text));
 		dialog.setCancelable(false);
 		
-		//CheckBox cB = (CheckBox) dialog.findViewById(R.id.password_checkbox);
-		
-		//cB.setChecked(Core.passwordCheck.equals("disabled"));
-        
-	
-		Button yes = (Button) dialog.findViewById(R.id.yes_button);
+        Button yes = (Button) dialog.findViewById(R.id.yes_button);
 		yes.setOnClickListener(new OnClickListener() {
 		@Override
 		   public void onClick(View v) {
-			Core.passwordCheck = "disabled";
-			Core.updateConf(getApplicationContext());
-			dialog.dismiss();
-			createPass();
-			
-		   			    
-		   } // end onClick
-		
-		
+				Core.passwordCheck = "disabled";
+				Core.updateConf(getApplicationContext());
+				dialog.dismiss();
+				createPass();
+			} // end onClick
 		});//end clickListener
 		
 		Button no = (Button) dialog.findViewById(R.id.no_button);
@@ -553,47 +494,32 @@ public class Setup extends Activity {
 		@Override
 		   public void onClick(View v) {
 			
-			CheckBox cB = (CheckBox) dialog.findViewById(R.id.password_checkbox);
-			if (cB.isChecked())
-	        	Core.passwordCheck = "disabled";
-	        else
-	        	Core.passwordCheck = "enabled";	
-			Core.updateConf(getApplicationContext());
-			//Log.v(LOG_TAG,"password check"+Core.passwordCheck);
-			dialog.dismiss();
-			
-		   			    
-		   } // end onClick
-
-
-	    });//end clickListener
+				CheckBox cB = (CheckBox) dialog.findViewById(R.id.password_checkbox);
+				if (cB.isChecked())
+					Core.passwordCheck = "disabled";
+				else
+					Core.passwordCheck = "enabled";	
+				Core.updateConf(getApplicationContext());
+				dialog.dismiss();
+			} // end onClick
+		});//end clickListener
 		
-		
-		//now that the dialog is set up, it's time to show it   
-
-		    dialog.show();
-		
-		
-		
+		dialog.show();
 	}
+	
 	public void createPass() {
-		//set up dialog
+		
 		final Dialog dialog = new Dialog(this);
 		dialog.setContentView(R.layout.password_create);
-		//dialog.setTitle(getString(R.string.password_set));
 		dialog.setCancelable(false);
 		dialog.getWindow().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-		//there are a lot of settings, for dialog, check them all out!
-
-		//set up text
+		
 		final EditText text = (EditText) dialog.findViewById(R.id.password_create_field);
 		text.setText("");
-		//set up text
+		
 		final EditText text2 = (EditText) dialog.findViewById(R.id.password_create_field_2);
 		text2.setText("");
 
-
-		//set up button
 		Button button = (Button) dialog.findViewById(R.id.password_create_button);
 		button.setOnClickListener(new OnClickListener() {
 		@Override
@@ -659,32 +585,25 @@ public class Setup extends Activity {
 		    }
 		   } // end onClick
 			
-
-
-	    });//end clickListener
+		});//end clickListener
 			
-		//now that the dialog is set up, it's time to show it   
-
-		    dialog.show();
+		dialog.show();
 
 	}// end createPass
 	
-	public void enterpass() {
-		//set up dialog
+	public void enterPass() {
+		
 		final Dialog dialog = new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
 		dialog.setContentView(R.layout.password_entry);
 		dialog.setTitle(getString(R.string.password_enter));
 		dialog.setCancelable(false);
 		dialog.getWindow().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		dialog.getWindow().setFlags(LayoutParams.FLAG_FULLSCREEN, LayoutParams.FLAG_FULLSCREEN);
-		//there are a lot of settings, for dialog, check them all out!
-
-		//set up text
+		
+		
 		final EditText text = (EditText) dialog.findViewById(R.id.password_entry_input);
 		text.setText("");
 		
-
-		//set up button
 		Button button = (Button) dialog.findViewById(R.id.password_entry_button);
 		button.setOnClickListener(new OnClickListener() {
 		@Override
@@ -692,8 +611,7 @@ public class Setup extends Activity {
 			
 			String password = text.getText().toString().trim();
 				
-			
-		    try
+			try
 		    {
 		        if(password.equals(Core.password))
 		        {
@@ -721,14 +639,11 @@ public class Setup extends Activity {
 			    		setButtonEvents();
 			        	setupnosim.setVisibility(RelativeLayout.VISIBLE);
 		            }
-		            	
-		            
 		        }
 		        else
 		        {
 		        	text.setError(getString(R.string.password_incorrect)); 
 		        }
-		      
 		    }
 		    catch(Exception x)
 		    {       
@@ -742,14 +657,12 @@ public class Setup extends Activity {
 		}
 		});
 		
-		//now that the dialog is set up, it's time to show it   
 		Button backButton = (Button) dialog.findViewById(R.id.password_back_button);
 		backButton.setOnClickListener(new OnClickListener() {
 		@Override
 		   public void onClick(View v) {
 				dialog.dismiss();
 				switchTabInActivity(0);
-			
 			}
 		});
 		   
@@ -765,5 +678,5 @@ public class Setup extends Activity {
         PandroidAgent ParentActivity;
         ParentActivity = (PandroidAgent) this.getParent();
         ParentActivity.switchTab(indexTabToSwitchTo);
-}
+	}
 }

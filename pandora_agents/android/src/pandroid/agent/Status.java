@@ -30,12 +30,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-//import android.util.Log;
-
 public class Status  extends Activity {
 	Handler h = new Handler();
-	public static final String LOG_TAG = "mark";
-	
+		
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,13 +45,7 @@ public class Status  extends Activity {
         Core.loadLastValues(getApplicationContext());
         showLastValues();
         updateLastContactInfo();
-        
-        //connect automatically
-        //Core.restartAgentListener(getApplicationContext());
-        setButtonEvents();
-        
-        
-        
+        //setButtonEvents();
     }
     
     public void onStart(){
@@ -66,8 +57,9 @@ public class Status  extends Activity {
         	public void run() {
         		Core.loadLastValues(getApplicationContext());
         		showLastValues();
-        		updateLastContactInfo();
         		       		
+        		updateLastContactInfo();
+        		
         		h.postDelayed(this, 1000);
         	}
         });
@@ -94,22 +86,19 @@ public class Status  extends Activity {
             	startActivity(i);
             	break;
         }
-        
         return true;
     }
     
+    
+    /*
 	private void updateLastXML() {
 		
 		TextView xml = (TextView) this.findViewById(R.id.xml);
-		
-		//Core.restartAgentListener(getApplicationContext());
-		
 		SharedPreferences agentPreferences = getSharedPreferences(
     			getString(R.string.const_string_preferences),
     			Activity.MODE_PRIVATE);
 		
 		String lastXML = agentPreferences.getString("lastXML", "[no data]");
-		
 		xml.setText("Last XML builded: \n\n" + lastXML);
 		
 	}
@@ -118,12 +107,13 @@ public class Status  extends Activity {
 		xml.setText("");
 	}
 	
+	*/
+	
 	private void updateLastContactInfo() {
 		long lastContact = Core.lastContact;
 		int contactError = Core.contactError;
 		boolean alarmEnabled = Core.alarmEnabled;
-
-        Date date = new Date();
+		Date date = new Date();
         long timestamp = date.getTime() / 1000;
         long timeAgo = -1;
         
@@ -131,8 +121,6 @@ public class Status  extends Activity {
         TextView lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
 		lastContactInfo.setTextColor(Color.parseColor("#FF0000"));
 		lastContactInfo.setText(getString(R.string.loading));
-        
-        
         
         if(lastContact != -1){
             timeAgo = timestamp - lastContact;
@@ -153,12 +141,11 @@ public class Status  extends Activity {
     		lastContactInfo.setText(getString(R.string.contact_stopped_str));
     	}
     	
-    	
     	else if(contactError == 1) {
         	lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
     		lastContactInfo.setTextColor(Color.parseColor("#FF0000"));
     		lastContactInfo.setText(getString(R.string.conctact_error_str));
-        	//stopAgentListener();
+        	
         }
     	else if(lastContact == -1) {
     		stringAgo = getString(R.string.never_str);
@@ -166,15 +153,16 @@ public class Status  extends Activity {
     	else if(timeAgo == 0) {
     		stringAgo = getString(R.string.now_str);
     	}
-    	else {
+    	else if(contactError == 0) {
         	stringAgo = timeAgo + " " + getString(R.string.seconds_str);
         	lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
     		lastContactInfo.setTextColor(Color.parseColor("#00FF00"));
     		lastContactInfo.setText(getString(R.string.last_contact_str) + stringAgo);
         }
-    		   
-	}//end updateLastContactInfo
+       
+    }//end updateLastContactInfo
 	
+	/* For debugging
 	private void setButtonEvents() {
         // Set update button events
         Button start = (Button) findViewById(R.id.start);
@@ -203,27 +191,13 @@ public class Status  extends Activity {
         
         start.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
-        		//boolean result = Core.updateConf(getApplicationContext());
-        		/*
-        		if (result) {
-        			Toast toast = Toast.makeText(getApplicationContext(),
-        	       		getString(R.string.config_saved),
-        	       		Toast.LENGTH_SHORT);
-        	    	toast.show();
-        		}
-        		else {
-        			Toast toast = Toast.makeText(getApplicationContext(),
-            	       	getString(R.string.incorrect_update),
-            	       	Toast.LENGTH_SHORT);
-            	    	toast.show();
-        		}
-        		*/
         		Core.restartAgentListener(getApplicationContext());
         	}
         });
         
     }//end button events
-	
+	*/
+    
 	private void showLastValues() {
 		
 		// latitude
@@ -267,10 +241,10 @@ public class Status  extends Activity {
 		if (Core.taskStatus.equals("enabled") && Core.taskHumanName.length() != 0) {
 			String text = Core.taskHumanName + " ( " + Core.task + " ): ";
 			if (Core.taskRun.equals("true")) {
-				text = text + "running";
+				text = text + getString(R.string.running);
 			}
 			else {
-				text = text + "not running";
+				text = text + getString(R.string.stopped);
 			}
 			textView.setText(text);		
 		}
@@ -288,10 +262,10 @@ public class Status  extends Activity {
 		textView = (TextView)findViewById(R.id.uptime_value);
 		textView.setText("");
 		if (Core.upTime != 0) {
-			textView.setText("" + Core.upTime+" Seconds");
+			textView.setText("" + Core.upTime+" "+ getString(R.string.seconds));
 		}
 		//  simID
-		//Log.v(LOG_TAG, "HERE: "+Core.hasSim);
+		
 		if (Core.hasSim) {
 			textView = (TextView)findViewById(R.id.sim_id_value);
 			textView.setText("");
@@ -317,35 +291,43 @@ public class Status  extends Activity {
 			textView = (TextView)findViewById(R.id.network_type_value);
 			textView.setText("");
 			textView.setText("" + Core.networkType);
-		
+			
+			// phoneType
 			textView = (TextView)findViewById(R.id.phone_type_value);
 			textView.setText("");
 			textView.setText("" + Core.phoneType);
-		
+			
+			// signalStrength
 			textView = (TextView)findViewById(R.id.signal_strength_value);
 			textView.setText("");
 			textView.setText("" + Core.signalStrength+"dB");
-		
+			
+			//incomingCalls
 			textView = (TextView)findViewById(R.id.incoming_calls_value);
 			textView.setText("");
 			textView.setText("" + Core.incomingCalls);
 		
+			//missedCalls
 			textView = (TextView)findViewById(R.id.missed_calls_value);
 			textView.setText("");
 			textView.setText("" + Core.missedCalls);
 
+			// outgoingCalls
 			textView = (TextView)findViewById(R.id.outgoing_calls_value);
 			textView.setText("");
 			textView.setText("" + Core.outgoingCalls);
 		
+			// receiveBytes
 			textView = (TextView)findViewById(R.id.receive_bytes_value);
 			textView.setText("");
 			textView.setText("" + Core.receiveBytes);
 		
+			// transmiteBytes
 			textView = (TextView)findViewById(R.id.transmit_bytes_value);
 			textView.setText("");
 			textView.setText("" + Core.transmitBytes);
 			
+			// roaming
 			textView = (TextView)findViewById(R.id.roaming_value);
 			textView.setText("");
 			textView.setText("" + Core.roaming);

@@ -1,1 +1,1 @@
-path/to/firefox_extension
+/home/hari/Desktop/Xtension

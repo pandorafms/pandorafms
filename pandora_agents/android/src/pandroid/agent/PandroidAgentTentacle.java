@@ -23,7 +23,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-
 class tentacle_client {
 
 	// Return 0 when success, -1 when error

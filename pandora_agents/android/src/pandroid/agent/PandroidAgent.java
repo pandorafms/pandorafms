@@ -14,68 +14,47 @@
 
 package pandroid.agent;
 
-//import java.util.Date;
-
-//import android.app.Activity;
-//import android.app.AlarmManager;
-//import android.app.PendingIntent;
+import android.app.Dialog;
 import android.app.TabActivity;
-//import android.content.ComponentName;
-//import android.content.Context;
 import android.content.Context;
 import android.content.Intent;
-//import android.content.SharedPreferences;
-//import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-//import android.telephony.TelephonyManager;
-//import android.view.KeyEvent;
-//import android.view.View;
-//import android.view.View.OnClickListener;
-//import android.view.View.OnKeyListener;
-//import android.view.inputmethod.InputMethodManager;
-//import android.widget.Button;
-//import android.widget.CheckBox;
-//import android.widget.EditText;
 import android.telephony.TelephonyManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.TabHost;
-//import android.widget.TextView;
-import android.util.Log;
 
 public class PandroidAgent extends TabActivity {
 	
-	public static final String LOG_TAG = "mark";
-//public class PandroidAgent extends Activity {
-    Handler h = new Handler();
-    
-    int defaultInterval = 300; //important
-    /*
-    String defaultServerPort = "41121";
-    String defaultServerAddr = "farscape.artica.es";
-    String defaultAgentName = "pandroid";
-    String defaultGpsStatus = "disabled"; // "disabled" or "enabled"
-    */
-    //boolean alarmEnabled;
-    
-    //boolean showLastXML = true;
-    
-    //String lastGpsContactDateTime = "";
-    
-    //Thread thread = new Thread();
-    //ComponentName service = null;
-    //PendingIntent sender = null;
-    //AlarmManager am = null;
-    
+	Handler h = new Handler();
+    int defaultInterval = 300;
     TabHost tabHost;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //if removed, battery -1 and agent reverts to defaults in core
-        Core.restartAgentListener(getApplicationContext());
+       
+        final Dialog dialog = new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+		dialog.setContentView(R.layout.welcome);
+		dialog.setCancelable(false);
+		dialog.getWindow().setFlags(LayoutParams.FLAG_FULLSCREEN, LayoutParams.FLAG_FULLSCREEN);
+        
+        
+        dialog.show();
+         
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+        	  dialog.dismiss(); 
+          }
+        }, 3000);   	
+            	
+         Core.restartAgentListener(getApplicationContext());
+            
         
         //Check whether device has a sim card, phone without a sim card present
         //return SIM_STATE_ABSENT but tablets only return SIM_STATE_UNKNOWN
-        
         String serviceName = Context.TELEPHONY_SERVICE;
 		TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
 		String hasSim = ""+(telephonyManager.getSimState() != TelephonyManager.SIM_STATE_UNKNOWN);
@@ -83,9 +62,11 @@ public class PandroidAgent extends TabActivity {
 			hasSim = ""+(telephonyManager.getSimState() != TelephonyManager.SIM_STATE_ABSENT);
 		Core.hasSim = Boolean.parseBoolean(hasSim);
 		
+	
+            
 		
 		
-        //Create layout with 2 tabs
+		//Create layout with 2 tabs
 		tabHost  = getTabHost();
         
         tabHost.addTab
@@ -101,16 +82,12 @@ public class PandroidAgent extends TabActivity {
 			.setIndicator(getString(R.string.setup_str))
 			.setContent(new Intent(this, Setup.class))
 		);
-        
-        //tabHost.getTabWidget().getChildAt(0).getLayoutParams();
-		//tabHost.getTabWidget().getChildAt(1).getLayoutParams();
-        
     }
     
     //Sets hello signal to 1(first connect since pandroid was closed)
     public void onResume(){
     	super.onResume();
-    	Log.v(LOG_TAG, "hello signal: "+Core.helloSignal);
+    	
     	if(Core.helloSignal == 0)
     		Core.helloSignal = 1;
     	Core.updateConf(getApplicationContext());

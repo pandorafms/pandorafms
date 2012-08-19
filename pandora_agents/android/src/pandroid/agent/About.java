@@ -28,7 +28,7 @@ public class About extends Activity {
         setContentView(R.layout.about);
         
         TextView text = (TextView) findViewById(R.id.url_pandora);
-        text.setText(Html.fromHtml("<a href='http://pandorafms.org/'>PandoraFMS.org</a>"));
+        text.setText(Html.fromHtml("<a href='http://pandorafms.com/'>PandoraFMS.com</a>"));
         text.setMovementMethod(LinkMovementMethod.getInstance());
 	}
 }

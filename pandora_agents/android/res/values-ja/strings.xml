@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
 // Pandora FMS - http://pandorafms.com
 // ==================================================
@@ -13,54 +12,131 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
--->
-<resources>
-	<string name="const_string_preferences">PANDROID_DATA</string>
+--><resources>
+	<string name="const_string_preferences">"PANDROID_DATA"</string>
 
-	<string name="status_str">状態</string>
-	<string name="setup_str">設定</string>
-	<string name="app_name">Pandroid エージェント</string>
-	<string name="interval">間隔:</string>
-	<string name="update">設定の構成</string>
-	<string name="reset">デフォルト設定</string>
-	<string name="serverAddr">サーバアドレス:</string>
-	<string name="serverPort">サーバポート:</string>
-	<string name="confTitle">Pandroid エージェント設定</string>
-	<string name="agent">エージェント名:</string>
-	<string name="gpsReport">GPSデータレポート</string>
-	<string name="memoryReport">メモリシステムレポート</string>
-	<string name="taskReport">タスクレポート</string>
-	<string name="gpsMode">GPS モード</string>
-	<string name="gpsCurrent">現在の位置 (消費電力が大きいです)</string>
-	<string name="summary">現在の設定:</string>
-	<string name="starStop">再起動</string>
-	<string name="gpsLast">最新の位置</string>
-	<string name="loading">ロード中...</string>
-	<string name="process">プロセス</string>
-	<string name="last_values">最新の値</string>
-	<string name="latitude">緯度</string>
-	<string name="longitude">経度</string>
-	<string name="battery_level">バッテリー残量</string>
-	<string name="orientation">方位</string>
-	<string name="proximity">近傍</string>
-	<string name="incorrect_update">オプションの更新に失敗</string>
-	<string name="correct_update">オプションの更新に成功</string>
-	<string name="task">タスク</string>
-	<string name="memory">メモリ</string>
-	<string name="help_label_str">ヘルプ</string>
-	<string name="about_label_str">About</string>
-	<string name="licensed_under_gpl_str">GPL v2 ライセンス</string>
-	<string name="develop_team_str">開発者: Sergio M. Zarzuelo, Miguel de Dios</string>
-	<string name="pandroid_agent_str">Pandroid エージェント</string>
-	<string name="help_str">ヘルプ</string>
-	<string name="memory_avaliable_str" formatted="false">空き: &#37;iKb トータル: &#37;iKb</string>
-	<string name="never_str">なし</string>
-	<string name="now_str">今</string>
-	<string name="seconds_str">秒前</string>
-	<string name="conctact_error_str">接続エラー</string>
-	<string name="last_contact_str">最新の接続:\n</string>
-	<string name="help_text_str">
-		Pandroid エージェントは、Pandora FMS 用の Android エージェントです。&lt;p&gt;
-		Pandora FMS は統合監視システムです。Android エージェントでは、GPS の情報、バッテリーの残量、メモリ量を取得することができます。指定したプロセスが動作しているかを確認するように将来拡張することもでき、タブレットからサーバに組み込みデバイスの情報を送るのに便利です。デバイスに入っている他のアプリケーションやデータを取得するようにしたり、その他さまざまな処理を拡張することもできます。ソースコードを提供しています。&lt;p&gt;Pandora FMS に関する詳細は以下を参照ください。&lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
-	</string>
+	<string name="status_str">"ステータス"</string>
+	<string name="setup_str">"セットアップ"</string>
+	<string name="app_name">"Pandroid エージェント"</string>
+	<string name="interval">"間隔"</string>
+	<string name="update">"設定更新"</string>
+	<string name="reset">"デフォルトの設定"</string>
+	<string name="serverAddr">"サーバアドレス："</string>
+	<string name="serverPort">"サーバーポート:"</string>
+	<string name="confTitle">"Pandroid エージェントの設定"</string>
+	<string name="agent">"エージェント名："</string>
+	<string name="gpsMode">"GPSモード"</string>
+	<string name="gpsCurrent">"現在位置（高バッテリコスト）"</string>
+	<string name="summary">"現在の設定"</string>
+	<string name="starStop">"再起動"</string>
+	<string name="gpsLast">"最後の既知の位置"</string>
+	<string name="loading">"ロード中…"</string>
+	<string name="last_values">"最後の値"</string>
+	<string name="latitude">"緯度"</string>
+	<string name="longitude">"経度"</string>
+	<string name="battery_level">"バッテリーレベル"</string>
+	<string name="orientation">"方向決め"</string>
+	<string name="proximity">"近接"</string>
+	<string name="incorrect_update">"オプションを更新できませんでした。"</string>
+	<string name="task">"タスク"</string>
+	<string name="memory">"メモリー"</string>
+	<string name="help_label_str">"ヘルプ"</string>
+	<string name="about_label_str">"約"</string>
+	<string name="licensed_under_gpl_str">"GPL v2の下でライセンス"</string>
+	<string name="develop_team_str">"開発者：Sergio M. Zarzuelo, Miguel de Dios, Mark Holland"</string>
+	<string name="pandroid_agent_str">"Pandroid エージェント"</string>
+	<string name="pandroid_agent_copyright">"著作権 © 2011 Artica"</string>
+	<string name="about_desc">"Pandroid エージェントのロゴ"</string>
+	<string name="help_str">"ヘルプ"</string>
+	<string formatted="false" name="memory_avaliable_str">"利用可能な：%iKb 合計：%iKb"</string>
+	<string name="never_str">"絶対にない"</string>
+	<string name="now_str">"今すぐ。"</string>
+	<string name="seconds_str">"秒前"</string>
+	<string name="conctact_error_str">"エラーお問い合わせ"</string>
+	<string name="last_contact_str">"最後の接触ます\n"</string>
+	<string name="help_text_str">"PandroidエージェントがPandora FMSのためのAndroidアプリのPandora FMSエージェントです。 &lt;P&gt; Pandora FMSは、汎用監視システムです。 processがアクティブであるかどうかandroidのagent Withあなたは、あなたのdevice、GPSによる位置情報、device、監視上のバッテリーが残っているどのくらい、使用可能なメモリからデバイスがオンturnedされてから経過した時間、ハロー信号に情報のすべての種類を取得canアプリのインストール、SIMカードとAndroid携帯電話のための情報として、インストールされているすべてのアプリaswellでインベントリfor monitoring、SIMカードのIDを、SMSの数は、送信/受信、不在着信/発信/コールの数、ネットワークオペレータとタイプ、電話機タイプ、モバイル信号強度、モバイルネットワークを介して送信/受信されたバイト数。完全なソースコードが提供されます。&lt;p&gt;がhref=\"http://pandorafms.com\"&gt; http://pandoraFMS.comする&lt;/a&gt; &lt;/p&gt; &lt;aでPandora FMSの詳細を参照してください。"</string>
+	<string name="start">"開始"</string>
+	<string name="correct_start">"接続成功"</string>
+	<string name="config_saved">"設定の保存に成功しました"</string>
+	<string name="contact_stopped_str">"エージェントが停止"</string>
+	<string name="seconds">"秒"</string>
+	<string name="running">"実行中"</string>
+	<string name="stopped">"停止"</string>
+	
+	
+	
+	<string name="sim_id">"シムID："</string>
+	<string name="sim_id_value">""</string>
+	<string name="uptime">"タイムアップ装置："</string>
+	<string name="uptime_value">""</string>
+	<string name="sms_received">"受信したSMS："</string>
+	<string name="sms_received_value">""</string>
+	<string name="sms_sent">"送信されたSMS："</string>
+	<string name="sms_sent_value">""</string>
+	<string name="network_operator">"ネットワークオペレータ："</string>
+	<string name="network_operator_value">""</string>
+	<string name="network_type">"ネットワークの種類"</string>
+	<string name="network_type_value">""</string>
+	<string name="phone_type">"携帯電話の種類:"</string>
+	<string name="phone_type_value">""</string>
+	<string name="signal_strength">"信号の強さ："</string>
+	<string name="signal_strength_value">""</string>
+	<string name="incoming_calls">"着信コール"</string>
+	<string name="incoming_calls_value">""</string>
+	<string name="missed_calls">"不在着信："</string>
+	<string name="missed_calls_value">""</string>
+	<string name="outgoing_calls">"発信がある"</string>
+	<string name="outgoing_calls_value">""</string>
+	<string name="receive_bytes">"受信バイト数:"</string>
+	<string name="receive_bytes_value">""</string>
+	<string name="transmit_bytes">"バイトが送信された"</string>
+	<string name="transmit_bytes_value">""</string>
+	<string name="roaming">"ローミング："</string>
+	<string name="roaming_value">""</string>
+	
+	
+	<string name="alert_dialog_password">"パスワードを入力"</string>
+	<string name="password_no_match">"パスワードが一致しません"</string>
+	<string name="password_error">"エラー"</string>
+	<string name="password">"パスワード"</string>
+	<string name="password_length">"パスワードは6文字以上でなければなりません！"</string>
+	<string name="password_incorrect">"パスワードが間違っています。"</string>
+	<string name="password_set">"（なしの場合は空白のままにします）パスワードを設定"</string>
+	<string name="password_enter">"パスワードの入力"</string>
+	<string name="password_repeat">"パスワード再入力"</string>
+	<string name="password_choose_text">"は、パスワードを設定しますか？"</string>
+	<string name="password_checkbox">"再び尋ねるいけない"</string>
+	<string name="password_created">"パスワードが正常に作成"</string>
+	<string name="password_removed">"パスワードが設定されていません"</string>
+	<string name="set_password">"パスワードを作成/変更"</string>
+	
+	<string name="mobileWebURL">"モバイル·サーバーのURL："</string>
+	<string name="go_to_web">"携帯サイトを見る"</string>
+	
+	<string name="enter">"入力する"</string>
+	<string name="back">"バック"</string>
+	<string name="yes">"はい"</string>
+	<string name="no">"ノー"</string>
+	
+	<string name="simIDReport">"レポートシム番号"</string>
+	<string name="gpsReport">"レポートGPSデータ"</string>
+	<string name="memoryReport">"利用可能なメモリを通報"</string>
+	<string name="taskReport">"レポートタスク"</string>
+	<string name="uptimeReport">"タイムアップデバイスを報告"</string>
+	<string name="NetworkOperatorReport">"レポートのネットワークオペレータ"</string>
+	<string name="NetworkTypeReport">"レポート·ネットワークタイプ"</string>
+	<string name="PhoneTypeReport">"レポートの電話機タイプ"</string>
+	<string name="SignalStrengthReport">"信号強度を報告する"</string>
+	<string name="ReceivedSMSReport">"受信したSMSの数を報告"</string>
+	<string name="SentSMSReport">"送信されたSMSのレポート番号"</string>
+	<string name="IncomingCallsReport">"着信コールのレポート番号"</string>
+	<string name="MissedCallsReport">"不在着信の報告数"</string>
+	<string name="OutgoingCallsReport">"発信コールのレポート番号"</string>
+	<string name="BytesReceivedReport">"受信したモバイルデータの量を報告"</string>
+	<string name="BytesSentReport">"送信されたモバイル·データの量を報告"</string>
+	<string name="HelloSignalReport">"こんにちはシグナルを報告"</string>
+	<string name="BatteryLevelReport">"バッテリーレベルを報告"</string>
+	<string name="RoamingReport">"ローミングした場合、レポート"</string>
+	
+	
 </resources>

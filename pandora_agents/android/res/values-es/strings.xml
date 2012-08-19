@@ -27,16 +27,12 @@
 	<string name="serverPort">Puerto del server:</string>
 	<string name="confTitle">Configuración del Agente Pandroid</string>
 	<string name="agent">Nombre Agente:</string>
-	<string name="gpsReport">Reporta datos GPS</string>
-	<string name="memoryReport">Reporta estado memoria</string>
-	<string name="taskReport">Reporta tareas</string>
 	<string name="gpsMode">Modo GPS</string>
 	<string name="gpsCurrent">Actual posición (alto consumo de batería)</string>
 	<string name="summary">Configuración actual:</string>
 	<string name="starStop">Reiniciar</string>
 	<string name="gpsLast">Última posición conocida</string>
-	<string name="loading">Cargando...</string>
-	<string name="process">Procesando</string>
+	<string name="loading">Cargando…</string>
 	<string name="last_values">Últimos valores</string>
 	<string name="latitude">Latitud</string>
 	<string name="longitude">Longitud</string>
@@ -44,14 +40,15 @@
 	<string name="orientation">Orientación</string>
 	<string name="proximity">Proximidad</string>
 	<string name="incorrect_update">Incorrecta actulización configuración.</string>
-	<string name="correct_update">Correcta actualización configuración.</string>
 	<string name="task">Tarea</string>
 	<string name="memory">Memoria</string>
 	<string name="help_label_str">Ayuda</string>
 	<string name="about_label_str">Sobre</string>
 	<string name="licensed_under_gpl_str">Licenciado bajo GPL v2</string>
-	<string name="develop_team_str">Desarrolladores: Sergio M. Zarzuelo, Miguel de Dios</string>
+	<string name="develop_team_str">Desarrolladores: Sergio M. Zarzuelo, Miguel de Dios, Mark Holland</string>
 	<string name="pandroid_agent_str">Agente Pandroid</string>
+	<string name="pandroid_agent_copyright">Copyright © 2011 Artica</string>
+	<string name="about_desc">Pandroid Agent logotipo</string>
 	<string name="help_str">Ayuda</string>
 	<string name="memory_avaliable_str" formatted="false">Disponible: &#37;iKb Total: &#37;iKb</string>
 	<string name="never_str">Nunca.</string>
@@ -61,14 +58,24 @@
 	<string name="last_contact_str">Último contacto:\n</string>
 	<string name="help_text_str">
 		Pandroid Agent es un agente en Android para Pandora FMS. &lt;p&gt;
-		Pandora FMS es un sistema de monitorizaci&#243;n de prop&#243;sito general. Con el agente en Android puedes monitorizar GPS, cuanta batería le queda al dispositivo, memoria disponible. Este podrá expandirse en el futuro para reportar si un proceso esta en ejecución, siendo muy útil para sistemas embebidos en servidores centrales. Tambien se puede expandir para obtener información de otras aplicaciones en el dispositivo o hacer otras cosas mas. El código fuente esta disponible.&lt;p&gt;Puedes informarte de esto y mas en Pandora FMS en &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
+		Pandora FMS es un sistema de monitorizaci&#243;n de prop&#243;sito general. Con el agente en Android puedes monitorizar todo tipo de cosas,
+		 GPS, cuanta batería le queda al dispositivo, memoria disponible, si un proceso está activo, El tiempoe que lleva encendido el dispositivo,
+		un señal de saludo para monotrorizar instalaciones de pandroid, un inventario con información de todos los apps instalados. También
+		datos de moviles, la ID del sim, número de SMS enviados/recibidos, número de llamadas entrantes/perdidas/recibidas, el nombre del operador
+		y el tipo, el tipo de movil, la potencia de señal, el número de bytes enviados/recibidos por la red movil.
+		 El código fuente esta disponible.&lt;p&gt;Puedes informarte de esto y mas en Pandora FMS en &lt;a href=&quot;http://pandorafms.com&quot;&gt;http://pandoraFMS.com&lt;/a&gt;&lt;/p&gt;
 	</string>
 	<string name="start">Iniciar</string>
 	<string name="correct_start">Conexion con exito</string>
+	<string name="config_saved">Configuración guardado con exito</string>
 	<string name="contact_stopped_str">Agente parado</string>
+	<string name="seconds">Segundos</string>
+	<string name="running">En marcha</string>
+	<string name="stopped">Parado</string>
+	
+	
 	<string name="sim_id">Sim ID:</string>
 	<string name="sim_id_value"/>
-	<string name="loading_str">Cargando...</string>
 	<string name="uptime">Tiempo encendido:</string>
 	<string name="uptime_value"/>
 	<string name="sms_received">SMS recibido: </string>
@@ -77,7 +84,6 @@
 	<string name="sms_sent_value"/>
 	<string name="network_operator">Operador:</string>
 	<string name="network_operator_value"/>
-	<string name="simIDReport">Reporta Sim ID</string>
 	<string name="network_type">Tipo red:</string>
 	<string name="network_type_value"/>
 	<string name="phone_type">Tipo movil:</string>
@@ -94,27 +100,37 @@
 	<string name="receive_bytes_value"/>
 	<string name="transmit_bytes">Bytes transmitidos:</string>
 	<string name="transmit_bytes_value"/>
+	<string name="roaming">Roaming:</string>
+	<string name="roaming_value"/>
+	
+	
 	<string name="alert_dialog_password">Introducir contraseña</string>
 	<string name="password_no_match">Las contraseñas son diferentes!</string>
 	<string name="password_error">error</string>
 	<string name="password">contraseña</string>
-	<string name="password_length">La contraseña debe contener mas de 6 caracteres!</string>
+	<string name="password_length">La contraseña debe contener mas de 6 carácteres!</string>
 	<string name="password_incorrect">Contraseña incorrecta</string>
 	<string name="password_set">Crear contraseña</string>
 	<string name="password_enter">Introducir contraseña</string>
 	<string name="password_repeat">Repetir contraseña</string>
 	<string name="password_choose_text">Quieres poner una contraseña?</string>
-	<string name="password_checkbox">No vuelkves a preguntar</string>
+	<string name="password_checkbox">No vuelves a preguntar</string>
 	<string name="password_created">Contraseña creada</string>
 	<string name="password_removed">Sin contraseña</string>
 	<string name="set_password">Crear/Cambiar contraseña</string>
+	
+	<string name="mobileWebURL">URL de servidor movil:</string>
+	<string name="go_to_web">Ver sitio movil</string>
+	
 	<string name="enter">Intro</string>
 	<string name="back">Volver</string>
-	
 	<string name="yes">si</string>
 	<string name="no">no</string>
 	
-	<string name="BatteryLevelReport">Reporta nivel de bateria</string>
+	<string name="simIDReport">Reporta Sim ID</string>
+	<string name="gpsReport">Reporta datos GPS</string>
+	<string name="memoryReport">Reporta estado memoria</string>
+	<string name="taskReport">Reporta tarea</string>
 	<string name="uptimeReport">Reporta tiempo encendido</string>
 	<string name="NetworkOperatorReport">Reporta operador de red</string>
 	<string name="NetworkTypeReport">Reporta tipo de red</string>
@@ -128,5 +144,8 @@
 	<string name="BytesReceivedReport">Reporta bytes recibidos</string>
 	<string name="BytesSentReport">Reporta bytes enviados</string>
 	<string name="HelloSignalReport">Reporta señal de saludo</string>
+	<string name="BatteryLevelReport">Reporta nivel de bateria</string>
+	<string name="RoamingReport">Reporta si Roaming</string>
+	
 	
 </resources>

@@ -30,11 +30,11 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Criteria;
@@ -43,6 +43,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.TrafficStats;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,22 +55,18 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 public class PandroidAgentListener extends Service {
 	
-	//log
-	public static final String LOG_TAG = "mark";
-	
     Handler h = new Handler();
-    
-       
     String lastGpsContactDateTime = "";
-    
-    
     boolean showLastXML = true;
     
 	@Override
 	public void onCreate() {
+		
 	}
 	
 	@Override
@@ -91,48 +88,92 @@ public class PandroidAgentListener extends Service {
 	}
 	
 	private void contact(){
-        Date date = new Date();
+			
+		Toast toast = Toast.makeText(getApplicationContext(),
+				    getString(R.string.loading),
+		       		Toast.LENGTH_SHORT);
+		toast.setGravity(Gravity.BOTTOM,0,0);
+		toast.show();
+		    
+		Date date = new Date();
         
-    	putSharedData("PANDROID_DATA", "contactError", "0", "integer");
-        putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
+    	putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
         
-        // Keep lastXML sent if is not empty (empty means error sending it)
-        String lastXML = buildXML();
-        
-		String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
-
-		String destFileName = agentName + "." + System.currentTimeMillis() + ".data";
-		
-		writeFile(destFileName, lastXML);
-
-		String[] tentacleData = {
-				  "-a",
-				  getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
-				  "-p",
-				  Core.defaultServerPort,
-				  "-v",
-				  "/data/data/pandroid.agent/files/" + destFileName
-	    		  };
-
-		int tentacleRet = new tentacle_client().tentacle_client(tentacleData);
-    	
-		// Deleting the file after send it
-		File file = new File("/data/data/pandroid.agent/files/" + destFileName);
-    	file.delete();
-		
-        if(tentacleRet == 0) {
-            putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
-            if (Core.helloSignal >= 1)
-            	Core.helloSignal = 0;
-            Core.updateConf(getApplicationContext());
-        }
-        else {
-        	putSharedData("PANDROID_DATA", "contactError", "1", "integer");
-        }
-        
+        String lastXML = "";
+        new contactTask().execute(lastXML);
         updateValues();
-        
+		
 	}//end contact
+       
+        
+    private class contactTask extends AsyncTask<String, Void, Void>{
+        		
+        	@Override
+        	protected Void doInBackground(String...params) {  
+        			
+        	String lastXML = params[0];
+        	lastXML = buildXML();
+        	String destFileName = "";
+        	String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
+        	destFileName = agentName + "." + System.currentTimeMillis() + ".data";
+        	
+        	writeFile(destFileName, lastXML);
+        	String[] tentacleData = {
+  				  "-a",
+  				  getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
+  				  "-p",
+  				  Core.defaultServerPort,
+  				  "-v",
+  				  "/data/data/pandroid.agent/files/" + destFileName
+  	    		  };
+
+        	int tentacleRet = new tentacle_client().tentacle_client(tentacleData);
+        	
+        	putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");	
+        	if(tentacleRet == 0) {
+        		putSharedData("PANDROID_DATA", "contactError", "0", "integer");
+        		// Deleting the file after send it
+        		// move to only delete if sent successfully
+        		File file = new File("/data/data/pandroid.agent/files/" + destFileName);
+        		file.delete();
+        		if (Core.helloSignal >= 1)
+        				Core.helloSignal = 0;
+        		Core.updateConf(getApplicationContext());
+           }
+           else{
+        	   putSharedData("PANDROID_DATA", "contactError", "1", "integer");
+           }
+        return null;
+        	
+        }//end doInBackground
+   }
+   
+    ////////////////////////////////////////////////////////////////////////////////////////
+    //  From unfinished task of buffering unsent xml files when no connection available   //
+    ////////////////////////////////////////////////////////////////////////////////////////
+    
+    /*
+	public boolean saveArray(String[] array, String arrayName, Context mContext) {   
+	    SharedPreferences prefs = mContext.getSharedPreferences("PANDROID_DATA", 0);  
+	    SharedPreferences.Editor editor = prefs.edit();  
+	    editor.putInt(arrayName +"_size", array.length);  
+	    for(int i=0;i<array.length;i++)  
+	        editor.putString(arrayName + "_" + i, array[i]);  
+	    return editor.commit();  
+	} 
+	
+	public String[] loadArray(String arrayName, Context mContext) {  
+	    SharedPreferences prefs = mContext.getSharedPreferences("PANDROID_DATA", 0);  
+	    int size = prefs.getInt(arrayName + "_size", 0);  
+	    String array[] = new String[size];  
+	    for(int i=0;i<size;i++)  
+	        array[i] = prefs.getString(arrayName + "_" + i, null);  
+	    return array;  
+	}  
+	*/
+	
+	////////////////////////////////////////////////////////////////////////////////////////
+	
 	
 	private String buildXML(){
 		String buffer = "";
@@ -149,16 +190,11 @@ public class PandroidAgentListener extends Service {
 		String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
 		String interval = getSharedData("PANDROID_DATA", "interval", Integer.toString(Core.defaultInterval), "integer");
 		
-
-		
-		
 		buffer += "<agent_data " +
-			"description='' group='' os_name='android' os_version='"+Build.VERSION.RELEASE+"' " +		//change to read real version of os
+			"description='' group='' os_name='android' os_version='"+Build.VERSION.RELEASE+"' " +		
 			"interval='"+ interval +"' version='4.0(Build 111012)' " + 
 			"timestamp='" + getHumanDateTime(-1) + "' agent_name='" + agentName + "' " +
 			"timezone_offset='0'" + gpsData +">\n";
-		
-		
 		
 		// 																					//
 		//									MODULES											//
@@ -231,7 +267,6 @@ public class PandroidAgentListener extends Service {
 			}
 		}
 		
-		
 		if (memoryStatus.equals("enabled")) {
 			
 			Float freeMemory = new Float((Float.valueOf(availableRamKb) / Float.valueOf(totalRamKb)) * 100.0);
@@ -240,13 +275,13 @@ public class PandroidAgentListener extends Service {
 			buffer += buildmoduleXML("freeRamMemory", "The percentage of available ram.", "generic_data",
 				formatPercent.format(freeMemory.doubleValue()));
 		}
-		//buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);
+		buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);
+		if (DeviceUpTimeReport.equals("enabled"))
+			buffer += buildmoduleXML("upTime","Total device uptime in seconds.", "generic_data", upTime);
 		
 		if (Core.hasSim){
 			if (SimIDReport.equals("enabled"))
 				buffer += buildmoduleXML("simID", "The Sim ID.", "generic_data_string", SimID);
-			if (DeviceUpTimeReport.equals("enabled"))
-				buffer += buildmoduleXML("upTime","Total device uptime in seconds.", "generic_data", upTime);
 			if (NetworkOperatorReport.equals("enabled"))
 				buffer += buildmoduleXML("networkOperator","Currently registered network operator", "generic_data_string", networkOperator);
 			if (NetworkTypeReport.equals("enabled"))
@@ -274,11 +309,15 @@ public class PandroidAgentListener extends Service {
 		}// end if sim card
 		if (HelloSignalReport.equals("enabled"))
 			buffer += buildmoduleXML("helloSignal","Hello Signal", "generic_data", helloSignal);
+		
+		buffer += buildInventoryXML();
+		
 		// End_Modules
 		
 		buffer += "</agent_data>";
 		
 		return buffer;
+		
 	}// end buildXML
 	
     private void writeFile(String fileName, String textToWrite) {
@@ -309,7 +348,40 @@ public class PandroidAgentListener extends Service {
 		return buffer;
 	}
 	
-    private void gpsLocation() {
+	 
+	
+	private String buildInventoryXML(){
+		
+		String module_xml = "";
+		
+		module_xml += "\t<inventory>\n";
+		module_xml += "\t\t<inventory_module>\n\t\t\t<name><![CDATA[";
+		module_xml += "Software";
+		module_xml += "]]></name>\n";
+		module_xml += "\t\t\t<datalist>\n";
+		    
+		List<PackageInfo> packs = getPackageManager().getInstalledPackages(0);
+		for(int i=0;i<packs.size();i++) {
+		      module_xml += "\t\t\t\t<data><![CDATA[";
+		      
+		      PackageInfo p = packs.get(i);
+		           		            
+		      module_xml += p.applicationInfo.loadLabel(getPackageManager()).toString();
+		      module_xml += ";"+ p.versionName;
+		      module_xml += ";"+ p.packageName;
+		      module_xml += "]]></data>\n";
+		}
+		
+		/* Close the datalist and module_inventory */
+		module_xml += "\t\t\t</datalist>\n\t\t</inventory_module>\n";
+		/* Close inventory */
+		module_xml += "\t</inventory>\n";
+		//Log.d(LOG_TAG,module_xml);
+		        
+		return module_xml;
+	}
+	
+	private void gpsLocation() {
     	// Starts with GPS, if no GPS then gets network location
     	
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);  
@@ -366,24 +438,14 @@ public class PandroidAgentListener extends Service {
     }
     
     private void batteryLevel() {
-        BroadcastReceiver batteryLevelReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-            	try {
-            		context.unregisterReceiver(this);
-            	}
-            	catch (IllegalArgumentException e) {
-            		//None
-            	}
-                
-                int rawlevel = intent.getIntExtra("level", -1);
-                int scale = intent.getIntExtra("scale", -1);
-                if (rawlevel >= 0 && scale > 0) {
-                    putSharedData("PANDROID_DATA", "batteryLevel", Integer.valueOf((rawlevel * 100) / scale).toString(), "integer");
-                }
-            }
-        };
-        IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        registerReceiver(batteryLevelReceiver, batteryLevelFilter);
+    	
+    	Intent batteryIntent = getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+    		int rawlevel = batteryIntent.getIntExtra("level", -1);
+    		int scale = batteryIntent.getIntExtra("scale", -1);
+    		//double level = -1;
+    		if (rawlevel >= 0 && scale > 0) {
+    			putSharedData("PANDROID_DATA", "batteryLevel", Integer.valueOf((rawlevel * 100) / scale).toString(), "integer");
+    		}
     }
     
     /*private void sensors() {
@@ -465,7 +527,7 @@ public class PandroidAgentListener extends Service {
         getTaskStatus();
         getMemoryStatus();
         getUpTime();
-        //Ignore unnecessary modules
+        
         if(Core.hasSim)
         {
         	getSimID();
@@ -539,7 +601,7 @@ public class PandroidAgentListener extends Service {
 	/**
 	 * 	Retrieves the simID of the device if available
 	 */
-	public void getSimID(){
+	private void getSimID(){
 		
 			String simID = getSharedData("PANDROID_DATA", "simID", Core.defaultSimID, "string");
 		
@@ -551,20 +613,17 @@ public class PandroidAgentListener extends Service {
 	/**
 	 * 	Retrieves the time in seconds since the device was switched on
 	 */
-	public void getUpTime(){
+	private void getUpTime(){
 		long upTime = Core.defaultUpTime;
-	
 		upTime = SystemClock.elapsedRealtime()/1000;
-		
 		if(upTime != 0)
 			putSharedData("PANDROID_DATA", "upTime", ""+upTime, "long");
 	}
 	/**
 	 * 	Retrieve currently registered network operator, i.e. vodafone, movistar, etc...
 	 */
-	public void getNetworkOperator(){
+	private void getNetworkOperator(){
 		String networkOperator = Core.defaultNetworkOperator;
-				
 		String serviceName = Context.TELEPHONY_SERVICE;
 	    TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
 		networkOperator = telephonyManager.getNetworkOperatorName();
@@ -575,16 +634,12 @@ public class PandroidAgentListener extends Service {
 	/**
 	 *  Retrieves the number of sent sms messages using the android messaging app only
 	 */
-	public void getSMSSent(){
+	private void getSMSSent(){
 		
 		String SMSSent = ""+Core.defaultSMSSent;
-		
 		SMSSent = getSharedData("PANDROID_DATA", "SMSSent", ""+Core.defaultSMSSent, "integer");
-		
 		Uri allMessages = Uri.parse("content://sms/sent");
-		
 		Cursor c = getContentResolver().query(allMessages, null, null, null, null);
-		
 		int totalMessages = 0;
 		
 		while (c.moveToNext()) 
@@ -593,7 +648,6 @@ public class PandroidAgentListener extends Service {
 		    long messageLength = messageBody.length();
 		    double numberOfMessages = messageLength / 160.0;
 		    double numberOfMessagesRoundedUp = Math.ceil(numberOfMessages);
-
 		    totalMessages = (int) (totalMessages + numberOfMessagesRoundedUp);
 		}
 		
@@ -605,16 +659,13 @@ public class PandroidAgentListener extends Service {
 			putSharedData("PANDROID_DATA", "SMSSent", SMSSent, "integer");
 		
 	}// end getSMSSent
-	
 	/**
 	 *  Retrieve the type of data network currently connected to, i.e. edge, gprs, etc...
 	 */
-	public void getNetworkType()
+	private void getNetworkType()
 	{
 		String networkType = Core.defaultNetworkType;
-		
 		TelephonyManager tM = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-		
 		int nT = tM.getNetworkType();
 
 		switch (nT)
@@ -676,12 +727,10 @@ public class PandroidAgentListener extends Service {
 	/**
 	 *  Retrieve the type of mobile network currently conncected to, i.e. gms, cdma, etc...
 	 */
-	public void getPhoneType()
+	private void getPhoneType()
 	{
 		String phoneType = Core.defaultPhoneType;
-		
 		TelephonyManager tM = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-		
 		int pT = tM.getPhoneType();
 
 		switch (pT)
@@ -706,13 +755,11 @@ public class PandroidAgentListener extends Service {
 	/**
 	 *  Retrieves the number of incoming, missed and outgoing calls
 	 */
-	public void getCalls()
+	private void getCalls()
 	{
 		Cursor c = getApplicationContext().getContentResolver().query(android.provider.CallLog.Calls.CONTENT_URI, null, null, null, null);
 		c.moveToFirst();
-		
 		int typeColumn = c.getColumnIndex(android.provider.CallLog.Calls.TYPE);
-		
 		int incoming = 0;
 		int outgoing = 0;
 		int missed = 0;
@@ -726,11 +773,9 @@ public class PandroidAgentListener extends Service {
                     	case android.provider.CallLog.Calls.INCOMING_TYPE:
                     		incoming++;
                     		break;
-
                     	case android.provider.CallLog.Calls.MISSED_TYPE:
                            	missed++;
                             break;
-
                     	case android.provider.CallLog.Calls.OUTGOING_TYPE:
                             outgoing++;
                             break;
@@ -741,17 +786,15 @@ public class PandroidAgentListener extends Service {
 			putSharedData("PANDROID_DATA", "incomingCalls", ""+incoming, "integer");
             putSharedData("PANDROID_DATA", "missedCalls", ""+missed, "integer");
             putSharedData("PANDROID_DATA", "outgoingCalls", ""+outgoing, "integer");
-
 		}
 	}// end getCalls
-	
 	/**
 	 *  Retrieves the current cell signal strength in dB
 	 */
-	public void getSignalStrength()
+	private void getSignalStrength()
 	{	
-		TelephonyManager 		telephone 	= 	(TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-		signalListener 			phoneState 	= 	new signalListener();
+		TelephonyManager telephone 	= 	(TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		signalListener phoneState 	= 	new signalListener();
 		telephone.listen(phoneState ,PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 	}
 	
@@ -761,25 +804,23 @@ public class PandroidAgentListener extends Service {
 		public void onSignalStrengthsChanged(SignalStrength signalStrength)
 		{
 			super.onSignalStrengthsChanged(signalStrength);
-			Log.v(LOG_TAG, "here");
 			String signalStrengthValue = ""+Core.defaultSignalStrength;
 			if (signalStrength.isGsm()) {
                 if (signalStrength.getGsmSignalStrength() != 99)
                     signalStrengthValue =""+ (signalStrength.getGsmSignalStrength() * 2 - 113);
                 else
                     signalStrengthValue =""+ (signalStrength.getGsmSignalStrength());
-            } else {
-                signalStrengthValue ="" + (signalStrength.getCdmaDbm());
+            }
+			else{
+               signalStrengthValue ="" + (signalStrength.getCdmaDbm());
             }
 			putSharedData("PANDROID_DATA", "signalStrength", signalStrengthValue, "integer");
 		}
-		
 	};
-	
 	/**
 	 *  Retrieves the number of sent/received bytes using the mobile network
 	 */
-	public void getDataBytes()
+	private void getDataBytes()
 	{
 		
 		long receiveBytes = TrafficStats.getMobileRxBytes();
@@ -790,10 +831,11 @@ public class PandroidAgentListener extends Service {
 			putSharedData("PANDROID_DATA", "receiveBytes", ""+receiveBytes, "long" );
 			putSharedData("PANDROID_DATA", "transmitBytes", ""+transmitBytes, "long" );
 		}
-			
 	}
-	
-	public void getRoaming()
+	/**
+	 * Retrieves whether the device is currently connected to a roaming network
+	 */
+	private void getRoaming()
 	{
 		TelephonyManager telephone 	= 	(TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 		boolean roaming = telephone.isNetworkRoaming();
@@ -802,7 +844,6 @@ public class PandroidAgentListener extends Service {
 			putSharedData("PANDROID_DATA", "roaming", "1", "integer" );
 		else
 			putSharedData("PANDROID_DATA", "roaming", "0", "integer" );
-				
 	}
 	
 	

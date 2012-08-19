@@ -1,0 +1,144 @@
+<!--
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details. 
+--><resources>
+	<string name="const_string_preferences">"PANDROID_DATA"</string>
+
+	<string name="status_str">"État"</string>
+	<string name="setup_str">"Paramétrer"</string>
+	<string name="app_name">"Agent Pandroid"</string>
+	<string name="interval">"Fréquence :"</string>
+	<string name="update">"Paramètres de mise à jour"</string>
+	<string name="reset">"Définir par Défaut"</string>
+	<string name="serverAddr">"Adresse du serveur:"</string>
+	<string name="serverPort">"Server Port:"</string>
+	<string name="confTitle">"Configuration de l'agent Pandroid"</string>
+	<string name="agent">"Nom de l'agent:"</string>
+	<string name="gpsMode">"Mode GPS"</string>
+	<string name="gpsCurrent">"Position actuelle (coût de la batterie élevée)"</string>
+	<string name="summary">"Configuration actuelle:"</string>
+	<string name="starStop">"Redém."</string>
+	<string name="gpsLast">"Dernière position connue"</string>
+	<string name="loading">"Chargement ..."</string>
+	<string name="last_values">"Dernières valeurs"</string>
+	<string name="latitude">"Latitude"</string>
+	<string name="longitude">"Longitude"</string>
+	<string name="battery_level">"Niveau de charge de la batterie"</string>
+	<string name="orientation">"Orientation"</string>
+	<string name="proximity">"proximité"</string>
+	<string name="incorrect_update">"Impossible de mettre à jour les options."</string>
+	<string name="task">"Tâche"</string>
+	<string name="memory">"Lecteur"</string>
+	<string name="help_label_str">"aide"</string>
+	<string name="about_label_str">"Sur"</string>
+	<string name="licensed_under_gpl_str">"Sous licence GPL v2"</string>
+	<string name="develop_team_str">"Développeurs: Sergio M. Zarzuelo, Miguel de Dios, Mark Holland"</string>
+	<string name="pandroid_agent_str">"Agent Pandroid"</string>
+	<string name="pandroid_agent_copyright">"Copyright © 2011 Artica"</string>
+	<string name="about_desc">"Logo Agent Pandroid"</string>
+	<string name="help_str">"aide"</string>
+	<string formatted="false" name="memory_avaliable_str">"Disponible: %iKb Total: %iKb"</string>
+	<string name="never_str">"Jamais."</string>
+	<string name="now_str">"Maintenant."</string>
+	<string name="seconds_str">"secondes"</string>
+	<string name="conctact_error_str">"Contactez erreur"</string>
+	<string name="last_contact_str">"dernier Contact:\n"</string>
+	<string name="help_text_str">"
+		Agent Pandroid est un Android Pandora FMS agent de Pandora FMS. &lt;p&gt; Pandora FMS est un système de surveillance à usage général. Avec l'agent android vous pouvez obtenir toutes sortes d'informations à partir de votre appareil, l'emplacement gps, combien de batterie est laissée, la mémoire disponible sur l'appareil, suivi si un processus est actif, le temps écoulé depuis l'appareil a été mis sous tension, un signal BONJOUR pour la surveillance des installations de l'application, un inventaire de toutes les applications installées aswell titre d'information pour les téléphones Android avec une carte sim, l'ID de carte SIM, le nombre de SMS envoyés / reçus, le nombre d'appels entrants / manqués / sortant, le réseau l'opérateur et le type, le type de téléphone, le niveau de signal mobile, le nombre d'octets envoyés / reçus sur le réseau mobile. Le code source complet est fourni. &lt;p&gt; Voir plus sur Pandora FMS à &lt;a href=\"http://pandorafms.com\"&gt; http://pandoraFMS.com &lt;/ a&gt; &lt;/ p&gt;
+	"</string>
+	<string name="start">"Commence"</string>
+	<string name="correct_start">"Connexion réussie"</string>
+	<string name="config_saved">"Configuration sauvegardée avec succès"</string>
+	<string name="contact_stopped_str">"Agent arrêté"</string>
+	<string name="seconds">"Secondes"</string>
+	<string name="running">"En marche"</string>
+	<string name="stopped">"Arrêté"</string>
+	
+	
+	
+	<string name="sim_id">"Sim ID:"</string>
+	<string name="sim_id_value">""</string>
+	<string name="uptime">"Dispositif le temps de:"</string>
+	<string name="uptime_value">""</string>
+	<string name="sms_received">"SMS reçus: "</string>
+	<string name="sms_received_value">""</string>
+	<string name="sms_sent">"SMS envoyés: "</string>
+	<string name="sms_sent_value">""</string>
+	<string name="network_operator">"Opérateur de réseau:"</string>
+	<string name="network_operator_value">""</string>
+	<string name="network_type">"Type de réseau :"</string>
+	<string name="network_type_value">""</string>
+	<string name="phone_type">"Type de téléphone:"</string>
+	<string name="phone_type_value">""</string>
+	<string name="signal_strength">"Intensité du signal :"</string>
+	<string name="signal_strength_value">""</string>
+	<string name="incoming_calls">"Appels entrants:"</string>
+	<string name="incoming_calls_value">""</string>
+	<string name="missed_calls">"Appels manqués"</string>
+	<string name="missed_calls_value">""</string>
+	<string name="outgoing_calls">"Appels sortants:"</string>
+	<string name="outgoing_calls_value">""</string>
+	<string name="receive_bytes">"Octets reçus :"</string>
+	<string name="receive_bytes_value">""</string>
+	<string name="transmit_bytes">"Octets transmis:"</string>
+	<string name="transmit_bytes_value">""</string>
+	<string name="roaming">"Itinérance :"</string>
+	<string name="roaming_value">""</string>
+	
+	
+	<string name="alert_dialog_password">"Saisir votre mot de passe"</string>
+	<string name="password_no_match">"Les mots de passe diffèrent."</string>
+	<string name="password_error">"Erreur."</string>
+	<string name="password">"mot de passe"</string>
+	<string name="password_length">"mot de passe doit être plus long que 6 caractères!"</string>
+	<string name="password_incorrect">"Mot de passe incorrect"</string>
+	<string name="password_set">"Définir mot de passe (laisser vide pour aucun)"</string>
+	<string name="password_enter">"Saisir le mot de passe"</string>
+	<string name="password_repeat">"Répéter mot de passe"</string>
+	<string name="password_choose_text">"Ne vous souhaitez définir un mot de passe?"</string>
+	<string name="password_checkbox">"Ne pas demander à nouveau"</string>
+	<string name="password_created">"Mot de passe créé avec succès"</string>
+	<string name="password_removed">"Aucun mot de passe défini"</string>
+	<string name="set_password">"Créer/Modifier le mot de passe"</string>
+	
+	<string name="mobileWebURL">"URL du serveur Mobile:"</string>
+	<string name="go_to_web">"Voir le site mobile"</string>
+	
+	<string name="enter">"Entrer..."</string>
+	<string name="back">"arrière"</string>
+	<string name="yes">"oui"</string>
+	<string name="no">"no"</string>
+	
+	<string name="simIDReport">"Rapport Sim ID"</string>
+	<string name="gpsReport">"Rapport de données GPS"</string>
+	<string name="memoryReport">"Signaler mémoire disponible"</string>
+	<string name="taskReport">"Tâche de rapport"</string>
+	<string name="uptimeReport">"Signaler appareil le temps"</string>
+	<string name="NetworkOperatorReport">"Signaler opérateur de réseau"</string>
+	<string name="NetworkTypeReport">"Rapport type de réseau"</string>
+	<string name="PhoneTypeReport">"Rapport type de téléphone"</string>
+	<string name="SignalStrengthReport">"Rapport puissance du signal"</string>
+	<string name="ReceivedSMSReport">"Rapport du nombre de SMS reçus"</string>
+	<string name="SentSMSReport">"Indiquer le nombre de SMS envoyés"</string>
+	<string name="IncomingCallsReport">"Rapport numéro des appels entrants"</string>
+	<string name="MissedCallsReport">"Rapport numéro des appels manqués"</string>
+	<string name="OutgoingCallsReport">"Numéro de rapport des appels sortants"</string>
+	<string name="BytesReceivedReport">"Rapport du montant reçu données mobiles"</string>
+	<string name="BytesSentReport">"Rapport du montant envoyé des données mobiles"</string>
+	<string name="HelloSignalReport">"Rapport Signal Bonjour"</string>
+	<string name="BatteryLevelReport">"Signaler niveau de la batterie"</string>
+	<string name="RoamingReport">"Signaler roaming"</string>
+	
+	
+</resources>

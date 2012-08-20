@@ -1,7 +1,11 @@
 2012-08-20  Sergio Martin <sergio.martin@artica.es>
 
-	* util/pandora_migrate_plugins.pl: fixed order of the
-	macros fields in the form
+	* ChangeLog: Fixed bad description in last commit
+
+2012-08-20  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_migrate_plugins.pl: fixed spaces
+	between parameters
 
 2012-08-17  Sergio Martin <sergio.martin@artica.es>
 

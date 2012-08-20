@@ -273,6 +273,19 @@ if ($id_agente) {
 	if ($inventorytab == -1)
 		$inventorytab = "";
 	
+	 
+	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($id_agente));
+
+	if($has_remote_conf === true) {
+		/* Plugins */
+		$pluginstab = enterprise_hook ('plugins_tab');
+		if ($pluginstab == -1)
+			$pluginstab = "";
+	}
+	else {
+		$pluginstab = "";
+	}
+	
 	/* Collection */
 	$collectiontab = enterprise_hook('collection_tab');
 	
@@ -323,6 +336,7 @@ if ($id_agente) {
 		'alert' => $alerttab,
 		'template' => $templatetab,
 		'inventory' => $inventorytab,
+		'pluginstab' => $pluginstab,
 		'collection'=> $collectiontab,
 		'group' => $grouptab,
 		'gis' => $gistab);
@@ -365,6 +379,9 @@ if ($id_agente) {
 			break;
 		case "inventory":
 			$tab_description = '- ' . __('Inventory') . ui_print_help_icon('inventory_tab', true);
+			break;
+		case "plugins":
+			$tab_description = '- ' . __('Agent plugins') . ui_print_help_icon('plugins_tab', true);
 			break;
 		case "module":
 			$tab_description = '- '. __('Modules');

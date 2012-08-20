@@ -100,6 +100,7 @@ if ($new_user && $config['admin_can_add_user']) {
 	$user_info['comments'] = '';
 	$user_info['is_admin'] = 0;
 	$user_info['language'] = 'default';
+	$user_info["not_login"] = false;
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$user_info['id_skin'] = '';
 	}
@@ -137,6 +138,7 @@ if ($create_user) {
 		$values['last_pass_change'] = date ("Y/m/d H:i:s", get_system_time());
 		$values['metaconsole_access'] = get_parameter ('metaconsole_access');
 	}
+	$values["not_login"] = (bool)get_parameter ('not_login', false);
 	
 	if ($id == '') {
 		ui_print_error_message (__('User ID cannot be empty'));
@@ -171,7 +173,7 @@ if ($create_user) {
 			$info .= ' Skin: ' . $values['id_skin'];
 		}
 		
-		switch ($config['dbtype']){
+		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
 				$result = create_user($id, $password_new, $values);
@@ -180,7 +182,7 @@ if ($create_user) {
 				}
 				break;
 			case "oracle":
-				$result = db_process_sql('/INSERT INTO tusuario (fullname, firstname, lastname, email, phone, comments, is_admin, language, id_skin, block_size, flash_chart, id_user, password, last_connect, registered) VALUES (\'' . $values['fullname'] . '\',\'\',\'\',\'\',\'\',\'\',' . $values['is_admin'] . ',\'' . $values['language'] .'\',' . $values['id_skin'] . ',' . $values['block_size'] . ',' . $values['flash_chart'] . ',\'' . $id . '\',\'' . $password_new . '\',0,\'' . get_system_time () . '\')');		
+				$result = db_process_sql('/INSERT INTO tusuario (fullname, firstname, lastname, email, phone, comments, is_admin, language, id_skin, block_size, flash_chart, id_user, password, last_connect, registered) VALUES (\'' . $values['fullname'] . '\',\'\',\'\',\'\',\'\',\'\',' . $values['is_admin'] . ',\'' . $values['language'] .'\',' . $values['id_skin'] . ',' . $values['block_size'] . ',' . $values['flash_chart'] . ',\'' . $id . '\',\'' . $password_new . '\',0,\'' . get_system_time () . '\')');
 				
 				if ($result) {
 					$res = db_process_sql('/INSERT INTO tpassword_history (id_user, password, date_begin) VALUES (\'' . $id . '\',\'' . md5($password_new) . '\',\'' . date ("Y/m/d H:i:s", get_system_time()) . '\')');		
@@ -230,6 +232,7 @@ if ($update_user) {
 	if(enterprise_installed()) {
 		$values['metaconsole_access'] = get_parameter ('metaconsole_access');
 	}
+	$values["not_login"] = (bool)get_parameter ('not_login', false);
 	
 	$res1 = update_user ($id, $values);
 	
@@ -300,7 +303,7 @@ if ($update_user) {
 	$user_info = $values;
 }
 
-if ($status != -1){
+if ($status != -1) {
 	ui_print_result_message ($status,
 		__('User info successfully updated'),
 		__('Error updating user info (no change?)'));	
@@ -442,6 +445,10 @@ if (enterprise_installed()) {
 		'metaconsole_access', $user_info_metaconsole_access,
 		'','',-1,true, false, false);
 }
+
+$table->data[13][0] = __('Not Login');
+$table->data[13][0] .= ui_print_help_tip(__('The user with not login set only can access to API.'), true);
+$table->data[13][1] = html_print_checkbox('not_login', 1, $user_info["not_login"], true);
 
 echo '<form method="post" autocomplete="off">';
 

@@ -1,67 +1,73 @@
 -- -----------------------------------------------------
 -- Table `tusuario`
 -- -----------------------------------------------------
+ALTER TABLE tusuario ADD COLUMN (disabled NUMBER(10,0) DEFAULT 0 NOT NULL);
+ALTER TABLE tusuario ADD COLUMN (shortcut NUMBER(5, 0) DEFAULT 0);
+ALTER TABLE tusuario ADD COLUMN (force_change_pass NUMBER(5,0) DEFAULT 0 NOT NULL);
+ALTER TABLE tusuario ADD COLUMN (last_pass_change TIMESTAMP DEFAULT 0);
+ALTER TABLE tusuario ADD COLUMN (last_failed_login TIMESTAMP DEFAULT 0);
+ALTER TABLE tusuario ADD COLUMN (failed_attempt NUMBER(5,0) DEFAULT 0 NOT NULL);
+ALTER TABLE tusuario ADD COLUMN (login_blocked NUMBER(5,0) DEFAULT 0 NOT NULL);
+ALTER TABLE tusuario ADD COLUMN disabled NUMBER(10, 0) NOT NULL DEFAULT 0;
+ALTER TABLE tusuario ADD COLUMN shortcut NUMBER(5, 0) DEFAULT 0;
+ALTER TABLE tusuario ADD COLUMN shortcut_data CLOB DEFAULT '';
+ALTER TABLE tusuario ADD (section VARCHAR2(255) NOT NULL);
+INSERT INTO tusuario (section) VALUES ('Default');
+ALTER TABLE tusuario ADD COLUMN (data_section VARCHAR2(255) NOT NULL);
+ALTER TABLE tusuario ADD COLUMN (metaconsole_access VARCHAR2(100) DEFAULT 'only_console' NOT NULL);
+ALTER TABLE tusuario ADD CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced','custom','all','only_console'));
+ALTER TABLE tusuario ADD COLUMN (not_login NUMBER(5,0) default 0 NOT NULL);
 
-alter table tusuario add (disabled NUMBER(10,0) default 0 NOT NULL);
-alter table tusuario add (shortcut NUMBER(5, 0) DEFAULT 0);
-	
 -- -----------------------------------------------------
 -- Table "tnetflow_filter"
 -- -----------------------------------------------------
-
 CREATE TABLE tnetflow_filter (
-id_sg NUMBER(10, 0) NOT NULL PRIMARY KEY,
-id_name VARCHAR2(600) NOT NULL,
-id_group NUMBER(10, 0),
-ip_dst CLOB NOT NULL,
-ip_src CLOB NOT NULL,
-dst_port CLOB NOT NULL,
-src_port CLOB NOT NULL,
-advanced_filter CLOB NOT NULL,
-filter_args CLOB NOT NULL,
-aggregate VARCHAR2(60),
-output VARCHAR2(60)
+	id_sg NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_name VARCHAR2(600) NOT NULL,
+	id_group NUMBER(10, 0),
+	ip_dst CLOB NOT NULL,
+	ip_src CLOB NOT NULL,
+	dst_port CLOB NOT NULL,
+	src_port CLOB NOT NULL,
+	advanced_filter CLOB NOT NULL,
+	filter_args CLOB NOT NULL,
+	aggregate VARCHAR2(60),
+	output VARCHAR2(60)
 );
-
 CREATE SEQUENCE tnetflow_filter_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnetflow_filter_inc BEFORE INSERT ON tnetflow_filter REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_filter_s.nextval INTO :NEW.ID_SG FROM dual; END tnetflow_filter_inc;;
 
 -- -----------------------------------------------------
 -- Table "tnetflow_report"
 -- -----------------------------------------------------
-
 CREATE TABLE tnetflow_report (
-id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
-id_name VARCHAR2(100) NOT NULL,
-description CLOB default '',
-id_group NUMBER(10, 0)
+	id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_name VARCHAR2(100) NOT NULL,
+	description CLOB default '',
+	id_group NUMBER(10, 0)
 );
-
 CREATE SEQUENCE tnetflow_report_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnetflow_report_inc BEFORE INSERT ON tnetflow_report REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_s.nextval INTO :NEW.ID_REPORT FROM dual; END tnetflow_report_inc;;
 
 -- -----------------------------------------------------
 -- Table "tnetflow_report_content"
 -- -----------------------------------------------------
-
 CREATE TABLE tnetflow_report_content (
-id_rc NUMBER(10, 0) NOT NULL PRIMARY KEY,
-id_report NUMBER(10, 0) NOT NULL REFERENCES tnetflow_report(id_report) ON DELETE CASCADE,
-id_filter NUMBER(10,0) NOT NULL REFERENCES tnetflow_filter(id_sg) ON DELETE CASCADE,
-"date" NUMBER(20, 0) default 0 NOT NULL,
-period NUMBER(11, 0) default 0 NOT NULL,
-max NUMBER(11, 0) default 0 NOT NULL,
-show_graph VARCHAR2(60),
-"order" NUMBER(11,0) default 0 NOT NULL
+	id_rc NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_report NUMBER(10, 0) NOT NULL REFERENCES tnetflow_report(id_report) ON DELETE CASCADE,
+	id_filter NUMBER(10,0) NOT NULL REFERENCES tnetflow_filter(id_sg) ON DELETE CASCADE,
+	"date" NUMBER(20, 0) default 0 NOT NULL,
+	period NUMBER(11, 0) default 0 NOT NULL,
+	max NUMBER(11, 0) default 0 NOT NULL,
+	show_graph VARCHAR2(60),
+	"order" NUMBER(11,0) default 0 NOT NULL
 );
-
 CREATE SEQUENCE tnetflow_report_content_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnetflow_report_content_inc BEFORE INSERT ON tnetflow_report_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_content_s.nextval INTO :NEW.ID_RC FROM dual; END tnetflow_report_content_inc;;
 
 -- -----------------------------------------------------
 -- Table `tincidencia`
 -- -----------------------------------------------------
-
 alter table tincidencia add (id_agent NUMBER(10,0) default 0 NULL);
 
 -- -----------------------------------------------------
@@ -72,13 +78,12 @@ alter table tagente add (url_address CLOB default '' NULL);
 -- -----------------------------------------------------
 -- Table `talert_special_days`
 -- -----------------------------------------------------
-
 CREATE TABLE talert_special_days (
-id NUMBER(10,0) NOT NULL PRIMARY KEY,
-date DATE default '0000-00-00' NOT NULL,
-same_day VARCHAR2(20) default 'sunday',
-description CLOB,
-CONSTRAINT talert_special_days_same_day_cons CHECK (same_day IN ('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))
+	id NUMBER(10,0) NOT NULL PRIMARY KEY,
+	date DATE default '0000-00-00' NOT NULL,
+	same_day VARCHAR2(20) default 'sunday',
+	description CLOB,
+	CONSTRAINT talert_special_days_same_day_cons CHECK (same_day IN ('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))
 );
 
 CREATE SEQUENCE talert_special_days_s INCREMENT BY 1 START WITH 1;
@@ -87,7 +92,6 @@ CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_specia
 -- -----------------------------------------------------
 -- Table `talert_templates`
 -- -----------------------------------------------------
-
 alter table talert_templates add (special_day NUMBER(5,0) default 0);
 
 -- -----------------------------------------------------
@@ -172,20 +176,6 @@ UPDATE ttipo_modulo SET descripcion='Generic data' WHERE id_tipo=1;
 UPDATE ttipo_modulo SET descripcion='Generic data incremental' WHERE id_tipo=4;
 
 -- -----------------------------------------------------
--- Table `tusuario`
--- -----------------------------------------------------
-ALTER TABLE tusuario ADD COLUMN disabled NUMBER(10, 0) NOT NULL DEFAULT 0;
-ALTER TABLE tusuario ADD COLUMN shortcut NUMBER(5, 0) DEFAULT 0;
-ALTER TABLE tusuario ADD COLUMN shortcut_data CLOB default '';
-
--- -----------------------------------------------------
--- Table `tusuario`
--- -----------------------------------------------------
-ALTER TABLE tusuario ADD (section VARCHAR2(255) NOT NULL);
-INSERT INTO tusuario (section) VALUES ('Default');
-ALTER TABLE tusuario ADD (data_section VARCHAR2(255) NOT NULL);
-
--- -----------------------------------------------------
 -- Table `treport_content_item`
 -- -----------------------------------------------------
 ALTER TABLE treport_content_item ADD (operation CLOB default '');
@@ -206,16 +196,6 @@ alter table talert_compound add (special_day NUMBER(5,0) default 0);
 -- -----------------------------------------------------
 
 ALTER TABLE tnetwork_component ADD COLUMN unit CLOB default '';
-
--- -----------------------------------------------------
--- Table `tusuario`
--- -----------------------------------------------------
-
-alter table tusuario add (force_change_pass NUMBER(5,0) default 0 NOT NULL);
-alter table tusuario add (last_pass_change TIMESTAMP default 0);
-alter table tusuario add (last_failed_login TIMESTAMP default 0);
-alter table tusuario add (failed_attempt NUMBER(5,0) default 0 NOT NULL);
-alter table tusuario add (login_blocked NUMBER(5,0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table `talert_commands`
@@ -275,13 +255,6 @@ ALTER TABLE tnetwork_component ADD (macros CLOB default '');
 ALTER TABLE tagente_modulo ADD (wizard_level VARCHAR2(100) default 'nowizard' NOT NULL);
 ALTER TABLE tagente_modulo ADD CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
 ALTER TABLE tagente_modulo ADD (macros CLOB default '');
-
--- -----------------------------------------------------
--- Table `tusuario`
--- -----------------------------------------------------
-
-ALTER TABLE tusuario ADD (metaconsole_access VARCHAR2(100) default 'only_console' NOT NULL);
-ALTER TABLE tusuario ADD CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced','custom','all','only_console'));
 
 -- -----------------------------------------------------
 -- Table `tplugin`

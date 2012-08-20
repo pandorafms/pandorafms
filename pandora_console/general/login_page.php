@@ -38,14 +38,14 @@ echo '
 // Replace the following with your own URL and logo.
 // A mashup of the Pandora FMS logo and your companies highly preferred
 echo '&nbsp;&nbsp;<a href="http://pandorafms.org" title="Go to pandorafms.org...">';
-if (defined ('PANDORA_ENTERPRISE')){
+if (defined ('PANDORA_ENTERPRISE')) {
 	html_print_image ("images/pandora_login_enterprise.png", false, array ("alt" => "logo", "border" => 0));
 }
 else {
 	html_print_image ("images/pandora_login.png", false, array ("alt" => "logo", "border" => 0));	
 }
 echo '</a>';
-		
+
 // This prints the current pandora console version.
 // For stable/live function it might be wise to comment it out
 
@@ -61,9 +61,9 @@ if (!empty ($page) && !empty ($sec)) {
 }
 
 echo '<br />'.html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login"', true).
-   '<br>
+	'<br>
 		<br />'.html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login"', true, true).
-   '<br>';
+	'<br>';
 	echo '<div style="float: right; margin-top: -70px; margin-right: 25px">';
 	html_print_input_image ("Login", "images/login_botton.png", 'Login');
 	echo '</div>';
@@ -82,25 +82,24 @@ echo '<div id="ver_num">' . $pandora_version.(($develop_bypass == 1) ? ' '.__('B
 
 
 if (isset ($login_failed)) {
-
 	echo '<div id="login_failed" title="Login failed" style="">';
-
-		echo '<div style="position:absolute; top:0px; text-align: center; left:0%; right:0%; height:100px; width:330px; margin: 0 auto; ">';
 		
+		echo '<div style="position:absolute; top:0px; text-align: center; left:0%; right:0%; height:100px; width:330px; margin: 0 auto; ">';
+			
 			echo '<div id="error_login" style="margin-top: 20px">';
 			echo '<strong style="font-size: 10pt">' . $config["auth_error"] . '</strong>';
 			echo '</div>';
-	
+			
 			echo '<div id="error_login_icon">';
 			echo html_print_image('images/error_login.png', true, array("alt" => __('Login failed'), "border" => 0));
 			echo '</div>';
-	  
+			
 			echo '<div style="position:absolute; margin: 0 auto; top: 70px; left: 35%; ">';	  
 				html_print_submit_button("Ok", 'hide-login-error', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only" style="width:100px;"');  
 			echo '</div>';
 			
 		echo '</div>';
-			
+		
 	echo '</div>';	
 }
 

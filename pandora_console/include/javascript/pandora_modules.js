@@ -528,8 +528,17 @@ function add_macro_field(macro, row_model_id) {
 	$macro_field.attr('id',row_id);
 	$macro_field.attr('class','macro_field');
 		
-	// Assign values
-	$macro_field.insertAfter('#'+ row_model_id +'_field');
+	// Get the number of fields already printed
+	var fields = $('.macro_field').size();
+	
+	// If is the first, we insert it after model row
+	if(fields == 0) {
+		$macro_field.insertAfter('#'+ row_model_id +'_field');
+	}
+	// If there are more fields, we insert it after the last one
+	else {
+		$macro_field.insertAfter('#'+ $('.macro_field').eq(fields-1).attr('id'));
+	}
 	
 	// Change the label
 	if(macro_help == '') {

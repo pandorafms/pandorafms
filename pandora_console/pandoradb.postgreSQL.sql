@@ -762,6 +762,9 @@ CREATE TABLE "tgraph_source" (
 	"weight" DOUBLE PRECISION default 0
 );
 
+-- -----------------------------------------------------
+-- Table "treport"
+-- -----------------------------------------------------
 CREATE TABLE "treport" (
 	"id_report" SERIAL NOT NULL PRIMARY KEY,
 	"id_user" varchar(100) NOT NULL default '',
@@ -774,7 +777,8 @@ CREATE TABLE "treport" (
 	"first_page" TEXT default NULL,
 	"footer" TEXT default NULL,
 	"custom_font" varchar(200) default NULL,
-	"id_template" BIGINT NOT NULL default 0
+	"id_template" BIGINT NOT NULL default 0,
+	"id_group_edit" BIGINT NOT NULL default 0
 );
 
 -- -----------------------------------------------------

@@ -90,7 +90,7 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 	}
 	
 	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, $returnAllColumns, $id_groups);
-
+	
 	if ($id_groups !== null) {
 		$childrens = groups_get_childrens($id_groups);
 		foreach ($childrens as $child) {
@@ -110,13 +110,13 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 		$user_groups_tree = groups_get_groups_tree_recursive($user_groups, $parent_group);
 	}
 	$fields = array();
-
+	
 	foreach ($user_groups_tree as $group) {
 		$groupName = ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false);
 		
 		$fields[$group['id_grupo']] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
 	}
-
+	
 	return $fields;
 }
 

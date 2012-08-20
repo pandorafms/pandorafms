@@ -149,6 +149,10 @@ CREATE TABLE `tagente_estado` (
 
 -- Probably last_execution_try index is not useful and loads more than benefits
 
+-- -----------------------------------------------------
+-- Table `tagente_modulo`
+-- -----------------------------------------------------
+
 -- id_modulo now uses tmodule 
 -- ---------------------------
 -- 1 - Data server modules (agent related modules)
@@ -221,105 +225,122 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   KEY `nombre` (`nombre` (255)),
   KEY `module_group` (`id_module_group`) using btree
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-
 -- snmp_oid is also used for WMI query
 
+-- -----------------------------------------------------
+-- Table `tagent_access`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagent_access` (
-  `id_agent` int(10) unsigned NOT NULL default '0',
-  `utimestamp` bigint(20) NOT NULL default '0',
-  KEY `agent_index` (`id_agent`),
-  KEY `idx_utimestamp` USING BTREE (`utimestamp`)
+	`id_agent` int(10) unsigned NOT NULL default '0',
+	`utimestamp` bigint(20) NOT NULL default '0',
+	KEY `agent_index` (`id_agent`),
+	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `talert_snmp`
+-- -----------------------------------------------------
 CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
-  `id_as` int(10) unsigned NOT NULL auto_increment,
-  `id_alert` int(10) unsigned NOT NULL default '0',
-  `al_field1` text NOT NULL,
-  `al_field2` text NOT NULL,
-  `al_field3` text NOT NULL,
-  `description` varchar(255) default '',
-  `alert_type` int(2) unsigned NOT NULL default '0',
-  `agent` varchar(100) default '',
-  `custom_oid` text,
-  `oid` varchar(255) NOT NULL default '',
-  `time_threshold` int(11) NOT NULL default '0',
-  `times_fired` int(2) unsigned NOT NULL default '0',
-  `last_fired` datetime NOT NULL default '1970-01-01 00:00:00',
-  `max_alerts` int(11) NOT NULL default '1',
-  `min_alerts` int(11) NOT NULL default '1',
-  `internal_counter` int(2) unsigned NOT NULL default '0',
-  `priority` tinyint(4) default '0',
-  `_snmp_f1_` text, 
-  `_snmp_f2_` text, 
-  `_snmp_f3_` text,
-  `_snmp_f4_` text, 
-  `_snmp_f5_` text, 
-  `_snmp_f6_` text,
-  `trap_type` int(11) NOT NULL default '-1',
-  `single_value` varchar(255) default '', 
-  PRIMARY KEY  (`id_as`)
+	`id_as` int(10) unsigned NOT NULL auto_increment,
+	`id_alert` int(10) unsigned NOT NULL default '0',
+	`al_field1` text NOT NULL,
+	`al_field2` text NOT NULL,
+	`al_field3` text NOT NULL,
+	`description` varchar(255) default '',
+	`alert_type` int(2) unsigned NOT NULL default '0',
+	`agent` varchar(100) default '',
+	`custom_oid` text,
+	`oid` varchar(255) NOT NULL default '',
+	`time_threshold` int(11) NOT NULL default '0',
+	`times_fired` int(2) unsigned NOT NULL default '0',
+	`last_fired` datetime NOT NULL default '1970-01-01 00:00:00',
+	`max_alerts` int(11) NOT NULL default '1',
+	`min_alerts` int(11) NOT NULL default '1',
+	`internal_counter` int(2) unsigned NOT NULL default '0',
+	`priority` tinyint(4) default '0',
+	`_snmp_f1_` text, 
+	`_snmp_f2_` text, 
+	`_snmp_f3_` text,
+	`_snmp_f4_` text, 
+	`_snmp_f5_` text, 
+	`_snmp_f6_` text,
+	`trap_type` int(11) NOT NULL default '-1',
+	`single_value` varchar(255) default '', 
+	PRIMARY KEY  (`id_as`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `talert_commands`
+-- -----------------------------------------------------
 CREATE TABLE  IF NOT EXISTS `talert_commands` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  `command` text,
-  `description` text,
-  `internal` tinyint(1) default 0,
-  PRIMARY KEY (`id`)
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`command` text,
+	`description` text,
+	`internal` tinyint(1) default 0,
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `talert_actions`
+-- -----------------------------------------------------
 CREATE TABLE  IF NOT EXISTS `talert_actions` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` text,
-  `id_alert_command` int(10) unsigned NULL default 0,
-  `field1` text NOT NULL,
-  `field2` text,
-  `field3` text,
-  `id_group` mediumint(8) unsigned NULL default 0,
-  `action_threshold` int(10) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
-    ON DELETE CASCADE ON UPDATE CASCADE
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`name` text,
+	`id_alert_command` int(10) unsigned NULL default 0,
+	`field1` text NOT NULL,
+	`field2` text,
+	`field3` text,
+	`id_group` mediumint(8) unsigned NULL default 0,
+	`action_threshold` int(10) NOT NULL default '0',
+	PRIMARY KEY  (`id`),
+	FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
+		ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `talert_templates`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_templates` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` text,
-  `description` mediumtext,
-  `id_alert_action` int(10) unsigned NULL,
-  `field1` text,
-  `field2` text,
-  `field3` text NOT NULL,
-  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always'),
-  `value` varchar(255) default '',
-  `matches_value` tinyint(1) default 0,
-  `max_value` double(18,2) default NULL,
-  `min_value` double(18,2) default NULL,
-  `time_threshold` int(10) NOT NULL default '0',
-  `max_alerts` int(4) unsigned NOT NULL default '1',
-  `min_alerts` int(4) unsigned NOT NULL default '0',
-  `time_from` time default '00:00:00',
-  `time_to` time default '00:00:00',
-  `monday` tinyint(1) default 1,
-  `tuesday` tinyint(1) default 1,
-  `wednesday` tinyint(1) default 1,
-  `thursday` tinyint(1) default 1,
-  `friday` tinyint(1) default 1,
-  `saturday` tinyint(1) default 1,
-  `sunday` tinyint(1) default 1,
-  `recovery_notify` tinyint(1) default '0',
-  `field2_recovery` text NOT NULL,
-  `field3_recovery` text NOT NULL,
-  `priority` tinyint(4) default '0',
-  `id_group` mediumint(8) unsigned NULL default 0,
-  `special_day` tinyint(1) default 0,
-  PRIMARY KEY  (`id`),
-  KEY `idx_template_action` (`id_alert_action`),
-  FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
-    ON DELETE SET NULL ON UPDATE CASCADE
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`name` text,
+	`description` mediumtext,
+	`id_alert_action` int(10) unsigned NULL,
+	`field1` text,
+	`field2` text,
+	`field3` text NOT NULL,
+	`type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always'),
+	`value` varchar(255) default '',
+	`matches_value` tinyint(1) default 0,
+	`max_value` double(18,2) default NULL,
+	`min_value` double(18,2) default NULL,
+	`time_threshold` int(10) NOT NULL default '0',
+	`max_alerts` int(4) unsigned NOT NULL default '1',
+	`min_alerts` int(4) unsigned NOT NULL default '0',
+	`time_from` time default '00:00:00',
+	`time_to` time default '00:00:00',
+	`monday` tinyint(1) default 1,
+	`tuesday` tinyint(1) default 1,
+	`wednesday` tinyint(1) default 1,
+	`thursday` tinyint(1) default 1,
+	`friday` tinyint(1) default 1,
+	`saturday` tinyint(1) default 1,
+	`sunday` tinyint(1) default 1,
+	`recovery_notify` tinyint(1) default '0',
+	`field2_recovery` text NOT NULL,
+	`field3_recovery` text NOT NULL,
+	`priority` tinyint(4) default '0',
+	`id_group` mediumint(8) unsigned NULL default 0,
+	`special_day` tinyint(1) default 0,
+	PRIMARY KEY  (`id`),
+	KEY `idx_template_action` (`id_alert_action`),
+	FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
+		ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `talert_template_modules`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_template_modules` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`id_agent_module` int(10) unsigned NOT NULL,
@@ -343,51 +364,57 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
 	INDEX force_execution (`force_execution`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `talert_template_module_actions`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `id_alert_template_module` int(10) unsigned NOT NULL,
-  `id_alert_action` int(10) unsigned NOT NULL,
-  `fires_min` int(3) unsigned default 0,
-  `fires_max` int(3) unsigned default 0,
-  `module_action_threshold` int(10) NOT NULL default '0',
-  `last_execution` bigint(20) NOT NULL default '0',
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
-    ON DELETE CASCADE ON UPDATE CASCADE
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_alert_template_module` int(10) unsigned NOT NULL,
+	`id_alert_action` int(10) unsigned NOT NULL,
+	`fires_min` int(3) unsigned default 0,
+	`fires_max` int(3) unsigned default 0,
+	`module_action_threshold` int(10) NOT NULL default '0',
+	`last_execution` bigint(20) NOT NULL default '0',
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
+		ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
+		ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `talert_compound`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_compound` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(255) default '',
-  `description` mediumtext,
-  `id_agent` int(10) unsigned NOT NULL,
-  `time_threshold` int(10) NOT NULL default '0',
-  `max_alerts` int(4) unsigned NOT NULL default '1',
-  `min_alerts` int(4) unsigned NOT NULL default '0',
-  `time_from` time default '00:00:00',
-  `time_to` time default '00:00:00',
-  `monday` tinyint(1) default 1,
-  `tuesday` tinyint(1) default 1,
-  `wednesday` tinyint(1) default 1,
-  `thursday` tinyint(1) default 1,
-  `friday` tinyint(1) default 1,
-  `saturday` tinyint(1) default 1,
-  `sunday` tinyint(1) default 1,
-  `recovery_notify` tinyint(1) default '0',
-  `field2_recovery` varchar(255) NOT NULL default '',
-  `field3_recovery` mediumtext NOT NULL,
-  `internal_counter` int(4) default '0',
-  `last_fired` bigint(20) NOT NULL default '0',
-  `last_reference` bigint(20) NOT NULL default '0',
-  `times_fired` int(3) NOT NULL default '0',
-  `disabled` tinyint(1) default '0',
-  `priority` tinyint(4) default '0',
-  `special_day` tinyint(1) default 0,
-  PRIMARY KEY  (`id`),
-  FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
-    ON DELETE CASCADE ON UPDATE CASCADE
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(255) default '',
+	`description` mediumtext,
+	`id_agent` int(10) unsigned NOT NULL,
+	`time_threshold` int(10) NOT NULL default '0',
+	`max_alerts` int(4) unsigned NOT NULL default '1',
+	`min_alerts` int(4) unsigned NOT NULL default '0',
+	`time_from` time default '00:00:00',
+	`time_to` time default '00:00:00',
+	`monday` tinyint(1) default 1,
+	`tuesday` tinyint(1) default 1,
+	`wednesday` tinyint(1) default 1,
+	`thursday` tinyint(1) default 1,
+	`friday` tinyint(1) default 1,
+	`saturday` tinyint(1) default 1,
+	`sunday` tinyint(1) default 1,
+	`recovery_notify` tinyint(1) default '0',
+	`field2_recovery` varchar(255) NOT NULL default '',
+	`field3_recovery` mediumtext NOT NULL,
+	`internal_counter` int(4) default '0',
+	`last_fired` bigint(20) NOT NULL default '0',
+	`last_reference` bigint(20) NOT NULL default '0',
+	`times_fired` int(3) NOT NULL default '0',
+	`disabled` tinyint(1) default '0',
+	`priority` tinyint(4) default '0',
+	`special_day` tinyint(1) default 0,
+	PRIMARY KEY  (`id`),
+	FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
+		ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE  IF NOT EXISTS `talert_compound_elements` (
@@ -858,20 +885,24 @@ CREATE TABLE IF NOT EXISTS `tgraph_source` (
   PRIMARY KEY(`id_gs`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `treport`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport` (
-  `id_report` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
-  `id_user` varchar(100) NOT NULL default '',
-  `name` varchar(150) NOT NULL default '',
-  `description` TEXT NOT NULL,
-  `private` tinyint(1) UNSIGNED NOT NULL default 0,
-  `id_group` mediumint(8) unsigned NULL default NULL,
-  `custom_logo` varchar(200)  default NULL,
-  `header` MEDIUMTEXT,
-  `first_page` MEDIUMTEXT,
-  `footer` MEDIUMTEXT,
-  `custom_font` varchar(200) default NULL,
-  `id_template` INTEGER UNSIGNED DEFAULT 0,
-  PRIMARY KEY(`id_report`)
+	`id_report` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+	`id_user` varchar(100) NOT NULL default '',
+	`name` varchar(150) NOT NULL default '',
+	`description` TEXT NOT NULL,
+	`private` tinyint(1) UNSIGNED NOT NULL default 0,
+	`id_group` mediumint(8) unsigned NULL default NULL,
+	`custom_logo` varchar(200)  default NULL,
+	`header` MEDIUMTEXT,
+	`first_page` MEDIUMTEXT,
+	`footer` MEDIUMTEXT,
+	`custom_font` varchar(200) default NULL,
+	`id_template` INTEGER UNSIGNED DEFAULT 0,
+	`id_group_edit` mediumint(8) unsigned NULL DEFAULT 0,
+	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------

@@ -42,6 +42,32 @@ $idReport = get_parameter('id_report', 0);
 $offset = get_parameter('offset', 0);
 $idItem = get_parameter('id_item', 0);
 
+//Other Checks for the edit the reports
+if ($idReport != 0) {
+	$report = db_get_row_filter('treport', array('id_report' => $idReport));
+	$type_access_selected = reports_get_type_access($report);
+	$edit = false;
+	switch ($type_access_selected) {
+		case 'group_view':
+			$edit = check_acl($config['id_user'], $report['id_group'], "IW");
+			break;
+		case 'group_edit':
+			$edit = check_acl($config['id_user'], $report['id_group_edit'], "IW");
+			break;
+		case 'user_edit':
+			if ($config['id_user'] == $report['id_user'] ||
+				is_user_admin ($config["id_user"]))
+				$edit = true;
+			break;
+	}
+	if (! $edit) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access report builder");
+		require ("general/noaccess.php");
+		exit;
+	}
+}
+
 switch ($action) {
 	case 'sort_items':
 		switch ($activeTab) {
@@ -325,7 +351,6 @@ switch ($action) {
 			}
 			
 			foreach ($reports as $report) {
-				
 				if (!is_user_admin ($config["id_user"])){
 					if ($report["private"] && $report["id_user"] != $config['id_user'])
 						if (!check_acl ($config["id_user"], $report["id_group"], "AR"))
@@ -352,7 +377,7 @@ switch ($action) {
 				$data[3] = '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
 				
 				
-				//Calculate dinamically the number of the column	
+				//Calculate dinamically the number of the column
 				$next = 4;
 				if (enterprise_hook ('load_custom_reporting_2') !== ENTERPRISE_NOT_HOOK) {
 					$next = 6;
@@ -371,17 +396,35 @@ switch ($action) {
 					$data[$next] = ui_print_group_icon($report['id_group'], true);
 					$next++;
 					
-					$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit" style="display:inline">';
-					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
-					$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
-					$data[$next] .= '</form>';
+					$type_access_selected = reports_get_type_access($report);
+					$edit = false;
+					switch ($type_access_selected) {
+						case 'group_view':
+							$edit = check_acl($config['id_user'], $report['id_group'], "IW");
+							break;
+						case 'group_edit':
+							$edit = check_acl($config['id_user'], $report['id_group_edit'], "IW");
+							break;
+						case 'user_edit':
+							if ($config['id_user'] == $report['id_user'] ||
+								is_user_admin ($config["id_user"]))
+								$edit = true;
+							break;
+					}
 					
-					$data[$next] .= '&nbsp;&nbsp;<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
-					$data[$next] .= html_print_input_hidden ('action','delete_report', true);
-					$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
-						true, array ('title' => __('Delete')));
-					$data[$next] .= '</form>';
+					if ($edit) {
+						$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit" style="display:inline">';
+						$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
+						$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
+						$data[$next] .= '</form>';
+						
+						$data[$next] .= '&nbsp;&nbsp;<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+						$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
+						$data[$next] .= html_print_input_hidden ('action','delete_report', true);
+						$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
+							true, array ('title' => __('Delete')));
+						$data[$next] .= '</form>';
+					}
 				}
 				
 				array_push ($table->data, $data);
@@ -410,6 +453,9 @@ switch ($action) {
 				$idGroupReport = 0; //All groups
 				$description = '';
 				$resultOperationDB = null;
+				$report_id_user = 0;
+				$type_access_selected = reports_get_type_access(false);
+				$id_group_edit = 0;
 				break;
 			case 'item_editor':
 				$resultOperationDB = null;
@@ -428,10 +474,45 @@ switch ($action) {
 				$reportName = get_parameter('name');
 				$idGroupReport = get_parameter('id_group');
 				$description = get_parameter('description');
+				$type_access_selected = get_parameter('type_access', 'group_view');
+				$id_group_edit_param = (int)get_parameter('id_group_edit', 0);
+				
+				switch ($type_access_selected) {
+					case 'group_view':
+						$id_group_edit = 0;
+						$private = 0;
+						break;
+					case 'group_edit':
+						$id_group_edit = $id_group_edit_param;
+						$private = 0;
+						break;
+					case 'user_edit':
+						$id_group_edit = 0;
+						$private = 1;
+						break;
+				}
 				
 				if ($action == 'update') {
-					if ($reportName != "" && $idGroupReport != ""){
-						$resultOperationDB = (bool)db_process_sql_update('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description), array('id_report' => $idReport));
+					if ($reportName != "" && $idGroupReport != "") {
+						$new_values = array('name' => $reportName,
+							'id_group' => $idGroupReport,
+							'description' => $description,
+							'private' => $private,
+							'id_group_edit' => $id_group_edit);
+						
+						
+						$report = db_get_row_filter('treport',
+							array('id_report' => $idReport));
+						$report_id_user = $report['id_user'];
+						if ($report_id_user != $config['id_user'] &&
+							is_user_admin ($config["id_user"])) {
+							unset($new_values['private']);
+							unset($new_values['id_group_edit']);
+						}
+						
+						$resultOperationDB = (bool)db_process_sql_update(
+							'treport', $new_values,
+							array('id_report' => $idReport));
 						if ($resultOperationDB !== false)
 							db_pandora_audit( "Report management", "Update report #$idReport");
 						else
@@ -442,8 +523,14 @@ switch ($action) {
 					}
 				}
 				else if ($action == 'save') {
-					if($reportName != "" && $idGroupReport != "") {
-						$idOrResult = db_process_sql_insert('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description));
+					if ($reportName != "" && $idGroupReport != "") {
+						$idOrResult = db_process_sql_insert('treport',
+							array('name' => $reportName,
+								'id_group' => $idGroupReport,
+								'description' => $description,
+								'private' => $private,
+								'id_group_edit' => $id_group_edit,
+								'id_user' => $config['id_user']));
 						if ($idOrResult !== false)
 							db_pandora_audit( "Report management", "Create report #$idOrResult");
 						else
@@ -459,6 +546,7 @@ switch ($action) {
 					else {
 						$resultOperationDB = true;
 						$idReport = $idOrResult;
+						$report_id_user = $config['id_user'];
 					}
 				}
 				$action = 'edit';
@@ -487,9 +575,9 @@ switch ($action) {
 								$good_format = true;
 								break;
 							case 'prediction_date':
-								$values['period'] = get_parameter('period1');	
+								$values['period'] = get_parameter('period1');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg');
-								$values['top_n_value'] = get_parameter('quantity');												
+								$values['top_n_value'] = get_parameter('quantity');
 								$interval_max = get_parameter('max_interval');
 								$interval_min = get_parameter('min_interval');
 								// Checks intervals fields
@@ -597,9 +685,8 @@ switch ($action) {
 									// Will update server_name variable
 									$values['server_name'] = trim($server_name);
 									$agent_name = substr($agent_name_server, 0, $separator_pos);
-							
-								}
 								
+								}
 							}
 						}
 						
@@ -647,9 +734,9 @@ switch ($action) {
 								$good_format = true;
 								break;
 							case 'prediction_date':
-								$values['period'] = get_parameter('period1');	
+								$values['period'] = get_parameter('period1');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg');
-								$values['top_n_value'] = get_parameter('quantity');												
+								$values['top_n_value'] = get_parameter('quantity');
 								$interval_max = get_parameter('max_interval');
 								$interval_min = get_parameter('min_interval');
 								// Checks intervals fields
@@ -780,11 +867,11 @@ switch ($action) {
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$values['style'] = io_safe_input(json_encode($style));
 						
-						if ($good_format){
+						if ($good_format) {
 							$result = db_process_sql_insert('treport_content', $values);
 							
 							if ($result === false) {
-									$resultOperationDB = false;
+								$resultOperationDB = false;
 							}
 							else {
 								$idItem = $result;
@@ -835,11 +922,15 @@ switch ($action) {
 	case 'filter':
 	case 'edit':
 		$resultOperationDB = null;
-		$report = db_get_row_filter('treport', array('id_report' => $idReport));
+		$report = db_get_row_filter('treport',
+			array('id_report' => $idReport));
 		
 		$reportName = $report['name'];
 		$idGroupReport = $report['id_group'];
 		$description = $report['description'];
+		$type_access_selected = reports_get_type_access($report);
+		$id_group_edit = $report['id_group_edit'];
+		$report_id_user = $report['id_user'];
 		break;
 	case 'delete':
 		$idItem = get_parameter('id_item');

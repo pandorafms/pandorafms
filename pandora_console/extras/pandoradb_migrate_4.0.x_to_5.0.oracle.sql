@@ -158,6 +158,7 @@ ALTER TABLE treport_content_item ADD FOREIGN KEY (id_report_content) REFERENCES 
 -- Table `treport`
 -- -----------------------------------------------------
 ALTER TABLE treport ADD (id_template NUMBER(10, 0) default 0 NOT NULL);
+ALTER TABLE treport ADD (id_group_edit  NUMBER(19, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table `tgraph`

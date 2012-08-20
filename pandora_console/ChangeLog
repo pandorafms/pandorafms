@@ -1,3 +1,18 @@
+2012-08-20 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/reporting_builder.main.php,
+	godmode/reporting/reporting_builder.php,
+	include/functions_reports.php, pandoradb.sql,
+	pandoradb.postgreSQL.sql, pandoradb.oracle.sql,
+	operation/reporting/reporting_xml.php,
+	operation/reporting/reporting_viewer.php,
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: now the reports
+	can set the group can edit or private edition.
+	
+	* include/functions_users.php: cleaned source code style.
+
 2012-08-20  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

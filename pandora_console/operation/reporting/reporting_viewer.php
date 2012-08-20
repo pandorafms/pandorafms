@@ -43,8 +43,8 @@ require_once ('include/functions_groups.php');
 
 enterprise_include("include/functions_reporting.php");
 
-// Check if the report is a private report.
-if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user_admin ($config['id_user']))) {
+if ($report['id_group'] != 0 &&
+	!is_user_admin ($config['id_user'])) {
 	include ("general/noaccess.php");
 	return;
 }

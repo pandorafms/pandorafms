@@ -29,12 +29,14 @@ $groups = users_get_groups ();
 
 switch ($action) {
 	case 'new':
-		$actionButtonHtml = html_print_submit_button(__('Save'), 'add', false, 'class="sub wand"', true);
+		$actionButtonHtml = html_print_submit_button(__('Save'),
+			'add', false, 'class="sub wand"', true);
 		$hiddenFieldAction = 'save'; 
 		break;
 	case 'update':
 	case 'edit':
-		$actionButtonHtml = html_print_submit_button(__('Update'), 'edit', false, 'class="sub upd"', true);
+		$actionButtonHtml = html_print_submit_button(__('Update'),
+			'edit', false, 'class="sub upd"', true);
 		$hiddenFieldAction = 'update'; 
 		break;
 }
@@ -46,20 +48,44 @@ $table->head = array ();
 $table->data = array ();
 $table->size = array ();
 $table->size = array ();
-$table->size[0] = '10%';
+$table->size[0] = '15%';
 $table->size[1] = '90%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
 
 $table->data['name'][0] = __('Name');
-$table->data['name'][1] = html_print_input_text('name', $reportName, __('Name'), 80, 100, true);
+$table->data['name'][1] = html_print_input_text('name', $reportName,
+	__('Name'), 80, 100, true);
 
 $table->data['group'][0] = __('Group');
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$return_all_groups = true;
-else	
+else
 	$return_all_groups = false;
 $table->data['group'][1] = html_print_select_groups(false, "AR", $return_all_groups, 'id_group', $idGroupReport, false, '', '', true);
+
+if ($report_id_user == $config['id_user'] ||
+	is_user_admin ($config["id_user"])) {
+	//S/he is the creator of report (or admin) and s/he can change the access.
+	$type_access = array('group_view' => __('Only the group can view the report'),
+		'group_edit' => __('The next group can edit the report'),
+		'user_edit' => __('Only the user and admin user can edit the report')
+		);
+	$table->data['access'][0] = __('Write Access') .
+		ui_print_help_tip(__('For example, you want a report that the people of "All" groups can see but you want to edit only for you or your group.'), true);
+	$table->data['access'][1] = html_print_select ($type_access, 'type_access',
+		$type_access_selected, 'change_type_access(this)', '', 0, true);
+
+	$style = "display: none;";
+	if ($type_access_selected == 'group_edit')
+		$style = "";
+	$table->data['access'][1] .= '<span style="' . $style . '" class="access_subform" id="group_edit">
+		' .
+		html_print_select_groups(false, "AR", false,
+			'id_group_edit', $id_group_edit, false, '', '', true) . '
+		</span>';
+}
+
 
 $table->data['description'][0] = __('Description');
 $table->data['description'][1] = html_print_textarea('description', 5, 15, $description, '', true);
@@ -73,3 +99,17 @@ html_print_input_hidden('action', $hiddenFieldAction);
 html_print_input_hidden('id_report', $idReport);
 echo '</div></form>';
 ?>
+<script type="text/javascript">
+	function change_type_access(select_item) {
+		$(".access_subform").hide();
+		switch ($(select_item).val()) {
+			case 'group_view':
+				break;
+			case 'group_edit':
+				$("#group_edit").show();
+				break;
+			case 'user_edit':
+				break;
+		}
+	}
+</script>

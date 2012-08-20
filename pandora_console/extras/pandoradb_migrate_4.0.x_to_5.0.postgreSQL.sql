@@ -150,6 +150,7 @@ INSERT INTO "tconfig" ("token", "value") VALUES ('event_fields', 'evento,id_agen
 -- Table `treport`
 -- -----------------------------------------------------
 ALTER TABLE "treport" ADD COLUMN "id_template" INTEGER NOT NULL default 0;
+ALTER TABLE "treport" ADD COLUMN "id_group_edit" BIGINT NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table `tgraph`

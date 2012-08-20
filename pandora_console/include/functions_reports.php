@@ -21,6 +21,20 @@
 
 require_once ($config['homedir'].'/include/functions_users.php');
 
+function reports_get_type_access($report) {
+	if (empty($report)) {
+		return 'group_view';
+	}
+	if ($report['private']) {
+		return 'user_edit';
+	}
+	else if ($report['id_group_edit'] != 0) {
+		return 'group_edit';
+	}
+	
+	return 'group_view';
+}
+
 /**
  * Get a custom user report.
  *
@@ -73,12 +87,15 @@ function reports_get_reports ($filter = false, $fields = false, $returnAllGroup 
 	
 	if (! is_array ($filter))
 		$filter = array ();
+		/*
 	if (!is_user_admin ($config["id_user"]))
 		$filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")',
 			$config['id_user']);
+		*/
 	if (is_array ($fields)) {
 		$fields[] = 'id_group';
 		$fields[] = 'id_user';
+		$fields[] = 'id_group_edit';
 	}
 	
 	$reports = array ();

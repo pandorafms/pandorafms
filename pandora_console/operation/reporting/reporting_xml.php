@@ -129,8 +129,9 @@ if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
 	exit;
 }
 
-/* Check if the user can see the graph */
-if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user_admin($config['id_user']))) {
+if ($report['id_group'] != 0 &&
+	!is_user_admin ($config['id_user'])) {
+	include ("general/noaccess.php");
 	return;
 }
 

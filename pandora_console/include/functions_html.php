@@ -302,7 +302,9 @@ function html_print_select ($fields, $name, $selected = '', $script = '',
 	if (is_array($fields) && !empty ($fields)) {
 		if ($sort !== false) {
 			// Sorting the fields in natural way and case insensitive preserving keys
-			uasort($fields, "strnatcasecmp");
+			$first_elem = reset($fields);
+			if (!is_array($first_elem))
+				uasort($fields, "strnatcasecmp");
 		}
 		$lastopttype = '';
 		foreach ($fields as $value => $label) {

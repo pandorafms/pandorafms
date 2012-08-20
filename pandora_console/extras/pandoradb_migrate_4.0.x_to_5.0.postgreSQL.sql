@@ -1,9 +1,22 @@
 -- -----------------------------------------------------
 -- Table `tusuario`
 -- -----------------------------------------------------
-
 ALTER TABLE "tusuario" ADD COLUMN "disabled" INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE "tusuario" ADD COLUMN "shortcut" SMALLINT DEFAULT 0;
+ALTER TABLE "tusuario" ADD COLUMN "disabled" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "tusuario" ADD COLUMN "shortcut" SMALLINT DEFAULT 0;
+ALTER TABLE "tusuario" ADD COLUMN "shortcut_data" text DEFAULT '';
+ALTER TABLE "tusuario" ADD COLUMN "section" varchar(255) NOT NULL DEFAULT '';
+INSERT INTO "tusuario" ("section") VALUES ("Default");
+ALTER TABLE "tusuario" ADD COLUMN "data_section" varchar(255) NOT NULL DEFAULT '';
+ALTER TABLE "tusuario" ADD COLUMN "force_change_pass" SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE "tusuario" ADD COLUMN "last_pass_change" BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE "tusuario" ADD COLUMN "last_failed_login" BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE "tusuario" ADD COLUMN "failed_attempt" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "tusuario" ADD COLUMN "login_blocked" SMALLINT NOT NULL DEFAULT 0;
+CREATE TYPE type_tusuario_metaconsole_access AS ENUM ('basic','advanced','custom','all','only_console');
+ALTER TABLE "tusuario" ADD COLUMN "metaconsole_access" type_tusuario_metaconsole_access DEFAULT 'only_console';
+ALTER TABLE "tusuario" ADD COLUMN "not_login" SMALLINT NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table `tnetflow_filter`
@@ -164,20 +177,6 @@ UPDATE "ttipo_modulo" SET "descripcion"='Generic data' WHERE "id_tipo"=1;
 UPDATE "ttipo_modulo" SET "descripcion"='Generic data incremental' WHERE "id_tipo"=4;
 
 -- -----------------------------------------------------
--- Table `tusuario`
--- -----------------------------------------------------
-ALTER TABLE "tusuario" ADD COLUMN "disabled" INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE "tusuario" ADD COLUMN "shortcut" SMALLINT DEFAULT 0;
-ALTER TABLE "tusuario" ADD COLUMN "shortcut_data" text default '';
-
--- -----------------------------------------------------
--- Table `tusuario`
--- -----------------------------------------------------
-ALTER TABLE "tusuario" ADD COLUMN "section" varchar(255) NOT NULL DEFAULT '';
-INSERT INTO "tusuario" ("section") VALUES ("Default");
-ALTER TABLE "tusuario" ADD COLUMN "data_section" varchar(255) NOT NULL DEFAULT '';
-
--- -----------------------------------------------------
 -- Table `treport_content_item`
 -- -----------------------------------------------------
 ALTER TABLE "treport_content_item" ADD COLUMN "operation" text default '';
@@ -198,16 +197,6 @@ ALTER TABLE "talert_compound" ADD COLUMN "special_day" SMALLINT default 0;
 -- -----------------------------------------------------
 
 ALTER TABLE "tnetwork_component" ADD COLUMN "unit" text default '';
-
--- -----------------------------------------------------
--- Table `tusuario`
--- -----------------------------------------------------
-
-ALTER TABLE "tusuario" ADD COLUMN "force_change_pass" SMALLINT NOT NULL default 0;
-ALTER TABLE "tusuario" ADD COLUMN "last_pass_change" BIGINT NOT NULL default 0;
-ALTER TABLE "tusuario" ADD COLUMN "last_failed_login" BIGINT NOT NULL default 0;
-ALTER TABLE "tusuario" ADD COLUMN "failed_attempt" INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE "tusuario" ADD COLUMN "login_blocked" SMALLINT NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table `talert_commands`
@@ -267,12 +256,6 @@ CREATE TYPE type_tagente_modulo_wizard_level AS ENUM ('basic','advanced','custom
 ALTER TABLE "tagente_modulo" ADD COLUMN "wizard_level" type_tagente_modulo_wizard_level default 'nowizard';
 ALTER TABLE "tagente_modulo" ADD COLUMN "macros" TEXT default '';
 
--- -----------------------------------------------------
--- Table `tusuario`
--- -----------------------------------------------------
-
-CREATE TYPE type_tusuario_metaconsole_access AS ENUM ('basic','advanced','custom','all','only_console');
-ALTER TABLE "tusuario" ADD COLUMN "metaconsole_access" type_tusuario_metaconsole_access default 'only_console';
 -- -----------------------------------------------------
 -- Table `tplugin`
 -- -----------------------------------------------------

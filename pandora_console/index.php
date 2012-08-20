@@ -133,13 +133,13 @@ $process_login = false;
 
 // Update user password
 $change_pass = get_parameter_post('renew_password', 0);
-	
+
 if ($change_pass == 1) {
 	
 	$password_new = (string) get_parameter_post ('new_password', '');
 	$password_confirm = (string) get_parameter_post ('confirm_new_password', '');
 	$id = (string) get_parameter_post ('login', '');
-
+	
 	$changed_pass = login_update_password_check ($password_new, $password_confirm, $id);
 }
 
@@ -187,9 +187,12 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	
 	$expired_pass = false;
 	
-	if (($nick_in_db != false)&& ((!is_user_admin($nick) || $config['enable_pass_policy_admin'])) && (defined('PANDORA_ENTERPRISE')) && ($config['enable_pass_policy'])) {
+	if (($nick_in_db != false) && ((!is_user_admin($nick)
+		|| $config['enable_pass_policy_admin']))
+		&& (defined('PANDORA_ENTERPRISE'))
+		&& ($config['enable_pass_policy'])) {
 		include_once(ENTERPRISE_DIR."/include/auth/mysql.php");
-	
+		
 		$blocked = login_check_blocked($nick);
 		
 		if ($blocked) {
@@ -209,7 +212,6 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 				login_change_password($nick);
 				break;
 		}
-	
 	}
 	
 	if (($nick_in_db !== false) && $expired_pass) { //login ok and password has expired
@@ -218,7 +220,8 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
-	else if (($nick_in_db !== false) && (!$expired_pass)) { //login ok and password has not expired
+	else if (($nick_in_db !== false) && (!$expired_pass)) {
+		//login ok and password has not expired
 		$process_login = true;
 		
 		unset ($_GET["sec2"]);
@@ -307,7 +310,6 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	}
 }
 elseif (! isset ($config['id_user'])) {
-
 	// There is no user connected
 	require_once ('general/login_page.php');
 	while (@ob_end_flush ());

@@ -30,11 +30,28 @@ CREATE OR REPLACE LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION unix_timestamp(TIMESTAMP without time zone = CURRENT_TIMESTAMP) RETURNS double precision AS 'SELECT ceil(date_part(''epoch'', $1)); ' LANGUAGE SQL;
 
-CREATE TABLE "taddress" ("id_a" SERIAL NOT NULL PRIMARY KEY,"ip" VARCHAR(60) NOT NULL default '',"ip_pack" INTEGER NOT NULL default 0);
+-- -----------------------------------------------------
+-- Table `taddress`
+-- -----------------------------------------------------
+CREATE TABLE "taddress" (
+	"id_a" SERIAL NOT NULL PRIMARY KEY,
+	"ip" VARCHAR(60) NOT NULL default '',
+	"ip_pack" INTEGER NOT NULL default 0
+);
 CREATE INDEX "taddress_ip_idx" ON "taddress"("ip");
 
-CREATE TABLE "taddress_agent" ("id_ag" BIGSERIAL NOT NULL PRIMARY KEY,"id_a" BIGINT NOT NULL default 0,"id_agent" BIGINT NOT NULL default 0);
+-- -----------------------------------------------------
+-- Table `taddress_agent`
+-- -----------------------------------------------------
+CREATE TABLE "taddress_agent" (
+	"id_ag" BIGSERIAL NOT NULL PRIMARY KEY,
+	"id_a" BIGINT NOT NULL default 0,
+	"id_agent" BIGINT NOT NULL default 0
+);
 
+-- -----------------------------------------------------
+-- Table `tagente`
+-- -----------------------------------------------------
 CREATE TABLE "tagente" (
 	"id_agente" SERIAL NOT NULL PRIMARY KEY,
 	"nombre" varchar(600) NOT NULL default '',
@@ -66,6 +83,9 @@ CREATE INDEX "tagente_direccion_idx" ON "tagente"("direccion");
 CREATE INDEX "tagente_disabled_idx" ON "tagente"("disabled");
 CREATE INDEX "tagente_id_grupo_idx" ON "tagente"("id_grupo");
 
+-- -----------------------------------------------------
+-- Table `tagente_datos`
+-- -----------------------------------------------------
 CREATE TABLE "tagente_datos" (
 	"id_agente_modulo" INTEGER NOT NULL default 0,
 	"datos" DOUBLE PRECISION default NULL,
@@ -74,6 +94,9 @@ CREATE TABLE "tagente_datos" (
 CREATE INDEX "tagente_datos_id_agente_modulo_idx" ON "tagente_datos"("id_agente_modulo");
 CREATE INDEX "tagente_datos_utimestamp_idx" ON "tagente_datos"("utimestamp");
 
+-- -----------------------------------------------------
+-- Table `tagente_datos_inc`
+-- -----------------------------------------------------
 CREATE TABLE "tagente_datos_inc" (
 	"id_adi" SERIAL NOT NULL PRIMARY KEY,
 	"id_agente_modulo" INTEGER NOT NULL default 0,
@@ -82,8 +105,9 @@ CREATE TABLE "tagente_datos_inc" (
 );
 CREATE INDEX "tagente_datos_inc_id_agente_modulo_idx" ON "tagente_datos_inc"("id_agente_modulo");
 
-
-
+-- -----------------------------------------------------
+-- Table `tagente_datos_string`
+-- -----------------------------------------------------
 CREATE TABLE "tagente_datos_string" (
 	"id_agente_modulo" INTEGER NOT NULL default 0,
 	"datos" TEXT NOT NULL,
@@ -92,20 +116,22 @@ CREATE TABLE "tagente_datos_string" (
 CREATE INDEX "tagente_datos_string_id_agente_modulo_idx" ON "tagente_datos_string"("id_agente_modulo");
 CREATE INDEX "tagente_datos_string_utimestamp_idx" ON "tagente_datos_string"("utimestamp");
 
-
-
+-- -----------------------------------------------------
+-- Table `tagente_datos_log4x`
+-- -----------------------------------------------------
 CREATE TABLE "tagente_datos_log4x" (
 	"id_tagente_datos_log4x" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_agente_modulo" INTEGER NOT NULL default 0,
-
 	"severity" text NOT NULL,
 	"message" text NOT NULL,
 	"stacktrace" text NOT NULL,
-
 	"utimestamp" INTEGER NOT NULL default 0
 );
 CREATE INDEX "tagente_datos_log4x_id_agente_modulo_idx" ON "tagente_datos_log4x"("id_agente_modulo");
 
+-- -----------------------------------------------------
+-- Table `tagente_estado`
+-- -----------------------------------------------------
 CREATE TABLE "tagente_estado" (
 	"id_agente_estado" SERIAL NOT NULL PRIMARY KEY,
 	"id_agente_modulo" INTEGER NOT NULL default 0,
@@ -664,6 +690,9 @@ CREATE TABLE "tsesion" (
 CREATE INDEX "tsesion_utimestamp_idx" ON "tsesion"("utimestamp");
 CREATE INDEX "tsesion_id_usuario_idx" ON "tsesion"("id_usuario");
 
+-- -----------------------------------------------------
+-- Table `ttipo_modulo`
+-- -----------------------------------------------------
 CREATE TABLE "ttipo_modulo" (
 	"id_tipo" SERIAL NOT NULL PRIMARY KEY,
 	"nombre" varchar(100) NOT NULL default '',
@@ -672,6 +701,9 @@ CREATE TABLE "ttipo_modulo" (
 	"icon" varchar(100) default NULL
 );
 
+-- -----------------------------------------------------
+-- Table `ttrap`
+-- -----------------------------------------------------
 CREATE TABLE "ttrap" (
 	"id_trap" BIGSERIAL NOT NULL PRIMARY KEY,
 	"source" varchar(50) NOT NULL default '',
@@ -691,6 +723,9 @@ CREATE TABLE "ttrap" (
 	"severity" INTEGER NOT NULL default 2
 );
 
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
 CREATE TYPE type_tusuario_metaconsole_access AS ENUM ('basic','advanced','custom','all','only_console');
 CREATE TABLE "tusuario" (
 	"id_user" varchar(60) NOT NULL PRIMARY KEY,
@@ -720,9 +755,13 @@ CREATE TABLE "tusuario" (
 	"last_failed_login" BIGINT NOT NULL default 0,
 	"failed_attempt" INTEGER NOT NULL DEFAULT 0,
 	"login_blocked" SMALLINT NOT NULL default 0,
+	"not_login" SMALLINT NOT NULL default 0,
 	"metaconsole_access" type_tusuario_metaconsole_access default 'only_console'
 );
 
+-- -----------------------------------------------------
+-- Table `tusuario_perfil`
+-- -----------------------------------------------------
 CREATE TABLE "tusuario_perfil" (
 	"id_up" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_usuario" varchar(100) NOT NULL default '',
@@ -732,6 +771,9 @@ CREATE TABLE "tusuario_perfil" (
 	"id_policy" INTEGER DEFAULT 0 NOT NULL
 );
 
+-- -----------------------------------------------------
+-- Table `tnews`
+-- -----------------------------------------------------
 CREATE TABLE "tnews" (
 	"id_news" SERIAL NOT NULL PRIMARY KEY,
 	"author" varchar(255)  NOT NULL DEFAULT '',
@@ -740,6 +782,9 @@ CREATE TABLE "tnews" (
 	"timestamp" TIMESTAMP without time zone default '1970-01-01 00:00:00'
 );
 
+-- -----------------------------------------------------
+-- Table `tgraph`
+-- -----------------------------------------------------
 CREATE TABLE "tgraph" (
 	"id_graph" SERIAL NOT NULL PRIMARY KEY,
 	"id_user" varchar(100) NOT NULL default '',
@@ -755,6 +800,9 @@ CREATE TABLE "tgraph" (
 	"id_graph_template" INTEGER NOT NULL default 0 
 );
 
+-- -----------------------------------------------------
+-- Table `tgraph_source`
+-- -----------------------------------------------------
 CREATE TABLE "tgraph_source" (
 	"id_gs" SERIAL NOT NULL PRIMARY KEY,
 	"id_graph" BIGINT NOT NULL default 0,
@@ -824,6 +872,9 @@ CREATE TABLE "treport_content" (
 	"server_name" TEXT DEFAULT ''
 );
 
+-- -----------------------------------------------------
+-- Table "treport_content_sla_combined"
+-- -----------------------------------------------------
 CREATE TABLE "treport_content_sla_combined" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_report_content" INTEGER NOT NULL  REFERENCES treport_content("id_rc") ON UPDATE CASCADE ON DELETE CASCADE,
@@ -834,6 +885,9 @@ CREATE TABLE "treport_content_sla_combined" (
 	"server_name" TEXT DEFAULT ''
 );
 
+-- -----------------------------------------------------
+-- Table "treport_content_item"
+-- -----------------------------------------------------
 CREATE TABLE "treport_content_item" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_report_content" INTEGER NOT NULL REFERENCES treport_content("id_rc") ON UPDATE CASCADE ON DELETE CASCADE,
@@ -842,12 +896,18 @@ CREATE TABLE "treport_content_item" (
 	"operation" TEXT DEFAULT ''
 );
 
+-- -----------------------------------------------------
+-- Table "treport_custom_sql"
+-- -----------------------------------------------------
 CREATE TABLE "treport_custom_sql" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(150) NOT NULL default '',
 	"sql" TEXT default NULL
 );
 
+-- -----------------------------------------------------
+-- Table "tlayout"
+-- -----------------------------------------------------
 CREATE TABLE "tlayout" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(50)  NOT NULL,
@@ -858,6 +918,9 @@ CREATE TABLE "tlayout" (
 	"width" INTEGER NOT NULL default 0
 );
 
+-- -----------------------------------------------------
+-- Table "tlayout_data"
+-- -----------------------------------------------------
 CREATE TABLE "tlayout_data" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_layout" INTEGER NOT NULL default 0,

@@ -163,67 +163,66 @@ CREATE TABLE `tagente_estado` (
 -- 7 - WEB Server (enteprise)
 
 CREATE TABLE IF NOT EXISTS `tagente_modulo` (
-  `id_agente_modulo` int(10) unsigned NOT NULL auto_increment,
-  `id_agente` int(10) unsigned NOT NULL default '0',
-  `id_tipo_modulo` smallint(5) NOT NULL default '0',
-  `descripcion` TEXT NOT NULL,
-  `extended_info` TEXT NOT NULL,
-  `nombre` text NOT NULL,
-  `unit` text,
-  `id_policy_module` INTEGER unsigned NOT NULL default '0',
-  `max` bigint(20) default '0',
-  `min` bigint(20) default '0',
-  `module_interval` int(4) unsigned default '0',
-  `module_ff_interval` int(4) unsigned default '0',
-  `tcp_port` int(4) unsigned default '0',
-  `tcp_send` TEXT,
-  `tcp_rcv` TEXT,
-  `snmp_community` varchar(100) default '',
-  `snmp_oid` varchar(255) default '0',
-  `ip_target` varchar(100) default '',
-  `id_module_group` int(4) unsigned default '0',
-  `flag` tinyint(1) unsigned default '1',
-  `id_modulo` int(10) unsigned default '0',
-  `disabled` tinyint(1) unsigned NOT NULL default '0',
-  `id_export` smallint(4) unsigned default '0',
-  `plugin_user` text,
-  `plugin_pass` text,
-  `plugin_parameter` text,
-  `id_plugin` int(10) default '0',
-  `post_process` double(18,5) default NULL,
-  `prediction_module` bigint(14) default '0',
-  `max_timeout` int(4) unsigned default '0',
-  `custom_id` varchar(255) default '',
-  `history_data` tinyint(1) unsigned default '1',
-  `min_warning` double(18,2) default 0,
-  `max_warning` double(18,2) default 0,
-  `str_warning` text,
-  `min_critical` double(18,2) default 0,
-  `max_critical` double(18,2) default 0,
-  `str_critical` text,
-  `min_ff_event` int(4) unsigned default '0',
-  `delete_pending` int(1) unsigned default 0,
-  `policy_linked` tinyint(1) unsigned not null default 0,
-  `policy_adopted` tinyint(1) unsigned not null default 0,
-  `custom_string_1` text,
-  `custom_string_2` text,
-  `custom_string_3` text,
-  `custom_integer_1` int(10) default 0,
-  `custom_integer_2` int(10) default 0,
-  `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
-  `macros` text,
-  `critical_instructions` text,
-  `warning_instructions` text,
-  `unknown_instructions` text,
-  
-  PRIMARY KEY  (`id_agente_modulo`),
-  KEY `main_idx` (`id_agente_modulo`,`id_agente`),
-  KEY `tam_agente` (`id_agente`),
-  KEY `id_tipo_modulo` (`id_tipo_modulo`),
-  KEY `disabled` (`disabled`),
-  KEY `module` (`id_modulo`),
-  KEY `nombre` (`nombre` (255)),
-  KEY `module_group` (`id_module_group`) using btree
+	`id_agente_modulo` int(10) unsigned NOT NULL auto_increment,
+	`id_agente` int(10) unsigned NOT NULL default '0',
+	`id_tipo_modulo` smallint(5) NOT NULL default '0',
+	`descripcion` TEXT NOT NULL,
+	`extended_info` TEXT NOT NULL,
+	`nombre` text NOT NULL,
+	`unit` text,
+	`id_policy_module` INTEGER unsigned NOT NULL default '0',
+	`max` bigint(20) default '0',
+	`min` bigint(20) default '0',
+	`module_interval` int(4) unsigned default '0',
+	`module_ff_interval` int(4) unsigned default '0',
+	`tcp_port` int(4) unsigned default '0',
+	`tcp_send` TEXT,
+	`tcp_rcv` TEXT,
+	`snmp_community` varchar(100) default '',
+	`snmp_oid` varchar(255) default '0',
+	`ip_target` varchar(100) default '',
+	`id_module_group` int(4) unsigned default '0',
+	`flag` tinyint(1) unsigned default '1',
+	`id_modulo` int(10) unsigned default '0',
+	`disabled` tinyint(1) unsigned NOT NULL default '0',
+	`id_export` smallint(4) unsigned default '0',
+	`plugin_user` text,
+	`plugin_pass` text,
+	`plugin_parameter` text,
+	`id_plugin` int(10) default '0',
+	`post_process` double(18,5) default NULL,
+	`prediction_module` bigint(14) default '0',
+	`max_timeout` int(4) unsigned default '0',
+	`custom_id` varchar(255) default '',
+	`history_data` tinyint(1) unsigned default '1',
+	`min_warning` double(18,2) default 0,
+	`max_warning` double(18,2) default 0,
+	`str_warning` text,
+	`min_critical` double(18,2) default 0,
+	`max_critical` double(18,2) default 0,
+	`str_critical` text,
+	`min_ff_event` int(4) unsigned default '0',
+	`delete_pending` int(1) unsigned default 0,
+	`policy_linked` tinyint(1) unsigned not null default 0,
+	`policy_adopted` tinyint(1) unsigned not null default 0,
+	`custom_string_1` text,
+	`custom_string_2` text,
+	`custom_string_3` text,
+	`custom_integer_1` int(10) default 0,
+	`custom_integer_2` int(10) default 0,
+	`wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
+	`macros` text,
+	`critical_instructions` text,
+	`warning_instructions` text,
+	`unknown_instructions` text,
+	PRIMARY KEY  (`id_agente_modulo`),
+	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
+	KEY `tam_agente` (`id_agente`),
+	KEY `id_tipo_modulo` (`id_tipo_modulo`),
+	KEY `disabled` (`disabled`),
+	KEY `module` (`id_modulo`),
+	KEY `nombre` (`nombre` (255)),
+	KEY `module_group` (`id_module_group`) using btree
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 -- snmp_oid is also used for WMI query
 
@@ -657,99 +656,110 @@ CREATE TABLE IF NOT EXISTS `tnota` (
   KEY `id_incident` (`id_incident`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `torigen`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `torigen` (
-  `origen` varchar(100) NOT NULL default ''
+	`origen` varchar(100) NOT NULL default ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `tperfil`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tperfil` (
-  `id_perfil` int(10) unsigned NOT NULL auto_increment,
-  `name` TEXT NOT NULL,
-  `incident_edit` tinyint(3) NOT NULL default '0',
-  `incident_view` tinyint(3) NOT NULL default '0',
-  `incident_management` tinyint(3) NOT NULL default '0',
-  `agent_view` tinyint(3) NOT NULL default '0',
-  `agent_edit` tinyint(3) NOT NULL default '0',
-  `alert_edit` tinyint(3) NOT NULL default '0',
-  `user_management` tinyint(3) NOT NULL default '0',
-  `db_management` tinyint(3) NOT NULL default '0',
-  `alert_management` tinyint(3) NOT NULL default '0',
-  `pandora_management` tinyint(3) NOT NULL default '0',
-  PRIMARY KEY  (`id_perfil`)
+	`id_perfil` int(10) unsigned NOT NULL auto_increment,
+	`name` TEXT NOT NULL,
+	`incident_edit` tinyint(3) NOT NULL default '0',
+	`incident_view` tinyint(3) NOT NULL default '0',
+	`incident_management` tinyint(3) NOT NULL default '0',
+	`agent_view` tinyint(3) NOT NULL default '0',
+	`agent_edit` tinyint(3) NOT NULL default '0',
+	`alert_edit` tinyint(3) NOT NULL default '0',
+	`user_management` tinyint(3) NOT NULL default '0',
+	`db_management` tinyint(3) NOT NULL default '0',
+	`alert_management` tinyint(3) NOT NULL default '0',
+	`pandora_management` tinyint(3) NOT NULL default '0',
+	PRIMARY KEY  (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `trecon_script`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `trecon_script` (
-  `id_recon_script` int(10) NOT NULL auto_increment,
-  `name` varchar(100) default '',
-  `description` TEXT,
-  `script` varchar(250) default '',
-  PRIMARY KEY  (`id_recon_script`)
+	`id_recon_script` int(10) NOT NULL auto_increment,
+	`name` varchar(100) default '',
+	`description` TEXT,
+	`script` varchar(250) default '',
+	PRIMARY KEY  (`id_recon_script`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `trecon_task`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `trecon_task` (
-  `id_rt` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  `description` varchar(250) NOT NULL default '',
-  `subnet` text NOT NULL default '',
-  `id_network_profile` int(10) unsigned NOT NULL default '0',
-  `create_incident` tinyint(3) unsigned NOT NULL default '0',
-  `id_group` int(10) unsigned NOT NULL default '1',
-  `utimestamp` bigint(20) unsigned NOT NULL default '0',
-  `status` tinyint(4) NOT NULL default '0',
-  `interval_sweep` int(10) unsigned NOT NULL default '0',
-  `id_recon_server` int(10) unsigned NOT NULL default '0',
-  `id_os` tinyint(4) NOT NULL default '0',
-  `recon_ports` varchar(250) NOT NULL default '',
-  `snmp_community` varchar(64) NOT NULL default 'public',
-  `id_recon_script` int(10),
-  `field1` text NOT NULL default '',
-  `field2` varchar(250) NOT NULL default '',
-  `field3` varchar(250) NOT NULL default '',
-  `field4` varchar(250) NOT NULL default '',
-  `os_detect` tinyint(1) unsigned default '0',
-  `resolve_names` tinyint(1) unsigned default '0',
-  `parent_detection` tinyint(1) unsigned default '0',
-  `parent_recursion` tinyint(1) unsigned default '0',
-  `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY  (`id_rt`),
-  KEY `recon_task_daemon` (`id_recon_server`)
+	`id_rt` int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`description` varchar(250) NOT NULL default '',
+	`subnet` text NOT NULL default '',
+	`id_network_profile` int(10) unsigned NOT NULL default '0',
+	`create_incident` tinyint(3) unsigned NOT NULL default '0',
+	`id_group` int(10) unsigned NOT NULL default '1',
+	`utimestamp` bigint(20) unsigned NOT NULL default '0',
+	`status` tinyint(4) NOT NULL default '0',
+	`interval_sweep` int(10) unsigned NOT NULL default '0',
+	`id_recon_server` int(10) unsigned NOT NULL default '0',
+	`id_os` tinyint(4) NOT NULL default '0',
+	`recon_ports` varchar(250) NOT NULL default '',
+	`snmp_community` varchar(64) NOT NULL default 'public',
+	`id_recon_script` int(10),
+	`field1` text NOT NULL default '',
+	`field2` varchar(250) NOT NULL default '',
+	`field3` varchar(250) NOT NULL default '',
+	`field4` varchar(250) NOT NULL default '',
+	`os_detect` tinyint(1) unsigned default '0',
+	`resolve_names` tinyint(1) unsigned default '0',
+	`parent_detection` tinyint(1) unsigned default '0',
+	`parent_recursion` tinyint(1) unsigned default '0',
+	`disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
+	PRIMARY KEY  (`id_rt`),
+	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-
-
+-- -----------------------------------------------------
+-- Table `tserver`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tserver` (
-  `id_server` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  `ip_address` varchar(100) NOT NULL default '',
-  `status` int(11) NOT NULL default '0',
-  `laststart` datetime NOT NULL default '1970-01-01 00:00:00',
-  `keepalive` datetime NOT NULL default '1970-01-01 00:00:00',
-  `snmp_server` tinyint(3) unsigned NOT NULL default '0',
-  `network_server` tinyint(3) unsigned NOT NULL default '0',
-  `data_server` tinyint(3) unsigned NOT NULL default '0',
-  `master` tinyint(3) unsigned NOT NULL default '0',
-  `checksum` tinyint(3) unsigned NOT NULL default '0',
-  `description` varchar(255) default NULL,
-  `recon_server` tinyint(3) unsigned NOT NULL default '0',
-  `version` varchar(20) NOT NULL default '',
-  `plugin_server` tinyint(3) unsigned NOT NULL default '0',
-  `prediction_server` tinyint(3) unsigned NOT NULL default '0',
-  `wmi_server` tinyint(3) unsigned NOT NULL default '0',
-  `export_server` tinyint(3) unsigned NOT NULL default '0',
-  `server_type` tinyint(3) unsigned NOT NULL default '0',
-  `queued_modules` int(5) unsigned NOT NULL default '0',
-  `threads` int(5) unsigned NOT NULL default '0',
-  `lag_time` int(11) NOT NULL default 0,
-  `lag_modules` int(11) NOT NULL default 0,
-  `total_modules_running` int(11) NOT NULL default 0,
-  `my_modules` int(11) NOT NULL default 0,
-  `stat_utimestamp` bigint(20) NOT NULL default '0',
-  PRIMARY KEY  (`id_server`),
+	`id_server` int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`ip_address` varchar(100) NOT NULL default '',
+	`status` int(11) NOT NULL default '0',
+	`laststart` datetime NOT NULL default '1970-01-01 00:00:00',
+	`keepalive` datetime NOT NULL default '1970-01-01 00:00:00',
+	`snmp_server` tinyint(3) unsigned NOT NULL default '0',
+	`network_server` tinyint(3) unsigned NOT NULL default '0',
+	`data_server` tinyint(3) unsigned NOT NULL default '0',
+	`master` tinyint(3) unsigned NOT NULL default '0',
+	`checksum` tinyint(3) unsigned NOT NULL default '0',
+	`description` varchar(255) default NULL,
+	`recon_server` tinyint(3) unsigned NOT NULL default '0',
+	`version` varchar(20) NOT NULL default '',
+	`plugin_server` tinyint(3) unsigned NOT NULL default '0',
+	`prediction_server` tinyint(3) unsigned NOT NULL default '0',
+	`wmi_server` tinyint(3) unsigned NOT NULL default '0',
+	`export_server` tinyint(3) unsigned NOT NULL default '0',
+	`server_type` tinyint(3) unsigned NOT NULL default '0',
+	`queued_modules` int(5) unsigned NOT NULL default '0',
+	`threads` int(5) unsigned NOT NULL default '0',
+	`lag_time` int(11) NOT NULL default 0,
+	`lag_modules` int(11) NOT NULL default 0,
+	`total_modules_running` int(11) NOT NULL default 0,
+	`my_modules` int(11) NOT NULL default 0,
+	`stat_utimestamp` bigint(20) NOT NULL default '0',
+	PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`),
 	KEY `keepalive` (`keepalive`),
 	KEY `status` (`status`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 -- server types:
 -- 0 data
 -- 1 network
@@ -763,82 +773,93 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 -- 9 web
 -- TODO: drop 2.x xxxx_server fields, unused since server_type exists.
 
+-- -----------------------------------------------------
+-- Table `tsesion`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tsesion` (
-  `id_sesion` bigint(20) unsigned NOT NULL auto_increment,
-  `id_usuario` varchar(60) NOT NULL default '0',
-  `ip_origen` varchar(100) NOT NULL default '',
-  `accion` varchar(100) NOT NULL default '',
-  `descripcion` text NOT NULL,
-  `fecha` datetime NOT NULL default '1970-01-01 00:00:00',
-  `utimestamp` bigint(20) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_sesion`),
-  KEY `idx_utimestamp` (`utimestamp`),
-  KEY `idx_user` (`id_usuario`)
+	`id_sesion` bigint(20) unsigned NOT NULL auto_increment,
+	`id_usuario` varchar(60) NOT NULL default '0',
+	`ip_origen` varchar(100) NOT NULL default '',
+	`accion` varchar(100) NOT NULL default '',
+	`descripcion` text NOT NULL,
+	`fecha` datetime NOT NULL default '1970-01-01 00:00:00',
+	`utimestamp` bigint(20) unsigned NOT NULL default '0',
+	PRIMARY KEY  (`id_sesion`),
+	KEY `idx_utimestamp` (`utimestamp`),
+	KEY `idx_user` (`id_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `ttipo_modulo`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttipo_modulo` (
-  `id_tipo` smallint(5) unsigned NOT NULL auto_increment,
-  `nombre` varchar(100) NOT NULL default '',
-  `categoria` int(11) NOT NULL default '0',
-  `descripcion` varchar(100) NOT NULL default '',
-  `icon` varchar(100) default NULL,
-  PRIMARY KEY  (`id_tipo`)
+	`id_tipo` smallint(5) unsigned NOT NULL auto_increment,
+	`nombre` varchar(100) NOT NULL default '',
+	`categoria` int(11) NOT NULL default '0',
+	`descripcion` varchar(100) NOT NULL default '',
+	`icon` varchar(100) default NULL,
+	PRIMARY KEY  (`id_tipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `ttrap`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttrap` (
-  `id_trap` bigint(20) unsigned NOT NULL auto_increment,
-  `source` varchar(50) NOT NULL default '',
-  `oid` text NOT NULL,
-  `oid_custom` text,
-  `type` int(11) NOT NULL default '0',
-  `type_custom` varchar(100) default '',
-  `value` text,
-  `value_custom` text,
-  `alerted` smallint(6) NOT NULL default '0',
-  `status` smallint(6) NOT NULL default '0',
-  `id_usuario` varchar(150) default '',
-  `timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
-  `priority` tinyint(4) unsigned NOT NULL default '2',
-  `text` varchar(255) default '',
-  `description` varchar(255) default '',
-  `severity` tinyint(4) unsigned NOT NULL default '2',
-  PRIMARY KEY  (`id_trap`),
-  INDEX timestamp (`timestamp`),
-  INDEX status (`status`)
+	`id_trap` bigint(20) unsigned NOT NULL auto_increment,
+	`source` varchar(50) NOT NULL default '',
+	`oid` text NOT NULL,
+	`oid_custom` text,
+	`type` int(11) NOT NULL default '0',
+	`type_custom` varchar(100) default '',
+	`value` text,
+	`value_custom` text,
+	`alerted` smallint(6) NOT NULL default '0',
+	`status` smallint(6) NOT NULL default '0',
+	`id_usuario` varchar(150) default '',
+	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
+	`priority` tinyint(4) unsigned NOT NULL default '2',
+	`text` varchar(255) default '',
+	`description` varchar(255) default '',
+	`severity` tinyint(4) unsigned NOT NULL default '2',
+	PRIMARY KEY  (`id_trap`),
+	INDEX timestamp (`timestamp`),
+	INDEX status (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tusuario` (
-  `id_user` varchar(60) NOT NULL default '0',
-  `fullname` varchar(255) NOT NULL,
-  `firstname` varchar(255) NOT NULL,
-  `lastname` varchar(255) NOT NULL,
-  `middlename` varchar(255) NOT NULL,
-  `password` varchar(45) default NULL,
-  `comments` varchar(200) default NULL,
-  `last_connect` bigint(20) NOT NULL default '0',
-  `registered` bigint(20) NOT NULL default '0',
-  `email` varchar(100) default NULL,
-  `phone` varchar(100) default NULL,
-  `is_admin` tinyint(1) unsigned NOT NULL default '0',
-  `language` varchar(10) default NULL,
-  `timezone` varchar(50) default '',
-  `block_size` int(4) NOT NULL DEFAULT 20,
-  `flash_chart` int(4) NOT NULL DEFAULT 1,
-  `id_skin` int(10) unsigned NOT NULL,
-  `disabled` int(4) NOT NULL DEFAULT 0,
-  `shortcut` tinyint(1) DEFAULT 0,
-  `shortcut_data` text,
-  `section` TEXT NOT NULL,
-  `data_section` TEXT NOT NULL,
-  `force_change_pass` tinyint(1) unsigned NOT NULL default 0,
-  `last_pass_change` DATETIME  NOT NULL DEFAULT 0,
-  `last_failed_login` DATETIME  NOT NULL DEFAULT 0,
-  `failed_attempt` int(4) NOT NULL DEFAULT 0,
-  `login_blocked` tinyint(1) unsigned NOT NULL default 0,
-  `metaconsole_access` enum('basic','advanced','custom','all','only_console') default 'only_console',
-  UNIQUE KEY `id_user` (`id_user`)
+	`id_user` varchar(60) NOT NULL default '0',
+	`fullname` varchar(255) NOT NULL,
+	`firstname` varchar(255) NOT NULL,
+	`lastname` varchar(255) NOT NULL,
+	`middlename` varchar(255) NOT NULL,
+	`password` varchar(45) default NULL,
+	`comments` varchar(200) default NULL,
+	`last_connect` bigint(20) NOT NULL default '0',
+	`registered` bigint(20) NOT NULL default '0',
+	`email` varchar(100) default NULL,
+	`phone` varchar(100) default NULL,
+	`is_admin` tinyint(1) unsigned NOT NULL default '0',
+	`language` varchar(10) default NULL,
+	`timezone` varchar(50) default '',
+	`block_size` int(4) NOT NULL DEFAULT 20,
+	`flash_chart` int(4) NOT NULL DEFAULT 1,
+	`id_skin` int(10) unsigned NOT NULL,
+	`disabled` int(4) NOT NULL DEFAULT 0,
+	`shortcut` tinyint(1) DEFAULT 0,
+	`shortcut_data` text,
+	`section` TEXT NOT NULL,
+	`data_section` TEXT NOT NULL,
+	`force_change_pass` tinyint(1) unsigned NOT NULL default 0,
+	`last_pass_change` DATETIME  NOT NULL DEFAULT 0,
+	`last_failed_login` DATETIME  NOT NULL DEFAULT 0,
+	`failed_attempt` int(4) NOT NULL DEFAULT 0,
+	`login_blocked` tinyint(1) unsigned NOT NULL default 0,
+	`metaconsole_access` enum('basic','advanced','custom','all','only_console') default 'only_console',
+	`not_login` tinyint(1) unsigned NOT NULL DEFAULT 0,
+	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
@@ -993,79 +1014,94 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
   PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tlayout_data`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout_data` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_layout` INTEGER UNSIGNED NOT NULL default 0,
-  `pos_x` INTEGER UNSIGNED NOT NULL default 0,
-  `pos_y` INTEGER UNSIGNED NOT NULL default 0,
-  `height` INTEGER UNSIGNED NOT NULL default 0,
-  `width` INTEGER UNSIGNED NOT NULL default 0,
-  `label` varchar(200) DEFAULT "",
-  `image` varchar(200) DEFAULT "",
-  `type` tinyint(1) UNSIGNED NOT NULL default 0,
-  `period` INTEGER UNSIGNED NOT NULL default 3600,
-  `id_agente_modulo` mediumint(8) unsigned NOT NULL default '0',
-  `id_agent` int(10) unsigned NOT NULL default 0,
-  `id_layout_linked` INTEGER unsigned NOT NULL default '0',
-  `parent_item` INTEGER UNSIGNED NOT NULL default 0,
-  `label_color` varchar(20) DEFAULT "",
-  `no_link_color` tinyint(1) UNSIGNED NOT NULL default 0,
-  PRIMARY KEY(`id`)
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_layout` INTEGER UNSIGNED NOT NULL default 0,
+	`pos_x` INTEGER UNSIGNED NOT NULL default 0,
+	`pos_y` INTEGER UNSIGNED NOT NULL default 0,
+	`height` INTEGER UNSIGNED NOT NULL default 0,
+	`width` INTEGER UNSIGNED NOT NULL default 0,
+	`label` varchar(200) DEFAULT "",
+	`image` varchar(200) DEFAULT "",
+	`type` tinyint(1) UNSIGNED NOT NULL default 0,
+	`period` INTEGER UNSIGNED NOT NULL default 3600,
+	`id_agente_modulo` mediumint(8) unsigned NOT NULL default '0',
+	`id_agent` int(10) unsigned NOT NULL default 0,
+	`id_layout_linked` INTEGER unsigned NOT NULL default '0',
+	`parent_item` INTEGER UNSIGNED NOT NULL default 0,
+	`label_color` varchar(20) DEFAULT "",
+	`no_link_color` tinyint(1) UNSIGNED NOT NULL default 0,
+	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tplugin`
+-- -----------------------------------------------------
+-- The fields "net_dst_opt", "net_port_opt", "user_opt" and
+-- "pass_opt" are deprecated for the 5.1.
 CREATE TABLE IF NOT EXISTS `tplugin` (
-    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name` varchar(200) NOT NULL,
-    `description` mediumtext,
-    `max_timeout` int(4) UNSIGNED NOT NULL default 0,
-    `execute` varchar(250) NOT NULL,
-    `net_dst_opt` varchar(50) default '',
-    `net_port_opt` varchar(50) default '',
-    `user_opt` varchar(50) default '',
-    `pass_opt` varchar(50) default '',
-    `plugin_type` int(2) UNSIGNED NOT NULL default 0,
-    `macros` text,
-    `parameters` text,
-    PRIMARY KEY(`id`)
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` varchar(200) NOT NULL,
+	`description` mediumtext,
+	`max_timeout` int(4) UNSIGNED NOT NULL default 0,
+	`execute` varchar(250) NOT NULL,
+	`net_dst_opt` varchar(50) default '',
+	`net_port_opt` varchar(50) default '',
+	`user_opt` varchar(50) default '',
+	`pass_opt` varchar(50) default '',
+	`plugin_type` int(2) UNSIGNED NOT NULL default 0,
+	`macros` text,
+	`parameters` text,
+	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8; 
 
-
+-- -----------------------------------------------------
+-- Table `tmodule`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule` (
-  `id_module` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  PRIMARY KEY (`id_module`)
+	`id_module` int(11) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	PRIMARY KEY (`id_module`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `tserver_export`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tserver_export` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  `preffix` varchar(100) NOT NULL default '',
-  `interval` int(5) unsigned NOT NULL default '300',
-  `ip_server` varchar(100) NOT NULL default '',
-  `connect_mode` enum ('tentacle', 'ssh', 'local') default 'local',
-  `id_export_server` int(10) unsigned default NULL,
-  `user` varchar(100) NOT NULL default '',
-  `pass` varchar(100) NOT NULL default '',
-  `port` int(4) unsigned default '0',
-  `directory` varchar(100) NOT NULL default '',
-  `options` varchar(100) NOT NULL default '',
-  `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'Number of hours of diference with the server timezone' ,
-  PRIMARY KEY  (`id`),
-  INDEX id_export_server (`id_export_server`)
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`preffix` varchar(100) NOT NULL default '',
+	`interval` int(5) unsigned NOT NULL default '300',
+	`ip_server` varchar(100) NOT NULL default '',
+	`connect_mode` enum ('tentacle', 'ssh', 'local') default 'local',
+	`id_export_server` int(10) unsigned default NULL,
+	`user` varchar(100) NOT NULL default '',
+	`pass` varchar(100) NOT NULL default '',
+	`port` int(4) unsigned default '0',
+	`directory` varchar(100) NOT NULL default '',
+	`options` varchar(100) NOT NULL default '',
+	`timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'Number of hours of diference with the server timezone' ,
+	PRIMARY KEY  (`id`),
+	INDEX id_export_server (`id_export_server`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tserver_export_data`
+-- -----------------------------------------------------
 -- id_export_server is real pandora fms export server process that manages this server
 -- id is the "destination" server to export
 CREATE TABLE IF NOT EXISTS `tserver_export_data` (
-  `id` int(20) unsigned NOT NULL auto_increment,
-  `id_export_server` int(10) unsigned default NULL,
-  `agent_name` varchar(100) NOT NULL default '',
-  `module_name` varchar(100) NOT NULL default '',
-  `module_type` varchar(100) NOT NULL default '',
-  `data` varchar(255) default NULL, 
-  `timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
-  PRIMARY KEY  (`id`)
+	`id` int(20) unsigned NOT NULL auto_increment,
+	`id_export_server` int(10) unsigned default NULL,
+	`agent_name` varchar(100) NOT NULL default '',
+	`module_name` varchar(100) NOT NULL default '',
+	`module_type` varchar(100) NOT NULL default '',
+	`data` varchar(255) default NULL, 
+	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
+	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tplanned_downtime` (

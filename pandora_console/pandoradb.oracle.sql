@@ -27,28 +27,33 @@
 CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP (oracletime IN DATE DEFAULT SYSDATE) RETURN INTEGER AS unixtime INTEGER; BEGIN unixtime := (oracletime - to_date('19700101','YYYYMMDD')) * 86400; RETURN unixtime; END;;
 CREATE OR REPLACE FUNCTION NOW RETURN TIMESTAMP AS t_now TIMESTAMP; BEGIN SELECT LOCALTIMESTAMP INTO t_now FROM dual; RETURN t_now; END;;
 
+-- -----------------------------------------------------
+-- Table `taddress`
+-- -----------------------------------------------------
 CREATE TABLE taddress (
 	id_a NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	ip VARCHAR(60) default '',
 	ip_pack NUMBER(10, 0) default 0 NOT NULL 
 );
 CREATE INDEX taddress_ip_idx ON taddress(ip);
-
 CREATE SEQUENCE taddress_s INCREMENT BY 1 START WITH 1;
-
 -- Triggers must end with double semicolons because Pandora installer need it 
 CREATE OR REPLACE TRIGGER taddress_inc BEFORE INSERT ON taddress REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT taddress_s.nextval INTO :NEW.ID_A FROM dual; END;;
 
+-- -----------------------------------------------------
+-- Table `taddress_agent`
+-- -----------------------------------------------------
 CREATE TABLE taddress_agent (
 	id_ag NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	id_a NUMBER(19, 0) default 0 NOT NULL,
 	id_agent NUMBER(19, 0) default 0 NOT NULL 
 );
-
 CREATE SEQUENCE taddress_agent_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER taddress_agent_inc BEFORE INSERT ON taddress_agent REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT taddress_agent_s.nextval INTO :NEW.ID_AG FROM dual; END;;
 
+-- -----------------------------------------------------
+-- Table `tagente`
+-- -----------------------------------------------------
 CREATE TABLE tagente (
 	id_agente NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	nombre VARCHAR2(600) default '',
@@ -79,11 +84,12 @@ CREATE INDEX tagente_nombre_idx ON tagente(nombre);
 CREATE INDEX tagente_direccion_idx ON tagente(direccion);
 CREATE INDEX tagente_disabled_idx ON tagente(disabled);
 CREATE INDEX tagente_id_grupo_idx ON tagente(id_grupo);
-
 CREATE SEQUENCE tagente_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tagente_inc BEFORE INSERT ON tagente REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_s.nextval INTO :NEW.ID_AGENTE FROM dual; END;;
 
+-- -----------------------------------------------------
+-- Table `tagente_datos`
+-- -----------------------------------------------------
 CREATE TABLE tagente_datos (
 	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
 	datos BINARY_DOUBLE default NULL,
@@ -92,6 +98,9 @@ CREATE TABLE tagente_datos (
 CREATE INDEX tagente_datos_id_agent_mod_idx ON tagente_datos(id_agente_modulo);
 CREATE INDEX tagente_datos_utimestamp_idx ON tagente_datos(utimestamp);
 
+-- -----------------------------------------------------
+-- Table `tagente_datos_inc`
+-- -----------------------------------------------------
 CREATE TABLE tagente_datos_inc (
 	id_adi NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
@@ -99,11 +108,12 @@ CREATE TABLE tagente_datos_inc (
 	utimestamp NUMBER(10, 0) default 0 NOT NULL
 );
 CREATE INDEX tagente_datos_inc_id_ag_mo_idx ON tagente_datos_inc(id_agente_modulo);
-
 CREATE SEQUENCE tagente_datos_inc_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tagente_datos_inc_inc BEFORE INSERT ON tagente_datos_inc REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_datos_inc_s.nextval INTO :NEW.ID_ADI FROM dual; END;;
 
+-- -----------------------------------------------------
+-- Table `tagente_datos_string`
+-- -----------------------------------------------------
 CREATE TABLE tagente_datos_string (
 	id_agente_modulo NUMBER(10, 0) NOT NULL,
 	datos CLOB NOT NULL,
@@ -111,6 +121,9 @@ CREATE TABLE tagente_datos_string (
 );
 CREATE INDEX tagente_datos_string_utsta_idx ON tagente_datos_string(utimestamp);
 
+-- -----------------------------------------------------
+-- Table `tagente_datos_log4x`
+-- -----------------------------------------------------
 CREATE TABLE tagente_datos_log4x (
 	id_tagente_datos_log4x NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
@@ -120,11 +133,12 @@ CREATE TABLE tagente_datos_log4x (
 	utimestamp NUMBER(10, 0) default 0 NOT NULL
 );
 CREATE INDEX tagente_datos_log4x_id_a_m_idx ON tagente_datos_log4x(id_agente_modulo);
-
 CREATE SEQUENCE tagente_datos_log4x_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tagente_datos_log4x_inc BEFORE INSERT ON tagente_datos_log4x REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_datos_log4x_s.nextval INTO :NEW.ID_TAGENTE_DATOS_LOG4X FROM dual; END;;
 
+-- -----------------------------------------------------
+-- Table `tagente_estado`
+-- -----------------------------------------------------
 CREATE TABLE tagente_estado (
 	id_agente_estado NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
@@ -861,6 +875,9 @@ CREATE SEQUENCE ttrap_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER ttrap_inc BEFORE INSERT ON ttrap REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttrap_s.nextval INTO :NEW.ID_TRAP FROM dual; END ttrap_inc;;
 
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
 CREATE TABLE tusuario (
 	id_user VARCHAR2(60) NOT NULL PRIMARY KEY,
 	fullname VARCHAR2(255) NOT NULL,
@@ -890,9 +907,13 @@ CREATE TABLE tusuario (
 	failed_attempt NUMBER(5,0) default 0 NOT NULL,
 	login_blocked NUMBER(5,0) default 0 NOT NULL,
 	metaconsole_access VARCHAR2(100) default 'only_console' NOT NULL,
+	not_login NUMBER(5,0) default 0 NOT NULL,
 	CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced','custom','all','only_console'))
 );
 
+-- -----------------------------------------------------
+-- Table `tusuario_perfil`
+-- -----------------------------------------------------
 CREATE TABLE tusuario_perfil (
 	id_up NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	id_usuario VARCHAR2(100) default '',

@@ -161,7 +161,7 @@ sub pandora_migrate_plugins_main ($) {
 			$macros->{$macro_cont}{'help'} = '';
 			$macros->{$macro_cont}{'value'} = '';
 						
-			$parameters .= $plugin->{'net_dst_opt'}.' _field'.$macro_cont.'_';
+			$parameters .= $plugin->{'net_dst_opt'}.' _field'.$macro_cont.'_ ';
 			$macro_cont ++;
 		}
 		
@@ -173,7 +173,7 @@ sub pandora_migrate_plugins_main ($) {
 			$macros->{$macro_cont}{'help'} = '';
 			$macros->{$macro_cont}{'value'} = '';
 						
-			$parameters .= $plugin->{'net_port_opt'}.' _field'.$macro_cont.'_';
+			$parameters .= $plugin->{'net_port_opt'}.' _field'.$macro_cont.'_ ';
 			$macro_cont ++;
 		}
 		
@@ -185,7 +185,7 @@ sub pandora_migrate_plugins_main ($) {
 			$macros->{$macro_cont}{'help'} = '';
 			$macros->{$macro_cont}{'value'} = '';
 						
-			$parameters .= $plugin->{'user_opt'}.' _field'.$macro_cont.'_';
+			$parameters .= $plugin->{'user_opt'}.' _field'.$macro_cont.'_ ';
 			$macro_cont ++;
 		}
 		
@@ -197,7 +197,7 @@ sub pandora_migrate_plugins_main ($) {
 			$macros->{$macro_cont}{'help'} = '';
 			$macros->{$macro_cont}{'value'} = '';
 			
-			$parameters .= $plugin->{'pass_opt'}.' _field'.$macro_cont.'_';
+			$parameters .= $plugin->{'pass_opt'}.' _field'.$macro_cont.'_ ';
 			$macro_cont ++;
 		}
 		

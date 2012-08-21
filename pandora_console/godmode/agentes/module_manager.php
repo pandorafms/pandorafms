@@ -218,9 +218,9 @@ if ($multiple_delete) {
 }
 
 
-// ==========================
-// MODULE VISUALIZATION TABLE
-// ==========================
+// ==================
+// TABLE LIST MODULES
+// ==================
 
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=' . $id_agente;
 $selectNameUp = '';
@@ -350,8 +350,8 @@ $params = implode(',', array ('id_agente_modulo', 'id_tipo_modulo',
 	'descripcion', 'nombre', 'max', 'min', 'module_interval',
 	'id_modulo', 'id_module_group', 'disabled','max_warning',
 	'min_warning', 'str_warning', 'max_critical', 'min_critical',
-	'str_critical'));
-	
+	'str_critical', 'quiet'));
+
 $where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);
 
 $search_string_entities = io_safe_input($search_string);
@@ -480,8 +480,12 @@ foreach ($modules as $module) {
 		
 		$data = array ();
 	}
-	
-	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=' . $id_agente . '&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+	$data[0] = "";
+	if ($module['quiet']) {
+		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""))
+			. "&nbsp;";
+	}
+	$data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=' . $id_agente . '&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	if ($module["disabled"])
 		$data[0] .= '<em class="disabled_module">' .
 			ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '[&hellip;]', 'font-size: 7.2pt').'</em>';

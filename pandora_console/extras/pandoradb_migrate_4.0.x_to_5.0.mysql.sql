@@ -103,6 +103,7 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `module_ff_interval` int(4) unsigned def
 ALTER TABLE `tagente_modulo` CHANGE COLUMN `post_process` `post_process` double(18,5) default NULL;
 ALTER TABLE `tagente_modulo` ADD COLUMN `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard';
 ALTER TABLE `tagente_modulo` ADD COLUMN `macros` text;
+ALTER TABLE `tagente_modulo` ADD COLUMN `quiet` tinyint(1) NOT NULL DEFAULT '0';
 
 -- -----------------------------------------------------
 -- Table `tnetwork_component`

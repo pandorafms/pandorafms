@@ -220,6 +220,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`critical_instructions` text,
 	`warning_instructions` text,
 	`unknown_instructions` text,
+	`quiet` tinyint(1) NOT NULL default '0',
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
 	KEY `tam_agente` (`id_agente`),

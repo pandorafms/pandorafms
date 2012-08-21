@@ -252,12 +252,12 @@ if ($ag_group > 0) {
 else {
 	// CLEAN: sql_extra
 	$sql_extra = '';
-		
-    // Admin user get ANY group, even if they doesnt exist
-    if (check_acl ($config['id_user'], 0, "PM")) {		
-	    $sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE (1=1 %s) %s', $search_sql, $sql_extra);
-	    $total_agents = db_get_sql ($sql);
-    	switch ($config["dbtype"]) {
+	
+	// Admin user get ANY group, even if they doesnt exist
+	if (check_acl ($config['id_user'], 0, "PM")) {		
+		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE (1=1 %s) %s', $search_sql, $sql_extra);
+		$total_agents = db_get_sql ($sql);
+		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('SELECT *
 					FROM tagente WHERE (1=1 %s) %s
@@ -280,15 +280,15 @@ else {
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
-    }
-    else {
+	}
+	else {
 		$sql = sprintf ('SELECT COUNT(*)
 			FROM tagente
 			WHERE (id_grupo IN (%s)
 			%s) %s',
 			implode (',', array_keys (users_get_groups ())),
 			$search_sql, $sql_extra);    
-			
+		
 		$total_agents = db_get_sql ($sql);
 		
 		switch ($config["dbtype"]) {
@@ -324,7 +324,7 @@ else {
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
-   }
+	}
 }
 
 $agents = db_get_all_rows_sql ($sql);
@@ -365,7 +365,7 @@ if ($agents !== false) {
 	foreach ($agents as $agent) {
 		$id_grupo = $agent["id_grupo"];
 		$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($agent["id_agente"]));
-
+		
 		if($is_extra === ENTERPRISE_NOT_HOOK) {
 			$is_extra = false;
 		}
@@ -394,11 +394,17 @@ if ($agents !== false) {
 			echo "<em>";
 		}
 		echo '<span class="left">';
-		echo "<strong><a href='index.php?sec=gagente&
+		echo "<strong>";
+		if ($agent['quiet']) {
+			html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+			echo "&nbsp;";
+		}
+		echo "<a href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=main&
 			id_agente=" . $agent["id_agente"] . "'>" .
 			ui_print_truncate_text($agent["nombre"], 'agent_medium', true, true, true, '[&hellip;]', 'font-size: 7pt') .
-			"</a></strong>";
+			"</a>";
+		echo "</strong>";
 		if ($agent["disabled"]) {
 			ui_print_help_tip(__('Disabled'));
 			echo "</em>";

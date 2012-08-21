@@ -124,6 +124,7 @@ $unit = "";
 $id_tag = array();
 $tab_description = '';
 $url_description = '';
+$quiet = 0;
 $macros = '';
 
 $create_agent = (bool) get_parameter ('create_agent');
@@ -146,6 +147,7 @@ if ($create_agent) {
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
+	$quiet = (int) get_parameter("quiet", 0);
 	
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
@@ -179,7 +181,8 @@ if ($create_agent) {
 				'id_parent' => $id_parent, 'custom_id' => $custom_id,
 				'icon_path' => $icon_path,
 				'update_gis_data' => $update_gis_data,
-				'url_address' => $url_description));
+				'url_address' => $url_description,
+				'quiet' => $quiet));
 		enterprise_hook ('update_agent', array ($id_agente));
 		if ($id_agente !== false) {
 			// Create custom fields for this agent
@@ -197,9 +200,12 @@ if ($create_agent) {
 				' Comments: ' . $comentarios . ' Mode: ' . $modo .
 				' ID_parent: ' . $id_parent . ' Server: ' . $server_name .
 				' ID os: ' . $id_os . ' Disabled: ' . $disabled .
-				' Custom ID: ' . $custom_id . ' Cascade protection: '  . $cascade_protection . 
-				' Icon path: ' . $icon_path . ' Update GIS data: ' . $update_gis_data . 
-				' Url description: ' . $url_description;
+				' Custom ID: ' . $custom_id .
+				' Cascade protection: '  . $cascade_protection . 
+				' Icon path: ' . $icon_path .
+				' Update GIS data: ' . $update_gis_data . 
+				' Url description: ' . $url_description .
+				' Quiet: ' . (int)$quiet;
 			
 			db_pandora_audit("Agent management",
 				"Created agent $nombre_agente", false, false, $info);
@@ -275,8 +281,8 @@ if ($id_agente) {
 	
 	 
 	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($id_agente));
-
-	if($has_remote_conf === true) {
+	
+	if ($has_remote_conf === true) {
 		/* Plugins */
 		$pluginstab = enterprise_hook ('plugins_tab');
 		if ($pluginstab == -1)
@@ -497,13 +503,14 @@ if ($update_agent) { // if modified some agent paramenter
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (bool) get_parameter_post ("disabled");
 	$server_name = (string) get_parameter_post ("server_name", "");
-	$id_parent = (string) get_parameter_post ("id_parent");
-	$id_parent = (int) agents_get_agent_id ($id_parent);
+	$parent_name = (string) get_parameter_post ("id_parent");
+	$id_parent = (int) agents_get_agent_id ($parent_name);
 	$custom_id = (string) get_parameter_post ("custom_id", "");
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
+	$quiet = (int) get_parameter("quiet", 0);
 	
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
@@ -552,7 +559,7 @@ if ($update_agent) { // if modified some agent paramenter
 			$delete_ip = get_parameter_post ("address_list");
 			agents_delete_address ($id_agente, $delete_ip);
 		}
-	
+		
 		$result = db_process_sql_update ('tagente', 
 			array ('disabled' => $disabled,
 				'id_parent' => $id_parent,
@@ -568,7 +575,8 @@ if ($update_agent) { // if modified some agent paramenter
 				'custom_id' => $custom_id,
 				'icon_path' => $icon_path,
 				'update_gis_data' => $update_gis_data,
-				'url_address' => $url_description),
+				'url_address' => $url_description,
+				'quiet' => $quiet),
 			array ('id_agente' => $id_agente));
 			
 		if ($result === false) {
@@ -582,7 +590,8 @@ if ($update_agent) { // if modified some agent paramenter
 				' Server Name: ' . $server_name . ' ID parent: ' . $id_parent .
 				' Custom ID: ' . $custom_id . ' Cascade Protection: ' . $cascade_protection .
 				' Icon Path: ' . $icon_path . 'Update GIS data: ' .$update_gis_data .
-				' Url description: ' . $url_description;
+				' Url description: ' . $url_description .
+				' Quiet: ' . (int)$quiet;
 			
 			enterprise_hook ('update_agent', array ($id_agente));
 			ui_print_success_message (__('Successfully updated'));
@@ -631,6 +640,7 @@ if ($id_agente) {
 	$icon_path = $agent["icon_path"];
 	$update_gis_data = $agent["update_gis_data"];
 	$url_description = $agent["url_address"];
+	$quiet = $agent["quiet"];
 }
 
 $update_module = (bool) get_parameter ('update_module');
@@ -690,14 +700,14 @@ if ($update_module || $create_module) {
 	
 	// Get macros
 	$macros = (string) get_parameter ('macros');
-
-	if(!empty($macros)) {
+	
+	if (!empty($macros)) {
 		$macros = json_decode(base64_decode($macros), true);
-
+		
 		foreach($macros as $k => $m) {
 			$macros[$k]['value'] = get_parameter($m['macro'], '');
 		}
-
+		
 		$macros = json_encode($macros);
 	}
 	
@@ -873,7 +883,7 @@ if ($create_module) {
 	switch ($config["dbtype"]) {
 		case "oracle":
 			if (empty($description) || !isset($description)) {
-				$description=' ';
+				$description = ' ';
 			}
 			break;
 	}
@@ -918,15 +928,15 @@ if ($create_module) {
 		'unit' => $unit,
 		'macros' => $macros);
 	
-	if($prediction_module == 3 && $serialize_ops == '') {
+	if ($prediction_module == 3 && $serialize_ops == '') {
 		$id_agent_module = false;
 	}
 	else {
 		$id_agent_module = modules_create_agent_module ($id_agente, $name, $values, false, $id_tag);
 	}
-
+	
 	if (is_error($id_agent_module)) {
-		switch($id_agent_module) {
+		switch ($id_agent_module) {
 			case ERR_EXIST:
 				$msg = __('There was a problem adding module. Another module already exists with the same name.');
 				break;
@@ -947,7 +957,7 @@ if ($create_module) {
 			"Fail to try added module '$name' for agent ".$agent["nombre"]);
 	}
 	else {
-		if($prediction_module == 3) {
+		if ($prediction_module == 3) {
 			enterprise_hook('modules_create_synthetic_operations', array($id_agent_module, $serialize_ops));
 		}
 		

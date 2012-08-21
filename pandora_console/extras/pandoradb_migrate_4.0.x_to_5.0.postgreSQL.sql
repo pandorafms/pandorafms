@@ -62,14 +62,13 @@ CREATE TABLE "tnetflow_report_content" (
 -- -----------------------------------------------------
 -- Table `tincidencia`
 -- -----------------------------------------------------
-
 ALTER TABLE "tincidencia" ADD COLUMN "id_agent" INTEGER NULL DEFAULT 0;
 
 -- -----------------------------------------------------
 -- Table `tagente`
 -- -----------------------------------------------------
-
 ALTER TABLE "tagente" ADD COLUMN "url_address" text NULL default '';
+ALTER TABLE "tagente" ADD COLUMN "quiet" SMALLINT NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table `talert_special_days`

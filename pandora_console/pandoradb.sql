@@ -18,6 +18,12 @@
 -- Because Pandora Installer don't understand them
 -- and fails creating database !!!
 
+-- Priority : 0 - Maintance (grey)
+-- Priority : 1 - Low (green)
+-- Priority : 2 - Normal (blue)
+-- Priority : 3 - Warning (yellow)
+-- Priority : 4 - Critical (red)
+
 -- -----------------------------------------------------
 -- Table `taddress`
 -- -----------------------------------------------------
@@ -64,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
 	`update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and do not update it' ,
 	`url_address` mediumtext NULL,
+	`quiet` tinyint(1) NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`),
 	KEY `direccion` (`direccion`),
@@ -146,13 +153,11 @@ CREATE TABLE `tagente_estado` (
 	KEY `running_by` (`running_by`),
 	KEY `last_execution_try` (`last_execution_try`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-
 -- Probably last_execution_try index is not useful and loads more than benefits
 
 -- -----------------------------------------------------
 -- Table `tagente_modulo`
 -- -----------------------------------------------------
-
 -- id_modulo now uses tmodule 
 -- ---------------------------
 -- 1 - Data server modules (agent related modules)
@@ -416,103 +421,118 @@ CREATE TABLE IF NOT EXISTS `talert_compound` (
 		ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `talert_compound_elements`
+-- -----------------------------------------------------
 CREATE TABLE  IF NOT EXISTS `talert_compound_elements` (
-  `id_alert_compound` int(10) unsigned NOT NULL,
-  `id_alert_template_module` int(10) unsigned NOT NULL,
-  `operation` enum('NOP', 'AND','OR','XOR','NAND','NOR','NXOR'),
-  `order` tinyint(2) unsigned default 0,
-  UNIQUE  (`id_alert_compound`, `id_alert_template_module`, `operation`),
-  FOREIGN KEY (`id_alert_compound`) REFERENCES talert_compound(`id`)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
-    ON DELETE CASCADE ON UPDATE CASCADE
+	`id_alert_compound` int(10) unsigned NOT NULL,
+	`id_alert_template_module` int(10) unsigned NOT NULL,
+	`operation` enum('NOP', 'AND','OR','XOR','NAND','NOR','NXOR'),
+	`order` tinyint(2) unsigned default 0,
+	UNIQUE  (`id_alert_compound`, `id_alert_template_module`, `operation`),
+	FOREIGN KEY (`id_alert_compound`) REFERENCES talert_compound(`id`)
+		ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
+		ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `talert_compound_actions`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_compound_actions` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `id_alert_compound` int(10) unsigned NOT NULL,
-  `id_alert_action` int(10) unsigned NOT NULL,
-  `fires_min` int(3) unsigned default 0,
-  `fires_max` int(3) unsigned default 0,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`id_alert_compound`) REFERENCES talert_compound(`id`)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
-    ON DELETE CASCADE ON UPDATE CASCADE
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_alert_compound` int(10) unsigned NOT NULL,
+	`id_alert_action` int(10) unsigned NOT NULL,
+	`fires_min` int(3) unsigned default 0,
+	`fires_max` int(3) unsigned default 0,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_alert_compound`) REFERENCES talert_compound(`id`)
+		ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
+		ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `talert_special_days`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_special_days` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `date` date NOT NULL DEFAULT '0000-00-00',
-  `same_day` enum('monday','tuesday','wednesday','thursday','friday','saturday','sunday') NOT NULL DEFAULT 'sunday',
-  `description` text,
-  PRIMARY KEY (`id`)
+	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`date` date NOT NULL DEFAULT '0000-00-00',
+	`same_day` enum('monday','tuesday','wednesday','thursday','friday','saturday','sunday') NOT NULL DEFAULT 'sunday',
+	`description` text,
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Priority : 0 - Maintance (grey)
--- Priority : 1 - Low (green)
--- Priority : 2 - Normal (blue)
--- Priority : 3 - Warning (yellow)
--- Priority : 4 - Critical (red)
-
+-- -----------------------------------------------------
+-- Table `tattachment`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tattachment` (
-  `id_attachment` int(10) unsigned NOT NULL auto_increment,
-  `id_incidencia` int(10) unsigned NOT NULL default '0',
-  `id_usuario` varchar(60) NOT NULL default '',
-  `filename` varchar(255) NOT NULL default '',
-  `description` varchar(150) default '',
-  `size` bigint(20) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_attachment`)
+	`id_attachment` int(10) unsigned NOT NULL auto_increment,
+	`id_incidencia` int(10) unsigned NOT NULL default '0',
+	`id_usuario` varchar(60) NOT NULL default '',
+	`filename` varchar(255) NOT NULL default '',
+	`description` varchar(150) default '',
+	`size` bigint(20) unsigned NOT NULL default '0',
+	PRIMARY KEY  (`id_attachment`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tconfig`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tconfig` (
-  `id_config` int(10) unsigned NOT NULL auto_increment,
-  `token` varchar(100) NOT NULL default '',
-  `value` text NOT NULL,
-  PRIMARY KEY  (`id_config`)
+	`id_config` int(10) unsigned NOT NULL auto_increment,
+	`token` varchar(100) NOT NULL default '',
+	`value` text NOT NULL,
+	PRIMARY KEY  (`id_config`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `tconfig_os`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS  `tconfig_os` (
-  `id_os` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  `description` varchar(250) default '',
-  `icon_name` varchar(100) default '',
-  PRIMARY KEY  (`id_os`)
+	`id_os` int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`description` varchar(250) default '',
+	`icon_name` varchar(100) default '',
+	PRIMARY KEY  (`id_os`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `tevento`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tevento` (
-  `id_evento` bigint(20) unsigned NOT NULL auto_increment,
-  `id_agente` int(10) NOT NULL default '0',
-  `id_usuario` varchar(100) NOT NULL default '0',
-  `id_grupo` mediumint(4) NOT NULL default '0',
-  `estado` tinyint(3) unsigned NOT NULL default '0',
-  `timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
-  `evento` text NOT NULL,
-  `utimestamp` bigint(20) NOT NULL default '0',
-  `event_type` enum('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change') default 'unknown',
-  `id_agentmodule` int(10) NOT NULL default '0',
-  `id_alert_am` int(10) NOT NULL default '0',
-  `criticity` int(4) unsigned NOT NULL default '0',
-  `user_comment` text NOT NULL,
-  `tags` text NOT NULL,
-  `source` tinytext NOT NULL,
-  `id_extra` tinytext NOT NULL,
-  PRIMARY KEY  (`id_evento`),
-  KEY `indice_1` (`id_agente`,`id_evento`),
-  KEY `indice_2` (`utimestamp`,`id_evento`),
-  KEY `idx_agentmodule` (`id_agentmodule`),
-  INDEX criticity (`criticity`),
-  INDEX estado (`estado`)
+	`id_evento` bigint(20) unsigned NOT NULL auto_increment,
+	`id_agente` int(10) NOT NULL default '0',
+	`id_usuario` varchar(100) NOT NULL default '0',
+	`id_grupo` mediumint(4) NOT NULL default '0',
+	`estado` tinyint(3) unsigned NOT NULL default '0',
+	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
+	`evento` text NOT NULL,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	`event_type` enum('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change') default 'unknown',
+	`id_agentmodule` int(10) NOT NULL default '0',
+	`id_alert_am` int(10) NOT NULL default '0',
+	`criticity` int(4) unsigned NOT NULL default '0',
+	`user_comment` text NOT NULL,
+	`tags` text NOT NULL,
+	`source` tinytext NOT NULL,
+	`id_extra` tinytext NOT NULL,
+	PRIMARY KEY  (`id_evento`),
+	KEY `indice_1` (`id_agente`,`id_evento`),
+	KEY `indice_2` (`utimestamp`,`id_evento`),
+	KEY `idx_agentmodule` (`id_agentmodule`),
+	INDEX criticity (`criticity`),
+	INDEX estado (`estado`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 -- Criticity: 0 - Maintance (grey)
 -- Criticity: 1 - Informational (blue)
 -- Criticity: 2 - Normal (green) (status 0)
 -- Criticity: 3 - Warning (yellow) (status 2)
 -- Criticity: 4 - Critical (red) (status 1)
 
+-- -----------------------------------------------------
+-- Table `tgrupo`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tgrupo` (
 	`id_grupo` mediumint(4) unsigned NOT NULL auto_increment,
 	`nombre` varchar(100) NOT NULL default '',

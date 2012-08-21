@@ -74,6 +74,7 @@ alter table tincidencia add (id_agent NUMBER(10,0) default 0 NULL);
 -- Table `tagente`
 -- -----------------------------------------------------
 alter table tagente add (url_address CLOB default '' NULL);
+alter table tagente add (quiet NUMBER(5, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table `talert_special_days`

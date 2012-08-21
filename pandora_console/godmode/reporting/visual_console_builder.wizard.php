@@ -136,6 +136,10 @@ $label_type = array ('agent_module' => __('Agent - Module'),
 	'none' => __('None'));
 $table->data["all_5"][1] = html_print_select ($label_type, 'label_type', 'agent_module', '', '', '', true);
 
+$table->data["all_6"][0] = __('Enable link agent');
+$table->data["all_6"][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('enable_link', 1, '', 1, false, '', '', true).'&nbsp;&nbsp;';
+$table->data["all_6"][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('enable_link', 0, '', 1, false, '', '', true);
+
 echo '<form method="post"
 	action="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '"
 	onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';

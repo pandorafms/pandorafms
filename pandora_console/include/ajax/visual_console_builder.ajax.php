@@ -66,6 +66,8 @@ $value_show = get_parameter('value_show', 'percent');
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
 
+$enable_link = get_parameter('enable_link', 1);
+
 switch ($action) {
 	case 'get_font':
 		$return = array();
@@ -236,6 +238,9 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 			default:
+				if ($enable_link !== null) {
+					$values['enable_link'] = $enable_link;
+				}
 				if ($label !== null) {
 					$values['label'] = $label;
 				}

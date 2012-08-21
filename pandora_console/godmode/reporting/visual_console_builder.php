@@ -192,6 +192,7 @@ switch ($activeTab) {
 				$type_percentile = get_parameter ("type_percentile", 'percentile');
 				$value_show = get_parameter ("value_show", 'percent');
 				$label_type = get_parameter ("label_type", 'agent_module');
+				$enable_link = get_parameter ("enable_link", 'enable_link');
 				// This var switch between creation of items, item_per_agent = 0 => item per module; item_per_agent <> 0  => item per agent
 				$item_per_agent = get_parameter ("item_per_agent", 0);
 				
@@ -206,7 +207,7 @@ switch ($activeTab) {
 					$message .= visual_map_process_wizard_add_agents($id_agents_result,
 						$image, $idVisualConsole, $range, $width, $height,
 						$period, $process_value, $percentileitem_width,
-						$max_value, $type_percentile, $value_show, $label_type, $type);	
+						$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link);	
 						
 					$statusProcessInDB = array('flag' => true, 'message' => $message);						
 					
@@ -232,7 +233,7 @@ switch ($activeTab) {
 							$message .= visual_map_process_wizard_add_modules($id_modules,
 								$image, $idVisualConsole, $range, $width, $height,
 								$period, $process_value, $percentileitem_width,
-								$max_value, $type_percentile, $value_show, $label_type, $type);
+								$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link);
 						}
 						else {
 							$id_modules = array();
@@ -257,7 +258,7 @@ switch ($activeTab) {
 							$message .= visual_map_process_wizard_add_modules($id_modules,
 								$image, $idVisualConsole, $range, $width, $height,
 								$period, $process_value, $percentileitem_width,
-								$max_value, $type_percentile, $value_show, $label_type, $type);
+								$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link);
 						}
 						$statusProcessInDB = array('flag' => true, 'message' => $message);
 					}

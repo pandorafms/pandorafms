@@ -937,7 +937,8 @@ CREATE TABLE "tlayout_data" (
 	"id_layout_linked" INTEGER NOT NULL default 0,
 	"parent_item" INTEGER NOT NULL default 0,
 	"label_color" varchar(20) DEFAULT '',
-	"no_link_color" SMALLINT NOT NULL default 0
+	"no_link_color" SMALLINT NOT NULL default 0,
+	"enable_link" SMALLINT NOT NULL default 1
 );
 
 CREATE TABLE "tplugin" (

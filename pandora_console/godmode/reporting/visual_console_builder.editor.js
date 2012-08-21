@@ -289,6 +289,7 @@ function readFields() {
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
 	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
 	values['value_show'] = $("input[name=value_show]:checked").val();
+	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0; 
 	
 	if (typeof(enterprise_readFields) == 'function') {
 		//The parameter is a object and the function can change or add
@@ -476,6 +477,8 @@ function loadFieldsFromDB(item) {
 					if (key == 'width') $("input[name=width]").val(val);
 					if (key == 'height') $("input[name=height]").val(val);
 					if (key == 'label') $("input[name=label]").val(val);
+					if (key == 'enable_link') $("input[name=enable_link]").val(val);
+
 					if (key == 'image') {
 						//Load image preview
 						$("select[name=image]").val(val);
@@ -623,6 +626,9 @@ function hiddenFields(item) {
 	
 	$("#image_row").css('display', 'none');
 	$("#image_row."  + item).css('display', '');
+	
+	$("#enable_link_row").css('display', 'none');
+	$("#enable_link_row."  + item).css('display', '');
 	
 	$("#preview_row").css('display', 'none');
 	$("#preview_row."  + item).css('display', '');

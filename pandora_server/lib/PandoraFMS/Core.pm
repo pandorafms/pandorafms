@@ -227,6 +227,11 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 		
 		return;
 	}
+	if ($module->{'quiet'} == 1) {
+		logger($pa_config, "Generate Alert. The module '" . $module->{'nombre'} . "' is in quiet mode.", 10);
+		
+		return;
+	}
 	
 	# Do not generate alerts for disabled groups
 	if (is_group_disabled ($dbh, $agent->{'id_grupo'})) {
@@ -1605,12 +1610,23 @@ sub pandora_event ($$$$$$$$$$;$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags) = @_;
 	
-	my $agent = get_db_single_row ($dbh, 'SELECT *
-		FROM tagente WHERE id_agente = ?', $id_agente);
-	if ($agent->{'quiet'} == 1) {
-		logger($pa_config, "Generate Event. The agent '" . $agent->{'nombre'} . "' is in quiet mode.", 10);
-		
-		return;
+	if ($id_agente != 0) {
+		my $agent = get_db_single_row ($dbh, 'SELECT *
+			FROM tagente WHERE id_agente = ?', $id_agente);
+		if ($agent->{'quiet'} == 1) {
+			logger($pa_config, "Generate Event. The agent '" . $agent->{'nombre'} . "' is in quiet mode.", 10);
+			
+			return;
+		}
+	}
+	if ($id_agentmodule != 0) {
+		my $module = get_db_single_row ($dbh, 'SELECT *
+		FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agentmodule);
+		if ($module->{'quiet'} == 1) {
+			logger($pa_config, "Generate Event. The module '" . $module->{'nombre'} . "' is in quiet mode.", 10);
+			
+			return;
+		}
 	}
 	
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);

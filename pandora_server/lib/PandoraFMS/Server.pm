@@ -36,30 +36,30 @@ our @ServerSuffixes;
 # Server class constructor.
 ########################################################################################
 sub new ($$$;$) {
-    my $class = shift;
-    my $self = {
-        _pa_config => shift,
-        _server_id => 0,
-        _server_type => shift,
-        _dbh => shift,
-        _num_threads => 1,
-        _threads => [],
-        _queue_size => 0,
+	my $class = shift;
+	my $self = {
+		_pa_config => shift,
+		_server_id => 0,
+		_server_type => shift,
+		_dbh => shift,
+		_num_threads => 1,
+		_threads => [],
+		_queue_size => 0,
 		_errstr => ''
-    };
-
+	};
+	
 	# Share variables that may be set from different threads
 	share ($self->{'_queue_size'});
 	share ($self->{'_errstr'});
-
+	
 	# Thread kill signal handler
 	#$SIG{'KILL'} = sub {
-    #	threads->exit() if threads->can('exit');
-    #	exit();
+	#	threads->exit() if threads->can('exit');
+	#	exit();
 	#};
-
-    bless $self, $class;
-    return $self;
+	
+	bless $self, $class;
+	return $self;
 }
 
 ########################################################################################

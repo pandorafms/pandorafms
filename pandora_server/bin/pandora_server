@@ -47,13 +47,13 @@ my $DBH;
 ########################################################################################
 sub pandora_shutdown () {
 	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' Shutdown by signal ', 1);
-
+	
 	# Stop servers
 	foreach my $server (@Servers) {
 		$server->downEvent ();
 		$server->stop ();
 	}
-
+	
 	# Stop the netflow daemon
 	pandora_stop_netflow_daemon ();
 	
@@ -69,20 +69,20 @@ sub pandora_shutdown () {
 # Server startup.
 ########################################################################################
 sub pandora_startup () {
-
+	
 	# Start logging
 	pandora_start_log (\%Config);
-
+	
 	# Connect to the DB
 	$DBH = db_connect ($Config{'dbengine'}, $Config{'dbname'}, $Config{'dbhost'}, $Config{'dbport'},
 					$Config{'dbuser'}, $Config{'dbpass'});
-
+	
 	# Grab config tokens shared with the console and not in the .conf
-
+	
 	pandora_get_sharedconfig (\%Config, $DBH);
-
+	
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
-
+	
 	# Load servers
 	pandora_reset_server (\%Config, $DBH);
 	push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
@@ -92,15 +92,15 @@ sub pandora_startup () {
 	push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
 	push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
 	push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
-
+	
 	enterprise_hook('load_enterprise_servers', [\@Servers, \%Config, $DBH]);
-
+	
 	# Start the netflow daemon if necessary
 	pandora_start_netflow_daemon ();
 	
 	# Remove disabled servers
 	@Servers = grep { defined ($_) } @Servers;
-
+	
 	# Run
 	foreach my $server (@Servers) {
 		$server->run ();
@@ -111,21 +111,21 @@ sub pandora_startup () {
 # Server restart.
 ########################################################################################
 sub pandora_restart () {
-
+	
 	# Stop the servers
 	foreach my $server (@Servers) {
 		$server->stop ();
 	}
-
+	
 	# Remove the servers
 	while (pop (@Servers)) {};
 	
 	# Close STDERR, redirected by pandora_start_log
 	close (STDERR);
-
+	
 	# Wait before trying to start again
 	sleep ($Config{'restart_delay'});
-
+	
 	# Start the servers
 	pandora_startup ();
 }
@@ -134,31 +134,31 @@ sub pandora_restart () {
 # Server crash. Handler to write in the log unhandled errors and write it to console
 ########################################################################################
 sub pandora_crash () {
-
+	
 	my $full_error = "";
-
+	
 	# Avoid show messages about enterprise library loading failurem, VERY 
 	# confussing, all of them are warnigs and not critical, and user should be
 	# worried about that. If perl has a more "clean" way to avoid this messages
 	# will be nice to replace this code, but at this time it's the only way I know
-
+	
 	foreach my $error_line (@_) {
-
-        # Trap the XML error and exit without nasty messages
-        if ($error_line =~ m/XML\/Parser/){
-            logger (\%Config, "Problem parsing XML file, XML file discarded: $error_line", 2);
-            return;
-        }
-
+		# Trap the XML error and exit without nasty messages
+		if ($error_line =~ m/XML\/Parser/) {
+			logger (\%Config, "Problem parsing XML file, XML file discarded: $error_line", 2);
+			return;
+		}
+		
 		elsif ($error_line !~ m/Enterprise/i && $error_line !~ m/Format_XS/i && $error_line !~ m/ConfigLocal/i){
 			logger (\%Config, '[E] \'' . $Config{'servername'} . "': $error_line", 1);
 		} 
-
-
-        else {
+		
+		
+		else {
 			if ($error_line !~ m/Can\'t\slocate/) {
 				logger (\%Config, '[E] \'' . $Config{'servername'} . "': $error_line", 1);
-			} else {
+			}
+			else {
 				# Known errors of loading Enterprise, Format_XS and ConfigLocal 
 				# modules, non fatal.
 				return;
@@ -166,16 +166,15 @@ sub pandora_crash () {
 		}
 		$full_error .= $error_line;
 	}
-
+	
 	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' unhandled error.', 1);
-
+	
 	# It's interesting show by console problems, not only in logs. This helps
 	# to solve stupid problems like Database credential problems for example
-
+	
 	print_message (\%Config, ' [E] Unhandled error in "' . $Config{'servername'} . "\". See more information in logfiles at '/var/log/pandora' \n", 0);
 	print_message (\%Config, " Error description:\n", 0);
 	print_message (\%Config, $full_error, 0);
-
 }
 
 ########################################################################################

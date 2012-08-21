@@ -268,3 +268,8 @@ ALTER TABLE "tplugin" ADD COLUMN "parameters" TEXT default '';
 -- -----------------------------------------------------
 ALTER TABLE "trecon_task" ALTER COLUMN "subnet" TYPE TEXT;
 ALTER TABLE "trecon_task" ALTER COLUMN "field1" TYPE TEXT;
+
+-- -----------------------------------------------------
+-- Table `tlayout_data`
+-- -----------------------------------------------------
+ALTER TABLE "tlayout_data" ADD COLUMN "enable_link" SMALLINT NOT NULL default 1;

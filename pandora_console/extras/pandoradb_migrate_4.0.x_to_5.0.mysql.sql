@@ -267,3 +267,8 @@ UPDATE trecon_script SET `description`='This&#x20;script&#x20;is&#x20;used&#x20;
 -- -----------------------------------------------------
 ALTER TABLE trecon_task MODIFY subnet TEXT NOT NULL DEFAULT '';
 ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL DEFAULT '';
+
+-- -----------------------------------------------------
+-- Table `tlayout_data
+-- -----------------------------------------------------
+ALTER TABLE tlayout_data ADD COLUMN `enable_link` tinyint(1) UNSIGNED NOT  NULL default 1;

@@ -268,3 +268,8 @@ ALTER TABLE tplugin ADD (parameters CLOB default '');
 -- -----------------------------------------------------
 ALTER TABLE trecon_task MODIFY subnet TEXT NOT NULL;
 ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL;
+
+-- -----------------------------------------------------
+-- Table `tlayout_data`
+-- -----------------------------------------------------
+ALTER TABLE tlayout_data ADD (enable_link NUMBER(5, 0) NOT NULL default 1);

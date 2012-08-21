@@ -397,7 +397,7 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range,
  */
 function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
-	$max_value, $type_percentile, $value_show, $label_type, $type) {
+	$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link = true) {
 	if (empty ($id_modules)) {
 		$return = ui_print_error_message (__('No modules selected'), '', true);
 		return $return;
@@ -486,7 +486,8 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 			'width' => $value_width,
 			'period' => $period,
 			'height' => $value_height,
-			'label_color' => '#000000');
+			'label_color' => '#000000',
+			'enable_link' => $enable_link);
 		
 		db_process_sql_insert ('tlayout_data', $values);
 		
@@ -512,7 +513,7 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
  */
 function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
-	$max_value, $type_percentile, $value_show, $label_type, $type) {
+	$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link = 1) {
 	
 	if (empty ($id_agents)) {
 		$return = ui_print_error_message (__('No agents selected'), '', true);
@@ -590,7 +591,8 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 			'width' => $value_width,
 			'period' => $period,
 			'height' => $value_height,
-			'label_color' => '#000000');
+			'label_color' => '#000000',
+			'enable_link' => $enable_link);
 		
 		db_process_sql_insert ('tlayout_data', $values);
 		
@@ -780,6 +782,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	$lines = array ();
 	
 	foreach ($layout_datas as $layout_data) {
+		$enable_link = db_get_value('enable_link', 'tlayout_data', 'id', $layout_data['id']);
+		
 		switch ($layout_data['type']) {
 			case STATIC_GRAPH:
 			case PERCENTILE_BAR:
@@ -874,33 +878,47 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				else
 					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">'; 
-				
+
+				if ($layout_data['id_agente_modulo'] != 0) {
+					$id_agent = db_get_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
+				}
+				elseif ($layout_data['id_agent'] != 0) {
+					
+					$id_agent = $layout_data["id_agent"];
+				}
+				else {
+					$id_agent = 0;
+				}
+
 				if ($show_links) {
+
 					if (!isset($id_agent)) $id_agent = 0;
-					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
-						
-						//Extract id service if it is a prediction module.
-						$id_service = db_get_value_filter('custom_integer_1',
-							'tagente_modulo',
-							array('id_agente_modulo' => $layout_data['id_agente_modulo'],
-								'prediction_module' => 1));
-						
-						if ($id_service === false) {
-							$id_service = 0;
-						}
-						
-						if ($id_service != 0) {
-							//Link to an service page
-							echo '<a href="'.$config['homeurl'].'/index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-								$id_service . '&offset=0">';
-						}
-						else {
-							// Link to an agent
-							echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+
+					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {					
+						if ($enable_link) {
+							
+							//Extract id service if it is a prediction module.
+							$id_service = db_get_value_filter('custom_integer_1',
+								'tagente_modulo',
+								array('id_agente_modulo' => $layout_data['id_agente_modulo'],
+									'prediction_module' => 1));
+							
+							if ($id_service === false) {
+								$id_service = 0;
+							}
+							
+							if ($id_service != 0) {
+								//Link to an service page
+								echo '<a href="'.$config['homeurl'].'/index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+									$id_service . '&offset=0">';
+							}
+							else {
+								// Link to an agent
+								echo '<a href="'.$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+							}
 						}
 					}
-					elseif ($layout_data['id_layout_linked'] > 0) {
-					
+					elseif ($layout_data['id_layout_linked'] > 0) {			
 						// Link to a map
 						echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 					
@@ -996,9 +1014,11 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				if ($show_links) {
 					if (!isset($id_agent)) $id_agent = 0;
 					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
-						// Link to an agent
-						echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
-						$endTagA = true;
+						if ($enable_link) {
+							// Link to an agent
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+							$endTagA = true;
+						}
 					} 
 					elseif ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
@@ -1024,9 +1044,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				if ($show_links) {
 					if (!isset($id_agent)) $id_agent = 0;
 					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
-						// Link to an agent
-						echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
-						$endTagA = true;
+						
+						if ($enable_link) {
+							// Link to an agent
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+							$endTagA = true;
+						}
 					} 
 					elseif ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
@@ -1104,11 +1127,14 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						$id_service = 0;
 					}
 					
-					if ($id_service != 0) { 
-						//Link to an service page
-						echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-							$id_service . '&offset=0">';
-						$endTagA = true;
+					if ($id_service != 0) {
+						
+						if ($enable_link) { 
+							//Link to an service page
+							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+								$id_service . '&offset=0">';
+							$endTagA = true;
+						}
 					}
 					elseif ($layout_data['id_layout_linked'] > 0) {
 					
@@ -1194,26 +1220,30 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				if ($show_links) {
 					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
 						
-						//Extract id service if it is a prediction module.
-						$id_service = db_get_value_filter('custom_integer_1',
-							'tagente_modulo',
-							array('id_agente_modulo' => $layout_data['id_agente_modulo'],
-								'prediction_module' => 1));
 						
-						if ($id_service === false) {
-							$id_service = 0;
-						}
+						if ($enable_link) {
 						
-						if ($id_service != 0) {
-							//Link to an service page
-							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-								$id_service . '&offset=0">';
-							$endTagA = true;
-						}
-						else {
-							// Link to an agent
-							echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
-							$endTagA = true;
+							//Extract id service if it is a prediction module.
+							$id_service = db_get_value_filter('custom_integer_1',
+								'tagente_modulo',
+								array('id_agente_modulo' => $layout_data['id_agente_modulo'],
+									'prediction_module' => 1));
+							
+							if ($id_service === false) {
+								$id_service = 0;
+							}
+							
+							if ($id_service != 0) {
+								//Link to an service page
+								echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+									$id_service . '&offset=0">';
+								$endTagA = true;
+							}
+							else {
+								// Link to an agent
+								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+								$endTagA = true;
+							}
 						}
 					}
 					elseif ($layout_data['id_layout_linked'] > 0) {
@@ -1278,23 +1308,26 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				if ($show_links) {
 					if (($layout_data['id_layout_linked'] == "") || ($layout_data['id_layout_linked'] == 0)) {
 						
-						//Extract id service if it is a prediction module.
-						$id_service = db_get_value_filter('custom_integer_1',
-							'tagente_modulo',
-							array('id_agente_modulo' => $layout_data['id_agente_modulo'],
-								'prediction_module' => 1));
+						if ($enable_link) {
 						
-						if ($id_service === false) {
-							$id_service = 0;
-						}
-						
-						if ($id_service != 0) { 
-							//Link to an service page
-							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
-								$id_service . '&offset=0">';
-						}
-						else {
-							echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data">';
+							//Extract id service if it is a prediction module.
+							$id_service = db_get_value_filter('custom_integer_1',
+								'tagente_modulo',
+								array('id_agente_modulo' => $layout_data['id_agente_modulo'],
+									'prediction_module' => 1));
+							
+							if ($id_service === false) {
+								$id_service = 0;
+							}
+							
+							if ($id_service != 0) { 
+								//Link to an service page
+								echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+									$id_service . '&offset=0">';
+							}
+							else {
+								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data">';
+							}
 						}
 					}
 					else {

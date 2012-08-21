@@ -5,7 +5,7 @@ body {
     font-family:Tahoma, Geneva, Arial;
     font-size:10pt;
 }
-h1 { font-weight: bold; font-size:16px; margin:2px 0px 2px 0px; color:#0068C4; font-family:arial }
+h1 { font-weight: bold; font-size:16px; margin:2px 0px 2px 0px; color:#237948; font-family:arial }
 h2{
     color : blue;
 }
@@ -15,9 +15,9 @@ p
     font-size:20px;
 }
 
-a { color: #035BAC; text-decoration:none; }
+a { color: #254533; text-decoration:none; }
 a:hover { text-decoration:underline; }
-a:visited { color: #035BAC; text-decoration:none; }
+a:visited { color: #254533; text-decoration:none; }
 a:visited:hover { text-decoration:underline; }
 
 span.res { font-size:80%; color:#555; }

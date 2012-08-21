@@ -340,8 +340,12 @@ foreach ($modules as $module) {
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		if ($module["id_policy_module"] != 0) {
 			$linked = policies_is_module_linked($module['id_agente_modulo']);
-			$id_policy = db_get_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
-			$name_policy = db_get_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
+			$id_policy = db_get_value_sql('SELECT id_policy
+				FROM tpolicy_modules
+				WHERE id = '.$module["id_policy_module"]);
+			$name_policy = db_get_value_sql('SELECT name
+				FROM tpolicies
+				WHERE id = '.$id_policy);
 			$policyInfo = policies_info_module_policy($module["id_policy_module"]);
 			
 			$adopt = false;
@@ -393,6 +397,10 @@ foreach ($modules as $module) {
 	}
 	$nombre_tipo_modulo = modules_get_moduletype_name ($module["id_tipo_modulo"]);
 	echo "<td class='".$tdcolor."_id' title='".io_safe_output($module["nombre"])."'>";
+	if ($module['quiet']) {
+		html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+		echo "&nbsp;";
+	}
 	ui_print_string_substr ($module["nombre"], 35, false, 10);
 	echo "</td><td class='".$tdcolor."'> ";
 	

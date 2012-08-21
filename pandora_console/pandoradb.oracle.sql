@@ -226,8 +226,9 @@ CREATE TABLE tagente_modulo (
 	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
 	macros CLOB default '',
 	critical_instructions CLOB default '',
-    warning_instructions CLOB default '',
-    unknown_instructions CLOB default '',	
+	warning_instructions CLOB default '',
+	unknown_instructions CLOB default '',
+	quiet NUMBER(5, 0) default 0 NOT NULL,
 	CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'))
 );
 CREATE INDEX tagente_modulo_id_agente_idx ON tagente_modulo(id_agente);

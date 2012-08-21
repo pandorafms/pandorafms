@@ -153,6 +153,7 @@ if ($id_agent_module) {
 		$interval = agents_get_interval ($id_agente);
 	}
 	$ff_interval = $module['module_ff_interval'];
+	$quiet_module = $module['quiet'];
 	$unit = $module['unit'];
 	$tcp_port = $module['tcp_port'];
 	$tcp_send = $module['tcp_send'];

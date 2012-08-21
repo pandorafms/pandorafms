@@ -123,6 +123,7 @@ ALTER TABLE "talert_snmp" ADD COLUMN "single_value" varchar(255) DEFAULT '';
 -- Table `tagente_modulo`
 -- -----------------------------------------------------
 ALTER TABLE "tagente_modulo" ADD COLUMN "module_ff_interval" INTEGER NOT NULL default 0;
+ALTER TABLE "tagente_modulo" ADD COLUMN "quiet" SMALLINT NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table `tevent_filter`

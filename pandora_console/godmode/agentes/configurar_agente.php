@@ -65,6 +65,7 @@ $nombre_agente = "";
 $direccion_agente = get_parameter ('direccion', '');
 $intervalo = SECONDS_5MINUTES;
 $ff_interval = 0;
+$quiet_module = 0;
 $id_server = "";
 $max_alerts = 0;
 $modo = 1;
@@ -683,6 +684,7 @@ if ($update_module || $create_module) {
 	$max = (int) get_parameter ('max');
 	$interval = (int) get_parameter ('module_interval', $intervalo);
 	$ff_interval = (int) get_parameter ('module_ff_interval');
+	$quiet_module = (int) get_parameter ('quiet_module');
 	$id_plugin = (int) get_parameter ('id_plugin');
 	$id_export = (int) get_parameter ('id_export');
 	$disabled = (bool) get_parameter ('disabled');
@@ -818,7 +820,8 @@ if ($update_module) {
 		'custom_integer_2' => $custom_integer_2,
 		'min_ff_event' => $ff_event,
 		'unit' => $unit,
-		'macros' => $macros);
+		'macros' => $macros,
+		'quiet' => $quiet_module);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$result = false;
@@ -926,7 +929,8 @@ if ($create_module) {
 		'custom_integer_2' => $custom_integer_2,
 		'min_ff_event' => $ff_event,
 		'unit' => $unit,
-		'macros' => $macros);
+		'macros' => $macros,
+		'quiet' => $quiet_module);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$id_agent_module = false;

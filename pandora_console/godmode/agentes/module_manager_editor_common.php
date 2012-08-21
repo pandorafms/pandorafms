@@ -264,7 +264,7 @@ $none_text = __('None');
 $disabled_export = false;
 // If code comes from policies disable export select
 global $__code_from;
-if ($__code_from == 'policies'){
+if ($__code_from == 'policies') {
 	$none_text = __('Not needed');
 	$disabled_export = true;
 } 
@@ -314,6 +314,10 @@ $table_advanced->data[6][4] =  html_print_select_from_sql (
 	ORDER BY name",
 	'id_tag_selected[]', $id_tag, '','','', true, true, false,
 	false, 'width: 200px', '5');
+$table_advanced->data[7][0] = __('Quiet');
+$table_advanced->data[7][0] .= ui_print_help_tip(__('The module still stores data but the alerts and events will be stop'), true);
+$table_advanced->colspan[7][1] = 4;
+$table_advanced->data[7][1] = html_print_checkbox('quiet_module', 1, $quiet_module, true);
 ?>
 
 <script type="text/javascript">

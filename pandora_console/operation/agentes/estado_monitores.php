@@ -29,11 +29,11 @@ if (is_ajax ()) {
 		if ($tags === false)
 			$tags = array();
 			
-		echo '<h3> Tag\'s information </h3>';		
+		echo '<h3> Tag\'s information </h3>';
 		foreach ($tags as $tag) {
 				echo tags_get_name($tag).'<br>';
 		}
-	
+		
 		return;
 	}
 	return;
@@ -42,7 +42,7 @@ if (is_ajax ()) {
 if (!isset ($id_agente)) {
 	//This page is included, $id_agente should be passed to it.
 	db_pandora_audit("HACK Attempt",
-			  "Trying to get to monitor list without id_agent passed");
+		"Trying to get to monitor list without id_agent passed");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -171,7 +171,7 @@ switch ($config["dbtype"]) {
 		$fields_tagente_estado = oracle_list_all_field_table('tagente_estado', 'string');
 		$fields_tagente_modulo = oracle_list_all_field_table('tagente_modulo', 'string');
 		$fields_tmodule_group = oracle_list_all_field_table('tmodule_group', 'string');
-
+		
 		$sql = sprintf ("
 			SELECT " . $fields_tagente_estado . ', ' . $fields_tagente_modulo . ', ' . $fields_tmodule_group .
 			" FROM tagente_estado, tagente_modulo
@@ -306,15 +306,20 @@ foreach ($modules as $module) {
 	$data[2] = servers_show_type ($module['id_modulo']) . '&nbsp;';
 	
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
-	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
-	  
-	$data[3] = ui_print_string_substr ($module["nombre"], 30, true);
+		$data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
+	
+	$data[3] = "";
+	if ($module['quiet']) {
+		$data[3] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""))
+			. "&nbsp;";
+	}
+	$data[3] .= ui_print_string_substr ($module["nombre"], 30, true);
 	if (!empty($module["extended_info"])) {
 		if ($module["extended_info"] != "") {
 			$data[3] .= ui_print_help_tip ($module["extended_info"], true, '/images/comments.png');
 		}
 	}
-
+	
 	//Adds tag context information
 	if (tags_get_modules_tag_count($module['id_agente_modulo']) > 0) {
 		$data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">' .
@@ -323,9 +328,9 @@ foreach ($modules as $module) {
 	$data[4] = ui_print_string_substr ($module["descripcion"], 60, true, 8);
 	
 	modules_get_status($module['id_agente_modulo'], $module['estado'], $module['datos'], $status, $title);
-
+	
 	$data[5] = ui_print_status_image($status, $title, true);
-
+	
 	if ($module["id_tipo_modulo"] == 24) { // log4x
 		switch($module["datos"]) {
 			case 10: $salida = "TRACE"; $style="font-weight:bold; color:darkgreen;"; break;
@@ -400,7 +405,7 @@ function toggle_full_value(id) {
 	value_title = $("#value_module_" + id).attr('title');
 	
 	$("#value_module_" + id).attr('title', $("#value_module_text_" + id).html());
-
+	
 	$("#value_module_text_" + id).html(value_title);
 }
 </script>

@@ -45,7 +45,7 @@ if($is_extra === ENTERPRISE_NOT_HOOK) {
 
 if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 	db_pandora_audit("ACL Violation", 
-			  "Trying to access Agent General Information");
+		"Trying to access Agent General Information");
 	require_once ("general/noaccess.php");
 	return;
 }
@@ -59,7 +59,7 @@ echo '<div style="height: 10px">&nbsp;</div>';
 
 if ($config["agentaccess"]){
 	echo '<b>'.__('Agent access rate (24h)').'</b><br />';
-
+	
 	graphic_agentaccess($id_agente, 280, 110, 86400);
 }
 
@@ -70,7 +70,7 @@ echo '<br>';
 graph_graphic_agentevents ($id_agente, 290, 15, 86400, '');
 
 echo '</div>';
-	
+
 echo '<div width="450px">';
 echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:53%">';
 //Agent name
@@ -78,9 +78,14 @@ echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
 if ($agent['disabled']) {
 	$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase;", true) . ui_print_help_tip(__('Disabled'), true) . "</em>";
 }
+else if ($agent['quiet']) {
+	$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase;", true) .
+	"&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
+}
 else {
 	$cellName = ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase;", true);
 }
+
 echo '<td class="datos"><b>'.$cellName.'</b></td>';
 echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
 echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'), "alt" => "")) . '</a></td></tr>';

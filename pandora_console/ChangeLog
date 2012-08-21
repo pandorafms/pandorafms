@@ -1,3 +1,17 @@
+2012-08-21 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* pandoradb.oracle.sql, operation/agentes/estado_generalagente.php,
+	operation/agentes/estado_agente.php,
+	operation/agentes/ver_agente.php,
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	godmode/agentes/agent_manager.php,
+	godmode/agentes/modificar_agente.php,
+	godmode/agentes/configurar_agente.php, pandoradb.sql,
+	pandoradb.postgreSQL.sql: added the feature to set a agent in
+	"Quiet" mode.
+
 2012-08-21 Dario Rodriguez <dario.rodriguez@artica.es>
 
         * operation/agentes/ver_agente.php: Added code to support new

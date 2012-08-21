@@ -55,6 +55,7 @@ ALTER TABLE `tincidencia` ADD COLUMN `id_agent` int(10) unsigned NULL default 0;
 -- Table `tagente`
 -- -----------------------------------------------------
 ALTER TABLE `tagente` ADD COLUMN `url_address` mediumtext NULL;
+ALTER TABLE `tagente` ADD COLUMN `quiet` tinyint(1) NOT NULL DEFAULT '0';
 
 -- -----------------------------------------------------
 -- Table `talert_special_days`
@@ -86,20 +87,22 @@ ALTER TABLE tplanned_downtime_agents
 -- Table `tevento`
 -- -----------------------------------------------------
 ALTER TABLE `tevento` ADD COLUMN (`source` tinytext NOT NULL,
-`id_extra` tinytext NOT NULL);
+	`id_extra` tinytext NOT NULL);
 
 -- -----------------------------------------------------
 -- Table `talert_snmp`
 -- -----------------------------------------------------
 ALTER TABLE `talert_snmp` ADD COLUMN (`_snmp_f1_` text, `_snmp_f2_` text, `_snmp_f3_` text,
-`_snmp_f4_` text, `_snmp_f5_` text, `_snmp_f6_` text, `trap_type` int(11) NOT NULL default '-1',
-`single_value` varchar(255) DEFAULT '');
+	`_snmp_f4_` text, `_snmp_f5_` text, `_snmp_f6_` text, `trap_type` int(11) NOT NULL default '-1',
+	`single_value` varchar(255) DEFAULT '');
 
 -- -----------------------------------------------------
 -- Table `tagente_modulo`
 -- -----------------------------------------------------
 ALTER TABLE `tagente_modulo` ADD COLUMN `module_ff_interval` int(4) unsigned default '0';
 ALTER TABLE `tagente_modulo` CHANGE COLUMN `post_process` `post_process` double(18,5) default NULL;
+ALTER TABLE `tagente_modulo` ADD COLUMN `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard';
+ALTER TABLE `tagente_modulo` ADD COLUMN `macros` text;
 
 -- -----------------------------------------------------
 -- Table `tnetwork_component`
@@ -243,12 +246,6 @@ UPDATE tconfig SET `value`='comparation'
 ALTER TABLE tnetwork_component ADD `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard';
 ALTER TABLE tnetwork_component ADD `only_metaconsole` tinyint(1) unsigned default '0';
 ALTER TABLE tnetwork_component ADD `macros` text;
-
--- -----------------------------------------------------
--- Table `tagente_modulo`
--- -----------------------------------------------------
-ALTER TABLE tagente_modulo ADD `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard';
-ALTER TABLE tagente_modulo ADD `macros` text;
 
 -- -----------------------------------------------------
 -- Table `tplugin`

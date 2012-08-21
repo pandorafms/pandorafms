@@ -301,10 +301,10 @@ if (is_ajax ()) {
 		foreach($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
-			
+		
 		//Hack to translate text "any" in PHP to javascript
 		//$agent_modules['any_text'] = __('Any');
-
+		
 		echo json_encode ($agent_modules);
 		return;
 	}
@@ -317,7 +317,7 @@ if (is_ajax ()) {
 		echo '<strong>'.__('Group').':</strong> ';
 		echo html_print_image('images/groups_small/'.groups_get_icon ($agent['id_grupo']).'.png', true); 
 		echo groups_get_name ($agent['id_grupo']).'<br />';
-
+		
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
 		
@@ -518,33 +518,33 @@ else {
 }
 
 
+///-------------Code for the tabs in the header of agent page-----------
 $tab = get_parameter ("tab", "main");
 
 /* Manage tab */
-
 $managetab = "";
-
 if (check_acl ($config['id_user'],$id_grupo, "AW") || $is_extra) {
 	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
 		. html_print_image("images/setup.png", true, array ("title" => __('Manage')))
 		. '</a>';
-
+	
 	if ($tab == 'manage')
 		$managetab['active'] = true;
 	else
 		$managetab['active'] = false;
 }
 
+
 /* Main tab */
 $maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'
-		. html_print_image("images/monitor.png", true, array("title" => __('Main')))
-		. '</a>';
-		
+	. html_print_image("images/monitor.png", true, array("title" => __('Main')))
+	. '</a>';
 if ($tab == 'main')
 	$maintab['active'] = true;
 else
 	$maintab['active'] = false;
-	
+
+
 /* Data */
 $datatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=data">'
 	. html_print_image("images/lightbulb.png", true, array("title" => __('Data')))
@@ -555,21 +555,21 @@ if (($tab == 'data') OR ($tab == 'data_view'))
 else
 	$datatab['active'] = false;
 
+
 /* Alert tab */
 $alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'
-		. html_print_image("images/bell.png", true, array("title" => __('Alerts')))
-		. '</a>';
-		
+	. html_print_image("images/bell.png", true, array("title" => __('Alerts')))
+	. '</a>';
 if ($tab == 'alert')
 	$alerttab['active'] = true;
 else
 	$alerttab['active'] = false;
-	
+
+
 /* SLA view */
 $slatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente='.$id_agente.'">'
-		. html_print_image("images/images.png", true, array("title" => __('S.L.A.')))
-		. '</a>';
-
+	. html_print_image("images/images.png", true, array("title" => __('S.L.A.')))
+	. '</a>';
 if ($tab == 'sla') {
 	$slatab['active'] = true;
 }
@@ -577,35 +577,35 @@ else {
 	$slatab['active'] = false;
 }
 
+
 /* Inventory */
 $inventorytab = enterprise_hook ('inventory_tab');
-
 if ($inventorytab == -1)
 	$inventorytab = "";
 
+
 /* Collection */
 $collectiontab = enterprise_hook('collection_tab');
-
 if ($collectiontab == -1)
 	$collectiontab = "";
-	
+
+
 /* Policy */
 $policyTab = enterprise_hook('policy_tab');
 if ($policyTab == -1)
 	$policyTab = "";
 
-/* Group tab */
 
+/* Group tab */
 $grouptab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$id_grupo.'">'
 	. html_print_image("images/agents_group.png", true, array( "title" =>  __('Group')))
 	. '</a>';
-	
 $grouptab['active']=false;
+
 
 /* GIS tab */
 $gistab="";
 if ($config['activate_gis']) {
-	
 	$gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'
 		.html_print_image("images/world.png", true, array( "title" => __('GIS data')))
 		.'</a>';
@@ -616,41 +616,37 @@ if ($config['activate_gis']) {
 		$gistab['active'] = false;
 }
 
-$total_incidents = agents_get_count_incidents($id_agente);
 
 /* Incident tab */
-if ($config['integria_enabled'] == 0 and $total_incidents > 0){
+$total_incidents = agents_get_count_incidents($id_agente);
+if ($config['integria_enabled'] == 0 and $total_incidents > 0) {
 	$incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente.'">' 
-			. html_print_image ("images/book_edit.png", true, array ("title" =>__('Incidents')))
-			. '</a>';
+		. html_print_image ("images/book_edit.png", true, array ("title" =>__('Incidents')))
+		. '</a>';
 	
-	if($tab == 'incident')
+	if ($tab == 'incident')
 		$incidenttab['active'] = true;
 	else
 		$incidenttab['active'] = false;
-}	
-	
-$custom_fields['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'
-		. html_print_image("images/note.png", true, array("title" => __('Custom fields')))
-		. '</a>';
+}
+
 
 /* Url address tab */
-if ($agent['url_address'] != ''){
+if ($agent['url_address'] != '') {
 	$urladdresstab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=url_address&id_agente='.$id_agente.'">' 
 		. html_print_image ("images/link2.png", true, array ("title" =>__('Url address')))
 		. '</a>';
 }
-
-if($tab == 'url_address')
+if ($tab == 'url_address')
 	$urladdresstab['active'] = true;
 else
 	$urladdresstab['active'] = false;
-	
-$custom_fields['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'
-		. html_print_image("images/note.png", true, array("title" => __('Custom fields')))
-		. '</a>';
 
 
+/* Custom fields tab */
+$custom_fields['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'
+	. html_print_image("images/note.png", true, array("title" => __('Custom fields')))
+	. '</a>';
 if ($tab == 'custom_fields') {
 	$custom_fields['active'] = true;
 }
@@ -658,9 +654,11 @@ else {
 	$custom_fields['active'] = false;
 }
 
+
+/* Graphs tab */
 $graphs['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'">'
-		. html_print_image("images/chart_curve.png", true, array("title" => __('Graphs')))
-		. '</a>';
+	. html_print_image("images/chart_curve.png", true, array("title" => __('Graphs')))
+	. '</a>';
 if ($tab == 'graphs') {
 	$graphs['active'] = true;
 }
@@ -669,20 +667,30 @@ else {
 }
 
 
-$onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab, 
-				'data' => $datatab, 'alert' => $alerttab, 'sla' => $slatab, 
-				'inventory' => $inventorytab, 'collection' => $collectiontab, 
-				'group' => $grouptab, 'gis' => $gistab, 'custom' => $custom_fields, 'graphs' => $graphs, 'policy' => $policyTab);
+$onheader = array('manage' => $managetab,
+	'separator' => "",
+	'main' => $maintab, 
+	'data' => $datatab,
+	'alert' => $alerttab,
+	'sla' => $slatab, 
+	'inventory' => $inventorytab,
+	'collection' => $collectiontab, 
+	'group' => $grouptab,
+	'gis' => $gistab,
+	'custom' => $custom_fields,
+	'graphs' => $graphs,
+	'policy' => $policyTab);
 
-// If the agent has incidents associated				
-if ($total_incidents){
+//Added after it exists
+// If the agent has incidents associated
+if ($total_incidents) {
 	$onheader['incident'] = $incidenttab;
 }
-
-if ($agent['url_address'] != ''){
-	$onheader['url_address'] = $urladdresstab;	
+if ($agent['url_address'] != '') {
+	$onheader['url_address'] = $urladdresstab;
 }
 
+//Tabs for extensions
 foreach($config['extensions'] as $extension) {
 	if (isset($extension['extension_ope_tab'])) {
 		
@@ -849,5 +857,4 @@ switch ($tab) {
 		}
 		break;
 }
-
 ?>

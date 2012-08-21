@@ -14,7 +14,6 @@
 // GNU General Public License for more details.
 
 if (is_ajax ()) {
-	
 	global $config;
 	
 	$search_parents = (bool) get_parameter ('search_parents');
@@ -28,7 +27,7 @@ if (is_ajax ()) {
 		
 		$filter = array ();
 		
-		switch ($config['dbtype']){
+		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
 				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
@@ -58,7 +57,7 @@ if (is_ajax ()) {
 		
 		$filter = array ();
 		
-		switch ($config['dbtype']){
+		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
 				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
@@ -96,8 +95,8 @@ if (is_ajax ()) {
 		
 		$oid_snmp = array();
 		$out = false;
-		foreach($idSNMP as $id) {
-			foreach($snmp[$id] as $key => $value){
+		foreach ($idSNMP as $id) {
+			foreach ($snmp[$id] as $key => $value){
 				
 				// Check if it has "ifXXXX" syntax and skip it 
 				if (! preg_match  ( "/if/", $key)) {
@@ -107,7 +106,7 @@ if (is_ajax ()) {
 				$oid_snmp[$value['oid']] = $key;
 			}
 			
-			if($out === false){
+			if ($out === false) {
 				$out = $oid_snmp;
 			}
 			else{
@@ -341,8 +340,12 @@ if ($config['activate_gis']) {
 			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
-$table->data[6][0] = __('Url address:');
+$table->data[6][0] = __('Url address');
 $table->data[6][1] = html_print_input_text ('url_description', $url_description, '', 45, 255, true);
+
+$table->data[7][0] = __('Quiet');
+$table->data[7][0] .= ui_print_help_tip(__('The agent still runs but the alerts and events will be stop'), true);
+$table->data[7][1] = html_print_checkbox('quiet', 1, $quiet, true);
 
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);

@@ -47,7 +47,7 @@ if (is_ajax ()) {
 		
 		$filter_groups = '';
 		$filter_groups = implode(',', array_keys($usr_groups));		
-
+		
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ("SELECT t1.id, t1.name,
@@ -325,11 +325,11 @@ switch ($sortField) {
 }
 
 $search_sql = '';
-if ($search != ""){
+if ($search != "") {
 	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%' OR comentarios LIKE '%$search%') ";
 }
 
-// Show only selected groups	
+// Show only selected groups
 if ($group_id > 0) {
 	$groups = array($group_id);
 	if ($recursion) {
@@ -361,13 +361,13 @@ $agents = agents_get_agents(array (
 	'search' => $search_sql,
 	'offset' => (int) get_parameter ('offset'),
 	'limit' => (int) $config['block_size']  ),
-
+	
 	array ('id_agente',
 		'id_grupo',
 		'id_os',
 		'ultimo_contacto',
 		'intervalo',
-		'comentarios description'),
+		'comentarios description', 'quiet'),
 	'AR',
 	$order);
 
@@ -457,6 +457,9 @@ foreach ($agents as $agent) {
 	
 	$data[0] = '';
 	$data[0] .= '<span class="left">';
+	if ($agent['quiet']) {
+		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "&nbsp;";
+	}
 	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:6.5pt !important;', true);
 	$data[0] .= '</span>';
 	$data[0] .= '<div class="left actions" style="visibility: hidden; clear: left">';

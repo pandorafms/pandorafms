@@ -661,6 +661,22 @@ foreach ($config['extensions'] as $extension) {
 			}
 			
 		}
+
+                //RHEV extension is only available for RHEV Virtual Machines
+                if ($extension['extension_ope_tab']['id'] === "rhev_manager") {
+
+                        //Get id for remote field "rhev_type"
+			$id_remote_field = db_get_value("id_field", "tagent_custom_fields", "name", "rhev_type");
+
+			//Get rhev type for this agent
+			$rhev_type = db_get_value_filter ("description", "tagent_custom_data", array ("id_field" => $id_remote_field, "id_agent" => $agent['id_agente']));
+
+			//Check if rhev type is a vm
+                        if ($rhev_type != "vm") {
+                                continue;
+                        }
+                }
+
 		
 		$image = $extension['extension_ope_tab']['icon'];
 		$name = $extension['extension_ope_tab']['name'];

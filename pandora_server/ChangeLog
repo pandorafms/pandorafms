@@ -1,5 +1,10 @@
 2012-08-21 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* lib/PandoraFMS/Core.pm: added in the modules the same feature to
+	set agent in "Quiet" mode.
+
+2012-08-21 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* lib/PandoraFMS/Server.pm:: added the feature to set a agent in
 	"Quiet" mode.
 	

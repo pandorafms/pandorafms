@@ -83,25 +83,46 @@ function process_user_login ($login, $pass, $api = false) {
 		// Connect to Database
 		switch ($config["dbtype"]) {
 			case "mysql":
-				$sql = sprintf ("SELECT `id_user`, `password`
-					FROM `tusuario`
-					WHERE `id_user` = '%s' AND `not_login` = " .
-						((int)$api) . "
-						AND `disabled` = 0", $login);
+				if (!$api) {
+					$sql = sprintf ("SELECT `id_user`, `password`
+						FROM `tusuario`
+						WHERE `id_user` = '%s' AND `not_login` = 0
+							AND `disabled` = 0", $login);
+				}
+				else {
+					$sql = sprintf ("SELECT `id_user`, `password`
+						FROM `tusuario`
+						WHERE `id_user` = '%s'
+							AND `disabled` = 0", $login);
+				}
 				break;
 			case "postgresql":
-				$sql = sprintf ('SELECT "id_user", "password"
-					FROM "tusuario"
-					WHERE "id_user" = \'%s\' AND "not_login" = ' .
-						((int)$api) . '
-						AND "disabled" = 0', $login);
+				if (!$api) {
+					$sql = sprintf ('SELECT "id_user", "password"
+						FROM "tusuario"
+						WHERE "id_user" = \'%s\' AND "not_login" = 0
+							AND "disabled" = 0', $login);
+				}
+				else {
+					$sql = sprintf ('SELECT "id_user", "password"
+						FROM "tusuario"
+						WHERE "id_user" = \'%s\'
+							AND "disabled" = 0', $login);
+				}
 				break;
 			case "oracle":
-				$sql = sprintf ('SELECT id_user, password
-					FROM tusuario
-					WHERE id_user = \'%s\' AND not_login = ' .
-						((int)$api) . '
-						AND disabled = 0', $login);
+				if (!$api) {
+					$sql = sprintf ('SELECT id_user, password
+						FROM tusuario
+						WHERE id_user = \'%s\' AND not_login = 0
+							AND disabled = 0', $login);
+				}
+				else {
+					$sql = sprintf ('SELECT id_user, password
+						FROM tusuario
+						WHERE id_user = \'%s\'
+							AND disabled = 0', $login);
+				}
 				break;
 		}
 		$row = db_get_row_sql ($sql);

@@ -63,7 +63,7 @@
 		un señal de saludo para monotrorizar instalaciones de pandroid, un inventario con información de todos los apps instalados. También
 		datos de moviles, la ID del sim, número de SMS enviados/recibidos, número de llamadas entrantes/perdidas/recibidas, el nombre del operador
 		y el tipo, el tipo de movil, la potencia de señal, el número de bytes enviados/recibidos por la red movil.
-		 El código fuente esta disponible.&lt;p&gt;Puedes informarte de esto y mas en Pandora FMS en &lt;a href=&quot;http://pandorafms.com&quot;&gt;http://pandoraFMS.com&lt;/a&gt;&lt;/p&gt;
+		 El código fuente esta disponible.&lt;p&gt;Puedes informarte de esto y mas en Pandora FMS en &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
 	</string>
 	<string name="start">Iniciar</string>
 	<string name="correct_start">Conexion con exito</string>
@@ -146,6 +146,13 @@
 	<string name="HelloSignalReport">Reporta señal de saludo</string>
 	<string name="BatteryLevelReport">Reporta nivel de bateria</string>
 	<string name="RoamingReport">Reporta si Roaming</string>
+	
+	<string name="notification_title">Pandroid</string>
+	<string name="notification_message">Agente en ejecución</string>
+	<string name="ticker_text">Connectando…</string>
+	<string name="stopAgent">Detener Agente</string>
+	<string name="restartAgent">Reiniciar Agente</string>
+	<string name="notificationCheck">Mostrar notificación mientras en ejecución?</string>
 	
 	
 </resources>

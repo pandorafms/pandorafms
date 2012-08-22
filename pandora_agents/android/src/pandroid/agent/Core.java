@@ -67,7 +67,8 @@ public class Core {
     static volatile public String defaultBytesSentReport = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultHelloSignalReport = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultRoamingReport = "enabled"; // "disabled" or "enabled"
-    
+    static volatile public String defaultInventoryReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultNotificationCheck = "enabled"; // "disabled" or "enabled"
     static volatile public boolean defaultHasSim = false;
     
     //																	//
@@ -111,8 +112,8 @@ public class Core {
     static volatile public String serverAddr = defaultServerAddr;
     static volatile public String serverPort  = defaultServerPort;
     static volatile public int interval = defaultInterval;
-    static volatile public String agentName = defaultmobileWebURL;
-    static volatile public String mobileWebURL = defaultAgentName;
+    static volatile public String agentName = defaultAgentName;
+    static volatile public String mobileWebURL = defaultmobileWebURL;
     static volatile public String gpsStatus = defaultGpsStatus;
     static volatile public String memoryStatus = defaultMemoryStatus;
     static volatile public String taskStatus = defaultTaskStatus;
@@ -135,11 +136,13 @@ public class Core {
     static volatile public String HelloSignalReport = defaultHelloSignalReport;
     static volatile public String BatteryLevelReport = defaultHelloSignalReport;
     static volatile public String RoamingReport = defaultRoamingReport;
+    static volatile public String InventoryReport = defaultRoamingReport;
+    static volatile public String NotificationCheck = defaultNotificationCheck;
     
     static volatile public boolean hasSim = defaultHasSim;
     
     static volatile public String password = defaultPassword;
-    
+   
     //																//
     //						 MODULES VALUES							//
     //																//
@@ -282,7 +285,8 @@ public class Core {
 	    HelloSignalReport = agentPreferences.getString("HelloSignalReport", defaultHelloSignalReport);
 	    BatteryLevelReport = agentPreferences.getString("BatteryLevelReport", defaultBatteryLevelReport);
 	    RoamingReport = agentPreferences.getString("RoamingReport", defaultRoamingReport);
-	    
+	    InventoryReport = agentPreferences.getString("InventoryReport", defaultInventoryReport);
+	    NotificationCheck = agentPreferences.getString("NotificationCheck", defaultNotificationCheck);
     }// end loadConf
     
     static public boolean updateConf(Context context) {
@@ -293,7 +297,7 @@ public class Core {
     		passwordCheck, DeviceUpTimeReport, NetworkOperatorReport, NetworkTypeReport, PhoneTypeReport,
     		SignalStrengthReport, ReceivedSMSReport, SentSMSReport, IncomingCallsReport, MissedCallsReport,
     		OutgoingCallsReport, BytesReceivedReport, BytesSentReport, HelloSignalReport, BatteryLevelReport,
-    		RoamingReport, roaming, mobileWebURL
+    		RoamingReport, roaming, mobileWebURL, InventoryReport , NotificationCheck
     		);
     	
     }// end updateConf
@@ -307,7 +311,8 @@ public class Core {
     	String _password, int _helloSignal, String _passwordCheck, String _DeviceUpTimeReport, String _NetworkOperatorReport,
     	String _NetworkTypeReport, String _PhoneTypeReport, String _SignalStrengthReport, String _ReceivedSMSReport,
     	String _SentSMSReport, String _IncomingCallsReport, String _MissedCallsReport, String _OutgoingCallsReport, String _BytesReceivedReport,
-    	String _BytesSentReport, String _HelloSignalReport, String _BatteryLevelReport, String _RoamingReport, int _roaming, String _mobileWebURL) {
+    	String _BytesSentReport, String _HelloSignalReport, String _BatteryLevelReport, String _RoamingReport, int _roaming, String _mobileWebURL,
+    	String _InventoryReport, String _NotificationCheck) {
     	
     	if (con == null) {
     		con = context;
@@ -360,6 +365,8 @@ public class Core {
 		editor.putString("HelloSignalReport", _HelloSignalReport); 
 		editor.putString("BatteryLevelReport", _BatteryLevelReport);
 		editor.putString("RoamingReport", _RoamingReport);
+		editor.putString("InventoryReport", _InventoryReport);
+		editor.putString("NotificationCheck", _NotificationCheck);
 		editor.putString("mobileWebURL", _mobileWebURL);
 		
 		if (editor.commit()) {

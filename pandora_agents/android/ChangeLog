@@ -1,15 +1,60 @@
+2012-08-22 Mark Holland <mark@mark-holland.me.uk>
+
+	* AndroidManifest.xml: Changed icon drawable to
+	ic_launcher
+
+	* res/drawable-hdpi: Added notification icon
+
+	* res/drawable-ldpi: Added notification icon
+
+	* res/drawable-mdpi: Added notification icon
+
+	* res/drawable-xhdpi: Added notification icon
+
+	* res/layout/setup.xml: Added inventory report checkbox,
+	notification checkbox and stop/restart listener buttons.
+
+	* res/layout/setupnosim.xml: Added inventory report checkbox,
+	notification checkbox and stop/restart listener buttons.
+
+	* res/values/strings.xml: Added strings for notification and
+	stop/restart buttons, reflected in all locales
+
+	* src/pandroid/agent/core.java: Added variables for notification
+	and inventory report, fixed agentname, mobileurl mixup.
+
+	* src/pandroid/agent/PandroidAgent.java: Removed splash screen, 
+	Added check if app launched before and only restarts listener in
+	this case. Added onPause and onDestroy methods to ensure no settings
+	loss.
+	
+	* src/pandroid/agent/PandroidAgentListener.java: Added optional
+	notification when pandroid alarm is enabled, removed loading toast,
+	added inventory enabled check, added cancel notification method,
+	changed xml format to utf-8(untested)
+
+	* src/pandroid/agent/setup.java: Fixed mobile url, if no http:// or 
+	https:// then http:// added automatically. Added stop/restart listener
+	buttons, added inventory report and notification checkbox
+
+
+2012-08-20 Mark Holland <mark@mark-holland.me.uk>
+
+	* Pandroid Agent v3.0.apk: Added apk of pandroid so that
+	anyone can test it.
+
 2012-08-19 Mark Holland <mark@mark-holland.me.uk>
 
-	* res/layout/drawable-hdpi: Added help and about icons
+	* res/drawable-hdpi: Added help and about icons
 	from sdk	
 
-	* res/layout/drawable-ldpi: Added new vector images.
+	* res/drawable-ldpi: Added new vector images.
 	Added help and about icons from sdk.
 
-	* res/layout/drawable-mdpi:Added help and about icons
+	* res/drawable-mdpi:Added help and about icons
 	from sdk.
 
-	* res/layout/drawable-xhdpi: Added new higher
+	* res/drawable-xhdpi: Added new higher
 	resolution images. Added help and about icons from sdk
 
 	* res/layout/password_choose.xml: UI tweak

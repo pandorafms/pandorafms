@@ -140,5 +140,12 @@
 	<string name="BatteryLevelReport">"Relatório de nível da bateria"</string>
 	<string name="RoamingReport">"Relatar se de roaming"</string>
 	
+	<string name="notification_title">Pandroid</string>
+	<string name="notification_message">Agente está em execução</string>
+	<string name="ticker_text">Ligar…</string>
+	<string name="stopAgent">pare de Agente</string>
+	<string name="restartAgent">reinicie Agente</string>
+	<string name="notificationCheck">Mostrar notificação quando a correr?</string>
+	
 	
 </resources>

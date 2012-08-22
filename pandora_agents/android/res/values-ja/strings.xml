@@ -138,5 +138,11 @@
 	<string name="BatteryLevelReport">"バッテリーレベルを報告"</string>
 	<string name="RoamingReport">"ローミングした場合、レポート"</string>
 	
+	<string name="notification_title">Pandroid</string>
+	<string name="notification_message">エージェントが実行されている</string>
+	<string name="ticker_text">連絡…</string>
+	<string name="stopAgent">エージェントを停止します</string>
+	<string name="restartAgent">エージェントを再起動します。</string>
+	<string name="notificationCheck">実行時に通知を表示しますか？</string>
 	
 </resources>

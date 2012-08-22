@@ -141,4 +141,11 @@
 	<string name="RoamingReport">"Signaler roaming"</string>
 	
 	
+	<string name="notification_title">Pandroid</string>
+	<string name="notification_message">Agent est exécuté</string>
+	<string name="ticker_text">Connexion en cours…</string>
+	<string name="stopAgent">Cesser Agent</string>
+	<string name="restartAgent">Redémarrez l\'Agent</string>
+	<string name="notificationCheck">Afficher la notification lors de l\'exécution?</string>
+	
 </resources>

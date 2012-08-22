@@ -13,6 +13,7 @@
 // GNU General Public License for more details. 
 package pandroid.agent;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,6 +30,9 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -55,10 +59,10 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.Gravity;
-import android.widget.Toast;
 
 public class PandroidAgentListener extends Service {
+	
+	private NotificationManager notificationManager;
 	
     Handler h = new Handler();
     String lastGpsContactDateTime = "";
@@ -67,6 +71,27 @@ public class PandroidAgentListener extends Service {
 	@Override
 	public void onCreate() {
 		
+		try {
+            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        } catch (Exception e) {
+            Log.e("notification", e.toString());
+        }
+		Log.v("MARK","notif"+Core.NotificationCheck);
+		if(Core.NotificationCheck == "enabled"){
+			
+			Notification notification = new Notification(R.drawable.icon, getText(R.string.ticker_text),
+					System.currentTimeMillis());
+			Intent notificationIntent = new Intent(this,PandroidAgent.class);
+			notificationIntent.setAction("android.intent.action.MAIN");
+			notificationIntent.addCategory("android.intent.category.LAUNCHER");
+			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, Notification.FLAG_NO_CLEAR);
+			notification.setLatestEventInfo(this, getText(R.string.notification_title), getText(R.string.notification_message), pendingIntent); 
+			notification.flags |= Notification.FLAG_ONGOING_EVENT;
+			notificationManager.notify(1, notification);
+		}
+		else{
+			CancelNotification(getApplicationContext(),1);
+		}
 	}
 	
 	@Override
@@ -89,11 +114,15 @@ public class PandroidAgentListener extends Service {
 	
 	private void contact(){
 			
+		/*
 		Toast toast = Toast.makeText(getApplicationContext(),
+		 
 				    getString(R.string.loading),
 		       		Toast.LENGTH_SHORT);
 		toast.setGravity(Gravity.BOTTOM,0,0);
 		toast.show();
+		*/
+		
 		    
 		Date date = new Date();
         
@@ -244,6 +273,8 @@ public class PandroidAgentListener extends Service {
 		String HelloSignalReport = getSharedData("PANDROID_DATA", "HelloSignalReport", Core.defaultHelloSignalReport, "string");
 		String BatteryLevelReport = getSharedData("PANDROID_DATA", "BatteryLevelReport", Core.defaultBatteryLevelReport, "string");
 		String RoamingReport = getSharedData("PANDROID_DATA", "RoamingReport", Core.defaultRoamingReport, "string");
+		String InventoryReport = getSharedData("PANDROID_DATA", "InventoryReport", Core.defaultInventoryReport, "string");
+
 		
 		if (BatteryLevelReport.equals("enabled")) 
 			buffer += buildmoduleXML("battery_level", "The current Battery level", "generic_data", batteryLevel);	
@@ -310,7 +341,9 @@ public class PandroidAgentListener extends Service {
 		if (HelloSignalReport.equals("enabled"))
 			buffer += buildmoduleXML("helloSignal","Hello Signal", "generic_data", helloSignal);
 		
-		buffer += buildInventoryXML();
+		if(InventoryReport.equals("enabled"))
+			Log.v("MARK",InventoryReport);
+			buffer += buildInventoryXML();
 		
 		// End_Modules
 		
@@ -321,15 +354,31 @@ public class PandroidAgentListener extends Service {
 	}// end buildXML
 	
     private void writeFile(String fileName, String textToWrite) {
-    	try { // catches IOException below
+try { // catches IOException below
+    		
+    		String filePath = fileName;
+    		String UTF8 = "utf8";
+    		int BUFFER_SIZE = 8192;
+    		
+    		FileOutputStream fOut = openFileOutput(fileName, MODE_WORLD_READABLE);
+    		OutputStreamWriter osw = new OutputStreamWriter(fOut, UTF8); 
+    		
+    		BufferedWriter bw = new BufferedWriter(osw,BUFFER_SIZE);
+    		
+    		// Write the string to the file
+    		bw.write(textToWrite);
+    		//ensure that everything is really written out and close
+    		bw.flush();
+    		bw.close();
+    		/*
     		FileOutputStream fOut = openFileOutput(fileName, MODE_WORLD_READABLE);
     		OutputStreamWriter osw = new OutputStreamWriter(fOut); 
     		
     		// Write the string to the file
     		osw.write(textToWrite);
     		/* ensure that everything is really written out and close */
-    		osw.flush();
-    		osw.close();
+    		//osw.flush();
+    		//osw.close();
     	} catch (IOException e) {
 
     	}
@@ -939,6 +988,12 @@ public class PandroidAgentListener extends Service {
     	
         return humanDateTime;
     }
+    
+    public static void CancelNotification(Context ctx, int notifyId) {
+	    String ns = Context.NOTIFICATION_SERVICE;
+	    NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+	    nMgr.cancel(notifyId);
+	}
   
     
     

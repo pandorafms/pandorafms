@@ -139,5 +139,12 @@
 	<string name="BatteryLevelReport">"报告电池电量"</string>
 	<string name="RoamingReport">"报告如果漫游"</string>
 	
+	<string name="notification_title">Pandroid</string>
+	<string name="notification_message">代理正在运行</string>
+	<string name="ticker_text">连…</string>
+	<string name="stopAgent">停止代理</string>
+	<string name="restartAgent">重新启动代理</string>
+	<string name="notificationCheck">运行时显示通知？</string>
+	
 	
 </resources>

@@ -40,7 +40,7 @@
             <vbox class="result" id="result">
                 <vbox class="b" id="event" style="display:none;">
                     <description value="Events"
-                                 style="font-weight: bold; font-size:16px; margin:2px 0px 2px 0px; color:#0068C4; font-family:arial"/>
+                                 style="font-weight: bold; font-size:16px; margin:2px 0px 2px 0px; color:#237948; font-family:arial"/>
                     <vbox class="e" id="e">
                     </vbox>
                 </vbox>

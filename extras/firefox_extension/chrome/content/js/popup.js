@@ -108,6 +108,15 @@ PandoraPoPUp = function () {
                     a.setAttribute("value", allEventsPoP[i][6]);
 
                     //var temp_style="font-weight:bold;";      new_events
+                    var agent_url;
+                    if(allEventsPoP[i][1]==""){;
+                                agent_url=prefmanager.getCharPref("ip_address")+"/index.php?sec=eventos&sec2=operation/events/events" ; 
+                    }else{
+                                agent_url=prefmanager.getCharPref("ip_address")+"/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente="+allEventsPoP[i][1];
+                    }
+                    a.setAttribute("href",agent_url);
+                    a.setAttribute("class","text-link");
+                        
                     if (i < prefmanager.getIntPref("new_events")) {
                         var temp_style = "font-weight:bold;";
                     }
@@ -117,16 +126,16 @@ PandoraPoPUp = function () {
 
 
                     if (allEventsPoP[i][19] == "Warning") {
-                        eve_title.setAttribute("style", "background:#FDE84F; margin-bottom:1px;" + temp_style);
+                        eve_title.setAttribute("style", "background:#FCED7E; margin-bottom:1px;" + temp_style);
                     }
                     if (allEventsPoP[i][19] == "Critical") {
-                        eve_title.setAttribute("style", "background:#C60700; margin-bottom:1px;" + temp_style);
+                        eve_title.setAttribute("style", "background:#FA7A7A; margin-bottom:1px;" + temp_style);
                     }
                     if (allEventsPoP[i][19] == "Informational") {
-                        eve_title.setAttribute("style", "background:#739FD0; margin-bottom:1px;" + temp_style);
+                        eve_title.setAttribute("style", "background:#7FB9FA; margin-bottom:1px;" + temp_style);
                     }
                     if (allEventsPoP[i][19] == "Normal") {
-                        eve_title.setAttribute("style", "background:#8AE234; margin-bottom:1px;" + temp_style);
+                        eve_title.setAttribute("style", "background:#A8D96C; margin-bottom:1px;" + temp_style);
                     }
                     if (allEventsPoP[i][19] == "Maintenance") {
                         eve_title.setAttribute("style", "background:#BABDB6; margin-bottom:1px;" + temp_style);

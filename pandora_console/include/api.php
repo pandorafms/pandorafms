@@ -51,6 +51,7 @@ $no_login_msg = "";
 if (isInACL($ipOrigin)) {
 	if(empty($apiPassword) || (!empty($apiPassword) && $api_password === $apiPassword)) {
 		$user_in_db = process_user_login($user, $password, true);
+		
 		if ($user_in_db !== false) {
 			$config['id_user'] = $user_in_db;
 			$correctLogin = true;

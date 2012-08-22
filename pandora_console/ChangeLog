@@ -1,3 +1,10 @@
+2012-08-22 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/api.php: cleaned source code style.
+	
+	* include/auth/mysql.php: fixed the access users in the api with or
+	without no_login field set.
+
 2012-08-21 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,

@@ -27,9 +27,9 @@ $menu_operation['class'] = 'operation';
 
 // Agent read, Server read
 if (check_acl ($config['id_user'], 0, "AR")) {
-
+	
 	enterprise_hook ('metaconsole_menu');
-
+	
 	//View agents
 	$menu_operation["estado"]["text"] = __('Monitoring');
 	$menu_operation["estado"]["sec2"] = "operation/agentes/tactical";
@@ -39,13 +39,13 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub = array ();
 	$sub["operation/agentes/tactical"]["text"] = __('Tactical view');
 	$sub["operation/agentes/tactical"]["refr"] = 0;
-		
+	
 	$sub["operation/agentes/group_view"]["text"] = __('Group view');
 	$sub["operation/agentes/group_view"]["refr"] = 0;
-
-			$sub['operation/tree']['text'] = __('Tree view');
-			$sub["operation/tree"]["refr"] = 0;
-
+	
+	$sub['operation/tree']['text'] = __('Tree view');
+	$sub["operation/tree"]["refr"] = 0;
+	
 	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
 	$sub["operation/agentes/estado_agente"]["refr"] = 0;
 	$sub["operation/agentes/estado_agente"]["subsecs"] = array(
@@ -129,7 +129,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	}
 	else if (!empty($config['refr'])) {
 		$sub["godmode/reporting/map_builder"]["refr"] = $config['refr'];
-	}	
+	}
 	else {
 		$sub["godmode/reporting/map_builder"]["refr"] = 60;
 	}
@@ -162,15 +162,15 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		}
 		$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
 		$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
-		if (!empty($config['vc_refr'])){
+		if (!empty($config['vc_refr'])) {
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['vc_refr'];
-		}			
-		elseif (!empty($config['refr'])){
+		}
+		elseif (!empty($config['refr'])) {
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['refr'];
 		}
-		else{
+		else {
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
-		}	
+		}
 	}
 	
 	$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
@@ -180,17 +180,17 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["godmode/reporting/graphs"]["subsecs"] = array(
 		"operation/reporting/graph_viewer",
 		"godmode/reporting/graph_builder");
-															
+	
 	$sub["operation/agentes/exportdata"]["text"] = __('Export data');
 	$sub["operation/agentes/exportdata"]["subsecs"] =  array("operation/agentes/exportdata");
-														
-	enterprise_hook ('dashboard_menu');
-	enterprise_hook ('reporting_godmenu');	
 	
-			
+	enterprise_hook ('dashboard_menu');
+	enterprise_hook ('reporting_godmenu');
+	
+	
 	$menu_operation["reporting"]["sub"] = $sub;
 	//End reporting
-
+	
 	
 	//INI GIS Maps
 	if ($config['activate_gis']) {
@@ -215,9 +215,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		
 		foreach ($gisMaps as $gisMap) {
 			$is_in_group = in_array($gisMap['group_id'], $own_groups);
-			if (!$is_in_group){
+			if (!$is_in_group) {
 				continue;
-			}			
+			}
 			if (! check_acl ($config["id_user"], $gisMap["group_id"], "IR")) {
 				continue;
 			}

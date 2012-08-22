@@ -118,14 +118,7 @@
                     android:textColor="#bbbbbb"
                     android:textSize="14dip" />
 
-                <CheckBox
-                    android:id="@+id/checkMemoryReport"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/memoryReport"
-                    android:textColor="#bbbbbb"
-                    android:textSize="14dip" />
-
+                
                 <CheckBox
                     android:id="@+id/checkTaskReport"
                     android:layout_width="wrap_content"
@@ -150,6 +143,24 @@
                         android:layout_height="wrap_content"
                         android:visibility="gone" />
                 </LinearLayout>
+                
+                <CheckBox
+                    android:id="@+id/checkMemoryReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/memoryReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+                
+                                
+                <CheckBox
+                    android:id="@+id/checkInventoryReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/InventoryReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+                
 
                 <CheckBox
                     android:id="@+id/checkDeviceUpTimeReport"
@@ -175,17 +186,38 @@
 
                 
 
-                <Button
-                    android:id="@+id/set_password"
-                    android:layout_width="fill_parent"
+                <CheckBox
+                    android:id="@+id/checkNotification"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/set_password" />
-
+                    android:text="@string/notificationCheck"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14dip" />
+                 
                 <Button
                     android:id="@+id/update"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/update" />
+                
+                <Button
+                    android:id="@+id/set_password"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/set_password" />
+				
+				<Button
+                    android:id="@+id/stopAgent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stopAgent" />
+				
+               <Button
+                    android:id="@+id/restartAgent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/restartAgent" />
+                
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

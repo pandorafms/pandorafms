@@ -22,6 +22,8 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Dialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -145,11 +147,34 @@ public class Setup extends Activity {
         	public void onClick(View view) {
         		 getDataFromView();
         		 Core.updateConf(getApplicationContext());
-        		 Uri uri = Uri.parse(Core.mobileWebURL);
+
+        		 String url = Core.mobileWebURL;
+        		 if (!url.startsWith("https://") && !url.startsWith("http://")){
+        			    url = "http://" + url;
+        			}
+        		 
+        		 Uri uri = Uri.parse(url);
         		 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         		 startActivity(intent);
         	}
         });
+        
+        Button stopAgent = (Button) findViewById(R.id.stopAgent);
+        stopAgent.setOnClickListener(new OnClickListener() {
+        	public void onClick(View view) {
+        		 Core.stopAgentListener();
+        		 CancelNotification(getApplicationContext(),1);
+        	}
+        });
+        
+        Button restartAgent = (Button) findViewById(R.id.restartAgent);
+        restartAgent.setOnClickListener(new OnClickListener() {
+        	public void onClick(View view) {
+        		 Core.restartAgentListener(getApplicationContext());
+               	}
+        });
+        
+
         
 	}// end setButtonEvents
     
@@ -235,6 +260,13 @@ public class Setup extends Activity {
 		    
 		    button = (Button)findViewById(R.id.goToWebButton);
 		    button.setEnabled(true);
+		    
+		    button = (Button)findViewById(R.id.stopAgent);
+		    button.setEnabled(true);
+		    
+		    button = (Button)findViewById(R.id.restartAgent);
+		    button.setEnabled(true);
+
 		}
     }// end onPostExecute
 	
@@ -257,7 +289,7 @@ public class Setup extends Activity {
 		Core.agentName = editText.getText().toString();
 		
 		editText = (EditText) findViewById(R.id.mobileWebURLInput);
-		Core.mobileWebURL = "http://"+editText.getText().toString();
+		Core.mobileWebURL = editText.getText().toString();
         
         checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
         if (checkBox.isChecked())
@@ -381,11 +413,25 @@ public class Setup extends Activity {
         		Core.RoamingReport = "disabled";
         }// end if sim card
         
+        checkBox = (CheckBox) findViewById(R.id.checkInventoryReport);
+        if (checkBox.isChecked())
+        	Core.InventoryReport = "enabled";
+        else
+        	Core.InventoryReport = "disabled";
+        
+
         checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
         if (checkBox.isChecked())
         	Core.HelloSignalReport = "enabled";
         else
         	Core.HelloSignalReport = "disabled";
+        
+        checkBox = (CheckBox) findViewById(R.id.checkNotification);
+        if (checkBox.isChecked())
+        	Core.NotificationCheck = "enabled";
+        else
+        	Core.NotificationCheck = "disabled";
+        
         
         Core.updateConf(getApplicationContext());
     }
@@ -467,8 +513,14 @@ public class Setup extends Activity {
         	checkBox.setChecked(Core.RoamingReport.equals("enabled"));
         }//end if sim card
         
+        checkBox = (CheckBox) findViewById(R.id.checkInventoryReport);
+    	checkBox.setChecked(Core.InventoryReport.equals("enabled"));
+       
         checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
         checkBox.setChecked(Core.HelloSignalReport.equals("enabled"));
+        
+        checkBox = (CheckBox) findViewById(R.id.checkNotification);
+        checkBox.setChecked(Core.NotificationCheck.equals("enabled"));
         
     }
 	
@@ -679,4 +731,12 @@ public class Setup extends Activity {
         ParentActivity = (PandroidAgent) this.getParent();
         ParentActivity.switchTab(indexTabToSwitchTo);
 	}
+	
+	
+	public static void CancelNotification(Context ctx, int notifyId) {
+	    String ns = Context.NOTIFICATION_SERVICE;
+	    NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+	    nMgr.cancel(notifyId);
+	}
+
 }

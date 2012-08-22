@@ -14,6 +14,8 @@
 
 package pandroid.agent;
 
+import java.io.File;
+
 import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.Context;
@@ -21,6 +23,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.WindowManager.LayoutParams;
 import android.widget.TabHost;
 
@@ -33,7 +36,7 @@ public class PandroidAgent extends TabActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       
+        /*
         final Dialog dialog = new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
 		dialog.setContentView(R.layout.welcome);
 		dialog.setCancelable(false);
@@ -50,8 +53,19 @@ public class PandroidAgent extends TabActivity {
           }
         }, 3000);   	
             	
-         Core.restartAgentListener(getApplicationContext());
-            
+        */
+        
+        //Requires The agent name to use installation id
+        File installation = new File(getApplicationContext().getFilesDir(), "INSTALLATION");
+        if(!installation.exists()){
+        	Core.restartAgentListener(getApplicationContext());
+        }
+        else{
+        	//Core.stopAgentListener();
+        	Core.loadConf(this);
+        	Core.alarmEnabled = true;
+        	//new Intent(this, EventReceiver.class);
+        }
         
         //Check whether device has a sim card, phone without a sim card present
         //return SIM_STATE_ABSENT but tablets only return SIM_STATE_UNKNOWN
@@ -63,9 +77,6 @@ public class PandroidAgent extends TabActivity {
 		Core.hasSim = Boolean.parseBoolean(hasSim);
 		
 	
-            
-		
-		
 		//Create layout with 2 tabs
 		tabHost  = getTabHost();
         
@@ -84,6 +95,16 @@ public class PandroidAgent extends TabActivity {
 		);
     }
     
+    public void onPause(){
+    	super.onPause();
+    	Core.updateConf(getApplicationContext());
+    }
+    
+    public void onDestroy(){
+    	super.onDestroy();
+    	Core.updateConf(getApplicationContext());
+    	
+    }
     //Sets hello signal to 1(first connect since pandroid was closed)
     public void onResume(){
     	super.onResume();

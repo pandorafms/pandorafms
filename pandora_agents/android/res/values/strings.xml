@@ -147,6 +147,13 @@
 	<string name="HelloSignalReport">Report Hello Signal</string>
 	<string name="BatteryLevelReport">Report battery level</string>
 	<string name="RoamingReport">Report if roaming</string>
+	<string name="InventoryReport">Report inventory of installed apps</string>
 	
+	<string name="notification_title">Pandroid</string>
+	<string name="notification_message">Agent is running</string>
+	<string name="ticker_text">Connecting…</string>
+	<string name="stopAgent">Stop Agent</string>
+	<string name="restartAgent">Restart Agent</string>
+	<string name="notificationCheck">Show notification when running?</string>
 	
 </resources>

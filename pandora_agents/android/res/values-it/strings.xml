@@ -141,4 +141,11 @@
 	<string name="RoamingReport">"Segnalare se il roaming"</string>
 	
 	
+	<string name="notification_title">Pandroid</string>
+	<string name="notification_message">Agente è in esecuzione</string>
+	<string name="ticker_text">Connessione in corso…</string>
+	<string name="stopAgent">arresto Agente</string>
+	<string name="restartAgent">Riavviare Agente</string>
+	<string name="notificationCheck">Mostra notifica durante l\'esecuzione?</string>
+	
 </resources>

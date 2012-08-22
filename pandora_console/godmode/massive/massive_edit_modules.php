@@ -75,9 +75,9 @@ if ($update) {
 	if ($force) {
 		if ($force == 'type') {
 			$condition = '';
-			if($module_type != 0)
+			if ($module_type != 0)
 				$condition = ' AND t2.id_tipo_modulo = '.$module_type;
-				
+			
 			$agents_ = db_get_all_rows_sql('SELECT DISTINCT(t1.id_agente)
 				FROM tagente t1, tagente_modulo t2
 				WHERE t1.id_agente = t2.id_agente');
@@ -199,7 +199,7 @@ $snmp_versions['3'] = 'v. 3';
 
 $table->width = '99%';
 $table->data = array ();
-	
+
 $table->data[0][0] = __('Selection mode');
 $table->data[0][1] = __('Select modules first').' '.html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 $table->data[0][2] = '';
@@ -347,6 +347,12 @@ $id_tag = array();
 $table->data['edit8'][2] = __('Tags');
 $table->data['edit8'][3] = html_print_select_from_sql ('SELECT id_tag, name FROM ttag ORDER BY name',
 	'id_tag[]', $id_tag, '',__('None'),'0', true, true, false, false);
+
+$table->data['edit9'][0] = __('Quiet');
+$table->data['edit9'][0] .= ui_print_help_tip(__('The module still store data but the alerts and events will be stop'), true);
+$table->data['edit9'][1] = html_print_select(array(-1 => __('No change'),
+	1 => __('Yes'), 0 => __('No')),
+	"quiet_select", -1, "", '', 0, true);
 
 echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit">';
 html_print_table ($table);
@@ -592,6 +598,10 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	
 	if (strlen(get_parameter('history_data')) > 0) {
 		$values['history_data'] = get_parameter('history_data');
+	}
+	
+	if (get_parameter('quiet_select', -1) != -1) {
+		$values['quiet'] = get_parameter('quiet_select');
 	}
 	
 	// Whether to update module tag info

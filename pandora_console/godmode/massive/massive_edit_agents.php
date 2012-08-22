@@ -78,7 +78,9 @@ if ($update_agents) {
 		$values['cascade_protection'] = get_parameter('cascade_protection');
 	if (get_parameter ('delete_conf', 0) != 0)
 		$values['delete_conf'] = get_parameter('delete_conf');
-
+	if (get_parameter('quiet_select', -1) != -1)
+		$values['quiet'] = get_parameter('quiet_select');
+	
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if ($fields === false) $fields = array();
@@ -127,30 +129,30 @@ if ($update_agents) {
 	
 	$n_edited = 0;
 	$result = false;
-	foreach ($id_agents as $id_agent) {		
+	foreach ($id_agents as $id_agent) {
 		if (!empty($values)) {
 			$result = db_process_sql_update ('tagente',
-					 $values,
-					 array ('id_agente' => $id_agent));
+				$values,
+				array ('id_agente' => $id_agent));
 		}
-				
+		
 		// Update Custom Fields
 		foreach ($fields as $field) {
 			if (get_parameter_post ('customvalue_'.$field['id_field'], '') != '') {
 				$key = $field['id_field'];
 				$value = get_parameter_post ('customvalue_'.$field['id_field'], '');
-			
+				
 				$old_value = db_get_all_rows_filter('tagent_custom_data', array('id_agent' => $id_agent, 'id_field' => $key));
-			
+				
 				if ($old_value === false) {
 					// Create custom field if not exist
 					$result = db_process_sql_insert ('tagent_custom_data',
-						 array('id_field' => $key,'id_agent' => $id_agent, 'description' => $value));
+						array('id_field' => $key,'id_agent' => $id_agent, 'description' => $value));
 				}
-				else {		
+				else {
 					$result = db_process_sql_update ('tagent_custom_data',
-						 array('description' => $value),
-						 array('id_field' => $key,'id_agent' => $id_agent));
+						array('description' => $value),
+						array('id_field' => $key,'id_agent' => $id_agent));
 				}
 			}
 		}
@@ -170,9 +172,8 @@ if ($update_agents) {
 	
 	
 	ui_print_result_message ($result !== false,
-			__('Agents updated successfully').'('.$n_edited.')',
-			__('Agents cannot be updated'));
-	
+		__('Agents updated successfully').'('.$n_edited.')',
+		__('Agents cannot be updated'));
 }
 $id_group = 0;
 
@@ -277,6 +278,7 @@ $new_agent = true;
 $icon_path = '';
 $update_gis_data = -1;
 $cascade_protection = -1;
+$quiet_select = -1;
 
 $table->width = '95%';
 $table->class = "databox_color";
@@ -311,14 +313,14 @@ $table->data[3][1] .= '<span id="n_configurations"></span>';
 $table->data[3][1] .= ') '.html_print_checkbox_extended ("delete_conf", 1, 0, false, '', 'style="margin-right: 40px;"', true).'</div>';
 
 $table->data[3][1] .= '<div id="not_available_configurations" style="display: none"><em>'.__('Not available').'</em></div>';		
-	
+
 $listIcons = gis_get_array_list_icons();
 
 $arraySelectIcon = array();
 foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
-if($icon_path == '') {
+if ($icon_path == '') {
 	$display_icons = 'none';
 	// Hack to show no icon. Use any given image to fix not found image errors
 	$path_without = "images/spinner.png";
@@ -350,6 +352,12 @@ if ($config['activate_gis']) {
 	$table->data[5][1] .= __('Disabled').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 	$table->data[5][1] .= __('Active').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
+
+$table->data[6][0] = __('Quiet');
+$table->data[6][0] .= ui_print_help_tip(__('The agent still runs but the alerts and events will be stop'), true);
+$table->data[6][1] = html_print_select(array(-1 => __('No change'),
+	1 => __('Yes'), 0 => __('No')),
+	"quiet_select", $quiet_select, "", '', 0, true);
 
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);

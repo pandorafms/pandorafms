@@ -44,7 +44,7 @@ visual_map_editor_print_item_palette($visualConsole['id'], $background);
 
 echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll;">';
 echo '<div id="background" class="" style="
-	border: 2px black solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';
+	margin: 0px auto;border: 2px black solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';
 echo "<div id='background_grid'
 	style='position: absolute; display: none; overflow: hidden;
 	background: url(images/console/background/white_boxed.jpg);

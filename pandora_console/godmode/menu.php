@@ -39,7 +39,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	if (check_acl ($config["id_user"], 0, "PM")) {
 		$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
 		$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
-		$sub["godmode/agentes/planned_downtime"]["text"] = __('Scheduled downtime');
+		$sub["godmode/agentes/planned_downtime.list"]["text"] = __('Scheduled downtime');
 		$sub["godmode/agentes/fields_manager"]["text"] = __('Manage custom fields');
 	}
 	enterprise_hook('agents_submenu');

@@ -774,7 +774,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	}
 	
 	echo '<div id="layout_map"
-		style="z-index: 0; position:relative; width:'.$mapWidth.'px; height:'.$mapHeight.'px;">';
+		style="margin:0px auto;text-align:center;z-index: 0; position:relative; width:'.$mapWidth.'px; height:'.$mapHeight.'px;">';
 	echo "<img src='" . $backgroundImage . "' width='100%' height='100%' />";
 	$layout_datas = db_get_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	if (empty($layout_datas))

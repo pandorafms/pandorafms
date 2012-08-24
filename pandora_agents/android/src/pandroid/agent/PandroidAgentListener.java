@@ -275,6 +275,10 @@ public class PandroidAgentListener extends Service {
 		String RoamingReport = getSharedData("PANDROID_DATA", "RoamingReport", Core.defaultRoamingReport, "string");
 		String InventoryReport = getSharedData("PANDROID_DATA", "InventoryReport", Core.defaultInventoryReport, "string");
 
+		if(InventoryReport.equals("enabled"))
+		{
+			buffer += buildInventoryXML();
+		}
 		
 		if (BatteryLevelReport.equals("enabled")) 
 			buffer += buildmoduleXML("battery_level", "The current Battery level", "generic_data", batteryLevel);	
@@ -341,9 +345,8 @@ public class PandroidAgentListener extends Service {
 		if (HelloSignalReport.equals("enabled"))
 			buffer += buildmoduleXML("helloSignal","Hello Signal", "generic_data", helloSignal);
 		
-		if(InventoryReport.equals("enabled"))
-			Log.v("MARK",InventoryReport);
-			buffer += buildInventoryXML();
+		
+			
 		
 		// End_Modules
 		

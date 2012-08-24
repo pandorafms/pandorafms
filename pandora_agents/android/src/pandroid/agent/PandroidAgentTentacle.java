@@ -23,6 +23,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import android.util.Log;
+
 class tentacle_client {
 
 	// Return 0 when success, -1 when error
@@ -109,7 +111,7 @@ class tentacle_client {
 	    } catch (IOException e) {
 	    	getError("Could not get the file");
 	    }
-	    
+	    Log.v("MARK",data);
 	    getInfo("*** Start of transference ***\n",verbose);
 	    // Send the file name and length
 	    try {
@@ -126,10 +128,11 @@ class tentacle_client {
 	    }
 	    
 	    getInfo("Server -> Client: " + serverResponse + "\n", verbose);
-	    if (serverResponse.equals("SEND OK")) {
+	    if (serverResponse != null && serverResponse.equals("SEND OK")) {
 		    try {
 		    	 getInfo("Client -> Server: [file data]\n", verbose);
-		    	 serverOutput.writeBytes(data);
+		    	 serverOutput.write(data.getBytes());
+		    	 
 		    } catch (IOException e) {
 		    	getError("Could not write on server");
 		    }
@@ -140,7 +143,7 @@ class tentacle_client {
 		    }
 		    
 		    getInfo("Server -> Client: " + serverResponse + "\n", verbose);
-		    if (serverResponse.equals("SEND OK")) {
+		    if (serverResponse != null && serverResponse.equals("SEND OK")) {
 			    try {
 			    	send = "QUIT\n";
 			    	getInfo("Client -> Server: " + send, verbose);
@@ -181,6 +184,7 @@ class tentacle_client {
     }
     
     private void log (String msg) {
+    	
     	//Context context = getApplicationContext();
     	//int duration = Toast.LENGTH_SHORT;
 

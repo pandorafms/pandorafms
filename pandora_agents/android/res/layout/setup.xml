@@ -282,12 +282,6 @@
                     android:textSize="14dip" />
                 
                 
-                <Button
-                    android:id="@+id/set_password"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/set_password" />
-
                 <CheckBox
                     android:id="@+id/checkNotification"
                     android:layout_width="wrap_content"

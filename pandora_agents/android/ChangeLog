@@ -1,3 +1,24 @@
+2012-08-24 Mark Holland <mark@mark-holland.me.uk>
+
+	* AndroidManifest.xml: Added experimental start
+	pandroid on device boot(not operational)
+
+	* res/layout/setup.xml: Removed duplicate password
+	button
+
+	* res/layout/setupnosim.xml: Removed unused text view
+
+	* src/pandroid/agent/core.java: set inventory to disabled
+	by default
+	
+	* src/pandroid/agent/PandroidAgentListener.java: Fixed
+	inventory report if condition
+
+	* src/pandroid/agent/PandroidAgentTentacle.java: Fixed if
+	condition when server response == null, Changed how data
+	is written to serverOutput, fixes utf-8.
+	
+
 2012-08-22 Mark Holland <mark@mark-holland.me.uk>
 
 	* AndroidManifest.xml: Changed icon drawable to

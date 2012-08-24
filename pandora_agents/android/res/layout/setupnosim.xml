@@ -178,13 +178,7 @@
                     android:textColor="#bbbbbb"
                     android:textSize="14dip" />
 
-                <TextView
-                    android:id="@+id/field5"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/task" />
-
-                
+                               
 
                 <CheckBox
                     android:id="@+id/checkNotification"

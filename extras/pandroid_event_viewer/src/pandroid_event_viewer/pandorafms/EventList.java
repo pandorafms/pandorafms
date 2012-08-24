@@ -16,18 +16,24 @@ GNU General Public License for more details.
  */
 package pandroid_event_viewer.pandorafms;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
+import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,10 +43,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Activity where events are displayed.
@@ -49,11 +57,18 @@ import android.widget.TextView;
  * 
  */
 public class EventList extends ListActivity {
+	private static String TAG = "EventList";
+
+	private static int DEFAULT_STATUS_CODE = 0;
+	private static int DEFAULT_PRIORITY_CODE = 0;
+	private static String DEFAULT_SOURCE = "Pandora FMS Event";
+	private static final int CREATE_INCIDENT_DIALOG = 1;
 	private ListView lv;
 	private MyAdapter la;
 	private PandroidEventviewerActivity object;
-
 	private BroadcastReceiver onBroadcast;
+	private Dialog creatingIncidentDialog;
+	private Context context = this;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -179,6 +194,60 @@ public class EventList extends ListActivity {
 		return true;
 	}
 
+	@Override
+	protected Dialog onCreateDialog(int id, Bundle args) {
+		switch (id) {
+		case CREATE_INCIDENT_DIALOG:
+			final String group;
+			Dialog dialog = new Dialog(this);
+			dialog.setContentView(R.layout.create_incident);
+			dialog.setTitle(getString(R.string.create_incident));
+			final EditText titleEditText = (EditText) dialog
+					.findViewById(R.id.incident_title);
+			final EditText descriptionEditText = (EditText) dialog
+					.findViewById(R.id.incident_description);
+			String temp = args.getString("title");
+
+			if (temp != null) {
+				titleEditText.setText(temp);
+			}
+
+			temp = args.getString("description");
+			if (temp != null) {
+				descriptionEditText.setText(temp);
+			}
+			temp = args.getString("group");
+			if (temp != null) {
+				group = temp;
+			} else {
+				group = "";
+			}
+			dialog.findViewById(R.id.incident_create_button)
+					.setOnClickListener(new OnClickListener() {
+
+						public void onClick(View v) {
+							if (titleEditText != null
+									&& titleEditText.length() > 0) {
+								creatingIncidentDialog = ProgressDialog.show(
+										context, "",
+										getString(R.string.creating_incident),
+										true);
+								String title = titleEditText.getText().toString();
+								String description = descriptionEditText.getText().toString();
+								new SetNewIncidentAsyncTask().execute(title,
+										description, group);
+							} else {
+								Toast.makeText(getApplicationContext(),
+										R.string.title_empty,
+										Toast.LENGTH_SHORT).show();
+							}
+						}
+					});
+			return dialog;
+		}
+		return null;
+	}
+
 	/**
 	 * Shows loading information.
 	 */
@@ -202,12 +271,12 @@ public class EventList extends ListActivity {
 		super.onListItemClick(l, v, position, id);
 
 		try {
-		EventListItem item = this.object.eventList.get(position);
-		item.opened = !item.opened;
-		this.object.eventList.set(position, item);
-		la.notifyDataSetChanged();
+			EventListItem item = this.object.eventList.get(position);
+			item.opened = !item.opened;
+			this.object.eventList.set(position, item);
+			la.notifyDataSetChanged();
 		} catch (IndexOutOfBoundsException e) {
-			
+
 		}
 	}
 
@@ -240,19 +309,19 @@ public class EventList extends ListActivity {
 			this.object = object;
 			showLoadingEvents = false;
 		}
-		
+
 		public int getCount() {
 			return this.object.eventList.size() + 1;
 		}
-		
+
 		public Object getItem(int position) {
 			return null;
 		}
-		
+
 		public long getItemId(int position) {
 			return 0;
 		}
-		
+
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view;
 
@@ -289,7 +358,7 @@ public class EventList extends ListActivity {
 						}
 
 						button.setOnClickListener(new View.OnClickListener() {
-							
+
 							public void onClick(View v) {
 								object.offset += object.pagination;
 								loadMoreEvents();
@@ -343,7 +412,8 @@ public class EventList extends ListActivity {
 				timestamp.setText(item.timestamp);
 
 				if (item.criticity_image.length() != 0)
-					Core.setTextViewLeftImage((TextView) view.findViewById(R.id.event_name), Core
+					Core.setTextViewLeftImage((TextView) view
+							.findViewById(R.id.event_name), Core
 							.getSeverityImage(getApplicationContext(),
 									item.criticity), 16);
 
@@ -416,8 +486,9 @@ public class EventList extends ListActivity {
 					}
 
 					Core.setTextViewLeftImage((TextView) viewEventExtended
-							.findViewById(R.id.type_text),
-							Core.getEventTypeImage(getApplicationContext(), item.event_type), 16);
+							.findViewById(R.id.type_text), Core
+							.getEventTypeImage(getApplicationContext(),
+									item.event_type), 16);
 
 					text = (TextView) viewEventExtended
 							.findViewById(R.id.type_text);
@@ -458,17 +529,14 @@ public class EventList extends ListActivity {
 						((Button) viewEventExtended
 								.findViewById(R.id.create_incident_button))
 								.setOnClickListener(new OnClickListener() {
-									
+
 									public void onClick(View v) {
-										Intent intent = new Intent(
-												getBaseContext(),
-												CreateIncidentActivity.class);
-										intent.putExtra("group",
-												item.group_name);
-										intent.putExtra("title", item.event);
-										intent.putExtra("description",
+										Bundle b = new Bundle();
+										b.putString("group", item.group_name);
+										b.putString("title", item.event);
+										b.putString("description",
 												item.description_event);
-										startActivity(intent);
+										showDialog(CREATE_INCIDENT_DIALOG, b);
 									}
 								});
 					} else {
@@ -555,7 +623,7 @@ public class EventList extends ListActivity {
 				mPosition = position;
 				this.object = object;
 			}
-			
+
 			public void onClick(View arg0) {
 				EventListItem item = this.object.eventList.get(mPosition);
 				item.opened = !item.opened;
@@ -572,12 +640,76 @@ public class EventList extends ListActivity {
 		 */
 		private class OnClickListenerButtonValidate implements OnClickListener {
 			public int id_event;
-			
+
 			public void onClick(View v) {
 				Intent i = new Intent(getApplicationContext(),
 						PopupValidationEvent.class);
 				i.putExtra("id_event", id_event);
 				startActivity(i);
+			}
+		}
+	}
+
+	/**
+	 * Performs the create incident petition.
+	 * 
+	 * @return <b>true</b> if it is created.
+	 * @throws IOException
+	 *             If there is a problem with the connection.
+	 */
+	private void sendNewIncident(String title, String description, String group)
+			throws IOException {
+		Log.i(TAG, "Sending new incident");
+		String incidentParams[] = new String[6];
+		incidentParams[0] = title;
+		incidentParams[1] = description;
+		incidentParams[2] = String.valueOf(DEFAULT_SOURCE);
+		incidentParams[3] = String.valueOf(DEFAULT_PRIORITY_CODE);
+		incidentParams[4] = String.valueOf(DEFAULT_STATUS_CODE);
+		int groupCode = -1;
+		for (Entry<Integer, String> entry : API.getGroups(
+				getApplicationContext()).entrySet()) {
+			if (entry.getValue().equals(group)) {
+				groupCode = entry.getKey();
+			}
+		}
+		if (groupCode >= 0) {
+			incidentParams[5] = String.valueOf(groupCode);
+		}
+		API.createNewIncident(getApplicationContext(), incidentParams);
+	}
+
+	/**
+	 * Performs the api call to add the new incident
+	 * 
+	 * @author Santiago Munín González
+	 * 
+	 */
+	private class SetNewIncidentAsyncTask extends
+			AsyncTask<String, Void, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(String... params) {
+			try {
+				sendNewIncident(params[0], params[1], params[2]);
+				return true;
+			} catch (IOException e) {
+				return false;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				Toast.makeText(getApplicationContext(),
+						R.string.incident_created, Toast.LENGTH_SHORT).show();
+				creatingIncidentDialog.dismiss();
+				finish();
+			} else {
+				Toast.makeText(getApplicationContext(),
+						R.string.create_incident_group_error,
+						Toast.LENGTH_SHORT).show();
+				creatingIncidentDialog.dismiss();
 			}
 		}
 	}

@@ -1,4 +1,10 @@
-2012-08-10 Santiago Munín <burning1@gmail.com>
+2012-08-24 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Core.java: Fixed a bug (possible null argument as image).
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Create incident is displayed as a dialog
+	* src/pandroid_event_viewer/pandorafms/PandroidEventviewerActivity.java: FIXME comment removed.
+	* src/pandroid_event_viewer/pandorafms/CreateIncidentActivity.java: No longer needed. Removed.
+
+2012-08-24 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Options.java: Fixed a little bug with the connection status textview.
 	* res/layout/options.xml: Connection status textview now has a fixed width.
 	* res/values/strings.xml: Added an entry.

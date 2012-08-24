@@ -463,8 +463,10 @@ public class Core {
 	 */
 	public static void setTextViewLeftImage(TextView view, Drawable image,
 			int size) {
-		image.setBounds(0, 0, size, size);
-		view.setCompoundDrawables(image, null, null, null);
+		if (image != null) {
+			image.setBounds(0, 0, size, size);
+			view.setCompoundDrawables(image, null, null, null);
+		}
 	}
 
 	/**

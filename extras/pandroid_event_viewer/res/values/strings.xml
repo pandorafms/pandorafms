@@ -121,5 +121,6 @@
     <string name="unknown_version">Unknown version</string>
     <string name="enable_background_service">Check in background</string>
     <string name="default_profile_can_not_remove">Default profile can not be removed</string>
+    <string name="connection_problems">Connection failed</string>
 
 </resources>

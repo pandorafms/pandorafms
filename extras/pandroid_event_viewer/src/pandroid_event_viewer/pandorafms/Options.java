@@ -219,6 +219,9 @@ public class Options extends Activity {
 					this.getString(R.string.config_update_succesful_str),
 					Toast.LENGTH_SHORT);
 			toast.show();
+			connectionStatus.setText(R.string.check_connection);
+			connectionStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+					0, R.drawable.help);
 			new CheckConnectionAsyncTask().execute();
 		} else {
 			Toast toast = Toast.makeText(context,
@@ -320,6 +323,7 @@ public class Options extends Activity {
 				connectionStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0,
 						0, R.drawable.ok);
 			} else {
+				connectionStatus.setText(getString(R.string.connection_problems));
 				connectionStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0,
 						0, R.drawable.cross);
 			}

@@ -74,5 +74,5 @@
     <string name="pandroid_event_viewer_description_str">Visor de eventos para Pandora FMS.</string>
     <string name="pandroid_info_txt"><b>Bienvenido al visor de eventos de Pandora FMS para Android</b></string>
     <string name="pandroid_info_long_txt"><p>Esta aplicación se usa para ver de forma autónoma y cómoda, el estado de los eventos resportados por un servidor de monitorización Pandora FMS. Desde esta aplicación podrá ver en tiempo real los eventos, e incluso validar o filtrarlos.</p><p>La configuración por defecto apunta al servidor de demo de Pandora FMS en firefly.artica.es. Cambie la configuración para que apunte a su propio servidor de Pandora FMS.</p></string>
-
+<string name="connection_problems">Conexión fallida</string>
 </resources>

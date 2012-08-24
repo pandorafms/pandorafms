@@ -1,4 +1,10 @@
 2012-08-10 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Options.java: Fixed a little bug with the connection status textview.
+	* res/layout/options.xml: Connection status textview now has a fixed width.
+	* res/values/strings.xml: Added an entry.
+	* res/values-es/strings.xml: Added an entry.
+
+2012-08-10 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Options.java: Removed url_changed in SharedPreferences.
 	* src/pandroid_event_viewer/pandorafms/Main.java: Tags and groups are loading onResume. Also, they are always loaded (url_changed isn't used anymore).
 	* src/pandroid_event_viewer/pandorafms/Core.java: Changed method visibility.

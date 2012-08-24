@@ -67,7 +67,7 @@ public class Core {
     static volatile public String defaultBytesSentReport = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultHelloSignalReport = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultRoamingReport = "enabled"; // "disabled" or "enabled"
-    static volatile public String defaultInventoryReport = "enabled"; // "disabled" or "enabled"
+    static volatile public String defaultInventoryReport = "disabled"; // "disabled" or "enabled"
     static volatile public String defaultNotificationCheck = "enabled"; // "disabled" or "enabled"
     static volatile public boolean defaultHasSim = false;
     

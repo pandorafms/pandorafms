@@ -36,6 +36,20 @@
         
     	<service android:enabled="true" android:name="pandroid.agent.PandroidAgentListener" />
 		<receiver android:name="pandroid.agent.EventReceiver" />
+		
+		<receiver
+    		android:name="pandroid.agent.StartMyServiceAtBootReceiver"
+    		android:enabled="true"
+    		android:exported="true"
+    		android:label="StartMyServiceAtBootReceiver">
+    		<intent-filter>
+        		<action android:name="android.intent.action.BOOT_COMPLETED" />
+    		</intent-filter>
+		</receiver>
+		
+		<service android:enabled="true" android:name="pandroid.agent.MyStartService" />
+		
+		
 		<activity
         	android:name=".About"
         	android:label="@string/pandroid_agent_str"
@@ -65,7 +79,7 @@
 	<uses-permission android:name="android.permission.RECEIVE_SMS"/>
 	<uses-permission android:name="android.permission.READ_CONTACTS"/>
 	<uses-permission android:name="android.permission.READ_SMS"/>
-	
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	
 	<uses-feature android:name="android.hardware.sensor.light" />
 	<uses-feature android:name="android.hardware.location" />

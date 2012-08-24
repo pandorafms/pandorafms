@@ -40,7 +40,6 @@ import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.TabHost;
 import android.widget.Toast;
-//FIXME grey buttons doesn't become white when connection is correctly set
 public class PandroidEventviewerActivity extends TabActivity implements
 		Serializable {
 	private static String TAG = "PandroidEventviewerActivity";

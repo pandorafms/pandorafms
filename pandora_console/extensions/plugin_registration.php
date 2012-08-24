@@ -71,17 +71,29 @@ function pluginreg_extension_main () {
 		echo "<h2 class=error>".__("Cannot load INI file")."</h2>";
 		return;
 	}
+	
+	// Get the version of the pspz
+	// Version 1: Until 4.0.x
+	// Version 2: From 5.0
+	$version = isset($ini_array["plugin_definition"]["version"]) ? $ini_array["plugin_definition"]["version"] : 1;
+	
+	if(!isset($ini_array["plugin_definition"]["execution_postcommand"])) {
+		$ini_array["plugin_definition"]["execution_postcommand"] = '';
+	}
 
+	// From Pandora 5.0 the pspz are in different format (version 2)
+	// If pspz is a version 1, we convert it to 2
+	if($version == 1) {
+		$ini_array["plugin_definition"] = pluginreg_convert_plugin_1_to_2($ini_array["plugin_definition"]);
+	}
+
+	// Build plugin_exec
 	$exec_path = $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
 	
 	$file_exec_path = $exec_path;
 	
 	if (isset($ini_array["plugin_definition"]["execution_command"]) && ($ini_array["plugin_definition"]["execution_command"] != "")){
 		$exec_path = $ini_array["plugin_definition"]["execution_command"] . " " . $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
-	}
-	
-	if (isset($ini_array["plugin_definition"]["execution_postcommand"]) && ($ini_array["plugin_definition"]["execution_postcommand"] != "")){
-		$exec_path = $exec_path . " " .$ini_array["plugin_definition"]["execution_postcommand"];
 	}
 	
 	if (!file_exists($file_exec_path)){
@@ -91,7 +103,6 @@ function pluginreg_extension_main () {
 	}
 	
 	// Verify if a plugin with the same name is already registered
-	
 	$sql0 = "SELECT COUNT(*) FROM tplugin WHERE name = '" . io_safe_input ($ini_array["plugin_definition"]["name"]) . "'";
 	$result = db_get_sql ($sql0);
 	
@@ -102,15 +113,36 @@ function pluginreg_extension_main () {
 		return;
 	}
 	
+	// Build macros
+	$macros = array();
+	$n = 1;
+	while(1) {
+		if(!isset($ini_array["plugin_definition"]["macro_desc_field".$n."_"])) {
+			break;
+		}
+		
+		$macros[$n]['macro'] = "_field".$n."_";
+		$macros[$n]['desc'] = $ini_array["plugin_definition"]["macro_desc_field".$n."_"];
+		$macros[$n]['value'] = "";
+		$macros[$n]['help'] = "";
+		
+		$n++;
+	}
+	
+	if(empty($macros)) {
+		$macros = '';
+	}
+	else {
+		$macros = json_encode($macros);
+	}
+	
 	$values = array(
 		'name' => io_safe_input ($ini_array["plugin_definition"]["name"]),
 		'description' => io_safe_input ($ini_array["plugin_definition"]["description"]),
 		'max_timeout' => $ini_array["plugin_definition"]["timeout"],
 		'execute' => io_safe_input ($exec_path),
-		'net_dst_opt' => $ini_array["plugin_definition"]["ip_opt"],
-		'net_port_opt' => $ini_array["plugin_definition"]["port_opt"],
-		'user_opt' => $ini_array["plugin_definition"]["user_opt"],
-		'pass_opt' => $ini_array["plugin_definition"]["pass_opt"],
+		'parameters' => io_safe_input ($ini_array["plugin_definition"]["execution_postcommand"]),
+		'macros' => $macros,
 		'plugin_type' => $ini_array["plugin_definition"]["plugin_type"]);
 	
 	$create_id = db_process_sql_insert('tplugin', $values);
@@ -151,6 +183,51 @@ function pluginreg_extension_main () {
 	echo "<h2 class=suc>".__("Plugin"). " ". $ini_array["plugin_definition"]["name"] . " ". __("Registered successfully")."</h2>";
 	unlink ($config["attachment_store"] . "/plugin_definition.ini");
 
+}
+
+function pluginreg_convert_plugin_1_to_2($plugin) {
+	$ip_desc = 'Target IP';
+	$port_desc = 'Port';
+	$user_desc = 'Username';
+	$pass_desc = 'Password';
+	
+	$parameters = '';
+	$n_field = 1;
+	$macro = "_field".$n_field."_";
+	
+	if(!empty($plugin["ip_opt"])) {
+		$parameters.= $plugin["ip_opt"]." $macro ";
+		unset($plugin["ip_opt"]);
+		$plugin['macro_desc'.$macro] = $ip_desc;
+		$n_field ++;
+		$macro = "_field".$n_field."_";
+	}
+	
+	if(!empty($plugin["port_opt"])) {
+		$parameters.= $plugin["port_opt"]." $macro ";
+		unset($plugin["port_opt"]);
+		$plugin['macro_desc'.$macro] = $port_desc;
+		$n_field ++;
+		$macro = "_field".$n_field."_";
+	}
+	
+	if(!empty($plugin["user_opt"])) {
+		$parameters.= $plugin["user_opt"]." $macro ";
+		unset($plugin["user_opt"]);
+		$plugin['macro_desc'.$macro] = $user_desc;
+		$n_field ++;
+		$macro = "_field".$n_field."_";
+	}
+	
+	if(!empty($plugin["pass_opt"])) {
+		$parameters.= $plugin["pass_opt"]." $macro ";
+		unset($plugin["pass_opt"]);
+		$plugin['macro_desc'.$macro] = $pass_desc;
+	}
+	
+	$plugin["execution_postcommand"] .= " $parameters";
+	
+	return $plugin;
 }
 
 extensions_add_godmode_menu_option (__('Register plugin'), 'PM','gservers','');

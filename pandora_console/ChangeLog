@@ -1,3 +1,9 @@
+2012-08-24  Sergio Martin <sergio.martin@artica.es>
+
+	* extensions/plugin_registration.php: Modified the plugin
+	registration extension to pspz version 2. with back compatibility
+	with version 1.
+
 2012-08-23 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/menu.php, godmode/agentes/planned_downtime.php,

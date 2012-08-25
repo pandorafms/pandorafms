@@ -1,3 +1,7 @@
+2012-08-25  Junichi Satoh  <junichi@rworks.jp>
+
+	* res/values-ja/strings.xml: Fixed wrong Japanese translations.
+
 2012-08-24 Mark Holland <mark@mark-holland.me.uk>
 
 	* AndroidManifest.xml: Added experimental start

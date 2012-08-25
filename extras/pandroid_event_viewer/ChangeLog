@@ -1,3 +1,7 @@
+2012-08-25 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/Main.java: Bug with api version detect solved.
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Comments are cut when they're too long.
+
 2012-08-24 Santiago Munín <burning1@gmail.com>
 	* src/pandroid_event_viewer/pandorafms/Core.java: Fixed a bug (possible null argument as image).
 	* src/pandroid_event_viewer/pandorafms/EventList.java: Create incident is displayed as a dialog

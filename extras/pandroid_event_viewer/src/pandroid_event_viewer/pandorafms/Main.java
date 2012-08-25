@@ -67,6 +67,7 @@ public class Main extends Activity {
 	private static String PROFILE_PREFIX = "profile:";
 	private static String DEFAULT_PROFILE_NAME = "Default";
 	private static String DEFAULT_PROFILE = "0|3||||0|6";
+	private static String VERSION_4_0_2_LABEL = "v4.0.2";
 	private PandroidEventviewerActivity object;
 	private HashMap<Integer, String> pandoraGroups;
 	private Spinner comboSeverity;
@@ -89,7 +90,8 @@ public class Main extends Activity {
 				this.getString(R.string.const_string_preferences),
 				Activity.MODE_PRIVATE);
 
-		if (preferences.getString("api_version", "v4.0.2").equals("v4.0.2")) {
+		if (preferences.getString("api_version", "")
+				.equals(VERSION_4_0_2_LABEL)) {
 			version402 = true;
 		}
 

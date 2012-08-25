@@ -457,6 +457,10 @@ public class EventList extends ListActivity {
 					}
 
 					if (item.user_comment.length() != 0) {
+						if (item.user_comment.length()> 200) {
+							item.user_comment = item.user_comment.substring(0, 197);
+							item.user_comment = item.user_comment.concat("...");
+						}
 						text = (TextView) viewEventExtended
 								.findViewById(R.id.comments_text);
 						text.setText(item.user_comment);

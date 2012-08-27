@@ -1,3 +1,16 @@
+2012-06-27  Vanessa Gil <vanessa.gil@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  pandoradb_data.sql,
+	  pandoradb_data.oracle.sql,
+	  pandoradb_data.postgreSQL.sql,
+	  general/header.php,
+	  godmode/setup/setup_visuals.php,
+	  include/functions_config.php: Disable autorefresh by default except
+	some pages.
+
 2012-08-27  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/alert_commands.php: Fixed a little bugs

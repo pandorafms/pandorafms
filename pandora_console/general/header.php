@@ -130,11 +130,38 @@ config_check();
 			<?php
 			// Autorefresh
 			$ignored_params = array ('agent_config' => false, 'code' => false);
-			if ($config["refr"]) {
-				$ignored_params['refr'] = 0;
-				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
-				echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
-				echo '</a>';
+				if ($config["refr"]) {//autorefresh interval
+					$ignored_params['refr'] = 0;
+					if (($config['enable_refr']) || (($_GET['sec2'] == 'operation/agentes/tactical') || ($_GET['sec2'] == 'operation/agentes/estado_agente') ||
+					($_GET['sec2'] == 'operation/agentes/group_view') || ($_GET['sec2'] == 'operation/events/events') || 
+					($_GET['sec2'] == 'enterprise/dashboard/main_dashboard'))) { //enable autorefresh to all pages or default pages
+					
+						echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
+						echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
+						echo '</a>';
+						
+					} 
+					else {
+						
+						$ignored_params['refr'] = '';
+						echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh').'</a>'; 
+						$values = array (
+							'5' => __('5 seconds'),
+							'10' => __('10 seconds'),
+							'15' => __('15 seconds'),
+							'30' => __('30 seconds'),
+							(string)SECONDS_1MINUTE => __('1 minute'),
+							(string)SECONDS_2MINUTES => __('2 minutes'),
+							(string)SECONDS_5MINUTES => __('5 minutes'),
+							(string)SECONDS_15MINUTES => __('15 minutes'),
+							(string)SECONDS_30MINUTES => __('30 minutes'),
+							(string)SECONDS_1HOUR => __('1 hour'));
+						echo '<span id="combo_refr" style="display: none">';
+						html_print_select ($values, 'ref', '', '', __('Select'), '0', false, false, false);
+						unset ($values);
+						echo '</span>';
+					
+				}
 			}
 			else {
 				$ignored_params['refr'] = '';
@@ -267,6 +294,7 @@ ui_require_jquery_file('jquery-ui-1.8.17.custom.min');
 				$("select#ref").change (function () {
 					href = $(a).attr ("href");
 					$(document).attr ("location", href + this.value);
+
 				});
 				
 				return false;

@@ -224,6 +224,7 @@ function config_update_config () {
 			config_update_value ('font_size', get_parameter('font_size'));
 			config_update_value ('flash_charts', (bool) get_parameter ('flash_charts'));
 			config_update_value ('custom_logo', (string) get_parameter ('custom_logo'));
+			config_update_value ('enable_refr', get_parameter('enable_refr'));
 			config_update_value ('refr', get_parameter('refr'));
 			config_update_value ('vc_refr', get_parameter('vc_refr'));
 			config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small'));
@@ -673,6 +674,10 @@ function config_process_config () {
 	
 	if (!isset ($config['dbtype'])) {
 		config_update_value ('dbtype', 'mysql');
+	}
+	
+	if (!isset ($config['enable_refr'])) {
+		config_update_value ('enable_refr', 0);
 	}
 	
 	if (!isset ($config['vc_refr'])) {

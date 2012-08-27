@@ -119,30 +119,34 @@ $values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
 $values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
 $values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
 
-$table->data[15][0] = __('Global default interval for refresh') . ui_print_help_tip(__('This interval will affect all pages'), true);
-$table->data[15][1] = html_print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);
+$table->data[15][0] = __('Enable refresh for all pages');
+$table->data[15][1] = __('Yes').'&nbsp;'.html_print_radio_button ('enable_refr', 1, '', $config["enable_refr"], true).'&nbsp;&nbsp;';
+$table->data[15][1] .= __('No').'&nbsp;'.html_print_radio_button ('enable_refr', 0, '', $config["enable_refr"], true);
 
-$table->data[16][0] = __('Default interval for refresh on Visual Console') . ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
-$table->data[16][1] = html_print_select ($values, 'vc_refr', $config["vc_refr"], '', 'N/A', 0, true, false, false);
+$table->data[16][0] = __('Global default interval for refresh') . ui_print_help_tip(__('This interval will affect all pages'), true);
+$table->data[16][1] = html_print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);
 
-$table->data[17][0] = __('Agent size text') . ui_print_help_tip(__('When the agent name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table->data[17][1] = __('Small:') . html_print_input_text ('agent_size_text_small', $config["agent_size_text_small"], '', 3, 3, true);
-$table->data[17][1] .= ' ' . __('Normal:') . html_print_input_text ('agent_size_text_medium', $config["agent_size_text_medium"], '', 3, 3, true);
+$table->data[17][0] = __('Default interval for refresh on Visual Console') . ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
+$table->data[17][1] = html_print_select ($values, 'vc_refr', $config["vc_refr"], '', 'N/A', 0, true, false, false);
 
-$table->data[18][0] = __('Module size text') . ui_print_help_tip(__('When the module name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table->data[18][1] = __('Small:') . html_print_input_text ('module_size_text_small', $config["module_size_text_small"], '', 3, 3, true);
-$table->data[18][1] .= ' ' . __('Normal:') . html_print_input_text ('module_size_text_medium', $config["module_size_text_medium"], '', 3, 3, true);
+$table->data[18][0] = __('Agent size text') . ui_print_help_tip(__('When the agent name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table->data[18][1] = __('Small:') . html_print_input_text ('agent_size_text_small', $config["agent_size_text_small"], '', 3, 3, true);
+$table->data[18][1] .= ' ' . __('Normal:') . html_print_input_text ('agent_size_text_medium', $config["agent_size_text_medium"], '', 3, 3, true);
 
-$table->data[19][0] = __('Description size text') . ui_print_help_tip(__('When the description name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table->data[19][1] = html_print_input_text ('description_size_text', $config["description_size_text"], '', 3, 3, true);
+$table->data[19][0] = __('Module size text') . ui_print_help_tip(__('When the module name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table->data[19][1] = __('Small:') . html_print_input_text ('module_size_text_small', $config["module_size_text_small"], '', 3, 3, true);
+$table->data[19][1] .= ' ' . __('Normal:') . html_print_input_text ('module_size_text_medium', $config["module_size_text_medium"], '', 3, 3, true);
 
-$table->data[20][0] = __('Item title size text') . ui_print_help_tip(__('When the item title name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table->data[20][1] = html_print_input_text ('item_title_size_text', $config["item_title_size_text"], '', 3, 3, true);
+$table->data[20][0] = __('Description size text') . ui_print_help_tip(__('When the description name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table->data[20][1] = html_print_input_text ('description_size_text', $config["description_size_text"], '', 3, 3, true);
+
+$table->data[21][0] = __('Item title size text') . ui_print_help_tip(__('When the item title name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table->data[21][1] = html_print_input_text ('item_title_size_text', $config["item_title_size_text"], '', 3, 3, true);
 
 
-$table->data[21][0] = __('GIS Labels') . ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
-$table->data[21][1] = __('Yes').'&nbsp;'.html_print_radio_button ('gis_label', 1, '', $config["gis_label"], true).'&nbsp;&nbsp;';
-$table->data[21][1] .= __('No').'&nbsp;'.html_print_radio_button ('gis_label', 0, '', $config["gis_label"], true);
+$table->data[22][0] = __('GIS Labels') . ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
+$table->data[22][1] = __('Yes').'&nbsp;'.html_print_radio_button ('gis_label', 1, '', $config["gis_label"], true).'&nbsp;&nbsp;';
+$table->data[22][1] .= __('No').'&nbsp;'.html_print_radio_button ('gis_label', 0, '', $config["gis_label"], true);
 
 
 $listIcons = gis_get_array_list_icons();
@@ -152,7 +156,7 @@ foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
 
-$table->data[22][0] = __('Default icon in GIS') . ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
+$table->data[23][0] = __('Default icon in GIS') . ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
 
 $gis_default_icon = $config["gis_default_icon"];
 
@@ -174,7 +178,7 @@ else {
         $path_warning = $path . $gis_default_icon . ".warning.png";
 }
 
-$table->data[22][1] = html_print_select($arraySelectIcon, "gis_default_icon", $gis_default_icon, "changeIcons();", __('None'), '', true) .  '&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .  '&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) . '&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
+$table->data[23][1] = html_print_select($arraySelectIcon, "gis_default_icon", $gis_default_icon, "changeIcons();", __('None'), '', true) .  '&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .  '&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) . '&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
 
 
 echo '<form id="form_setup" method="post">';

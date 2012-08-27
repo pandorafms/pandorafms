@@ -99,7 +99,8 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('enable_pass_policy_admin', 0),
 ('enable_pass_history', 0),
 ('compare_pass', 3),
-('meta_style', 'meta_pandora');
+('meta_style', 'meta_pandora'),
+('enable_refr', '0');
 
 COMMIT WORK;
 

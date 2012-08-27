@@ -1,3 +1,8 @@
+2012-08-27  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/alert_commands.php: Fixed a little bugs
+	of presentation in the command descriptions
+
 2012-08-24  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/plugin_registration.php: Modified the plugin

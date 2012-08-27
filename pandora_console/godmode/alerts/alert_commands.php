@@ -33,6 +33,12 @@ if (is_ajax ()) {
 	if ($get_alert_command) {
 		$id = (int) get_parameter ('id');
 		$command = alerts_get_alert_command ($id);
+		
+		// If is setted a description, we change the carriage return by <br> tags
+		if(isset($command['description'])) {
+			$command['description'] = io_safe_input(str_replace("\r\n","<br>", io_safe_output($command['description'])));
+		}
+		
 		echo json_encode ($command);
 	}
 	return;
@@ -165,7 +171,7 @@ foreach ($commands as $command) {
 		$data[0] .= $command['name'];
 	$data[0] .= '</span>';
 	$data[1] = $command['id'];
-	$data[2] = $command['description'];
+	$data[2] = str_replace("\r\n","<br>",io_safe_output($command['description']));
 	$data[3] = '';
 	if (! $command['internal'])
 		$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'"

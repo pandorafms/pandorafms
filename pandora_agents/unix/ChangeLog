@@ -1,3 +1,8 @@
+2012-08-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent: Merged from trunk. Improved to be able to use CRLF
+	in pandora_agent.conf.
+
 2012-08-15  Junichi Satoh  <junichi@rworks.jp>
 
 	* pandora_agent: Merged from trunk. Changed not to use thread library

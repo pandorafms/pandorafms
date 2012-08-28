@@ -535,6 +535,9 @@ sub read_config (;$) {
 	foreach my $line (@file){
 		# Skip comments and empty lines
 		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
+
+		# Replace CRLF with LF
+		$line =~ s/\r\n/\n/g;
 		
 		# Token search
 		if (defined ($token)) {

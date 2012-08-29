@@ -711,6 +711,26 @@ if ($update_module || $create_module) {
 		}
 		
 		$macros = json_encode($macros);
+		
+		$macros_for_data = config_agents_get_macros_data_conf($_POST);
+		
+		$conf_array = explode("\n",$configuration_data);
+		foreach($conf_array as $line) {
+			if(preg_match("/^module_name\s*(.*)/", $line, $match)) {
+				$new_configuration_data .= "module_name $name\n";
+			}
+			// We delete from conf all the module macros starting with _field
+			else if(!preg_match("/^module_macro_field.*/", $line, $match)) {
+				$new_configuration_data .= "$line\n";
+			}
+		}
+
+		if($macros_for_data != '') {
+			// Add macros to configuration file
+			$new_configuration_data = str_replace('module_end', $macros_for_data."module_end", $new_configuration_data);
+		}
+		
+		$configuration_data = $new_configuration_data;
 	}
 	
 	// Services are an enterprise feature, 

@@ -198,8 +198,8 @@ function mysql_db_get_all_rows_in_table($table, $order_field = "", $order = 'ASC
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
 function mysql_db_process_sql_insert($table, $values) {
-	 //Empty rows or values not processed
-
+	//Empty rows or values not processed
+	
 	if (empty ($values))
 		return false;
 	
@@ -239,7 +239,7 @@ function mysql_db_process_sql_insert($table, $values) {
 	$query .= '('.implode (', ', $fields).')';
 	
 	$query .= ' VALUES ('.$values_str.')';
-
+	
 	return db_process_sql ($query, 'insert_id');
 }
 

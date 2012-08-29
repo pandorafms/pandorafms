@@ -472,11 +472,11 @@ CREATE OR REPLACE TRIGGER talert_compound_actions_update AFTER UPDATE OF ID ON t
 CREATE OR REPLACE TRIGGER talert_compound_action_update1 AFTER UPDATE OF ID ON talert_actions FOR EACH ROW BEGIN UPDATE talert_compound_actions SET ID_ALERT_ACTION = :NEW.ID WHERE ID_ALERT_ACTION = :OLD.ID; END;;
 
 CREATE TABLE talert_special_days (
-id NUMBER(10,0) NOT NULL PRIMARY KEY,
-date DATE default '0000-00-00' NOT NULL,
-same_day VARCHAR2(20) default 'sunday',
-description CLOB,
-CONSTRAINT talert_special_days_same_day_cons CHECK (same_day IN ('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))
+	id NUMBER(10,0) NOT NULL PRIMARY KEY,
+	date DATE default '0000-00-00' NOT NULL,
+	same_day VARCHAR2(20) default 'sunday',
+	description CLOB,
+	CONSTRAINT talert_special_days_same_day_cons CHECK (same_day IN ('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))
 );
 
 -- on update trigger
@@ -1188,6 +1188,9 @@ CREATE SEQUENCE tserver_export_data_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tserver_export_data_inc BEFORE INSERT ON tserver_export_data REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_export_data_s.nextval INTO :NEW.ID FROM dual; END tserver_export_data_inc;;
 
+-- -----------------------------------------------------
+-- Table `tplanned_downtime`
+-- -----------------------------------------------------
 CREATE TABLE tplanned_downtime (
 	id NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(100) NOT NULL,
@@ -1196,22 +1199,50 @@ CREATE TABLE tplanned_downtime (
 	date_to NUMBER(19, 0) default 0 NOT NULL,
 	executed NUMBER(5, 0) default 0 NOT NULL,
 	id_group NUMBER(19, 0) default 0 NOT NULL,
-	only_alerts NUMBER(5, 0) default 0 NOT NULL
+	only_alerts NUMBER(5, 0) default 0 NOT NULL,
+	monday NUMBER(5, 0) default 0,
+	tuesday NUMBER(5, 0) default 0,
+	wednesday NUMBER(5, 0) default 0,
+	thursday NUMBER(5, 0) default 0,
+	friday NUMBER(5, 0) default 0,
+	saturday NUMBER(5, 0) default 0,
+	sunday NUMBER(5, 0) default 0,
+	-- Need to set better datatype
+	periodically_time_from DATE default NULL,
+	periodically_time_to DATE default NULL,
+	--
+	periodically_day_from NUMBER(19, 0) default NULL,
+	periodically_day_to NUMBER(19, 0) default NULL,
+	type_downtime VARCHAR2(100) NOT NULL default 'disabled_agents_alerts',
+	type_execution VARCHAR2(100) NOT NULL default 'once',
+	type_periodicity VARCHAR2(100) NOT NULL default 'weekly'
 );
-
 CREATE SEQUENCE tplanned_downtime_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tplanned_downtime_inc BEFORE INSERT ON tplanned_downtime REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_inc;;
 
+-- -----------------------------------------------------
+-- Table `tplanned_downtime_agents`
+-- -----------------------------------------------------
 CREATE TABLE tplanned_downtime_agents (
 	id NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	id_agent NUMBER(19, 0) default 0 NOT NULL,
+	id_downtime NUMBER(19, 0) default 0 NOT NULL REFERENCES tplanned_downtime(id) ON DELETE CASCADE,
+	all_modules NUMBER(5, 0) default 1
+);
+CREATE SEQUENCE tplanned_downtime_agents_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tplanned_downtime_agents_inc BEFORE INSERT ON tplanned_downtime_agents REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_agents_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_agents_inc;;
+
+-- -----------------------------------------------------
+-- Table `tplanned_downtime_modules`
+-- -----------------------------------------------------
+CREATE TABLE tplanned_downtime_modules (
+	id NUMBER(19, 0) NOT NULL PRIMARY KEY,
+	id_agent NUMBER(19, 0) default 0 NOT NULL,
+	id_agent_module NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_downtime NUMBER(19, 0) default 0 NOT NULL REFERENCES tplanned_downtime(id) ON DELETE CASCADE
 );
-
-CREATE SEQUENCE tplanned_downtime_agents_s INCREMENT BY 1 START WITH 1;
-
-CREATE OR REPLACE TRIGGER tplanned_downtime_agents_inc BEFORE INSERT ON tplanned_downtime_agents REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_agents_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_agents_inc;;
+CREATE SEQUENCE tplanned_downtime_modules_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tplanned_downtime_modules_inc BEFORE INSERT ON tplanned_downtime_modules REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_modules_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_modules_inc;;
 
 -- GIS extension Tables
 

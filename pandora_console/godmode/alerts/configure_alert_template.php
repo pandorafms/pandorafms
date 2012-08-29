@@ -182,17 +182,17 @@ function update_template ($step) {
 		$priority = (int) get_parameter ('priority');
 		$id_group = get_parameter ("id_group");
 		$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
-
+		
 		$values = array ('name' => $name,
-				'type' => $type,
-				'description' => $description,
-				'value' => $value,
-				'max_value' => $max,
-				'min_value' => $min,
-				'id_group' => $id_group,
-				'matches_value' => $matches,
-				'priority' => $priority);
-
+			'type' => $type,
+			'description' => $description,
+			'value' => $value,
+			'max_value' => $max,
+			'min_value' => $min,
+			'id_group' => $id_group,
+			'matches_value' => $matches,
+			'priority' => $priority);
+		
 		$result = alerts_update_alert_template ($id,$values);
 	}
 	elseif ($step == 2) {
@@ -260,14 +260,14 @@ function update_template ($step) {
 					'min_alerts' => $min_alerts
 					);
 				break;
-		}	
+		}
 		$result = alerts_update_alert_template ($id, $values);
 	}
 	elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
 		$field2_recovery = (string) get_parameter ('field2_recovery');
 		$field3_recovery = (string) get_parameter ('field3_recovery');
-
+		
 		$values = array ('recovery_notify' => $recovery_notify,
 			'field2_recovery' => $field2_recovery,
 			'field3_recovery' => $field3_recovery);

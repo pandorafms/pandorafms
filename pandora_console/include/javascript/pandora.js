@@ -209,13 +209,13 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 						  $('#module').append ($('<option></option>').html (s).attr ("value", val));
 						  $('#module').fadeIn ('normal');
 						  });
-			 if (selected != undefined)
-			 $('#module').attr ('value', selected);
-			 $('#module').css ("width", "auto");
-			 $('#module').css ("max-width", "");
-			 
-			 
-			 $('#module').removeAttr('disabled');
+			if (selected != undefined)
+				$('#module').attr ('value', selected);
+			$('#module').css ("width", "auto");
+			$('#module').css ("max-width", "");
+			
+			
+			$('#module').removeAttr('disabled');
 		 },
 		 "json"
 		 );

@@ -1,3 +1,11 @@
+2012-08-29  Sergio Martin <sergio.martin@artica.es>
+
+	* DEBIAN/control
+	Makefile.PL
+	pandora_server.spec
+	pandora_server.redhat.spec: Added the perl JSON dependence
+	to specs and the check to Makefile
+
 2012-08-21 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* lib/PandoraFMS/Core.pm: added in the modules the same feature to

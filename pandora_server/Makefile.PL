@@ -22,6 +22,7 @@ WriteMakefile(
 		Time::HiRes => 0,
 		HTML::Entities => 0,
 		IO::Socket::INET6 => 0,
+		JSON => 0,
     },
     EXE_FILES 		=> [ 'bin/pandora_server', 'bin/pandora_exec'],
     PMLIBDIRS  		=> [ 'lib' ],

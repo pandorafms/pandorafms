@@ -23,11 +23,11 @@ ALTER TABLE "tusuario" ADD COLUMN "not_login" SMALLINT NOT NULL default 0;
 -- -----------------------------------------------------
 CREATE TABLE "tnetflow_filter" (
 	"id_sg" SERIAL NOT NULL PRIMARY KEY,
-  	"id_name" varchar(600) NOT NULL default '',
-  	"id_group" INTEGER,
-  	"ip_dst" TEXT NOT NULL,
+	"id_name" varchar(600) NOT NULL default '',
+	"id_group" INTEGER,
+	"ip_dst" TEXT NOT NULL,
 	"ip_src" TEXT NOT NULL,
-  	"dst_port" TEXT NOT NULL,
+	"dst_port" TEXT NOT NULL,
 	"src_port" TEXT NOT NULL,
 	"advanced_filter" TEXT NOT NULL,
 	"filter_args" TEXT NOT NULL,
@@ -39,19 +39,19 @@ CREATE TABLE "tnetflow_filter" (
 -- Table `tnetflow_report`
 -- -----------------------------------------------------
 CREATE TABLE "tnetflow_report" (
- 	"id_report" SERIAL NOT NULL PRIMARY KEY,
- 	"id_name" varchar(150) NOT NULL default '',
+	"id_report" SERIAL NOT NULL PRIMARY KEY,
+	"id_name" varchar(150) NOT NULL default '',
 	"description" TEXT,
-  	"id_group" INTEGER
+	"id_group" INTEGER
 );
 
 -- -----------------------------------------------------
 -- Table `tnetflow_report_content`
 -- -----------------------------------------------------
 CREATE TABLE "tnetflow_report_content" (
-   	"id_rc" SERIAL NOT NULL PRIMARY KEY,
+	"id_rc" SERIAL NOT NULL PRIMARY KEY,
 	"id_report" INTEGER NOT NULL default 0 REFERENCES tnetflow_report("id_report") ON DELETE CASCADE,
-    "id_filter" INTEGER NOT NULL default 0 REFERENCES tnetflow_filter("id_sg") ON DELETE CASCADE,
+	"id_filter" INTEGER NOT NULL default 0 REFERENCES tnetflow_filter("id_sg") ON DELETE CASCADE,
 	"date" BIGINT NOT NULL default 0,
 	"period" INTEGER NOT NULL default 0,
 	"max" INTEGER NOT NULL default 0,
@@ -89,6 +89,24 @@ CREATE TABLE "talert_special_days" (
 ALTER TABLE "talert_templates" ADD COLUMN "special_day" SMALLINT default 0;
 
 -- -----------------------------------------------------
+-- Table `tplanned_downtime`
+-- -----------------------------------------------------
+ALTER TABLE "tplanned_downtime" ADD COLUMN "monday" SMALLINT default 0;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "tuesday" SMALLINT default 0;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "wednesday" SMALLINT default 0;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "thursday" SMALLINT default 0;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "friday" SMALLINT default 0;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "saturday" SMALLINT default 0;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "sunday" SMALLINT default 0;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "periodically_time_from" TIME default NULL;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "periodically_time_to" TIME default NULL;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "periodically_day_from" SMALLINT default NULL;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "periodically_day_to" SMALLINT default NULL;
+ALTER TABLE "tplanned_downtime" ADD COLUMN "type_downtime" VARCHAR( 100 ) NOT NULL default 'disabled_agents_alerts';
+ALTER TABLE "tplanned_downtime" ADD COLUMN "type_execution" VARCHAR( 100 ) NOT NULL default 'once';
+ALTER TABLE "tplanned_downtime" ADD COLUMN "type_periodicity" VARCHAR( 100 ) NOT NULL default 'weekly';
+
+-- -----------------------------------------------------
 -- Table `tplanned_downtime_agents`
 -- -----------------------------------------------------
 DELETE FROM "tplanned_downtime_agents"
@@ -98,6 +116,18 @@ ALTER TABLE "tplanned_downtime_agents"
 ADD CONSTRAINT downtime_foreign
 FOREIGN KEY("id_downtime")
 REFERENCES "tplanned_downtime"("id");
+
+ALTER TABLE "tplanned_downtime_agents" ADD COLUMN "all_modules" SMALLINT default 1;
+
+-- -----------------------------------------------------
+-- Table "tplanned_downtime_modules"
+-- -----------------------------------------------------
+CREATE TABLE "tplanned_downtime_modules" (
+	"id" BIGSERIAL NOT NULL PRIMARY KEY,
+	"id_agent" BIGINT NOT NULL default 0,
+	"id_agent_module" INTEGER NOT NULL default 0,
+	"id_downtime" BIGINT NOT NULL REFERENCES tplanned_downtime("id")  ON DELETE CASCADE 
+);
 
 -- -----------------------------------------------------
 -- Table `tevento`

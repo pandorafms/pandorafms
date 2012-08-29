@@ -1,3 +1,22 @@
+2012-08-29 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql,
+	include/db/mysql.php,
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	godmode/agentes/planned_downtime.list.php,
+	godmode/agentes/planned_downtime.editor.php, godmode/menu.php,
+	include/ajax/planned_downtime.ajax.php: refactoriced the code for
+	planned downtime, now this have new feature such as set a downtime
+	with a periodicity each week, each month and set the agents and
+	the modules with Quiet state instead the old form (but the old still
+	is). And the page is more easy and quickly to set or config a
+	planned downtime.
+	
+	* godmode/alerts/configure_alert_template.php,
+	include/javascript/pandora.js: cleaned source code style.
+
 2012-06-27  Vanessa Gil <vanessa.gil@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,

@@ -68,13 +68,13 @@ CREATE OR REPLACE TRIGGER tnetflow_report_content_inc BEFORE INSERT ON tnetflow_
 -- -----------------------------------------------------
 -- Table `tincidencia`
 -- -----------------------------------------------------
-alter table tincidencia add (id_agent NUMBER(10,0) default 0 NULL);
+ALTER TABLE tincidencia ADD (id_agent NUMBER(10,0) default 0 NULL);
 
 -- -----------------------------------------------------
 -- Table `tagente`
 -- -----------------------------------------------------
-alter table tagente add (url_address CLOB default '' NULL);
-alter table tagente add (quiet NUMBER(5, 0) default 0 NOT NULL);
+ALTER TABLE tagente ADD (url_address CLOB default '' NULL);
+ALTER TABLE tagente ADD (quiet NUMBER(5, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table `talert_special_days`
@@ -93,39 +93,69 @@ CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_specia
 -- -----------------------------------------------------
 -- Table `talert_templates`
 -- -----------------------------------------------------
-alter table talert_templates add (special_day NUMBER(5,0) default 0);
+ALTER TABLE talert_templates ADD (special_day NUMBER(5,0) default 0);
+
+-- -----------------------------------------------------
+-- Table `talert_templates`
+-- -----------------------------------------------------
+ALTER TABLE tplanned_downtime ADD (monday NUMBER(5, 0) default 0);
+ALTER TABLE tplanned_downtime ADD (tuesday NUMBER(5, 0) default 0);
+ALTER TABLE tplanned_downtime ADD (wednesday NUMBER(5, 0) default 0);
+ALTER TABLE tplanned_downtime ADD (thursday NUMBER(5, 0) default 0);
+ALTER TABLE tplanned_downtime ADD (friday NUMBER(5, 0) default 0);
+ALTER TABLE tplanned_downtime ADD (saturday NUMBER(5, 0) default 0);
+ALTER TABLE tplanned_downtime ADD (sunday NUMBER(5, 0) default 0);
+ALTER TABLE tplanned_downtime ADD (periodically_time_from DATE default NULL);
+ALTER TABLE tplanned_downtime ADD (periodically_time_to DATE default NULL);
+ALTER TABLE tplanned_downtime ADD (periodically_day_from NUMBER(19, 0) default NULL);
+ALTER TABLE tplanned_downtime ADD (periodically_day_to NUMBER(19, 0) default NULL);
+ALTER TABLE tplanned_downtime ADD (type_downtime VARCHAR2(100) NOT NULL default 'disabled_agents_alerts');
+ALTER TABLE tplanned_downtime ADD (type_execution VARCHAR2(100) NOT NULL default 'once');
+ALTER TABLE tplanned_downtime ADD (type_periodicity VARCHAR2(100) NOT NULL default 'weekly');
 
 -- -----------------------------------------------------
 -- Table `tplanned_downtime_agents`
 -- -----------------------------------------------------
-
 DELETE FROM tplanned_downtime_agents
 WHERE id_downtime NOT IN (SELECT id FROM tplanned_downtime);
 
-alter table tplanned_downtime_agents
+ALTER TABLE tplanned_downtime_agents
 add constraint tplanned_downtimes_foreign_key
 foreign key (id_downtime)
 references tplanned_downtime (id);
 
+ALTER TABLE tplanned_downtime_agents ADD (all_modules NUMBER(5, 0) default 1);
+
+-- -----------------------------------------------------
+-- Table `tplanned_downtime_modules`
+-- -----------------------------------------------------
+CREATE TABLE tplanned_downtime_modules (
+	id NUMBER(19, 0) NOT NULL PRIMARY KEY,
+	id_agent NUMBER(19, 0) default 0 NOT NULL,
+	id_agent_module NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_downtime NUMBER(19, 0) default 0 NOT NULL REFERENCES tplanned_downtime(id) ON DELETE CASCADE
+);
+CREATE SEQUENCE tplanned_downtime_modules_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tplanned_downtime_modules_inc BEFORE INSERT ON tplanned_downtime_modules REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_modules_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_modules_inc;;
+
 -- -----------------------------------------------------
 -- Table `tevento`
 -- -----------------------------------------------------
-
-alter table tevento add (source VARCHAR2(100) default '' NOT NULL);
-alter table tevento add (id_extra VARCHAR2(100) default '' NOT NULL);
+ALTER TABLE tevento ADD (source VARCHAR2(100) default '' NOT NULL);
+ALTER TABLE tevento ADD (id_extra VARCHAR2(100) default '' NOT NULL);
 
 -- -----------------------------------------------------
 -- Table `talert_snmp`
 -- -----------------------------------------------------
 
-ALTER TABLE talert_snmp add (_snmp_f1_ CLOB default ''); 
-ALTER TABLE talert_snmp add (_snmp_f2_ CLOB default ''); 
-ALTER TABLE talert_snmp add (_snmp_f3_ CLOB default ''); 
-ALTER TABLE talert_snmp add (_snmp_f4_ CLOB default ''); 
-ALTER TABLE talert_snmp add (_snmp_f5_ CLOB default ''); 
-ALTER TABLE talert_snmp add (_snmp_f6_ CLOB default '');
-ALTER TABLE talert_snmp add (trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL);
-ALTER TABLE talert_snmp add (single_value VARCHAR2(255) DEFAULT '');
+ALTER TABLE talert_snmp ADD (_snmp_f1_ CLOB default ''); 
+ALTER TABLE talert_snmp ADD (_snmp_f2_ CLOB default ''); 
+ALTER TABLE talert_snmp ADD (_snmp_f3_ CLOB default ''); 
+ALTER TABLE talert_snmp ADD (_snmp_f4_ CLOB default ''); 
+ALTER TABLE talert_snmp ADD (_snmp_f5_ CLOB default ''); 
+ALTER TABLE talert_snmp ADD (_snmp_f6_ CLOB default '');
+ALTER TABLE talert_snmp ADD (trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL);
+ALTER TABLE talert_snmp ADD (single_value VARCHAR2(255) DEFAULT '');
 
 -- -----------------------------------------------------
 -- Table `tevent_filter`
@@ -190,7 +220,7 @@ ALTER TABLE tmensajes MODIFY mensaje VARCHAR2(255) NOT NULL DEFAULT '';
 -- Table `talert_compound`
 -- -----------------------------------------------------
 
-alter table talert_compound add (special_day NUMBER(5,0) default 0);
+ALTER TABLE talert_compound ADD (special_day NUMBER(5,0) default 0);
 
 -- -----------------------------------------------------
 -- Table `tnetwork_component`

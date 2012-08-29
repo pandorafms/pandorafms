@@ -74,6 +74,24 @@ CREATE TABLE IF NOT EXISTS `talert_special_days` (
 ALTER TABLE `talert_templates` ADD COLUMN `special_day` tinyint(1) DEFAULT '0';
 
 -- -----------------------------------------------------
+-- Table `tplanned_downtime`
+-- -----------------------------------------------------
+ALTER TABLE `tplanned_downtime` ADD COLUMN `monday` tinyint(1) default 0;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `tuesday` tinyint(1) default 0;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `wednesday` tinyint(1) default 0;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `thursday` tinyint(1) default 0;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `friday` tinyint(1) default 0;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `saturday` tinyint(1) default 0;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `sunday` tinyint(1) default 0;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `periodically_time_from` time NULL default NULL;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `periodically_time_to` time NULL default NULL;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `periodically_day_from` int(100) unsigned default NULL;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `periodically_day_to` int(100) unsigned default NULL;
+ALTER TABLE `tplanned_downtime` ADD COLUMN `type_downtime` varchar(100) NOT NULL default 'disabled_agents_alerts';
+ALTER TABLE `tplanned_downtime` ADD COLUMN `type_execution` varchar(100) NOT NULL default 'once';
+ALTER TABLE `tplanned_downtime` ADD COLUMN `type_periodicity` varchar(100) NOT NULL default 'weekly';
+
+-- -----------------------------------------------------
 -- Table `tplanned_downtime_agents`
 -- -----------------------------------------------------
 DELETE FROM tplanned_downtime_agents
@@ -83,6 +101,21 @@ ALTER TABLE tplanned_downtime_agents
 	ADD FOREIGN KEY(`id_downtime`) REFERENCES tplanned_downtime(`id`)
 	ON DELETE CASCADE;
 
+ALTER TABLE `tplanned_downtime_agents` ADD COLUMN `all_modules` tinyint(1) default 1;
+
+
+-- -----------------------------------------------------
+-- Table `tplanned_downtime_modules`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tplanned_downtime_modules` (
+	`id` int(20) unsigned NOT NULL auto_increment,
+	`id_agent` mediumint(8) unsigned NOT NULL default '0',
+	`id_agent_module` int(10) NOT NULL, 
+	`id_downtime` mediumint(8) NOT NULL default '0',
+	PRIMARY KEY  (`id`),
+	FOREIGN KEY (`id_downtime`) REFERENCES tplanned_downtime(`id`)
+		ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- -----------------------------------------------------
 -- Table `tevento`
 -- -----------------------------------------------------

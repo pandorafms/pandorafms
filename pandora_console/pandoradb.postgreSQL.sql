@@ -993,6 +993,9 @@ CREATE TABLE "tserver_export_data" (
 	"timestamp" TIMESTAMP without time zone default '1970-01-01 00:00:00'
 );
 
+-- -----------------------------------------------------
+-- Table "tplanned_downtime"
+-- -----------------------------------------------------
 CREATE TABLE "tplanned_downtime" (
 	"id" BIGSERIAL NOT NULL PRIMARY KEY,
 	"name" VARCHAR( 100 ) NOT NULL,
@@ -1001,17 +1004,45 @@ CREATE TABLE "tplanned_downtime" (
 	"date_to" BIGINT NOT NULL default 0,
 	"executed" SMALLINT NOT NULL default 0,
 	"id_group" BIGINT NOT NULL default 0,
-	"only_alerts" SMALLINT NOT NULL default 0
+	"only_alerts" SMALLINT NOT NULL default 0,
+	"monday" SMALLINT default 0,
+	"tuesday" SMALLINT default 0,
+	"wednesday" SMALLINT default 0,
+	"thursday" SMALLINT default 0,
+	"friday" SMALLINT default 0,
+	"saturday" SMALLINT default 0,
+	"sunday" SMALLINT default 0,
+	"periodically_time_from" TIME default NULL,
+	"periodically_time_to" TIME default NULL,
+	"periodically_day_from" SMALLINT default NULL,
+	"periodically_day_to" SMALLINT default NULL,
+	"type_downtime" VARCHAR( 100 ) NOT NULL default 'disabled_agents_alerts',
+	"type_execution" VARCHAR( 100 ) NOT NULL default 'once',
+	"type_periodicity" VARCHAR( 100 ) NOT NULL default 'weekly'
 );
 
+-- -----------------------------------------------------
+-- Table "tplanned_downtime_agents"
+-- -----------------------------------------------------
 CREATE TABLE "tplanned_downtime_agents" (
 	"id" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_agent" BIGINT NOT NULL default 0,
 	"id_downtime" BIGINT NOT NULL REFERENCES tplanned_downtime("id")  ON DELETE CASCADE 
+	"all_modules" SMALLINT default 1
 );
 
--- GIS extension Tables
+-- -----------------------------------------------------
+-- Table "tplanned_downtime_modules"
+-- -----------------------------------------------------
+CREATE TABLE "tplanned_downtime_modules" (
+	"id" BIGSERIAL NOT NULL PRIMARY KEY,
+	"id_agent" BIGINT NOT NULL default 0,
+	"id_agent_module" INTEGER NOT NULL default 0,
+	"id_downtime" BIGINT NOT NULL REFERENCES tplanned_downtime("id")  ON DELETE CASCADE 
+);
 
+
+-- GIS extension Tables
 -- -----------------------------------------------------
 -- Table "tgis_data_history"
 -- -----------------------------------------------------

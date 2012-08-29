@@ -64,15 +64,15 @@ $table->head = array ();
 $table->head[0] = __('Name #Ag.');
 $table->head[1] = __('Description');
 $table->head[2] = __('Group');
-$table->head[3] = __('From');
-$table->head[4] = __('To');
-$table->head[5] = __('Affect');
+$table->head[3] = __('Type');
+$table->head[4] = __('Execution');
+$table->head[5] = __('Configuration');
 $table->head[6] = __('Delete');
 $table->head[7] = __('Update');
 $table->head[8] = __('Running');
 $table->head[9] = __('Stop downtime');
 $table->align[2] = "center";
-$table->align[5] = "center";
+//$table->align[5] = "center";
 $table->align[6] = "center";
 $table->align[7] = "center";
 $table->align[8] = "center";
@@ -101,14 +101,68 @@ else {
 		$data[0] = $downtime['name']. " ($total)";
 		$data[1] = $downtime['description'];
 		$data[2] = ui_print_group_icon ($downtime['id_group'], true);
-		$data[3] = date ("Y-m-d H:i", $downtime['date_from']);
-		$data[4] = date ("Y-m-d H:i", $downtime['date_to']);
-		if ($downtime['only_alerts']) {
-			$data[5] = __('Only alerts');
+		
+		$type_text = array('quiet' => __('Quiet'),
+			'disable_agents' => __('Disabled Agents'),
+			'disable_agents_alerts' => __('Disabled Agents and Alerts'));
+		
+		$data[3] = $type_text[$downtime['type_downtime']];
+		
+		$execution_text = array('once' => __('once'),
+			'periodically' => __('Periodically'));
+		
+		$data[4] = $execution_text[$downtime['type_execution']];
+		
+		switch ($downtime['type_execution']) {
+			case 'once':
+				$data[5] = date ("Y-m-d H:i", $downtime['date_from']) .
+					"&nbsp;" . __('to') . "&nbsp;".
+					date ("Y-m-d H:i", $downtime['date_to']);
+				break;
+			case 'periodically':
+				switch ($downtime['type_periodicity']) {
+					case 'weekly':
+						$data[5] = __('Weekly:');
+						$data[5] .= "&nbsp;";
+						if ($downtime['monday']) {
+							$data[5] .= __('Mon');
+							$data[5] .= "&nbsp;";
+						}
+						if ($downtime['tuesday']) {
+							$data[5] .= __('Tue');
+							$data[5] .= "&nbsp;";
+						}
+						if ($downtime['wednesday']) {
+							$data[5] .= __('Wed');
+							$data[5] .= "&nbsp;";
+						}
+						if ($downtime['thursday']) {
+							$data[5] .= __('Thu');
+							$data[5] .= "&nbsp;";
+						}
+						if ($downtime['friday']) {
+							$data[5] .= __('Fri');
+							$data[5] .= "&nbsp;";
+						}
+						if ($downtime['saturday']) {
+							$data[5] .= __('Sat');
+							$data[5] .= "&nbsp;";
+						}
+						if ($downtime['sunday']) {
+							$data[5] .= __('Sun');
+							$data[5] .= "&nbsp;";
+						}
+						break;
+					case 'monthly':
+						$data[5] = __('Monthly:');
+						$data[5] .= $downtime['periodically_day_from'];
+						$data[5] .= "&nbsp;" . __('to') . "&nbsp;";
+						$data[5] .= $downtime['periodically_day_to'];
+						break;
+				}
+				break;
 		}
-		else {
-			$data[5] = __('All');
-		}
+		
 		if ($downtime["executed"] == 0) {
 			$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;'.
 				'delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .

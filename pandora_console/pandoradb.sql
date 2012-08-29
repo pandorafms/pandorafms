@@ -546,59 +546,71 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
  	PRIMARY KEY  (`id_grupo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tincidencia`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tincidencia` (
-  `id_incidencia` bigint(6) unsigned zerofill NOT NULL auto_increment,
-  `inicio` datetime NOT NULL default '1970-01-01 00:00:00',
-  `cierre` datetime NOT NULL default '1970-01-01 00:00:00',
-  `titulo` text NOT NULL,
-  `descripcion` text NOT NULL,
-  `id_usuario` varchar(60) NOT NULL default '',
-  `origen` varchar(100) NOT NULL default '',
-  `estado` int(10) NOT NULL default '0',
-  `prioridad` int(10) NOT NULL default '0',
-  `id_grupo` mediumint(4) unsigned NOT NULL default '0',
-  `actualizacion` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `id_creator` varchar(60) default NULL,
-  `id_lastupdate` varchar(60) default NULL,
-  `id_agente_modulo` bigint(100) NOT NULL,
-  `notify_email` tinyint(3) unsigned NOT NULL default '0',
-  `id_agent` int(10) unsigned NULL default 0, 
-  PRIMARY KEY  (`id_incidencia`),
-  KEY `incident_index_1` (`id_usuario`,`id_incidencia`),
-  KEY `id_agente_modulo` (`id_agente_modulo`)
+	`id_incidencia` bigint(6) unsigned zerofill NOT NULL auto_increment,
+	`inicio` datetime NOT NULL default '1970-01-01 00:00:00',
+	`cierre` datetime NOT NULL default '1970-01-01 00:00:00',
+	`titulo` text NOT NULL,
+	`descripcion` text NOT NULL,
+	`id_usuario` varchar(60) NOT NULL default '',
+	`origen` varchar(100) NOT NULL default '',
+	`estado` int(10) NOT NULL default '0',
+	`prioridad` int(10) NOT NULL default '0',
+	`id_grupo` mediumint(4) unsigned NOT NULL default '0',
+	`actualizacion` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+	`id_creator` varchar(60) default NULL,
+	`id_lastupdate` varchar(60) default NULL,
+	`id_agente_modulo` bigint(100) NOT NULL,
+	`notify_email` tinyint(3) unsigned NOT NULL default '0',
+	`id_agent` int(10) unsigned NULL default 0, 
+	PRIMARY KEY  (`id_incidencia`),
+	KEY `incident_index_1` (`id_usuario`,`id_incidencia`),
+	KEY `id_agente_modulo` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tlanguage`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS`tlanguage` (
-  `id_language` varchar(6) NOT NULL default '',
-  `name` varchar(100) NOT NULL default '',
-  PRIMARY KEY  (`id_language`)
+	`id_language` varchar(6) NOT NULL default '',
+	`name` varchar(100) NOT NULL default '',
+	PRIMARY KEY  (`id_language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `tlink`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlink` (
-  `id_link` int(10) unsigned zerofill NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  `link` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id_link`)
+	`id_link` int(10) unsigned zerofill NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`link` varchar(255) NOT NULL default '',
+	PRIMARY KEY  (`id_link`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `tmensajes`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmensajes` (
-  `id_mensaje` int(10) unsigned NOT NULL auto_increment,
-  `id_usuario_origen` varchar(60) NOT NULL default '',
-  `id_usuario_destino` varchar(60) NOT NULL default '',
-  `mensaje` text NOT NULL,
-  `timestamp` bigint (20) unsigned NOT NULL default '0',
-  `subject` varchar(255) NOT NULL default '',
-  `estado` int(4) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_mensaje`)
+	`id_mensaje` int(10) unsigned NOT NULL auto_increment,
+	`id_usuario_origen` varchar(60) NOT NULL default '',
+	`id_usuario_destino` varchar(60) NOT NULL default '',
+	`mensaje` text NOT NULL,
+	`timestamp` bigint (20) unsigned NOT NULL default '0',
+	`subject` varchar(255) NOT NULL default '',
+	`estado` int(4) unsigned NOT NULL default '0',
+	PRIMARY KEY  (`id_mensaje`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- -----------------------------------------------------
+-- Table `tmodule_group`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule_group` (
-  `id_mg` tinyint(4) unsigned NOT NULL auto_increment,
-  `name` varchar(150) NOT NULL default '',
-  PRIMARY KEY  (`id_mg`)
+	`id_mg` tinyint(4) unsigned NOT NULL auto_increment,
+	`name` varchar(150) NOT NULL default '',
+	PRIMARY KEY  (`id_mg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -1126,46 +1138,79 @@ CREATE TABLE IF NOT EXISTS `tserver_export_data` (
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tplanned_downtime`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
-  `id` MEDIUMINT( 8 ) NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR( 100 ) NOT NULL,
-  `description` TEXT NOT NULL,
-  `date_from` bigint(20) NOT NULL default '0',
-  `date_to` bigint(20) NOT NULL default '0',
-  `executed` tinyint(1) UNSIGNED NOT NULL default 0,
-  `id_group` mediumint(8) unsigned NULL default 0,
-  `only_alerts` tinyint(1) UNSIGNED NOT NULL default 0,
-  PRIMARY KEY (  `id` ) 
+	`id` MEDIUMINT( 8 ) NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR( 100 ) NOT NULL,
+	`description` TEXT NOT NULL,
+	`date_from` bigint(20) NOT NULL default '0',
+	`date_to` bigint(20) NOT NULL default '0',
+	`executed` tinyint(1) UNSIGNED NOT NULL default 0,
+	`id_group` mediumint(8) unsigned NULL default 0,
+	`only_alerts` tinyint(1) UNSIGNED NOT NULL default 0,
+	`monday` tinyint(1) default 0,
+	`tuesday` tinyint(1) default 0,
+	`wednesday` tinyint(1) default 0,
+	`thursday` tinyint(1) default 0,
+	`friday` tinyint(1) default 0,
+	`saturday` tinyint(1) default 0,
+	`sunday` tinyint(1) default 0,
+	`periodically_time_from` time NULL default NULL,
+	`periodically_time_to` time NULL default NULL,
+	`periodically_day_from` int(100) unsigned default NULL,
+	`periodically_day_to` int(100) unsigned default NULL,
+	`type_downtime` varchar(100) NOT NULL default 'disabled_agents_alerts',
+	`type_execution` varchar(100) NOT NULL default 'once',
+	`type_periodicity` varchar(100) NOT NULL default 'weekly',
+	PRIMARY KEY (  `id` ) 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tplanned_downtime_agents`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
-  `id` int(20) unsigned NOT NULL auto_increment,
-  `id_agent` mediumint(8) unsigned NOT NULL default '0',
-  `id_downtime` mediumint(8) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  FOREIGN KEY (`id_downtime`) REFERENCES tplanned_downtime(`id`)
-	ON DELETE CASCADE
+	`id` int(20) unsigned NOT NULL auto_increment,
+	`id_agent` mediumint(8) unsigned NOT NULL default '0',
+	`id_downtime` mediumint(8) NOT NULL default '0',
+	`all_modules` tinyint(1) default 1,
+	PRIMARY KEY  (`id`),
+	FOREIGN KEY (`id_downtime`) REFERENCES tplanned_downtime(`id`)
+		ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tplanned_downtime_modules`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tplanned_downtime_modules` (
+	`id` int(20) unsigned NOT NULL auto_increment,
+	`id_agent` mediumint(8) unsigned NOT NULL default '0',
+	`id_agent_module` int(10) NOT NULL, 
+	`id_downtime` mediumint(8) NOT NULL default '0',
+	PRIMARY KEY  (`id`),
+	FOREIGN KEY (`id_downtime`) REFERENCES tplanned_downtime(`id`)
+		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- GIS extension Tables
-
 -- -----------------------------------------------------
 -- Table `tgis_data_history`
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_data_history` (
-  `id_tgis_data` INT NOT NULL AUTO_INCREMENT COMMENT 'key of the table' ,
-  `longitude` DOUBLE NOT NULL ,
-  `latitude` DOUBLE NOT NULL ,
-  `altitude` DOUBLE NULL ,
-  `start_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'timestamp on wich the agente started to be in this position' ,
-  `end_timestamp` TIMESTAMP NULL COMMENT 'timestamp on wich the agent was placed for last time on this position' ,
-  `description` TEXT NULL COMMENT 'description of the region correoponding to this placemnt' ,
-  `manual_placement` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 to show that the position cames from the agent, 1 to show that the position was established manualy' ,
-  `number_of_packages` INT NOT NULL DEFAULT 1 COMMENT 'Number of data packages received with this position from the start_timestampa to the_end_timestamp' ,
-  `tagente_id_agente` INT(10) UNSIGNED NOT NULL COMMENT 'reference to the agent' ,
-  PRIMARY KEY (`id_tgis_data`) ,
-  INDEX `start_timestamp_index` USING BTREE (`start_timestamp` ASC),
-  INDEX `end_timestamp_index` USING BTREE (`end_timestamp` ASC) )
+	`id_tgis_data` INT NOT NULL AUTO_INCREMENT COMMENT 'key of the table' ,
+	`longitude` DOUBLE NOT NULL ,
+	`latitude` DOUBLE NOT NULL ,
+	`altitude` DOUBLE NULL ,
+	`start_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'timestamp on wich the agente started to be in this position' ,
+	`end_timestamp` TIMESTAMP NULL COMMENT 'timestamp on wich the agent was placed for last time on this position' ,
+	`description` TEXT NULL COMMENT 'description of the region correoponding to this placemnt' ,
+	`manual_placement` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 to show that the position cames from the agent, 1 to show that the position was established manualy' ,
+	`number_of_packages` INT NOT NULL DEFAULT 1 COMMENT 'Number of data packages received with this position from the start_timestampa to the_end_timestamp' ,
+	`tagente_id_agente` INT(10) UNSIGNED NOT NULL COMMENT 'reference to the agent' ,
+	PRIMARY KEY (`id_tgis_data`) ,
+	INDEX `start_timestamp_index` USING BTREE (`start_timestamp` ASC),
+	INDEX `end_timestamp_index` USING BTREE (`end_timestamp` ASC) )
 ENGINE = InnoDB
 COMMENT = 'Table to store historical GIS information of the agents';
 

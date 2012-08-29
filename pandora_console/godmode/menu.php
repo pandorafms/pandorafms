@@ -176,7 +176,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$menu_godmode["gservers"]["sub"] = $sub;
 }
 
-if (check_acl ($config['id_user'], 0, "LW")) {	
+if (check_acl ($config['id_user'], 0, "LW")) {
 	enterprise_hook ('snmpconsole_menu');
 }
 

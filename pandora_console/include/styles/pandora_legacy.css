@@ -360,7 +360,7 @@ input.sub[disabled] {
 
 input.next, input.upd, input.ok, input.wand, input.delete, input.cog, input.target, input.search,
 input.copy, input.add, input.graph, input.percentile, input.binary,
-input.camera, input.config, input.cancel {
+input.camera, input.config, input.cancel, input.default {
 	padding-right: 21px;
 }
 input.delete_min, input.graph_min, input.percentile_min, input.percentile_item_min, input.binary_min,
@@ -414,6 +414,9 @@ input.camera {
 }
 input.config {
 	background: #e5e5e5 url(../../images/config.png) no-repeat 98% 3px;
+}
+input.default {
+	background: #e5e5e5 url(../../images/default_list.png) no-repeat 98% 3px;
 }
 input.delete_min {
 	background: #e5e5e5 url(../../images/cross.png) no-repeat center;

@@ -159,7 +159,22 @@ else
 }
 
 if (!$edit) {
-	$table_simple->data[1][1] = '<em>'.modules_get_moduletype_description ($id_module_type).'</em>';
+	$sql = sprintf ('SELECT id_tipo, nombre
+			FROM ttipo_modulo
+			WHERE id_tipo = %s
+			ORDER BY descripcion',
+			$id_module_type);
+		
+	$type_names = db_get_all_rows_sql($sql);
+	
+	$type_names_hash = array();
+	foreach($type_names as $tn) {
+		$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
+	}
+
+	$table_simple->data[1][1] = '<em>'.modules_get_moduletype_description ($id_module_type).' ('.$type_names_hash[$id_module_type].')</em>';
+
+	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(json_encode($type_names_hash)),true);
 }
 else {
 	if (isset($id_module_type)) {
@@ -174,8 +189,25 @@ else {
 		WHERE categoria IN (%s)
 		ORDER BY descripcion',
 		implode (',', $categories));
+		
 	$table_simple->data[1][1] = html_print_select_from_sql ($sql, 'id_module_type',
 		$idModuleType, '', '', '', true, false, false, $disabledBecauseInPolicy, false, false, 100);
+
+	// Store the relation between id and name of the types on a hidden field
+	$sql = sprintf ('SELECT id_tipo, nombre
+			FROM ttipo_modulo
+			WHERE categoria IN (%s)
+			ORDER BY descripcion',
+			implode (',', $categories));
+		
+	$type_names = db_get_all_rows_sql($sql);
+	
+	$type_names_hash = array();
+	foreach($type_names as $tn) {
+		$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
+	}
+
+	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(json_encode($type_names_hash)),true);
 }
 
 $table_simple->data[1][2] = __('Module group');

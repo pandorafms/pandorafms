@@ -1,3 +1,14 @@
+2012-08-29  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora_legacy.css
+	include/styles/pandora.css
+	include/javascript/pandora_modules.js
+	godmode/agentes/module_manager_editor_common.php
+	godmode/agentes/configurar_agente.php
+	godmode/agentes/module_manager_editor.php
+	godmode/servers/plugin.php: Add macros to the local modules like
+	the wizard or plugin modules. Fix some little bugs of interface
+
 2012-08-29 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql,

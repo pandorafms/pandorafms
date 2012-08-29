@@ -367,13 +367,8 @@ echo '<h3 id="message" class="error invisible"></h3>';
 echo '<form method="post" id="module_form">';
 html_print_table ($table_simple);
 
-echo '<b><a href="#" id="show_advanced" onclick="$(\'div#advanced\').show ();$(this).remove (); return false">';
-echo __('Advanced options').'&nbsp;' .html_print_image ("images/down.png", true, array ("title" => __('Advanced options')));
-echo '</a></b>';
+ui_toggle(html_print_table ($table_advanced, true), __('Advanced options'));
 
-echo '<div id="advanced" style="display: none">';
-html_print_table ($table_advanced);
-echo '</div>';
 
 // Submit
 echo '<div class="action-buttons" style="width: '.$table_simple->width.'">';
@@ -459,7 +454,11 @@ $(document).ready (function () {
 			$("#simple-configuration_data").hide();
 		}
 		else {
-			$("#simple-configuration_data").show();
+			// If exists macros dont show configuration data because
+			// this visibility is controled by a form button
+			if($('#hidden-macros').val() == '') {
+				$("#simple-configuration_data").show();
+			}
 		}
 		
 	}

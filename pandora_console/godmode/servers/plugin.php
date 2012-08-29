@@ -111,6 +111,8 @@ if (($create != "") OR ($view != "")) {
 	$table->colspan['plugin_desc'][1] = 3;
 	$table->data['plugin_desc'] = $data;
 	
+	echo '<br>';
+	
 	echo '<fieldset style="width:96%"><legend>'.__('General').'</legend>';
 	html_print_table($table);
 	echo '</fieldset>';

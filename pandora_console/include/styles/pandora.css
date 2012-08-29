@@ -367,7 +367,7 @@ input.sub[disabled] {
 input.next, input.upd, input.ok, input.wand, input.delete, input.cog,
 input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,
-input.cancel {
+input.cancel, input.default {
 	padding-right: 21px;
 }
 
@@ -418,6 +418,9 @@ input.camera {
 }
 input.config {
 	background: #e5e5e5 url(../../images/config.png) no-repeat 98% 3px;
+}
+input.default {
+	background: #e5e5e5 url(../../images/default_list.png) no-repeat 98% 3px;
 }
 
 

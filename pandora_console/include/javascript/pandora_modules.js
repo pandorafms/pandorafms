@@ -98,6 +98,35 @@ function configure_modules_form () {
 				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"])
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
+			
+				// Delete macro fields
+				$('.macro_field').remove();
+				
+				$('#hidden-macros').val('');
+
+				var legend = '';
+				// If exist macros, load the fields
+				if(data["macros"] != '') {
+					$('#hidden-macros').val(Base64.encode(data["macros"]));
+					
+					var obj = jQuery.parseJSON(data["macros"]);
+					$.each(obj, function(k,macro) {
+						add_macro_field(macro, 'simple-macro');
+						legend += macro['macro']+" = "+ macro['desc']+"<br>";
+					});
+					$('#configuration_data_legend').html(legend);
+
+					$('#simple-show_configuration_data').show();
+					$('#simple-hide_configuration_data').hide();
+					$('#configuration_data_legend').show();
+					$('#simple-configuration_data').hide();
+				}
+				else {
+					$('#simple-show_configuration_data').hide();
+					$('#simple-hide_configuration_data').hide();
+					$('#configuration_data_legend').hide();
+					$('#simple-configuration_data').show();
+				}
 			},
 			"json"
 		);
@@ -169,6 +198,7 @@ function configure_modules_form () {
 				$("#id_module_group option[value="+data["id_module_group"]+"]").select (1);
 				$("#max_timeout").attr ("value", data["max_timeout"]);
 				$("#id_plugin option[value="+data["id_plugin"]+"]").select (1);
+				$("#id_plugin").trigger('change');
 				$("#text-plugin_user").attr ("value", js_html_entity_decode (data["plugin_user"]));
 				$("#password-plugin_pass").attr ("value", js_html_entity_decode (data["plugin_pass"]));
 				$("#text-plugin_parameter").attr ("value", js_html_entity_decode (data["plugin_parameter"]));

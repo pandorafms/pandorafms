@@ -198,6 +198,7 @@ $label = base64_decode(get_parameter('label', ''));
 		$zoom = get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_events_graph = get_parameter ("show_events_graph", 0);
+		$time_compare = get_parameter ("time_compare", 0);
 		
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
@@ -237,7 +238,7 @@ $label = base64_decode(get_parameter('label', ''));
 			case 'sparse':
 				echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
 					$label, null, $draw_alerts, $avg_only, false, $date, '', $baseline,
-					0, true, false, $urlImage, 1, false, 'adapter_'.$graph_type);
+					0, true, false, $urlImage, 1, false, 'adapter_'.$graph_type, $time_compare);
 				echo '<br><br><br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, 'adapted_'.$graph_type);
@@ -379,6 +380,23 @@ $label = base64_decode(get_parameter('label', ''));
 								?>
 							</td>
 						</tr>
+						<?php
+						switch ($graph_type) {
+							case 'sparse':
+						?>
+						<tr>
+							<td><?php echo __('Time compare');?></td>
+							<td>
+								<?php
+								html_print_checkbox ("time_compare",
+									1, (bool) $time_compare);
+								?>
+							</td>
+						</tr>
+						<?php
+							break;
+						}
+						?>
 						<tr>
 							<td></td>
 							<td style="text-align: right">

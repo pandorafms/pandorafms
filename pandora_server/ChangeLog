@@ -1,3 +1,11 @@
+2012-08-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/Core.pm: refactoriced the code for the new Planned
+	Downtime, now check the downtimes once and periodical and the
+	subtypes of downtimes.
+	
+	* bin/pandora_server: cleaned source code style.
+
 2012-08-29  Sergio Martin <sergio.martin@artica.es>
 
 	* DEBIAN/control

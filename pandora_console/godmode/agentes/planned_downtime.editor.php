@@ -117,7 +117,7 @@ if ($insert_downtime_agent == 1) {
 		$all_modules = true;
 	else {
 		//It is empty.
-		if ($module_names[0] === 0)
+		if ($module_names[0] == "0")
 			$all_modules = true;
 	}
 	
@@ -330,7 +330,7 @@ if ($id_downtime > 0) {
 $table->data[3][0] = __('Type');
 $table->data[3][1] = html_print_select(array('quiet' => __('Quiet'),
 	'disable_agents' => __('Disabled Agents'),
-	'disable_agents_alerts' => __('Disabled Agents and Alerts')),
+	'disable_agents_alerts' => __('Disabled only Alerts')),
 	'type_downtime', $type_downtime, '', '', 0, true, false, true,
 	'', $disabled_type);
 $table->data[4][0] = __('Execution');

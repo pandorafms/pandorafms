@@ -1,3 +1,11 @@
+2012-08-30 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/planned_downtime.editor.php: fixed thw added
+	agents without modules in Quiet mode.
+	
+	* godmode/agentes/planned_downtime.list.php: fixing some things like
+	as the link to stop.
+
 2012-08-30  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

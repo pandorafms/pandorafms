@@ -104,7 +104,7 @@ else {
 		
 		$type_text = array('quiet' => __('Quiet'),
 			'disable_agents' => __('Disabled Agents'),
-			'disable_agents_alerts' => __('Disabled Agents and Alerts'));
+			'disable_agents_alerts' => __('Disabled only Alerts'));
 		
 		$data[3] = $type_text[$downtime['type_downtime']];
 		
@@ -182,7 +182,7 @@ else {
 			$data[8] = html_print_image ("images/pixel_red.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
 		
 		if ($downtime["executed"] != 0) {
-			$data[9] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;stop_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+			$data[9] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;stop_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
 			html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
 		}
 		

@@ -2,6 +2,12 @@
 
 	* include/functions_graph.php
 	operation/agentes/stat_win.php: Added time compare mode
+	to boolean module graphs
+
+2012-08-30  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	operation/agentes/stat_win.php: Added time compare mode
 	to sparse module graphs
 
 2012-08-29  Sergio Martin <sergio.martin@artica.es>

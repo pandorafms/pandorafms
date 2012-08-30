@@ -230,7 +230,7 @@ $label = base64_decode(get_parameter('label', ''));
 		switch ($graph_type) {
 			case 'boolean':
 				echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-					$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage, 'adapter_'.$graph_type);
+					$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage, 'adapter_'.$graph_type, $time_compare);
 				echo '<br><br><br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, 'adapted_'.$graph_type);				
@@ -382,6 +382,7 @@ $label = base64_decode(get_parameter('label', ''));
 						</tr>
 						<?php
 						switch ($graph_type) {
+							case 'boolean':
 							case 'sparse':
 						?>
 						<tr>

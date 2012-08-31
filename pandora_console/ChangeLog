@@ -1,3 +1,9 @@
+2012-08-31  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	operation/agentes/stat_win.php: Added double mode to 
+	time compare graphs modes. Separated and overlapped.
+
 2012-06-31  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/functions_api.php: Added functions to api.

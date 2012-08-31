@@ -435,7 +435,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	global $warning_min;
 	global $critical_min;
 	
-	if($compare) {
+	if($compare !== false) {
 		$series_suffix = '2';
 		$series_suffix_str = ' ('.__('Previous').')';
 		// Build the data of the previous period
@@ -445,9 +445,19 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 						$show_title, $projection, $adapt_key, $compare, 
 						$series_suffix, $series_suffix_str);
 		
-		// Store the chart calculated deleting index, because will be over the current period
-		$chart_prev = array_values($chart);
-		$legend_prev = $legend;
+		switch($compare) {
+			case 'separated':
+				// Store the chart calculated
+				$chart_prev = $chart;
+				$legend_prev = $legend;
+				$long_index_prev = $long_index;
+				break;
+			case 'overlapped':
+				// Store the chart calculated deleting index, because will be over the current period
+				$chart_prev = array_values($chart);
+				$legend_prev = $legend;
+				break;
+		}
 	}
 	
 	// Build the data of the current period
@@ -460,7 +470,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		return $data_returned;
 	}
 	
-	if($compare) {
+	if($compare === 'overlapped') {
 		$i = 0;
 		foreach($chart as $k=>$v) {
 			$chart[$k] = array_merge($v,$chart_prev[$i]);
@@ -477,11 +487,24 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => $config['homeurl'] .  "/images/logo_vertical_water.png");
 
-	// Color commented not to restrict serie colors
-	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
-		$water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
-		$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key);
+	if($compare === 'separated') {
+		return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,
+			$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			$water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
+			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key).
+			 '<br>'.
+			 area_graph($flash_chart, $chart_prev, $width, $height/2, $color, $legend_prev,
+			$long_index_prev, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			$water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
+			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key);
+	}
+	else {
+		// Color commented not to restrict serie colors
+		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
+			$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			$water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
+			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key);
+	}
 }
 
 function graph_get_formatted_date($timestamp, $format1, $format2) {
@@ -2182,21 +2205,40 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	global $legend;
 	global $long_index;
 		
-	if($compare) {
+	if($compare !== false) {
 		$series_suffix = '2';
 		$series_suffix_str = ' ('.__('Previous').')';
 		// Build the data of the previous period
 		grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$unit_name, $show_alerts, $avg_only, $date-$period, $series_suffix, $series_suffix_str);
 				
-		// Store the chart calculated as previous
-		$chart_prev = $chart;
-		$legend_prev = $legend;
-		$long_index_prev = $long_index;
+		switch($compare) {
+			case 'separated':
+				// Store the chart calculated
+				$chart_prev = $chart;
+				$legend_prev = $legend;
+				$long_index_prev = $long_index;
+				break;
+			case 'overlapped':
+				// Store the chart calculated deleting index, because will be over the current period
+				$chart_prev = array_values($chart);
+				$legend_prev = $legend;
+				break;
+		}
 	}
 	
 	grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	$unit_name, $show_alerts, $avg_only, $date);
+	
+	if($compare === 'overlapped') {
+		$i = 0;
+		foreach($chart as $k=>$v) {
+			$chart[$k] = array_merge($v,$chart_prev[$i]);
+			$i++;
+		}
+		
+		$legend = array_merge($legend, $legend_prev);
+	}
 	
 	if ($only_image) {
 		$flash_chart = false;
@@ -2205,7 +2247,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => $config['homeurl'] .  "/images/logo_vertical_water.png");
 	
-	if($compare) {
+	if($compare === 'separated') {
 		return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,
 			 $long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
 			 $water_mark,

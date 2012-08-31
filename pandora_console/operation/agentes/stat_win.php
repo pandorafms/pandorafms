@@ -198,7 +198,18 @@ $label = base64_decode(get_parameter('label', ''));
 		$zoom = get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_events_graph = get_parameter ("show_events_graph", 0);
-		$time_compare = get_parameter ("time_compare", 0);
+		$time_compare_separated = get_parameter ("time_compare_separated", 0);
+		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
+		
+		
+		$time_compare = false;
+		
+		if($time_compare_separated) {
+			$time_compare = 'separated';
+		}
+		else if($time_compare_overlapped) {
+			$time_compare = 'overlapped';
+		}
 		
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
@@ -386,11 +397,20 @@ $label = base64_decode(get_parameter('label', ''));
 							case 'sparse':
 						?>
 						<tr>
-							<td><?php echo __('Time compare');?></td>
+							<td><?php echo __('Time compare').' ('.__('Overlapped').')';?></td>
 							<td>
 								<?php
-								html_print_checkbox ("time_compare",
-									1, (bool) $time_compare);
+								html_print_checkbox ("time_compare_overlapped",
+									1, (bool) $time_compare_overlapped);
+								?>
+							</td>
+						</tr>
+						<tr>
+							<td><?php echo __('Time compare').' ('.__('Separated').')';?></td>
+							<td>
+								<?php
+								html_print_checkbox ("time_compare_separated",
+									1, (bool) $time_compare_separated);
 								?>
 							</td>
 						</tr>
@@ -417,3 +437,11 @@ $label = base64_decode(get_parameter('label', ''));
 		</div>
 	</body>
 </html>
+<script>
+	$('#checkbox-time_compare_separated').click(function() {
+		$('#checkbox-time_compare_overlapped').removeAttr('checked');
+	});
+	$('#checkbox-time_compare_overlapped').click(function() {
+		$('#checkbox-time_compare_separated').removeAttr('checked');
+	});
+</script>

@@ -1,3 +1,7 @@
+2012-06-31  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_api.php: Added functions to api.
+
 2012-08-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/planned_downtime.editor.php: fixed thw added

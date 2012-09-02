@@ -6,6 +6,11 @@
 2012-08-16 Hareesan Rajendra  <rharishan@gmail.com>
 
         * firefox_extension : Contains files for Firefox extension.
+ 
+2012-09-02 Hareesan Rajendra  <rharishan@gmail.com>
+
+        * options.xul : Made some style property changes.
+        * ReadMe.txt  : Updated with the informations.  
 
 
 

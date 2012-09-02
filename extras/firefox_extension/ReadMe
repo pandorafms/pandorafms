@@ -19,3 +19,17 @@ the icon of pandora eventviewer in one corner.
 
 For more information about this extension contact Pandora FMS development team at pandorafms.com
 
+
+---------------How to pack as extension file-----------
+
+For Ubuntu users:
+
+1. Go to the root of extension folder using command prompt. 
+2. Use the command "zip -r pandorafms_firefox_extension.xpi ./"  without double quotation(" ") marks. 
+3. Make sure the root folder of the compressed folder contains the chrome.manifest, install.rdf files. 
+
+For other operating system users: 
+Use any of the compressing mechanism and compress the extension folder to .xpi format and make sure the chrome.manifest, install.rdf files located in the root directory of the compressed folder. 
+
+ 
+

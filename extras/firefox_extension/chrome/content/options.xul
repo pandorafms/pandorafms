@@ -235,5 +235,5 @@
             </tabpanels>
         </tabbox>
     </prefpane>
- <label value="Author Information : R.Hareesan (rharishan@gmail.com)"></label>
+ <label style="font-family:arial;font-style:italic;color:black;font-size:11px;" value="Author Information : R.Hareesan (rharishan@gmail.com)"></label>
 </prefwindow>

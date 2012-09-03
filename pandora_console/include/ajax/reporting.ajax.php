@@ -147,7 +147,11 @@ if ($get_metaconsole_hash_data) {
 	
 	$pwd = $server["auth_token"]; // Create HASH login info
 	$user = $config["id_user"];
-	$hashdata = $user.$pwd;
+	
+	// Extract auth token from serialized field
+	$pwd_deserialiced = json_decode($pwd, true);
+	$hashdata = $user.$pwd_deserialiced['auth_token'];
+	
 	$hashdata = md5($hashdata);
 	$url_hash = "&loginhash=auto&loginhash_data=$hashdata&loginhash_user=$user";
 	

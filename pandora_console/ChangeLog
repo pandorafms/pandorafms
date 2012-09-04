@@ -1,3 +1,15 @@
+2012-09-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	 include/graphs/fgraph.php: Fixed minor bugs.
+	
+	* operation/agentes/stat_win.php: Url built with ui_get_full_url
+	function.
+	 	
+	 godmode/reporting/reporting_builder.list_items.php
+	 godmode/reporting/reporting_builder.php: Fixed bug in list element
+	 view due to bad js action of the form.
+
 2012-09-04 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/graph_builder.php,

@@ -342,8 +342,8 @@ html_print_table($table);
 ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 
 echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
-	method='post' onclick='return message_check_delete_items();' onsubmit='return added_ids_deleted_items_to_hidden_input();'>";
-	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
+	echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
 	html_print_input_hidden('ids_items_to_delete', '');
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
@@ -453,6 +453,8 @@ function message_check_delete_items() {
 }
 
 function added_ids_deleted_items_to_hidden_input() {
+	message_check_delete_items();
+	
 	var ids = '';
 	var first = true;
 	

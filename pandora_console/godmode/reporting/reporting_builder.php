@@ -476,6 +476,7 @@ switch ($action) {
 				$description = get_parameter('description');
 				$type_access_selected = get_parameter('type_access', 'group_view');
 				$id_group_edit_param = (int)get_parameter('id_group_edit', 0);
+				$report_id_user = get_parameter('report_id_user');
 				
 				switch ($type_access_selected) {
 					case 'group_view':

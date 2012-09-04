@@ -191,7 +191,7 @@ function slicesbar_graph($chart_data, $period, $width, $height, $colors, $font,
 function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array(),
 	$legend = array(), $xaxisname = "", $yaxisname = "", $homedir="",
 	$water_mark = '', $font = '', $font_size = '', $force_steps = true, $ttl = 1, $reduce_data_columns = false,
-	$adapt_key) {
+	$adapt_key = '') {
 
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
@@ -245,7 +245,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if (empty($chart_data)) {
-		return '<img src="' . $no_data_image . '" />';
+		return html_print_image($no_data_image, true, array("border" => '0'));
 	}
 	
 	if($flash_chart) {
@@ -277,7 +277,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	if (empty($chart_data)) {
-		return '<img src="' . $no_data_image . '" />';
+		return html_print_image($no_data_image, true, array("border" => '0'));
 	}
 	
 	if($flash_chart) {
@@ -312,7 +312,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	if (empty($chart_data)) {
-		return '<img src="' . $no_data_image . '" />';
+		return html_print_image($no_data_image, true, array("border" => '0'));
 	}
 	
 	if($flash_chart) {
@@ -347,7 +347,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	if (empty($chart_data)) {
-		return '<img src="' . $no_data_image . '" />';
+		return html_print_image($no_data_image, true, array("border" => '0'));
 	}
 	
 	if($flash_chart) {
@@ -374,7 +374,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 
 function kiviat_graph($graph_type, $flash_chart, $chart_data, $width, $height, $no_data_image, $ttl = 1, $homedir="") {
 	if (empty($chart_data)) {
-		return '<img src="' . $no_data_image . '" />';
+		return html_print_image($no_data_image, true, array("border" => '0'));
 	}
 	
 	$graph = array();

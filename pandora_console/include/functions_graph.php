@@ -244,6 +244,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$flash_chart = $config['flash_charts'];
 	
 	// Get event data (contains alert data too)
+	$events = array();
 	if ($show_events == 1 || $show_alerts == 1) {
 		$events = db_get_all_rows_filter ('tevento',
 			array ('id_agentmodule' => $agent_module_id,
@@ -328,6 +329,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}
 
 	// Get baseline data
+	$baseline_data = array();
 	if ($baseline) {
 		$baseline_data = array ();
 		if ($baseline == 1) {

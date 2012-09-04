@@ -226,11 +226,7 @@ $label = base64_decode(get_parameter('label', ''));
 		else
 			$date = $utime;
 		
-		$urlImage = 'http://';
-		if ($config['https']) {
-			$urlImage = 'https://';
-		}
-		$urlImage .= $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/';
+		$urlImage = ui_get_full_url(false);
 		
 		// log4x doesnt support flash yet
 		//

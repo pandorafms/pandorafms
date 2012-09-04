@@ -538,7 +538,17 @@ function modules_get_agentmodule ($id_agentmodule) {
 				$fields_[] = $field['column_name'];
 			}
 			$fields = implode(',', $fields_);
-			$result = db_process_sql("SELECT TO_NUMBER(MAX_CRITICAL) as max_critical, TO_NUMBER(MIN_CRITICAL) as min_critical, TO_NUMBER(MAX_WARNING) as max_warning, TO_NUMBER(MIN_WARNING) as  min_warning, TO_NUMBER(POST_PROCESS) as post_process, " . $fields . " FROM tagente_modulo WHERE id_agente_modulo = " . $id_agentmodule);
+			
+			$result = db_process_sql("
+				SELECT TO_NUMBER(MAX_CRITICAL) as max_critical,
+					TO_NUMBER(MIN_CRITICAL) as min_critical,
+					TO_NUMBER(MAX_WARNING) as max_warning,
+					TO_NUMBER(MIN_WARNING) as  min_warning,
+					TO_NUMBER(POST_PROCESS) as post_process,
+					" . $fields . "
+				FROM tagente_modulo
+				WHERE id_agente_modulo = " . $id_agentmodule);
+			
 			return $result[0];
 			break;
 	}
@@ -565,7 +575,10 @@ function modules_get_agentmodule_id ($agentmodule_name, $agent_id) {
  * @return bool true if is init and false if is not init
  */
 function modules_get_agentmodule_is_init ($id_agentmodule) {
-	$result = db_get_row_filter ('tagente_estado', array('id_agente_modulo' => $id_agentmodule), 'utimestamp');
+	$result = db_get_row_filter ('tagente_estado',
+		array('id_agente_modulo' => $id_agentmodule),
+		'utimestamp');
+	
 	return (bool)$result['utimestamp'];
 }
 
@@ -589,7 +602,8 @@ function modules_get_agent_modules_count ($id_agent = 0) {
 		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",", (array) $id_agent));
 	}
 	
-	return (int) db_get_sql ("SELECT COUNT(*) FROM tagente_modulo" . $filter);
+	return (int) db_get_sql ("SELECT COUNT(*)
+		FROM tagente_modulo" . $filter);
 }
 
 /**

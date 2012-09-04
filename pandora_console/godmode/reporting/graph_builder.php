@@ -72,13 +72,20 @@ if ($add_graph) {
 	$events = get_parameter_post ("events");
 	$stacked = get_parameter ("stacked", 0);
 	$period = get_parameter_post ("period");
-
+	
 	// Create graph
-	$values = array( 'id_user' => $config['id_user'], 'name' => $name, 'description' => $description, 
-	'period' => $period, 'width' => $width, 'height' => $height,
-	'private' => 0, 'id_group' => $idGroup, 'events' => $events, 
-	'stacked' => $stacked);
-
+	$values = array(
+		'id_user' => $config['id_user'],
+		'name' => $name,
+		'description' => $description, 
+		'period' => $period,
+		'width' => $width,
+		'height' => $height,
+		'private' => 0,
+		'id_group' => $idGroup,
+		'events' => $events, 
+		'stacked' => $stacked);
+	
 	if (trim($name) != "") {
 		$id_graph = db_process_sql_insert('tgraph', $values);
 		if ($id_graph !== false)

@@ -293,8 +293,14 @@ function html_print_select ($fields, $name, $selected = '', $script = '',
 			$nothing = __('None');
 		}
 		$output .= '<option value="'.$nothing_value.'"';
+		
 		if ($nothing_value == $selected) {
 			$output .= ' selected="selected"';
+		}
+		else if (is_array ($selected)) {
+			if (in_array ($nothing_value, $selected)) {
+				$output .= ' selected="selected"';
+			}
 		}
 		$output .= '>'.$nothing.'</option>';
 	}

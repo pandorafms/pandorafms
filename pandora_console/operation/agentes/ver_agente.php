@@ -306,6 +306,7 @@ if (is_ajax ()) {
 		//$agent_modules['any_text'] = __('Any');
 		
 		echo json_encode ($agent_modules);
+		
 		return;
 	}
 	

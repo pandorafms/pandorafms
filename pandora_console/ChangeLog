@@ -1,3 +1,19 @@
+2012-09-04 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/graph_builder.php,
+	include/functions_modules.php, operation/agentes/ver_agente.php:
+	cleaned source code style.
+	
+	* include/functions_html.php: fixed the function "html_print_select"
+	when pass the selected as array
+	(for example in multiple select box).
+	
+	* godmode/reporting/reporting_builder.item_editor.php,
+	include/functions_reports.php: into the function "get_report_name"
+	added parameter $template to get type for content template. And the
+	function "get_report_types" renamed for "reports_get_report_types"
+	and added the same parameter $template.
+
 2012-08-31  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

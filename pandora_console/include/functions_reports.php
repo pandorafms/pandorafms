@@ -411,11 +411,12 @@ function reports_delete_content ($id_report_content) {
  * Get report type name from type id.
  *
  * @param int $type Type id of the report.
+ * @param boolean $template Set true for to get types for templates. By default false.
  *
  * @return string Report type name.
  */
-function get_report_name ($type) {
-	$types = get_report_types ();
+function get_report_name ($type, $template = false) {
+	$types = reports_get_report_types ($template);
 	if (! isset ($types[$type]))
 		return __('Unknown');
 	
@@ -475,9 +476,11 @@ function get_report_type_data_source ($type) {
 /**
  * Get report types in an array.
  * 
+ * @param boolean $template Set true for to get types for templates. By default false.
+ * 
  * @return array An array with all the possible reports in Pandora where the array index is the report id.
  */
-function get_report_types () {
+function reports_get_report_types ($template = false) {
 	global $config;
 	
 	$types = array ();
@@ -487,7 +490,7 @@ function get_report_types () {
 	$types['simple_baseline_graph'] = array('optgroup' => __('Graphs'),
 		'name' => __('Simple baseline graph'));
 	$types['custom_graph'] = array('optgroup' => __('Graphs'),
-			'name' => __('Custom graph'));
+		'name' => __('Custom graph'));
 	# Only pandora managers have access to the whole database
 	if (check_acl ($config['id_user'], 0, "PM")) {
 		$types['sql_graph_vbar'] = array('optgroup' => __('Graphs'),
@@ -497,53 +500,57 @@ function get_report_types () {
 		$types['sql_graph_hbar'] = array('optgroup' => __('Graphs'),
 			'name' => __('SQL horizonal bar graph'));
 	}
+	if ($template) {
+		$types['automatic_graph'] = array('optgroup' => __('Graphs'), 
+			'name' => __('Automatic combined Graph'));
+	}
 	
 	
 	
 	$types['TTRT'] = array('optgroup' => __('ITIL'),
-			'name' => __('TTRT'));
+		'name' => __('TTRT'));
 	$types['TTO'] = array('optgroup' => __('ITIL'),
-			'name' => __('TTO'));
+		'name' => __('TTO'));
 	$types['MTBF'] = array('optgroup' => __('ITIL'),
-			'name' => __('MTBF'));
+		'name' => __('MTBF'));
 	$types['MTTR'] = array('optgroup' => __('ITIL'),
-			'name' => __('MTTR'));
+		'name' => __('MTTR'));
 	
 	
 	
 	$types['SLA'] = array('optgroup' => __('SLA'),
-			'name' => __('S.L.A.'));
+		'name' => __('S.L.A.'));
 	
 	
 	
 	$types['prediction_date'] = array('optgroup' => __('Forecasting'),
-			'name' => __('Prediction date'));
+		'name' => __('Prediction date'));
 	$types['projection_graph'] = array('optgroup' => __('Forecasting'),
-			'name' => __('Projection graph'));
+		'name' => __('Projection graph'));
 	
 	
 	
 	$types['avg_value'] = array('optgroup' => __('Modules'),
-			'name' => __('Avg. Value'));
+		'name' => __('Avg. Value'));
 	$types['max_value'] = array('optgroup' => __('Modules'),
-			'name' => __('Max. Value'));
+		'name' => __('Max. Value'));
 	$types['min_value'] = array('optgroup' => __('Modules'),
-			'name' => __('Min. Value'));
+		'name' => __('Min. Value'));
 	$types['monitor_report'] = array('optgroup' => __('Modules'),
-			'name' => __('Monitor report'));
+		'name' => __('Monitor report'));
 	$types['database_serialized'] = array('optgroup' => __('Modules'),
-			'name' => __('Serialize data'));
+		'name' => __('Serialize data'));
 	$types['sumatory'] = array('optgroup' => __('Modules'),
-			'name' => __('Summatory'));
+		'name' => __('Summatory'));
 	
 	
 	
 	$types['general'] = array('optgroup' => __('Grouped'),
-			'name' => __('General'));
+		'name' => __('General'));
 	$types['group_report'] = array('optgroup' => __('Grouped'),
-			'name' => __('Group report'));
+		'name' => __('Group report'));
 	$types['exception'] = array('optgroup' => __('Grouped'),
-			'name' => __('Exception'));
+		'name' => __('Exception'));
 	if ($config['metaconsole'] != 1)
 		$types['agent_module'] = array('optgroup' => __('Grouped'),
 			'name' => __('Agents/Modules'));
@@ -553,36 +560,36 @@ function get_report_types () {
 			'name' => __('SQL query'));
 	}
 	$types['top_n'] = array('optgroup' => __('Grouped'),
-			'name' => __('Top n'));
+		'name' => __('Top n'));
 	
 	
 	
 	$types['text'] = array('optgroup' => __('Text/HTML '),
-			'name' => __ ('Text'));
+		'name' => __ ('Text'));
 	$types['url'] = array('optgroup' => __('Text/HTML '),
-			'name' => __('Import text from URL'));
+		'name' => __('Import text from URL'));
 	
 	
 	
 	$types['alert_report_module'] = array('optgroup' => __('Alerts'),
-			'name' => __('Alert report module')); 
+		'name' => __('Alert report module')); 
 	$types['alert_report_agent'] = array('optgroup' => __('Alerts'),
-			'name' => __('Alert report agent'));
+		'name' => __('Alert report agent'));
 	
 	
 	
 	$types['event_report_agent'] = array('optgroup' => __('Events'),
-			'name' => __('Event report agent')); 
+		'name' => __('Event report agent')); 
 	$types['event_report_module'] = array('optgroup' => __('Events'),
-			'name' => __('Event report module')); 
+		'name' => __('Event report module')); 
 	$types['event_report_group'] = array('optgroup' => __('Events'),
-			'name' => __('Event report group'));
+		'name' => __('Event report group'));
 	
 	if($config['enterprise_installed']) {
 		$types['inventory'] = array('optgroup' => __('Inventory'),
-				'name' => __('Inventory')); 
+			'name' => __('Inventory')); 
 		$types['inventory_changes'] = array('optgroup' => __('Inventory'),
-				'name' => __('Inventory changes'));
+			'name' => __('Inventory changes'));
 	}
 	
 	return $types;

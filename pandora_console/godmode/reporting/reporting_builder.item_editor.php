@@ -361,10 +361,10 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="">
 				<?php
 				if ($action == 'new') { 
-					html_print_select(get_report_types(), 'type', $type, 'chooseType();', '', '');
+					html_print_select(reports_get_report_types(), 'type', $type, 'chooseType();', '', '');
 				}
 				else {
-					echo get_report_name($type);
+					echo reports_get_report_types($type);
 					echo '<input type="hidden" id="type" name="type" value="' . $type . '" />';
 				}
 				?>
@@ -480,7 +480,7 @@ html_print_input_hidden('id_item', $idItem);
 				if ($config['metaconsole'] == 1) {
 					$connection = metaconsole_get_connection($server_name);
 					$agent_name = '';
-
+					
 					if (metaconsole_load_external_db($connection) == NOERR)
 						$agent_name = db_get_value_filter('nombre', 'tagente', array('id_agente' => $idAgent));	
 						// Append server name
@@ -510,7 +510,7 @@ html_print_input_hidden('id_item', $idItem);
 					
 					if ($config['metaconsole'] == 1) {
 						$connection = metaconsole_get_connection($server_name);
-
+						
 						if (metaconsole_load_external_db($connection) == NOERR) {
 							$agent_name_temp = db_get_all_rows_sql($sql);
 							

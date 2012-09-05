@@ -91,6 +91,7 @@ $new_component = (bool) get_parameter ('new_component');
 $duplicate_network_component = (bool) get_parameter ('duplicate_network_component');
 $delete_multiple = (bool) get_parameter('delete_multiple');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
+$create_network_from_module = (bool) get_parameter ('create_network_from_module', 0);
 
 if ($duplicate_network_component) {
 	$source_id = (int) get_parameter ('source_id');
@@ -300,7 +301,7 @@ if ($multiple_delete) {
 	$id = 0;
 }
 
-if ($id || $new_component) {
+if ($id || $new_component || $create_network_from_module) {
 	include_once ('godmode/modules/manage_network_components_form.php');
 	return;
 }
@@ -440,7 +441,6 @@ if (isset($data)) {
 else {
 	echo "<div class='nf'>".__('There are no defined network components')."</div>";
 }
-
 
 echo '<form method="post" action="'.$url.'">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

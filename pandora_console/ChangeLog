@@ -1,3 +1,8 @@
+2012-09-05  Vanessa Gil <vanessa.gil@artica.es>
+
+	* general/header.php
+	  include/functions_ui.php: Enable/disable autorefresh.
+
 2012-09-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php

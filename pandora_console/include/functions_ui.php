@@ -1108,9 +1108,14 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	// If user is logged or displayed view is the public view of visual console
 	if ($config["refr"] > 0 && (isset($config['id_user']) || $vc_public_view == 1)) {
-		$query = ui_get_url_refresh (false);
-		
-		$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL=' . $query . '" />';
+		if ($config['enable_refr'] || $GET['sec2'] == "operation/agentes/estado_agente" || $GET['sec2'] == "operation/agentes/tactical"||
+		$_GET['sec2'] == "operation/agentes/group_view" || $_GET['sec2'] == 'operation/events/events' ||
+		$_GET['sec2'] == "enterprise/dashboard/main_dashboard") {
+			
+			$query = ui_get_url_refresh (false);	
+			$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL=' . $query . '" />';
+			
+		}
 	}
 	$output .= "\n\t";
 	$output .= '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>

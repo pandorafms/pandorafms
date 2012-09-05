@@ -1,5 +1,12 @@
 2012-09-05  Vanessa Gil <vanessa.gil@artica.es>
 
+	* godmode/agentes/module_manager.php
+	  godmode/modules/manage_network_components.php
+	  godmode/modules/manage_network_components_form.php: Add button
+	to create a network component from module.
+
+2012-09-05  Vanessa Gil <vanessa.gil@artica.es>
+
 	* general/header.php
 	  include/functions_ui.php: Enable/disable autorefresh.
 

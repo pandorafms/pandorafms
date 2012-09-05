@@ -428,7 +428,7 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[2] = '55px';
-$table->size[8] = '100px';
+$table->size[8] = '120px';
 $table->align = array ();
 $table->align[2] = 'center';
 $table->align[8] = 'left';
@@ -589,6 +589,14 @@ foreach ($modules as $module) {
 				array ('title' => __('Normalize')));
 			$data[8] .= '</a>';
 		}
+	}
+	//create network component action
+	if (is_user_admin($config['id_user'])) {
+		$data[8] .= '&nbsp;<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
+			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+		$data[8] .= html_print_image ('images/network.png', true,
+			array ('title' => __('Create network component')));
+		$data[8] .= '</a> ';
 	}
 	
 	array_push ($table->data, $data);

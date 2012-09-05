@@ -25,7 +25,49 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
+$create_network_from_module = get_parameter('create_network_from_module');
+
+if ($create_network_from_module) {
+
+	$id_agentmodule = get_parameter('create_module_from');
+	$data_module = db_get_row_filter('tagente_modulo', array ('id_agente_modulo' => $id_agentmodule));
+	
+	$name = $data_module["nombre"];
+	$description = $data_module["descripcion"];
+	$max = $data_module["max"];
+	$min = $data_module["min"];
+	$module_interval = $data_module["module_interval"];
+	$tcp_port = $data_module["tcp_port"];
+	$tcp_rcv = $data_module["tcp_rcv"];
+	$tcp_send = $data_module["tcp_send"];
+	$snmp_community = $data_module["snmp_community"];
+	$snmp_oid = $data_module["snmp_oid"];
+	$id_module_group = $data_module["id_module_group"];
+	$id_plugin = $data_module["id_plugin"];
+	$plugin_user = $data_module["plugin_user"];
+	$plugin_pass = $data_module["plugin_pass"];
+	$plugin_parameter = $data_module["plugin_parameter"];
+	$macros = $data_module["macros"];
+	$max_timeout = $data_module["max_timeout"];
+	$min_warning = $data_module["min_warning"];
+	$max_warning = $data_module["max_warning"];
+	$str_warning = $data_module["str_warning"];
+	$max_critical = $data_module["max_critical"];
+	$min_critical = $data_module["min_critical"];
+	$str_critical = $data_module["str_critical"];
+	$ff_event = $data_module["min_ff_event"];
+	$history_data = $data_module["history_data"];
+	$post_process = $data_module["post_process"];
+	$unit = $data_module["unit"];
+	$wizard_level = $data_module["wizard_level"];
+	
+}
+
 $id_component_type = (int) get_parameter ('id_component_type');
+if ($create_network_from_module) {
+	$id_component_type = 2;
+}
+
 if (isset ($id)) {
 	$component = network_components_get_network_component ((int) $id);
 	if ($component !== false) {
@@ -135,7 +177,7 @@ else if ($id_component_type == 4) {
 	require ("godmode/modules/manage_network_components_form_common.php");
 	require ("godmode/modules/manage_network_components_form_plugin.php");
 }
-else if ($id_component_type == 2) { 
+else if ($id_component_type == 2 || $create_network_from_module) {
 	$categories = array (3, 4, 5);
 	require ("godmode/modules/manage_network_components_form_common.php");
 	require ("godmode/modules/manage_network_components_form_network.php");
@@ -164,6 +206,7 @@ if ($id) {
 }
 else {
 	html_print_input_hidden ('create_component', 1);
+	html_print_input_hidden ('create_network_from_module', 0);
 	html_print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
 }
 echo '</div>';

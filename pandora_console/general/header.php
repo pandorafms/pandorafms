@@ -137,7 +137,10 @@ config_check();
 				echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 				echo '</a>';
 			} else {
-
+				
+				if (!isset($_GET['sec2'])) 
+					$_GET['sec2'] = '';
+					
 				if (($config['refr']) && (($_GET['sec2'] == 'operation/agentes/tactical') || ($_GET['sec2'] == 'operation/agentes/estado_agente') ||
 					($_GET['sec2'] == 'operation/agentes/group_view') || ($_GET['sec2'] == 'operation/events/events') || 
 					($_GET['sec2'] == 'enterprise/dashboard/main_dashboard'))) {

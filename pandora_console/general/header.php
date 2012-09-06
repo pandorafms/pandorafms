@@ -53,7 +53,7 @@ config_check();
 			<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
 			
-			if ($config["metaconsole"] == 0){
+			if ($config["metaconsole"] == 0) {
 				$msg_cnt = messages_get_count ($config["id_user"]);
 				if ($msg_cnt > 0) {
 					echo '<div id="dialog_messages" style="display: none"></div>';
@@ -130,7 +130,6 @@ config_check();
 			<?php
 			// Autorefresh
 			$ignored_params = array ('agent_config' => false, 'code' => false);
-			
 			if ($config['enable_refr']) {
 				$ignored_params['refr'] = 0;
 				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
@@ -150,22 +149,22 @@ config_check();
 						echo '</a>';
 				} else {
 					$ignored_params['refr'] = '';
-						echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh').'</a>'; 
-						$values = array (
-							'5' => __('5 seconds'),
-							'10' => __('10 seconds'),
-							'15' => __('15 seconds'),
-							'30' => __('30 seconds'),
-							(string)SECONDS_1MINUTE => __('1 minute'),
-							(string)SECONDS_2MINUTES => __('2 minutes'),
-							(string)SECONDS_5MINUTES => __('5 minutes'),
-							(string)SECONDS_15MINUTES => __('15 minutes'),
-							(string)SECONDS_30MINUTES => __('30 minutes'),
-							(string)SECONDS_1HOUR => __('1 hour'));
-						echo '<span id="combo_refr" style="display: none">';
-						html_print_select ($values, 'ref', '', '', __('Select'), '0', false, false, false);
-						unset ($values);
-						echo '</span>';
+					echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh').'</a>'; 
+					$values = array (
+						'5' => __('5 seconds'),
+						'10' => __('10 seconds'),
+						'15' => __('15 seconds'),
+						'30' => __('30 seconds'),
+						(string)SECONDS_1MINUTE => __('1 minute'),
+						(string)SECONDS_2MINUTES => __('2 minutes'),
+						(string)SECONDS_5MINUTES => __('5 minutes'),
+						(string)SECONDS_15MINUTES => __('15 minutes'),
+						(string)SECONDS_30MINUTES => __('30 minutes'),
+						(string)SECONDS_1HOUR => __('1 hour'));
+					echo '<span id="combo_refr" style="display: none">';
+					html_print_select ($values, 'ref', '', '', __('Select'), '0', false, false, false);
+					unset ($values);
+					echo '</span>';
 				}
 			}
 
@@ -177,7 +176,7 @@ config_check();
 			if (isset($config["custom_logo"]))
 				echo html_print_image("images/custom_logo/" . $config["custom_logo"], true,array("height" => '60', "width" => '139', "alt" => 'Logo'));
 			echo "</a>";
-		?>
+			?>
 		</td>
 	</tr>
 	<tr>
@@ -195,7 +194,8 @@ config_check();
 						echo "value='" . __("Enter keywords to search") . "'";
 					else if (strlen($config['search_keywords']) == 0)
 						echo "value='" . __("Enter keywords to search") . "'";
-					else echo "value='" . $config['search_keywords'] . "'";
+					else
+						echo "value='" . $config['search_keywords'] . "'";
 					?>
 					onfocus="javascript: if (fieldKeyWordEmpty) $('#keywords').val('');"
 					size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
@@ -211,7 +211,7 @@ config_check();
 		</td>
 		<td>
 			<?php
-			if ($config["metaconsole"] == 0){
+			if ($config["metaconsole"] == 0) {
 				echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events">' . html_print_image("images/lightning_go.png", true, array("alt" => 'lightning_go', "class" => 'bot')) . '&nbsp;'.__('Events').'</a>';
 			}
 			?>
@@ -281,7 +281,6 @@ ui_require_jquery_file('jquery-ui-1.8.17.custom.min');
 				$("select#ref").change (function () {
 					href = $(a).attr ("href");
 					$(document).attr ("location", href + this.value);
-
 				});
 				
 				return false;

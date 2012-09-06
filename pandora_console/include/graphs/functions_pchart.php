@@ -109,7 +109,8 @@ if (!$force_height) {
 
 $water_mark = '';
 if(isset($graph['water_mark'])) { 
-	$water_mark = $graph['water_mark']; //"/var/www/pandora_console/images/logo_vertical_water.png";
+	//"/var/www/pandora_console/images/logo_vertical_water.png";
+	$water_mark = $graph['water_mark'];
 }
 
 if (isset($graph['force_steps'])) {
@@ -144,40 +145,40 @@ $c = 1;
 switch($graph_type) {
 	case 'hbar':
 	case 'vbar':
-			foreach($data as $i => $values) {				
-				foreach($values as $name => $val) {
-					$data_values[$name][] = $val;
-				}				
-				
-				if (($c % $step) == 0) {
-					$data_keys[] = $i;
-				}
-				else {
-					$data_keys[] = "";
-				}
-				
-				$c++;
-			}
-			$fine_colors = array();
-
-			// If is set fine colors we store it or set default
-			if(isset($colors[reset(array_keys($data_values))]['fine'])) {
-				$fine = $colors[reset(array_keys($data_values))]['fine'];
-				if($fine === true) {
-					$fine = $default_fine_colors;
-				}
-				
-				foreach($fine as $i => $fine_color) {
-					$rgb_fine = html_html2rgb($fine_color);
-					$fine_colors[$i]['R'] = $rgb_fine[0];
-					$fine_colors[$i]['G'] = $rgb_fine[1];
-					$fine_colors[$i]['B'] = $rgb_fine[2];
-					$fine_colors[$i]['Alpha'] = 100;
-				}
-				$colors = array();
+		foreach($data as $i => $values) {
+			foreach($values as $name => $val) {
+				$data_values[$name][] = $val;
 			}
 			
-			break;
+			if (($c % $step) == 0) {
+				$data_keys[] = $i;
+			}
+			else {
+				$data_keys[] = "";
+			}
+			
+			$c++;
+		}
+		$fine_colors = array();
+		
+		// If is set fine colors we store it or set default
+		if(isset($colors[reset(array_keys($data_values))]['fine'])) {
+			$fine = $colors[reset(array_keys($data_values))]['fine'];
+			if($fine === true) {
+				$fine = $default_fine_colors;
+			}
+			
+			foreach($fine as $i => $fine_color) {
+				$rgb_fine = html_html2rgb($fine_color);
+				$fine_colors[$i]['R'] = $rgb_fine[0];
+				$fine_colors[$i]['G'] = $rgb_fine[1];
+				$fine_colors[$i]['B'] = $rgb_fine[2];
+				$fine_colors[$i]['Alpha'] = 100;
+			}
+			$colors = array();
+		}
+		
+		break;
 	case 'progress':
 	case 'area':
 	case 'stacked_area':
@@ -185,27 +186,27 @@ switch($graph_type) {
 	case 'line':
 	case 'threshold':
 	case 'scatter':
-			foreach($data as $i => $d) {
-				$data_values[] = $d;
-				
-				
-				if (($c % $step) == 0) {
-					$data_keys[] = $i;
-				}
-				else {
-					$data_keys[] = "";
-				}
-				
-				$c++;
+		foreach($data as $i => $d) {
+			$data_values[] = $d;
+			
+			
+			if (($c % $step) == 0) {
+				$data_keys[] = $i;
+			}
+			else {
+				$data_keys[] = "";
 			}
 			
-			break;
+			$c++;
+		}
+		
+		break;
 	case 'slicebar':
 	case 'polar':
 	case 'radar':
 	case 'pie3d':
 	case 'pie2d':
-			break;
+		break;
 }
 
 switch($graph_type) {
@@ -214,15 +215,15 @@ switch($graph_type) {
 	case 'radar':
 	case 'pie3d':
 	case 'pie2d':
-			break;
+		break;
 	default:
-			if(!is_array(reset($data_values))) {
-				$data_values = array($data_values);
-				if(is_array($colors) && !empty($colors)) {
-					$colors = array($colors);
-				}
+		if(!is_array(reset($data_values))) {
+			$data_values = array($data_values);
+			if(is_array($colors) && !empty($colors)) {
+				$colors = array($colors);
 			}
-			break;
+		}
+		break;
 }
 
 $rgb_color = array();
@@ -271,40 +272,40 @@ foreach($colors as $i => $color) {
 switch($graph_type) {
 	case 'pie3d':
 	case 'pie2d':
-			pch_pie_graph($graph_type, array_values($data), array_keys($data),
-				$width, $height, $font, $water_mark, $font_size);
-			break;
+		pch_pie_graph($graph_type, array_values($data), array_keys($data),
+			$width, $height, $font, $water_mark, $font_size);
+		break;
 	case 'slicebar':
-			pch_slicebar_graph($graph_type, $data, $period, $width, $height, $colors, $font, $round_corner, $font_size);
-			break;
+		pch_slicebar_graph($graph_type, $data, $period, $width, $height, $colors, $font, $round_corner, $font_size);
+		break;
 	case 'polar':
 	case 'radar':
-			pch_kiviat_graph($graph_type, array_values($data), array_keys($data),
-				$width, $height, $font, $font_size);
-			break;
+		pch_kiviat_graph($graph_type, array_values($data), array_keys($data),
+			$width, $height, $font, $font_size);
+		break;
 	case 'hbar':
 	case 'vbar':
-			pch_bar_graph($graph_type, $data_keys, $data_values, $width, $height,
-				$font, $antialiasing, $rgb_color, $xaxisname, $yaxisname, false,
-				$legend, $fine_colors, $water_mark, $font_size);
-			break;
+		pch_bar_graph($graph_type, $data_keys, $data_values, $width, $height,
+			$font, $antialiasing, $rgb_color, $xaxisname, $yaxisname, false,
+			$legend, $fine_colors, $water_mark, $font_size);
+		break;
 	case 'stacked_area':
 	case 'area':
 	case 'line':
-			pch_vertical_graph($graph_type, $data_keys, $data_values, $width,
-				$height, $rgb_color, $xaxisname, $yaxisname, false, $legend,
-				$font, $antialiasing, $water_mark, $font_size);
-			break;
+		pch_vertical_graph($graph_type, $data_keys, $data_values, $width,
+			$height, $rgb_color, $xaxisname, $yaxisname, false, $legend,
+			$font, $antialiasing, $water_mark, $font_size);
+		break;
 	case 'threshold':
-			pch_threshold_graph($graph_type, $data_keys, $data_values, $width,
-				$height, $font, $antialiasing, $xaxisname, $yaxisname, $title,
-				$font_size);
-			break;
+		pch_threshold_graph($graph_type, $data_keys, $data_values, $width,
+			$height, $font, $antialiasing, $xaxisname, $yaxisname, $title,
+			$font_size);
+		break;
 }
 
 function pch_slicebar_graph ($graph_type, $data, $period, $width, $height, $colors, $font, $round_corner, $font_size) {
 	/* CAT:Slicebar charts */
-
+	
 	set_time_limit (0);
 	
 	// Dataset definition
@@ -314,7 +315,7 @@ function pch_slicebar_graph ($graph_type, $data, $period, $width, $height, $colo
 	$myPicture->Antialias = 0;
 	
 	$myPicture->setFontProperties(array("FontName"=> $font, "FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
-
+	
 	// Round corners defined in global setup
 	if ($round_corner != 0)
 		$radius = ($height > 18) ? 8 : 0;
@@ -338,7 +339,11 @@ function pch_slicebar_graph ($graph_type, $data, $period, $width, $height, $colo
 		$color = $colorsrgb[$color]; 
 		$ratio = $thinest_slice * $d['utimestamp'];
 		$myPicture->drawRoundedFilledRectangle ($i, 0, $ratio+$i, 
-				$height, $radius, array('R' => $color['R'], 'G' => $color['G'], 'B' => $color['B']));
+			$height, $radius,
+			array('R' => $color['R'],
+				'G' => $color['G'],
+				'B' => $color['B'])
+			);
 		$i+=$ratio;
 	}
 	
@@ -355,7 +360,7 @@ function pch_slicebar_graph ($graph_type, $data, $period, $width, $height, $colo
 			}
 		}
 	}
-			
+	
 	$myPicture->drawRoundedRectangle (0, 0, $width,
 		$height - 1, $radius, array('R' => 157, 'G' => 157, 'B' => 157));
 	
@@ -365,12 +370,12 @@ function pch_slicebar_graph ($graph_type, $data, $period, $width, $height, $colo
 function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	$height, $font, $water_mark, $font_size) {
 	/* CAT:Pie charts */
-
+	
 	/* Create and populate the pData object */
 	$MyData = new pData();   
 	$MyData->addPoints($data_values,"ScoreA");  
 	$MyData->setSerieDescription("ScoreA","Application A");
-
+	
 	/* Define the absissa serie */
 	$MyData->addPoints($legend_values,"Labels");
 	$MyData->setAbscissa("Labels");
@@ -380,7 +385,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	
 	/* Set the default font properties */ 
 	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
-
+	
 	
 	
 	$water_mark_height = 0;
@@ -397,24 +402,24 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	
 	/* Create the pPie object */ 
 	$PieChart = new pPie($myPicture,$MyData);
-
+	
 	/* Draw an AA pie chart */
 	switch($graph_type) {
 		case "pie2d":
-			   $PieChart->draw2DPie($width/4,$height/2,array("DataGapAngle"=>0,"DataGapRadius"=>0, "Border"=>FALSE, "BorderR"=>200, "BorderG"=>200, "BorderB"=>200, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
-				break;
+			$PieChart->draw2DPie($width/4,$height/2,array("DataGapAngle"=>0,"DataGapRadius"=>0, "Border"=>FALSE, "BorderR"=>200, "BorderG"=>200, "BorderB"=>200, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
+			break;
 		case "pie3d":
-			   $PieChart->draw3DPie($width/4, $height/2,array("DataGapAngle"=>5,"DataGapRadius"=>6, "Border"=>TRUE, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
-				break;
+			$PieChart->draw3DPie($width/4, $height/2,array("DataGapAngle"=>5,"DataGapRadius"=>6, "Border"=>TRUE, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
+			break;
 	}
-
+	
 	/* Write down the legend next to the 2nd chart*/
 		//Calculate the bottom margin from the size of string in each index
 	$max_chars = graph_get_max_index($legend_values);
 	$legend_with_aprox = 32 + (7 * $max_chars);
-
+	
 	$PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
- 
+	
 	/* Enable shadow computing */ 
 	$myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 		
@@ -425,45 +430,45 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width,
 	$height, $font, $font_size) {
 	/* CAT:Radar/Polar charts */
-
+	
 	/* Create and populate the pData object */
 	$MyData = new pData();   
 	$MyData->addPoints($data_values,"ScoreA");  
 	$MyData->setSerieDescription("ScoreA","Application A");
-
+	
 	/* Define the absissa serie */
 	$MyData->addPoints($legend_values,"Labels");
 	$MyData->setAbscissa("Labels");
 	
 	/* Create the pChart object */
 	$myPicture = new pImage($width,$height,$MyData,TRUE);
-
+	
 	/* Set the default font properties */ 
 	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
-
+	
 	/* Create the pRadar object */ 
 	$SplitChart = new pRadar();
-
+	
 	/* Draw a radar chart */ 
 	$myPicture->setGraphArea(20,25,$width-10,$height-10);
- 
+	
 	/* Draw an AA pie chart */
 	switch($graph_type) {
 		case "radar":
-				$Options = array("SkipLabels"=>0,"LabelPos"=>RADAR_LABELS_HORIZONTAL,
-					"LabelMiddle"=>FALSE,"Layout"=>RADAR_LAYOUT_STAR,
-					"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,
-					"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50), 
-					"FontName"=>$font,"FontSize"=>$font_size);
-			   $SplitChart->drawRadar($myPicture,$MyData,$Options); 
-				break;
+			$Options = array("SkipLabels"=>0,"LabelPos"=>RADAR_LABELS_HORIZONTAL,
+				"LabelMiddle"=>FALSE,"Layout"=>RADAR_LAYOUT_STAR,
+				"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,
+				"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50), 
+				"FontName"=>$font,"FontSize"=>$font_size);
+			$SplitChart->drawRadar($myPicture,$MyData,$Options); 
+			break;
 		case "polar":
-				$Options = array("Layout"=>RADAR_LAYOUT_CIRCLE,"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50),
-					"FontName"=>$font,"FontSize"=>$font_size); 
- 			   $SplitChart->drawRadar($myPicture,$MyData,$Options); 
-				break;
+			$Options = array("Layout"=>RADAR_LAYOUT_CIRCLE,"BackgroundGradient"=>array("StartR"=>255,"StartG"=>255,"StartB"=>255,"StartAlpha"=>100,"EndR"=>207,"EndG"=>227,"EndB"=>125,"EndAlpha"=>50),
+				"FontName"=>$font,"FontSize"=>$font_size); 
+			$SplitChart->drawRadar($myPicture,$MyData,$Options); 
+			break;
 	}
-		
+	
 	/* Render the picture */
 	$myPicture->stroke(); 
 }
@@ -472,63 +477,63 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	$antialiasing, $rgb_color = false, $xaxisname = "", $yaxisname = "",
 	$show_values = false, $legend = array(), $fine_colors = array(), $water_mark = '', $font_size) {
 	/* CAT: Vertical Bar Chart */
-	if(!is_array($legend) || empty($legend)) {
+	if (!is_array($legend) || empty($legend)) {
 		unset($legend);
 	}
-
+	
 	/* Create and populate the pData object */
 	$MyData = new pData();
 	$overridePalette = array();
-	foreach($data as $i => $values) {
+	foreach ($data as $i => $values) {
 		$MyData->addPoints($values,$i);
 		
-		if(!empty($rgb_color)) {
+		if (!empty($rgb_color)) {
 			$MyData->setPalette($i, 
-					array("R" => $rgb_color[$i]['color']["R"], 
-						"G" => $rgb_color[$i]['color']["G"], 
-						"B" => $rgb_color[$i]['color']["B"],
-						"BorderR" => $rgb_color[$i]['border']["R"], 
-						"BorderG" => $rgb_color[$i]['border']["G"], 
-						"BorderB" => $rgb_color[$i]['border']["B"], 
-						"Alpha" => $rgb_color[$i]['alpha']));
+				array("R" => $rgb_color[$i]['color']["R"], 
+					"G" => $rgb_color[$i]['color']["G"], 
+					"B" => $rgb_color[$i]['color']["B"],
+					"BorderR" => $rgb_color[$i]['border']["R"], 
+					"BorderG" => $rgb_color[$i]['border']["G"], 
+					"BorderB" => $rgb_color[$i]['border']["B"], 
+					"Alpha" => $rgb_color[$i]['alpha']));
 		}
 		
 		// Assign cyclic colors to bars if are setted
 		if($fine_colors) {
 			$c = 0;
 			foreach($values as $ii => $vv) {
-					if(!isset($fine_colors[$c])) {
-						$c = 0;
-					}
-					$overridePalette[$ii] = $fine_colors[$c];
-					$c++;
+				if(!isset($fine_colors[$c])) {
+					$c = 0;
+				}
+				$overridePalette[$ii] = $fine_colors[$c];
+				$c++;
 			}
 		}
 		else {
 			$overridePalette = false;
 		}
 	}
-
+	
 	$MyData->setAxisName(0,$yaxisname);
 	$MyData->addPoints($index,"Xaxis");
 	$MyData->setSerieDescription("Xaxis", $xaxisname);
 	$MyData->setAbscissa("Xaxis");
-
+	
 	/* Create the pChart object */
 	$myPicture = new pImage($width,$height,$MyData);
 	
 	/* Turn of Antialiasing */
 	$myPicture->Antialias = $antialiasing;
-
+	
 	/* Add a border to the picture */
 	//$myPicture->drawRectangle(0,0,$width,$height,array("R"=>0,"G"=>0,"B"=>0));
-
+	
 	/* Turn on shadow computing */ 
 	$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
-
+	
 	/* Set the default font */
 	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size));
-
+	
 	/* Draw the scale */
 	// TODO: AvoidTickWhenEmpty = FALSE When the distance between two ticks will be less than 50 px
 	// TODO: AvoidTickWhenEmpty = TRUE When the distance between two ticks will be greater than 50 px
@@ -539,21 +544,21 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	
 	switch($graph_type) {
 		case "vbar":
-				$scaleSettings = array("AvoidTickWhenEmpty" => FALSE, "AvoidGridWhenEmpty" => FALSE, 
-					"GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, 
-					"Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
-				$margin_left = 40;
-				$margin_top = 10;
-				$margin_bottom = 10 * $max_chars;
-				break;
+			$scaleSettings = array("AvoidTickWhenEmpty" => FALSE, "AvoidGridWhenEmpty" => FALSE, 
+				"GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, 
+				"Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
+			$margin_left = 40;
+			$margin_top = 10;
+			$margin_bottom = 10 * $max_chars;
+			break;
 		case "hbar":
-				$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,
-					"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM, 
-					"LabelValuesRotation" => 30);
-				$margin_left = $font_size * $max_chars;
-				$margin_top = 40;
-				$margin_bottom = 10;
-				break;
+			$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,
+				"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM, 
+				"LabelValuesRotation" => 30);
+			$margin_left = $font_size * $max_chars;
+			$margin_top = 40;
+			$margin_bottom = 10;
+			break;
 	}
 	
 	$water_mark_height = 0;
@@ -569,9 +574,9 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	
 	/* Define the chart area */
 	$myPicture->setGraphArea($margin_left,$margin_top,$width - $water_mark_width,$height-$margin_bottom);
-
+	
 	$myPicture->drawScale($scaleSettings);
-
+	
 	if(isset($legend)) {
 		/* Write the chart legend */
 		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
@@ -580,12 +585,12 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	
 	/* Turn on shadow computing */ 
 	$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
-
+	
 	/* Draw the chart */
 	$settings = array("ForceTransparency"=>"-1", "Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayValues"=>$show_values,"DisplayZeroValues"=>FALSE,"DisplayR"=>100,"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE, "OverrideColors"=>$overridePalette);
 	
 	$myPicture->drawBarChart($settings);
-
+	
 	/* Render the picture */
 	$myPicture->stroke(); 
 }
@@ -664,20 +669,20 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$MyData->addPoints($index,"Xaxis");
 	$MyData->setSerieDescription("Xaxis", $xaxisname);
 	$MyData->setAbscissa("Xaxis");
-
+	
 	/* Create the pChart object */
 	$myPicture = new pImage($width,$height,$MyData);
-
+	
 	/* Turn of Antialiasing */
 	$myPicture->Antialias = $antialiasing;
-
+	
 	/* Add a border to the picture */
 	//$myPicture->drawRectangle(0,0,$width,$height,array("R"=>0,"G"=>0,"B"=>0));
-
+	
 	/* Set the default font */
 	$myPicture->setFontProperties(array("FontName"=>$font, "FontSize"=>$font_size));
-
- 	if(isset($legend)) {
+	
+	if (isset($legend)) {
 		/* Set horizontal legend if is posible */
 		$legend_mode = LEGEND_HORIZONTAL;
 		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
@@ -685,7 +690,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			$legend_mode = LEGEND_VERTICAL;
 			$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
 		}
-
+		
 		/* Write the chart legend */
 		$myPicture->drawLegend($width-$size['Width'], 8,array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
 	}
@@ -704,14 +709,14 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		$myPicture->drawFromPNG(($width - $water_mark_width),
 			($height - $water_mark_height) - $margin_bottom, $water_mark);
 	}
-
+	
 	// Get the max number of scale
 	$max_all = 0;
-
+	
 	$serie_ne_zero = false;
-	foreach($data as $serie) {
+	foreach ($data as $serie) {
 		$max_this_serie = max($serie);
-		if($max_this_serie > $max_all) {
+		if ($max_this_serie > $max_all) {
 			$max_all = $max_this_serie; 
 		}
 		// Detect if all serie is equal to zero or not
@@ -721,14 +726,14 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	
 	// Get the number of digits of the scale
 	$digits_left = 0;
-	while($max_all > 1) {
+	while ($max_all > 1) {
 		$digits_left ++;
 		$max_all /= 10;
 	}
 	
 	// If the number is less than 1 we count the decimals
 	// Also check if the serie is not all equal to zero (!$serie_ne_zero)
-	if($digits_left == 0 and !$serie_ne_zero) { 
+	if ($digits_left == 0 and !$serie_ne_zero) { 
 		while($max_all < 1) {
 			$digits_left ++;
 			$max_all *= 10;
@@ -738,12 +743,12 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$chart_size = ($digits_left * $font_size) + 20;
 	
 	/* Area depends on yaxisname */
-	if ($yaxisname != ''){
-		$chart_size += 40;	
+	if ($yaxisname != '') {
+		$chart_size += 40;
 	}
-	else{
+	else {
 		$chart_size = 40;
-	}	
+	}
 	
 	if (isset($size['Height'])) {
 		/* Define the chart area */
@@ -799,7 +804,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		"DisplayZeros"=> FALSE,
 		"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>TRUE);
 	
-		
+	
 	switch($graph_type) {
 		case "stacked_area":
 		case "area":
@@ -847,13 +852,13 @@ function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $font
 	$settings = array("Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayValues"=>$show_values,"DisplayZeroValues"=>FALSE,"DisplayR"=>100,"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE);
 	$myPicture->drawSplineChart($settings);
 	$myPicture->setShadow(FALSE);
-
+	
 	if($show_legend) {
 		/* Write the chart legend */ 
 		$myPicture->drawLegend(643,210,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL)); 
-	 }
-	 
-	 /* Render the picture */
-	 $myPicture->stroke(); 
+	}
+	
+	/* Render the picture */
+	$myPicture->stroke(); 
 }
 ?>

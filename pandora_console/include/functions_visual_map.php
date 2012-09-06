@@ -764,18 +764,18 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			$proportion = $width / $layout["width"];
 			$mapHeight = $proportion * $layout["height"];
 		}
-		$backgroundImage = $config['homeurl'].'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
+		$backgroundImage = '/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
 			$config['homeurl'] . '/' . 'images/console/background/'.io_safe_input ($layout["background"]);
 	}
 	else {
 		$mapWidth = $layout["width"];
 		$mapHeight = $layout["height"];
-		$backgroundImage =  $config['homeurl'].'/images/console/background/'.io_safe_input ($layout["background"]);
+		$backgroundImage = '/images/console/background/'.io_safe_input ($layout["background"]);
 	}
 	
 	echo '<div id="layout_map"
 		style="margin:0px auto;text-align:center;z-index: 0; position:relative; width:'.$mapWidth.'px; height:'.$mapHeight.'px;">';
-	echo "<img src='" . $backgroundImage . "' width='100%' height='100%' />";
+	echo "<img src='" . ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
 	$layout_datas = db_get_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	if (empty($layout_datas))
 		$layout_datas = array();

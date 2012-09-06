@@ -212,10 +212,10 @@ foreach ($contents as $content) {
 		}
 		$new_interval = $report['datetime'] - $datetime_init; 		
 		$content['period'] = $new_interval;
-	}		
+	}
 	
 	reporting_render_report_html_item ($content, $table, $report);
-
+	
 	if ($content['type'] == 'agent_module')
 		echo '<div style="width: 99%; overflow: auto;">';
 		
@@ -236,10 +236,10 @@ $(document).ready (function () {
 	$("#loading").slideUp ();
 	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
 	$("#text-date").datepicker ();
-
+	
 	$('[id^=text-date_init]').datepicker ();
 	$('[id^=text-time_init]').timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
-
+	
 	$.datepicker.regional["<?php echo $config['language']; ?>"];
 	
 	/* Show/hide begin date reports controls */
@@ -259,5 +259,4 @@ $(document).ready (function () {
 		}
 	});
 });
-
 </script>

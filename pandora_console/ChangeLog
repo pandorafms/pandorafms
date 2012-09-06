@@ -1,3 +1,17 @@
+2012-09-06 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* general/header.php, general/login_page.php,
+	godmode/setup/setup.php, include/functions_ui.php,
+	include/functions_graph.php, include/functions_html.php,
+	include/graphs/fgraph.php, include/graphs/functions_pchart.php,
+	include/graphs/functions_flot.php, include/functions_reporting.php,
+	include/functions_visual_map.php, include/functions_config.php,
+	operation/reporting/reporting_viewer.php,
+	operation/visual_console/render_view.php,
+	operation/agentes/tactical.php, operation/menu.php,
+	operation/events/events.php: added the feature to set a
+	public url for inverse proxy or for example mod_proxy of Apache.
+
 2012-09-05  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/agentes/module_manager.php

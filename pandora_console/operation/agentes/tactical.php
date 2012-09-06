@@ -48,12 +48,12 @@ function print_cells_temp ($cells) {
 		if ($row[1] === 0) {
 			$row[1] = "-";
 		}
-
+		
 		// Prevents error for empty color
 		$color = '';
 		if (isset($row["color"]))
 			$color = 'style="color: ' . $row["color"] . ';"';
-
+		
 		if (isset($row["href"]) and !empty($row["href"]))
 			echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" href="'.io_safe_input ($row["href"]).'" ' . $color . '>'.$row[1].'</a></td></tr>';
 		else
@@ -61,7 +61,7 @@ function print_cells_temp ($cells) {
 	}
 }
 
-if ($config["realtimestats"] == 0){
+if ($config["realtimestats"] == 0) {
 	$updated_time ="<a href='index.php?sec=estado&sec2=operation/agentes/tactical&force_refresh=1'>";
 	$updated_time .= __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 	$updated_time .= "</a>"; 
@@ -113,13 +113,13 @@ $table->data[6][0] = '<b>'.__('Alert level').'</b>';
 $table->style[7] = "padding-top:4px; padding-bottom:4px;";
 $table->data[7][0] =
 	progress_bar($data["alert_level"], 140, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
-	
+
 html_print_table ($table);
 unset ($table);
 
 echo '<table class="databox" cellpadding="4" cellspacing="4" width="100%">';
 echo '<tr><th colspan="2">'.__('Monitor checks').'</th></tr>';
-	
+
 $cells = array ();
 $cells[0][0] = __('Monitor checks');
 $cells[0][1] = $data["monitor_checks"];
@@ -166,37 +166,37 @@ print_cells_temp ($cells);
 // --------------------------------------------------------------------------
 // Server performance 
 // --------------------------------------------------------------------------
-if($is_admin) {
+if ($is_admin) {
 	$server_performance = servers_get_performance();
-
+	
 	echo '<tr><th colspan="2">'.__('Server performance').'</th></tr>';
 	$cells = array ();
-
+	
 	$cells[0][0] = __('Local modules rate');
 	$cells[0][1] = format_numeric($server_performance ["local_modules_rate"]);
 	$cells[0]["color"] = "#729fcf";
 	$cells[0]["href"] = "";
-
+	
 	$cells[1][0] = __('Remote modules rate');
 	$cells[1][1] = format_numeric($server_performance ["remote_modules_rate"]);
 	$cells[1]["color"] = "#729fcf";
 	$cells[1]["href"] = "";
-
+	
 	$cells[2][0] = __('Local modules');
 	$cells[2][1] = format_numeric($server_performance ["total_local_modules"]);
 	$cells[2]["color"] = "#3465a4";
 	$cells[2]["href"] = "";
-
+	
 	$cells[3][0] = __('Remote modules');
 	$cells[3][1] = format_numeric($server_performance ["total_remote_modules"]);
 	$cells[3]["color"] = "#3465a4";
 	$cells[3]["href"] = "";
-
+	
 	$cells[4][0] = __('Total running modules');
 	$cells[4][1] = format_numeric($server_performance ["total_modules"]);
 	$cells[4]["color"] = "#000";
 	$cells[4]["href"] = "";
-
+	
 	print_cells_temp ($cells);
 }
 
@@ -237,22 +237,22 @@ events_print_event_table ("WHERE estado<>1 ", 10, "100%");
 // --------------------------------------------------------------------------
 // Server information
 // --------------------------------------------------------------------------
-if($is_admin) {
+if ($is_admin) {
 	$serverinfo = servers_get_info ();
 	$cells = array ();
-
+	
 	if ($serverinfo === false) {
 		$serverinfo = array ();
 	}
-
+	
 	$table->class = "databox";
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->width = "100%";
-
+	
 	$table->title = __('Tactical server information');
 	$table->titlestyle = "background-color:#799E48;";
-
+	
 	$table->head = array ();
 	$table->head[0] = __('Name');
 	$table->head[1] = __('Type');
@@ -262,9 +262,9 @@ if($is_admin) {
 	$table->align[2] = 'center';
 	$table->align[3] = 'center';
 	$table->align[4] = 'right';
-
+	
 	$table->data = array ();
-
+	
 	foreach ($serverinfo as $server) {
 		$data = array ();
 		$data[0] = $server["name"];

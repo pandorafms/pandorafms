@@ -81,7 +81,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub2['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');	
 	enterprise_hook ('snmpconsole_submenu');	
 	$sub2['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
-
+	
 	$sub["operation/snmpconsole/snmp_view"]["sub2"] = $sub2;
 	
 	$menu_operation["estado"]["sub"] = $sub;
@@ -267,10 +267,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	?>
 	<script type="text/javascript">
 	function openSoundEventWindow() {
-		<?php
-			$url = ui_get_full_url(false);
-		?>
-		url = '<?php echo $url . 'operation/events/sound_events.php'; ?>';
+		url = '<?php
+			echo ui_get_full_url('operation/events/sound_events.php');
+			?>';
 		
 		window.open(url, '<?php __('Sound Alerts'); ?>','width=475, height=275, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
 	}
@@ -344,16 +343,16 @@ if (check_acl ($config['id_user'], 0, "IR")) {
 		$sub["operation/netflow/nf_live_view"]["text"] = __('Live view');
 		$menu_operation["netf"]["sub"] = $sub;
 	}
-}		
+}
 // Rest of options, all with AR privilege (or should events be with incidents?)
 if (check_acl ($config['id_user'], 0, "AR")) {
-
+	
 	//SNMP Console
 	$menu_operation["snmpconsole"]["text"] = __('SNMP console');
 	$menu_operation["snmpconsole"]["refr"] = 0;
 	$menu_operation["snmpconsole"]["sec2"] = "operation/snmpconsole/snmp_view";
 	$menu_operation["snmpconsole"]["id"] = "oper-snmpc";
-			
+	
 	// Extensions menu additions
 	if (is_array ($config['extensions'])) {
 		$menu_operation["extensions"]["text"] = __('Extensions');

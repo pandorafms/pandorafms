@@ -7,7 +7,7 @@ body {
 }
 h1 { font-weight: bold; font-size:16px; margin:2px 0px 2px 0px; color:#237948; font-family:arial }
 h2{
-    color : blue;
+    color : black;
 }
 p
 {
@@ -43,20 +43,13 @@ div.b div.items p img {
     float:left;margin:0px 3px 0px 0px;
 }
 
-
-
-
-
-
 div.options_header{
-    height :80px;
-    width : 450px;
     margin : 10px 10px;
 }
 
 div.options_divider{
     width : 100%;
-    background-color : #C8D8E8;
+    background-color : #C8C8C8;
 }
 
 div.optionsG_textarea{

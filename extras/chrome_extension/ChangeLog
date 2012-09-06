@@ -1,3 +1,24 @@
+2012-09-06  Sancho Lerena <slerena@artica.es>
+
+	* manifest.json: Added URL.
+
+	* options.html,
+	css/popup.css: Small layout changes.
+
+	* images/*: New icons.
+
+2012-09-02 Hareesan Rajendra  <rharishan@gmail.com>
+
+        * options.html  : Made some style property changes.
+
+2012-08-22 Hareesan Rajendra  <rharishan@gmail.com>
+
+        * Updated few features. 
+
+2012-08-22  Hareesan Rajendra  <rharishan@gmail.com>
+
+        * Added Color changes and few other changes
+
 2012-08-19  Sancho Lerena  <slerena@artica.es>
 
 	* Fixed some missing files, and created COPYING and ChangeLog.

@@ -28,15 +28,15 @@ function include_javascript_dependencies_flot_graph($return = false) {
 		
 		// NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
 		$output = '
-			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.min.js"></script>
-			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.pie.min.js"></script>
-			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.crosshair.min.js"></script>
-			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.stack.min.js"></script>
-			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.selection.min.js"></script>
-			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.resize.min.js"></script>
-			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.threshold.js"></script>
-			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/jquery.flot.symbol.min.js"></script>
-			<script language="javascript" type="text/javascript" src="'. $config['homeurl'] . '/include/graphs/flot/pandora.flot.js"></script>
+			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.pie.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.crosshair.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.stack.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.selection.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.resize.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.threshold.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.symbol.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/pandora.flot.js') .'"></script>
 		';
 		$output .= "
 		<script type='text/javascript'>

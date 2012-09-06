@@ -60,7 +60,8 @@ if (check_acl ($config["id_user"], $id_group, "AW")) {
 	
 	$hash = md5($config["dbpass"]. $id_layout. $config["id_user"]);
 	
-	$options['public_link']['text'] = '<a href="'.$config["homeurl"].'/operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"].'">'.
+	$url = ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"]);
+	$options['public_link']['text'] = '<a href="' . $url . '">'.
 	
 	html_print_image ("images/camera.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
 	$options['public_link']['active'] = false;

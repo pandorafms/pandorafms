@@ -824,7 +824,7 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false, $fontsi
 	}
 	
 	$string2 = io_safe_output ($string);
-	if (mb_strlen($string2, "UTF-8") >  $cutoff){
+	if (mb_strlen($string2, "UTF-8") >  $cutoff) {
 		$string3 = "...";
 	}
 	else {
@@ -1099,7 +1099,7 @@ function ui_require_jquery_file ($name, $path = 'include/javascript/') {
 function ui_process_page_head ($string, $bitfield) {
 	global $config;
 	global $vc_public_view;
-
+	
 	if (isset ($config['ignore_callback']) && $config['ignore_callback'] == true) {
 		return;
 	}
@@ -1210,7 +1210,7 @@ function ui_process_page_head ($string, $bitfield) {
 		array_push ($loaded, $name);
 		if (!empty ($config["compact_header"])) {
 			$output .= '<style type="text/css">';
-			$style = file_get_contents ($config["homedir"]."/".$filename);
+			$style = file_get_contents ($config["homedir"] . "/" . $filename);
 			//Replace paths
 			$style = str_replace (array ("@import url(", "../../images"), array ("@import url(include/styles/", "images"), $style);
 			//Remove comments
@@ -1218,7 +1218,8 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= '</style>';
 		}
 		else {
-			$output .= '<link rel="stylesheet" href="' . $config['homeurl'] . '/' .$filename.'" type="text/css" />'."\n\t";
+			$url_css = ui_get_full_url($filename);
+			$output .= '<link rel="stylesheet" href="' . $url_css . '" type="text/css" />'."\n\t";
 		}
 	}
 	//End load CSS
@@ -1230,7 +1231,7 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	//Pandora specific JavaScript should go first
 	$config['js'] = array_merge (array ("pandora" => "include/javascript/pandora.js"), $config['js']);
-		
+	
 	//Load other javascript
 	//We can't load empty
 	$loaded = array ('');
@@ -1245,7 +1246,8 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= "\n".'/* ]]> */</script>';
 		}
 		else {
-			$output .= '<script type="text/javascript" src="'. $config['homeurl'] . '/' .$filename.'"></script>'."\n\t";
+			$url_js = ui_get_full_url($filename);
+			$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
 		}
 	}
 	//End load JS
@@ -1259,10 +1261,10 @@ function ui_process_page_head ($string, $bitfield) {
 	$black_list_pages_old_jquery = array('operation/gis_maps/index');
 	if (in_array(get_parameter('sec2'), $black_list_pages_old_jquery)) {
 		$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery.js",
-					"ui" => "include/javascript/jquery.ui.core.js",
-					"dialog" => "include/javascript/jquery.ui.dialog.js",
-					"pandora" => "include/javascript/jquery.pandora.js"),
-		$config['jquery']);
+			"ui" => "include/javascript/jquery.ui.core.js",
+			"dialog" => "include/javascript/jquery.ui.dialog.js",
+			"pandora" => "include/javascript/jquery.pandora.js"),
+			$config['jquery']);
 	}
 	else {
 		$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery-1.7.1.js",
@@ -1288,7 +1290,8 @@ function ui_process_page_head ($string, $bitfield) {
 			$output .= "\n".'/* ]]> */</script>';
 		}
 		else {
-			$output .= '<script type="text/javascript" src="' . $config['homeurl'] . '/' . $filename.'"></script>'."\n\t";
+			$url_js = ui_get_full_url($filename);
+			$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
 		}
 	}
 	
@@ -1301,8 +1304,8 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	
 	$output .= '<!--[if gte IE 6]>
-	<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
-	<![endif]-->';
+		<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
+		<![endif]-->';
 	
 	$output .= $string;
 	
@@ -1929,14 +1932,19 @@ function ui_get_url_refresh ($params = false, $relative = true, $add_post = true
  * An example of full URL is http:/localhost/pandora_console/index.php?sec=gsetup&sec2=godmode/setup/setup
  *
  * @param mixed $url If provided, it will be added after the index.php, but it is false boolean value, put the homeurl in the url.
+ * @param boolean $no_proxy To avoid the proxy checks, by default it is false.
  *
  * @return string A full URL in Pandora.
  */
-function ui_get_full_url ($url = '') {
+function ui_get_full_url ($url = '', $no_proxy = false) {
 	global $config;
-	$port = null;   // null means 'use the starndard port'
 	
-	if (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')) {
+	$port = null;   // null means 'use the starndard port'
+	$proxy = false; //By default Pandora FMS doesn't run across proxy.
+	
+	if (isset ($_SERVER['HTTPS'])
+		&& ($_SERVER['HTTPS'] === true
+		|| $_SERVER['HTTPS'] == 'on')) {
 		$protocol = 'https';
 		if ( $_SERVER['SERVER_PORT'] != 443) {
 			$port = $_SERVER['SERVER_PORT'];
@@ -1948,17 +1956,32 @@ function ui_get_full_url ($url = '') {
 	}
 	else {
 		$protocol = 'http';
-
+		
 		if ( $_SERVER['SERVER_PORT'] != 80) {
 			$port = $_SERVER['SERVER_PORT'];
 		}
 	}
 	
-	$fullurl = $protocol.'://' . $_SERVER['SERVER_NAME'];
+	if (!$no_proxy) {
+		//Check if the PandoraFMS runs across the proxy like as
+		//mod_proxy of Apache
+		//and check if public_url is setted
+		if (!empty($config['public_url'])
+			&& (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))) {
+			$fullurl = $config['public_url'];
+			$proxy = true;
+		}
+		else {
+			$fullurl = $protocol.'://' . $_SERVER['SERVER_NAME'];
+		}
+	}
+	else {
+		$fullurl = $protocol.'://' . $_SERVER['SERVER_NAME'];
+	}
 	
 	// using a different port than the standard
 	if ( $port != null ) {
-		$fullurl .= ":".$port;
+		$fullurl .= ":" . $port;
 	}
 	
 	if ($url === '') {
@@ -1968,8 +1991,21 @@ function ui_get_full_url ($url = '') {
 		//Only add the home url
 		$url = $config['homeurl'] . '/';
 	}
+	elseif (!strstr($url, ".php")) {
+		if ($proxy) {
+			$fullurl .= '/';
+		}
+		else {
+			$fullurl .= $config['homeurl'] . '/';
+		}
+	}
 	else {
-		$fullurl .= $_SERVER['SCRIPT_NAME'];
+		if ($proxy) {
+			$fullurl .= '/';
+		}
+		else {
+			$fullurl .= $_SERVER['SCRIPT_NAME'];
+		}
 	}
 	
 	return $fullurl.$url;

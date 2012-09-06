@@ -116,7 +116,7 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-if ($current_system_lang == ""){
+if ($current_system_lang == "") {
 	$current_system_lang = "en";
 }
 
@@ -213,7 +213,7 @@ if ($config["integria_enabled"]) {
 	if ($bad_input){
 		$table->data[20][1] .= html_print_image('images/error.png', true, array('title' => __('URL and/or Integria password are incorrect')));
 	}
-
+	
 	$table->data[21][0] = __('Integria API password');
 	$table->data[21][1] = html_print_input_text ('integria_api_password', $config["integria_api_password"], '', 25, 25, true);
 	
@@ -321,6 +321,11 @@ $table->data[27][1] = html_print_input_text ('license_info_key', $license_info, 
 $table->data[27][1] .= '&nbsp;<a id="dialog_license_info" title="'.__("License Info").'" href="#">'.html_print_image('images/lock.png', true, array('class' => 'bot', 'title' => __('License info'))).'</a>';
 $table->data[27][1] .= '<div id="dialog_show_license" style="display:none"></div>';
 
+$table->data[28][0] = __('Public URL');
+$table->data[28][0] .= ui_print_help_tip(__('Set this value when your PandoraFMS across inverse proxy or for example with mod_proxy of Apache.'), true);
+$table->data[28][1] = html_print_input_text ('public_url', $config['public_url'], '', 40, 255, true);
+
+
 ?>
 <script type="text/javascript">
 function toggleButton(type) {
@@ -356,24 +361,26 @@ function show_timezone () {
 				});	
 			}
 		});
-}		
+}
 
 $(document).ready (function () {
-
+	
 	$("#zone").attr("disabled", true);
 	$("#timezone").attr("disabled", true);
-		
-	$("#radiobtn0011").click(function(){
+	
+	$("#radiobtn0011").click(function() {
 			flag = $("#radiobtn0011").is(':checked');
-			if (flag == true){
-				<?php echo "if (! confirm ('" . __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?') . "')) return false" ?>
+			if (flag == true) {
+				message = "<?php
+					echo __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?');
+					?>";
+				if (!confirm(message)) return false"
 			}
 	});
 	
-	$("#change_timezone").click(function () {	
+	$("#change_timezone").click(function () {
 		$("#zone").attr("disabled", false);
 		$("#timezone").attr("disabled", false);
-					
 	});
 });
 </script>

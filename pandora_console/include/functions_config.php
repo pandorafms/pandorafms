@@ -131,6 +131,8 @@ function config_update_config () {
 			config_update_value ('netflow_interval', get_parameter ('netflow_interval'));
 			config_update_value ('netflow_daemon', get_parameter ('netflow_daemon'));
 			
+			config_update_value ('public_url', get_parameter('public_url'));
+			
 			$enterprise = enterprise_include_once ('godmode/setup/setup.php');
 			if ($enterprise !== ENTERPRISE_NOT_HOOK) {
 				config_update_value ('enable_pass_policy', get_parameter('enable_pass_policy'));
@@ -711,7 +713,7 @@ function config_process_config () {
 	if (!isset($config['item_title_size_text'])) {
 		config_update_value ('item_title_size_text', 45);
 	}
-
+	
 	if (!isset($config['gis_label'])) {
 		config_update_value ('gis_label', 0);
 	}
@@ -719,7 +721,11 @@ function config_process_config () {
 	if (!isset($config['gis_default_icon'])) {
 		config_update_value ('gis_default_icon', "marker");
 	}
-
+	
+	if (!isset($config['public_url'])) {
+		config_update_value ('public_url', "");
+	}
+	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }

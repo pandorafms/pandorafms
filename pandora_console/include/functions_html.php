@@ -666,7 +666,7 @@ function html_print_input_image ($name, $src, $value, $style = '', $return = fal
 	}
 	
 	// path to image 
-	$src = $config["homeurl"] . '/' . $src;
+	$src = ui_get_full_url($src);
 	
 	$output = '<input id="image-'.$name.$idcounter.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image"';
 	
@@ -1226,13 +1226,10 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	}
 	
 	if (!$relative) {
-		$urlImage = ui_get_full_url(false);
-		
 		if (defined('METACONSOLE'))
-			$urlImage .= ENTERPRISE_DIR . '/meta/';
+			$src .= ENTERPRISE_DIR . '/meta/' . $src;
 		
-		// path to image 
-		$src = $urlImage . $src;
+		$src = ui_get_full_url($src);
 	}
 	
 	// Only return src field of image

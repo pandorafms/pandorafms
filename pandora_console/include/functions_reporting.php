@@ -2303,8 +2303,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[1][0] = 3;
 			$data = array ();
 			
-			$urlImage = ui_get_full_url(false);
-			
 			require_once ($config["homedir"] . '/include/functions_graph.php');
 			$data[0] = 	graphic_combined_module(
 				$modules,
@@ -2318,8 +2316,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				$graph["stacked"],
 				$report["datetime"],
-				true,
-				$urlImage);
+				true);
 			array_push ($table->data, $data);
 			
 			break;

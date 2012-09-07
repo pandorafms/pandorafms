@@ -1,3 +1,10 @@
+2012-09-07 Miguel de Dios <miguel.dedios@artica.es>
+	* include/functions_ui.php: fixed the ui_get_full_url function,
+	because sometimes added two times the php script name.
+	
+	* operation/events/events_rss.php: avoid to lost the url with the
+	actual fixes into the function ui_get_full_url.
+
 2012-09-06 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* general/header.php, general/login_page.php,

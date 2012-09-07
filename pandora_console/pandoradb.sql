@@ -956,6 +956,7 @@ CREATE TABLE IF NOT EXISTS `treport` (
 	`custom_font` varchar(200) default NULL,
 	`id_template` INTEGER UNSIGNED DEFAULT 0,
 	`id_group_edit` mediumint(8) unsigned NULL DEFAULT 0,
+	`metaconsole` tinyint(1) DEFAULT 0,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

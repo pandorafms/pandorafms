@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 include_once($config['homedir'] . "/include/functions_agents.php");
 enterprise_include_once ('include/functions_metaconsole.php');
 
-if ($config ['metaconsole'] == 1) {
+if ($config ['metaconsole'] == 1 and defined('METACONSOLE')) {
 	$agents = array();
 	$agents = metaconsole_get_report_agents($idReport);
 	$modules = array();
@@ -105,10 +105,17 @@ else {
 		$modules[$row['id_agent_module']] = $row['nombre'];
 	}
 	
+	// Filter report items created from metaconsole in normal console list and the opposite
+	if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
+		$where_types = ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+	}
+	else
+		$where_types = ' AND ((server_name IS NULL OR length(server_name) = 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';	
+	
 	$rows = db_get_all_rows_sql('
 		SELECT DISTINCT(type)
 		FROM treport_content
-		WHERE id_report = ' . $idReport);
+		WHERE id_report = ' . $idReport . $where_types);
 	if ($rows === false) {
 		$rows = array();
 	}
@@ -143,7 +150,7 @@ $table->data[1][0] = __('Type');
 $table->data[1][1] = html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
 
 echo '<div id="form_filter" style="display: none;">';
-echo '<form method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report=' . $idReport . '">';
+echo '<form method="post" action ="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report=' . $idReport . '">';
 
 html_print_table ($table);
 
@@ -164,6 +171,13 @@ if ($agentFilter != 0) {
 if ($moduleFilter != 0) {
 	$where .= ' AND id_agent_module = ' . $moduleFilter;
 }
+
+// Filter report items created from metaconsole in normal console list and the opposite
+if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
+	$where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';	
+}
+else
+	$where .= ' AND ((server_name IS NULL OR length(server_name) = 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';	
 
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -198,6 +212,12 @@ $table = null;
 
 $table->style[0] = 'text-align: right;';
 
+// Build link for sort actions: metaconsole and normal console
+$variable_link = ui_get_full_url(false);
+// Metaconsole
+if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
+	$variable_link .= '/enterprise/meta/';
+
 if ($items) {
 	$table->width = '100%';
 	
@@ -211,18 +231,19 @@ if ($items) {
 	$table->head[0] = '<span title="' . __('Position') . '">' . __('P.') . '</span>';
 	$table->head[1] = __('Type');
 	if (!$filterEnable) {
-		$table->head[1] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
-			'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
+		$table->head[1] .= ' <a onclick="return message_check_sort_items();" href="' . $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
+			'<a onclick="return message_check_sort_items();" href="' . $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
 	}
 	$table->head[2] = __('Agent');
 	if (!$filterEnable) {
-		$table->head[2] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
-			'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
+		$table->head[2] .= ' <a onclick="return message_check_sort_items();" href="' . $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
+			'<a onclick="return message_check_sort_items();" href="' . $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
 	}
 	$table->head[3] = __('Module');
+
 	if (!$filterEnable) {
-		$table->head[3] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
-			'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
+		$table->head[3] .= ' <a onclick="return message_check_sort_items();" href="' . $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
+			'<a onclick="return message_check_sort_items();" href="' . $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
 	}
 	$table->head[4] = __('Period');
 	$table->head[5] = __('Description');
@@ -270,7 +291,7 @@ foreach ($items as $item) {
 	
 	$server_name = $item ['server_name'];
 	
-	if (($config ['metaconsole'] == 1) && ($server_name != '')) {
+	if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
 		
 		$connection = metaconsole_get_connection($server_name);
 		if (metaconsole_load_external_db($connection) != NOERR) {
@@ -320,9 +341,9 @@ foreach ($items as $item) {
 	
 	$row[6] = '';
 	
-	$row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
+	$row[6] .= '<a href="' . $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
 	$row[6] .= '&nbsp;&nbsp;';
-	$row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
+	$row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="' .  $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
 	$row[6] .= html_print_checkbox_extended ('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
 	
 	$row[7] = '';
@@ -333,15 +354,15 @@ foreach ($items as $item) {
 	$table->data[] = $row;
 	$count++;
 	//Restore db connection
-	if (($config ['metaconsole'] == 1) && ($server_name != '') ) {
+	if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
 		metaconsole_restore_db();
 	}
 }
-ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+ui_pagination ($countItems, $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 html_print_table($table);
-ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+ui_pagination ($countItems, $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 
-echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
+echo "<form action='" . $variable_link . "index.php?sec=reporting&sec2=" . $config['homedir'] . "/godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
 	method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
 	echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
 	html_print_input_hidden('ids_items_to_delete', '');
@@ -350,8 +371,13 @@ echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_bui
 echo "</form>";
 
 $table = null;
-$table->width = '60%';
+$table->width = '100%';
 $table->colspan[0][0] = 3;
+$table->size = array();
+$table->size[0] = '25%';
+$table->size[1] = '25%';
+$table->size[2] = '25%';
+$table->size[3] = '25%';
 $table->data[0][0] = "<b>". __("Sort items") . "</b>";
 $table->data[1][0] = __('Sort selected items from position: ');
 $table->data[1][1] = html_print_select_style(
@@ -362,14 +388,19 @@ $table->data[1][2] = html_print_input_text_extended('position_to_sort', 1,
 $table->data[1][2] .= html_print_input_hidden('ids_items_to_sort', '', true);
 $table->data[1][3] = html_print_submit_button(__('Sort'), 'sort_submit', false, 'class="sub upd"', true);
 
-echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=sort_items&id_report=" . $idReport . "'
+echo "<form action='" . $variable_link . "index.php?sec=reporting&sec2=" . $config['homedir'] . "/godmode/reporting/reporting_builder&tab=list_items&action=sort_items&id_report=" . $idReport . "'
 	method='post' onsubmit='return added_ids_sorted_items_to_hidden_input();'>";
 html_print_table($table);
 echo "</form>";
 
 $table = null;
-$table->width = '60%';
+$table->width = '100%';
 $table->colspan[0][0] = 3;
+$table->size = array();
+$table->size[0] = '25%';
+$table->size[1] = '25%';
+$table->size[2] = '25%';
+$table->size[3] = '25%';
 $table->data[0][0] = "<b>". __("Delete items") . "</b>";
 $table->data[1][0] = __('Delete selected items from position: ');
 $table->data[1][1] = html_print_select_style(
@@ -380,7 +411,7 @@ $table->data[1][2] = html_print_input_text_extended('position_to_delete', 1,
 $table->data[1][2] .= html_print_input_hidden('ids_items_to_delete', '', true);
 $table->data[1][3] = html_print_submit_button(__('Delete'), 'delete_submit', false, 'class="sub upd"', true);
 
-echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items_pos&id_report=" . $idReport . "'
+echo "<form action='" . $variable_link . "index.php?sec=reporting&sec2=" . $config['homedir'] . "/godmode/reporting/reporting_builder&tab=list_items&action=delete_items_pos&id_report=" . $idReport . "'
 	method='post'>";
 html_print_table($table);
 echo "</form>";

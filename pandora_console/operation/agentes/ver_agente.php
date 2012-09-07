@@ -178,16 +178,22 @@ if (is_ajax ()) {
 				break;
 		}
 		
-		if ($config ['metaconsole'] == 1) {
+		if ($config ['metaconsole'] == 1 and defined('METACONSOLE')) {
 			$result = array();
 			$nameModules = array();
 			$temp = array();
 			$first = true;
+			$temp_element = array();
+			$counter = 0;
+			$first_elements = array();
 			
 			foreach ($idAgents as $idA) {
+
 				$row = explode ('|', $idA);
 				$server_name = $row[0];
 				$id_agent = $row [1];
+				// New iteration
+				$counter++;
 				
 				//Metaconsole db connection
 				$connection = metaconsole_get_connection($server_name);
@@ -195,30 +201,65 @@ if (is_ajax ()) {
 					//ui_print_error_message ("Error connecting to ".$server_name);
 					continue;
 				}
-				
+
 				//Get agent's modules
 				$temp = agents_get_modules ($id_agent);
 				
-				//Copy only the very first result to $nameModules
+				// Keep first element to search for common modules in next iterations
 				if (empty($nameModules) && $first == true) {
+					$first_elements = $temp;
+				}
+				
+				$temp = array_intersect($temp, $first_elements);
+				
+				// Add elements to array
+				if (!empty($temp)) {
+				
+					// Add agent and server
+					foreach ($temp as $element_key => $element_value) {
+
+						//$temp_element[$element_key . '|' . $id_agent . '|' . $server_name] = $element_value;
+						if (!isset($temp_element[$element_value]) && $first)
+							$temp_element[$element_value] = $element_key . '|' . $id_agent . '|' . $server_name;
+						else if (isset($temp_element[$element_value]))
+							$temp_element[$element_value] .= ';' . $element_key . '|' . $id_agent . '|' . $server_name;
+
+					}
+					
+				}
+				// If the result array is empty then there aren't common modules 
+				else if (!$first)
+					unset($temp_element);
+							
+				
+				// First iteration flag
+				if (empty($nameModules) && $first == true)
 					$first = false;
-					$nameModules = $temp;
+				
+				// In last iteration we have all elements agents-servers serialized and ready to be used
+				if ($counter == count($idAgents)) {
+					if (!empty($temp_element))
+					
+						foreach ($temp_element as $temp_ele_key => $temp_ele_val) {
+							$nameModules[$temp_ele_val] = $temp_ele_key;
+						}
+					
 				}
 				
 				//If there's only one agent selected, get out of this loop 
-				if (count($idAgents) <= 1) {
+				/*if (count($idAgents) <= 1) {
 					//Restore db connection
 					metaconsole_restore_db();
 					break;
-				}
-				$nameModules = array_intersect ($nameModules, $temp); 
+				}*/
+				//$nameModules = array_intersect ($nameModules, $temp); 
 				
-			//Restore db connection
-			metaconsole_restore_db();
+				//Restore db connection
+				metaconsole_restore_db();
 			}
 			
-			foreach ($nameModules as $nameModule) {
-				$result[] = io_safe_output($nameModule);
+			foreach ($nameModules as $nameModule_key => $nameModule_value) {
+				$result[$nameModule_key] = io_safe_output($nameModule_value);
 			}
 		}
 		else {
@@ -247,10 +288,10 @@ if (is_ajax ()) {
 			
 			$result = array();
 			foreach($nameModules as $nameModule) {
-				$result[] = io_safe_output($nameModule['nombre']);
+				$result[$nameModule['nombre'].'$*$'.implode('|', $idAgents)] = io_safe_output($nameModule['nombre']);
 			}
 		}
-		
+
 		echo json_encode($result);
 		return;
 	}
@@ -272,7 +313,7 @@ if (is_ajax ()) {
 		else
 			$search = false;
 		
-		if ($config ['metaconsole'] == 1 and !$force_local_modules) { 
+		if ($config ['metaconsole'] == 1 and !$force_local_modules and defined('METACONSOLE')) { 
 			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
 				$connection = metaconsole_get_connection($server_name);
 				if (metaconsole_load_external_db($connection) == NOERR) {

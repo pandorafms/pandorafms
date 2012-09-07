@@ -103,7 +103,7 @@ config_check();
 		</td>
 		<td width="20%">
 			<?php
-			if ($config["metaconsole"] == 0) {
+			//if ($config["metaconsole"] == 0) {
 				echo '<a class="white_bold" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
 				
 				$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
@@ -123,7 +123,7 @@ config_check();
 				}
 				unset ($servers); // Since this is the header, we don't like to trickle down variables.
 				echo '</a>';
-			}
+			//}
 			?>
 		</td>
 		<td width="20%">
@@ -182,7 +182,7 @@ config_check();
 	<tr>
 		<td colspan="2">
 		<?php
-		if ($config["metaconsole"] == 0) {
+		//if ($config["metaconsole"] == 0) {
 		?>
 			<form method="get" style="" name="quicksearch" action="">
 				<script type="text/javascript">
@@ -206,7 +206,7 @@ config_check();
 				?>
 			</form>
 		<?php
-		}
+		//}
 		?>
 		</td>
 		<td>

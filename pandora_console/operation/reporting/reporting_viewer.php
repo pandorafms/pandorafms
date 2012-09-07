@@ -38,8 +38,8 @@ if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
 }
 
 // Include with the functions to calculate each kind of report.
-require_once ('include/functions_reporting.php');
-require_once ('include/functions_groups.php');
+require_once ($config['homedir'] . '/include/functions_reporting.php');
+require_once ($config['homedir'] . '/include/functions_groups.php');
 
 enterprise_include("include/functions_reporting.php");
 
@@ -65,9 +65,15 @@ $enable_init_date = get_parameter('enable_init_date', 0);
 
 // Standard header
 
-$url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time";
+// Build link for sort actions: metaconsole and normal console
+$variable_link = ui_get_full_url(false);
+// Metaconsole
+if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
+	$variable_link .= '/enterprise/meta/';
 
-$options['setup'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=new&tab=item_editor&id_report=$id_report'>"
+$url = $variable_link . "index.php?sec=reporting&sec2=" . $config['homedir'] . "/operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time";
+
+$options['setup'] = "<a href='" . $variable_link . "index.php?sec=reporting&sec2=" . $config['homedir'] . "/godmode/reporting/reporting_builder&action=new&tab=item_editor&id_report=$id_report'>"
 . html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
 . "</a>";
 
@@ -82,8 +88,19 @@ else {
 		. "</a>";
 }
 
-ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom reporting'). " - ".$report["name"],
-	"images/reporting.png", false, "", false, $options);
+// Page header for metaconsole
+if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
+	// Bread crumbs
+	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder', 'text' => __('Reporting')));
+
+	ui_meta_print_page_header($nav_bar);	
+	
+	// Print header
+	ui_meta_print_header(__('Reporting'), "", $options);				
+}
+else
+	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom reporting'). " - ".$report["name"],
+		"images/reporting.png", false, "", false, $options);
 
 if ($enable_init_date) {
 	if ($datetime_init > $datetime) {

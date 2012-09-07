@@ -984,7 +984,8 @@ CREATE TABLE treport (
 	footer CLOB default NULL,
 	custom_font VARCHAR2(200) default NULL,
 	id_template NUMBER(10, 0) default 0 NOT NULL,
-	id_group_edit NUMBER(19, 0) default 0 NOT NULL
+	id_group_edit NUMBER(19, 0) default 0 NOT NULL,
+	metaconsole NUMBER(5, 0) DEFAULT 0
 );
 
 CREATE SEQUENCE treport_s INCREMENT BY 1 START WITH 1;

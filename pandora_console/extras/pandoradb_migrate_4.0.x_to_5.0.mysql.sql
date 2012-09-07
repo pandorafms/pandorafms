@@ -190,6 +190,7 @@ ALTER TABLE treport_content_item ADD FOREIGN KEY (`id_report_content`) REFERENCE
 -- -----------------------------------------------------
 ALTER TABLE treport ADD COLUMN `id_template` INTEGER UNSIGNED DEFAULT 0;
 ALTER TABLE treport ADD COLUMN `id_group_edit` mediumint(8) unsigned NULL DEFAULT 0;
+ALTER TABLE treport ADD COLUMN `metaconsole` tinyint(1) DEFAULT 0;
 
 -- -----------------------------------------------------
 -- Table `tgraph`

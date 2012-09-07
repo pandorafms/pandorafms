@@ -135,7 +135,7 @@ elseif ($search_agents && ($config['metaconsole'] == 1)) {
 	return;
 }
 
-if ($search_agents_2 && ($config['metaconsole'] == 0)) {
+if ($search_agents_2 && (!defined('METACONSOLE'))) {
 
 	require_once ('include/functions_agents.php');
 
@@ -187,7 +187,7 @@ if ($search_agents_2 && ($config['metaconsole'] == 0)) {
 
 	return;
 }
-elseif ($search_agents_2 && ($config['metaconsole'] == 1)) {
+elseif ($search_agents_2 && ($config['metaconsole'] == 1) && defined('METACONSOLE')) {
 	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup");
 	if (!isset($servers)) {
 		return;

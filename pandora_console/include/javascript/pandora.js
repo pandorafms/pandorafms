@@ -132,6 +132,7 @@ function isEmptyObject(obj) {
  * @param selected Which module(s) have to be selected
  */
 function agent_changed_by_multiple_agents (event, id_agent, selected) {
+
 	// Hack to add custom condition
 	if($("#hidden-custom_condition").val() != undefined) {
 		custom_condition = $("#hidden-custom_condition").val();
@@ -164,7 +165,15 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	$('#module').attr ('disabled', 1);
 	$('#module').empty ();
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
-	jQuery.post ('ajax.php', 
+	
+	// Check if homedir was received like a JSON
+	homedir = '';
+	if (event.data == null)
+		homedir += '.';
+	else
+		homedir  = event.data.homedir;
+	
+	jQuery.post (homedir + '/ajax.php', 
 		 {"page": "operation/agentes/ver_agente",
 		 "get_agent_modules_json_for_multiple_agents": 1,
 		 "id_agent[]": idAgents,
@@ -206,7 +215,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 			 }
 			 jQuery.each (data, function (i, val) {
 						  s = js_html_entity_decode(val);
-						  $('#module').append ($('<option></option>').html (s).attr ("value", val));
+						  $('#module').append ($('<option></option>').html (s).attr ("value", i));
 						  $('#module').fadeIn ('normal');
 						  });
 			if (selected != undefined)
@@ -433,7 +442,7 @@ function agent_changed_by_multiple_agents_id (event, id_agent, selected) {
  * @param id_agent_id id of the hidden field to store the agent id
  * @param id_agent_module_selector id of the selector for the modules of the agent.
  */
-function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_selector, id_server_name, noneValue) {
+function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_selector, id_server_name, noneValue, homedir = '.') {
 	//Check exist the field with id in the var id_agent_name.
 	if ($(id_agent_name).length == 0)
 		return;
@@ -450,7 +459,7 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 					data: data_params,
 					async: false,
 					type: 'POST',
-					url: action="ajax.php",
+					url: action= homedir + "/ajax.php",
 					timeout: 10000,
 					dataType: 'json',
 					success: function (data) {
@@ -496,7 +505,7 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 				jQuery.ajax ({
 					data: data_params,
 					type: 'POST',
-					url: action="ajax.php",
+					url: action= homedir + "/ajax.php",
 					timeout: 10000,
 					dataType: 'json',
 					success: function (data) {

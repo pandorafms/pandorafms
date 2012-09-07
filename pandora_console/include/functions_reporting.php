@@ -1318,7 +1318,7 @@ function reporting_alert_reporting ($id_group, $period = 0, $date = 0, $return =
 	$data[__('Alerts not fired')] = $not_fired_percentage;
 	
 	$output .= pie3d_graph(false, $data, 280, 150,
-		__("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+		__("other"), $config['homeurl'] . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']); 
 	
 	$output .= '<strong>'.__('Alerts fired').': '.sizeof ($alerts_fired).'</strong><br />';
@@ -1394,7 +1394,7 @@ function reporting_monitor_health ($id_group, $period = 0, $date = 0, $return = 
 	$data[__('Monitors BAD')] = $not_down_percentage;
 	
 	$output .= pie3d_graph(false, $data, 280, 150,
-		__("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+		__("other"), $config['homeurl'] . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']); 
 	
 	if (!$return)
@@ -2105,7 +2105,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	}
 	
 	$server_name = $content ['server_name'];
-	if (($config ['metaconsole'] == 1) && $server_name != '') {
+	if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 		$connection = metaconsole_get_connection($server_name);
 		if (metaconsole_load_external_db($connection) != NOERR) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
@@ -2143,7 +2143,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], '', 0, 0, true, true);
+				$report["datetime"], '', 0, 0, true, true, $config['homeurl'] . '/');
 			
 			array_push ($table->data, $data);
 			break;
@@ -2189,7 +2189,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				$report["datetime"],
 				true,
-				'',
+				$config['homedir'] . '/',
 				1,
 				// Important parameter, this tell to graphic_combined_module function that is a projection graph
 				$output_projection,
@@ -2250,7 +2250,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], '', true, 0, true, true);
+				$report["datetime"], '', true, 0, true, true, $config['homedir'] . '/');
 				
 			/*$data[0] = 	graphic_combined_module(
 				$modules,
@@ -2316,7 +2316,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				$graph["stacked"],
 				$report["datetime"],
-				true);
+				true,
+				$config['homeurl'] . "/");
 			array_push ($table->data, $data);
 			
 			break;
@@ -2398,7 +2399,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			foreach ($slas as $sla) {
 				$server_name = $sla ['server_name'];
 				//Metaconsole connection
-				if (($config ['metaconsole'] == 1) && $server_name != '') {
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 					$connection = metaconsole_get_connection($server_name);
 					if (!metaconsole_load_external_db($connection)) {
 						//ui_print_error_message ("Error connecting to ".$server_name);
@@ -2439,7 +2440,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$server_name = $sla ['server_name'];
 				//Metaconsole connection
-				if (($config ['metaconsole'] == 1) && $server_name != '') {
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 					$connection = metaconsole_get_connection($server_name);
 					if (!metaconsole_load_external_db($connection)) {
 						//ui_print_error_message ("Error connecting to ".$server_name);
@@ -2530,12 +2531,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					
 					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
 						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
-						$content['time_to'], 650, 25,'');
+						$content['time_to'], 650, 25, $config['homeurl'] . '/');
 					
 					array_push ($tableslice->data, $dataslice);
 				}
 					
-				if ($config ['metaconsole'] == 1) {
+				if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
 					//Restore db connection
 					metaconsole_restore_db();
 				}
@@ -2553,7 +2554,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data_pie_graph = json_encode ($data_graph);
 			if ($show_graphs && !empty($slas)) {
 				$data[0] = pie3d_graph(false, $data_graph,
-					500, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+					500, 150, __("other"), $config['homeurl'] . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
 				
 				
@@ -2867,7 +2868,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			
-			$data[0] = graph_custom_sql_graph($content["id_rc"], $sizgraph_w, 200, $content["type"], true);
+			$data[0] = graph_custom_sql_graph($content["id_rc"], $sizgraph_w, 200, $content["type"], true, $config['homeurl'] . '/');
 			
 			array_push($table->data, $data);
 			break;
@@ -3258,7 +3259,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					foreach ($generals as $key => $row) {
 						//Metaconsole connection
 						$server_name = $row ['server_name'];
-						if (($config ['metaconsole'] == 1) && $server_name != '') {
+						if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 							$connection = metaconsole_get_connection($server_name);
 							if (metaconsole_load_external_db($connection) != NOERR) {
 								//ui_print_error_message ("Error connecting to ".$server_name);
@@ -3294,7 +3295,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$operations[$key] = $row['operation'];
 						
 						//Restore dbconnection
-						if (($config ['metaconsole'] == 1) && $server_name != '') {
+						if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 							metaconsole_restore_db();
 						}
 					}
@@ -3303,11 +3304,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						switch ($order_uptodown) {
 							//Descending
 							case 1:
-								array_multisort($data_res, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+								array_multisort($data_res, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $operations, SORT_ASC);
 								break;
 							//Ascending
 							case 2:
-								array_multisort($data_res, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+								array_multisort($data_res, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $operations, SORT_ASC);
 								break;
 						}
 						$i=0;
@@ -3345,17 +3346,36 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 					//Order by agent name
 					elseif ($order_uptodown == 3) {
-						array_multisort($agent_name, SORT_ASC, $data_avg, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
+						array_multisort($agent_name, SORT_ASC, $data_res, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $operations, SORT_ASC);
 						$i=0;
 						foreach ($agent_name as $a) {
 							$data = array();
 							$data[0] = $agent_name[$i];
 							$data[1] = $module_name[$i];
+							
+							switch ($operations[$i]) {
+								case 'sum':
+									$op = __('Summatory');
+									break;
+								case 'min':
+									$op = __('Minimal');
+									break;
+								case 'max':
+									$op = __('Maximun');
+									break;
+								case 'avg':
+								default:
+									$op = __('Average');
+									break;
+							}
+							$data[2] = $op;							
+							
+							
 							if ($data_res[$i] === false) {
-								$data[2] = '--';
+								$data[3] = '--';
 							}
 							else {
-								$data[2] = format_for_graph($data_res[$i], 2) . " " . $units[$i];
+								$data[3] = format_for_graph($data_res[$i], 2) . " " . $units[$i];
 							}
 							array_push ($table1->data, $data);
 							$i++;
@@ -3388,7 +3408,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					foreach ($generals as $general) {
 						//Metaconsole connection
 						$server_name = $general ['server_name'];
-						if (($config ['metaconsole'] == 1) && $server_name != '') {
+						if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 							$connection = metaconsole_get_connection($server_name);
 							if (metaconsole_load_external_db($connection) != NOERR) {
 								//ui_print_error_message ("Error connecting to ".$server_name);
@@ -3404,11 +3424,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						if (!in_array ($mod_name, $modules_list)) {
 							array_push ($modules_list, $mod_name);
 						}
-						if (!in_array ($general['operation'], $operation_list)) {
+						//if (!in_array ($general['operation'], $operation_list)) {
 							array_push ($operation_list, $general['operation']);
-						}
+						//}
 						//Restore dbconnection
-						if (($config ['metaconsole'] == 1) && $server_name != '') {
+						if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 							metaconsole_restore_db();
 						}
 					}
@@ -3435,7 +3455,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							foreach ($generals as $g) {
 								//Metaconsole connection
 								$server_name = $g ['server_name'];
-								if (($config ['metaconsole'] == 1) && $server_name != '') {
+								if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 									$connection = metaconsole_get_connection($server_name);
 									if (metaconsole_load_external_db($connection) != NOERR) {
 										//ui_print_error_message ("Error connecting to ".$server_name);
@@ -3474,10 +3494,20 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 								else {
 									$data[$i] = '--';
 								}
-								if ($found == true) break;
+								
+								if ($found == true) {
+									
+									//Restore dbconnection
+									if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+										metaconsole_restore_db();
+									}									
+									
+									break;
+								
+								}
 								
 								//Restore dbconnection
-								if (($config ['metaconsole'] == 1) && $server_name != '') {
+								if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 									metaconsole_restore_db();
 								}
 							}
@@ -3500,7 +3530,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				do {
 					//Metaconsole connection
 					$server_name = $generals[$i]['server_name'];
-					if (($config ['metaconsole'] == 1) && $server_name != '') {
+					if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 						$connection = metaconsole_get_connection($server_name);
 						if (metaconsole_load_external_db($connection) != NOERR) {
 							//ui_print_error_message ("Error connecting to ".$server_name);
@@ -3525,7 +3555,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$i++;
 					
 					//Restore dbconnection
-					if (($config ['metaconsole'] == 1) && $server_name != '') {
+					if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 						metaconsole_restore_db();
 					}
 				} while ($min === false && $i < count($generals));
@@ -3540,7 +3570,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				foreach ($generals as $g) {
 					//Metaconsole connection
 					$server_name = $g['server_name'];
-					if (($config ['metaconsole'] == 1) && $server_name != '') {
+					if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 						$connection = metaconsole_get_connection($server_name);
 						if (metaconsole_load_external_db($connection) != NOERR) {
 							//ui_print_error_message ("Error connecting to ".$server_name);
@@ -3575,7 +3605,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 					
 					//Restore dbconnection
-					if (($config ['metaconsole'] == 1) && $server_name != '') {
+					if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 						metaconsole_restore_db();
 					}
 				}
@@ -3677,7 +3707,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				//Metaconsole connection
 				$server_name = $row['server_name'];
-				if (($config ['metaconsole'] == 1) && $server_name != '') {
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 					$connection = metaconsole_get_connection($server_name);
 					if (metaconsole_load_external_db($connection) != NOERR) {
 						//ui_print_error_message ("Error connecting to ".$server_name);
@@ -3716,7 +3746,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				
 				//Restore dbconnection
-				if (($config ['metaconsole'] == 1) && $server_name != '') {
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 					metaconsole_restore_db();
 				}
 			}
@@ -3826,7 +3856,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph(false, $data_pie_graph,
-					$sizgraph_w, $sizgraph_h, __("other"),"", $config['homedir'] .  "/images/logo_vertical_water.png",
+					$sizgraph_w, $sizgraph_h, __("other"),$config['homeurl'] .  "/", $config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
 				
 				array_push ($table->data, $data);
@@ -3835,7 +3865,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table->style[0] .= 'text-align:center';
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
-				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
+				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w, $height, array(), array(), "", "", true, $config['homeurl'] . "/", $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
 				
 				array_push ($table->data, $data);
 			}
@@ -3944,7 +3974,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			do {
 				//Metaconsole connection
 				$server_name = $exceptions[$i]['server_name'];
-				if (($config ['metaconsole'] == 1) && $server_name != '') {
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 					$connection = metaconsole_get_connection($server_name);
 					if (metaconsole_load_external_db($connection) != NOERR) {
 						//ui_print_error_message ("Error connecting to ".$server_name);
@@ -3956,7 +3986,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$i++;
 				
 				//Restore dbconnection
-				if (($config ['metaconsole'] == 1) && $server_name != '') {
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 					metaconsole_restore_db();
 				}
 			} while ($min === false && $i < count($exceptions));
@@ -3967,7 +3997,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			foreach ($exceptions as $exc) {
 				//Metaconsole connection
 				$server_name = $exc['server_name'];
-				if (($config ['metaconsole'] == 1) && $server_name != '') {
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 					$connection = metaconsole_get_connection($server_name);
 					if (metaconsole_load_external_db($connection) != NOERR) {
 						//ui_print_error_message ("Error connecting to ".$server_name);
@@ -4025,7 +4055,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$units[] = $unit;
 				}
 				//Restore dbconnection
-				if (($config ['metaconsole'] == 1) && $server_name != '') {
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 					metaconsole_restore_db();
 				}
 			}
@@ -4122,7 +4152,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph(false, $data_pie_graph,
-					600, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+					600, 150, __("other"), $config['homeurl'] .  "/", $config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
 				array_push ($table->data, $data);
 				//Display bars graph
@@ -4424,8 +4454,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 	}
 	//Restore dbconnection
-	if (($config ['metaconsole'] == 1) && $server_name != '') {
-		metaconsole_restore_db();
+	if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+		metaconsole_restore_db_force();
 	}
 }
 

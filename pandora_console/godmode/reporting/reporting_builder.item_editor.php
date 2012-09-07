@@ -33,7 +33,7 @@ $show_sort_options[1] = __('Ascending');
 $show_sort_options[2] = __('Descending');
 
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
-require_once ($config['homedir'].'/include/functions_agents.php');
+require_once ($config['homedir'] . '/include/functions_agents.php');
 if (enterprise_include_once ('include/functions_metaconsole.php')) {
 	$servers = enterprise_hook("metaconsole_get_connection_names");
 }
@@ -95,7 +95,7 @@ switch ($action) {
 		$server_name = $item ['server_name'];
 
 		// Metaconsole db connection
-		if (($config ['metaconsole'] == 1) && ($server_name != '')) {
+		if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
 			$connection = metaconsole_get_connection($server_name);
 			if (metaconsole_load_external_db($connection) != NOERR) {
 				//ui_print_error_message ("Error connecting to ".$server_name);
@@ -342,14 +342,20 @@ switch ($action) {
 		}
 		
 		//Restore db connection
-		if (($config ['metaconsole'] == 1) && ($server_name != '')) {
+		if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
 			metaconsole_restore_db();
 		}
 		
 		break;
 }
 
-$urlForm = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
+// Build link for sort actions: metaconsole and normal console
+$variable_link = ui_get_full_url(false);
+// Metaconsole
+if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
+	$variable_link .= '/enterprise/meta/';
+
+$urlForm = $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';
 html_print_input_hidden('id_item', $idItem);
@@ -364,7 +370,11 @@ html_print_input_hidden('id_item', $idItem);
 					html_print_select(reports_get_report_types(), 'type', $type, 'chooseType();', '', '');
 				}
 				else {
-					echo reports_get_report_types($type);
+					$report_type = reports_get_report_types($type);
+					if (!empty($report_type) and isset($report_type[$type]['name']))
+						echo $report_type[$type]['name'];
+					else
+						echo __('Not valid');
 					echo '<input type="hidden" id="type" name="type" value="' . $type . '" />';
 				}
 				?>
@@ -477,7 +487,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Agent'); ?></td>
 			<td style="">
 				<?php
-				if ($config['metaconsole'] == 1) {
+				if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 					$connection = metaconsole_get_connection($server_name);
 					$agent_name = '';
 					
@@ -508,7 +518,7 @@ html_print_input_hidden('id_item', $idItem);
 				if($idAgent) {
 					$sql = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente =  " . $idAgent . " AND  delete_pending = 0";
 					
-					if ($config['metaconsole'] == 1) {
+					if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 						$connection = metaconsole_get_connection($server_name);
 						
 						if (metaconsole_load_external_db($connection) == NOERR) {
@@ -582,7 +592,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Custom graph'); ?></td>
 			<td style="">
 				<?php
-				if ($config['metaconsole'] == 1) {
+				if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 					$graphs = array();
 					$graphs = metaconsole_get_custom_graphs();
 					$value_selected = $idCustomGraph . '|' . $server_name;
@@ -607,7 +617,7 @@ html_print_input_hidden('id_item', $idItem);
 					$style_button_create_custom_graph = '';
 					$style_button_edit_custom_graph = 'style="display: none;"';
 					// Select the target server
-					if ($config['metaconsole'] == 1) {
+					if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 						$metaconsole_connections = enterprise_hook('metaconsole_get_connection_names');
 						if ($metaconsole_connections === false) {
 							$metaconsole_connections = array();
@@ -650,7 +660,7 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_servers" style="" class="datos">			
 			<td style="vertical-align: top;"><?php echo __('Server'); ?></td>
 			<td style=""><?php
-				if ($config ['metaconsole'] != 1)
+				if ($config ['metaconsole'] != 1 or !defined('METACONSOLE'))
 					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0, false, false, true, '', true);
 				else
 					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0);
@@ -773,7 +783,7 @@ if ($enterpriseEnable) {
 	reporting_enterprise_text_box();
 }
 //Restore db connection
-if ($config ['metaconsole'] == 1) {
+if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
 	metaconsole_restore_db();
 }
 
@@ -811,7 +821,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 					foreach ($itemsSLA as $item) {
 						$server_name = $item ['server_name'];
 						// Metaconsole db connection
-						if (($config ['metaconsole'] == 1) && ($server_name != '')) {
+						if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
 							$connection = metaconsole_get_connection($server_name);
 							if (metaconsole_load_external_db($connection) != NOERR) {
 								//ui_print_error_message ("Error connecting to ".$server_name);
@@ -822,8 +832,12 @@ function print_SLA_list($width, $action, $idItem = null) {
 						$nameAgent = agents_get_name ($idAgent);
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
+						$server_name_element = '';
+						if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) 
+							$server_name_element .= ' (' . $server_name . ')';
+						
 						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">
-								<td>' . printSmallFont($nameAgent) . '</td>
+								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
 								<td>' . printSmallFont($nameModule) . '</td>
 								<td>' . $item['sla_min'] . '</td>
 								<td>' . $item['sla_max'] . '</td>
@@ -832,7 +846,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
-						if ($config ['metaconsole'] == 1) {
+						if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
 							//Restore db connection
 							metaconsole_restore_db();
 						}
@@ -875,7 +889,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 
 function print_General_list($width, $action, $idItem = null) {
 	global $config;
-	include_once('include/functions_html.php');
+	include_once($config['homedir'] . '/include/functions_html.php');
 	?>
 	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="98%">
 		<thead>
@@ -906,7 +920,7 @@ function print_General_list($width, $action, $idItem = null) {
 					foreach ($itemsGeneral as $item) {
 						$server_name = $item ['server_name'];
 						// Metaconsole db connection
-						if (($config ['metaconsole'] == 1) && ($server_name != '')) {
+						if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
 							$connection = metaconsole_get_connection($server_name);
 							if (metaconsole_load_external_db($connection) != NOERR) {
 								//ui_print_error_message ("Error connecting to ".$server_name);
@@ -917,15 +931,19 @@ function print_General_list($width, $action, $idItem = null) {
 						$nameAgent = agents_get_name ($idAgent);
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
+						$server_name_element = '';
+						if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) 
+							$server_name_element .= ' (' . $server_name . ')';						
+						
 						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
-								<td>' . printSmallFont($nameAgent) . '</td>
+								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
 								<td>' . printSmallFont($nameModule) . '</td>
 								<td>' . printSmallFont($item['operation']) . '</td>
 								<td style="text-align: center;">
 									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
-						if ($config ['metaconsole'] == 1) {
+						if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
 							//Restore db connection
 							metaconsole_restore_db();
 						}
@@ -968,9 +986,9 @@ ui_require_javascript_file ('pandora_inventory', ENTERPRISE_DIR.'/include/javasc
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
-	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module', '#hidden-server_name');
-	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla', '#hidden-server_name');
-	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general', '#id_operation_module_general');
+	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module', '#hidden-server_name', undefined, <?php echo '"' . $config['homeurl'] . '"'; ?>);
+	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla', '#hidden-server_name', undefined, <?php echo '"' . $config['homeurl'] . '"'; ?>);
+	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general', '#id_operation_module_general', <?php echo '"' . $config['homeurl'] . '"'; ?>);
 
 	chooseType();
 	chooseSQLquery();
@@ -988,7 +1006,7 @@ function create_custom_graph() {
 		global $config;
 	
 		// Metaconsole activated
-		if ($config['metaconsole'] == 1) {
+		if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 	?>
 			var target_server = $("#meta_servers").val();
 			// If target server is not selected
@@ -1007,7 +1025,7 @@ function create_custom_graph() {
 				jQuery.ajax ({
 					data: params1.join ("&"),
 					type: 'POST',
-					url: action="ajax.php",
+					url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 					async: false,
 					timeout: 10000,
 					success: function (data) {
@@ -1023,7 +1041,7 @@ function create_custom_graph() {
 				jQuery.ajax ({
 					data: params1.join ("&"),
 					type: 'POST',
-					url: action="ajax.php",
+					url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 					async: false,
 					timeout: 10000,
 					success: function (data) {
@@ -1049,7 +1067,7 @@ function edit_custom_graph() {
 		global $config;
 	
 		// Metaconsole activated
-		if ($config['metaconsole'] == 1) {
+		if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 	?>
 			var agent_server_temp;
 			var id_element_graph;
@@ -1069,7 +1087,7 @@ function edit_custom_graph() {
 			jQuery.ajax ({
 				data: params1.join ("&"),
 				type: 'POST',
-				url: action="ajax.php",
+				url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -1085,7 +1103,7 @@ function edit_custom_graph() {
 			jQuery.ajax ({
 				data: params1.join ("&"),
 				type: 'POST',
-				url: action="ajax.php",
+				url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -1134,7 +1152,7 @@ function chooseSQLquery() {
 		jQuery.ajax ({
 			data: params1.join ("&"),
 			type: 'POST',
-			url: action="ajax.php",
+			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 			async: false,
 			timeout: 10000,
 			success: function (data) {
@@ -1149,7 +1167,7 @@ function chooseSQLquery() {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action="ajax.php",
+			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 			timeout: 10000,
 			dataType: 'json',
 			success: function (data) {
@@ -1170,7 +1188,7 @@ function deleteSLARow(id_row) {
 	jQuery.ajax ({
 		data: params.join ("&"),
 		type: 'POST',
-		url: action="ajax.php",
+		url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 		timeout: 10000,
 		dataType: 'json',
 		success: function (data) {
@@ -1190,7 +1208,7 @@ function deleteGeneralRow(id_row) {
 	jQuery.ajax ({
 		data: params.join ("&"),
 		type: 'POST',
-		url: action="ajax.php",
+		url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 		timeout: 10000,
 		dataType: 'json',
 		success: function (data) {
@@ -1221,7 +1239,7 @@ function addSLARow() {
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
-				url: action="ajax.php",
+				url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -1236,7 +1254,7 @@ function addSLARow() {
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
-				url: action="ajax.php",
+				url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -1257,7 +1275,7 @@ function addSLARow() {
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
-				url: action="ajax.php",
+				url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 				timeout: 10000,
 				dataType: 'json',
 				success: function (data) {
@@ -1309,7 +1327,7 @@ function addGeneralRow() {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action="ajax.php",
+			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 			async: false,
 			timeout: 10000,
 			success: function (data) {
@@ -1324,7 +1342,7 @@ function addGeneralRow() {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action="ajax.php",
+			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 			async: false,
 			timeout: 10000,
 			success: function (data) {
@@ -1339,7 +1357,7 @@ function addGeneralRow() {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action="ajax.php",
+			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 			async: false,
 			timeout: 10000,
 			success: function (data) {
@@ -1357,7 +1375,7 @@ function addGeneralRow() {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action="ajax.php",
+			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
 			timeout: 10000,
 			dataType: 'json',
 			success: function (data) {

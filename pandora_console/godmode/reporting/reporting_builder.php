@@ -13,6 +13,10 @@
 // GNU General Public License for more details.
 global $config;
 
+// IMPORTANT NOTE: All reporting pages are used also for metaconsole reporting functionality
+// So, it's very important to specify full url and paths to resources because metaconsole has a different
+// entry point: enterprise/meta/index.php than normal console !!!
+
 // Login check
 check_login ();
 
@@ -23,10 +27,11 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
-require_once ("include/functions_reports.php");
+require_once ($config['homedir'] . "/include/functions_reports.php");
 
 // Load enterprise extensions
 enterprise_include ('operation/reporting/custom_reporting.php');
+enterprise_include_once ('include/functions_metaconsole.php');
 
 $enterpriseEnable = false;
 if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NOT_HOOK) {
@@ -188,7 +193,7 @@ switch ($action) {
 			$sql = "SELECT id_rc FROM treport_content WHERE id_report=$idReport ORDER BY '`order`'";
 			$items = db_get_all_rows_sql($sql);
 			switch ($pos_delete) {
-				case 'below':
+				case 'above':
 					if ($position_to_delete == 1) {
 						$resultOperationDB = false;
 					} else {
@@ -201,7 +206,7 @@ switch ($action) {
 						}
 					}
 					break;
-				case 'above':
+				case 'below':
 					if ($position_to_delete == $countItems) {
 						$resultOperationDB = false;
 					} else {
@@ -221,11 +226,11 @@ switch ($action) {
 	case 'list':
 		$buttons = array(
 			'list_reports' => array('active' => false,
-				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">' . 
+				'text' => '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder">' . 
 					html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
 			);
 		
-		if ($enterpriseEnable){
+		if ($enterpriseEnable and !defined('METACONSOLE')) {
 			$buttons = reporting_enterprise_add_main_Tabs($buttons);
 		}
 		
@@ -240,8 +245,19 @@ switch ($action) {
 				break;
 		}
 		
-		// Report LIST
-		ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting.png", false, "",false, $buttons);
+		// Page header for metaconsole
+		if ($enterpriseEnable and defined('METACONSOLE')) {
+			// Bread crumbs
+			ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder', 'text' => __('Reporting')));
+
+			ui_meta_print_page_header($nav_bar);	
+			
+			// Print header
+			ui_meta_print_header(__('Reporting'), "", $buttons);				
+		}
+		// Page header for normal console		
+		else
+			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting.png", false, "",false, $buttons);
 		
 		if ($action == 'delete_report') {
 			$result = reports_delete_report ($idReport);
@@ -274,7 +290,7 @@ switch ($action) {
 		
 		$table_aux->data[0][6] = html_print_submit_button(__('Search'), 'search_submit', false, 'class="sub upd"', true);
 		
-		echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group='.$id_group'
+		echo "<form action='index.php?sec=reporting&sec2=" . $config['homedir'] . "/godmode/reporting/reporting_builder&id_group='.$id_group'
 			method='post'>";
 			html_print_table($table_aux);
 		echo "</form>";
@@ -309,6 +325,12 @@ switch ($action) {
 				'order' => 'name'
 			);
 		}
+		
+		// Filter normal and metaconsole reports
+		if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
+			$filter['metaconsole'] = 1;
+		else
+			$filter['metaconsole'] = 0;
 		
 		$reports = reports_get_reports ($filter,
 			array ('name', 'id_report', 'description', 'private',
@@ -362,7 +384,7 @@ switch ($action) {
 				$data = array ();
 				
 				if (check_acl ($config["id_user"], $report["id_group"], "AW")) {
-					$data[0] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
+					$data[0] = '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&action=edit&id_report='.
 						$report['id_report'].'">'.$report['name'].'</a>';
 				}
 				else {
@@ -372,9 +394,9 @@ switch ($action) {
 				
 				$data[1] = $report['description'];
 				
-				$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">' .
+				$data[2] = '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/operation/reporting/reporting_viewer&id='.$report['id_report'].'">' .
 					html_print_image("images/reporting.png", true) . '</a>';
-				$data[3] = '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
+				$data[3] = '<a href="'. $config['homeurl'] . '/ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
 				
 				
 				//Calculate dinamically the number of the column
@@ -413,7 +435,7 @@ switch ($action) {
 					}
 					
 					if ($edit) {
-						$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit" style="display:inline">';
+						$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&action=edit" style="display:inline">';
 						$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 						$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
 						$data[$next] .= '</form>';
@@ -433,12 +455,12 @@ switch ($action) {
 			html_print_table ($table);
 		}
 		else {
-			echo "<div class='nf'>".__('There are no defined reportings')."</div>";
+			ui_print_error_message(__('There are no defined reportings'));
 		}
 		
 		
 		if (check_acl ($config['id_user'], 0, "IW")) {
-			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new">';
+			echo '<form method="post" action="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=main&action=new">';
 			echo '<div class="action-buttons" style="width: 98%;">';
 			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 			echo "</div>";
@@ -525,13 +547,21 @@ switch ($action) {
 				}
 				else if ($action == 'save') {
 					if ($reportName != "" && $idGroupReport != "") {
+						
+						// This flag allow to differentiate between normal console and metaconsole reports 
+						if (defined('METACONSOLE') and $config['metaconsole'] == 1)
+							$metaconsole_report = 1;
+						else
+							$metaconsole_report = 0;
+							
 						$idOrResult = db_process_sql_insert('treport',
 							array('name' => $reportName,
 								'id_group' => $idGroupReport,
 								'description' => $description,
 								'private' => $private,
 								'id_group_edit' => $id_group_edit,
-								'id_user' => $config['id_user']));
+								'id_user' => $config['id_user'],
+								'metaconsole' => $metaconsole_report));
 						if ($idOrResult !== false)
 							db_pandora_audit( "Report management", "Create report #$idOrResult");
 						else
@@ -833,7 +863,7 @@ switch ($action) {
 							break;
 						}
 						
-						if ($config['metaconsole'] == 1) {
+						if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 							if ($values['type'] == 'custom_graph') {
 								$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
 								if ($id_gs !== false && $id_gs !== '') {
@@ -914,7 +944,8 @@ switch ($action) {
 				}
 				break;
 			default:
-				if ($enterpriseEnable) {
+				
+				if ($enterpriseEnable and $activeTab != 'advanced') {
 					$resultOperationDB = reporting_enterprise_update_action();
 				}
 				break;
@@ -964,49 +995,156 @@ switch ($action) {
 			case 'module':
 			case 'agent':
 			case 'type':
-				switch ($field) {
-					case 'module':
-						$sql = "
-							SELECT t1.id_rc, t2.nombre
-							FROM treport_content AS t1
-								LEFT JOIN tagente_modulo AS t2
-									ON t1.id_agent_module = t2.id_agente_modulo
-							WHERE %s
-							ORDER BY nombre %s
-						";
-						break;
-					case 'agent':
-						$sql = "
-							SELECT t4.id_rc, t5.nombre
-							FROM
-								(
-								SELECT t1.*, id_agente
+				
+				// Sort functionality for normal console
+				if (!defined('METACONSOLE')) {
+					switch ($field) {
+						case 'module':
+							$sql = "
+								SELECT t1.id_rc, t2.nombre
 								FROM treport_content AS t1
 									LEFT JOIN tagente_modulo AS t2
-										ON t1.id_agent_module = id_agente_modulo
-								) AS t4
-								LEFT JOIN tagente AS t5
-									ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
-							WHERE %s
-							ORDER BY t5.nombre %s
-						";
-						break;
-					case 'type':
-						$sql = "SELECT id_rc FROM treport_content WHERE %s ORDER BY type %s";
-						break;
-				}
-				$sql = sprintf($sql, 'id_report = ' . $idReport, '%s');
-				switch ($dir) {
-					case 'up':
-						$sql = sprintf($sql, 'ASC');
-						break;
-					case 'down':
-						$sql = sprintf($sql, 'DESC');
-						break;
-				}
+										ON t1.id_agent_module = t2.id_agente_modulo
+								WHERE %s
+								ORDER BY nombre %s
+							";
+							break;
+						case 'agent':
+							$sql = "
+								SELECT t4.id_rc, t5.nombre
+								FROM
+									(
+									SELECT t1.*, id_agente
+									FROM treport_content AS t1
+										LEFT JOIN tagente_modulo AS t2
+											ON t1.id_agent_module = id_agente_modulo
+									) AS t4
+									LEFT JOIN tagente AS t5
+										ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
+								WHERE %s
+								ORDER BY t5.nombre %s
+							";
+							break;
+						case 'type':
+							$sql = "SELECT id_rc FROM treport_content WHERE %s ORDER BY type %s";
+							break;
+					}
+					$sql = sprintf($sql, 'id_report = ' . $idReport, '%s');
+					switch ($dir) {
+						case 'up':
+							$sql = sprintf($sql, 'ASC');
+							break;
+						case 'down':
+							$sql = sprintf($sql, 'DESC');
+							break;
+					}
+					echo $sql;
+					$ids = db_get_all_rows_sql($sql);
 				
-				$ids = db_get_all_rows_sql($sql);
-				
+				}
+				// Sort functionality for metaconsole
+				else if ($config['metaconsole'] == 1) {
+					
+					switch ($field) {
+						case 'agent':	
+						case 'module':					
+
+							$sql = "SELECT id_rc, id_agent, id_agent_module, server_name FROM treport_content WHERE %s ORDER BY server_name";
+							$sql = sprintf($sql, 'id_report = ' . $idReport, '%s');
+							
+							$report_items = db_get_all_rows_sql($sql);
+							
+							$ids = array();
+							$temp_sort = array();
+							$i = 0;
+							
+							if (!empty($report_items)) {
+								
+								foreach ($report_items as $report_item) {
+
+									$connection = metaconsole_get_connection($report_item['server_name']);
+									if (metaconsole_load_external_db($connection) != NOERR) {
+										//ui_print_error_message ("Error connecting to ".$server_name);
+									}
+											
+									switch ($field) {
+										case 'agent':									
+											$agents_name = agents_get_agents(array('id_agente' => $report_item['id_agent']), 'nombre');
+											
+											// Item without agent
+											if (!$agents_name) 
+												$element_name = '';
+											else {
+												$agent_name = array_shift($agents_name);
+												$element_name = $agent_name['nombre'];
+											}
+											
+											break;
+											
+										case 'module':
+											$module_name = modules_get_agentmodule_name($report_item['id_agent_module']);
+											
+											// Item without module
+											if (!$module_name) 
+												$element_name = '';
+											else {
+												$element_name = $module_name;
+											}										
+										
+											break;
+									}	
+									
+									metaconsole_restore_db_force();
+
+									$temp_sort[$report_item['id_rc']] = $element_name;									
+								
+								}
+										
+								// Performes sorting	
+								switch ($dir) {
+									case 'up':
+										asort($temp_sort);
+										break;
+									case 'down':
+										arsort($temp_sort);
+										break;
+								}	
+										
+								foreach ($temp_sort as $temp_element_key => $temp_element_val) {
+									$ids[$i]['id_rc'] = $temp_element_key;
+									$ids[$i]['element_name'] = $temp_element_val;
+									$i++;
+								}
+								
+								// Free resources
+								unset($temp_sort);							
+								unset($report_items);							
+										
+							}
+							
+							break;
+						// Type case only depends of local database
+						case 'type':
+							$sql = "SELECT id_rc FROM treport_content WHERE %s ORDER BY type %s";
+							
+							$sql = sprintf($sql, 'id_report = ' . $idReport, '%s');
+							switch ($dir) {
+								case 'up':
+									$sql = sprintf($sql, 'ASC');
+									break;
+								case 'down':
+									$sql = sprintf($sql, 'DESC');
+									break;
+							}
+
+							$ids = db_get_all_rows_sql($sql);								
+							
+							break;
+					}
+			
+					
+				}
+
 				$count = 1;
 				$resultOperationDB = true;
 				foreach($ids as $id) {
@@ -1019,6 +1157,7 @@ switch ($action) {
 					
 					$count = $count + 1;
 				}
+
 				break;
 			default:
 				switch ($config["dbtype"]) {
@@ -1122,13 +1261,13 @@ if ($enterpriseEnable) {
 
 $buttons = array(
 	'main' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $idReport . '">' . 
+		'text' => '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $idReport . '">' . 
 			html_print_image("images/reporting_edit.png", true, array ("title" => __('Main'))) .'</a>'),
 	'list_items' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . '">' . 
+		'text' => '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . '">' . 
 			html_print_image("images/god6.png", true, array ("title" => __('List items'))) .'</a>'),
 	'item_editor' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $idReport . '">' . 
+		'text' => '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $idReport . '">' . 
 			html_print_image("images/config.png", true, array ("title" => __('Item editor'))) .'</a>')
 	);
 	
@@ -1137,7 +1276,7 @@ if ($enterpriseEnable) {
 }
 
 $buttons['view'] = array('active' => false,
-	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $idReport . '">' . 
+	'text' => '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/operation/reporting/reporting_viewer&id=' . $idReport . '">' . 
 		html_print_image("images/reporting.png", true, array ("title" => __('View report'))) .'</a>');
 	
 $buttons[$activeTab]['active'] = true;
@@ -1153,7 +1292,18 @@ else {
 	$textReportName = '';
 }
 
-ui_print_page_header(__('Reporting') . $textReportName, "images/reporting_edit.png", false, "reporting_" . $activeTab . "_tab", true, $buttons);
+// Page header for metaconsole
+if ($enterpriseEnable and defined('METACONSOLE')) {
+	// Bread crumbs
+	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder', 'text' => __('Reporting')));
+
+	ui_meta_print_page_header($nav_bar);	
+	
+	// Print header
+	ui_meta_print_header(__('Reporting'). $textReportName, "", $buttons);				
+}
+else
+	ui_print_page_header(__('Reporting') . $textReportName, "images/reporting_edit.png", false, "reporting_" . $activeTab . "_tab", true, $buttons);
 
 if ($resultOperationDB !== null) {
 	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action'));
@@ -1161,13 +1311,13 @@ if ($resultOperationDB !== null) {
 
 switch ($activeTab) {
 	case 'main':
-		require_once('godmode/reporting/reporting_builder.main.php');
+		require_once($config['homedir'] . '/godmode/reporting/reporting_builder.main.php');
 		break;
 	case 'list_items':
-		require_once('godmode/reporting/reporting_builder.list_items.php');
+		require_once($config['homedir'] . '/godmode/reporting/reporting_builder.list_items.php');
 		break;
 	case 'item_editor':
-		require_once('godmode/reporting/reporting_builder.item_editor.php');
+		require_once($config['homedir'] . '/godmode/reporting/reporting_builder.item_editor.php');
 		break;
 	default:
 		reporting_enterprise_select_tab($activeTab);

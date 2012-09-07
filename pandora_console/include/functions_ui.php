@@ -1936,7 +1936,7 @@ function ui_get_url_refresh ($params = false, $relative = true, $add_post = true
  *
  * @return string A full URL in Pandora.
  */
-function ui_get_full_url ($url = '', $no_proxy = false) {
+function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = false) {
 	global $config;
 	
 	$port = null;   // null means 'use the starndard port'
@@ -2004,7 +2004,12 @@ function ui_get_full_url ($url = '', $no_proxy = false) {
 			$fullurl .= '/';
 		}
 		else {
-			$fullurl .= $_SERVER['SCRIPT_NAME'];
+			if ($add_name_php_file) {
+				$fullurl .= $_SERVER['SCRIPT_NAME'];
+			}
+			else {
+				$fullurl .= $config['homeurl'] . '/';
+			}
 		}
 	}
 	

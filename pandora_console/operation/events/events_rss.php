@@ -47,7 +47,7 @@ function rss_error_handler ($errno, $errstr, $errfile, $errline) {
 	global $config;
 	
 	$url = ui_get_full_url(false);
-	$selfurl = ui_get_full_url('?' . $_SERVER['QUERY_STRING']);
+	$selfurl = ui_get_full_url('?' . $_SERVER['QUERY_STRING'], false, true);
 	
 	$rss_feed = '<?xml version="1.0" encoding="utf-8" ?>'; //' Fixes certain highlighters freaking out on the PHP closing tag
 	$rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'; 
@@ -202,7 +202,7 @@ switch ($config["dbtype"]) {
 $result= db_get_all_rows_sql ($sql);
 
 $url = ui_get_full_url(false);
-$selfurl = ui_get_full_url('?' . $_SERVER['QUERY_STRING']);
+$selfurl = ui_get_full_url('?' . $_SERVER['QUERY_STRING'], false, true);
 
 if (empty ($result)) {
 	$lastbuild = 0; //Last build in 1970

@@ -2417,6 +2417,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 				$sla_showed[] = $sla;
 				$sla_showed_values[] = $sla_value;
+				
+				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+					//Restore db connection
+					metaconsole_restore_db();
+				}					
+				
 			}
 			
 			// SLA items sorted descending ()

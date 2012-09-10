@@ -463,7 +463,7 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 					data: data_params,
 					async: false,
 					type: 'POST',
-					url: action= homedir + "/ajax.php",
+					url: action= homedir_path + "/ajax.php",
 					timeout: 10000,
 					dataType: 'json',
 					success: function (data) {
@@ -509,7 +509,7 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 				jQuery.ajax ({
 					data: data_params,
 					type: 'POST',
-					url: action= homedir + "/ajax.php",
+					url: action= homedir_path + "/ajax.php",
 					timeout: 10000,
 					dataType: 'json',
 					success: function (data) {

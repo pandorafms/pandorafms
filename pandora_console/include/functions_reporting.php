@@ -4166,7 +4166,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
 				
-				$data[0] = hbar_graph(false, $data_hbar, 600, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
+				$data[0] = hbar_graph(false, $data_hbar, 600, $height, array(), array(), "", "", true, $config['homeurl']  . "/", $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
 				
 				array_push ($table->data, $data);
 			}

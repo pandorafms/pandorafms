@@ -16,7 +16,7 @@
 
 function dbmanager_query ($sql, &$error) {
 	global $config;
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$retval = array();
@@ -44,21 +44,21 @@ function dbmanager_query ($sql, &$error) {
 			
 			if (! empty ($retval))
 				return $retval;
-		
+			
 			//Return false, check with === or !==
 			return "Empty";
 			break;
 		case "postgresql":
 		case "oracle":
 			$retval = array();
-		
+			
 			if ($sql == '')
 				return false;
-				
+			
 			$sql = html_entity_decode($sql, ENT_QUOTES);
 			
 			$result = db_process_sql($sql, "affected_rows", '', false, $status);
-		
+			
 			//$result = mysql_query ($sql);
 			if ($result === false) {
 				$backtrace = debug_backtrace();
@@ -80,9 +80,9 @@ function dbmanager_query ($sql, &$error) {
 
 function dbmgr_extension_main () {
 	ui_require_css_file ('dbmanager', 'extensions/dbmanager/');
-
+	
 	global $config;
-
+	
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
@@ -91,21 +91,21 @@ function dbmgr_extension_main () {
 	
 	if (!check_refererer()) {
 		require ("general/noaccess.php");
-	
+		
 		return;
 	}
-
+	
 	$sql = (string) get_parameter ('sql');
-
+	
 	ui_print_page_header (__('Database interface'), "", false, false, true);
-
+	
 	echo '<div class="notify">';
 	echo "This is an advanced extension to interface with Pandora FMS database directly from WEB console using native SQL sentences. Please note that <b>you can damage</b> your Pandora FMS installation if you don't know </b>exactly</b> what are you are doing, this means that you can severily damage your setup using this extension. This extension is intended to be used <b>only by experienced users</b> with a depth knowledge of Pandora FMS internals.";
 	echo '</div>';
-
+	
 	echo "<br />";
 	echo "Some samples of usage: <blockquote><em>SHOW STATUS;<br />DESCRIBE tagente<br />SELECT * FROM tserver<br />UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</em></blockquote>";
-
+	
 	echo "<br /><br />";
 	echo "<form method='post' action=''>";
 	html_print_textarea ('sql', 5, 40, html_entity_decode($sql, ENT_QUOTES));
@@ -114,11 +114,11 @@ function dbmgr_extension_main () {
 	html_print_submit_button (__('Execute SQL'), '', false, 'class="sub next"');
 	echo '</div>';
 	echo "</form>";
-
+	
 	// Processing SQL Code
 	if ($sql == '')
 		return;
-
+	
 	echo "<br />";
 	echo "<hr />";
 	echo "<br />";
@@ -159,5 +159,4 @@ extensions_add_godmode_menu_option (__('DB interface'), 'PM','gdbman',"dbmanager
 
 /* This sets the function to be called when the extension is selected in the operation menu */
 extensions_add_godmode_function ('dbmgr_extension_main');
-
 ?>

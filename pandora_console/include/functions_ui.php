@@ -1833,7 +1833,6 @@ function ui_toggle($code, $name, $title = '', $hidde_default = true) {
 	echo "</div>";
 	
 	// JQuery Toggle
-	
 	echo '<script type="text/javascript">';
 	echo '/* <![CDATA[ */';
 	echo "$(document).ready (function () {";
@@ -1988,7 +1987,12 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 	}
 	
 	if ($url === '') {
-		$url = $_SERVER['REQUEST_URI'];
+		if ($proxy) {
+			$url = '';
+		}
+		else {
+			$url = $_SERVER['REQUEST_URI'];
+		}
 	}
 	elseif ($url === false) {
 		//Only add the home url

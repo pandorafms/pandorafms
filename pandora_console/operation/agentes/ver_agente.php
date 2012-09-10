@@ -201,7 +201,7 @@ if (is_ajax ()) {
 					//ui_print_error_message ("Error connecting to ".$server_name);
 					continue;
 				}
-
+				
 				//Get agent's modules
 				$temp = agents_get_modules ($id_agent);
 				
@@ -291,7 +291,7 @@ if (is_ajax ()) {
 				$result[$nameModule['nombre'].'$*$'.implode('|', $idAgents)] = io_safe_output($nameModule['nombre']);
 			}
 		}
-
+		
 		echo json_encode($result);
 		return;
 	}

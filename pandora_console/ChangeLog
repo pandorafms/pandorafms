@@ -1,3 +1,8 @@
+2012-09-07 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/javascript/pandora.js, include/functions_ui.php,
+	include/functions_html.php: cleaned source code style.
+
 2012-09-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php
@@ -61,6 +66,7 @@
 	in metaconsole.
 
 2012-09-07 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_ui.php: fixed the ui_get_full_url function,
 	because sometimes added two times the php script name.
 	

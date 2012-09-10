@@ -553,12 +553,12 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 		} //If the attribute was already processed, skip
 		
 		/*
-		 * Remember, this next code have a $$ that for example there is a var as
-		 * $a = 'john' then $$a is a var $john .
-		 *
-		 * In this case is use for example for $name and $atribute = 'name' .
-		 * 
-		 */
+		* Remember, this next code have a $$ that for example there is a var as
+		* $a = 'john' then $$a is a var $john .
+		*
+		* In this case is use for example for $name and $atribute = 'name' .
+		* 
+		*/
 		
 		/* Exact operator because we want to show "0" on the value */
 		if ($$attribute !== '') {

@@ -201,6 +201,11 @@ if ($id_agent_module) {
 	$ff_event = $module['min_ff_event'];
 	// Select tag info.
 	$id_tag = tags_get_module_tags ($id_agent_module);
+	
+	$critical_instructions = $module['critical_instructions'];
+	$warning_instructions = $module['warning_instructions'];
+	$unknown_instructions = $module['unknown_instructions'];
+
 }
 else {
 	if (!isset ($moduletype)) {
@@ -253,6 +258,11 @@ else {
 		$snmp3_privacy_method = "";
 		$snmp3_privacy_pass = "";
 		$snmp3_security_level = "";
+		
+		$critical_instructions = '';
+		$warning_instructions = '';
+		$unknown_instructions = '';
+		
 	}
 }
 

@@ -305,3 +305,18 @@ ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL DEFAULT '';
 -- Table `tlayout_data
 -- -----------------------------------------------------
 ALTER TABLE tlayout_data ADD COLUMN `enable_link` tinyint(1) UNSIGNED NOT  NULL default 1;
+
+-- -----------------------------------------------------
+-- Table `tlocal_component`
+-- -----------------------------------------------------
+ALTER TABLE tlocal_component ADD `critical_instructions` TEXT NOT NULL default '';
+ALTER TABLE tlocal_component ADD `warning_instructions` TEXT NOT NULL default '';
+ALTER TABLE tlocal_component ADD `unknown_instructions` TEXT NOT NULL default '';
+
+-- -----------------------------------------------------
+-- Table `tpolicy_modules`
+-- -----------------------------------------------------
+ALTER TABLE tpolicy_modules ADD `critical_instructions` TEXT NOT NULL default '';
+ALTER TABLE tpolicy_modules ADD `warning_instructions` TEXT NOT NULL default '';
+ALTER TABLE tpolicy_modules ADD `unknown_instructions` TEXT NOT NULL default '';
+

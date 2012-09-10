@@ -217,9 +217,9 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`custom_integer_2` int(10) default 0,
 	`wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
 	`macros` text,
-	`critical_instructions` text,
-	`warning_instructions` text,
-	`unknown_instructions` text,
+	`critical_instructions` text NOT NULL default '',
+	`warning_instructions` text NOT NULL default '',
+	`unknown_instructions` text NOT NULL default '',
 	`quiet` tinyint(1) NOT NULL default '0',
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
@@ -518,6 +518,9 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`tags` text NOT NULL,
 	`source` tinytext NOT NULL,
 	`id_extra` tinytext NOT NULL,
+	`critical_instructions` text NOT NULL default '',
+	`warning_instructions` text NOT NULL default '',
+	`unknown_instructions` text NOT NULL default '',
 	PRIMARY KEY  (`id_evento`),
 	KEY `indice_1` (`id_agente`,`id_evento`),
 	KEY `indice_2` (`utimestamp`,`id_evento`),
@@ -653,6 +656,9 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
   `only_metaconsole` tinyint(1) unsigned default '0',
   `macros` text,
+  `critical_instructions` text NOT NULL default '',
+  `warning_instructions` text NOT NULL default '',
+  `unknown_instructions` text NOT NULL default '',
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

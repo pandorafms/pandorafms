@@ -122,6 +122,10 @@ $table_simple->style[0] = 'font-weight: bold; vertical-align: top; width: 26%';
 $table_simple->style[1] = 'width: 40%';
 $table_simple->style[2] = 'font-weight: bold; vertical-align: top';
 
+$table_simple->colspan[4][1] = 3;
+$table_simple->colspan[5][1] = 3;
+$table_simple->colspan[6][1] = 3;
+
 $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = html_print_input_text ('name', io_safe_output($name), '', 45, 100, true, $disabledBecauseInPolicy);
 
@@ -249,6 +253,16 @@ if($disabledBecauseInPolicy) {
 else {
 	$table_simple->data[3][3] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
 }
+
+$table_simple->data[4][0] = __('Critical instructions');
+$table_simple->data[4][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
+
+
+$table_simple->data[5][0] = __('Warning instructions');
+$table_simple->data[5][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, '', true);
+
+$table_simple->data[6][0] = __('Unknown instructions');
+$table_simple->data[6][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
 
 /* Advanced form part */
 $table_advanced->id = 'advanced';

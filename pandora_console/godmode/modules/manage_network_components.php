@@ -75,6 +75,9 @@ $unit = (string) get_parameter('unit');
 $id = (int) get_parameter ('id');
 $wizard_level = get_parameter ('wizard_level');
 $only_metaconsole = get_parameter ('only_metaconsole');
+$critical_instructions = (string) get_parameter('critical_instructions');
+$warning_instructions = (string) get_parameter('warning_instructions');
+$unknown_instructions = (string) get_parameter('unknown_instructions');
 
 $snmp_version = (string) get_parameter('snmp_version');
 $snmp3_auth_user = (string) get_parameter('snmp3_auth_user');
@@ -110,6 +113,7 @@ if ($duplicate_network_component) {
 }
 
 if ($create_component) {
+
 	$custom_string_1 = '';
 	$custom_string_2 = '';
 	$custom_string_3 = '';
@@ -160,7 +164,10 @@ if ($create_component) {
 				'unit' => $unit,
 				'wizard_level' => $wizard_level,
 				'only_metaconsole' => $only_metaconsole,
-				'macros' => $macros));
+				'macros' => $macros,
+				'critical_instructions' => $critical_instructions,
+				'warning_instructions' => $warning_instructions,
+				'unknown_instructions' => $unknown_instructions));
 	}
 	else {
 		$id = '';
@@ -232,7 +239,10 @@ if ($update_component) {
 				'unit' => $unit,
 				'wizard_level' => $wizard_level,
 				'only_metaconsole' => $only_metaconsole,
-				'macros' => $macros));
+				'macros' => $macros,
+				'critical_instructions' => $critical_instructions,
+				'warning_instructions' => $warning_instructions,
+				'unknown_instructions' => $unknown_instructions));
 	}
 	else {
 		$result = '';
@@ -342,7 +352,10 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'max_critical' => false,
 	'str_critical' => false,
 	'ff_event' => false,
-	'id_component_type' => false));
+	'id_component_type' => false,
+	'critical_instructions' => false,
+	'warning_instructions' => false,
+	'unknown_instructions' => false));
 
 
 $search_id_group = (int) get_parameter ('search_id_group');

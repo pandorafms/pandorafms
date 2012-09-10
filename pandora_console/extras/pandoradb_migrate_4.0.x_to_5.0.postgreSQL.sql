@@ -305,3 +305,17 @@ ALTER TABLE "trecon_task" ALTER COLUMN "field1" TYPE TEXT;
 -- Table `tlayout_data`
 -- -----------------------------------------------------
 ALTER TABLE "tlayout_data" ADD COLUMN "enable_link" SMALLINT NOT NULL default 1;
+
+-- -----------------------------------------------------
+-- Table `tlocal_component`
+-- -----------------------------------------------------
+ALTER TABLE "tlocal_component" ADD COLUMN "critical_instructions" text default '';
+ALTER TABLE "tlocal_component" ADD COLUMN "warning_instructions" text default '';
+ALTER TABLE "tlocal_component" ADD COLUMN "unknown_instructions" text default '';
+
+-- -----------------------------------------------------
+-- Table `tpolicy_modules`
+-- -----------------------------------------------------
+ALTER TABLE "tpolicy_modules" ADD COLUMN "critical_instructions" text default '';
+ALTER TABLE "tpolicy_modules" ADD COLUMN "warning_instructions" text default '';
+ALTER TABLE "tpolicy_modules" ADD COLUMN "unknown_instructions" text default '';

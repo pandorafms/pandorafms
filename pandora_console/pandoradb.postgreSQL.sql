@@ -439,7 +439,10 @@ CREATE TABLE "tevento" (
 	"user_comment" text NOT NULL,
 	"tags" text NOT NULL,
 	"source" text NOT NULL default '',
-	"id_extra" text NOT NULL default ''
+	"id_extra" text NOT NULL default '',
+	"critical_instructions" TEXT default '',
+	"warning_instructions" TEXT default '',
+	"unknown_instructions" TEXT default ''
 );
 CREATE INDEX "tevento_id_1_idx" ON "tevento"("id_agente", "id_evento");
 CREATE INDEX "tevento_id_2_idx" ON "tevento"("utimestamp", "id_evento");
@@ -551,7 +554,10 @@ CREATE TABLE "tnetwork_component" (
 	"unit" TEXT default '',
 	"wizard_level" type_tlocal_component_wizard_level default 'nowizard',
 	"only_metaconsole" INTEGER default '0',
-	"macros" TEXT default ''
+	"macros" TEXT default '',
+	"critical_instructions" TEXT default '',
+	"warning_instructions" TEXT default '',
+	"unknown_instructions" TEXT default ''
 );
 
 CREATE TABLE "tnetwork_component_group" (

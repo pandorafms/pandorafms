@@ -44,6 +44,9 @@ $table->colspan = array ();
 if(!enterprise_installed()) {
 	$table->colspan[0][1] = 3;
 }
+$table_simple->colspan[7][1] = 4;
+$table_simple->colspan[8][1] = 4;
+$table_simple->colspan[9][1] = 4;
 $table->data = array ();
 
 $table->data[0][0] = __('Name');
@@ -114,4 +117,16 @@ $table->data[5][3] = html_print_input_text ('max', $max, '', 5, 15, true);
 $table->data[6][0] = __('Unit');
 $table->data[6][1] = html_print_input_text ('unit', $unit, '', 12, 25, true);
 $table->data[6][2] = $table->data[6][3] = '';
+
+$table->data[7][0] = __('Critical instructions');
+$table->data[7][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
+$table->data[7][2] = $table->data[7][3] = '';
+
+$table->data[8][0] = __('Warning instructions');
+$table->data[8][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, '', true);
+$table->data[8][2] = $table->data[8][3] = '';
+
+$table->data[9][0] = __('Unknown instructions');
+$table->data[9][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
+$table->data[9][2] = $table->data[9][3] = '';
 ?>

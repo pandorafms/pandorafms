@@ -781,6 +781,9 @@ if ($update_module || $create_module) {
 	$unit = (string) get_parameter('unit');
 	$id_tag = (array) get_parameter('id_tag_selected');
 	$serialize_ops = (string) get_parameter('serialize_ops');
+	$critical_instructions = (string) get_parameter('critical_instructions');
+	$warning_instructions = (string) get_parameter('warning_instructions');
+	$unknown_instructions = (string) get_parameter('unknown_instructions');
 	
 	if ($prediction_module != 3) {
 		unset($serialize_ops);
@@ -840,8 +843,10 @@ if ($update_module) {
 		'custom_integer_2' => $custom_integer_2,
 		'min_ff_event' => $ff_event,
 		'unit' => $unit,
-		'macros' => $macros,
-		'quiet' => $quiet_module);
+		'quiet' => $quiet_module,
+		'critical_instructions' => $critical_instructions,
+		'warning_instructions' => $warning_instructions,
+		'unknown_instructions' => $unknown_instructions);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$result = false;
@@ -950,7 +955,10 @@ if ($create_module) {
 		'min_ff_event' => $ff_event,
 		'unit' => $unit,
 		'macros' => $macros,
-		'quiet' => $quiet_module);
+		'quiet' => $quiet_module,
+		'critical_instructions' => $critical_instructions,
+		'warning_instructions' => $warning_instructions,
+		'unknown_instructions' => $unknown_instructions);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$id_agent_module = false;

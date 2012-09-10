@@ -26,7 +26,7 @@ define("GRAPH_LINE", 2);
 define("GRAPH_STACKED_LINE", 3);
 
 function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_index, 
-				$data, $data_i, $resolution, $interval, $period, $datelimit, 
+				$data, $data_i, $previous_data, $resolution, $interval, $period, $datelimit, 
 				$projection, $avg_only = false, $uncompressed_module = false, 
 				$show_events = false, $show_alerts = false, $baseline = false, 
 				$baseline_data = array(), $events = array(), $series_suffix = '') {
@@ -216,6 +216,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	global $chart_extra_data;
 	global $warning_min;
 	global $critical_min;
+	global $graphic_type;
 	
 	$chart = array();
 	$color = array();
@@ -346,7 +347,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	// Calculate chart data
 	grafico_modulo_sparse_data_chart ($chart, $chart_data_extra, $long_index, 
-		$data, $data_i, $resolution, $interval, $period, $datelimit, 
+		$data, $data_i, $previous_data, $resolution, $interval, $period, $datelimit, 
 		$projection, $avg_only, $uncompressed_module, 
 		$show_events, $show_alerts, $baseline, 
 		$baseline_data, $events, $series_suffix);

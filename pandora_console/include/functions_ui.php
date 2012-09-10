@@ -1980,8 +1980,11 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 	}
 	
 	// using a different port than the standard
-	if ( $port != null ) {
-		$fullurl .= ":" . $port;
+	if (!$proxy) {
+		// using a different port than the standard
+		if ( $port != null ) {
+			$fullurl .= ":" . $port;
+		}
 	}
 	
 	if ($url === '') {

@@ -1,3 +1,10 @@
+2012-09-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_reporting.php
+	 include/javascript/pandora.js
+	 include/functions_ui.php: Fixes in global, exception and sla
+	 metaconsole reports.
+
 2012-09-10  Sergio Martin <sergio.martin@artica.es>
 
 	* ChangeLog: Updated the changelog with 

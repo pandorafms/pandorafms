@@ -1763,7 +1763,23 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar',
 		$sql = io_safe_output($sql['sql']);
 	}
 	
+	if (($config['metaconsole'] == 1) && defined('METACONSOLE')) {
+		$metaconsole_connection = enterprise_hook('metaconsole_get_connection', array($report_content['server_name']));
+		
+		if ($metaconsole_connection === false) {
+			return false;
+		}
+		
+		if (enterprise_hook('metaconsole_load_external_db', array($metaconsole_connection)) != NOERR) {
+			//ui_print_error_message ("Error connecting to ".$server_name);
+			return false;
+		}		
+	}
+
 	$data_result = db_get_all_rows_sql ($sql);
+
+	if (($config['metaconsole'] == 1) && defined('METACONSOLE'))
+		enterprise_hook('metaconsole_restore_db');
 	
 	if ($data_result === false)
 		$data_result = array ();
@@ -1804,7 +1820,7 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar',
 			break;
 		case 'sql_graph_hbar': // horizontal bar
 			return hbar_graph($flash_charts, $data, $width, $height, array(),
-				array(), "", "", $homeurl,
+				array(), "", "", true, $homeurl,
 				$water_mark,
 				$config['fontpath'], $config['font_size'], false, $ttl);
 			break;

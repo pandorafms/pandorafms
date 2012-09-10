@@ -2852,6 +2852,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'sql_graph_pie':
 		case 'sql_graph_vbar':
 		case 'sql_graph_hbar':
+		
+			if ($config['metaconsole'] == 1 && defined('METACONSOLE'))
+				metaconsole_restore_db();
+		
 			reporting_header_content($mini, $content, $report, $table, __('User defined graph') . " (".__($content["type"])  .")",
 				"", "");
 			

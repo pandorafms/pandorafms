@@ -60,6 +60,9 @@ if ($create_network_from_module) {
 	$post_process = $data_module["post_process"];
 	$unit = $data_module["unit"];
 	$wizard_level = $data_module["wizard_level"];
+	$critical_instructions = $data_module["critical_instructions"];
+	$warning_instructions = $data_module["warning_instructions"];
+	$unknown_instructions = $data_module["unknown_instructions"];
 	
 }
 
@@ -103,6 +106,9 @@ if (isset ($id)) {
 		$unit = $component["unit"];
 		$wizard_level = $component["wizard_level"];
 		$only_metaconsole = $component["only_metaconsole"];
+		$critical_instructions = $component["critical_instructions"];
+		$warning_instructions = $component["warning_instructions"];
+		$unknown_instructions = $component["unknown_instructions"];
 
 		
 		if ($type >= 15 && $type <= 18) {
@@ -145,6 +151,9 @@ if (isset ($id)) {
 		$unit = '';
 		$wizard_level = 'nowizard';
 		$only_metaconsole = 0;
+		$critical_instructions = '';
+		$warning_instructions = '';
+		$unknown_instructions = '';
 		
 		$snmp_version = 1;
 		$snmp3_auth_user = '';

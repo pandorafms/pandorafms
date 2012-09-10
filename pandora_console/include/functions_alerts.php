@@ -1164,6 +1164,9 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module, $noACLs = f
 		$alert = alerts_get_alert_agent_module ($id);
 		$agent_id = modules_get_agentmodule_agent ($alert["id_agent_module"]);
 		$group_id = agents_get_agentmodule_group ($agent_id);
+		$critical_instructions = db_get_value('critical_instructions', 'tagente_modulo', 'id_agente_modulo', $agent_id);
+		$warning_instructions = db_get_value('warning_instructions', 'tagente_modulo', 'id_agente_modulo', $agent_id);
+		$unknown_instructions = db_get_value('unknown_instructions', 'tagente_modulo', 'id_agente_modulo', $agent_id);
 		
 		if (!$noACLs){
 			if (! check_acl ($config['id_user'], $group_id, "AW")) {
@@ -1180,7 +1183,7 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module, $noACLs = f
 				alerts_get_alert_template_description ($alert["id_alert_template"]),
 				$group_id, $agent_id, 1, $config["id_user"],
 				"alert_manual_validation", 1, $alert["id_agent_module"],
-				$id);
+				$id, $critical_instructions, $warning_instructions, $unknown_instructions);
 		}
 		elseif ($result === false) {
 			return false;

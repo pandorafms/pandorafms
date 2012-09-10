@@ -304,3 +304,18 @@ ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL;
 -- Table `tlayout_data`
 -- -----------------------------------------------------
 ALTER TABLE tlayout_data ADD (enable_link NUMBER(5, 0) NOT NULL default 1);
+
+-- -----------------------------------------------------
+-- Table `tlocal_component`
+-- -----------------------------------------------------
+ALTER TABLE tlocal_component ADD (critical_instructions VARCHAR2(255) default '');
+ALTER TABLE tlocal_component ADD (warning_instructions VARCHAR2(255) default '');
+ALTER TABLE tlocal_component ADD (unknown_instructions VARCHAR2(255) default '');
+
+-- -----------------------------------------------------
+-- Table `tpolicy_modules`
+-- -----------------------------------------------------
+ALTER TABLE tpolicy_modules ADD (critical_instructions VARCHAR2(255) default '');
+ALTER TABLE tpolicy_modules ADD (warning_instructions VARCHAR2(255) default '');
+ALTER TABLE tpolicy_modules ADD (unknown_instructions VARCHAR2(255) default '');
+

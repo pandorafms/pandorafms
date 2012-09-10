@@ -16,6 +16,7 @@
 include_once("include/functions_modules.php");
 include_once("include/functions_events.php");
 include_once ('include/functions_groups.php');
+enterprise_include_once ('include/functions_metaconsole.php');
 
 function xml_array ($array) {
 	foreach ($array as $name => $value) {
@@ -188,6 +189,16 @@ foreach ($contents as $content) {
 	$data["period"] = human_time_description_raw ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
+		
+	// Support for metaconsole
+	$server_name = $content ['server_name'];
+
+	if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+		$connection = metaconsole_get_connection($server_name);
+		if (metaconsole_connect($connection) != NOERR){
+			//ui_print_error_message ("Error connecting to ".$server_name);
+		}
+	}	
 	
 	$session_id = session_id();
 	
@@ -269,6 +280,17 @@ foreach ($contents as $content) {
 			$sla_failed = false;
 			
 			foreach ($slas as $sla) {
+				
+				//Metaconsole connection
+				$server_name = $sla ['server_name'];
+				if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+					$connection = metaconsole_get_connection($server_name);
+					if (metaconsole_connect($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}				
+				
 				$sla_data = array ();
 				$sla_data["agent"] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
 				$sla_data["module"] = modules_get_agentmodule_name ($sla['id_agent_module']);
@@ -285,6 +307,12 @@ foreach ($contents as $content) {
 					$sla_data["value"] = format_numeric ($sla_value);
 				}
 				array_push ($data["objdata"]["sla"], $sla_data);
+				
+				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+					//Restore db connection
+					metaconsole_restore_db();
+				}				
+					
 			}
 			break;
 		case 6:
@@ -662,6 +690,12 @@ foreach ($contents as $content) {
 	xml_array ($data);
 	echo '</object>';
 	$counter++;
+	
+	if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+		//Restore db connection
+		metaconsole_restore_db();
+	}	
+	
 }
 
 echo '</reports></report>';

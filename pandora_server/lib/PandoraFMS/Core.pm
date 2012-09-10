@@ -482,18 +482,23 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
 				 internal_counter = 0 WHERE id = ?', $id);
 
+		# Critical_instructions, warning_instructions, unknown_instructions
+		my $critical_instructions = get_db_value ($dbh, 'SELECT critical_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
+		my $warning_instructions = get_db_value ($dbh, 'SELECT warning_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
+		my $unknown_instructions = get_db_value ($dbh, 'SELECT unknown_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
+		
 		# Generate an event
 		if ($table eq 'tevent_alert') {
 			pandora_event ($pa_config, "Alert ceased (" .
 				$alert->{'name'} . ")", 0, 0, $alert->{'priority'}, $id,
 				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), 
-				"alert_ceased", 0, $dbh);
+				"alert_ceased", 0, $dbh, 'Pandora', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 		}  else {
 			pandora_event ($pa_config, "Alert ceased (" .
 					$alert->{'name'} . ")", $agent->{'id_grupo'},
 					$agent->{'id_agente'}, $alert->{'priority'}, $id,
 					(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0),
-					"alert_ceased", 0, $dbh);
+					"alert_ceased", 0, $dbh, 'Pandora', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 		}
 		return;
 	}
@@ -751,13 +756,18 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 			}
 		}
 	}
-
+	
+	# Critical_instructions, warning_instructions, unknown_instructions
+	my $critical_instructions = get_db_value ($dbh, 'SELECT critical_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
+	my $warning_instructions = get_db_value ($dbh, 'SELECT warning_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
+	my $unknown_instructions = get_db_value ($dbh, 'SELECT unknown_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
+	
 	# Generate an event
 	my ($text, $event) = ($alert_mode == 0) ? ('recovered', 'alert_recovered') : ('fired', 'alert_fired');
 
 	pandora_event ($pa_config, "Alert $text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
 			(defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $alert->{'priority'}, (defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
-			(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), $event, 0, $dbh);
+			(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), $event, 0, $dbh, 'Pandora', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 }
 
 ##########################################################################
@@ -2180,9 +2190,9 @@ Generate an event.
 
 =cut
 ##########################################################################
-sub pandora_event ($$$$$$$$$$;$$$$$) {
+sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
-		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags) = @_;
+		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $critical_instructions, $warning_instructions, $unknown_instructions) = @_;
 	
 	if ($id_agente != 0) {
 		my $agent = get_db_single_row ($dbh, 'SELECT *
@@ -2222,13 +2232,16 @@ sub pandora_event ($$$$$$$$$$;$$$$$) {
 	$comment = '' unless defined ($comment);
 	$id_extra = '' unless defined ($id_extra);
 	$user_name = '' unless defined ($user_name);
+	$critical_instructions = '' unless defined ($critical_instructions);
+	$warning_instructions = '' unless defined ($warning_instructions);
+	$unknown_instructions = '' unless defined ($unknown_instructions);
 	
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
-	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name);
+	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions);
 }
 
 ##########################################################################
@@ -2764,11 +2777,11 @@ sub generate_status_event ($$$$$$$) {
 	# Generate the event
 	if ($status != 0){
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh);
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 	} else { 
 		# Self validate this event if has "normal" status
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh);
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 	}
 
 }

@@ -1,3 +1,8 @@
+2012-09-10 Vanessa Gil <vanessa.gil@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added several fields
+	to events.
+
 2012-08-30 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* lib/PandoraFMS/Core.pm: refactoriced the code for the new Planned

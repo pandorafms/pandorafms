@@ -442,10 +442,14 @@ function agent_changed_by_multiple_agents_id (event, id_agent, selected) {
  * @param id_agent_id id of the hidden field to store the agent id
  * @param id_agent_module_selector id of the selector for the modules of the agent.
  */
-function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_selector, id_server_name, noneValue, homedir = '.') {
+function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_selector, id_server_name, noneValue, homedir) {
 	//Check exist the field with id in the var id_agent_name.
 	if ($(id_agent_name).length == 0)
 		return;
+	
+	homedir_path = '';
+	if (homedir != undefined)
+		homedir_path = '.';	
 	
 	$(id_agent_name).autocomplete({
 		minLength: 2,

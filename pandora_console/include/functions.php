@@ -48,7 +48,8 @@ function check_refererer() {
 		$url = $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $config["homeurl"];
 	}
 	else {
-		$url = $_SERVER['SERVER_NAME'] . $config["homeurl"];
+		$url = ui_get_full_url();
+		$url = preg_replace('/http(s?):\/\//','',$url);
 	}
 	
 	// Remove protocol from referer

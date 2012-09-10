@@ -86,7 +86,7 @@ config_check();
 				echo "&nbsp;";
 			}
 			
-			echo '<a class="white_bold" href="index.php?bye=bye">';
+			echo '<a class="white_bold" href="' . ui_get_full_url('index.php?bye=bye') . '">';
 			html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
 			echo '</a>';
 			

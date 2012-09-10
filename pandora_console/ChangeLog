@@ -1,3 +1,24 @@
+2012-09-10 Miguel de Dios <miguel.dedios@artica.es>
+
+	* general/header.php: fixed the link to logout when the Pandora
+	run across inverse proxy.
+	
+	* include/functions.php: update the function "check_refererer" for
+	situations when the Pandora runs across the inverse proxy.
+	
+	* include/functions_html.php: function "html_print_image" fixed when
+	use the metaconsole across the inverse proxy.
+	
+	* include/functions_reporting.php,
+	operation/reporting/reporting_viewer.php: fixed some links for the
+	Pandora runs across inverse proxy.
+	
+	* include/functions_ui.php: fixed the function "ui_get_full_url"
+	when pass a empty url in a Pandora into a inverse proxy.
+	
+	* extensions/dbmanager.php, operation/agentes/ver_agente.php:
+	cleaned source code style.
+
 2012-09-10 Vanessa Gil <vanessa.gil@artica.es>
 
 	* pandoradb.sql
@@ -17,7 +38,7 @@
 	  operation/events/events_list.php: Added several fields to modules
 	and events.
 
-2012-09-07 Miguel de Dios <miguel.dedios@artica.es>
+2012-09-10 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js, include/functions_ui.php,
 	include/functions_html.php: cleaned source code style.

@@ -1,5 +1,10 @@
 2012-09-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/javascript/pandora.js: Fix over agent_module_autocomplete
+	function due to problems with Chrome.
+
+2012-09-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_reporting.php
 	 operation/reporting/reporting_xml.php: Some fixes on CSV and XML
 	 report exportation.

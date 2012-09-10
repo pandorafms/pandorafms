@@ -70,42 +70,42 @@ function agent_changed (event, id_agent, selected) {
 	$('#module').empty ();
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
 	jQuery.post ('ajax.php', 
-				 {"page": "operation/agentes/ver_agente",
-				 "get_agent_modules_json": 1,
-				 "id_agent": id_agent
-				 },
-				 function (data) {
-					 
-					 $('#module').empty ();
-					 
-					 if (typeof($(document).data('text_for_module')) != 'undefined') {
-						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
-					 }
-					 else {
-						 if (typeof(data['any_text']) != 'undefined') {
-							 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
-						 }
-						 else {
-							 var anyText = $("#any_text").html(); //Trick for catch the translate text.
-							 
-							 if (anyText == null) {
-								 anyText = 'Any';
-							 }
-							 
-							 $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
-						 }
-					 }
-					 jQuery.each (data, function (i, val) {
-								  s = js_html_entity_decode (val['nombre']);
-								  $('#module').append ($('<option></option>').html (s).attr ("value", val['id_agente_modulo']));
-								  $('#module').fadeIn ('normal');
-								  });
-					 if (selected != undefined)
-					 $('#module').attr ('value', selected);
-					 $('#module').removeAttr('disabled');
-				 },
-				 "json"
-				 );
+				{"page": "operation/agentes/ver_agente",
+				"get_agent_modules_json": 1,
+				"id_agent": id_agent
+				},
+				function (data) {
+					
+					$('#module').empty ();
+					
+					if (typeof($(document).data('text_for_module')) != 'undefined') {
+						$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+					}
+					else {
+						if (typeof(data['any_text']) != 'undefined') {
+							$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+						}
+						else {
+							var anyText = $("#any_text").html(); //Trick for catch the translate text.
+							
+							if (anyText == null) {
+								anyText = 'Any';
+							}
+							
+							$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+						}
+					}
+					jQuery.each (data, function (i, val) {
+								s = js_html_entity_decode (val['nombre']);
+								$('#module').append ($('<option></option>').html (s).attr ("value", val['id_agente_modulo']));
+								$('#module').fadeIn ('normal');
+								});
+					if (selected != undefined)
+					$('#module').attr ('value', selected);
+					$('#module').removeAttr('disabled');
+				},
+				"json"
+				);
 }
 
 /**
@@ -132,7 +132,6 @@ function isEmptyObject(obj) {
  * @param selected Which module(s) have to be selected
  */
 function agent_changed_by_multiple_agents (event, id_agent, selected) {
-
 	// Hack to add custom condition
 	if($("#hidden-custom_condition").val() != undefined) {
 		custom_condition = $("#hidden-custom_condition").val();
@@ -225,9 +224,9 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 			
 			
 			$('#module').removeAttr('disabled');
-		 },
-		 "json"
-		 );
+		},
+		"json"
+		);
 }
 
 /**
@@ -256,43 +255,43 @@ function agent_changed_by_multiple_agents_with_alerts (event, id_agent, selected
 	$('#module').empty ();
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
 	jQuery.post ('ajax.php', 
-				 {"page": "operation/agentes/ver_agente",
-				 "get_agent_modules_alerts_json_for_multiple_agents": 1,
-				 "template": template,
-				 "id_agent[]": idAgents,
-				 "selection_mode": selection_mode
-				 },
-				 function (data) {
-					 $('#module').empty ();
-					 
-					 if (typeof($(document).data('text_for_module')) != 'undefined') {
-						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
-					 }
-					 else {
-						 if (typeof(data['any_text']) != 'undefined') {
-							 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
-						 }
-						 else {
-							 var anyText = $("#any_text").html(); //Trick for catch the translate text.
-							 
-							 if (anyText == null) {
-								 anyText = 'Any';
-							 }
-							 
-							 $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
-						 }
-					 }
-					 jQuery.each (data, function (i, val) {
-								  s = js_html_entity_decode(val);
-								  $('#module').append ($('<option></option>').html (s).attr ("value", val));
-								  $('#module').fadeIn ('normal');
-								  });
-					 if (selected != undefined)
-					 $('#module').attr ('value', selected);
-					 $('#module').removeAttr('disabled');
-				 },
-				 "json"
-				 );
+				{"page": "operation/agentes/ver_agente",
+				"get_agent_modules_alerts_json_for_multiple_agents": 1,
+				"template": template,
+				"id_agent[]": idAgents,
+				"selection_mode": selection_mode
+				},
+				function (data) {
+					$('#module').empty ();
+					
+					if (typeof($(document).data('text_for_module')) != 'undefined') {
+						$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+					}
+					else {
+						if (typeof(data['any_text']) != 'undefined') {
+							$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+						}
+						else {
+							var anyText = $("#any_text").html(); //Trick for catch the translate text.
+							
+							if (anyText == null) {
+								anyText = 'Any';
+							}
+							
+							$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+						}
+					}
+					jQuery.each (data, function (i, val) {
+								s = js_html_entity_decode(val);
+								$('#module').append ($('<option></option>').html (s).attr ("value", val));
+								$('#module').fadeIn ('normal');
+								});
+					if (selected != undefined)
+					$('#module').attr ('value', selected);
+					$('#module').removeAttr('disabled');
+				},
+				"json"
+				);
 }
 
 /**
@@ -415,7 +414,7 @@ function agent_changed_by_multiple_agents_id (event, id_agent, selected) {
 					$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
 				}
 			}
-			 
+			
 			jQuery.each (data, function (i, val) {
 				s = js_html_entity_decode(val['nombre']);
 				//$('#module').append ($('<option></option>').html (s).attr ("value", val));
@@ -463,7 +462,7 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 					data: data_params,
 					async: false,
 					type: 'POST',
-					url: action= homedir_path + "/ajax.php",
+					url: action="ajax.php",
 					timeout: 10000,
 					dataType: 'json',
 					success: function (data) {
@@ -582,12 +581,12 @@ function agent_autocomplete (id_agent_name, id_server_name, id_agent_id, metacon
 	//Check exist the field with id in the var id_agent_name.
 	if ($(id_agent_name).length == 0)
 		return;
-
+	
 	// Correction over ajax call for metaconsole
 	ajax_path = '';
 	if (metaconsole_exec != undefined)
 		ajax_path = '../../';
-
+	
 	$(id_agent_name).autocomplete({
 		minLength: 2,
 		source: function( request, response ) {
@@ -781,7 +780,7 @@ function toggleBoth(name) {
 	}
 	else {
 		$('#'+name+'_manual').css('display','none');
-	}	
+	}
 }
 
 /**
@@ -802,8 +801,8 @@ function calculateSeconds(name) {
 function period_select_update(name, seconds) {
 	$('#text-'+name+'_text').val(seconds);
 	adjustTextUnits(name);
-	calculateSeconds(name);			
-	$('#'+name+'_manual').show();			
+	calculateSeconds(name);
+	$('#'+name+'_manual').show();	
 	$('#'+name+'_default').hide();
 }
 
@@ -827,7 +826,7 @@ function adjustTextUnits(name) {
 			$('#text-'+name+'_text').val(restPrev);
 			unitsSelected = true;
 		}
-				
+		
 		restPrev = rest;
 	});
 	

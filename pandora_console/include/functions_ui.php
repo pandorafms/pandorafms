@@ -1857,7 +1857,7 @@ function ui_toggle($code, $name, $title = '', $hidde_default = true) {
  * @param bool Whether to return the relative URL or the absolute URL. Returns
  * relative by default
  * @param bool Whether to add POST values to the URL.
- */	
+ */
 function ui_get_url_refresh ($params = false, $relative = true, $add_post = true) {
 	// Agent selection filters and refresh
 	global $config;
@@ -2016,7 +2016,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 		}
 	}
 	
-	return $fullurl.$url;
+	return $fullurl . $url;
 }
 
 /**
@@ -2092,18 +2092,18 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 		$buffer .= '</ul></div>';
 	}
 	else {
-		if ($options != ""){
+		if ($options != "") {
 			$buffer .= '<div id="menu_tab"><ul class="mn"><li class="nomn">';
 			$buffer .= $options;
 			$buffer .= '</li></ul></div>';
 		}
 	}
-
+	
 	$buffer .=  '</div>';  //<br /><br /><br />';
-
+	
 	if (!$return)
 		echo $buffer;
-
+	
 	return $buffer;
 }
 

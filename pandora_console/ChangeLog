@@ -1,3 +1,14 @@
+2012-09-10  Sergio Martin <sergio.martin@artica.es>
+
+	* ChangeLog: Updated the changelog with 
+	changes of last commit
+
+2012-09-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/help/en/help_macros.php
+	include/help/es/help_macros.php: Add help to 
+	new macros
+
 2012-09-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/javascript/pandora.js: Fix over agent_module_autocomplete

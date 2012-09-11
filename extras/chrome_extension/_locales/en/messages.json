@@ -1,10 +1,10 @@
 {
   "name": {
-    "message": "Pandora FMS Chrome extension",
+    "message": "Pandora FMS Event extension for Chrome",
     "description": "Extension name in manifest."
   },
   "description": {
-    "message": "Pandora FMS Chrome extension is a helper to keep your monitoring close, in your browser. You can follow last events and messages from the Pandora FMS console.",
+    "message": "Pandora FMS event extension for Chrome is a helper to keep your monitoring close, in your browser. You can follow last events and messages from the Pandora FMS console.",
     "description": "Extension description in manifest.",
     "placeholders": {
       "google": {

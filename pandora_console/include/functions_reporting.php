@@ -1318,7 +1318,7 @@ function reporting_alert_reporting ($id_group, $period = 0, $date = 0, $return =
 	$data[__('Alerts not fired')] = $not_fired_percentage;
 	
 	$output .= pie3d_graph(false, $data, 280, 150,
-		__("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+		__("other"), ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']); 
 	
 	$output .= '<strong>'.__('Alerts fired').': '.sizeof ($alerts_fired).'</strong><br />';
@@ -1394,7 +1394,7 @@ function reporting_monitor_health ($id_group, $period = 0, $date = 0, $return = 
 	$data[__('Monitors BAD')] = $not_down_percentage;
 	
 	$output .= pie3d_graph(false, $data, 280, 150,
-		__("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+		__("other"), ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']); 
 	
 	if (!$return)
@@ -2143,7 +2143,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], '', 0, 0, true, true);
+				$report["datetime"], '', 0, 0, true, true, ui_get_full_url(false) . '/');
 			
 			array_push ($table->data, $data);
 			break;
@@ -2189,7 +2189,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				$report["datetime"],
 				true,
-				'',
+				ui_get_full_url(false) . '/',
 				1,
 				// Important parameter, this tell to graphic_combined_module function that is a projection graph
 				$output_projection,
@@ -2250,7 +2250,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], '', true, 0, true, true);
+				$report["datetime"], '', true, 0, true, true, ui_get_full_url(false) . '/');
 				
 			/*$data[0] = 	graphic_combined_module(
 				$modules,
@@ -2316,7 +2316,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				0,
 				$graph["stacked"],
 				$report["datetime"],
-				true);
+				true,
+				ui_get_full_url(false) . '/');
 			array_push ($table->data, $data);
 			
 			break;
@@ -2536,7 +2537,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					
 					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
 						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
-						$content['time_to'], 650, 25,'');
+						$content['time_to'], 650, 25, ui_get_full_url(false) . '/');
 					
 					array_push ($tableslice->data, $dataslice);
 				}
@@ -2559,7 +2560,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data_pie_graph = json_encode ($data_graph);
 			if ($show_graphs && !empty($slas)) {
 				$data[0] = pie3d_graph(false, $data_graph,
-					500, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+					500, 150, __("other"), ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
 				
 				
@@ -2877,7 +2878,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			
-			$data[0] = graph_custom_sql_graph($content["id_rc"], $sizgraph_w, 200, $content["type"], true);
+			$data[0] = graph_custom_sql_graph($content["id_rc"], $sizgraph_w, 200, $content["type"], true, ui_get_full_url(false) . '/');
 			
 			array_push($table->data, $data);
 			break;
@@ -3865,7 +3866,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph(false, $data_pie_graph,
-					$sizgraph_w, $sizgraph_h, __("other"),"", $config['homedir'] .  "/images/logo_vertical_water.png",
+					$sizgraph_w, $sizgraph_h, __("other"), ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
 				
 				array_push ($table->data, $data);
@@ -3874,7 +3875,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table->style[0] .= 'text-align:center';
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
-				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
+				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w, $height, array(), array(), "", "", true, ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
 				
 				array_push ($table->data, $data);
 			}
@@ -4161,7 +4162,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array();
 			if ($show_graph == 1 || $show_graph == 2) {
 				$data[0] = pie3d_graph(false, $data_pie_graph,
-					600, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
+					600, 150, __("other"), ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
 					$config['fontpath'], $config['font_size']); 
 				array_push ($table->data, $data);
 				//Display bars graph
@@ -4169,7 +4170,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
 				
-				$data[0] = hbar_graph(false, $data_hbar, 600, $height, array(), array(), "", "", true, "", $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
+				$data[0] = hbar_graph(false, $data_hbar, 600, $height, array(), array(), "", "", true, ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png", '', '', true, 1, true);
 				
 				array_push ($table->data, $data);
 			}

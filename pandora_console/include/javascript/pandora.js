@@ -447,8 +447,10 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 		return;
 	
 	homedir_path = '';
-	if (homedir != undefined)
+	if (homedir == undefined)
 		homedir_path = '.';	
+	else	
+		homedir_path = homedir;
 	
 	$(id_agent_name).autocomplete({
 		minLength: 2,
@@ -462,7 +464,7 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 					data: data_params,
 					async: false,
 					type: 'POST',
-					url: action="ajax.php",
+					url: action=homedir_path + "/ajax.php",
 					timeout: 10000,
 					dataType: 'json',
 					success: function (data) {

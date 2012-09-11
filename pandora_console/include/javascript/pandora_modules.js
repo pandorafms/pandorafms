@@ -23,8 +23,10 @@ function configure_modules_form () {
 	
 		var $select = $("#local_component").hide ();
 		$("#component").hide ();
-		if (this.value == 0)
+		if (this.value == 0) {
+			reset_data_module_form();
 			return;
+		}
 		$("#component_loading").show ();
 		$(".error, #no_component").hide ();
 		$("option[value!=0]", $select).remove ();
@@ -56,10 +58,39 @@ function configure_modules_form () {
 		}
 	);
 	
+	function reset_data_module_form() {
+			// Delete macro fields
+			$('.macro_field').remove();
+			
+			// Hide show/hide configuration data switch
+			$('#simple-show_configuration_data').hide();
+			$('#simple-hide_configuration_data').hide();
+			$('#configuration_data_legend').hide();
+			
+			$("#textarea_configuration_data").val('');
+			$('#simple-configuration_data').show();
+
+			$("#text-name").val('');
+			$("#textarea_description").val('');
+			$("#checkbox-history_data").check ();
+			$("#text-max").attr ("value", "");
+			$("#text-min").attr ("value", "");
+			$("#text-min_warning").attr ("value", 0);
+			$("#text-max_warning").attr ("value", 0);
+			$("#text-str_warning").attr ("value", '');
+			$("#text-min_critical").attr ("value", 0);
+			$("#text-max_critical").attr ("value", 0);
+			$("#text-str_critical").attr ("value", '');
+			$("#text-ff_event").attr ("value", 0);
+			$("#text-post_process").attr("value", 0);
+			$("#text-unit").attr("value", '');
+	}
 	
 	$("#local_component").change (function () {
-		if (this.value == 0)
+		if (this.value == 0) {
+			reset_data_module_form();
 			return;
+		}
 		$("#component_loading").show ();
 		$(".error").hide ();
 		jQuery.post ("ajax.php",

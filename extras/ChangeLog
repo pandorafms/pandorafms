@@ -1,3 +1,17 @@
+2012-09-11 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* chrome_extension/manifest.json,
+	chrome_extension/options.html,
+	chrome_extension/background.html,
+	chrome_extension/popup.html,
+	chrome_extension/css/popup.css,
+	chrome_extension/notification.html,
+	chrome_extension/js/notification.js,
+	chrome_extension/js/options.js,
+	chrome_extension/js/background.js,
+	chrome_extension/js/popup.js: Fixed extension to
+	work with Chrome 2.x
+
 2012-06-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Update version in agent configuration

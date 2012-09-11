@@ -58,11 +58,19 @@ div.optionsG_textarea{
     margin : 5px, 10px;
 }
 div.options_textarea{
-    background-color : #E1EDE5;
-    width : 450px;
+    background-color : #ebebeb;
+    width : 550px;
     margin : 10px 10px;
+    padding: 10px;
+	-webkit-border-radius:10px;    
+    border: 2px solid #c8c8c8;
 }
 
+div.options_footer{
+    width : 550px;
+    margin : 10px 10px;
+    padding: 10px;
+}
 
 .tooltip {
     display:none;

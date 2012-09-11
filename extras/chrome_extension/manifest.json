@@ -1,6 +1,7 @@
 {
     "name": "__MSG_name__",
-    "version": "1.1",
+    "version": "1.2",
+    "manifest_version": 2,
     "description": "__MSG_description__",
     "homepage_url": "http://pandorafms.com",
     "browser_action": {
@@ -25,4 +26,4 @@
     "background"
     ],
     "default_locale": "en"
-}
+ }

@@ -16,21 +16,7 @@
     <body>
         <h1>Event Alert</h1>
         <div id="e" style="background:url('images/icon.png') no-repeat 0% 50%; margin:0 4px; padding-left:50px; min-height:48px;">
-            <script type="text/javascript">
-                var url = window.location.href;
-                var re = /\?event=(\d+)/;
-                if(re.exec(url)) {
-                    if(!isNaN(RegExp.$1)) {
-                        var eventId = RegExp.$1;
-                        document.write(chrome.extension.getBackgroundPage().getNotification(eventId));
-                    }
-                }
-                window.onload = function () {
-                    setTimeout(function() {
-                        window.close();
-                    }, 10000);	
-                }
-            </script>
+			<script src="js/notification.js"></script>
         </div>
     </body>
 </html>

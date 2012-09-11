@@ -986,9 +986,9 @@ ui_require_javascript_file ('pandora_inventory', ENTERPRISE_DIR.'/include/javasc
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
-	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module', '#hidden-server_name', undefined, <?php echo '"' . $config['homeurl'] . '"'; ?>);
-	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla', '#hidden-server_name', undefined, <?php echo '"' . $config['homeurl'] . '"'; ?>);
-	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general', '#id_operation_module_general', <?php echo '"' . $config['homeurl'] . '"'; ?>);
+	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module', '#hidden-server_name', undefined, <?php echo '"' . ui_get_full_url(false) . '"'; ?>);
+	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla', '#hidden-server_name', undefined, <?php echo '"' . ui_get_full_url(false) . '"'; ?>);
+	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general', '#id_operation_module_general', <?php echo '"' . ui_get_full_url(false) . '"'; ?>);
 
 	chooseType();
 	chooseSQLquery();
@@ -1025,7 +1025,7 @@ function create_custom_graph() {
 				jQuery.ajax ({
 					data: params1.join ("&"),
 					type: 'POST',
-					url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+					url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 					async: false,
 					timeout: 10000,
 					success: function (data) {
@@ -1041,7 +1041,7 @@ function create_custom_graph() {
 				jQuery.ajax ({
 					data: params1.join ("&"),
 					type: 'POST',
-					url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+					url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 					async: false,
 					timeout: 10000,
 					success: function (data) {
@@ -1087,7 +1087,7 @@ function edit_custom_graph() {
 			jQuery.ajax ({
 				data: params1.join ("&"),
 				type: 'POST',
-				url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+				url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -1103,7 +1103,7 @@ function edit_custom_graph() {
 			jQuery.ajax ({
 				data: params1.join ("&"),
 				type: 'POST',
-				url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+				url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -1152,7 +1152,7 @@ function chooseSQLquery() {
 		jQuery.ajax ({
 			data: params1.join ("&"),
 			type: 'POST',
-			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+			url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 			async: false,
 			timeout: 10000,
 			success: function (data) {
@@ -1167,7 +1167,7 @@ function chooseSQLquery() {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+			url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 			timeout: 10000,
 			dataType: 'json',
 			success: function (data) {
@@ -1188,7 +1188,7 @@ function deleteSLARow(id_row) {
 	jQuery.ajax ({
 		data: params.join ("&"),
 		type: 'POST',
-		url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+		url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 		timeout: 10000,
 		dataType: 'json',
 		success: function (data) {
@@ -1208,7 +1208,7 @@ function deleteGeneralRow(id_row) {
 	jQuery.ajax ({
 		data: params.join ("&"),
 		type: 'POST',
-		url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+		url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 		timeout: 10000,
 		dataType: 'json',
 		success: function (data) {
@@ -1239,7 +1239,7 @@ function addSLARow() {
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
-				url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+				url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -1254,7 +1254,7 @@ function addSLARow() {
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
-				url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+				url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -1275,7 +1275,7 @@ function addSLARow() {
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
-				url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+				url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 				timeout: 10000,
 				dataType: 'json',
 				success: function (data) {
@@ -1327,7 +1327,7 @@ function addGeneralRow() {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+			url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 			async: false,
 			timeout: 10000,
 			success: function (data) {
@@ -1342,7 +1342,7 @@ function addGeneralRow() {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+			url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 			async: false,
 			timeout: 10000,
 			success: function (data) {
@@ -1357,7 +1357,7 @@ function addGeneralRow() {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+			url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 			async: false,
 			timeout: 10000,
 			success: function (data) {
@@ -1375,7 +1375,7 @@ function addGeneralRow() {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action= <?php echo '"' . $config['homeurl'] . '"'; ?> + "/ajax.php",
+			url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
 			timeout: 10000,
 			dataType: 'json',
 			success: function (data) {

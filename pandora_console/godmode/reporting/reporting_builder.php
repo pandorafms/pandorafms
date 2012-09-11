@@ -396,7 +396,7 @@ switch ($action) {
 				
 				$data[2] = '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/operation/reporting/reporting_viewer&id='.$report['id_report'].'">' .
 					html_print_image("images/reporting.png", true) . '</a>';
-				$data[3] = '<a href="'. $config['homeurl'] . '/ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
+				$data[3] = '<a href="'. ui_get_full_url(false) . '/ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
 				
 				
 				//Calculate dinamically the number of the column

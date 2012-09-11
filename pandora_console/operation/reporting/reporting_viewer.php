@@ -38,8 +38,8 @@ if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
 }
 
 // Include with the functions to calculate each kind of report.
-require_once ('include/functions_reporting.php');
-require_once ('include/functions_groups.php');
+require_once ($config['homedir'] . '/include/functions_reporting.php');
+require_once ($config['homedir'] . '/include/functions_groups.php');
 
 enterprise_include("include/functions_reporting.php");
 

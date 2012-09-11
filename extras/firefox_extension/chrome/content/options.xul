@@ -28,6 +28,7 @@
                 <tab label="General Parameters"/>
                 <tab label="Sound Settings"/>
                 <tab label="Other Settings"/>
+				<tab label="About"/>
             </tabs>
             <tabpanels>
         
@@ -232,8 +233,38 @@
                         </grid>
                     </groupbox>
                 </tabpanel>
+                <tabpanel>
+                    <groupbox>
+                        <grid>
+                            <columns>
+                                <column flex="1" style="padding-left: 100px; padding-top: 150px;"/>
+                            </columns>
+                            <rows>                                
+                                <image src="images/logo.png"></image>                                
+                            </rows>
+                        </grid>
+                        
+                        <grid>
+                            <columns>
+                                <column flex="2" style="padding-left: 100px; padding-top: 15px;"/>
+                            </columns>
+                            <label control="none" value="(c) Pandora FMS Development team 2012"/>
+                            <rows>                                
+                            </rows>
+                        </grid>
+                        
+                            <grid>
+                            <columns>
+                                <column flex="3" style="padding-left: 100px;padding-top: 15px;"/>
+                            </columns>
+                            <label control="none" value="Developed by Rajendra Hareesan (rharishan@gmail.com)"/>
+                            <rows>                                
+                            </rows>
+                        </grid>
+
+                    </groupbox>
+                </tabpanel>
             </tabpanels>
         </tabbox>
     </prefpane>
- <label style="font-family:arial;font-style:italic;color:black;font-size:11px;" value="Author Information : R.Hareesan (rharishan@gmail.com)"></label>
 </prefwindow>

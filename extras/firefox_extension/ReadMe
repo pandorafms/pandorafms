@@ -29,6 +29,7 @@ For Ubuntu users:
 3. Make sure the root folder of the compressed folder contains the chrome.manifest, install.rdf files. 
 
 For other operating system users: 
+
 Use any of the compressing mechanism and compress the extension folder to .xpi format and make sure the chrome.manifest, install.rdf files located in the root directory of the compressed folder. 
 
  

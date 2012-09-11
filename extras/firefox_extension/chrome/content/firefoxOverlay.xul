@@ -62,7 +62,7 @@
                         tooltiptext="Pandora FMS"
                         style="cursor:pointer;"
                         onclick="PandoraChrome.fn.displaySideBar();">
-            <image style="width: 16px; height: 16px" src="chrome://pandorasidebar/content/icons/icon16.png" id="ciIcon" />
+            <image style="width: 16px; height: 16px" src="chrome://pandorasidebar/content/images/icon16.png" id="ciIcon" />
             <label style="cursor:pointer; font-size:11px; color:#123863; font-weight:bold; display:none;" id="updateCount"></label>
         </statusbarpanel>
         <statusbarpanel id="temp"

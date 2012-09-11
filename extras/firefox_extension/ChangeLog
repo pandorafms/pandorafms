@@ -1,3 +1,27 @@
+2012-09-11  Sancho Lerena <slerena@artica.es>
+
+	* install.rdf,
+        chrome/content/firefoxOverlay.xul,
+	chrome/content/options.xul: Icons, normalized paths.
+
+	* chrome/content/icons: Removed unused directory
+
+	* hrome/content/images: Updated images.
+
+2012-09-02  Hareesan Rajendra  <rharishan@gmail.com>
+
+        * options.xul : Made some style property changes.
+
+        * ReadMe.txt  : Updated with the informations.
+
+2012-08-22 Hareesan Rajendra  <rharishan@gmail.com>
+
+        * Updated few features.
+
+2012-08-22 Hareesan Rajendra  <rharishan@gmail.com>
+
+        * Added color changes and few other updates.
+
 2012-08-19  Sancho Lerena <slerena@artica.es>
 
 	* Commited some missing files from Hareesan. Created ChangeLog and small 

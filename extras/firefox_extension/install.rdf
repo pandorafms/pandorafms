@@ -3,12 +3,12 @@
  xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>hareesan@pandorafms.org</em:id>
-    <em:name>Pandora FMS</em:name>
-    <em:version>1.3.2</em:version>
-	<em:iconURL>chrome://pandorasidebar/content/icons/icon32.png</em:iconURL>
+    <em:name>Pandora FMS Event viewer</em:name>
+    <em:version>1.0</em:version>
+	<em:iconURL>chrome://pandorasidebar/content/images/icon32.png</em:iconURL>
     <em:creator>Pandora FMS</em:creator>
-	<em:homepageURL>http://www.pandorafms.org</em:homepageURL>
-    <em:description>Pandora FMS event viewer extension for Firefox</em:description>
+	<em:homepageURL>http://pandorafms.com</em:homepageURL>
+    <em:description>Pandora FMS event viewer extension for Firefox. Use CTRL-SHIFT-L to launch the extension bar.</em:description>
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- firefox -->

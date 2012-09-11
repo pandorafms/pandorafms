@@ -1,3 +1,11 @@
+2012-09-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/Core.pm: changed to use own code instead the
+	external module Time::Piece.
+	
+	* lib/PandoraFMS/Tools.pm: added function "month_have_days" for
+	to get the count of days for any month in any year.
+
 2012-09-10 Vanessa Gil <vanessa.gil@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added several fields

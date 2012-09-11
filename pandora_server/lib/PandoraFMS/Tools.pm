@@ -66,6 +66,7 @@ our @EXPORT = qw(
 	ticks_totime
 	safe_input
 	safe_output
+	month_have_days
 );
 
 ########################################################################
@@ -798,13 +799,13 @@ Returns:
 ##############################################################################
 sub pandora_ping ($$) {
 	my ($pa_config, $host) = @_;
-
+	
 	my $output = 0;
 	my $i;
-
+	
 	# See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
 	my $OSNAME = $^O;
-
+	
 	# Windows XP .. Windows 7
 	if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
 		my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
@@ -817,17 +818,17 @@ sub pandora_ping ($$) {
 		}
 	return 0;
 	}
-
+	
 	elsif ($OSNAME eq "solaris"){
 		my $ping_command = "ping";
-
+		
 		if ($host =~ /\d+:|:\d+/ ) {
 			$ping_command = "ping -A inet6"
 		}
-
+		
 		# Note: timeout option is not implemented in ping.
 		# 'networktimeout' is not used by ping on Solaris.
-
+		
 		# Ping the host
 		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
 			`$ping_command -s -n $host 56 1 >/dev/null 2>&1`;
@@ -838,17 +839,17 @@ sub pandora_ping ($$) {
 		}
 		return 0;
 	}
-
+	
 	elsif ($OSNAME eq "freebsd"){
 		my $ping_command = "ping -t $pa_config->{'networktimeout'}";
-
+		
 		if ($host =~ /\d+:|:\d+/ ) {
 			$ping_command = "ping6";
 		}
-
+		
 		# Note: timeout(-t) option is not implemented in ping6.
 		# 'networktimeout' is not used by ping6 on FreeBSD.
-
+		
 		# Ping the host
 		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
 			`$ping_command -q -n -c 1 $host >/dev/null 2>&1`;
@@ -859,16 +860,16 @@ sub pandora_ping ($$) {
 		}
 		return 0;
 	}
-
+	
 	# by default LINUX calls
 	else {
-
+		
 		my $ping_command = "ping";
-
+		
 		if ($host =~ /\d+:|:\d+/ ) {
 			$ping_command = "ping6";
 		}
-
+		
 		# Ping the host
 		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
 			`$ping_command -q -W $pa_config->{'networktimeout'} -n -c 1 $host >/dev/null 2>&1`;
@@ -879,115 +880,150 @@ sub pandora_ping ($$) {
 		}
 		return 0;
 	}
-
+	
 	return $output;
 }
 
-##############################################################################
+########################################################################
 =head2 C<< pandora_ping_latency (I<$pa_config>, I<$host>) >> 
 
 Ping the given host. Returns the average round-trip time.
 
 =cut
-##############################################################################
+########################################################################
 sub pandora_ping_latency ($$) {
 	my ($pa_config, $host) = @_;
-
+	
 	my $output = 0;
-
+	
 	# See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
 	my $OSNAME = $^O;
-
+	
 	# Windows XP .. Windows 2008, I assume Win7 is the same
 	if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
-
+		
 		# System ping reports in different languages, but with the same format:
 		# Mínimo = xxms, Máximo = xxms, Media = XXms
 		# Minimun = xxms, Mamimun = xxms, Average = XXms
-
+		
 		# If this fails, ping can be replaced by fping which also have the same format
 		# but always in english
-
+		
 		my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
 		$output = `ping -n $pa_config->{'icmp_checks'} -w $ms_timeout $host`;
-
+		
 		if ($output =~ m/\=\s([0-9]*)[a-z][a-z]\r/){
 			return $1;
 		} else {
 			return 0;
 		}
-
+		
 	}
-
+	
 	elsif ($OSNAME eq "solaris"){
 		my $ping_command = "ping";
-
+		
 		if ($host =~ /\d+:|:\d+/ ) {
 			$ping_command = "ping -A inet6";
 		}
-
+		
 		# Note: timeout option is not implemented in ping.
 		# 'networktimeout' is not used by ping on Solaris.
-
+		
 		# Ping the host
 		my @output = `$ping_command -s -n $host 56 $pa_config->{'icmp_checks'} 2>/dev/null`;
-
+		
 		# Something went wrong
 		return 0 if ($? != 0);
-
+		
 		# Parse the output
 		my $stats = pop (@output);
 		return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
 		return $2;
 	}
-
+	
 	elsif ($OSNAME eq "freebsd"){
 		my $ping_command = "ping";
-
+		
 		if ($host =~ /\d+:|:\d+/ ) {
 			$ping_command = "ping6";
 		}
-
+		
 		# Note: timeout(-t) option is not implemented in ping6. 
 		# timeout(-t) and waittime(-W) options in ping are not the same as
 		# Linux. On latency, there are no way to set timeout.
 		# 'networktimeout' is not used on FreeBSD.
-
+		
 		# Ping the host
 		my @output = `$ping_command -q -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
-
+		
 		# Something went wrong
 		return 0 if ($? != 0);
-
+		
 		# Parse the output
 		my $stats = pop (@output);
 		return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
 		return $2;
 	}
-
+	
 	# by default LINUX calls
 	else {
 		my $ping_command = "ping";
-
+		
 		if ($host =~ /\d+:|:\d+/ ) {
 			$ping_command = "ping6";
 		}
-
-
+		
+		
 		# Ping the host
 		my @output = `$ping_command -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
-
+		
 		# Something went wrong
 		return 0 if ($? != 0);
-
+		
 		# Parse the output
 		my $stats = pop (@output);
 		return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
 		return $2;
 	}
-
+	
 	# If no valid get values until now, just return with empty value (not valid)
 	return $output;
+}
+
+########################################################################
+=head2 C<< month_have_days (I<$month>, I<$year>) >> 
+
+Pass a $month (as january 0 number and each month with numbers) and the year
+as number (for example 1981). And return the days of this month.
+
+=cut
+########################################################################
+sub month_have_days($$) {
+	my $month= shift(@_);
+	my $year= @_ ? shift(@_) : (1900 + (localtime())[5]);
+	
+	my @monthDays= qw( 31 28 31 30 31 30 31 31 30 31 30 31 );
+	
+	if (  $year <= 1752  ) {
+		# Note:  Although September 1752 only had 19 days,
+		# they were numbered 1,2,14..30!
+		if (1752 == $year  &&  9 == $month) {
+			return 19;
+		}
+		if (2 == $month  &&  0 == $year % 4) {
+			return 29;
+		}
+	}
+	else {
+		#Check if Leap year
+		if (2 == $month && 0 == $year % 4 && 0 == $year%100
+			|| 0 == $year%400) {
+			return 29;
+		}
+	}
+	
+	return $monthDays[$month];
 }
 
 # End of function declaration

@@ -1,3 +1,9 @@
+2012-09-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_modules.js: Fixed the reset of the
+	form of local modules after select a module component and
+	unselect it
+
 2012-09-10 Miguel de Dios <miguel.dedios@artica.es>
 
 	* general/header.php: fixed the link to logout when the Pandora

@@ -1,3 +1,20 @@
+2012-09-12  Sergio Martin <sergio.martin@artica.es>
+
+	* src/pandroid/agent/PandroidAgent.java
+	src/pandroid/agent/PandroidAgentTentacle.java
+	src/pandroid/agent/Status.java
+	src/pandroid/agent/PandroidAgentListener.java
+	res/drawable-xhdpi/ic_launcher.png
+	res/drawable-xhdpi/logo.png
+	res/drawable-xhdpi/pandroid_large.png
+	res/drawable-hdpi/ic_launcher.png
+	res/drawable-ldpi/ic_launcher.png
+	res/drawable-ldpi/logo.png
+	res/drawable-ldpi/pandroid_large.png
+	res/drawable-mdpi/ic_launcher.png: Fixed some
+	warnings of not used variables and includes.
+	Added new designs
+
 2012-08-25  Junichi Satoh  <junichi@rworks.jp>
 
 	* res/values-ja/strings.xml: Fixed wrong Japanese translations.

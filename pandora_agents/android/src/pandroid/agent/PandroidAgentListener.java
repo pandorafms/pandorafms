@@ -359,7 +359,6 @@ public class PandroidAgentListener extends Service {
     private void writeFile(String fileName, String textToWrite) {
 try { // catches IOException below
     		
-    		String filePath = fileName;
     		String UTF8 = "utf8";
     		int BUFFER_SIZE = 8192;
     		
@@ -610,6 +609,7 @@ try { // catches IOException below
 		        RandomAccessFile reader = new RandomAccessFile("/proc/meminfo", "r");
 		        
 		        String line = reader.readLine();
+		        reader.close();
 		        line = line.replaceAll("[ ]+", " ");
 		        String[] tokens = line.split(" ");
 		        

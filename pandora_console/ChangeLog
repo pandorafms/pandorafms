@@ -1,3 +1,10 @@
+2012-09-12  Vanessa Gil <vanessa.gil@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: Fixed bug:
+	error adding fields.
+
 2012-09-12  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_users.php

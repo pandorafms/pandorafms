@@ -62,7 +62,7 @@ function eventsTextAgent() {
 				var params = [];
 				params.push("all=enabled");
 				params.push("search_agents_2=1");
-				params.push("page=operation/agentes/exportdata");
+				params.push("page=include/ajax/agent");
 				params.push("id_group="+ $("#group").val());
 				params.push("q="+ term);
 				jQuery.ajax ({

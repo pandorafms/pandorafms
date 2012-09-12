@@ -148,7 +148,7 @@ $(document).ready (function () {
 			var term = request.term; //Word to search
 			
 			var data_params = {
-				page: "operation/agentes/exportdata",
+				page: "include/ajax/agent",
 				"search_agents_2": 1,
 				id_group: function() { return $("#id_group").val(); },
 				"q": term};

@@ -1704,95 +1704,6 @@ function ui_print_status_image ($type, $title = "", $return = false, $options = 
 }
 
 /**
- * Prints a form to search agents.
- *
- * @param array Extra options for the function. To be documented.
- * @param array Extra and hidden filter for the agent search.
- */
-function ui_print_ui_agents_list ($options = false, $filter = false, $return = false) {
-	global $config;
-	
-	$output = '';
-	
-	$group_filter = true;
-	$text_filter = true;
-	$access = 'AR';
-	$table_heads = array (__('Name'), __('Group'), __('Status'));
-	$table_renders = array ('view_link', 'group', 'status');
-	$table_align = array ('', '', 'center');
-	$table_size = array ('50%', '45%', '5%');
-	$fields = false;
-	$show_filter_form = true;
-	if (is_array ($options)) {
-		if (isset ($options['group_filter']))
-			$group_filter = (bool) $options['group_filter'];
-		if (isset ($options['text_filter']))
-			$text_filter = (bool) $options['text_filter'];
-		if (isset ($options['access']))
-			$access = (string) $options['access'];
-		if (isset ($options['table_heads']))
-			$table_heads = (array) $options['table_heads'];
-		if (isset ($options['table_renders']))
-			$table_renders = (array) $options['table_renders'];
-		if (isset ($options['table_align']))
-			$table_align = (array) $options['table_align'];
-		if (isset ($options['table_size']))
-			$table_size = (array) $options['table_size'];
-		if (isset ($options['fields']))
-			$fields = (array) $options['fields'];
-		if (isset ($options['show_filter_form']))
-			$show_filter_form = (bool) $options['show_filter_form'];
-		
-		if (count ($table_renders) != count ($table_heads))
-			trigger_error ('Different count for table_renders and table_heads options');
-		
-		unset ($options);
-	}
-	
-	if ($return)
-		return ui_get_include_contents ($config['homedir'].'/general/ui/agents_list.php',
-			get_defined_vars ());
-	
-	include ($config['homedir'].'/general/ui/agents_list.php');
-}
-
-/**
- * Get the content of a PHP file instead of dumping to the output.
- * 
- * Picked from PHP official doc.
- *
- * @param string File name to include and get content.
- * @param array Extra parameters in an indexed array to be passed to the file.
- *
- * @return string Content of the file after being processed. False if the file
- * could not be included.
- */
-function ui_get_include_contents ($filename, $params = false) {
-	global $config;
-	
-	ob_start ();
-	
-	if (is_array ($params)) {
-		extract ($params);
-	}
-	
-	$filename = realpath ($filename);
-	if (strncmp ($config["homedir"], $filename, strlen ($config["homedir"])) != 0) {
-		return false;
-	}
-	
-	$result = include ($filename);
-	if ($result === false) {
-		ob_end_clean ();
-		return false;
-	}
-	
-	$contents = ob_get_contents ();
-	ob_end_clean ();
-
-	return $contents;
-}
-/**
  * Print a code into a DIV and enable a toggle to show and hide it
  * 
  * @param string html code
@@ -2116,21 +2027,286 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	return $buffer;
 }
 
-/** 
- * Add a help link to show help in a popup window.
- * 
- *
- * @param string $help_id Help id to be shown when clicking.
- * @param bool $return Whether to print this (false) or return (true)
- * 
- * @return string Link with the popup.
- */
-function ui_popup_help ($help_id, $return = false) {
-	$output = "&nbsp;<a href='javascript:help_popup(".$help_id.")'>[H]</a>";
-	if ($return)
-		return $output;
-	echo $output;
+function ui_print_agent_autocomplete_input($parameters) {
+	global $config;
+	
+	//Normalize and extract the data from $parameters
+	//------------------------------------------------------------------
+	$return = false; //Default value
+	if (isset($parameters['return'])) {
+		$return = $parameters['return'];
+	}
+	
+	$input_name = uniqid('agent_autocomplete_'); //Default value
+	if (isset($parameters['input_name'])) {
+		$input_name = $parameters['input_name'];
+	}
+	
+	$input_id = 'text-' . $input_name; //Default value
+	if (isset($parameters['input_id'])) {
+		$input_id = $parameters['input_id'];
+	}
+	
+	//Default value
+	$icon_image = html_print_image('images/lightning.png', true, false, true);
+	if (isset($parameters['icon_image'])) {
+		$icon_image = $parameters['icon_image'];
+	}
+	
+	$value = ''; //Default value
+	if (isset($parameters['value'])) {
+		$value = $parameters['value'];
+	}
+	
+	$show_helptip = true; //Default value
+	if (isset($parameters['show_helptip'])) {
+		$show_helptip = $parameters['show_helptip'];
+	}
+	
+	$helptip_text = __("Type at least two characters to search."); //Default value
+	if (isset($parameters['helptip_text'])) {
+		$helptip_text = $parameters['helptip_text'];
+	}
+	
+	$print_hidden_input_idagent = false; //Default value
+	if (isset($parameters['print_hidden_input_idagent'])) {
+		$print_hidden_input_idagent = $parameters['print_hidden_input_idagent'];
+	}
+	
+	$hidden_input_idagent_name = uniqid('agent_autocomplete_idagent_'); //Default value
+	if (isset($parameters['hidden_input_idagent_name'])) {
+		$hidden_input_idagent_name = $parameters['hidden_input_idagent_name'];
+	}
+	
+	$hidden_input_idagent_id = 'hidden-' . $input_name; //Default value
+	if (isset($parameters['hidden_input_idagent_id'])) {
+		$hidden_input_idagent_name = $parameters['hidden_input_idagent_id'];
+	}
+	
+	$hidden_input_idagent_value = 0; //Default value
+	if (isset($parameters['hidden_input_idagent_value'])) {
+		$hidden_input_idagent_value = $parameters['hidden_input_idagent_value'];
+	}
+	
+	$size = 30; //Default value
+	if (isset($parameters['size'])) {
+		$size = $parameters['size'];
+	}
+	
+	$maxlength = 100; //Default value
+	if (isset($parameters['maxlength'])) {
+		$maxlength = $parameters['maxlength'];
+	}
+	
+	$disabled = false; //Default value
+	if (isset($parameters['disabled'])) {
+		$disabled = $parameters['disabled'];
+	}
+	
+	// Javascript configurations
+	//-----------------------------------------
+	$javascript = true; //Default value
+	if (isset($parameters['javascript'])) {
+		$javascript = $parameters['javascript'];
+	}
+	
+	$selectbox_id = 'id_agent_module'; //Default value
+	if (isset($parameters['selectbox_id'])) {
+		$selectbox_id = $parameters['selectbox_id'];
+	}
+	
+	$javascript_is_function_select = false; //Default value
+	if (isset($parameters['javascript_is_function_select'])) {
+		$javascript_is_function_select = $parameters['javascript_is_function_select'];
+	}
+	
+	$javascript_name_function_select = 'function_select_' . $input_name; //Default value
+	if (isset($parameters['javascript_name_function_select'])) {
+		$javascript_name_function_select = $parameters['javascript_name_function_select'];
+	}
+	
+	$javascript_code_function_select = '';
+	$javascript_code_function_select .= '
+		function function_select_' . $input_name . '(agent_name) {
+			
+			$("#' . $selectbox_id . '").empty ();
+			var inputs = [];
+			inputs.push ("agent_name=" + agent_name);
+			inputs.push ("filter=delete_pending = 0");
+			inputs.push ("get_agent_modules_json=1");
+			inputs.push ("page=operation/agentes/ver_agente");
+			jQuery.ajax ({
+				data: inputs.join ("&"),
+				type: "GET",
+				url: action="ajax.php",
+				timeout: 10000,
+				dataType: "json",
+				success: function (data) {
+					$("#' . $selectbox_id . '")
+						.append($("<option></option>")
+						.attr("value", 0).text("--"));
+					
+					jQuery.each (data, function(i, val) {
+						s = js_html_entity_decode(val["nombre"]);
+						$("#' . $selectbox_id . '")
+							.append ($("<option></option>")
+							.attr("value", val["id_agente_modulo"]).text (s));
+					});
+					
+					$("#' . $selectbox_id . '").enable();
+					$("#' . $selectbox_id . '").fadeIn ("normal");
+				}
+			});
+			
+			return false;
+		}
+		';
+	if (isset($parameters['javascript_code_function_select'])) {
+		$javascript_code_function_select = $parameters['javascript_code_function_select'];
+	}
+	
+	//Default value
+	$javascript_page = 'godmode/agentes/agent_manager';
+	if (isset($parameters['javascript_page'])) {
+		$javascript_page = $parameters['javascript_page'];
+	}
+	
+	$javascript_function_change ='';
+	$javascript_function_change .='
+		function set_functions_change_autocomplete_' . $input_name . '() {
+			$("#' . $input_id . '").autocomplete({
+				minLength: 2,
+				source: function( request, response ) {
+					var term = request.term; //Word to search
+					
+					var data_params = {
+						"page": "' . $javascript_page . '",
+						"search_parents_2": 1,
+						"q": term};
+					
+					jQuery.ajax ({
+						data: data_params,
+						async: false,
+						type: "POST",
+						url: action="ajax.php",
+						timeout: 10000,
+						dataType: "json",
+						success: function (data) {
+								response(data);
+								
+								return;
+							}
+						});
+					
+					return;
+				},
+				select: function( event, ui ) {
+					var agent_name = ui.item.name;
+					
+					//Put the name
+					$(this).val(agent_name);
+					
+					if (' . ((int)$javascript_is_function_select) . ') {
+						' . $javascript_name_function_select . '(agent_name);
+					}
+					
+					return false;
+				}
+				})
+			.data( "autocomplete")._renderItem = function( ul, item ) {
+				if (item.ip == "") {
+					text = "<a>" + item.name + "</a>";
+				}
+				else {
+					text = "<a>" + item.name
+						+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
+				}
+				
+				return $("<li></li>")
+					.data("item.autocomplete", item)
+					.append(text)
+					.appendTo(ul);
+			};
+		
+		//Force the size of autocomplete
+		$(".ui-autocomplete").css("max-height", "100px");
+		$(".ui-autocomplete").css("overflow-y", "auto");
+		/* prevent horizontal scrollbar */
+		$(".ui-autocomplete").css("overflow-x", "hidden");
+		/* add padding to account for vertical scrollbar */
+		$(".ui-autocomplete").css("padding-right", "20px");
+		
+		//Force to style of items
+		$(".ui-autocomplete").css("text-align", "left");
+	}
+	';
+	if (isset($parameters['javascript_function_change'])) {
+		$javascript_function_change = $parameters['javascript_function_change'];
+	}
+	
+	$javascript_document_ready = true;//Default value
+	if (isset($parameters['javascript_document_ready'])) {
+		$javascript_document_ready = $parameters['javascript_document_ready'];
+	}
+	
+	$javascript_tags = true;//Default value
+	if (isset($parameters['javascript_tags'])) {
+		$javascript_tags = $parameters['javascript_tags'];
+	}
+	
+	$javascript_code = ''; //Default value
+	if (isset($parameters['disabled'])) {
+		$disabled = $parameters['disabled'];
+	}
+	//------------------------------------------------------------------
+	
+	$html = '';
+	
+	$attrs = '';
+	if ($show_helptip) {
+		$attrs = array('style' => 'background: url(' . $icon_image . ') no-repeat right;');
+	}
+	
+	$html = html_print_input_text_extended($input_name, $value,
+		$input_id, $helptip_text, $size, $maxlength, $disabled, '', $attrs, true);
+	if ($show_helptip) {
+		$html .= ui_print_help_tip ($helptip_text, true);
+	}
+	
+	if ($print_hidden_input_idagent) {
+		$html .= html_print_input_hidden_extended($hidden_input_idagent_name,
+			$hidden_input_idagent_value, $hidden_input_idagent_id, true);
+	}
+	
+	//Write the javascript
+	if ($javascript) {
+		if ($javascript_tags) {
+			$html .= '<script type="text/javascript">
+				/* <![CDATA[ */';
+		}
+		
+		$html .= $javascript_function_change;
+		if ($javascript_is_function_select) {
+			$html .= $javascript_code_function_select;
+		}
+		
+		if ($javascript_document_ready) {
+			$html .= '$(document).ready (function () {
+				set_functions_change_autocomplete_' . $input_name . '();
+				});';
+		}
+		
+		if ($javascript_tags) {
+			$html .= '/* ]]> */
+				</script>';
+		}
+	}
+	
+	if ($return) {
+		return $html;
+	}
+	else {
+		echo $html;
+	}
 }
-
-
 ?>

@@ -50,15 +50,15 @@ if (isset ($_GET["id"])) {
 	$id_grupo = $row["id_grupo"];
 	$id_creator = $row["id_creator"]; //creator
 	$id_lastupdate = $row["id_lastupdate"]; //last updater
-	$id_agent = $row["id_agent"]; 		// Agent
+	$id_agent = $row["id_agent"]; // Agent
 	
 	// Note add - everybody that can read incidents, can add notes
 	if (isset ($_GET["insertar_nota"])) {
 		$nota = get_parameter ("nota");
-
+		
 		$sql = sprintf ("INSERT INTO tnota (id_usuario, id_incident, nota) VALUES ('%s', %d, '%s')",$config["id_user"],$id_inc, $nota);
 		$id_nota = db_process_sql ($sql, "insert_id");
-
+		
 		if ($id_nota !== false) {
 			incidents_process_touch ($id_inc);
 		}
@@ -66,7 +66,7 @@ if (isset ($_GET["id"])) {
 			__('Successfully added'),
 			__('Could not be added'));
 	}
-
+	
 	// Delete note
 	if (isset ($_POST["delete_nota"])) {
 		$id_nota = get_parameter ("delete_nota", 0);
@@ -76,7 +76,7 @@ if (isset ($_GET["id"])) {
 		// incidents notes. note authors are 
 		// able to delete their own notes
 			$result = incidents_delete_note ($id_nota);
-
+			
 			if (!empty ($result)) {
 				incidents_process_touch ($id_inc);
 			}
@@ -85,7 +85,7 @@ if (isset ($_GET["id"])) {
 				__('Could not be deleted'));
 		}
 	}
-
+	
 	// Delete file
 	if (((check_acl ($config["id_user"], $id_grupo, "IM")==1) OR
 		($id_owner == $config["id_user"])) AND isset ($_POST["delete_file"])) {
@@ -108,7 +108,7 @@ if (isset ($_GET["id"])) {
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	}
-
+	
 	// Upload file
 	if ((check_acl ($config["id_user"], $id_grupo, "IW") == 1) AND isset ($_GET["upload_file"]) AND ($_FILES['userfile']['name'] != "")) {
 		$description = get_parameter ("file_description", __('No description available'));
@@ -116,7 +116,7 @@ if (isset ($_GET["id"])) {
 		// Insert into database
 		$filename = io_safe_input ($_FILES['userfile']['name']);
 		$filesize = io_safe_input ($_FILES['userfile']['size']);
-
+		
 		//The following is if you have clamavlib installed
 		//(php5-clamavlib) and enabled in php.ini
 		//http://www.howtoforge.com/scan_viruses_with_php_clamavlib
@@ -131,9 +131,9 @@ if (isset ($_GET["id"])) {
 		
 		$sql = sprintf ("INSERT INTO tattachment (id_incidencia, id_usuario, filename, description, size) 
 			VALUES (%d, '%s', '%s', '%s', %d)", $id_inc, $config["id_user"], $filename, $description, $filesize);
-
+		
 		$id_attachment = db_process_sql ($sql,"insert_id");
-
+		
 		// Copy file to directory and change name
 		if ($id_attachment !== false) {
 			$nombre_archivo = $config["attachment_store"]
@@ -154,7 +154,7 @@ if (isset ($_GET["id"])) {
 			echo '<h3 class="error">'.__('File could not be saved due to database error').'</h3>';
 			$result = false;
 		}
-
+		
 		if ($result !== false) {
 			unlink ($_FILES['userfile']['tmp_name']);
 			incidents_process_touch ($id_inc);
@@ -336,15 +336,35 @@ foreach ($agents_incidents as $agent_incident) {
 	$result_agent_incidents[$agent_incident['id_agente']] = $agent_incident['nombre'];
 }
 
-echo '</td></tr><tr><td class="datos"><b>'.__('Agent').'</b></td><td class="datos">';
+echo '</td>';
+echo '</tr>';
 
-html_print_input_hidden('id_agent', $id_agent);
-html_print_input_text_extended ('agent', agents_get_name ($id_agent), 'text-agent', '', 30, 100, false, '', array('style' => 'background: url(images/lightning.png) no-repeat right;'));
-ui_print_help_tip(__("Type at least two characters to search"), false);
+echo '<tr>';
+echo '<td class="datos"><b>'.__('Agent').'</b></td>';
+echo '<td class="datos">';
+//html_print_input_hidden('id_agent', $id_agent);
+//html_print_input_text_extended ('agent', agents_get_name ($id_agent), 'text-agent', '', 30, 100, false, '', array('style' => 'background: url(images/lightning.png) no-repeat right;'));
+//ui_print_help_tip(__("Type at least two characters to search"), false);
+echo '</td>';
+echo '</tr>';
 
-//html_print_select ($result_agent_incidents, "incident_agents", $id_agent, '', __('None'), 0, false, false, false, 'w135', false);
+//////////
+echo '<tr>';
+echo '<td class="datos"><b>'.__('Teste').'</b></td>';
+echo '<td class="datos">';
+$params = array();
+$params['show_helptip'] = true;
+$params['input_name'] = 'agent';
+$params['value'] = agents_get_name ($id_agent);
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_value'] = $id_agent;
+$params['hidden_input_idagent_name'] = 'id_agent';
+ui_print_agent_autocomplete_input($params);
+echo '</td>';
+echo '</tr>';
+//////////
 
-echo '</td></tr><tr><td class="datos2" colspan="4">';
+echo '<tr><td class="datos2" colspan="4">';
 
 if ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
 	html_print_textarea ("descripcion", 15, 80, $texto, 'style="height:200px;"');
@@ -493,6 +513,6 @@ if (isset ($id_inc)) {
 ?>
 <script>
 $(document).ready (function () {
-	agent_autocomplete('#text-agent', '#hidden-server_name', '#hidden-id_agent');
+	//agent_autocomplete('#text-agent', '#hidden-server_name', '#hidden-id_agent');
 });
 </script>

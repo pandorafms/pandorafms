@@ -1,3 +1,9 @@
+2012-09-12  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_plugin.php
+	godmode/agentes/configurar_agente.php: Fixed two notices
+	in the module creation
+
 2012-09-12  Vanessa Gil <vanessa.gil@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,

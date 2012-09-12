@@ -15,6 +15,8 @@
 
 enterprise_include_once('include/functions_policies.php');
 
+global $module;
+
 $macros = $module['macros'];
 
 $disabledBecauseInPolicy = false;

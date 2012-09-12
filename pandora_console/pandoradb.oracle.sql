@@ -565,7 +565,8 @@ CREATE TABLE tgrupo (
 	propagate NUMBER(5, 0) default 0,
 	disabled NUMBER(5, 0) default 0,
 	custom_id VARCHAR2(255) default '',
-	id_skin NUMBER(10, 0) DEFAULT 0 NOT NULL
+	id_skin NUMBER(10, 0) DEFAULT 0 NOT NULL,
+	description CLOB
 );
 
 CREATE SEQUENCE tgrupo_s INCREMENT BY 1 START WITH 1;

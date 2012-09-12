@@ -137,6 +137,12 @@ ALTER TABLE "tevento" ADD COLUMN "source" text NULL default '';
 ALTER TABLE "tevento" ADD COLUMN "id_extra" text NULL default '';
 
 -- -----------------------------------------------------
+-- Table `tgrupo`
+-- -----------------------------------------------------
+
+ALTER TABLE "tgrupo" ADD COLUMN "description" text;
+
+-- -----------------------------------------------------
 -- Table `talert_snmp`
 -- -----------------------------------------------------
 

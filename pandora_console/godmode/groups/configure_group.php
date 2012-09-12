@@ -49,6 +49,7 @@ if ($id_group) {
 		$custom_id = $group["custom_id"];
 		$propagate = $group["propagate"];
 		$skin = $group["id_skin"];
+		$description = $group["description"];
 	}
 	else {
 		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
@@ -115,6 +116,9 @@ $table->data[4][1] = html_print_checkbox('propagate', 1, $propagate, true);
 
 $table->data[5][0] = __('Custom ID');
 $table->data[5][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+
+$table->data[6][0] = __('Description');
+$table->data[6][1] = html_print_input_text ('description', $description, '', 60, 255, true);
 
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {

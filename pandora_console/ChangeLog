@@ -1,3 +1,19 @@
+2012-09-12  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_users.php
+	godmode/groups/configure_group.php
+	godmode/groups/group_list.php
+	pandoradb.sql
+	pandoradb_data.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: Added
+	'description' column to Group.
+
 2012-09-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_reporting.php

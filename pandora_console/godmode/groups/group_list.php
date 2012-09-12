@@ -147,6 +147,7 @@ if ($create_group) {
 	$alerts_disabled = (bool) get_parameter ('alerts_disabled');
 	$custom_id = (string) get_parameter ('custom_id');
 	$skin = (string) get_parameter ('skin');
+	$description = (string) get_parameter ('description');
 $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
 
 	
@@ -159,7 +160,8 @@ $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
 				'parent' => $id_parent,
 				'disabled' => $alerts_disabled,
 				'custom_id' => $custom_id,
-				'id_skin' => $skin
+				'id_skin' => $skin,
+				'description' => $description
 			);
 		
 			$result = db_process_sql_insert('tgrupo', $values);
@@ -186,26 +188,28 @@ if ($update_group) {
 	$name = (string) get_parameter ('name');
 	$icon = (string) get_parameter ('icon');
 	$id_parent = (int) get_parameter ('id_parent');
+	$description = (string) get_parameter ('description');
 	$alerts_enabled = (bool) get_parameter ('alerts_enabled');
 	$custom_id = (string) get_parameter ('custom_id');
 	$propagate = (bool) get_parameter('propagate');
 	$skin = (string) get_parameter ('skin');
+	$description = (string) get_parameter ('description');
 	
 	/*Check if name field is empty*/
 	if( $name != "") {	
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
-					icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d
+					icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d, description = "%s"
 					WHERE id_grupo = %d',
-					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
+					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $description, $id_group);
 				break;
 			case "postgresql":
 			case "oracle":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = \'%s\',
-					icon = \'%s\', disabled = %d, parent = %d, custom_id = \'%s\', propagate = %d, id_skin = %d
+					icon = \'%s\', disabled = %d, parent = %d, custom_id = \'%s\', propagate = %d, id_skin = %d, description = \'%s\'
 					WHERE id_grupo = %d',
-					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $id_group);
+					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $description, $id_group);
 				break;
 		}
 		$result = db_process_sql ($sql);
@@ -260,10 +264,11 @@ if (!empty($groups)) {
 	$table->head[1] = __('ID');
 	$table->head[2] = __('Icon');
 	$table->head[3] = __('Alerts');
-	$table->head[4] = __('Actions');
+	$table->head[4] = __('Description');
+	$table->head[5] = __('Actions');
 	$table->align = array ();
 	$table->align[2] = 'center';
-	$table->align[4] = 'center';
+	$table->align[5] = 'center';
 	$table->data = array ();
 	
 	$iterator = 0;
@@ -347,14 +352,15 @@ if (!empty($groups)) {
 		$data[1] = $group['id_grupo'];
 		$data[2] = ui_print_group_icon($group['id_grupo'], true);
 		$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');
+		$data[4] = $group['description'];
 		if ($group['id_grupo'] == 0) {
-			$data[4] = '';
+			$data[5] = '';
 		}
 		else {
-			$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
+			$data[5] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
 			//Check if there is only a group to unable delete it
 			if ((count($groups) > 3) || (count($groups) <= 3 && $group['parent'] != 0)) {
-				$data[4] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+				$data[5] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
 			}
 		}
 		

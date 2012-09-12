@@ -133,16 +133,16 @@ SELECT setval('tconfig_os_id_os_seq', (SELECT (SELECT MAX(id_os) FROM tconfig_os
 --
 BEGIN WORK;
 LOCK TABLE "tgrupo";
-INSERT INTO "tgrupo" ("id_grupo", "nombre", "icon", "parent", "propagate", "disabled", "custom_id", "id_skin")
+INSERT INTO "tgrupo" ("id_grupo", "nombre", "icon", "parent", "propagate", "disabled", "custom_id", "id_skin", "description")
 VALUES 
-(2,'Servers','server_database',0,0,0,'',1),
-(4,'Firewalls','firewall',0,0,0,'',1),
-(8,'Databases','database_gear',0,0,0,'',1),
-(9,'Network','transmit',0,0,0,'',1),
-(10,'Unknown','world',0,0,0,'',1),
-(11,'Workstations','computer',0,0,0,'',1),
-(12,'Applications','applications',0,0,0,'',1),
-(13,'Web','world',0,0,0,'',1);
+(2,'Servers','server_database',0,0,0,'',1,''),
+(4,'Firewalls','firewall',0,0,0,'',1,''),
+(8,'Databases','database_gear',0,0,0,'',1,''),
+(9,'Network','transmit',0,0,0,'',1,''),
+(10,'Unknown','world',0,0,0,'',1,''),
+(11,'Workstations','computer',0,0,0,'',1,''),
+(12,'Applications','applications',0,0,0,'',1,''),
+(13,'Web','world',0,0,0,'',1,'');
 COMMIT WORK;
 SELECT setval('tgrupo_id_grupo_seq', (SELECT (SELECT MAX(id_grupo) FROM tgrupo)));
 

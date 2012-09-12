@@ -546,6 +546,7 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 	`disabled` tinyint(3) unsigned NOT NULL default '0',
 	`custom_id` varchar(255) default '',
 	`id_skin` int(10) unsigned NOT NULL default '0',
+	`description` text,
  	PRIMARY KEY  (`id_grupo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

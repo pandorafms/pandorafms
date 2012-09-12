@@ -133,14 +133,14 @@ UNLOCK TABLES;
 
 LOCK TABLES `tgrupo` WRITE;
 INSERT INTO `tgrupo` VALUES 
-(2,'Servers','server_database',0,0,0,'',1),
-(4,'Firewalls','firewall',0,0,0,'',1),
-(8,'Databases','database_gear',0,0,0,'',1),
-(9,'Network','transmit',0,0,0,'',1),
-(10,'Unknown','world',0,0,0,'',1),
-(11,'Workstations','computer',0,0,0,'',1),
-(12,'Applications','applications',0,0,0,'',1),
-(13,'Web','world',0,0,0,'',1);
+(2,'Servers','server_database',0,0,0,'',1,''),
+(4,'Firewalls','firewall',0,0,0,'',1,''),
+(8,'Databases','database_gear',0,0,0,'',1,''),
+(9,'Network','transmit',0,0,0,'',1,''),
+(10,'Unknown','world',0,0,0,'',1,''),
+(11,'Workstations','computer',0,0,0,'',1,''),
+(12,'Applications','applications',0,0,0,'',1,''),
+(13,'Web','world',0,0,0,'',1,'');
 UNLOCK TABLES;
 
 

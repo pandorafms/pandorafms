@@ -122,6 +122,11 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime_modules` (
 ALTER TABLE `tevento` ADD COLUMN (`source` tinytext NOT NULL,
 	`id_extra` tinytext NOT NULL);
 
+-- -----------------------------------------------------  
+-- Table `tgrupo`
+-- -----------------------------------------------------
+ALTER TABLE `tgrupo` ADD COLUMN `description` text;
+
 -- -----------------------------------------------------
 -- Table `talert_snmp`
 -- -----------------------------------------------------

@@ -165,7 +165,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 		if ($returnAllColumns) {
 			$groupall = array('id_grupo' => 0, 'nombre' => __('All'),
 				'icon' => 'world', 'parent' => 0, 'disabled' => 0,
-				'custom_id' => null, 'propagate' => 0); 
+				'custom_id' => null, 'description' => '', 'propagate' => 0); 
 		}
 		else {
 			$groupall = array('id_grupo' => 0, 'nombre' => __("All"));

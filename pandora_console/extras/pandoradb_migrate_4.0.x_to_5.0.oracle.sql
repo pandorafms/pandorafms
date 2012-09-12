@@ -144,6 +144,11 @@ CREATE OR REPLACE TRIGGER tplanned_downtime_modules_inc BEFORE INSERT ON tplanne
 ALTER TABLE tevento ADD (source VARCHAR2(100) default '' NOT NULL);
 ALTER TABLE tevento ADD (id_extra VARCHAR2(100) default '' NOT NULL);
 
+-- -----------------------------------------------------  
+-- Table `tgrupo`
+-- -----------------------------------------------------
+ALTER TABLE tgrupo ADD (description CLOB);
+
 -- -----------------------------------------------------
 -- Table `talert_snmp`
 -- -----------------------------------------------------

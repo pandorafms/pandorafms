@@ -15,116 +15,6 @@
 
 global $config;
 
-if (is_ajax ()) {
-	$search_agents = (bool) get_parameter ('search_agents');
-	$search_agents_2 = (bool) get_parameter ('search_agents_2');
-	
-	if ($search_agents) {
-		
-		require_once ('include/functions_agents.php');
-		
-		$id_agent = (int) get_parameter ('id_agent');
-		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
-		$id_group = (int) get_parameter('id_group', -1);
-		$addedItems = html_entity_decode((string) get_parameter('add'));
-		$addedItems = json_decode($addedItems);
-		$all = (string)get_parameter('all', 'all');
-		
-		if ($addedItems != null) {
-			foreach ($addedItems as $item) {
-				echo $item . "|\n";
-			}
-		}
-		
-		$filter = array ();
-		switch ($config['dbtype']) {
-			case "mysql":
-				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
-				break;
-			case "postgresql":	
-				$filter[] = '(nombre LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\' OR comentarios LIKE \'%'.$string.'%\')';
-				break;
-			case "oracle":
-				$filter[] = '(UPPER(nombre) LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
-				break;
-		}
-		
-		if ($id_group != -1)
-			$filter['id_grupo'] = $id_group; 
-		
-		switch ($all) {
-			case 'enabled':
-				$filter['disabled'] = 0;
-				break;
-		}
-		
-		$agents = agents_get_agents ($filter, array ('nombre', 'direccion'));
-		if ($agents === false)
-			return;
-			
-		foreach ($agents as $agent) {
-			echo io_safe_output($agent['nombre'])."|".io_safe_output($agent['direccion'])."\n";
-		}
-		
-		return;
- 	}
- 	
- 	if ($search_agents_2) {
- 	
- 		require_once ('include/functions_agents.php');
- 	
- 		$id_agent = (int) get_parameter ('id_agent');
- 		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
- 		$id_group = (int) get_parameter('id_group', -1);
- 		$addedItems = html_entity_decode((string) get_parameter('add'));
- 		$addedItems = json_decode($addedItems);
- 		$all = (string)get_parameter('all', 'all');
- 	
- 		if ($addedItems != null) {
- 			foreach ($addedItems as $item) {
- 				echo $item . "|\n";
- 			}
- 		}
- 	
- 		$filter = array ();
- 		switch ($config['dbtype']) {
- 			case "mysql":
- 				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
- 				break;
- 			case "postgresql":
- 				$filter[] = '(nombre LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\' OR comentarios LIKE \'%'.$string.'%\')';
- 				break;
- 			case "oracle":
- 				$filter[] = '(UPPER(nombre) LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
- 				break;
- 		}
- 	
- 		if ($id_group != -1)
- 		$filter['id_grupo'] = $id_group;
- 	
- 		switch ($all) {
- 			case 'enabled':
- 				$filter['disabled'] = 0;
- 				break;
- 		}
- 	
- 		$agents = agents_get_agents ($filter, array ('id_agente', 'nombre', 'direccion'));
- 		if ($agents === false)
- 			$agents = array();
- 		
- 		$data = array();
- 		foreach ($agents as $agent) {
- 			$data[] = array('id' => $agent['id_agente'], 'name' => io_safe_output($agent['nombre']), 'ip' => io_safe_output($agent['direccion']));
- 		}
- 		
- 		echo json_encode($data);
- 	
- 		return;
- 	}
- 	
- 	return;
-}
-
 // Load global vars
 require_once ("include/config.php");
 require_once ("include/functions_agents.php");
@@ -168,12 +58,12 @@ $export_type = get_parameter_post ('export_type', 'data');
 $export_btn = get_parameter ('export_btn', 0);
 
 if (!empty ($export_btn) && !empty ($module)) {
-
+	
 	// Disable SQL cache
 	global $sql_cache;
 	$sql_cache = array ('saved' => 0);
-
-
+	
+	
 	//Convert start time and end time to unix timestamps
 	$start = strtotime ($start_date." ".$start_time);
 	$end = strtotime ($end_date." ".$end_time);
@@ -185,11 +75,11 @@ if (!empty ($export_btn) && !empty ($module)) {
 		ui_print_error_message (__('Invalid time specified'));
 		return;
 	}
-
-	// ***************************************************
+	
+	//******************************************************************
 	// Starts, ends and dividers
-	// ***************************************************
-
+	//******************************************************************
+	
 	switch ($export_type) {
 		case "data":
 		case "avg":
@@ -202,42 +92,42 @@ if (!empty ($export_btn) && !empty ($module)) {
 			$dataend = '</table>';
 			break;
 	}
-
-	// ***************************************************
+	
+	//******************************************************************
 	// Data processing
-	// ***************************************************
-
+	//******************************************************************
+	
 	$data = array ();
 	switch ($export_type) {
 		case "data":
 		case "avg":
 			// Show header
 			echo $datastart;
-
+			
 			foreach ($module as $selected) {
-
+				
 				$output = "";
 				$work_period = 120000;
 				if ($work_period > $period) {
 					$work_period = $period;
 				}
-
+				
 				$work_end = $end - $period + $work_period;
 				//Buffer to get data, anyway this will report a memory exhaustin
-
+				
 				while ($work_end <= $end) {
-
+					
 					$data = array (); // Reinitialize array for each module chunk
 					if ($export_type == "avg") {
 						$arr = array ();
 						$arr["data"] = reporting_get_agentmodule_data_average ($selected, $work_period, $work_end);
 						if ($arr["data"] === false) {
 							continue;
-						}	
+						}
 						$arr["module_name"] = modules_get_agentmodule_name ($selected);
 						$arr["agent_name"] = modules_get_agentmodule_agent_name ($selected);
 						$arr["agent_id"] = modules_get_agentmodule_agent ($selected);
-						$arr["utimestamp"] = $end;				
+						$arr["utimestamp"] = $end;
 						array_push ($data, $arr);
 					}
 					else {
@@ -292,16 +182,16 @@ if (empty($export_btn)) {
 	$table->cellpadding = 5;
 	$table->class = "databox_color";
 	$table->style[0] = 'vertical-align: top;';
-
+	
 	$table->data = array ();
-
+	
 	//Group selector
 	$table->data[0][0] = '<b>'.__('Group').'</b>';
-		
+	
 	$groups = users_get_groups ($config['id_user'], "AR");
-		
+	
 	$table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "group", $group, 'submit_group();', '', 0, true, false, true, 'w130', false);
-		
+	
 	//Agent selector
 	$table->data[1][0] = '<b>'.__('Source agent').'</b>';
 	
@@ -423,7 +313,7 @@ $(document).ready (function () {
 				var term = request.term; //Word to search
 				
 				var data_params = {
-					page: "operation/agentes/exportdata",
+					page: "include/ajax/agent",
 					search_agents_2: 1,
 					id_group: function() { return $("#group").val(); },
 					"q": term};
@@ -479,7 +369,6 @@ $(document).ready (function () {
 		//Force to style of items
 		$(".ui-autocomplete").css("text-align", "left");
 	}
-
 });
 
 function change_action() {

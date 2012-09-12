@@ -430,6 +430,8 @@ function agent_changed_by_multiple_agents_id (event, id_agent, selected) {
 }
 
 
+
+//------------------DEPRECATED------------------------------------------
 /**
  * Autocomplete Agent box and module selector functions.
  * 
@@ -566,6 +568,9 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 	//Force to style of items
 	$(".ui-autocomplete").css("text-align", "left");
 }
+//------------------DEPRECATED------------------------------------------
+
+
 
 /**
  * Autocomplete Agent box functions.
@@ -792,6 +797,7 @@ function toggleBoth(name) {
  */
 function calculateSeconds(name) {
 	var calculated = $('#text-'+name+'_text').val()*$('#'+name+'_units').val();
+	
 	$('.'+name).val(calculated);
 }
 

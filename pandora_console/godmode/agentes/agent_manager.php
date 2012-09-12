@@ -16,38 +16,7 @@
 if (is_ajax ()) {
 	global $config;
 	
-	$search_parents = (bool) get_parameter ('search_parents');
 	$search_parents_2 = (bool) get_parameter ('search_parents_2');
-	
-	if ($search_parents) {
-		require_once ('include/functions_agents.php');
-		
-		$id_agent = (int) get_parameter ('id_agent');
-		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
-		
-		$filter = array ();
-		
-		switch ($config['dbtype']) {
-			case "mysql":
-			case "postgresql":
-				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
-				break;
-			case "oracle":
-				$filter[] = '(upper(nombre) LIKE upper("%'.$string.'%") OR upper(direccion) LIKE upper("%'.$string.'%") OR upper(comentarios) LIKE upper("%'.$string.'%"))';
-				break;
-		}
-		$filter[] = 'id_agente != '.$id_agent;
-		
-		$agents = agents_get_agents ($filter, array ('nombre', 'direccion'));
-		if ($agents === false)
-			return;
-		
-		foreach ($agents as $agent) {
-			echo io_safe_output($agent['nombre']) . "|" . io_safe_output($agent['direccion'])  . "\n";
-		}
-		
-		return;
-	}
 	
 	if ($search_parents_2) {
 		require_once ('include/functions_agents.php');
@@ -220,11 +189,12 @@ $groups = users_get_groups ($config["id_user"], "AR",false);
 $agents = agents_get_group_agents (array_keys ($groups));
 
 $table->data[2][0] = __('Parent');
-//Image src with skins
-$src_code = html_print_image('images/lightning.png', true, false, true);
-$table->data[2][1] = html_print_input_text_extended ('id_parent', agents_get_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
-	array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true)
-	. ui_print_help_tip (__("Type at least two characters to search"), true);
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['input_name'] = 'id_parent';
+$params['value'] = agents_get_name ($id_parent);
+$table->data[2][1] = ui_print_agent_autocomplete_input($params);
 
 $table->data[2][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
 
@@ -291,7 +261,7 @@ if (!$new_agent) {
 		$table->data[3][1] .= '</a>'.ui_print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
 	}
 	else
-		$table->data[3][1] = '<em>'.__('Not available').'</em>';		
+		$table->data[3][1] = '<em>'.__('Not available').'</em>';
 }
 else
 	$table->data[3][1] = '<em>'.__('Not available').'</em>';
@@ -365,7 +335,7 @@ if($fields === false) $fields = array();
 foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
-		
+	
 	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
 	if($custom_value === false) {
@@ -435,65 +405,6 @@ function changeIcons() {
 
 $(document).ready (function () {
 	$("select#id_os").pandoraSelectOS ();
-	
-	$("#text-id_parent").autocomplete({
-		minLength: 2,
-		source: function( request, response ) {
-			var term = request.term; //Word to search
-			
-			var data_params = {
-				"page": "godmode/agentes/agent_manager",
-				"search_parents_2": 1,
-				"q": term};
-			
-			jQuery.ajax ({
-				data: data_params,
-				async: false,
-				type: "POST",
-				url: action="ajax.php",
-				timeout: 10000,
-				dataType: "json",
-				success: function (data) {
-					response(data);
-					return;
-				}
-			});
-			return;
-		},
-		select: function( event, ui ) {
-			var agent_name = ui.item.name;
-			
-			//Put the name
-			$(this).val(agent_name);
-			
-			return false;
-		}
-	})
-	.data( "autocomplete")._renderItem = function( ul, item ) {
-		if (item.ip == "") {
-			text = "<a>" + item.name + "</a>";
-		}
-		else {
-			text = "<a>" + item.name
-				+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
-		}
-		
-		return $("<li></li>")
-			.data("item.autocomplete", item)
-			.append(text)
-			.appendTo(ul);
-	};
-	
-	//Force the size of autocomplete
-	$(".ui-autocomplete").css("max-height", "100px");
-	$(".ui-autocomplete").css("overflow-y", "auto");
-	/* prevent horizontal scrollbar */
-	$(".ui-autocomplete").css("overflow-x", "hidden");
-	/* add padding to account for vertical scrollbar */
-	$(".ui-autocomplete").css("padding-right", "20px");
-	
-	//Force to style of items
-	$(".ui-autocomplete").css("text-align", "left");
 });
 /* ]]> */
 </script>

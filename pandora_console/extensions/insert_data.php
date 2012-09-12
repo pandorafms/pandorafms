@@ -110,7 +110,7 @@ function mainInsertData() {
 			}
 			else {
 				$result = createXMLData($agent, $agentModule, $date_xml, $data);
-
+				
 				if($result) {
 					$done++;
 				}
@@ -146,11 +146,18 @@ function mainInsertData() {
 	$table->style[0] = 'font-weight: bolder;';
 	
 	$table->data = array();
+	
 	$table->data[0][0] = __('Agent');
-	$src_code = html_print_image('images/lightning.png', true, false, true);
-	$table->data[0][1] = html_print_input_text_extended ('id_agent', $id_agent, 'text_id_agent', '', 30, 100, false, '',
-		array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true)
-		. ui_print_help_tip(__('Type at least two characters to search'), true);
+	$params = array();
+	$params['return'] = true;
+	$params['show_helptip'] = true;
+	$params['input_name'] = 'id_agent';
+	$params['value'] = $id_agent;
+	$params['javascript_is_function_select'] = true;
+	$params['javascript_name_function_select'] = 'custom_select_function';
+	$params['javascript_code_function_select'] = '';
+	$table->data[0][1] = ui_print_agent_autocomplete_input($params);
+	
 	$table->data[1][0] = __('Module');
 	$modules = array ();
 	if ($id_agent)
@@ -182,95 +189,6 @@ function mainInsertData() {
 <script type="text/javascript">
 	/* <![CDATA[ */
 	$(document).ready (function () {
-		$("#text_id_agent").autocomplete({
-			minLength: 2,
-			source: function( request, response ) {
-				var term = request.term; //Word to search
-				
-				var data_params = {
-					page: "operation/agentes/exportdata",
-					"search_agents_2": 1,
-					"q": term,
-					id_group: function() {
-						return $("#id_group").val();
-					}
-				};
-				
-				jQuery.ajax ({
-					data: data_params,
-					async: false,
-					type: "POST",
-					url: action="ajax.php",
-					timeout: 10000,
-					dataType: "json",
-					success: function (data) {
-						response(data);
-						return;
-					}
-				});
-				return;
-			},
-			select: function( event, ui ) {
-				var agent_name = ui.item.name;
-				
-				//Put the name
-				$(this).val(agent_name);
-				
-				$('#id_agent_module').empty ();
-				var inputs = [];
-				inputs.push ("agent_name=" + agent_name);
-				inputs.push ('filter=delete_pending = 0');
-				inputs.push ("get_agent_modules_json=1");
-				inputs.push ("page=operation/agentes/ver_agente");
-				jQuery.ajax ({
-					data: inputs.join ("&"),
-					type: 'GET',
-					url: action="ajax.php",
-					timeout: 10000,
-					dataType: 'json',
-					success: function (data) {
-						$('#id_agent_module').append ($('<option></option>').attr ('value', 0).text ("--"));
-						jQuery.each (data, function (i, val) {
-							s = js_html_entity_decode (val['nombre']);
-							$('#id_agent_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
-						});
-						$('#id_agent_module').enable();
-						$('#id_agent_module').fadeIn ('normal');
-
-						$('#submit-submit').enable();
-						$('#submit-submit').fadeIn ('normal');
-					}
-				});
-				
-				return false;
-			}
-		})
-		.data( "autocomplete")._renderItem = function( ul, item ) {
-			if ((item.ip == "") || (typeof(item.ip) == "undefined")) {
-				text = "<a>" + item.name + "</a>";
-			}
-			else {
-				text = "<a>" + item.name
-					+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
-			}
-			
-			return $("<li></li>")
-				.data("item.autocomplete", item)
-				.append(text)
-				.appendTo(ul);
-		};
-		
-		//Force the size of autocomplete
-		$(".ui-autocomplete").css("max-height", "100px");
-		$(".ui-autocomplete").css("overflow-y", "auto");
-		/* prevent horizontal scrollbar */
-		$(".ui-autocomplete").css("overflow-x", "hidden");
-		/* add padding to account for vertical scrollbar */
-		$(".ui-autocomplete").css("padding-right", "20px");
-		
-		//Force to style of items
-		$(".ui-autocomplete").css("text-align", "left");
-
 		$("#text-time").timeEntry ({
 			spinnerImage: 'images/time-entry.png',
 			spinnerSize: [20, 20, 0]
@@ -279,6 +197,36 @@ function mainInsertData() {
 		$("#text-date").datepicker ();
 		
 	});
+	
+	function custom_select_function(agent_name) {
+		$('#id_agent_module').empty ();
+		
+		var inputs = [];
+		inputs.push ("agent_name=" + agent_name);
+		inputs.push ('filter=delete_pending = 0');
+		inputs.push ("get_agent_modules_json=1");
+		inputs.push ("page=operation/agentes/ver_agente");
+		jQuery.ajax ({
+			data: inputs.join ("&"),
+			type: 'GET',
+			url: action="ajax.php",
+			timeout: 10000,
+			dataType: 'json',
+			success: function (data) {
+				$('#id_agent_module').append ($('<option></option>').attr ('value', 0).text ("--"));
+				jQuery.each (data, function (i, val) {
+					s = js_html_entity_decode (val['nombre']);
+					$('#id_agent_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+				});
+				$('#id_agent_module').enable();
+				$('#id_agent_module').fadeIn ('normal');
+				
+				$('#submit-submit').enable();
+				$('#submit-submit').fadeIn ('normal');
+			}
+		});
+	}
+	
 	/* ]]> */
 </script>
 <?php

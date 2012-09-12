@@ -1,3 +1,40 @@
+2012-09-12 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extensions/insert_data.php,
+	operation/incidents/incident_detail.php: started to use the new function
+	"ui_print_agent_autocomplete_input" to make more easy (and standar)
+	the autocomplete agent input.
+	
+	* godmode/agentes/agent_manager.php: erased unused source code for
+	old ajax call, and started to use the new function
+	"ui_print_agent_autocomplete_input" to make more easy (and standar)
+	the autocomplete agent input.
+	
+	* operation/agentes/exportdata.php: erased duplicated source code
+	for call ajax, and rewrote some javascript to use same page to
+	ajax.
+	
+	* godmode/alerts/alert_list.builder.php,
+	godmode/events/event_edit_filter.php,
+	godmode/reporting/visual_console_builder.editor.js: rewrote some
+	javascript to use same page to ajax.
+	
+	* include/ajax/agent.php: cleaned source code style.
+	
+	* include/functions_ui.php: removed the old unused code as
+	the functions "ui_print_ui_agents_list" and "ui_popup_help". And
+	added the first version of "ui_print_agent_autocomplete_input", and
+	this function maybe will be changing for a some time.
+	
+	* include/functions_html.php: into the function
+	"html_print_input_text_extended" added code to use the $alt
+	parameter (never it have been used before) and added the function
+	"html_print_input_hidden_extended" with more parameters than the
+	simple "html_print_input_hidden" function.
+	
+	* include/javascript/pandora.js: marked as Deprecated the function
+	"agent_module_autocomplete".
+
 2012-09-12  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor_plugin.php

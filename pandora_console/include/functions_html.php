@@ -542,6 +542,10 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 		$attributes = array ();
 	}
 	
+	if (!empty($alt)) {
+		$output .= 'alt="' . $alt . '" ';
+	}
+	
 	//Attributes specified by function call
 	$attrs = array ("name" => "unnamed", "value" => "",
 		"id" => "text-".sprintf ('%04d', $idcounter),
@@ -713,6 +717,43 @@ function html_print_input_hidden ($name, $value, $return = false, $class = false
 	
 	if ($return)
 		return $output;
+	
+	echo $output;
+}
+
+/**
+ * Render an input hidden element. Extended version, use html_print_input_hidden() to simplify.
+ *
+ * The element will have an id like: "hidden-$name"
+ * 
+ * @param string $name Input name.
+ * @param string $value Input value.
+ * @param string $id Input value.
+ * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param string $class Set the class of input.
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_input_hidden_extended($name, $value, $id, $return = false, $class = false) {
+	if ($class !== false) {
+		$classText = 'class="' . $class . '"';
+	}
+	else {
+		$classText = '';
+	}
+	
+	if (empty($id)) {
+		$ouput_id = 'hidden-' . $name;
+	}
+	else {
+		$ouput_id = $id;
+	}
+	
+	$output = '<input id="' . $ouput_id . '" name="' . $name . '" type="hidden" ' . $classText . ' value="' . $value . '" />';
+	
+	if ($return)
+		return $output;
+	
 	echo $output;
 }
 

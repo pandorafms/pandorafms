@@ -693,6 +693,7 @@ if ($update_module || $create_module) {
 	$tcp_port = (int) get_parameter ('tcp_port');
 	$configuration_data = (string) get_parameter ('configuration_data');
 	$old_configuration_data = (string) get_parameter ('old_configuration_data');
+	$new_configuration_data = '';
 	
 	$custom_string_1 = (string) get_parameter ('custom_string_1');
 	$custom_string_2 = (string) get_parameter ('custom_string_2');

@@ -108,6 +108,8 @@ class tentacle_client {
          String line;
          while((line=br.readLine())!=null)
             data += line + '\n';
+         
+         br.close();
 	    } catch (IOException e) {
 	    	getError("Could not get the file");
 	    }

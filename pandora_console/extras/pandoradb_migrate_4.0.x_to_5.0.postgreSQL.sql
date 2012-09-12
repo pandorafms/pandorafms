@@ -313,15 +313,23 @@ ALTER TABLE "trecon_task" ALTER COLUMN "field1" TYPE TEXT;
 ALTER TABLE "tlayout_data" ADD COLUMN "enable_link" SMALLINT NOT NULL default 1;
 
 -- -----------------------------------------------------
--- Table `tlocal_component`
+-- Table `tevento`
 -- -----------------------------------------------------
-ALTER TABLE "tlocal_component" ADD COLUMN "critical_instructions" text default '';
-ALTER TABLE "tlocal_component" ADD COLUMN "warning_instructions" text default '';
-ALTER TABLE "tlocal_component" ADD COLUMN "unknown_instructions" text default '';
+ALTER TABLE "tevento" ADD COLUMN "critical_instructions" text default '';
+ALTER TABLE "tevento" ADD COLUMN "warning_instructions" text default '';
+ALTER TABLE "tevento" ADD COLUMN "unknown_instructions" text default '';
 
 -- -----------------------------------------------------
--- Table `tpolicy_modules`
+-- Table `tagente_modulo`
 -- -----------------------------------------------------
-ALTER TABLE "tpolicy_modules" ADD COLUMN "critical_instructions" text default '';
-ALTER TABLE "tpolicy_modules" ADD COLUMN "warning_instructions" text default '';
-ALTER TABLE "tpolicy_modules" ADD COLUMN "unknown_instructions" text default '';
+ALTER TABLE "tagente_modulo" ADD COLUMN "critical_instructions" text default '';
+ALTER TABLE "tagente_modulo" ADD COLUMN "warning_instructions" text default '';
+ALTER TABLE "tagente_modulo" ADD COLUMN "unknown_instructions" text default '';
+
+-- -----------------------------------------------------
+-- Table `tnetwork_component`
+-- -----------------------------------------------------
+ALTER TABLE "tnetwork_component" ADD COLUMN "critical_instructions" text default '';
+ALTER TABLE "tnetwork_component" ADD COLUMN "warning_instructions" text default '';
+ALTER TABLE "tnetwork_component" ADD COLUMN "unknown_instructions" text default '';
+

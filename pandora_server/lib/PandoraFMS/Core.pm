@@ -3455,6 +3455,13 @@ sub pandora_module_unknown ($$) {
 		else {
 			logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
 		}
+		
+		# Generate event with severity minor
+		my ($event_type, $severity) = ('going_unknown', 5);
+		my $description = "Module " . safe_output($module->{'nombre'}) . " is going to UNKNOWN";
+		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+	
 	}
 }
 

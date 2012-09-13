@@ -207,7 +207,7 @@ public class PandroidAgentListener extends Service {
 	private String buildXML(){
 		String buffer = "";
 		String gpsData = "";
-		buffer += "<?xml version='1.0' encoding='utf-8'?>\n";
+		buffer += "<?xml version='1.0' encoding='iso-8859-1'?>\n";
 		
 		String latitude = getSharedData("PANDROID_DATA", "latitude", "181", "float");
 		String longitude = getSharedData("PANDROID_DATA", "longitude", "181", "float");
@@ -358,7 +358,7 @@ public class PandroidAgentListener extends Service {
 	
     private void writeFile(String fileName, String textToWrite) {
 try { // catches IOException below
-    		
+    		/*
     		String UTF8 = "utf8";
     		int BUFFER_SIZE = 8192;
     		
@@ -372,15 +372,15 @@ try { // catches IOException below
     		//ensure that everything is really written out and close
     		bw.flush();
     		bw.close();
-    		/*
+    		*/
     		FileOutputStream fOut = openFileOutput(fileName, MODE_WORLD_READABLE);
     		OutputStreamWriter osw = new OutputStreamWriter(fOut); 
     		
     		// Write the string to the file
     		osw.write(textToWrite);
     		/* ensure that everything is really written out and close */
-    		//osw.flush();
-    		//osw.close();
+    		osw.flush();
+    		osw.close();
     	} catch (IOException e) {
 
     	}

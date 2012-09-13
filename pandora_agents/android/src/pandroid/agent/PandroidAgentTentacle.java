@@ -113,7 +113,7 @@ class tentacle_client {
 	    } catch (IOException e) {
 	    	getError("Could not get the file");
 	    }
-	    Log.v("MARK",data);
+	    
 	    getInfo("*** Start of transference ***\n",verbose);
 	    // Send the file name and length
 	    try {
@@ -133,7 +133,7 @@ class tentacle_client {
 	    if (serverResponse != null && serverResponse.equals("SEND OK")) {
 		    try {
 		    	 getInfo("Client -> Server: [file data]\n", verbose);
-		    	 serverOutput.write(data.getBytes());
+		    	 serverOutput.writeBytes(data);
 		    	 
 		    } catch (IOException e) {
 		    	getError("Could not write on server");

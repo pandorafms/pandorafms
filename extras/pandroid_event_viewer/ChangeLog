@@ -1,3 +1,15 @@
+2012-09-13  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* res/drawable-ldpi/criticity_0.png,
+	res/drawable-ldpi/criticity_1.png,
+	res/drawable-ldpi/criticity_2.png,res/drawable-ldpi/criticity_3.png,
+	res/drawable-ldpi/criticity_4.png,
+	res/drawable-ldpi/criticity_default.png,
+	res/drawable-ldpi/pandorafms_logo.png: update the images thanks a
+	Carla Andres.
+	
+	* res/layout/info.xml: fixed the layout to show the app icon.
+
 2012-09-08 Santiago Munín <burning1@gmail.com>
 	* res/values/strings.xml: Fixed some entries.
 

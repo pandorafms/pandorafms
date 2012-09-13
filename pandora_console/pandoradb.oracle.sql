@@ -542,7 +542,7 @@ CREATE TABLE tevento (
 	critical_instructions VARCHAR2(255) default '',
 	warning_instructions VARCHAR2(255) default '',
 	unknown_instructions VARCHAR2(255) default '',
-	CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change'))
+	CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change'))
 );
 CREATE INDEX tevento_id_1_idx ON tevento(id_agente, id_evento);
 CREATE INDEX tevento_id_2_idx ON tevento(utimestamp, id_evento);

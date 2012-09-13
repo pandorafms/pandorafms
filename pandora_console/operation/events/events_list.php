@@ -697,6 +697,12 @@ foreach ($result as $event) {
 		case 4:
 			$img_sev = "images/status_sets/default/severity_critical.png";
 			break;
+		case 5:
+			$img_sev = "images/status_sets/default/severity_minor.png";
+			break;
+		case 6:
+			$img_sev = "images/status_sets/default/severity_major.png";
+			break;
 	}
 	
 	if (in_array('evento', $show_fields)) {

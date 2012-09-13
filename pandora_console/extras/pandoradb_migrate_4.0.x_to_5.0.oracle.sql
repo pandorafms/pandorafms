@@ -316,6 +316,7 @@ ALTER TABLE tlayout_data ADD (enable_link NUMBER(5, 0) NOT NULL default 1);
 ALTER TABLE tevento ADD (critical_instructions VARCHAR2(255) default '');
 ALTER TABLE tevento ADD (warning_instructions VARCHAR2(255) default '');
 ALTER TABLE tevento ADD (unknown_instructions VARCHAR2(255) default '');
+ALTER TABLE tevento MODIFY CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change'))
 
 -- -----------------------------------------------------
 -- Table `tagente_modulo`

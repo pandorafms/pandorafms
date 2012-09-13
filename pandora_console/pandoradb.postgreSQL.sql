@@ -422,7 +422,7 @@ CREATE TABLE "tconfig_os" (
 	"icon_name" varchar(100) default ''
 );
 
-CREATE TYPE type_tevento_event AS ENUM ('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change');
+CREATE TYPE type_tevento_event AS ENUM ('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change');
 CREATE TABLE "tevento" (
 	"id_evento" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_agente" INTEGER NOT NULL default 0,

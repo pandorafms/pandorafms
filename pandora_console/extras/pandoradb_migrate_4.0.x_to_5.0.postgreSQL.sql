@@ -318,6 +318,7 @@ ALTER TABLE "tlayout_data" ADD COLUMN "enable_link" SMALLINT NOT NULL default 1;
 ALTER TABLE "tevento" ADD COLUMN "critical_instructions" text default '';
 ALTER TABLE "tevento" ADD COLUMN "warning_instructions" text default '';
 ALTER TABLE "tevento" ADD COLUMN "unknown_instructions" text default '';
+ALTER TYPE type_tevento_event ADD VALUE 'going_unknown' BEFORE 'unknown';
 
 -- -----------------------------------------------------
 -- Table `tagente_modulo`

@@ -1,3 +1,22 @@
+2012-09-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora_legacy.css
+	include/styles/pandora.css
+	include/functions.php
+	pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	operation/events/events_list.php
+	images/skin/skin_default/include/styles/pandora.css
+	images/status_sets/default/severity_major_pixel.png
+	images/status_sets/default/severity_minor_pixel.png
+	images/status_sets/default/severity_major.png
+	images/status_sets/default/severity_minor.png
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added images and styles
+	for minor and major criticities
+
 2012-09-13  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/events/events_list.php: Display instructions for

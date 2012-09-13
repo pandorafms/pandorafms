@@ -935,6 +935,12 @@ div#logo_text3 {
 .datos_grey, .datos_greyf9 {
 	background-color: #E4E4E4;
 }
+.datos_sky, .datos_skyf9 {
+	background-color: #cdfffc;
+}
+.datos_pink, .datos_pinkf9 {
+	background-color: #F39DE2;
+}
 td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {
 	padding: 5px 5px 5px 5px;
 }

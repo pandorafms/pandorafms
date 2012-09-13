@@ -1,3 +1,10 @@
+2012-08-24 Mark Holland <mark@mark-holland.me.uk>
+
+	* src/pandroid/agent/PandroidAgentListener.java:
+	Reverted to original writeFile method, changed
+	xml encoding header to iso-8859-1
+
+
 2012-09-12  Sergio Martin <sergio.martin@artica.es>
 
 	* src/pandroid/agent/PandroidAgent.java

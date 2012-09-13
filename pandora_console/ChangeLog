@@ -1,3 +1,9 @@
+2012-09-13  Vanessa Gil <vanessa.gil@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php
+	  godmode/modules/manage_network_components_form_common.php: Moved 
+	instructions fields to 'advanced options' and added help tip.
+
 2012-09-12 Miguel de Dios <miguel.dedios@artica.es>
 
 	* extensions/insert_data.php,

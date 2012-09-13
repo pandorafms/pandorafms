@@ -254,16 +254,6 @@ else {
 	$table_simple->data[3][3] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
 }
 
-$table_simple->data[4][0] = __('Critical instructions');
-$table_simple->data[4][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
-
-
-$table_simple->data[5][0] = __('Warning instructions');
-$table_simple->data[5][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, '', true);
-
-$table_simple->data[6][0] = __('Unknown instructions');
-$table_simple->data[6][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
-
 /* Advanced form part */
 $table_advanced->id = 'advanced';
 $table_advanced->width = '98%';
@@ -364,6 +354,19 @@ $table_advanced->data[7][0] = __('Quiet');
 $table_advanced->data[7][0] .= ui_print_help_tip(__('The module still stores data but the alerts and events will be stop'), true);
 $table_advanced->colspan[7][1] = 4;
 $table_advanced->data[7][1] = html_print_checkbox('quiet_module', 1, $quiet_module, true);
+
+$table_advanced->data[8][0] = __('Critical instructions'). ui_print_help_tip(__("Instructions when the status is critical"), true);
+$table_advanced->data[8][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
+$table_advanced->colspan[8][1] = 4;
+
+$table_advanced->data[9][0] = __('Warning instructions'). ui_print_help_tip(__("Instructions when the status is warning"), true);
+$table_advanced->data[9][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, '', true);
+$table_advanced->colspan[9][1] = 4;
+
+$table_advanced->data[10][0] = __('Unknown instructions'). ui_print_help_tip(__("Instructions when the status is unknown"), true);
+$table_advanced->data[10][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
+$table_advanced->colspan[10][1] = 4;
+
 ?>
 
 <script type="text/javascript">

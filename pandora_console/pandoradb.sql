@@ -510,7 +510,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	`evento` text NOT NULL,
 	`utimestamp` bigint(20) NOT NULL default '0',
-	`event_type` enum('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change') default 'unknown',
+	`event_type` enum('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change') default 'unknown',
 	`id_agentmodule` int(10) NOT NULL default '0',
 	`id_alert_am` int(10) NOT NULL default '0',
 	`criticity` int(4) unsigned NOT NULL default '0',

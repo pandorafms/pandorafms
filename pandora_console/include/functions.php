@@ -835,6 +835,7 @@ function get_event_types () {
 	$types['critical'] = __('Monitor Critical');
 	$types['warning'] = __('Monitor Warning');
 	$types['normal'] = __('Monitor Normal');
+	$types['going_unknown'] = __('Monitor Unknown');
 	
 	$types['alert_fired'] = __('Alert fired');
 	$types['alert_recovered'] = __('Alert recovered');
@@ -900,6 +901,12 @@ function get_priority_name ($priority) {
 		case 4: 
 			return __('Critical');
 			break;
+		case 5: 
+			return __('Minor');
+			break;
+		case 6: 
+			return __('Major');
+			break;
 		default: 
 			return __('All');
 			break;
@@ -929,6 +936,12 @@ function get_priority_class($priority) {
 			break;
 		case 4: 
 			return "datos_red";
+			break;
+		case 5: 
+			return "datos_sky";
+			break;
+		case 6: 
+			return "datos_pink";
 			break;
 		default: 
 			return "datos_grey";

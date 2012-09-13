@@ -1111,40 +1111,46 @@ foreach ($result as $event) {
 	} 
 	
 	$string .= '</td></tr><tr>';
-	
-	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Critical instructions') . '</td><td align="left">';
-	if ($event["critical_instructions"] != '') {
-		$string .= $event["critical_instructions"];
-		$string .= '</td></tr><tr>';
-		$odd = ($odd == '')? 'rowOdd' : '';
-	}
-	else {
-		$string .= '<i>- ' . __('Empty') . ' -</i>';
-	}
-	$string .= '</td></tr>';
-	
-	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Warning instructions') . '</td><td align="left">';
-	if ($event["warning_instructions"] != '') {
-		$string .= $event["warning_instructions"];
-		$string .= '</td></tr><tr>';
-		$odd = ($odd == '')? 'rowOdd' : '';
-	}
-	else {
-		$string .= '<i>- ' . __('Empty') . ' -</i>';
-	}
-	$string .= '</td></tr>';
-	
-	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Unknown instructions') . '</td><td align="left">';
-	if ($event["unknown_instructions"] != '') {
-		$string .= $event["unknown_instructions"];
-		$string .= '</td></tr><tr>';
-		$odd = ($odd == '')? 'rowOdd' : '';
-	}
-	else {
-		$string .= '<i>- ' . __('Empty') . ' -</i>';
-	}
-	$string .= '</td></tr>';
 
+	if ($event["criticity"] == 4) {
+		$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Critical instructions') . '</td><td align="left">';
+		if ($event["critical_instructions"] != '') {
+			$string .= $event["critical_instructions"];
+			$string .= '</td></tr><tr>';
+			$odd = ($odd == '')? 'rowOdd' : '';
+		}
+		else {
+			$string .= '<i>- ' . __('Empty') . ' -</i>';
+		}
+		$string .= '</td></tr>';
+	}
+	
+	if ($event["criticity"] == 3) {	
+		$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Warning instructions') . '</td><td align="left">';
+		if ($event["warning_instructions"] != '') {
+			$string .= $event["warning_instructions"];
+			$string .= '</td></tr><tr>';
+			$odd = ($odd == '')? 'rowOdd' : '';
+		}
+		else {
+			$string .= '<i>- ' . __('Empty') . ' -</i>';
+		}
+		$string .= '</td></tr>';
+	}
+
+	if ($event["criticity"] == 0) {	
+		$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Unknown instructions') . '</td><td align="left">';
+		if ($event["unknown_instructions"] != '') {
+			$string .= $event["unknown_instructions"];
+			$string .= '</td></tr><tr>';
+			$odd = ($odd == '')? 'rowOdd' : '';
+		}
+		else {
+			$string .= '<i>- ' . __('Empty') . ' -</i>';
+		}
+		$string .= '</td></tr>';
+	}
+	
 	$string .= '</table>';
 	
 	$data = array($string);

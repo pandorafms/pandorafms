@@ -118,15 +118,15 @@ $table->data[6][0] = __('Unit');
 $table->data[6][1] = html_print_input_text ('unit', $unit, '', 12, 25, true);
 $table->data[6][2] = $table->data[6][3] = '';
 
-$table->data[7][0] = __('Critical instructions');
+$table->data[7][0] = __('Critical instructions'). ui_print_help_tip(__("Instructions when the status is critical"), true);
 $table->data[7][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
 $table->data[7][2] = $table->data[7][3] = '';
 
-$table->data[8][0] = __('Warning instructions');
+$table->data[8][0] = __('Warning instructions'). ui_print_help_tip(__("Instructions when the status is warning"), true);
 $table->data[8][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, '', true);
 $table->data[8][2] = $table->data[8][3] = '';
 
-$table->data[9][0] = __('Unknown instructions');
+$table->data[9][0] = __('Unknown instructions'). ui_print_help_tip(__("Instructions when the status is unknown"), true);
 $table->data[9][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
 $table->data[9][2] = $table->data[9][3] = '';
 ?>

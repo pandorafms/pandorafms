@@ -1,5 +1,10 @@
 2012-09-13  Vanessa Gil <vanessa.gil@artica.es>
 
+	* operation/events/events_list.php: Display instructions for
+	the event criticity.
+
+2012-09-13  Vanessa Gil <vanessa.gil@artica.es>
+
 	* godmode/agentes/module_manager_editor_common.php
 	  godmode/modules/manage_network_components_form_common.php: Moved 
 	instructions fields to 'advanced options' and added help tip.

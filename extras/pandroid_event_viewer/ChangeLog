@@ -1,3 +1,8 @@
+2012-09-13 Santiago Munín <burning1@gmail.com>
+	* src/pandroid_event_viewer/pandorafms/EventList.java: Now, if an element is validated, his color changes to green.
+	* src/pandroid_event_viewer/pandorafms/PopupValidationEvent.java: Now it returns a result (validated or not) which will be processed for the activity which called it. 
+	* res/values/colors.xml: Added colors to values instead of hardcoding them.
+
 2012-09-13  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* res/drawable-ldpi/criticity_0.png,

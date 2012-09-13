@@ -28,7 +28,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -63,12 +62,14 @@ public class EventList extends ListActivity {
 	private static int DEFAULT_PRIORITY_CODE = 0;
 	private static String DEFAULT_SOURCE = "Pandora FMS Event";
 	private static final int CREATE_INCIDENT_DIALOG = 1;
+	private static final int VALIDATE_EVENT_ACTIVITY = 0;
 	private ListView lv;
 	private MyAdapter la;
 	private PandroidEventviewerActivity object;
 	private BroadcastReceiver onBroadcast;
 	private Dialog creatingIncidentDialog;
 	private Context context = this;
+	private View currentElement;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -232,8 +233,10 @@ public class EventList extends ListActivity {
 										context, "",
 										getString(R.string.creating_incident),
 										true);
-								String title = titleEditText.getText().toString();
-								String description = descriptionEditText.getText().toString();
+								String title = titleEditText.getText()
+										.toString();
+								String description = descriptionEditText
+										.getText().toString();
 								new SetNewIncidentAsyncTask().execute(title,
 										description, group);
 							} else {
@@ -290,6 +293,25 @@ public class EventList extends ListActivity {
 		la.notifyDataSetChanged();
 
 		object.executeBackgroundGetEvents(true);
+	}
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == VALIDATE_EVENT_ACTIVITY) {
+			if (resultCode == RESULT_OK) {
+				String text;
+				if (data.getExtras().getBoolean("validated")) {
+					currentElement.setBackgroundColor(getResources().getColor(
+							R.color.Green));
+					text = getApplicationContext().getString(
+							R.string.successful_validate_event_str);
+				} else {
+					text = getApplicationContext().getString(
+							R.string.fail_validate_event_str);
+				}
+				Toast.makeText(getApplicationContext(), text,
+						Toast.LENGTH_SHORT).show();
+			}
+		}
 	}
 
 	/**
@@ -375,23 +397,29 @@ public class EventList extends ListActivity {
 
 				switch (item.criticity) {
 
-				case 0:// Blue
-					view.setBackgroundColor(Color.parseColor("#CDE2EA"));
+				case 0:
+					view.setBackgroundColor(getResources().getColor(
+							R.color.Blue));
 					break;
-				case 1:// Grey
-					view.setBackgroundColor(Color.parseColor("#E4E4E4"));
+				case 1:
+					view.setBackgroundColor(getResources().getColor(
+							R.color.Grey));
 					break;
-				case 2:// Green
-					view.setBackgroundColor(Color.parseColor("#BBFFA4"));
+				case 2:
+					view.setBackgroundColor(getResources().getColor(
+							R.color.Green));
 					break;
-				case 3:// Yellow
-					view.setBackgroundColor(Color.parseColor("#F4FFBF"));
+				case 3:
+					view.setBackgroundColor(getResources().getColor(
+							R.color.Yellow));
 					break;
-				case 4:// Red
-					view.setBackgroundColor(Color.parseColor("#FFC0B5"));
+				case 4:
+					view.setBackgroundColor(getResources()
+							.getColor(R.color.Red));
 					break;
-				default:// Grey
-					view.setBackgroundColor(Color.parseColor("#E4E4E4"));
+				default:
+					view.setBackgroundColor(getResources().getColor(
+							R.color.Grey));
 					break;
 				}
 
@@ -457,8 +485,9 @@ public class EventList extends ListActivity {
 					}
 
 					if (item.user_comment.length() != 0) {
-						if (item.user_comment.length()> 200) {
-							item.user_comment = item.user_comment.substring(0, 197);
+						if (item.user_comment.length() > 200) {
+							item.user_comment = item.user_comment.substring(0,
+									197);
 							item.user_comment = item.user_comment.concat("...");
 						}
 						text = (TextView) viewEventExtended
@@ -524,8 +553,9 @@ public class EventList extends ListActivity {
 						text.setText("");
 						text.setVisibility(TextView.VISIBLE);
 					} else if (item.status != 1) {
-						OnClickListenerButtonValidate clickListener = new OnClickListenerButtonValidate();
-						clickListener.id_event = item.id_event;
+						currentElement = view;
+						OnClickListenerButtonValidate clickListener = new OnClickListenerButtonValidate(
+								item.id_event);
 						button.setOnClickListener(clickListener);
 						text = (TextView) viewEventExtended
 								.findViewById(R.id.validate_event_label);
@@ -643,13 +673,17 @@ public class EventList extends ListActivity {
 		 * 
 		 */
 		private class OnClickListenerButtonValidate implements OnClickListener {
-			public int id_event;
+			private int idEvent;
+
+			public OnClickListenerButtonValidate(int idEvent) {
+				this.idEvent = idEvent;
+			}
 
 			public void onClick(View v) {
 				Intent i = new Intent(getApplicationContext(),
 						PopupValidationEvent.class);
-				i.putExtra("id_event", id_event);
-				startActivity(i);
+				i.putExtra("id_event", idEvent);
+				startActivityForResult(i, VALIDATE_EVENT_ACTIVITY);
 			}
 		}
 	}

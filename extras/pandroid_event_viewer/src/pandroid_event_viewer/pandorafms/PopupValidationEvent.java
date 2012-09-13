@@ -26,7 +26,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 /**
  * Provides the functionality necessary to validate an event.
@@ -73,14 +72,7 @@ public class PopupValidationEvent extends Activity {
 	}
 
 	/**
-	 * Finish the activity
-	 */
-	private void destroyPopup() {
-		finish();
-	}
-
-	/**
-	 * Sends a validation (async task)
+	 * Sends a validation request (async task)
 	 * 
 	 * @author Miguel de Dios Matías
 	 * 
@@ -90,7 +82,6 @@ public class PopupValidationEvent extends Activity {
 
 		private boolean connectionProblem = false;
 
-		@Override
 		protected Boolean doInBackground(Void... params) {
 			int idEvent = Integer.valueOf(id_event);
 			try {
@@ -100,26 +91,17 @@ public class PopupValidationEvent extends Activity {
 				connectionProblem = true;
 				return false;
 			}
+
 		}
 
-		@Override
 		protected void onPostExecute(Boolean result) {
-			String text;
 			if (connectionProblem) {
 				Core.showConnectionProblemToast(getApplicationContext(), true);
 			} else {
-				if (result) {
-					text = getApplicationContext().getString(
-							R.string.successful_validate_event_str);
-				} else {
-					text = getApplicationContext().getString(
-							R.string.fail_validate_event_str);
-				}
-
-				Toast toast = Toast.makeText(getApplicationContext(), text,
-						Toast.LENGTH_SHORT);
-				toast.show();
-				destroyPopup();
+				Intent resultIntent = new Intent();
+				resultIntent.putExtra("validated", result);
+				setResult(RESULT_OK, resultIntent);
+				finish();
 			}
 		}
 	}

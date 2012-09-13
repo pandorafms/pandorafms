@@ -190,7 +190,9 @@ if (empty($export_btn)) {
 	
 	$groups = users_get_groups ($config['id_user'], "AR");
 	
-	$table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "group", $group, 'submit_group();', '', 0, true, false, true, 'w130', false);
+	$table->data[0][1] = html_print_select_groups($config['id_user'],
+		"AR", true, "group", $group, '', '', 0, true, false, true,
+		'w130', false);
 	
 	//Agent selector
 	$table->data[1][0] = '<b>'.__('Source agent').'</b>';
@@ -212,9 +214,16 @@ if (empty($export_btn)) {
 	//Src code of lightning image with skins 
 	$src_code = html_print_image ('images/lightning.png', true, false, true);
 	
-	$table->data[1][1] = html_print_input_text_extended ('agent', agents_get_name ($agent), 'text-agent', '', 40, 100, false, '',
-		array('style' => "background: url($src_code) no-repeat right;"), true)
-		. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+	$params = array();
+	$params['return'] = true;
+	$params['show_helptip'] = true;
+	$params['input_name'] = 'agent';
+	$params['selectbox_group'] = 'group';
+	$params['value'] = agents_get_name ($agent);
+	$params['javascript_is_function_select'] = true;
+	$params['add_none_module'] = false;
+	$params['selectbox_id'] = 'module_arr';
+	$table->data[1][1] = ui_print_agent_autocomplete_input($params);
 	
 	//Module selector
 	$table->data[2][0] = '<b>'.__('Modules').'</b>';
@@ -279,7 +288,7 @@ if (empty($export_btn)) {
 	
 	// Submit button
 	echo '<div class="action-buttons" style="width:98%;">';
-		html_print_button (__('Export'), 'export_btn', $disabled_export_button, 'change_action()', 'class="sub wand"');
+		html_print_button (__('Export'), 'export_btn', false, 'change_action()', 'class="sub wand"');
 	echo '</div></form>';
 }
 ui_require_jquery_file ('pandora.controls');
@@ -287,113 +296,24 @@ ui_require_jquery_file ('ajaxqueue');
 ui_require_jquery_file ('bgiframe');
 ?>
 <script type="text/javascript">
-/* <![CDATA[ */
-$(document).ready (function () {
-	var inputActive = true;
-	
-	$.ajax({
-		type: "POST",
-		url: "ajax.php",
-		data: "page=operation/agentes/exportdata&search_agents=1&id_group=" + $("#group").val(),
-		success: function(msg){
-			if (msg.length == 0) {
-				$("#text-agent").css ('background-color', '#FF8080');
-				$("#text-agent").val("<?php echo __("No agents in this category");?>");
-				$("#text-agent").attr("disabled", true);
-				$("#text-agent").css ('color', '#000000');
-				inputActive = false;
-			}
+	/* <![CDATA[ */
+	function change_action() {
+		type = $("#export_type").val();
+		var f = document.forms.export_form;
+		
+		switch (type) {
+			case 'csv':
+				f.action = "operation/agentes/exportdata.csv.php";
+				break;
+			case 'excel':
+				f.action = "operation/agentes/exportdata.excel.php";
+				break;
+			case 'avg':
+			case 'data':
+				f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata&export_btn=1";
+				break;
 		}
-	});
-	
-	if (inputActive) {
-		$("#text-agent").autocomplete({
-			minLength: 2,
-			source: function( request, response ) {
-				var term = request.term; //Word to search
-				
-				var data_params = {
-					page: "include/ajax/agent",
-					search_agents_2: 1,
-					id_group: function() { return $("#group").val(); },
-					"q": term};
-				
-				jQuery.ajax ({
-					data: data_params,
-					async: false,
-					type: "POST",
-					url: action="ajax.php",
-					timeout: 10000,
-					dataType: "json",
-					success: function (data) {
-						response(data);
-						return;
-					}
-				});
-				return;
-			},
-			select: function( event, ui ) {
-				var agent_name = ui.item.name;
-				
-				//Put the name
-				$(this).val(agent_name);
-				
-				this.form.submit();
-				
-				return false;
-			}
-		})
-		.data( "autocomplete")._renderItem = function( ul, item ) {
-			if ((item.ip == "") || (typeof(item.ip) == "undefined")) {
-				text = "<a>" + item.name + "</a>";
-			}
-			else {
-				text = "<a>" + item.name
-					+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
-			}
-			
-			return $("<li></li>")
-				.data("item.autocomplete", item)
-				.append(text)
-				.appendTo(ul);
-		};
-		
-		//Force the size of autocomplete
-		$(".ui-autocomplete").css("max-height", "100px");
-		$(".ui-autocomplete").css("overflow-y", "auto");
-		/* prevent horizontal scrollbar */
-		$(".ui-autocomplete").css("overflow-x", "hidden");
-		/* add padding to account for vertical scrollbar */
-		$(".ui-autocomplete").css("padding-right", "20px");
-		
-		//Force to style of items
-		$(".ui-autocomplete").css("text-align", "left");
+		$("#export_form").submit();
 	}
-});
-
-function change_action() {
-	type = $("#export_type").val();
-	var f = document.forms.export_form;
-	
-	switch (type) {
-		case 'csv':
-			f.action = "operation/agentes/exportdata.csv.php";
-			break;
-		case 'excel':
-			f.action = "operation/agentes/exportdata.excel.php";
-			break;
-		case 'avg':
-		case 'data':
-			f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata&export_btn=1";
-			break;
-	}
-	$("#export_form").submit();
-}
-
-function submit_group() {
-	var f = document.forms.export_form;
-	f.action = "index.php?sec=reporting&sec2=operation/agentes/exportdata";
-	f.form.submit();
-}
-/* ]]> */
+	/* ]]> */
 </script>

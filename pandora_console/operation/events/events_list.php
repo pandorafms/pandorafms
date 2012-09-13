@@ -308,14 +308,19 @@ html_print_input_text ('search', io_safe_output($search), '', 15);
 echo '</td>';
 
 //Agent search
-$src_code = html_print_image('images/lightning.png', true, false, true);
-echo "<td>".__('Agent search')."</td><td>";
-html_print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
-array('style' => 'background: url(' . $src_code . ') no-repeat right;'))
-. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+echo "<td>" . __('Agent search') . "</td>";
+echo '<td class="datos">';
+$params = array();
+$params['show_helptip'] = false;
+$params['input_name'] = 'id_agent';
+$params['value'] = $text_agent;
+ui_print_agent_autocomplete_input($params);
+echo '</td>';
 
 
-echo "</td></tr>";
+
+
+echo "</tr>";
 
 // User selectable block size
 echo '<tr><td>';
@@ -765,7 +770,7 @@ foreach ($result as $event) {
 	
 	if (in_array('id_agentmodule',$show_fields)) {
 		$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">'
-					.db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]).'</a>';
+			.db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]).'</a>';
 		$i++;
 	}
 	
@@ -776,7 +781,7 @@ foreach ($result as $event) {
 				WHERE id IN (SELECT id_alert_template
 				FROM talert_template_modules
 				WHERE id = ' . $event["id_alert_am"] . ');';
-	
+			
 			$templateName = db_get_sql($sql);
 			$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">'.$templateName.'</a>';
 		}
@@ -785,7 +790,7 @@ foreach ($result as $event) {
 		}
 		$i++;
 	}
-
+	
 	if (in_array('criticity',$show_fields)) {
 		$data[$i] = get_priority_name ($event["criticity"]);
 		$i++;
@@ -815,7 +820,8 @@ foreach ($result as $event) {
 		else {
 			$data[$i] = '';
 		}
-			$i++;
+		
+		$i++;
 	}
 	
 	if (in_array('source',$show_fields)) {
@@ -835,7 +841,7 @@ foreach ($result as $event) {
 		if (($event["estado"] != 1) and (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1)) {
 			$data[$i] .= '<a href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
 			$data[$i] .= html_print_image ("images/ok.png", true,
-					array ("title" => __('Validate event')));
+				array ("title" => __('Validate event')));
 			$data[$i] .= '</a>&nbsp;';
 		}
 		else {
@@ -854,12 +860,12 @@ foreach ($result as $event) {
 					array ("title" => __('Is not allowed delete events in process'))).'&nbsp;';
 			}
 		}
-	
+		
 		$data[$i] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $event["id_evento"] . ');">';
 		$data[$i] .= html_print_image ("images/eye.png", true,
-				array ("title" => __('Show more')));	
+			array ("title" => __('Show more')));	
 		$data[$i] .= '</a>&nbsp;';
-	
+		
 		// Create incident from this event
 		if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
 			if(isset($config['integria_enabled']) && $config['integria_enabled'] == 1) {
@@ -874,7 +880,7 @@ foreach ($result as $event) {
 			$data[$i] .= '</a>';
 		}
 		$i++;
-	
+		
 		if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
 			//Checkbox
 			$data[$i] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
@@ -889,16 +895,16 @@ foreach ($result as $event) {
 	$string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
 	$string .= '<td align="left" width="200px">'; 
 	$string .= '<div style="text-align:center;">';
-		
+	
 	if($event["estado"] == 0) {
 		$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process'), '3' => __('Add comment')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
 	}
 	if($event["estado"] == 2) {
 		$string .= html_print_select(array('1' => __('Validate'), '3' => __('Add comment')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
 	}
-		
+	
 	$string .= '<a class="validate_event" href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
-		
+	
 	$string .= html_print_button (__('Update'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
 	$string .= '</a>';
 	$string .= '</td><td width="400px">';
@@ -915,14 +921,14 @@ foreach ($result as $event) {
 	$table->colspan[$idx][0] = 10;
 	$table->rowstyle[$idx] = 'display: none;';
 	array_push ($table->data, $data);
-
+	
 	//Hiden row with extended description
 	$string = '<table width="99%" style="border:solid 1px #D3D3D3;" class="toggle" cellpadding="6"><tr>';
 	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
 	$string .= '<b>' . __('Event ID') . '</b></td><td align="left">';
 	$string .= io_safe_output($event["id_evento"]);
 	$string .= '</td></tr><tr class="rowOdd">';	
-
+	
 	$string .= '<td align="left" valign="top" width="25%" border="solid 1px">';
 	$string .= '<b>' . __('Event name') . '</b></td><td align="left">';
 	$string .= io_safe_output($event["evento"]);
@@ -953,7 +959,7 @@ foreach ($result as $event) {
 		$string .= date ($config["date_format"], strtotime($event["timestamp"]));
 	}
 	$string .= '</td></tr><tr>';
-
+	
 	$odd = 'rowOdd';
 	
 	$string .= '<td align="left" valign="top" width="15%">';
@@ -965,7 +971,7 @@ foreach ($result as $event) {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 	}
 	$string .= '</td></tr><tr class="'. $odd .'">';
-
+	
 	$odd = ($odd == '')? 'rowOdd' : '';
 	
 	if ($event["id_agentmodule"] != 0) {
@@ -1053,7 +1059,7 @@ foreach ($result as $event) {
 		$string .= '</td></tr><tr class="' . $odd . '">';
 		$odd = ($odd == '')? 'rowOdd' : '';
 	}
-
+	
 	$string .= '</td></tr>';
 	$odd = ($odd == '')? 'rowOdd' : '';
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Comments') . '</td><td id="comment_row_' . $event['id_evento'] . '" align="left">';
@@ -1085,7 +1091,7 @@ foreach ($result as $event) {
 		$string .= '<i>- ' . __('Empty') . ' -</i>';
 		$odd = ($odd == '')? 'rowOdd' : '';
 	}
-
+	
 	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Source') . '</td><td align="left">';
 	if ($event["source"] != '') {
 		$string .= $event["source"];
@@ -1157,6 +1163,17 @@ foreach ($result as $event) {
 		$string .= '</td></tr>';
 	}
 	
+	$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Unknown instructions') . '</td><td align="left">';
+	if ($event["unknown_instructions"] != '') {
+		$string .= $event["unknown_instructions"];
+		$string .= '</td></tr><tr>';
+		$odd = ($odd == '')? 'rowOdd' : '';
+	}
+	else {
+		$string .= '<i>- ' . __('Empty') . ' -</i>';
+	}
+	$string .= '</td></tr>';
+	
 	$string .= '</table>';
 	
 	$data = array($string);
@@ -1210,7 +1227,6 @@ unset ($table);
 /* 
  <![CDATA[ */
 $(document).ready( function() {
-
 	// Don't collapse filter if update button has been pushed
 	if ($("#hidden-toogle_filter").val() == 'false'){
 		$("#event_control").toggle ();
@@ -1224,7 +1240,7 @@ $(document).ready( function() {
 	
 	$("#filter_id").change(function () {
 		// If selected 'none' flush filter
-		if ( $("#filter_id").val() == 0 ){
+		if ( $("#filter_id").val() == 0 ) {
 			$("#text-id_name").val('');
 			$("#ev_group").val(0);
 			$("#event_type").val('');
@@ -1238,9 +1254,9 @@ $(document).ready( function() {
 			$("#group_rep").val(1);
 			$("#tag").val('');
 			$("#filter_only_alert").val(-1);
-			$("#row_name").css('visibility', 'hidden');	
+			$("#row_name").css('visibility', 'hidden');
 			$("#submit-update_filter").css('visibility', 'hidden');
-			$("#id_group").val(0);	
+			$("#id_group").val(0);
 		}
 		// If filter selected then load filter
 		else {
@@ -1253,35 +1269,35 @@ $(document).ready( function() {
 				},
 				function (data) {
 					jQuery.each (data, function (i, val) {
-					  if (i == 'id_name')
-						$("#text-id_name").val(val);
-					  if (i == 'id_group')
-						$("#ev_group").val(val);
-					  if (i == 'event_type')
-						$("#event_type").val(val);
-					  if (i == 'severity')
-						$("#severity").val(val);
-					  if (i == 'status')
-						$("#status").val(val);
-					  if (i == 'search')
-						$("#text-search").val(val);
-					  if (i == 'text_agent')
-						$("#text_id_agent").val(val);
-					  if (i == 'pagination')
-						$("#pagination").val(val);
-					  if (i == 'event_view_hr')
-						$("#text-event_view_hr").val(val);	
-					  if (i == 'id_user_ack')
-						$("#id_user_ack").val(val);	
-					  if (i == 'group_rep')
-						$("#group_rep").val(val);
-					  if (i == 'tag')
-						$("#tag").val(val);	
-					  if (i == 'filter_only_alert')
-						$("#filter_only_alert").val(val);
-					  if (i == 'id_group_filter')
-						$("#id_group").val(val);
-				  });
+						if (i == 'id_name')
+							$("#text-id_name").val(val);
+						if (i == 'id_group')
+							$("#ev_group").val(val);
+						if (i == 'event_type')
+							$("#event_type").val(val);
+						if (i == 'severity')
+							$("#severity").val(val);
+						if (i == 'status')
+							$("#status").val(val);
+						if (i == 'search')
+							$("#text-search").val(val);
+						if (i == 'text_agent')
+							$("#text_id_agent").val(val);
+						if (i == 'pagination')
+							$("#pagination").val(val);
+						if (i == 'event_view_hr')
+							$("#text-event_view_hr").val(val);
+						if (i == 'id_user_ack')
+							$("#id_user_ack").val(val);
+						if (i == 'group_rep')
+							$("#group_rep").val(val);
+						if (i == 'tag')
+							$("#tag").val(val);
+						if (i == 'filter_only_alert')
+							$("#filter_only_alert").val(val);
+						if (i == 'id_group_filter')
+							$("#id_group").val(val);
+					});
 				},
 				"json"
 			);
@@ -1293,7 +1309,8 @@ $(document).ready( function() {
 		// Checks if the filter has name or not
 		if ($('#row_name').css('visibility') == 'hidden') {
 			$('#row_name').css('visibility', '');
-			$('#show_filter_error').html('<h3 class="error"> <?php echo __('Define name and group for the filter and click on Save filter again'); ?> </h3>');
+			$('#show_filter_error')
+				.html('<h3 class="error"> <?php echo __('Define name and group for the filter and click on Save filter again'); ?> </h3>');
 			$('#filter_name_color').css('color', '#CC0000');
 			$('#filter_group_color').css('color', '#CC0000');
 		// If the filter has name insert in database
@@ -1343,36 +1360,39 @@ $(document).ready( function() {
 			$('#filter_id').append ($('<option></option>').html ( <?php echo "'" . __('none') . "'" ?> ).attr ("value", 0));	
 			// Reload filters select
 			jQuery.post ("ajax.php",
-							{"page" : "operation/events/events_list",
-							"get_event_filters" : 1
-						},
-						function (data) {
-							jQuery.each (data, function (i, val) {
-								s = js_html_entity_decode(val);
-								
-								if (i == id_filter_save){
-									$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
-								}
-								else {
-									$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));	  
-								}
-							});
-						},
-						"json"	
-						);
+				{
+					"page" : "operation/events/events_list",
+					"get_event_filters" : 1
+				},
+				function (data) {
+					jQuery.each (data, function (i, val) {
+						s = js_html_entity_decode(val);
+						
+						if (i == id_filter_save){
+							$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
+						}
+						else {
+							$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));	  
+						}
+					});
+				},
+				"json"
+				);
 			$("#submit-update_filter").css('visibility', '');
 		}
 		return false;
 	});
 	
 	// This updates an event filter
-	$("#submit-update_filter").click(function () {	
+	$("#submit-update_filter").click(function () {
 		
 		// If the filter name is blank show error
 		if ($('#text-id_name').val() == '') {
-			$('#show_filter_error').html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
+			$('#show_filter_error')
+			.html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
+			
 			return false;
-		}		
+		}
 		
 		var id_filter_update =  $("#filter_id").val();
 		
@@ -1388,7 +1408,7 @@ $(document).ready( function() {
 			"search" : $("#text-search").val(),
 			"text_agent" : $("#text_id_agent").val(),
 			"pagination" : $("#pagination").val(),
-			"event_view_hr" : $("#text-event_view_hr").val(),	
+			"event_view_hr" : $("#text-event_view_hr").val(),
 			"id_user_ack" : $("#id_user_ack").val(),
 			"group_rep" : $("#group_rep").val(),
 			"tag" : $("#tag").val(),
@@ -1396,13 +1416,13 @@ $(document).ready( function() {
 			"id_group_filter": $("#id_group").val()
 			},
 			function (data) {
-				if (data == 'ok'){
+				if (data == 'ok') {
 					$('#show_filter_error').html('<h3 class="suc"> <?php echo __('Filter updated'); ?> </h3>');
 				}
 				else {
 					$('#show_filter_error').html('<h3 class="error"> <?php echo __('Error updating filter'); ?> </h3>');
 				}
-			});	
+			});
 			
 			// First remove all options of filters select
 			$('#filter_id').find('option').remove().end();
@@ -1415,20 +1435,20 @@ $(document).ready( function() {
 						},
 						function (data) {
 							jQuery.each (data, function (i, val) {
-								  s = js_html_entity_decode(val);
-								  if (i == id_filter_update){
+								s = js_html_entity_decode(val);
+								if (i == id_filter_update) {
 									$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
-								  }
-								  else {
+								}
+								else {
 									$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));	  
-								  }
+								}
 							});
 						},
-						"json"	
-						);				
+						"json"
+						);
 			
-		return false;
-	});	
+			return false;
+	});
 	
 	// Change toggle arrow when it's clicked
 	$("#tgl_event_control").click(function() {
@@ -1447,7 +1467,7 @@ $(document).ready( function() {
 				success: function (data) {
 					$("#toggle_arrow").attr('src', data);
 				}
-			});			
+			});
 		}
 		else {
 			var params = [];
@@ -1467,8 +1487,6 @@ $(document).ready( function() {
 			});
 		}
 	});
-		
 });
 /* ]]> */
 </script>
-

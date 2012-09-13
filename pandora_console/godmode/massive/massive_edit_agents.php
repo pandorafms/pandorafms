@@ -236,9 +236,12 @@ $groups = users_get_groups ($config["id_user"], "AR",false);
 $agents = agents_get_group_agents (array_keys ($groups));
 
 $table->data[0][0] = __('Parent');
-$table->data[0][1] = html_print_input_text_extended ('id_parent', agents_get_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
-	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['input_name'] = 'id_parent';
+$params['value'] = agents_get_name ($id_parent);
+$table->data[0][1] = ui_print_agent_autocomplete_input($params);
 
 $table->data[0][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
 
@@ -377,7 +380,7 @@ if ($fields === false) $fields = array();
 foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
-		
+	
 	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
 	if ($custom_value === false) {
@@ -413,17 +416,12 @@ ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('ajaxqueue');
 ui_require_jquery_file ('bgiframe');
-ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
 	
 //Use this function for change 3 icons when change the selectbox
 $(document).ready (function () {
-	function get_n_conf_files(idAgents) {
-
-	}
-	
 	$("#id_agents").change (function () {
 		var idAgents = Array();
 		jQuery.each ($("#id_agents option:selected"), function (i, val) {
@@ -447,7 +445,7 @@ $(document).ready (function () {
 				},
 				"json"
 			);
-	
+		
 		$("#form_agents").attr("style", "");
 	});
 	
@@ -457,29 +455,6 @@ $(document).ready (function () {
 	
 	$("select#id_os").pandoraSelectOS ();
 	
-	$("#text-id_parent").autocomplete ("ajax.php",
-		{
-			scroll: true,
-			minChars: 2,
-			extraParams: {
-				page: "godmode/agentes/agent_manager",
-				search_parents: 1,
-				id_group: function() { return $("#group").val(); },
-				id_agent: <?php echo $id_agente ?>
-			},
-			formatItem: function (data, i, total) {
-				if (total == 0)
-					$("#text-id_parent").css ('background-color', '#cc0000');
-				else
-					$("#text-id_parent").css ('background-color', '');
-				if (data == "")
-					return false;
-				return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-			},
-			delay: 200
-		}
-	);
-
 	var recursion;
 	$("#checkbox-recursion").click(function (){
 		recursion = this.checked ? 1 : 0;

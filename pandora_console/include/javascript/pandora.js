@@ -4,7 +4,8 @@ var ENTERPRISE_DIR = 'enterprise';
 function toggleDiv (divid){
 	if (document.getElementById(divid).style.display == 'none') {
 		document.getElementById(divid).style.display = 'block';
-	} else {
+	}
+	else {
 		document.getElementById(divid).style.display = 'none';
 	}
 }
@@ -31,10 +32,11 @@ function js_html_entity_decode (str) {
 		return "";
 	
 	str2 = str.replace (/</g, "&lt;").
-	replace (/>/g,"&gt;").replace(/&lt;/g,'<').replace(/&gt;/g,'>')
-	.replace(/&#92;/g,'\\').replace(/&quot;/g,'\"').replace(/&#039;/g,'\'')
-	.replace(/&amp;/g,'&').replace(/&#x20;/g,' ')
-	.replace(/&#13;/g, '\r').replace(/&#10;/g, '\n');
+		replace (/>/g,"&gt;").replace(/&lt;/g,'<')
+		.replace(/&gt;/g,'>').replace(/&#92;/g,'\\')
+		.replace(/&quot;/g,'\"').replace(/&#039;/g,'\'')
+		.replace(/&amp;/g,'&').replace(/&#x20;/g,' ')
+		.replace(/&#13;/g, '\r').replace(/&#10;/g, '\n');
 	
 	return str2;
 }
@@ -53,6 +55,7 @@ Array.prototype.in_array = function () {
 		if(this[j] == arguments[0])
 			return true;
 	}
+	
 	return false;
 };
 
@@ -173,50 +176,50 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 		homedir  = event.data.homedir;
 	
 	jQuery.post (homedir + '/ajax.php', 
-		 {"page": "operation/agentes/ver_agente",
-		 "get_agent_modules_json_for_multiple_agents": 1,
-		 "id_agent[]": idAgents,
-		 "all": find_modules,
-		 "custom_condition": custom_condition,
-		 "selection_mode": selection_mode
-		 },
-		 function (data) {
-			 $('#module').empty ();
-			 
-			 if (isEmptyObject(data)) {
-				 var noneText = $("#none_text").html(); //Trick for catch the translate text.
-				 
-				 if (noneText == null) {
-					 noneText = 'None';
-				 }
-				 
-				 $('#module').append ($('<option></option>').html (noneText).attr ("None", "").attr('selected', true));
-				 
-				 return;
-			 }
-			 
-			 if (typeof($(document).data('text_for_module')) != 'undefined') {
-				 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
-			 }
-			 else {
-				 if (typeof(data['any_text']) != 'undefined') {
-					 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
-				 }
-				 else {
-					 var anyText = $("#any_text").html(); //Trick for catch the translate text.
-					 
-					 if (anyText == null) {
-						 anyText = 'Any';
-					 }
-					 
-					 $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
-				 }
-			 }
-			 jQuery.each (data, function (i, val) {
-						  s = js_html_entity_decode(val);
-						  $('#module').append ($('<option></option>').html (s).attr ("value", i));
-						  $('#module').fadeIn ('normal');
-						  });
+		{"page": "operation/agentes/ver_agente",
+		"get_agent_modules_json_for_multiple_agents": 1,
+		"id_agent[]": idAgents,
+		"all": find_modules,
+		"custom_condition": custom_condition,
+		"selection_mode": selection_mode
+		},
+		function (data) {
+			$('#module').empty ();
+			
+			if (isEmptyObject(data)) {
+				var noneText = $("#none_text").html(); //Trick for catch the translate text.
+				
+				if (noneText == null) {
+					noneText = 'None';
+				}
+				
+				$('#module').append ($('<option></option>').html (noneText).attr ("None", "").attr('selected', true));
+				
+				return;
+			}
+			
+			if (typeof($(document).data('text_for_module')) != 'undefined') {
+				$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+			}
+			else {
+				if (typeof(data['any_text']) != 'undefined') {
+					$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+				}
+				else {
+					var anyText = $("#any_text").html(); //Trick for catch the translate text.
+					
+					if (anyText == null) {
+						anyText = 'Any';
+					}
+					
+					$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+				}
+			}
+			jQuery.each (data, function (i, val) {
+						s = js_html_entity_decode(val);
+						$('#module').append ($('<option></option>').html (s).attr ("value", i));
+						$('#module').fadeIn ('normal');
+						});
 			if (selected != undefined)
 				$('#module').attr ('value', selected);
 			$('#module').css ("width", "auto");
@@ -347,28 +350,28 @@ function module_changed_by_multiple_modules (event, id_module, selected) {
 					else {
 						if (typeof(data['any_text']) != 'undefined') {
 							$('#agents').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
-						 }
-						 else {
-							 var anyText = $("#any_text").html(); //Trick for catch the translate text.
-							 
-							 if (anyText == null) {
-								 anyText = 'Any';
-							 }
-							 
-							 $('#agents').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
-						 }
-					 }
-					 jQuery.each (data, function (i, val) {
-								  s = js_html_entity_decode(val);
-								  $('#agents').append ($('<option></option>').html (s).attr ("value", val));
-								  $('#agents').fadeIn ('normal');
-								  });
-					 if (selected != undefined)
-					 $('#agents').attr ('value', selected);
-					 $('#agents').removeAttr('disabled');
-				 },
-				 "json"
-				 );
+						}
+						else {
+							var anyText = $("#any_text").html(); //Trick for catch the translate text.
+							
+							if (anyText == null) {
+								anyText = 'Any';
+							}
+							
+							$('#agents').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+						}
+					}
+					jQuery.each (data, function (i, val) {
+								s = js_html_entity_decode(val);
+								$('#agents').append ($('<option></option>').html (s).attr ("value", val));
+								$('#agents').fadeIn ('normal');
+								});
+					if (selected != undefined)
+					$('#agents').attr ('value', selected);
+					$('#agents').removeAttr('disabled');
+				},
+				"json"
+				);
 }
 
 /**

@@ -1,3 +1,14 @@
+2012-09-13 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/incidents/incident_detail.php,
+	operation/agentes/exportdata.php, operation/events/events_list.php,
+	operation/events/events.php, godmode/events/event_edit_filter.php,
+	godmode/massive/massive_edit_agents.php, include/functions_api.php,
+	include/constants.php, include/javascript/pandora.js,
+	include/functions_ui.php: started to use the new function
+	"ui_print_agent_autocomplete_input" to make more easy (and standar)
+	the autocomplete agent input.
+
 2012-09-13  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora_legacy.css

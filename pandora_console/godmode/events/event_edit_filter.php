@@ -80,7 +80,7 @@ else {
 	$search = '';
 	$text_agent = __('All');
 	$pagination = '';
-	$event_view_hr = '';	
+	$event_view_hr = '';
 	$id_user_ack = '';
 	$group_rep = '';
 	$tag = '';
@@ -101,14 +101,14 @@ if ($update) {
 	$id_user_ack = get_parameter('id_user_ack', '');
 	$group_rep = get_parameter('group_rep', '');
 	$tag = get_parameter('tag', '');
-	$filter_only_alert = get_parameter('filter_only_alert','');				
+	$filter_only_alert = get_parameter('filter_only_alert','');
 	
 	if ($id_name == '') {
 		ui_print_error_message (__('Not updated. Blank name'));
 	}
 	else {
 		$values = array ('id_filter' => $id,
-			'id_name' => $id_name,			
+			'id_name' => $id_name,	
 			'id_group_filter' => $id_group_filter,
 			'id_group' => $id_group,
 			'event_type' => $event_type,
@@ -125,7 +125,7 @@ if ($update) {
 		);
 		
 		$result = db_process_sql_update ('tevent_filter', $values, array ('id_filter' => $id));
-			
+		
 		ui_print_result_message ($result,
 			__('Successfully updated'),
 			__('Not updated. Error updating data'));
@@ -150,7 +150,7 @@ if ($create) {
 
 	$values = array (
 			'id_name' => $id_name,	
-			'id_group_filter' => $id_group_filter,		
+			'id_group_filter' => $id_group_filter,
 			'id_group' => $id_group,
 			'event_type' => $event_type,
 			'severity' => $severity,
@@ -190,46 +190,49 @@ $table->data[0][1] = html_print_input_text ('id_name', $id_name, false, 20, 80, 
 
 $table->data[1][0] = '<b>'.__('Filter group').'</b>' . ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
 $table->data[1][1] = html_print_select_groups($config['id_user'], "IW", 
-		$own_info['is_admin'], 'id_group_filter', $id_group_filter, '', '', -1, true,
-		false, false);
+	$own_info['is_admin'], 'id_group_filter', $id_group_filter, '', '', -1, true,
+	false, false);
 
 $table->data[2][0] = '<b>'.__('Group').'</b>';
 $table->data[2][1] = html_print_select_groups($config['id_user'], "IW", 
-		$own_info['is_admin'], 'id_group', $id_group, '', '', -1, true,
-		false, false);
-		
+	$own_info['is_admin'], 'id_group', $id_group, '', '', -1, true,
+	false, false);
+
 $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
-$types["not_normal"] = __("Not normal");		
-	
+$types["not_normal"] = __("Not normal");
+
 $table->data[3][0] = '<b>' . __('Event type') . '</b>';
 $table->data[3][1] = html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
 
 $table->data[4][0] = '<b>' . __('Severity') . '</b>';
 $table->data[4][1] = html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true);
-	
+
 $fields = events_get_all_status();
-	
+
 $table->data[5][0] = '<b>' . __('Event status') . '</b>';
 $table->data[5][1] = html_print_select ($fields, 'status', $status, '', '', '', true);
-	
+
 $table->data[6][0] = '<b>' . __('Free search') . '</b>';
 $table->data[6][1] = html_print_input_text ('search', io_safe_output($search), '', 15, 255, true);
 
 $table->data[7][0] = '<b>' . __('Agent search') . '</b>';
-$src_code = html_print_image('images/lightning.png', true, false, true);
-$table->data[7][1] = html_print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
-array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true)
-. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
-	
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['input_name'] = 'text_agent';
+$params['selectbox_group'] = 'id_group';
+$params['value'] = $text_agent;
+$table->data[7][1] = ui_print_agent_autocomplete_input($params);
+
 $lpagination[25] = 25;
 $lpagination[50] = 50;
 $lpagination[100] = 100;
 $lpagination[200] = 200;
-$lpagination[500] = 500;	
+$lpagination[500] = 500;
 $table->data[8][0] = '<b>' . __('Block size for pagination') . '</b>';
 $table->data[8][1] = html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"], true);
-	
+
 $table->data[9][0] = '<b>' . __('Max. hours old') . '</b>';
 $table->data[9][1] = html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
 
@@ -257,7 +260,7 @@ $table->data[12][1] = html_print_select ($tags_name, "tag", $tag, '', __('All'),
 
 $table->data[13][0] = '<b>' . __('Alert events') . '</b>';
 $table->data[13][1] = html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '', true);
-	
+
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/event_edit_filter">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -275,70 +278,3 @@ echo '</form>';
 
 ui_require_jquery_file ('bgiframe');
 ?>
-
-<script type="text/javascript">
-/* <![CDATA[ */
-$(document).ready( function() {
-	$("#text_id_agent").autocomplete({
-		minLength: 2,
-		source: function( request, response ) {
-			var term = request.term; //Word to search
-			
-			var data_params = {
-				page: "include/ajax/agent",
-				"search_agents_2": 1,
-				id_group: function() { return $("#id_group").val(); },
-				"q": term};
-			
-			jQuery.ajax ({
-				data: data_params,
-				async: false,
-				type: "POST",
-				url: action="ajax.php",
-				timeout: 10000,
-				dataType: "json",
-				success: function (data) {
-					response(data);
-					return;
-				}
-			});
-			return;
-		},
-		select: function( event, ui ) {
-			var agent_name = ui.item.name;
-			
-			//Put the name
-			$(this).val(agent_name);
-			
-			return false;
-		}
-	})
-	.data( "autocomplete")._renderItem = function( ul, item ) {
-		if ((item.ip == "") || (typeof(item.ip) == "undefined")) {
-			text = "<a>" + item.name + "</a>";
-		}
-		else {
-			text = "<a>" + item.name
-				+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
-		}
-		
-		return $("<li></li>")
-			.data("item.autocomplete", item)
-			.append(text)
-			.appendTo(ul);
-	};
-	
-	//Force the size of autocomplete
-	$(".ui-autocomplete").css("max-height", "100px");
-	$(".ui-autocomplete").css("overflow-y", "auto");
-	/* prevent horizontal scrollbar */
-	$(".ui-autocomplete").css("overflow-x", "hidden");
-	/* add padding to account for vertical scrollbar */
-	$(".ui-autocomplete").css("padding-right", "20px");
-	
-	//Force to style of items
-	$(".ui-autocomplete").css("text-align", "left");
-
-});
-/* ]]> */
-</script>

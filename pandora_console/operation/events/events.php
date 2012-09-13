@@ -78,7 +78,7 @@ if (is_ajax ()) {
 		$event = events_get_event ($id);
 		if ($event === false)
 			return;
-
+		
 		alerts_agent_module_standby ($event['id_alert_am'], 1);
 		return;
 	}
@@ -88,13 +88,13 @@ if (is_ajax ()) {
 		$similars = (bool) get_parameter ('similars');
 		$comment = (string) get_parameter ('comment');
 		$new_status = get_parameter ('new_status');
-
+		
 		// Set off the standby mode when close an event
 		if($new_status == 1) {
 			$event = events_get_event ($id);
 			alerts_agent_module_standby ($event['id_alert_am'], 0);
 		}
-				
+		
 		$return = events_validate_event ($id, $similars, $comment, $new_status);
 		if ($return)
 			echo 'ok';
@@ -277,7 +277,7 @@ if ($config["pure"] == 0) {
 	}
 	
 	ui_print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $onheader);
-
+	
 	?>
 	<script type="text/javascript">
 	function openSoundEventWindow() {
@@ -348,7 +348,7 @@ if ($validate) {
 				__('Could not be set in process'));
 		}
 	}
-
+	
 	if ($standby_alert) {
 		foreach($ids as $id) {
 			$event = events_get_event ($id);
@@ -389,63 +389,6 @@ ui_require_jquery_file ('bgiframe');
 /* <![CDATA[ */
 
 $(document).ready( function() {
-	$("#text_id_agent").autocomplete({
-		minLength: 2,
-		source: function( request, response ) {
-			var term = request.term; //Word to search
-			
-			var data_params = {
-				"page": "godmode/agentes/agent_manager",
-				"search_parents_2": 1,
-				"q": term};
-			
-			jQuery.ajax ({
-				data: data_params,
-				async: false,
-				type: "POST",
-				url: action="ajax.php",
-				timeout: 10000,
-				dataType: "json",
-				success: function (data) {
-					response(data);
-					return;
-				}
-			});
-			return;
-		},
-		select: function( event, ui ) {
-			var agent_name = ui.item.name;
-			
-			//Put the name
-			$(this).val(agent_name);
-			
-			return false;
-		}
-	})
-	.data( "autocomplete")._renderItem = function( ul, item ) {
-		if (item.ip == "") {
-			text = "<a>" + item.name + "</a>";
-		}
-		else {
-			text = "<a>" + item.name
-				+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
-		}
-		
-		return $("<li></li>")
-			.data("item.autocomplete", item)
-			.append(text)
-			.appendTo(ul);
-	};
-	//Force the size of autocomplete
-	$(".ui-autocomplete").css("max-height", "100px");
-	$(".ui-autocomplete").css("overflow-y", "auto");
-	/* prevent horizontal scrollbar */
-	$(".ui-autocomplete").css("overflow-x", "hidden");
-	/* add padding to account for vertical scrollbar */
-	$(".ui-autocomplete").css("padding-right", "20px");
-	
-	//Force to style of items
-	$(".ui-autocomplete").css("text-align", "left");
 	
 	$("input[name=allbox]").change (function() {
 		$("input[name='eventid[]']").attr('checked', $(this).attr('checked'));
@@ -531,7 +474,7 @@ $(document).ready( function() {
 							function (data, status) {
 								$("#comment_row_"+id).html(data);
 							});
-							
+						
 						// Get event comment in header
 						jQuery.post ("ajax.php",
 							{"page" : "operation/events/events",
@@ -645,7 +588,7 @@ $(document).ready( function() {
 							"get_comment" : 1,
 							"id" : id
 							},
-							function (data, status) {						
+							function (data, status) {
 								$("#comment_row_"+id).html(data);
 							});
 							
@@ -656,7 +599,7 @@ $(document).ready( function() {
 							"id" : id
 							},
 							function (data, status) {
-								$("#comment_header_"+id).html(data);								
+								$("#comment_header_"+id).html(data);
 							});
 					}
 					
@@ -707,13 +650,12 @@ $(document).ready( function() {
 			document.getElementById(divid).style.display = 'none';
 		}
 	}
-
 });
 /* ]]> */
 	
 	function toggleCommentForm(id_event) {
 		display = $('.event_form_' + id_event).css('display');
-
+		
 		$('#select_validate_' + id_event).change (function() {
 			$option = $('#select_validate_' + id_event).val();
 			if ($option == 2) {
@@ -738,7 +680,7 @@ $(document).ready( function() {
 	
 	function toggleVisibleExtendedInfo(id_event) {
 		display = $('.event_info_' + id_event).css('display');
-
+		
 		if (display != 'none') {
 			$('.event_info_' + id_event).css('display', 'none');
 		}

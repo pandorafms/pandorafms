@@ -2047,6 +2047,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$input_id = $parameters['input_id'];
 	}
 	
+	$selectbox_group = ''; //Default value
+	if (isset($parameters['selectbox_group'])) {
+		$selectbox_group = $parameters['selectbox_group'];
+	}
+	
 	//Default value
 	$icon_image = html_print_image('images/lightning.png', true, false, true);
 	if (isset($parameters['icon_image'])) {
@@ -2103,16 +2108,21 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$disabled = $parameters['disabled'];
 	}
 	
+	$selectbox_id = 'id_agent_module'; //Default value
+	if (isset($parameters['selectbox_id'])) {
+		$selectbox_id = $parameters['selectbox_id'];
+	}
+	
+	$add_none_module = true; //Default value
+	if (isset($parameters['add_none_module'])) {
+		$add_none_module = $parameters['add_none_module'];
+	}
+	
 	// Javascript configurations
 	//-----------------------------------------
 	$javascript = true; //Default value
 	if (isset($parameters['javascript'])) {
 		$javascript = $parameters['javascript'];
-	}
-	
-	$selectbox_id = 'id_agent_module'; //Default value
-	if (isset($parameters['selectbox_id'])) {
-		$selectbox_id = $parameters['selectbox_id'];
 	}
 	
 	$javascript_is_function_select = false; //Default value
@@ -2130,11 +2140,13 @@ function ui_print_agent_autocomplete_input($parameters) {
 		function function_select_' . $input_name . '(agent_name) {
 			
 			$("#' . $selectbox_id . '").empty ();
+			
 			var inputs = [];
 			inputs.push ("agent_name=" + agent_name);
 			inputs.push ("filter=delete_pending = 0");
 			inputs.push ("get_agent_modules_json=1");
 			inputs.push ("page=operation/agentes/ver_agente");
+			
 			jQuery.ajax ({
 				data: inputs.join ("&"),
 				type: "GET",
@@ -2142,9 +2154,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 				timeout: 10000,
 				dataType: "json",
 				success: function (data) {
-					$("#' . $selectbox_id . '")
-						.append($("<option></option>")
-						.attr("value", 0).text("--"));
+					if (' . ((int)$add_none_module) . ') {
+						$("#' . $selectbox_id . '")
+							.append($("<option></option>")
+							.attr("value", 0).text("--"));
+					}
 					
 					jQuery.each (data, function(i, val) {
 						s = js_html_entity_decode(val["nombre"]);
@@ -2166,7 +2180,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 	}
 	
 	//Default value
-	$javascript_page = 'godmode/agentes/agent_manager';
+	$javascript_page = 'include/ajax/agent';
 	if (isset($parameters['javascript_page'])) {
 		$javascript_page = $parameters['javascript_page'];
 	}
@@ -2181,7 +2195,16 @@ function ui_print_agent_autocomplete_input($parameters) {
 					
 					var data_params = {
 						"page": "' . $javascript_page . '",
-						"search_parents_2": 1,
+						"search_agents_2": 1,
+						id_group: function() {
+							var group_id = 0;
+							
+							if (' . ((int)!empty($selectbox_group)) . ') {
+								group_id = $("#' . $selectbox_group . '").val();
+							}
+							
+							return group_id;
+						},
 						"q": term};
 					
 					jQuery.ajax ({
@@ -2202,12 +2225,17 @@ function ui_print_agent_autocomplete_input($parameters) {
 				},
 				select: function( event, ui ) {
 					var agent_name = ui.item.name;
+					var agent_id = ui.item.id;
 					
 					//Put the name
 					$(this).val(agent_name);
 					
 					if (' . ((int)$javascript_is_function_select) . ') {
 						' . $javascript_name_function_select . '(agent_name);
+					}
+					
+					if (' . ((int)$print_hidden_input_idagent) . ') {
+						$("#' . $hidden_input_idagent_id . '").val(agent_id);
 					}
 					
 					return false;
@@ -2227,19 +2255,19 @@ function ui_print_agent_autocomplete_input($parameters) {
 					.append(text)
 					.appendTo(ul);
 			};
-		
-		//Force the size of autocomplete
-		$(".ui-autocomplete").css("max-height", "100px");
-		$(".ui-autocomplete").css("overflow-y", "auto");
-		/* prevent horizontal scrollbar */
-		$(".ui-autocomplete").css("overflow-x", "hidden");
-		/* add padding to account for vertical scrollbar */
-		$(".ui-autocomplete").css("padding-right", "20px");
-		
-		//Force to style of items
-		$(".ui-autocomplete").css("text-align", "left");
-	}
-	';
+			
+			//Force the size of autocomplete
+			$(".ui-autocomplete").css("max-height", "100px");
+			$(".ui-autocomplete").css("overflow-y", "auto");
+			/* prevent horizontal scrollbar */
+			$(".ui-autocomplete").css("overflow-x", "hidden");
+			/* add padding to account for vertical scrollbar */
+			$(".ui-autocomplete").css("padding-right", "20px");
+			
+			//Force to style of items
+			$(".ui-autocomplete").css("text-align", "left");
+		}';
+	
 	if (isset($parameters['javascript_function_change'])) {
 		$javascript_function_change = $parameters['javascript_function_change'];
 	}
@@ -2262,10 +2290,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 	
 	$html = '';
 	
-	$attrs = '';
-	if ($show_helptip) {
-		$attrs = array('style' => 'background: url(' . $icon_image . ') no-repeat right;');
-	}
+	
+	$attrs = array('style' => 'background: url(' . $icon_image . ') no-repeat right;');
 	
 	$html = html_print_input_text_extended($input_name, $value,
 		$input_id, $helptip_text, $size, $maxlength, $disabled, '', $attrs, true);

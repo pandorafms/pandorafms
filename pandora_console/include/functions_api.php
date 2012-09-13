@@ -37,7 +37,7 @@ enterprise_include_once ('include/functions_local_components.php');
  * @return mixed
  */
 function parseOtherParameter($other, $otherType) {
-
+	
 	switch ($otherType) {
 		case 'url_encode':
 			$returnVar = array('type' => 'string', 'data' => urldecode($other));
@@ -4737,7 +4737,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 		$pagination = $filter['limit'];
 	if (isset($filter['offset']))
 		$offset = $filter['offset'];
-	if (isset($filter['id_group'])) { 	
+	if (isset($filter['id_group'])) {
 		$id_group = $filter['id_group'];
 		//A little hack to make the query fetch all groups and not only "All" (with id=0)
 		if ($id_group == 0)

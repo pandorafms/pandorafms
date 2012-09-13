@@ -340,17 +340,7 @@ echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td class="datos"><b>'.__('Agent').'</b></td>';
-echo '<td class="datos">';
-//html_print_input_hidden('id_agent', $id_agent);
-//html_print_input_text_extended ('agent', agents_get_name ($id_agent), 'text-agent', '', 30, 100, false, '', array('style' => 'background: url(images/lightning.png) no-repeat right;'));
-//ui_print_help_tip(__("Type at least two characters to search"), false);
-echo '</td>';
-echo '</tr>';
-
-//////////
-echo '<tr>';
-echo '<td class="datos"><b>'.__('Teste').'</b></td>';
+echo '<td class="datos"><b>' . __('Agent') . '</b></td>';
 echo '<td class="datos">';
 $params = array();
 $params['show_helptip'] = true;
@@ -389,9 +379,9 @@ echo "</div></form>";
 
 //If we're actually working on an incident
 if (isset ($id_inc)) {
-	// ********************************************************************
+	//******************************************************************
 	// Notes 
-	// ********************************************************************
+	//******************************************************************
 	
 	echo '<div>';
 	
@@ -439,9 +429,9 @@ if (isset ($id_inc)) {
 	unset ($table);
 	
 	
-	// ************************************************************
+	//******************************************************************
 	// Files attached to this incident
-	// ************************************************************
+	//******************************************************************
 	
 	$result = incidents_get_attach ($id_inc);
 	
@@ -487,9 +477,9 @@ if (isset ($id_inc)) {
 	}
 	unset ($table);
 	
-	// ************************************************************
+	//******************************************************************
 	// Upload control
-	// ************************************************************
+	//******************************************************************
 	
 	
 	// Upload control
@@ -511,8 +501,3 @@ if (isset ($id_inc)) {
 	}
 }
 ?>
-<script>
-$(document).ready (function () {
-	//agent_autocomplete('#text-agent', '#hidden-server_name', '#hidden-id_agent');
-});
-</script>

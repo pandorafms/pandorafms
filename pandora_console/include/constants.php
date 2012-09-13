@@ -99,7 +99,7 @@ switch ($config["dbtype"]) {
 		define ('BACKUP_FULLPATH', $config['homedir'] . '/' . BACKUP_DIR);
 		break;
 	case "oracle":
-		define ('BACKUP_DIR', 'DATA_PUMP_DIR');	
+		define ('BACKUP_DIR', 'DATA_PUMP_DIR');
 		define ('BACKUP_FULLPATH', 'DATA_PUMP_DIR');
 		break;
 }

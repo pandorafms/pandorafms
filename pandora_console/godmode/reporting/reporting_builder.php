@@ -184,7 +184,7 @@ switch ($action) {
 		$pos_delete = (string)get_parameter('delete_m', 'below');
 		
 		$countItems = db_get_sql('SELECT COUNT(id_rc)
-					FROM treport_content WHERE id_report = ' . $idReport);
+			FROM treport_content WHERE id_report = ' . $idReport);
 		
 		if (($countItems < $position_to_delete) || ($position_to_delete < 1)) {
 			$resultOperationDB = false;
@@ -196,7 +196,8 @@ switch ($action) {
 				case 'above':
 					if ($position_to_delete == 1) {
 						$resultOperationDB = false;
-					} else {
+					}
+					else {
 						$i = 1;
 						foreach ($items as $key => $item) {
 							if ($i < $position_to_delete) {
@@ -209,11 +210,15 @@ switch ($action) {
 				case 'below':
 					if ($position_to_delete == $countItems) {
 						$resultOperationDB = false;
-					} else {
+					}
+					else {
 						$i = 1;
 						foreach ($items as $key => $item) {
 							if ($i > $position_to_delete) {
-								$resultOperationDB = db_process_sql_delete('treport_content', array('id_rc' => $item['id_rc']));
+								$resultOperationDB =
+									db_process_sql_delete(
+										'treport_content',
+										array('id_rc' => $item['id_rc']));
 							}
 							$i++;
 						}
@@ -248,14 +253,17 @@ switch ($action) {
 		// Page header for metaconsole
 		if ($enterpriseEnable and defined('METACONSOLE')) {
 			// Bread crumbs
-			ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder', 'text' => __('Reporting')));
-
-			ui_meta_print_page_header($nav_bar);	
+			ui_meta_add_breadcrumb(
+				array(
+				'link' => 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder',
+				'text' => __('Reporting')));
+			
+			ui_meta_print_page_header($nav_bar);
 			
 			// Print header
-			ui_meta_print_header(__('Reporting'), "", $buttons);				
+			ui_meta_print_header(__('Reporting'), "", $buttons);
 		}
-		// Page header for normal console		
+		// Page header for normal console
 		else
 			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting.png", false, "",false, $buttons);
 		
@@ -553,7 +561,7 @@ switch ($action) {
 							$metaconsole_report = 1;
 						else
 							$metaconsole_report = 0;
-							
+						
 						$idOrResult = db_process_sql_insert('treport',
 							array('name' => $reportName,
 								'id_group' => $idGroupReport,
@@ -1044,11 +1052,9 @@ switch ($action) {
 				}
 				// Sort functionality for metaconsole
 				else if ($config['metaconsole'] == 1) {
-					
 					switch ($field) {
-						case 'agent':	
-						case 'module':					
-
+						case 'agent':
+						case 'module':
 							$sql = "SELECT id_rc, id_agent, id_agent_module, server_name FROM treport_content WHERE %s ORDER BY server_name";
 							$sql = sprintf($sql, 'id_report = ' . $idReport, '%s');
 							
@@ -1061,14 +1067,14 @@ switch ($action) {
 							if (!empty($report_items)) {
 								
 								foreach ($report_items as $report_item) {
-
+									
 									$connection = metaconsole_get_connection($report_item['server_name']);
 									if (metaconsole_load_external_db($connection) != NOERR) {
 										//ui_print_error_message ("Error connecting to ".$server_name);
 									}
-											
+									
 									switch ($field) {
-										case 'agent':									
+										case 'agent':
 											$agents_name = agents_get_agents(array('id_agente' => $report_item['id_agent']), 'nombre');
 											
 											// Item without agent
@@ -1089,18 +1095,18 @@ switch ($action) {
 												$element_name = '';
 											else {
 												$element_name = $module_name;
-											}										
-										
+											}
+											
 											break;
-									}	
+									}
 									
 									metaconsole_restore_db_force();
-
-									$temp_sort[$report_item['id_rc']] = $element_name;									
+									
+									$temp_sort[$report_item['id_rc']] = $element_name;
 								
 								}
-										
-								// Performes sorting	
+								
+								// Performes sorting
 								switch ($dir) {
 									case 'up':
 										asort($temp_sort);
@@ -1117,9 +1123,9 @@ switch ($action) {
 								}
 								
 								// Free resources
-								unset($temp_sort);							
-								unset($report_items);							
-										
+								unset($temp_sort);
+								unset($report_items);
+								
 							}
 							
 							break;
@@ -1136,15 +1142,15 @@ switch ($action) {
 									$sql = sprintf($sql, 'DESC');
 									break;
 							}
-
-							$ids = db_get_all_rows_sql($sql);								
+							
+							$ids = db_get_all_rows_sql($sql);
 							
 							break;
 					}
-			
+					
 					
 				}
-
+				
 				$count = 1;
 				$resultOperationDB = true;
 				foreach($ids as $id) {
@@ -1157,7 +1163,7 @@ switch ($action) {
 					
 					$count = $count + 1;
 				}
-
+				
 				break;
 			default:
 				switch ($config["dbtype"]) {
@@ -1270,7 +1276,7 @@ $buttons = array(
 		'text' => '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $idReport . '">' . 
 			html_print_image("images/config.png", true, array ("title" => __('Item editor'))) .'</a>')
 	);
-	
+
 if ($enterpriseEnable) {
 	$buttons = reporting_enterprise_add_Tabs($buttons, $idReport);
 }
@@ -1278,7 +1284,7 @@ if ($enterpriseEnable) {
 $buttons['view'] = array('active' => false,
 	'text' => '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/operation/reporting/reporting_viewer&id=' . $idReport . '">' . 
 		html_print_image("images/reporting.png", true, array ("title" => __('View report'))) .'</a>');
-	
+
 $buttons[$activeTab]['active'] = true;
 
 if ($idReport != 0) {
@@ -1296,11 +1302,11 @@ else {
 if ($enterpriseEnable and defined('METACONSOLE')) {
 	// Bread crumbs
 	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder', 'text' => __('Reporting')));
-
+	
 	ui_meta_print_page_header($nav_bar);	
 	
 	// Print header
-	ui_meta_print_header(__('Reporting'). $textReportName, "", $buttons);				
+	ui_meta_print_header(__('Reporting'). $textReportName, "", $buttons);
 }
 else
 	ui_print_page_header(__('Reporting') . $textReportName, "images/reporting_edit.png", false, "reporting_" . $activeTab . "_tab", true, $buttons);

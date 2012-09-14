@@ -184,9 +184,14 @@ foreach ($layoutDatas as $layoutData) {
 				$cell_content_enterprise = enterprise_visual_map_print_list_element('agent', $layoutData);
 			}
 			if ($cell_content_enterprise === false) {
-				$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . 
-					html_print_input_text_extended ('agent_' . $idLayoutData, agents_get_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
-					array('class' => 'text-agent', 'style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), true);
+				$params = array();
+				$params['return'] = true;
+				$params['show_helptip'] = true;
+				$params['input_name'] = 'agent_' . $idLayoutData;
+				$params['value'] = agents_get_name($layoutData['id_agent']);
+				$params['javascript_is_function_select'] = true;
+				$params['selectbox_id'] = 'module_' . $idLayoutData;
+				$table->data[$i + 2][0] = ui_print_agent_autocomplete_input($params);
 			}
 			else {
 				$table->data[$i + 2][0] = $cell_content_enterprise;
@@ -281,72 +286,13 @@ ui_require_javascript_file ('wz_jsgraphics');
 ui_require_javascript_file ('pandora_visual_console');
 ui_require_jquery_file('ajaxqueue');
 ui_require_jquery_file('bgiframe');
-ui_require_jquery_file('autocomplete');
 ?>
+
 <script type="text/javascript">
-$(document).ready (function () {
-	$(".label_color").attachColorPicker();
-	//$(".ColorPickerDivSample").css('float', 'right');
-});
-
-var idText = $("#ip_text").html();
-
-$(".text-agent").autocomplete(
-	"ajax.php",
-	{
-		minChars: 2,
-		scroll:true,
-		extraParams: {
-			page: "operation/agentes/exportdata",
-			all: "enabled",
-			search_agents: 1,
-			id_group: function() { return $("#group").val(); }
-		},
-		formatItem: function (data, i, total) {
-			if (total == 0)
-				$(".text-agent").css ('background-color', '#cc0000');
-			else
-				$(".text-agent").css ('background-color', '');
-			if (data == "")
-				return false;
-			return data[0]+'<br><span class="ac_extra_field">' + idText + ': '+data[1]+'</span>';
-		},
-		delay: 200
-	}
-);
-
-
-$(".text-agent").result (
-	function (event, data, formatted) {
-		var id = $(this).attr('id').replace('text-agent_', '');
-		
-		selectAgent = true;
-		var agent_name = this.value;
-		$('#module_' + id).fadeOut ('normal', function () {
-			$('#module_' + id).empty ();
-			var inputs = [];
-			inputs.push ("filter=disabled = 0");
-			inputs.push ("agent_name=" + agent_name);
-			inputs.push ("get_agent_modules_json=1");
-			inputs.push ("page=operation/agentes/ver_agente");
-			jQuery.ajax ({
-				data: inputs.join ("&"),
-				type: 'GET',
-				url: action="ajax.php",
-				timeout: 10000,
-				dataType: 'json',
-				success: function (data) {
-					$('#module_' + id).append ($('<option></option>').attr ('value', 0).text ("--"));
-					jQuery.each (data, function (i, val) {
-						s = js_html_entity_decode (val['nombre']);
-						$('#module_' + id).append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
-					});
-					$('#module_' + id).fadeIn ('normal');
-				}
-			});
-		});
-
-		
-	}
-);
+	$(document).ready (function () {
+		$(".label_color").attachColorPicker();
+		//$(".ColorPickerDivSample").css('float', 'right');
+	});
+	
+	var idText = $("#ip_text").html();
 </script>

@@ -1,3 +1,17 @@
+2012-09-14 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/javascript/pandora.js,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql: cleaned source code
+	style.
+	
+	* godmode/agentes/module_manager_editor_prediction.php,
+	godmode/reporting/visual_console_builder.elements.php,
+	godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	include/functions_ui.php: started to use the new function
+	"ui_print_agent_autocomplete_input" to make more easy (and standar)
+	the autocomplete agent input.
+
 2012-09-13 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/incidents/incident_detail.php,

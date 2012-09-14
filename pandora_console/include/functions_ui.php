@@ -2073,6 +2073,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$helptip_text = $parameters['helptip_text'];
 	}
 	
+	$use_hidden_input_idagent = false; //Default value
+	if (isset($parameters['use_hidden_input_idagent'])) {
+		$use_hidden_input_idagent = $parameters['use_hidden_input_idagent'];
+	}
+	
 	$print_hidden_input_idagent = false; //Default value
 	if (isset($parameters['print_hidden_input_idagent'])) {
 		$print_hidden_input_idagent = $parameters['print_hidden_input_idagent'];
@@ -2085,7 +2090,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 	
 	$hidden_input_idagent_id = 'hidden-' . $input_name; //Default value
 	if (isset($parameters['hidden_input_idagent_id'])) {
-		$hidden_input_idagent_name = $parameters['hidden_input_idagent_id'];
+		$hidden_input_idagent_id = $parameters['hidden_input_idagent_id'];
 	}
 	
 	$hidden_input_idagent_value = 0; //Default value
@@ -2116,6 +2121,21 @@ function ui_print_agent_autocomplete_input($parameters) {
 	$add_none_module = true; //Default value
 	if (isset($parameters['add_none_module'])) {
 		$add_none_module = $parameters['add_none_module'];
+	}
+	
+	$none_module_text = '--'; //Default value
+	if (isset($parameters['none_module_text'])) {
+		$none_module_text = $parameters['none_module_text'];
+	}
+	
+	$use_input_server = false; //Default value
+	if (isset($parameters['use_input_server'])) {
+		$use_input_server = $parameters['use_input_server'];
+	}
+	
+	$input_server_id = false; //Default value
+	if (isset($parameters['input_server_id'])) {
+		$input_server_id = $parameters['input_server_id'];
 	}
 	
 	// Javascript configurations
@@ -2157,7 +2177,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 					if (' . ((int)$add_none_module) . ') {
 						$("#' . $selectbox_id . '")
 							.append($("<option></option>")
-							.attr("value", 0).text("--"));
+							.attr("value", 0).text("' . $none_module_text . '"));
 					}
 					
 					jQuery.each (data, function(i, val) {
@@ -2226,6 +2246,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 				select: function( event, ui ) {
 					var agent_name = ui.item.name;
 					var agent_id = ui.item.id;
+					var server_name = ui.item.ip;
 					
 					//Put the name
 					$(this).val(agent_name);
@@ -2234,8 +2255,13 @@ function ui_print_agent_autocomplete_input($parameters) {
 						' . $javascript_name_function_select . '(agent_name);
 					}
 					
-					if (' . ((int)$print_hidden_input_idagent) . ') {
+					if ((' . ((int)$print_hidden_input_idagent) . ')
+						|| (' . ((int)$use_hidden_input_idagent) . ')) {
 						$("#' . $hidden_input_idagent_id . '").val(agent_id);
+					}
+					
+					if (' . ((int)$use_input_server) . ') {
+						$("#' . $input_server_id . '").val(server_name);
 					}
 					
 					return false;

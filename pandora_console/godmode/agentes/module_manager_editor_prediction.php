@@ -23,7 +23,9 @@ $id_agente = get_parameter('id_agente', '');
 $agent_name = get_parameter('agent_name', agents_get_name($id_agente));
 $id_agente_modulo= get_parameter('id_agent_module',0);
 $custom_integer_2 = get_parameter ('custom_integer_2', 0);
-$sql = 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = '.$id_agente_modulo;
+$sql = 'SELECT *
+	FROM tagente_modulo
+	WHERE id_agente_modulo = '.$id_agente_modulo;
 $row = db_get_row_sql($sql);
 $is_service = false;
 $is_synthetic = false;
@@ -96,15 +98,26 @@ if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
 	$data[0] = '';
 }
 
+
+
+
 $data[1] = '<div id="module_data" style="top:1em; float:left; width:50%;">';
 $data[1] .= html_print_label(__("Agent"),'agent_name', true)."<br/>";
-$sql = "SELECT id_agente, nombre FROM tagente";
-// TODO: ACL Filter
-//Image src with skins
-$src_code = html_print_image('images/lightning.png', true, false, true); 
-$data[1] .= html_print_input_text_extended ('agent_name',$agent_name, 'text_agent_name', '', 30, 100, $is_service, '',
-	array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true, false);
-$data[1] .= '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>&nbsp; <br/>';
+
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['input_name'] = 'agent_name';
+$params['value'] = $agent_name;
+$params['javascript_is_function_select'] = true;
+$params['selectbox_id'] = 'prediction_module';
+$params['none_module_text'] = __('Select Module');
+$params['use_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_id'] = 'hidden-id_agente';
+$data[1] .= ui_print_agent_autocomplete_input($params);
+
+
+
 $data[1] .= html_print_label(__("Module"),'prediction_module',true);
 if($id_agente) {
 	$sql = "SELECT id_agente_modulo, nombre
@@ -170,7 +183,6 @@ unset ($table_advanced->data[3]);
 ?>
 <script type="text/javascript">
 $(document).ready(function() {
-	agent_module_autocomplete ("#text_agent_name", "#id_agente", "#prediction_module");
 	<?php 
 		enterprise_hook('setup_services_synth', array($is_service, $is_synthetic, $is_synthetic_avg, $is_netflow, $ops));
 	?>

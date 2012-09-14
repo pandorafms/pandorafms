@@ -454,7 +454,7 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 	homedir_path = '';
 	if (homedir == undefined)
 		homedir_path = '.';	
-	else	
+	else
 		homedir_path = homedir;
 	
 	$(id_agent_name).autocomplete({

@@ -494,7 +494,7 @@ html_print_input_hidden('id_item', $idItem);
 					if (metaconsole_load_external_db($connection) == NOERR)
 						$agent_name = db_get_value_filter('nombre', 'tagente', array('id_agente' => $idAgent));	
 						// Append server name
-						if (!empty($agent_name))		
+						if (!empty($agent_name))
 							$agent_name .= ' (' . $server_name . ')';
 					//Restore db connection
 					metaconsole_restore_db();
@@ -502,12 +502,23 @@ html_print_input_hidden('id_item', $idItem);
 				else {
 					$agent_name = agents_get_name ($idAgent);
 				}
-				html_print_input_hidden('id_agent', $idAgent) .
-				html_print_input_text_extended ('agent', $agent_name,
-					'text-agent', '', 30, 100, false, '',
-					array('style' => 'background: url(images/lightning.png) no-repeat right;'))
-					. ui_print_help_tip(__("Type at least two characters to search"), false);
+				
+				html_print_input_hidden('id_agent', $idAgent);
 				html_print_input_hidden ('server_name', $server_name);
+				
+				$params = array();
+				$params['show_helptip'] = true;
+				$params['input_name'] = 'agent';
+				$params['value'] = $agent_name;
+				$params['javascript_is_function_select'] = true;
+				$params['selectbox_id'] = 'id_agent_module';
+				$params['add_none_module'] = false;
+				$params['use_hidden_input_idagent'] = true;
+				$params['hidden_input_idagent_id'] = 'hidden-id_agent';
+				$params['use_input_server'] = true;
+				$params['input_server_id'] = 'hidden-server_name';
+				ui_print_agent_autocomplete_input($params);
+				
 				?>
 			</td>
 		</tr>
@@ -538,11 +549,11 @@ html_print_input_hidden('id_item', $idItem);
 						//Restore db connection
 						metaconsole_restore_db();
 					}
-					else {		
+					else {
 						html_print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');					
-					}	
+					}
 				}
-				else {	
+				else {
 					?>
 					<select style="max-width: 180px" id="id_agent_module" name="id_agent_module" disabled="disabled">
 						<option value="0"><?php echo __('Select an Agent first'); ?></option>
@@ -582,7 +593,7 @@ html_print_input_hidden('id_item', $idItem);
 				if($dates === ENTERPRISE_NOT_HOOK) {
 					$dates = array();
 				}
-
+				
 				html_print_select($dates, 'date', '', '', __('Last'), 0, false, false, false, '', false, "min-width: 180px");
 				html_print_input_hidden('date_selected',$date);
 				?>
@@ -610,7 +621,7 @@ html_print_input_hidden('id_item', $idItem);
 					}
 					html_print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, 'change_custom_graph();', __('None'), 0);
 				}
-					
+				
 				$style_button_create_custom_graph = 'style="display: none;"';
 				$style_button_edit_custom_graph = '';
 				if (empty($idCustomGraph)) {
@@ -657,14 +668,16 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Query SQL'); ?></td>
 			<td style=""><?php html_print_textarea('sql', 5, 25, $sql); ?></td>
 		</tr>
-		<tr id="row_servers" style="" class="datos">			
+		<tr id="row_servers" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Server'); ?></td>
-			<td style=""><?php
+			<td style="">
+				<?php
 				if ($config ['metaconsole'] != 1 or !defined('METACONSOLE'))
 					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0, false, false, true, '', true);
 				else
 					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0);
-				 ?></td>
+				?>
+			</td>
 		</tr>
 		<tr id="row_header" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Serialized header') . ui_print_help_tip(__("The separator character is |"), true);?></td>
@@ -696,14 +709,16 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_order_uptodown" style="" class="datos">
 			<td><?php echo __('Order');?></td>
-			<td><?php
+			<td>
+				<?php
 				echo __('Ascending');
 				html_print_radio_button ('radiobutton_order_uptodown', 2, '', $order_uptodown);
 				echo __('Descending');
 				html_print_radio_button ('radiobutton_order_uptodown', 1, '', $order_uptodown);
 				echo __('By agent name');
 				html_print_radio_button ('radiobutton_order_uptodown', 3, '', $order_uptodown);
-				?></td>
+				?>
+			</td>
 		</tr>
 		<tr id="row_quantity" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Quantity (n)'); ?></td>
@@ -711,14 +726,16 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_max_min_avg" style="" class="datos">
 			<td><?php echo __('Display');?></td>
-			<td><?php
+			<td>
+				<?php
 				echo __('Max');
 				html_print_radio_button ('radiobutton_max_min_avg', 1, '', $top_n);
 				echo __('Min');
 				html_print_radio_button ('radiobutton_max_min_avg', 2, '', $top_n);
 				echo __('Avg');
 				html_print_radio_button ('radiobutton_max_min_avg', 3, '', $top_n);
-				?></td>
+				?>
+			</td>
 		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Value'); ?></td>
@@ -756,7 +773,7 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_sort" style="" class="datos">
 			<td><?php echo __('Order') . ui_print_help_tip(__('SLA items sorted by fulfillment value'), true);?></td>
 			<td><?php html_print_select ($show_sort_options, 'combo_sla_sort_options', $sla_sorted_by, '', __('None'), 0); ?></td>
-		</tr>		
+		</tr>
 		<tr id="row_show_in_landscape" style="" class="datos">
 			<td><?php echo __('Show in landscape');?></td>
 			<td><?php html_print_checkbox('show_in_landscape', 1, $show_in_landscape, false, false,
@@ -868,7 +885,20 @@ function print_SLA_list($width, $action, $idItem = null) {
 							<td>
 								<input id="hidden-id_agent_sla" name="id_agent_sla" value="" type="hidden">
 								<input id="hidden-server_name" name="server_name" value="" type="hidden">
-								<input style="background: transparent url(images/lightning.png) no-repeat right;" name="agent_sla" id="text-agent_sla" size="15" maxlength="20" type="text"><a href="#" class="tip">&nbsp;<span>Type at least two characters to search</span></a></td>
+								<?php
+								$params = array();
+								$params['show_helptip'] = true;
+								$params['input_name'] = 'agent_sla';
+								$params['value'] = '';
+								$params['use_hidden_input_idagent'] = true;
+								$params['hidden_input_idagent_id'] = 'hidden-id_agent_sla';
+								$params['javascript_is_function_select'] = true;
+								$params['selectbox_id'] = 'id_agent_module_sla';
+								$params['add_none_module'] = false;
+								$params['use_input_server'] = true;
+								$params['input_server_id'] = 'hidden-server_name';
+								ui_print_agent_autocomplete_input($params);
+								?>
 							<td><select id="id_agent_module_sla" name="id_agente_modulo_sla" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
 							<td><input name="sla_min" id="text-sla_min" size="10" maxlength="10" type="text"></td>
 							<td><input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text"></td>
@@ -963,10 +993,24 @@ function print_General_list($width, $action, $idItem = null) {
 							<td>
 								<input id="hidden-id_agent_general" name="id_agent_general" value="" type="hidden">
 								<input id="hidden-server_name_general" name="server_name_general" value="" type="hidden">
-								<input style="background: transparent url(images/lightning.png) no-repeat right;" name="agent_general" id="text-agent_general" size="15" maxlength="20" type="text"><a href="#" class="tip">&nbsp;<span>Type at least two characters to search</span></a></td>
+								<?php
+								$params = array();
+								$params['show_helptip'] = true;
+								$params['input_name'] = 'agent_general';
+								$params['value'] = '';
+								$params['use_hidden_input_idagent'] = true;
+								$params['hidden_input_idagent_id'] = 'hidden-id_agent_general';
+								$params['javascript_is_function_select'] = true;
+								$params['selectbox_id'] = 'id_agent_module_general';
+								$params['add_none_module'] = false;
+								$params['use_input_server'] = true;
+								$params['input_server_id'] = 'hidden-server_name_general';
+								ui_print_agent_autocomplete_input($params);
+								?>
+							</td>
 							<td><select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
 							<?php $operation = array ('avg'=>'avg','max'=>'max','min'=>'min','sum'=>'sum'); ?>
-							<td><?php html_print_select ($operation, 'id_operation_module_general', 0, false, '', '', false, false, true, 'width: 200px', true); ?></td>
+							<td><?php html_print_select ($operation, 'id_operation_module_general', 0, false, '', '', false, false, true, 'width: 200px', false); ?></td>
 							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
@@ -980,19 +1024,15 @@ function print_General_list($width, $action, $idItem = null) {
 	<span style="display: none" id="module_general_text"><?php echo __('Select an Agent first'); ?></span>
 	<?php
 }
-			
+
 ui_require_javascript_file ('pandora_inventory', ENTERPRISE_DIR.'/include/javascript/');
 
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
-	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module', '#hidden-server_name', undefined, <?php echo '"' . ui_get_full_url(false) . '"'; ?>);
-	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla', '#hidden-server_name', undefined, <?php echo '"' . ui_get_full_url(false) . '"'; ?>);
-	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general', '#id_operation_module_general', <?php echo '"' . ui_get_full_url(false) . '"'; ?>);
-
 	chooseType();
 	chooseSQLquery();
-
+	
 	$("#text-time_to, #text-time_from").timeEntry ({
 		spinnerImage: 'images/time-entry.png',
 		spinnerSize: [20, 20, 0],
@@ -1004,7 +1044,7 @@ $(document).ready (function () {
 function create_custom_graph() {
 	<?php 
 		global $config;
-	
+		
 		// Metaconsole activated
 		if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 	?>
@@ -1047,14 +1087,14 @@ function create_custom_graph() {
 					success: function (data) {
 						server_url = data;
 					}
-				});					
-					
+				});
+				
 				window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph" + hash_data;
 			}
-	<?php		
+	<?php
 		}
 		else {
-	?>	
+	?>
 		window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph";
 	<?php
 		}
@@ -1065,14 +1105,14 @@ function edit_custom_graph() {
 	var id_graph = $("#id_custom_graph").val();
 	<?php 
 		global $config;
-	
+		
 		// Metaconsole activated
 		if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 	?>
 			var agent_server_temp;
 			var id_element_graph;
 			var id_server;
-		
+			
 			if (id_graph.indexOf("|") != -1){
 				agent_server_temp = id_graph.split('|');
 				id_element_graph = agent_server_temp[0];
@@ -1109,10 +1149,10 @@ function edit_custom_graph() {
 				success: function (data) {
 					server_url = data;
 				}
-			});			
-					
+			});
+			
 			window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_element_graph + hash_data;		
-	<?php		
+	<?php
 		}
 		else {
 	?>
@@ -1126,7 +1166,7 @@ function change_custom_graph() {
 	//Hidden the button create or edit custom graph
 	if ($("#id_custom_graph").val() != "0") {
 		$("#meta_servers").val(0);
-		$("#meta_target_servers").css('display', 'none');		
+		$("#meta_target_servers").css('display', 'none');
 		$("#button-create_graph").css("display", "none");
 		$("#button-edit_graph").css("display", "");
 	}
@@ -1140,7 +1180,7 @@ function change_custom_graph() {
 
 function chooseSQLquery() {
 	var idCustom = $("#id_custom").val();
-
+	
 	if (idCustom == 0) {
 		$("#sql_example").html('');
 	}
@@ -1228,7 +1268,7 @@ function addSLARow() {
 	var slaMin = $("input[name=sla_min]").val();
 	var slaMax = $("input[name=sla_max]").val();
 	var slaLimit = $("input[name=sla_limit]").val();
-
+	
 	if ((idAgent != '') && (slaMin != '') && (slaMax != '')
 		&& (slaLimit != '')) {
 			//Truncate nameAgent
@@ -1270,7 +1310,7 @@ function addSLARow() {
 			params.push("sla_max=" + slaMax);
 			params.push("sla_limit=" + slaLimit);
 			params.push("server_name=" + serverName);
-		
+			
 			params.push("page=include/ajax/reporting.ajax");
 			jQuery.ajax ({
 				data: params.join ("&"),
@@ -1281,7 +1321,7 @@ function addSLARow() {
 				success: function (data) {
 					if (data['correct']) {
 						row = $("#sla_template").clone();
-					
+						
 						$("#row", row).show();
 						$("#row", row).attr('id', 'sla_' + data['id']);
 						$(".agent_name", row).html(nameAgent);
@@ -1302,7 +1342,7 @@ function addSLARow() {
 							.html ($("#module_sla_text").html()));
 						$("input[name=sla_min]").val('');
 						$("input[name=sla_max]").val('');
-						$("input[name=sla_limit]").val('');					
+						$("input[name=sla_limit]").val('');
 					}
 				}
 			});
@@ -1317,7 +1357,7 @@ function addGeneralRow() {
 	var operation = $("#id_operation_module_general").val();
 	var nameModule = $("#id_agent_module_general :selected").text();
 	var nameOperation = $("#id_operation_module_general :selected").text();
-
+	
 	if (idAgent != '') {
 		//Truncate nameAgent
 		var params = [];
@@ -1457,7 +1497,7 @@ function chooseType() {
 	$("#row_date").hide();
 	$("#row_agent_multi").hide();
 	$("#row_module_multi").hide();
-
+	
 	switch (type) {
 		case 'event_report_group':
 			$("#row_description").show();
@@ -1491,7 +1531,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_interval").show();
 			$("#row_show_in_two_columns").show();
-			break;			
+			break;
 		case 'custom_graph':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -1723,7 +1763,7 @@ function chooseType() {
 			$("#row_module_multi").show();
 			$("#row_date").show();
 			$("#row_show_in_two_columns").show();
-
+			
 			$("#id_agents").change(agent_changed_by_multiple_agents_inventory);
 			$("#id_agents").trigger('change');
 			

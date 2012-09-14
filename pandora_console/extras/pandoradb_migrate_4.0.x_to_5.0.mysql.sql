@@ -1,6 +1,6 @@
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
 	`id_sg`  int(10) unsigned NOT NULL auto_increment,
 	`id_name` varchar(600) NOT NULL default '0',
@@ -16,9 +16,9 @@ CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
 	PRIMARY KEY  (`id_sg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tnetflow_report`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetflow_report` (
 	`id_report` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
 	`id_name` varchar(150) NOT NULL default '',
@@ -27,9 +27,9 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report` (
 	PRIMARY KEY(`id_report`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tnetflow_report_content`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 	`id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_report` INTEGER UNSIGNED NOT NULL default 0,
@@ -46,20 +46,20 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 		ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tincidencia`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 ALTER TABLE `tincidencia` ADD COLUMN `id_agent` int(10) unsigned NULL default 0;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 ALTER TABLE `tagente` ADD COLUMN `url_address` mediumtext NULL;
 ALTER TABLE `tagente` ADD COLUMN `quiet` tinyint(1) NOT NULL DEFAULT '0';
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `talert_special_days`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_special_days` (
 	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 	`date` date NOT NULL DEFAULT '0000-00-00',
@@ -68,9 +68,9 @@ CREATE TABLE IF NOT EXISTS `talert_special_days` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `talert_templates`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 ALTER TABLE `talert_templates` ADD COLUMN `special_day` tinyint(1) DEFAULT '0';
 
 -- -----------------------------------------------------

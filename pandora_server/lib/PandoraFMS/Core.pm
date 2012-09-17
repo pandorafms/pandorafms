@@ -2740,22 +2740,47 @@ sub get_module_status ($$$) {
 			
 		# Critical
 		if ($critical_min ne $critical_max) {
-			return 1 if ($data >= $critical_min && $data < $critical_max);
-			return 1 if ($data >= $critical_min && $critical_max < $critical_min);
+			# [critical_min, critical_max]
+			if ($module->{'critical_inverse'} == 0) {
+				return 1 if ($data >= $critical_min && $data < $critical_max);
+				return 1 if ($data >= $critical_min && $critical_max < $critical_min);
+			}
+			# (-inf, critical_min), (critical_max, +inf)
+			else {
+				return 1 if ($data < $critical_min || $data > $critical_max);
+			}
 		}
 	
 		# Warning
 		if ($warning_min ne $warning_max) {
-			return 2 if ($data >= $warning_min && $data < $warning_max);
-			return 2 if ($data >= $warning_min && $warning_max < $warning_min);
+			# [warning_min, warning_max]
+			if ($module->{'warning_inverse'} == 0) {
+				return 2 if ($data >= $warning_min && $data < $warning_max);
+				return 2 if ($data >= $warning_min && $warning_max < $warning_min);
+			}
+			# (-inf, warning_min), (warning_max, +inf)
+			else {
+				return 2 if ($data < $warning_min || $data > $warning_max);
+			}
 		}
 	}
+	# String
+	else {
 
-	# Critical
-	return 1 if ($critical_str ne '' && $data =~ /$critical_str/);
+		# Critical
+		if ($module->{'critical_inverse'} == 0) {
+			return 1 if ($critical_str ne '' && $data =~ /$critical_str/);
+		} else {
+			return 1 if ($critical_str ne '' && $data !~ /$critical_str/);
+		}
 
-	# Warning
-	return 2 if ($warning_str ne '' && $data =~ /$warning_str/);		
+		# Warning
+		if ($module->{'warning_inverse'} == 0) {
+			return 2 if ($warning_str ne '' && $data =~ /$warning_str/);
+		} else {
+			return 2 if ($warning_str ne '' && $data !~ /$warning_str/);
+		}
+	}
 	
 	# Normal
 	return 0;

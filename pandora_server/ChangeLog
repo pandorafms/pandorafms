@@ -1,3 +1,8 @@
+2012-09-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added support for inverse intervals when calculating
+	  the status of a module.
+
 2012-09-17 Vanessa Gil <vanessa.gil@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Added new fields

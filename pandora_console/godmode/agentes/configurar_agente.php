@@ -785,6 +785,8 @@ if ($update_module || $create_module) {
 	$critical_instructions = (string) get_parameter('critical_instructions');
 	$warning_instructions = (string) get_parameter('warning_instructions');
 	$unknown_instructions = (string) get_parameter('unknown_instructions');
+	$critical_inverse = (int) get_parameter('critical_inverse');
+	$warning_inverse = (int) get_parameter('warning_inverse');
 	
 	if ($prediction_module != 3) {
 		unset($serialize_ops);
@@ -847,7 +849,9 @@ if ($update_module) {
 		'quiet' => $quiet_module,
 		'critical_instructions' => $critical_instructions,
 		'warning_instructions' => $warning_instructions,
-		'unknown_instructions' => $unknown_instructions);
+		'unknown_instructions' => $unknown_instructions,
+		'critical_inverse' => $critical_inverse,
+		'warning_inverse' => $warning_inverse);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$result = false;
@@ -959,7 +963,9 @@ if ($create_module) {
 		'quiet' => $quiet_module,
 		'critical_instructions' => $critical_instructions,
 		'warning_instructions' => $warning_instructions,
-		'unknown_instructions' => $unknown_instructions);
+		'unknown_instructions' => $unknown_instructions,
+		'critical_inverse' => $critical_inverse,
+		'warning_inverse' => $warning_inverse);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$id_agent_module = false;

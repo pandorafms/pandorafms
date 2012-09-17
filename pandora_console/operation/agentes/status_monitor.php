@@ -402,6 +402,8 @@ switch ($config["dbtype"]) {
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
 			tagente_modulo.extended_info,
+			tagente_modulo.critical_inverse,
+			tagente_modulo.warning_inverse,
 			tagente_estado.utimestamp AS utimestamp".$sql.") ORDER BY " . $order['field'] . " " . $order['order'] 
 			. " LIMIT ".$offset.",".$config["block_size"];
 		break;

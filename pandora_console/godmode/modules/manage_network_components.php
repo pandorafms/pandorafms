@@ -78,6 +78,8 @@ $only_metaconsole = get_parameter ('only_metaconsole');
 $critical_instructions = (string) get_parameter('critical_instructions');
 $warning_instructions = (string) get_parameter('warning_instructions');
 $unknown_instructions = (string) get_parameter('unknown_instructions');
+$critical_inverse = (int) get_parameter('critical_inverse');
+$warning_inverse = (int) get_parameter('warning_inverse');
 
 $snmp_version = (string) get_parameter('snmp_version');
 $snmp3_auth_user = (string) get_parameter('snmp3_auth_user');
@@ -167,7 +169,9 @@ if ($create_component) {
 				'macros' => $macros,
 				'critical_instructions' => $critical_instructions,
 				'warning_instructions' => $warning_instructions,
-				'unknown_instructions' => $unknown_instructions));
+				'unknown_instructions' => $unknown_instructions,
+				'critical_inverse' => $critical_inverse,
+				'warning_inverse' => $warning_inverse));
 	}
 	else {
 		$id = '';
@@ -242,7 +246,9 @@ if ($update_component) {
 				'macros' => $macros,
 				'critical_instructions' => $critical_instructions,
 				'warning_instructions' => $warning_instructions,
-				'unknown_instructions' => $unknown_instructions));
+				'unknown_instructions' => $unknown_instructions,
+				'critical_inverse' => $critical_inverse,
+				'warning_inverse' => $warning_inverse));
 	}
 	else {
 		$result = '';
@@ -355,7 +361,9 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'id_component_type' => false,
 	'critical_instructions' => false,
 	'warning_instructions' => false,
-	'unknown_instructions' => false));
+	'unknown_instructions' => false,
+	'critical_inverse' => false,
+	'warning_inverse' => false));
 
 
 $search_id_group = (int) get_parameter ('search_id_group');

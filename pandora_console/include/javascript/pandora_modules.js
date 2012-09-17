@@ -86,6 +86,10 @@ function configure_modules_form () {
 			$("#text-unit").attr("value", '');
 			$("#text-critical_inverse").attr ("value", 0);
 			$("#text-warning_inverse").attr ("value", 0);
+			$("#textarea_critical_instructions").attr ("value", '');
+			$("#textarea_warning_instructions").attr ("value", '');
+			$("#textarea_unknown_instructions").attr ("value", '');
+			
 	}
 	
 	$("#local_component").change (function () {

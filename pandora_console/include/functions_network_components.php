@@ -342,7 +342,9 @@ function network_components_create_module_from_network_component ($id_network_co
 			'min_ff_event',
 			'critical_inverse',
 			'warning_inverse',
-			));
+			'module_critical_instructions',
+			'module_warning_instructions',
+			'module_unknown_instructions'));
 	if (empty ($component))
 		return false;
 	$values = $component;
@@ -407,6 +409,9 @@ function network_components_duplicate_network_component ($id_local_component) {
 	$networkCopy['min_ff_event'] = $network['min_ff_event'];
 	$networkCopy['critical_inverse'] = $network['critical_inverse'];
 	$networkCopy['warning_inverse'] = $network['warning_inverse'];
+	$networkCopy['critical_instructions'] = $network['critical_instructions'];
+	$networkCopy['warning_instructions'] = $network['warning_instructions'];
+	$networkCopy['unknown_instructions'] = $network['unknown_instructions'];
 	
 	return network_components_create_network_component ($name, $network['type'], $network['id_group'], $networkCopy);
 }

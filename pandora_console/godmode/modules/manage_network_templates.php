@@ -101,7 +101,7 @@ if ($export_profile) {
 					components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
 					components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
 					components.max_timeout, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
-					components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name
+					components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
 				FROM `tnetwork_component` AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
 				WHERE tpc.id_nc = components.id_nc
 					AND components.id_group = comp_group.id_sg
@@ -113,7 +113,7 @@ if ($export_profile) {
 					components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
 					components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
 					components.max_timeout, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
-					components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name
+					components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
 				FROM \"tnetwork_component\" AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
 				WHERE tpc.id_nc = components.id_nc
 					AND components.id_group = comp_group.id_sg
@@ -125,7 +125,7 @@ if ($export_profile) {
 					components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
 					components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
 					components.max_timeout, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
-					components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name
+					components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
 				FROM tnetwork_component AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
 				WHERE tpc.id_nc = components.id_nc
 					AND components.id_group = comp_group.id_sg

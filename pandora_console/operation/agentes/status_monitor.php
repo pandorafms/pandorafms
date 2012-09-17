@@ -404,6 +404,9 @@ switch ($config["dbtype"]) {
 			tagente_modulo.extended_info,
 			tagente_modulo.critical_inverse,
 			tagente_modulo.warning_inverse,
+			tagente_modulo.critical_instructions,
+			tagente_modulo.warning_instructions,
+			tagente_modulo.unknown_instructions,
 			tagente_estado.utimestamp AS utimestamp".$sql.") ORDER BY " . $order['field'] . " " . $order['order'] 
 			. " LIMIT ".$offset.",".$config["block_size"];
 		break;
@@ -429,6 +432,11 @@ switch ($config["dbtype"]) {
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
 			tagente_modulo.extended_info,
+			tagente_modulo.critical_inverse,
+			tagente_modulo.warning_inverse,
+			tagente_modulo.critical_instructions,
+			tagente_modulo.warning_instructions,
+			tagente_modulo.unknown_instructions,
 			tagente_estado.utimestamp AS utimestamp".$sql.") LIMIT " . $config["block_size"] . " OFFSET " . $offset;
 		break;
 	case "oracle":
@@ -455,6 +463,11 @@ switch ($config["dbtype"]) {
 			tagente_modulo.max_critical,
 			tagente_modulo.str_critical,
 			tagente_modulo.extended_info,
+			tagente_modulo.critical_inverse,
+			tagente_modulo.warning_inverse,
+			tagente_modulo.critical_instructions,
+			tagente_modulo.warning_instructions,
+			tagente_modulo.unknown_instructions,
 			tagente_estado.utimestamp AS utimestamp" . $sql;
 		$sql = oracle_recode_query ($sql, $set);
 		break;

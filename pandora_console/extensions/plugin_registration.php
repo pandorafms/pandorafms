@@ -175,6 +175,9 @@ function pluginreg_extension_main () {
 			'tcp_port' => isset($ini_array[$label]["tcp_port"]) ? $ini_array[$label]["tcp_port"] : '',
 			'critical_inverse' => isset($ini_array[$label]["critical_inverse"]) ? $ini_array[$label]["critical_inverse"] : '',
 			'warning_inverse' => isset($ini_array[$label]["warning_inverse"]) ? $ini_array[$label]["warning_inverse"] : '',
+			'critical_instructions' => isset($ini_array[$label]["critical_instructions"]) ? $ini_array[$label]["critical_instructions"] : '',
+			'warning_instructions' => isset($ini_array[$label]["warning_instructions"]) ? $ini_array[$label]["warning_instructions"] : '',
+			'unknown_instructions' => isset($ini_array[$label]["unknown_instructions"]) ? $ini_array[$label]["unknown_instructions"] : '',
 			'id_plugin' => $create_id);
 		
 		db_process_sql_insert('tnetwork_component', $values);

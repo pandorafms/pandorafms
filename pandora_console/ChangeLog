@@ -1,3 +1,15 @@
+2012-09-17  Vanessa Gil <vanessa.gil@artica.es>
+
+	* operation/events/events_list.php
+	  extensions/plugin_registration.php
+	  operation/agentes/status_monitor.php
+	  godmode/agentes/agent_template.php
+	  godmode/massive/massive_edit_modules.php
+	  godmode/modules/manage_network_templates.php
+	  include/javascript/pandora_modules.js
+	  include/functions_network_components.php: Added instructions to modules,
+	events, policies, massive operations...
+
 2012-09-17  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/javascript/pandora_modules.js,

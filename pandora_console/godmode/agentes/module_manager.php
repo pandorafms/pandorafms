@@ -350,7 +350,7 @@ $params = implode(',', array ('id_agente_modulo', 'id_tipo_modulo',
 	'descripcion', 'nombre', 'max', 'min', 'module_interval',
 	'id_modulo', 'id_module_group', 'disabled','max_warning',
 	'min_warning', 'str_warning', 'max_critical', 'min_critical',
-	'str_critical', 'quiet'));
+	'str_critical', 'quiet', 'critical_inverse', 'warning_inverse'));
 
 $where = sprintf("delete_pending = 0 AND id_agente = %s", $id_agente);
 

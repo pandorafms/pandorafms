@@ -84,6 +84,8 @@ function configure_modules_form () {
 			$("#text-ff_event").attr ("value", 0);
 			$("#text-post_process").attr("value", 0);
 			$("#text-unit").attr("value", '');
+			$("#text-critical_inverse").attr ("value", 0);
+			$("#text-warning_inverse").attr ("value", 0);
 	}
 	
 	$("#local_component").change (function () {
@@ -125,8 +127,10 @@ function configure_modules_form () {
 				$("#text-max_critical").attr ("value", (data["max_critical"] == 0) ? 0 : data["max_critical"]);
 				$("#text-str_critical").attr ("value", (data["str_critical"] == 0) ? 0 : data["str_critical"]);
 				$("#text-ff_event").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
-				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"])
+				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"]);
 				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"])
+				$("#text-critical_inverse").attr ("value", (data["critical_inverse"] == 0) ? 0 : data["critical_inverse"]);
+				$("#text-warning_inverse").attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 			
@@ -244,8 +248,10 @@ function configure_modules_form () {
 				$("#text-max_critical").attr ("value", (data["max_critical"] == 0) ? 0 : data["max_critical"]);
 				$("#text-str_critical").attr ("value", (data["str_critical"] == 0) ? 0 : data["str_critical"]);
 				$("#text-ff_event").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
-				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"])
+				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"]);
 				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"])
+				$("#text-critical_inverse").attr ("value", (data["critical_inverse"] == 0) ? 0 : data["critical_inverse"]);
+				$("#text-warning_inverse").attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 				

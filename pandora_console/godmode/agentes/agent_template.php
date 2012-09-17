@@ -85,7 +85,9 @@ if (isset ($_POST["template_id"])) {
 				'str_warning' => $row2['str_warning'],
 				'min_critical' => $row2['min_critical'],
 				'max_critical' => $row2['max_critical'],
-				'str_critical' => $row2['str_critical']
+				'str_critical' => $row2['str_critical'],
+				'critical_inverse' => $row2['critical_inverse'],
+				'warning_inverse' => $row2['warning_inverse'],
 				);
 			$id_agente_modulo = db_process_sql_insert('tagente_modulo', $values);
 			

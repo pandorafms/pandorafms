@@ -1,3 +1,21 @@
+2012-09-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/javascript/pandora_modules.js,
+	  include/functions_network_components.php,
+	  pandoradb.sql,
+	  extensions/plugin_registration.php,
+	  operation/agentes/status_monitor.php,
+	  godmode/agentes/agent_template.php,
+	  godmode/agentes/module_manager_editor_common.php,
+	  godmode/agentes/module_manager.php,
+	  godmode/agentes/configurar_agente.php,
+	  godmode/agentes/module_manager_editor.php,
+	  godmode/massive/massive_edit_modules.php,
+	  godmode/modules/manage_network_components_form.php,
+	  godmode/modules/manage_network_components_form_common.php,
+	  godmode/modules/manage_network_components.php: Added inverse intervals for
+	  warning and critical limits.
+
 2012-09-14 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js,

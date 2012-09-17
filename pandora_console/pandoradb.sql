@@ -221,6 +221,8 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`warning_instructions` text NOT NULL default '',
 	`unknown_instructions` text NOT NULL default '',
 	`quiet` tinyint(1) NOT NULL default '0',
+	`critical_inverse` tinyint(1) unsigned default '0',
+	`warning_inverse` tinyint(1) unsigned default '0',
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
 	KEY `tam_agente` (`id_agente`),
@@ -660,6 +662,8 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `critical_instructions` text NOT NULL default '',
   `warning_instructions` text NOT NULL default '',
   `unknown_instructions` text NOT NULL default '',
+  `critical_inverse` tinyint(1) unsigned default '0',
+  `warning_inverse` tinyint(1) unsigned default '0',
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

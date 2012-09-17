@@ -93,6 +93,9 @@ $table->data[3][1] .= html_print_input_text ('max_warning', $max_warning,
 $table->data[3][1] .= '<br /><em>'.__('Str.').'</em>';
 $table->data[3][1] .= html_print_input_text ('str_warning', $str_warning,
 	'', 5, 15, true);
+$table->data[3][1] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table->data[3][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
+
 $table->data[3][2] = __('Critical status');
 $table->data[3][3] = '<em>'.__('Min.').'</em>';
 $table->data[3][3] .= html_print_input_text ('min_critical', $min_critical,
@@ -103,6 +106,8 @@ $table->data[3][3] .= html_print_input_text ('max_critical', $max_critical,
 $table->data[3][3] .= '<br /><em>'.__('Str.').'</em>';
 $table->data[3][3] .= html_print_input_text ('str_critical', $str_critical,
 	'', 5, 15, true);
+$table->data[3][3] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table->data[3][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
 
 $table->data[4][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);
 $table->data[4][1] = html_print_input_text ('ff_event', $ff_event,

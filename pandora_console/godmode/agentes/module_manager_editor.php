@@ -206,6 +206,9 @@ if ($id_agent_module) {
 	$warning_instructions = $module['warning_instructions'];
 	$unknown_instructions = $module['unknown_instructions'];
 
+	$critical_inverse = $module['critical_inverse'];
+	$warning_inverse = $module['warning_inverse'];
+
 }
 else {
 	if (!isset ($moduletype)) {
@@ -263,6 +266,8 @@ else {
 		$warning_instructions = '';
 		$unknown_instructions = '';
 		
+		$critical_inverse = '';
+		$warning_inverse = '';
 	}
 }
 

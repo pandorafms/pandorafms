@@ -173,6 +173,8 @@ function pluginreg_extension_main () {
 			'str_critical' => isset($ini_array[$label]["str_critical"]) ? $ini_array[$label]["str_critical"] : '',
 			'min_ff_event' => isset($ini_array[$label]["min_ff_event"]) ? $ini_array[$label]["min_ff_event"] : '',
 			'tcp_port' => isset($ini_array[$label]["tcp_port"]) ? $ini_array[$label]["tcp_port"] : '',
+			'critical_inverse' => isset($ini_array[$label]["critical_inverse"]) ? $ini_array[$label]["critical_inverse"] : '',
+			'warning_inverse' => isset($ini_array[$label]["warning_inverse"]) ? $ini_array[$label]["warning_inverse"] : '',
 			'id_plugin' => $create_id);
 		
 		db_process_sql_insert('tnetwork_component', $values);

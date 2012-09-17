@@ -275,6 +275,9 @@ $table->data['edit1'][1] .= '<br /><em>'.__('Max.').'</em>';
 $table->data['edit1'][1] .= html_print_input_text ('max_warning', '', '', 5, 15, true);
 $table->data['edit1'][1] .= '<br /><em>'.__('Str.').'</em>';
 $table->data['edit1'][1] .= html_print_input_text ('str_warning', '', '', 5, 15, true);
+$table->data['edit1'][1] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table->data['edit1'][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
+
 $table->data['edit1'][2] = __('Critical status');
 $table->data['edit1'][3] = '<em>'.__('Min.').'</em>';
 $table->data['edit1'][3] .= html_print_input_text ('min_critical', '', '', 5, 15, true);
@@ -282,6 +285,8 @@ $table->data['edit1'][3] .= '<br /><em>'.__('Max.').'</em>';
 $table->data['edit1'][3] .= html_print_input_text ('max_critical', '', '', 5, 15, true);
 $table->data['edit1'][3] .= '<br /><em>'.__('Str.').'</em>';
 $table->data['edit1'][3] .= html_print_input_text ('str_critical', '', '', 5, 15, true);
+$table->data['edit1'][3] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table->data['edit1'][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
 
 $table->data['edit2'][0] = __('Interval');
 $table->data['edit2'][1] = html_print_extended_select_for_time ('module_interval', 0, '', __('No change'), '0', 10, true, 'width: 150px');
@@ -574,7 +579,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	/* List of fields which can be updated */
 	$fields = array ('min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'module_interval',
 		'disabled', 'post_process', 'unit', 'snmp_community', 'tcp_send', 'custom_string_1', 'plugin_parameter', 
-		'custom_string_2', 'custom_string_3', 'min', 'max', 'id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
+		'custom_string_2', 'custom_string_3', 'min', 'max', 'id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data', 'critical_inverse', 'warning_inverse');
 	$values = array ();
 	
 	// Specific snmp reused fields

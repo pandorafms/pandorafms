@@ -137,7 +137,7 @@ if (($new_msg) && (!empty ($dst_user)) && (!$reply)) {
 // Create message (destination group)
 if (($new_msg) && ($dst_group!='') && (!$reply)) {
 	$return = messages_create_group ($config["id_user"], $dst_group, $subject, $message);
-
+	
 	ui_print_result_message ($return,
 		__('Message successfully sent'),
 		__('Error sending message to group %s', groups_get_name ($dst_group)));
@@ -172,7 +172,7 @@ foreach ($users_full as $user_id => $user_info) {
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$return_all_groups = true;
 else
-	$return_all_groups = false;	
+	$return_all_groups = false;
 
 $groups = users_get_groups ($config["id_user"], "AR"); //Get a list of all groups
 
@@ -190,7 +190,7 @@ echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/mes
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-		html_print_submit_button (__('Send message'), 'send_mes', false, 'class="sub wand"');
+	html_print_submit_button (__('Send message'), 'send_mes', false, 'class="sub wand"');
 echo '</form>';
 echo '</div>';
 ?>

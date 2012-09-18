@@ -44,12 +44,15 @@ $table->align[1] = 'left';
 
 /* Add an agent selector */
 if (! $id_agente) {
-	
 	$table->data['agent'][0] = __('Agent');
-	$src_code = html_print_image('images/lightning.png', true, false, true);
-	$table->data['agent'][1] = html_print_input_text_extended ('id_agent', '', 'text_id_agent', '', 30, 100, false, '',
-	array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true)
-	. ui_print_help_tip(__('Type at least two characters to search'), true);
+	
+	$params = array();
+	$params['return'] = true;
+	$params['show_helptip'] = true;
+	$params['input_name'] = 'id_agent';
+	$params['selectbox_id'] = 'id_agent_module';
+	$params['javascript_is_function_select'] = true;
+	$table->data['agent'][1] = ui_print_agent_autocomplete_input($params);
 }
 
 $table->data[0][0] = __('Module');
@@ -141,94 +144,6 @@ ui_require_jquery_file ('bgiframe');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-	
-	$("#text_id_agent").autocomplete({
-		minLength: 2,
-		source: function( request, response ) {
-			var term = request.term; //Word to search
-			
-			var data_params = {
-				page: "include/ajax/agent",
-				"search_agents_2": 1,
-				id_group: function() { return $("#id_group").val(); },
-				"q": term};
-			
-			jQuery.ajax ({
-				data: data_params,
-				async: false,
-				type: "POST",
-				url: action="ajax.php",
-				timeout: 10000,
-				dataType: "json",
-				success: function (data) {
-					response(data);
-					return;
-				}
-			});
-			return;
-		},
-		select: function( event, ui ) {
-			var agent_name = ui.item.name;
-			
-			//Put the name
-			$(this).val(agent_name);
-			
-			$('#id_agent_module').fadeOut ('normal', function () {
-				$('#id_agent_module').empty ();
-				var inputs = [];
-				inputs.push ("agent_name=" + agent_name);
-				inputs.push ('filter=delete_pending = 0 AND id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_estado WHERE utimestamp = 0)');
-				inputs.push ("get_agent_modules_json=1");
-				inputs.push ("page=operation/agentes/ver_agente");
-				/* This will force to get local modules although metaconsole is active */
-				inputs.push ("force_local_modules=1");
-				jQuery.ajax ({
-					data: inputs.join ("&"),
-					type: 'GET',
-					url: action="ajax.php",
-					timeout: 10000,
-					dataType: 'json',
-					success: function (data) {
-						$('#id_agent_module').append ($('<option></option>').attr ('value', 0).text ("--"));
-						jQuery.each (data, function (i, val) {
-							s = js_html_entity_decode (val['nombre']);
-							$('#id_agent_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
-						});
-						$('#id_agent_module').enable();
-						$('#id_agent_module').fadeIn ('normal');
-					}
-				});
-			});
-
-			return false;
-		}
-	})
-	.data( "autocomplete")._renderItem = function( ul, item ) {
-		if (item.ip == "") {
-			text = "<a>" + item.name + "</a>";
-		}
-		else {
-			text = "<a>" + item.name
-				+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
-		}
-		
-		return $("<li></li>")
-			.data("item.autocomplete", item)
-			.append(text)
-			.appendTo(ul);
-	};
-	
-	//Force the size of autocomplete
-	$(".ui-autocomplete").css("max-height", "100px");
-	$(".ui-autocomplete").css("overflow-y", "auto");
-	/* prevent horizontal scrollbar */
-	$(".ui-autocomplete").css("overflow-x", "hidden");
-	/* add padding to account for vertical scrollbar */
-	$(".ui-autocomplete").css("padding-right", "20px");
-	
-	//Force to style of items
-	$(".ui-autocomplete").css("text-align", "left");
-
 <?php if (! $id_agente) : ?>
 	$("#id_group").pandoraSelectGroupAgent ({
 		callbackBefore: function () {

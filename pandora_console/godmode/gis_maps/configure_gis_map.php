@@ -413,12 +413,23 @@ $table->data[1][1] = '<div id="form_layer">
 			</tr>
 			<tr>
 				<td>' . __('Agent') . ':</td>
-				<td colspan="3">
-					' . html_print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
-					array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-					. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>&nbsp;' . 
-					html_print_button(__('Add agent'), 'add_agent', true, 'addAgentLayer();', 'class="sub add"', true) .'
-				</td>
+				<td colspan="3">';
+
+
+
+$table->data[1][1] .= html_print_button(__('Add agent'), 'add_agent', true, 'addAgentLayer();', 'class="sub add"', true);
+
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['input_name'] = 'id_agent';
+$params['value'] = '';
+$params['javascript_function_action_after_select'] = 'active_button_add_agent';
+$table->data[1][1] .= ui_print_agent_autocomplete_input($params);
+
+
+
+$table->data[1][1] .= '</td>
 			</tr>
 			<tr>
 				<td colspan="4">
@@ -508,7 +519,6 @@ ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('bgiframe');
-ui_require_jquery_file ('autocomplete');
 ui_require_jquery_file ('json');
 ?>
 <script type="text/javascript">
@@ -517,7 +527,7 @@ function refreshMapView() {
 	$("#map").html('');
 	
 	id_connection_default = $("input[name=map_connection_default]:checked").val();
-
+	
 	jQuery.ajax ({
 		data: "page=operation/gis_maps/ajax&opt=get_map_connection_data&id_connection=" + id_connection_default,
 		type: "GET",
@@ -538,7 +548,7 @@ function refreshMapView() {
 				center_latitude = mapConnection['initial_latitude'];
 				center_longitude = mapConnection['initial_longitude'];
 				center_altitude = mapConnection['initial_altitude'];
-
+				
 				baseLayer = jQuery.evalJSON(mapConnection['conection_data']);
 				
 				var objBaseLayers = Array();
@@ -546,43 +556,16 @@ function refreshMapView() {
 				objBaseLayers[0]['type'] = baseLayer['type'];
 				objBaseLayers[0]['name'] = mapConnection['conection_name'];
 				objBaseLayers[0]['url'] = baseLayer['url'];
-
+				
 				js_printMap('map', inital_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls);
 			}
 		}
 	});
-	
 }
 
-$("#text_id_agent").autocomplete(
-	"ajax.php",
-	{
-		minChars: 2,
-		scroll:true,
-		extraParams: {
-			page: "operation/agentes/exportdata",
-			search_agents: 1,
-			id_group: function() { return $("#id_group").val(); }
-		},
-		formatItem: function (data, i, total) {
-			if (total == 0)
-				$("#text_id_agent").css ('background-color', '#cc0000');
-			else
-				$("#text_id_agent").css ('background-color', '');
-			if (data == "")
-				return false;
-			
-			return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-		},
-		delay: 200
-	}
-);
-
-$("#text_id_agent").result (
-	function () {
-		$("#button-add_agent").removeAttr('disabled');
-	}
-);
+function active_button_add_agent() {
+	$("#button-add_agent").removeAttr('disabled');
+}
 
 function loadAgents(agent_list) {
 	if (agent_list != null) {
@@ -614,7 +597,7 @@ function deleteLayer(idRow) {
 	$("#hidden-layer_edit_id_form").val('');
 	
 	for (var index in layerList) {
-
+	
 		//int because in the object array there are method as string
 		if (isInt(index)) {
 			if (layerList[index] == idRow) {
@@ -622,9 +605,9 @@ function deleteLayer(idRow) {
 			}
 		}
 	}
-
+	
 	updateArrowLayers();
-
+	
 	//If delete the layer in edit progress, must clean the form.
 	if ($("#hidden-layer_edit_id_form").val() == idRow) {
 		$("#form_layer_table").css('visibility', 'hidden');
@@ -656,7 +639,7 @@ function serializeForm() {
 	else
 		layer.layer_visible = 0;
 	layer.layer_agent_list = Array();
-
+	
 	for (var index2 in agentList) {
 		if (isInt(index2)) {
 			layer.layer_agent_list[index2] = $("#name_agent_" + agentList[index2]).val();
@@ -669,15 +652,15 @@ function serializeForm() {
 function editLayer(indexLayer) {
 	agentList = Array();
 	countAgentList = 0;
-
+	
 	stringValuesLayer = $("#layer_values_" + indexLayer).val();
 	layer = $.evalJSON(stringValuesLayer);
 	
 	setFieldsFormLayer(layer.layer_name, layer.layer_group, layer.layer_visible, layer.layer_agent_list);
 	$("#hidden-layer_edit_id_form").val(indexLayer);
-
+	
 	$("input[name=save_layer]").val('<?php echo __("Update Layer"); ?>');
-
+	
 	$("#form_layer_table").css('visibility', 'visible');
 	
 	hightlightRow(indexLayer);
@@ -700,7 +683,7 @@ function hightlightRow(idLayer) {
 
 function saveLayer() {
 	layer_id = $("#hidden-layer_edit_id_form").val();
-
+	
 	if (layer_id == '') {
 		id = countLayer;
 		tableRow = $("#chuck_layer_item").clone();
@@ -712,7 +695,7 @@ function saveLayer() {
 		id = layer_id;
 		tableRow = $("#layer_item_" + id);
 	}
-
+	
 	$(".col1", tableRow).html($("#text-layer_name_form").val());
 	$("#edit_layer", tableRow).attr("href", "javascript: editLayer(" + id + ");");
 	$("#delete_row", tableRow).attr("href", "javascript: deleteLayer(" + id + ")");
@@ -720,17 +703,17 @@ function saveLayer() {
 	$("#down_arrow", tableRow).attr("href", "javascript: downLayer(" + id + ")");
 	
 	$("#layer_values_" + id, tableRow).val(serializeForm());
-
+	
 	if (layer_id == '') {
 		$("#list_layers").append(tableRow);
 		layerList.push(countLayer);
 		
 		countLayer++;
 	}
-
+	
 	updateArrowLayers();
 	hightlightRow(id);
-
+	
 	editLayer(id);
 	$("input[name=save_layer]").val('<?php echo __("Update Layer"); ?>');
 }
@@ -750,13 +733,13 @@ function deleteAgentLayer(idRow) {
 
 function addAgentLayer(agent_name) {
 	if (typeof(agent_name) == 'undefined')
-		agent_name = $("#text_id_agent").val(); //default value
+		agent_name = $("#text-id_agent").val(); //default value
 	
 	tableRow = $("#chuck_agent").clone();
-
+	
 	tableRow.attr('id','agent_' + countAgentList);
 	agentList.push(countAgentList);
-
+	
 	$(".col1", tableRow).html(agent_name);
 	$("#delete_row", tableRow).attr("href", 'javascript: deleteAgentLayer(' + countAgentList + ')');
 	$("#name_agent", tableRow).val(agent_name);
@@ -771,7 +754,7 @@ function addAgentLayer(agent_name) {
 
 function deleteConnectionMap(idConnectionMap) {
 	for (var index in connectionMaps) {
-
+	
 		//int because in the object array there are method as string
 		if (isInt(index)) {
 			if (connectionMaps[index] == idConnectionMap) {
@@ -779,15 +762,15 @@ function deleteConnectionMap(idConnectionMap) {
 			}
 		}
 	}
-
+	
 	checked = $("#radiobtn0001", $("#map_connection_" + idConnectionMap)).attr('checked');
 	$("#map_connection_" + idConnectionMap).remove();
-
+	
 	if (checked) {
 		//Checked first, but not is index = 0 maybe.
 		
 		for (var index in connectionMaps) {
-
+			
 			//int because in the object array there are method as string
 			if (isInt(index)) {
 				$("#radiobtn0001", $("#map_connection_" + connectionMaps[index])).attr('checked', 'checked');
@@ -829,7 +812,7 @@ function changeDefaultConection(id) {
 function addConnectionMap() {
 	idConnectionMap = $("#map_connection :selected").val();
 	connectionMapName = $("#map_connection :selected").text();
-
+	
 	//Test if before just added
 	for (var index in connectionMaps) {
 		if (isInt(index)) {
@@ -848,11 +831,11 @@ function addConnectionMap() {
 	if (connectionMaps.length == 0) {
 		//The first is checked
 		$("#radiobtn0001", tableRows).attr('checked', 'checked');
-
+		
 		//Set the fields with conexion data (in ajax)
 		setFieldsRequestAjax(idConnectionMap);
 	}
-
+	
 	connectionMaps.push(idConnectionMap);
 	
 	$("#text-map_connection_name", tableRows).val(connectionMapName);
@@ -872,7 +855,7 @@ function upLayer(idLayer) {
 	var toDownIndex = null;
 	
 	for (var index in layerList) {
-
+		
 		//int because in the object array there are method as string
 		if (isInt(index)) {
 			toUpIndex = index;
@@ -890,7 +873,7 @@ function upLayer(idLayer) {
 		temp = layerList[toUpIndex];
 		layerList[toUpIndex] = layerList[toDownIndex];
 		layerList[toDownIndex] = temp;
-
+		
 		updateArrowLayers();
 	}
 }
@@ -924,7 +907,7 @@ function downLayer(idLayer) {
 		temp = layerList[toUpIndex];
 		layerList[toUpIndex] = layerList[toDownIndex];
 		layerList[toDownIndex] = temp;
-
+		
 		updateArrowLayers();
 	}
 }

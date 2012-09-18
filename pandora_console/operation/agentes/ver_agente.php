@@ -803,23 +803,23 @@ switch($tab) {
 		break;
 	case "inventory":
 		$header_description = ' - ' . __('Inventory');
-		break;	
+		break;
 	case "collection":
 		$header_description = ' - ' . __('Collection');
-		break;		
+		break;
 	case "gis":
 		$header_description = ' - ' . __('Gis');
-		break;	
+		break;
 	case "custom_fields":
 		$header_description = ' - ' . __('Custom fields');
-		break;	
+		break;
 	case "graphs":
 		$header_description = ' - ' . __('Graphs');
-		break;	
+		break;
 	case "policy":
 		$header_description = ' - ' . __('Policy');
 		break;
-	case "incident":	
+	case "incident":
 		$header_description = ' - ' . __('Incident');
 		break;
 	case "url_address":

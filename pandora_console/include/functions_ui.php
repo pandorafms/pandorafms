@@ -2140,6 +2140,38 @@ function ui_print_agent_autocomplete_input($parameters) {
 	
 	// Javascript configurations
 	//-----------------------------------------
+	$javascript_function_action_after_select = ''; //Default value
+	$javascript_function_action_after_select_js_call = ''; //Default value
+	if (isset($parameters['javascript_function_action_after_select'])) {
+		$javascript_function_action_after_select = $parameters['javascript_function_action_after_select'];
+		$javascript_function_action_after_select_js_call =
+			$javascript_function_action_after_select . '();';
+	}
+	
+	if (isset($parameters['javascript_function_action_after_select_js_call'])) {
+		if ($javascript_function_action_after_select_js_call !=
+			$parameters['javascript_function_action_after_select_js_call']) {
+			$javascript_function_action_after_select_js_call =
+				$parameters['javascript_function_action_after_select_js_call'];
+		}
+	}
+	
+	$javascript_function_action_into_source = ''; //Default value
+	$javascript_function_action_into_source_js_call = ''; //Default value
+	if (isset($parameters['javascript_function_action_into_source'])) {
+		$javascript_function_action_into_source = $parameters['javascript_function_action_into_source'];
+		$javascript_function_action_into_source_js_call =
+			$javascript_function_action_into_source . '();';
+	}
+	
+	if (isset($parameters['javascript_function_action_into_source_js_call'])) {
+		if ($javascript_function_action_into_source_js_call !=
+			$parameters['javascript_function_action_into_source_js_call']) {
+			$javascript_function_action_into_source_js_call =
+				$parameters['javascript_function_action_into_source_js_call'];
+		}
+	}
+	
 	$javascript = true; //Default value
 	if (isset($parameters['javascript'])) {
 		$javascript = $parameters['javascript'];
@@ -2205,6 +2237,53 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$javascript_page = $parameters['javascript_page'];
 	}
 	
+	$javascript_change_ajax_params_original = array('page' => '"' . $javascript_page . '"',
+		'search_agents_2' => 1,
+		'id_group' => 'function() {
+				var group_id = 0;
+				
+				if (' . ((int)!empty($selectbox_group)) . ') {
+					group_id = $("#' . $selectbox_group . '").val();
+				}
+				
+				return group_id;
+			}',
+		'q' => 'term');
+	if (isset($parameters['javascript_change_ajax_params'])) {
+		$javascript_change_ajax_params = array();
+		
+		$found_page = false;
+		foreach ($parameters['javascript_change_ajax_params'] as $key => $param_ajax) {
+			if ($key == 'page') {
+				$found_page = true;
+				if ($javascript_page != $param_ajax) {
+					$javascript_change_ajax_params['page'] = $param_ajax;
+				}
+				else {
+					$javascript_change_ajax_params['page'] = $javascript_page;
+				}
+			}
+			else {
+				$javascript_change_ajax_params[$key] = $param_ajax;
+			}
+		}
+		
+		if (!$found_page) {
+			$javascript_change_ajax_params['page'] = $javascript_page;
+		}
+	}
+	else {
+		$javascript_change_ajax_params = $javascript_change_ajax_params_original;
+	}
+	$first = true;
+	$javascript_change_ajax_params_text = 'var data_params = {';
+	foreach ($javascript_change_ajax_params as $key => $param_ajax) {
+		if (!$first) $javascript_change_ajax_params_text .= ",\n";
+		else $first = false;
+		$javascript_change_ajax_params_text .= '"' . $key . '":' . $param_ajax;
+	}
+	$javascript_change_ajax_params_text .= '};';
+	
 	$javascript_function_change ='';
 	$javascript_function_change .='
 		function set_functions_change_autocomplete_' . $input_name . '() {
@@ -2213,19 +2292,13 @@ function ui_print_agent_autocomplete_input($parameters) {
 				source: function( request, response ) {
 					var term = request.term; //Word to search
 					
-					var data_params = {
-						"page": "' . $javascript_page . '",
-						"search_agents_2": 1,
-						id_group: function() {
-							var group_id = 0;
-							
-							if (' . ((int)!empty($selectbox_group)) . ') {
-								group_id = $("#' . $selectbox_group . '").val();
-							}
-							
-							return group_id;
-						},
-						"q": term};
+					' . $javascript_change_ajax_params_text . '
+					
+					//Function to call when the source
+					if (' . ((int)!empty($javascript_function_action_into_source_js_call)) . ') {
+						' . $javascript_function_action_into_source_js_call . '
+					}
+					
 					
 					jQuery.ajax ({
 						data: data_params,
@@ -2260,8 +2333,14 @@ function ui_print_agent_autocomplete_input($parameters) {
 						$("#' . $hidden_input_idagent_id . '").val(agent_id);
 					}
 					
+					//Put the server id into the hidden input
 					if (' . ((int)$use_input_server) . ') {
 						$("#' . $input_server_id . '").val(server_name);
+					}
+					
+					//Function to call after the select
+					if (' . ((int)!empty($javascript_function_action_after_select_js_call)) . ') {
+						' . $javascript_function_action_after_select_js_call . '
 					}
 					
 					return false;

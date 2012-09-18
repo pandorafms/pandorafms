@@ -60,7 +60,7 @@ if (is_ajax ()){
 		}
 		// Activate shortcut var
 		else {
-			db_process_sql_update('tusuario', array('shortcut' => 1), array('id_user' => $id));		
+			db_process_sql_update('tusuario', array('shortcut' => 1), array('id_user' => $id));
 		}
 	
 	}
@@ -83,7 +83,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["phone"] = get_parameter_post ("phone", $user_info["phone"]);
 	$upd_info["comments"] = get_parameter_post ("comments", $user_info["comments"]);
 	$upd_info["language"] = get_parameter_post ("language", $user_info["language"]);
-	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);	
+	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
 	$upd_info["block_size"] = get_parameter ("block_size", $config["block_size"]);
 	$default_block_size = get_parameter ("default_block_size", 0);
 	if($default_block_size) {

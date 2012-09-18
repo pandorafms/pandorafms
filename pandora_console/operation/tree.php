@@ -92,7 +92,7 @@ if (is_ajax ())
 						//Skip agents which only have not init modules
 						
 						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
-							tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";					
+							tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
 						
 						$sql = agents_get_agents(array (
 							'order' => 'nombre COLLATE utf8_general_ci ASC',
@@ -386,7 +386,7 @@ if (is_ajax ())
 				if ($lessBranchs == 1)
 					html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 				else
-					html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+					html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
 				
 				echo $img;
 				echo "</a>";
@@ -504,20 +504,20 @@ if (is_ajax ())
 				echo "<li style='margin: 0; padding: 0;'>";
 				switch ($lessBranchs) {
 					case 0:
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 1:
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 2:
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 3:
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 				}
 				echo "<i>" . __("Empty") . "</i>";

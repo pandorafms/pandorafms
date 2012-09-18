@@ -28,16 +28,16 @@ if ($show_sent) {
 }
 
 $buttons['message_list'] = array('active' => $active_list,
-		'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list">' .
-		html_print_image("images/email.png", true, array ("title" => __('Message list'))) .'</a>');
-		
+	'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list">' .
+	html_print_image("images/email.png", true, array ("title" => __('Message list'))) .'</a>');
+
 $buttons['sent_messages'] = array('active' => $active_sent,
-		'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list&amp;show_sent=1">' .
-		html_print_image("images/email_go.png", true, array ("title" => __('Sent messages'))) .'</a>');
-		
+	'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list&amp;show_sent=1">' .
+	html_print_image("images/email_go.png", true, array ("title" => __('Sent messages'))) .'</a>');
+
 $buttons['create_message'] = array('active' => false,
-		'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_edit">' .
-		html_print_image("images/email_edit.png", true, array ("title" => __('Create message'))) .'</a>');
+	'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_edit">' .
+	html_print_image("images/email_edit.png", true, array ("title" => __('Create message'))) .'</a>');
 
 if (!is_ajax ()) {
 	ui_print_page_header (__('Messages'), "images/email.png", false, "", false, $buttons);
@@ -65,7 +65,7 @@ if ($multiple_delete) {
 	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tmensajes',
 			array ('id_mensaje' => $id));
-	
+		
 		if ($result === false) {
 			db_process_sql_rollback();
 			break;
@@ -190,15 +190,15 @@ else {
 		
 		if ($show_sent) {
 			$data[4] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
-						onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
-						html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'.
-						html_print_checkbox_extended ('delete_multiple[]', $message_id, false, false, '', 'class="check_delete"', true);
+				onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
+				html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'.
+				html_print_checkbox_extended ('delete_multiple[]', $message_id, false, false, '', 'class="check_delete"', true);
 		}
 		else {
 			$data[4] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_list&delete_message=1&id='.$message_id.'"
-						onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
-						html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'.
-						html_print_checkbox_extended ('delete_multiple[]', $message_id, false, false, '', 'class="check_delete"', true);
+				onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
+				html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'.
+				html_print_checkbox_extended ('delete_multiple[]', $message_id, false, false, '', 'class="check_delete"', true);
 		}
 		array_push ($table->data, $data);
 	}
@@ -210,7 +210,7 @@ else {
 			echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
 				html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 			echo "</div>";
-	echo "</form>";	
+	echo "</form>";
 }
 
 echo '<form method="post" action="index.php?sec=workspace&sec2=operation/messages/message_edit">';
@@ -221,14 +221,12 @@ echo "</form>";
 ?>
 
 <script type="text/javascript">
-
-function check_all_checkboxes() {
-	if ($("input[name=all_delete]").attr('checked')) {
-		$(".check_delete").attr('checked', true);
+	function check_all_checkboxes() {
+		if ($("input[name=all_delete]").attr('checked')) {
+			$(".check_delete").attr('checked', true);
+		}
+		else {
+			$(".check_delete").attr('checked', false);
+		}
 	}
-	else {
-		$(".check_delete").attr('checked', false);
-	}
-}
-
 </script>

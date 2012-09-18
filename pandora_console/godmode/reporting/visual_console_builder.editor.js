@@ -42,102 +42,12 @@ function visual_map_main() {
 	
 	eventsBackground();
 	eventsItems();
-	eventsTextAgent();
 	
 	//Fixed to wait the load of images.
 	$(window).load(function() {
 			draw_lines(lines, 'background', true);
 		}
 	);
-}
-
-function eventsTextAgent() {
-	var idText = $("#ip_text").html();
-	
-	$("#text-agent").autocomplete({
-		minLength: 2,
-		source: function( request, response ) {
-				var term = request.term; //Word to search
-				
-				var params = [];
-				params.push("all=enabled");
-				params.push("search_agents_2=1");
-				params.push("page=include/ajax/agent");
-				params.push("id_group="+ $("#group").val());
-				params.push("q="+ term);
-				jQuery.ajax ({
-					data: params.join ("&"),
-					async: false,
-					type: 'POST',
-					url: action="ajax.php",
-					timeout: 10000,
-					dataType: 'json',
-					success: function (data) {
-						response(data);
-						return;
-					}
-				});
-				return;
-			},
-		select: function( event, ui ) {
-			var agent_name = ui.item.name;
-			
-			//Put the name
-			$(this).val(agent_name);
-			
-			//Fill the modules select box
-			$('#module').fadeOut ('normal', function () {
-				$('#module').empty ();
-				var inputs = [];
-				inputs.push ("filter=disabled = 0");
-				inputs.push ("agent_name=" + agent_name);
-				inputs.push ("get_agent_modules_json=1");
-				inputs.push ("page=operation/agentes/ver_agente");
-				jQuery.ajax ({
-					data: inputs.join ("&"),
-					type: 'GET',
-					url: action="ajax.php",
-					timeout: 10000,
-					dataType: 'json',
-					success: function (data) {
-						$('#module').append ($('<option></option>').attr ('value', 0).text ("--"));
-						jQuery.each (data, function (i, val) {
-							s = js_html_entity_decode (val['nombre']);
-							$('#module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
-						});
-						$('#module').fadeIn ('normal');
-					}
-				});
-			});
-			
-			return false;
-		}
-	})
-	.data( "autocomplete")._renderItem = function( ul, item ) {
-		if (item.ip == '') {
-			text = "<a>" + item.name + "</a>";
-		}
-		else {
-			text = "<a>" + item.name
-				+ "<br><span style='font-size: 70%; font-style: italic;'>IP:" + item.ip + "</span></a>";
-		}
-		
-		return $("<li></li>")
-			.data("item.autocomplete", item)
-			.append(text)
-			.appendTo(ul);
-	};
-	
-	//Force the size of autocomplete
-	$(".ui-autocomplete").css("max-height", "100px");
-	$(".ui-autocomplete").css("overflow-y", "auto");
-	/* prevent horizontal scrollbar */
-	$(".ui-autocomplete").css("overflow-x", "hidden");
-	/* add padding to account for vertical scrollbar */
-	$(".ui-autocomplete").css("padding-right", "20px");
-	
-	//Force to style of items
-	$(".ui-autocomplete").css("text-align", "left");
 }
 
 function cancel_button_palette_callback() {

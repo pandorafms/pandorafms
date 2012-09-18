@@ -165,7 +165,7 @@ else {
 			'&sort_field=module_name&sort=up">'. html_print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp)) . '</a>' .
 		'<a href="index.php?search_category=modules&keywords=' .
 			$config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . 
-			'&sort_field=module_name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown)) . '</a>';	
+			'&sort_field=module_name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown)) . '</a>';
 	$table->head[1] = __('Agent') . ' ' .
 		'<a href="index.php?search_category=modules&keywords=' . 
 			$config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . 

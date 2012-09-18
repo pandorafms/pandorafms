@@ -116,9 +116,9 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$return = "<div>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' style='font-size:".$font_size."pt'></p>";
+	$return .= "<div id='timestamp_$graph_id' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='overview_$graph_id' style='display:none; margin-left:0px; margin-top:20px; width: ".$width."px; height:50px;'></div>";
-	$return .= "<div id='timestamp_$graph_id' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 
 	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";

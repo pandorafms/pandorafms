@@ -200,7 +200,7 @@ $label = base64_decode(get_parameter('label', ''));
 		$show_events_graph = get_parameter ("show_events_graph", 0);
 		$time_compare_separated = get_parameter ("time_compare_separated", 0);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
-		
+		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
 		
 		$time_compare = false;
 		
@@ -237,7 +237,7 @@ $label = base64_decode(get_parameter('label', ''));
 		switch ($graph_type) {
 			case 'boolean':
 				echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-					$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage, 'adapter_'.$graph_type, $time_compare);
+					$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage, 'adapter_'.$graph_type, $time_compare, $unknown_graph);
 				echo '<br><br><br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, 'adapted_'.$graph_type);				
@@ -245,7 +245,7 @@ $label = base64_decode(get_parameter('label', ''));
 			case 'sparse':
 				echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
 					$label, null, $draw_alerts, $avg_only, false, $date, '', $baseline,
-					0, true, false, $urlImage, 1, false, 'adapter_'.$graph_type, $time_compare);
+					0, true, false, $urlImage, 1, false, 'adapter_'.$graph_type, $time_compare, $unknown_graph);
 				echo '<br><br><br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, 'adapted_'.$graph_type);
@@ -407,6 +407,15 @@ $label = base64_decode(get_parameter('label', ''));
 								<?php
 								html_print_checkbox ("time_compare_separated",
 									1, (bool) $time_compare_separated);
+								?>
+							</td>
+						</tr>
+						<tr>
+							<td><?php echo __('Show unknown graph');?></td>
+							<td>
+								<?php
+								html_print_checkbox ("unknown_graph",
+									1, (bool) $unknown_graph);
 								?>
 							</td>
 						</tr>

@@ -605,6 +605,30 @@ function get_parameterBetweenListValues ($name, $values, $default) {
 }
 
 /** 
+ * Get a parameter from a checkbox.
+ * 
+ * Is checked if the checkbox is sent to fix html bad design
+ *
+ * @param string $name key of the parameter in the $_POST or $_GET array
+ * @param mixed $default default value if the key wasn't found
+ * 
+ * @return mixed Whatever was in that parameter, cleaned however 
+ * 
+ */
+
+function get_parameter_checkbox ($name, $default = '') {
+	$sent = get_parameter($name.'_sent', 0);
+	
+	// If is not sent, return the default
+	if(!$sent) {
+		return $default;
+	}
+	
+	// If sent, get parameter normally
+	return get_parameter($name, 0);
+}
+
+/** 
  * Get a parameter from a request.
  *
  * It checks first on post request, if there were nothing defined, it

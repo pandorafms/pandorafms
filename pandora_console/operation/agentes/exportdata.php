@@ -68,7 +68,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 	$start = strtotime ($start_date." ".$start_time);
 	$end = strtotime ($end_date." ".$end_time);
 	$period = $end - $start;
-	$data = array ();	
+	$data = array ();
 	
 	//If time is negative or zero, don't process - it's invalid
 	if ($start < 1 || $end < 1) {
@@ -79,7 +79,6 @@ if (!empty ($export_btn) && !empty ($module)) {
 	//******************************************************************
 	// Starts, ends and dividers
 	//******************************************************************
-	
 	switch ($export_type) {
 		case "data":
 		case "avg":
@@ -96,7 +95,6 @@ if (!empty ($export_btn) && !empty ($module)) {
 	//******************************************************************
 	// Data processing
 	//******************************************************************
-	
 	$data = array ();
 	switch ($export_type) {
 		case "data":

@@ -101,10 +101,20 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'datos');
-			$form_items['agent_row']['html'] = '<td>' . __('Agent') .
-				'<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . '</td>
-				<td>' . html_print_input_text_extended ('agent', '', 'text-agent', '', 25, 100, false, '',
-					array('style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), true) . '</td>';
+			$form_items['agent_row']['html'] = '<td>' . __('Agent') . '</td>';
+			
+			
+			
+			$params = array();
+			$params['return'] = true;
+			$params['show_helptip'] = true;
+			$params['input_name'] = 'agent';
+			$params['size'] = 20;
+			$params['selectbox_id'] = 'module';
+			$params['javascript_is_function_select'] = true;
+			$form_items['agent_row']['html'] .= '<td>' . ui_print_agent_autocomplete_input($params);
+			
+			
 			
 			$form_items['module_row'] = array();
 			$form_items['module_row']['items'] = array('static_graph',

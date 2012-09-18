@@ -70,13 +70,13 @@ foreach($ids as $key => $id) {
 		case 1:
 			$img_st = "images/tick.png";
 			$title_st = __('Event validated');
-			break;			
+			break;
 		case 2:
 			$img_st = "images/hourglass.png";
 			$title_st = __('Event in process');
 			break;
 	}
-
+	
 	$icon = html_print_image ($img_st, true, 
 		array ("class" => "image_status",
 			"width" => 16,
@@ -112,7 +112,7 @@ $string .= '</td><td width="400px">';
 if($any_alert) {
 	$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert', 'ff2', false, true).'</div>';
 }
-$string .= '</td></tr></table></form>';	
+$string .= '</td></tr></table></form>';
 
 echo $string;
 

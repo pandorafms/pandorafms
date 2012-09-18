@@ -139,11 +139,12 @@ switch ($opt) {
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
 		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['tagente_id_agente'] . '">'.agents_get_name($row['tagente_id_agente']).'</a><br />';
-		$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $row['longitude'] . ', ' . $row['latitude'] . ', ' . $row['altitude'] . ') <br />';		
+		$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $row['longitude'] . ', ' . $row['latitude'] . ', ' . $row['altitude'] . ') <br />';
 		$returnJSON['content'] .= __('Start contact') . ': ' . $row['start_timestamp'] . '<br />';
 		$returnJSON['content'] .= __('Last contact') . ': ' . $row['end_timestamp'] . '<br />';
 		$returnJSON['content'] .= __('Num reports') . ': '.$row['number_of_packages'].'<br />'; 
-		if ($row['manual_placemen']) $returnJSON['content'] .= '<br />' . __('Manual placement') . '<br />'; 
+		if ($row['manual_placemen'])
+			$returnJSON['content'] .= '<br />' . __('Manual placement') . '<br />'; 
 		
 		echo json_encode($returnJSON);
 		

@@ -308,22 +308,22 @@ if  ($draw != '') {
 			//displayNormalFilter ();
 			$("#table2-3").css('display', '');
 			$("#table2-4").css('display', '');
-			$("#table2-5").css('display', 'none');			
+			$("#table2-5").css('display', 'none');
 			
 			// Check right filter type
 			$("#radiobtn0001").attr("checked", "checked");
-			$("#radiobtn0002").attr("checked", "");			
+			$("#radiobtn0002").attr("checked", "");
 			
 			$("#text-ip_dst").val('');
 			$("#text-ip_src").val('');
 			$("#text-dst_port").val('');
 			$("#text-src_port").val('');
-			$("#textarea_advanced_filter").val('');		
-			$("#aggregate").val('');					
+			$("#textarea_advanced_filter").val('');
+			$("#aggregate").val('');
 			$("#output").val('');
 			
 			// Hide update filter button
-			$("#submit-update_button").css("visibility", "hidden");	
+			$("#submit-update_button").css("visibility", "hidden");
 			
 		}
 		else {
@@ -354,12 +354,12 @@ if  ($draw != '') {
 						
 						// Check right filter type
 						$("#radiobtn0001").attr("checked", "");
-						$("#radiobtn0002").attr("checked", "checked");					
+						$("#radiobtn0002").attr("checked", "checked");
 					}
 				});	
-				
+			
 			// Shows update filter button
-			$("#submit-update_button").css("visibility", "");			
+			$("#submit-update_button").css("visibility", "");
 			
 			// Get filter values from DB
 			jQuery.post ("ajax.php",
@@ -368,22 +368,22 @@ if  ($draw != '') {
 				"id" : $("#filter_id").val()
 				},
 				function (data) {
-				  jQuery.each (data, function (i, val) {
-					  if (i == 'ip_dst')
-						$("#text-ip_dst").val(val);
-					  if (i == 'ip_src')
-						$("#text-ip_src").val(val);
-					  if (i == 'dst_port')
-						$("#text-dst_port").val(val);
-					  if (i == 'src_port')
-						$("#text-src_port").val(val);
-					  if (i == 'advanced_filter')
-						$("#textarea_advanced_filter").val(val);							
-					  if (i == 'aggregate')
-						$("#aggregate").val(val);
-					  if (i == 'output')
-						$("#output").val(val);
-				  });
+					jQuery.each (data, function (i, val) {
+						if (i == 'ip_dst')
+							$("#text-ip_dst").val(val);
+						if (i == 'ip_src')
+							$("#text-ip_src").val(val);
+						if (i == 'dst_port')
+							$("#text-dst_port").val(val);
+						if (i == 'src_port')
+							$("#text-src_port").val(val);
+						if (i == 'advanced_filter')
+							$("#textarea_advanced_filter").val(val);
+						if (i == 'aggregate')
+							$("#aggregate").val(val);
+						if (i == 'output')
+							$("#output").val(val);
+					});
 				},
 				"json");
 		}
@@ -393,21 +393,21 @@ if  ($draw != '') {
 	$(document).ready( function() {
 		// Hide update filter button
 		if ($("#filter_id").val() == 0) {
-			$("#submit-update_button").css("visibility", "hidden");		
+			$("#submit-update_button").css("visibility", "hidden");
 		}
 		else {
-			$("#submit-update_button").css("visibility", "");				
+			$("#submit-update_button").css("visibility", "");
 		}
 		
 		// Change color of name and group if save button has been pushed
 		$("#submit-save_button").click(function () {
 			if ($("#text-name").val() == "") {
 				$('#filter_name_color').css('color', '#CC0000');
-				$('#filter_group_color').css('color', '#CC0000');			
+				$('#filter_group_color').css('color', '#CC0000');
 			}
 			else {
 				$('#filter_name_color').css('color', '#000000');
-				$('#filter_group_color').css('color', '#000000');				
+				$('#filter_group_color').css('color', '#000000');
 			}
 		});
 	});

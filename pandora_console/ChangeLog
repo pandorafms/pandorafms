@@ -1,3 +1,22 @@
+2012-09-18 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.js,
+	godmode/alerts/alert_list.builder.php,
+	godmode/alerts/alert_list.list.php,
+	godmode/gis_maps/configure_gis_map.php,
+	include/functions_visual_map_editor.php, include/functions_ui.php,
+	operation/tree.php, operation/agentes/exportdata.excel.php,
+	operation/agentes/exportdata.php, operation/agentes/ver_agente.php,
+	operation/snmpconsole/snmp_view.php, operation/users/user_edit.php,
+	operation/gis_maps/ajax.php, operation/events/events_validate.php,
+	operation/messages/message_edit.php,
+	operation/messages/message_list.php,
+	operation/reporting/reporting_viewer.php,
+	operation/netflow/nf_live_view.php,
+	operation/incidents/incident.php, operation/search_modules.php:
+	started to use the new function "ui_print_agent_autocomplete_input"
+	to make more easy (and standar) the autocomplete agent input.
+
 2012-09-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.postgreSQL.sql,

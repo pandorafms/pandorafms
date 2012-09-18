@@ -50,28 +50,28 @@ $export_type = get_parameter_post ('export_type', 'data');
 $export_btn = get_parameter_post ('export_btn', 0);
 
 if (!empty ($module)) {
-
+	
 	// Disable SQL cache
 	global $sql_cache;
 	$sql_cache = array ('saved' => 0);
-
-
+	
+	
 	//Convert start time and end time to unix timestamps
 	$start = strtotime ($start_date." ".$start_time);
 	$end = strtotime ($end_date." ".$end_time);
 	$period = $end - $start;
-	$data = array ();	
+	$data = array ();
 	
 	//If time is negative or zero, don't process - it's invalid
 	if ($start < 1 || $end < 1) {
 		ui_print_error_message (__('Invalid time specified'));
 		return;
 	}
-
-	// ***************************************************
+	
+	//******************************************************************
 	// Starts, ends and dividers
-	// ***************************************************
-
+	//******************************************************************
+	
 	//Excel is tab-delimited, needs quotes and needs Windows-style newlines
 	$datastart = __('Agent')."\t".__('Module')."\t".__('Data')."\t".__('Timestamp')."\r\n";
 	$rowstart = '"';
@@ -80,10 +80,10 @@ if (!empty ($module)) {
 	$dataend = "\r\n";
 	$extension = "xls";
 	
-	// ***************************************************
+	//******************************************************************
 	// Header output
-	// ***************************************************
-
+	//******************************************************************
+	
 	$config['ignore_callback'] = true;
 	while (@ob_end_clean ());
 	
@@ -91,29 +91,29 @@ if (!empty ($module)) {
 	header("Content-Disposition: attachment; filename=export_".date("Ymd", $start)."_".date("Ymd", $end).".".$extension);
 	header("Pragma: no-cache");
 	header("Expires: 0");
-
-	// ***************************************************
+	
+	//******************************************************************
 	// Data processing
-	// ***************************************************
-
+	//******************************************************************
+	
 	$data = array ();
 	
 	// Show header
 	echo $datastart;
-
+	
 	foreach ($module as $selected) {
-
+		
 		$output = "";
 		$work_period = 120000;
 		if ($work_period > $period) {
 			$work_period = $period;
 		}
-
+		
 		$work_end = $end - $period + $work_period;
 		//Buffer to get data, anyway this will report a memory exhaustin
-
+		
 		while ($work_end <= $end) {
-
+			
 			$data = array (); // Reinitialize array for each module chunk
 			if ($export_type == "avg") {
 				$arr = array ();
@@ -157,10 +157,9 @@ if (!empty ($module)) {
 		unset ($output);
 		$output = "";
 	} // main foreach
-	echo $dataend;	
+	echo $dataend;
 }
 else {
 	ui_print_error_message (__('No modules specified'));
 }
-
 ?>

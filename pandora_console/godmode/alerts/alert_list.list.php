@@ -57,11 +57,17 @@ if ($temp){
 }
 
 $form_filter .= "<td>".__('Agents')."</td><td>";
-//Image src with skins
-$src_code = html_print_image('images/lightning.png', true, false, true);
-$form_filter .= html_print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 12, 100, false, '',
-array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true);
-$form_filter .=  ui_print_help_tip(__('Type at least two characters to search'), true); //'<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+
+
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['input_name'] = 'agent_name';
+$params['value'] = $agentName;
+$params['size'] = 12;
+$form_filter .=  ui_print_agent_autocomplete_input($params);
+
+
 $form_filter .= "</td>\n";
 
 $form_filter .= "<td>".__('Module name')."</td><td>";
@@ -580,37 +586,10 @@ ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('bgiframe');
-ui_require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-	$("#text-agent_name").autocomplete ("ajax.php",
-		{
-			scroll: true,
-			minChars: 2,
-			extraParams: {
-				page: "godmode/agentes/agent_manager",
-				search_parents: 1,
-				id_group: function() { return $("#grupo").val(); },
-				id_agent: <?php echo $id_agente ?>
-			},
-			formatItem: function (data, i, total) {
-				if (total == 0)
-					$("#text-id_parent").css ('background-color', '#cc0000');
-				else
-					$("#text-id_parent").css ('background-color', 'none');
-				if (data == "")
-					return false;
-
-				return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-			},
-			delay: 200
-		}
-	);
-//----------------------------
-
-
 <?php
 if (! $id_agente) {
 ?>

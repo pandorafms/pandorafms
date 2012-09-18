@@ -452,7 +452,7 @@ if ($traps !== false) {
 			if (! check_acl ($config["id_user"], 0, "AR")) {
 				continue;
 			}
-			$data[1] = '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap["source"].'" title="'.__('Create agent').'">'.$trap["source"].'</a>';	
+			$data[1] = '<a href="index.php?sec=estado&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap["source"].'" title="'.__('Create agent').'">'.$trap["source"].'</a>';
 		}
 		else {
 			if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
@@ -563,7 +563,7 @@ if ($traps !== false) {
 					break;
 				default:
 					$desc_trap_type = __('Other');
-					 break;	
+					break;
 			}
 			$string .= '<tr><td align="left" valign="top">' . '<b>' . __('Type:') . '</td><td align="left">' . $desc_trap_type . '</td></tr>';
 		}
@@ -586,7 +586,7 @@ if ($idx == 0) {
 	echo '<div class="nf">'.__('No matching traps found').'</div>';
 }
 else {
-	html_print_table ($table);	
+	html_print_table ($table);
 }
 
 unset ($table);

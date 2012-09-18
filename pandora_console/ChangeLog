@@ -1,5 +1,10 @@
 2012-09-18  Vanessa Gil <vanessa.gil@artica.es>
 
+	* include/functions_config.php: Fixed bug in netflow
+	setup.
+
+2012-09-18  Vanessa Gil <vanessa.gil@artica.es>
+
 	* include/functions_api.php: Added new
 	functions to API.
 

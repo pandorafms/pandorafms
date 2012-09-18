@@ -127,9 +127,6 @@ function config_update_config () {
 			config_update_value ('metaconsole', get_parameter ('metaconsole'));
 			config_update_value ('collection_max_size', get_parameter('collection_max_size'));
 			config_update_value ('activate_netflow', (bool) get_parameter ('activate_netflow'));
-			config_update_value ('netflow_path', get_parameter ('netflow_path'));
-			config_update_value ('netflow_interval', get_parameter ('netflow_interval'));
-			config_update_value ('netflow_daemon', get_parameter ('netflow_daemon'));
 			
 			config_update_value ('public_url', get_parameter('public_url'));
 			
@@ -252,6 +249,11 @@ function config_update_config () {
 			config_update_value ('history_db_step', (string) get_parameter ('history_db_step'));
 			config_update_value ('history_db_delay', (string) get_parameter ('history_db_delay'));
 			///////////////
+			break;
+		case 'godmode/setup/setup_netflow':
+			config_update_value ('netflow_path', get_parameter ('netflow_path'));
+			config_update_value ('netflow_interval', get_parameter ('netflow_interval'));
+			config_update_value ('netflow_daemon', get_parameter ('netflow_daemon'));
 			break;
 	}
 	

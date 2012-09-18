@@ -1,3 +1,8 @@
+2012-09-18  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_api.php: Added new
+	functions to API.
+
 2012-09-18 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js,

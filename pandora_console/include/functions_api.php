@@ -5336,22 +5336,23 @@ function get_tags($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 }
 
 /**
- * Total modules for a given group
+ * Total modules for a group given
  * 
  * @param int $id_group 
  * 
 **/
-// http://localhost/pandora_console/include/api.php?op=get&op2=total_modules&id=1
-function api_get_total_modules($id_group, $returnType) {
-	
-	$sql = sprintf('SELECT COUNT(*)
-				FROM tgroup_stat, tgrupo
-				WHERE tgrupo.id_grupo = tgroup_stat.id_group AND tgroup_stat.id_group = %d', $id_group);
+// http://localhost/pandora_console/include/api.php?op=get&op2=total_modules&id=1&apipass=1234&user=admin&pass=pandora
+function api_get_total_modules($id_group, $trash1, $trash2, $returnType) {
+
+	$sql = "SELECT COUNT(*) FROM tagente_modulo				
+			WHERE id_module_group=$id_group";
+
 	$total = db_get_value_sql($sql);
 
 	$data = array('type' => 'string', 'data' => $total);
 	
-	returnData(string, $data);
+	returnData($returnType, $data);
+
 }
 
 /**
@@ -5360,14 +5361,14 @@ function api_get_total_modules($id_group, $returnType) {
  * @param int $id_group 
  * 
 **/
-// http://localhost/pandora_console/include/api.php?op=get&op2=total_modules&id=2
-function api_get_total_agents($id_group, $returnType) {
+// http://localhost/pandora_console/include/api.php?op=get&op2=total_agents&id=2&apipass=1234&user=admin&pass=pandora
+function api_get_total_agents($id_group, $trash1, $trash2, $returnType) {
 
-	$sql = sprintf('SELECT COUNT(*) FROM tagente WHERE id_grupo=%d AND  disabled=0', $id_group);
-	$group = db_get_value_sql($sql);
+	$sql = sprintf('SELECT COUNT(*) FROM tagente WHERE id_grupo=%d AND disabled=0', $id_group);
+	$total_agents = db_get_value_sql($sql);
 
-	$data = array('type' => 'string', 'data' => $group);
-	returnData(string, $data);
+	$data = array('type' => 'string', 'data' => $total_agents);
+	returnData($returnType, $data);
 }
 
 /**
@@ -5376,8 +5377,8 @@ function api_get_total_agents($id_group, $returnType) {
  * @param int $id_group 
  * 
 **/
-// http://localhost/pandora_console/include/api.php?op=get&op2=agent_name&id=1
-function api_get_agent_name($id_agent, $returnType) {
+// http://localhost/pandora_console/include/api.php?op=get&op2=agent_name&id=1&apipass=1234&user=admin&pass=pandora
+function api_get_agent_name($id_agent, $trash1, $trash2, $returnType) {
 	
 	$sql = sprintf('SELECT nombre FROM tagente WHERE id_agente = %d', $id_agent);
 	$value = db_get_value_sql($sql);	
@@ -5387,7 +5388,7 @@ function api_get_agent_name($id_agent, $returnType) {
 	
 	$data = array('type' => 'string', 'data' => $value);
 
-	returnData(string, $data);
+	returnData($returnType, $data);
 }
 
 /**
@@ -5396,8 +5397,8 @@ function api_get_agent_name($id_agent, $returnType) {
  * @param int $id_group 
  * 
 **/
-// http://localhost/pandora_console/include/api.php?op=get&op2=module_name&id_module=20
-function api_get_module_name($id_module, $returnType) {
+// http://localhost/pandora_console/include/api.php?op=get&op2=module_name&id=20&apipass=1234&user=admin&pass=pandora
+function api_get_module_name($id_module, $trash1, $trash2, $returnType) {
 	
 	$sql = sprintf('SELECT name FROM tmodule WHERE id_module = %d', $id_module);
 	$value = db_get_value_sql($sql);	
@@ -5406,26 +5407,29 @@ function api_get_module_name($id_module, $returnType) {
 	}
 	
 	$data = array('type' => 'string', 'data' => $value);
-	
-	returnData(string, $data);
-	//returnData($returnType, $data);
+
+	returnData($returnType, $data);
 }
 
-function api_get_alert_action_by_group($id_group, $id_action, $returnType) {
-	
-	$sql = sprintf('SELECT SUM(internal_counter) FROM talert_template_modules
+// http://localhost/pandora_console/include/api.php?op=get&op2=alert_action_by_group&id=3&id2=1&apipass=1234&user=admin&pass=pandora
+function api_get_alert_action_by_group($id_group, $id_action, $trash2, $returnType) {
+
+	$sql = "SELECT SUM(internal_counter) FROM talert_template_modules
 	WHERE id_alert_template IN 
 	(SELECT id FROM talert_templates
-	WHERE id_group=%d AND id_alert_action = %d)', $id_group, $id_action);
-	
+	WHERE id_group=$id_group AND id_alert_action = $id_action)";
+
 	$value = db_get_value_sql($sql);
+
 	if ($value === false) {
 		returnError('data_not_found', $returnType);
+	} else if ($value == '') {
+		$value = 0;
 	}
 	
 	$data = array('type' => 'string', 'data' => $value);
 	
-	returnData(string, $data);
+	returnData($returnType, $data);
 }
 
 ?>

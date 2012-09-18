@@ -220,7 +220,9 @@ CREATE TABLE "tagente_modulo" (
 	"critical_instructions" TEXT default '',
     "warning_instructions" TEXT default '',
     "unknown_instructions" TEXT default '',
-    "quiet" SMALLINT NOT NULL default 0
+    "quiet" SMALLINT NOT NULL default 0,
+	"critical_inverse" SMALLINT NOT NULL default 0,
+	"warning_inverse" SMALLINT NOT NULL default 0
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");
@@ -558,7 +560,9 @@ CREATE TABLE "tnetwork_component" (
 	"macros" TEXT default '',
 	"critical_instructions" TEXT default '',
 	"warning_instructions" TEXT default '',
-	"unknown_instructions" TEXT default ''
+	"unknown_instructions" TEXT default '',
+	"critical_inverse" SMALLINT NOT NULL default 0,
+	"warning_inverse" SMALLINT NOT NULL default 0
 );
 
 CREATE TABLE "tnetwork_component_group" (

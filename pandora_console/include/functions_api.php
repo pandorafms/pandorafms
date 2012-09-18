@@ -683,11 +683,11 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType)
  * @param $thrash1 Don't use.
  * @param $thrash2 Don't use.
  * @param array $other it's array, $other as param is <agent_name>;<ip>;<id_parent>;<id_group>;
- *  <cascade_protection>;<interval_sec>;<id_os>;<name_server>;<custom_id>;<learning_mode>;<disabled>;<description> in this order
+ *  <cascade_protection>;<interval_sec>;<id_os>;<id_server>;<custom_id>;<learning_mode>;<disabled>;<description> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=new_agent&other=pepito|1.1.1.1|0|4|0|30|8|miguel-portatil||0|0|nose%20nose&other_mode=url_encode_separator_|
+ *  api.php?op=set&op2=new_agent&other=pepito|1.1.1.1|0|4|0|30|8|10||0|0|nose%20nose&other_mode=url_encode_separator_|
  * 
  * @param $thrash3 Don't use.
  */
@@ -701,7 +701,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	$cascadeProtection = $other['data'][4];
 	$intervalSeconds = $other['data'][5];
 	$idOS = $other['data'][6];
-	$nameServer = $other['data'][7];
+	$idServer = $other['data'][7];
 	$customId = $other['data'][8];
 	$learningMode = $other['data'][9];
 	$disabled = $other['data'][10];
@@ -709,13 +709,15 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql1 = 'SELECT name FROM tserver WHERE name LIKE "' . $nameServer . '"';
+			$sql1 = 'SELECT name FROM tserver WHERE id_server ='. $idServer;
 			break;
 		case "postgresql":
 		case "oracle":
-			$sql1 = 'SELECT name FROM tserver WHERE name LIKE \'' . $nameServer . '\'';
+			$sql1 = 'SELECT name FROM tserver WHERE id_server ='. $idServer;
 			break;
 	}
+	
+	$nameServer = db_get_value_sql($sql1);
 	
 	if (agents_get_agent_id ($name)) {
 		returnError('agent_name_exist', 'The name of agent yet exist in DB.');

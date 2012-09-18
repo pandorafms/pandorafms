@@ -1,3 +1,9 @@
+2012-09-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql: Added inverse critical and warning intervals to
+	  the Oracle and PostgreSQL database schemas.
+
 2012-09-18  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/functions_api.php: Fixed bug creating

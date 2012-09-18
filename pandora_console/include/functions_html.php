@@ -1230,6 +1230,7 @@ function html_print_checkbox_extended ($name, $value, $checked, $disabled, $scri
  */
 function html_print_checkbox ($name, $value, $checked = false, $return = false, $disabled = false, $script = '') {
 	$output = html_print_checkbox_extended ($name, $value, (bool) $checked, $disabled, $script, '', true);
+	$output .= html_print_input_hidden($name.'_sent',1,true);
 	
 	if ($return === false)
 		echo $output;

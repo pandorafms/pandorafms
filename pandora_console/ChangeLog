@@ -1,3 +1,17 @@
+2012-09-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_flot.php
+	include/graphs/flot/pandora.flot.js
+	operation/agentes/stat_win.php  
+	include/functions_modules.php: Added unknown status
+	to graphs and improve some little aesthetic things of
+	flot graphs
+
+	* include/functions.php
+	include/functions_html.php: Fixed html checkbox issue
+	with get_parameter_checkbox function
+
 2012-09-17  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/events/events_list.php

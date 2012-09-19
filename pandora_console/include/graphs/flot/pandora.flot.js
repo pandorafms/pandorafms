@@ -442,7 +442,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
     }
 }
 
-function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, type, serie_types, water_mark, width, max_x, homeurl, unit, font_size, menu, events, event_ids, legend_events, alerts, alert_ids, legend_alerts, yellow_threshold, red_threshold, force_integer, separator, separator2) {
+function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, type, serie_types, water_mark, width, max_x, homeurl, unit, font_size, menu, events, event_ids, legend_events, alerts, alert_ids, legend_alerts, yellow_threshold, red_threshold, force_integer, separator, separator2, series_suffix_str) {
 
 	var threshold = true;
 	var thresholded = false;
@@ -793,7 +793,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
     
 	$('#'+graph_id).bind("plotclick", function (event, pos, item) {
 		plot.unhighlight();
-		if (item && item.series.label != '' && (item.series.label == legend_events || item.series.label == legend_alerts)) {
+		if (item && item.series.label != '' && (item.series.label == legend_events || item.series.label == legend_events+series_suffix_str || item.series.label == legend_alerts || item.series.label == legend_alerts+series_suffix_str)) {
 			plot.unhighlight();
 			var canvaslimit = parseInt(plot.offset().left + plot.width());
 			var dataset  = plot.getData();
@@ -815,10 +815,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			$('#extra_'+graph_id).css('top',plot.offset().top + 25);
 			
 			switch(item.series.label) {
+				case legend_alerts+series_suffix_str:
 				case legend_alerts:
 					extra_info = '<b>'+legend_alerts+' - '+labels_long[item.dataIndex]+'</b>'+get_event_details(alertsz[item.dataIndex]);
 					extra_show = true;
 					break;
+				case legend_events+series_suffix_str:
 				case legend_events:
 					extra_info = '<b>'+legend_events+' - '+labels_long[item.dataIndex]+'</b>'+get_event_details(eventsz[item.dataIndex]);
 					extra_show = true;

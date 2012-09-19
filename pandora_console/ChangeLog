@@ -1,3 +1,8 @@
+2012-09-19  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_api.php: Added functions: event_info
+	and create_event.
+
 2012-09-18  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/functions_config.php: Fixed bug in netflow

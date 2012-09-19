@@ -30,7 +30,10 @@ if (! check_acl ($config["id_user"], 0, "IW")) {
 	require ("general/noaccess.php");
 	return;
 }
-		
+
+//id report
+$id = (int)get_parameter('id');
+
 $buttons['report_list']['active'] = false;
 $buttons['report_list'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report">'
 		. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
@@ -52,8 +55,7 @@ ui_print_page_header (__('Report items'), "images/networkmap/so_cisco_new.png", 
 $delete = (bool) get_parameter ('delete');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 $order = get_parameter('order');
-//id report
-$id = (int) get_parameter ('id');
+
 //id item
 $id_rc = (int) get_parameter ('id_rc');
 

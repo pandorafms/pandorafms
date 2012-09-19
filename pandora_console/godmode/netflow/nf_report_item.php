@@ -89,10 +89,10 @@ if ($update) {
 }
 
 if ($create){
-	$id_filter = get_parameter('id_filter');
+	$id_filter = (int)get_parameter('id_filter', 0);
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
-	$max_val = get_parameter('max','2');
-	$show_graph = get_parameter('show_graph','');
+	$max_val = (int)get_parameter('max',2);
+	$show_graph = (string)get_parameter('show_graph','');
 	
 	//insertion order
 	$sql = "SELECT max(`order`) as max_order FROM tnetflow_report_content where id_report=$id";
@@ -114,7 +114,10 @@ if ($create){
 	);
 	$id_rc = db_process_sql_insert('tnetflow_report_content', $values);
 	if ($id_rc === false) {
-		echo '<h3 class="error">'.__ ('Error creating item').'</h3>';
+		if ($id_filter == 0)
+			echo '<h3 class="error">'.__ ('Error creating item. No filter.').'</h3>';
+		else
+			echo '<h3 class="error">'.__ ('Error creating item').'</h3>';
 	}
 	else {
 		echo '<h3 class="suc">'.__ ('Item created successfully').'</h3>';

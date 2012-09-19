@@ -1,5 +1,12 @@
 2012-09-19  Vanessa Gil <vanessa.gil@artica.es>
 
+	* gomode/netflow/nf_item_list.php
+	  godmode/netflow/nf_report_form.php
+	  godmode/netflow/nf_report_item.php: Fixed bug adding items
+	to reports.
+
+2012-09-19  Vanessa Gil <vanessa.gil@artica.es>
+
 	* include/functions_api.php: Added functions: event_info
 	and create_event.
 

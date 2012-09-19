@@ -30,9 +30,28 @@ if (! check_acl ($config["id_user"], 0, "IW")) {
 	return;
 }
 
-$id = (int)get_parameter('id');
+$result_ins = -1;
 $update = (string)get_parameter('update', 0);
 $create = (string)get_parameter('create', 0);
+
+if ($create){
+	$name = (string) get_parameter ('name');
+	$group = (int) get_parameter ('id_group');
+	$description = get_parameter('description','');
+	
+	$values = array (
+		'id_name' => $name,
+		'id_group' => $group,
+		'description' => $description,
+	);
+
+	$result_ins = db_process_sql_insert('tnetflow_report', $values);
+	
+	$id = $result_ins;
+	
+} else {
+	$id = (int)get_parameter('id');
+}
 
 $buttons['report_list']['active'] = false;
 $buttons['report_list'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report">'
@@ -52,6 +71,14 @@ $buttons['edit_report']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netf
 //Header
 ui_print_page_header (__('Netflow Report'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
 
+//Control error creating report
+if (($result_ins === false) && ($result_ins != -1)) {
+	ui_print_error_message ('Error creating report');
+}
+else if (($result_ins != false) && ($result_ins != -1)){
+	ui_print_success_message ('Report created successfully');
+}
+		
 if ($id) {
 	$permission = netflow_check_report_group ($id, false);
 	if (!$permission) { //no tiene permisos para acceder a un informe
@@ -91,26 +118,6 @@ if ($update) {
 				),
 			array ('id_report' => $id));
 				ui_print_result_message ($result, __('Report updated successfully'), __('Error updating report'));
-	}
-}
-
-if ($create){
-	$name = (string) get_parameter ('name');
-	$group = (int) get_parameter ('id_group');
-	$description = get_parameter('description','');
-	
-	$values = array (
-		'id_name' => $name,
-		'id_group' => $group,
-		'description' => $description,
-	);
-	
-	$id = db_process_sql_insert('tnetflow_report', $values);
-	if ($id === false) {
-		ui_print_error_message ('Error creating report');
-	}
-	else {
-		ui_print_success_message ('Report created successfully');
 	}
 }
 

@@ -5432,4 +5432,94 @@ function api_get_alert_action_by_group($id_group, $id_action, $trash2, $returnTy
 	returnData($returnType, $data);
 }
 
+// http://localhost/pandora_console/include/api.php?op=get&op2=event_info&id=58&apipass=1234&user=admin&pass=pandora
+function api_get_event_info($id_event, $trash1, $trash, $returnType) {
+
+	$sql = "SELECT * FROM tevento WHERE id_evento=$id_event";
+	$event_data = db_get_row_sql($sql);
+	
+	$i = 0;
+	foreach ($event_data as $data) {
+		if ($i == 0)
+			$result = $data;
+		else 
+			$result .= ';'.$data;
+		$i++;
+	}
+
+	$data = array('type' => 'string', 'data' => $result);
+	
+	returnData($returnType, $data);
+	return;
+}
+
+// http://localhost/pandora_console/include/api.php?op=get&op2=create_event&id=name_event&other=2|admin|2|4|1|system|8|4|0|3|comments||Pandora||critical_inst|warning_inst|unknown_inst&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+function api_set_create_event($id, $trash1, $other, $trash2) {
+	if ($other['type'] == 'string') {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+	else if ($other['type'] == 'array') {
+		
+		$values = array();
+		if ($other['data'][0] != '')
+			$values['id_agente'] = $other['data'][0];
+		if ($other['data'][1] != '')
+			$values['id_usuario'] = $other['data'][1];
+		if ($other['data'][2] != '')
+			$values['id_grupo'] = $other['data'][2];
+		if ($other['data'][3] != '')
+			$values['estado'] = $other['data'][3];
+		$values['timestamp'] = date("Y-m-d H:i:s", get_system_time());
+	
+		$values['evento'] = $id;
+		$values['utimestamp'] = get_system_time ();
+		if ($other['data'][4] != '')
+			$values['event_type'] = $other['data'][4];
+		if ($other['data'][5] != '')
+			$values['id_agentmodule'] = $other['data'][5];
+		if ($other['data'][6] != '')
+			$values['id_alert_am'] = $other['data'][6];
+		if ($other['data'][7] != '')
+			$values['criticity'] = $other['data'][7];
+		if ($other['data'][8] != '') {
+			$values['user_comment'] = $other['data'][8];
+		}
+		if ($other['data'][9] != '') {
+			$values['tags'] = $other['data'][9];
+		} else {
+			if ($other['data'][9] != '' && $other['data'][9] > 0) {
+				
+			}
+		}
+		if ($other['data'][10] != '')
+			$values['source'] = $other['data'][10];
+		else 
+			$values['source'] = 'Pandora';
+		if ($other['data'][11] != '')
+			$values['id_extra'] = $other['data'][11];
+		if ($other['data'][12] != '') {
+			$values['critical_instructions'] = $other['data'][12];
+		}		
+		if ($other['data'][13] != '') {
+			$values['warning_instructions'] = $other['data'][13];
+		}
+		if ($other['data'][14] != '') {
+			$values['unknown_instructions'] = $other['data'][14];
+		}
+		
+		$return = db_process_sql_insert('tevento', $values);
+		
+		$data['type'] = 'string';
+		if ($return === false) {
+			$data['data'] = 0;
+		}
+		else {
+			$data['data'] = $return;
+		}
+		returnData('string', $data);
+		return;		
+	}
+}
+
 ?>

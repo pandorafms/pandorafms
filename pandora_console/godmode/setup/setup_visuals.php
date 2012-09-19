@@ -161,21 +161,21 @@ $table->data[23][0] = __('Default icon in GIS') . ui_print_help_tip(__('Agent ic
 $gis_default_icon = $config["gis_default_icon"];
 
 if ($gis_default_icon == '') {
-        $display_icons = 'none';
-        // Hack to show no icon. Use any given image to fix not found image errors
-        $path_without = "images/spinner.png";
-        $path_default = "images/spinner.png";
-        $path_ok = "images/spinner.png";
-        $path_bad = "images/spinner.png";
-        $path_warning = "images/spinner.png";
+	$display_icons = 'none';
+	// Hack to show no icon. Use any given image to fix not found image errors
+	$path_without = "images/spinner.png";
+	$path_default = "images/spinner.png";
+	$path_ok = "images/spinner.png";
+	$path_bad = "images/spinner.png";
+	$path_warning = "images/spinner.png";
 }
 else {
-        $display_icons = '';
-        $path_without = $path . $gis_default_icon . ".default.png";
-        $path_default = $path . $gis_default_icon . ".default.png";
-        $path_ok = $path . $gis_default_icon . ".ok.png";
-        $path_bad = $path . $gis_default_icon . ".bad.png";
-        $path_warning = $path . $gis_default_icon . ".warning.png";
+	$display_icons = '';
+	$path_without = $path . $gis_default_icon . ".default.png";
+	$path_default = $path . $gis_default_icon . ".default.png";
+	$path_ok = $path . $gis_default_icon . ".ok.png";
+	$path_bad = $path . $gis_default_icon . ".bad.png";
+	$path_warning = $path . $gis_default_icon . ".warning.png";
 }
 
 $table->data[23][1] = html_print_select($arraySelectIcon, "gis_default_icon", $gis_default_icon, "changeIcons();", __('None'), '', true) .  '&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .  '&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) . '&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));

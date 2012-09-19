@@ -60,7 +60,7 @@ else {
 
 // Skip system messages if user is not PM
 if (!check_acl ($config["id_user"], 0, "PM")) {
-    $sql_group_filter .= " AND id_grupo != 0";
+	$sql_group_filter .= " AND id_grupo != 0";
 }
 
 switch ($config["dbtype"]) {

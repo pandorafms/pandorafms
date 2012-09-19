@@ -2128,18 +2128,43 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$none_module_text = $parameters['none_module_text'];
 	}
 	
+	$print_input_server = false; //Default value
+	if (isset($parameters['print_input_server'])) {
+		$print_input_server = $parameters['print_input_server'];
+	}
+	
 	$use_input_server = false; //Default value
 	if (isset($parameters['use_input_server'])) {
 		$use_input_server = $parameters['use_input_server'];
 	}
 	
-	$input_server_id = false; //Default value
+	$input_server_name = uniqid('server_'); //Default value
 	if (isset($parameters['input_server_id'])) {
 		$input_server_id = $parameters['input_server_id'];
 	}
 	
+	$input_server_id = 'hidden-' . $input_server_name; //Default value
+	if (isset($parameters['input_server_id'])) {
+		$input_server_id = $parameters['input_server_id'];
+	}
+	
+	$input_server_value = ''; //Default value
+	if (isset($parameters['input_server_value'])) {
+		$input_server_value = $parameters['input_server_value'];
+	}
+	
+	$metaconsole_enabled = false; //Default value
+	if (isset($parameters['metaconsole_enabled'])) {
+		$metaconsole_enabled = $parameters['metaconsole_enabled'];
+	}
+	
 	// Javascript configurations
 	//-----------------------------------------
+	$javascript_ajax_page = 'ajax.php'; //Default value
+	if (isset($parameters['javascript_ajax_page'])) {
+		$javascript_ajax_page = $parameters['javascript_ajax_page'];
+	}
+	
 	$javascript_function_action_after_select = ''; //Default value
 	$javascript_function_action_after_select_js_call = ''; //Default value
 	if (isset($parameters['javascript_function_action_after_select'])) {
@@ -2199,10 +2224,20 @@ function ui_print_agent_autocomplete_input($parameters) {
 			inputs.push ("get_agent_modules_json=1");
 			inputs.push ("page=operation/agentes/ver_agente");
 			
+			if (' . ((int)$metaconsole_enabled) . ') {
+				inputs.push ("server_name=" + $("#' . $input_server_id . '").val());
+			}
+			
+			if ((' . ((int)$print_hidden_input_idagent) . ')
+						|| (' . ((int)$use_hidden_input_idagent) . ')) {
+						
+				inputs.push ("id_agent=" + $("#' . $hidden_input_idagent_id . '").val());
+			}
+			
 			jQuery.ajax ({
 				data: inputs.join ("&"),
-				type: "GET",
-				url: action="ajax.php",
+				type: "POST",
+				url: action="' . $javascript_ajax_page . '",
 				timeout: 10000,
 				dataType: "json",
 				success: function (data) {
@@ -2304,7 +2339,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 						data: data_params,
 						async: false,
 						type: "POST",
-						url: action="ajax.php",
+						url: action="' . $javascript_ajax_page . '",
 						timeout: 10000,
 						dataType: "json",
 						success: function (data) {
@@ -2319,14 +2354,19 @@ function ui_print_agent_autocomplete_input($parameters) {
 				select: function( event, ui ) {
 					var agent_name = ui.item.name;
 					var agent_id = ui.item.id;
-					var server_name = ui.item.ip;
+					var server_name;
+					
+					if (' . ((int)$metaconsole_enabled) . ') {
+						server_name = ui.item.server;
+					}
+					else {
+						server_name = ui.item.ip;
+					}
+					
+					 
 					
 					//Put the name
 					$(this).val(agent_name);
-					
-					if (' . ((int)$javascript_is_function_select) . ') {
-						' . $javascript_name_function_select . '(agent_name);
-					}
 					
 					if ((' . ((int)$print_hidden_input_idagent) . ')
 						|| (' . ((int)$use_hidden_input_idagent) . ')) {
@@ -2334,8 +2374,14 @@ function ui_print_agent_autocomplete_input($parameters) {
 					}
 					
 					//Put the server id into the hidden input
-					if (' . ((int)$use_input_server) . ') {
+					if ((' . ((int)$use_input_server) . ')
+						|| (' . ((int)$print_input_server) . ')) {
 						$("#' . $input_server_id . '").val(server_name);
+					}
+					
+					//Call the function to select (example fill the modules)
+					if (' . ((int)$javascript_is_function_select) . ') {
+						' . $javascript_name_function_select . '(agent_name);
 					}
 					
 					//Function to call after the select
@@ -2407,6 +2453,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if ($print_hidden_input_idagent) {
 		$html .= html_print_input_hidden_extended($hidden_input_idagent_name,
 			$hidden_input_idagent_value, $hidden_input_idagent_id, true);
+	}
+	
+	if ($print_input_server) {
+		$html .= html_print_input_hidden_extended($input_server_name,
+			$input_server_value, $input_server_id, true);
 	}
 	
 	//Write the javascript

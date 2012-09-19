@@ -334,7 +334,7 @@ function mainSystemInfo() {
 		else {
 			echo __('No selected');
 		}
-    	
+		
 		$zip = new ZipArchive;
 		
 		if ($zip->open($zipArchive, ZIPARCHIVE::CREATE) === true) {

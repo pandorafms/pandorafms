@@ -194,8 +194,8 @@ if (is_ajax ())
 					case 'module':
 						//Replace separator token "articapandora_32_pandoraartica_" for " "
 						//example:
-						//  "Load_articapandora_32_pandoraartica_Average"
-						//     result -> "Load Average"
+						//"Load_articapandora_32_pandoraartica_Average"
+						//result -> "Load Average"
 						$name = str_replace(array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_','_articapandora_'.ord('/').'_pandoraartica_'),array(' ','#','/'),$id);
 						
 						$name = io_safe_input($name);

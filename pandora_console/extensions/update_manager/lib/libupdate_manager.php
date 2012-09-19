@@ -526,7 +526,7 @@ function um_delete_directory($dirname) {
 			if (!is_dir($dirname."/".$file))
 				unlink($dirname."/".$file);
 			else
-				um_delete_directory($dirname.'/'.$file);    
+				um_delete_directory($dirname . '/' . $file);
 		}
 	}
 	closedir($dir_handle);
@@ -734,14 +734,14 @@ function um_db_get_all_auths () {
 		echo '<strong>Error getting authorizations</strong> <br />';
 		return array();
 	}
-		
+	
 	$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate_auth');
-
+	
 	$cont = 0;
 	$auths = array();
-	while(true) {
+	while (true) {
 		$auth = um_std_from_result($result, $cont);
-		if($auth === false) {
+		if ($auth === false) {
 			break;
 		}
 		$auths[$auth->id] = $auth;
@@ -780,13 +780,13 @@ function um_db_check_auth ($client_key, $subscription_limit) {
 	if ($auth->developer == 1 || $auth->subscription_limit >= $subscription_limit) {
 		return $auth->id;
 	}
-		
+	
 	return false;
 }
 
 function um_db_is_auth_developer ($id_auth) {
 	$developer = db_get_value('developer', DB_PREFIX.'tupdate_auth', '`id`', $id_auth);
-
+	
 	if ($developer === false) {
 		echo '<strong>Error reading authorization developers bit</strong> <br />';
 		return false;

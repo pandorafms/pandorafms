@@ -78,18 +78,18 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 	$id_network_profile = get_parameter_post ("id_network_profile");
 	$recon_ports = get_parameter_post ("recon_ports", "");
 	$id_os = get_parameter_post ("id_os", 10);
-    $snmp_community = get_parameter_post ("snmp_community", "public");
-    $id_recon_script = get_parameter ("id_recon_script", 'NULL');
-    $mode = get_parameter ("mode", "");
-    $field1 = get_parameter ("field1", "");
-    $field2 = get_parameter ("field2", "");
-    $field3 = get_parameter ("field3", "");
-    $field4 = get_parameter ("field4", "");
-    if ($mode == "network_sweep")
+	$snmp_community = get_parameter_post ("snmp_community", "public");
+	$id_recon_script = get_parameter ("id_recon_script", 'NULL');
+	$mode = get_parameter ("mode", "");
+	$field1 = get_parameter ("field1", "");
+	$field2 = get_parameter ("field2", "");
+	$field3 = get_parameter ("field3", "");
+	$field4 = get_parameter ("field4", "");
+	if ($mode == "network_sweep")
 		$id_recon_script = 'NULL';
 	else
 		$id_network_profile = 0;
-
+	
 	$os_detect = (int) get_parameter ("os_detect", 0);
 	$resolve_names = (int) get_parameter ("resolve_names", 0);
 	$parent_detection = (int) get_parameter ("parent_detection", 0);

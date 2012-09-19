@@ -1,3 +1,27 @@
+2012-09-19 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extensions/resource_registration.php, extensions/system_info.php,
+	extensions/update_manager/lib/libupdate_manager.php,
+	godmode/agentes/modificar_agente.php,
+	godmode/alerts/alert_actions.php,
+	godmode/alerts/alert_list.list.php,
+	godmode/massive/massive_add_profiles.php,
+	godmode/massive/massive_edit_modules.php,
+	godmode/servers/manage_recontask.php,
+	godmode/setup/setup_visuals.php, include/functions_api.php,
+	include/functions_graph.php, include/functions_messages.php,
+	include/graphs/functions_flot.php,
+	include/graphs/flot/pandora.flot.js, operation/tree.php,
+	operation/agentes/status_events.php,
+	operation/agentes/ver_agente.php, operation/events/events_list.php,
+	operation/events/events_marquee.php,
+	operation/events/events_rss.php: cleaned source code style.
+	
+	* godmode/reporting/reporting_builder.item_editor.php,
+	include/functions_ui.php, include/ajax/agent.php: continue to change
+	to the new function "ui_print_agent_autocomplete_input" to make more
+	easy (and standar) the autocomplete agent input.
+
 2012-09-19  Vanessa Gil <vanessa.gil@artica.es>
 
 	* gomode/netflow/nf_item_list.php

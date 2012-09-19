@@ -316,10 +316,14 @@ if (is_ajax ()) {
 		if ($config ['metaconsole'] == 1 and !$force_local_modules and defined('METACONSOLE')) { 
 			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
 				$connection = metaconsole_get_connection($server_name);
+				
 				if (metaconsole_load_external_db($connection) == NOERR) {
 					/* Get all agents if no agent was given */
 					if ($id_agent == 0)
-						$id_agent = array_keys (agents_get_group_agents (array_keys (users_get_groups ()), $search, "none"));
+						$id_agent = array_keys (
+							agents_get_group_agents (
+								array_keys (users_get_groups ()), $search, "none"));
+					
 					
 					$agent_modules = agents_get_modules ($id_agent,
 						($fields != '' ? explode (',', $fields) : "*"),

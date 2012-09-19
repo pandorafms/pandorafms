@@ -287,7 +287,7 @@ else {
 			WHERE (id_grupo IN (%s)
 			%s) %s',
 			implode (',', array_keys (users_get_groups ())),
-			$search_sql, $sql_extra);    
+			$search_sql, $sql_extra);
 		
 		$total_agents = db_get_sql ($sql);
 		

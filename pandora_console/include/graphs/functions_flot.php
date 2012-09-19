@@ -119,7 +119,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$return .= "<div id='timestamp_$graph_id' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='overview_$graph_id' style='display:none; margin-left:0px; margin-top:20px; width: ".$width."px; height:50px;'></div>";
-
+	
 	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
 		$watermark = 'true';
@@ -131,7 +131,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	// Set a weird separator to serialize and unserialize passing data from php to javascript
 	$separator = ';;::;;';
 	$separator2 = ':,:,,,:,:';
-		
+	
 	// Transform data from our format to library format
 	$legend2 = array();
 	$labels = array();
@@ -142,8 +142,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$colors = array();
 	
 	$index = array_keys(reset($chart_data));
-	foreach($index as $serie_key) {
-		if(isset($color[$serie_key])) {
+	foreach ($index as $serie_key) {
+		if (isset($color[$serie_key])) {
 			$colors[] = $color[$serie_key]['color'];
 		}
 		else {
@@ -157,21 +157,21 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 		foreach($values as $key => $value) {
 			$jsvar = "data_".$graph_id."_".$key;
 			
-			if(!isset($serie_types[$key])) {
+			if (!isset($serie_types[$key])) {
 				$serie_types2[$jsvar] = 'line';
 			}
 			else {
 				$serie_types2[$jsvar] = $serie_types[$key];
 			}
 			
-			if($serie_types2[$jsvar] == 'points' && $value == 0) {
+			if ($serie_types2[$jsvar] == 'points' && $value == 0) {
 				$data[$jsvar][] = 'null';
 			}
 			else {
 				$data[$jsvar][] = $value;
 			}
 			
-			if(!isset($legend[$key])) {
+			if (!isset($legend[$key])) {
 				$legend2[$jsvar] = 'null';
 			}
 			else {
@@ -179,7 +179,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 			}
 		}
 	}
-
+	
 	// Store data series in javascript format
 	$jsvars = '';
 	$jsseries = array();
@@ -200,23 +200,23 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	
 	// Max is "n-1" because start with 0 
 	$max_x--;
-		
-	if($menu) {
+	
+	if ($menu) {
 		$threshold = false;
-		if($yellow_threshold != 0 || $red_threshold != 0) {
+		if ($yellow_threshold != 0 || $red_threshold != 0) {
 			$threshold = true;
 		}
-
+		
 		$nbuttons = 2;
 		
-		if($threshold) {
+		if ($threshold) {
 			$nbuttons++;
 		}
 		
 		$menu_width = 18 * $nbuttons + 8;
 		$return .= "<div id='menu_$graph_id' style='display:none; text-align:center; width:".$menu_width."px; position:relative; border: solid 1px #666; border-bottom: 0px; padding: 4px 4px 4px 4px'>
-				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
-		if($threshold) {
+			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
+		if ($threshold) {
 			$return .= "<a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
 		}
 		$return .= "<a href='javascript:'><img id='menu_overview_$graph_id' src='".$homeurl."images/chart_curve_overview.png' alt='".__('Overview graph')."' title='".__('Overview graph')."'></a>
@@ -224,9 +224,9 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	}
 	$extra_height = $height - 50;
 	$extra_width = (int)($width / 3);
-
+	
 	$return .= "<div id='extra_$graph_id' style='font-size: ".$font_size."pt; display:none; position:absolute; overflow: auto; height: ".$extra_height."px; width: ".$extra_width."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
-
+	
 	// Process extra data
 	$events = array();
 	$event_ids = array();
@@ -235,8 +235,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$legend_events = '';
 	$legend_alerts = '';
 
-	foreach($chart_extra_data as $i => $data) {
-		switch($i) {
+	foreach ($chart_extra_data as $i => $data) {
+		switch ($i) {
 			case 'legend_alerts':
 				$legend_alerts = $data;
 				break;
@@ -275,7 +275,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$colors  = implode($separator, $colors);
 	
 	// transform into string to pass to javascript
-	if($force_integer) {
+	if ($force_integer) {
 		$force_integer = 'true';
 	}
 	else {
@@ -353,7 +353,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 	$return .= "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
-	if($water_mark != '') {
+	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
 		$watermark = 'true';
 	}
@@ -364,22 +364,22 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 	// Set a weird separator to serialize and unserialize passing data from php to javascript
 	$separator = ';;::;;';
 	$separator2 = ':,:,,,:,:';
-		
+	
 	// Transform data from our format to library format
 	$labels = array();
 	$a = array();
 	$vars = array();
-			
+	
 	$max = 0;
 	$i = count($graph_data);
-	foreach($graph_data as $label => $values) {
+	foreach ($graph_data as $label => $values) {
 		$labels[] = io_safe_output($label);
 		$i--;
-
-		foreach($values as $key => $value) {
+		
+		foreach ($values as $key => $value) {
 			$jsvar = "data_".$graph_id."_".$key;
 			
-			if($multicolor) {
+			if ($multicolor) {
 				for($j = count($graph_data) - 1; $j>=0; $j--) {
 					if($j == $i) {
 						$data[$jsvar.$i][$j] = $value;
@@ -408,25 +408,25 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 	$jsseries = array();
 	
 	$i = 0;
-
+	
 	$values2 = array();
-
-	foreach($data as $jsvar => $values) {
+	
+	foreach ($data as $jsvar => $values) {
 		$values2[] = implode($separator,$values);
 	}
 	
 	$values = implode($separator2, $values2);
-
+	
 	$jsseries = implode(',', $jsseries);
 	
-
+	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	
 	$return .= "pandoraFlotHBars('$graph_id', '$values', '$labels', false, $max, '$water_mark', '$separator', '$separator2')";
-
+	
 	$return .= "</script>";
-
+	
 	return $return;	
 }
 
@@ -447,7 +447,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
-	if($water_mark != '') {
+	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
 		$watermark = 'true';
 	}
@@ -457,32 +457,32 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	
 	$colors = array();
 	$index = array_keys(reset($graph_data));
-
-	foreach($index as $serie_key) {
-		if(isset($color[$serie_key])) {
+	
+	foreach ($index as $serie_key) {
+		if (isset($color[$serie_key])) {
 			$colors[] = $color[$serie_key]['color'];
 		}
 		else {
 			$colors[] = '';
 		}
 	}
-
+	
 	// Set a weird separator to serialize and unserialize passing data from php to javascript
 	$separator = ';;::;;';
 	$separator2 = ':,:,,,:,:';
-		
+	
 	// Transform data from our format to library format
 	$labels = array();
 	$a = array();
 	$vars = array();
-			
+	
 	$max = 0;
 	$i = count($graph_data);
-	foreach($graph_data as $label => $values) {
+	foreach ($graph_data as $label => $values) {
 		$labels[] = io_safe_output($label);
 		$i--;
-
-		foreach($values as $key => $value) {
+		
+		foreach ($values as $key => $value) {
 			$jsvar = "data_".$graph_id."_".$key;
 			
 			if($multicolor) {
@@ -500,7 +500,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 			}
 			
 			//$return .= "<div id='value_".$i."_$graph_id' class='values_$graph_id' style='color: #000; position:absolute;'>$value</div>";
-			if($value > $max) {
+			if ($value > $max) {
 				$max = $value;
 			}
 		}
@@ -509,30 +509,30 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	// Store serialized data to use it from javascript
 	$labels = implode($separator,$labels);
 	$colors  = implode($separator, $colors);
-
+	
 	// Store data series in javascript format
 	$jsvars = '';
 	$jsseries = array();
 	
 	$i = 0;
-
+	
 	$values2 = array();
-
+	
 	foreach($data as $jsvar => $values) {
 		$values2[] = implode($separator,$values);
 	}
 	
 	$values = implode($separator2, $values2);
-
+	
 	$jsseries = implode(',', $jsseries);
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	
 	$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2')";
-
+	
 	$return .= "</script>";
-
+	
 	return $return;	
 }
 
@@ -593,7 +593,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 		$intervaltick*= 2;
 		
 		$i_aux /= 2;
-	}	
+	}
 	
 	$intervaltick = (int) $intervaltick;
 	$acumulate = 0;
@@ -648,12 +648,11 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
-    $return .= "//<![CDATA[\n";
-   	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, false, $max, '$separator', '$separator2')";
+	$return .= "//<![CDATA[\n";
+	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, false, $max, '$separator', '$separator2')";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	
 	return $return;	
 }
-
 ?>

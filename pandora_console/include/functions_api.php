@@ -1471,7 +1471,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3){
  * 	example 1 (snmp v: 3, snmp3_priv_method: AES, passw|authNoPriv|MD5|pepito_user|example_priv_passw) 
  * 
  *  api.php?op=set&op2=create_snmp_module&id=pepito&other=prueba|0|15|1|10|15||16|18||15|0|127.0.0.1|60|3|public|.1.3.6.1.2.1.1.1.0|180|0|0|0|0|SNMP%20module%20from%20API|AES|example_priv_passw|authNoPriv|MD5|pepito_user|example_auth_passw&other_mode=url_encode_separator_| 
- *    
+ *  
  *  example 2 (snmp v: 1)
  * 
  *  api.php?op=set&op2=create_snmp_module&id=pepito1&other=prueba2|0|15|1|10|15||16|18||15|0|127.0.0.1|60|1|public|.1.3.6.1.2.1.1.1.0|180|0|0|0|0|SNMP module from API&other_mode=url_encode_separator_|
@@ -2325,27 +2325,27 @@ function api_get_alert_template($id_template, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_module_groups($thrash1, $thrash2, $other, $thrash3) {
-
-        if (!isset($other['data'][0]))
-                $separator = ';'; // by default
-        else   
-                $separator = $other['data'][0];
-
-        $filter = false;
-
+	
+	if (!isset($other['data'][0]))
+		$separator = ';'; // by default
+	else
+		$separator = $other['data'][0];
+	
+	$filter = false;
+	
 	$module_groups = @db_get_all_rows_filter ('tmodule_group', $filter);
-
-        if ($module_groups !== false) {
-                $data['type'] = 'array';
-                $data['data'] = $module_groups;
-        }
-
-        if (!$module_groups) {
-                returnError('error_get_module_groups', __('Error getting module groups.'));
-        }
-        else { 
-                returnData('csv', $data, $separator);
-        }
+	
+	if ($module_groups !== false) {
+		$data['type'] = 'array';
+		$data['data'] = $module_groups;
+	}
+	
+	if (!$module_groups) {
+		returnError('error_get_module_groups', __('Error getting module groups.'));
+	}
+	else { 
+		returnData('csv', $data, $separator);
+	}
 }
 
 /**
@@ -2361,27 +2361,27 @@ function api_get_module_groups($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_plugins($thrash1, $thrash2, $other, $thrash3) {
-
-        if (!isset($other['data'][0]))
-                $separator = ';'; // by default
-        else   
-                $separator = $other['data'][0];
-
-        $filter = false;
-
-        $plugins = @db_get_all_rows_filter ('tplugin', $filter);
-
-        if ($plugins !== false) {
-                $data['type'] = 'array';
-                $data['data'] = $plugins;
-        }
-
-        if (!$plugins) {
-                returnError('error_get_plugins', __('Error getting plugins.'));
-        }
-        else { 
-                returnData('csv', $data, $separator);
-        }
+	
+	if (!isset($other['data'][0]))
+		$separator = ';'; // by default
+	else
+		$separator = $other['data'][0];
+	
+	$filter = false;
+	
+	$plugins = @db_get_all_rows_filter ('tplugin', $filter);
+	
+	if ($plugins !== false) {
+		$data['type'] = 'array';
+		$data['data'] = $plugins;
+	}
+	
+	if (!$plugins) {
+		returnError('error_get_plugins', __('Error getting plugins.'));
+	}
+	else { 
+		returnData('csv', $data, $separator);
+	}
 }
 
 /**
@@ -2395,16 +2395,16 @@ function api_get_plugins($thrash1, $thrash2, $other, $thrash3) {
 function api_set_create_network_module_from_component($agent_name, $component_name, $thrash1, $thrash2) {
 	$agent_id = agents_get_agent_id($agent_name);
 	
-	if (!$agent_id){
+	if (!$agent_id) {
 		returnError('error_network_module_from_component', __('Error creating module from network component. Agent doesn\'t exists.'));
-		return;		
+		return;
 	}
 	
 	$component= db_get_row ('tnetwork_component', 'name', $component_name);
 	
-	if (!$component){
+	if (!$component) {
 		returnError('error_network_module_from_component', __('Error creating module from network component. Network component doesn\'t exists.'));
-		return;		
+		return;
 	}
 	
 	// Adapt fields to module structure
@@ -2416,13 +2416,13 @@ function api_set_create_network_module_from_component($agent_name, $component_na
 	unset($component['description']);
 	unset($component['name']);
 	$component['ip_target'] = agents_get_address($agent_id);
-
+	
 	// Create module
 	$module_id = modules_create_agent_module ($agent_id, $component_name, $component, true);
 	
-	if (!$module_id){
+	if (!$module_id) {
 		returnError('error_network_module_from_component', __('Error creating module from network component. Error creating module.'));
-		return;		
+		return;
 	}
 	
 	return $module_id;
@@ -2932,28 +2932,28 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_network_data_module_policy', __('Error adding network module to policy. Id_policy cannot be left blank.'));
-		return;			
-	}
-
-	if ($other['data'][0] == ""){
-		returnError('error_network_data_module_policy', __('Error adding network module to policy. Module_name cannot be left blank.'));
-		return;			
+		return;
 	}
 	
-	if ($other['data'][1] < 6 or $other['data'][1] > 18){
+	if ($other['data'][0] == "") {
+		returnError('error_network_data_module_policy', __('Error adding network module to policy. Module_name cannot be left blank.'));
+		return;
+	}
+	
+	if ($other['data'][1] < 6 or $other['data'][1] > 18) {
 		returnError('error_network_data_module_policy', __('Error adding network module to policy. Id_module_type is not correct for network modules.'));
-		return;		
-	}	
+		return;
+	}
 	
 	// Check if the module is already in the policy
 	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name'));
-
+	
 	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
 		returnError('error_network_data_module_policy', __('Error adding network module to policy.'));
-		return;	
-	}	
+		return;
+	}
 	
 	$values = array();
 	$values['id_tipo_modulo'] = $other['data'][1];
@@ -2969,21 +2969,21 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
 	$values['min_critical'] = $other['data'][11];
 	$values['max_critical'] = $other['data'][12];
 	$values['str_critical'] = $other['data'][13];
- 	$values['history_data'] = $other['data'][14];
- 	$values['min_ff_event'] = $other['data'][15];	
- 	$values['disabled'] = $other['data'][16];
-    $values['tcp_port'] = $other['data'][17];			
-    $values['snmp_community'] = $other['data'][18];
-    $values['snmp_oid'] = $other['data'][19]; 	
-    $values['custom_id'] = $other['data'][20];
- 	
- 	if ($name_module_policy !== false){
+	$values['history_data'] = $other['data'][14];
+	$values['min_ff_event'] = $other['data'][15];
+	$values['disabled'] = $other['data'][16];
+	$values['tcp_port'] = $other['data'][17];
+	$values['snmp_community'] = $other['data'][18];
+	$values['snmp_oid'] = $other['data'][19];
+	$values['custom_id'] = $other['data'][20];
+	
+	if ($name_module_policy !== false) {
 		if ($name_module_policy[0]['name'] == $other['data'][0]){
 			returnError('error_network_data_module_policy', __('Error adding network module to policy. The module is already in the policy.'));
-			return;				
+			return;
 		}
 	}
- 
+	
 	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false)); 
 	
 	if ($success)
@@ -3074,29 +3074,29 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Id_policy cannot be left blank.'));
-		return;			
-	}
-
-	if ($other['data'][0] == ""){
-		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Module_name cannot be left blank.'));
-		return;			
+		return;
 	}
 	
-	if ($other['data'][22] == ""){
+	if ($other['data'][0] == "") {
+		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Module_name cannot be left blank.'));
+		return;
+	}
+	
+	if ($other['data'][22] == "") {
 		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Id_plugin cannot be left blank.'));
-		return;		
+		return;
 	}
 	
 	// Check if the module is already in the policy
 	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name'));
-
+	
 	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
 		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy.'));
-		return;	
-	}			
-
+		return;
+	}
+	
 	$values = array();
 	$values['disabled'] = $other['data'][1];
 	$values['id_tipo_modulo'] = $other['data'][2];
@@ -3111,32 +3111,31 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	$values['history_data'] = $other['data'][11];
 	$values['tcp_port'] = $other['data'][12];
 	$values['snmp_community'] = $other['data'][13];
- 	$values['snmp_oid'] = $other['data'][14];
- 	$values['module_interval'] = $other['data'][15];	
- 	$values['post_process'] = $other['data'][16];			
-    $values['min'] = $other['data'][17];
-    $values['max'] = $other['data'][18]; 	
-    $values['custom_id'] = $other['data'][19];
-    $values['description'] = $other['data'][20];
-    $values['id_plugin'] = $other['data'][21];    
-    $values['plugin_user'] = $other['data'][22];  
-    $values['plugin_pass'] = $other['data'][23];
-    $values['plugin_parameter'] = $other['data'][24];              
-  	
- 	if ($name_module_policy !== false){
-		if ($name_module_policy[0]['name'] == $other['data'][0]){
+	$values['snmp_oid'] = $other['data'][14];
+	$values['module_interval'] = $other['data'][15];
+	$values['post_process'] = $other['data'][16];
+	$values['min'] = $other['data'][17];
+	$values['max'] = $other['data'][18];
+	$values['custom_id'] = $other['data'][19];
+	$values['description'] = $other['data'][20];
+	$values['id_plugin'] = $other['data'][21]; 
+	$values['plugin_user'] = $other['data'][22];
+	$values['plugin_pass'] = $other['data'][23];
+	$values['plugin_parameter'] = $other['data'][24];
+	
+	if ($name_module_policy !== false) {
+		if ($name_module_policy[0]['name'] == $other['data'][0]) {
 			returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. The module is already in the policy.'));
-			return;				
+			return;
 		}
 	}
- 
-	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 4, $values, false)); 
+	
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 4, $values, false));
 	
 	if ($success)
 		returnData('string', array('type' => 'string', 'data' => $success));
 	else
-		returnError('error_add_plugin_module_policy', 'Error adding plugin module to policy.');	
-
+		returnError('error_add_plugin_module_policy', 'Error adding plugin module to policy.');
 }
 
 /**
@@ -3353,46 +3352,46 @@ function api_set_update_module_in_conf($id_agent, $module_name, $configuration_d
  * @param $thrash3 Don't use
  */
 function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Id_policy cannot be left blank.'));
-		return;			
+		return;
 	}
-
-	if ($other['data'][0] == ""){
+	
+	if ($other['data'][0] == "") {
 		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Module_name cannot be left blank.'));
-		return;			
+		return;
 	}
 	
 	// Check if the module is already in the policy
 	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name'));
-
+	
 	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
 		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy.'));
-		return;	
+		return;
 	}
 	
-	if ($other['data'][2] < 15 or $other['data'][2] > 18){
+	if ($other['data'][2] < 15 or $other['data'][2] > 18) {
 		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Id_module_type is not correct for SNMP modules.'));
-		return;		
-	}			
-
+		return;
+	}
+	
 	# SNMP version 3
-	if ($other['data'][13] == "3"){
+	if ($other['data'][13] == "3") {
 		
-		if ($other['data'][22] != "AES" and $other['data'][22] != "DES"){
+		if ($other['data'][22] != "AES" and $other['data'][22] != "DES") {
 			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
-			return;	
+			return;
 		}
 		
-		if ($other['data'][24] != "authNoPriv" and $other['data'][24] != "authPriv" and $other['data'][24] != "noAuthNoPriv"){
+		if ($other['data'][24] != "authNoPriv" and $other['data'][24] != "authPriv" and $other['data'][24] != "noAuthNoPriv") {
 			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
-			return;	
-		}		
+			return;
+		}
 		
-		if ($other['data'][25] != "MD5" and $other['data'][25] != "SHA"){
+		if ($other['data'][25] != "MD5" and $other['data'][25] != "SHA") {
 			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
-			return;	
-		}		
+			return;
+		}
 		
 		$values = array(
 			'disabled' => $other['data'][1],
@@ -3404,16 +3403,16 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			'min_critical' => $other['data'][7],
 			'max_critical' => $other['data'][8],
 			'str_critical' => $other['data'][9],
-			'min_ff_event' => $other['data'][10],		
-			'history_data' => $other['data'][11],			
-			'tcp_port' => $other['data'][12],	
-			'tcp_send' => $other['data'][13],				
-			'snmp_community' => $other['data'][14],		
+			'min_ff_event' => $other['data'][10],
+			'history_data' => $other['data'][11],
+			'tcp_port' => $other['data'][12],
+			'tcp_send' => $other['data'][13],
+			'snmp_community' => $other['data'][14],
 			'snmp_oid' => $other['data'][15],
 			'module_interval' => $other['data'][16],
 			'post_process' => $other['data'][17],
 			'min' => $other['data'][18],
-			'max' => $other['data'][19],	
+			'max' => $other['data'][19],
 			'custom_id' => $other['data'][20],
 			'description' => $other['data'][21],
 			'custom_string_1' => $other['data'][22],
@@ -3422,7 +3421,7 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			'plugin_parameter' => $other['data'][25],
 			'plugin_user' => $other['data'][26],
 			'plugin_pass' => $other['data'][27]
-		);			
+		);
 	}
 	else {
 		$values = array(
@@ -3435,11 +3434,11 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			'min_critical' => $other['data'][7],
 			'max_critical' => $other['data'][8],
 			'str_critical' => $other['data'][9],
-			'min_ff_event' => $other['data'][10],		
-			'history_data' => $other['data'][11],			
-			'tcp_port' => $other['data'][12],	
-			'tcp_send' => $other['data'][13],				
-			'snmp_community' => $other['data'][14],		
+			'min_ff_event' => $other['data'][10],
+			'history_data' => $other['data'][11],
+			'tcp_port' => $other['data'][12],
+			'tcp_send' => $other['data'][13],
+			'snmp_community' => $other['data'][14],
 			'snmp_oid' => $other['data'][15],
 			'module_interval' => $other['data'][16],
 			'post_process' => $other['data'][17],
@@ -3447,22 +3446,22 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			'max' => $other['data'][19],	
 			'custom_id' => $other['data'][20],
 			'description' => $other['data'][21]
-		);			
-	}             
-
- 	if ($name_module_policy !== false){
-		if ($name_module_policy[0]['name'] == $other['data'][0]){
+		);
+	}
+	
+	if ($name_module_policy !== false) {
+		if ($name_module_policy[0]['name'] == $other['data'][0]) {
 			returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. The module is already in the policy.'));
-			return;				
+			return;
 		}
 	}
- 
-	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false)); 
+	
+	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 2, $values, false));
 	
 	if ($success)
 		returnData('string', array('type' => 'string', 'data' => $success));
 	else
-		returnError('error_add_snmp_module_policy', 'Error adding SNMP module to policy.');	
+		returnError('error_add_snmp_module_policy', 'Error adding SNMP module to policy.');
 
 }
 

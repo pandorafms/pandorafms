@@ -231,7 +231,8 @@ elseif ($search_agents_2 && ($config['metaconsole'] == 1) && defined('METACONSOL
 		foreach ($agents as $agent) {
 			$data[] = array('id' => $agent['id_agente'],
 				'name' => io_safe_output($agent['nombre']) . " (" . io_safe_output($server['server_name']) . ") ",
-				'ip' => io_safe_output($agent['direccion']));
+				'ip' => io_safe_output($agent['direccion']),
+				'server' => io_safe_output($server['server_name']));
 		}
 		//Restore db connection
 		metaconsole_restore_db();

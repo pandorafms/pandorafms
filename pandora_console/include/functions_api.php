@@ -5438,11 +5438,17 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType) {
 	$event_data = db_get_row_sql($sql);
 	
 	$i = 0;
-	foreach ($event_data as $data) {
+	foreach ($event_data as $key => $data) {
+/*
 		if ($i == 0)
 			$result = $data;
 		else 
 			$result .= ';'.$data;
+*/
+		if ($i == 0)
+			$result = $key.': '.$data.'<br>';
+		else
+			$result .= $key.': '.$data.'<br>'; 
 		$i++;
 	}
 
@@ -5452,8 +5458,8 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType) {
 	return;
 }
 
-// http://localhost/pandora_console/include/api.php?op=get&op2=create_event&id=name_event&other=2|admin|2|4|1|system|8|4|0|3|comments||Pandora||critical_inst|warning_inst|unknown_inst&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
-function api_set_create_event($id, $trash1, $other, $trash2) {
+// http://localhost/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|admin|2|4|1|system|8|4|0|3|comments||Pandora||critical_inst|warning_inst|unknown_inst&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+function api_set_create_event($id, $trash1, $other, $returnType) {
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');
 		return;
@@ -5481,16 +5487,10 @@ function api_set_create_event($id, $trash1, $other, $trash2) {
 			$values['id_alert_am'] = $other['data'][6];
 		if ($other['data'][7] != '')
 			$values['criticity'] = $other['data'][7];
-		if ($other['data'][8] != '') {
+		if ($other['data'][8] != '')
 			$values['user_comment'] = $other['data'][8];
-		}
-		if ($other['data'][9] != '') {
+		if ($other['data'][9] != '')
 			$values['tags'] = $other['data'][9];
-		} else {
-			if ($other['data'][9] != '' && $other['data'][9] > 0) {
-				
-			}
-		}
 		if ($other['data'][10] != '')
 			$values['source'] = $other['data'][10];
 		else 
@@ -5516,9 +5516,28 @@ function api_set_create_event($id, $trash1, $other, $trash2) {
 		else {
 			$data['data'] = $return;
 		}
-		returnData('string', $data);
+		returnData($returnType, $data);
 		return;		
 	}
 }
 
+// http://localhost/pandora_console/include/api.php?op=get&op2=tactical_view&apipass=1234&user=admin&pass=pandora
+function api_get_tactical_view($trash1, $trash2, $trash3, $returnType) {
+	$tactical_info = reporting_get_group_stats();
+	$i = 0;
+	foreach ($tactical_info as $key => $data) {
+		if ($i == 0)
+			$result = $key.': '.$data.'<br>';
+		else
+			$result .= $key.': '.$data.'<br>'; 
+			
+		$i++;
+	}
+
+	$data = array('type' => 'string', 'data' => $result);
+	
+	returnData($returnType, $data);
+	return;
+	
+}
 ?>

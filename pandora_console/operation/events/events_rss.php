@@ -27,9 +27,9 @@ $ipOrigin = $_SERVER['REMOTE_ADDR'];
 
 // Uncoment this to activate ACL on RSS Events
 if (!isInACL($ipOrigin)) {
-    exit;
+	exit;
 }
-    
+
 // Check user credentials
 $user = get_parameter('user');
 $hashup = get_parameter('hashup');

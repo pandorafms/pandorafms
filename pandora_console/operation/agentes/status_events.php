@@ -18,8 +18,8 @@
 check_login();
 
 if (!isset($id_agente)){
-    require ("general/noaccess.php");
-    exit;
+	require ("general/noaccess.php");
+	exit;
 }
 
 require_once ("include/functions_events.php");

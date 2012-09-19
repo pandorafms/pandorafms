@@ -58,7 +58,7 @@ $exception_condition_value = 10;
 $modulegroup = 0;
 $period = 86400;
 // Added support for projection graphs
-$period_pg = 432000; 	
+$period_pg = 432000;
 $projection_period = 432000;
 $only_display_wrong = 0;
 // Added support for prediction date report
@@ -93,7 +93,7 @@ switch ($action) {
 		$actionParameter = 'update';
 		$item = db_get_row_filter('treport_content', array('id_rc' => $idItem));
 		$server_name = $item ['server_name'];
-
+		
 		// Metaconsole db connection
 		if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
 			$connection = metaconsole_get_connection($server_name);
@@ -101,12 +101,12 @@ switch ($action) {
 				//ui_print_error_message ("Error connecting to ".$server_name);
 			}
 		}
-
+		
 		$style = json_decode(io_safe_output($item['style']), true);
 		$show_in_two_columns = $style['show_in_two_columns'];
 		$show_in_landscape = $style['show_in_landscape'];
 		$type = $item['type'];
-
+		
 		switch ($type) {
 			case 'avg_value':
 				$period = $item['period'];
@@ -517,6 +517,12 @@ html_print_input_hidden('id_item', $idItem);
 				$params['hidden_input_idagent_id'] = 'hidden-id_agent';
 				$params['use_input_server'] = true;
 				$params['input_server_id'] = 'hidden-server_name';
+				if (($config['metaconsole'] == 1) &&
+					(defined('METACONSOLE'))) {
+					//It is a page in the new metaconsole.
+					$params['metaconsole_enabled'] = true;
+					$params['javascript_ajax_page'] = '../../ajax.php';
+				}
 				ui_print_agent_autocomplete_input($params);
 				
 				?>

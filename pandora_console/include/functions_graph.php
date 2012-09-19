@@ -252,7 +252,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$chart_extra_data = array();
 	$warning_min = 0;
 	$critical_min = 0;
-
+	
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;

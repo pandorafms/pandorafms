@@ -154,11 +154,11 @@ function messages_process_read ($message_id, $read = true) {
  */
 function messages_get_message ($message_id) {
 	global $config;
-
+	
 	$sql = sprintf("SELECT id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp
 		FROM tmensajes
 		WHERE id_usuario_destino='%s' AND id_mensaje=%d" , $config["id_user"], $message_id);
-    $row = db_get_row_sql ($sql);
+	$row = db_get_row_sql ($sql);
 	
 	if (empty ($row)) {
 		return false;
@@ -178,11 +178,11 @@ function messages_get_message ($message_id) {
  */
 function messages_get_message_sent ($message_id) {
 	global $config;
-
+	
 	$sql = sprintf("SELECT id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp
 		FROM tmensajes
 		WHERE id_usuario_origen='%s' AND id_mensaje=%d" , $config["id_user"], $message_id);
-    $row = db_get_row_sql ($sql);
+	$row = db_get_row_sql ($sql);
 	
 	if (empty ($row)) {
 		return false;

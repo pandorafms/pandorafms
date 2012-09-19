@@ -104,7 +104,7 @@ $data[2] .= '</span>';
 $users_profiles = "";
 
 $data[2] .= html_print_select (users_get_info(), 'users_id[]', '', '', '', 
-    '', true, true, true, '', false, 'width: 100%');
+	'', true, true, true, '', false, 'width: 100%');
 
 
 array_push ($table->data, $data);

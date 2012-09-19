@@ -1135,7 +1135,9 @@ foreach ($result as $event) {
 			$string .= '<i>- ' . __('Empty') . ' -</i>';
 		}
 		$string .= '</td></tr>';
-	} else if ($event["criticity"] == 3) {
+	}
+	
+	if ($event["criticity"] == 3) {	
 		$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Warning instructions') . '</td><td align="left">';
 		if ($event["warning_instructions"] != '') {
 			$string .= $event["warning_instructions"];
@@ -1146,7 +1148,9 @@ foreach ($result as $event) {
 			$string .= '<i>- ' . __('Empty') . ' -</i>';
 		}
 		$string .= '</td></tr>';
-	} else if ($event["criticity"] == 0) {	
+	}
+
+	if ($event["criticity"] == 0) {	
 		$string .= '<tr class="' . $odd . '"><td align="left" valign="top">' . '<b>' . __('Unknown instructions') . '</td><td align="left">';
 		if ($event["unknown_instructions"] != '') {
 			$string .= $event["unknown_instructions"];

@@ -84,14 +84,14 @@ if ($groups_user === false) {
 $groups_id = implode(',', array_keys($groups_user));
 
 $form_filter .= "<tr>\n";
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions WHERE id_group IN ($groups_id);");
-			break;
-		case "oracle":
-			$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions WHERE id_group IN ($groups_id)");
-			break;
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions WHERE id_group IN ($groups_id);");
+		break;
+	case "oracle":
+		$temp = db_get_all_rows_sql("SELECT id, name FROM talert_actions WHERE id_group IN ($groups_id)");
+		break;
 }
 
 $arrayActions = array();

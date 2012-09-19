@@ -743,7 +743,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				else {
 					$('#timestamp_'+graph_id).text(labels_long[j]);
 				}
-
+				
 				$('#timestamp_'+graph_id).css('top', plot.offset().top-$('#timestamp_'+graph_id).height()*1.5);
 				
 				var timesize = $('#timestamp_'+graph_id).width();

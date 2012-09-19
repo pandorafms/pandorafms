@@ -1,3 +1,8 @@
+2012-09-19  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_api.php: Added function: tactical
+	view.
+
 2012-09-19  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

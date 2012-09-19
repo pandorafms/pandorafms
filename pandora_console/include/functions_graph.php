@@ -29,7 +29,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$data, $data_i, $previous_data, $resolution, $interval, $period, $datelimit, 
 				$projection, $avg_only = false, $uncompressed_module = false, 
 				$show_events = false, $show_alerts = false, $show_unknown = false, $baseline = false, 
-				$baseline_data = array(), $events = array(), $series_suffix = '') {
+				$baseline_data = array(), $events = array(), $series_suffix = '', $start_unknown = false) {
 	
 	global $config;
 	global $chart_extra_data;
@@ -41,7 +41,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 	$event_i = 0;
 			
 	// Is unknown flag
-	$is_unknown = false;
+	$is_unknown = $start_unknown;
 
 	// Calculate chart data
 	for ($i = 0; $i < $resolution; $i++) {
@@ -103,6 +103,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			}
 			$event_i++;
 		}
+
 		if($is_unknown) {
 			$unknown_value++;
 		}
@@ -150,16 +151,29 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		if (!$projection){
 			$timestamp = $timestamp_short;
 		}
+		
 		// Data
 		if($show_events) {
-			$chart[$timestamp]['event'.$series_suffix] = $event_value;
+			if(!isset($chart[$timestamp]['event'.$series_suffix])) {
+				$chart[$timestamp]['event'.$series_suffix] = 0;
+			}
+			
+			$chart[$timestamp]['event'.$series_suffix] += $event_value;
 			$series_type['event'.$series_suffix] = 'points';
 		}
 		if($show_alerts) {
-			$chart[$timestamp]['alert'.$series_suffix] = $alert_value;
+			if(!isset($chart[$timestamp]['alert'.$series_suffix])) {
+				$chart[$timestamp]['alert'.$series_suffix] = 0;
+			}
+			
+			$chart[$timestamp]['alert'.$series_suffix] += $alert_value;
 			$series_type['alert'.$series_suffix] = 'points';
 		}
 		if($show_unknown) {
+			if(!isset($chart[$timestamp]['unknown'.$series_suffix])) {
+				$chart[$timestamp]['unknown'.$series_suffix] = 0;
+			}
+			
 			$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
 			$series_type['unknown'.$series_suffix] = 'area';
 		}
@@ -217,12 +231,12 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		}
 		
 		if(!empty($event_ids)) {
-			$chart_extra_data[count($chart)-1]['events'.$series_suffix] = implode(',',$event_ids);
+			$chart_extra_data[count($chart)-1]['events'] = implode(',',$event_ids);
 		}
 		if(!empty($alert_ids)) {
-			$chart_extra_data[count($chart)-1]['alerts'.$series_suffix] = implode(',',$alert_ids);
+			$chart_extra_data[count($chart)-1]['alerts'] = implode(',',$alert_ids);
 		}
-	}
+	}	
 }
 
 
@@ -248,11 +262,10 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$color = array();
 	$legend = array();
 	$long_index = array();
-	$series_type = array();
-	$chart_extra_data = array();
 	$warning_min = 0;
 	$critical_min = 0;
-	
+	$start_unknown = false;
+
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
@@ -279,6 +292,16 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
 			array ('id_evento', 'evento', 'utimestamp', 'event_type'));
+
+		// Get the last event after inverval to know if graph start on unknown
+		$prev_event = db_get_row_filter ('tevento',
+			array ('id_agentmodule' => $agent_module_id,
+				"utimestamp <= $datelimit",
+				'order' => 'utimestamp DESC'));
+		if(isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
+			$start_unknown = true;
+		}
+		
 		if ($events === false) {
 			$events = array ();
 		}
@@ -376,8 +399,8 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$data, $data_i, $previous_data, $resolution, $interval, $period, $datelimit, 
 		$projection, $avg_only, $uncompressed_module, 
 		$show_events, $show_alerts, $show_unknown, $baseline, 
-		$baseline_data, $events, $series_suffix);
-	
+		$baseline_data, $events, $series_suffix, $start_unknown);
+
 	// Return chart data and don't draw
 	if ($return_data == 1) {
 		return $chart;
@@ -387,17 +410,16 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$min_value = round(reporting_get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
 	$max_value = round(reporting_get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
 	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
-	
 	// Fix event and alert scale
 	$event_max = $max_value * 1.05;
 	foreach ($chart as $timestamp => $chart_data) {
 		if ($show_events && $chart_data['event'.$series_suffix] > 0) {
 			$chart[$timestamp]['event'.$series_suffix] = $event_max * 1.2;
 		}
-		if ($show_alerts && $chart_data['alert'] > 0) {
+		if ($show_alerts && $chart_data['alert'.$series_suffix] > 0) {
 			$chart[$timestamp]['alert'.$series_suffix] = $event_max * 1.10;
 		}
-		if ($show_unknown && $chart_data['unknown'] > 0) {
+		if ($show_unknown && $chart_data['unknown'.$series_suffix] > 0) {
 			$chart[$timestamp]['unknown'.$series_suffix] = $event_max * 1.05;
 		}
 	}
@@ -427,16 +449,16 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
 	
 	if($show_events) {
-		$legend['event'.$series_suffix] = __('Events');
-		$chart_extra_data['legend_events'] = $legend['event'];
+		$legend['event'.$series_suffix_str] = __('Events').$series_suffix_str;
+		$chart_extra_data['legend_events'] = $legend['event'].$series_suffix_str;
 	}
 	if($show_alerts) {
-		$legend['alert'.$series_suffix] = __('Alerts');
-		$chart_extra_data['legend_alerts'] = $legend['alert'];
+		$legend['alert'.$series_suffix] = __('Alerts').$series_suffix_str;
+		$chart_extra_data['legend_alerts'] = $legend['alert'.$series_suffix_str];
 	}
 	if($show_unknown) {
 		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
-		$chart_extra_data['legend_unknown'] = $legend['unknown'];
+		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
 	}
 	
 	if (!$avg_only){
@@ -475,28 +497,32 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	global $warning_min;
 	global $critical_min;
 	
+	$series_suffix_str = '';
 	if($compare !== false) {
 		$series_suffix = '2';
 		$series_suffix_str = ' ('.__('Previous').')';
 		// Build the data of the previous period
 
 		grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
-			$width, $height , $title, $unit_name,
+			$width, $height, $title, $unit_name,
 			$show_alerts, $avg_only, $date-$period, $unit, $baseline, $return_data, 
 			$show_title, $projection, $adapt_key, $compare, 
 			$series_suffix, $series_suffix_str, $show_unknown);
-		
+
 		switch($compare) {
 			case 'separated':
 				// Store the chart calculated
 				$chart_prev = $chart;
 				$legend_prev = $legend;
 				$long_index_prev = $long_index;
+				$series_type_prev = $series_type;
+				$color_prev = $color;
 				break;
 			case 'overlapped':
 				// Store the chart calculated deleting index, because will be over the current period
 				$chart_prev = array_values($chart);
 				$legend_prev = $legend;
+				$series_type_prev = $series_type;
 				break;
 		}
 	}
@@ -506,7 +532,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$width, $height , $title, $unit_name,
 		$show_alerts, $avg_only, $date, $unit, $baseline, 
 		$return_data, $show_title, $projection, $adapt_key, $compare, '', '', $show_unknown);
-	
+
 	if ($return_data) {
 		return $data_returned;
 	}
@@ -535,19 +561,19 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,
 			$long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			$water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
-			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key).
+			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, $series_suffix_str).
 			 '<br>'.
-			 area_graph($flash_chart, $chart_prev, $width, $height/2, $color, $legend_prev,
+			 area_graph($flash_chart, $chart_prev, $width, $height/2, $color_prev, $legend_prev,
 			$long_index_prev, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			$water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
-			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key);
+			$series_type_prev, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, $series_suffix_str);
 	}
 	else {
 		// Color commented not to restrict serie colors
 		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 			$long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			$water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
-			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key);
+			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, $series_suffix_str);
 	}
 }
 
@@ -1968,18 +1994,21 @@ function fs_error_image () {
 
 function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	$unit_name, $show_alerts, $avg_only = 0, $date = 0, $series_suffix = '', 
-	$series_suffix_str = '') {
+	$series_suffix_str = '', $show_unknown = false) {
 	
 	global $config;
 	global $chart;
 	global $color;
 	global $legend;
 	global $long_index;
+	global $series_type;
+	global $chart_extra_data;
 	
 	$chart = array();
 	$color = array();
 	$legend = array();
 	$long_index = array();
+	$start_unknown = false;
 	
 	// Set variables
 	if ($date == 0) $date = get_system_time();
@@ -1997,13 +2026,23 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	
 	// Get event data (contains alert data too)
-	if ($show_events == 1 || $show_alerts == 1) {
+	if ($show_unknown == 1 || $show_events == 1 || $show_alerts == 1) {
 		$events = db_get_all_rows_filter('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('evento', 'utimestamp', 'event_type'));
+			array ('evento', 'utimestamp', 'event_type', 'id_evento'));
+			
+		// Get the last event after inverval to know if graph start on unknown
+		$prev_event = db_get_row_filter ('tevento',
+			array ('id_agentmodule' => $agent_module_id,
+				"utimestamp <= $datelimit",
+				'order' => 'utimestamp DESC'));
+		if(isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
+			$start_unknown = true;
+		}
+		
 		if ($events === false) {
 			$events = array ();
 		}
@@ -2110,16 +2149,34 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		// Read events and alerts that fall in the current interval
 		$event_value = 0;
 		$alert_value = 0;
+		$unknown_value = 0;
+
+		$event_ids = array();
+		$alert_ids = array();
 		while (isset ($events[$k]) &&
 			$events[$k]['utimestamp'] >= $timestamp &&
 			$events[$k]['utimestamp'] < ($timestamp + $interval)) {
 			if ($show_events == 1) {
 				$event_value++;
+				$event_ids[] = $events[$k]['id_evento'];
 			}
 			if ($show_alerts == 1 && substr ($events[$k]['event_type'], 0, 5) == 'alert') {
 				$alert_value++;
+				$alert_ids[] = $events[$k]['id_evento'];
+			}
+			if ($show_unknown) {
+				if($events[$k]['event_type'] == 'going_unknown') {
+					$is_unknown = true;
+				}
+				else if(substr ($events[$k]['event_type'], 0, 5) == 'going') {
+					$is_unknown = false;
+				}
 			}
 			$k++;
+		}
+
+		if($is_unknown) {
+			$unknown_value++;
 		}
 		
 		// Set the title and time format
@@ -2144,6 +2201,10 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
 		$timestamp = $timestamp_short;
 		/////////////////////////////////////////////////////////////////
+				
+		if($is_unknown) {
+			$total = 0;
+		}
 		
 		// Data and zeroes (draw a step)
 		if ($zero == 1 && $count > 0) {
@@ -2172,7 +2233,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			$previous_data = $total;
 		}
 		else { // Compressed data
-			if ($uncompressed_module || ($timestamp > time ())) {
+			if ($uncompressed_module || ($timestamp > time ()) || $is_unknown) {
 				$chart[$timestamp]['sum'.$series_suffix] = 0;
 			}
 			else {
@@ -2185,38 +2246,63 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			$chart[$timestamp]['max'.$series_suffix] = 0;
 		}
 		if($show_events) {
-			$chart[$timestamp]['event'.$series_suffix] = $event_value;
+			if(!isset($chart[$timestamp]['event'.$series_suffix])) {
+				$chart[$timestamp]['event'.$series_suffix] = 0;
+			}
+			
+			$chart[$timestamp]['event'.$series_suffix] += $event_value;
+			$series_type['event'.$series_suffix] = 'points';
 		}
-		else {
-			unset($chart[$timestamp]['event'.$series_suffix]);
+		if($show_alerts) {
+			if(!isset($chart[$timestamp]['alert'.$series_suffix])) {
+				$chart[$timestamp]['alert'.$series_suffix] = 0;
+			}
+			
+			$chart[$timestamp]['alert'.$series_suffix] += $alert_value;
+			$series_type['alert'.$series_suffix] = 'points';
 		}
-		if ($show_alerts) {
-			$chart[$timestamp]['alert'.$series_suffix] = $alert_value;
+		if($show_unknown) {
+			if(!isset($chart[$timestamp]['unknown'.$series_suffix])) {
+				$chart[$timestamp]['unknown'.$series_suffix] = 0;
+			}
+			
+			$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
+			$series_type['unknown'.$series_suffix] = 'area';
 		}
-		else {
-			unset($chart[$timestamp]['alert'.$series_suffix]);
-		}
-	}
 	
+		if(!empty($event_ids)) {
+			$chart_extra_data[count($chart)-1]['events'] = implode(',',$event_ids);
+		}
+		if(!empty($alert_ids)) {
+			$chart_extra_data[count($chart)-1]['alerts'] = implode(',',$alert_ids);
+		}
+	
+	}
+		
 	// Get min, max and avg (less efficient but centralized for all modules and reports)
 	$min_value = round(reporting_get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
 	$max_value = round(reporting_get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
 	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
 	
 	// Fix event and alert scale
-	$event_max = $max_value * 1.05;
 	foreach ($chart as $timestamp => $chart_data) {
 		if ($show_events) {
-			if ($chart_data['event'] > 0) {
-				$chart[$timestamp]['event'.$series_suffix] = $event_max;
+			if ($chart_data['event'.$series_suffix] > 0) {
+				$chart[$timestamp]['event'.$series_suffix] = $max_value * 1.2;
 			}
 		}
 		if ($show_alerts) {
-			if ($chart_data['alert'] > 0) {
-				$chart[$timestamp]['alert'.$series_suffix] = $event_max;
+			if ($chart_data['alert'.$series_suffix] > 0) {
+				$chart[$timestamp]['alert'.$series_suffix] = $max_value * 1.10;
+			}
+		}
+		if ($show_unknown) {
+			if ($chart_data['unknown'.$series_suffix] > 0) {
+				$chart[$timestamp]['unknown'.$series_suffix] = $max_value * 1.05;
 			}
 		}
 	}
+
 	///////////////////////////////////////////////////
 	// Set the title and time format
 	if ($period <= SECONDS_6HOURS) {
@@ -2241,12 +2327,20 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str . ' (' . $avg_value . ') ' . $unit;
+	
 	if($show_events) {
 		$legend['event'.$series_suffix] = __('Events').$series_suffix_str;
+		$chart_extra_data['legend_events'] = $legend['event'.$series_suffix];
 	}
 	if($show_alerts) {
 		$legend['alert'.$series_suffix] = __('Alerts').$series_suffix_str;
+		$chart_extra_data['legend_alerts'] = $legend['alert'.$series_suffix];
 	}
+	if($show_unknown) {
+		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
+		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix];
+	}
+	
 	if (!$avg_only) {
 		$legend['max'.$series_suffix] = __('Max').$series_suffix_str . ' (' .format_for_graph($max_value) . ') ' . $unit;
 		$legend['min'.$series_suffix] = __('Min').$series_suffix_str . ' (' . format_for_graph($min_value) . ') ' . $unit;
@@ -2260,6 +2354,9 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	if($show_alerts) {
 		$color['alert'.$series_suffix] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
 	}
+	if($show_unknown) {
+		$color['unknown'.$series_suffix] = array('border' => '#999999', 'color' => '#999999', 'alpha' => 50);
+	}
 	$color['max'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['min'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
 	//$color['baseline'.$series_suffix] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
@@ -2268,7 +2365,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 
 function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
-	$date = 0, $only_image = false, $homeurl = '', $adapt_key = '', $compare = false) {
+	$date = 0, $only_image = false, $homeurl = '', $adapt_key = '', $compare = false, $show_unknown = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -2279,31 +2376,38 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	global $color;
 	global $legend;
 	global $long_index;
-	
+	global $series_type;
+	global $chart_extra_data;
+
+	$series_suffix_str = '';
 	if ($compare !== false) {
 		$series_suffix = '2';
 		$series_suffix_str = ' ('.__('Previous').')';
 		// Build the data of the previous period
 		grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
-		$unit_name, $show_alerts, $avg_only, $date-$period, $series_suffix, $series_suffix_str);
-				
+		$unit_name, $show_alerts, $avg_only, $date-$period, $series_suffix, 
+		$series_suffix_str, $show_unknown);
 		switch($compare) {
 			case 'separated':
 				// Store the chart calculated
 				$chart_prev = $chart;
 				$legend_prev = $legend;
 				$long_index_prev = $long_index;
+				$series_type_prev = $series_type;
+				$chart_extra_data_prev = $chart_extra_data;
+				$chart_extra_data = array();
+				$color_prev = $color;
 				break;
 			case 'overlapped':
 				// Store the chart calculated deleting index, because will be over the current period
 				$chart_prev = array_values($chart);
 				$legend_prev = $legend;
+				$series_type_prev = $series_type;
 				break;
 		}
 	}
-	
 	grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
-	$unit_name, $show_alerts, $avg_only, $date);
+	$unit_name, $show_alerts, $avg_only, $date, '', '', $show_unknown);
 	
 	if ($compare === 'overlapped') {
 		$i = 0;
@@ -2321,26 +2425,26 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
-	
+
 	if ($compare === 'separated') {
 		return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,
 			 $long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			 $water_mark,
-			 $config['fontpath'], $config['font_size'], $unit, 1, array(), 
-			 array(), 0, 0, $adapt_key).
+			 $config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
+			 $chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str).
 			 '<br>'.
-			 area_graph($flash_chart, $chart_prev, $width, $height/2, $color, $legend_prev,
+			 area_graph($flash_chart, $chart_prev, $width, $height/2, $color_prev, $legend_prev,
 			 $long_index_prev, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			 $water_mark,
-			 $config['fontpath'], $config['font_size'], $unit, 1, array(), 
-			 array(), 0, 0, $adapt_key);
+			 $config['fontpath'], $config['font_size'], $unit, 1, $series_type_prev, 
+			 $chart_extra_data_prev, 0, 0, $adapt_key, false, $series_suffix_str);
 	}
 	else {
 		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 			 $long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
 			 $water_mark,
-			 $config['fontpath'], $config['font_size'], $unit, 1, array(), 
-			 array(), 0, 0, $adapt_key);
+			 $config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
+			 $chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str);
 	}
 }
 
@@ -2411,10 +2515,10 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $only_im
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
-	return stacked_area_graph($flash_chart, $chart, $width, $height, null, $sources,
-		null, ui_get_full_url("images/image_problem.opaque.png"), "", "",
-		$water_mark,
-		$config['fontpath'], $config['font_size'], "");
+	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
+		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+		$config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size'], $unit);
 }
 
 
@@ -2744,8 +2848,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
  * @param string homeurl Home url if the complete path is needed
  * @param int Zoom factor over the graph
  * @param string adaptation width and margin left key (could be adapter_[something] or adapted_[something])
+ * @param int date limit of the period
  */
-function graphic_module_events ($id_module, $width, $height, $period = 0, $homeurl = '', $zoom = 0, $adapt_key = '') {
+function graphic_module_events ($id_module, $width, $height, $period = 0, $homeurl = '', $zoom = 0, $adapt_key = '', $date = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -2754,7 +2859,9 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
 	
 	$interval = (int) ($period / $resolution);
-	$date = get_system_time ();
+	if($date === false) {
+		$date = get_system_time ();
+	}
 	$datelimit = $date - $period;
 	$periodtime = floor ($period / $interval);
 	$time = array ();
@@ -2789,33 +2896,64 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 		}
 		
 		$top = $datelimit + ($periodtime * ($i + 1));
-		
-		
-		$event = db_get_row_filter ('tevento', 
+
+		$events = db_get_all_rows_filter ('tevento', 
 		array ('id_agentmodule' => $id_module,
 			'utimestamp > '.$bottom,
-			'utimestamp < '.$top), 'criticity, utimestamp');			
+			'utimestamp < '.$top), 'event_type, utimestamp');			
+
+		$status = 'normal';
+		foreach($events as $event) {
+			if(empty($event['utimestamp'])) {
+				continue;
+			}
+						
+			switch($event['event_type']) {
+				case 'going_down_normal':
+				case 'going_up_normal':
+					// The default status is normal. Do nothing
+					break;
+				case 'going_unknown':
+					if($status == 'normal') {
+						$status = 'unknown';
+					}
+					break;
+				case 'going_up_warning':
+				case 'going_down_warning':
+					if($status == 'normal' || $status == 'unknown') {
+						$status = 'warning';
+					}
+					break;
+				case 'going_up_critical':
+				case 'going_down_critical':
+					$status = 'critical';
+					break;
+			}
+		}
+				
+		$data[$cont]['utimestamp'] = $periodtime;
 		
-		if (!empty($event['utimestamp'])){
-			$data[$cont]['utimestamp'] = $periodtime;
-			switch ($event['criticity']) {
-				case 3:
+		if (!empty($events)){
+			switch ($status) {
+				case 'warning':
 					$data[$cont]['data'] = 2;
 					break;
-				case 4:
+				case 'critical':
 					$data[$cont]['data'] = 3;
+					break;
+				case 'unknown':
+					$data[$cont]['data'] = 4;
 					break;
 				default:
 					$data[$cont]['data'] = 1;
 					break;
 			}
-			$current_timestamp = $event['utimestamp'];
 		}
 		else{
-			$data[$cont]['utimestamp'] = $periodtime;			
 			$data[$cont]['data'] = 1;
 			$current_timestamp = $bottom;
 		}
+		
 		$legend[] = date($time_format, $current_timestamp);	
 		$cont++;
 	}

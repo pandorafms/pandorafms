@@ -238,31 +238,31 @@ $label = base64_decode(get_parameter('label', ''));
 			case 'boolean':
 				echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
 					$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage, 'adapter_'.$graph_type, $time_compare, $unknown_graph);
-				echo '<br><br><br>';
+				echo '<br>';
 				if ($show_events_graph)
-					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, 'adapted_'.$graph_type);				
+					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, 'adapted_'.$graph_type, $date);				
 				break;
 			case 'sparse':
 				echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
 					$label, null, $draw_alerts, $avg_only, false, $date, '', $baseline,
 					0, true, false, $urlImage, 1, false, 'adapter_'.$graph_type, $time_compare, $unknown_graph);
-				echo '<br><br><br>';
+				echo '<br>';
 				if ($show_events_graph)
-					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, 'adapted_'.$graph_type);
+					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, 'adapted_'.$graph_type, $date);
 				break;
 			case 'string':
 				echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
 					$label, null, $draw_alerts, 1, false, $date, false, $urlImage, 'adapter_'.$graph_type);
-				echo '<br><br><br>';
+				echo '<br>';
 				if ($show_events_graph)
-					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, 'adapted_'.$graph_type);			
+					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, 'adapted_'.$graph_type, $date);			
 				break;
 			case 'log4x':
 				echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
 					$label, $unit_name, $draw_alerts, 1, $pure, $date);
-				echo '<br><br><br>';
+				echo '<br>';
 				if ($show_events_graph)
-					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom);			
+					echo graphic_module_events($id, $width, $height, $period, $config['homeurl'] . '/', $zoom, '', $date);			
 				break;
 			default:
 				echo fs_error_image ('../images');

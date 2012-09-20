@@ -1,3 +1,12 @@
+2012-09-20 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/javascript/pandora.js, include/functions_api.php: cleaned
+	source code style. And erased deprecated functions.
+	
+	* include/functions_ui.php: I hope that is finished the changes for
+	the function "ui_print_agent_autocomplete_input" (at the moment) and
+	added a huge header doc on the function.
+
 2012-09-19  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/functions_api.php: Added function: tactical

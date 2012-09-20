@@ -2027,6 +2027,223 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	return $buffer;
 }
 
+
+/**
+ * Print a input for agent autocomplete, this input search into your
+ * pandora DB (or pandoras DBs when you have metaconsole) for agents
+ * that have name near to equal that you are writing into the input.
+ * 
+ * This generate a lot of lines of html and javascript code.
+ *
+ * @parameters array Array with several properties:
+ *  - $parameters['return'] boolean, by default is false
+ *    true  - return as html string the code (html and js)
+ *    false - print the code.
+ * 
+ *  - $parameters['input_name'] the input name (needs to get the value)
+ *    string  - The name.
+ *    default - "agent_autocomplete_<aleatory_uniq_raw_letters/numbers>"
+ * 
+ *  - $parameters['input_id'] the input id (needs to get the value)
+ *    string  - The ID.
+ *    default - "text-<input_name>"
+ * 
+ *  - $parameters['selectbox_group'] the id of selectbox with the group
+ *    string  - The ID of selectbox.
+ *    default - "" empty string
+ * 
+ *  - $parameters['icon_image'] the small icon to show into the input in
+ *    the right side.
+ *    string  - The url for the image.
+ *    default - "images/lightning.png"
+ * 
+ *  - $parameters['value'] The initial value to set the input.
+ *    string  - The value.
+ *    default - "" emtpy string
+ * 
+ *  - $parameters['show_helptip'] boolean, by  default is false
+ *    true  - print the icon out the field in side right the tiny star
+ *            for tip.
+ *    false - does not print
+ * 
+ *  - $parameters['helptip_text'] The text to show in the tooltip.
+ *    string  - The text to show into the tooltip.
+ *    default - "Type at least two characters to search." (translate)
+ * 
+ *  - $parameters['use_hidden_input_idagent'] boolean, Use a field for
+ *    store the id of agent from the ajax query. By default is false.
+ *    true  - Use the field for id agent and the sourcecode work with
+ *            this.
+ *    false - Doesn't use the field (maybe this doesn't exist outer)
+ * 
+ *  - $parameters['print_hidden_input_idagent'] boolean, Print a field
+ *    for store the id of agent from the ajax query. By default is
+ *    false.
+ *    true  - Print the field for id agent and the sourcecode work with
+ *            this.
+ *    false - Doesn't print the field (maybe this doesn't exist outer)
+ *
+ *  - $parameters['hidden_input_idagent_name'] The name of hidden input
+ *    for to store the id agent.
+ *    string  - The name of hidden input.
+ *    default - "agent_autocomplete_idagent_<aleatory_uniq_raw_letters/numbers>"
+ *
+ *  - $parameters['hidden_input_idagent_id'] The id of hidden input
+ *    for to store the id agent.
+ *    string  - The id of hidden input.
+ *    default - "hidden-<hidden_input_idagent_name>"
+ *
+ *  - $parameters['hidden_input_idagent_value'] The initial value to set
+ *    the input id agent for store the id agent.
+ *    string  - The value.
+ *    default - 0
+ *
+ *  - $parameters['size'] The size in characters for the input of agent.
+ *    string  - A number of characters.
+ *    default - 30
+ *
+ *  - $parameters['maxlength'] The max characters that can store the
+ *    input of agent.
+ *    string  - A number of characters max to store
+ *    default - 100
+ *
+ *  - $parameters['disabled'] Set as disabled the input of agent. By
+ *    default is false
+ *    true  - Set disabled the input of agent.
+ *    false - Set enabled the input of agent.
+ *
+ *  - $parameters['selectbox_id'] The id of select box that stores the
+ *    list of modules of agent select.
+ *    string - The id of select box.
+ *    default - "id_agent_module"
+ *
+ *  - $parameters['add_none_module'] Boolean, add the list of modules
+ *    the "none" entry, with value 0. By default is true
+ *    true  - add the none entry.
+ *    false - does not add the none entry.
+ *
+ *  - $parameters['none_module_text'] Boolean, add the list of modules
+ *    the "none" entry, with value 0.
+ *    string  - The text to put for none module for example "select a
+ *              module"
+ *    default - "none" (translate)
+ *
+ *  - $parameters['print_input_server'] Boolean, print the hidden field
+ *    to store the server (metaconsole). By default false.
+ *    true  - Print the hidden input for the server.
+ *    false - Does not print.
+ *
+ *  - $parameters['use_input_server'] Boolean, use the hidden field
+ *    to store the server (metaconsole). By default false.
+ *    true  - Use the hidden input for the server.
+ *    false - Does not print.
+ *
+ *  - $parameters['input_server_name'] The name for hidden field to
+ *    store the server.
+ *    string  - The name of field for server.
+ *    default - "server_<aleatory_uniq_raw_letters/numbers>"
+ *
+ *  - $parameters['input_server_id'] The id for hidden field to store
+ *    the server.
+ *    string  - The id of field for server.
+ *    default - "hidden-<input_server_name>"
+ *
+ *  - $parameters['input_server_value'] The value to store into the
+ *    field server.
+ *    string  - The name of server.
+ *    default - "" empty string
+ *
+ *  - $parameters['metaconsole_enabled'] Boolean, set the sourcecode for
+ *    to make some others things that run of without metaconsole. By
+ *    default false.
+ *    true  - Set the gears for metaconsole.
+ *    false - Run as without metaconsole.
+ *
+ *  - $parameters['javascript_ajax_page'] The page to send the ajax
+ *    queries.
+ *    string  - The url to ajax page, remember the url must be into your
+ *              domain (ajax security).
+ *    default - "ajax.php"
+ *
+ *  - $parameters['javascript_function_action_after_select'] The name of
+ *    function to call after the user select a agent into the list in
+ *    the autocomplete field.
+ *    string  - The name of function.
+ *    default - ""
+ *
+ *  - $parameters['javascript_function_action_after_select_js_call'] The
+ *    call of this function to call after user select a agent into the
+ *    list in the autocomplete field. Instead the 
+ *    $parameters['javascript_function_action_after_select'], this is
+ *    overwrite the previous element. And this is necesary when you need
+ *    to set some params in your custom function.
+ *    string  - The call line as javascript code.
+ *    default - ""
+ *
+ *  - $parameters['javascript_function_action_into_source'] The source
+ *    code as block string to call when the autocomplete starts to get
+ *    the data from ajax.
+ *    string  - A huge string with your function as javascript.
+ *    default - ""
+ *
+ *  - $parameters['javascript'] Boolean, set the autocomplete agent to
+ *    use javascript or enabled javascript. By default true.
+ *    true  - Enabled the javascript.
+ *    false - Disabled the javascript.
+ *
+ *  - $parameters['javascript_is_function_select'] Boolean, set to
+ *    enable to call a function when user select a agent in the
+ *    autocomplete list. By default false.
+ *    true  - Enabled this feature.
+ *    false - Disabled this feature.
+ *
+ *  - $parameters['javascript_code_function_select'] The name of
+ *    function to call when user select a agent in the autocomplete
+ *    list.
+ *    string  - The name of function but remembers this function pass
+ *              the parameter agent_name.
+ *    default - "function_select_<input_name>"
+ *
+ *  - $parameters['javascript_name_function_select'] The source
+ *    code as block string to call when user select a agent into the
+ *    list in the autocomplete field. Althought use this element, you
+ *    need use the previous parameter to set name of your custom
+ *    function or call line.
+ *    string  - A huge string with your function as javascript.
+ *    default - A lot of lines of source code into a string, please this
+ *              lines you can read in the source code of function.
+ *
+ *  - $parameters['javascript_change_ajax_params'] The params to pass in
+ *    the ajax query for the list of agents.
+ *    array   - The associative array with the key and value to pass in
+ *              the ajax query.
+ *    default - A lot of lines of source code into a string, please this
+ *              lines you can read in the source code of function.
+ *
+ *  - $parameters['javascript_function_change'] The source code as block
+ *    string with all javascript code to run autocomplete field.
+ *    string - The source code javascript into a string.
+ *    default - A lot of lines of source code into a string, please this
+ *              lines you can read in the source code of function.
+ *
+ *  - $parameters['javascript_document_ready'] Boolean, set the
+ *    javascript sourcecode to run with the document is ready. By
+ *    default is true.
+ *    true  - Set to run when document is ready.
+ *    false - Not set to run.
+ *
+ *  - $parameters['javascript_tags'] Boolean, print the html tags for
+ *    javascript. By default is true.
+ *    true  - Print the javascript tags.
+ *    false - Doesn't print the tags.
+ *
+ *  - $parameters['javascript_tags'] Boolean, print the html tags for
+ *    javascript. By default is true.
+ *    true  - Print the javascript tags.
+ *    false - Doesn't print the tags.
+ *
+ * @return string HTML code if return parameter is true.
+ */
 function ui_print_agent_autocomplete_input($parameters) {
 	global $config;
 	
@@ -2139,8 +2356,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 	}
 	
 	$input_server_name = uniqid('server_'); //Default value
-	if (isset($parameters['input_server_id'])) {
-		$input_server_id = $parameters['input_server_id'];
+	if (isset($parameters['input_server_name'])) {
+		$input_server_name = $parameters['input_server_name'];
 	}
 	
 	$input_server_id = 'hidden-' . $input_server_name; //Default value
@@ -2319,21 +2536,74 @@ function ui_print_agent_autocomplete_input($parameters) {
 	}
 	$javascript_change_ajax_params_text .= '};';
 	
-	$javascript_function_change ='';
+	
+	
+	$spinner_image = html_print_image('images/spinner.gif', true, false, true);
+	
+	
+	$javascript_function_change = ''; //Default value
 	$javascript_function_change .='
 		function set_functions_change_autocomplete_' . $input_name . '() {
+			var cache_' . $input_name . ' = {};
+			
 			$("#' . $input_id . '").autocomplete({
 				minLength: 2,
 				source: function( request, response ) {
 					var term = request.term; //Word to search
 					
-					' . $javascript_change_ajax_params_text . '
+					//Set loading
+					$("#' . $input_id . '")
+						.css("background","url(\"' . $spinner_image . '\") right center no-repeat");
 					
 					//Function to call when the source
 					if (' . ((int)!empty($javascript_function_action_into_source_js_call)) . ') {
 						' . $javascript_function_action_into_source_js_call . '
 					}
 					
+					//Check the cache
+					var found = false;
+					if (term in cache_' . $input_name . ') {
+						response(cache_' . $input_name . '[term]);
+						
+						//Set icon
+						$("#' . $input_id . '")
+							.css("background","url(\"' . $icon_image . '\") right center no-repeat");
+						return;
+					}
+					else {
+						//Check if other terms cached start with same
+						//letters.
+						//TODO: At the moment disabled
+						/*
+						for (i = 1; i < term.length; i++) {
+							var term_match = term.substr(0, term.length - i);
+							
+							$.each(cache_' . $input_name . ', function (oldterm, olddata) {
+								var pattern = new RegExp("^" + term_match + ".*","gi");
+								
+								if (oldterm.match(pattern)) {
+									response(cache_' . $input_name . '[oldterm]);
+									
+									found = true;
+									
+									return;
+								}
+							});
+							
+							if (found)
+								break;
+						}
+						*/
+					}
+					
+					if (found) {
+						//Set icon
+						$("#' . $input_id . '")
+							.css("background","url(\"' . $icon_image . '\") right center no-repeat");
+						return;
+					}
+					
+					' . $javascript_change_ajax_params_text . '
 					
 					jQuery.ajax ({
 						data: data_params,
@@ -2343,7 +2613,13 @@ function ui_print_agent_autocomplete_input($parameters) {
 						timeout: 10000,
 						dataType: "json",
 						success: function (data) {
+								cache_' . $input_name . '[term] = data; //Save the cache
+								
 								response(data);
+								
+								//Set icon
+								$("#' . $input_id . '")
+									.css("background","url(\"' . $icon_image . '\") right center no-repeat");
 								
 								return;
 							}
@@ -2433,10 +2709,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$javascript_tags = $parameters['javascript_tags'];
 	}
 	
-	$javascript_code = ''; //Default value
-	if (isset($parameters['disabled'])) {
-		$disabled = $parameters['disabled'];
-	}
 	//------------------------------------------------------------------
 	
 	$html = '';

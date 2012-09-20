@@ -5351,7 +5351,6 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType) {
 	$data = array('type' => 'string', 'data' => $total);
 	
 	returnData($returnType, $data);
-
 }
 
 /**
@@ -5422,7 +5421,8 @@ function api_get_alert_action_by_group($id_group, $id_action, $trash2, $returnTy
 
 	if ($value === false) {
 		returnError('data_not_found', $returnType);
-	} else if ($value == '') {
+	}
+	else if ($value == '') {
 		$value = 0;
 	}
 	

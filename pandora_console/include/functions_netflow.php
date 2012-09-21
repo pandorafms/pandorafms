@@ -187,6 +187,17 @@ function sort_netflow_data (&$netflow_data) {
 	usort($netflow_data, "compare_flows");
 }
 
+/**
+ * Show a table with netflow statistics.
+ *
+ * @param array data Statistic data.
+ * @param string start_date Start date.
+ * @param string end_date End date.
+ * @param string aggregate Aggregate field.
+ * @param string unit Unit to show.
+ *
+ * @return The statistics table.
+ */
 function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 	global $nfdump_date_format;
 
@@ -223,9 +234,9 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 }
 
 /**
- * Show a table with netflow statistics.
+ * Show a table with netflow data.
  *
- * @param array data Statistic data.
+ * @param array data Netflow data.
  * @param string start_date Start date.
  * @param string end_date End date.
  * @param string aggregate Aggregate field.
@@ -292,6 +303,38 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate) {
 }
 
 /**
+ * Show a table with a traffic summary.
+ *
+ * @param array data Summary data.
+ *
+ * @return The statistics table.
+ */
+function netflow_summary_table ($data) {
+	global $nfdump_date_format;
+	
+	$values = array();
+	$table->size = array ('50%');
+	$table->class = 'databox';
+	$table->data = array();
+	
+	$table->data[0][0] = '<b>'.__('Total flows').'</b>';
+	$table->data[0][1] = format_numeric ($data['totalflows']);
+	$table->data[1][0] = '<b>'.__('Total megabytes').'</b>';
+	$table->data[1][1] = format_numeric ((int)($data['totalbytes'] / 1048576));
+	$table->data[2][0] = '<b>'.__('Total packets').'</b>';
+	$table->data[2][1] = format_numeric ($data['totalpackets']);
+	$table->data[3][0] = '<b>'.__('Average bits per second'). '</b>';
+	$table->data[3][1] = format_numeric ($data['avgbps']);
+	$table->data[4][0] = '<b>'.__('Average packets per second').'</b>';
+	$table->data[4][1] = format_numeric ($data['avgpps']);
+	$table->data[5][0] = '<b>'.__('Average bytes per packet').'</b>';
+	$table->data[5][1] = format_numeric ($data['avgbpp']);
+	
+	
+	html_print_table($table);
+}
+
+/**
  * Returns 1 if the given address is a network address.
  *
  * @param string address Host or network address.
@@ -325,6 +368,9 @@ function netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggreg
 	global $nfdump_date_format;
 	global $config;
 	
+	// Suppress the header line and the statistics at the bottom
+	$command .= ' -q';
+
 	// If there is aggregation calculate the top n
 	if ($aggregate != 'none') {
 		$values['data'] = array ();
@@ -357,11 +403,11 @@ function netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggreg
 		$temp_file = $config['attachment_store'] . '/netflow_' . $unique_id . '.tmp';
 		$command .= ' -t '.date($nfdump_date_format, $last_timestamp).'-'.date($nfdump_date_format, $end_date);
 		exec("$command > $temp_file");
-		
+
 		// Parse data file
 		// We must parse from $start_date to avoid creating new intervals!
 		netflow_parse_file ($start_date, $end_date, $temp_file, $values, $aggregate, $unit);
-		
+
 		unlink ($temp_file);
 	}
 	
@@ -385,10 +431,10 @@ function netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggreg
  *
  * @return An array with netflow stats.
  */
-function netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max, $unit){
+function netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max, $unit) {
 	global $nfdump_date_format;
 	
-	$command .= " -s $aggregate/$unit -n $max -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+	$command .= " -q -s $aggregate/$unit -n $max -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 	exec($command, $string);
 	
 	if (! is_array($string)) {
@@ -436,6 +482,34 @@ function netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max, 
 }
 
 /**
+ * Returns a traffic summary for the given period in an array.
+ *
+ * @param string start_date Period start date.
+ * @param string end_date Period end date.
+ * @param string command Command used to retrieve netflow data.
+ * @param string unique_id A unique number that is used to generate a cache file.
+ *
+ * @return An array with netflow stats.
+ */
+function netflow_get_summary ($start_date, $end_date, $command, $unique_id) {
+	global $nfdump_date_format;
+	global $config;
+	
+	// Execute nfdump and save its output in a temporary file
+	$temp_file = $config['attachment_store'] . '/netflow_' . $unique_id . '.tmp';
+	$command .= " -o \"fmt: \" -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+	exec("$command > $temp_file");
+	
+	// Parse data file
+	// We must parse from $start_date to avoid creating new intervals!
+	$values = array ();
+	netflow_parse_file ($start_date, $end_date, $temp_file, $values);
+	unlink ($temp_file);
+	
+	return $values;
+}
+
+/**
  * Returns the command needed to run nfdump for the given filter.
  *
  * @param array filter Netflow filter.
@@ -447,7 +521,7 @@ function netflow_get_command ($filter) {
 	global $config;
 	
 	// Build command
-	$command = 'nfdump -q -N -m';
+	$command = 'nfdump -N -m';
 	
 	// Netflow data path
 	if (isset($config['netflow_path']) && $config['netflow_path'] != '') {
@@ -570,7 +644,7 @@ function netflow_get_filter_arguments ($filter) {
  * @return Timestamp of the last data read.
  *
  */
-function netflow_parse_file ($start_date, $end_date, $file, &$values, $aggregate, $unit) {
+function netflow_parse_file ($start_date, $end_date, $file, &$values, $aggregate = '', $unit = '') {
 	global $config;
 	
 	// Last timestamp read
@@ -587,6 +661,32 @@ function netflow_parse_file ($start_date, $end_date, $file, &$values, $aggregate
 	$period = $end_date - $start_date;
 	$interval_length = (int) ($period / $num_intervals);
 	
+	// Parse the summary and exit
+	if ($aggregate == '' && $unit == '') {
+		while ($line = fgets ($fh)) {
+			$line = preg_replace('/\s+/','',$line);
+			$idx = strpos ($line, 'Summary:');
+			if ($idx === FALSE) {
+				continue;
+			}
+			
+			// Parse summary items
+			$idx += strlen ('Summary:');
+			$line = substr ($line, $idx);
+			$summary = explode(',', $line);
+			foreach ($summary as $item) {
+				$val = explode (':', $item);
+				if (! isset ($val[1])) {
+					continue;
+				}
+				$values[$val[0]] = $val[1];
+			}
+		}
+
+		fclose ($fh);
+		return;
+	}
+
 	// Parse flow data
 	$read_flag = 1;
 	$flow = array ();
@@ -694,11 +794,11 @@ function netflow_parse_file ($start_date, $end_date, $file, &$values, $aggregate
 				}
 				
 				// Calculate interval data
-				$values['data'][$timestamp][$agg] = (int) ($interval_total[$agg] / $interval_count[$agg]);
+				$values['data'][$timestamp][$agg] = (int) $interval_total[$agg];
 				
-				// Average with previous data
+				// Add previous data
 				if ($previous_value != 0) {
-					$values['data'][$timestamp][$agg] = (int) (($values['data'][$timestamp][$agg] + $previous_data) / 2);
+					$values['data'][$timestamp][$agg] = (int) ($values['data'][$timestamp][$agg] + $previous_data);
 				}
 			}
 		}
@@ -718,11 +818,11 @@ function netflow_parse_file ($start_date, $end_date, $file, &$values, $aggregate
 			}
 			
 			// Calculate interval data
-			$values[$timestamp]['data'] = (int) ($interval_total / $interval_count);
+			$values[$timestamp]['data'] = (int) $interval_total;
 			
-			// Average with previous data
+			// Add previous data
 			if ($previous_value != 0) {
-				$values[$timestamp]['data'] = (int) (($values[$timestamp]['data'] + $previous_value) / 2);
+				$values[$timestamp]['data'] = (int) ($values[$timestamp]['data'] + $previous_value);
 			}
 			
 			
@@ -829,7 +929,8 @@ function netflow_get_chart_types () {
 		__('Area graph'),
 		__('Pie graph'),
 		__('Data table'),
-		__('Statistics table'));
+		__('Statistics table'),
+		__('Summary table'));
 }
 
 /**
@@ -902,6 +1003,10 @@ function netflow_draw_item ($start_date, $end_date, $type, $filter, $command, $f
 		case '3':
 			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
 			echo netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
+			break;
+		case '4':
+			$data = netflow_get_summary ($start_date, $end_date, $command, $unique_id);
+			netflow_summary_table ($data);
 			break;
 		default:
 			echo fs_error_image();

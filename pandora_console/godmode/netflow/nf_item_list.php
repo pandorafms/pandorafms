@@ -138,7 +138,6 @@ $table->head[0] = __('Order');
 $table->head[1] = __('Filter');
 $table->head[2] = __('Max. values');
 $table->head[3] = __('Chart type');
-$table->head[3] = __('Chart type');
 $table->head[4] = __('Action') . html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 	
 $table->style = array ();
@@ -208,6 +207,9 @@ foreach ($reports_item as $item) {
 			break;
 		case 3:
 			$data[3] = 'Statistics table';
+			break;
+		case 4:
+			$data[3] = 'Summary table';
 			break;
 	}
 	

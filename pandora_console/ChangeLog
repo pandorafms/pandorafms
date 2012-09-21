@@ -1,3 +1,11 @@
+2012-09-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_netflow.php,
+	  operation/netflow/nf_view.php,
+	  godmode/netflow/nf_item_list.php: Added netflow traffic summary
+	  reports. Small performance improvements. Fixed a bug in the
+	  scale of area charts.
+
 2012-09-21 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/agentes/estado_monitores.php: added the small form to

@@ -99,18 +99,17 @@ if (empty ($id)){
 $report_name = db_get_value('id_name', 'tnetflow_report', 'id_report', $id);
 echo"<h3>$report_name</h3>";
 
-$all_rcs = db_get_all_rows_sql("SELECT id_rc FROM tnetflow_report_content WHERE id_report='$id'");
-if (empty ($all_rcs)) {
+$report_contents = db_get_all_rows_sql("SELECT * FROM tnetflow_report_content WHERE id_report='$id' ORDER BY `order`");
+if (empty ($report_contents)) {
 	echo fs_error_image();
 	return;
 }
 
 // Process report items
-for ($x = 0; isset($all_rcs[$x]['id_rc']); $x++) {
+foreach ($report_contents as $content_report) {
 	
 	// Get report item
 	$report_id = $all_rcs[$x]['id_rc'];
-	$content_report = db_get_row_sql("SELECT * FROM tnetflow_report_content WHERE id_rc='$report_id'");
 	$content_id = $content_report['id_rc'];
 	$max_aggregates= $content_report['max'];
 	$type = $content_report['show_graph'];

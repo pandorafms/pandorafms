@@ -188,7 +188,7 @@ if (is_ajax ()) {
 			$first_elements = array();
 			
 			foreach ($idAgents as $idA) {
-
+				
 				$row = explode ('|', $idA);
 				$server_name = $row[0];
 				$id_agent = $row [1];
@@ -217,20 +217,20 @@ if (is_ajax ()) {
 				
 					// Add agent and server
 					foreach ($temp as $element_key => $element_value) {
-
+						
 						//$temp_element[$element_key . '|' . $id_agent . '|' . $server_name] = $element_value;
 						if (!isset($temp_element[$element_value]) && $first)
 							$temp_element[$element_value] = $element_key . '|' . $id_agent . '|' . $server_name;
 						else if (isset($temp_element[$element_value]))
 							$temp_element[$element_value] .= ';' . $element_key . '|' . $id_agent . '|' . $server_name;
-
+						
 					}
 					
 				}
 				// If the result array is empty then there aren't common modules 
 				else if (!$first)
 					unset($temp_element);
-							
+				
 				
 				// First iteration flag
 				if (empty($nameModules) && $first == true)
@@ -269,7 +269,7 @@ if (is_ajax ()) {
 					io_safe_output($custom_condition) . '
 					AND delete_pending = 0
 					AND id_agente IN (' . implode(',', $idAgents) . ')';
-				
+			
 			if($selection_mode == 'common') {
 				$sql .= ' AND (
 							SELECT count(nombre)
@@ -307,8 +307,8 @@ if (is_ajax ()) {
 		$force_local_modules = (int) get_parameter ('force_local_modules', 0);
 		
 		if ($agentName != null) {
-				$search = array();
-				$search['name'] = io_safe_output($agentName);
+			$search = array();
+			$search['name'] = io_safe_output($agentName);
 		}
 		else
 			$search = false;
@@ -367,7 +367,8 @@ if (is_ajax ()) {
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
 		
-		$sql = sprintf ('SELECT tagente_modulo.descripcion, tagente_modulo.nombre
+		$sql = sprintf ('SELECT tagente_modulo.descripcion,
+				tagente_modulo.nombre
 			FROM tagente_estado, tagente_modulo 
 			WHERE tagente_modulo.id_agente = %d
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
@@ -445,7 +446,7 @@ if (is_ajax ()) {
 		echo html_print_image("images/" . modules_get_type_icon ($agentmoduletype), true) . '<br />';
 		echo '<strong>'.__('Module group').':</strong> ';
 		$modulegroup =  modules_get_modulegroup_name (modules_get_agentmodule_modulegroup ($module['id_agente_modulo']));
-		if($modulegroup === false){
+		if ($modulegroup === false) {
 			echo __('None').'<br />';
 		}
 		else{
@@ -454,7 +455,7 @@ if (is_ajax ()) {
 		echo '<strong>'.__('Agent').':</strong> ';
 		echo ui_print_truncate_text(modules_get_agentmodule_agent_name($module['id_agente_modulo']), 'agent_small', false, true, false).'<br />';
 		
-		if($module['id_tipo_modulo'] == 18) {
+		if ($module['id_tipo_modulo'] == 18) {
 			echo '<strong>'.__('Address').':</strong> ';
 			
 			// Get the IP/IPs from the module description
@@ -484,14 +485,14 @@ if (is_ajax ()) {
 		echo ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false) . '</h3>';
 		echo '<strong>'.__('Parent').':</strong> ';
 		if ($group['parent'] == 0) {
-			echo __('None').'<br />';
+			echo __('None') . '<br />';
 		}
 		else {
 			$group_parent = db_get_row ('tgrupo', 'id_grupo', $group['parent']);
 			echo html_print_image("images/groups_small/" . groups_get_icon ($group['parent']) . ".png", true); 
-			echo $group_parent['nombre'].'<br />';
+			echo $group_parent['nombre'] . '<br />';
 		}
-		echo '<strong>'.__('Sons').':</strong> ';
+		echo '<strong>' . __('Sons') . ':</strong> ';
 		$groups_sons = db_get_all_fields_in_table ('tgrupo', 'parent', $group['id_grupo']);
 		if ($groups_sons === false) { 
 			echo __('None').'<br />';

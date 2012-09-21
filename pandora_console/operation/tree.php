@@ -536,20 +536,20 @@ if (is_ajax ())
 				
 				switch ($lessBranchs) {
 					case 0:
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 1:
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 2:
-						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 					case 3:
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
-						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));	
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+						html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
 						break;
 				}
 				
@@ -742,7 +742,7 @@ treeview_printTree($activeTab);
 	 function loadSubTree(type, div_id, less_branchs, id_father) {
 		hiddenDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv');
 		loadDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv');
-		pos = parseInt($('#tree_image'+id_father+'_'+type+'_'+div_id).attr('pos_tree'));	
+		pos = parseInt($('#tree_image'+id_father+'_'+type+'_'+div_id).attr('pos_tree'));
 		
 		//If has yet ajax request running
 		if (loadDiv == 2)

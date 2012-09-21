@@ -509,7 +509,7 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 	
 	if ($maxlength == 0)
 		$maxlength = 255;
-		
+	
 	if ($size == 0)
 		$size = 10;
 	

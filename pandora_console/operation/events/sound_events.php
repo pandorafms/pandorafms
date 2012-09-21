@@ -158,7 +158,7 @@ function forgetPreviousEvents() {
 			running = true;
 		},
 		"json"
-	);	
+	);
 }
 
 function check_event() {

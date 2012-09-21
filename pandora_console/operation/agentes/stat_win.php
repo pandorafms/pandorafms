@@ -38,7 +38,7 @@ if (! isset ($config['id_user']) && get_parameter("loginhash", 0)) {
 		$_SESSION['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;
 	
-		$hash_connection_data = true;	
+		$hash_connection_data = true;
 	}
 	
 }
@@ -108,7 +108,7 @@ $label = base64_decode(get_parameter('label', ''));
 				
 				$("#graph_menu_arrow").click(function(){
 					if ($("#graph_menu_arrow").attr("src").indexOf("hide") == -1){
-						$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow_hide.png");	
+						$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow_hide.png");
 					}
 					else {
 						$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow.png");

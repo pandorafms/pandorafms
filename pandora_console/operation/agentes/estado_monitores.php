@@ -155,16 +155,77 @@ switch ($config["dbtype"]) {
 // TODO: Clean extra_sql
 $extra_sql = '';
 
+$status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);
+$status_text_monitor = get_parameter('status_text_monitor', '');
+$filter_monitors = (bool)get_parameter('filter_monitors', false);
+
+$status_filter_sql = '1 = 1';
+if ($status_filter_monitor != -1) {
+	$status_filter_sql = 'tagente_estado.estado = ' . $status_filter_monitor;
+}
+$status_text_monitor_sql = '%';
+if (!empty($status_text_monitor)) {
+	$status_text_monitor_sql = $status_text_monitor . '%';
+}
+
+
+//Count monitors/modules
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$sql = sprintf("
+			SELECT COUNT(*)
+			FROM tagente_estado,
+				(SELECT *
+				FROM tagente_modulo
+				WHERE id_agente = %d AND nombre LIKE \"%s\" AND delete_pending = 0
+					AND disabled = 0) tagente_modulo 
+			LEFT JOIN tmodule_group
+				ON tagente_modulo.id_module_group = tmodule_group.id_mg 
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+				AND %s AND %s tagente_estado.utimestamp != 0  
+			ORDER BY tagente_modulo.id_module_group , %s  %s",
+			$id_agente, $status_text_monitor_sql, $status_filter_sql, $extra_sql, $order['field'], $order['order']);	
+		break;
+	case "oracle":
+		$sql = sprintf ("
+			SELECT COUNT(*)" .
+			" FROM tagente_estado, tagente_modulo
+				LEFT JOIN tmodule_group
+				ON tmodule_group.id_mg = tagente_modulo.id_module_group
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND tagente_modulo.id_agente = %d
+				AND tagente_modulo.nombre LIKE '%s'
+				AND %s 
+				AND tagente_modulo.delete_pending = 0
+				AND tagente_modulo.disabled = 0
+				AND tagente_estado.utimestamp != 0 
+			ORDER BY tagente_modulo.id_module_group , %s %s
+			", $id_agente, $status_text_monitor_sql, $status_filter_sql, $order['field'], $order['order']);
+		break;
+}
+$count_modules = db_get_all_rows_sql ($sql);
+$count_modules = reset($count_modules[0]);
+
+
+//Get monitors/modules
 // Get all module from agent
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
 		$sql = sprintf("
-			SELECT * FROM tagente_estado, (SELECT * FROM tagente_modulo WHERE id_agente = %d AND delete_pending = 0 AND disabled = 0) tagente_modulo 
-				LEFT JOIN tmodule_group ON tagente_modulo.id_module_group = tmodule_group.id_mg 
+			SELECT *
+			FROM tagente_estado,
+				(SELECT *
+				FROM tagente_modulo
+				WHERE id_agente = %d AND nombre LIKE \"%s\" AND delete_pending = 0
+					AND disabled = 0) tagente_modulo 
+			LEFT JOIN tmodule_group
+				ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND %s tagente_estado.utimestamp != 0  
-			ORDER BY tagente_modulo.id_module_group , %s  %s", $id_agente, $extra_sql, $order['field'], $order['order']);	
+				AND %s AND %s tagente_estado.utimestamp != 0  
+			ORDER BY tagente_modulo.id_module_group , %s  %s",
+			$id_agente, $status_text_monitor_sql, $status_filter_sql, $extra_sql, $order['field'], $order['order']);	
 		break;
 	// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
 	case "oracle":
@@ -178,15 +239,20 @@ switch ($config["dbtype"]) {
 				LEFT JOIN tmodule_group
 				ON tmodule_group.id_mg = tagente_modulo.id_module_group
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND tagente_modulo.id_agente = %d 
+				AND tagente_modulo.id_agente = %d
+				AND tagente_modulo.nombre LIKE '%s'
+				AND %s 
 				AND tagente_modulo.delete_pending = 0
 				AND tagente_modulo.disabled = 0
 				AND tagente_estado.utimestamp != 0 
 			ORDER BY tagente_modulo.id_module_group , %s %s
-			", $id_agente, $order['field'], $order['order']);
+			", $id_agente, $status_text_monitor_sql, $status_filter_sql, $order['field'], $order['order']);
 		break;
 }
-$modules = db_get_all_rows_sql ($sql);
+
+$limit = " LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+
+$modules = db_get_all_rows_sql ($sql . $limit);
 if (empty ($modules)) {
 	$modules = array ();
 }
@@ -331,14 +397,34 @@ foreach ($modules as $module) {
 	
 	$data[5] = ui_print_status_image($status, $title, true);
 	
-	if ($module["id_tipo_modulo"] == 24) { // log4x
+	
+	if ($module["id_tipo_modulo"] == 24) {
+		// log4x
 		switch($module["datos"]) {
-			case 10: $salida = "TRACE"; $style="font-weight:bold; color:darkgreen;"; break;
-			case 20: $salida = "DEBUG"; $style="font-weight:bold; color:darkgreen;"; break;
-			case 30: $salida = "INFO";  $style="font-weight:bold; color:darkgreen;"; break;
-			case 40: $salida = "WARN";  $style="font-weight:bold; color:darkorange;"; break;
-			case 50: $salida = "ERROR"; $style="font-weight:bold; color:red;"; break;
-			case 60: $salida = "FATAL"; $style="font-weight:bold; color:red;"; break;
+			case 10:
+				$salida = "TRACE";
+				$style="font-weight:bold; color:darkgreen;";
+				break;
+			case 20:
+				$salida = "DEBUG";
+				$style="font-weight:bold; color:darkgreen;";
+				break;
+			case 30:
+				$salida = "INFO";
+				$style="font-weight:bold; color:darkgreen;";
+				break;
+			case 40:
+				$salida = "WARN";
+				$style="font-weight:bold; color:darkorange;";
+				break;
+			case 50:
+				$salida = "ERROR";
+				$style="font-weight:bold; color:red;";
+				break;
+			case 60:
+				$salida = "FATAL";
+				$style="font-weight:bold; color:red;";
+				break;
 		}
 		$salida = "<span style='$style'>$salida</span>";
 	}
@@ -381,8 +467,7 @@ foreach ($modules as $module) {
 		
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".base64_encode($module["nombre"])."&amp;refresh=600','day_".$win_handle."')";
 		
-	//	if ($nombre_tipo_modulo != "log4x")
-			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
+		$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 		$data[8] .= "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => '0', "alt" => "")) . "</a>"; 
 	}
 	
@@ -411,12 +496,21 @@ function toggle_full_value(id) {
 </script>
 <?php
 
+echo "<h4 style='padding-top:0px !important;'>".__('Full list of monitors')."</h4>";
+
+print_form_filter_monitors($status_filter_monitor, $status_text_monitor);
 if (empty ($table->data)) {
-	echo '<div class="nf">'.__('This agent doesn\'t have any active monitors').'</div>';
+	if ($filter_monitors) {
+		echo '<div class="nf">' . __('Any monitors aren\'t with this filter.') . '</div>';
+	}
+	else {
+		echo '<div class="nf">' . __('This agent doesn\'t have any active monitors.') . '</div>';
+	}
 }
 else {
-	echo "<h4 style='padding-top:0px !important;'>".__('Full list of monitors')."</h4>";
+	ui_pagination ($count_modules);
 	html_print_table ($table);
+	ui_pagination ($count_modules);
 }
 
 unset ($table);
@@ -429,12 +523,45 @@ ui_require_jquery_file ('cluetip');
 <script type="text/javascript">
 /* <![CDATA[ */
 	$("a.tag_details").cluetip ({
-		arrows: true,
-		attribute: 'href',
-		cluetipClass: 'default'
-	}).click (function () {
-		return false;
-	});
-
+			arrows: true,
+			attribute: 'href',
+			cluetipClass: 'default'
+		})
+		.click (function () {
+			return false;
+		});
 /* ]]> */
 </script>
+<?php
+function print_form_filter_monitors($status_filter_monitor = -1,
+	$status_text_monitor = '') {
+	
+	$form_text = '<form action="" method="post">';
+	
+	$table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
+	$table->data[0][0] .= __('Status:');
+	$status_list = array(
+		-1 => __('All'),
+		AGENT_MODULE_STATUS_CRITICAL_BAD => __('Critical'),
+		AGENT_MODULE_STATUS_CRITICAL_ALERT => __('Alert'),
+		AGENT_MODULE_STATUS_NORMAL => __('Normal'),
+		AGENT_MODULE_STATUS_WARNING => __('Warning'),
+		AGENT_MODULE_STATUS_UNKNOW => __('Unknow'));
+	$table->data[0][1] = html_print_select ($status_list,
+		'status_filter_monitor', $status_filter_monitor, '', '', 0,
+		true);
+	$table->data[0][2] = __('Free text for search (*):');
+	$table->data[0][3] = html_print_input_text('status_text_monitor', $status_text_monitor, '', 30, 100, true);
+	$table->data[0][4] = html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search"', true);
+	$table->data[0][4] .= '</form>';
+	$table->data[0][5] = '<form action="" method="post">';
+	$table->data[0][5] .= html_print_submit_button(__('Reset'), 'reset', false, 'class="sub upd"', true);
+	$table->data[0][5] .= '</form>';
+	html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search"', true);
+	$form_text .= html_print_table($table, true);
+	
+	$form_text .= '';
+	
+	ui_toggle($form_text, __('Form filter'), __('Form filter'));
+}
+?>

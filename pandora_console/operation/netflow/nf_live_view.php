@@ -356,7 +356,7 @@ if  ($draw != '') {
 						$("#radiobtn0001").attr("checked", "");
 						$("#radiobtn0002").attr("checked", "checked");
 					}
-				});	
+				});
 			
 			// Shows update filter button
 			$("#submit-update_button").css("visibility", "");

@@ -66,13 +66,13 @@ switch ($status) {
 if ($search != "")
 	$filter[] = 'evento LIKE "%'.io_safe_input($search).'%"';
 if (($event_type != "all") OR ($event_type != 0))
-	$filter['event_type'] = $event_type;	
+	$filter['event_type'] = $event_type;
 if ($severity != -1)
 	$filter[] = 'criticity >= '.$severity;
 
 if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
-
+	
 	switch ($text_agent)
 	{
 		case __('All'):
@@ -106,9 +106,9 @@ if ($id_agent != -1)
 	$filter['id_agente'] = $id_agent;
 
 if ($id_event != -1)
-	$filter['id_evento'] = $id_event;	
+	$filter['id_evento'] = $id_event;
 
-$timestamp_filter = '';	
+$timestamp_filter = '';
 if ($event_view_hr > 0) {
 	$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR); //Put hours in seconds
 	$timestamp_filter = " AND (utimestamp > 	$unixtime OR estado = 2)";
@@ -125,7 +125,7 @@ if ($tag != "") {
 //$filter['order'] = 'timestamp DESC';
 $now = date ("Y-m-d");
 
-// Show contentype header	
+// Show contentype header
 Header ("Content-type: text/txt");
 header ('Content-Disposition: attachment; filename="pandora_export_event'.$now.'.txt"');
 

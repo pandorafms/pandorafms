@@ -240,14 +240,14 @@ if ($config["pure"] == 0) {
 	
 	// Sound events
 	$sound_event['active'] = false;
-	$sound_event['text'] = '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>';			
+	$sound_event['text'] = '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>';
 	
 	// If the user has administrator permission display manage tab
 	if (check_acl ($config["id_user"], 0, "IW")) {
 		// Manage events
 		$manage_events['active'] = false;
 		$manage_events['text'] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter">' .
-			html_print_image("images/setup.png", true, array ("title" => __('Manage events'))) . '</a>';		
+			html_print_image("images/setup.png", true, array ("title" => __('Manage events'))) . '</a>';
 		
 		$onheader = array('manage_events' => $manage_events,
 			'separator' => '',
@@ -554,7 +554,7 @@ $(document).ready( function() {
 						// Change state image
 						$("#status_img_"+id).attr ("src", "images/hourglass.png");
 						$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event in process') . "'"; ?>);
-						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);		
+						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);
 						
 						// Remove row due to new state
 						if (($("#status").val() == 0) || ($("#status").val() == 1)){

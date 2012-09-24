@@ -1,3 +1,26 @@
+2012-09-24 Miguel de Dios <miguel.dedios@artica.es>
+
+	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: added the fields
+	"text_filter" and "dont_show_subgroups" for to new filters to
+	generate the networkmap. 
+	
+	* operation/agentes/networkmap.topology.php,
+	operation/agentes/networkmap.groups.php,
+	include/functions_networkmap.php, include/functions_servers.php:
+	added the new filters for free text for agents and hidden the
+	subgroups of any group in the group networkmap.
+	
+	* extensions/resource_registration.php,
+	operation/agentes/networkmap.php, general/header.php,
+	godmode/netflow/nf_report_form.php,
+	godmode/agentes/module_manager.php, include/functions_groups.php,
+	include/auth/ldap.php, operation/agentes/estado_ultimopaquete.php,
+	include/functions.php, include/functions_db.php: cleaned source code
+	style.
+
 2012-09-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_netflow.php,

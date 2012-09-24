@@ -24,9 +24,9 @@
 -- Priority : 3 - Warning (yellow)
 -- Priority : 4 - Critical (red)
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `taddress`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `taddress` (
 	`id_a` int(10) unsigned NOT NULL auto_increment,
 	`ip` varchar(60) NOT NULL default '',
@@ -35,9 +35,9 @@ CREATE TABLE IF NOT EXISTS `taddress` (
 	KEY `ip` (`ip`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `taddress_agent`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `taddress_agent` (
 	`id_ag` bigint(20) unsigned NOT NULL auto_increment,
 	`id_a` bigint(20) unsigned NOT NULL default '0',
@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS `taddress_agent` (
 	PRIMARY KEY  (`id_ag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tagente`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente` (
 	`id_agente` int(10) unsigned NOT NULL auto_increment,
 	`nombre` varchar(600) BINARY NOT NULL default '',
@@ -610,106 +610,117 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
 	PRIMARY KEY  (`id_mensaje`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tmodule_group`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule_group` (
 	`id_mg` tinyint(4) unsigned NOT NULL auto_increment,
 	`name` varchar(150) NOT NULL default '',
 	PRIMARY KEY  (`id_mg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+------------------------------------------------------------------------
+-- Table `tnetwork_component`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetwork_component` (
-  `id_nc` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(80) NOT NULL,
-  `description` varchar(250) default NULL,
-  `id_group` int(6) NOT NULL default '1',
-  `type` smallint(6) NOT NULL default '6',
-  `max` bigint(20) NOT NULL default '0',
-  `min` bigint(20) NOT NULL default '0',
-  `module_interval` mediumint(8) unsigned NOT NULL default '0',
-  `tcp_port` int(10) unsigned NOT NULL default '0',
-  `tcp_send` text NOT NULL,
-  `tcp_rcv` text NOT NULL,
-  `snmp_community` varchar(255) NOT NULL default 'NULL',
-  `snmp_oid` varchar(400) NOT NULL,
-  `id_module_group` tinyint(4) unsigned NOT NULL default '0',
-  `id_modulo` int(10) unsigned default '0',
-  `id_plugin` INTEGER unsigned default '0',
-  `plugin_user` text,
-  `plugin_pass` text,
-  `plugin_parameter` text,
-  `max_timeout` tinyint(3) unsigned default '0',
-  `history_data` tinyint(1) unsigned default '1',
-  `min_warning` double(18,2) default 0,
-  `max_warning` double(18,2) default 0,
-  `str_warning` text,
-  `min_critical` double(18,2) default 0,
-  `max_critical` double(18,2) default 0,
-  `str_critical` text,
-  `min_ff_event` int(4) unsigned default '0',
-  `custom_string_1` text,
-  `custom_string_2` text,
-  `custom_string_3` text,
-  `custom_integer_1` int(10) default 0,
-  `custom_integer_2` int(10) default 0,
-  `post_process` double(18,5) default 0,
-  `unit` text,
-  `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
-  `only_metaconsole` tinyint(1) unsigned default '0',
-  `macros` text,
-  `critical_instructions` text NOT NULL default '',
-  `warning_instructions` text NOT NULL default '',
-  `unknown_instructions` text NOT NULL default '',
-  `critical_inverse` tinyint(1) unsigned default '0',
-  `warning_inverse` tinyint(1) unsigned default '0',
-  PRIMARY KEY  (`id_nc`)
+	`id_nc` int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(80) NOT NULL,
+	`description` varchar(250) default NULL,
+	`id_group` int(6) NOT NULL default '1',
+	`type` smallint(6) NOT NULL default '6',
+	`max` bigint(20) NOT NULL default '0',
+	`min` bigint(20) NOT NULL default '0',
+	`module_interval` mediumint(8) unsigned NOT NULL default '0',
+	`tcp_port` int(10) unsigned NOT NULL default '0',
+	`tcp_send` text NOT NULL,
+	`tcp_rcv` text NOT NULL,
+	`snmp_community` varchar(255) NOT NULL default 'NULL',
+	`snmp_oid` varchar(400) NOT NULL,
+	`id_module_group` tinyint(4) unsigned NOT NULL default '0',
+	`id_modulo` int(10) unsigned default '0',
+	`id_plugin` INTEGER unsigned default '0',
+	`plugin_user` text,
+	`plugin_pass` text,
+	`plugin_parameter` text,
+	`max_timeout` tinyint(3) unsigned default '0',
+	`history_data` tinyint(1) unsigned default '1',
+	`min_warning` double(18,2) default 0,
+	`max_warning` double(18,2) default 0,
+	`str_warning` text,
+	`min_critical` double(18,2) default 0,
+	`max_critical` double(18,2) default 0,
+	`str_critical` text,
+	`min_ff_event` int(4) unsigned default '0',
+	`custom_string_1` text,
+	`custom_string_2` text,
+	`custom_string_3` text,
+	`custom_integer_1` int(10) default 0,
+	`custom_integer_2` int(10) default 0,
+	`post_process` double(18,5) default 0,
+	`unit` text,
+	`wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
+	`only_metaconsole` tinyint(1) unsigned default '0',
+	`macros` text,
+	`critical_instructions` text NOT NULL default '',
+	`warning_instructions` text NOT NULL default '',
+	`unknown_instructions` text NOT NULL default '',
+	`critical_inverse` tinyint(1) unsigned default '0',
+	`warning_inverse` tinyint(1) unsigned default '0',
+	PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+------------------------------------------------------------------------
+-- Table `tnetwork_component_group`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetwork_component_group` (
-  `id_sg`  int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(200) NOT NULL default '',
-  `parent` mediumint(8) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_sg`)
+	`id_sg`  int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(200) NOT NULL default '',
+	`parent` mediumint(8) unsigned NOT NULL default '0',
+	PRIMARY KEY  (`id_sg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+------------------------------------------------------------------------
+-- Table `tnetwork_profile`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetwork_profile` (
-  `id_np`  int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  `description` varchar(250) default '',
-  PRIMARY KEY  (`id_np`)
+	`id_np`  int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`description` varchar(250) default '',
+	PRIMARY KEY  (`id_np`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+------------------------------------------------------------------------
+-- Table `tnetwork_profile_component`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetwork_profile_component` (
-  `id_nc` mediumint(8) unsigned NOT NULL default '0',
-  `id_np` mediumint(8) unsigned NOT NULL default '0',
-  KEY `id_np` (`id_np`)
+	`id_nc` mediumint(8) unsigned NOT NULL default '0',
+	`id_np` mediumint(8) unsigned NOT NULL default '0',
+	KEY `id_np` (`id_np`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+------------------------------------------------------------------------
+-- Table `tnota`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnota` (
-  `id_nota` bigint(6) unsigned zerofill NOT NULL auto_increment,
-  `id_incident` bigint(6) unsigned zerofill NOT NULL,
-  `id_usuario` varchar(100) NOT NULL default '0',
-  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  `nota` mediumtext NOT NULL,
-  PRIMARY KEY  (`id_nota`),
-  KEY `id_incident` (`id_incident`)
+	`id_nota` bigint(6) unsigned zerofill NOT NULL auto_increment,
+	`id_incident` bigint(6) unsigned zerofill NOT NULL,
+	`id_usuario` varchar(100) NOT NULL default '0',
+	`timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
+	`nota` mediumtext NOT NULL,
+	PRIMARY KEY  (`id_nota`),
+	KEY `id_incident` (`id_incident`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `torigen`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `torigen` (
 	`origen` varchar(100) NOT NULL default ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tperfil`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tperfil` (
 	`id_perfil` int(10) unsigned NOT NULL auto_increment,
 	`name` TEXT NOT NULL,
@@ -726,9 +737,9 @@ CREATE TABLE IF NOT EXISTS `tperfil` (
 	PRIMARY KEY  (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `trecon_script`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `trecon_script` (
 	`id_recon_script` int(10) NOT NULL auto_increment,
 	`name` varchar(100) default '',
@@ -737,9 +748,9 @@ CREATE TABLE IF NOT EXISTS `trecon_script` (
 	PRIMARY KEY  (`id_recon_script`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `trecon_task`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`id_rt` int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
@@ -769,9 +780,9 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tserver`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tserver` (
 	`id_server` int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
@@ -817,9 +828,9 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 -- 9 web
 -- TODO: drop 2.x xxxx_server fields, unused since server_type exists.
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tsesion`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tsesion` (
 	`id_sesion` bigint(20) unsigned NOT NULL auto_increment,
 	`id_usuario` varchar(60) NOT NULL default '0',
@@ -833,9 +844,9 @@ CREATE TABLE IF NOT EXISTS `tsesion` (
 	KEY `idx_user` (`id_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `ttipo_modulo`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttipo_modulo` (
 	`id_tipo` smallint(5) unsigned NOT NULL auto_increment,
 	`nombre` varchar(100) NOT NULL default '',
@@ -845,9 +856,9 @@ CREATE TABLE IF NOT EXISTS `ttipo_modulo` (
 	PRIMARY KEY  (`id_tipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `ttrap`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttrap` (
 	`id_trap` bigint(20) unsigned NOT NULL auto_increment,
 	`source` varchar(50) NOT NULL default '',
@@ -870,9 +881,9 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
 	INDEX status (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tusuario`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tusuario` (
 	`id_user` varchar(60) NOT NULL default '0',
 	`fullname` varchar(255) NOT NULL,
@@ -906,53 +917,64 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+------------------------------------------------------------------------
+-- Table `tusuario_perfil`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
-  `id_up` bigint(10) unsigned NOT NULL auto_increment,
-  `id_usuario` varchar(100) NOT NULL default '',
-  `id_perfil` int(10) unsigned NOT NULL default '0',
-  `id_grupo` int(10) NOT NULL default '0',
-  `assigned_by` varchar(100) NOT NULL default '',
-  `id_policy` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_up`)
+	`id_up` bigint(10) unsigned NOT NULL auto_increment,
+	`id_usuario` varchar(100) NOT NULL default '',
+	`id_perfil` int(10) unsigned NOT NULL default '0',
+	`id_grupo` int(10) NOT NULL default '0',
+	`assigned_by` varchar(100) NOT NULL default '',
+	`id_policy` int(10) unsigned NOT NULL default '0',
+	PRIMARY KEY  (`id_up`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+------------------------------------------------------------------------
+-- Table `tnews`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnews` (
-  `id_news` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
-  `author` varchar(255)  NOT NULL DEFAULT '',
-  `subject` varchar(255)  NOT NULL DEFAULT '',
-  `text` TEXT NOT NULL,
-  `timestamp` DATETIME  NOT NULL DEFAULT 0,
-  PRIMARY KEY(`id_news`)
+	`id_news` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+	`author` varchar(255)  NOT NULL DEFAULT '',
+	`subject` varchar(255)  NOT NULL DEFAULT '',
+	`text` TEXT NOT NULL,
+	`timestamp` DATETIME  NOT NULL DEFAULT 0,
+	PRIMARY KEY(`id_news`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+------------------------------------------------------------------------
+-- Table `tgraph`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tgraph` (
-  `id_graph` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
-  `id_user` varchar(100) NOT NULL default '',
-  `name` varchar(150) NOT NULL default '',
-  `description` TEXT NOT NULL,
-  `period` int(11) NOT NULL default '0',
-  `width` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
-  `height` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
-  `private` tinyint(1) UNSIGNED NOT NULL default 0,
-  `events` tinyint(1) UNSIGNED NOT NULL default 0,
-  `stacked` tinyint(1) UNSIGNED NOT NULL default 0,
-  `id_group` mediumint(8) unsigned NULL default 0,
-  `id_graph_template` int(11) NOT NULL default 0,
-  PRIMARY KEY(`id_graph`)
+	`id_graph` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+	`id_user` varchar(100) NOT NULL default '',
+	`name` varchar(150) NOT NULL default '',
+	`description` TEXT NOT NULL,
+	`period` int(11) NOT NULL default '0',
+	`width` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
+	`height` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
+	`private` tinyint(1) UNSIGNED NOT NULL default 0,
+	`events` tinyint(1) UNSIGNED NOT NULL default 0,
+	`stacked` tinyint(1) UNSIGNED NOT NULL default 0,
+	`id_group` mediumint(8) unsigned NULL default 0,
+	`id_graph_template` int(11) NOT NULL default 0,
+	PRIMARY KEY(`id_graph`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+------------------------------------------------------------------------
+-- Table `tgraph_source`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tgraph_source` (
-  `id_gs` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
-  `id_graph` int(11) NOT NULL default 0,
-  `id_agent_module` int(11) NOT NULL default 0,
-  `weight` float(5,3) NOT NULL DEFAULT 0,
-  PRIMARY KEY(`id_gs`)
+	`id_gs` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+	`id_graph` int(11) NOT NULL default 0,
+	`id_agent_module` int(11) NOT NULL default 0,
+	`weight` float(5,3) NOT NULL DEFAULT 0,
+	PRIMARY KEY(`id_gs`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `treport`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport` (
 	`id_report` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
 	`id_user` varchar(100) NOT NULL default '',
@@ -971,9 +993,9 @@ CREATE TABLE IF NOT EXISTS `treport` (
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `treport_content`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport_content` (
 	`id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_report` INTEGER UNSIGNED NOT NULL default 0,
@@ -1017,51 +1039,63 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 		ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+------------------------------------------------------------------------
+-- Table `treport_content_sla_combined`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (
-  `id` INTEGER UNSIGNED NOT NULL auto_increment,
-  `id_report_content` INTEGER UNSIGNED NOT NULL,
-  `id_agent_module` int(10) unsigned NOT NULL,
-  `sla_max` double(18,2) NOT NULL default 0,
-  `sla_min` double(18,2) NOT NULL default 0,
-  `sla_limit` double(18,2) NOT NULL default 0,
-  `server_name` text,
-  PRIMARY KEY(`id`),
-  FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
-     ON UPDATE CASCADE ON DELETE CASCADE
+	`id` INTEGER UNSIGNED NOT NULL auto_increment,
+	`id_report_content` INTEGER UNSIGNED NOT NULL,
+	`id_agent_module` int(10) unsigned NOT NULL,
+	`sla_max` double(18,2) NOT NULL default 0,
+	`sla_min` double(18,2) NOT NULL default 0,
+	`sla_limit` double(18,2) NOT NULL default 0,
+	`server_name` text,
+	PRIMARY KEY(`id`),
+	FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
+		ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+------------------------------------------------------------------------
+-- Table `treport_content_item`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport_content_item` (
-  `id` INTEGER UNSIGNED NOT NULL auto_increment, 
-  `id_report_content` INTEGER UNSIGNED NOT NULL, 
-  `id_agent_module` int(10) unsigned NOT NULL, 
-  `server_name` text,
-  `operation` text,
-  PRIMARY KEY(`id`),
-  FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
-     ON UPDATE CASCADE ON DELETE CASCADE 
+	`id` INTEGER UNSIGNED NOT NULL auto_increment, 
+	`id_report_content` INTEGER UNSIGNED NOT NULL, 
+	`id_agent_module` int(10) unsigned NOT NULL, 
+	`server_name` text,
+	`operation` text,
+	PRIMARY KEY(`id`),
+	FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
+		ON UPDATE CASCADE ON DELETE CASCADE 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+------------------------------------------------------------------------
+-- Table `treport_custom_sql`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport_custom_sql` (
-  `id` INTEGER UNSIGNED NOT NULL auto_increment,
-  `name` varchar(150) NOT NULL default '',
-  `sql` TEXT,
-  PRIMARY KEY(`id`)
+	`id` INTEGER UNSIGNED NOT NULL auto_increment,
+	`name` varchar(150) NOT NULL default '',
+	`sql` TEXT,
+	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
+------------------------------------------------------------------------
+-- Table `tlayout`
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(50)  NOT NULL,
-  `id_group` INTEGER UNSIGNED NOT NULL,
-  `background` varchar(200)  NOT NULL,
-  `fullscreen` tinyint(1) UNSIGNED NOT NULL default 0,
-  `height` INTEGER UNSIGNED NOT NULL default 0,
-  `width` INTEGER UNSIGNED NOT NULL default 0,
-  PRIMARY KEY(`id`)
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` varchar(50)  NOT NULL,
+	`id_group` INTEGER UNSIGNED NOT NULL,
+	`background` varchar(200)  NOT NULL,
+	`fullscreen` tinyint(1) UNSIGNED NOT NULL default 0,
+	`height` INTEGER UNSIGNED NOT NULL default 0,
+	`width` INTEGER UNSIGNED NOT NULL default 0,
+	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tlayout_data`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_layout` INTEGER UNSIGNED NOT NULL default 0,
@@ -1083,9 +1117,9 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tplugin`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- The fields "net_dst_opt", "net_port_opt", "user_opt" and
 -- "pass_opt" are deprecated for the 5.1.
 CREATE TABLE IF NOT EXISTS `tplugin` (
@@ -1104,18 +1138,18 @@ CREATE TABLE IF NOT EXISTS `tplugin` (
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8; 
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tmodule`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule` (
 	`id_module` int(11) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
 	PRIMARY KEY (`id_module`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tserver_export`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tserver_export` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
@@ -1134,9 +1168,9 @@ CREATE TABLE IF NOT EXISTS `tserver_export` (
 	INDEX id_export_server (`id_export_server`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tserver_export_data`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- id_export_server is real pandora fms export server process that manages this server
 -- id is the "destination" server to export
 CREATE TABLE IF NOT EXISTS `tserver_export_data` (
@@ -1150,9 +1184,9 @@ CREATE TABLE IF NOT EXISTS `tserver_export_data` (
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tplanned_downtime`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
 	`id` MEDIUMINT( 8 ) NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR( 100 ) NOT NULL,
@@ -1179,9 +1213,9 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
 	PRIMARY KEY (  `id` ) 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
 	`id` int(20) unsigned NOT NULL auto_increment,
 	`id_agent` mediumint(8) unsigned NOT NULL default '0',
@@ -1192,9 +1226,9 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
 		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tplanned_downtime_modules`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tplanned_downtime_modules` (
 	`id` int(20) unsigned NOT NULL auto_increment,
 	`id_agent` mediumint(8) unsigned NOT NULL default '0',
@@ -1206,9 +1240,9 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime_modules` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- GIS extension Tables
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tgis_data_history`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_data_history` (
 	`id_tgis_data` INT NOT NULL AUTO_INCREMENT COMMENT 'key of the table' ,
 	`longitude` DOUBLE NOT NULL ,
@@ -1227,50 +1261,50 @@ ENGINE = InnoDB
 COMMENT = 'Table to store historical GIS information of the agents';
 
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tgis_data_status`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_data_status` (
-  `tagente_id_agente` INT(10) UNSIGNED NOT NULL COMMENT 'Reference to the agent' ,
-  `current_longitude` DOUBLE NOT NULL COMMENT 'Last received longitude',
-  `current_latitude` DOUBLE NOT NULL COMMENT 'Last received latitude',
-  `current_altitude` DOUBLE NULL COMMENT 'Last received altitude',
-  `stored_longitude` DOUBLE NOT NULL COMMENT 'Reference longitude to see if the agent has moved',
-  `stored_latitude` DOUBLE NOT NULL COMMENT 'Reference latitude to see if the agent has moved',
-  `stored_altitude` DOUBLE NULL COMMENT 'Reference altitude to see if the agent has moved',
-  `number_of_packages` INT NOT NULL DEFAULT 1 COMMENT 'Number of data packages received with this position since start_timestampa' ,
-  `start_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp on wich the agente started to be in this position' ,
-  `manual_placement` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 to show that the position cames from the agent, 1 to show that the position was established manualy' ,
-  `description` TEXT NULL COMMENT 'description of the region correoponding to this placemnt' ,
-  PRIMARY KEY (`tagente_id_agente`) ,
-  INDEX `start_timestamp_index` USING BTREE (`start_timestamp` ASC),
-  INDEX `fk_tgisdata_tagente1` (`tagente_id_agente` ASC) ,
-  CONSTRAINT `fk_tgisdata_tagente1`
-    FOREIGN KEY (`tagente_id_agente` )
-    REFERENCES `tagente` (`id_agente` )
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION)
+	`tagente_id_agente` INT(10) UNSIGNED NOT NULL COMMENT 'Reference to the agent' ,
+	`current_longitude` DOUBLE NOT NULL COMMENT 'Last received longitude',
+	`current_latitude` DOUBLE NOT NULL COMMENT 'Last received latitude',
+	`current_altitude` DOUBLE NULL COMMENT 'Last received altitude',
+	`stored_longitude` DOUBLE NOT NULL COMMENT 'Reference longitude to see if the agent has moved',
+	`stored_latitude` DOUBLE NOT NULL COMMENT 'Reference latitude to see if the agent has moved',
+	`stored_altitude` DOUBLE NULL COMMENT 'Reference altitude to see if the agent has moved',
+	`number_of_packages` INT NOT NULL DEFAULT 1 COMMENT 'Number of data packages received with this position since start_timestampa' ,
+	`start_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp on wich the agente started to be in this position' ,
+	`manual_placement` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 to show that the position cames from the agent, 1 to show that the position was established manualy' ,
+	`description` TEXT NULL COMMENT 'description of the region correoponding to this placemnt' ,
+	PRIMARY KEY (`tagente_id_agente`) ,
+	INDEX `start_timestamp_index` USING BTREE (`start_timestamp` ASC),
+	INDEX `fk_tgisdata_tagente1` (`tagente_id_agente` ASC) ,
+	CONSTRAINT `fk_tgisdata_tagente1`
+		FOREIGN KEY (`tagente_id_agente` )
+		REFERENCES `tagente` (`id_agente` )
+		ON DELETE CASCADE
+		ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table to store last GIS information of the agents';
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tgis_map`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map` (
-  `id_tgis_map` INT NOT NULL AUTO_INCREMENT COMMENT 'table identifier' ,
-  `map_name` VARCHAR(63) NOT NULL COMMENT 'Name of the map' ,
-  `initial_longitude` DOUBLE NULL COMMENT 'longitude of the center of the map when it\'s loaded' ,
-  `initial_latitude` DOUBLE NULL COMMENT 'latitude of the center of the map when it\'s loaded' ,
-  `initial_altitude` DOUBLE NULL COMMENT 'altitude of the center of the map when it\'s loaded' ,
-  `zoom_level` TINYINT(2) NULL DEFAULT '1' COMMENT 'Zoom level to show when the map is loaded.' ,
-  `map_background` VARCHAR(127) NULL COMMENT 'path on the server to the background image of the map' ,
-  `default_longitude` DOUBLE NULL COMMENT 'default longitude for the agents placed on the map' ,
-  `default_latitude` DOUBLE NULL COMMENT 'default latitude for the agents placed on the map' ,
-  `default_altitude` DOUBLE NULL COMMENT 'default altitude for the agents placed on the map' ,
-  `group_id` INT(10) NOT NULL DEFAULT 0 COMMENT 'Group that owns the map' ,
-  `default_map` TINYINT(1) NULL DEFAULT 0 COMMENT '1 if this is the default map, 0 in other case',
-  PRIMARY KEY (`id_tgis_map`),
-  INDEX `map_name_index` (`map_name` ASC)
+	`id_tgis_map` INT NOT NULL AUTO_INCREMENT COMMENT 'table identifier' ,
+	`map_name` VARCHAR(63) NOT NULL COMMENT 'Name of the map' ,
+	`initial_longitude` DOUBLE NULL COMMENT "longitude of the center of the map when it\'s loaded" ,
+	`initial_latitude` DOUBLE NULL COMMENT "latitude of the center of the map when it\'s loaded" ,
+	`initial_altitude` DOUBLE NULL COMMENT "altitude of the center of the map when it\'s loaded" ,
+	`zoom_level` TINYINT(2) NULL DEFAULT '1' COMMENT 'Zoom level to show when the map is loaded.' ,
+	`map_background` VARCHAR(127) NULL COMMENT 'path on the server to the background image of the map' ,
+	`default_longitude` DOUBLE NULL COMMENT 'default longitude for the agents placed on the map' ,
+	`default_latitude` DOUBLE NULL COMMENT 'default latitude for the agents placed on the map' ,
+	`default_altitude` DOUBLE NULL COMMENT 'default altitude for the agents placed on the map' ,
+	`group_id` INT(10) NOT NULL DEFAULT 0 COMMENT 'Group that owns the map' ,
+	`default_map` TINYINT(1) NULL DEFAULT 0 COMMENT '1 if this is the default map, 0 in other case',
+	PRIMARY KEY (`id_tgis_map`),
+	INDEX `map_name_index` (`map_name` ASC)
 )
 ENGINE = InnoDB
 COMMENT = 'Table containing information about a gis map';
@@ -1288,9 +1322,9 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_connection` (
   `default_longitude` DOUBLE NULL COMMENT 'default longitude for the agents placed on the map' ,
   `default_latitude` DOUBLE NULL COMMENT 'default latitude for the agents placed on the map' ,
   `default_altitude` DOUBLE NULL COMMENT 'default altitude for the agents placed on the map' ,
-  `initial_longitude` DOUBLE NULL COMMENT 'longitude of the center of the map when it\'s loaded' ,
-  `initial_latitude` DOUBLE NULL COMMENT 'latitude of the center of the map when it\'s loaded' ,
-  `initial_altitude` DOUBLE NULL COMMENT 'altitude of the center of the map when it\'s loaded' ,
+  `initial_longitude` DOUBLE NULL COMMENT "longitude of the center of the map when it\'s loaded" ,
+  `initial_latitude` DOUBLE NULL COMMENT "latitude of the center of the map when it\'s loaded" ,
+  `initial_altitude` DOUBLE NULL COMMENT "altitude of the center of the map when it\'s loaded" ,
   `group_id` INT(10) NOT NULL DEFAULT 0 COMMENT 'Group that owns the map',
   PRIMARY KEY (`id_tmap_connection`) )
 ENGINE = InnoDB
@@ -1362,103 +1396,99 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer_has_tagente` (
 ENGINE = InnoDB
 COMMENT = 'Table to define wich agents are shown in a layer';
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tgroup_stat`
--- -----------------------------------------------------
-
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tgroup_stat` (
-  `id_group` int(10) unsigned NOT NULL default '0',
-  `modules` int(10) unsigned NOT NULL default '0',
-  `normal` int(10) unsigned NOT NULL default '0',
-  `critical` int(10) unsigned NOT NULL default '0',
-  `warning` int(10) unsigned NOT NULL default '0',
-  `unknown` int(10) unsigned NOT NULL default '0',
-  `non-init` int(10) unsigned NOT NULL default '0',
-  `alerts` int(10) unsigned NOT NULL default '0',
-  `alerts_fired` int(10) unsigned NOT NULL default '0',
-  `agents` int(10) unsigned NOT NULL default '0',
-  `agents_unknown` int(10) unsigned NOT NULL default '0',
-  `utimestamp` int(20) unsigned NOT NULL default 0,
-  PRIMARY KEY  (`id_group`)
+	`id_group` int(10) unsigned NOT NULL default '0',
+	`modules` int(10) unsigned NOT NULL default '0',
+	`normal` int(10) unsigned NOT NULL default '0',
+	`critical` int(10) unsigned NOT NULL default '0',
+	`warning` int(10) unsigned NOT NULL default '0',
+	`unknown` int(10) unsigned NOT NULL default '0',
+	`non-init` int(10) unsigned NOT NULL default '0',
+	`alerts` int(10) unsigned NOT NULL default '0',
+	`alerts_fired` int(10) unsigned NOT NULL default '0',
+	`agents` int(10) unsigned NOT NULL default '0',
+	`agents_unknown` int(10) unsigned NOT NULL default '0',
+	`utimestamp` int(20) unsigned NOT NULL default 0,
+	PRIMARY KEY  (`id_group`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to store global system stats per group' 
 DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tnetwork_map`
--- -----------------------------------------------------
-
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetwork_map` (
-  `id_networkmap` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_user` VARCHAR(60)  NOT NULL,
-  `name` VARCHAR(100)  NOT NULL,
-  `type` VARCHAR(20)  NOT NULL,
-  `layout` VARCHAR(20)  NOT NULL,
-  `nooverlap` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-  `simple` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-  `regenerate` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
-  `font_size` INT UNSIGNED NOT NULL DEFAULT 12,
-  `id_group` INT  NOT NULL DEFAULT 0,
-  `id_module_group` INT  NOT NULL DEFAULT 0,  
-  `id_policy` INT  NOT NULL DEFAULT 0,
-  `depth` VARCHAR(20)  NOT NULL,
-  `only_modules_with_alerts` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-  `hide_policy_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-  `zoom` FLOAT UNSIGNED NOT NULL DEFAULT 1,
-  `distance_nodes` FLOAT UNSIGNED NOT NULL DEFAULT 2.5,
-  `center` INT UNSIGNED NOT NULL DEFAULT 0,
-  `contracted_nodes` TEXT,
-  `show_snmp_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-   PRIMARY KEY  (`id_networkmap`)
+	`id_networkmap` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_user` VARCHAR(60)  NOT NULL,
+	`name` VARCHAR(100)  NOT NULL,
+	`type` VARCHAR(20)  NOT NULL,
+	`layout` VARCHAR(20)  NOT NULL,
+	`nooverlap` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`simple` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`regenerate` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
+	`font_size` INT UNSIGNED NOT NULL DEFAULT 12,
+	`id_group` INT  NOT NULL DEFAULT 0,
+	`id_module_group` INT  NOT NULL DEFAULT 0,  
+	`id_policy` INT  NOT NULL DEFAULT 0,
+	`depth` VARCHAR(20)  NOT NULL,
+	`only_modules_with_alerts` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`hide_policy_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`zoom` FLOAT UNSIGNED NOT NULL DEFAULT 1,
+	`distance_nodes` FLOAT UNSIGNED NOT NULL DEFAULT 2.5,
+	`center` INT UNSIGNED NOT NULL DEFAULT 0,
+	`contracted_nodes` TEXT,
+	`show_snmp_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`text_filter` VARCHAR(100)  NOT NULL DEFAULT "",
+	`dont_show_subgroups` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	PRIMARY KEY  (`id_networkmap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tsnmp_filter`
--- -----------------------------------------------------
-
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tsnmp_filter` (
-  `id_snmp_filter` int(10) unsigned NOT NULL auto_increment,
-  `description` varchar(255) default '',
-  `filter` varchar(255) default '',
-  PRIMARY KEY  (`id_snmp_filter`)
+	`id_snmp_filter` int(10) unsigned NOT NULL auto_increment,
+	`description` varchar(255) default '',
+	`filter` varchar(255) default '',
+	PRIMARY KEY  (`id_snmp_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tagent_custom_fields`
--- -----------------------------------------------------
-
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagent_custom_fields` (
-  `id_field` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(45) NOT NULL default '',
-  `display_on_front` tinyint(1) NOT NULL default 0,
-  PRIMARY KEY  (`id_field`)
+	`id_field` int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(45) NOT NULL default '',
+	`display_on_front` tinyint(1) NOT NULL default 0,
+	PRIMARY KEY  (`id_field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tagent_custom_data`
--- -----------------------------------------------------
-
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagent_custom_data` (
-  `id_field` int(10) unsigned NOT NULL,
-  `id_agent` int(10) unsigned NOT NULL,
-  `description` text,
-  FOREIGN KEY (`id_field`) REFERENCES tagent_custom_fields(`id_field`)
-	ON UPDATE CASCADE ON DELETE CASCADE,
-  FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
-	ON UPDATE CASCADE ON DELETE CASCADE,
-  PRIMARY KEY  (`id_field`, `id_agent`)
+	`id_field` int(10) unsigned NOT NULL,
+	`id_agent` int(10) unsigned NOT NULL,
+	`description` text,
+	FOREIGN KEY (`id_field`) REFERENCES tagent_custom_fields(`id_field`)
+		ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
+		ON UPDATE CASCADE ON DELETE CASCADE,
+	PRIMARY KEY  (`id_field`, `id_agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `ttag`
--- -----------------------------------------------------
-
+------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttag` ( 
- `id_tag` integer(10) unsigned NOT NULL auto_increment, 
- `name` varchar(100) NOT NULL default '', 
- `description` text NOT NULL, 
- `url` mediumtext NOT NULL, 
- PRIMARY KEY  (`id_tag`)
+	`id_tag` integer(10) unsigned NOT NULL auto_increment, 
+	`name` varchar(100) NOT NULL default '', 
+	`description` text NOT NULL, 
+	`url` mediumtext NOT NULL, 
+	PRIMARY KEY  (`id_tag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
 -- -----------------------------------------------------

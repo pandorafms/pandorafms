@@ -430,12 +430,12 @@ function groups_get_all($groupWithAgents = false) {
  */
 function groups_get_id_recursive($id_parent, $all = false) {
 	$return = array();
-
+	
 	$return = array_merge($return, array($id_parent));
-
+	
 	//Check propagate
 	$id = db_get_value_filter('id_grupo', 'tgrupo', array('id_grupo' => $id_parent, 'propagate' => 1));
-
+	
 	if (($id !== false) || $all) {
 		$children = db_get_all_rows_filter("tgrupo", array('parent' => $id_parent, 'disabled' => 0), array('id_grupo'));
 		if ($children === false) {
@@ -448,12 +448,12 @@ function groups_get_id_recursive($id_parent, $all = false) {
 			}
 			$children = $temp;
 		}
-
+		
 		foreach ($children as $id_children) {
 			$return = array_merge($return, groups_get_id_recursive($id_children, $all));
 		}
 	}
-
+	
 	return $return;
 }
 
@@ -468,7 +468,7 @@ function groups_get_id_recursive($id_parent, $all = false) {
  */
 function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
 	$return = array();
-
+	
 	foreach ($groups as $key => $group) {
 		if (($key === 0 || $key === __('All')) && ($parent === 0 || $parent === __('All'))) { //When the groups is the all group
 			$group['deep'] = $deep;
@@ -488,7 +488,7 @@ function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
 			$return = $return + array($key => $group) + $branch;
 		}
 	}
-
+	
 	return $return;
 }
 
@@ -501,44 +501,44 @@ function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
  */
 function groups_get_status ($id_group = 0) {
 	$agents = agents_get_group_agents($id_group);
-
+	
 	$agents_status = array();
-	foreach($agents as $key => $agent){
+	foreach ($agents as $key => $agent) {
 		$agents_status[] = agents_get_status($key);
 	}
-
+	
 	$childrens = groups_get_childrens($id_group);
-
-	foreach($childrens as $key => $child){
+	
+	foreach ($childrens as $key => $child) {
 		$agents_status[] = groups_get_status($key);
 	}
-
+	
 	// Status is 0 for normal, 1 for critical, 2 for warning and 3/-1 for unknown. 4 for fired alerts
-
+	
 	// Checking if any agent has fired alert (4)
-	if(is_int(array_search(4,$agents_status))){
+	if (is_int(array_search(4,$agents_status))) {
 		return 4;
 	}
 	// Checking if any agent has critical status (1)
-	elseif(is_int(array_search(1,$agents_status))){
+	elseif (is_int(array_search(1,$agents_status))) {
 		return 1;
 	}
 	// Checking if any agent has warning status (2)
-	elseif(is_int(array_search(2,$agents_status))){
+	elseif (is_int(array_search(2,$agents_status))) {
 		return 2;
 	}
 	// Checking if any agent has unknown status (-1)
-	elseif(is_int(array_search(-1,$agents_status))){
+	elseif (is_int(array_search(-1,$agents_status))) {
 		return -1;
 	}
 	// Checking if any agents module has unknown status (3)
-	elseif(is_int(array_search(3,$agents_status))){
+	elseif (is_int(array_search(3,$agents_status))) {
 		return 3;
 	}
 	else {
 		return 0;
 	}
-
+	
 	return $status;
 }
 
@@ -551,7 +551,7 @@ function groups_get_status ($id_group = 0) {
  * @return string The group name
  */
 function groups_get_name ($id_group, $returnAllGroup = false) {
-	if($id_group > 0)
+	if ($id_group > 0)
 		return (string) db_get_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
 	elseif($returnAllGroup)
 		return "All";
@@ -574,23 +574,23 @@ function groups_get_users ($id_group, $filter = false) {
 	
 	$resulta = array();
 	$resulta = db_get_all_rows_filter ("tusuario_perfil", $filter);
-
+	
 	// The users of the group All (0) will be also returned
 	$filter['id_grupo'] = 0;
 	$resultb = array();
 	$resultb = db_get_all_rows_filter ("tusuario_perfil", $filter);
-
-	if($resulta == false && $resultb == false)
+	
+	if ($resulta == false && $resultb == false)
 		$result = false;
-	elseif($resulta == false)
+	elseif ($resulta == false)
 		$result = $resultb;
-	elseif($resultb == false)
+	elseif ($resultb == false)
 		$result = $resulta;
 	else
 		$result = array_merge($resulta,$resultb);
-
+	
 	if ($result === false)
-	return array ();
+		return array ();
 	
 	//This removes stale users from the list. This can happen if switched to another auth scheme
 	//(internal users still exist) or external auth has users removed/inactivated from the list (eg. LDAP)
@@ -603,7 +603,7 @@ function groups_get_users ($id_group, $filter = false) {
 			array_push ($retval, get_user_info ($user));
 		}
 	}
-
+	
 	return $retval;
 }
 
@@ -628,15 +628,15 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	if ($id_group < 0) 
 		return; 
-
+	
 	// Get stats for this group
 	$data = reporting_get_group_stats($id_group);
-
+	
 	if ($data["total_agents"] == 0)
 		return; // Skip empty groups
-
+	
 	// Calculate entire row color
-	if ($data["monitor_alerts_fired"] > 0){
+	if ($data["monitor_alerts_fired"] > 0) {
 		echo "<tr class='group_view_alrm' style='height: 35px;'>";
 	}
 	elseif ($data["monitor_critical"] > 0) {
@@ -674,7 +674,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	if ($data["total_agents"] > 0)
 		echo "<a class='group_view_data' style='font-weight: bold; font-size: 18px; text-align: center;' 
 			href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
-		
+	
 	//Total agent field given by function reporting_get_group_stats return the number of agents
 	//of this groups and its children. It was done to print empty fathers of children groups.
 	//We need to recalculate the total agents for this group here to get only the total agents
@@ -693,7 +693,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	echo $data["total_agents"];
 	echo "</a>";
-		
+	
 	// Agents unknown
 	if ($data["agents_unknown"] > 0) {
 		echo "<td class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'>";
@@ -706,9 +706,9 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	else {
 		echo "<td></td>";
 	}
-
+	
 	// Monitors Unknown
-	if ($data["monitor_unknown"] > 0){
+	if ($data["monitor_unknown"] > 0) {
 		echo "<td class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 		echo "<a style='font-weight: bold; font-size: 18px; color: #666; text-align: center;'
 			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=3'>";
@@ -719,13 +719,13 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	else {
 		echo "<td></td>";
 	}
-
-
+	
+	
 	// Monitors Not Init
-	if ($data["monitor_not_init"] > 0){
+	if ($data["monitor_not_init"] > 0) {
 		echo "<td class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'>";
-                echo "<a class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'
-                        href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=5'>";
+		echo "<a class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'
+			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=5'>";
 		echo $data["monitor_not_init"];
 		echo "</a>";
 		echo "</td>";
@@ -738,7 +738,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	// Monitors OK
 	echo "<td class='group_view_data_ok' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 	if ($data["monitor_ok"] > 0) {
-                echo "<a class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'                       href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=0'>";
+		echo "<a class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=0'>";
 		echo $data["monitor_ok"];
 		echo "</a>";
 	}
@@ -746,12 +746,12 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 		echo "&nbsp;";
 	}
 	echo "</td>";
-
+	
 	// Monitors Warning
-	if ($data["monitor_warning"] > 0){
+	if ($data["monitor_warning"] > 0) {
 		echo "<td class='group_view_data_warn' style='font-weight: bold; font-size: 18px; text-align: center;'>";
-                echo "<a class='group_view_data_warn' class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'
-                        href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=1'>";
+		echo "<a class='group_view_data_warn' class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'
+			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=1'>";
 		echo $data["monitor_warning"];
 		echo "</a>";
 		echo "</td>";
@@ -759,12 +759,12 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	else {
 		echo "<td></td>";
 	}
-
+	
 	// Monitors Critical
-	if ($data["monitor_critical"] > 0){
+	if ($data["monitor_critical"] > 0) {
 		echo "<td class='group_view_data_crit' style='font-weight: bold; font-size: 18px; text-align: center;'>";
-                echo "<a class='group_view_data_crit' style='font-weight: bold; font-size: 18px; text-align: center;'
-                        href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=2'>";
+		echo "<a class='group_view_data_crit' style='font-weight: bold; font-size: 18px; text-align: center;'
+			href='index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=$id_group&status=2'>";
 		echo $data["monitor_critical"];
 		echo "</a>";
 		echo "</td>";
@@ -773,7 +773,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 		echo "<td></td>";
 	}
 	// Alerts fired
-	if ($data["monitor_alerts_fired"] > 0){
+	if ($data["monitor_alerts_fired"] > 0) {
 		echo "<td class='group_view_data_alrm' style='font-weight: bold; font-size: 18px;  text-align: center;'>";
 		echo "<a class='group_view_data_alrm' style='font-weight: bold; font-size: 18px; text-align: center;'
 			href='index.php?sec=estado&sec2=operation/agentes/alerts_status&ag_group=$id_group&filter=fired'>";
@@ -784,8 +784,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	else {
 		echo "<td></td>";
 	}
-
-
+	
+	
 	echo "</tr>";
 	echo "<tr style='height: 5px;'><td colspan=10> </td></tr>";
 	
@@ -804,7 +804,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
  */
 function groups_get_group_by_id($id_group) {
 	$result_group = db_get_row('tgrupo', 'id_grupo', $id_group);
-
+	
 	return $result_group;
 }
 
@@ -819,19 +819,20 @@ function groups_get_group_by_id($id_group) {
  */
 function groups_create_group($group_name, $rest_values){
 	
-	if ($group_name == ""){
+	if ($group_name == "") {
 		return false;
 	}
 	
 	$array_tmp = array('nombre' => $group_name);
 	
 	$values = array_merge($rest_values, $array_tmp);
-
+	
 	$check = db_get_value('nombre', 'tgrupo', 'nombre', $group_name);
 	
 	if (!$check){
 		$result = db_process_sql_insert('tgrupo', $values);
-	} else {
+	}
+	else {
 		$result = false;
 	}
 	
@@ -845,60 +846,58 @@ function groups_agent_unknown ($group_array) {
 	
 	if (empty ($group_array)) {
 		return 0;
-		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
 	// Agent of module group X and critical status
 	$agents_critical = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 1 
-						AND tagente_estado.utimestamp != 0
-						AND tagente.id_grupo IN $group_clause
-						group by tagente.id_agente";		
-
-	// Agent of module group X and warning status	
-	$agents_warning = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 2 
-						AND tagente_estado.utimestamp != 0
-						AND tagente.id_grupo IN $group_clause
-						group by tagente.id_agente";
-
-	// Agent of module group X and unknown status		
-	$agents_unknown = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 3
-						AND tagente_estado.utimestamp != 0
-						AND tagente.id_grupo IN $group_clause
-						group by tagente.id_agente";	
-
-	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
-						FROM tagente, tagente_modulo, tagente_estado 
-						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-
-						AND tagente.id_grupo IN $group_clause 
-						AND tagente.id_agente NOT IN ($agents_critical)
-						AND tagente.id_agente NOT IN ($agents_warning)
-						AND tagente.id_agente IN ($agents_unknown) ) AS t");
+		FROM tagente_estado, tagente, tagente_modulo
+		WHERE tagente_estado.id_agente = tagente.id_agente
+			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente.disabled = 0
+			AND tagente_modulo.disabled = 0
+			AND estado = 1 
+			AND tagente_estado.utimestamp != 0
+			AND tagente.id_grupo IN $group_clause
+		GROUP by tagente.id_agente";
 	
+	// Agent of module group X and warning status
+	$agents_warning = "SELECT tagente.id_agente 
+		FROM tagente_estado, tagente, tagente_modulo
+		WHERE tagente_estado.id_agente = tagente.id_agente
+			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente.disabled = 0
+			AND tagente_modulo.disabled = 0
+			AND estado = 2 
+			AND tagente_estado.utimestamp != 0
+			AND tagente.id_grupo IN $group_clause
+		GROUP by tagente.id_agente";
+	
+	// Agent of module group X and unknown status
+	$agents_unknown = "SELECT tagente.id_agente 
+		FROM tagente_estado, tagente, tagente_modulo
+		WHERE tagente_estado.id_agente = tagente.id_agente
+			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente.disabled = 0
+			AND tagente_modulo.disabled = 0
+			AND estado = 3
+			AND tagente_estado.utimestamp != 0
+			AND tagente.id_grupo IN $group_clause
+		GROUP by tagente.id_agente";
+	
+	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
+		FROM tagente, tagente_modulo, tagente_estado 
+		WHERE tagente.id_agente = tagente_modulo.id_agente
+			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+			AND tagente.id_grupo IN $group_clause 
+			AND tagente.id_agente NOT IN ($agents_critical)
+			AND tagente.id_agente NOT IN ($agents_warning)
+			AND tagente.id_agente IN ($agents_unknown) ) AS t");
 }
 
 // Get ok agents by using the status code in modules.
@@ -908,10 +907,11 @@ function groups_agent_ok ($group_array) {
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)){
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
@@ -925,7 +925,7 @@ function groups_agent_ok ($group_array) {
 						AND estado = 1 
 						AND tagente_estado.utimestamp != 0
 						AND tagente.id_grupo IN $group_clause
-						group by tagente.id_agente";		
+						group by tagente.id_agente";
 
 	// Agent of module group X and warning status	
 	$agents_warning = "SELECT tagente.id_agente 

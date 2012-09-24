@@ -46,13 +46,30 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0,
 	$font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1,
 	$ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
-	$relative = false) {
+	$relative = false, $text_filter = '') {
+	
+	global $config;
 	
 	$parents = array();
 	$orphans = array();
 	
 	$filter = array ();
 	$filter['disabled'] = 0;
+	
+	if (!empty($text_filter)) {
+		switch ($config['dbtype']) {
+			case "mysql":
+			case "postgresql":
+				$filter[] =
+					'(nombre COLLATE utf8_general_ci LIKE "%' . $text_filter . '%")';
+				break;
+			case "oracle":
+				$filter[] =
+					'(upper(nombre) LIKE upper("%' . $text_filter . '%"))';
+				break;
+		}
+	}
+	
 	if ($group >= 1) {
 		$filter['id_grupo'] = $group;
 		
@@ -128,6 +145,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0,
 		$node_count++;
 	}
 	
+	$stats = array();
+	
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
 		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {
@@ -177,7 +196,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0,
 }
 
 // Generate a dot graph definition for graphviz with groups
-function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0, $depth = 'all', $id_networkmap = 0) {
+function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0, $depth = 'all', $id_networkmap = 0, $dont_show_subgroups = 0) {
 	global $config;
 	
 	$parents = array();
@@ -192,7 +211,12 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 		$id_groups = groups_get_id_recursive($group, true);
 		
 		foreach($id_groups as $id_group) {
-			if(check_acl($config["id_user"], $id_group, 'AR')) {
+			$add = false;
+			if (check_acl($config["id_user"], $id_group, 'AR')) {
+				$add = true;
+			}
+			
+			if ($add) {
 				$groups[] = db_get_row ('tgrupo', 'id_grupo', $id_group);
 			}
 		}
@@ -225,13 +249,19 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 	
 	$node_count = 0;
 	
+	$groups_hiden = array();
 	foreach ($nodes_groups as $node_group) {
-		
 		$node_count++;
 		
 		// Save node parent information to define edges later
 		if ($node_group['parent'] != "0" && $node_group['id_grupo'] != $group) {
-			$parents[$node_count] = $nodes_groups[$node_group['parent']]['id_node'];
+			if ((!$dont_show_subgroups) || ($group == 0)) {
+				$parents[$node_count] = $nodes_groups[$node_group['parent']]['id_node'];
+			}
+			else {
+				$groups_hiden[$node_group['id_grupo']] = 1;
+				continue;
+			}
 		}
 		else {
 			$orphans[$node_count] = 1;
@@ -251,6 +281,12 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 		// Parse agents
 		$nodes_agents = array();
 		foreach ($agents as $agent) {
+			if ($dont_show_subgroups) {
+				if (!empty($groups_hiden[$agent['id_grupo']])) {
+					continue;
+				}
+			}
+			
 			$node_count ++;
 			// Save node parent information to define edges later
 			$parents[$node_count] = $agent['parent'] = $nodes_groups[$agent['id_grupo']]['id_node'];
@@ -270,7 +306,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 			foreach ($modules as $key => $module) {
 				$node_count ++;
 				$agent_module = modules_get_agentmodule($key);
-				$alerts_module = db_get_sql('SELECT count(*) as num
+				$alerts_module = db_get_sql('SELECT count(*) AS num
 					FROM talert_template_modules
 					WHERE id_agent_module = ' . $key);
 				
@@ -635,7 +671,7 @@ function networkmap_get_filter ($layout) {
  * 
  * @return mixed New networkmap id if created. False if it could not be created.
  */
-function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'radial', $nooverlap = true, $simple = false, $regenerate = true, $font_size = 12, $id_group = 0, $id_module_group = 0, $depth = 'all', $only_modules_with_alerts = false, $hide_policy_modules = false, $zoom = 1, $distance_nodes = 2.5, $center = 0) {
+function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'radial', $nooverlap = true, $simple = false, $regenerate = true, $font_size = 12, $id_group = 0, $id_module_group = 0, $depth = 'all', $only_modules_with_alerts = false, $hide_policy_modules = false, $zoom = 1, $distance_nodes = 2.5, $center = 0, $text_filter = '', $dont_show_subgroups = 0) {
 	
 	global $config;
 	
@@ -657,6 +693,8 @@ function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'rad
 	$values['distance_nodes'] = $distance_nodes;
 	$values['center'] = $center;
 	$values['id_user'] = $config['id_user'];
+	$values['text_filter'] = $text_filter;
+	$values['dont_show_subgroups'] = $dont_show_subgroups;
 	
 	return @db_process_sql_insert ('tnetwork_map', $values);
 }
@@ -679,20 +717,20 @@ function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = f
 		return false;
 	if (! is_array ($filter))
 		$filter = array ();
-		
+	
 	$filter['id_networkmap'] = $id_networkmap;
 	
 	if($check_user) {
 		//If hte user has admin flag don't filter by user	
 		$user_info = users_get_user_by_id($config['id_user']);
-
+		
 		if (!$user_info['is_admin']) {
 			$filter['id_user'] = $config['id_user'];
 		}
 	}
 	
 	$networkmap = db_get_row_filter ('tnetwork_map', $filter, $fields);
-		
+	
 	return $networkmap;
 }
 

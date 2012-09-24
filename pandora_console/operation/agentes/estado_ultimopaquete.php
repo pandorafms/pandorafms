@@ -432,15 +432,27 @@ foreach ($modules as $module) {
 		echo "<td class='".$tdcolor."f9' colspan='1'>&nbsp;</td>";
 		echo "<td class='".$tdcolor."f9' colspan='1'>&nbsp;x</td>";
 		
-		switch($module["datos"]){
-			case 10: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>".__('TRACE')."</td>"; break;
-			case 20: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>".__('DEBUG')."</td>"; break;
-			case 30: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>".__('INFO')."</td>"; break;
-			case 40: echo "<td class=$tdcolor style='color:darkorange; font-weight:bold;'>".__('WARN')."</td>"; break;
-			case 50: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>".__('ERROR')."</td>"; break;
-			case 60: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>".__('FATAL')."</td>"; break;
+		switch ($module["datos"]) {
+			case 10:
+				echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>".__('TRACE')."</td>";
+				break;
+			case 20:
+				echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>".__('DEBUG')."</td>";
+				break;
+			case 30:
+				echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>".__('INFO')."</td>";
+				break;
+			case 40:
+				echo "<td class=$tdcolor style='color:darkorange; font-weight:bold;'>".__('WARN')."</td>";
+				break;
+			case 50:
+				echo "<td class=$tdcolor style='color:red; font-weight:bold;'>".__('ERROR')."</td>";
+				break;
+			case 60:
+				echo "<td class=$tdcolor style='color:red; font-weight:bold;'>".__('FATAL')."</td>";
+				break;
 		}
-
+	
 	}
 	else if (($module["id_tipo_modulo"] == 100) OR ($module['history_data'] == 0)) {
 		echo "<td class='".$tdcolor."f9' colspan='2' title='".$module["datos"]."'>";

@@ -419,7 +419,8 @@ function ldap_load_user ($login) {
 					$ret["is_admin"] = is_user_admin ($info[0][$config["auth"]["ldap_user_attr"]["id_user"]][0]);
 					if (isset ($info[0][$ldap_key])) {
 						$ret[$internal_key] = $info[0][$ldap_key][0];
-					} else {
+					}
+					else {
 						$ret[$internal_key] = '';
 					}
 				}
@@ -431,7 +432,7 @@ function ldap_load_user ($login) {
 	else {
 		$ldap_cache["error"] .= 'Could not connect to LDAP server';
 	}
-
+	
 	return $ret;
 }
 
@@ -506,7 +507,8 @@ function get_users ($order = false) {
 		$sr = @ldap_search ($ldap_cache["ds"], $config["auth"]["ldap_base_dn"], $config["auth"]["ldap_user_filter"], array_values ($config["auth"]["ldap_user_attr"]));
 		if (!$sr) {
 			$ldap_cache["error"] .= 'Error searching LDAP server (get_users): ' . ldap_error( $ldap_cache["ds"] );
-		} else {
+		}
+		else {
 			ldap_sort ($ldap_cache["ds"], $sr, $config["auth"]["ldap_user_attr"]["fullname"]);
 			$info = @ldap_get_entries( $ldap_cache["ds"], $sr );
 			for ( $i = 0; $i < $info['count']; $i++ ) {
@@ -514,7 +516,8 @@ function get_users ($order = false) {
 					$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]]["last_connect"] = $time;
 					if (isset ($info[$i][$ldap_key])) {
 						$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]][$internal_key] = $info[$i][$ldap_key][0];
-					} else {
+					}
+					else {
 						$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]][$internal_key] = '';
 					}
 					$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]]["is_admin"] = is_user_admin ($info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]);
@@ -541,6 +544,7 @@ function get_users ($order = false) {
 function stripdn ($dn) {
 	list ($uid, $trash) = explode (',', $dn, 2);
 	list ($trash, $user) = explode ('=', $uid);
+	
 	return ($user);
 }
 

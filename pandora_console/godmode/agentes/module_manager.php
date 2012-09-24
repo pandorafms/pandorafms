@@ -16,8 +16,8 @@
 /* You can redefine $url and unset $id_agente to reuse the form. Dirty (hope temporal) hack */
 if (isset ($id_agente)) {
 	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
-
-} else {
+}
+else {
 	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module';
 }
 

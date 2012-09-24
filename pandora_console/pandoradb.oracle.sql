@@ -1474,9 +1474,9 @@ CREATE TABLE tgroup_stat (
 	utimestamp NUMBER(10, 0) default 0 NOT NULL
 );
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table "tnetwork_map"
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE tnetwork_map (
 	id_networkmap NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_user VARCHAR2(60)  NOT NULL,
@@ -1497,7 +1497,9 @@ CREATE TABLE tnetwork_map (
 	distance_nodes BINARY_DOUBLE default 2.5,
 	center NUMBER(10, 0) default 0 NOT NULL,
 	contracted_nodes CLOB,
-	show_snmp_modules NUMBER(5, 0) default 0 NOT NULL
+	show_snmp_modules NUMBER(5, 0) default 0 NOT NULL,
+	text_filter VARCHAR(100) DEFAULT '',
+	dont_show_subgroups NUMBER(10, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tnetwork_map_s INCREMENT BY 1 START WITH 1;

@@ -1,3 +1,9 @@
+2012-09-24 Mark Holland <mark@mark-holland.me.uk>
+
+	* src/pandroid/agent/PandroidAgentListener.java:
+	Removed asynctask when making contact in attempt
+	to fix configuration loss after x time
+
 2012-08-24 Mark Holland <mark@mark-holland.me.uk>
 
 	* src/pandroid/agent/PandroidAgentListener.java:

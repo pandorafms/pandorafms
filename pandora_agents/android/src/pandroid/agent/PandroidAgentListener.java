@@ -112,6 +112,53 @@ public class PandroidAgentListener extends Service {
 		return null;
 	}
 	
+	
+	
+	private void contact(){
+        Date date = new Date();
+        
+    	putSharedData("PANDROID_DATA", "contactError", "0", "integer");
+        putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
+        
+        // Keep lastXML sended if is not empty (empty means error sending it)
+        String lastXML = buildXML();
+        
+		String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
+
+		String destFileName = agentName + "." + System.currentTimeMillis() + ".data";
+		
+		writeFile(destFileName, lastXML);
+
+		String[] tentacleData = {
+				  "-a",
+				  getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
+				  "-p",
+				  Core.defaultServerPort,
+				  "-v",
+				  "/data/data/pandroid.agent/files/" + destFileName
+	    		  };
+
+		int tentacleRet = new tentacle_client().tentacle_client(tentacleData);
+    	
+		// Deleting the file after send it
+		File file = new File("/data/data/pandroid.agent/files/" + destFileName);
+    	file.delete();
+		
+        if(tentacleRet == 0) {
+            putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
+            if (Core.helloSignal >= 1)
+				Core.helloSignal = 0;
+            Core.updateConf(getApplicationContext());
+        }
+        else {
+        	putSharedData("PANDROID_DATA", "contactError", "1", "integer");
+        }
+        
+        updateValues();
+	}
+	
+	
+	/*
 	private void contact(){
 			
 		/*
@@ -121,7 +168,7 @@ public class PandroidAgentListener extends Service {
 		       		Toast.LENGTH_SHORT);
 		toast.setGravity(Gravity.BOTTOM,0,0);
 		toast.show();
-		*/
+		
 		
 		    
 		Date date = new Date();
@@ -176,7 +223,7 @@ public class PandroidAgentListener extends Service {
         	
         }//end doInBackground
    }
-   
+   */
     ////////////////////////////////////////////////////////////////////////////////////////
     //  From unfinished task of buffering unsent xml files when no connection available   //
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -904,6 +951,7 @@ try { // catches IOException below
 		SharedPreferences agentPreferences = getSharedPreferences(preferenceName, mode);
 		SharedPreferences.Editor editor = agentPreferences.edit();
 		
+				
 		if(type == "boolean") {
 			editor.putBoolean(tokenName, Boolean.parseBoolean(data));
 		}

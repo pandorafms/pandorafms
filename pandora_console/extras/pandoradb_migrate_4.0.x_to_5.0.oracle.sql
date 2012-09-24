@@ -332,3 +332,8 @@ ALTER TABLE tnetwork_component ADD (critical_instructions VARCHAR2(255) default 
 ALTER TABLE tnetwork_component ADD (warning_instructions VARCHAR2(255) default '');
 ALTER TABLE tnetwork_component ADD (unknown_instructions VARCHAR2(255) default '');
 
+------------------------------------------------------------------------
+-- Table `tnetwork_map`
+------------------------------------------------------------------------
+ALTER TABLE tnetwork_map ADD (text_filter VARCHAR(100) DEFAULT '');
+ALTER TABLE tnetwork_map ADD (dont_show_subgroups NUMBER(10, 0) default 0 NOT NULL);

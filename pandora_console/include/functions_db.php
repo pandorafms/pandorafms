@@ -66,7 +66,8 @@ function db_connect($host = null, $db = null, $user = null, $pass = null, $port 
 		if ($critical) {
 			include ($config["homedir"]."/general/error_authconfig.php");
 			exit;
-		} else if ($error == 0) {
+		}
+		else if ($error == 0) {
 			// Display the error once even if multiple connection attempts are made
 			$error = 1;
 			ui_print_error_message (__("Error connecting to database %s at %s.", $db, $host));

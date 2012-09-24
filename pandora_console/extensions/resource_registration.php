@@ -120,7 +120,8 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 			
 			$agents_item= array();
 			if (isset($item['agent'])) {
-				$agents = agents_get_agents(array('id_grupo' => $group_filter), array('id_agente', 'nombre'));
+				$agents = agents_get_agents(array('id_grupo' => $group_filter),
+					array('id_agente', 'nombre'));
 				
 				$agent_clean = str_replace(array('[', ']'), '', $item['agent']);
 				$regular_expresion = ($agent_clean != $item['agent']);

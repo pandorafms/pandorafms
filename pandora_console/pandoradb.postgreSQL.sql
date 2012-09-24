@@ -1233,9 +1233,9 @@ CREATE TABLE "tgis_map_layer_has_tagente" (
 CREATE INDEX "tgis_map_layer_has_tagente_tgis_map_layer_id_tmap_layer_idx" ON "tgis_map_layer_has_tagente"("tgis_map_layer_id_tmap_layer");
 CREATE INDEX "tgis_map_layer_has_tagente_tagente_id_agente_idx" ON "tgis_map_layer_has_tagente"("tagente_id_agente");
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table "tgroup_stat"
--- -----------------------------------------------------
+------------------------------------------------------------------------
 --Table to store global system stats per group
 CREATE TABLE "tgroup_stat" (
 	"id_group" INTEGER NOT NULL default 0 PRIMARY KEY,
@@ -1252,9 +1252,9 @@ CREATE TABLE "tgroup_stat" (
 	"utimestamp" INTEGER NOT NULL default 0
 );
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table "tnetwork_map"
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE "tnetwork_map" (
 	"id_networkmap" SERIAL NOT NULL PRIMARY KEY,
 	"id_user" VARCHAR(60)  NOT NULL,
@@ -1275,21 +1275,23 @@ CREATE TABLE "tnetwork_map" (
 	"distance_nodes" DOUBLE PRECISION default 2.5,
 	"center" INTEGER NOT NULL default 0,
 	"contracted_nodes" TEXT,
-	"show_snmp_modules" SMALLINT NOT NULL default 0
+	"show_snmp_modules" SMALLINT NOT NULL default 0,
+	"text_filter" VARCHAR(100) DEFAULT '',
+	"dont_show_subgroups" INTEGER NOT NULL default 0
 );
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table "tsnmp_filter"
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE "tsnmp_filter" (
 	"id_snmp_filter" SERIAL NOT NULL PRIMARY KEY,
 	"description" varchar(255) default '',
 	"filter" varchar(255) default ''
 );
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table "tagent_custom_fields"
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE "tagent_custom_fields" (
 	"id_field" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(45) NOT NULL default '',

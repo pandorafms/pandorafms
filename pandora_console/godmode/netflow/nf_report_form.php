@@ -34,7 +34,7 @@ $result_ins = -1;
 $update = (string)get_parameter('update', 0);
 $create = (string)get_parameter('create', 0);
 
-if ($create){
+if ($create) {
 	$name = (string) get_parameter ('name');
 	$group = (int) get_parameter ('id_group');
 	$description = get_parameter('description','');
@@ -44,12 +44,13 @@ if ($create){
 		'id_group' => $group,
 		'description' => $description,
 	);
-
+	
 	$result_ins = db_process_sql_insert('tnetflow_report', $values);
 	
 	$id = $result_ins;
 	
-} else {
+}
+else {
 	$id = (int)get_parameter('id');
 }
 
@@ -78,7 +79,7 @@ if (($result_ins === false) && ($result_ins != -1)) {
 else if (($result_ins != false) && ($result_ins != -1)){
 	ui_print_success_message ('Report created successfully');
 }
-		
+
 if ($id) {
 	$permission = netflow_check_report_group ($id, false);
 	if (!$permission) { //no tiene permisos para acceder a un informe

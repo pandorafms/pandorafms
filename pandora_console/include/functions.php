@@ -79,11 +79,13 @@ function safe_int ($value, $min = false, $max = false) {
 			$check = safe_int ($check, $min, $max);
 			if ($check !== false) {
 				$value[$key] = $check;
-			} else {
+			}
+			else {
 				unset ($value[$key]);
 			}
 		}
-	} else {
+	}
+	else {
 		$value = (int) $value; //Cast as integer
 		if (($min !== false && $value < $min) || ($max !== false && $value > $max)) {
 			//If it's smaller than min or larger than max return false

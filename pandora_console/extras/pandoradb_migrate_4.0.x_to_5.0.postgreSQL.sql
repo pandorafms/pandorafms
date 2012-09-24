@@ -119,9 +119,9 @@ REFERENCES "tplanned_downtime"("id");
 
 ALTER TABLE "tplanned_downtime_agents" ADD COLUMN "all_modules" SMALLINT default 1;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table "tplanned_downtime_modules"
--- -----------------------------------------------------
+------------------------------------------------------------------------
 CREATE TABLE "tplanned_downtime_modules" (
 	"id" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_agent" BIGINT NOT NULL default 0,
@@ -129,12 +129,15 @@ CREATE TABLE "tplanned_downtime_modules" (
 	"id_downtime" BIGINT NOT NULL REFERENCES tplanned_downtime("id")  ON DELETE CASCADE 
 );
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tevento`
--- -----------------------------------------------------
-
+------------------------------------------------------------------------
 ALTER TABLE "tevento" ADD COLUMN "source" text NULL default '';
 ALTER TABLE "tevento" ADD COLUMN "id_extra" text NULL default '';
+ALTER TABLE "tevento" ADD COLUMN "critical_instructions" text default '';
+ALTER TABLE "tevento" ADD COLUMN "warning_instructions" text default '';
+ALTER TABLE "tevento" ADD COLUMN "unknown_instructions" text default '';
+ALTER TYPE type_tevento_event ADD VALUE 'going_unknown' BEFORE 'unknown';
 
 -- -----------------------------------------------------
 -- Table `tgrupo`
@@ -160,6 +163,12 @@ ALTER TABLE "talert_snmp" ADD COLUMN "single_value" varchar(255) DEFAULT '';
 -- -----------------------------------------------------
 ALTER TABLE "tagente_modulo" ADD COLUMN "module_ff_interval" INTEGER NOT NULL default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "quiet" SMALLINT NOT NULL default 0;
+CREATE TYPE type_tagente_modulo_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
+ALTER TABLE "tagente_modulo" ADD COLUMN "wizard_level" type_tagente_modulo_wizard_level default 'nowizard';
+ALTER TABLE "tagente_modulo" ADD COLUMN "macros" TEXT default '';
+ALTER TABLE "tagente_modulo" ADD COLUMN "critical_instructions" text default '';
+ALTER TABLE "tagente_modulo" ADD COLUMN "warning_instructions" text default '';
+ALTER TABLE "tagente_modulo" ADD COLUMN "unknown_instructions" text default '';
 
 -- -----------------------------------------------------
 -- Table `tevent_filter`
@@ -287,50 +296,32 @@ ALTER TABLE "tnetwork_component" ADD COLUMN "only_metaconsole" INTEGER default '
 ALTER TABLE "tnetwork_component" ADD COLUMN "macros" TEXT default '';
 
 -- -----------------------------------------------------
--- Table `tagente_modulo`
--- -----------------------------------------------------
-
-CREATE TYPE type_tagente_modulo_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
-ALTER TABLE "tagente_modulo" ADD COLUMN "wizard_level" type_tagente_modulo_wizard_level default 'nowizard';
-ALTER TABLE "tagente_modulo" ADD COLUMN "macros" TEXT default '';
-
--- -----------------------------------------------------
 -- Table `tplugin`
 -- -----------------------------------------------------
 
 ALTER TABLE "tplugin" ADD COLUMN "macros" TEXT default '';
 ALTER TABLE "tplugin" ADD COLUMN "parameters" TEXT default '';
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `trecon_task`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 ALTER TABLE "trecon_task" ALTER COLUMN "subnet" TYPE TEXT;
 ALTER TABLE "trecon_task" ALTER COLUMN "field1" TYPE TEXT;
 
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tlayout_data`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 ALTER TABLE "tlayout_data" ADD COLUMN "enable_link" SMALLINT NOT NULL default 1;
 
--- -----------------------------------------------------
--- Table `tevento`
--- -----------------------------------------------------
-ALTER TABLE "tevento" ADD COLUMN "critical_instructions" text default '';
-ALTER TABLE "tevento" ADD COLUMN "warning_instructions" text default '';
-ALTER TABLE "tevento" ADD COLUMN "unknown_instructions" text default '';
-ALTER TYPE type_tevento_event ADD VALUE 'going_unknown' BEFORE 'unknown';
-
--- -----------------------------------------------------
--- Table `tagente_modulo`
--- -----------------------------------------------------
-ALTER TABLE "tagente_modulo" ADD COLUMN "critical_instructions" text default '';
-ALTER TABLE "tagente_modulo" ADD COLUMN "warning_instructions" text default '';
-ALTER TABLE "tagente_modulo" ADD COLUMN "unknown_instructions" text default '';
-
--- -----------------------------------------------------
+------------------------------------------------------------------------
 -- Table `tnetwork_component`
--- -----------------------------------------------------
+------------------------------------------------------------------------
 ALTER TABLE "tnetwork_component" ADD COLUMN "critical_instructions" text default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "warning_instructions" text default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "unknown_instructions" text default '';
 
+------------------------------------------------------------------------
+-- Table `tnetwork_map`
+------------------------------------------------------------------------
+ALTER TABLE "tnetwork_map" ADD COLUMN "text_filter" VARCHAR(100) DEFAULT '';
+ALTER TABLE "tnetwork_map" ADD COLUMN "dont_show_subgroups" INTEGER NOT NULL DEFAULT 0;

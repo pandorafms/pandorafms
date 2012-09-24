@@ -32,7 +32,7 @@ require_once ('include/functions_networkmap.php');
 $filter = networkmap_get_filter ($layout);
 
 // Generate dot file
-$graph = networkmap_generate_dot_groups (__('Pandora FMS'), $group, $simple, $font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen, $pure, $modwithalerts, $module_group, $hidepolicymodules, $depth, $id_networkmap);
+$graph = networkmap_generate_dot_groups (__('Pandora FMS'), $group, $simple, $font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen, $pure, $modwithalerts, $module_group, $hidepolicymodules, $depth, $id_networkmap, $dont_show_subgroups);
 
 if ($graph === false) {
 	ui_print_error_message (__('Map could not be generated'));

@@ -1,3 +1,34 @@
+2012-09-25 Miguel de Dios <miguel.dedios@artica.es>
+
+	* general/login_page.php, general/logoff.php, general/header.php,
+	general/login_help_dialog.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	godmode/reporting/visual_console_builder.elements.php,
+	godmode/agentes/planned_downtime.editor.php,
+	godmode/alerts/alert_list.list.php,
+	godmode/alerts/configure_alert_compound.php,
+	godmode/alerts/alert_list.php,
+	godmode/alerts/configure_alert_template.php,
+	include/styles/jquery-ui-1.8.23.custom.css,
+	include/javascript/jquery.jquery-ui-1.8.17.custom.min.js,
+	include/javascript/jquery.timeentry.js,
+	include/javascript/jquery.ui.droppable.js,
+	include/javascript/jquery.ui.draggable.js,
+	include/javascript/jquery.ui-timepicker-addon.js,
+	include/javascript/jquery.ui.resizable.js,
+	include/javascript/jquery.autocomplete.js,
+	include/javascript/jquery.ui.core.js,
+	include/javascript/jquery-1.8.2.js,
+	include/javascript/jquery.ui.dialog.js,
+	include/javascript/jquery.jquery-ui-1.8.23.custom.min.js,
+	include/functions_ui.php, index.php,
+	extensions/update_manager/update_pandora.php,
+	extensions/insert_data.php, operation/agentes/datos_agente.php,
+	operation/reporting/graph_viewer.php,
+	operation/reporting/reporting_viewer.php: updated the jquery and
+	jquery.ui, and removed old useless files. And added the jquery
+	library to timepicker and implemented the calls into the code.
+
 2012-09-24 Miguel de Dios <miguel.dedios@artica.es>
 
 	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql,

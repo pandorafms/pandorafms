@@ -221,9 +221,9 @@ config_check();
 	</tr>
 </table>
 <?php
-ui_require_jquery_file ('countdown');
-ui_require_css_file ('jquery-ui-1.8.17.custom');
-ui_require_jquery_file('jquery-ui-1.8.17.custom.min');
+ui_require_css_file ('jquery-ui-1.8.23.custom');
+ui_require_jquery_file('jquery-ui-1.8.23.custom.min');
+ui_require_jquery_file('countdown');
 ?>
 <script type="text/javascript" src="include/javascript/webchat.js "></script>	
 <script type="text/javascript">

@@ -295,7 +295,7 @@ else {
 			$agents = agents_get_group_agents (array_keys ($groups), false, "none");
 			
 			require_once('godmode/alerts/alert_list.list.php');
-
+			
 			return;
 			break;
 		case 'builder':

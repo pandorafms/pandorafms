@@ -525,7 +525,7 @@ foreach ($simple_alerts as $alert) {
 		$data[5] .= html_print_input_hidden ('disable_alert', 1, true);
 	}
 	$data[5] .= html_print_input_hidden ('id_alert', $alert['id'], true);
-	$data[5] .= '</form>';	
+	$data[5] .= '</form>';
 	
 	$data[5] .= '&nbsp;&nbsp;<form class="standby_alert_form" method="post" style="display: inline;">';
 	if (!$alert['standby']) {
@@ -537,7 +537,7 @@ foreach ($simple_alerts as $alert) {
 		$data[5] .= html_print_input_hidden ('standbyoff_alert', 1, true);
 	}
 	$data[5] .= html_print_input_hidden ('id_alert', $alert['id'], true);
-	$data[5] .= '</form>';	
+	$data[5] .= '</form>';
 
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
@@ -581,7 +581,7 @@ if ($display_create){
 	echo '</form>';
 	echo '</div>';
 }
-	
+
 ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');
 ui_require_jquery_file ('pandora.controls');

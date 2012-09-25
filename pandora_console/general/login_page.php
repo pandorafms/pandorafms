@@ -103,11 +103,8 @@ if (isset ($login_failed)) {
 	echo '</div>';	
 }
 
-ui_require_css_file ('dialog');
-ui_require_jquery_file ('ui.core');
-ui_require_jquery_file ('ui.dialog');
-ui_require_jquery_file ('ui.draggable');
-
+ui_require_css_file ('jquery-ui-1.8.23.custom');
+ui_require_jquery_file('jquery-ui-1.8.23.custom.min');
 ?>
 
 <?php

@@ -184,15 +184,22 @@ function mainInsertData() {
 	echo "</form>";
 	
 	ui_require_css_file ('datepicker');
-	ui_require_jquery_file ('timeentry');
+	ui_require_jquery_file ("ui-timepicker-addon");
 ?>
 <script type="text/javascript">
 	/* <![CDATA[ */
 	$(document).ready (function () {
-		$("#text-time").timeEntry ({
-			spinnerImage: 'images/time-entry.png',
-			spinnerSize: [20, 20, 0]
-		});
+		
+		$('#text-time').timepicker({
+			showSecond: true,
+			timeFormat: 'hh:mm:ss',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'});
 		
 		$("#text-date").datepicker ();
 		

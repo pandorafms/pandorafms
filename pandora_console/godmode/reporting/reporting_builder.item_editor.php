@@ -800,7 +800,7 @@ else {
 echo '</div>';
 echo '</form>';
 
-ui_require_jquery_file ('timeentry');
+ui_require_jquery_file ("ui-timepicker-addon");
 ui_require_javascript_file('pandora');
 if ($enterpriseEnable) {
 	reporting_enterprise_text_box();
@@ -1039,12 +1039,16 @@ $(document).ready (function () {
 	chooseType();
 	chooseSQLquery();
 	
-	$("#text-time_to, #text-time_from").timeEntry ({
-		spinnerImage: 'images/time-entry.png',
-		spinnerSize: [20, 20, 0],
-		show24Hours: true
-		}
-	);
+	$("#text-time_to, #text-time_from").timepicker({
+			showSecond: true,
+			timeFormat: 'hh:mm:ss',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'});
 });
 
 function create_custom_graph() {

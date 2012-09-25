@@ -277,9 +277,6 @@ echo '<span id="ip_text" style="display: none;">' . __('IP') . '</span>';
 
 ui_require_css_file ('color-picker');
 
-ui_require_jquery_file ('ui.core');
-ui_require_jquery_file ('ui.draggable');
-ui_require_jquery_file ('ui.droppable');
 ui_require_jquery_file ('colorpicker');
 ui_require_jquery_file ('pandora.controls');
 ui_require_javascript_file ('wz_jsgraphics');

@@ -93,18 +93,12 @@ echo '<div id="login_help_dialog" title="' . __('Welcome to Pandora FMS') . '" s
 	echo '</div>';
 	
 echo '</div>';
-
-ui_require_css_file ('dialog');
-ui_require_jquery_file ('ui.core');
-ui_require_jquery_file ('ui.dialog');
-ui_require_jquery_file ('ui.draggable');
-
 ?>
 
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */
 
-$(document).ready (function () {			
+$(document).ready (function () {
 
 	$("#login_help_dialog").dialog({
 				resizable: true,
@@ -118,7 +112,7 @@ $(document).ready (function () {
 						},
 				bgiframe: jQuery.browser.msie
 	});
-		
+	
 	
 	$("#submit-hide-login-help").click (function () {
 		
@@ -136,7 +130,6 @@ $(document).ready (function () {
 		}
 		
 	});
-		
 });
 
 /* ]]> */

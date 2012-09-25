@@ -169,13 +169,22 @@ echo '</div>';
 /* We must add javascript here. Otherwise, the date picker won't 
    work if the date is not correct because php is returning. */
 
-ui_require_jquery_file ('timeentry');
+ui_require_jquery_file ("ui-timepicker-addon");
 ?>
 <script language="javascript" type="text/javascript">
 
 $(document).ready (function () {
 	$("#loading").slideUp ();
-	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
+	$("#text-time").timepicker({
+			showSecond: true,
+			timeFormat: 'hh:mm:ss',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'});
 	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo $config['language']; ?>"]);
 	$("#text-date").datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
 });

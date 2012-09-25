@@ -648,10 +648,10 @@ else {
 echo '</div>';
 echo '</form>';
 
-ui_require_jquery_file ('ui.core');
-ui_require_jquery_file ('timeentry');
 ui_require_javascript_file ('pandora_alerts');
+ui_require_jquery_file ("ui-timepicker-addon");
 ?>
+
 <script type="text/javascript">
 /* <![CDATA[ */
 var matches = "<?php echo __('The alert would fire when the value matches <span id=\"value\"></span>');?>";
@@ -715,7 +715,9 @@ function render_example () {
 }
 
 $(document).ready (function () {
-<?php if ($step == 1): ?>
+<?php
+if ($step == 1) {
+?>
 	$("input#text-value").keyup (render_example);
 	$("input#text-max").keyup (render_example);
 	$("input#text-min").keyup (render_example);
@@ -789,7 +791,7 @@ $(document).ready (function () {
 		case "onchange":
 			$("#template-value, #template-max, #template-min").hide ();
 			$("#template-example, span#matches_value").show ();
-
+			
 			/* Show example */
 			if ($("#checkbox-matches_value")[0].checked)
 				$("span#example").empty ().append (onchange);
@@ -842,12 +844,20 @@ $(document).ready (function () {
 	});
 	
 	$("#text-value").keyup (check_regex);
-<?php elseif ($step == 2): ?>
-	$("#text-time_from, #text-time_to").timeEntry ({
-		spinnerImage: 'images/time-entry.png',
-		spinnerSize: [20, 20, 0]
-		}
-	);
+<?php
+}
+elseif ($step == 2) {
+?>
+	$('#text-time_from, #text-time_to').timepicker({
+		showSecond: true,
+		timeFormat: 'hh:mm:ss',
+		timeOnlyTitle: '<?php echo __('Choose time');?>',
+		timeText: '<?php echo __('Time');?>',
+		hourText: '<?php echo __('Hour');?>',
+		minuteText: '<?php echo __('Minute');?>',
+		secondText: '<?php echo __('Second');?>',
+		currentText: '<?php echo __('Now');?>',
+		closeText: '<?php echo __('Close');?>'});
 	
 	$("#threshold").change (function () {
 		if (this.value == -1) {
@@ -860,7 +870,10 @@ $(document).ready (function () {
 			$("#template-threshold-other_input").hide ();
 		}
 	});
-<?php elseif ($step == 3): ?>
+<?php
+}
+elseif ($step == 3) {
+?>
 	$("#recovery_notify").change (function () {
 		if (this.value == 1) {
 			$("#template-field2, #template-field3").show ();
@@ -869,7 +882,9 @@ $(document).ready (function () {
 			$("#template-field2, #template-field3").hide ();
 		}
 	});
-<?php endif; ?>
+<?php
+}
+?>
 })
 /* ]]> */
 </script>

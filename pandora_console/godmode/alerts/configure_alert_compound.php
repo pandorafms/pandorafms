@@ -673,12 +673,10 @@ if ($step == 1) {
 	echo '</div>';
 }
 
-ui_require_css_file ('timeentry');
+ui_require_jquery_file ("ui-timepicker-addon");
 ui_require_jquery_file ('form');
 ui_require_jquery_file ('tablesorter');
 ui_require_jquery_file ('tablesorter.pager');
-ui_require_jquery_file ('ui.core');
-ui_require_jquery_file ('timeentry');
 ?>
 
 <script type="text/javascript" src="include/javascript/pandora_alerts.js"></script>
@@ -909,11 +907,16 @@ $(document).ready (function () {
 		return true;
 	});
 <?php elseif ($step == 2): ?>
-	$("#text-time_from, #text-time_to").timeEntry ({
-		spinnerImage: 'images/time-entry.png',
-		spinnerSize: [20, 20, 0]
-		}
-	);
+	$("#text-time_from, #text-time_to").timepicker({
+			showSecond: true,
+			timeFormat: 'hh:mm:ss',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'});
 	
 	$("#threshold").change (function () {
 		if (this.value == -1) {

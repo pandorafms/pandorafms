@@ -14,10 +14,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-ui_require_css_file ('dialog');
-ui_require_jquery_file ('ui.core');
-ui_require_jquery_file ('ui.dialog');
-ui_require_jquery_file ('ui.draggable');
+ui_require_css_file ('jquery-ui-1.8.23.custom');
+ui_require_jquery_file('jquery-ui-1.8.23.custom.min');
 
 ?>
 <img src="images/login_background.png" id="login_body">

@@ -1112,7 +1112,7 @@ function ui_process_page_head ($string, $bitfield) {
 		$_GET['sec2'] == "operation/agentes/group_view" || $_GET['sec2'] == 'operation/events/events' ||
 		$_GET['sec2'] == "enterprise/dashboard/main_dashboard") {
 			
-			$query = ui_get_url_refresh (false);	
+			$query = ui_get_url_refresh (false);
 			$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL=' . $query . '" />';
 			
 		}
@@ -1157,7 +1157,7 @@ function ui_process_page_head ($string, $bitfield) {
 			// It accepts username and password. The rest should be internal to the auth file.
 			// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
 			// process_user_login should return false in case of errors or invalid login, the nickname if correct
-			$nick_in_db = process_user_login ($nick, $pass);	
+			$nick_in_db = process_user_login ($nick, $pass);
 			
 			if ($nick_in_db === false) {
 				$login_ok = false;
@@ -1238,7 +1238,7 @@ function ui_process_page_head ($string, $bitfield) {
 	foreach ($config['js'] as $name => $filename) {
 		if (in_array ($name, $loaded))
 			continue;
-			
+		
 		array_push ($loaded, $name);
 		if (!empty ($config["compact_header"])) {
 			$output .= '<script type="text/javascript">/* <![CDATA[ */'."\n";
@@ -1260,15 +1260,17 @@ function ui_process_page_head ($string, $bitfield) {
 	//Pandora specific jquery should go first
 	$black_list_pages_old_jquery = array('operation/gis_maps/index');
 	if (in_array(get_parameter('sec2'), $black_list_pages_old_jquery)) {
-		$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery.js",
-			"ui" => "include/javascript/jquery.ui.core.js",
-			"dialog" => "include/javascript/jquery.ui.dialog.js",
-			"pandora" => "include/javascript/jquery.pandora.js"),
+		$config['jquery'] = array_merge (
+			array ("jquery" => "include/javascript/jquery.js",
+				"ui" => "include/javascript/jquery.ui.core.js",
+				"dialog" => "include/javascript/jquery.ui.dialog.js",
+				"pandora" => "include/javascript/jquery.pandora.js"),
 			$config['jquery']);
 	}
 	else {
-		$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery-1.7.1.js",
-			"pandora" => "include/javascript/jquery.pandora.js"),
+		$config['jquery'] = array_merge(
+			array ("jquery" => "include/javascript/jquery-1.8.2.js",
+				"pandora" => "include/javascript/jquery.pandora.js"),
 			$config['jquery']);
 	}
 	

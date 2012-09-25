@@ -192,10 +192,6 @@ function update_pandora_administration($settings, $user_key) {
 	
 	html_print_table($tableMain);
 	
-	ui_require_css_file ('dialog');
-	ui_require_jquery_file ('ui.core');
-	ui_require_jquery_file ('ui.dialog');
-	
 	update_pandora_print_javascript_admin();
 }
 ?>

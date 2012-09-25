@@ -232,16 +232,22 @@ else {
 	unset ($table);
 }
 
-ui_require_jquery_file ('timeentry');
+ui_require_jquery_file ("ui-timepicker-addon");
 
 ?>
 <script language="javascript" type="text/javascript">
 
 $(document).ready (function () {
-	$("#text-time_from, #text-time_to").timeEntry ({
-		spinnerImage: 'images/time-entry.png',
-		spinnerSize: [20, 20, 0]
-		});
+	$("#text-time_from, #text-time_to").timepicker({
+		showSecond: true,
+		timeFormat: 'hh:mm:ss',
+		timeOnlyTitle: '<?php echo __('Choose time');?>',
+		timeText: '<?php echo __('Time');?>',
+		hourText: '<?php echo __('Hour');?>',
+		minuteText: '<?php echo __('Minute');?>',
+		secondText: '<?php echo __('Second');?>',
+		currentText: '<?php echo __('Now');?>',
+		closeText: '<?php echo __('Close');?>'});
 	$("#text-date_from, #text-date_to").datepicker ();
 	$.datepicker.regional["<?php echo $config['language']; ?>"];
 });

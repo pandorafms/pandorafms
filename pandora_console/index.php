@@ -63,12 +63,12 @@ session_start ();
 require_once ("include/config.php");
 
 /* Enterprise support */
-if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
-	include_once (ENTERPRISE_DIR."/load_enterprise.php");
+if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+	include_once (ENTERPRISE_DIR . "/load_enterprise.php");
 }
 
-if (file_exists (ENTERPRISE_DIR."/include/functions_login.php")) {
-	include_once (ENTERPRISE_DIR."/include/functions_login.php");
+if (file_exists (ENTERPRISE_DIR . "/include/functions_login.php")) {
+	include_once (ENTERPRISE_DIR . "/include/functions_login.php");
 }
 
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {

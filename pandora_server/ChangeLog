@@ -1,3 +1,10 @@
+2012-09-26  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* util/pandora_db.pl: bug fix: 'audit_purge' was used to purge
+	tagente_datos_string (instead of 'string_purge'). Also fixed
+	the bug that the oldest data on the corresponding table would
+	be never purged.
+
 2012-08-20  Sergio Martin <sergio.martin@artica.es>
 
 	* util/plugin/EU_10yrspread.pl: added plugin to monitor 

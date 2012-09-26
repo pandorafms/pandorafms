@@ -217,7 +217,7 @@ html_print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub 
 echo '</td><td style="width:5%;">&nbsp;</form></td>';
 
 echo '<td>';
-echo '<form method="post" action="index.php?sec=estado&sec2=godmode/agentes/configurar_agente">';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
 	html_print_input_hidden ('new_agent', 1);
 	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 echo "</form>";

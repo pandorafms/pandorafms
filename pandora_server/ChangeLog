@@ -1,3 +1,12 @@
+2012-09-26  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* util/pandora_db.pl: bug fix: 'audit_purge' was used to purge
+	tagente_datos_string (instead of 'string_purge'). Also fixed
+	the bug that the oldest data on the corresponding table would
+	be never purged.
+
+	Merged from 4.0 branch.
+
 2012-09-25 Vanessa Gil <vanessa.gil@artica.es>
 
 	* util/tool_api.pl: Added file to create events using API.

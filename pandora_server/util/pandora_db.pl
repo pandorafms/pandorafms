@@ -102,7 +102,7 @@ sub pandora_purgedb ($$) {
 		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
 	
 		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-			db_do ($dbh, "DELETE FROM tagente_datos WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+			db_do ($dbh, "DELETE FROM tagente_datos WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
 			print "[PURGE] Data deletion Progress %$ax .. \r";
 		}
 	    print "\n";
@@ -119,7 +119,7 @@ sub pandora_purgedb ($$) {
 		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
 
 		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-			db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+			db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
 			print "[PURGE] Log4x data deletion progress %$ax .. \r";
 		}
 		print "\n";
@@ -140,7 +140,7 @@ sub pandora_purgedb ($$) {
 		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
 	
 		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-			db_do ($dbh, "DELETE FROM tagente_datos_string WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+			db_do ($dbh, "DELETE FROM tagente_datos_string WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
 			print "[PURGE] String deletion Progress %$ax .. \r";
 		}
 	    print "\n";
@@ -225,7 +225,7 @@ sub pandora_purgedb ($$) {
 		$purge_steps = int( $total_time / $BIG_OPERATION_STEP);
 	
 		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
-			db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark);
+			db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark);
 			print "[PURGE] Agent access deletion progress %$ax .. \r";
 		}
 	    print "\n";
@@ -386,7 +386,7 @@ sub pandora_load_config ($) {
 	$conf->{'_event_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'event_purge'");
 	$conf->{'_trap_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");
 	$conf->{'_audit_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'audit_purge'");
-	$conf->{'_string_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'audit_purge'");
+	$conf->{'_string_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'string_purge'");
 	$conf->{'_gis_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'gis_purge'");
 
 	$conf->{'_days_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_purge'");

@@ -1,3 +1,10 @@
+2012-09-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_menu.php
+	operation/agentes/estado_agente.php: Add a manually list of the
+	pages (sec2) not accessibles from menu to link it to the
+	section where appear (sec). Fix a bad section
+
 2012-09-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/ajax/reporting.ajax.php: Deserialized field for metaconsole

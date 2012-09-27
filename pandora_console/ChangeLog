@@ -1,3 +1,13 @@
+2012-09-27  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_menu.php
+	index.php
+	operation/menu.php
+	godmode/agentes/modificar_agente.php
+	godmode/menu.php: Fixed some pages to ACL Enterprise
+	and the full screen pages loading menu structure when is not
+	shown
+
 2012-09-26  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_menu.php

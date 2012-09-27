@@ -321,6 +321,9 @@ if ($config["pure"] == 0) {
 }
 else {
 	echo '<div id="main_pure">';
+	// Require menu only to build structure to use it in ACLs
+	require ("operation/menu.php");
+	require ("godmode/menu.php");
 }
 
 // http://es2.php.net/manual/en/ref.session.php#64525

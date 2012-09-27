@@ -69,7 +69,7 @@ if (!empty($agent_to_delete)) {
 $tab = 'view';
 
 /* Setup tab */
-$viewtab['text'] = '<a href="index.php?sec=gagente&sec2=operation/agentes/estado_agente">' 
+$viewtab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente">' 
 		. html_print_image ("images/zoom.png", true, array ("title" =>__('View')))
 		. '</a>';
 		

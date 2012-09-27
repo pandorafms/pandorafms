@@ -382,5 +382,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 // Save operation menu array to use in operation/extensions.php view
 $operation_menu_array = $menu_operation;
 
-menu_print_menu ($menu_operation, true);
+if(!$config['pure']) {
+	menu_print_menu ($menu_operation, true);
+}
 ?>

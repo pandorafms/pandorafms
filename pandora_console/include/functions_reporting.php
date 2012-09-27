@@ -58,11 +58,12 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 	$uncompressed_module = is_module_uncompressed ($module_type);
 	
 	// Get module data
-	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
-			WHERE id_agente_modulo = ' . (int) $id_agent_module .
+	$interval_data = db_get_all_rows_sql ('SELECT *
+		FROM tagente_datos 
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
 			' AND utimestamp > ' . (int) $datelimit .
 			' AND utimestamp < ' . (int) $date .
-			' ORDER BY utimestamp ASC', true);
+		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Uncompressed module data
@@ -78,7 +79,7 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($interval_data, $previous_data);
 		}
-	
+		
 		// Get next data
 		$next_data = modules_get_next_data ($id_agent_module, $date);
 		if ($next_data !== false) {
@@ -127,7 +128,7 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 		if ($period == 0) {
 			return 0;
 		}
-	
+		
 		return $total / $period;
 	}
 	
@@ -161,18 +162,20 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
 	$uncompressed_module = is_module_uncompressed ($module_type);
 	
 	// Get module data
-	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
-			WHERE id_agente_modulo = ' . (int) $id_agent_module .
+	$interval_data = db_get_all_rows_sql ('SELECT *
+		FROM tagente_datos 
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
 			' AND utimestamp > ' . (int) $datelimit .
 			' AND utimestamp < ' . (int) $date .
-			' ORDER BY utimestamp ASC', true);
+		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Uncompressed module data
 	if ($uncompressed_module) {
 	
 	// Compressed module data
-	} else {
+	}
+	else {
 		// Get previous data
 		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 		if ($previous_data !== false) {
@@ -185,7 +188,8 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
 		if ($next_data !== false) {
 			$next_data['utimestamp'] = $date;
 			array_push ($interval_data, $next_data);
-		} else if (count ($interval_data) > 0) {
+		}
+		else if (count ($interval_data) > 0) {
 			// Propagate the last known data to the end of the interval
 			$next_data = array_pop ($interval_data);
 			array_push ($interval_data, $next_data);
@@ -232,25 +236,27 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;	
-
+	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);
 	$uncompressed_module = is_module_uncompressed ($module_type);
-
+	
 	// Get module data
-	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
-			WHERE id_agente_modulo = ' . (int) $id_agent_module .
+	$interval_data = db_get_all_rows_sql ('SELECT *
+		FROM tagente_datos 
+		WHERE id_agente_modulo = ' . (int) $id_agent_module .
 			' AND utimestamp > ' . (int) $datelimit .
 			' AND utimestamp < ' . (int) $date .
-			' ORDER BY utimestamp ASC', true);
+		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Uncompressed module data
 	if ($uncompressed_module) {
 		$min_necessary = 1;
 	
 	// Compressed module data
-	} else {
+	}
+	else {
 		// Get previous data
 		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 		if ($previous_data !== false) {
@@ -263,7 +269,8 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 
 		if ($next_data !== false) {
 			$next_data['utimestamp'] = $date;
 			array_push ($interval_data, $next_data);
-		} else if (count ($interval_data) > 0) {
+		}
+		else if (count ($interval_data) > 0) {
 			// Propagate the last known data to the end of the interval
 			$next_data = array_pop ($interval_data);
 			array_push ($interval_data, $next_data);
@@ -271,20 +278,20 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 
 			array_push ($interval_data, $next_data);
 		}
 	}
-
+	
 	if (count ($interval_data) < 1) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$min = $interval_data[0]['datos'];
-
+	
 	foreach ($interval_data as $data) {
 		if ($data['datos'] < $min) {
 			$min = $data['datos'];
 		}
 	}
-
+	
 	return $min;
 }
 
@@ -301,7 +308,8 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 
 	global $config;
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
-	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
+	if ((empty ($period)) OR ($period == 0))
+		$period = $config["sla_period"];
 	$datelimit = $date - $period;
 	
 	$id_module_type = db_get_value ('id_tipo_modulo', 'tagente_modulo','id_agente_modulo', $id_agent_module);
@@ -415,7 +423,8 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	$datelimit = $date - $period;
 	
 	// Get interval data
-	$sql = sprintf ('SELECT * FROM tagente_datos
+	$sql = sprintf ('SELECT *
+		FROM tagente_datos
 		WHERE id_agente_modulo = %d
 			AND utimestamp > %d AND utimestamp <= %d',
 		$id_agent_module, $datelimit, $date);
@@ -463,7 +472,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	}
 	$sql .= ' ORDER BY utimestamp ASC';
 	$interval_data = db_get_all_rows_sql ($sql, true);
-
+	
 	if ($interval_data === false) {
 		$interval_data = array ();
 	}
@@ -481,7 +490,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 		$id_downtime = $downtime['id_downtime'];
 		$sql_date = "SELECT date_from, date_to FROM tplanned_downtime WHERE id=$id_downtime";
 		$date_downtime = db_get_row_sql($sql_date);
-	
+		
 		if ($date_downtime != false) {
 			$downtime_dates[$i]['date_from'] = $date_downtime['date_from'];
 			$downtime_dates[$i]['date_to'] = $date_downtime['date_to'];
@@ -496,7 +505,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -510,11 +519,11 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-
+	
 	if (count ($interval_data) < 2) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$bad_period = 0;
 	$first_data = array_shift ($interval_data);
@@ -523,7 +532,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	if ($first_data['utimestamp'] != $datelimit) {
 		$period = $date - $first_data['utimestamp'];
 	}
-
+	
 	$previous_utimestamp = $first_data['utimestamp'];
 	if ((($max_value > $min_value AND ($first_data['datos'] > $max_value OR $first_data['datos'] < $min_value))) OR
 		($max_value <= $min_value AND $first_data['datos'] < $min_value)) {
@@ -607,7 +616,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	//Add the working times (mon - tue - wed ...) and from time to time
 	$days = array();
 	//Translate to mysql week days
-
+	
 	if ($daysWeek) {
 		foreach ($daysWeek as $key => $value) {
 			if (!$value) {
@@ -648,11 +657,11 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 			$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" OR TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
 		}
 	}
-
+	
 	$sql .= ' ORDER BY utimestamp ASC';
 	$interval_data = db_get_all_rows_sql ($sql, true);
-
-	//calculate planned downtime dates
+	
+	//--------calculate planned downtime dates--------------------------
 	$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	$sql_downtime = "SELECT id_downtime FROM tplanned_downtime_agents WHERE id_agent=$id_agent";
 	$downtimes = db_get_all_rows_sql($sql_downtime); 
@@ -665,14 +674,14 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$id_downtime = $downtime['id_downtime'];
 		$sql_date = "SELECT date_from, date_to FROM tplanned_downtime WHERE id=$id_downtime";
 		$date_downtime = db_get_row_sql($sql_date);
-	
+		
 		if ($date_downtime != false) {
 			$downtime_dates[$i]['date_from'] = $date_downtime['date_from'];
 			$downtime_dates[$i]['date_to'] = $date_downtime['date_to'];
 			$i++;
 		}
 	}
-	/////
+	//------------------------------------------------------------------
 	
 	if ($interval_data === false) {
 		$interval_data = array ();
@@ -684,7 +693,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data (This adds data before the interval of the report)
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -698,12 +707,12 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-
+	
 	// We need more or equal two points
 	if (count ($interval_data) < 2) {
 		return false;
 	}
-
+	
 	//Get the percentage for the limits
 	$diff = $max_value - $min_value; 
 	
@@ -744,10 +753,10 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 			$previous_status = 1;
 		}
 	}
-
+	
 	$data_colors = array();
 	$i = 0;
-
+	
 	foreach ($interval_data as $data) {
 		$change = false;
 		$value = $data['datos'];
@@ -797,7 +806,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
  */
 function reporting_get_group_stats ($id_group = 0) {
 	global $config;
-
+	
 	$data = array ();
 	$data["monitor_checks"] = 0;
 	$data["monitor_not_init"] = 0;
@@ -820,29 +829,29 @@ function reporting_get_group_stats ($id_group = 0) {
 	$data["server_sanity"] = 100;
 	$data["total_not_init"] = 0;
 	$data["monitor_non_init"] = 0;
-
+	
 	$cur_time = get_system_time ();
-
+	
 	//Check for access credentials using check_acl. More overhead, much safer
 	if (!check_acl ($config["id_user"], $id_group, "AR")) {
 		return $data;
 	}
 	
 	if ($id_group == 0) {
-		$id_group = array_keys (users_get_groups ());
+		$id_group = array_keys (users_get_groups ($config['id_user'], "AR", false));
 	}
-
-	// -------------------------------------------------------------------
+	
+	// -----------------------------------------------------------------
 	// Server processed stats. NOT realtime (taken from tgroup_stat)
-	// -------------------------------------------------------------------
-	if ($config["realtimestats"] == 0){
-
+	// -----------------------------------------------------------------
+	if ($config["realtimestats"] == 0) {
+		
 		if (!is_array($id_group)){
 			$my_group = $id_group;
 			$id_group = array();
 			$id_group[0] = $my_group;
 		}
-
+		
 		foreach ($id_group as $group){
 			$group_stat = db_get_all_rows_sql ("SELECT *
 				FROM tgroup_stat, tgrupo
@@ -863,95 +872,95 @@ function reporting_get_group_stats ($id_group = 0) {
 			$data["agents_unknown"] += $group_stat[0]["agents_unknown"];
 			$data["utimestamp"] = $group_stat[0]["utimestamp"];
 		}
-
+		
 	// -------------------------------------------------------------------
 	// Realtime stats, done by PHP Console
 	// -------------------------------------------------------------------
 	}
 	else {
-
+		
 		if (!is_array($id_group)){
 			$my_group = $id_group;
 			$id_group = array();
 			$id_group[0] = $my_group;
 		}
-
+		
 		// Store the groups where we are quering
 		$covered_groups = array();
 		
 		foreach ($id_group as $group){	
 			$children = groups_get_childrens($group);
-
+			
 			//Show empty groups only if they have children with agents
 			$group_array = array();
-
+			
 			foreach($children as $sub) {
 				// If the group is quering previously, we ingore it
 				if(!in_array($sub['id_grupo'],$covered_groups)){
 					array_push($covered_groups, $sub['id_grupo']);
 					array_push($group_array, $sub['id_grupo']);
 				}
-
+			
 			}
-
+			
 			// Add id of this group to create the clause
 			// If the group is quering previously, we ingore it
 			if(!in_array($group,$covered_groups)){
 				array_push($covered_groups, $group);
 				array_push($group_array, $group);
 			}
-
+			
 			// If there are not groups to query, we jump to nextone
 			
 			if (empty($group_array)) {
 				continue;
 			}
-
+			
 			// Get unknown agents by using the status code in modules.
-						
+			
 			$data["agents_unknown"] = groups_agent_unknown ($group_array);
-
+			
 			// Get monitor NOT INIT, except disabled AND async modules
-
+			
 			$data["monitor_not_init"] = groups_monitor_not_init ($group_array);
-					
+			
 			// Get monitor OK, except disabled and non-init
 			
 			$data["monitor_ok"] = groups_monitor_ok ($group_array);
-
+			
 			// Get monitor CRITICAL, except disabled and non-init
-
+			
 			$data["monitor_critical"] = groups_monitor_critical ($group_array);
 			
 			// Get monitor WARNING, except disabled and non-init
 			
 			$data["monitor_warning"] = groups_monitor_warning ($group_array);
-		
+			
 			// Get monitor UNKNOWN, except disabled and non-init
 			
 			$data["monitor_unknown"] = groups_monitor_unknown ($group_array);
 			
 			// Get alerts configured, except disabled 
-
+			
 			$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
-
+			
 			// Get alert configured currently FIRED, except disabled 
-
+			
 			$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
-					
+			
 			// Calculate totals using partial counts from above
 			
 			// Get TOTAL agents in a group
 			$data["total_agents"] += groups_total_agents ($group_array);
-
+			
 			// Get TOTAL non-init modules, except disabled ones and async modules
-
+			
 			$data["total_not_init"] += $data["monitor_not_init"];
-
+			
 			// Get total count of monitors for this group, except disabled.
-
+			
 			$data["monitor_checks"] += $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
-					
+			
 		}
 		/*
 		 Monitor health (percentage)
@@ -964,46 +973,46 @@ function reporting_get_group_stats ($id_group = 0) {
 		 
 		 */
 	}
-
+	
 	if ($data["monitor_unknown"] > 0 && $data["monitor_checks"] > 0) {
 		$data["monitor_health"] = format_numeric (100 - ($data["monitor_unknown"] / ($data["monitor_checks"] / 100)), 1);
 	}
 	else {
 		$data["monitor_health"] = 100;
 	}
-
+	
 	if ($data["monitor_not_init"] > 0 && $data["monitor_checks"] > 0) {
 		$data["module_sanity"] = format_numeric (100 - ($data["monitor_not_init"] / ($data["monitor_checks"] / 100)), 1);
 	}
 	else {
 		$data["module_sanity"] = 100;
 	}
-
-	if (isset($data["alerts"])){
+	
+	if (isset($data["alerts"])) {
 		if ($data["monitor_alerts_fired"] > 0 && $data["alerts"] > 0) {
 			$data["alert_level"] = format_numeric (100 - ($data	["monitor_alerts_fired"] / ($data["alerts"] / 100)), 1);
-		} else {
+		}
+		else {
 			$data["alert_level"] = 100;
 		}
 	} 
- 	else {
+	else {
 		$data["alert_level"] = 100;
 		$data["alerts"] = 0;
 	}
-
+	
 	$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_warning"];
-
+	
 	if ($data["monitor_bad"] > 0 && $data["monitor_checks"] > 0) {
 		$data["global_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
 	}
 	else {
 		$data["global_health"] = 100;
 	}
-
+	
 	$data["server_sanity"] = format_numeric (100 - $data["module_sanity"], 1);
-
+	
 	return ($data);
-
 }
 
 
@@ -1851,7 +1860,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0, $date = 
 			array_push ($events, $event);
 		}
 	}
-
+	
 	if ($events) {
 		foreach ($events as $eventRow) {
 			foreach ($eventRow as $event) {
@@ -1864,7 +1873,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0, $date = 
 				array_push ($table->data, $data);
 			}
 		}
-	
+		
 		if ($html) {
 			return html_print_table ($table, $return);
 		}
@@ -1990,16 +1999,15 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
  *  @param array $b Array element 2 to compare
  * 
  */
-function sla_value_desc_cmp($a, $b)
-{	
+function sla_value_desc_cmp($a, $b) {
 	// This makes 'Unknown' values the lastest
 	if (preg_match('/^(.)*Unknown(.)*$/', $a[5]))
 		$a[6] = -1;
-		
+	
 	if (preg_match('/^(.)*Unknown(.)*$/', $b[5]))
 		$b[6] = -1;
-		
-    return ($a[6] < $b[6])? 1 : 0;
+	
+	return ($a[6] < $b[6])? 1 : 0;
 }
 
 /**
@@ -2009,8 +2017,7 @@ function sla_value_desc_cmp($a, $b)
  *  @param array $b Array element 2 to compare
  * 
  */
-function sla_value_asc_cmp($a, $b)
-{
+function sla_value_asc_cmp($a, $b) {
 	// This makes 'Unknown' values the lastest
 	if (preg_match('/^(.)*Unknown(.)*$/', $a[5]))
 		$a[6] = -1;
@@ -2330,7 +2337,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// What show?
 			$show_table = $content['show_graph'] == 0 || $content['show_graph'] == 1;
 			$show_graphs = $content['show_graph'] == 1 || $content['show_graph'] == 2;
-		
+			
 			//RUNNING
 			$table->style[1] = 'text-align: right';
 			
@@ -2348,7 +2355,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$slas = db_get_all_rows_field_filter ('treport_content_sla_combined',
 				'id_report_content', $content['id_rc']);
-
+			
 			if ($slas === false) {
 				$data = array ();
 				$table->colspan[$next_row][0] = 3;
@@ -2421,8 +2428,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
 					//Restore db connection
 					metaconsole_restore_db();
-				}					
-				
+				}
+			
 			}
 			
 			// SLA items sorted descending ()
@@ -2452,8 +2459,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						//ui_print_error_message ("Error connecting to ".$server_name);
 						continue;
 					}
-				}	
-		
+				}
+				
 				if ($sla_value === false) {
 					if ($total_result_SLA != 'fail')
 						$total_result_SLA = 'unknown';
@@ -2479,7 +2486,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$data_graph[__('Out of limits')]++;
 					$data_horin_graph[__('Out of limits')]['g']++;
 				}
-
+				
 				$total_SLA += $sla_value;
 				
 				if ($show_table) {
@@ -2541,7 +2548,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					
 					array_push ($tableslice->data, $dataslice);
 				}
-					
+				
 				if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
 					//Restore db connection
 					metaconsole_restore_db();
@@ -2567,7 +2574,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				//Print resume
 				$table_resume = null;
 				$table_resume->head[0] = __('Average Value');
-
+				
 				$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
 				$table_resume->data[0][0] .= format_numeric($total_SLA / count($sla_showed), 2);
 				$table_resume->data[0][0] .= "%</span>";
@@ -2818,7 +2825,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			else {
 				$sql = io_safe_output ($content['external_source']);
 			}
-
+			
 			// Do a security check on SQL coming from the user
 			$sql = check_sql ($sql);
 			
@@ -3265,7 +3272,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$table1->style[3] = 'text-align: center';
 					
 					$data_res = array();
-
+					
 					foreach ($generals as $key => $row) {
 						//Metaconsole connection
 						$server_name = $row ['server_name'];
@@ -3279,7 +3286,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						
 						$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
 						$ag_name = modules_get_agentmodule_agent_name ($row['id_agent_module']);
-
+						
 						switch ($row['operation']) {
 							case 'sum':
 									$data_res[$key] = reporting_get_agentmodule_data_sum ($row['id_agent_module'], $content['period'], $report["datetime"]);
@@ -3295,7 +3302,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 								$data_res[$key] = reporting_get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
 								break;
 						}
-
+						
 						$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $row ['id_agent_module']);
 						
 						$id_agent_module[$key] = $row['id_agent_module'];
@@ -3343,7 +3350,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 									break;
 							}
 							$data[2] = $op;
-
+							
 							if ($d === false) {
 								$data[3] = '--';
 							}
@@ -3533,7 +3540,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					break;
 			}
 			if ($content['show_resume'] && count($generals) > 0) {
-
+				
 				//Get the first valid value and assign it to $min & $max
 				$min = false;
 				$i=0;
@@ -3602,7 +3609,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$value = reporting_get_agentmodule_data_average ($g['id_agent_module'], $content['period']);
 							break;
 					}
-	
+					
 					if ($value !== false) {
 						if ($value > $max) {
 							$max = $value;
@@ -4174,7 +4181,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				array_push ($table->data, $data);
 			}
-
+			
 			if ($content['show_resume'] && $i>0) {
 				unset($table_summary);
 				
@@ -4197,7 +4204,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'agent_module':
 			reporting_header_content($mini, $content, $report, $table, __('Agents/Modules'));
-		
+			
 			$id_group = $content['id_group'];
 			$id_module_group = $content['id_module_group'];
 			$offset = get_parameter('offset', 0);
@@ -4241,7 +4248,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$cont ++;
 				}
 			}
-
+			
 			if($config["pure"] == 1) {
 				$block = count($modules_by_name);
 			}
@@ -4364,7 +4371,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$match = true;
 						}
 					}
-								
+					
 					if(!$match) {
 						$table_data .= "<td style='background-color: #DDD;'></td>";
 					}
@@ -4372,7 +4379,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_data .= "</tr>";
 			}
-
+			
 			$table_data .= "</table>";
 			
 			$table_data .= "<br><br><p>" . __("The colours meaning:") .
@@ -4413,7 +4420,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$module_name = $es['inventory_modules'];
 			$date = $es['date'];
 			$description = $content['description'];
-						
+			
 			$data = array ();
 			$table->colspan[1][0] = 2;
 			$table->colspan[2][0] = 2;
@@ -4421,9 +4428,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data[0] = $description;
 				array_push ($table->data, $data);
 			}
-
+			
 			$inventory_data = inventory_get_data((array)$id_agent,(array)$module_name,$date,'',false);
-
+			
 			if ($inventory_data == ERR_NODATA) {
 				$inventory_data = "<div class='nf'>".__('No data found.')."</div>";
 				$inventory_data .= "&nbsp;</td></tr><tr><td>";				
@@ -4449,17 +4456,17 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$data = array ();
-
+			
 			$table->colspan[1][0] = 2;
-
+			
 			if($description != '') {
 				$data[0] = $description;
 				array_push ($table->data, $data);
 			}
-
+			
 			$data[0] = $inventory_changes;
 			$table->colspan[2][0] = 2;
-
+			
 			array_push ($table->data, $data);
 			break;
 	}
@@ -4480,7 +4487,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
  * @return float The MTBF value in the interval.
  */
 function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
-
+	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
@@ -4493,7 +4500,7 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 	if ($module === false) {
 		return false;
 	}
-
+	
 	$critical_min = $module['min_critical'];
 	$critical_max = $module['max_critical'];
 	$module_type = $module['id_tipo_modulo'];
@@ -4512,14 +4519,14 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 		' AND utimestamp < ' . (int) $date .
 		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -4533,11 +4540,11 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-
+	
 	if (count ($interval_data) < 2) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
@@ -4551,7 +4558,7 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 		$previous_status = 0;
 		$critical_count = 0;
 	}
-
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {
@@ -4572,11 +4579,11 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 		
 		$previous_utimestamp = $data['utimestamp'];
 	}
-
+	
 	if ($critical_count == 0) {
 		return 0;
 	}
-
+	
 	return ($period - $critical_period) / $critical_count;
 }
 
@@ -4591,7 +4598,7 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
  * @return float The MTTR value in the interval.
  */
 function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
-
+	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
@@ -4604,7 +4611,7 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 	if ($module === false) {
 		return false;
 	}
-
+	
 	$critical_min = $module['min_critical'];
 	$critical_max = $module['max_critical'];
 	$module_type = $module['id_tipo_modulo'];
@@ -4623,14 +4630,14 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 		' AND utimestamp < ' . (int) $date .
 		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -4644,11 +4651,11 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-
+	
 	if (count ($interval_data) < 2) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
@@ -4662,7 +4669,7 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 		$previous_status = 0;
 		$critical_count = 0;
 	}
-
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {
@@ -4683,11 +4690,11 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 		
 		$previous_utimestamp = $data['utimestamp'];
 	}
-
+	
 	if ($critical_count == 0) {
 		return 0;
 	}
-
+	
 	return $critical_period / $critical_count;
 }
 
@@ -4701,7 +4708,7 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
  * @return float The TTO value in the interval.
  */
 function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
-
+	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
@@ -4714,7 +4721,7 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 	if ($module === false) {
 		return false;
 	}
-
+	
 	$critical_min = $module['min_critical'];
 	$critical_max = $module['max_critical'];
 	$module_type = $module['id_tipo_modulo'];
@@ -4725,7 +4732,7 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 		($critical_min == 0 && $critical_max == 0)) {
 		$critical_min = 1;
 	}
-
+	
 	// Get module data
 	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
 		WHERE id_agente_modulo = ' . (int) $id_agent_module .
@@ -4733,14 +4740,14 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 		' AND utimestamp < ' . (int) $date .
 		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -4754,23 +4761,23 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-
+	
 	if (count ($interval_data) < 2) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $first_data['utimestamp'];
 	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
 			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
-		$previous_status = 1;	
+		$previous_status = 1;
 	}
 	else {
 		$previous_status = 0;
 	}
-
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {
@@ -4788,7 +4795,7 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 		
 		$previous_utimestamp = $data['utimestamp'];
 	}
-
+	
 	return $period - $critical_period;
 }
 
@@ -4802,7 +4809,7 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
  * @return float The TTR value in the interval.
  */
 function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
-
+	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
@@ -4815,7 +4822,7 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	if ($module === false) {
 		return false;
 	}
-
+	
 	$critical_min = $module['min_critical'];
 	$critical_max = $module['max_critical'];
 	$module_type = $module['id_tipo_modulo'];
@@ -4834,7 +4841,7 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 		' AND utimestamp < ' . (int) $date .
 		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 	if ($previous_data !== false) {
@@ -4855,23 +4862,23 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-
+	
 	if (count ($interval_data) < 2) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $first_data['utimestamp'];
 	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
 			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
-		$previous_status = 1;	
+		$previous_status = 1;
 	}
 	else {
 		$previous_status = 0;
 	}
-
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {
@@ -4889,7 +4896,7 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 		
 		$previous_utimestamp = $data['utimestamp'];
 	}
-
+	
 	return $critical_period;
 }
 
@@ -4910,26 +4917,26 @@ function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, 
 	if (!$id_user) {
 		$id_user = $config['id_user'];
 	}
-
- 	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
-
+	
+	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
+	
 	$all_templates = db_get_all_rows_in_table ('tgraph_template', 'name');
 	if ($all_templates === false)
 		return array ();
-
+	
 	$templates = array ();
 	foreach ($all_templates as $template) {
 		if (!in_array($template['id_group'], array_keys($groups)))
 			continue;
-
+		
 		if ($template["id_user"] != $id_user && $template['private'])
 			continue;
-
+		
 		if ($template["id_group"] > 0)
 			if (!isset($groups[$template["id_group"]])){
 				continue;
 			}
-
+		
 		if ($only_names) {
 			$templates[$template['id_graph_template']] = $template['name'];
 		}
@@ -4939,7 +4946,7 @@ function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, 
 			$templates[$template['id_graph_template']]['graphs_template_count'] = $templatesCount;
 		}
 	}
-
+	
 	return $templates;
 }
 ?>

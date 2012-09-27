@@ -1,3 +1,10 @@
+2012-09-27 Miguel de Dios <miguel.dedios@artica.es>
+	* include/functions_ui.php, operation/agentes/tactical.php: cleaned
+	source code style.
+	
+	* include/functions_reporting.php: fixed the ACL into the function
+	"reporting_get_group_stats".
+
 2012-09-27  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_menu.php

@@ -34,7 +34,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 $is_admin = check_acl ($config['id_user'], 0, "PM");
 
 $force_refresh = get_parameter ("force_refresh", "");
-if ($force_refresh == 1){
+if ($force_refresh == 1) {
 	db_process_sql ("UPDATE tgroup_stat SET utimestamp = 0");
 }
 
@@ -75,8 +75,9 @@ ui_print_page_header (__("Tactical view"), "images/bricks.png", false, "", false
 $data = reporting_get_group_stats();
 
 echo '<div style="width:20%; float:left; padding-right: 5%;" id="leftcolumn">';
-// Monitor checks
-
+// ---------------------------------------------------------------------
+// The status horizontal bars (Global health, Monitor sanity...
+// ---------------------------------------------------------------------
 $table->width = "100%";
 $table->class = "databox";
 $table->cellpadding = 0;
@@ -117,6 +118,9 @@ $table->data[7][0] =
 html_print_table ($table);
 unset ($table);
 
+// ---------------------------------------------------------------------
+// Monitor checks
+// ---------------------------------------------------------------------
 echo '<table class="databox" cellpadding="4" cellspacing="4" width="100%">';
 echo '<tr><th colspan="2">'.__('Monitor checks').'</th></tr>';
 
@@ -163,9 +167,9 @@ $cells[7]["color"] = "#ff8800";
 
 print_cells_temp ($cells);
 
-// --------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Server performance 
-// --------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 if ($is_admin) {
 	$server_performance = servers_get_performance();
 	
@@ -227,16 +231,16 @@ echo '</div>'; //Left column
 echo '<div style="width: 70%; float:left;" id="rightcolumn">';
 
 
-// --------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Last events information
-// --------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
 events_print_event_table ("WHERE estado<>1 ", 10, "100%");
 
 
-// --------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Server information
-// --------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 if ($is_admin) {
 	$serverinfo = servers_get_info ();
 	$cells = array ();

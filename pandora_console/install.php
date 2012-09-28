@@ -17,50 +17,49 @@
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<head>
-<title>Pandora FMS - Installation Wizard</title>
-<meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="resource-type" content="document">
-<meta name="distribution" content="global">
-<meta name="author" content="Pandora FMS Development Team">
-<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and many others">
-<meta name="keywords" content="pandora, fms, monitoring, network, system, GPL, software">
-<meta name="robots" content="index, follow">
-<link rel="icon" href="images/pandora.ico" type="image/ico">
-<link rel="stylesheet" href="include/styles/install.css" type="text/css">
-</head>
-
-<script type="text/javascript">
-options_text = new Array('An existing Database','A new Database');
-options_values = new Array('db_exist','db_new');
-function ChangeDBDrop(causer) {
-	if (causer.value != 'db_exist') {
-		window.document.step2_form.drop.checked=0;		
-		window.document.step2_form.drop.disabled=1;
+	<head>
+		<title>Pandora FMS - Installation Wizard</title>
+		<meta http-equiv="expires" content="0">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta name="resource-type" content="document">
+		<meta name="distribution" content="global">
+		<meta name="author" content="Pandora FMS Development Team">
+		<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and many others">
+		<meta name="keywords" content="pandora, fms, monitoring, network, system, GPL, software">
+		<meta name="robots" content="index, follow">
+		<link rel="icon" href="images/pandora.ico" type="image/ico">
+		<link rel="stylesheet" href="include/styles/install.css" type="text/css">
+	</head>
+	<script type="text/javascript">
+	options_text = new Array('An existing Database','A new Database');
+	options_values = new Array('db_exist','db_new');
+	function ChangeDBDrop(causer) {
+		if (causer.value != 'db_exist') {
+			window.document.step2_form.drop.checked = 0;
+			window.document.step2_form.drop.disabled = 1;
+		}
+		else {
+			window.document.step2_form.drop.disabled = 0;
+		}
 	}
-	else {
-		window.document.step2_form.drop.disabled=0;
+	function ChangeDBAction(causer) {
+		var i = 0;
+		if (causer.value == 'oracle') {
+			window.document.step2_form.db_action.length = 1;
+		}
+		else {
+			window.document.step2_form.db_action.length = 2;
+		}
+		while (i < window.document.step2_form.db_action.length) {
+			window.document.step2_form.db_action.options[i].value = options_values[i];
+			window.document.step2_form.db_action.options[i].text = options_text[i];
+			i++;
+		}
+		window.document.step2_form.db_action.options[window.document.step2_form.db_action.length-1].selected=1;
+		ChangeDBDrop(window.document.step2_form.db_action);
 	}
-}
-function ChangeDBAction(causer) {
-	var i = 0;
-	if (causer.value == 'oracle') {
-		window.document.step2_form.db_action.length=1;
-	}
-	else {
-		window.document.step2_form.db_action.length=2;
-	}
-	while (i < window.document.step2_form.db_action.length) {
-		window.document.step2_form.db_action.options[i].value =options_values[i];
-		window.document.step2_form.db_action.options[i].text =options_text[i];
-		i++;
-	}
-	window.document.step2_form.db_action.options[window.document.step2_form.db_action.length-1].selected=1;
-	ChangeDBDrop(window.document.step2_form.db_action);
-}
-</script>
-<body>
+	</script>
+	<body>
 <div style='height: 10px'>
 
 
@@ -739,7 +738,22 @@ function install_step4() {
 							$config["dbpass"]="'.$random_password.'";	// DB Password
 							$config["dbhost"]="'.$dbhost.'";			// DB Host
 							$config["homedir"]="'.$path.'";		// Config homedir
+							/*
+							----------Attention--------------------
+							Please note that in certain installations:
+								- reverse proxy.
+								- web server in other ports.
+								- https
+							
+							This variable might be dynamically altered.
+							
+							But it is save as backup in the
+							$config["homeurl_static"]
+							for expecial needs.
+							----------Attention--------------------
+							*/
 							$config["homeurl"]="'.$url.'";			// Base URL
+							$config["homeurl_static"]="'.$url.'";			// Don\'t  delete
 							// End of automatic config file
 							?>';
 							$step7 = fputs ($cfgout, $config_new);
@@ -801,7 +815,22 @@ function install_step4() {
 							$config["dbpass"]="' . $dbpassword . '";	// DB Password
 							$config["dbhost"]="' . $dbhost . '";		// DB Host
 							$config["homedir"]="' . $path . '";		// Config homedir
+							/*
+							----------Attention--------------------
+							Please note that in certain installations:
+								- reverse proxy.
+								- web server in other ports.
+								- https
+							
+							This variable might be dynamically altered.
+							
+							But it is save as backup in the
+							$config["homeurl_static"]
+							for expecial cases.
+							----------Attention--------------------
+							*/
 							$config["homeurl"]="' . $url . '";		// Base URL
+							$config["homeurl_static"]="'.$url.'";			// Don\'t  delete
 							// End of automatic config file
 							?>';
 							$step4 = fputs ($cfgout, $config_new);
@@ -980,7 +1009,22 @@ function install_step4() {
 							$config["dbpass"]="'.$random_password.'";	// DB Password
 							$config["dbhost"]="'.$dbhost.'";			// DB Host
 							$config["homedir"]="'.$path.'";		// Config homedir
+							/*
+							----------Attention--------------------
+							Please note that in certain installations:
+								- reverse proxy.
+								- web server in other ports.
+								- https
+							
+							This variable might be dynamically altered.
+							
+							But it is save as backup in the
+							$config["homeurl_static"]
+							for expecial cases.
+							----------Attention--------------------
+							*/
 							$config["homeurl"]="'.$url.'";			// Base URL
+							$config["homeurl_static"]="'.$url.'";			// Don\'t  delete
 							// End of automatic config file
 							?>';
 							$step7 = fputs ($cfgout, $config_new);

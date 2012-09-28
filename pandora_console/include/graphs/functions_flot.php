@@ -26,17 +26,31 @@ function include_javascript_dependencies_flot_graph($return = false) {
 	if (!$is_include_javascript) {
 		$is_include_javascript = true;
 		
+		$metaconsole_hack = '';
+		if (defined('METACONSOLE')) {
+			$metaconsole_hack = '../../';
+		}
+		
 		// NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
 		$output = '
-			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.min.js') .'"></script>
-			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.pie.min.js') .'"></script>
-			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.crosshair.min.js') .'"></script>
-			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.stack.min.js') .'"></script>
-			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.selection.min.js') .'"></script>
-			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.resize.min.js') .'"></script>
-			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.threshold.js') .'"></script>
-			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/jquery.flot.symbol.min.js') .'"></script>
-			<script language="javascript" type="text/javascript" src="'. ui_get_full_url('/include/graphs/flot/pandora.flot.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack  . '/include/graphs/flot/jquery.flot.pie.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.crosshair.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.stack.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.selection.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.resize.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.threshold.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.symbol.min.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/pandora.flot.js') .'"></script>
 		';
 		$output .= "
 		<script type='text/javascript'>
@@ -79,25 +93,25 @@ function include_javascript_dependencies_flot_graph($return = false) {
 ///////////////////////////////
 function flot_area_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false, $series_suffix_str = '') {
 	global $config;
-		
+	
 	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str);
 }
 
 function flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false, $series_suffix_str = '') {
 	global $config;
-		
+	
 	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'area_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str);
 }
 
 function flot_line_stacked_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false, $series_suffix_str = '') {
 	global $config;
-		
+	
 	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_stacked', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str);
 }
 
 function flot_line_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl = '', $unit = '', $water_mark = '', $serie_types = array(), $chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key= '', $force_integer = false, $series_suffix_str = '') {
 	global $config;
-		
+	
 	return flot_area_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, 'line_simple', $water_mark, $serie_types, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str);
 }
 
@@ -105,13 +119,13 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
-
+	
 	$menu = true;
 	$font_size = '7';
 	
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
-
+	
 	// Parent layer
 	$return = "<div>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
@@ -234,7 +248,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$alert_ids = array();
 	$legend_events = '';
 	$legend_alerts = '';
-
+	
 	foreach ($chart_extra_data as $i => $data) {
 		switch ($i) {
 			case 'legend_alerts':
@@ -555,12 +569,12 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	// Set a weird separator to serialize and unserialize passing data from php to javascript
 	$separator = ';;::;;';
 	$separator2 = ':,:,,,:,:';
-		
+	
 	// Transform data from our format to library format
 	$labels = array();
 	$a = array();
 	$vars = array();
-			
+	
 	$datacolor = array();
 	
 	$max = 0;
@@ -577,9 +591,9 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	}
 	
 	$fontsize = 7;
-
+	
 	$extra_height = 15;
-		
+	
 	$return .= "<div id='extra_$graph_id' style='font-size: ".$fontsize."pt; display:none; position:absolute; overflow: auto; height: ".$extra_height."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
 	
 	$maxticks = (int) ($width / ($fontsize * $leg_max_length));

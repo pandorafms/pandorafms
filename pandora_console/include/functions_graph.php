@@ -2506,7 +2506,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $only_im
 	}
 	
 	if ($config['homeurl'] != '') {
-		$homeurl = $config['homeurl'] . '/';
+		$homeurl = $config['homeurl'];
 	}
 	else {
 		$homeurl = '';
@@ -2563,7 +2563,7 @@ function graph_netflow_total_area ($data, $period, $width, $height, $only_image)
 	}
 	
 	if ($config['homeurl'] != '') {
-		$homeurl = $config['homeurl'] . '/';
+		$homeurl = $config['homeurl'];
 	}
 	else {
 		$homeurl = '';

@@ -1913,7 +1913,11 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 		}
 		else {
 			//Only add the home url
-			$url = $config['homeurl'] . '/';
+			$url = $config['homeurl_static'] . '/';
+		}
+		
+		if (defined('METACONSOLE')) {
+			$url .= 'enterprise/meta/';
 		}
 	}
 	elseif (!strstr($url, ".php")) {
@@ -1921,7 +1925,11 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 			$fullurl .= '/';
 		}
 		else {
-			$fullurl .= $config['homeurl'] . '/';
+			$fullurl .= $config['homeurl_static'] . '/';
+		}
+		
+		if (defined('METACONSOLE')) {
+			$fullurl .= 'enterprise/meta/';
 		}
 	}
 	else {
@@ -1933,7 +1941,11 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 				$fullurl .= $_SERVER['SCRIPT_NAME'];
 			}
 			else {
-				$fullurl .= $config['homeurl'] . '/';
+				$fullurl .= $config['homeurl_static'] . '/';
+				
+				if (defined('METACONSOLE')) {
+					$fullurl .= 'enterprise/meta/';
+				}
 			}
 		}
 	}

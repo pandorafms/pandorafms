@@ -1,3 +1,10 @@
+2012-09-28 Miguel de Dios <miguel.dedios@artica.es>
+	* install.php, operation/agentes/stat_win.php, general/footer.php,
+	include/config_process.php, include/functions_ui.php,
+	include/functions_graph.php, include/graphs/functions_flot.php,
+	include/functions_visual_map.php: change the $config['home_url'],
+	now it is generated dinamicly.
+
 2012-09-27 Miguel de Dios <miguel.dedios@artica.es>
 	* include/functions_ui.php, operation/agentes/tactical.php: cleaned
 	source code style.

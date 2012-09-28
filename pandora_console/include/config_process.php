@@ -178,4 +178,10 @@ if (isset($_POST['vc_refr'])){
 	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));
 }
 
+
+//======================================================================
+// Update the $config['homeurl'] with the full url with the special
+// cases (reverse proxy, others ports...).
+//======================================================================
+$config["homeurl"] = ui_get_full_url(false);
 ?>

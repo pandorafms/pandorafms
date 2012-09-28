@@ -512,9 +512,14 @@ sub translate_obj ($$$) {
 	$SNMPSem->down ();
 	my $oid = SNMP::translateObj ($obj);
 	$SNMPSem->up ();
+
+	# Could not translate OID, disable the module
+	if (! defined ($oid)) {
+		db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1 WHERE id_agente_modulo = ?', $module_id);
+		return '';
+	}
 	
 	# Update module configuration
-	$oid = '' unless defined ($oid);
 	db_do ($dbh, 'UPDATE tagente_modulo SET snmp_oid = ? WHERE id_agente_modulo = ?', $oid, $module_id);
 	
 	return $oid;

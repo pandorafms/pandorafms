@@ -1,3 +1,8 @@
+2012-09-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Merged from trunk. Disable a module
+	  if a text obj tag cannot be converted to an OID.
+
 2012-09-26  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* util/pandora_db.pl: bug fix: 'audit_purge' was used to purge

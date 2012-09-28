@@ -1028,7 +1028,7 @@ sub translate_obj ($$$) {
 	
 	# Could not translate OID, disable the module
 	if (! defined ($oid)) {
-		db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1', $oid, $module_id);
+		db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1 WHERE id_agente_modulo = ?', $module_id);
 		return '';
 	}
 

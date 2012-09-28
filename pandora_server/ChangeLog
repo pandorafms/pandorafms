@@ -1,5 +1,9 @@
 2012-09-28  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Tools.pm: Fixed an SQL query.
+
+2012-09-28  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/NetworkServer.pm,
 	  lib/PandoraFMS/Tools.pm: Disable a module if a text obj tag cannot
 	  be converted to an OID.

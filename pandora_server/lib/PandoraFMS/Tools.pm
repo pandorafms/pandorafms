@@ -67,6 +67,7 @@ our @EXPORT = qw(
 	safe_input
 	safe_output
 	month_have_days
+	translate_obj
 );
 
 ########################################################################
@@ -809,14 +810,11 @@ sub pandora_ping ($$) {
 	# Windows XP .. Windows 7
 	if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
 		my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
-		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-			$output = `ping -n 1 -w $ms_timeout $host`;
-			if ($output =~ /TTL/){
-				return 1;
-			}
-			sleep 1;
+		$output = `ping -n $pa_config->{'icmp_checks'} -w $ms_timeout $host`;
+		if ($output =~ /TTL/){
+			return 1;
 		}
-	return 0;
+		return 0;
 	}
 	
 	elsif ($OSNAME eq "solaris"){
@@ -830,12 +828,9 @@ sub pandora_ping ($$) {
 		# 'networktimeout' is not used by ping on Solaris.
 		
 		# Ping the host
-		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-			`$ping_command -s -n $host 56 1 >/dev/null 2>&1`;
-			if ($? == 0) {
-				return 1;
-			}
-			sleep 1;
+		`$ping_command -s -n $host 56 $pa_config->{'icmp_checks'} >/dev/null 2>&1`;
+		if ($? == 0) {
+			return 1;
 		}
 		return 0;
 	}
@@ -851,12 +846,9 @@ sub pandora_ping ($$) {
 		# 'networktimeout' is not used by ping6 on FreeBSD.
 		
 		# Ping the host
-		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-			`$ping_command -q -n -c 1 $host >/dev/null 2>&1`;
-			if ($? == 0) {
-				return 1;
-			}
-			sleep 1;
+		`$ping_command -q -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
+		if ($? == 0) {
+			return 1;
 		}
 		return 0;
 	}
@@ -871,12 +863,9 @@ sub pandora_ping ($$) {
 		}
 		
 		# Ping the host
-		for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
-			`$ping_command -q -W $pa_config->{'networktimeout'} -n -c 1 $host >/dev/null 2>&1`;
-				if ($? == 0) {
-					return 1;
-				}
-			sleep 1;
+		`$ping_command -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;	
+		if ($? == 0) {
+			return 1;
 		}
 		return 0;
 	}
@@ -1024,6 +1013,29 @@ sub month_have_days($$) {
 	}
 	
 	return $monthDays[$month];
+}
+
+###############################################################################
+# Convert a text obj tag to an OID and update the module configuration.
+###############################################################################
+sub translate_obj ($$$) {
+	my ($dbh, $obj, $module_id) = @_;
+
+	# SNMP is not thread safe
+	$SNMPSem->down ();
+	my $oid = SNMP::translateObj ($obj);
+	$SNMPSem->up ();
+	
+	# Could not translate OID, disable the module
+	if (! defined ($oid)) {
+		db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1', $oid, $module_id);
+		return '';
+	}
+
+	# Update module configuration
+	db_do ($dbh, 'UPDATE tagente_modulo SET snmp_oid = ? WHERE id_agente_modulo = ?', $oid, $module_id);
+	
+	return $oid;
 }
 
 # End of function declaration

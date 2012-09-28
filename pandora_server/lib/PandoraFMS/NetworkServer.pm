@@ -502,23 +502,5 @@ sub exec_network_module ($$$$) {
 	}
 }
 
-###############################################################################
-# Convert a text obj tag to an OID and update the module configuration.
-###############################################################################
-sub translate_obj ($$$) {
-	my ($dbh, $obj, $module_id) = @_;
-
-	# SNMP is not thread safe
-	$SNMPSem->down ();
-	my $oid = SNMP::translateObj ($obj);
-	$SNMPSem->up ();
-	
-	# Update module configuration
-	$oid = '' unless defined ($oid);
-	db_do ($dbh, 'UPDATE tagente_modulo SET snmp_oid = ? WHERE id_agente_modulo = ?', $oid, $module_id);
-	
-	return $oid;
-}
-
 1;
 __END__

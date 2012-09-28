@@ -1,3 +1,10 @@
+2012-09-28 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* util/pandora_xml_stress.conf,
+	util/pandora_xml_stress.pl,
+	util/pandora_xml_stress_module_source.txt: Added new
+	features to pandora_xml_stress program.
+
 2012-09-26  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* util/pandora_db.pl: bug fix: 'audit_purge' was used to purge

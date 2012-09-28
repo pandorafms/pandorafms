@@ -81,6 +81,7 @@ sub load_config ($\%\@) {
 	close (FILE);
 }
 
+
 ################################################################################
 # Generate XML files.
 ################################################################################
@@ -112,6 +113,8 @@ sub generate_xml_files ($$$$$$) {
 	my $time_to = get_conf_token ($conf, 'time_to', $time_now);
 	die ("[error] Invalid time_to: $time_to\n\n") unless ($time_to =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
 	my $utimestamp_to = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+	
+	my %modules_src_pointers = init_src_pointers($modules);
 	
 	# Generate data files
 	my $utimestamp = $utimestamp_from;
@@ -164,6 +167,7 @@ sub generate_xml_files ($$$$$$) {
 				my $module_avg = get_generation_parameter($module, 'avg', '127');
 				my $module_time_wave_length = get_generation_parameter($module, 'time_wave_length', '0');
 				my $module_time_offset = get_generation_parameter($module, 'time_offset', '0');
+				my $module_src = get_generation_parameter($module, 'src', 'source.txt');
 				
 				# Generate module data
 				$xml_data .= "\t<module>\n";
@@ -208,6 +212,9 @@ sub generate_xml_files ($$$$$$) {
 						$rnd_data = generate_curve_data ($utimestamp, $module_min, $module_max,
 							$module_time_wave_length, $module_time_offset);
 					}
+				}elsif ($generation_type eq 'SOURCE') {
+						$rnd_data = generate_data_from_source($module_name, $module_src, \%modules_src_pointers);
+						
 				}
 				
 				# Save previous data
@@ -215,7 +222,7 @@ sub generate_xml_files ($$$$$$) {
 				$xml_data .= "\t\t<data>$rnd_data</data>\n";
 				$xml_data .= "\t</module>\n";
 			}
-			
+						
 			$xml_data .= "</agent_data>\n";
 			
 			# Fix the temporal path
@@ -232,6 +239,9 @@ sub generate_xml_files ($$$$$$) {
 			copy_xml_file ($conf, $xml_file);
 			$XMLFiles++;
 		}
+		
+		#Update src pointers for a new xml
+		update_src_pointers(\%modules_src_pointers);
 		
 		# First run, let the server create the new agent before sending more data
 		if ($utimestamp == $utimestamp_from) {
@@ -313,6 +323,79 @@ sub generate_scatter_data ($$$$$$) {
 	}
 	else {
 		return $avg;
+	}
+}
+
+################################################################################
+# Generates data from a txt source
+################################################################################
+sub generate_data_from_source ($$$) {
+	my ($module_name, $module_src, $pointers) = @_;
+		
+	my $data = 0;
+	
+	my $pointer;
+
+	if (-e $module_src) {
+		
+		#Get data and split to an array
+		open (FD , "<", $module_src);
+		my @data_array = <FD>;
+		close(FD);
+		
+		$module_name =~ s/\ /\_/;
+		
+		$pointer = $pointers->{$module_name};
+	
+		$pointer = $pointer % ($#data_array+1);
+				
+		$data = $data_array[$pointer];
+		
+	} else {
+		#There was an error, set last to 0 and return data
+		return $data;
+	}
+	
+	return $data;
+}
+
+################################################################################
+# Initialize SRC pointer for src modules
+################################################################################
+sub init_src_pointers ($) {
+	my ($modules) = shift;
+	
+	my %pointers;
+	
+	foreach my $mod (@{$modules}) {
+		# Skip unnamed modules
+		my $module_name = get_conf_token ($mod, 'module_name', '');
+		next if ($module_name eq '');
+		
+		my $type = get_generation_parameter($mod, 'type', 'RANDOM');
+		
+		if ($type eq 'SOURCE') {
+		
+			$module_name =~ s/\ /\_/;
+		
+			$pointers{$module_name} = 0; 
+		}
+	}
+	
+	return %pointers;
+}
+
+################################################################################
+# Updates SRC pointer for src modules
+################################################################################
+sub update_src_pointers ($) {
+	
+	my ($pointers) = shift;
+
+	foreach my $p (keys %{$pointers}) {
+		
+		#Add 1 to the pointer
+		$pointers->{$p}++;
 	}
 }
 

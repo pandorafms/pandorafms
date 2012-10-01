@@ -837,6 +837,9 @@ span.rmess, span.nrmess {
 .databox {
 	background-color: #fafafa;
 }
+table.alternate tr:nth-child(odd) td{
+	background-color: #e4e5e4;
+}
 /* Style for login form */
 .databox_login {
 	#margin-top: 100px !important;
@@ -921,25 +924,25 @@ div#logo_text3 {
 }
 /* classes for event priorities. Sits now in functions.php */
 .datos_green, .datos_greenf9 {
-	background-color: #BBFFA4;
+	background-color: #BBFFA4 !important;
 }
 .datos_red, .datos_redf9 {
-	background-color: #FFC0B5;
+	background-color: #FFC0B5 !important;
 }
 .datos_yellow, .datos_yellowf9 {
-	background-color: #F4FFBF;
+	background-color: #F4FFBF !important;
 }
 .datos_blue, .datos_bluef9 {
-	background-color: #CDE2EA;
+	background-color: #CDE2EA !important;
 }
 .datos_grey, .datos_greyf9 {
-	background-color: #E4E4E4;
-}
-.datos_sky, .datos_skyf9 {
-	background-color: #cdfffc;
+	background-color: #E4E4E4 !important;
 }
 .datos_pink, .datos_pinkf9 {
-	background-color: #F39DE2;
+	background-color: #F39DE2 !important;
+}
+.datos_brown, .datos_brownf9 {
+	background-color: #ffb589 !important;
 }
 td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {
 	padding: 5px 5px 5px 5px;

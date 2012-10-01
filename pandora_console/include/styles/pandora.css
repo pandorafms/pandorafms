@@ -886,7 +886,10 @@ span.rmess, span.nrmess {
 	
 }
 .databox {
-	background-color: #f4f5f4;
+	background-color: #f4f504;
+}
+table.alternate tr:nth-child(odd) td{
+	background-color: #e4e5e4;
 }
 /* Style for login form */
 .databox_login {
@@ -1624,11 +1627,11 @@ a.datos_blue, .datos_bluef9, .datos_blue {
 .datos_grey, .datos_greyf9 {
 	background-color: #E4E4E4;
 }
-.datos_sky, .datos_skyf9 {
-	background-color: #05FFF0;
-}
 .datos_pink, .datos_pinkf9 {
 	background-color: #FF92E9;
+}
+.datos_brown, .datos_brownf9 {
+	background-color: #c97a4a;
 }
 td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {
 	padding: 5px 5px 5px 5px;

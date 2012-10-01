@@ -153,11 +153,20 @@ function events_delete_event ($id_event, $similar = true) {
  *
  * @return bool Whether or not it was successful
  */	
-function events_validate_event ($id_event, $similars = true, $comment = '', $new_status = 1) {
+function events_validate_event ($id_event, $similars = true, $new_status = 1) {
 	global $config;
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
+	
+	if($new_status) {
+		$ack_utimestamp = time();
+		$ack_user = $config['id_user'];
+	}
+	else {
+		$acl_utimestamp = 0;
+		$ack_user = '';
+	}
 	
 	/* We must validate all events like the selected */
 	if ($similars && $new_status == 1) {
@@ -167,20 +176,143 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 		$id_event = array_unique($id_event);
 	}
 	
-	db_process_sql_begin ();
-	
-	switch ($new_status) {
+	switch($new_status) {
+		case 0:
+			$status_string = 'New';
+			break;
 		case 1:
-			$new_status_string = __('Validated');
+			$status_string = 'Validated';
 			break;
 		case 2:
-			$new_status_string = __('Set in process');
+			$status_string = 'In process';
 			break;
-		case 3:
-			$new_status_string = __('Added comment');
+		default:
+			$status_string = '';
 			break;
 	}
 	
+	events_comment_event($id_event, $similars, '', "Change status to $status_string");
+	
+	db_process_sql_begin ();
+	
+	foreach ($id_event as $event) {
+		if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
+			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
+			
+			return false;
+		}
+		
+		$values = array(
+			'estado' => $new_status,
+			'id_usuario' => $ack_user,
+			'ack_utimestamp' => $ack_utimestamp);
+			
+		$ret = db_process_sql_update('tevento', $values,
+			array('id_evento' => $event), 'AND', false);
+		
+		if (($ret === false) || ($ret === 0)) {
+			db_process_sql_rollback ();
+			return false;
+		}
+	}
+	
+	db_process_sql_commit ();
+	
+	return true;
+}
+
+/**
+ * Change the owner of an event if the event hasn't owner
+ *
+ * @param mixed Event ID or array of events
+ * @param bool Whether to change owner on similar events or not.
+ * @param string id_user of the new owner. If is false, the current owner will be setted
+ * @param bool flag to force the change or not (not force is change only when it hasn't owner)
+ *
+ * @return bool Whether or not it was successful
+ */	
+function events_change_owner_event ($id_event, $similars = true, $new_owner = false, $force = false) {
+	global $config;
+	
+	//Cleans up the selection for all unwanted values also casts any single values as an array 
+	$id_event = (array) safe_int ($id_event, 1);
+
+	/* We must validate all events like the selected */
+	if ($similars) {
+		foreach ($id_event as $id) {
+			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
+		}
+		$id_event = array_unique($id_event);
+	}
+	
+	// Only generate comment when is forced (sometimes is changed the owner when comment)
+	if($force) {
+		events_comment_event($event, $similars, '', 'Change owner');
+	}
+	
+	if($new_owner === false) {
+		$new_owner = $config['id_user'];
+	}
+		
+	db_process_sql_begin ();
+	
+	foreach ($id_event as $event) {
+		if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
+			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
+			return false;
+		}
+		
+		if($owner) {
+			$owner_user = db_get_value('owner_user', 'tevento', 'id_evento', $event);
+		}
+		
+		if(!empty($owner_user) && $force === false) {
+			continue;
+		}
+				
+		$values = array('owner_user' => $new_owner);
+
+		$ret = db_process_sql_update('tevento', $values,
+			array('id_evento' => $event), 'AND', false);
+		
+		if (($ret === false) || ($ret === 0)) {
+			db_process_sql_rollback ();
+			return false;
+		}
+	}
+	
+	db_process_sql_commit ();
+	
+	return true;
+}
+
+/**
+ * Comment events in a transaction
+ *
+ * @param mixed Event ID or array of events
+ * @param bool Whether to validate similar events or not.
+ *
+ * @return bool Whether or not it was successful
+ */	
+function events_comment_event ($id_event, $similars = true, $comment = '', $action = 'Added comment') {
+	global $config;
+
+	//Cleans up the selection for all unwanted values also casts any single values as an array 
+	$id_event = (array) safe_int ($id_event, 1);
+	
+	/* We must validate all events like the selected */
+	if ($similars) {
+		foreach ($id_event as $id) {
+			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
+		}
+		$id_event = array_unique($id_event);
+	}
+	
+	// If the event hasn't owner, assign the user as owner
+	events_change_owner_event ($id_event, $similars);
+	
+	db_process_sql_begin ();
+		
 	$comment = str_replace(array("\r\n", "\r", "\n"), '<br>', $comment);
 	
 	if ($comment != '') {
@@ -197,18 +329,13 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 			return false;
 		}
 		
-		$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
+		$comment = '<b>-- '.$action.' by '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
 		$fullevent = events_get_event($event);
 		if ($fullevent['user_comment'] != '') {
 			$comment .= '<br>'.$fullevent['user_comment'];
 		}
 		
-		if ($new_status == 3){ //only add a comment
-			$new_status = $fullevent["estado"];
-		}
-		
 		$values = array(
-			'estado' => $new_status,
 			'id_usuario' => $config['id_user'],
 			'user_comment' => $comment);
 		
@@ -524,6 +651,15 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 					array ("title" => events_print_type_description($type, true)));
 			}
 			break;
+		case "going_unknown":
+			if ($only_url) {
+				$output = $urlImage . "/" . "images/b_blue.png";
+			}
+			else {
+				$output .= html_print_image ("images/b_blue.png", true,
+					array ("title" => events_print_type_description($type, true)));
+			}
+			break;
 		case "alert_fired":
 			if ($only_url) {
 				$output = $urlImage . "/" . "images/bell.png";
@@ -589,6 +725,9 @@ function events_print_type_description ($type, $return = false) {
 	$output = '';
 	
 	switch ($type) {
+	case "going_unknown": 
+		$output .= __('Going to unknown');
+		break;
 	case "alert_recovered": 
 		$output .= __('Alert recovered');
 		break;

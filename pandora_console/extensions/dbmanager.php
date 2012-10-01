@@ -20,12 +20,12 @@ function dbmanager_query ($sql, &$error) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$retval = array();
-		
+			
 			if ($sql == '')
 				return false;
-				
+			
 			$sql = html_entity_decode($sql, ENT_QUOTES);
-		
+			
 			$result = mysql_query ($sql);
 			if ($result === false) {
 				$backtrace = debug_backtrace ();
@@ -89,7 +89,7 @@ function dbmgr_extension_main () {
 		return;
 	}
 	
-	if (!check_refererer()) {
+	if (!check_referer()) {
 		require ("general/noaccess.php");
 		
 		return;

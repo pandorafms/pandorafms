@@ -129,6 +129,7 @@ function config_update_config () {
 			config_update_value ('activate_netflow', (bool) get_parameter ('activate_netflow'));
 			
 			config_update_value ('public_url', get_parameter('public_url'));
+			config_update_value ('referer_security', get_parameter('referer_security'));
 			
 			$enterprise = enterprise_include_once ('godmode/setup/setup.php');
 			if ($enterprise !== ENTERPRISE_NOT_HOOK) {
@@ -726,6 +727,10 @@ function config_process_config () {
 	
 	if (!isset($config['public_url'])) {
 		config_update_value ('public_url', "");
+	}
+	
+	if (!isset($config['referer_security'])) {
+		config_update_value ('referer_security', 0);
 	}
 	
 	/* Finally, check if any value was overwritten in a form */

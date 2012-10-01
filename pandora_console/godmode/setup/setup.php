@@ -325,6 +325,14 @@ $table->data[28][0] = __('Public URL');
 $table->data[28][0] .= ui_print_help_tip(__('Set this value when your PandoraFMS across inverse proxy or for example with mod_proxy of Apache.'), true);
 $table->data[28][1] = html_print_input_text ('public_url', $config['public_url'], '', 40, 255, true);
 
+$table->data[29][0] = __('Referer security');
+$table->data[29][0] .= ui_print_help_tip(__('When it is set as "yes" in some important sections check if the user have gone from url Pandora.'), true);
+$table->data[29][1] = __('Yes') . '&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button ('referer_security', 1, '', $config["referer_security"], true) .
+	'&nbsp;&nbsp;';
+$table->data[29][1] .= __('No') . '&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button ('referer_security', 0, '', $config["referer_security"], true);
+
 
 ?>
 <script type="text/javascript">

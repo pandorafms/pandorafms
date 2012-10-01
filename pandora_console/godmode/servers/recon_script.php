@@ -37,7 +37,7 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 	return;
 }
 
-if (!check_refererer()) {
+if (!check_referer()) {
 	require ("general/noaccess.php");
 	
 	return;

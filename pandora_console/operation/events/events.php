@@ -383,6 +383,7 @@ else {
 }
 
 ui_require_jquery_file ('bgiframe');
+ui_require_javascript_file('pandora_events');
 
 ?>
 <script language="javascript" type="text/javascript">
@@ -675,17 +676,6 @@ $(document).ready( function() {
 		}
 		else {
 			$('.event_form_' + id_event).css('display', '');
-		}
-	}
-	
-	function toggleVisibleExtendedInfo(id_event) {
-		display = $('.event_info_' + id_event).css('display');
-		
-		if (display != 'none') {
-			$('.event_info_' + id_event).css('display', 'none');
-		}
-		else {
-			$('.event_info_' + id_event).css('display', '');
 		}
 	}
 </script>

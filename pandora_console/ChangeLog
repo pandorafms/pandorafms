@@ -1,3 +1,23 @@
+2012-10-01  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php
+	general/header.php 
+	include/functions_modules.php
+	include/javascript/pandora_events.js
+	include/ajax/events.php
+	include/functions.php
+	operation/events/events_list.php
+	operation/events/events.php: Change the event details view
+	to modal window
+
+	* include/styles/pandora_legacy.css
+	include/styles/pandora.css
+	images/status_sets/default/severity_major_pixel.png
+	images/status_sets/default/severity_minor_pixel.png
+	images/status_sets/default/severity_major.png
+	images/status_sets/default/severity_minor.png: Change the 
+	major/minor icons and colors
+
 2012-09-28 Miguel de Dios <miguel.dedios@artica.es>
 	* install.php, operation/agentes/stat_win.php, general/footer.php,
 	include/config_process.php, include/functions_ui.php,

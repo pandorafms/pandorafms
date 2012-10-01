@@ -54,8 +54,9 @@ function check_refererer() {
 	
 	// Remove protocol from referer
 	$referer = preg_replace('/http(s?):\/\//','',$referer);
+	$referer = preg_replace('/\?.*/','',$referer);
 	
-	if (strpos($referer, $url) === 0) {
+	if (strpos($url, $referer) === 0) {
 		return true;
 	}
 	else {
@@ -964,10 +965,10 @@ function get_priority_class($priority) {
 			return "datos_red";
 			break;
 		case 5: 
-			return "datos_sky";
+			return "datos_pink";
 			break;
 		case 6: 
-			return "datos_pink";
+			return "datos_brown";
 			break;
 		default: 
 			return "datos_grey";

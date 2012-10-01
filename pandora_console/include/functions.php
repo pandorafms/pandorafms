@@ -30,8 +30,12 @@ require_once('functions_io.php');
  *
  * @return bool true if all is ok, false if referer is not equal to current web page
  */
-function check_refererer() {
+function check_referer() {
 	global $config;
+	
+	//If it is disabled the check referer security
+	if (!$config["referer_security"])
+		return true;
 	
 	$referer = '';
 	if (isset($_SERVER['HTTP_REFERER'])) {
@@ -603,7 +607,7 @@ function get_parameterBetweenListValues ($name, $values, $default) {
 			return $value;
 		}
 	}
-
+	
 	return $default;
 }
 
@@ -1187,8 +1191,8 @@ function index_array ($array, $index = 'id', $value = 'name') {
  * @return string Graph type, as used in stat_win.php (Graphs launcher)
  */
 
-function return_graphtype ($id_module_type){
-	switch($id_module_type){
+function return_graphtype ($id_module_type) {
+	switch ($id_module_type) {
 		case 3:
 		case 10:
 		case 17:
@@ -1206,8 +1210,8 @@ function return_graphtype ($id_module_type){
 			return "log4x";
 			break;
 	}
-
-
+	
+	
 	return "sparse";
 }
 
@@ -1569,7 +1573,10 @@ function get_os_name ($id_os) {
  * @return array Dashboard name of the given user.
  */
 function get_user_dashboards ($id_user) {
-	$sql = "SELECT name FROM tdashboard WHERE id_user="."'".$id_user."'";
+	$sql = "SELECT name
+		FROM tdashboard
+		WHERE id_user="."'".$id_user."'";
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -1582,20 +1589,20 @@ function get_periods () {
 	$periods = array ();
 	
 	$periods[-1] = __('custom');
-	$periods[SECONDS_5MINUTES] = '5 '.__('minutes');
-	$periods[SECONDS_30MINUTES] = '30 '.__('minutes');
+	$periods[SECONDS_5MINUTES] = sprintf(__('%s minutes'), '5');
+	$periods[SECONDS_30MINUTES] = sprintf(__('%s minutes'), '30 ');
 	$periods[SECONDS_1HOUR] = __('1 hour');
-	$periods[SECONDS_6HOURS] = '6 '.__('hours');
-	$periods[SECONDS_12HOURS] = '12 '.__('hours');
+	$periods[SECONDS_6HOURS] = sprintf(__('%s hours'), '6 ');
+	$periods[SECONDS_12HOURS] = sprintf(__('%s hours'), '12 ');
 	$periods[SECONDS_1DAY] = __('1 day');
 	$periods[SECONDS_1WEEK] = __('1 week');
 	$periods[SECONDS_15DAYS] = __('15 days');
-	$periods[SECONDS_1MONTH] = '1 '.__('month');
-	$periods[SECONDS_3MONTHS] = '3 '.__('months');
-	$periods[SECONDS_6MONTHS] = '6 '.__('months');
-	$periods[SECONDS_1YEAR] = '1 '.__('year');
-	$periods[SECONDS_2YEARS] = '2 '.__('years');
-	$periods[SECONDS_3YEARS] = '3 '.__('years');
+	$periods[SECONDS_1MONTH] = __('1 month');
+	$periods[SECONDS_3MONTHS] = sprintf(__('%s months'), '3 ');
+	$periods[SECONDS_6MONTHS] = sprintf(__('%s months'), '6 ');
+	$periods[SECONDS_1YEAR] = __('1 year');
+	$periods[SECONDS_2YEARS] = sprintf(__('%s years'), '2 ');
+	$periods[SECONDS_3YEARS] = sprintf(__('%s years'), '3 ');
 	
 	return $periods;
 }
@@ -1611,7 +1618,7 @@ function copy_dir($src, $dst) {
 		return false;
 	
 	@mkdir($dst); 
-	while(false !== ( $file = readdir($dir)) ) {
+	while (false !== ( $file = readdir($dir)) ) {
 		if (( $file != '.' ) && ( $file != '..' )) {
 			if ( is_dir($src . '/' . $file) ) {
 				copy_dir($src . '/' . $file,$dst . '/' . $file); 

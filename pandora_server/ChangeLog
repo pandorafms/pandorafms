@@ -1,3 +1,8 @@
+2012-10-01  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_manage.pl: Fixed problem in CLI enabling the eacl from
+	command line. Function name was old and not working.
+
 2012-09-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Fixed an SQL query.

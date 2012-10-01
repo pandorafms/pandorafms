@@ -170,7 +170,7 @@ if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
 
 $period = get_parameter ( "period", 3600);
 $draw_alerts = get_parameter("draw_alerts", 0);
-$avg_only = get_parameter ("avg_only", 1);
+$avg_only = get_parameter ("avg_only", 0);
 $show_other = (bool)get_parameter('show_other', false);
 if ($show_other) {
 	$avg_only = 0;

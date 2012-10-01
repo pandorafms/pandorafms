@@ -1,3 +1,9 @@
+2012-10-01 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/agentes/stat_win.php: Fixed a bug which don't
+	fix the unchecked Avg. Only parameter which returns to be
+	checked when form was submitted.
+
 2012-10-01 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/setup/setup.php, include/functions_config.php,

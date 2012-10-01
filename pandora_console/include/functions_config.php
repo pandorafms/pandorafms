@@ -127,8 +127,10 @@ function config_update_config () {
 		return false;
 	
 	$update_config = (bool) get_parameter ('update_config');
-	if (! $update_config)
+	
+	if (! $update_config) {
 		return false;
+	}
 	
 	$sec2 = get_parameter_get('sec2');
 	switch($sec2) {
@@ -167,6 +169,8 @@ function config_update_config () {
 			config_update_value ('acl_enterprise', get_parameter ('acl_enterprise'));
 			config_update_value ('metaconsole', get_parameter ('metaconsole'));
 			config_update_value ('collection_max_size', get_parameter('collection_max_size'));
+			
+			config_update_value ('referer_security', get_parameter('referer_security'));
 			/////////////
 			break;
 		case 'godmode/setup/setup_auth':
@@ -255,8 +259,8 @@ function config_update_config () {
 			config_update_value ('description_size_text', get_parameter('description_size_text'));
 			config_update_value ('item_title_size_text', get_parameter('item_title_size_text'));
 			config_update_value ('gis_label', get_parameter ('gis_label'));
-                        config_update_value ('gis_default_icon', get_parameter ('gis_default_icon'));
-
+			config_update_value ('gis_default_icon', get_parameter ('gis_default_icon'));
+			
 			/////////////
 			break;
 		case 'enterprise/godmode/setup/setup_history':
@@ -273,7 +277,7 @@ function config_update_config () {
 			///////////////
 			break;
 	}
-		
+	
 	enterprise_include_once('include/functions_policies.php');
 	$enterprise = enterprise_include_once ('include/functions_skins.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
@@ -355,11 +359,11 @@ function config_process_config () {
 	// Load user session
 	if (isset ($_SESSION['id_usuario']))
 		$config["id_user"] = $_SESSION["id_usuario"];
-
+	
 	if (!isset ($config["round_corner"])) {
 		config_update_value ('round_corner', false);
 	}
-
+	
 	if (!isset ($config["agentaccess"])) {
 		config_update_value ('agentaccess', true);
 	}
@@ -367,39 +371,39 @@ function config_process_config () {
 	if (!isset ($config["timezone"])) {
 		config_update_value ('timezone', "Europe/Berlin");
 	}
-
+	
 	if (!isset ($config["stats_interval"])) {
 		config_update_value ('stats_interval', 300);
 	}
-
+	
 	if (!isset ($config["realtimestats"])) {
 		config_update_value ('realtimestats', 1);
 	}
-
+	
 	if (!isset ($config["event_purge"])) {
 		config_update_value ('event_purge', 15);
 	}
-
+	
 	if (!isset ($config["trap_purge"])) {
 		config_update_value ('trap_purge', 7);
 	}
-
+	
 	if (!isset ($config["string_purge"])) {
 		config_update_value ('string_purge', 14);
 	}
-
+	
 	if (!isset ($config["audit_purge"])) {
 		config_update_value ('audit_purge', 30);
 	}
-
+	
 	if (!isset ($config["acl_enterprise"])) {
 		config_update_value ('acl_enterprise', 0);
 	}
-
+	
 	if (!isset ($config["metaconsole"])) {
 		config_update_value ('metaconsole', 0);
 	}
-
+	
 	if (!isset ($config["gis_purge"])) {
 		config_update_value ('gis_purge', 7);
 	}
@@ -460,7 +464,7 @@ function config_process_config () {
 		config_update_value ( 'flash_charts', true);
 	}
 	
-	if (!isset ($config["custom_logo"])){
+	if (!isset ($config["custom_logo"])) {
 		config_update_value ('custom_logo', 'none.png');
 	}
 	
@@ -648,7 +652,9 @@ function config_process_config () {
 		config_update_value( 'api_password', '');
 	}
 	
-	if (!isset ($config['relative_path']) && (isset ($_POST['nick']) || isset ($config['id_user'])) && isset($config['enterprise_installed'])) {
+	if (!isset ($config['relative_path']) && (isset ($_POST['nick'])
+		|| isset ($config['id_user'])) && isset($config['enterprise_installed'])) {
+		
 		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			
@@ -665,13 +671,13 @@ function config_process_config () {
 				} else {
 					$view_mode = true;
 				}
-
+				
 				if (isset ($_GET["modified"]) && !$view_mode) { 
 					$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
 					$return_update_skin = update_user ($id, $upd_info);
 				}
-			}		
-					
+			}
+			
 			if (isset($config['id_user']))
 				$relative_path = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
 			else
@@ -715,15 +721,20 @@ function config_process_config () {
 	if (!isset($config['item_title_size_text'])) {
 		config_update_value ('item_title_size_text', 45);
 	}
-
-        if (!isset($config['gis_label'])) {
-                config_update_value ('gis_label', 0);
-        }
-
-        if (!isset($config['gis_default_icon'])) {
-                config_update_value ('gis_default_icon', "marker");
-        }
-
+	
+	if (!isset($config['gis_label'])) {
+		config_update_value ('gis_label', 0);
+	}
+	
+	if (!isset($config['gis_default_icon'])) {
+		config_update_value ('gis_default_icon', "marker");
+	}
+	
+	
+	if (!isset($config['referer_security'])) {
+		config_update_value ('referer_security', 0);
+	}
+	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
@@ -746,7 +757,7 @@ function config_check () {
 		}
 	}
 	
-	if (!is_writable ("attachment")){
+	if (!is_writable ("attachment")) {
 		$config["alert_cnt"]++;
 		$_SESSION["alert_msg"] .= ui_print_error_message(
 			array('message' => __('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory'),

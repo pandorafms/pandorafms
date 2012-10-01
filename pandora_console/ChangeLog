@@ -1,3 +1,16 @@
+2012-10-01 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/setup/setup.php, include/functions_config.php,
+	include/functions.php: now the "check_referer" can be disabled in
+	the setup.
+	
+	MERGED FROM TRUNK
+	
+	* include/functions_reporting.php: uploaded lost fixed for the
+	tactical view.
+	
+	MERGED FROM TRUNK
+	
 2012-09-27  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_menu.php

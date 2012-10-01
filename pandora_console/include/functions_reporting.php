@@ -829,7 +829,7 @@ function reporting_get_group_stats ($id_group = 0) {
 	}
 	
 	if ($id_group == 0) {
-		$id_group = array_keys (users_get_groups ());
+		$id_group = array_keys (users_get_groups ($config['id_user'], "AR", false));
 	}
 
 	// -------------------------------------------------------------------

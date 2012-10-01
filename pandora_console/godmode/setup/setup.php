@@ -220,6 +220,16 @@ $table->data[26][1] = html_print_input_text ('license_info_key', $license_info, 
 $table->data[26][1] .= '&nbsp;<a id="dialog_license_info" title="'.__("License Info").'" href="#">'.html_print_image('images/lock.png', true, array('class' => 'bot', 'title' => __('License info'))).'</a>';
 $table->data[26][1] .= '<div id="dialog_show_license" style="display:none"></div>';
 
+
+$table->data[29][0] = __('Referer security');
+$table->data[29][0] .= ui_print_help_tip(__('When it is set as "yes" in some important sections check if the user have gone from url Pandora.'), true);
+$table->data[29][1] = __('Yes') . '&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button ('referer_security', 1, '', $config["referer_security"], true) .
+	'&nbsp;&nbsp;';
+$table->data[29][1] .= __('No') . '&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button ('referer_security', 0, '', $config["referer_security"], true);
+
+
 ?>
 <script type="text/javascript">
 function toggleButton(type) {
@@ -250,8 +260,8 @@ $(document).ready (function () {
 	});
 });
 </script>
-
 <?php
+
 echo '<form id="form_setup" method="post">';
 echo "<fieldset>";
 echo "<legend>" . __('General options') . "</legend>";

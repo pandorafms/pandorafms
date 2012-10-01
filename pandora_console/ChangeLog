@@ -1,3 +1,14 @@
+2012-10-01  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added
+	owner and ack timestamp to event table and new last known status
+	in tagente_estado table
+
 2012-10-01 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/servers/recon_script.php, godmode/setup/setup.php,

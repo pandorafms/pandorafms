@@ -138,7 +138,9 @@ ALTER TABLE "tevento" ADD COLUMN "critical_instructions" text default '';
 ALTER TABLE "tevento" ADD COLUMN "warning_instructions" text default '';
 ALTER TABLE "tevento" ADD COLUMN "unknown_instructions" text default '';
 ALTER TYPE type_tevento_event ADD VALUE 'going_unknown' BEFORE 'unknown';
-
+ALTER TABLE "tevento" ADD COLUMN "owner_user" varchar(100) NOT NULL default '0';
+ALTER TABLE "tevento" ADD COLUMN "ack_utimestamp" BIGINT NOT NULL default 0;
+	
 -- -----------------------------------------------------
 -- Table `tgrupo`
 -- -----------------------------------------------------
@@ -325,3 +327,8 @@ ALTER TABLE "tnetwork_component" ADD COLUMN "unknown_instructions" text default 
 ------------------------------------------------------------------------
 ALTER TABLE "tnetwork_map" ADD COLUMN "text_filter" VARCHAR(100) DEFAULT '';
 ALTER TABLE "tnetwork_map" ADD COLUMN "dont_show_subgroups" INTEGER NOT NULL DEFAULT 0;
+
+------------------------------------------------------------------------
+-- Table `tagente_estado`
+------------------------------------------------------------------------
+ALTER TABLE "tagente_estado" ADD COLUMN "last_known_status" INTEGER default 0;

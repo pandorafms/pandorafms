@@ -122,6 +122,8 @@ ALTER TABLE `tevento` MODIFY COLUMN `event_type` ENUM('going_unknown','unknown',
 ALTER TABLE `tevento` ADD COLUMN `critical_instructions` TEXT NOT NULL DEFAULT '';
 ALTER TABLE `tevento` ADD COLUMN `warning_instructions` TEXT NOT NULL DEFAULT '';
 ALTER TABLE `tevento` ADD COLUMN `unknown_instructions` TEXT NOT NULL DEFAULT '';
+ALTER TABLE `tevento` ADD COLUMN `owner_user` VARCHAR(100) NOT NULL DEFAULT '';
+ALTER TABLE `tevento` ADD COLUMN `ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0';
 
 ------------------------------------------------------------------------
 -- Table `tgrupo`
@@ -146,6 +148,8 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `quiet` tinyint(1) NOT NULL DEFAULT '0';
 ALTER TABLE `tagente_modulo` ADD COLUMN `critical_instructions` TEXT NOT NULL DEFAULT '';
 ALTER TABLE `tagente_modulo` ADD COLUMN `warning_instructions` TEXT NOT NULL DEFAULT '';
 ALTER TABLE `tagente_modulo` ADD COLUMN `unknown_instructions` TEXT NOT NULL DEFAULT '';
+ALTER TABLE `tagente_modulo` ADD COLUMN `critical_inverse` tinyint(1) NOT NULL DEFAULT '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `warning_inverse` tinyint(1) NOT NULL DEFAULT '0';
 
 ------------------------------------------------------------------------
 -- Table `tnetwork_component`
@@ -303,3 +307,7 @@ ALTER TABLE tlayout_data ADD COLUMN `enable_link` tinyint(1) UNSIGNED NOT  NULL 
 ALTER TABLE tnetwork_map ADD `text_filter` VARCHAR(100)  NOT NULL DEFAULT "";
 ALTER TABLE tnetwork_map ADD `dont_show_subgroups` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
 
+------------------------------------------------------------------------
+-- Table `tagente_estado`
+------------------------------------------------------------------------
+ALTER TABLE `tagente_estado` ADD COLUMN `last_known_status` tinyint(4) NOT NULL DEFAULT 0;

@@ -146,7 +146,8 @@ CREATE TABLE "tagente_estado" (
 	"running_by" INTEGER default 0,
 	"last_execution_try" BIGINT NOT NULL default 0,
 	"status_changes" INTEGER default 0,
-	"last_status" INTEGER default 0
+	"last_status" INTEGER default 0,
+	"last_known_status" INTEGER default 0
 );
 CREATE INDEX "tagente_estado_id_agente_modulo_idx" ON "tagente_estado"("id_agente_modulo");
 CREATE INDEX "tagente_estado_id_agente_idx" ON "tagente_estado"("id_agente");
@@ -444,7 +445,9 @@ CREATE TABLE "tevento" (
 	"id_extra" text NOT NULL default '',
 	"critical_instructions" TEXT default '',
 	"warning_instructions" TEXT default '',
-	"unknown_instructions" TEXT default ''
+	"unknown_instructions" TEXT default '',
+	"owner_user" varchar(100) NOT NULL default '0',
+	"ack_utimestamp" BIGINT NOT NULL default 0
 );
 CREATE INDEX "tevento_id_1_idx" ON "tevento"("id_agente", "id_evento");
 CREATE INDEX "tevento_id_2_idx" ON "tevento"("utimestamp", "id_evento");

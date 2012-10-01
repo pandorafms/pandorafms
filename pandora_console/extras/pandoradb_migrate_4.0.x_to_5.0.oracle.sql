@@ -143,6 +143,12 @@ CREATE OR REPLACE TRIGGER tplanned_downtime_modules_inc BEFORE INSERT ON tplanne
 -- -----------------------------------------------------
 ALTER TABLE tevento ADD (source VARCHAR2(100) default '' NOT NULL);
 ALTER TABLE tevento ADD (id_extra VARCHAR2(100) default '' NOT NULL);
+ALTER TABLE tevento ADD (critical_instructions VARCHAR2(255) default '');
+ALTER TABLE tevento ADD (warning_instructions VARCHAR2(255) default '');
+ALTER TABLE tevento ADD (unknown_instructions VARCHAR2(255) default '');
+ALTER TABLE tevento MODIFY CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change'))
+ALTER TABLE tevento ADD (owner_user VARCHAR2(100) NOT NULL default '0');
+ALTER TABLE tevento ADD (ack_utimestamp NUMBER(19, 0) NOT NULL default 0);
 
 -- -----------------------------------------------------  
 -- Table `tgrupo`
@@ -311,14 +317,6 @@ ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL;
 ALTER TABLE tlayout_data ADD (enable_link NUMBER(5, 0) NOT NULL default 1);
 
 -- -----------------------------------------------------
--- Table `tevento`
--- -----------------------------------------------------
-ALTER TABLE tevento ADD (critical_instructions VARCHAR2(255) default '');
-ALTER TABLE tevento ADD (warning_instructions VARCHAR2(255) default '');
-ALTER TABLE tevento ADD (unknown_instructions VARCHAR2(255) default '');
-ALTER TABLE tevento MODIFY CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change'))
-
--- -----------------------------------------------------
 -- Table `tagente_modulo`
 -- -----------------------------------------------------
 ALTER TABLE tagente_modulo ADD (critical_instructions VARCHAR2(255) default '');
@@ -337,3 +335,8 @@ ALTER TABLE tnetwork_component ADD (unknown_instructions VARCHAR2(255) default '
 ------------------------------------------------------------------------
 ALTER TABLE tnetwork_map ADD (text_filter VARCHAR(100) DEFAULT '');
 ALTER TABLE tnetwork_map ADD (dont_show_subgroups NUMBER(10, 0) default 0 NOT NULL);
+
+------------------------------------------------------------------------
+-- Table `tagente_estado`
+------------------------------------------------------------------------
+ALTER TABLE tagente_estado ADD (last_known_status  NUMBER(5, 0) default 0 NOT NULL);

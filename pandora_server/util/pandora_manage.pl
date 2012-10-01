@@ -1951,7 +1951,7 @@ sub pandora_manage_main ($$$) {
 		} 
 		elsif ($param eq '--enable_eacl') {
 			param_check($ltotal, 0);
-            pandora_enable_eacl ($conf, $dbh);
+            		cli_enable_eacl ($conf, $dbh);
 		} 
         elsif ($param eq '--disable_group') {
 			param_check($ltotal, 1);

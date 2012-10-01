@@ -413,7 +413,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config["font_size"])) {
-		config_update_value ('font_size', 7);
+		config_update_value ('font_size', 6);
 	}
 	
 	/* 

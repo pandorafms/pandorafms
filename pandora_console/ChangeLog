@@ -1,5 +1,12 @@
 2012-10-01 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* include/functions_config.php: Chaged to 6 default
+	value for font_size. There was a problem and before
+	the fix above || the id 7 was stored a 6 in db.
+	              \/
+
+2012-10-01 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* godmode/setup/setup_visuals.php: Fixed an error
 	creating array for font_size combo, the array id
 	was created with 1 nomber less size 3 => id 2,

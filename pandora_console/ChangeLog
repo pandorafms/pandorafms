@@ -1,5 +1,10 @@
 2012-10-02 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* include/functions_graph.php: Fixed all bugs 
+	related to graph stats improvements
+
+2012-10-02 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql: Fixed
 	several errors in mysql migration script to 5.0 version.
 

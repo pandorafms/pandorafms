@@ -16630,7 +16630,7 @@ msgstr "Comment:"
 #: ../../operation/events/events_validate.php:106
 #: ../../operation/events/events_list.php:567
 msgid "Set in process"
-msgstr "Comment:"
+msgstr "Set in process"
 
 #: ../../enterprise/operation/metaconsole/eventview.php:736
 #: ../../operation/events/events_validate.php:107

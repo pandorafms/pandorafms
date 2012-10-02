@@ -148,8 +148,8 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `quiet` tinyint(1) NOT NULL DEFAULT '0';
 ALTER TABLE `tagente_modulo` ADD COLUMN `critical_instructions` TEXT NOT NULL DEFAULT '';
 ALTER TABLE `tagente_modulo` ADD COLUMN `warning_instructions` TEXT NOT NULL DEFAULT '';
 ALTER TABLE `tagente_modulo` ADD COLUMN `unknown_instructions` TEXT NOT NULL DEFAULT '';
-ALTER TABLE `tagente_modulo` ADD COLUMN `critical_inverse` tinyint(1) NOT NULL DEFAULT '0';
-ALTER TABLE `tagente_modulo` ADD COLUMN `warning_inverse` tinyint(1) NOT NULL DEFAULT '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `critical_inverse` tinyint(1) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `warning_inverse` tinyint(1) unsigned default '0';
 
 ------------------------------------------------------------------------
 -- Table `tnetwork_component`
@@ -162,6 +162,8 @@ ALTER TABLE tnetwork_component ADD `macros` text;
 ALTER TABLE tnetwork_component ADD `critical_instructions` TEXT NOT NULL default '';
 ALTER TABLE tnetwork_component ADD `warning_instructions` TEXT NOT NULL default '';
 ALTER TABLE tnetwork_component ADD `unknown_instructions` TEXT NOT NULL default '';
+ALTER TABLE `tnetwork_component` ADD COLUMN `critical_inverse` tinyint(1) unsigned default '0';
+ALTER TABLE `tnetwork_component` ADD COLUMN `warning_inverse` tinyint(1) unsigned default '0';
 
 ------------------------------------------------------------------------
 -- Table `tgraph_source` Alter table to allow negative values in weight

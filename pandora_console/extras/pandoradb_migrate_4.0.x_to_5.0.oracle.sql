@@ -322,6 +322,8 @@ ALTER TABLE tlayout_data ADD (enable_link NUMBER(5, 0) NOT NULL default 1);
 ALTER TABLE tagente_modulo ADD (critical_instructions VARCHAR2(255) default '');
 ALTER TABLE tagente_modulo ADD (warning_instructions VARCHAR2(255) default '');
 ALTER TABLE tagente_modulo ADD (unknown_instructions VARCHAR2(255) default '');
+ALTER TABLE tagente_modulo ADD (critical_inverse NUMBER(1, 0) default 0 NOT NULL);
+ALTER TABLE tagente_modulo ADD (warning_inverse NUMBER(1, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table `tnetwork_component`
@@ -329,6 +331,9 @@ ALTER TABLE tagente_modulo ADD (unknown_instructions VARCHAR2(255) default '');
 ALTER TABLE tnetwork_component ADD (critical_instructions VARCHAR2(255) default '');
 ALTER TABLE tnetwork_component ADD (warning_instructions VARCHAR2(255) default '');
 ALTER TABLE tnetwork_component ADD (unknown_instructions VARCHAR2(255) default '');
+ALTER TABLE tnetwork_component ADD (critical_inverse NUMBER(1, 0) default 0 NOT NULL);
+ALTER TABLE tnetwork_component ADD (warning_inverse NUMBER(1, 0) default 0 NOT NULL);
+evento
 
 ------------------------------------------------------------------------
 -- Table `tnetwork_map`

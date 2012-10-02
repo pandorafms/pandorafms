@@ -1,3 +1,16 @@
+2012-10-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_api.php,
+	  include/functions_netflow.php,
+	  operation/netflow/nf_reporting.php,
+	  operation/netflow/nf_view.php: Added XML netflow reports and many
+	  changes to enable metaconsole integration.
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Updated
+	  migration scripts.
+
 2012-10-02 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* godmode/setup/setup_visuals.php

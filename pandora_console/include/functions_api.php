@@ -27,6 +27,7 @@ include_once($config['homedir'] . "/include/functions_graph.php");
 include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . "/include/functions_network_components.php");
+include_once($config['homedir'] . "/include/functions_netflow.php");
 enterprise_include_once ('include/functions_local_components.php');
 
 /**
@@ -140,6 +141,9 @@ function returnData($returnType, $data, $separator = ';') {
 					echo $data['data'];
 					break;
 			}
+			break;
+		case 'json':
+			echo json_encode ($data);
 			break;
 	}
 }
@@ -5540,4 +5544,57 @@ function api_get_tactical_view($trash1, $trash2, $trash3, $returnType) {
 	return;
 	
 }
+
+// http://localhost/pandora_console/include/api.php?op=get&op2=netflow_get_data&other=1348562410|1348648810|base64_encode(json_encode($filter))|_1_1234|none|50|bytes&other_mode=url_encode_separator_|&apipass=pandora&user=pandora&pass=pandora'
+function api_get_netflow_get_data ($discard_1, $discard_2, $params) {
+	
+	// Parse function parameters
+	$start_date = $params['data'][0];
+	$end_date = $params['data'][1];
+	$filter = json_decode (base64_decode ($params['data'][2]), true);
+	$unique_id = $params['data'][3];
+	$aggregate = $params['data'][4];
+	$max = $params['data'][5];
+	$unit = $params['data'][6];
+	
+	// Get netflow data
+	$data = netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max, $unit);
+
+	returnData('json', $data);
+	return;
+}
+
+// http://localhost/pandora_console/include/api.php?op=get&op2=netflow_get_stats&other=1348562410|1348648810|base64_encode(json_encode($filter))|none|50|bytes&other_mode=url_encode_separator_|&apipass=pandora&user=pandora&pass=pandora'
+function api_get_netflow_get_stats ($discard_1, $discard_2, $params) {
+	
+	// Parse function parameters
+	$start_date = $params['data'][0];
+	$end_date = $params['data'][1];
+	$filter = json_decode (base64_decode ($params['data'][2]), true);
+	$aggregate = $params['data'][3];
+	$max = $params['data'][4];
+	$unit = $params['data'][5];
+	
+	// Get netflow data
+	$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit);
+
+	returnData('json', $data);
+	return;
+}
+
+// http://localhost/pandora_console/include/api.php?op=get&op2=netflow_get_summary&other=1348562410|1348648810|_base64_encode(json_encode($filter))|_1_1234&other_mode=url_encode_separator_|&apipass=pandora&user=pandora&pass=pandora'
+function api_get_netflow_get_summary ($discard_1, $discard_2, $params) {
+	
+	// Parse function parameters
+	$start_date = $params['data'][0];
+	$end_date = $params['data'][1];
+	$filter = json_decode (base64_decode ($params['data'][2]), true);
+	$unique_id = $params['data'][3];
+	
+	// Get netflow data
+	$data = netflow_get_summary ($start_date, $end_date, $filter, $unique_id);
+	returnData('json', $data);
+	return;
+}
+
 ?>

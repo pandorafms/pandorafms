@@ -16,10 +16,39 @@
 
 global $config;
 
-include_once("include/functions_graph.php");
-include_once("include/functions_ui.php");
-include_once("include/functions_netflow.php");
-ui_require_javascript_file ('calendar');
+// Login check
+if (isset ($_GET["direct"])) {
+	require_once ("../../include/config.php");
+	require_once ("../../include/auth/mysql.php");
+	require_once("../../include/functions_netflow.php");
+	$nick = get_parameter ("nick");
+	$pass = get_parameter ("pass");
+	if (isset ($nick) && isset ($pass)) {
+
+		$nick = process_user_login ($nick, $pass);
+		if ($nick !== false) {
+			unset ($_GET["sec2"]);
+			$_GET["sec"] = "general/logon_ok";
+			db_logon ($nick, $_SERVER['REMOTE_ADDR']);
+			$_SESSION['id_usuario'] = $nick;
+			$config['id_user'] = $nick;
+			//Remove everything that might have to do with people's passwords or logins
+			unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
+		}
+		else {
+			// User not known
+			$login_failed = true;
+			require_once ('general/login_page.php');
+			db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
+			exit;
+		}
+	}
+} else {
+	include_once($config['homedir'] . "/include/functions_graph.php");
+	include_once($config['homedir'] . "/include/functions_ui.php");
+	include_once($config['homedir'] . "/include/functions_netflow.php");
+	ui_require_javascript_file ('calendar');
+}
 
 check_login ();
 
@@ -41,19 +70,18 @@ if ($id) {
 }
 
 $period = get_parameter('period', '86400');
-$update_date = get_parameter('update_date', 0);
-if ($update_date) {
-	$date = get_parameter_post ('date');
-	$time = get_parameter_post ('time');
-	$interval = get_parameter('period','86400');
-}
-else {
-	$date = date ("Y/m/d", get_system_time ());
-	$time = date ("H:i:s", get_system_time ());
-	$interval ='86400';
-}
+$date = get_parameter_post ('date', date ("Y/m/d", get_system_time ()));
+$time = get_parameter_post ('time', date ("H:i:s", get_system_time ()));
+
 $end_date = strtotime ($date . " " . $time);
-$start_date = $end_date - $interval;
+$start_date = $end_date - $period;
+
+// Generate an XML report
+if (isset ($_GET["xml"])) {
+	header ('Content-type: application/xml; charset="utf-8"', true);
+	netflow_xml_report ($id, $start_date, $end_date);
+	return;
+}
 
 $buttons['report_list'] = '<a href="index.php?sec=netf&sec2=operation/netflow/nf_reporting">'
 	. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
@@ -83,11 +111,15 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_v
 	
 	$table->data[1][0] = '<b>'.__('Interval').'</b>';
 	$table->data[1][1] = html_print_select (netflow_get_valid_intervals (), 'period', $period, '', '', 0, true, false, false);
+	
+	$table->data[2][0] = '<b>'.__('Export').'</b>';
+	$table->data[2][1] = '<a title="XML" href="' . $config['homeurl'] . 'ajax.php?page=' . $config['homedir'] . '/operation/netflow/nf_view&id='.$id."&date=$date&time=$time&period=$period&xml=1\">" . html_print_image("images/database_lightning.png", true) . '</a>';
+
+
 	html_print_table ($table);
 	
 	echo '<div class="action-buttons" style="width:60%;">';
 	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
-	html_print_input_hidden ('update_date', 1);
 	echo '</div>';
 echo'</form>';
 
@@ -109,16 +141,13 @@ if (empty ($report_contents)) {
 foreach ($report_contents as $content_report) {
 	
 	// Get report item
-	$report_id = $all_rcs[$x]['id_rc'];
+	$report_id = $content_report['id_report'];
 	$content_id = $content_report['id_rc'];
 	$max_aggregates= $content_report['max'];
 	$type = $content_report['show_graph'];
 	
 	// Get item filters
 	$filter = db_get_row_sql("SELECT * FROM tnetflow_filter WHERE id_sg = '" . io_safe_input ($content_report['id_filter']) . "'", false, true);
-	
-	// Get the command to call nfdump
-	$command = netflow_get_command ($filter);
 	
 	if ($filter['aggregate'] != 'none') {
 		echo '<h4>' . $filter['id_name'] . ' (' . __($filter['aggregate']) . '/' . __($filter['output']) . ')</h4>';
@@ -131,6 +160,6 @@ foreach ($report_contents as $content_report) {
 	$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
 	
 	// Draw
-	netflow_draw_item ($start_date, $end_date, $type, $filter, $command, $filter, $max_aggregates, $unique_id);
+	netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggregates, $unique_id);
 }
 ?>

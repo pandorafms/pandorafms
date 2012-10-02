@@ -171,6 +171,8 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "macros" TEXT default '';
 ALTER TABLE "tagente_modulo" ADD COLUMN "critical_instructions" text default '';
 ALTER TABLE "tagente_modulo" ADD COLUMN "warning_instructions" text default '';
 ALTER TABLE "tagente_modulo" ADD COLUMN "unknown_instructions" text default '';
+ALTER TABLE "tagente_modulo" ADD COLUMN "critical_inverse" SMALLINT NOT NULL default 0;
+ALTER TABLE "tagente_modulo" ADD COLUMN "warning_inverse" SMALLINT NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table `tevent_filter`
@@ -321,6 +323,8 @@ ALTER TABLE "tlayout_data" ADD COLUMN "enable_link" SMALLINT NOT NULL default 1;
 ALTER TABLE "tnetwork_component" ADD COLUMN "critical_instructions" text default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "warning_instructions" text default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "unknown_instructions" text default '';
+ALTER TABLE "tnetwork_component" ADD COLUMN "critical_inverse" SMALLINT NOT NULL default 0;
+ALTER TABLE "tnetwork_component" ADD COLUMN "warning_inverse" SMALLINT NOT NULL default 0;
 
 ------------------------------------------------------------------------
 -- Table `tnetwork_map`

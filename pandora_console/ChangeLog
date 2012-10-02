@@ -1,5 +1,12 @@
 2012-10-02 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* include/functions_graph.php,
+	operation/agentes/stat_win.php: Fixed a problem with
+	max and min in boolean graph. This graphs don't have
+	max and min series.
+
+2012-10-02 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* include/styles/pandora.css: Fixed a wrong change
 	in style of table background.
 

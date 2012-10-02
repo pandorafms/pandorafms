@@ -16,10 +16,10 @@
 
 global $config;
 
-include_once("include/functions_ui.php");
-include_once("include/functions_db.php");
-include_once("include/functions_netflow.php");
-include_once("include/functions_html.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
+include_once($config['homedir'] . "/include/functions_db.php");
+include_once($config['homedir'] . "/include/functions_netflow.php");
+include_once($config['homedir'] . "/include/functions_html.php");
 
 check_login ();
 
@@ -81,12 +81,8 @@ foreach ($reports as $report) {
 
 	$data[0] = '<a href="index.php?sec=netf&sec2=operation/netflow/nf_view&id='.$report['id_report'].'">'.$report['id_name'].'</a>';
 	$data[1] = $report['description'];
-	
-	$group = db_get_value('nombre','tgrupo', 'id_grupo', $report['id_group']);
-	if ($group == '')
-		$group = 'All';
-	$data[2] = $group;
-	
+	$data[2] = ui_print_group_icon($report['id_group'], true);
+
 	array_push ($table->data, $data);
 }
 

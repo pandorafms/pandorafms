@@ -15,8 +15,8 @@
 // GNU General Public License for more details.
 
 
-include_once("include/functions_users.php");
-include_once("include/functions_io.php");
+include_once($config['homedir'] . "/include/functions_users.php");
+include_once($config['homedir'] . "/include/functions_io.php");
 
 // Date format for nfdump
 $nfdump_date_format = 'Y/m/d.H:i:s';
@@ -355,7 +355,7 @@ function netflow_is_net ($address) {
  *
  * @param string start_date Period start date.
  * @param string end_date Period end date.
- * @param string command Command used to retrieve netflow data.
+ * @param string filter Netflow filter.
  * @param string unique_id A unique number that is used to generate a cache file.
  * @param string aggregate Aggregate field.
  * @param int max Maximum number of aggregates.
@@ -364,10 +364,13 @@ function netflow_is_net ($address) {
  * @return An array with netflow stats.
  *
  */
-function netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max, $unit) {
+function netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max, $unit) {
 	global $nfdump_date_format;
 	global $config;
-	
+
+	// Get the command to call nfdump
+	$command = netflow_get_command ($filter);
+
 	// Suppress the header line and the statistics at the bottom
 	$command .= ' -q';
 
@@ -424,16 +427,20 @@ function netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggreg
  *
  * @param string start_date Period start date.
  * @param string end_date Period end date.
- * @param string command Command used to retrieve netflow data.
+ * @param string filter Netflow filter.
  * @param string aggregate Aggregate field.
  * @param int max Maximum number of aggregates.
  * @param string unit Unit to show.
  *
  * @return An array with netflow stats.
  */
-function netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max, $unit) {
+function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $unit) {
 	global $nfdump_date_format;
-	
+
+	// Get the command to call nfdump
+	$command = netflow_get_command ($filter);
+
+	// Execute nfdump
 	$command .= " -q -s $aggregate/$unit -n $max -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 	exec($command, $string);
 	
@@ -486,15 +493,18 @@ function netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max, 
  *
  * @param string start_date Period start date.
  * @param string end_date Period end date.
- * @param string command Command used to retrieve netflow data.
+ * @param string filter Netflow filter.
  * @param string unique_id A unique number that is used to generate a cache file.
  *
  * @return An array with netflow stats.
  */
-function netflow_get_summary ($start_date, $end_date, $command, $unique_id) {
+function netflow_get_summary ($start_date, $end_date, $filter, $unique_id) {
 	global $nfdump_date_format;
 	global $config;
-	
+
+	// Get the command to call nfdump
+	$command = netflow_get_command ($filter);
+
 	// Execute nfdump and save its output in a temporary file
 	$temp_file = $config['attachment_store'] . '/netflow_' . $unique_id . '.tmp';
 	$command .= " -o \"fmt: \" -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
@@ -842,7 +852,7 @@ function netflow_parse_file ($start_date, $end_date, $file, &$values, $aggregate
  */
 function netflow_save_cache ($data, $cache_file) {
 	
-	@file_put_contents ($cache_file, serialize ($data));
+	//@file_put_contents ($cache_file, serialize ($data));
 	
 	return;
 }
@@ -969,48 +979,216 @@ function netflow_get_valid_intervals () {
  * @param string start_date Period start date.
  * @param string end_date Period end date.
  * @param string type Chart type.
- * @param string command Command used to retrieve netflow data.
  * @param array filter Netflow filter.
  * @param int max_aggregates Maximum number of aggregates.
  * @param string unique_id A unique number that is used to generate a cache file.
+ * @param string output Output format. Only HTML and XML are supported.
  *
  */
-function netflow_draw_item ($start_date, $end_date, $type, $filter, $command, $filter, $max_aggregates, $unique_id) {
+function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggregates, $unique_id, $output = 'HTML') {
 	
 	$aggregate = $filter['aggregate'];
 	$unit = $filter['output'];
 	$interval = $end_date - $start_date;
-	
+
 	// Process item
 	switch ($type) {
 		case '0':
-			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
+			$data = netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max_aggregates, $unit);
 			if ($aggregate != 'none') {
-				echo graph_netflow_aggregate_area($data, $interval, 660, 320, 0);
+				if ($output == 'HTML') {
+					echo graph_netflow_aggregate_area($data, $interval, 660, 320, 0);
+				} else if ($output == 'XML') {
+					netflow_aggregate_area_xml ($data);
+				}
 			}
 			else {
-				echo graph_netflow_total_area($data, $interval, 660, 320, 0);
+				if ($output == 'HTML') {
+					echo graph_netflow_total_area($data, $interval, 660, 320, 0);
+				} else if ($output == 'XML') {
+					netflow_total_area_xml ($data);
+				}
 			}
 			break;
 		case '1':
-			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
-			echo graph_netflow_aggregate_pie($data, $aggregate);
+			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit);
+			if ($output == 'HTML') {
+				echo graph_netflow_aggregate_pie($data, $aggregate);
+			} else if ($output == 'XML') {
+				netflow_aggregate_pie_xml ($data);
+			}
 			break;
 		case '2':
-			$data = netflow_get_data ($start_date, $end_date, $command, $unique_id, $aggregate, $max_aggregates, $unit);
-			echo netflow_data_table ($data, $start_date, $end_date, $aggregate);
+			$data = netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max_aggregates, $unit);
+			if ($output == 'HTML') {
+				echo netflow_data_table ($data, $start_date, $end_date, $aggregate);
+			} else if ($output == 'XML') {
+				// Same as netflow_aggregate_area_xml
+				netflow_aggregate_area_xml ($data);
+			}
 			break;
 		case '3':
-			$data = netflow_get_stats ($start_date, $end_date, $command, $aggregate, $max_aggregates, $unit);
-			echo netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
+			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit);
+			if ($output == 'HTML') {
+				echo netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
+			} else if ($output == 'XML') {
+				netflow_stat_xml ($data);
+			}
 			break;
 		case '4':
-			$data = netflow_get_summary ($start_date, $end_date, $command, $unique_id);
-			netflow_summary_table ($data);
+			$data = netflow_get_summary ($start_date, $end_date, $filter, $unique_id);
+			if ($output == 'HTML') {
+				netflow_summary_table ($data);
+			} else {
+				netflow_summary_xml ($data);
+			}
 			break;
 		default:
 			echo fs_error_image();
 			break;
 	}
 }
+
+function netflow_xml_report ($id, $start_date, $end_date) {
+	
+	// Get report data
+	$report = db_get_row_sql ('SELECT * FROM tnetflow_report WHERE id_report =' . (int) $id);
+	if ($report === FALSE) {
+		echo "<report>" . __('Error generating report') . "</report>\n"; 
+		return;
+	}
+	
+	// Print report header
+	$time = get_system_time ();
+	echo '<?xml version="1.0" encoding="UTF-8" ?>';
+	echo "<report>\n";
+	echo "  <generated>\n";
+	echo "    <unix>" . $time . "</unix>\n"; 
+	echo "    <rfc2822>" . date ("r", $time) . "</rfc2822>\n";
+	echo "  </generated>\n"; 
+	echo "  <name>" . io_safe_output ($report['id_name']) . "</name>\n";
+	echo "  <description>" . io_safe_output ($report['description']) . "</description>\n";
+	echo "  <start_date>" . date ("r", $start_date) . "</start_date>\n";
+	echo "  <end_date>" . date ("r", $end_date) . "</end_date>\n";
+
+	// Get netflow item types
+	$item_types = netflow_get_chart_types ();
+	
+	// Print report items
+	$report_contents = db_get_all_rows_sql ("SELECT * FROM tnetflow_report_content WHERE id_report='" . $report['id_report'] . "' ORDER BY `order`");
+	foreach ($report_contents as $content) {
+
+        // Get item filters
+        $filter = db_get_row_sql("SELECT * FROM tnetflow_filter WHERE id_sg = '" . io_safe_input ($content['id_filter']) . "'", false, true);
+        if ($filter === FALSE) {
+			continue;
+		}
+
+		echo "  <report_item>\n";
+		echo "    <type>" . io_safe_output ($item_types[$content['show_graph']]) . "</type>\n";
+		echo "    <max_aggregates>" . $content['max'] . "</max_aggregates>\n";
+		echo "    <filter>\n";
+		echo "      <name>" . io_safe_output ($filter['id_name']) . "</name>\n";
+		echo "      <src_ip>" . io_safe_output ($filter['ip_src']) . "</src_ip>\n";
+		echo "      <dst_ip>" . io_safe_output ($filter['ip_dst']) . "</dst_ip>\n";
+		echo "      <src_port>" . io_safe_output ($filter['src_port']) . "</src_port>\n";
+		echo "      <dst_port>" . io_safe_output ($filter['src_port']) . "</dst_port>\n";
+		echo "      <advanced>" . io_safe_output ($filter['advanced_filter']) . "</advanced>\n";
+		echo "      <aggregate>" . io_safe_output ($filter['aggregate']) . "</aggregate>\n";
+		echo "      <unit>" . io_safe_output ($filter['output']) . "</unit>\n";
+		echo "    </filter>\n";
+
+		// Build a unique id for the cache
+		$unique_id = $report['id_report'] . '_' . $content['id_rc'] . '_' . ($end_date - $start_date);
+
+		netflow_draw_item ($start_date, $end_date, $content['show_graph'], $filter, $content['max'], $unique_id, 'XML');
+
+		echo "  </report_item>\n";
+	}
+	echo "</report>\n"; 
+}
+
+function netflow_aggregate_area_xml ($data) {
+
+	// Print source information
+	echo "<aggregates>\n";
+	foreach ($data['sources'] as $source => $discard) {
+		echo "<aggregate>$source</aggregate>\n";
+	}
+	echo "</aggregates>\n";
+	
+	// Print flow information
+	echo "<flows>\n";
+	foreach ($data['data'] as $timestamp => $flow) {
+		
+		echo "<flow>\n";
+		echo "  <timestamp>" . $timestamp . "</timestamp>\n";
+		echo "  <aggregates>\n";
+		foreach ($flow as $source => $data) {
+			echo "    <aggregate>$source</aggregate>\n";
+			echo "    <data>" . $data . "</data>\n";
+		}
+		echo "  </aggregates>\n";
+		echo "</flow>\n";
+	}
+	echo "</flows>\n";
+}
+
+function netflow_total_area_xml ($data) {
+
+	// Print flow information
+	echo "<flows>\n";
+	foreach ($data as $timestamp => $flow) {
+		echo "<flow>\n";
+		echo "  <timestamp>" . $timestamp . "</timestamp>\n";
+		echo "  <data>" . $flow['data'] . "</data>\n";
+		echo "</flow>\n";
+	}
+	echo "</flows>\n";
+}
+
+function netflow_aggregate_pie_xml ($data) {
+
+	// Calculate total
+	$total = 0;
+	foreach ($data as $flow) {
+		$total += $flow['data'];
+	}
+	if ($total == 0) {
+		return;
+	}
+	
+	// Print percentages
+	echo "<pie>\n";
+	foreach ($data as $flow) {
+		echo "<aggregate>" . $flow['agg'] . "</aggregate>\n";
+		echo "<data>" . format_numeric (100 * $flow['data'] / $total, 2) . "%</data>\n";
+	}
+	echo "</pie>\n";
+}
+
+function netflow_stat_xml ($data) {
+	
+	// Print stats
+	echo "<stats>\n";
+	foreach ($data as $flow) {
+		echo "<aggregate>" . $flow['agg'] . "</aggregate>\n";
+		echo "<data>" . $flow['data'] . "</data>\n";
+	}
+	echo "</stats>\n";
+}
+
+function netflow_summary_xml ($data) {
+	
+	// Print summary
+	echo "<summary>\n";
+	echo "  <total_flows>" . $data['totalflows'] . "</total_flows>\n";
+	echo "  <total_bytes>" . $data['totalbytes'] . "</total_bytes>\n";
+	echo "  <total_packets>" . $data['totalbytes'] . "</total_packets>\n";
+	echo "  <average_bps>" . $data['avgbps'] . "</average_bps>\n";
+	echo "  <average_pps>" . $data['avgpps'] . "</average_pps>\n";
+	echo "  <average_bpp>" . $data['avgpps'] . "</average_bpp>\n";
+	echo "</summary>\n";
+}
+
 ?>

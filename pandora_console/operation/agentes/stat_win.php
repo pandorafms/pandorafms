@@ -182,7 +182,7 @@ $label = base64_decode(get_parameter('label', ''));
 		
 		$period = get_parameter ( "period", SECONDS_1HOUR);
 		$draw_alerts = get_parameter("draw_alerts", 0);
-		$avg_only = get_parameter ("avg_only", 1);
+		$avg_only = get_parameter ("avg_only", 0);
 		$show_other = (bool)get_parameter('show_other', false);
 		if ($show_other) {
 			$avg_only = 0;

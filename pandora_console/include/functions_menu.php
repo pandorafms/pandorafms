@@ -380,6 +380,7 @@ function menu_add_extras(&$menu) {
 	$menu_extra['estado']['sub']['enterprise/godmode/snmpconsole/snmp_trap_editor']['text'] = __('SNMP trap editor');
 	$menu_extra['estado']['sub']['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
 	$menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');
+	$menu_extra['reporting']['sub']['godmode/reporting/visual_console_builder']['text'] = __('Manage visual console');
 	
 	// Duplicate extensions as sec=extension to check it from url
 	foreach ($menu as $k => $m) {

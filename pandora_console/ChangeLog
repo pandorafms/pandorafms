@@ -1,5 +1,9 @@
 2012-10-02  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_menu.php: Added new screen to eACL patch
+
+2012-10-02  Sergio Martin <sergio.martin@artica.es>
+
 	* include/languages/en_GB.po
 	include/languages/en_GB.mo: Fixed a translation for
 	"Set in process" in britanic english

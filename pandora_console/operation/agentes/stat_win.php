@@ -315,15 +315,19 @@ $label = base64_decode(get_parameter('label', ''));
 								?>
 							</td>
 						</tr>
-						<tr>
-							<td><?php echo __('Avg. Only'); ?></td>
-							<td>
-								<?php
-								html_print_checkbox ("avg_only", 1, (bool) $avg_only, false, false, 'show_others()');
-								html_print_input_hidden('show_other', 0);
-								?>
-							</td>
-						</tr>
+						<?php 
+						if ($graph_type != "boolean") {
+							echo '<tr>
+								<td>'.
+								__('Avg. Only').
+								'</td>
+							<td>';
+							html_print_checkbox ("avg_only", 1, (bool) $avg_only, false, false, 'show_others()');
+							html_print_input_hidden('show_other', 0);
+							echo	'</td>
+							</tr>';
+						}
+						?>
 						<tr>
 							<td><?php echo __('Begin date'); ?></td>
 							<td>

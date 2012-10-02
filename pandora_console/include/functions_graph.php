@@ -76,6 +76,7 @@ function get_graph_statistics ($chart_array) {
         }
 
         //Format stat data to display properly
+        $stats['last'] = round($stats['last'], 2);
         $stats['avg'] = round($stats['avg'], 2);
         $stats['min'] = round($stats['min'], 2);
         $stats['max'] = round($stats['max'], 2);
@@ -195,17 +196,20 @@ function get_statwin_graph_statistics ($chart_array) {
 	}
 
 	//Format stat data to display properly
-	$stats['sum']['avg'] = round($stats['sum']['avg'], 2);	
-        $stats['sum']['min'] = round($stats['sum']['min'], 2);
-        $stats['sum']['max'] = round($stats['sum']['max'], 2);
+	$stats['sum']['last'] = round($stats['sum']['last'], 2);
+	$stats['sum']['avg'] = round($stats['sum']['avg'], 2);
+    $stats['sum']['min'] = round($stats['sum']['min'], 2);
+    $stats['sum']['max'] = round($stats['sum']['max'], 2);
 
-        $stats['min']['avg'] = round($stats['min']['avg'], 2);
-        $stats['min']['min'] = round($stats['min']['min'], 2);
-        $stats['min']['max'] = round($stats['min']['max'], 2);
+	$stats['min']['last'] = round($stats['min']['last'], 2);
+    $stats['min']['avg'] = round($stats['min']['avg'], 2);
+    $stats['min']['min'] = round($stats['min']['min'], 2);
+    $stats['min']['max'] = round($stats['min']['max'], 2);
 
-        $stats['max']['avg'] = round($stats['max']['avg'], 2);
-        $stats['max']['min'] = round($stats['max']['min'], 2);
-        $stats['max']['max'] = round($stats['max']['max'], 2);
+	$stats['max']['last'] = round($stats['max']['last'], 2);
+    $stats['max']['avg'] = round($stats['max']['avg'], 2);
+    $stats['max']['min'] = round($stats['max']['min'], 2);
+    $stats['max']['max'] = round($stats['max']['max'], 2);
 
 	return $stats;
 }

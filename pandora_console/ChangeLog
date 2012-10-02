@@ -1,3 +1,13 @@
+2012-10-02 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* godmode/setup/setup_visuals.php
+	include/functions_config.php
+	include/functions_graph.php
+	operation/agentes/stat_win.php: Fixed some problesm
+	with graphs (visual and statistics)
+
+	MERGED FROM 4.0.2
+
 2012-10-01  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.sql

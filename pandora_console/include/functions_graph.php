@@ -25,6 +25,195 @@ define("GRAPH_STACKED_AREA", 1);
 define("GRAPH_LINE", 2);
 define("GRAPH_STACKED_LINE", 3);
 
+function get_graph_statistics ($chart_array) {
+
+        /// IMPORTANT!
+        ///
+        /// The calculus for AVG, MIN and MAX values are in this function
+        /// because it must be done based on graph array data not using reporting 
+        /// function to get coherent data between stats and graph visualization
+
+        $stats = array ();
+
+        $count = 0;
+
+        $size = sizeof($chart_array);
+
+        //Initialize stats array
+        $stats = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
+
+        foreach ($chart_array as $item) {
+                
+		//Sum all values later divide by the number of elements
+                $stats['avg'] = $stats['avg'] + $item;
+
+                //Get minimum
+                if ($stats['min'] == null) {
+			$stats['min'] = $item;
+                } else if ($item < $stats['min']) {
+                        $stats['min'] = $item;
+                }
+
+                //Get maximum
+                if ($stats['max'] == null) {
+                        $stats['max'] = $item;
+                } else if ($item > $stats['max']) {
+                        $stats['max'] = $item;
+                }
+		
+		$count++;
+
+                //Get last data
+                if ($count == $size) {
+                	$stats['last'] = $item;
+                }
+	}	
+
+        //End the calculus for average
+        if ($count > 0) {
+
+                $stats['avg'] = $stats['avg'] / $count;
+        }
+
+        //Format stat data to display properly
+        $stats['last'] = round($stats['last'], 2);
+        $stats['avg'] = round($stats['avg'], 2);
+        $stats['min'] = round($stats['min'], 2);
+        $stats['max'] = round($stats['max'], 2);
+
+	return $stats;
+}
+
+function get_statwin_graph_statistics ($chart_array) {
+
+	/// IMPORTANT!
+	///
+	/// The calculus for AVG, MIN and MAX values are in this function
+	/// because it must be done based on graph array data not using reporting 
+	/// function to get coherent data between stats and graph visualization
+	
+	$stats = array ();
+
+	$count = 0;
+
+	$size = sizeof($chart_array);
+
+	//Initialize stats array
+	$stats['sum'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
+	$stats['min'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
+        $stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
+
+	foreach ($chart_array as $item) {
+		//Get stats for normal grap
+		if ($item['sum']) {
+			//Sum all values later divide by the number of elements
+			$stats['sum']['avg'] = $stats['sum']['avg'] + $item['sum'];
+
+			//Get minimum
+			if ($stats['sum']['min'] == null) {
+				$stats['sum']['min'] = $item['sum'];
+			} else if ($item['sum'] < $stats['sum']['min']) {
+				$stats['sum']['min'] = $item['sum'];
+			}
+
+			//Get maximum
+			if ($stats['sum']['max'] == null) {
+                                $stats['sum']['max'] = $item['sum'];
+                        } else if ($item['sum'] > $stats['sum']['max']) {
+                                $stats['sum']['max'] = $item['sum'];
+                        }
+
+		}
+		
+		//Get stats for min graph
+                if ($item['min']) {
+                        //Sum all values later divide by the number of elements
+                        $stats['min']['avg'] = $stats['min']['avg'] + $item['min'];
+
+                        //Get minimum
+                        if ($stats['min']['min'] == null) {
+                                $stats['min']['min'] = $item['min'];
+                        } else if ($item['min'] < $stats['min']['min']) {
+                                $stats['min']['min'] = $item['min'];
+                        }
+
+                        //Get maximum
+                        if ($stats['min']['max'] == null) {
+                                $stats['min']['max'] = $item['min'];
+                        } else if ($item['min'] > $stats['min']['max']) {
+                                $stats['min']['max'] = $item['min'];
+                        }
+
+                }
+	
+		//Get stats for max graph
+                if ($item['max']) {
+                        //Sum all values later divide by the number of elements
+                        $stats['max']['avg'] = $stats['max']['avg'] + $item['max'];
+
+                        //Get minimum
+                        if ($stats['max']['min'] == null) {
+                                $stats['max']['min'] = $item['max'];
+                        } else if ($item['max'] < $stats['max']['min']) {
+                                $stats['max']['min'] = $item['max'];
+                        }
+                
+                        //Get maximum
+                        if ($stats['max']['max'] == null) {
+                                $stats['max']['max'] = $item['max'];
+                        } else if ($item['max'] > $stats['max']['max']) {
+                                $stats['max']['max'] = $item['max'];
+                        }
+
+                }
+        
+
+		//Count elements
+		$count++;
+
+		//Get last data
+		if ($count == $size) {
+			if ($item['sum']) {
+				$stats['sum']['last'] = $item['sum'];
+			}
+
+			if($item['min']) {
+				$stats['min']['last'] = $item['min'];
+			}
+
+			if ($item['max']) {
+				$stats['max']['last'] = $item['max'];
+			}
+		}
+	}
+
+	//End the calculus for average
+	if ($count > 0) {
+
+		$stats['sum']['avg'] = $stats['sum']['avg'] / $count;
+		$stats['min']['avg'] = $stats['min']['avg'] / $count;
+		$stats['max']['avg'] = $stats['max']['avg'] / $count;
+	}
+
+	//Format stat data to display properly
+	$stats['sum']['last'] = round($stats['sum']['last'], 2);
+	$stats['sum']['avg'] = round($stats['sum']['avg'], 2);
+    $stats['sum']['min'] = round($stats['sum']['min'], 2);
+    $stats['sum']['max'] = round($stats['sum']['max'], 2);
+
+	$stats['min']['last'] = round($stats['min']['last'], 2);
+    $stats['min']['avg'] = round($stats['min']['avg'], 2);
+    $stats['min']['min'] = round($stats['min']['min'], 2);
+    $stats['min']['max'] = round($stats['min']['max'], 2);
+
+	$stats['max']['last'] = round($stats['max']['last'], 2);
+    $stats['max']['avg'] = round($stats['max']['avg'], 2);
+    $stats['max']['min'] = round($stats['max']['min'], 2);
+    $stats['max']['max'] = round($stats['max']['max'], 2);
+
+	return $stats;
+}
+
 function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_index, 
 				$data, $data_i, $previous_data, $resolution, $interval, $period, $datelimit, 
 				$projection, $avg_only = false, $uncompressed_module = false, 
@@ -406,10 +595,8 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		return $chart;
 	}
 	
-	// Get min, max and avg (less efficient but centralized for all modules and reports)
-	$min_value = round(reporting_get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
-	$max_value = round(reporting_get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
-	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
+	$graph_stats = get_statwin_graph_statistics($chart);
+
 	// Fix event and alert scale
 	$event_max = $max_value * 1.05;
 	foreach ($chart as $timestamp => $chart_data) {
@@ -427,7 +614,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	// Only show caption if graph is not small
 	if ($width > MIN_WIDTH_CAPTION && $height > MIN_HEIGHT)
 		//Flash chart
-		$caption = __('Max. Value').$series_suffix_str . ': ' . $max_value . '    ' . __('Avg. Value').$series_suffix_str . ': ' . $avg_value . '    ' . __('Min. Value').$series_suffix_str . ': ' . $min_value . '    ' . __('Units. Value').$series_suffix_str . ': ' . $unit;
+		$caption = __('Max. Value').$series_suffix_str . ': ' . $graph_stats['sum']['max'] . '    ' . __('Avg. Value').$series_suffix_str . ': ' .  $graph_stats['sum']['avg'] . '    ' . __('Min. Value').$series_suffix_str . ': ' . $graph_stats['sum']['min'] . '    ' . __('Units. Value').$series_suffix_str . ': ' . $unit;
 	else
 		$caption = array();
 	
@@ -462,12 +649,12 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}
 	
 	if (!$avg_only){
-		$legend['max'.$series_suffix] = __('Max').$series_suffix_str . ' (' .format_for_graph($max_value) . ') ' . $unit;
-		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str . ' (' . $avg_value . ') ' . $unit;
-		$legend['min'.$series_suffix] = __('Min').$series_suffix_str . ' (' . format_for_graph($min_value) . ') ' . $unit;
+		$legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
+		$legent['sum'.$series_suffix] = __('Data').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
+		$legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
 	}
 	else
-		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str . ' (' . $avg_value . ') ' . $unit;	
+		$legend['sum'.$series_suffix] = __('Data').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
 	if ($baseline) {
 		$legend['baseline'.$series_suffix] = __('Baseline');
 	}
@@ -948,14 +1135,17 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		
 		//Add the max, min and avg in the legend
 		$avg = round($avg / $countAvg, 1);
-		
-		$min = format_for_graph($min);
-		$max = format_for_graph($max);
-		$avg = format_for_graph($avg);
+
+	        $graph_stats = get_graph_statistics($graph_values[$i]);
+
+		$min = $graph_stats['min'];
+		$max = $graph_stats['max'];
+		$avg = $graph_stats['avg'];
+		$last = $graph_stats['last'];
 		$units = modules_get_unit($agent_module_id);
 		
 		if ($projection == false or ($projection != false and $i == 0)){
-			$module_name_list[$i] .= " (".__("Max"). ":$max, ".__("Min"). ":$min, ". __("Avg"). ": $avg, ". __("Units"). ": $units)";
+			$module_name_list[$i] .= ": ".__('Last').": $last $units; ".__("Max").": $max $units; ".__("Min").": $min $units; ". __("Avg").": $avg";
 		}
 		
 		if ($weight_list[$i] != 1) {
@@ -2280,10 +2470,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 		
 	// Get min, max and avg (less efficient but centralized for all modules and reports)
-	$min_value = round(reporting_get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
-	$max_value = round(reporting_get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
-	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
-	
+	$graph_stats = get_statwin_graph_statistics($chart);
+
 	// Fix event and alert scale
 	foreach ($chart as $timestamp => $chart_data) {
 		if ($show_events) {
@@ -2322,11 +2510,11 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	
 	// Flash chart
-	$caption = __('Max. Value').$series_suffix_str . ': ' . $max_value . '    ' . __('Avg. Value').$series_suffix_str . 
-	': ' . $avg_value . '    ' . __('Min. Value').$series_suffix_str . ': ' . $min_value . '   ' . __('Units').$series_suffix_str . ': ' . $unit;
+	$caption = __('Max. Value').$series_suffix_str . ': ' . $graph_stats['sum']['max'] . '    ' . __('Avg. Value').$series_suffix_str . 
+	': ' . $graph_stats['sum']['avg'] . '    ' . __('Min. Value').$series_suffix_str . ': ' . $graph_stats['sum']['min'] . '   ' . __('Units').$series_suffix_str . ': ' . $unit;
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
-	$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str . ' (' . $avg_value . ') ' . $unit;
+	$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
 	
 	if($show_events) {
 		$legend['event'.$series_suffix] = __('Events').$series_suffix_str;
@@ -2342,8 +2530,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	
 	if (!$avg_only) {
-		$legend['max'.$series_suffix] = __('Max').$series_suffix_str . ' (' .format_for_graph($max_value) . ') ' . $unit;
-		$legend['min'.$series_suffix] = __('Min').$series_suffix_str . ' (' . format_for_graph($min_value) . ') ' . $unit;
+		$legend['max'.$series_suffix] = __('Max').$series_suffix_str .': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
+		$legend['min'.$series_suffix] = __('Min').$series_suffix_str .': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
 	}
 	//$legend['baseline'.$series_suffix] = __('Baseline').$series_suffix_str;
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -2788,13 +2976,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['event'] = $event_value;
 		$chart[$timestamp]['alert'] = $alert_value;
 	}
-	
-	// Get min, max and avg (less efficient but centralized for all modules and reports)
-	$min_value = round(reporting_get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
-	$max_value = round(reporting_get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
-	$avg_value = round(reporting_get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
-	$unit = modules_get_unit($agent_module_id);
-	
+
+	$graph_stats = get_statwin_graph_statistics($chart);
+
 	// Fix event and alert scale
 	$event_max = $max_value * 1.05;
 	foreach ($chart as $timestamp => $chart_data) {
@@ -2827,7 +3011,12 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$flash_chart = false;
 	}
 	
-	$legend = null;
+	$legend = array();
+
+    $legend['sum'] = __('Data').': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
+    $legend['max'] = __('Max').': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
+    $legend['min'] = __('Min').': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
+
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));

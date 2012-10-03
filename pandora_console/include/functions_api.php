@@ -97,9 +97,9 @@ function returnError($typeError, $returnType = 'string') {
 function returnData($returnType, $data, $separator = ';') {
 	switch ($returnType) {
 		case 'string':
-			if ($data['type'] == 'string')
+			if ($data['type'] == 'string') {
 				echo $data['data'];
-			else
+			} else
 				;//TODO
 			break;
 		case 'csv':
@@ -4690,8 +4690,6 @@ function api_set_validate_events($id_event, $trash1, $other, $return_type, $user
 	
 	$result = events_validate_event ($id_event, false, $text);
 	
-	//html_debug_print($result, true);
-	
 	if ($result) {
 		returnData('string', array('type' => 'string', 'data' => 'Correct validation'));
 	}
@@ -4722,7 +4720,6 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	$utimestamp_bottom = 0;
 	
 	$filter = otherParameter2Filter($other, true);
-	//html_debug_print($filter, true);
 	
 	if (isset($filter['criticity']))
 		$severity = $filter['criticity'];
@@ -4953,9 +4950,8 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	else if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
 	}
-	//html_debug_print($filter, true);
+	
 	$result = db_get_all_rows_sql ($sql);
-	//html_debug_print($sql, true);
 	
 	if (($result !== false) && (!$filter['total']) && (!$filter['more_criticity'])) {
 		//Add the description and image
@@ -4991,8 +4987,6 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 			$result[$key] = $row;
 		}
 	}
-	
-	//html_debug_print($result);
 	
 	$data['type'] = 'array';
 	$data['data'] = $result;
@@ -5462,7 +5456,7 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType) {
 	return;
 }
 
-// http://localhost/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|admin|2|4|1|system|8|4|0|3|comments||Pandora||critical_inst|warning_inst|unknown_inst&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+//http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|system|3|admin|2|1|10|0|comments||Pandora||critical_inst|warning_inst|unknown_inst|other&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
 function api_set_create_event($id, $trash1, $other, $returnType) {
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');
@@ -5471,20 +5465,33 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 	else if ($other['type'] == 'array') {
 		
 		$values = array();
+		
 		if ($other['data'][0] != '')
-			$values['id_agente'] = $other['data'][0];
+			$values['id_grupo'] = $other['data'][0];
+		else {
+			returnError('error_parameter', 'Id group required.');
+			return;
+		}
 		if ($other['data'][1] != '')
-			$values['id_usuario'] = $other['data'][1];
+			$values['event_type'] = $other['data'][1];
+		else {
+			returnError('error_parameter', 'Event type required.');
+			return;
+		}
+			
+			
 		if ($other['data'][2] != '')
-			$values['id_grupo'] = $other['data'][2];
+			$values['id_agente'] = $other['data'][2];
 		if ($other['data'][3] != '')
-			$values['estado'] = $other['data'][3];
+			$values['id_usuario'] = $other['data'][3];
+
+		if ($other['data'][4] != '')
+			$values['estado'] = $other['data'][4];
 		$values['timestamp'] = date("Y-m-d H:i:s", get_system_time());
 	
 		$values['evento'] = $id;
 		$values['utimestamp'] = get_system_time ();
-		if ($other['data'][4] != '')
-			$values['event_type'] = $other['data'][4];
+
 		if ($other['data'][5] != '')
 			$values['id_agentmodule'] = $other['data'][5];
 		if ($other['data'][6] != '')
@@ -5510,6 +5517,23 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		if ($other['data'][14] != '') {
 			$values['unknown_instructions'] = $other['data'][14];
 		}
+		if ($other['data'][15] != '') {
+			$values['owner_user'] = $other['data'][15];
+		}
+		$values ['ack_utimestamp'] = 0;
+		
+		if (preg_match("/\w*alert\w*/", $values['event_type'])) {
+			if (($values['id_alert_am'] == '') || ($values['id_alert_am'] == 0)) {
+				returnError('error_parameter', 'Id alert required for this type of event.');
+				return;
+			}
+		}
+		if (preg_match("/\w*going\w*/", $values['event_type'])) {
+			if (($values['id_agentmodule'] == '') || ($values['id_agentmodule'] == 0)) {
+				returnError('error_parameter', 'Id agent module required for this type of event.');
+				return;
+			}
+		}
 		
 		$return = db_process_sql_insert('tevento', $values);
 		
@@ -5521,7 +5545,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			$data['data'] = $return;
 		}
 		returnData($returnType, $data);
-		return;		
+		return;	
 	}
 }
 

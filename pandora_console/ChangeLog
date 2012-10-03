@@ -1,3 +1,8 @@
+2012-10-03  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_api.php: Changed function create
+	event.
+
 2012-10-03 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_graph.php,

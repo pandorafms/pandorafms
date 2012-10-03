@@ -1,5 +1,10 @@
 2012-10-04  Sancho Lerena <slerena@artica.es>
 
+        * include/functions_reporting.php: Guess what... AGAIN the
+        tactical problem. Now it's fixed forever (cross	my fingers)
+
+2012-10-04  Sancho Lerena <slerena@artica.es>
+
 	* include/functions_reporting.php: Fixed AGAIN the prooblem
 	with tactical view, users with several groups or ALL group
 	doesnt work fine.

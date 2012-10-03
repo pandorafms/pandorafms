@@ -949,7 +949,7 @@ function reporting_get_group_stats ($id_group = 0) {
 
 			// Get total count of monitors for this group, except disabled.
 
-			$data["monitor_checks"] += $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
+			$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
 					
 		}
 		/*

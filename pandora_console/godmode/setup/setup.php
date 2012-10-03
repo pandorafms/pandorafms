@@ -382,7 +382,7 @@ $(document).ready (function () {
 				message = "<?php
 					echo __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?');
 					?>";
-				if (!confirm(message)) return false"
+				if (!confirm(message)) return false;
 			}
 	});
 	

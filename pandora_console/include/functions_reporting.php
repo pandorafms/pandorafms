@@ -879,7 +879,7 @@ function reporting_get_group_stats ($id_group = 0) {
 		// Store the groups where we are quering
 		$covered_groups = array();
 		
-		foreach ($id_group as $group){	
+		foreach ($id_group as $group){
 			$children = groups_get_childrens($group);
 
 			//Show empty groups only if they have children with agents
@@ -902,34 +902,33 @@ function reporting_get_group_stats ($id_group = 0) {
 			}
 
 			// If there are not groups to query, we jump to nextone
-			
 			if (empty($group_array)) {
 				continue;
 			}
 
 			// Get unknown agents by using the status code in modules.
 						
-			$data["agents_unknown"] = groups_agent_unknown ($group_array);
+			$data["agents_unknown"] += groups_agent_unknown ($group_array);
 
 			// Get monitor NOT INIT, except disabled AND async modules
 
-			$data["monitor_not_init"] = groups_monitor_not_init ($group_array);
+			$data["monitor_not_init"] += groups_monitor_not_init ($group_array);
 					
 			// Get monitor OK, except disabled and non-init
 			
-			$data["monitor_ok"] = groups_monitor_ok ($group_array);
+			$data["monitor_ok"] += groups_monitor_ok ($group_array);
 
 			// Get monitor CRITICAL, except disabled and non-init
 
-			$data["monitor_critical"] = groups_monitor_critical ($group_array);
+			$data["monitor_critical"] += groups_monitor_critical ($group_array);
 			
 			// Get monitor WARNING, except disabled and non-init
 			
-			$data["monitor_warning"] = groups_monitor_warning ($group_array);
+			$data["monitor_warning"] += groups_monitor_warning ($group_array);
 		
 			// Get monitor UNKNOWN, except disabled and non-init
 			
-			$data["monitor_unknown"] = groups_monitor_unknown ($group_array);
+			$data["monitor_unknown"] += groups_monitor_unknown ($group_array);
 			
 			// Get alerts configured, except disabled 
 

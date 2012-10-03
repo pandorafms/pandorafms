@@ -1,3 +1,9 @@
+2012-10-04  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_reporting.php: Fixed AGAIN the prooblem
+	with tactical view, users with several groups or ALL group
+	doesnt work fine.
+
 2012-10-02  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_menu.php: Added new screen to eACL patch

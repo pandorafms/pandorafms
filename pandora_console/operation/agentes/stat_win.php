@@ -376,16 +376,6 @@ $label = base64_decode(get_parameter('label', ''));
 								?>
 							</td>
 						</tr>
-						<?php
-						if ($config['enterprise_installed'] && $graph_type == "sparse") {
-							echo '<tr>';
-							echo '<td>' . __('Draw baseline') . '</td>';
-							echo '<td>';
-							html_print_checkbox ("baseline", 1, (bool) $baseline);
-							echo '</td>';
-							echo '</tr>';
-						}
-						?>
 						<tr>
 							<td><?php echo __('Show event graph');?></td>
 							<td>

@@ -412,12 +412,13 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
 		/////////
 
-		if ($baseline) {
+		//Baseline was replaced by compare graphs feature
+		/*if ($baseline) {
 			$chart[$timestamp]['baseline'.$series_suffix] = array_shift ($baseline_data);
 			if ($chart[$timestamp]['baseline'.$series_suffix] == NULL) {
 				$chart[$timestamp]['baseline'.$series_suffix] = 0;
 			}
-		}
+		}*/
 		
 		if(!empty($event_ids)) {
 			$chart_extra_data[count($chart)-1]['events'] = implode(',',$event_ids);
@@ -568,8 +569,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}
 	
 	// Get baseline data
+	//Baseline was replaced by compare graph feature
 	$baseline_data = array();
-	if ($baseline) {
+	/*if ($baseline) {
 		$baseline_data = array ();
 		if ($baseline == 1) {
 			$baseline_data = enterprise_hook ('reporting_enterprise_get_baseline', array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
@@ -577,7 +579,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 				$baseline_data = array ();
 			}
 		}
-	}
+	}*/
 	
 	if (empty($unit)){
 		$unit = modules_get_unit($agent_module_id);
@@ -632,7 +634,8 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$color['max'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['sum'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	$color['min'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
-	$color['baseline'.$series_suffix] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
+	//Baseline was replaced by compare graph feature
+	//$color['baseline'.$series_suffix] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
 	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
 	
 	if($show_events) {
@@ -655,10 +658,10 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}
 	else
 		$legend['sum'.$series_suffix] = __('Data').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
-	if ($baseline) {
+	//Baseline was replaced by compare graph feature
+	/*if ($baseline) {
 		$legend['baseline'.$series_suffix] = __('Baseline');
-	}
-
+	}*/
 }
 
 function grafico_modulo_sparse ($agent_module_id, $period, $show_events,

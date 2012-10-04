@@ -88,11 +88,16 @@ $buttons['report_list'] = '<a href="index.php?sec=netf&sec2=operation/netflow/nf
 	. '</a>';
 
 //Header
-ui_print_page_header (__('Netflow'), "images/networkmap/so_cisco_new.png", false, "", false, $buttons);
+if (! defined ('METACONSOLE')) {
+	ui_print_page_header (__('Netflow'), "images/networkmap/so_cisco_new.png", false, "", false, $buttons);
+} else {
+	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_reporting', 'text' => __('Netflow reports')),
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_view', 'text' => __('View netflow report')));
+	ui_meta_print_page_header($nav_bar);
+}
 
-echo"<h4>".__('Filter graph')."</h4>";
-
-echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_view&amp;id='.$id.'">';
+echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_view&amp;id='.$id.'">';
 
 	$table->width = '60%';
 	$table->border = 0;
@@ -113,8 +118,11 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_v
 	$table->data[1][1] = html_print_select (netflow_get_valid_intervals (), 'period', $period, '', '', 0, true, false, false);
 	
 	$table->data[2][0] = '<b>'.__('Export').'</b>';
-	$table->data[2][1] = '<a title="XML" href="' . $config['homeurl'] . 'ajax.php?page=' . $config['homedir'] . '/operation/netflow/nf_view&id='.$id."&date=$date&time=$time&period=$period&xml=1\">" . html_print_image("images/database_lightning.png", true) . '</a>';
-
+	if (! defined ('METACONSOLE')) {
+		$table->data[2][1] = '<a title="XML" href="' . $config['homeurl'] . 'ajax.php?page=' . $config['homedir'] . '/operation/netflow/nf_view&id='.$id."&date=$date&time=$time&period=$period&xml=1\">" . html_print_image("images/database_lightning.png", true) . '</a>';
+	} else {
+		$table->data[2][1] = '<a title="XML" href="' . $config['homeurl'] . '../../ajax.php?page=' . $config['homedir'] . '/operation/netflow/nf_view&id='.$id."&date=$date&time=$time&period=$period&xml=1\">" . html_print_image("images/database_lightning.png", true) . '</a>';
+	}
 
 	html_print_table ($table);
 	
@@ -123,14 +131,14 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_v
 	echo '</div>';
 echo'</form>';
 
-if (empty ($id)){
+$report = db_get_row_sql('SELECT * FROM tnetflow_report WHERE id_report =' . (int)$id);
+if (empty ($report)){
 	echo fs_error_image();
 	return;
 }
 
-$report_name = db_get_value('id_name', 'tnetflow_report', 'id_report', $id);
-echo"<h3>$report_name</h3>";
-
+$report_name = $report['id_name'];
+$connection_name = $report['server_name'];
 $report_contents = db_get_all_rows_sql("SELECT * FROM tnetflow_report_content WHERE id_report='$id' ORDER BY `order`");
 if (empty ($report_contents)) {
 	echo fs_error_image();
@@ -160,6 +168,6 @@ foreach ($report_contents as $content_report) {
 	$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
 	
 	// Draw
-	netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggregates, $unique_id);
+	netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggregates, $unique_id, $connection_name);
 }
 ?>

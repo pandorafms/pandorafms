@@ -42,7 +42,8 @@ CREATE TABLE "tnetflow_report" (
 	"id_report" SERIAL NOT NULL PRIMARY KEY,
 	"id_name" varchar(150) NOT NULL default '',
 	"description" TEXT,
-	"id_group" INTEGER
+	"id_group" INTEGER,
+	"server_name" TEXT
 );
 
 -- -----------------------------------------------------

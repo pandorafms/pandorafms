@@ -17,17 +17,17 @@
 
 global $config;
 
-include_once("include/functions_ui.php");
-include_once("include/functions_netflow.php");
-include_once ("include/functions_users.php");
-include_once ("include/functions_groups.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
+include_once($config['homedir'] . "/include/functions_netflow.php");
+include_once ($config['homedir'] . "/include/functions_users.php");
+include_once ($config['homedir'] . "/include/functions_groups.php");
 
 check_login ();
 
 if (! check_acl ($config["id_user"], 0, "IW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
-	require ("general/noaccess.php");
+	require ($config['homedir'] . "/general/noaccess.php");
 	return;
 }
 
@@ -39,21 +39,29 @@ $create = (string)get_parameter('create', 0);
 if ($id){
 	$permission = netflow_check_filter_group ($id);
 	if (!$permission) { //no tiene permisos para acceder a un filtro
-		require ("general/noaccess.php");
+		require ($config['homedir'] . "/general/noaccess.php");
 		return;
 	}
 }
 	
-$buttons['edit'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'
+//Header
+if (! defined ('METACONSOLE')) {
+	$buttons['edit'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'
 		. html_print_image ("images/edit.png", true, array ("title" => __('Filter list')))
 		. '</a>';
 		
-$buttons['add'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'
+	$buttons['add'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'
 		. html_print_image ("images/add.png", true, array ("title" => __('Add filter')))
 		. '</a>';
-		
-//Header
-ui_print_page_header (__('Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+
+	ui_print_page_header (__('Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+} else {
+	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
+        array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit', 'text' => __('Netflow filters')),
+        array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form', 'text' => __('Add filter')));
+
+	ui_meta_print_page_header($nav_bar);
+}
 
 if ($id) {
 	$filter = netflow_filter_get_filter ($id);
@@ -207,7 +215,7 @@ $show_output = array();
 $show_output = array ('packets' => __('Packets'), 'bytes' => __('Bytes'), 'flows' =>__('Flows'));
 $table->data[9][1] = html_print_select ($show_output, 'output', $output, '', '', 0, true, false, true, '', false);
 
-echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">';
+echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {

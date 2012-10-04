@@ -1,3 +1,23 @@
+2012-10-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_html.php,
+	  include/functions_netflow.php,
+	  pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  operation/netflow/nf_live_view.php,
+	  operation/netflow/nf_reporting.php,
+	  operation/netflow/nf_view.php,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  godmode/netflow/nf_edit_form.php,
+	  godmode/netflow/nf_item_list.php,
+	  godmode/netflow/nf_report_item.php,
+	  godmode/netflow/nf_report_form.php,
+	  godmode/netflow/nf_edit.php: Added metaconsole integration to netflow
+	  reports.
+
 2012-10-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_html.php: Fixed path to images in metaconsole.

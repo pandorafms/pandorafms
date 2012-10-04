@@ -16,10 +16,14 @@
 
 global $config;
 
-include_once("include/functions_graph.php");
-include_once("include/functions_ui.php");
-include_once("include/functions_netflow.php");
-ui_require_javascript_file ('calendar');
+include_once($config['homedir'] . "/include/functions_graph.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
+include_once($config['homedir'] . "/include/functions_netflow.php");
+if (defined ('METACONSOLE')) {
+	ui_require_javascript_file ('calendar', '../../include/javascript/');
+} else {
+	ui_require_javascript_file ('calendar');
+}
 
 
 // ACL
@@ -81,7 +85,7 @@ $period = (int) get_parameter('period', '86400');
 $update_date = (int) get_parameter('update_date', 0);
 $date = get_parameter_post ('date', date ("Y/m/d", get_system_time ()));
 $time = get_parameter_post ('time', date ("H:i:s", get_system_time ()));
-
+$connection_name = get_parameter('connection_name', '');
 
 // Read buttons
 $draw = get_parameter('draw_button', '');
@@ -93,8 +97,15 @@ $update = get_parameter('update_button', '');
 $end_date = strtotime ($date . " " . $time);
 $start_date = $end_date - $period;
 
-//Header
-ui_print_page_header (__('Netflow live view'), "images/networkmap/so_cisco_new.png", false, "", false, array ());
+if (! defined ('METACONSOLE')) {
+	//Header
+	ui_print_page_header (__('Netflow live view'), "images/networkmap/so_cisco_new.png", false, "", false, array ());
+} else {
+	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
+        array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_live_view', 'text' => __('Netflow live view')));
+
+	ui_meta_print_page_header($nav_bar);
+}
 
 // Save user defined filter
 if ($save != '' && check_acl ($config["id_user"], 0, "AW")) {
@@ -129,8 +140,8 @@ else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 // The filter name will not be needed anymore
 $filter['id_name'] = '';
 
-echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_live_view">';
-	
+echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_live_view">';
+
 	// Chart options table
 	$table->width = '100%';
 	$table->border = 0;
@@ -157,6 +168,11 @@ echo '<form method="post" action="index.php?sec=netf&sec2=operation/netflow/nf_l
 	);
 	$table->data[0][6] = '<b>'.__('Max. values').'</b>';
 	$table->data[0][7] = html_print_select ($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true);
+
+	if (defined ('METACONSOLE')) {
+		$table->data[0][8] = '<b>'.__('Connection').'</b>';
+		$table->data[0][9] = html_print_select (metaconsole_get_connection_names (), 'connection_name', $connection_name, '', '', 0, true, false, false);
+	}
 	
 	html_print_table ($table);
 	
@@ -237,7 +253,7 @@ if  ($draw != '') {
 	$unique_id = 'live_view__' . ($end_date - $start_date);
 	
 	// Draw
-	netflow_draw_item ($start_date, $end_date, $chart_type, $filter, $command, $filter, $max_aggregates, $unique_id);
+	netflow_draw_item ($start_date, $end_date, $chart_type, $filter, $max_aggregates, $unique_id, $connection_name);
 }
 ?>
 
@@ -330,7 +346,13 @@ if  ($draw != '') {
 			// Load fields from DB
 			
 			// Get filter type
-			jQuery.post ("ajax.php",
+			<?php
+			if (! defined ('METACONSOLE')) {
+				echo 'jQuery.post ("ajax.php",';
+			} else {
+				echo 'jQuery.post ("' . $config['homeurl'] . '../../ajax.php",';
+			}
+			?>
 				{"page" : "operation/netflow/nf_live_view",
 				"get_filter_type" : 1,
 				"id" : $("#filter_id").val()
@@ -362,7 +384,13 @@ if  ($draw != '') {
 			$("#submit-update_button").css("visibility", "");
 			
 			// Get filter values from DB
-			jQuery.post ("ajax.php",
+			<?php
+			if (! defined ('METACONSOLE')) {
+				echo 'jQuery.post ("ajax.php",';
+			} else {
+				echo 'jQuery.post ("' . $config['homeurl'] . '../../ajax.php",';
+			}
+			?>
 				{"page" : "operation/netflow/nf_live_view",
 				"get_filter_values" : 1,
 				"id" : $("#filter_id").val()

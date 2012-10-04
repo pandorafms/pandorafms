@@ -16,10 +16,10 @@
 
 global $config;
 
-include_once("include/functions_ui.php");
-include_once("include/functions_html.php");
-include_once("include/functions_db.php");
-include_once("include/functions_netflow.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
+include_once($config['homedir'] . "/include/functions_html.php");
+include_once($config['homedir'] . "/include/functions_db.php");
+include_once($config['homedir'] . "/include/functions_netflow.php");
 ui_require_javascript_file ('calendar');
 
 check_login ();
@@ -50,9 +50,17 @@ $buttons['edit_report']['active'] = false;
 $buttons['edit_report']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_form&id='.$id.'">'
 		. html_print_image ("images/config.png", true, array ("title" => __('Edit report')))
 		. '</a>';
-		
+
 //Header
-ui_print_page_header (__('Report item editor'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+if (! defined ('METACONSOLE')) {
+	ui_print_page_header (__('Report item editor'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+} else {
+	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_reporting', 'text' => __('Netflow reports')),
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_item_list&id=' . $id, 'text' => __('Item list')),
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report_item&id=' . $id, 'text' => __('Edit item')));
+	ui_meta_print_page_header($nav_bar);
+}
 
 if ($id_rc) {
 	$item = netflow_reports_get_content ($id_rc);
@@ -166,7 +174,7 @@ $table->data[2][0] = '<b>'.__('Chart type').'</b>';
 $table->data[2][1] = html_print_select (netflow_get_chart_types (), 'show_graph', $show_graph,'','',0,true);
 $table->data[2][1] = html_print_select (netflow_get_chart_types (), 'show_graph', $show_graph,'','',0,true);
 
-echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$id.'">';
+echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir']. '/godmode/netflow/nf_report_item&id='.$id.'">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 

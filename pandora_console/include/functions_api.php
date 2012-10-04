@@ -5600,7 +5600,7 @@ function api_get_netflow_get_stats ($discard_1, $discard_2, $params) {
 	$unit = $params['data'][5];
 	
 	// Get netflow data
-	$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit);
+	$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $unit);
 
 	returnData('json', $data);
 	return;

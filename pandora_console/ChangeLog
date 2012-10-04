@@ -1,3 +1,9 @@
+2012-10-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_html.php: Fixed print_image when source image 
+	doesn't exists on metaconsole then try to search it in normal 
+	console.
+
 2012-10-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_api.php:  Fixed a typo.

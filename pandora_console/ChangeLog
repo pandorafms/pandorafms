@@ -1,3 +1,8 @@
+2012-10-04  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* general/login_help_dialog.php: Fixed obsolete URL for
+	documentation, on "Welcome to Pandora FMS" dialog.
+
 2012-10-04  Sancho Lerena <slerena@artica.es>
 
         * include/functions_reporting.php: Guess what... AGAIN the

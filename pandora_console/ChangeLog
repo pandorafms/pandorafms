@@ -1,3 +1,7 @@
+2012-10-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_html.php: Fixed path to images in metaconsole.
+
 2012-10-04  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* general/login_help_dialog.php: Fixed obsolete URL for

@@ -1267,12 +1267,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		
 	}
 	
-	if (!$relative) {
-		if (defined('METACONSOLE'))
-			$src = ui_get_full_url(ENTERPRISE_DIR . '/meta/' . $src);
-		else
-			$src = ui_get_full_url($src);
-	}
+	$src = ui_get_full_url($src);
 	
 	// Only return src field of image
 	if ($return_src) {

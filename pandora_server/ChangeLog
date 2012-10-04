@@ -1,3 +1,8 @@
+2012-10-04  Junichi Satoh <junichi@rworks.jp>
+
+	* lib/PandoraFMS/Core.pm: Fixed unexpected execution with monthly
+	planned downtime.
+
 2012-10-03 Vanessa Gil <vanessa.gil@artica.es>
 
 	* util/tool_api.pl: Changed format for creating events using API.

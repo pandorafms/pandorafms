@@ -1373,7 +1373,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 		FROM tplanned_downtime
 		WHERE type_periodicity="monthly"
 			AND executed = 0
-			AND periodically_day_from >= ?', $number_day_month);
+			AND periodically_day_from <= ?', $number_day_month);
 	
 	foreach my $downtime (@downtimes) {
 		#Convert to identical type.

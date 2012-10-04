@@ -1267,7 +1267,15 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		
 	}
 	
+	$src_tmp = $src;
 	$src = ui_get_full_url($src);
+	
+	// If metaconsole is activated and image doesn't exists try to search on normal console
+	if (defined('METACONSOLE')) {
+		if (false === file_get_contents($src,0,null,0,1)) {
+			$src = ui_get_full_url('../../' . $src_tmp); 
+		}
+	}
 	
 	// Only return src field of image
 	if ($return_src) {

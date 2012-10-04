@@ -364,10 +364,16 @@ function netflow_is_net ($address) {
  * @return An array with netflow stats.
  *
  */
-function netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max, $unit) {
+function netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max, $unit, $connection_name = '') {
 	global $nfdump_date_format;
 	global $config;
 
+	// Requesting remote data
+	if (defined ('METACONSOLE') && $connection_name != '') {
+		$data = metaconsole_call_remote_api ($connection_name, 'netflow_get_data', "$start_date|$end_date|" . base64_encode(json_encode($filter)) . "|$unique_id|$aggregate|$max|$unit");
+		return json_decode ($data, true);
+	}
+	
 	// Get the command to call nfdump
 	$command = netflow_get_command ($filter);
 
@@ -434,8 +440,14 @@ function netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggrega
  *
  * @return An array with netflow stats.
  */
-function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $unit) {
+function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $unit, $connection_name = '') {
 	global $nfdump_date_format;
+
+	// Requesting remote data
+	if (defined ('METACONSOLE') && $connection_name != '') {
+		$data = metaconsole_call_remote_api ($connection_name, 'netflow_get_stats', "$start_date|$end_date|" . base64_encode(json_encode($filter)) . "|$aggregate|$max|$unit");
+		return json_decode ($data, true);
+	}
 
 	// Get the command to call nfdump
 	$command = netflow_get_command ($filter);
@@ -498,9 +510,15 @@ function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $
  *
  * @return An array with netflow stats.
  */
-function netflow_get_summary ($start_date, $end_date, $filter, $unique_id) {
+function netflow_get_summary ($start_date, $end_date, $filter, $unique_id, $connection_name = '') {
 	global $nfdump_date_format;
 	global $config;
+
+	// Requesting remote data
+	if (defined ('METACONSOLE') && $connection_name != '') {
+		$data = metaconsole_call_remote_api ($connection_name, 'netflow_get_summary', "$start_date|$end_date|" . base64_encode(json_encode($filter)) . "|$unique_id");
+		return json_decode ($data, true);
+	}
 
 	// Get the command to call nfdump
 	$command = netflow_get_command ($filter);
@@ -985,8 +1003,7 @@ function netflow_get_valid_intervals () {
  * @param string output Output format. Only HTML and XML are supported.
  *
  */
-function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggregates, $unique_id, $output = 'HTML') {
-	
+function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggregates, $unique_id, $connection_name = '', $output = 'HTML') {
 	$aggregate = $filter['aggregate'];
 	$unit = $filter['output'];
 	$interval = $end_date - $start_date;
@@ -994,7 +1011,7 @@ function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggrega
 	// Process item
 	switch ($type) {
 		case '0':
-			$data = netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max_aggregates, $unit);
+			$data = netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($aggregate != 'none') {
 				if ($output == 'HTML') {
 					echo graph_netflow_aggregate_area($data, $interval, 660, 320, 0);
@@ -1011,7 +1028,7 @@ function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggrega
 			}
 			break;
 		case '1':
-			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit);
+			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($output == 'HTML') {
 				echo graph_netflow_aggregate_pie($data, $aggregate);
 			} else if ($output == 'XML') {
@@ -1019,7 +1036,7 @@ function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggrega
 			}
 			break;
 		case '2':
-			$data = netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max_aggregates, $unit);
+			$data = netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($output == 'HTML') {
 				echo netflow_data_table ($data, $start_date, $end_date, $aggregate);
 			} else if ($output == 'XML') {
@@ -1028,7 +1045,7 @@ function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggrega
 			}
 			break;
 		case '3':
-			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit);
+			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($output == 'HTML') {
 				echo netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
 			} else if ($output == 'XML') {
@@ -1036,19 +1053,29 @@ function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggrega
 			}
 			break;
 		case '4':
-			$data = netflow_get_summary ($start_date, $end_date, $filter, $unique_id);
+			$data = netflow_get_summary ($start_date, $end_date, $filter, $unique_id, $connection_name);
 			if ($output == 'HTML') {
 				netflow_summary_table ($data);
-			} else {
+			} else if ($output == 'XML') {
 				netflow_summary_xml ($data);
 			}
 			break;
 		default:
-			echo fs_error_image();
+			if ($output == 'HTML') {
+				echo fs_error_image();
+			}
 			break;
 	}
 }
 
+/**
+ * Render a netflow report as an XML.
+ *
+ * @param int ID of the netflow report.
+ * @param string end_date Period start date.
+ * @param string end_date Period end date.
+ *
+ */
 function netflow_xml_report ($id, $start_date, $end_date) {
 	
 	// Get report data
@@ -1101,13 +1128,19 @@ function netflow_xml_report ($id, $start_date, $end_date) {
 		// Build a unique id for the cache
 		$unique_id = $report['id_report'] . '_' . $content['id_rc'] . '_' . ($end_date - $start_date);
 
-		netflow_draw_item ($start_date, $end_date, $content['show_graph'], $filter, $content['max'], $unique_id, 'XML');
+		netflow_draw_item ($start_date, $end_date, $content['show_graph'], $filter, $content['max'], $unique_id, $report['server_name'], 'XML');
 
 		echo "  </report_item>\n";
 	}
 	echo "</report>\n"; 
 }
 
+/**
+ * Render an aggregated area chart as an XML.
+ *
+ * @param array Netflow data.
+ *
+ */
 function netflow_aggregate_area_xml ($data) {
 
 	// Print source information
@@ -1134,6 +1167,12 @@ function netflow_aggregate_area_xml ($data) {
 	echo "</flows>\n";
 }
 
+/**
+ * Render an area chart as an XML.
+ *
+ * @param array Netflow data.
+ *
+ */
 function netflow_total_area_xml ($data) {
 
 	// Print flow information
@@ -1147,6 +1186,12 @@ function netflow_total_area_xml ($data) {
 	echo "</flows>\n";
 }
 
+/**
+ * Render a pie chart as an XML.
+ *
+ * @param array Netflow data.
+ *
+ */
 function netflow_aggregate_pie_xml ($data) {
 
 	// Calculate total
@@ -1167,6 +1212,12 @@ function netflow_aggregate_pie_xml ($data) {
 	echo "</pie>\n";
 }
 
+/**
+ * Render a stats table as an XML.
+ *
+ * @param array Netflow data.
+ *
+ */
 function netflow_stat_xml ($data) {
 	
 	// Print stats
@@ -1178,6 +1229,12 @@ function netflow_stat_xml ($data) {
 	echo "</stats>\n";
 }
 
+/**
+ * Render a summary table as an XML.
+ *
+ * @param array Netflow data.
+ *
+ */
 function netflow_summary_xml ($data) {
 	
 	// Print summary

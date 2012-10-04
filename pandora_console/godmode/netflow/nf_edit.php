@@ -17,9 +17,9 @@
 
 global $config;
 
-include_once("include/functions_ui.php");
-include_once("include/functions_db.php");
-include_once("include/functions_netflow.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
+include_once($config['homedir'] . "/include/functions_db.php");
+include_once($config['homedir'] . "/include/functions_netflow.php");
 
 check_login ();
 
@@ -31,7 +31,14 @@ if (! check_acl ($config["id_user"], 0, "AW")) {
 }
 		
 //Header
-ui_print_page_header (__('Manage Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true);
+if (! defined ('METACONSOLE')) {
+	ui_print_page_header (__('Manage Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true);
+} else {
+	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
+        array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit', 'text' => __('Netflow filters')));
+
+	ui_meta_print_page_header($nav_bar);
+}
 
 $delete = (bool) get_parameter ('delete');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
@@ -122,14 +129,13 @@ $total_filters = $total_filters[0]['total'];
 foreach ($filters as $filter) {
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&id='.$filter['id_sg'].'">'.$filter['id_name'].'</a>';
-	
+	$data[0] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config ['homedir'] . '/godmode/netflow/nf_edit_form&id='.$filter['id_sg'].'">'.$filter['id_name'].'</a>';
 	$group = db_get_value('nombre','tgrupo', 'id_grupo', $filter['id_group']);
 	if ($group == '')
 		$group = 'All';
 	$data[1] = $group;
 	$data[2] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
-		href='index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id=".$filter['id_sg']."&offset=0'>" . 
+		href='" . $config['homeurl'] . "index.php?sec=netf&sec2=" . $config['homedir'] . "/godmode/netflow/nf_edit&delete=1&id=".$filter['id_sg']."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $filter['id_sg'], false, false, '', 'class="check_delete"', true);
 	
@@ -137,7 +143,7 @@ foreach ($filters as $filter) {
 }
 
 if(isset($data)) {
-	echo "<form method='post' action='index.php?sec=netf&sec2=godmode/netflow/nf_edit'>";
+	echo "<form method='post' action='" . $config['homeurl'] . "index.php?sec=netf&sec2=" . $config['homedir'] . "/godmode/netflow/nf_edit'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
@@ -149,7 +155,7 @@ else {
 	echo "<div class='nf'>".__('There are no defined filters')."</div>";
 }
 
-echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">';
+	echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form">';
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
 	html_print_submit_button (__('Create filter'), 'crt', false, 'class="sub wand"');
 	echo "</div>";

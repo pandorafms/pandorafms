@@ -16,10 +16,13 @@
 
 global $config;
 
-include_once("include/functions_ui.php");
-include_once("include/functions_html.php");
-include_once("include/functions_db.php");
-include_once("include/functions_netflow.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
+include_once($config['homedir'] . "/include/functions_html.php");
+include_once($config['homedir'] . "/include/functions_db.php");
+include_once($config['homedir'] . "/include/functions_netflow.php");
+if (defined ('METACONSOLE')) {
+	include_once($config['homedir'] . "/enterprise/include/functions_metaconsole.php");
+}
 
 check_login ();
 
@@ -38,11 +41,13 @@ if ($create) {
 	$name = (string) get_parameter ('name');
 	$group = (int) get_parameter ('id_group');
 	$description = get_parameter('description','');
+	$connection_name = get_parameter('connection_name','');
 	
 	$values = array (
 		'id_name' => $name,
 		'id_group' => $group,
 		'description' => $description,
+		'server_name' => $connection_name,
 	);
 	
 	$result_ins = db_process_sql_insert('tnetflow_report', $values);
@@ -54,23 +59,30 @@ else {
 	$id = (int)get_parameter('id');
 }
 
-$buttons['report_list']['active'] = false;
-$buttons['report_list'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report">'
+if (! defined ('METACONSOLE')) {
+	$buttons['report_list']['active'] = false;
+	$buttons['report_list'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report">'
 	. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
 	. '</a>';
 
-$buttons['report_items']['active'] = false;
-$buttons['report_items']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">'
+	$buttons['report_items']['active'] = false;
+	$buttons['report_items']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">'
 	. html_print_image ("images/god6.png", true, array ("title" => __('Report items')))
 	. '</a>';
 
-$buttons['edit_report']['active'] = true;
-$buttons['edit_report']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_form&id='.$id.'">'
+	$buttons['edit_report']['active'] = true;
+	$buttons['edit_report']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_form&id='.$id.'">'
 	. html_print_image ("images/config.png", true, array ("title" => __('Edit report')))
 	. '</a>';
 
-//Header
-ui_print_page_header (__('Netflow Report'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+	//Header
+	ui_print_page_header (__('Netflow Report'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+} else {
+	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_reporting', 'text' => __('Netflow reports')),
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report_form', 'text' => __('Edit netflow report')));
+	ui_meta_print_page_header($nav_bar);
+}
 
 //Control error creating report
 if (($result_ins === false) && ($result_ins != -1)) {
@@ -93,12 +105,14 @@ if ($id) {
 	$name = $report['id_name'];
 	$description = $report['description'];
 	$group = $report['id_group'];
+	$connection_name = $report['server_name'];
 
 }
 else {
 	$name = '';
 	$group = '';
 	$description = '';
+	$connection_name = '';
 }
 
 if ($update) {
@@ -106,6 +120,7 @@ if ($update) {
 	$name = (string) get_parameter ('name');
 	$description = get_parameter ('description');
 	$group = get_parameter('id_group');
+	$connection_name = get_parameter('connection_name');
 	
 	if ($name == '') {
 		ui_print_error_message (__('Not updated. Blank name'));
@@ -116,6 +131,7 @@ if ($update) {
 				'id_name' => $name,
 				'id_group' => $group,
 				'description' => $description,
+				'server_name' => $connection_name,
 				),
 			array ('id_report' => $id));
 				ui_print_result_message ($result, __('Report updated successfully'), __('Error updating report'));
@@ -143,8 +159,16 @@ $table->data[1][1] = html_print_select_groups($config['id_user'], "IW",
 $table->data[2][0] = '<b>'.__('Description').'</b>';
 $table->data[2][1] = html_print_textarea ('description', 2, 65, $description, '', true);
 
+if (defined ('METACONSOLE')) {
+	$table->data[3][0] = '<b>'.__('Connection').'</b>';
+	$table->data[3][1] = html_print_select (metaconsole_get_connection_names (), 'connection_name', $connection_name, '', '', 0, true, false, false);
+}
 
-echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_report_form">';
+
+if (defined ('METACONSOLE')) {
+	echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report_form">';
+}
+
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 

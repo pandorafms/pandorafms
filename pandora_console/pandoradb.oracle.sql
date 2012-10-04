@@ -1636,6 +1636,7 @@ id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
 id_name VARCHAR2(100) NOT NULL,
 description CLOB default '',
 id_group NUMBER(10, 0)
+server_name CLOB default '',
 );
 
 CREATE SEQUENCE tnetflow_report_s INCREMENT BY 1 START WITH 1;

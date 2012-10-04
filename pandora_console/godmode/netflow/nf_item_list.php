@@ -17,10 +17,10 @@
 
 global $config;
 
-include_once("include/functions_ui.php");
-include_once("include/functions_db.php");
-include_once("include/functions_netflow.php");
-include_once("include/functions_html.php");
+include_once($config['homedir'] . "/include/functions_ui.php");
+include_once($config['homedir'] . "/include/functions_db.php");
+include_once($config['homedir'] . "/include/functions_netflow.php");
+include_once($config['homedir'] . "/include/functions_html.php");
 
 check_login ();
 
@@ -50,8 +50,15 @@ $buttons['edit_report']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netf
 		. '</a>';
 		
 //Header
-ui_print_page_header (__('Report items'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
-		
+if (! defined ('METACONSOLE')) {
+	ui_print_page_header (__('Report items'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+} else {
+	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_reporting', 'text' => __('Netflow reports')),
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_item_list&id=' . $id, 'text' => __('Item list')));
+	ui_meta_print_page_header($nav_bar);
+}
+	
 $delete = (bool) get_parameter ('delete');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 $order = get_parameter('order');
@@ -222,7 +229,11 @@ foreach ($reports_item as $item) {
 }
 
 if (isset($data)) {
-	echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">';
+	if (! defined ('METACONSOLE')) {
+		echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">';
+	} else {
+		echo '<form method="post" action="' . ui_get_full_url(false) . 'enterprise/meta/index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_item_list&id='.$id.'">';
+	}
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
@@ -234,7 +245,7 @@ else {
 	echo "<div class='nf'>".__('There are no defined items')."</div>";
 }
 
-echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$id.'">';
+	echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report_item&id='.$id.'">';
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
 	html_print_submit_button (__('Create item'), 'crt', false, 'class="sub wand"');
 	echo "</div>";

@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report` (
 	`id_name` varchar(150) NOT NULL default '',
 	`description` TEXT NOT NULL,
 	`id_group` int(10),
+	`server_name` TEXT NOT NULL,
 	PRIMARY KEY(`id_report`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -430,7 +430,6 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `tags` text NOT NULL,
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
-  KEY `indice_2` (`utimestamp`,`id_evento`),
   KEY `idx_agentmodule` (`id_agentmodule`),
   INDEX criticity (`criticity`),
   INDEX estado (`estado`)

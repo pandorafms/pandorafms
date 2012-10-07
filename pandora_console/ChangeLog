@@ -1,3 +1,8 @@
+2012-10-07  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb.sql: Deleted index on utimestamp for tevento. This
+	will produce a performance penalty for no reason.
+
 2012-10-04  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* general/login_help_dialog.php: Fixed obsolete URL for

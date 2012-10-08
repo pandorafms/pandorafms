@@ -157,7 +157,7 @@ foreach($groups_user as $key => $groups){
 
 $sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',',$groups_id).")";
 $table->data[0][0] = '<b>'.__('Filter').'</b>';
-$table->data[0][1] = html_print_select_from_sql($sql, 'id_filter', $name_filter, '', '', 0, true);
+$table->data[0][1] = html_print_select_from_sql($sql, 'id_filter', $id_filter, '', '', 0, true);
 
 $table->data[1][0] = '<b>'.__('Max. values').'</b>';
 		$max_values = array ('2' => '2',

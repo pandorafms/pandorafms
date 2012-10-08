@@ -1,3 +1,16 @@
+2012-10-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_graph.php,
+	  include/functions_html.php,
+	  include/graphs/fgraph.php,
+	  include/functions_ui.php,
+	  include/functions_netflow.php,
+	  operation/netflow/nf_live_view.php,
+	  operation/netflow/nf_view.php,
+	  godmode/netflow/nf_item_list.php,
+	  godmode/netflow/nf_report_item.php: Small improvements and fixes.
+	  Added support for PDF netflow reports (enterprise only).
+
 2012-10-07  Sancho Lerena <slerena@artica.es>
 
         * pandoradb.sql: Deleted index on utimestamp for tevento. This

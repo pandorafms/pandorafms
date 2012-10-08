@@ -999,7 +999,7 @@ function html_print_table (&$table, $return = false) {
 		$output .= '<table style="' . $styleTable . '" width="'.$table->width.'"'.$table->tablealign;
 	}
 	else {
-		$output .= '<table style="' . $styleTable . '" "'.$table->tablealign;
+		$output .= '<table style="' . $styleTable . '"'.$table->tablealign;
 	}
 	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
 	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';

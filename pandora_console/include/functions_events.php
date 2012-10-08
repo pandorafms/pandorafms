@@ -224,10 +224,10 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	
 	switch ($new_status) {
 		case 1:
-			$new_status_string = __('Validated');
+			$new_status_string = 'Validated';
 			break;
 		case 2:
-			$new_status_string = __('Setted in process');
+			$new_status_string = 'Setted in process';
 			break;
 	}
 	
@@ -257,7 +257,7 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 				$sql_validation .= " AND estado <> 1";
 			else if ($new_status == 2)
 				$sql_validation .= " AND estado NOT IN (1,2)";
-								   
+			   
 			$ret = db_process_sql($sql_validation);
 				
 			break;				

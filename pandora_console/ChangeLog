@@ -1,5 +1,10 @@
 2012-10-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_events.php: Removed translation in events 
+	message.
+
+2012-10-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_events.php: Improvement performance in 
 	validation process (Check this for 5.0v).
 

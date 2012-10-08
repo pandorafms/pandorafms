@@ -247,19 +247,34 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	switch ($config['dbtype']) {
 		// Oldstyle SQL to avoid innecesary PHP foreach
 		case 'mysql':
-			$ret = db_process_sql("UPDATE tevento 
+			$sql_validation = "UPDATE tevento 
 								   SET estado = " . $new_status .", 
 									   id_usuario = '" . $config['id_user'] . "', 
 									   user_comment=concat(user_comment, '" . $comment . "') 
-								   WHERE id_evento in (" . implode(',', $id_event) . ")");	
+								   WHERE id_evento in (" . implode(',', $id_event) . ")";
+			
+			if ($new_status == 1)
+				$sql_validation .= " AND estado <> 1";
+			else if ($new_status == 2)
+				$sql_validation .= " AND estado NOT IN (1,2)";
+								   
+			$ret = db_process_sql($sql_validation);
+				
 			break;				
 		case 'postgresql':
 		case 'oracle':
-			$ret = db_process_sql("UPDATE tevento 
+			$sql_validation = "UPDATE tevento 
 								   SET estado = " . $new_status . ", 
 									   id_usuario = '" . $config['id_user'] . "', 
 									   user_comment=user_comment || '" . $comment . "') 
-								   WHERE id_evento in (" . implode(',', $id_event) . ")");						
+								   WHERE id_evento in (" . implode(',', $id_event) . ")";	
+								   
+			if ($new_status == 1)
+				$sql_validation .= " AND estado <> 1";
+			else if ($new_status == 2)
+				$sql_validation .= " AND estado NOT IN (1,2)";
+				
+			$ret = db_process_sql($sql_validation);							   					
 
 			break;
 	}

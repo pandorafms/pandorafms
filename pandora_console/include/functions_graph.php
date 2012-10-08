@@ -2661,7 +2661,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
  * Print an area graph with netflow aggregated
  */
 
-function graph_netflow_aggregate_area ($data, $period, $width, $height, $only_image) {
+function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = '', $ttl = 1, $only_image = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -2726,7 +2726,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $only_im
 	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
 		$config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size'], $unit);
+		$config['fontpath'], $config['font_size'], $unit, 2);
 }
 
 
@@ -2734,7 +2734,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $only_im
 /**
  * Print an area graph with netflow total
  */
-function graph_netflow_total_area ($data, $period, $width, $height, $only_image) {
+function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', $ttl = 1, $only_image = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -2783,19 +2783,18 @@ function graph_netflow_total_area ($data, $period, $width, $height, $only_image)
 	return area_graph($flash_chart, $chart, $width, $height, array (), array (),
 		array (), ui_get_full_url("images/image_problem.opaque.png"), "", "", $homeurl,
 		$water_mark,
-		$config['fontpath'], $config['font_size'], "");
+		$config['fontpath'], $config['font_size'], $unit, $ttl);
 }
 
 /**
  * Print a pie graph with netflow aggregated
  */
-function graph_netflow_aggregate_pie ($data, $aggregate) {
+function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image = false) {
 	global $config;
 	global $graphic_type;
 	
 	if (empty ($data)) {
-		echo fs_error_image ();
-		return;
+		return fs_error_image ();
 	}
 	
 	$i = 0;
@@ -2811,10 +2810,15 @@ function graph_netflow_aggregate_pie ($data, $aggregate) {
 		}
 		$i++;
 	}
-	
-	return pie3d_graph($config['flash_charts'], $values, 320, 200,
+
+	$flash_chart = $config['flash_charts'];
+	if ($only_image) {
+		$flash_chart = false;
+	}
+
+	return pie3d_graph($flash_chart, $values, 320, 200,
 		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size']);
+		$config['fontpath'], $config['font_size'], $ttl);
 }
 
 

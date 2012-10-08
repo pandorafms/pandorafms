@@ -268,8 +268,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$graph['font_size'] = $font_size;
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
-		
-		return "<img src='".$homeurl."include/graphs/functions_pchart.php?static_graph=1&graph_type=area&ttl=".$ttl."&id_graph=" . $id_graph . "'>";
+	
+		return "<img src='" . ui_get_full_url (false, false, false, false) . "include/graphs/functions_pchart.php?static_graph=1&graph_type=area&ttl=".$ttl."&id_graph=" . $id_graph . "'>";
 	}
 }
 
@@ -304,7 +304,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=stacked_area&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		return "<img src='" . ui_get_full_url (false, false, false, false) . "include/graphs/functions_pchart.php?static_graph=1&graph_type=stacked_area&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
 	}
 }
 

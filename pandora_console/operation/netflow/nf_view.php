@@ -82,13 +82,20 @@ if (isset ($_GET["xml"])) {
 	netflow_xml_report ($id, $start_date, $end_date);
 	return;
 }
+// Generate a PDF report
+else if (isset ($_GET["pdf"])) {
+	enterprise_include_once ('include/functions_netflow_pdf.php');
+	header ('Content-type: application/pdf', true);
+	netflow_pdf_report ($id, $start_date, $end_date);
+	return;
+}
 
-$buttons['report_list'] = '<a href="index.php?sec=netf&sec2=operation/netflow/nf_reporting">'
-	. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
-	. '</a>';
 
 //Header
 if (! defined ('METACONSOLE')) {
+	$buttons['report_list'] = '<a href="index.php?sec=netf&sec2=operation/netflow/nf_reporting">'
+		. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
+		. '</a>';
 	ui_print_page_header (__('Netflow'), "images/networkmap/so_cisco_new.png", false, "", false, $buttons);
 } else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
@@ -122,6 +129,11 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		$table->data[2][1] = '<a title="XML" href="' . $config['homeurl'] . 'ajax.php?page=' . $config['homedir'] . '/operation/netflow/nf_view&id='.$id."&date=$date&time=$time&period=$period&xml=1\">" . html_print_image("images/database_lightning.png", true) . '</a>';
 	} else {
 		$table->data[2][1] = '<a title="XML" href="' . $config['homeurl'] . '../../ajax.php?page=' . $config['homedir'] . '/operation/netflow/nf_view&id='.$id."&date=$date&time=$time&period=$period&xml=1\">" . html_print_image("images/database_lightning.png", true) . '</a>';
+	}
+	if (defined ('METACONSOLE')) {
+		$table->data[2][1] .= '&nbsp;&nbsp;<a title="PDF" href="' . $config['homeurl'] . '../../ajax.php?page=' . $config['homedir'] . '/operation/netflow/nf_view&id='.$id."&date=$date&time=$time&period=$period&pdf=1\">" . html_print_image("images/pdf.png", true) . '</a>';
+	} else if (defined ('PANDORA_ENTERPRISE')) {
+		$table->data[2][1] .= '&nbsp;&nbsp;<a title="PDF" href="' . $config['homeurl'] . 'ajax.php?page=' . $config['homedir'] . '/operation/netflow/nf_view&id='.$id."&date=$date&time=$time&period=$period&pdf=1\">" . html_print_image("images/pdf.png", true) . '</a>';
 	}
 
 	html_print_table ($table);
@@ -168,6 +180,6 @@ foreach ($report_contents as $content_report) {
 	$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
 	
 	// Draw
-	netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggregates, $unique_id, $connection_name);
+	echo netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggregates, $unique_id, $connection_name, 'HTML');
 }
 ?>

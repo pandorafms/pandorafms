@@ -35,17 +35,17 @@ if (! check_acl ($config["id_user"], 0, "IW")) {
 $id = (int)get_parameter('id');
 
 $buttons['report_list']['active'] = false;
-$buttons['report_list'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report">'
+$buttons['report_list'] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report">'
 		. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
 		. '</a>';
 		
 $buttons['report_items']['active'] = true;
-$buttons['report_items']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">'
+$buttons['report_items']['text'] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_item_list&id='.$id.'">'
 		. html_print_image ("images/god6.png", true, array ("title" => __('Report items')))
 		. '</a>';
 		
 $buttons['edit_report']['active'] = false;
-$buttons['edit_report']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_form&id='.$id.'">'
+$buttons['edit_report']['text'] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report_form&id='.$id.'">'
 		. html_print_image ("images/config.png", true, array ("title" => __('Edit report')))
 		. '</a>';
 		
@@ -187,18 +187,18 @@ foreach ($reports_item as $item) {
 	}
 	else if (($item['id_rc'] == $first_item) && ($item['id_rc'] != $last_item)){
 		$data[0] = '<span style="display: block; float: left; width: 16px;">&nbsp;</span>';
-		$data[0] .= '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
+		$data[0] .= '<a href="' . $config['homeurl'].'index.php?sec=netf&sec2=' . $config['homedir'].'/godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
 	}
 	else if (($item['id_rc'] == $last_item) && ($item['id_rc'] != $first_item)){
-		$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
+		$data[0] = '<a href="' . $config['homeurl'].'index.php?sec=netf&sec2=' . $config['homedir'].'/godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
 	}
 	else {
-		$data[0] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
-		$data[0] .= '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
+		$data[0] = '<a href="' . $config['homeurl'].'index.php?sec=netf&sec2=' . $config['homedir'].'/godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">' . html_print_image("images/up.png", true, array("title" => __('Move to up'))) . '</a>';
+		$data[0] .= '<a href="' . $config['homeurl'].'index.php?sec=netf&sec2=' . $config['homedir'].'/godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">' . html_print_image("images/down.png", true, array("title" => __('Move to down'))) . '</a>';
 	}
 	
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $item['id_filter']);
-	$data[1] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$item['id_report'].'&id_rc='.$item['id_rc'].'">'.$name_filter.'</a>';
+	$data[1] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report_item&id='.$item['id_report'].'&id_rc='.$item['id_rc'].'">'.$name_filter.'</a>';
 	
 	$data[2] = $item['max'];
 	
@@ -221,7 +221,7 @@ foreach ($reports_item as $item) {
 	}
 	
 	$data[4] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
-		href='index.php?sec=netf&sec2=godmode/netflow/nf_item_list&delete=1&id_rc=".$item['id_rc']."&id=".$id."&offset=0'>" . 
+		href='" . $config['homeurl'] . "index.php?sec=netf&sec2=" . $config['homedir'] . "/godmode/netflow/nf_item_list&delete=1&id_rc=".$item['id_rc']."&id=".$id."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
 	
@@ -229,11 +229,7 @@ foreach ($reports_item as $item) {
 }
 
 if (isset($data)) {
-	if (! defined ('METACONSOLE')) {
-		echo '<form method="post" action="index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">';
-	} else {
-		echo '<form method="post" action="' . ui_get_full_url(false) . 'enterprise/meta/index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_item_list&id='.$id.'">';
-	}
+	echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2="' . $config['homedir'] . '/godmode/netflow/nf_item_list&id='.$id.'">';
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";

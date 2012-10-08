@@ -1845,10 +1845,11 @@ function ui_get_url_refresh ($params = false, $relative = true, $add_post = true
  *
  * @param mixed $url If provided, it will be added after the index.php, but it is false boolean value, put the homeurl in the url.
  * @param boolean $no_proxy To avoid the proxy checks, by default it is false.
+ * @param boolean $metaconsole_root Set the root to the metaconsole dir if the metaconsole is enabled, true by default.
  *
  * @return string A full URL in Pandora.
  */
-function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = false) {
+function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = false, $metaconsole_root = true) {
 	global $config;
 	
 	$port = null;   // null means 'use the starndard port'
@@ -1916,7 +1917,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 			$url = $config['homeurl_static'] . '/';
 		}
 		
-		if (defined('METACONSOLE')) {
+		if (defined('METACONSOLE') && $metaconsole_root) {
 			$url .= 'enterprise/meta/';
 		}
 	}
@@ -1928,7 +1929,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 			$fullurl .= $config['homeurl_static'] . '/';
 		}
 		
-		if (defined('METACONSOLE')) {
+		if (defined('METACONSOLE') && $metaconsole_root) {
 			$fullurl .= 'enterprise/meta/';
 		}
 	}
@@ -1943,7 +1944,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 			else {
 				$fullurl .= $config['homeurl_static'] . '/';
 				
-				if (defined('METACONSOLE')) {
+				if (defined('METACONSOLE') && $metaconsole_root) {
 					$fullurl .= 'enterprise/meta/';
 				}
 			}

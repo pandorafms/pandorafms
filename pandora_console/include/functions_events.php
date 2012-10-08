@@ -71,19 +71,50 @@ function events_get_event ($id, $fields = false) {
  * the same.
  *
  * @param int Event id to get similar events.
+ * @param int Target status of the event. If = 0 (select all), if = 1 (not select validated), if = 2 (not select in process-validated)
+ * @param int Limitation in time to get events. If it's zero without limit.
  *
  * @return array A list of events ids.
  */
-function events_get_similar_ids ($id) {
+function events_get_similar_ids ($id, $status = 0, $validated_limit_time = 0) {
 	$ids = array ();
 	$event = events_get_event ($id, array ('evento', 'id_agentmodule'));
 	if ($event === false)
 		return $ids;
+		
+	$sql_filters = array();	
+	if ($validated_limit_time > 0) {
+		$unixtime = get_system_time () - ($validated_limit_time * 3600); //Put hours in seconds
+		$sql_filters['utimestamp'] = "> " . $unixtime;
+	}
 	
-	$events = db_get_all_rows_filter ('tevento',
-		array ('evento' => $event['evento'],
-			'id_agentmodule' => $event['id_agentmodule']),
-		array ('id_evento'));
+	$sql_filters['evento'] = $event['evento'];
+	$sql_filters['id_agentmodule'] = $event['id_agentmodule'];		
+	
+	switch ($status) {
+		// Select all
+		case 0:
+			$events = db_get_all_rows_filter ('tevento',
+				$sql_filters,
+				array ('id_evento'));
+			break;
+		// Not select validated
+		case 1:
+			$sql_filters['estado'] = '<> 1';
+			$events = db_get_all_rows_filter ('tevento',
+				$sql_filters,
+				array ('id_evento'));
+			break;
+		// Not select in process and validated
+		case 2:
+			$sql_filters['estado'] = '<> 1';
+			$sql_filters['estado'] = '<> 2';
+			$events = db_get_all_rows_filter ('tevento',
+				$sql_filters,
+				array ('id_evento'));
+			break;
+	}
+			
 	if ($events === false)
 		return $ids;
 	
@@ -150,10 +181,13 @@ function events_delete_event ($id_event, $similar = true) {
  *
  * @param mixed Event ID or array of events
  * @param bool Whether to validate similar events or not.
+ * @param string Comment in the validated event.
+ * @param int New status.
+ * @param int Time limit for the get events.
  *
  * @return bool Whether or not it was successful
  */	
-function events_validate_event ($id_event, $similars = true, $comment = '', $new_status = 1) {
+function events_validate_event ($id_event, $similars = true, $comment = '', $new_status = 1, $validated_limit_time = 0) {
 	global $config;
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
@@ -162,12 +196,31 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	/* We must validate all events like the selected */
 	if ($similars && $new_status == 1) {
 		foreach ($id_event as $id) {
-			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
+			$id_event = array_merge ($id_event, events_get_similar_ids ($id, $new_status, $validated_limit_time));
 		}
 		$id_event = array_unique($id_event);
 	}
+
+	$events_similar = array();
 	
-	db_process_sql_begin ();
+	// Now check ACLs, discart no valid ACL events
+	if (!empty($id_event)) {
+		
+		foreach ($id_event as $event) {
+			
+			if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
+				db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
+				
+				continue;
+			}		
+			
+			$events_similar[] = $event; 
+		
+		}
+				
+		$id_event = $events_similar;
+		
+	}
 	
 	switch ($new_status) {
 		case 1:
@@ -187,38 +240,38 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 		$commentbox = '';
 	}
 	
-	foreach ($id_event as $event) {
-		if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
-			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
-			
-			return false;
-		}
-		
-		$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
-		$fullevent = events_get_event($event);
-		if ($fullevent['user_comment'] != '') {
-			$comment .= '<br>'.$fullevent['user_comment'];
-		}
-		
-		$values = array(
-			'estado' => $new_status,
-			'id_usuario' => $config['id_user'],
-			'user_comment' => $comment);
-		
-		$ret = db_process_sql_update('tevento', $values,
-			array('id_evento' => $event), 'AND', false);
-		
-		if (($ret === false) || ($ret === 0)) {
-			db_process_sql_rollback ();
-			return false;
-		}
+	$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox.'<br>';
+	
+	// If we are validating then only select => not validated
+	// If we are setting in process only select => not validated and not setted in process
+	switch ($config['dbtype']) {
+		// Oldstyle SQL to avoid innecesary PHP foreach
+		case 'mysql':
+			$ret = db_process_sql("UPDATE tevento 
+								   SET estado = " . $new_status .", 
+									   id_usuario = '" . $config['id_user'] . "', 
+									   user_comment=concat(user_comment, '" . $comment . "') 
+								   WHERE id_evento in (" . implode(',', $id_event) . ")");	
+			break;				
+		case 'postgresql':
+		case 'oracle':
+			$ret = db_process_sql("UPDATE tevento 
+								   SET estado = " . $new_status . ", 
+									   id_usuario = '" . $config['id_user'] . "', 
+									   user_comment=user_comment || '" . $comment . "') 
+								   WHERE id_evento in (" . implode(',', $id_event) . ")");						
+
+			break;
+	}
+	
+	if (($ret === false) || ($ret === 0)) {
+		return false;
 	}
 	
 	foreach ($id_event as $event) {
 		db_pandora_audit("Event validated", "Validated event #".$event);
 	}
-	db_process_sql_commit ();
-	
+
 	return true;
 }
 

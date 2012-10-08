@@ -256,7 +256,8 @@ if ($validate) {
 	$new_status =  get_parameter ("select_validate", 1);
 	$ids = explode(',',$ids);
 	$standby_alert = (bool) get_parameter("standby-alert");
-	
+	$validated_limit_time = get_parameter("validated_limit_time", 0);
+
 	// Avoid to re-set inprocess events
 	if($new_status == 2) {
 		foreach($ids as $key => $id) {
@@ -268,7 +269,7 @@ if ($validate) {
 	}
 	
 	if(isset($ids[0]) && $ids[0] != -1){
-		$return = events_validate_event ($ids, ($group_rep == 1), $comment, $new_status);
+		$return = events_validate_event ($ids, ($group_rep == 1), $comment, $new_status, $validated_limit_time);
 		if($new_status == 1) {
 			ui_print_result_message ($return,
 				__('Successfully validated'),

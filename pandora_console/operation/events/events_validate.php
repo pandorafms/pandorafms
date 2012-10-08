@@ -96,6 +96,7 @@ foreach($ids as $key => $id) {
 
 //Hiden row with description form
 $string = '<form  method="post" action="'.$url_val.'">';
+$string .= html_print_input_hidden('validated_limit_time', $event_view_hr, true);
 $string .= '<table border="0" style="width:80%; margin-left: 10%;"><tr><td align="left" valign="top" width="30px">';
 $string .=  '<td align="right"><b>' . __('Comment:') . '</b></td>';
 $string .= html_print_input_hidden('eventid', implode(',',$ids), true);

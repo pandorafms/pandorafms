@@ -1,3 +1,10 @@
+2012-10-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_events.php
+	 operation/events/events_validate.php
+	 operation/events/events.php: Fixed bad performance error validating
+	 events from this view.
+	 
 2012-10-07  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb.sql: Deleted index on utimestamp for tevento. This

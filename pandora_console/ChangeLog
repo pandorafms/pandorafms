@@ -1,3 +1,12 @@
+2012-10-09  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php
+	operation/events/events_validate.php
+	operation/events/events_list.php
+	operation/events/events.php: Fixed events validation and
+	deletion problem not searching similar events if the event
+	is only one and passing the current time window
+
 2012-10-09  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* pandoradb.sql: cleaned code style, to be acceptable by

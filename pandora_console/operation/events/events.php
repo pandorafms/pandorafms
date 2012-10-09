@@ -86,14 +86,21 @@ if (is_ajax ()) {
 		$similars = (bool) get_parameter ('similars');
 		$comment = (string) get_parameter ('comment');
 		$new_status = get_parameter ('new_status');
+		$validated_limit_time = get_parameter("validated_limit_time", 0);
+		$event_rep = get_parameter("event_rep", 1);
 
 		// Set off the standby mode when close an event
 		if($new_status == 1) {
 			$event = events_get_event ($id);
 			alerts_agent_module_standby ($event['id_alert_am'], 0);
 		}
-				
-		$return = events_validate_event ($id, $similars, $comment, $new_status);
+		
+		// If the event is not repited, the similars will be disabled
+		if($event_rep == 1) {
+			$similars = false;
+		}
+
+		$return = events_validate_event ($id, $similars, $comment, $new_status, $validated_limit_time);
 		if ($return)
 			echo 'ok';
 		else
@@ -104,8 +111,15 @@ if (is_ajax ()) {
 	if ($delete_event) {
 		$id = (array) get_parameter ("id");
 		$similars = (bool) get_parameter ('similars');
+		$validated_limit_time = get_parameter("validated_limit_time", 0);
+		$event_rep = get_parameter("event_rep", 1);
 		
-		$return = events_delete_event ($id, $similars);
+		// If the event is not repited, the similars will be disabled
+		if($event_rep == 1) {
+			$similars = false;
+		}
+		
+		$return = events_delete_event ($id, $similars, $validated_limit_time);
 		if ($return)
 			echo 'ok';
 		else
@@ -251,13 +265,28 @@ if (($section == 'validate') && ($ids[0] == -1)) {
 
 //Process validation (pass array or single value)
 if ($validate) {
-	$ids =  get_parameter ("eventid", -1);
-	$comment =  get_parameter ("comment", '');
 	$new_status =  get_parameter ("select_validate", 1);
-	$ids = explode(',',$ids);
+	$comment =  get_parameter ("comment", '');
+	// Ids contains ids and count of the events separated by low bar
+	$ids =  get_parameter ("eventid", -1);
+	$ids_array = explode(',',$ids);
+	if(count($ids_array) == 1 && $ids_array[0] == -1) {
+		$ids = $ids_array;
+		$events_rep = array();
+	}
+	else {
+		$ids = array();
+		$events_rep = array();
+		foreach($ids_array as $id) {
+			$id_count = explode('_',$id);
+			$ids[] = $id_count[0];
+			$events_rep[] = $id_count[1];
+		}
+	}
+	
 	$standby_alert = (bool) get_parameter("standby-alert");
 	$validated_limit_time = get_parameter("validated_limit_time", 0);
-
+	
 	// Avoid to re-set inprocess events
 	if($new_status == 2) {
 		foreach($ids as $key => $id) {
@@ -269,7 +298,7 @@ if ($validate) {
 	}
 	
 	if(isset($ids[0]) && $ids[0] != -1){
-		$return = events_validate_event ($ids, ($group_rep == 1), $comment, $new_status, $validated_limit_time);
+		$return = events_validate_event ($ids, true, $comment, $new_status, $validated_limit_time, $events_rep);
 		if($new_status == 1) {
 			ui_print_result_message ($return,
 				__('Successfully validated'),
@@ -294,10 +323,25 @@ if ($validate) {
 
 //Process deletion (pass array or single value)
 if ($delete) {
-	$ids = (array) get_parameter ("eventid", -1);
-		
+	// Ids contains ids and count of the events separated by low bar
+	$ids_array = get_parameter ("eventid", -1);
+
+	if(count($ids_array) == 1 && $ids_array[0] == -1) {
+		$ids = $ids_array;
+		$events_rep = array();
+	}
+	else {
+		$ids = array();
+		$events_rep = array();
+		foreach($ids_array as $id) {
+			$id_count = explode('_',$id);
+			$ids[] = $id_count[0];
+			$events_rep[] = $id_count[1];
+		}
+	}
+
 	if ($ids[0] != -1) {
-		$return = events_delete_event ($ids, ($group_rep == 1));
+		$return = events_delete_event ($ids, ($group_rep == 1), $event_view_hr, $events_rep);
 		ui_print_result_message ($return,
 			__('Successfully deleted'),
 			__('Could not be deleted'));
@@ -377,6 +421,8 @@ $(document).ready( function() {
 		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process
 		var checkbox_standby_alert = $('#checkbox-standby-alert-'+id).attr('checked');
 		var similars = $('#group_rep').val();
+		var event_rep = $('#hidden-event_rep_'+id).val();
+		var validated_limit_time = $('#hidden-validated_limit_time_'+id).val();
 
 		if(!select_validate) {
 			select_validate = 1;
@@ -405,7 +451,9 @@ $(document).ready( function() {
 			"id" : id,
 			"comment" : comment,
 			"new_status" : select_validate,
-			"similars" : similars
+			"similars" : similars,
+			"event_rep" : event_rep,
+			"validated_limit_time" : validated_limit_time
 			},
 			function (data, status) {
 				if (data == "ok") {
@@ -429,11 +477,18 @@ $(document).ready( function() {
 		}
 		$tr = $(this).parents ("tr");
 		id = this.id.split ("-").pop ();
+		
+		var event_rep = $('#hidden-event_rep_'+id).val();
+		var validated_limit_time = $('#hidden-validated_limit_time_'+id).val();
+		var similars = $('#group_rep').val();
+		
 		jQuery.post ("ajax.php",
 			{"page" : "operation/events/events",
 			"delete_event" : 1,
 			"id" : id,
-			"similars" : <?php echo ($group_rep ? 1 : 0) ?>
+			"similars" : similars,
+			"event_rep" : event_rep,
+			"validated_limit_time" : validated_limit_time
 			},
 			function (data, status) {
 				if (data == "ok") {

@@ -129,19 +129,26 @@ function events_get_similar_ids ($id, $status = 0, $validated_limit_time = 0) {
  *
  * @param mixed Event ID or array of events
  * @param bool Whether to delete similar events too.
+ * @param int Time limit for the get events.
+ * @param mixed Event repeated counts given when are provided various ids
  *
  * @return bool Whether or not it was successful
  */
-function events_delete_event ($id_event, $similar = true) {
+function events_delete_event ($id_event, $similar = true, $validated_limit_time = 0, $events_rep = array()) {
 	global $config;
 	
+	html_debug_print($validated_limit_time,true);
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
 	
 	/* We must delete all events like the selected */
 	if ($similar) {
-		foreach ($id_event as $id) {
-			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
+		foreach ($id_event as $k => $id) {
+			// Check if is provided $events_rep and if is 1 to avoid get similar ids
+			if(!empty($events_rep) && $events_rep[$k] == 1) {
+				continue;
+			}
+			$id_event = array_merge ($id_event, events_get_similar_ids ($id,0 ,$validated_limit_time));
 		}
 		$id_event = array_unique($id_event);
 	}
@@ -184,18 +191,24 @@ function events_delete_event ($id_event, $similar = true) {
  * @param string Comment in the validated event.
  * @param int New status.
  * @param int Time limit for the get events.
+ * @param mixed Event repeated counts given when are provided various ids
  *
  * @return bool Whether or not it was successful
  */	
-function events_validate_event ($id_event, $similars = true, $comment = '', $new_status = 1, $validated_limit_time = 0) {
+function events_validate_event ($id_event, $similars = true, $comment = '', $new_status = 1, $validated_limit_time = 0, $events_rep = array()) {
 	global $config;
-	
+
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
-	
+
 	/* We must validate all events like the selected */
 	if ($similars && $new_status == 1) {
-		foreach ($id_event as $id) {
+		foreach ($id_event as $k => $id) {
+			// Check if is provided $events_rep and if is 1 to avoid get similar ids
+			if(!empty($events_rep) && $events_rep[$k] == 1) {
+				continue;
+			}
+
 			$id_event = array_merge ($id_event, events_get_similar_ids ($id, $new_status, $validated_limit_time));
 		}
 		$id_event = array_unique($id_event);

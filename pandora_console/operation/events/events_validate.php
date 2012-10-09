@@ -59,7 +59,11 @@ $table->head[0] = __('Events to validate');
 $table->align[0] = 'center';
 
 $table->data = array();
-foreach($ids as $key => $id) {
+foreach($ids as $key => $id_count) {
+	// Get the id and count from the separated by low bar value
+	$id_count = explode('_',$id_count);
+	$id = $id_count[0];
+	
 	$event = events_get_event($id);
 	// Colored box
 	switch($event["estado"]) {
@@ -93,7 +97,6 @@ foreach($ids as $key => $id) {
 		$any_inprocess = true;
 	}
 }
-
 //Hiden row with description form
 $string = '<form  method="post" action="'.$url_val.'">';
 $string .= html_print_input_hidden('validated_limit_time', $event_view_hr, true);

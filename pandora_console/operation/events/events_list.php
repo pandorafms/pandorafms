@@ -552,7 +552,8 @@ foreach ($result as $event) {
 	
 	if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
 		//Checkbox
-		$data[5] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
+		// Is passed ID and COUNT of event sepparated by low bar
+		$data[5] = html_print_checkbox_extended ("eventid[]", $event["id_evento"].'_'.$event["event_rep"], false, false, false, 'class="chk"', true);
 	}
 	array_push ($table->data, $data);
 	
@@ -563,6 +564,8 @@ foreach ($result as $event) {
 	$string .=  '<td align="left" width="450px"><b>' . html_print_textarea("comment_".$event["id_evento"], 2, 10, '', 'style="min-height: 10px; width: 250px;"', true) . '</b></td>';
 	$string .= '<td align="left" width="200px">'; 
 	$string .= '<div style="text-align:center;">';
+	$string .= html_print_input_hidden('event_rep_'.$event["id_evento"],$event['event_rep'],true);
+	$string .= html_print_input_hidden('validated_limit_time_'.$event["id_evento"],$event_view_hr,true);
 	if($event["estado"] == 0) {
 		$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
 	}
@@ -770,8 +773,10 @@ if (!empty ($table->data)) {
 		?>
 		<script type="text/javascript">
 		function submit_delete() {
-			$("#hidden_delete_events").val(1);
-			$("#form_events").submit();
+			if(confirm('<?php echo __('Are you sure?'); ?>')) {
+				$("#hidden_delete_events").val(1);
+				$("#form_events").submit();
+			}
 		}
 		</script>
 		<?php

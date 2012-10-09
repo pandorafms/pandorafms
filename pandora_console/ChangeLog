@@ -1,5 +1,10 @@
 2012-10-09  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb.sql: Added tevent_response to 
+	creation schemma
+
+2012-10-09  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_events.php
 	include/styles/jquery-ui-1.8.23.custom.css
 	include/javascript/pandora_events.js

@@ -382,6 +382,9 @@ else {
 	}
 }
 
+echo "<div id='event_details_window'></div>";
+echo "<div id='event_response_window'></div>";
+
 ui_require_jquery_file ('bgiframe');
 ui_require_javascript_file('pandora_events');
 
@@ -422,6 +425,7 @@ $(document).ready( function() {
 		$tr = $(this).parents ("tr");
 		
 		id = this.id.split ("-").pop ();
+
 		var comment = $('#textarea_comment_'+id).val();
 		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process, 3 add comment
 		var checkbox_standby_alert = $('#checkbox-standby-alert-'+id).attr('checked');
@@ -642,7 +646,7 @@ $(document).ready( function() {
 		);
 		return false;
 	});
-	
+		
 	function toggleDiv (divid){
 		if (document.getElementById(divid).style.display == 'none'){
 			document.getElementById(divid).style.display = 'block';
@@ -678,4 +682,15 @@ $(document).ready( function() {
 			$('.event_form_' + id_event).css('display', '');
 		}
 	}
+	
+	// Autoload event giving the id as POST/GET parameter
+	<?php
+		$load_event = get_parameter('load_event',0);
+		
+		if($load_event) {	
+	?>	
+			show_event_dialog(<?php echo $load_event; ?>, 1);
+	<?php	
+		}
+	?>
 </script>

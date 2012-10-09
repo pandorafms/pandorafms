@@ -1,3 +1,21 @@
+2012-10-09  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php
+	include/styles/jquery-ui-1.8.23.custom.css
+	include/javascript/pandora_events.js
+	include/ajax/events.php
+	operation/events/events_list.php
+	operation/events/events.php
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	godmode/menu.php
+	godmode/events/event_responses.list.php
+	godmode/events/custom_events.php
+	godmode/events/event_responses.php
+	godmode/events/events.php
+	godmode/events/event_responses.editor.php: Added several changes on
+	events system as responses editor and performer, and several
+	fixes
+
 2012-10-09 Miguel de Dios <miguel.dedios@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,

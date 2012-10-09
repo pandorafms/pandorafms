@@ -106,6 +106,12 @@ if ($fields_selected[0]!='') {
 			case 'id_extra':
 				$result = __('Extra id');
 				break;
+			case 'owner_user':
+				$result = __('Owner');
+				break;
+			case 'ack_utimestamp':
+				$result = __('ACK Timestamp');
+				break;
 		}
 		$result_selected[$field_selected] = $result;
 	}
@@ -121,9 +127,12 @@ echo '</a></h3>';
 $table->width = '90%';
 
 $table->size = array();
-$table->size[0] = '20%';
-$table->size[2] = '10px';
-$table->size[3] = '20%';
+//~ $table->size[0] = '20%';
+$table->size[1] = '10px';
+//~ $table->size[2] = '20%';
+
+$table->style[0] = 'text-align:center;';
+$table->style[2] = 'text-align:center;';
 
 $table->data = array();
 
@@ -144,6 +153,8 @@ $fields_available['user_comment'] = __('Comment');
 $fields_available['tags'] = __('Tags');
 $fields_available['source'] = __('Source');
 $fields_available['id_extra'] = __('Extra id');
+$fields_available['owner_user'] = __('Owner');
+$fields_available['ack_utimestamp'] = __('ACK Timestamp');
 
 //remove fields already selected
 foreach ($fields_available as $key=>$available) {
@@ -154,13 +165,14 @@ foreach ($fields_available as $key=>$available) {
 	}
 }
 
-$table->data[1][0] =  '<b>' . __('Fields available').'</b>';
-$table->data[1][1] = html_print_select ($fields_available, 'fields_available[]', true, '', '', '', true, true, false, '', false, 'width: 200px');
-$table->data[1][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add fields to select'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
-$table->data[1][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete fields to select'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
+$table->data[0][0] =  '<b>' . __('Fields available').'</b>';
+$table->data[1][0] = html_print_select ($fields_available, 'fields_available[]', true, '', '', '', true, true, false, '', false, 'width: 200px');
+$table->data[1][1] =  '<a href="javascript:">'.html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add fields to select'))).'</a>'; 
+$table->data[1][1] .= '<br><br><br><br><a href="javascript:">'. html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete fields to select'))).'</a>';
 
-$table->data[1][3] = '<b>' . __('Fields selected') . '</b>';
-$table->data[1][4] =  html_print_select($result_selected, 'fields_selected[]', true, '', '', '', true, true, false, '', false, 'width: 200px');	
+$table->data[0][1] = '';
+$table->data[0][2] = '<b>' . __('Fields selected') . '</b>';
+$table->data[1][2] =  html_print_select($result_selected, 'fields_selected[]', true, '', '', '', true, true, false, '', false, 'width: 200px');	
 
 echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields">';
 html_print_table($table);
@@ -191,7 +203,7 @@ $(document).ready (function () {
 				field_name = $(value).html();
 				if (field_name != <?php echo "'".__('None')."'"; ?>){
 					id_field = $(value).attr('value');
-					$("select[name='fields_available[]']").append($("<option></option>").val(field_name).html('<i>' + id_field + '</i>'));
+					$("select[name='fields_available[]']").append($("<option></option>").val(id_field).html('<i>' + field_name + '</i>'));
 					$("#fields_selected").find("option[value='" + id_field + "']").remove();
 				}
 		});

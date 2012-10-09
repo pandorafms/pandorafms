@@ -1,3 +1,7 @@
+2012-10-08  Sancho Lerena <slerena@artica.es>
+
+	* util/mysql_plugin.sh: Fixed problem in composed variables.
+
 2012-10-01  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_manage.pl: Fixed enable eacl from CLI.

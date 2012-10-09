@@ -1,5 +1,10 @@
 2012-10-09  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_events.php: Deleted sql transaction
+	when event delete
+
+2012-10-09  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_events.php
 	operation/events/events_validate.php
 	operation/events/events_list.php

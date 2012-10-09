@@ -153,7 +153,6 @@ function events_delete_event ($id_event, $similar = true, $validated_limit_time 
 		$id_event = array_unique($id_event);
 	}
 	
-	db_process_sql_begin ();
 	$errors = 0;
 	
 	foreach ($id_event as $event) {
@@ -167,7 +166,6 @@ function events_delete_event ($id_event, $similar = true, $validated_limit_time 
 			db_pandora_audit("Event deleted", "Deleted event #".$event);
 			//ACL didn't fail nor did return
 			continue;
-
 		}
 		
 		$errors++;
@@ -175,10 +173,8 @@ function events_delete_event ($id_event, $similar = true, $validated_limit_time 
 	}
 	
 	if ($errors > 1) {
-		db_process_sql_rollback ();
 		return false;
 	} else {
-		db_process_sql_commit ();
 		return true;
 	}
 }

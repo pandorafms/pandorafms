@@ -1,3 +1,8 @@
+2012-10-09  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* pandoradb.sql: cleaned code style, to be acceptable by
+	Clustrix's SQL parser, for examples.
+
 2012-10-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_events.php: Removed translation in events 

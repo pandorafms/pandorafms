@@ -1613,3 +1613,20 @@ CREATE TABLE IF NOT EXISTS `tpassword_history` (
   `date_end` DATETIME  NOT NULL DEFAULT 0,
 PRIMARY KEY  (`id_pass`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tevent_response`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tevent_response` (
+	`id`  int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(600) NOT NULL default '',
+	`description` TEXT NOT NULL,
+	`target` TEXT NOT NULL,
+	`type` varchar(60) NOT NULL,
+	`id_group` MEDIUMINT(4) NOT NULL default 0,
+	`modal_width` INTEGER  NOT NULL DEFAULT 0,
+	`modal_height` INTEGER  NOT NULL DEFAULT 0,
+	`new_window` TINYINT(4)  NOT NULL DEFAULT 0,
+	`params` TEXT  NOT NULL,
+	PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

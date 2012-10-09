@@ -1280,7 +1280,8 @@ CREATE TABLE "tnetwork_map" (
 	"contracted_nodes" TEXT,
 	"show_snmp_modules" SMALLINT NOT NULL default 0,
 	"text_filter" VARCHAR(100) DEFAULT '',
-	"dont_show_subgroups" INTEGER NOT NULL default 0
+	"dont_show_subgroups" INTEGER NOT NULL default 0,
+	"pandoras_children" INTEGER NOT NULL default 0
 );
 
 ------------------------------------------------------------------------

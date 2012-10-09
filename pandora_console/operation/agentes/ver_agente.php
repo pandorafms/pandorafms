@@ -357,15 +357,42 @@ if (is_ajax ()) {
 	
 	if ($get_agent_status_tooltip) {
 		$id_agent = (int) get_parameter ('id_agent');
-		$agent = db_get_row ('tagente', 'id_agente', $id_agent);
+		$metaconsole = (bool)get_parameter('metaconsole', false);
+		$id_server = (int)get_parameter('id_server', 0); //Metaconsole
+		
+		$server = null;
+		if ($metaconsole) {
+			$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
+			
+			if (metaconsole_connect($server) != NOERR) {
+				return;
+			}
+			
+			$agent = db_get_row ('tagente', 'id_agente', $id_agent);
+			
+			metaconsole_restore_db();
+		}
+		else {
+			$agent = db_get_row ('tagente', 'id_agente', $id_agent);
+		}
+		
+		
+		
+		
 		echo '<h3>'.$agent['nombre'].'</h3>';
 		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
 		echo '<strong>'.__('Group').':</strong> ';
-		echo html_print_image('images/groups_small/'.groups_get_icon ($agent['id_grupo']).'.png', true); 
+		
+		$hack_metaconsole = '';
+		if ($metaconsole) {
+			$hack_metaconsole = '../../';
+		}
+		echo html_print_image($hack_metaconsole . 'images/groups_small/'.groups_get_icon ($agent['id_grupo']).'.png', true); 
 		echo groups_get_name ($agent['id_grupo']).'<br />';
 		
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
+		
 		
 		$sql = sprintf ('SELECT tagente_modulo.descripcion,
 				tagente_modulo.nombre
@@ -374,12 +401,35 @@ if (is_ajax ()) {
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND tagente_modulo.disabled = 0 
 				AND tagente_estado.estado = 1', $id_agent);
-		$bad_modules = db_get_all_rows_sql ($sql);
+		if ($metaconsole) {
+			if (metaconsole_connect($server) != NOERR) {
+				return;
+			}
+			
+			$bad_modules = db_get_all_rows_sql ($sql);
+			
+			metaconsole_restore_db();
+		}
+		else {
+			$bad_modules = db_get_all_rows_sql ($sql);
+		}
+		
 		$sql = sprintf ('SELECT COUNT(*)
 			FROM tagente_modulo
 			WHERE id_agente = %d
 				AND disabled = 0', $id_agent);
-		$total_modules = db_get_sql ($sql);
+		if ($metaconsole) {
+			if (metaconsole_connect($server) != NOERR) {
+				return;
+			}
+			
+			$total_modules = db_get_sql ($sql);
+			
+			metaconsole_restore_db();
+		}
+		else {
+			$total_modules = db_get_sql ($sql);
+		}
 		
 		if ($bad_modules === false)
 			$size_bad_modules = 0;
@@ -408,7 +458,19 @@ if (is_ajax ()) {
 					AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
 					AND talert_template_modules.times_fired > 0 ',
 				$id_agent);
-		$alert_modules = db_get_sql ($sql);
+		if ($metaconsole) {
+			if (metaconsole_connect($server) != NOERR) {
+				return;
+			}
+			
+			$alert_modules = db_get_sql ($sql);
+			
+			metaconsole_restore_db();
+		}
+		else {
+			$alert_modules = db_get_sql ($sql);
+		}
+		
 		if ($alert_modules > 0) {
 			$sql = sprintf ('SELECT tagente_modulo.nombre, talert_template_modules.last_fired
 				FROM talert_template_modules, tagente_modulo, tagente
@@ -419,7 +481,18 @@ if (is_ajax ()) {
 					AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
 					AND talert_template_modules.times_fired > 0 ',
 				$id_agent);
-			$alerts = db_get_all_rows_sql ($sql);
+			if ($metaconsole) {
+				if (metaconsole_connect($server) != NOERR) {
+					return;
+				}
+				
+				$alerts = db_get_all_rows_sql ($sql);
+				
+				metaconsole_restore_db();
+			}
+			else {
+				$alerts = db_get_all_rows_sql ($sql);
+			}
 			echo '<strong>'.__('Alerts fired').':</strong>';
 			echo "<ul>";
 			foreach ($alerts as $alert_item) {

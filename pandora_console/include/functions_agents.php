@@ -368,14 +368,14 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 AND estado = 2 AND tagente_estado.utimestamp != 0';
-
+		
 		
 		$critical_modules = 'SELECT tagente.id_agente
 			FROM tagente_estado, tagente, tagente_modulo 
 			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.utimestamp != 0';
-
+		
 		$unknown_modules = 'SELECT tagente.id_agente
 			FROM tagente_estado, tagente, tagente_modulo 
 			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
@@ -423,7 +423,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				break;
 		}
 		unset($filter['status']);
-	} 
+	}
 	
 	
 	unset($filter['order']);
@@ -526,19 +526,19 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				$limit_sql = " OFFSET $offset LIMIT $limit ";
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
-
+			
 			if ($return)
 				return $sql;
 			else
 				$agents = db_get_all_rows_sql($sql);
 			break;
-		case "oracle":	
+		case "oracle":
 			$set = array();
 			if (isset($offset) && isset($limit)) {
 				$set['limit'] = $limit;
 				$set['offset'] = $offset;
 			}
-
+			
 			if ($return)
 				return $sql;
 			else

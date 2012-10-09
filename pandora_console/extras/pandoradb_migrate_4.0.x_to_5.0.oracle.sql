@@ -18,9 +18,9 @@ ALTER TABLE tusuario ADD COLUMN (metaconsole_access VARCHAR2(100) DEFAULT 'only_
 ALTER TABLE tusuario ADD CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced','custom','all','only_console'));
 ALTER TABLE tusuario ADD COLUMN (not_login NUMBER(5,0) default 0 NOT NULL);
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tnetflow_filter"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE tnetflow_filter (
 	id_sg NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_name VARCHAR2(600) NOT NULL,
@@ -341,6 +341,7 @@ evento
 ------------------------------------------------------------------------
 ALTER TABLE tnetwork_map ADD (text_filter VARCHAR(100) DEFAULT '');
 ALTER TABLE tnetwork_map ADD (dont_show_subgroups NUMBER(10, 0) default 0 NOT NULL);
+ALTER TABLE tnetwork_map ADD (pandoras_children NUMBER(10, 0) default 0 NOT NULL);
 
 ------------------------------------------------------------------------
 -- Table `tagente_estado`

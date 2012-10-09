@@ -26,7 +26,10 @@ require_once ('functions_agents.php');
 require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . "/include/functions_groups.php");
 ui_require_css_file ('cluetip');
-ui_require_jquery_file ('cluetip');
+$hack_metaconsole = '';
+if (defined('METACONSOLE'))
+	$hack_metaconsole = '../../';
+ui_require_jquery_file ('cluetip', $hack_metaconsole . 'include/javascript/');
 
 // Check if a node descends from a given node
 function networkmap_is_descendant ($node, $ascendant, $parents) {
@@ -393,14 +396,21 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 
 // Returns an edge definition
 function networkmap_create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, $sec2 = 'operation/agentes/networkmap', $tab = 'topology', $id_networkmap = 0) {
-
-	// edgeURL allows node navigation
-	$edge = $head.' -- '.$tail.'[color="#BDBDBD", headclip=false, tailclip=false,
-	edgeURL="index.php?sec=estado&sec2='.$sec2.'&tab='.$tab.'&recenter_networkmap=1&center='.$head.
+	
+	if (defined("METACONSOLE")) {
+		$url = '';
+	}
+	else {
+		$url = 'index.php?sec=estado&sec2='.$sec2.'&tab='.$tab.'&recenter_networkmap=1&center='.$head.
 	'&layout='.$layout.'&nooverlap=' .$nooverlap.'&pure='.$pure.
 	'&zoom='.$zoom.'&ranksep='.$ranksep.'&simple='.$simple.'&regen=1'.
-	'&font_size='.$font_size.'&group='.$group.'&id_networkmap='.$id_networkmap.'"];';
-
+	'&font_size='.$font_size.'&group='.$group.'&id_networkmap='.$id_networkmap;
+	}
+	
+	// edgeURL allows node navigation
+	$edge = "\n" . $head.' -- '.$tail.'[color="#BDBDBD", headclip=false, tailclip=false,
+	edgeURL=""];' . "\n";
+	
 	return $edge;
 }
 
@@ -429,7 +439,7 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 	
 	$icon = groups_get_icon($group['id_grupo']);
 	
-	if ($simple == 0){
+	if ($simple == 0) {
 		// Set node icon
 		if (file_exists (html_print_image("images/groups_small/" . $icon . ".png", true, false, true, true))) { 
 			$img_node = html_print_image("images/groups_small/" . $icon . ".png", true, false, false, true);
@@ -445,13 +455,13 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 			$name = groups_get_name($group['id_grupo']);
 		}
 		
-		$node = $group['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>'.$img_node.'</TD></TR>
+		$node = "\n" . $group['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>'.$img_node.'</TD></TR>
 		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
 		 shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'",
-		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
+		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];' . "\n";
 	}
 	else {
-		$node = $group['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
+		$node = "\n" . $group['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];' . "\n";
 	}
 	return $node;
 }
@@ -463,21 +473,21 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	$status = agents_get_status($agent['id_agente']);
 	
 	// Set node status
-	switch($status) {
+	switch ($status) {
 		case 0: 
-				$status_color = '#8DFF1D'; // Normal monitor
+			$status_color = '#8DFF1D'; // Normal monitor
 			break;
 		case 1:
-				$status_color = '#FF1D1D'; // Critical monitor
+			$status_color = '#FF1D1D'; // Critical monitor
 			break;
 		case 2:
-				$status_color = '#FFE308'; // Warning monitor
+			$status_color = '#FFE308'; // Warning monitor
 			break;
 		case 4:
-				$status_color = '#FFA300'; // Alert fired
+			$status_color = '#FFA300'; // Alert fired
 			break;
 		default:
-				$status_color = '#BBBBBB'; // Unknown monitor
+			$status_color = '#BBBBBB'; // Unknown monitor
 			break;
 	}
 	
@@ -487,10 +497,14 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		$name = substr ($name, 0, 16) . '...';
 	}
 	
-	if ($simple == 0){
+	if ($simple == 0) {
 		// Set node icon
 		$img_node = ui_print_os_icon ($agent['id_os'], false, true, true, true, true, $relative);
 		$img_node = str_replace($config['homeurl'] . '/', '', $img_node);
+		
+		if (defined('METACONSOLE')) {
+			$img_node = '../../' . $img_node;
+		}
 		
 		if ($relative) {
 			$img_node = html_print_image($img_node, true, false, false, true);
@@ -499,13 +513,27 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 			$img_node = html_print_image($img_node, true, false, false, false);
 		}
 		
-		$node = $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
+		if (defined("METACONSOLE")) {
+			$url = 'TODO'; //TODO
+			$url_tooltip = '../../ajax.php?' .
+				'page=operation/agentes/ver_agente&' .
+				'get_agent_status_tooltip=1&' .
+				'id_agent='.$agent['id_agente'] . '&' .
+				'metaconsole=1&' .
+				'id_server=' . $agent['id_server'];
+		}
+		else {
+			$url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'];
+			$url_tooltip = 'ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'];
+		}
+		
+		$node = "\n" . $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
 		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
-		 shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
-		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
+		 shape="doublecircle", URL="'.$url.'",
+		 tooltip="' . $url_tooltip . '"];' . "\n";
 	}
 	else {
-		$node = $agent['id_node'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
+		$node = $agent['id_node'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];' . "\n";
 	}
 	
 	return $node;
@@ -549,17 +577,36 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
 
 // Returns the definition of the central module
 function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $stats = array()) {
-	$img = '<TR><TD>' . html_print_image("images/networkmap/pandora_node.png", true, false, false, true) . '</TD></TR>';
-	$name = '<TR><TD BGCOLOR="#FFFFFF">'.$name.'</TD></TR>';
-	$label = '<TABLE BORDER="0">'.$img.$name.'</TABLE>';
-	if ($simple == 1){
-		$label = '';
-	}
 	
 	$stats_json = base64_encode(json_encode($stats));
 	
+	$img_src = "images/networkmap/pandora_node.png";
+	if (defined('METACONSOLE')) {
+		$img_src = '../../' . $img_src;
+		
+		$url_tooltip = '../../ajax.php?' .
+			'page=include/ajax/networkmap.ajax&' .
+			'action=get_networkmap_summary&' .
+			'stats='.$stats_json . '&' .
+			'metaconsole=1';
+		$url = 'index.php?sec=monitoring&sec2=monitoring/tree_view';
+	}
+	else {
+		$url_tooltip = 'ajax.php?page=include/ajax/networkmap.ajax&action=get_networkmap_summary&stats='.$stats_json.'", URL="index.php?sec=estado&sec2=operation/agentes/group_view';
+		$url = 'index.php?sec=estado&sec2=operation/agentes/group_view';
+	}
+	
+	$img_tag = html_print_image($img_src, true, false, false, true);
+	
+	$img = '<TR><TD>' . $img_tag . '</TD></TR>';
+	$name = '<TR><TD BGCOLOR="#FFFFFF">'.$name.'</TD></TR>';
+	$label = '<TABLE BORDER="0">'.$img.$name.'</TABLE>';
+	if ($simple == 1) {
+		$label = '';
+	}
+	
 	$node = '0 [ color="#364D1F", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.8, height=0.6, label=<'.$label.'>,
-		shape="ellipse", tooltip="ajax.php?page=include/ajax/networkmap.ajax&action=get_networkmap_summary&stats='.$stats_json.'", URL="index.php?sec=estado&sec2=operation/agentes/group_view" ];';
+		shape="ellipse", tooltip="' . $url_tooltip . '", URL="' . $url . '" ];';
 	
 	return $node;
 }
@@ -833,18 +880,18 @@ function networkmap_update_networkmap ($id_networkmap, $values) {
  */
 function networkmap_get_types () {
 	$networkmap_types = array();
-
+	
 	$is_enterprise = enterprise_include_once('include/functions_policies.php');
-
+	
 	$networkmap_types['topology'] = __('Create a new topology map');
 	$networkmap_types['groups'] = __('Create a new group map');
-
+	
 	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$enterprise_types = enterprise_hook('policies_get_networkmap_types');
-	
+		
 		$networkmap_types = array_merge($networkmap_types, $enterprise_types);
 	}
-
+	
 	return $networkmap_types;
 }
 
@@ -855,18 +902,18 @@ function networkmap_get_types () {
  */
 function networkmap_get_filter_types () {
 	$networkmap_types = array();
-
+	
 	$is_enterprise = enterprise_include_once('include/functions_policies.php');
-
+	
 	$networkmap_types['topology'] = __('Topology');
 	$networkmap_types['groups'] = __('Group');
-
+	
 	if ($is_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$enterprise_types = enterprise_hook('policies_get_networkmap_filter_types');
-	
+		
 		$networkmap_types = array_merge($networkmap_types, $enterprise_types);
 	}
-
+	
 	return $networkmap_types;
 }
 

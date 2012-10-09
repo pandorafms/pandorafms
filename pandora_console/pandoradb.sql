@@ -544,7 +544,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 CREATE TABLE IF NOT EXISTS `tgrupo` (
 	`id_grupo` mediumint(4) unsigned NOT NULL auto_increment,
 	`nombre` varchar(100) NOT NULL default '',
-	`icon` varchar(50) default NULL default 'world',
+	`icon` varchar(50) default 'world',
 	`parent` mediumint(4) unsigned NOT NULL default '0',
 	`propagate` tinyint(1) unsigned NOT NULL default '0',
 	`disabled` tinyint(3) unsigned NOT NULL default '0',
@@ -582,7 +582,7 @@ CREATE TABLE IF NOT EXISTS `tincidencia` (
 -- -----------------------------------------------------
 -- Table `tlanguage`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS`tlanguage` (
+CREATE TABLE IF NOT EXISTS `tlanguage` (
 	`id_language` varchar(6) NOT NULL default '',
 	`name` varchar(100) NOT NULL default '',
 	PRIMARY KEY  (`id_language`)

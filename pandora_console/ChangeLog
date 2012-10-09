@@ -1,3 +1,8 @@
+2012-10-09  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* pandoradb.sql: cleaned code style, to be acceptable by
+	Clustrix's SQL parser, for examples.  Merged from branch 4.x.
+
 2012-10-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_graph.php,

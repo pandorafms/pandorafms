@@ -64,6 +64,59 @@ function events_get_event ($id, $fields = false) {
 	return $event;
 }
 
+function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1) {
+	global $config; 
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			db_process_sql ('SET group_concat_max_len = 9999999');
+			$sql = "SELECT *, MAX(id_evento) AS id_evento,
+					GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
+					MIN(estado) AS min_estado,
+					MAX(estado) AS max_estado,
+					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+					MIN(utimestamp) AS timestamp_rep_min
+				FROM tevento
+				WHERE 1=1 ".$sql_post."
+				GROUP BY evento, id_agentmodule
+				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+			break;
+		case "postgresql":
+			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
+					MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+					MIN(utimestamp) AS timestamp_rep_min
+				FROM tevento
+				WHERE 1=1 ".$sql_post."
+				GROUP BY evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra
+				ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
+			break;
+		case "oracle":
+			$set = array();
+			$set['limit'] = $pagination;
+			$set['offset'] = $offset;
+			// TODO: Remove duplicate user comments
+			$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
+				FROM (SELECT * FROM tevento WHERE 1=1 ".$sql_post.") a, 
+				(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
+				id_agentmodule, COUNT(*) AS event_rep, MIN(estado) AS min_estado, MAX(estado) AS max_estado,
+				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
+				MIN(utimestamp) AS timestamp_rep_min
+				FROM tevento 
+				WHERE 1=1 ".$sql_post." 
+				GROUP BY to_char(evento), id_agentmodule) b 
+				WHERE a.id_evento=b.id_evento AND 
+				to_char(a.evento)=to_char(b.evento) 
+				AND a.id_agentmodule=b.id_agentmodule";
+			$sql = oracle_recode_query ($sql, $set);
+			break;
+	}
+	
+	//Extract the events by filter (or not) from db
+	$events = db_get_all_rows_sql ($sql);
+	
+	return $events;
+}
+
 /**
  * Get all the events ids similar to a given event id.
  *
@@ -94,7 +147,7 @@ function events_get_similar_ids ($id) {
 }
 
 /**
- * Delete events in a transaction
+ * Delete events in a transresponse
  *
  * @param mixed Event ID or array of events
  * @param bool Whether to delete similar events too.
@@ -146,7 +199,7 @@ function events_delete_event ($id_event, $similar = true) {
 }
 
 /**
- * Validate events in a transaction
+ * Validate events in a transresponse
  *
  * @param mixed Event ID or array of events
  * @param bool Whether to validate similar events or not.
@@ -287,14 +340,14 @@ function events_change_owner_event ($id_event, $similars = true, $new_owner = fa
 }
 
 /**
- * Comment events in a transaction
+ * Comment events in a transresponse
  *
  * @param mixed Event ID or array of events
  * @param bool Whether to validate similar events or not.
  *
  * @return bool Whether or not it was successful
  */	
-function events_comment_event ($id_event, $similars = true, $comment = '', $action = 'Added comment') {
+function events_comment_event ($id_event, $similars = true, $comment = '', $response = 'Added comment') {
 	global $config;
 
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
@@ -329,7 +382,7 @@ function events_comment_event ($id_event, $similars = true, $comment = '', $acti
 			return false;
 		}
 		
-		$comment = '<b>-- '.$action.' by '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
+		$comment = '<b>-- '.$response.' by '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
 		$fullevent = events_get_event($event);
 		if ($fullevent['user_comment'] != '') {
 			$comment .= '<br>'.$fullevent['user_comment'];
@@ -1029,6 +1082,15 @@ function events_check_event_filter_group ($id_filter) {
 }
 
 /**
+ * Return an array with all the possible macros in event responses
+ *
+ * @return array
+ */
+function events_get_macros() {
+	return array('_agent_address_' => __('Agent address'), '_agent_id_' => __('Agent id'), '_event_id_' => __('Event id'));
+}
+
+/**
  *  Get a event filter.
  * 
  * @param int Filter id to be fetched.
@@ -1077,4 +1139,623 @@ function events_get_event_filter_select(){
 	return $result;
 }
 
+
+// Events pages functions to load modal window with advanced view of an event.
+// Called from include/ajax/events.php
+
+function events_page_responses ($event) {
+	global $config;
+	/////////
+	// Responses
+	/////////
+	
+	$table_responses->id = 'responses_table';
+	$table_responses->width = '100%';
+	$table_responses->data = array ();
+	$table_responses->head = array ();
+	$table_responses->style[0] = 'width:35%; font-weight: bold; text-align: left;';
+	$table_responses->style[1] = 'text-align: left;';
+	$table_responses->class = "databox alternate";
+
+	// Owner
+	$data = array();
+	$data[0] = __('Change owner');
+		
+	$users = groups_get_users(array_keys(users_get_groups(false, "AR", false)));
+	
+	foreach($users as $u) {
+		$owners[$u['id_user']] = $u['fullname'];
+	}
+	
+	if($event['owner_user'] == '') {
+		$owner_name = __('None');
+	}
+	else {
+		$owner_name = db_get_value('fullname', 'tusuario', 'id_user', $event['owner_user']);
+		$owners[$event['owner_user']] = $owner_name;
+	}
+	
+	$data[1] = html_print_select($owners, 'id_owner', $event['owner_user'], '', __('None'), -1, true);
+	$data[1] .= html_print_button(__('Update'),'owner_button',false,'event_change_owner();','class="sub next"',true);
+	
+	$table_responses->data[] = $data;
+	
+	// Status
+	$data = array();
+	$data[0] = __('Change status');
+	
+	$status = array(0 => __('New'), 2 => __('In process'), 1 => __('Validated'));
+
+	$data[1] = html_print_select($status, 'estado', $event['estado'], '', '', 0, true, false, false);
+	$data[1] .= html_print_button(__('Update'),'status_button',false,'event_change_status();','class="sub next"',true);
+
+	$table_responses->data[] = $data;
+	
+	// Comments
+	$data = array();
+	$data[0] = __('Comment');
+	$data[1] = html_print_button(__('Add comment'),'comment_button',false,'$(\'#link_comments\').trigger(\'click\');','class="sub next"',true);
+
+	$table_responses->data[] = $data;
+	
+	// Delete
+	$data = array();
+	$data[0] = __('Delete event');
+	$data[1] = '<form method="post" response="index.php?sec=eventos&sec2=operation/events/events&section=list&delete=1&eventid='.$event['id_evento'].'">';
+	$data[1] .= html_print_button(__('Delete event'),'delete_button',false,'if(!confirm(\''.__('Are you sure?').'\')) { return false; } this.form.submit();','class="sub cancel"',true);
+	$data[1] .= '</form>';
+
+	$table_responses->data[] = $data;
+	
+	// Custom responses
+	$data = array();
+	$data[0] = __('Custom responses');
+	$event_responses = db_get_all_rows_in_table('tevent_response');
+
+	if(empty($event_responses)) {
+		$data[1] .= '<i>'.__('N/A').'</i>';
+	}
+	else {
+		$responses = array();
+		foreach($event_responses as $v) {
+			$responses[$v['id']] = $v['name'];
+		}
+		$data[1] .= html_print_select($responses,'select_custom_response','','','','',true, false, false);
+		$data[1] .= html_print_button(__('Execute'),'custom_response_button',false,'execute_response('.$event['id_evento'].')',"class='sub next'",true);
+	}
+
+	$table_responses->data[] = $data;
+	
+	$responses_js = "<script>
+			$('#select_custom_response').change(function() {
+				var id_response = $('#select_custom_response').val();
+				var params = get_response_params(id_response);
+				var description = get_response_description(id_response);
+				$('.params_rows').remove();
+
+				$('#responses_table').append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px;\">".__('Description')."</td><td style=\"text-align:left;\">'+description+'</td></tr>');
+
+				if(params.length == 1 && params[0] == '') {
+					return;
+				}
+				
+				$('#responses_table').append('<tr class=\"params_rows\"><td style=\"text-align:left; padding-left:20px;\" colspan=\"2\">".__('Parameters')."</td></tr>');
+
+				for(i=0;i<params.length;i++) {
+					add_row_param('responses_table',params[i]);
+				}
+			});
+			$('#select_custom_response').trigger('change');
+			</script>";
+	
+	$responses = '<div id="extended_event_responses_page" class="extended_event_pages">'.html_print_table($table_responses, true).$responses_js.'</div>';
+
+	return $responses;
+}
+
+// Replace macros in the target of a response and return it
+function events_get_response_target($event_id, $response_id) {
+	$event_response = db_get_row('tevent_response','id',$response_id);
+		
+	$event = db_get_row('tevento','id_evento',$event_id);
+
+	$macros = array_keys(events_get_macros());
+	
+	$target = io_safe_output($event_response['target']);
+	foreach($macros as $macro) {
+		$subst = '';
+		switch($macro) {
+			case '_agent_address_':
+				$subst = agents_get_address($event['id_agente']);
+				break;
+			case '_agent_id_':
+				$subst = $event['id_agente'];
+				break;
+			case '_event_id_':
+				$subst = $event['id_evento'];
+				break;
+		}
+
+		$target = str_replace($macro,$subst,$target);
+	}
+	
+	return $target;
+}
+
+function events_page_custom_fields ($event) {
+	global $config;
+	/////////
+	// Custom fields
+	/////////
+	
+	$table->width = '100%';
+	$table->data = array ();
+	$table->head = array ();
+	$table->style[0] = 'width:35%; font-weight: bold; text-align: left;';
+	$table->style[1] = 'text-align: left;';
+	$table->class = "databox alternate";
+	
+	$fields = db_get_all_rows_filter('tagent_custom_fields');
+	
+	if($event['id_agente'] == 0) {
+		$fields_data = array();
+	}
+	else {
+		$fields_data = db_get_all_rows_filter('tagent_custom_data', array('id_agent' => $event['id_agente']));
+		if(is_array($fields_data)) {
+			$fields_data_aux = array();
+			foreach($fields_data as $fd) {
+				$fields_data_aux[$fd['id_field']] = $fd['description'];
+			}
+			$fields_data = $fields_data_aux;
+		}
+	}
+	
+	foreach($fields as $field) {
+		// Owner
+		$data = array();
+		$data[0] = $field['name'];
+		
+		$data[1] = empty($fields_data[$field['id_field']]) ? '<i>'.__('N/A').'</i>' : $fields_data[$field['id_field']];
+		
+		$field['id_field'];
+		
+		$table->data[] = $data;
+	}
+	
+	$custom_fields = '<div id="extended_event_custom_fields_page" class="extended_event_pages">'.html_print_table($table, true).'</div>';
+
+	return $custom_fields;
+}
+
+function events_page_details ($event) {
+	global $img_sev;
+	
+	/////////
+	// Details
+	/////////
+	
+	$table_details->width = '100%';
+	$table_details->data = array ();
+	$table_details->head = array ();
+	$table_details->style[0] = 'width:35%; font-weight: bold; text-align: left;';
+	$table_details->style[1] = 'text-align: left;';
+	$table_details->class = "databox alternate";
+	
+	switch($event['event_type']) {
+		case 'going_unknown':
+		case 'going_up_warning':
+		case 'going_down_warning':
+		case 'going_up_critical':
+		case 'going_down_critical':
+			
+			break;
+	}
+	
+	if ($event["id_agente"] != 0) {
+		$agent = db_get_row('tagente','id_agente',$event["id_agente"]);
+	}
+	else {
+		$agent = array();
+	}
+	
+	$data = array();
+	$data[0] = __('Agent details');
+	$data[1] = empty($agent) ? '<i>' . __('N/A') . '</i>' : '';
+	$table_details->data[] = $data;
+	
+	if (!empty($agent)) {
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
+		$data[1] = ui_print_agent_name ($event["id_agente"], true);
+		$table_details->data[] = $data;
+		
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('IP Address').'</div>';
+		$data[1] = empty($agent['url_address']) ? '<i>'.__('N/A').'</i>' : $agent['url_address'];
+		$table_details->data[] = $data;
+		
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('OS').'</div>';
+		$data[1] = ui_print_os_icon ($agent["id_os"], true, true).' ('.$agent["os_version"].')';
+		$table_details->data[] = $data;
+
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last contact').'</div>';
+		$data[1] = $agent["ultimo_contacto"];
+		$table_details->data[] = $data;
+		
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last remote contact').'</div>';
+		if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") { 
+			$data[1] .= __('Never');
+		}
+		else {
+			$data[1] .= $agent["ultimo_contacto_remoto"];
+		}
+		$table_details->data[] = $data;
+		
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Custom fields').'</div>';
+		$data[1] = html_print_button(__('View custom fields'),'custom_button',false,'$(\'#link_custom_fields\').trigger(\'click\');','class="sub next"',true);
+		$table_details->data[] = $data;
+	}
+	
+	if ($event["id_agentmodule"] != 0) {
+		$module = db_get_row_filter('tagente_modulo',array('id_agente_modulo' => $event["id_agentmodule"], 'delete_pending' => 0));
+	}
+	else {
+		$module = array();
+	}
+		
+	$data = array();
+	$data[0] = __('Module details');
+	$data[1] = empty($module) ? '<i>' . __('N/A') . '</i>' : '';
+	$table_details->data[] = $data;
+		
+	if (!empty($module)) {
+		// Module name
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
+		$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data"><b>';
+		$data[1] .= $module['nombre'];
+		$data[1] .= '</b></a>';
+		$table_details->data[] = $data;
+		
+		// Module group
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Module group').'</div>';
+		$id_module_group = $module['id_module_group'];
+		if($id_module_group == 0) {
+			$data[1] = __('No assigned');
+		}
+		else {
+			$module_group = db_get_value('name', 'tmodule_group', 'id_mg', $id_module_group);
+			$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . '">';
+			$data[1] .= $module_group;
+			$data[1] .= '</a>';
+		}
+		$table_details->data[] = $data;
+		
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Graph').'</div>';
+		$data[1] = '<a href="javascript:winopeng(\'operation/agentes/stat_win.php?type=sparse&period=86400&id='.$event["id_agentmodule"].'&label=L2Rldi9zZGE2&refresh=600\',\'day_5f80228c\')">';
+		$data[1] .= html_print_image('images/chart_curve.png',true);
+		$data[1] .= '</a>';
+		$table_details->data[] = $data;
+	}
+
+	$data = array();
+	$data[0] = __('Alert details');
+	$data[1] = $event["id_alert_am"] == 0 ? '<i>' . __('N/A') . '</i>' : '';
+	$table_details->data[] = $data;
+	
+	if($event["id_alert_am"] != 0) {
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Source').'</div>';
+		$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">';
+		$standby = db_get_value('standby', 'talert_template_modules', 'id', $event["id_alert_am"]);
+		if(!$standby) {
+			$data[1] .= html_print_image ("images/bell.png", true,
+				array ("title" => __('Go to data overview')));
+		}
+		else {
+			$data[1] .= html_print_image ("images/bell_pause.png", true,
+				array ("title" => __('Go to data overview')));
+		}
+		
+		$sql = 'SELECT name
+			FROM talert_templates
+			WHERE id IN (SELECT id_alert_template
+					FROM talert_template_modules
+					WHERE id = ' . $event["id_alert_am"] . ');';
+		
+		$templateName = db_get_sql($sql);
+		
+		$data[1] .= $templateName;
+		
+		$data[1] .= '</a>';			
+
+		$table_details->data[] = $data;
+		
+		$data = array();
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Priority').'</div>';
+		
+		$priority_code = db_get_value('priority', 'talert_template_modules', 'id', $event["id_alert_am"]);
+		$alert_priority = get_priority_name ($priority_code);
+		$data[1] = html_print_image ($img_sev, true, 
+			array ("class" => "image_status",
+				"width" => 12,
+				"height" => 12,
+				"title" => $alert_priority));
+		$data[1] .= ' '.$alert_priority;
+		
+		$table_details->data[] = $data;
+	}
+	
+	switch($event['event_type']) {
+		case 'going_unknown':
+			$data = array();
+			$data[0] = __('Instructions');
+			if ($event["unknown_instructions"] != '') {
+				$data[1] = $event["unknown_instructions"];
+			}
+			else {
+				$data[1] = '<i>' . __('N/A') . '</i>';
+			}
+			$table_details->data[] = $data;
+			break;
+		case 'going_up_warning':
+		case 'going_down_warning':
+			$data = array();
+			$data[0] = __('Instructions');
+			if ($event["warning_instructions"] != '') {
+				$data[1] = $event["warning_instructions"];
+			}
+			else {
+				$data[1] = '<i>' . __('N/A') . '</i>';
+			}
+			$table_details->data[] = $data;
+			break;
+		case 'going_up_critical':
+		case 'going_down_critical':
+			$data = array();
+			$data[0] = __('Instructions');
+			if ($event["critical_instructions"] != '') {
+				$data[1] = $event["critical_instructions"];
+			}
+			else {
+				$data[1] = '<i>' . __('N/A') . '</i>';
+			}
+			$table_details->data[] = $data;
+			break;
+	}
+		
+	$data = array();
+	$data[0] = __('Extra id');
+	if ($event["id_extra"] != '') {
+		$data[1] = $event["id_extra"];
+	}
+	else {
+		$data[1] = '<i>' . __('N/A') . '</i>';
+	}
+	$table_details->data[] = $data;
+	
+	$data = array();
+	$data[0] = __('Source');
+	if ($event["source"] != '') {
+		$data[1] = $event["source"];
+	}
+	else {
+		$data[1] = '<i>' . __('N/A') . '</i>';
+	}
+	$table_details->data[] = $data;
+	
+	$details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
+
+	return $details;
+}
+
+function events_page_general ($event) {
+	global $img_sev;
+	global $config;
+	global $group_rep;
+	/////////
+	// General
+	/////////
+	
+	$table_general->width = '100%';
+	$table_general->data = array ();
+	$table_general->head = array ();
+	$table_general->style[0] = 'width:35%; font-weight: bold; text-align: left;';
+	$table_general->style[1] = 'text-align: left;';
+	$table_general->class = "databox alternate";
+	
+	$data = array();
+	$data[0] = __('Event ID');
+	$data[1] = "#".$event["id_evento"];
+	$table_general->data[] = $data;
+	
+	$data = array();
+	$data[0] = __('Event name');
+	$data[1] = io_safe_output(io_safe_output($event["evento"]));
+	$table_general->data[] = $data;
+	
+	$data = array();
+	$data[0] = __('Timestamp');
+	if ($group_rep == 1 && $event["event_rep"] > 0) {
+		$data[1] = __('First event').': '.date ($config["date_format"], $event['timestamp_rep_min']).'<br>'.__('Last event').': '.date ($config["date_format"], $event['timestamp_rep']);
+	}
+	else {
+		$data[1] = date ($config["date_format"], strtotime($event["timestamp"]));
+	}
+	$table_general->data[] = $data;
+	
+	$data = array();
+	$data[0] = __('Owner');
+	if(empty($event["owner_user"])) {
+		$data[1] = '<i>'.__('N/A').'</i>';
+	}
+	else {
+		$user_owner = db_get_value('fullname', 'tusuario', 'id_user', $event["owner_user"]);
+		$data[1] = $user_owner;
+	}
+	$table_general->data[] = $data;
+	
+	$data = array();
+	$data[0] = __('Type');
+	$data[1] = events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
+	$table_general->data[] = $data;
+	
+	$data = array();
+	$data[0] = __('Repeated');
+	if ($group_rep != 0) {
+		if($event["event_rep"] == 0) {
+			$data[1] = __('No');
+		}
+		else {
+			$data[1] = sprintf("%d Times",$event["event_rep"]);
+		}
+	}
+	else {
+		$data[1] = __('No');
+	}
+	$table_general->data[] = $data;
+	
+	$data = array();
+	$data[0] = __('Severity');
+	$event_criticity = get_priority_name ($event["criticity"]);
+	$data[1] = html_print_image ($img_sev, true, 
+		array ("class" => "image_status",
+			"width" => 12,
+			"height" => 12,
+			"title" => $event_criticity));
+	$data[1] .= ' '.$event_criticity;
+	$table_general->data[] = $data;
+	
+	// Get Status
+	switch($event['estado']) {
+		case 0:
+			$img_st = "images/star.png";
+			$title_st = __('New event');
+			break;
+		case 1:
+			$img_st = "images/tick.png";
+			$title_st = __('Event validated');
+			break;
+		case 2:
+			$img_st = "images/hourglass.png";
+			$title_st = __('Event in process');
+			break;
+	}
+	
+	$data = array();
+	$data[0] = __('Status');
+	$data[1] = html_print_image($img_st,true).' '.$title_st;
+	$table_general->data[] = $data;
+	
+	// If event is validated, show who and when acknowleded it
+	$data = array();
+	$data[0] = __('Acknowledged by');
+		
+	if($event['estado'] == 1) {
+		$user_ack = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
+		$date_ack = date ($config["date_format"], $event['ack_utimestamp']);
+		$data[1] = $user_ack.' ('.$date_ack.')';	
+	}
+	else {
+		$data[1] = '<i>'.__('N/A').'</i>';
+	}
+	$table_general->data[] = $data;
+	
+	$data = array();
+	$data[0] = __('Group');
+	$data[1] = ui_print_group_icon ($event["id_grupo"], true);
+	$data[1] .= groups_get_name ($event["id_grupo"]);
+	$table_general->data[] = $data;
+	
+	$data = array();
+	$data[0] = __('Tags');
+
+	if ($event["tags"] != '') {
+		$tag_array = explode(',', $event["tags"]);
+		$data[1] = '';
+		foreach ($tag_array as $tag_element){
+			$blank_char_pos = strpos($tag_element, ' ');
+			$tag_name = substr($tag_element, 0, $blank_char_pos);
+			$tag_url = substr($tag_element, $blank_char_pos + 1);
+			$data[1] .= ' ' .$tag_name;
+			if (!empty($tag_url)){
+				$data[1] .= ' <a href="javascript: openURLTagWindow(\'' . $tag_url . '\');">' . html_print_image('images/lupa.png', true, array('title' => __('Click here to open a popup window with URL tag'))) . '</a> ';
+			}
+			$data[1] .= ',';
+		}
+		$data[1] = rtrim($table_general, ',');
+	}
+	else {
+		$data[1] = '<i>' . __('N/A') . '</i>';
+	}
+	$table_general->data[] = $data;
+	 
+	$general = '<div id="extended_event_general_page" class="extended_event_pages">'.html_print_table($table_general,true).'</div>';
+	
+	return $general;
+}
+	
+function events_page_comments ($event) {
+	/////////
+	// Comments
+	/////////
+	
+	$table_comments->width = '100%';
+	$table_comments->data = array ();
+	$table_comments->head = array ();
+	$table_comments->style[0] = 'width:35%; vertical-align: top; text-align: left;';
+	$table_comments->style[1] = 'text-align: left;';
+	$table_comments->class = "databox alternate";	
+	
+	$comments_array = explode('<br>',io_safe_output($event["user_comment"]));
+
+	// Split comments and put in table
+	$col = 0;
+	$data = array();
+	foreach($comments_array as $c) {	
+		switch($col) {
+			case 0:
+				$row_text = preg_replace('/\s*--\s*/',"",$c);
+				$row_text = preg_replace('/\<\/b\>/',"</i>",$row_text);
+				$row_text = preg_replace('/\[/',"</b><br><br><i>[",$row_text);
+				$row_text = preg_replace('/[\[|\]]/',"",$row_text);
+				break;
+			case 1:
+				$row_text = preg_replace("/[\r\n|\r|\n]/","<br>",io_safe_output(strip_tags($c)));
+				break;
+		}
+		
+		$data[$col] = $row_text;
+		
+		$col++;
+		
+		if($col == 2) {
+			$col = 0;
+			$table_comments->data[] = $data;
+			$data = array();
+		}
+	}
+	
+	if(count($comments_array) == 1 && $comments_array[0] == '') {
+		$table_comments->style[0] = 'text-align:center;';
+		$table_comments->colspan[0][0] = 2;
+		$data = array();
+		$data[0] = __('There are no comments');
+		$table_comments->data[] = $data;
+	}
+	
+	$comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea("comment", 3, 10, '', 'style="min-height: 15px; width: 100%;"', true);
+	$comments_form .= '<br><div style="text-align:right;">'.html_print_button(__('Add comment'),'comment_button',false,'event_comment();','class="sub next"',true).'</div><br></div>';
+	
+	$comments = '<div id="extended_event_comments_page" class="extended_event_pages">'.$comments_form.html_print_table($table_comments, true).'</div>';
+	
+	return $comments;
+}
 ?>

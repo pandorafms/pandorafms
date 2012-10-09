@@ -150,6 +150,7 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 	// Custom event fields
 	$sub = array ();
 	$sub["godmode/events/events&amp;section=fields"]["text"] = __('Custom events');
+	$sub["godmode/events/events&amp;section=responses"]["text"] = __('Event responses');
 	
 	$menu_godmode["geventos"]["sub"] = $sub;
 }

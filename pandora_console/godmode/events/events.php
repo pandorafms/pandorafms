@@ -37,6 +37,9 @@ $buttons = array(
 		'filter' => array('active' => false, 
 			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter">' .
 			html_print_image("images/lightning_go.png", true, array ("title" => __('Create filter'))) . '</a>'),
+		'responses' => array('active' => false, 	
+			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=responses">' .
+			html_print_image("images/cog.png", true, array ("title" => __('Event responses'))) . '</a>'),
 		'fields' => array('active' => false, 	
 			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields">' .
 			html_print_image("images/god6.png", true, array ("title" => __('Custom fields'))) . '</a>'),
@@ -50,6 +53,10 @@ switch ($section) {
 	case 'fields':
 		$buttons['fields']['active'] = true;
 		$subpage = ' - ' . __('Custom fields');
+		break;
+	case 'responses':
+		$buttons['responses']['active'] = true;
+		$subpage = ' - ' . __('Responses');
 		break;
 	case 'view':
 		$buttons['view']['active'] = true;
@@ -69,6 +76,9 @@ switch($section) {
 		break;
 	case 'fields':
 		require_once('godmode/events/custom_events.php');
+		break;
+	case 'responses':
+		require_once('godmode/events/event_responses.php');
 		break;
 }
 

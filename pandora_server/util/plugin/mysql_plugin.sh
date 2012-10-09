@@ -62,6 +62,6 @@ done
 
 # Execution
 
-echo "show global status" | mysql -u $USER -p$PASSWORD -h$SERVER | grep "$QUERY" | awk '{ print $2 }'
+echo "show global status" | mysql -u $USER -p$PASSWORD -h$SERVER | grep "$QUERY" | head -1 | awk '{ print $2 }'
 
 

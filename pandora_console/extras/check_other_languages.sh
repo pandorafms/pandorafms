@@ -19,7 +19,7 @@ mkdir "/tmp/$1" >> /dev/null 2> /dev/null
 for a in `ls include/help/en`
 do 
 	ESTA=`find include/help/$1/$a 2> /dev/null | wc -l`
-       	if [ $ESTA == 0 ]
+	if [ $ESTA == 0 ]
 	then 
 		echo "Missing $a, and copying to /tmp/$1"
 		cp include/help/en/$a "/tmp/$1"

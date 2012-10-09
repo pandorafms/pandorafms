@@ -32,20 +32,32 @@ switch($action) {
 	case 'get_networkmap_summary':
 		$stats = get_parameter('stats', array());
 		$stats = json_decode(base64_decode($stats),true);
+		$metaconsole = (bool)get_parameter('metaconsole', false);
+		
+		$hack_metaconsole = '';
+		if ($metaconsole) {
+			$hack_metaconsole = '../../';
+		}
 		
 		$summary = '<br>';
 		
-		if(isset($stats['policies'])) {
-			$summary .= count($stats['policies'])." x ".html_print_image('images/policies.png',true).' '.__('Policies')."<br>";
+		if (isset($stats['policies'])) {
+			$summary .= count($stats['policies']) . " x " .
+				html_print_image($hack_metaconsole . 'images/policies.png',true) . ' '.
+				__('Policies') . "<br>";
 		}
 		
-		if(isset($stats['groups'])) {
+		if (isset($stats['groups'])) {
 			// TODO: GET STATUS OF THE GROUPS AND ADD IT TO SUMMARY
-			$summary .= count($stats['groups'])." x ".html_print_image('images/group.png',true).' '.__('Groups')."<br>";
+			$summary .= count($stats['groups']) . " x " .
+				html_print_image($hack_metaconsole . 'images/group.png',true) . ' ' .
+				__('Groups') . "<br>";
 		}
 		
-		if(isset($stats['agents'])) {
-			$summary .= count($stats['agents'])." x ".html_print_image('images/bricks.png',true).' '.__('Agents')."<br>";
+		if (isset($stats['agents'])) {
+			$summary .= count($stats['agents']) .
+				" x " . html_print_image($hack_metaconsole . 'images/bricks.png',true) .
+				' ' . __('Agents') . "<br>";
 			// TODO: GET STATUS OF THE AGENTS AND ADD IT TO SUMMARY
 			//~ $status_agents = array();
 			//~ foreach($stats['agents'] as $id_agent) {
@@ -57,7 +69,7 @@ switch($action) {
 			//~ }
 		}
 		
-		if(isset($stats['modules'])) {
+		if (isset($stats['modules'])) {
 			// TODO: GET STATUS OF THE MODULES AND ADD IT TO SUMMARY
 			$summary .= count($stats['modules'])." x ".html_print_image('images/brick.png',true).' '.__('Modules')."<br>";
 		}

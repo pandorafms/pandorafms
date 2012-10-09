@@ -1,3 +1,30 @@
+2012-10-09 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql, pandoradb.sql,
+	pandoradb.postgreSQL.sql, pandoradb.oracle.sql: added flag field
+	"pandoras_children" into the table "tnetwork_map".
+	
+	* extras/check_other_languages.sh, include/functions_agents.php,
+	operation/agentes/networkmap_list.php: cleaned source code style.
+	
+	* include/functions_networkmap.php: a lot of fixes for the
+	metaconsole, and other changes now generate a graphviz code more
+	clean and human readble (good for maintenaince).
+	
+	* include/ajax/networkmap.ajax.php: into the ajax call
+	"get_networkmap_summary" started to adapt to call from the
+	metaconsole (WIP).
+	
+	* include/functions_ui.php: fixes for metaconsole links to images in
+	the functions "ui_print_message", "ui_print_group_icon" and
+	"ui_toggle". And added the parameter $return in the function
+	"ui_toggle" for to return the html code as string.
+	
+	* operation/agentes/ver_agente.php: into the ajax call
+	"get_agent_status_tooltip" adapt to call from the metaconsole.
+
 2012-10-09  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* pandoradb.sql: cleaned code style, to be acceptable by

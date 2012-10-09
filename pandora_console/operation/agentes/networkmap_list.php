@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 	exit;
 }
 
-require_once ('include/functions_networkmap.php');
+require_once('include/functions_networkmap.php');
 
 ui_print_page_header(__('Network map'), "images/bricks.png", false, "network_map", false);
 
@@ -49,22 +49,39 @@ if ($delete_networkmap) {
 $group_search = get_parameter('group_search', '0');
 $type_search = get_parameter('type_filter', '0');
 
-echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap_list">';
-echo "<table style='width: 100%' class='databox'>";
-echo "<tr><td class='datos' >";
-echo __('Group');
-echo "</td><td class='datos'>";
-html_print_select_groups($config['id_user'], 'AR', true, 'group_search', $group_search);
-echo "</td><td class='datos'>";
-echo __('Type');
-echo "</td><td class='datos'>";
-$networkmap_filter_types = networkmap_get_filter_types();
-html_print_select($networkmap_filter_types, 'type_filter', $type_search, '', __('All'), 0, false);
-echo "</td>";
-echo "<td class='datos'>";
-html_print_submit_button (__('Filter'), 'crt', false, 'class="sub search"');
-echo "</td></tr></table>";
-echo "</form>";
+?>
+<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap_list">
+	<table style='width: 100%' class='databox'>
+		<tr>
+			<td class='datos' >
+				<?php echo __('Group'); ?>
+			</td>
+			<td class='datos'>
+				<?php
+				html_print_select_groups($config['id_user'], 'AR',
+					true, 'group_search', $group_search);
+				?>
+			</td>
+			<td class='datos'>
+				<?php echo __('Type'); ?>
+			</td>
+			<td class='datos'>
+				<?php
+				$networkmap_filter_types = networkmap_get_filter_types();
+				html_print_select($networkmap_filter_types, 'type_filter',
+					$type_search, '', __('All'), 0, false);
+				?>
+			</td>
+			<td class='datos'>
+				<?php
+				html_print_submit_button (__('Filter'), 'crt', false,
+					'class="sub search"');
+				?>
+			</td>
+		</tr>
+	</table>
+</form>
+<?php
 
 // Display table
 $table = null;
@@ -150,14 +167,21 @@ else {
 
 // Create networkmap form
 $networkmap_types = networkmap_get_types();
-echo "<table style='width: 100%' class='databox'>";
-echo "<tr><td class='datos' style='width: 50%'>";
-echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap">';
-html_print_input_hidden('add_networkmap', 1);
-html_print_select($networkmap_types, 'tab', 'topology', '');
-echo "</td><td class='datos'>";
-html_print_submit_button (__('Create networkmap'), 'crt', false, 'class="sub next"');
-echo "</form>";
-echo "</td></tr></table>";
-
 ?>
+<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap">
+	<table style='width: 100%' class='databox'>
+		<tr>
+			<td class='datos' style='width: 50%'>
+				<?php
+				html_print_input_hidden('add_networkmap', 1);
+				html_print_select($networkmap_types, 'tab', 'topology', '');
+				?>
+			</td>
+			<td class='datos'>
+				<?php 
+				html_print_submit_button (__('Create networkmap'), 'crt', false, 'class="sub next"');
+				?>
+			</td>
+		</tr>
+	</table>
+</form>

@@ -1311,24 +1311,24 @@ CREATE  TABLE IF NOT EXISTS `tgis_map` (
 ENGINE = InnoDB
 COMMENT = 'Table containing information about a gis map';
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tgis_map_connection`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map_connection` (
-  `id_tmap_connection` INT NOT NULL AUTO_INCREMENT COMMENT 'table id' ,
-  `conection_name` VARCHAR(45) NULL COMMENT 'Name of the connection (name of the base layer)' ,
-  `connection_type` VARCHAR(45) NULL COMMENT 'Type of map server to connect' ,
-  `conection_data` TEXT NULL COMMENT 'connection information (this can probably change to fit better the possible connection parameters)' ,
-  `num_zoom_levels` TINYINT(2) NULL COMMENT 'Number of zoom levels available' ,
-  `default_zoom_level` TINYINT(2) NOT NULL DEFAULT 16 COMMENT 'Default Zoom Level for the connection' ,
-  `default_longitude` DOUBLE NULL COMMENT 'default longitude for the agents placed on the map' ,
-  `default_latitude` DOUBLE NULL COMMENT 'default latitude for the agents placed on the map' ,
-  `default_altitude` DOUBLE NULL COMMENT 'default altitude for the agents placed on the map' ,
-  `initial_longitude` DOUBLE NULL COMMENT "longitude of the center of the map when it\'s loaded" ,
-  `initial_latitude` DOUBLE NULL COMMENT "latitude of the center of the map when it\'s loaded" ,
-  `initial_altitude` DOUBLE NULL COMMENT "altitude of the center of the map when it\'s loaded" ,
-  `group_id` INT(10) NOT NULL DEFAULT 0 COMMENT 'Group that owns the map',
-  PRIMARY KEY (`id_tmap_connection`) )
+	`id_tmap_connection` INT NOT NULL AUTO_INCREMENT COMMENT 'table id' ,
+	`conection_name` VARCHAR(45) NULL COMMENT 'Name of the connection (name of the base layer)' ,
+	`connection_type` VARCHAR(45) NULL COMMENT 'Type of map server to connect' ,
+	`conection_data` TEXT NULL COMMENT 'connection information (this can probably change to fit better the possible connection parameters)' ,
+	`num_zoom_levels` TINYINT(2) NULL COMMENT 'Number of zoom levels available' ,
+	`default_zoom_level` TINYINT(2) NOT NULL DEFAULT 16 COMMENT 'Default Zoom Level for the connection' ,
+	`default_longitude` DOUBLE NULL COMMENT 'default longitude for the agents placed on the map' ,
+	`default_latitude` DOUBLE NULL COMMENT 'default latitude for the agents placed on the map' ,
+	`default_altitude` DOUBLE NULL COMMENT 'default altitude for the agents placed on the map' ,
+	`initial_longitude` DOUBLE NULL COMMENT "longitude of the center of the map when it\'s loaded" ,
+	`initial_latitude` DOUBLE NULL COMMENT "latitude of the center of the map when it\'s loaded" ,
+	`initial_altitude` DOUBLE NULL COMMENT "altitude of the center of the map when it\'s loaded" ,
+	`group_id` INT(10) NOT NULL DEFAULT 0 COMMENT 'Group that owns the map',
+	PRIMARY KEY (`id_tmap_connection`) )
 ENGINE = InnoDB
 COMMENT = 'Table to store the map connection information';
 
@@ -1445,6 +1445,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_map` (
 	`show_snmp_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	`text_filter` VARCHAR(100)  NOT NULL DEFAULT "",
 	`dont_show_subgroups` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`pandoras_children` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id_networkmap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1558,9 +1559,9 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report` (
 PRIMARY KEY(`id_report`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tnetflow_report_content`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
    	`id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1578,9 +1579,9 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 	ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tevent_filter`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `id_filter`  int(10) unsigned NOT NULL auto_increment,

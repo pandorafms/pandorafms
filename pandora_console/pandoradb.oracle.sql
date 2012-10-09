@@ -40,9 +40,9 @@ CREATE SEQUENCE taddress_s INCREMENT BY 1 START WITH 1;
 -- Triggers must end with double semicolons because Pandora installer need it 
 CREATE OR REPLACE TRIGGER taddress_inc BEFORE INSERT ON taddress REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT taddress_s.nextval INTO :NEW.ID_A FROM dual; END;;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `taddress_agent`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE taddress_agent (
 	id_ag NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	id_a NUMBER(19, 0) default 0 NOT NULL,
@@ -1502,7 +1502,8 @@ CREATE TABLE tnetwork_map (
 	contracted_nodes CLOB,
 	show_snmp_modules NUMBER(5, 0) default 0 NOT NULL,
 	text_filter VARCHAR(100) DEFAULT '',
-	dont_show_subgroups NUMBER(10, 0) default 0 NOT NULL
+	dont_show_subgroups NUMBER(10, 0) default 0 NOT NULL,
+	pandoras_children NUMBER(10, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tnetwork_map_s INCREMENT BY 1 START WITH 1;

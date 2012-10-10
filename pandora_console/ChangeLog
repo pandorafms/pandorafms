@@ -1,3 +1,11 @@
+2012-10-10 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_networkmap.php: fixes and changes for the new
+	form to set the urls and url images.
+	
+	* include/functions_html.php: fixed the "html_print_image" for the
+	relative urls images (uses in the networkmap).
+
 2012-10-10  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

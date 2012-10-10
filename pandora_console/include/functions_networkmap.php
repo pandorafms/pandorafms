@@ -501,9 +501,10 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		// Set node icon
 		$img_node = ui_print_os_icon ($agent['id_os'], false, true, true, true, true, $relative);
 		$img_node = str_replace($config['homeurl'] . '/', '', $img_node);
+		$img_node = str_replace($config['homeurl'], '', $img_node);
 		
 		if (defined('METACONSOLE')) {
-			$img_node = '../../' . $img_node;
+			$img_node = str_replace('../../', '', $img_node);
 		}
 		
 		if ($relative) {
@@ -582,7 +583,6 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	
 	$img_src = "images/networkmap/pandora_node.png";
 	if (defined('METACONSOLE')) {
-		$img_src = '../../' . $img_src;
 		
 		$url_tooltip = '../../ajax.php?' .
 			'page=include/ajax/networkmap.ajax&' .

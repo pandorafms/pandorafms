@@ -347,3 +347,20 @@ ALTER TABLE tnetwork_map ADD (pandoras_children NUMBER(10, 0) default 0 NOT NULL
 -- Table `tagente_estado`
 ------------------------------------------------------------------------
 ALTER TABLE tagente_estado ADD (last_known_status  NUMBER(5, 0) default 0 NOT NULL);
+
+-- -----------------------------------------------------
+-- Table `tevent_response`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS tevent_response (
+	id  NUMBER(10) NOT NULL PRIMARY KEY,
+	name varchar2(600) NOT NULL default '',
+	description CLOB,
+	target CLOB,
+	type varchar2(60) NOT NULL,
+	id_group MEDIUMINT(4) NOT NULL default 0,
+	modal_width NUMBER(10, 0) NOT NULL DEFAULT 0,
+	modal_height NUMBER(10, 0) NOT NULL DEFAULT 0,
+	new_window NUMBER(10, 0) NOT NULL DEFAULT 0,
+	params CLOB
+);
+CREATE SEQUENCE tevent_response_s INCREMENT BY 1 START WITH 1;

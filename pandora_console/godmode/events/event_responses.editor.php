@@ -92,26 +92,10 @@ $table->data[3] = $data;
 
 $data = array();
 $table->colspan[4][1] = 3;
-$data[0] = '<span id="command_label" class="labels">'.__('Command').'</span><span id="url_label" style="display:none;" class="labels">'.__('URL').'</span>';
+$data[0] = '<span id="command_label" class="labels">'.__('Command').'</span><span id="url_label" style="display:none;" class="labels">'.__('URL').'</span>'.ui_print_help_icon ("response_macros", true);
 $data[1] = html_print_input_text('target',$event_response['target'],'',150,255,true);
 $types = array('url' => __('URL'), 'command' => __('Command'));
 $table->data[4] = $data;
-
-$data = array();
-$table->colspan[5][0] = 4;
-
-$macros = events_get_macros();
-
-$macros_info = "<div style='margin-left:20px'>";
-foreach($macros as $k=>$v) {
-	$macros_info .= "<b>$v:</b> $k<br>";
-}
-$macros_info .= "</div>";
-
-$data[0] = ui_print_info_message(array('title'=>__('Available macros'), 'message' => '<br>'.$macros_info), '', true);
-$table->data[5] = $data;
-
-echo '<br>';
 
 if($event_response_id == 0) {
 	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response">';

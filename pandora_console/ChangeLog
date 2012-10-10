@@ -1,3 +1,24 @@
+2012-10-10  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql: Add the default 
+	responses to data scripts.
+
+	* pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: 
+	Added the new table of event responses to oracle 
+	and postgresql schemmas. 
+
+	* godmode/events/event_responses.editor.php 
+	include/help/en/help_response_parameters.php
+	include/help/en/help_response_macros.php
+	include/help/es/help_response_parameters.php
+	include/help/es/help_response_macros.php: Add help to
+	parameters and macros in event responses
+
 2012-10-09  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.sql: Added tevent_response to 

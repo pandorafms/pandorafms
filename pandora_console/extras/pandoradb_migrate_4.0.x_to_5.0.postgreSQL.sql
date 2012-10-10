@@ -338,3 +338,19 @@ ALTER TABLE "tnetwork_map" ADD COLUMN "pandoras_children" INTEGER NOT NULL DEFAU
 -- Table `tagente_estado`
 ------------------------------------------------------------------------
 ALTER TABLE "tagente_estado" ADD COLUMN "last_known_status" INTEGER default 0;
+
+-- -----------------------------------------------------
+-- Table `tevent_response`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS "tevent_response" (
+	"id"  SERIAL NOT NULL PRIMARY KEY,
+	"name" varchar(600) NOT NULL default '',
+	"description" TEXT,
+	"target" TEXT,
+	"type" varchar(60) NOT NULL,
+	"id_group" INTEGER NOT NULL default 0,
+	"modal_width" INTEGER NOT NULL DEFAULT 0,
+	"modal_height" INTEGER NOT NULL DEFAULT 0,
+	"new_window" INTEGER NOT NULL DEFAULT 0,
+	"params" TEXT,
+);

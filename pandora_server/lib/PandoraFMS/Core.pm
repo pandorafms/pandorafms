@@ -1474,7 +1474,7 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		#	"%H:%M:%S");
 		#
 		#if ($date_now_time <= $date_downtime) {
-		if (($time lt $downtime->{'periodically_time_to'})
+		if (($time gt $downtime->{'periodically_time_to'})
 			|| ($time eq $downtime->{'periodically_time_to'})) {
 			
 			if (!defined($downtime->{'description'})) {
@@ -1650,7 +1650,7 @@ sub pandora_planned_downtime_weekly_stop($$) {
 		logger($pa_config, "Debug periodically_time_to = " .
 			$downtime->{'periodically_time_to'}, 5);
 		
-		if (($time lt $downtime->{'periodically_time_to'})
+		if (($time gt $downtime->{'periodically_time_to'})
 			|| ($time eq $downtime->{'periodically_time_to'})) {
 			
 			if (!defined($downtime->{'description'})) {

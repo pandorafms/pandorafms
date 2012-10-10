@@ -166,6 +166,7 @@ if (is_ajax ()) {
 		$idAgents = get_parameter('id_agent');
 		$custom_condition = get_parameter('custom_condition', '');
 		$selection_mode = get_parameter('selection_mode', 'common');
+		$serialized = get_parameter('serialized', '');
 		
 		$all = (string)get_parameter('all', 'all');
 		switch ($all) {
@@ -288,7 +289,10 @@ if (is_ajax ()) {
 			
 			$result = array();
 			foreach($nameModules as $nameModule) {
-				$result[$nameModule['nombre'].'$*$'.implode('|', $idAgents)] = io_safe_output($nameModule['nombre']);
+				if (empty($serialized))
+					$result[$nameModule['nombre']] = io_safe_output($nameModule['nombre']);
+				else
+					$result[$nameModule['nombre'].'$*$'.implode('|', $idAgents)] = io_safe_output($nameModule['nombre']);
 			}
 		}
 		

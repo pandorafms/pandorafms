@@ -1,3 +1,9 @@
+2012-10-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/javascript/pandora.js
+	 operation/agentes/ver_agente.php: Fixed multiselect in wizards 
+	 of Pandora Console.
+
 2012-10-10 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_networkmap.php: fixes and changes for the new

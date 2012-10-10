@@ -164,6 +164,11 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 		selection_mode = 'common';
 	}
 	
+	var serialized = $('#hidden-serialized').val();
+	if (serialized == undefined) {
+		serialized = '';
+	}
+	
 	$('#module').attr ('disabled', 1);
 	$('#module').empty ();
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
@@ -181,7 +186,8 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 		"id_agent[]": idAgents,
 		"all": find_modules,
 		"custom_condition": custom_condition,
-		"selection_mode": selection_mode
+		"selection_mode": selection_mode,
+		"serialized": serialized 
 		},
 		function (data) {
 			$('#module').empty ();

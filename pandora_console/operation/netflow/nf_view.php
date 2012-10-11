@@ -70,23 +70,25 @@ if ($id) {
 }
 
 $period = get_parameter('period', '86400');
-$date = get_parameter_post ('date', date ("Y/m/d", get_system_time ()));
-$time = get_parameter_post ('time', date ("H:i:s", get_system_time ()));
+$date = get_parameter ('date', date ("Y/m/d", get_system_time ()));
+$time = get_parameter ('time', date ("H:i:s", get_system_time ()));
 
 $end_date = strtotime ($date . " " . $time);
 $start_date = $end_date - $period;
 
 // Generate an XML report
 if (isset ($_GET["xml"])) {
+	$interval_length = get_parameter('interval_length', 0);
 	header ('Content-type: application/xml; charset="utf-8"', true);
-	netflow_xml_report ($id, $start_date, $end_date);
+	netflow_xml_report ($id, $start_date, $end_date, $interval_length);
 	return;
 }
 // Generate a PDF report
 else if (isset ($_GET["pdf"])) {
+	$interval_length = get_parameter('interval_length', 0);
 	enterprise_include_once ('include/functions_netflow_pdf.php');
 	header ('Content-type: application/pdf', true);
-	netflow_pdf_report ($id, $start_date, $end_date);
+	netflow_pdf_report ($id, $start_date, $end_date, $interval_length);
 	return;
 }
 
@@ -180,6 +182,6 @@ foreach ($report_contents as $content_report) {
 	$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
 	
 	// Draw
-	echo netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggregates, $unique_id, $connection_name, 'HTML');
+	echo netflow_draw_item ($start_date, $end_date, 0, $type, $filter, $max_aggregates, $unique_id, $connection_name, 'HTML');
 }
 ?>

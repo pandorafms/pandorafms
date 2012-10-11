@@ -253,7 +253,7 @@ if  ($draw != '') {
 	$unique_id = 'live_view__' . ($end_date - $start_date);
 	
 	// Draw
-	echo netflow_draw_item ($start_date, $end_date, $chart_type, $filter, $max_aggregates, $unique_id, $connection_name);
+	echo netflow_draw_item ($start_date, $end_date, 0, $chart_type, $filter, $max_aggregates, $unique_id, $connection_name);
 }
 ?>
 

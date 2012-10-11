@@ -17,8 +17,9 @@
 
 include_once($config['homedir'] . "/include/functions_users.php");
 include_once($config['homedir'] . "/include/functions_io.php");
-require_once($config['homedir'] . '/enterprise/include/pdf_translator.php');
-enterprise_include_once ($config['homedir'] . "/include/functions_io.php");
+include_once ($config['homedir'] . "/include/functions_io.php");
+enterprise_include_once ($config['homedir'] . '/enterprise/include/pdf_translator.php');
+enterprise_include_once ($config['homedir'] . '/enterprise/include/functions_metaconsole.php');
 
 // Date format for nfdump
 $nfdump_date_format = 'Y/m/d.H:i:s';
@@ -366,13 +367,13 @@ function netflow_is_net ($address) {
  * @return An array with netflow stats.
  *
  */
-function netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max, $unit, $connection_name = '') {
+function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $unique_id, $aggregate, $max, $unit, $connection_name = '') {
 	global $nfdump_date_format;
 	global $config;
 
 	// Requesting remote data
 	if (defined ('METACONSOLE') && $connection_name != '') {
-		$data = metaconsole_call_remote_api ($connection_name, 'netflow_get_data', "$start_date|$end_date|" . base64_encode(json_encode($filter)) . "|$unique_id|$aggregate|$max|$unit");
+		$data = metaconsole_call_remote_api ($connection_name, 'netflow_get_data', "$start_date|$end_date|$interval_length|" . base64_encode(json_encode($filter)) . "|$unique_id|$aggregate|$max|$unit");
 		return json_decode ($data, true);
 	}
 	
@@ -405,7 +406,7 @@ function netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggrega
 	
 	// Load cache
 	$cache_file = $config['attachment_store'] . '/netflow_' . $unique_id . '.cache';
-	$last_timestamp = netflow_load_cache ($values, $cache_file, $start_date, $end_date, $aggregate);
+	$last_timestamp = netflow_load_cache ($values, $cache_file, $start_date, $end_date, $interval_length, $aggregate);
 	if ($last_timestamp < $end_date) {
 		
 		$last_timestamp++;
@@ -417,7 +418,7 @@ function netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggrega
 
 		// Parse data file
 		// We must parse from $start_date to avoid creating new intervals!
-		netflow_parse_file ($start_date, $end_date, $temp_file, $values, $aggregate, $unit);
+		netflow_parse_file ($start_date, $end_date, $interval_length, $temp_file, $values, $aggregate, $unit);
 
 		unlink ($temp_file);
 	}
@@ -533,7 +534,7 @@ function netflow_get_summary ($start_date, $end_date, $filter, $unique_id, $conn
 	// Parse data file
 	// We must parse from $start_date to avoid creating new intervals!
 	$values = array ();
-	netflow_parse_file ($start_date, $end_date, $temp_file, $values);
+	netflow_parse_file ($start_date, $end_date, 0, $temp_file, $values);
 	unlink ($temp_file);
 	
 	return $values;
@@ -675,7 +676,7 @@ function netflow_get_filter_arguments ($filter) {
  * @return Timestamp of the last data read.
  *
  */
-function netflow_parse_file ($start_date, $end_date, $file, &$values, $aggregate = '', $unit = '', $interval_length = 0) {
+function netflow_parse_file ($start_date, $end_date, $interval_length, $file, &$values, $aggregate = '', $unit = '') {
 	global $config;
 	
 	// Last timestamp read
@@ -688,7 +689,7 @@ function netflow_parse_file ($start_date, $end_date, $file, &$values, $aggregate
 	}
 	
 	// Calculate the number of intervals
-	if ($interval_length > 0) {
+	if ($interval_length <= 0) {
 		$num_intervals = $config['graph_res'] * 50;
 		$period = $end_date - $start_date;
 		$interval_length = (int) ($period / $num_intervals);
@@ -890,11 +891,12 @@ function netflow_save_cache ($data, $cache_file) {
  * @param string cache_file Cache file name.
  * @param string start_date Period start date.
  * @param string end_date Period end date.
+ * @param string interval_length Interval length in seconds (num_intervals * interval_length = start_date - end_date).
  *
  * @return Timestamp of the last data read from cache.
  *
  */
-function netflow_load_cache (&$data, $cache_file, $start_date, $end_date, $aggregate) {
+function netflow_load_cache (&$data, $cache_file, $start_date, $end_date, $interval_length, $aggregate) {
 	global $config;
 	
 	// Open cache file
@@ -902,9 +904,14 @@ function netflow_load_cache (&$data, $cache_file, $start_date, $end_date, $aggre
 	$cache_data = @unserialize ($cache_data);
 	
 	// Calculate the number of intervals
-	$num_intervals = $config['graph_res'] * 50;
-	$period = $end_date - $start_date;
-	$interval_length = (int) ($period / $num_intervals);
+	if ($interval_length <= 0) {
+		$num_intervals = $config['graph_res'] * 50;
+		$period = $end_date - $start_date;
+		$interval_length = (int) ($period / $num_intervals);
+	} else {
+		$period = $end_date - $start_date;
+		$num_intervals = (int) ($period / $interval_length);
+	}
 	$last_timestamp = $start_date;
 	
 	// Initializa chart data
@@ -1004,6 +1011,7 @@ function netflow_get_valid_intervals () {
  *
  * @param string start_date Period start date.
  * @param string end_date Period end date.
+ * @param string interval_length Interval length in seconds (num_intervals * interval_length = start_date - end_date).
  * @param string type Chart type.
  * @param array filter Netflow filter.
  * @param int max_aggregates Maximum number of aggregates.
@@ -1012,7 +1020,7 @@ function netflow_get_valid_intervals () {
  *
  * @return The netflow report in the appropriate format.
  */
-function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggregates, $unique_id, $connection_name = '', $output = 'HTML', $only_image = false) {
+function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $filter, $max_aggregates, $unique_id, $connection_name = '', $output = 'HTML', $only_image = false) {
 	$aggregate = $filter['aggregate'];
 	$unit = $filter['output'];
 	$interval = $end_date - $start_date;
@@ -1020,7 +1028,7 @@ function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggrega
 	// Process item
 	switch ($type) {
 		case '0':
-			$data = netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
+			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($aggregate != 'none') {
 				if ($output == 'HTML') {
 					return graph_netflow_aggregate_area ($data, $interval, 660, 320, $unit);
@@ -1051,7 +1059,7 @@ function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggrega
 			}
 			break;
 		case '2':
-			$data = netflow_get_data ($start_date, $end_date, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
+			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($output == 'HTML' || $output == 'PDF') {
 				return netflow_data_table ($data, $start_date, $end_date, $aggregate);
 			} else if ($output == 'XML') {
@@ -1089,9 +1097,10 @@ function netflow_draw_item ($start_date, $end_date, $type, $filter, $max_aggrega
  * @param int ID of the netflow report.
  * @param string end_date Period start date.
  * @param string end_date Period end date.
+ * @param string interval_length Interval length in seconds (num_intervals * interval_length = start_date - end_date).
  *
  */
-function netflow_xml_report ($id, $start_date, $end_date) {
+function netflow_xml_report ($id, $start_date, $end_date, $interval_length = 0) {
 	
 	// Get report data
 	$report = db_get_row_sql ('SELECT * FROM tnetflow_report WHERE id_report =' . (int) $id);
@@ -1143,7 +1152,7 @@ function netflow_xml_report ($id, $start_date, $end_date) {
 		// Build a unique id for the cache
 		$unique_id = $report['id_report'] . '_' . $content['id_rc'] . '_' . ($end_date - $start_date);
 
-		echo netflow_draw_item ($start_date, $end_date, $content['show_graph'], $filter, $content['max'], $unique_id, $report['server_name'], 'XML');
+		echo netflow_draw_item ($start_date, $end_date, $interval_length, $content['show_graph'], $filter, $content['max'], $unique_id, $report['server_name'], 'XML');
 
 		echo "  </report_item>\n";
 	}

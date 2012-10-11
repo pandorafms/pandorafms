@@ -1,3 +1,13 @@
+2012-10-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/ajax/networkmap.ajax.php: added the code for the
+	metaconsole in the call "get_networkmap_summary" and added the
+	call "get_networkmap_summary_pandora_server" for the tooltips in
+	the metaconsole networkmap in the pandoras children nodes.
+	
+	* include/functions_agents.php: improve the execution time and
+	cleaned the code for the function "agents_get_modules".
+
 2012-10-11  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_response_parameters.php,

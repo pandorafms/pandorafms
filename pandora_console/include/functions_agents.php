@@ -1097,22 +1097,23 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 function agents_get_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true, $noACLs = false) {
 	global $config;
 	
-	// TODO: Clean extra_sql
-	$policy_sql = '';
+	$userGroups = users_get_groups($config['id_user'], 'AR', false);
+	if (empty($userGroups)) {
+		return array();
+	}
+	$id_userGroups = $id_groups = array_keys($groups);
 	
+	// =================================================================
+	// When there is not a agent id. Get a agents of groups that the
+	// user can read the agents.
+	// =================================================================
 	if ($id_agent === null) {
-		//Extract the agents of group user.
-		$groups = users_get_groups(false, 'AR', false);
-		if(empty($groups)) {
-			return array();
-		}
-		
-		$id_groups = array_keys($groups);
-		
-		$sql = "SELECT id_agente FROM tagente WHERE id_grupo IN (" . implode(',', $id_groups) . ")";
+		$sql = "SELECT id_agente
+			FROM tagente
+			WHERE id_grupo IN (" . implode(',', $id_groups) . ")";
 		$id_agent = db_get_all_rows_sql($sql);
 		
-		if($id_agent == false) {
+		if ($id_agent == false) {
 			$id_agent = array();
 		}
 		
@@ -1123,18 +1124,13 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 		$id_agent = $temp;
 	}
 	
+	// =================================================================
+	// Fixed strange values. Only array of ids or id as int
+	// =================================================================
 	if (!is_array($id_agent)) {
 		$id_agent = safe_int ($id_agent, 1);
 	}
 	
-	$userGroups = users_get_groups($config['id_user'], 'AR', false);
-	
-	if(empty($userGroups)) {
-		return array();
-	}
-	
-	$id_userGroups = array_keys($userGroups);
-
 	$where = "(
 			1 = (
 				SELECT is_admin
@@ -1158,13 +1154,12 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 						FROM tperfil WHERE agent_view = 1
 					)
 				)
-			" . $policy_sql . "
 		)";
 	
 	if (! empty ($id_agent)) {
 		$where .= sprintf (' AND id_agente IN (%s)', implode (",", (array) $id_agent));
 	}
-
+	
 	$where .= ' AND delete_pending = 0 ';
 	
 	if (! empty ($filter)) {
@@ -1181,7 +1176,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 				}
 				
 				if ($value[0] == '%') {
-					switch ($config['dbtype']){
+					switch ($config['dbtype']) {
 						case "mysql":
 						case "postgresql":
 							array_push ($fields, $field.' LIKE "'.$value.'"');
@@ -1195,7 +1190,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 					array_push($fields, $field.' <> ' . substr($value, 2));
 				}
 				else if (substr($value, -1) == '%') {
-					switch ($config['dbtype']){
+					switch ($config['dbtype']) {
 						case "mysql":
 						case "postgresql":
 							array_push ($fields, $field.' LIKE "'.$value.'"');
@@ -1206,7 +1201,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 					}
 				}
 				//else if (strstr($value, '666=666', true) == '') {
-				else if (strncmp($value, '666=666', 7) == 0){
+				else if (strncmp($value, '666=666', 7) == 0) {
 					switch ($config['dbtype']) {
 						case "mysql":
 						case "postgresql":
@@ -1245,7 +1240,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 		$details = "nombre";
 	}
 	else { 
-		if ($config['dbtype'] == 'oracle'){
+		if ($config['dbtype'] == 'oracle') {
 			$details_new = array();
 			if (is_array($details)) {
 				foreach ($details as $detail) {

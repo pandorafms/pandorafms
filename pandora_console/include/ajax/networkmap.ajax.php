@@ -28,6 +28,9 @@ if (! check_acl ($config['id_user'], 0, "IR")) {
 
 $action = get_parameter('action');
 
+//error_reporting(E_ALL);
+//ini_set("display_errors", 1);
+
 switch($action) {
 	case 'get_networkmap_summary':
 		$stats = get_parameter('stats', array());
@@ -55,18 +58,45 @@ switch($action) {
 		}
 		
 		if (isset($stats['agents'])) {
-			$summary .= count($stats['agents']) .
-				" x " . html_print_image($hack_metaconsole . 'images/bricks.png',true) .
-				' ' . __('Agents') . "<br>";
-			// TODO: GET STATUS OF THE AGENTS AND ADD IT TO SUMMARY
-			//~ $status_agents = array();
-			//~ foreach($stats['agents'] as $id_agent) {
-				//~ $st = agents_get_status($id_agent);
-				//~ if(!isset($status_agents[$st])) {
-					//~ $status_agents[$st] = 0;
-				//~ }
-				//~ $status_agents[$st] ++;
-			//~ }
+			if ($metaconsole) {
+				include_once ('include/functions_reporting.php');
+				
+				$servers = db_get_all_rows_sql ("SELECT *
+					FROM tmetaconsole_setup");
+				if ($servers === false)
+					$servers = array();
+				
+				$total_agents = 0;
+				
+				foreach ($servers as $server) {
+					// If connection was good then retrieve all data server
+					if (metaconsole_load_external_db ($server)) {
+						$connection = true;
+					}
+					else {
+						$connection = false;
+					}
+					
+					if ($connection)
+						$data = reporting_get_group_stats();
+					
+					metaconsole_restore_db();
+					
+					$total_agents += $data["total_agents"];
+				}
+				
+				
+				$total_agents = format_numeric($total_agents);
+				
+				$summary .= $total_agents .
+					" x " . html_print_image($hack_metaconsole . 'images/bricks.png',true) .
+					' ' . __('Agents') . "<br>";
+			}
+			else {
+				$summary .= count($stats['agents']) .
+					" x " . html_print_image($hack_metaconsole . 'images/bricks.png',true) .
+					' ' . __('Agents') . "<br>";
+			}
 		}
 		
 		if (isset($stats['modules'])) {
@@ -76,7 +106,62 @@ switch($action) {
 		
 		echo '<h3>'.__('Map summary').'</h3><strong>'.$summary.'</strong>';
 		break;
+	case 'get_networkmap_summary_pandora_server':
+		$id_server = (int)get_parameter('id_server', 0);
+		$stats = get_parameter('stats', array());
+		$stats = json_decode(base64_decode($stats),true);
+		$metaconsole = (bool)get_parameter('metaconsole', false);
+		
+		$hack_metaconsole = '';
+		if ($metaconsole) {
+			$hack_metaconsole = '../../';
+		}
+		
+		$summary = '<br>';
+		
+		if (isset($stats['agents'])) {
+			if ($metaconsole) {
+				include_once ('include/functions_reporting.php');
+				
+				$servers = db_get_all_rows_sql ("SELECT *
+					FROM tmetaconsole_setup
+					WHERE id = " . $id_server);
+				if ($servers === false)
+					$servers = array();
+				
+				$total_agents = 0;
+				
+				foreach ($servers as $server) {
+					// If connection was good then retrieve all data server
+					if (metaconsole_load_external_db ($server)) {
+						$connection = true;
+					}
+					else {
+						$connection = false;
+					}
+					
+					if ($connection)
+						$data = reporting_get_group_stats();
+					
+					metaconsole_restore_db();
+					
+					$total_agents += $data["total_agents"];
+				}
+				
+				
+				$total_agents = format_numeric($total_agents);
+				
+				$summary .= $total_agents .
+					" x " . html_print_image($hack_metaconsole . 'images/bricks.png',true) .
+					' ' . __('Agents') . "<br>";
+			}
+			else {
+				$summary .= count($stats['agents']) .
+					" x " . html_print_image($hack_metaconsole . 'images/bricks.png',true) .
+					' ' . __('Agents') . "<br>";
+			}
+		}
+		echo '<h3>'.__('Map summary').'</h3><strong>'.$summary.'</strong>';
+		break;
 }
-
-
 ?>

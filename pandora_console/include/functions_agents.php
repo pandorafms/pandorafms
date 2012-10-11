@@ -1101,7 +1101,7 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	if (empty($userGroups)) {
 		return array();
 	}
-	$id_userGroups = $id_groups = array_keys($groups);
+	$id_userGroups = $id_groups = array_keys($userGroups);
 	
 	// =================================================================
 	// When there is not a agent id. Get a agents of groups that the

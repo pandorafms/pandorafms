@@ -1,3 +1,8 @@
+2012-10-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php: fixed the order of vars in the
+	asignation into the code of function "agents_get_modules".
+
 2012-10-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_graph.php,

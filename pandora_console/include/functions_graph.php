@@ -2723,8 +2723,8 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
-	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+	return area_graph($flash_chart, $chart, $width, $height, array (), $sources,
+		array (), "images/image_problem.opaque.png", "", $unit, $homeurl,
 		$config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size'], $unit, 2);
 }

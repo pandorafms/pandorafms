@@ -210,7 +210,7 @@ if ($id_user_ack != "0")
 
 if ($event_view_hr > 0) {
 	$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR);
-	$sql_post .= " AND (utimestamp > ".$unixtime . " OR estado = 2)";
+	$sql_post .= " AND (utimestamp > ".$unixtime . ")";
 }
 
 //Search by tag
@@ -586,7 +586,7 @@ if ($i != 0) {
 	$table->size[$i] = '80px';
 	$i++;
 	if (check_acl ($config["id_user"], 0, "IW") == 1) {
-		$table->head[$i] = html_print_checkbox ("allbox", "1", false, true);
+		$table->head[$i] = html_print_checkbox ("all_validate_box", "1", false, true);
 		$table->align[$i] = 'center';
 	}
 }
@@ -601,22 +601,8 @@ foreach ($result as $event) {
 	$table->rowclass[] = $myclass;
 	
 	//print status
-	// Grouped events
-	if ($group_rep != 0) {
-		if ($event["max_estado"] == 2) {
-			$estado = 2;
-		}
-		else if ($event["min_estado"] == 0) {
-			$estado = 0;
-		}
-		else {
-			$estado = 1;
-		}
-	}
-	// Ungrouped events
-	else {
-		$estado = $event["estado"];
-	}
+	$estado = $event["estado"];
+
 	// Colored box
 	switch($estado) {
 		case 0:
@@ -636,6 +622,27 @@ foreach ($result as $event) {
 	$i = 0;
 	
 	$data[$i] = "#".$event["id_evento"];
+	
+	// Pass grouped values in hidden fields to use it from modal window
+	if($group_rep) {
+		$similar_ids = $event['similar_ids'];
+		$timestamp_first = $event['timestamp_rep_min'];
+		$timestamp_last = $event['timestamp_rep'];
+	}
+	else {
+		$similar_ids = $event["id_evento"];
+		$timestamp_first = $event['utimestamp'];
+		$timestamp_last = $event['utimestamp'];
+	}
+	
+	// Store group data to show in extended view
+	$data[$i] .= html_print_input_hidden('similar_ids_'.$event["id_evento"], $similar_ids, true);
+	$data[$i] .= html_print_input_hidden('timestamp_first_'.$event["id_evento"], $timestamp_first, true);
+	$data[$i] .= html_print_input_hidden('timestamp_last_'.$event["id_evento"], $timestamp_last, true);	
+	$data[$i] .= html_print_input_hidden('event_rep_'.$event["id_evento"], $event['event_rep'], true);	
+	// Store concat comments to show in extended view	
+	$data[$i] .= html_print_input_hidden('user_comment_'.$event["id_evento"], base64_encode($event['user_comment']), true);		
+
 	$i++;
 		
 	if (in_array('estado',$show_fields)) {
@@ -822,7 +829,7 @@ foreach ($result as $event) {
 		$data[$i] = '';
 		// Validate event
 		if (($event["estado"] != 1) and (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1)) {
-			$data[$i] .= '<a href="javascript:" class="validate_event" id="validate-'.$event["id_evento"].'">';
+			$data[$i] .= '<a href="javascript:validate_event_advanced('.$event["id_evento"].', 1)" id="validate-'.$event["id_evento"].'">';
 			$data[$i] .= html_print_image ("images/ok.png", true,
 				array ("title" => __('Validate event')));
 			$data[$i] .= '</a>&nbsp;';
@@ -853,7 +860,7 @@ foreach ($result as $event) {
 		
 		if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
 			//Checkbox
-			$data[$i] = html_print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
+			$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="chk_val"', true);
 		}
 		array_push ($table->data, $data);
 	}
@@ -865,22 +872,31 @@ echo '<div id="events_list">';
 if (!empty ($table->data)) {
 	ui_pagination ($total_events, $url."&pure=".$config["pure"], $offset, $pagination);
 	
-	echo '<form method="post" id="form_events" action="'.$url.'&amp;section=validate">';
+	echo '<form method="post" id="form_events" action="'.$url.'">';
 	echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
 	
 	html_print_table ($table);
 	
 	echo '<div style="width:'.$table->width.';" class="action-buttons">';
 	if (check_acl ($config["id_user"], 0, "IW") == 1) {
-		html_print_submit_button (__('Update'), 'validate_btn', false, 'class="sub ok"');
+		html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected();', 'class="sub ok"');
 	}
 	if (check_acl ($config["id_user"], 0,"IM") == 1) {
-		html_print_button(__('Delete'), 'delete_button', false, 'submit_delete();', 'class="sub delete"');
+		html_print_button(__('Delete selected'), 'delete_button', false, 'delete_selected();', 'class="sub delete"');
 		?>
 		<script type="text/javascript">
-		function submit_delete() {
-			$("#hidden_delete_events").val(1);
-			$("#form_events").submit();
+		function delete_selected() {
+			if(confirm('<?php echo __('Are you sure?'); ?>')) {
+				$("#hidden_delete_events").val(1);
+				$("#form_events").submit();
+			}
+		}
+		function validate_selected() {
+			$(".chk_val").each(function() { 
+				if($(this).is(":checked")) {
+					validate_event_advanced($(this).val(),1);
+				}
+			});  
 		}
 		</script>
 		<?php

@@ -1,3 +1,15 @@
+2012-10-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php
+	include/javascript/pandora_events.js
+	include/ajax/events.php
+	include/constants.php
+	operation/events/events_validate.php
+	operation/events/events_list.php
+	operation/events/events.php: Change the validation events 
+	system to validate passing the ids searialized avoiding a lot
+	of operations. Improve counts and fix several bugs
+
 2012-10-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_agents.php: fixed the order of vars in the

@@ -50,7 +50,10 @@ define ('ERR_NODATA', -70000);
 define ('ERR_CONNECTION', -80000);
 define ('ERR_DISABLED', -90000);
 
-
+/* Event status code */
+define ('EVENT_STATUS_NEW',0);
+define ('EVENT_STATUS_INPROCESS',2);
+define ('EVENT_STATUS_VALIDATED',1);
 
 /* Seconds in a time unit constants */
 define('SECONDS_1MINUTE', 60);

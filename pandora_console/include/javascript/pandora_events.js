@@ -3,19 +3,35 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 	if(dialog_page == undefined) {
 		dialog_page = 'general';
 	}
+	
+	var similar_ids = $('#hidden-similar_ids_'+event_id).val();
+	var timestamp_first = $('#hidden-timestamp_first_'+event_id).val();
+	var timestamp_last = $('#hidden-timestamp_last_'+event_id).val();
+	var user_comment = $('#hidden-user_comment_'+event_id).val();
+	var event_rep = $('#hidden-event_rep_'+event_id).val();
+
+	// Check if the event
+	if(similar_ids == undefined) {
+		similar_ids = -1;
+	}
 
 	jQuery.post ("ajax.php",
 		{"page": "include/ajax/events",
 		"get_extended_event": 1,
 		"group_rep": group_rep,
+		"event_rep": event_rep,
 		"dialog_page": dialog_page,
+		"similar_ids": similar_ids,
+		"timestamp_first": timestamp_first,
+		"timestamp_last": timestamp_last,
+		"user_comment": user_comment,
 		"event_id": event_id},
 		function (data, status) {
 			$("#event_details_window").hide ()
 				.empty ()
 				.append (data)
 				.dialog ({
-					title: $("#hidden-event_title_"+event_id).val(),
+					title: get_event_name(event_id),
 					resizable: true,
 					draggable: true,
 					modal: true,
@@ -192,6 +208,30 @@ function get_response_description(response_id) {
 	return response_description;
 }
 
+// Get an event response description from db
+function get_event_name(event_id) {
+	var name = '';
+	
+	var params = [];
+	params.push("page=include/ajax/events");
+	params.push("get_event_name=1");
+	params.push("event_id="+event_id);
+	
+	jQuery.ajax ({
+		data: params.join ("&"),
+		type: 'POST',
+		url: action="ajax.php",
+		async: false,
+		timeout: 10000,
+		dataType: 'html',
+		success: function (data) {
+			name = data;
+		}
+	});
+	
+	return name;
+}
+
 function add_row_param(id_table, param) {
 	$('#'+id_table).append('<tr class="params_rows"><td style="text-align:left; padding-left:40px;">'+param+'</td><td style="text-align:left"><input type="text" name="'+param+'" id="'+param+'"></td></tr>');
 }
@@ -265,14 +305,14 @@ function perform_response(target) {
 }
 
 // Change the status of an event to new, in process or validated
-function event_change_status() {
-	var event_id = $('#hidden-id_event').val();
+function event_change_status(event_ids) {
 	var new_status = $('#estado').val();
+	var event_id = $('#hidden-id_event').val();
 	
 	var params = [];
 	params.push("page=include/ajax/events");
 	params.push("change_status=1");
-	params.push("event_id="+event_id);
+	params.push("event_ids="+event_ids);
 	params.push("new_status="+new_status);
 	
 	$('#button-status_button').attr('disabled','disabled');
@@ -289,7 +329,7 @@ function event_change_status() {
 			$('#button-status_button').removeAttr('disabled');
 			$('#response_loading').hide();
 			show_event_dialog(event_id, $('#hidden-group_rep').val(), 'responses', data);
-			if(data == 'ok') {
+			if(data == 'status_ok') {
 			}
 			else {
 			}

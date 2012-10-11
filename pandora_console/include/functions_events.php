@@ -71,23 +71,23 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1) {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
 			$sql = "SELECT *, MAX(id_evento) AS id_evento,
-					GROUP_CONCAT(DISTINCT user_comment SEPARATOR '') AS user_comment,
-					MIN(estado) AS min_estado,
-					MAX(estado) AS max_estado,
+					GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
+					GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
 					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
 					MIN(utimestamp) AS timestamp_rep_min
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
-				GROUP BY evento, id_agentmodule
+				GROUP BY estado, evento, id_agentmodule
 				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
 			break;
 		case "postgresql":
-			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '') AS user_comment,
-					MIN(estado) AS min_estado, MAX(estado) AS max_estado, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '<br>') AS user_comment,
+					array_to_string(array_agg(DISTINCT id_evento), ',') AS similar_ids,
+					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
 					MIN(utimestamp) AS timestamp_rep_min
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
-				GROUP BY evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra
+				GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra
 				ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
 			break;
 		case "oracle":
@@ -98,12 +98,13 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1) {
 			$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
 				FROM (SELECT * FROM tevento WHERE 1=1 ".$sql_post.") a, 
 				(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
-				id_agentmodule, COUNT(*) AS event_rep, MIN(estado) AS min_estado, MAX(estado) AS max_estado,
+				id_agentmodule, COUNT(*) AS event_rep,
 				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
+				LISTAGG(id_evento, '') AS similar_ids,
 				MIN(utimestamp) AS timestamp_rep_min
 				FROM tevento 
 				WHERE 1=1 ".$sql_post." 
-				GROUP BY to_char(evento), id_agentmodule) b 
+				GROUP BY estado, to_char(evento), id_agentmodule) b 
 				WHERE a.id_evento=b.id_evento AND 
 				to_char(a.evento)=to_char(b.evento) 
 				AND a.id_agentmodule=b.id_agentmodule";
@@ -168,7 +169,6 @@ function events_delete_event ($id_event, $similar = true) {
 		$id_event = array_unique($id_event);
 	}
 	
-	db_process_sql_begin ();
 	$errors = 0;
 	
 	foreach ($id_event as $event) {
@@ -190,10 +190,8 @@ function events_delete_event ($id_event, $similar = true) {
 	}
 	
 	if ($errors > 1) {
-		db_process_sql_rollback ();
 		return false;
 	} else {
-		db_process_sql_commit ();
 		return true;
 	}
 }
@@ -275,7 +273,7 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1) {
 }
 
 /**
- * Change the owner of an event if the event hasn't owner
+ * Change the status of one or various events
  *
  * @param mixed Event ID or array of events
  * @param bool Whether to change owner on similar events or not.
@@ -284,58 +282,118 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1) {
  *
  * @return bool Whether or not it was successful
  */	
-function events_change_owner_event ($id_event, $similars = true, $new_owner = false, $force = false) {
+function events_change_status ($id_event, $new_status) { 
 	global $config;
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
-
-	/* We must validate all events like the selected */
-	if ($similars) {
-		foreach ($id_event as $id) {
-			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
+	
+	// Update ack info if the new status is validated
+	if($new_status == EVENT_STATUS_VALIDATED) {
+		$ack_utimestamp = time();
+		$ack_user = $config['id_user'];
+	}
+	else {
+		$acl_utimestamp = 0;
+		$ack_user = '';
+	}
+	
+	switch($new_status) {
+		case EVENT_STATUS_NEW:
+			$status_string = 'New';
+			break;
+		case EVENT_STATUS_VALIDATED:
+			$status_string = 'Validated';
+			break;
+		case EVENT_STATUS_INPROCESS:
+			$status_string = 'In process';
+			break;
+		default:
+			$status_string = '';
+			break;
+	}
+		
+	foreach ($id_event as $k => $id) {
+		if (check_acl ($config["id_user"], events_get_group ($id), "IW") == 0) {
+			db_pandora_audit("ACL Violation", "Attempted updating event #".$id);
+			
+			unset($id_event[$k]);
 		}
-		$id_event = array_unique($id_event);
+	}
+	
+	if(empty($id_event)) {
+		return false;
+	}
+	
+	$values = array(
+		'estado' => $new_status,
+		'id_usuario' => $ack_user,
+		'ack_utimestamp' => $ack_utimestamp);
+		
+	$ret = db_process_sql_update('tevento', $values,
+		array('id_evento' => $id_event));
+	
+	if (($ret === false) || ($ret === 0)) {
+		return false;
+	}
+	
+	events_comment($id_event, '', "Change status to $status_string");
+	
+	return true;
+}
+
+/**
+ * Change the owner of an event if the event hasn't owner
+ *
+ * @param mixed Event ID or array of events
+ * @param string id_user of the new owner. If is false, the current owner will be setted
+ * @param bool flag to force the change or not (not force is change only when it hasn't owner)
+ *
+ * @return bool Whether or not it was successful
+ */	
+function events_change_owner ($id_event, $new_owner = false, $force = false) {
+	global $config;
+	
+	//Cleans up the selection for all unwanted values also casts any single values as an array 
+	$id_event = (array) safe_int ($id_event, 1);
+			
+	foreach ($id_event as $k => $id) {
+		if (check_acl ($config["id_user"], events_get_group ($id), "IW") == 0) {
+			db_pandora_audit("ACL Violation", "Attempted updating event #".$id);
+			unset($id_event[$k]);
+		}
+	}
+	
+	if(empty($id_event)) {
+		return false;
 	}
 	
 	// Only generate comment when is forced (sometimes is changed the owner when comment)
 	if($force) {
-		events_comment_event($event, $similars, '', 'Change owner');
+		events_comment($id_event, '', 'Change owner');
 	}
 	
+	// If no new_owner is provided, the current user will be the owner
 	if($new_owner === false) {
 		$new_owner = $config['id_user'];
 	}
-		
-	db_process_sql_begin ();
 	
-	foreach ($id_event as $event) {
-		if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
-			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
-			return false;
-		}
-		
-		if($owner) {
-			$owner_user = db_get_value('owner_user', 'tevento', 'id_evento', $event);
-		}
-		
-		if(!empty($owner_user) && $force === false) {
-			continue;
-		}
-				
-		$values = array('owner_user' => $new_owner);
+	$values = array('owner_user' => $new_owner);
 
-		$ret = db_process_sql_update('tevento', $values,
-			array('id_evento' => $event), 'AND', false);
-		
-		if (($ret === false) || ($ret === 0)) {
-			db_process_sql_rollback ();
-			return false;
-		}
+	$where = array('id_evento' => $id_event);
+	
+	// If not force, add to where if owner_user <> ''
+	if(!$force) {
+		$where['owner_user'] = '<>';
 	}
 	
-	db_process_sql_commit ();
+	$ret = db_process_sql_update('tevento', $values,
+		$where, 'AND', false);
 	
+	if (($ret === false) || ($ret === 0)) {
+		return false;
+	}
+		
 	return true;
 }
 
@@ -343,29 +401,33 @@ function events_change_owner_event ($id_event, $similars = true, $new_owner = fa
  * Comment events in a transresponse
  *
  * @param mixed Event ID or array of events
- * @param bool Whether to validate similar events or not.
+ * @param string comment to be registered
+ * @param string action performed with the comment. Bu default just Added comment
  *
  * @return bool Whether or not it was successful
  */	
-function events_comment_event ($id_event, $similars = true, $comment = '', $response = 'Added comment') {
+function events_comment ($id_event, $comment = '', $action = 'Added comment') {
 	global $config;
 
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
 	
-	/* We must validate all events like the selected */
-	if ($similars) {
-		foreach ($id_event as $id) {
-			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
+	foreach ($id_event as $k => $id) {
+		if (check_acl ($config["id_user"], events_get_group ($id), "IW") == 0) {
+			db_pandora_audit("ACL Violation", "Attempted updating event #".$id);
+			
+			unset($id_event[$k]);
 		}
-		$id_event = array_unique($id_event);
+	}
+	
+	if(empty($id_event)) {
+		return false;
 	}
 	
 	// If the event hasn't owner, assign the user as owner
-	events_change_owner_event ($id_event, $similars);
-	
-	db_process_sql_begin ();
-		
+	events_change_owner ($id_event, $similars);
+			
+	// Give old ugly format to comment. TODO: Change this method for aux table or json
 	$comment = str_replace(array("\r\n", "\r", "\n"), '<br>', $comment);
 	
 	if ($comment != '') {
@@ -375,39 +437,36 @@ function events_comment_event ($id_event, $similars = true, $comment = '', $resp
 		$commentbox = '';
 	}
 	
-	foreach ($id_event as $event) {
-		if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
-			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
-			
-			return false;
-		}
-		
-		$comment = '<b>-- '.$response.' by '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
-		$fullevent = events_get_event($event);
-		if ($fullevent['user_comment'] != '') {
-			$comment .= '<br>'.$fullevent['user_comment'];
-		}
-		
-		$values = array(
-			'id_usuario' => $config['id_user'],
-			'user_comment' => $comment);
-		
-		$ret = db_process_sql_update('tevento', $values,
-			array('id_evento' => $event), 'AND', false);
-		
-		if (($ret === false) || ($ret === 0)) {
-			db_process_sql_rollback ();
-			return false;
-		}
+	$comment = '<b>-- '.$action.' by '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
+	
+	// Update comment
+	switch ($config['dbtype']) {
+		// Oldstyle SQL to avoid innecesary PHP foreach
+		case 'mysql':
+			$sql_validation = "UPDATE tevento 
+								   SET estado = " . $new_status .", 
+									   id_usuario = '" . $config['id_user'] . "', 
+									   user_comment = concat(user_comment, '" . $comment . "') 
+								   WHERE id_evento in (" . implode(',', $id_event) . ")";
+			   
+			$ret = db_process_sql($sql_validation);	
+			break;				
+		case 'postgresql':
+		case 'oracle':
+			$sql_validation = "UPDATE tevento 
+								   SET estado = " . $new_status . ", 
+									   id_usuario = '" . $config['id_user'] . "', 
+									   user_comment=user_comment || '" . $comment . "') 
+								   WHERE id_evento in (" . implode(',', $id_event) . ")";	
+								   
+			$ret = db_process_sql($sql_validation);							   					
+			break;
 	}
 	
-/*
-	foreach ($id_event as $event) {
-		db_pandora_audit("Event validated", "Validated event #".$event);
+	if (($ret === false) || ($ret === 0)) {
+		return false;
 	}
-*/
-	db_process_sql_commit ();
-	
+		
 	return true;
 }
 
@@ -1187,7 +1246,7 @@ function events_page_responses ($event) {
 	$status = array(0 => __('New'), 2 => __('In process'), 1 => __('Validated'));
 
 	$data[1] = html_print_select($status, 'estado', $event['estado'], '', '', 0, true, false, false);
-	$data[1] .= html_print_button(__('Update'),'status_button',false,'event_change_status();','class="sub next"',true);
+	$data[1] .= html_print_button(__('Update'),'status_button',false,'event_change_status(\''.$event['similar_ids'] .'\');','class="sub next"',true);
 
 	$table_responses->data[] = $data;
 	
@@ -1369,10 +1428,10 @@ function events_page_details ($event) {
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
 		$data[1] = ui_print_agent_name ($event["id_agente"], true);
 		$table_details->data[] = $data;
-		
+
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('IP Address').'</div>';
-		$data[1] = empty($agent['url_address']) ? '<i>'.__('N/A').'</i>' : $agent['url_address'];
+		$data[1] = empty($agent['direccion']) ? '<i>'.__('N/A').'</i>' : $agent['direccion'];
 		$table_details->data[] = $data;
 		
 		$data = array();
@@ -1382,17 +1441,12 @@ function events_page_details ($event) {
 
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last contact').'</div>';
-		$data[1] = $agent["ultimo_contacto"];
+		$data[1] = $agent["ultimo_contacto"] == "1970-01-01 00:00:00" ? '<i>'.__('N/A').'</i>' : $agent["ultimo_contacto"];
 		$table_details->data[] = $data;
-		
+
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last remote contact').'</div>';
-		if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") { 
-			$data[1] .= __('Never');
-		}
-		else {
-			$data[1] .= $agent["ultimo_contacto_remoto"];
-		}
+		$data[1] = $agent["ultimo_contacto_remoto"] == "1970-01-01 00:00:00" ? '<i>'.__('N/A').'</i>' : $agent["ultimo_contacto_remoto"];
 		$table_details->data[] = $data;
 		
 		$data = array();
@@ -1559,7 +1613,10 @@ function events_page_details ($event) {
 function events_page_general ($event) {
 	global $img_sev;
 	global $config;
+	
+	//$group_rep = $event['similar_ids'] == -1 ? 1 : count(explode(',',$event['similar_ids']));
 	global $group_rep;
+
 	/////////
 	// General
 	/////////
@@ -1583,8 +1640,8 @@ function events_page_general ($event) {
 	
 	$data = array();
 	$data[0] = __('Timestamp');
-	if ($group_rep == 1 && $event["event_rep"] > 0) {
-		$data[1] = __('First event').': '.date ($config["date_format"], $event['timestamp_rep_min']).'<br>'.__('Last event').': '.date ($config["date_format"], $event['timestamp_rep']);
+	if ($group_rep == 1 && $event["event_rep"] > 1) {
+		$data[1] = __('First event').': '.date ($config["date_format"], $event['timestamp_first']).'<br>'.__('Last event').': '.date ($config["date_format"], $event['timestamp_last']);
 	}
 	else {
 		$data[1] = date ($config["date_format"], strtotime($event["timestamp"]));
@@ -1610,15 +1667,15 @@ function events_page_general ($event) {
 	$data = array();
 	$data[0] = __('Repeated');
 	if ($group_rep != 0) {
-		if($event["event_rep"] == 0) {
-			$data[1] = __('No');
+		if($event["event_rep"] <= 1) {
+			$data[1] = '<i>'.__('No').'</i>';
 		}
 		else {
 			$data[1] = sprintf("%d Times",$event["event_rep"]);
 		}
 	}
 	else {
-		$data[1] = __('No');
+		$data[1] = '<i>'.__('No').'</i>';
 	}
 	$table_general->data[] = $data;
 	

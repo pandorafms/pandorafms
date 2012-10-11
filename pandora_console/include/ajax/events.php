@@ -31,6 +31,21 @@ $get_response = (bool) get_parameter ('get_response');
 $get_response_target = (bool) get_parameter ('get_response_target');
 $get_response_params = (bool) get_parameter ('get_response_params');
 $get_response_description = (bool) get_parameter ('get_response_description');
+$get_event_name = (bool) get_parameter ('get_event_name');
+
+if($get_event_name) {	
+	$event_id = get_parameter ('event_id');
+	
+	$name = db_get_value('evento','tevento','id_evento',$event_id);
+	
+	if($name === false) {
+		return;
+	}
+	
+	echo io_safe_output($name);
+	
+	return;
+}
 
 if($get_response_description) {	
 	$response_id = get_parameter ('response_id');
@@ -149,11 +164,10 @@ if($add_comment) {
 }
 
 if($change_status) { 
+	$event_ids = get_parameter ('event_ids');
 	$new_status = get_parameter ('new_status');
-	$event_id = get_parameter ('event_id');
-	$similars = true;
 	
-	$return = events_validate_event ($event_id, $similars, $new_status);
+	$return = events_change_status (explode(',',$event_ids), $new_status);
 
 	if ($return)
 		echo 'status_ok';
@@ -172,7 +186,7 @@ if($change_owner) {
 		$new_owner = '';
 	}
 
-	$return = events_change_owner_event($event_id, $similars, $new_owner, true);
+	$return = events_change_owner($event_id, $new_owner, true);
 
 	if ($return)
 		echo 'owner_ok';
@@ -185,18 +199,31 @@ if($change_owner) {
 if($get_extended_event) {
 	global $config;
 	
-	$dialog_page = get_parameter('dialog_page','general');
 	$event_id = get_parameter('event_id',false);
-	
-	$events = events_get_events_grouped("AND evento = (SELECT evento FROM tevento WHERE id_evento = $event_id)");
 
+	$event = events_get_event($event_id);
+	
 	// If the event is not found, we abort
-	if(empty($events)) {
+	if(empty($event)) {
 		echo 'not found';
 		return false;
 	}
-	else {
-		$event = reset($events);
+
+	$dialog_page = get_parameter('dialog_page','general');
+	$similar_ids = get_parameter('similar_ids', $event_id);
+	$group_rep = get_parameter('group_rep',false);
+	$event_rep = get_parameter('event_rep',1);
+	$user_comment = base64_decode(get_parameter('user_comment',false));
+	$timestamp_first = get_parameter('timestamp_first', $event['utimestamp']);
+	$timestamp_last = get_parameter('timestamp_last', $event['utimestamp']);
+
+	$event['similar_ids'] = $similar_ids;
+	$event['timestamp_first'] = $timestamp_first;
+	$event['timestamp_last'] = $timestamp_last;
+	$event['event_rep'] = $event_rep;
+	
+	if($user_comment !== false) {
+		$event['user_comment'] = $user_comment;
 	}
 	
 	// Check ACLs
@@ -222,9 +249,6 @@ if($get_extended_event) {
 			return false;
 		}
 	}
-
-
-	$group_rep = get_parameter('group_rep',false);
 	
 	// Print group_rep in a hidden field to recover it from javascript
 	html_print_input_hidden('group_rep',(int)$group_rep);

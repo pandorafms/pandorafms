@@ -260,5 +260,5 @@ function mainInsertData() {
 }
 
 extensions_add_godmode_function('mainInsertData');
-extensions_add_godmode_menu_option(__('Insert Data'), 'AW', 'gagente');
+extensions_add_godmode_menu_option(__('Insert Data'), 'AW', 'gagente', null, "v1r1");
 ?>

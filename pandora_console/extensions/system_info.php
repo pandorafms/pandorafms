@@ -616,7 +616,7 @@ function consoleMode() {
 if (!isset($argv)) {
 	//Execution across the browser
 	extensions_add_godmode_function('mainSystemInfo');
-	extensions_add_godmode_menu_option(__('System Info'), 'PM', 'gsetup');
+	extensions_add_godmode_menu_option(__('System Info'), 'PM', 'gsetup', null, "v1r1");
 }
 else {
 	$dir = dirname($_SERVER['PHP_SELF']);

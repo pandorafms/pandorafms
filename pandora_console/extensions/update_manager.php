@@ -226,8 +226,8 @@ function pandora_update_manager_godmode () {
 	require_once ('update_manager/settings.php');
 }
 
-extensions_add_operation_menu_option (__('Update manager'));
-extensions_add_godmode_menu_option (__('Update manager settings'), 'PM');
+extensions_add_operation_menu_option (__('Update manager'), null, null, "v1r1");
+extensions_add_godmode_menu_option (__('Update manager settings'), 'PM', null, null, "v1r1");
 extensions_add_main_function ('pandora_update_manager_main');
 extensions_add_godmode_function ('pandora_update_manager_godmode');
 extensions_add_login_function ('pandora_update_manager_login');

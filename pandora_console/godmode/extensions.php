@@ -145,6 +145,7 @@ $table->width = '98%';
 
 $table->head = array();
 $table->head[] = __('File');
+$table->head[] = __('Version');
 $table->head[] = "<span title='" . __("Enterprise") . "'>" . __('E.') . "</span>";
 $table->head[] = "<span title='" . __("Godmode Function") . "'>" . __('G.F.') . "</span>";
 $table->head[] = "<span title='" . __("Godmode Menu") . "'>" . __('G.M.') . "</span>";
@@ -156,6 +157,7 @@ $table->head[] = "<span title='" . __("Agent godmode tab") . "'>" . __('A.G.T.')
 $table->head[] = "<span title='" . __("Operation") . "'>" . __('O.') . "</span>";
 
 $table->width = array();
+$table->width[] = '30%';
 $table->width[] = '30%';
 $table->width[] = '22px';
 $table->width[] = '44px';
@@ -177,20 +179,50 @@ $table->align[] = 'center';
 $table->align[] = 'center';
 $table->align[] = 'center';
 $table->align[] = 'center';
+$table->align[] = 'center';
 
 $table->data = array();
 foreach ($extensions as $file => $extension) {
 	$data = array();
-	
 	$on = html_print_image("images/dot_green.png", true);
 	$off = html_print_image("images/dot_red.png", true); 
 	if (!$extension['enabled']) {
 		$on = html_print_image("images/dot_green.disabled.png", true); 
 		$off = html_print_image("images/dot_red.disabled.png", true);
 		$data[] = '<i style="color: grey;">' . $file . '</i>';
+
+		//Get version of this extensions
+		if ($config['extensions'][$file]['operation_menu']) {
+			$data[] = $config['extensions'][$file]['operation_menu']['version'];
+		}
+
+		if ($config['extensions'][$file]['godmode_menu']) {
+
+			$data[] = $config['extensions'][$file]['godmode_menu']['version'];
+		}
+
+                if ($config['extensions'][$file]['extension_ope_tab']) {
+                        $data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
+                } else if ($config['extensions'][$file]['extension_god_tab']) {
+                        $data[] = $config['extensions'][$file]['extension_god_tab']['version'];
+                }
+
+
 	}
 	else {
 		$data[] = $file;
+
+		//Get version of this extension
+                if ($config['extensions'][$file]['operation_menu']) {
+                        $data[] = $config['extensions'][$file]['operation_menu']['version'];
+                } else if ($config['extensions'][$file]['godmode_menu']) {
+                        $data[] = $config['extensions'][$file]['godmode_menu']['version'];
+                } else if ($config['extensions'][$file]['extension_ope_tab']) {
+		        $data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
+                } else if ($config['extensions'][$file]['extension_god_tab']) {
+                        $data[] = $config['extensions'][$file]['extension_god_tab']['version'];
+                }
+
 	}
 	
 	if ($extension['enterprise']) {

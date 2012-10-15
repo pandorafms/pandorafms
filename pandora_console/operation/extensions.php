@@ -45,9 +45,11 @@ if ($delete != ""){
 $table->width = '60%';
 $table->head = array ();
 $table->head[0] = __('Name');
-$table->head[1] = __('Action');
+$table->head[1] = __('Version');
+$table->head[2] = __('Action');
 $table->style = array();
-$table->style[1] = 'text-align: center; font-weight: bolder;';
+$table->style[1] = 'text-align: center;';
+$table->style[2] = 'text-align: center; font-weight: bolder;';
 $table->data = array ();
 
 foreach ($config['extensions'] as $extension) {
@@ -64,7 +66,8 @@ foreach ($config['extensions'] as $extension) {
 		
 	$data = array ();
 	$data[0] = $extension['operation_menu']['name'];
-	$data[1] = '<a href="index.php?sec=extensions&amp;sec2='.$extension['operation_menu']['sec2'].'" class="mn">' . __('Execute') . '</a>';
+	$data[1] = $extension['operation_menu']['version'];
+	$data[2] = '<a href="index.php?sec=extensions&amp;sec2='.$extension['operation_menu']['sec2'].'" class="mn">' . __('Execute') . '</a>';
 
 	array_push ($table->data, $data);
 }

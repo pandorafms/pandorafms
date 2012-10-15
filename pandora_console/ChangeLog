@@ -1,3 +1,26 @@
+2012-10-15 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_extensions.php,
+	extensions/insert_data.php,
+	extensions/snmp_explorer.php,
+	extensions/system_info.php,
+	extensions/net_tools.php,
+	extensions/extension_uploader.php,
+	extensions/pandora_logs.php,
+	extensions/agents_modules.php,
+	extensions/update_manager.php,
+	extensions/ssh_gateway.php,
+	extensions/dbmanager.php,
+	extensions/vnc_view.php,
+	extensions/resource_registration.php,
+	extensions/resource_exportation.php,
+	extensions/users_connected.ph,p
+	extensions/module_groups.php,
+	extensions/plugin_registration.php,
+	operation/extensions.php,
+	godmode/extensions.php: Modified extensions to show the
+	version in godmode and operation extension table view.
+
 2012-10-09  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php: Deleted sql transaction

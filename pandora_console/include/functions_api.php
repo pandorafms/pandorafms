@@ -5622,4 +5622,43 @@ function api_get_netflow_get_summary ($discard_1, $discard_2, $params) {
 	return;
 }
 
+//http://localhost/pandora_console/include/api.php?op=set&op2=validate_event_by_id&id=23&apipass=1234&user=admin&pass=pandora
+function api_set_validate_event_by_id ($id, $trash1, $trash2, $returnType) {
+	global $config;
+	
+	$data['type'] = 'string';
+	$check_id = db_get_value('id_evento', 'tevento', 'id_evento', $id);
+
+	if ($check_id) { //event exists
+	
+		$status = db_get_value('estado', 'tevento', 'id_evento', $id);
+		if ($status == 1) { //event already validated
+			$data['data'] = "Event already validated";
+		} else {
+			$ack_utimestamp = time();
+	
+			events_comment_event($id, '', '', "Change status to validated");
+		
+			$values = array(
+				'ack_utimestamp' => $ack_utimestamp,
+				'estado' => 1
+				);
+
+			$result = db_process_sql_update('tevento', $values, array('id_evento' => $id));
+		
+			if ($result === false) {
+				$data['data'] = "Error validating event";
+			}
+			else {
+				$data['data'] = "Event validate";
+			}
+		}
+		
+	} else {
+		$data['data'] = "Event not exists";
+	}
+
+	returnData($returnType, $data);
+	return;	
+}
 ?>

@@ -1,3 +1,8 @@
+2012-10-15  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_api.php: Added function validate_event_
+	by_id.
+
 2012-10-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php

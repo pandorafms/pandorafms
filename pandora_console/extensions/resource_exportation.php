@@ -58,7 +58,7 @@ if (isset($_GET['get_ptr'])) {
 	}
 }
 else {
-	extensions_add_godmode_menu_option (__('Resource exportation'), 'PM','gservers','');
+	extensions_add_godmode_menu_option (__('Resource exportation'), 'PM','gservers','', "v1r1");
 	extensions_add_godmode_function('resource_exportation_extension_main');
 }
 

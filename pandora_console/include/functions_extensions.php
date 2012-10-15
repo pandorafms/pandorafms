@@ -296,7 +296,7 @@ function extensions_load_extensions ($extensions) {
  * @param string fatherId Id of the parent menu item for the current extension 
  * @param string icon Path to the icon image (18x18 px). If this parameter is blank then predefined icon will be used
  */
-function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = null) {
+function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = null, $version="N/A") {
 	global $config;
 	global $extension_file;
 	
@@ -309,6 +309,7 @@ function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = 
 	$option_menu['sec2'] = $extension['dir'].'/'.mb_substr ($extension_file, 0, -4);
 	$option_menu['fatherId'] = $fatherId;
 	$option_menu['icon'] = $icon;
+	$option_menu['version'] = $version;
 	$extension['operation_menu'] = $option_menu;
 }
 
@@ -320,7 +321,7 @@ function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = 
  * @param string fatherId Id of the parent menu item for the current extension 
  * @param string icon Path to the icon image (18x18 px). If this parameter is blank then predefined icon will be used
  */
-function extensions_add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null) {
+function extensions_add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null, $version="N/A") {
 	global $config;
 	global $extension_file;
 	
@@ -333,6 +334,7 @@ function extensions_add_godmode_menu_option ($name, $acl, $fatherId = null, $ico
 	$option_menu['sec2'] = $extension['dir'].'/'.mb_substr ($extension_file, 0, -4);
 	$option_menu['fatherId'] = $fatherId;
 	$option_menu['icon'] = $icon;
+	$option_menu['version'] = $version;
 	$extension['godmode_menu'] = $option_menu;
 }
 
@@ -344,7 +346,7 @@ function extensions_add_godmode_menu_option ($name, $acl, $fatherId = null, $ico
  * @param tabIcon Path to the image icon 
  * @param tabFunction Name of the function to execute when this extension is called
  */
-function extensions_add_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction) {
+function extensions_add_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction, $version="N/A") {
 	global $config;
 	global $extension_file;
 	
@@ -354,6 +356,7 @@ function extensions_add_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFuncti
 	$extension['extension_god_tab']['name'] = $tabName;
 	$extension['extension_god_tab']['icon'] = $tabIcon;
 	$extension['extension_god_tab']['function'] = $tabFunction;
+	$extension['extension_god_tab']['version'] = $version;
 }
 
 /**
@@ -364,7 +367,7 @@ function extensions_add_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFuncti
  * @param tabIcon Path to the image icon 
  * @param tabFunction Name of the function to execute when this extension is called
  */
-function extensions_add_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction) {
+function extensions_add_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction, $version="N/A") {
 	global $config;
 	global $extension_file;
 	
@@ -374,6 +377,7 @@ function extensions_add_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFuncti
 	$extension['extension_ope_tab']['name'] = $tabName;
 	$extension['extension_ope_tab']['icon'] = $tabIcon;
 	$extension['extension_ope_tab']['function'] = $tabFunction;
+        $extension['extension_ope_tab']['version'] = $version;
 }
 
 /**

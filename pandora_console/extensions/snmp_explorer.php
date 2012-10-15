@@ -484,5 +484,5 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
 }
 
 
-extensions_add_godmode_tab_agent('snmp_explorer', __('SNMP Explorer'), 'images/snmp_wizard.png', 'snmp_explorer');
+extensions_add_godmode_tab_agent('snmp_explorer', __('SNMP Explorer'), 'images/snmp_wizard.png', 'snmp_explorer', "v1r1");
 ?>

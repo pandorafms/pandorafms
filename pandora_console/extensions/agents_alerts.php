@@ -320,7 +320,7 @@ function print_alerts_summary_modal_window($id, $alerts) {
 	echo '<div id="alerts_details_'.$id.'" title="'.__('Agent').': '.$agent.' / '.__('Template').': '.$template.'" style="display:none">'.$content.'</div>';
 }
 
-extensions_add_operation_menu_option(__("Agents/Alerts view"), 'estado');
+extensions_add_operation_menu_option(__("Agents/Alerts view"), 'estado', null, "v1r1");
 extensions_add_main_function('mainAgentsAlerts');
 
 ui_require_jquery_file('pandora');

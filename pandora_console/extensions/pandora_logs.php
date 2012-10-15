@@ -62,7 +62,7 @@ function pandoralogs_extension_main () {
 	view_logfile ("/var/log/pandora/pandora_server.error");
 }
 
-extensions_add_godmode_menu_option (__('System logfiles'), 'PM','glog',"");
+extensions_add_godmode_menu_option (__('System logfiles'), 'PM','glog', null, "v1r1");
 extensions_add_godmode_function('pandoralogs_extension_main');
 
 ?>

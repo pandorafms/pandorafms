@@ -86,6 +86,6 @@ function extension_uploader_extensions() {
 	echo "</form>";
 }
 
-extensions_add_godmode_menu_option(__('Extension uploader'), 'AM');
+extensions_add_godmode_menu_option(__('Extension uploader'), 'AM', null, null, "v1r1");
 extensions_add_godmode_function('extension_uploader_extensions');
 ?>

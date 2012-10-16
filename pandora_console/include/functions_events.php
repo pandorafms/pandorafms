@@ -946,7 +946,7 @@ function events_get_agent ($id_agent, $period, $date = 0) {
 	$datelimit = $date - $period;
 
 	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep,
-			max(timestamp) AS time2
+			max(timestamp) AS time2, id_agentmodule, estado, user_comment, tags, source, id_extra, owner_user
 		FROM tevento
 		WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d 
 		GROUP BY id_agentmodule, evento

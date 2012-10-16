@@ -1,3 +1,9 @@
+2012-10-16  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_events.php
+	  operation/reporting/reporting_xml.php: XML reports: graphs, events
+	and modules.
+
 2012-10-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/db/postgresql.php, include/db/mysql.php,

@@ -30,7 +30,7 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to mysql_pconnect(). 
-	$connect_id = mysql_connect($host . ":" . $port, $user, $pass);
+	$connect_id = mysql_connect($host . ":" . $port, $user, $pass, true);
 	if (! $connect_id) {
 		return false;
 	}

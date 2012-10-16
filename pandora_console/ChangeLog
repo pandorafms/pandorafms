@@ -1,3 +1,12 @@
+2012-10-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/db/postgresql.php, include/db/mysql.php,
+	  include/db/oracle.php, include/functions_db.php,
+	  operation/agentes/datos_agente.php: Merged from 4.0 branch. Fixed
+	  history database connection when the main database and the history
+	  database are on the same host. Allow switching between the main
+	  database and the history database to retrieve module data.
+
 2012-10-15 Dario Roriguez <dario.rodriguez@artica.es>
 
 	* extensions/agents_alerts.php: Modified to show

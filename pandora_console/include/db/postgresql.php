@@ -32,7 +32,7 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
 		" port=" . $port .
 		" dbname='" . $db . "'" .
 		" user='" . $user . "'" .
-		" password='" . $pass . "'");
+		" password='" . $pass . "'", PGSQL_CONNECT_FORCE_NEW);
 	
 	if (! $connect_id) {
 		return false;

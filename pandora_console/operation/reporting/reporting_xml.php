@@ -150,7 +150,8 @@ if ($datetime === false || $datetime == -1) {
 	exit;
 }
 
-$group_name = groups_get_name ($report['id_group']);
+$group_name = groups_get_name ($report['id_group'], true);
+
 switch ($config["dbtype"]) {
 	case "mysql":
 		$contents = db_get_all_rows_field_filter ('treport_content', 'id_report', $id_report, '`order`');
@@ -182,10 +183,10 @@ echo '<reports>';
 $counter = 0;
 
 foreach ($contents as $content) {
+
 	echo '<object id="'.$counter.'">';
 	$data = array ();
-	$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
-	$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
+
 	$data["period"] = human_time_description_raw ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
@@ -200,36 +201,66 @@ foreach ($contents as $content) {
 		}
 	}	
 	
-	$session_id = session_id();
-	
+	$session_id = session_id();	
 	switch ($content["type"]) {
+
 		case 1:
-		case 'simple_graph':	
+		case 'simple_graph':
+			
+			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
+			
 			$data["title"] = __('Simple graph');
 			
-			$img = grafico_modulo_sparse($content['id_agent_module'],
-				$content['period'], 0, 720,
-				230, '', null, false, true, false, $datetime, '', 0, 0, true, true);
-			preg_match("/src='(.*)'/", $img, $matches);
-			$url = $matches[1];
-			$url = "<![CDATA[".$url."]]>";
-			$data["objdata"]["img"] = $url; 
-			
+			$date_end = time();
+			$date_init = $date_end - $content['period'];
+
+			$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+					AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+
+			$data_module = db_get_all_rows_sql($sql);
+			if ($data_module === false) {
+				$data_module = array();
+			}
+			$i = 0;
+			foreach ($data_module as $data_m) {
+				$data["objdata"][$content['type']][$i]["timestamp"] = date ('Y-m-d H:i:s', $data_m['utimestamp']);
+				$data["objdata"][$content['type']][$i]["utimestamp"] = $data_m['utimestamp'];
+				$data["objdata"][$content['type']][$i]["data"] = $data_m['datos'];
+				$i++;
+			}	
 			break;
 		case 'simple_baseline_graph':
+		
+			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
+			
 			$data["title"] = __('Simple baseline graph');
 			
-			$img = grafico_modulo_sparse($content['id_agent_module'],
-				$content['period'], 0, 720,
-				230, '', null, false, true, false, ($datetime + $content['period']), '', true, 0, true, true);
-			
-			preg_match("/src='(.*)'/", $img, $matches);
-			$url = "<![CDATA[".$matches[1]."]]>";
-			
-			$data["objdata"]["img"] = $url; 
+			$date_end = time();
+			$date_init = $date_end - $content['period'];
+
+			$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+					AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+
+			$data_module = db_get_all_rows_sql($sql);
+			if ($data_module === false) {
+				$data_module = array();
+			}
+			$i = 0;
+			foreach ($data_module as $data_m) {
+				$data["objdata"][$content['type']][$i]["timestamp"] = date ('Y-m-d H:i:s', $data_m['utimestamp']);
+				$data["objdata"][$content['type']][$i]["utimestamp"] = $data_m['utimestamp'];
+				$data["objdata"][$content['type']][$i]["data"] = $data_m['datos'];
+				$i++;
+			}	
 			break;
 		case 2:
 		case 'custom_graph':
+		
+			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
+			
 			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 			$data["title"] = __('Custom graph');
 			$data["objdata"]["img_name"] = $graph["name"];
@@ -247,24 +278,23 @@ foreach ($contents as $content) {
 				array_push ($weights, $content2["weight"]);
 			}
 			
-			$img = graphic_combined_module(
-				$modules,
-				$weights,
-				$content['period'],
-				$sizgraph_w, $sizgraph_h,
-				'Combined%20Sample%20Graph',
-				'',
-				0,
-				0,
-				0,
-				$graph["stacked"],
-				$datetime);
-			
-			preg_match("/src='(.*)'/", $img, $matches);
-			$url = "<![CDATA[".$matches[1]."]]>";
-			
-			$data["objdata"]["img"] = $url;
-			
+			$date_end = time();
+			$date_init = $date_end - $content['period'];
+
+			$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+					AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+
+			$data_module = db_get_all_rows_sql($sql);
+			if ($data_module === false) {
+				$data_module = array();
+			}
+			$i = 0;
+			foreach ($data_module as $data_m) {
+				$data["objdata"][$content['type']][$i]["timestamp"] = date ('Y-m-d H:i:s', $data_m['utimestamp']);
+				$data["objdata"][$content['type']][$i]["utimestamp"] = $data_m['utimestamp'];
+				$data["objdata"][$content['type']][$i]["data"] = $data_m['datos'];
+				$i++;
+			}			
 			break;
 		case 3:
 		case 'SLA':
@@ -333,46 +363,57 @@ foreach ($contents as $content) {
 			break;
 		case 7:
 		case 'avg_value':
+			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
 			$data["title"] = __('Avg. Value');
-			$data["objdata"] = reporting_get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime);
-			if ($data["objdata"] === false) {
-				$data["objdata"] = __('Unknown');
+			$data["objdata"]["avg_value"] = reporting_get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime);
+			if ($data["objdata"]["avg_value"] === false) {
+				$data["objdata"]["avg_value"] = __('Unknown');
 			}
 			else {
-				$data["objdata"] = format_numeric ($data["objdata"]);
+				$data["objdata"]["avg_value"] = format_numeric ($data["objdata"]["avg_value"]);
 			}
 			break;
 		case 8:
 		case 'max_value':
+			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
+			
 			$data["title"] = __('Max. Value');
-			$data["objdata"] = reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime);
-			if ($data["objdata"] === false) {
-				$data["objdata"] = __('Unknown');
+			$data["objdata"]["max_value"] = reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime);
+			if ($data["objdata"]["max_value"] === false) {
+				$data["objdata"]["max_value"] = __('Unknown');
 			}
 			else {
-				$data["objdata"] = format_numeric ($data["objdata"]);
+				$data["objdata"]["max_value"] = format_numeric ($data["objdata"]["max_value"]);
 			}
 			break;
 		case 9:
 		case 'min_value':
+			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
+			
 			$data["title"] = __('Min. Value');
-			$data["objdata"] = reporting_get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $datetime);
-			if ($data["objdata"] === false) {
-				$data["objdata"] = __('Unknown');
+			$data["objdata"]["min_value"] = reporting_get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $datetime);
+			if ($data["objdata"]["min_value"] === false) {
+				$data["objdata"]["min_value"] = __('Unknown');
 			}
 			else {
-				$data["objdata"] = format_numeric ($data["objdata"]);
+				$data["objdata"]["min_value"] = format_numeric ($data["objdata"]["min_value"]);
 			}
 			break;
 		case 10:
 		case 'sumatory':
+			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
+			
 			$data["title"] = __('Sumatory');
-			$data["objdata"] = reporting_get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime);
-			if ($data["objdata"] === false) {
-				$data["objdata"] = __('Unknown');
+			$data["objdata"]["summatory_value"] = reporting_get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime);
+			if ($data["objdata"]["summatory_value"] === false) {
+				$data["objdata"]["summatory_value"] = __('Unknown');
 			}
 			else {
-				$data["objdata"] = format_numeric ($data["objdata"]);
+				$data["objdata"]["summatory_value"] = format_numeric ($data["objdata"]["summatory_value"]);
 			}
 			break;
 		case 'agent_detailed_event':
@@ -382,12 +423,12 @@ foreach ($contents as $content) {
 			$data["objdata"]["event_report_agent"] = array ();
 			
 			$date = get_system_time ();
-			
+						
 			$events = events_get_agent ($content['id_agent'], $content['period'], $date );
 			if (empty ($events)) {
 				$events = array ();
 			}
-			
+		
 			foreach ($events as $event) {
 				$objdata = array ();
 				$objdata['event'] = $event['evento'];
@@ -395,6 +436,24 @@ foreach ($contents as $content) {
 				$objdata['criticity'] = get_priority_name($event['criticity']);
 				$objdata['count'] = $event['count_rep'];
 				$objdata['timestamp'] = $event['time2'];
+				$objdata['module_name'] = modules_get_agentmodule_name ($event['id_agentmodule']);
+				$objdata['agent_name'] = agents_get_name ($content['id_agent']);
+				
+				if ($event['estado'] == 0)
+					$status = __('New');
+				else if ($event['estado'] == 1)
+					$status = __('Validated');
+				else if ($event['estado'] == 2)
+					$status = __('In process');
+				else 
+					$status = "";
+					
+				$objdata['event_status'] = $status;
+				$objdata['user_comment'] = $event['user_comment'];
+				$objdata['tags'] = $event['tags'];
+				$objdata['event_source'] = $event['source'];
+				$objdata['extra_id'] = $event['id_extra'];
+				$objdata['user_validation'] = $event['owner_user'];
 				array_push ($data["objdata"]["event_report_agent"], $objdata);
 			}
 			break;
@@ -405,6 +464,7 @@ foreach ($contents as $content) {
 			$data["objdata"] .= "]]>";
 			break;
 		case 'sql':
+			
 			$data["title"] = __('SQL');
 			
 			//name tags of row
@@ -455,17 +515,54 @@ foreach ($contents as $content) {
 			break;
 		case 'event_report_group':
 			$data["title"] = __('Group detailed event');
-			$data['group'] = groups_get_name($content['id_agent']);
+			$data['group'] = groups_get_name($content['id_group'], true);
 			$data["objdata"]["event_report_group"] = array();
 			
-			$events = reporting_get_group_detailed_event($content['id_agent'], $content['period'], $report["datetime"], true, false);
-			
-			foreach ($events->data as $eventRow) {
+			$id_group = groups_safe_acl ($config["id_user"], $content['id_group'], "AR");
+
+			if (!empty ($id_group)) {
+				//An empty array means the user doesn't have access
+				$datelimit = $report["datetime"] - $content['period'];
+
+				$sql = sprintf ('SELECT * FROM tevento
+					WHERE utimestamp > %d AND utimestamp <= %d
+					AND id_grupo IN (%s)
+					ORDER BY utimestamp ASC',
+					$datelimit, $report["datetime"], implode (",", $id_group));
+
+				$events = db_get_all_rows_sql($sql);
+				if ($events === false) {
+					$events = array();
+				}
+			} else {
+				$events = array();
+			}
+
+			foreach ($events as $event) {
 				$objdata = array();
-				$objdata['event_name'] = $eventRow[0];
-				$objdata['event_type'] = $eventRow[1];
-				$objdata['criticity'] = $eventRow[2];
-				$objdata['timestamp'] = $eventRow[3];
+				
+				$objdata['event'] = $event['evento'];
+				$objdata['event_type'] = $event['event_type'];
+				$objdata['criticity'] = get_priority_name($event['criticity']);
+				$objdata['timestamp'] = $event['timestamp'];
+				$objdata['module_name'] = modules_get_agentmodule_name ($event['id_agentmodule']);
+				$objdata['agent_name'] = agents_get_name ($content['id_agent']);
+				
+				if ($event['estado'] == 0)
+					$status = __('New');
+				else if ($event['estado'] == 1)
+					$status = __('Validated');
+				else if ($event['estado'] == 2)
+					$status = __('In process');
+				else 
+					$status = "";
+					
+				$objdata['event_status'] = $status;
+				$objdata['user_comment'] = $event['user_comment'];
+				$objdata['tags'] = $event['tags'];
+				$objdata['event_source'] = $event['source'];
+				$objdata['extra_id'] = $event['id_extra'];
+				$objdata['user_validation'] = $event['owner_user'];
 				
 				array_push($data["objdata"]["event_report_group"], $objdata);
 			}
@@ -473,16 +570,45 @@ foreach ($contents as $content) {
 		case 'event_report_module':
 			$data["title"] = __('Agents detailed event');
 			$data["objdata"]["event_report_module"] = array();
+	
+			$datelimit = $report["datetime"] - $content['period'];
 			
-			$events = reporting_get_module_detailed_event($content['id_agent_module'], $content['period'], $report["datetime"], true, false);
-			
-			foreach ($events->data as $eventRow) {
+			$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2, id_agentmodule, estado, user_comment, tags, source, id_extra, owner_user
+					FROM tevento
+					WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d 
+					GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $content['id_agent_module'], $datelimit, $report["datetime"]);
+
+			$events = db_get_all_rows_sql($sql);
+			if ($events === false) {
+				$events = array();
+			}
+	
+			foreach ($events as $event) {
 				$objdata = array();
-				$objdata['event_name'] = $eventRow[0];
-				$objdata['event_type'] = $eventRow[1];
-				$objdata['criticity'] = $eventRow[2];
-				$objdata['count'] = $eventRow[3];
-				$objdata['timestamp'] = $eventRow[4];
+				
+				$objdata['event'] = $event['evento'];
+				$objdata['event_type'] = $event['event_type'];
+				$objdata['criticity'] = get_priority_name($event['criticity']);
+				$objdata['count'] = $event['count_rep'];
+				$objdata['timestamp'] = $event['time2'];
+				$objdata['module_name'] = modules_get_agentmodule_name ($event['id_agentmodule']);
+				$objdata['agent_name'] = agents_get_name ($content['id_agent']);
+				
+				if ($event['estado'] == 0)
+					$status = __('New');
+				else if ($event['estado'] == 1)
+					$status = __('Validated');
+				else if ($event['estado'] == 2)
+					$status = __('In process');
+				else 
+					$status = "";
+					
+				$objdata['event_status'] = $status;
+				$objdata['user_comment'] = $event['user_comment'];
+				$objdata['tags'] = $event['tags'];
+				$objdata['event_source'] = $event['source'];
+				$objdata['extra_id'] = $event['id_extra'];
+				$objdata['user_validation'] = $event['owner_user'];
 				
 				array_push($data["objdata"]["event_report_module"], $objdata);
 			}
@@ -687,6 +813,7 @@ foreach ($contents as $content) {
 			
 			break;
 	}
+
 	xml_array ($data);
 	echo '</object>';
 	$counter++;

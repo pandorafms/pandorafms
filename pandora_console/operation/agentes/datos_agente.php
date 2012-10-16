@@ -28,6 +28,17 @@ $group = agents_get_agentmodule_group ($module_id);
 $agentId = get_parameter("id_agente"); 
 $freestring = get_parameter ("freestring");
 
+// Select active connection
+$connection = get_parameter ("connection", 'main');
+if ($connection == 'history' && $config['history_db_enabled'] == 1) {
+	if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
+		$config['history_db_connection'] = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
+	}
+	$connection_handler = $config['history_db_connection'];
+} else {
+	$connection_handler = $config['dbconnection'];
+}
+
 $selection_mode = get_parameter('selection_mode', 'fromnow');
 $date_from = (string) get_parameter ('date_from', date ('Y-m-j'));
 $time_from = (string) get_parameter ('time_from', date ('h:iA'));
@@ -122,7 +133,7 @@ $sql_body = io_safe_output($sql_body);
 $sql = "SELECT * " . $sql_body;
 $sql_count = "SELECT count(*) " . $sql_body;
 
-$count = db_get_table_count($sql_count, true);
+$count = db_get_value_sql ($sql_count, $connection_handler);
 
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -139,7 +150,7 @@ switch ($config["dbtype"]) {
 		break;		 
 }
 
-$result = db_get_all_rows_sql ($sql, true);
+$result = db_get_all_rows_sql ($sql, false, true, $connection_handler);
 if ($result === false) {
 	$result = array ();
 }
@@ -152,7 +163,15 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 
 $header_title = __('Received data from')." ".modules_get_agentmodule_agent_name ($module_id)." / ".modules_get_agentmodule_name ($module_id); 
 
-echo "<h4>".$header_title. "</h4>";
+echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $agentId . "&tab=data_view&id=" . $module_id . "'>";
+
+echo "<h4>".$header_title;
+if ($config['history_db_enabled'] == 1) {
+	echo "&nbsp;";
+	html_print_select (array ('main' => __('Main database'), 'history' => __('History database')), "connection", $connection);
+	ui_print_help_tip (__('Switch between the main database and the history database to retrieve module data'));
+}
+echo "</h4>";
 
 $formtable->width = '98%';
 $formtable->class = "databox";
@@ -161,8 +180,6 @@ $formtable->size = array ();
 $formtable->size[0] = '40%';
 $formtable->size[1] = '20%';
 $formtable->size[2] = '30%';
-
-echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $agentId . "&tab=data_view&id=" . $module_id . "'>";
 
 $formtable->data[0][0] = html_print_radio_button_extended ("selection_mode", 'fromnow', '', $selection_mode, false, '', 'style="margin-right: 15px;"', true) . __("Choose a time from now");
 $formtable->data[0][1] = html_print_extended_select_for_time ('period', $period, '', '', '0', 10, true);

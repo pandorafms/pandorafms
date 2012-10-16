@@ -1,5 +1,11 @@
 2012-10-16  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/functions_db.php,
+	  operation/agentes/datos_agente.php: Allow switching between the main
+	  database and the history database to retrieve module data.
+
+2012-10-16  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/db/postgresql.php,
 	  include/db/mysql.php,
 	  include/db/oracle.php: Always open a new connection. Useful

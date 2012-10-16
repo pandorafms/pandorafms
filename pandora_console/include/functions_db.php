@@ -277,18 +277,18 @@ function db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
  * @return the first value of the first row of a table result from query.
  *
  */
-function db_get_value_sql($sql) {
+function db_get_value_sql($sql, $dbconnection = false) {
 	global $config;
-	
+
 	switch ($config["dbtype"]) {
 		case "mysql":
-			return mysql_db_get_value_sql($sql);
+			return mysql_db_get_value_sql($sql, $dbconnection);
 			break;
 		case "postgresql":
-			return postgresql_db_get_value_sql($sql);
+			return postgresql_db_get_value_sql($sql, $dbconnection);
 			break;
 		case "oracle":
-			return oracle_db_get_value_sql($sql);
+			return oracle_db_get_value_sql($sql, $dbconnection);
 			break;
 	}
 }
@@ -419,18 +419,18 @@ function db_get_sql ($sql, $field = 0, $search_history_db = false) {
  * @return mixed A matrix with all the values returned from the SQL statement or
  * false in case of empty result
  */
-function db_get_all_rows_sql($sql, $search_history_db = false, $cache = true) {
+function db_get_all_rows_sql($sql, $search_history_db = false, $cache = true, $dbconnection = false) {
 	global $config;
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			return mysql_db_get_all_rows_sql($sql, $search_history_db, $cache);
+			return mysql_db_get_all_rows_sql($sql, $search_history_db, $cache, $dbconnection);
 			break;
 		case "postgresql":
-			return postgresql_db_get_all_rows_sql($sql, $search_history_db, $cache);
+			return postgresql_db_get_all_rows_sql($sql, $search_history_db, $cache, $dbconnection);
 			break;
 		case "oracle":
-			return oracle_db_get_all_rows_sql($sql, $search_history_db, $cache);
+			return oracle_db_get_all_rows_sql($sql, $search_history_db, $cache, $dbconnection);
 			break;
 	}
 }

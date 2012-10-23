@@ -68,12 +68,14 @@ if ($id_rc) {
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
 	$max_val = $item['max'];
 	$show_graph = $item['show_graph'];
+	$description = $item['description'];
 	
 }
 else {
 	$name_filter = '';
 	$max_val = '';
 	$show_graph = '';
+	$description = '';
 }
 
 if ($update) {
@@ -81,13 +83,15 @@ if ($update) {
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
 	$max_val = get_parameter('max','2');
 	$show_graph = get_parameter('show_graph','');
+	$description = get_parameter('description','');
 
 	$result = db_process_sql_update ('tnetflow_report_content',
 			array (
 				'id_report' => $id,
 				'id_filter' => $id_filter,
 				'max' => $max_val,
-				'show_graph' => $show_graph
+				'show_graph' => $show_graph,
+				'description' => $description
 				),
 			array ('id_rc' => $id_rc));
 			
@@ -101,6 +105,7 @@ if ($create){
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id_filter);
 	$max_val = (int)get_parameter('max',2);
 	$show_graph = (string)get_parameter('show_graph','');
+	$description = get_parameter('description','');
 	
 	//insertion order
 	$sql = "SELECT max(`order`) as max_order FROM tnetflow_report_content where id_report=$id";
@@ -118,6 +123,7 @@ if ($create){
 		'id_filter' => $id_filter,
 		'max' => $max_val,
 		'show_graph' => $show_graph,
+		'description' => $description,
 		'`order`' => $order
 	);
 	$id_rc = db_process_sql_insert('tnetflow_report_content', $values);
@@ -173,6 +179,9 @@ $table->data[1][1] = html_print_select ($max_values, 'max', $max_val, '', '', 0,
 $table->data[2][0] = '<b>'.__('Chart type').'</b>';
 $table->data[2][1] = html_print_select (netflow_get_chart_types (), 'show_graph', $show_graph,'','',0,true);
 $table->data[2][1] = html_print_select (netflow_get_chart_types (), 'show_graph', $show_graph,'','',0,true);
+
+$table->data[3][0] = '<b>'.__('Description').'</b>';
+$table->data[3][1] = html_print_textarea ('description', 2, 65, $description, '', true);
 
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir']. '/godmode/netflow/nf_report_item&id='.$id.'">';
 html_print_table ($table);

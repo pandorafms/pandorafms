@@ -208,7 +208,21 @@ if ($id_agent_module) {
 
 	$critical_inverse = $module['critical_inverse'];
 	$warning_inverse = $module['warning_inverse'];
-
+	
+	$cron_interval = explode (" ", $module['cron_interval']);
+	if (isset ($cron_interval[4])) {
+		$minute = $cron_interval[0];
+		$hour = $cron_interval[1];
+		$mday = $cron_interval[2];
+		$month = $cron_interval[3];
+		$wday = $cron_interval[4];
+	} else {
+		$minute = '*';
+		$hour = '*';
+		$mday = '*';
+		$month = '*';
+		$wday = '*';
+	}
 }
 else {
 	if (!isset ($moduletype)) {
@@ -268,6 +282,13 @@ else {
 		
 		$critical_inverse = '';
 		$warning_inverse = '';
+		
+		$cron_interval = '* * * * *';
+		$hour = '*';
+		$minute = '*';
+		$mday = '*';
+		$month = '*';
+		$wday = '*';
 	}
 }
 

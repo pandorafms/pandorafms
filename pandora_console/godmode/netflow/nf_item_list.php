@@ -143,22 +143,24 @@ $table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Order');
 $table->head[1] = __('Filter');
-$table->head[2] = __('Max. values');
-$table->head[3] = __('Chart type');
-$table->head[4] = __('Action') . html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
+$table->head[2] = __('Description');
+$table->head[3] = __('Max. values');
+$table->head[4] = __('Chart type');
+$table->head[5] = __('Action') . html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 	
 $table->style = array ();
 $table->style[1] = 'font-weight: bold';
 $table->align = array ();
 $table->align[1] = 'left';
-$table->align[2] = 'center';
+$table->align[2] = 'left';
 $table->align[3] = 'center';
-$table->align[4] = 'right';
+$table->align[4] = 'center';
+$table->align[5] = 'right';
 $table->size = array ();
 $table->size[0] = '20px';
-$table->size[2] = '5%';
-$table->size[3] = '15%';
-$table->size[4] = '60px';
+$table->size[3] = '5%';
+$table->size[4] = '15%';
+$table->size[5] = '60px';
 
 $table->data = array ();
 
@@ -200,27 +202,28 @@ foreach ($reports_item as $item) {
 	$name_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $item['id_filter']);
 	$data[1] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report_item&id='.$item['id_report'].'&id_rc='.$item['id_rc'].'">'.$name_filter.'</a>';
 	
-	$data[2] = $item['max'];
+	$data[2] = $item['description'];
+	$data[3] = $item['max'];
 	
 	switch ($item['show_graph']) {
 		case 0:
-			$data[3] = 'Area graph';
+			$data[4] = 'Area graph';
 			break;
 		case 1:
-			$data[3] = 'Pie graph';
+			$data[4] = 'Pie graph';
 			break;
 		case 2:
-			$data[3] = 'Data table';
+			$data[4] = 'Data table';
 			break;
 		case 3:
-			$data[3] = 'Statistics table';
+			$data[4] = 'Statistics table';
 			break;
 		case 4:
-			$data[3] = 'Summary table';
+			$data[4] = 'Summary table';
 			break;
 	}
 	
-	$data[4] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
+	$data[5] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='" . $config['homeurl'] . "index.php?sec=netf&sec2=" . $config['homedir'] . "/godmode/netflow/nf_item_list&delete=1&id_rc=".$item['id_rc']."&id=".$id."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);

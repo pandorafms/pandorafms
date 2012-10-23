@@ -57,6 +57,7 @@ CREATE TABLE tnetflow_report_content (
 	id_rc NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_report NUMBER(10, 0) NOT NULL REFERENCES tnetflow_report(id_report) ON DELETE CASCADE,
 	id_filter NUMBER(10,0) NOT NULL REFERENCES tnetflow_filter(id_sg) ON DELETE CASCADE,
+	description CLOB default '',
 	"date" NUMBER(20, 0) default 0 NOT NULL,
 	period NUMBER(11, 0) default 0 NOT NULL,
 	max NUMBER(11, 0) default 0 NOT NULL,
@@ -299,6 +300,7 @@ ALTER TABLE tagente_modulo ADD (wizard_level VARCHAR2(100) default 'nowizard' NO
 ALTER TABLE tagente_modulo ADD CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
 ALTER TABLE tagente_modulo ADD (macros CLOB default '');
 ALTER TABLE tagente_modulo ADD (quiet NUMBER(5, 0) default 0 NOT NULL);
+ALTER TABLE tagente_modulo ADD (cron_interval VARCHAR2(100) DEFAULT '');
 
 -- -----------------------------------------------------
 -- Table `tplugin`

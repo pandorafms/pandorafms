@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 	`id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_report` INTEGER UNSIGNED NOT NULL default 0,
 	`id_filter` INTEGER UNSIGNED NOT NULL default 0,
+	`description` TEXT NOT NULL,
 	`date` bigint(20) NOT NULL default '0',
 	`period` int(11) NOT NULL default 0,
 	`max` int (11) NOT NULL default 0,
@@ -152,6 +153,7 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `warning_instructions` TEXT NOT NULL DEF
 ALTER TABLE `tagente_modulo` ADD COLUMN `unknown_instructions` TEXT NOT NULL DEFAULT '';
 ALTER TABLE `tagente_modulo` ADD COLUMN `critical_inverse` tinyint(1) unsigned default '0';
 ALTER TABLE `tagente_modulo` ADD COLUMN `warning_inverse` tinyint(1) unsigned default '0';
+ALTER TABLE `tagente_modulo` ADD COLUMN `cron_interval` varchar(100) default '';
 
 ------------------------------------------------------------------------
 -- Table `tnetwork_component`

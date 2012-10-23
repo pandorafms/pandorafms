@@ -53,6 +53,7 @@ CREATE TABLE "tnetflow_report_content" (
 	"id_rc" SERIAL NOT NULL PRIMARY KEY,
 	"id_report" INTEGER NOT NULL default 0 REFERENCES tnetflow_report("id_report") ON DELETE CASCADE,
 	"id_filter" INTEGER NOT NULL default 0 REFERENCES tnetflow_filter("id_sg") ON DELETE CASCADE,
+	"description" TEXT,
 	"date" BIGINT NOT NULL default 0,
 	"period" INTEGER NOT NULL default 0,
 	"max" INTEGER NOT NULL default 0,
@@ -174,6 +175,7 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "warning_instructions" text default '';
 ALTER TABLE "tagente_modulo" ADD COLUMN "unknown_instructions" text default '';
 ALTER TABLE "tagente_modulo" ADD COLUMN "critical_inverse" SMALLINT NOT NULL default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "warning_inverse" SMALLINT NOT NULL default 0;
+ALTER TABLE "tagente_modulo" ADD COLUMN "cron_interval" varchar(100) default '';
 
 -- -----------------------------------------------------
 -- Table `tevent_filter`

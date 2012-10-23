@@ -41,6 +41,8 @@ our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
+	cron_next_execution
+	cron_next_execution_date
 	pandora_daemonize
 	logger
 	limpia_cadena
@@ -1036,6 +1038,139 @@ sub translate_obj ($$$) {
 	db_do ($dbh, 'UPDATE tagente_modulo SET snmp_oid = ? WHERE id_agente_modulo = ?', $oid, $module_id);
 	
 	return $oid;
+}
+
+###############################################################################
+# Get the number of seconds left to the next execution of the given cron entry.
+###############################################################################
+sub cron_next_execution ($) {
+	my ($cron) = @_;
+
+	# Check cron conf format
+	if ($cron !~ /^((\*|(\d+(-\d+){0,1}))\s*){5}$/) {
+		return 300;
+	}
+
+	# Get day of the week and month from cron config
+	my ($mday, $wday) = (split (/\s/, $cron))[2, 4];
+
+	# Get current time
+	my $cur_time = time();
+
+	# Any day of the way
+	if ($wday eq '*') {
+		my $nex_time = cron_next_execution_date ($cron,  $cur_time);
+		return $nex_time - time();
+	}
+
+	# A specific day of the week
+	my $count = 0;
+	my $nex_time = $cur_time;
+	do {
+		$nex_time = cron_next_execution_date ($cron, $nex_time);
+		my $nex_time_wd = $nex_time;
+		my ($nex_mon, $nex_wday) = (localtime ($nex_time_wd))[4, 6];
+		my $nex_mon_wd;
+		do {
+			# Check the day of the week
+			if ($nex_wday == $wday) {
+				return $nex_time_wd - time();
+			}
+			
+			# Move to the next day of the month
+			$nex_time_wd += 86400;
+			($nex_mon_wd, $nex_wday) = (localtime ($nex_time_wd))[4, 6];
+		} while ($mday eq '*' && $nex_mon_wd == $nex_mon);
+		$count++;
+	} while ($count < 60);
+
+	# Something went wrong, default to 5 minutes
+	return 300;
+}
+
+###############################################################################
+# Get the next execution date for the given cron entry in seconds since epoch.
+###############################################################################
+sub cron_next_execution_date ($$) {
+	my ($cron, $cur_time) = @_;
+
+	# Get cron configuration
+	my ($min, $hour, $mday, $mon, $wday) = split (/\s/, $cron);
+
+	# Months start from 0
+	if($mon ne '*') {
+		$mon -= 1;
+	}
+
+	# Get current time
+	if (! defined ($cur_time)) {
+		$cur_time = time();
+	}
+	my ($cur_min, $cur_hour, $cur_mday, $cur_mon, $cur_year) = (localtime ($cur_time))[1, 2, 3, 4, 5];
+	
+	# Get first next date candidate from cron configuration
+	my ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = ($min, $hour, $mday, $mon, $cur_year);
+
+	# Replace wildcards
+	if ($min eq '*') {
+		if ($hour ne '*' || $mday ne '*' || $wday ne '*' || $mon ne '*') {
+			$nex_min = 0;
+		}
+		else {
+			$nex_min = $cur_min;
+		}
+	}
+	if ($hour eq '*') {
+		if ($mday ne '*' || $wday ne '*' ||$mon ne '*') {
+			$nex_hour = 0;
+		}
+		else {
+			$nex_hour = $cur_hour;
+		}
+	}
+	if ($mday eq '*') {
+		if ($mon ne '*') {
+			$nex_mday = 1;
+		}
+		else {
+			$nex_mday = $cur_mday;
+		}
+	}
+	if ($mon eq '*') {
+		$nex_mon = $cur_mon;
+	}
+
+	# Find the next execution date
+	my $count = 0;
+	do {
+		my $next_time = timelocal(0, $nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year);
+		if ($next_time > $cur_time) {
+			return $next_time;
+		}
+		if ($min eq '*' && $hour eq '*' && $wday eq '*' && $mday eq '*' && $mon eq '*') {
+			($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = (localtime ($next_time + 60))[1, 2, 3, 4, 5];
+		}
+		elsif ($hour eq '*' && $wday eq '*' && $mday eq '*' && $mon eq '*') {
+			($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = (localtime ($next_time + 3600))[1, 2, 3, 4, 5];
+		}
+		elsif ($mday eq '*' && $mon eq '*') {
+			($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = (localtime ($next_time + 86400))[1, 2, 3, 4, 5];
+		}
+		elsif ($mon eq '*') {
+			$nex_mon = $nex_mon + 1;
+			if ($nex_mon > 11) {
+				$nex_mon = 0;
+				$nex_year++;
+			}
+		}
+		else {
+			$nex_year++;
+		}
+		$count++;
+	} while ($count < 60);
+	
+	# Something went wrong, default to 5 minutes
+	return $cur_time + 300;
 }
 
 # End of function declaration

@@ -974,7 +974,16 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $new_status = get_module_status ($processed_data, $module, $module_type);
 	
 	# Calculate the current interval
-	my $current_interval = ($module->{'module_interval'} == 0 ? $agent->{'intervalo'} : $module->{'module_interval'});
+	my $current_interval;
+	if ($module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
+		$current_interval = cron_next_execution ($module->{'cron_interval'});
+	}
+	elsif ($module->{'module_interval'} == 0) {
+		$current_interval = 300;
+	}
+	else {
+		$current_interval = $module->{'module_interval'};
+	}
 	
 	#Update module status
 	my $current_utimestamp = time ();
@@ -2297,7 +2306,16 @@ sub pandora_update_module_on_error ($$$) {
 	my ($pa_config, $module, $dbh) = @_;
 
 	# Set tagente_estado.current_interval to make sure it is not 0
-	my $current_interval = ($module->{'module_interval'} == 0 ? 300 : $module->{'module_interval'});
+	my $current_interval;
+	if ($module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
+		$current_interval = cron_next_execution ($module->{'cron_interval'});
+	}
+	elsif ($module->{'module_interval'} == 0) {
+		$current_interval = 300;
+	}
+	else {
+		$current_interval = $module->{'module_interval'};
+	}
 
 	logger($pa_config, "Updating module " . safe_output($module->{'nombre'}) . " (ID " . $module->{'id_agente_modulo'} . ") on error.", 10);
 
@@ -3457,8 +3475,8 @@ sub pandora_module_unknown ($$) {
 			AND tagente_modulo.disabled = 0 
 			AND tagente_estado.estado <> 3 
 			AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100) 
-			AND (tagente_estado.current_interval = 0
-			OR (tagente_estado.current_interval * 2) + tagente_estado.utimestamp < UNIX_TIMESTAMP())');
+			AND tagente_estado.utimestamp != 0
+			AND (tagente_estado.current_interval * 2) + tagente_estado.utimestamp < UNIX_TIMESTAMP()');
 	
 	foreach my $module (@modules) {
 		

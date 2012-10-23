@@ -107,8 +107,9 @@ sub process_module_snmp ($$$$$$$$$){
 	# id_modulo = 2 for snmp modules
 	$parameters{'id_modulo'} = 2;	
 
-	my $module_id = get_agent_module_id($dbh, $parameters{'nombre'}, $parameters{'id_agente'});
-	
+	#get_agent_module_id uses safe_input for module name so don't pass this variable using safe input!!!
+	my $module_id = get_agent_module_id($dbh, $module_name, $parameters{'id_agente'});
+
 	if($module_id == -1) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 	}

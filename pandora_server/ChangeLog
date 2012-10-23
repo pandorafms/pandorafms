@@ -1,3 +1,8 @@
+2012-10-23 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* util/recon_scripts/snmpdevices.pl: Fixed an error in snmpdevices.pl
+	which has a double safe_input.
+
 2012-10-08  Sancho Lerena <slerena@artica.es>
 
 	* util/mysql_plugin.sh: Fixed problem in composed variables.

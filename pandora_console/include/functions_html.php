@@ -488,6 +488,62 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 }
 
 /**
+ * Print selects to configure the cron of a module.
+ * 
+ * @param string Run hour.
+ * @param string Run minute.
+ * @param string Run day of the month.
+ * @param string Run month.
+ * @param string Run day of the week.
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * 
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday = '*', $month = '*', $wday = '*', $return = false) {
+
+	# Hours
+	for ($i = 0; $i < 24; $i++) {
+		$hours[$i] = $i;
+	}
+
+	# Minutes
+	for ($i = 0; $i < 60; $i+=5) {
+		$minutes[$i] = $i;
+	}
+
+	# Month days
+	for ($i = 0; $i < 31; $i++) {
+		$mdays[$i] = $i;
+	}
+
+	# Months
+	for ($i = 0; $i < 12; $i++) {
+		$months[$i] = date('F', mktime (0, 0, 0, $i, 1));
+	}
+
+	# Days of the week
+	$wdays = array(__('Sunday'), __('Monday'), __('Tuesday'), __('Wednesday'), __('Thursday'), __('Friday'), __('Saturday'));
+
+	# Print selectors
+	$table->id = 'cron';
+	$table->width = '98%';
+	$table->class = 'databox_color';
+	$table->head[0] = __('Hour');
+	$table->head[1] = __('Minute');
+	$table->head[2] = __('Month day');
+	$table->head[3] = __('Month');
+	$table->head[4] = __('Week day');
+
+	$table->data[0][0] = html_print_select ($hours, 'hour', $hour, '', __('Any'), '*', true, false, false);	
+	$table->data[0][1] = html_print_select ($minutes, 'minute', $minute, '', __('Any'), '*', true, false, false);
+	$table->data[0][2] = html_print_select ($mdays, 'mday', $mday, '', __('Any'), '*', true, false, false);
+	$table->data[0][3] = html_print_select ($months, 'month', $month, '', __('Any'), '*', true, false, false);
+	$table->data[0][4] = html_print_select ($wdays, 'wday', $wday, '', __('Any'), '*', true, false, false);
+	
+	return html_print_table ($table, $return);
+}
+
+/**
  * Render an input text element. Extended version, use html_print_input_text() to simplify.
  * 
  * @param string $name Input name.

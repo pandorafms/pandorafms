@@ -180,6 +180,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`max` bigint(20) default '0',
 	`min` bigint(20) default '0',
 	`module_interval` int(4) unsigned default '0',
+	`cron_interval` varchar(100) default '',
 	`module_ff_interval` int(4) unsigned default '0',
 	`tcp_port` int(4) unsigned default '0',
 	`tcp_send` TEXT,
@@ -1566,7 +1567,8 @@ PRIMARY KEY(`id_report`)
 CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
    	`id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_report` INTEGER UNSIGNED NOT NULL default 0,
-    `id_filter` INTEGER UNSIGNED NOT NULL default 0,
+	`id_filter` INTEGER UNSIGNED NOT NULL default 0,
+	`description` TEXT NOT NULL,
 	`date` bigint(20) NOT NULL default '0',
 	`period` int(11) NOT NULL default 0,
 	`max` int (11) NOT NULL default 0,

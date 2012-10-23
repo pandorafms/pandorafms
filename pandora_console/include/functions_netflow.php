@@ -1136,6 +1136,7 @@ function netflow_xml_report ($id, $start_date, $end_date, $interval_length = 0) 
 		}
 
 		echo "  <report_item>\n";
+		echo "    <description>" . io_safe_output ($content['description']) . "</description>\n";
 		echo "    <type>" . io_safe_output ($item_types[$content['show_graph']]) . "</type>\n";
 		echo "    <max_aggregates>" . $content['max'] . "</max_aggregates>\n";
 		echo "    <filter>\n";

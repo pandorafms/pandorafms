@@ -21,6 +21,7 @@ enterprise_include ('godmode/agentes/configurar_agente.php');
 enterprise_include ('include/functions_policies.php');
 enterprise_include ('include/functions_modules.php');
 include_once($config['homedir'] . "/include/functions_agents.php");
+include_once($config['homedir'] . "/include/functions_cron.php");
 ui_require_javascript_file('encode_decode_base64');
 
 check_login ();
@@ -788,6 +789,13 @@ if ($update_module || $create_module) {
 	$critical_inverse = (int) get_parameter('critical_inverse');
 	$warning_inverse = (int) get_parameter('warning_inverse');
 	
+	$hour = get_parameter('hour');
+	$minute = get_parameter('minute');
+	$mday = get_parameter('mday');
+	$month = get_parameter('month');
+	$wday = get_parameter('wday');
+	$cron_interval = "$minute $hour $mday $month $wday";
+	
 	if ($prediction_module != 3) {
 		unset($serialize_ops);
 		enterprise_hook('modules_delete_synthetic_operations', array($id_agent_module));
@@ -851,7 +859,8 @@ if ($update_module) {
 		'warning_instructions' => $warning_instructions,
 		'unknown_instructions' => $unknown_instructions,
 		'critical_inverse' => $critical_inverse,
-		'warning_inverse' => $warning_inverse);
+		'warning_inverse' => $warning_inverse,
+		'cron_interval' => $cron_interval);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$result = false;
@@ -890,6 +899,10 @@ if ($update_module) {
 		if ($prediction_module == 3) {
 			enterprise_hook('modules_create_synthetic_operations', array($id_agent_module, $serialize_ops));
 		}
+
+		// Update the module interval
+		cron_update_module_interval ($id_agent_module, $cron_interval);
+
 		ui_print_success_message(__('Module successfully updated'));
 		$id_agent_module = false;
 		$edit_module = false;
@@ -965,7 +978,8 @@ if ($create_module) {
 		'warning_instructions' => $warning_instructions,
 		'unknown_instructions' => $unknown_instructions,
 		'critical_inverse' => $critical_inverse,
-		'warning_inverse' => $warning_inverse);
+		'warning_inverse' => $warning_inverse,
+		'cron_interval' => $cron_interval);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$id_agent_module = false;
@@ -999,6 +1013,9 @@ if ($create_module) {
 		if ($prediction_module == 3) {
 			enterprise_hook('modules_create_synthetic_operations', array($id_agent_module, $serialize_ops));
 		}
+		
+		// Update the module interval
+		cron_update_module_interval ($id_agent_module, $cron_interval);
 		
 		ui_print_success_message(__('Module added successfully'));
 		$id_agent_module = false;

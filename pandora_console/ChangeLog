@@ -1,3 +1,23 @@
+2012-10-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_cron.php: Added to repository. Cron related
+	  functions.
+
+	* include/functions_html.php, pandoradb.sql,
+	  pandoradb.postgreSQL.sql, pandoradb.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  godmode/agentes/module_manager_editor_common.php,
+	  godmode/agentes/configurar_agente.php,
+	  godmode/agentes/module_manager_editor.php: Added support for remote
+	  cron modules.
+
+	* godmode/netflow/nf_item_list.php,
+	  godmode/netflow/nf_report_item.php,
+	  operation/netflow/nf_view.php,
+	  include/functions_netflow.php: Added a description to report items.
+
 2012-10-16  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/functions_events.php

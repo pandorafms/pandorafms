@@ -167,15 +167,19 @@ foreach ($report_contents as $content_report) {
 	$content_id = $content_report['id_rc'];
 	$max_aggregates= $content_report['max'];
 	$type = $content_report['show_graph'];
-	
+	$description = $content_report['description'];
+
 	// Get item filters
 	$filter = db_get_row_sql("SELECT * FROM tnetflow_filter WHERE id_sg = '" . io_safe_input ($content_report['id_filter']) . "'", false, true);
+	if ($description == '') {
+		$description = $filter['id_name'];
+	}	
 	
 	if ($filter['aggregate'] != 'none') {
-		echo '<h4>' . $filter['id_name'] . ' (' . __($filter['aggregate']) . '/' . __($filter['output']) . ')</h4>';
+		echo '<h4>' . $description . ' (' . __($filter['aggregate']) . '/' . __($filter['output']) . ')</h4>';
 	}
 	else {
-		echo '<h4>' . $filter['id_name'] . ' (' . __($filter['output']) . ')</h4>';
+		echo '<h4>' . $description . ' (' . __($filter['output']) . ')</h4>';
 	}
 	
 	// Build a unique id for the cache

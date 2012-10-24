@@ -791,6 +791,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	$field2 = decode_entities ($field2);
 	$field3 = decode_entities ($field3);
 
+
+	# Get group info
+	my $group = undef;
+	if (defined ($agent)) {
+		$group = get_db_single_row ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo = ?', $agent->{'id_grupo'});
+	}
+
 	# Thanks to people of Cordoba univ. for the patch for adding module and 
 	# id_agent macros to the alert.
 	
@@ -800,7 +807,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_field3_ => $field3,
 				_agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
-				_agentgroup_ => (defined ($agent)) ? get_group_name ($dbh, $agent->{'id_grupo'}) : '',
+				_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',
+				_agentstatus_ => (defined ($agent)) ? get_agent_status ($pa_config, $dbh, $agent->{'id_agente'}) : '',
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 				_data_ => $data,
@@ -810,9 +818,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_alert_times_fired_ => $alert->{'times_fired'},
 				_alert_priority_ => $alert->{'priority'},
 				_alert_text_severity_ => get_priority_name($alert->{'priority'}),
+				_groupcontact_ => (defined ($group)) ? $group->{'contact'} : '',
+				_groupother_ => (defined ($group)) ? $group->{'other'} : '',
 				_module_ => (defined ($module)) ? $module->{'nombre'} : '',
 				_modulegroup_ => (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '',
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
+				_modulestatus_ => (defined ($module)) ? get_agentmodule_status($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
+				_moduletags_ => (defined ($module)) ? pandora_get_module_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_alert_ => $alert->{'id'},
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
@@ -1010,15 +1022,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 	
 	$last_status = $new_status;
-	
-	# Generate alerts
-	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
-		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value);
-	}
-	else {
-		logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
-	}
-	
+		
 	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
 	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});
 	
@@ -1044,6 +1048,14 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	# Save module data. Async and log4x modules are not compressed.
 	if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
 		save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);
+	}
+
+	# Generate alerts
+	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
+		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value);
+	}
+	else {
+		logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
 	}
 }
 

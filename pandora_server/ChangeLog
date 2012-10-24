@@ -1,5 +1,10 @@
 2012-10-23  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Added new macros. Execute alerts after the
+	  module status is updated.
+
+2012-10-23  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm,
 	  lib/PandoraFMS/Tools.pm: Added support for remote cron modules. Small
 	  fixes.

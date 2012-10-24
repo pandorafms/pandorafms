@@ -1339,23 +1339,23 @@ COMMENT = 'Table to store the map connection information';
 -- Table `tgis_map_has_tgis_map_connection`
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_connection` (
-  `tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to tgis_map' ,
-  `tgis_map_connection_id_tmap_connection` INT NOT NULL COMMENT 'reference to tgis_map_connection' ,
-  `modification_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last Modification Time of the Connection' ,
-  `default_map_connection` TINYINT(1) NULL DEFAULT FALSE COMMENT 'Flag to mark the default map connection of a map' ,
-  PRIMARY KEY (`tgis_map_id_tgis_map`, `tgis_map_connection_id_tmap_connection`) ,
-  INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
-  INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1` (`tgis_map_connection_id_tmap_connection` ASC) ,
-  CONSTRAINT `fk_tgis_map_has_tgis_map_connection_tgis_map1`
-    FOREIGN KEY (`tgis_map_id_tgis_map` )
-    REFERENCES `tgis_map` (`id_tgis_map` )
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1`
-    FOREIGN KEY (`tgis_map_connection_id_tmap_connection` )
-    REFERENCES `tgis_map_connection` (`id_tmap_connection` )
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION)
+	`tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to tgis_map' ,
+	`tgis_map_connection_id_tmap_connection` INT NOT NULL COMMENT 'reference to tgis_map_connection' ,
+	`modification_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last Modification Time of the Connection' ,
+	`default_map_connection` TINYINT(1) NULL DEFAULT FALSE COMMENT 'Flag to mark the default map connection of a map' ,
+	PRIMARY KEY (`tgis_map_id_tgis_map`, `tgis_map_connection_id_tmap_connection`) ,
+	INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
+	INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1` (`tgis_map_connection_id_tmap_connection` ASC) ,
+	CONSTRAINT `fk_tgis_map_has_tgis_map_connection_tgis_map1`
+		FOREIGN KEY (`tgis_map_id_tgis_map` )
+		REFERENCES `tgis_map` (`id_tgis_map` )
+		ON DELETE CASCADE
+		ON UPDATE NO ACTION,
+	CONSTRAINT `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1`
+		FOREIGN KEY (`tgis_map_connection_id_tmap_connection` )
+		REFERENCES `tgis_map_connection` (`id_tmap_connection` )
+		ON DELETE CASCADE
+		ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table to asociate a connection to a gis map';
 
@@ -1363,19 +1363,19 @@ COMMENT = 'Table to asociate a connection to a gis map';
 -- Table `tgis_map_layer`
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
-  `id_tmap_layer` INT NOT NULL AUTO_INCREMENT COMMENT 'table id' ,
-  `layer_name` VARCHAR(45) NOT NULL COMMENT 'Name of the layer ' ,
-  `view_layer` TINYINT(1) NOT NULL DEFAULT TRUE COMMENT 'True if the layer must be shown' ,
-  `layer_stack_order` TINYINT(3) NULL DEFAULT 0 COMMENT 'Number of order of the layer in the layer stack, bigger means upper on the stack.\n' ,
-  `tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to the map containing the layer' ,
-  `tgrupo_id_grupo` MEDIUMINT(4) NOT NULL COMMENT 'reference to the group shown in the layer' ,
-  PRIMARY KEY (`id_tmap_layer`) ,
-  INDEX `fk_tmap_layer_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
-  CONSTRAINT `fk_tmap_layer_tgis_map1`
-    FOREIGN KEY (`tgis_map_id_tgis_map` )
-    REFERENCES `tgis_map` (`id_tgis_map` )
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION)
+	`id_tmap_layer` INT NOT NULL AUTO_INCREMENT COMMENT 'table id' ,
+	`layer_name` VARCHAR(45) NOT NULL COMMENT 'Name of the layer ' ,
+	`view_layer` TINYINT(1) NOT NULL DEFAULT TRUE COMMENT 'True if the layer must be shown' ,
+	`layer_stack_order` TINYINT(3) NULL DEFAULT 0 COMMENT 'Number of order of the layer in the layer stack, bigger means upper on the stack.\n' ,
+	`tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to the map containing the layer' ,
+	`tgrupo_id_grupo` MEDIUMINT(4) NOT NULL COMMENT 'reference to the group shown in the layer' ,
+	PRIMARY KEY (`id_tmap_layer`) ,
+	INDEX `fk_tmap_layer_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
+	CONSTRAINT `fk_tmap_layer_tgis_map1`
+		FOREIGN KEY (`tgis_map_id_tgis_map` )
+		REFERENCES `tgis_map` (`id_tgis_map` )
+		ON DELETE CASCADE
+		ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table containing information about the map layers';
 
@@ -1383,21 +1383,21 @@ COMMENT = 'Table containing information about the map layers';
 -- Table `tgis_map_layer_has_tagente`
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map_layer_has_tagente` (
-  `tgis_map_layer_id_tmap_layer` INT NOT NULL ,
-  `tagente_id_agente` INT(10) UNSIGNED NOT NULL ,
-  PRIMARY KEY (`tgis_map_layer_id_tmap_layer`, `tagente_id_agente`) ,
-  INDEX `fk_tgis_map_layer_has_tagente_tgis_map_layer1` (`tgis_map_layer_id_tmap_layer` ASC) ,
-  INDEX `fk_tgis_map_layer_has_tagente_tagente1` (`tagente_id_agente` ASC) ,
-  CONSTRAINT `fk_tgis_map_layer_has_tagente_tgis_map_layer1`
-    FOREIGN KEY (`tgis_map_layer_id_tmap_layer` )
-    REFERENCES `tgis_map_layer` (`id_tmap_layer` )
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tgis_map_layer_has_tagente_tagente1`
-    FOREIGN KEY (`tagente_id_agente` )
-    REFERENCES `tagente` (`id_agente` )
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION)
+	`tgis_map_layer_id_tmap_layer` INT NOT NULL ,
+	`tagente_id_agente` INT(10) UNSIGNED NOT NULL ,
+	PRIMARY KEY (`tgis_map_layer_id_tmap_layer`, `tagente_id_agente`) ,
+	INDEX `fk_tgis_map_layer_has_tagente_tgis_map_layer1` (`tgis_map_layer_id_tmap_layer` ASC) ,
+	INDEX `fk_tgis_map_layer_has_tagente_tagente1` (`tagente_id_agente` ASC) ,
+	CONSTRAINT `fk_tgis_map_layer_has_tagente_tgis_map_layer1`
+		FOREIGN KEY (`tgis_map_layer_id_tmap_layer` )
+		REFERENCES `tgis_map_layer` (`id_tmap_layer` )
+		ON DELETE CASCADE
+		ON UPDATE NO ACTION,
+	CONSTRAINT `fk_tgis_map_layer_has_tagente_tagente1`
+		FOREIGN KEY (`tagente_id_agente` )
+		REFERENCES `tagente` (`id_agente` )
+		ON DELETE CASCADE
+		ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table to define wich agents are shown in a layer';
 
@@ -1449,6 +1449,8 @@ CREATE TABLE IF NOT EXISTS `tnetwork_map` (
 	`text_filter` VARCHAR(100)  NOT NULL DEFAULT "",
 	`dont_show_subgroups` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	`pandoras_children` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`show_groups` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`show_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id_networkmap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1502,10 +1504,10 @@ CREATE TABLE IF NOT EXISTS `ttag` (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `ttag_module` ( 
- `id_tag` int(10) NOT NULL, 
- `id_agente_modulo` int(10) NOT NULL DEFAULT 0, 
-   PRIMARY KEY  (id_tag, id_agente_modulo),
-   KEY `idx_id_agente_modulo` (`id_agente_modulo`)
+	`id_tag` int(10) NOT NULL, 
+	`id_agente_modulo` int(10) NOT NULL DEFAULT 0, 
+	PRIMARY KEY  (id_tag, id_agente_modulo),
+	KEY `idx_id_agente_modulo` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
 -- -----------------------------------------------------
@@ -1513,10 +1515,10 @@ CREATE TABLE IF NOT EXISTS `ttag_module` (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `ttag_policy_module` ( 
- `id_tag` int(10) NOT NULL, 
- `id_policy_module` int(10) NOT NULL DEFAULT 0, 
-   PRIMARY KEY  (id_tag, id_policy_module),
-   KEY `idx_id_policy_module` (`id_policy_module`)
+	`id_tag` int(10) NOT NULL, 
+	`id_policy_module` int(10) NOT NULL DEFAULT 0, 
+	PRIMARY KEY  (id_tag, id_policy_module),
+	KEY `idx_id_policy_module` (`id_policy_module`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
 -- -----------------------------------------------------
@@ -1524,10 +1526,10 @@ CREATE TABLE IF NOT EXISTS `ttag_policy_module` (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `ttag_event` ( 
- `id_tag` int(10) NOT NULL, 
- `id_evento` bigint(20) NOT NULL DEFAULT 0, 
-   PRIMARY KEY  (id_tag, id_evento),
-   KEY `idx_id_evento` (`id_evento`)
+	`id_tag` int(10) NOT NULL, 
+	`id_evento` bigint(20) NOT NULL DEFAULT 0, 
+	PRIMARY KEY  (id_tag, id_evento),
+	KEY `idx_id_evento` (`id_evento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
 -- -----------------------------------------------------
@@ -1535,18 +1537,18 @@ CREATE TABLE IF NOT EXISTS `ttag_event` (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
-  `id_sg`  int(10) unsigned NOT NULL auto_increment,
-  `id_name` varchar(600) NOT NULL default '0',
-  `id_group` int(10),
-  `ip_dst` TEXT NOT NULL,
-  `ip_src` TEXT NOT NULL,
-  `dst_port` TEXT NOT NULL,
-  `src_port` TEXT NOT NULL,
-  `advanced_filter` TEXT NOT NULL,
-  `filter_args` TEXT NOT NULL,
-  `aggregate` varchar(60),
-  `output` varchar(60),
-PRIMARY KEY  (`id_sg`)
+	`id_sg`  int(10) unsigned NOT NULL auto_increment,
+	`id_name` varchar(600) NOT NULL default '0',
+	`id_group` int(10),
+	`ip_dst` TEXT NOT NULL,
+	`ip_src` TEXT NOT NULL,
+	`dst_port` TEXT NOT NULL,
+	`src_port` TEXT NOT NULL,
+	`advanced_filter` TEXT NOT NULL,
+	`filter_args` TEXT NOT NULL,
+	`aggregate` varchar(60),
+	`output` varchar(60),
+	PRIMARY KEY  (`id_sg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
@@ -1554,12 +1556,12 @@ PRIMARY KEY  (`id_sg`)
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `tnetflow_report` (
-  `id_report` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
-  `id_name` varchar(150) NOT NULL default '',
-  `description` TEXT NOT NULL,
-  `id_group` int(10),
-  `server_name` TEXT NOT NULL,
-PRIMARY KEY(`id_report`)  
+	`id_report` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+	`id_name` varchar(150) NOT NULL default '',
+	`description` TEXT NOT NULL,
+	`id_group` int(10),
+	`server_name` TEXT NOT NULL,
+	PRIMARY KEY(`id_report`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -1567,7 +1569,7 @@ PRIMARY KEY(`id_report`)
 -- ---------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
-   	`id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_report` INTEGER UNSIGNED NOT NULL default 0,
 	`id_filter` INTEGER UNSIGNED NOT NULL default 0,
 	`description` TEXT NOT NULL,
@@ -1588,34 +1590,34 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 -- ---------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `tevent_filter` (
-  `id_filter`  int(10) unsigned NOT NULL auto_increment,
-  `id_group_filter` int(10) NOT NULL default 0,
-  `id_name` varchar(600) NOT NULL,
-  `id_group` int(10) NOT NULL default 0,
-  `event_type` text NOT NULL,
-  `severity` int(10) NOT NULL default -1,
-  `status` int(10) NOT NULL default -1,
-  `search` TEXT,
-  `text_agent` TEXT, 
-  `pagination` int(10) NOT NULL default 25,
-  `event_view_hr` int(10) NOT NULL default 8,
-  `id_user_ack` TEXT,
-  `group_rep` int(10) NOT NULL default 0,
-  `tag` varchar(600) NOT NULL default '',
-  `filter_only_alert` int(10) NOT NULL default -1, 
-PRIMARY KEY  (`id_filter`)
+	`id_filter`  int(10) unsigned NOT NULL auto_increment,
+	`id_group_filter` int(10) NOT NULL default 0,
+	`id_name` varchar(600) NOT NULL,
+	`id_group` int(10) NOT NULL default 0,
+	`event_type` text NOT NULL,
+	`severity` int(10) NOT NULL default -1,
+	`status` int(10) NOT NULL default -1,
+	`search` TEXT,
+	`text_agent` TEXT, 
+	`pagination` int(10) NOT NULL default 25,
+	`event_view_hr` int(10) NOT NULL default 8,
+	`id_user_ack` TEXT,
+	`group_rep` int(10) NOT NULL default 0,
+	`tag` varchar(600) NOT NULL default '',
+	`filter_only_alert` int(10) NOT NULL default -1, 
+	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `tpassword_history`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tpassword_history` (
-  `id_pass`  int(10) unsigned NOT NULL auto_increment,
-  `id_user` varchar(60) NOT NULL,
-  `password` varchar(45) default NULL,
-  `date_begin` DATETIME  NOT NULL DEFAULT 0,
-  `date_end` DATETIME  NOT NULL DEFAULT 0,
-PRIMARY KEY  (`id_pass`)
+	`id_pass`  int(10) unsigned NOT NULL auto_increment,
+	`id_user` varchar(60) NOT NULL,
+	`password` varchar(45) default NULL,
+	`date_begin` DATETIME  NOT NULL DEFAULT 0,
+	`date_end` DATETIME  NOT NULL DEFAULT 0,
+	PRIMARY KEY  (`id_pass`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------

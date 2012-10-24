@@ -1461,9 +1461,9 @@ CREATE TABLE tgis_map_layer_has_tagente (
 CREATE INDEX tgis_map_layer_has_tagente_idx ON tgis_map_layer_has_tagente(tgis_map_layer_id_tmap_layer);
 CREATE INDEX tgis_map_layer_has_tagent1_idx ON tgis_map_layer_has_tagente(tagente_id_agente);
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tgroup_stat"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 --Table to store global system stats per group
 CREATE TABLE tgroup_stat (
 	id_group NUMBER(10, 0) default 0 NOT NULL PRIMARY KEY,
@@ -1506,16 +1506,18 @@ CREATE TABLE tnetwork_map (
 	show_snmp_modules NUMBER(5, 0) default 0 NOT NULL,
 	text_filter VARCHAR(100) DEFAULT '',
 	dont_show_subgroups NUMBER(10, 0) default 0 NOT NULL,
-	pandoras_children NUMBER(10, 0) default 0 NOT NULL
+	pandoras_children NUMBER(10, 0) default 0 NOT NULL,
+	show_groups NUMBER(10, 0) default 0 NOT NULL,
+	show_modules NUMBER(10, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tnetwork_map_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tnetwork_map_inc BEFORE INSERT ON tnetwork_map REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_map_s.nextval INTO :NEW.ID_NETWORKMAP FROM dual; END tnetwork_map_inc;;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tsnmp_filter"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE tsnmp_filter (
 	id_snmp_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	description VARCHAR2(255) default '',

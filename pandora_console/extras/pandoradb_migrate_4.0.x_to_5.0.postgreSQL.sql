@@ -337,6 +337,8 @@ ALTER TABLE "tnetwork_component" ADD COLUMN "warning_inverse" SMALLINT NOT NULL 
 ALTER TABLE "tnetwork_map" ADD COLUMN "text_filter" VARCHAR(100) DEFAULT '';
 ALTER TABLE "tnetwork_map" ADD COLUMN "dont_show_subgroups" INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE "tnetwork_map" ADD COLUMN "pandoras_children" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "tnetwork_map" ADD COLUMN "show_modules" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "tnetwork_map" ADD COLUMN "show_groups" INTEGER NOT NULL DEFAULT 0;
 
 ------------------------------------------------------------------------
 -- Table `tagente_estado`

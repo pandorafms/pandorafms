@@ -572,7 +572,9 @@ CREATE TABLE tgrupo (
 	disabled NUMBER(5, 0) default 0,
 	custom_id VARCHAR2(255) default '',
 	id_skin NUMBER(10, 0) DEFAULT 0 NOT NULL,
-	description CLOB
+	description CLOB,
+	contact CLOB,
+	other CLOB
 );
 
 CREATE SEQUENCE tgrupo_s INCREMENT BY 1 START WITH 1;

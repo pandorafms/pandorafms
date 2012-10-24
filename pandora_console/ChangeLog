@@ -1,5 +1,22 @@
 2012-10-23  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/help/en/help_alert_macros.php,
+	  include/help/es/help_alert_macros.php,
+	  include/help/ja/help_alert_macros.php: Update macro help files. The
+	  Japanese help file needs to be translated.
+
+	* pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  godmode/groups/configure_group.php,
+	  godmode/groups/group_list.php: Added more information to agent
+	  groups.
+
+2012-10-23  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/functions_cron.php: Added to repository. Cron related
 	  functions.
 

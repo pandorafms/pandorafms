@@ -552,6 +552,8 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 	`custom_id` varchar(255) default '',
 	`id_skin` int(10) unsigned NOT NULL default '0',
 	`description` text,
+	`contact` text,
+	`other` text,
  	PRIMARY KEY  (`id_grupo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

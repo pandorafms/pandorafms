@@ -1,3 +1,21 @@
+2012-10-24 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql, pandoradb.sql,
+	pandoradb.postgreSQL.sql, pandoradb.oracle.sql: added the fields
+	"show_groups", "show_modules" into the table "tnetwork_map".
+	
+	* include/functions_modules.php: added two parameters
+	(flag metaconsole, id_server) into the functions
+	"modules_get_agentmodule_is_init", "modules_get_agentmodule_type"
+	and "modules_get_agentmodule_status" for to extract data in the
+	metaconsole enviroments.
+	
+	* include/functions_networkmap.php: added two parameters
+	(flag metaconsole, id_server) into the functions
+	"networkmap_create_agent_node" and "networkmap_create_module_node".
+
 2012-10-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/help/en/help_alert_macros.php,

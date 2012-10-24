@@ -132,8 +132,9 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0,
 				$node_count ++;
 				$agent_module = modules_get_agentmodule($key);
 				
-				$alerts_module = db_get_sql('SELECT count(*) as num
-					FROM talert_template_modules WHERE id_agent_module = '.$key);
+				$alerts_module = db_get_sql('SELECT count(*) AS num
+					FROM talert_template_modules
+					WHERE id_agent_module = ' . $key);
 				
 				// Save node parent information to define edges later
 				$parents[$node_count] = $agent_module['parent'] = $agent['id_node'];
@@ -467,10 +468,15 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
 }
 
 // Returns a node definition
-function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cut_names = true, $relative = false) {
+function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cut_names = true, $relative = false, $metaconsole = false, $id_server = null) {
 	global $config;
 	
-	$status = agents_get_status($agent['id_agente']);
+	if (defined('METACONSOLE')) {
+		$status = agents_meta_get_status($id_server, $agent['id_agente']);
+	}
+	else {
+		$status = agents_get_status($agent['id_agente']);
+	}
 	
 	// Set node status
 	switch ($status) {
@@ -541,8 +547,9 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 }
 
 // Returns a module node definition
-function networkmap_create_module_node ($module, $simple = 0, $font_size = 10) {
-	$status = modules_get_agentmodule_status($module['id_agente_modulo']);
+function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $metaconsole = true, $id_server = null) {
+	$status = modules_get_agentmodule_status($module['id_agente_modulo'],
+		false, $metaconsole, $id_server);
 	
 	// Set node status
 	switch($status) {

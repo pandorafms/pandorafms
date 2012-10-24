@@ -162,12 +162,12 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `cron_interval` varchar(100) default '';
 ------------------------------------------------------------------------
 ALTER TABLE `tnetwork_component` CHANGE COLUMN `post_process` `post_process` double(18,5) default NULL;
 ALTER TABLE `tnetwork_component` ADD COLUMN `unit` TEXT  NOT NULL AFTER `post_process`;
-ALTER TABLE tnetwork_component ADD `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard';
-ALTER TABLE tnetwork_component ADD `only_metaconsole` tinyint(1) unsigned default '0';
-ALTER TABLE tnetwork_component ADD `macros` text;
-ALTER TABLE tnetwork_component ADD `critical_instructions` TEXT NOT NULL default '';
-ALTER TABLE tnetwork_component ADD `warning_instructions` TEXT NOT NULL default '';
-ALTER TABLE tnetwork_component ADD `unknown_instructions` TEXT NOT NULL default '';
+ALTER TABLE `tnetwork_component` ADD COLUMN `wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard';
+ALTER TABLE `tnetwork_component` ADD COLUMN `only_metaconsole` tinyint(1) unsigned default '0';
+ALTER TABLE `tnetwork_component` ADD COLUMN `macros` text;
+ALTER TABLE `tnetwork_component` ADD COLUMN `critical_instructions` TEXT NOT NULL default '';
+ALTER TABLE `tnetwork_component` ADD COLUMN `warning_instructions` TEXT NOT NULL default '';
+ALTER TABLE `tnetwork_component` ADD COLUMN `unknown_instructions` TEXT NOT NULL default '';
 ALTER TABLE `tnetwork_component` ADD COLUMN `critical_inverse` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `warning_inverse` tinyint(1) unsigned default '0';
 
@@ -315,6 +315,8 @@ ALTER TABLE tlayout_data ADD COLUMN `enable_link` tinyint(1) UNSIGNED NOT  NULL 
 ALTER TABLE tnetwork_map ADD `text_filter` VARCHAR(100)  NOT NULL DEFAULT "";
 ALTER TABLE tnetwork_map ADD `dont_show_subgroups` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE tnetwork_map ADD `pandoras_children` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE tnetwork_map ADD `show_groups` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE tnetwork_map ADD `show_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
 
 -- ----------------------------------------------------------------------
 -- Table `tagente_estado`

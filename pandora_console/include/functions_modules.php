@@ -570,14 +570,28 @@ function modules_get_agentmodule_id ($agentmodule_name, $agent_id) {
 /**
  * Get a if a module is init.
  *
- * @param int agentmodule id to get.
+ * @param int $agentmodule Id to get.
+ * @param bool $metaconsole Flag to extract the data for metaconsole, by default false.
+ * @param int $id_server Id of children console.
  *
  * @return bool true if is init and false if is not init
  */
-function modules_get_agentmodule_is_init ($id_agentmodule) {
-	$result = db_get_row_filter ('tagente_estado',
-		array('id_agente_modulo' => $id_agentmodule),
-		'utimestamp');
+function modules_get_agentmodule_is_init ($id_agentmodule, $metaconsole = false, $id_server = null) {
+	if ($metaconsole) {
+		$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
+		
+		if (metaconsole_connect($server) == NOERR) {
+			$result = db_get_row_filter ('tagente_estado',
+				array('id_agente_modulo' => $id_agentmodule),
+				'utimestamp');
+		}
+		metaconsole_restore_db();
+	}
+	else {
+		$result = db_get_row_filter ('tagente_estado',
+			array('id_agente_modulo' => $id_agentmodule),
+			'utimestamp');
+	}
 	
 	return (bool)$result['utimestamp'];
 }
@@ -670,8 +684,21 @@ function modules_get_agentmodule_name ($id_agente_modulo) {
  *
  * @return string Module type of the given agent module.
  */
-function modules_get_agentmodule_type ($id_agentmodule) {
-	return (int) db_get_value ('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+function modules_get_agentmodule_type ($id_agentmodule, $metaconsole = false, $id_server = null) {
+	if ($metaconsole) {
+		$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
+		
+		$return = db_get_value ('id_tipo_modulo',
+			'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+		
+		metaconsole_restore_db();
+	}
+	else {
+		$return = db_get_value ('id_tipo_modulo',
+			'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+	}
+	
+	return (int) $return;
 }
 
 /**
@@ -1057,17 +1084,38 @@ function modules_give_agent_id_from_module_id ($id_agent_module) {
  * @return int Module status. Value 4 means that some alerts assigned to the
  * module were fired.
  */
-function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = false) {
+function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = false, $metaconsole = false, $id_server = null) {
 	$current_timestamp = get_system_time ();
 	
-	if (!$without_alerts) {
-		$times_fired = db_get_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
-		if ($times_fired > 0) {
-			return AGENT_MODULE_STATUS_CRITICAL_ALERT; // Alert fired
+	if ($metaconsole) {
+		$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
+		
+		if (metaconsole_connect($server) == NOERR) {
+			
+			if (!$without_alerts) {
+				$times_fired = db_get_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
+				if ($times_fired > 0) {
+					return AGENT_MODULE_STATUS_CRITICAL_ALERT; // Alert fired
+				}
+			}
+			
+			$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
+			
 		}
+		metaconsole_restore_db();
 	}
-	
-	$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
+	else {
+		
+		
+		if (!$without_alerts) {
+			$times_fired = db_get_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
+			if ($times_fired > 0) {
+				return AGENT_MODULE_STATUS_CRITICAL_ALERT; // Alert fired
+			}
+		}
+		
+		$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
+	}
 	
 	return $status_row['estado'];
 }

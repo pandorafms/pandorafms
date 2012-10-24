@@ -148,6 +148,8 @@ if ($create_group) {
 	$custom_id = (string) get_parameter ('custom_id');
 	$skin = (string) get_parameter ('skin');
 	$description = (string) get_parameter ('description');
+	$contact = (string) get_parameter ('contact');
+	$other = (string) get_parameter ('other');
 $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
 
 	
@@ -161,7 +163,9 @@ $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
 				'disabled' => $alerts_disabled,
 				'custom_id' => $custom_id,
 				'id_skin' => $skin,
-				'description' => $description
+				'description' => $description,
+				'contact' => $contact,
+				'other' => $other
 			);
 		
 			$result = db_process_sql_insert('tgrupo', $values);
@@ -194,22 +198,24 @@ if ($update_group) {
 	$propagate = (bool) get_parameter('propagate');
 	$skin = (string) get_parameter ('skin');
 	$description = (string) get_parameter ('description');
-	
+	$contact = (string) get_parameter ('contact');
+	$other = (string) get_parameter ('other');
+		
 	/*Check if name field is empty*/
 	if( $name != "") {	
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
-					icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d, description = "%s"
+					icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d, description = "%s", contact = "%s", other = "%s"
 					WHERE id_grupo = %d',
-					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $description, $id_group);
+					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $description, $contact, $other, $id_group);
 				break;
 			case "postgresql":
 			case "oracle":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = \'%s\',
-					icon = \'%s\', disabled = %d, parent = %d, custom_id = \'%s\', propagate = %d, id_skin = %d, description = \'%s\'
+					icon = \'%s\', disabled = %d, parent = %d, custom_id = \'%s\', propagate = %d, id_skin = %d, description = \'%s\', contact = \'%s\', other = \'%s\'
 					WHERE id_grupo = %d',
-					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $description, $id_group);
+					$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $description, $contact, $other, $id_group);
 				break;
 		}
 		$result = db_process_sql ($sql);

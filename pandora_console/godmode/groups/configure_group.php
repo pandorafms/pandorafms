@@ -35,6 +35,8 @@ $alerts_disabled = 0;
 $custom_id = "";
 $propagate = 0;
 $skin = 0;
+$contact = "";
+$other = "";
 
 $create_group = (bool) get_parameter ('create_group');
 $id_group = (int) get_parameter ('id_group');
@@ -50,6 +52,8 @@ if ($id_group) {
 		$propagate = $group["propagate"];
 		$skin = $group["id_skin"];
 		$description = $group["description"];
+		$contact = $group["contact"];
+		$other = $group["other"];
 	}
 	else {
 		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
@@ -120,10 +124,16 @@ $table->data[5][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255
 $table->data[6][0] = __('Description');
 $table->data[6][1] = html_print_input_text ('description', $description, '', 60, 255, true);
 
+$table->data[7][0] = __('Contact') . ui_print_help_tip (__("Contact information accessible through the _group_contact_ macro"), true);
+$table->data[7][1] = html_print_textarea ('contact', 4, 40, $contact, "style='min-height: 0px;'", true);
+
+$table->data[8][0] = __('Other') . ui_print_help_tip (__("Information accessible through the _group_other_ macro"), true);
+$table->data[8][1] = html_print_textarea ('other', 4, 40, $other, "style='min-height: 0px;'", true);
+
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-	$table->data[6][0] = __('Skin');
-	$table->data[6][1] = skins_print_select($config["id_user"], 'skin', $skin, '', __('None'), 0, true);
+	$table->data[9][0] = __('Skin');
+	$table->data[9][1] = skins_print_select($config["id_user"], 'skin', $skin, '', __('None'), 0, true);
 }
 
 echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/group_list">';

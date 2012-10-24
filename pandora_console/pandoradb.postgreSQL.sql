@@ -468,7 +468,9 @@ CREATE TABLE "tgrupo" (
 	"disabled" SMALLINT default 0,
 	"custom_id" varchar(255) default '',
 	"id_skin" INTEGER NOT NULL DEFAULT 0,
-	"description" text
+	"description" text,
+	"contact" text,
+	"other" text
 );
 
 CREATE TABLE "tincidencia" (

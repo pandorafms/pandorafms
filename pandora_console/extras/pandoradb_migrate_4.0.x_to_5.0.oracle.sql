@@ -156,6 +156,8 @@ ALTER TABLE tevento ADD (ack_utimestamp NUMBER(19, 0) NOT NULL default 0);
 -- Table `tgrupo`
 -- -----------------------------------------------------
 ALTER TABLE tgrupo ADD (description CLOB);
+ALTER TABLE tgrupo ADD (contact CLOB);
+ALTER TABLE tgrupo ADD (other CLOB);
 
 -- -----------------------------------------------------
 -- Table `talert_snmp`

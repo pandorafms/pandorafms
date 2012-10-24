@@ -148,6 +148,8 @@ ALTER TABLE "tevento" ADD COLUMN "ack_utimestamp" BIGINT NOT NULL default 0;
 -- -----------------------------------------------------
 
 ALTER TABLE "tgrupo" ADD COLUMN "description" text;
+ALTER TABLE "tgrupo" ADD COLUMN "contact" text;
+ALTER TABLE "tgrupo" ADD COLUMN "other" text;
 
 -- -----------------------------------------------------
 -- Table `talert_snmp`

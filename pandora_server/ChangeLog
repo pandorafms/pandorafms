@@ -1,3 +1,10 @@
+2012-10-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf,
+	  lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/DataServer.pm: Added a new configuration option to
+	  make the data server process XML files in a stack instead of a queue.
+
 2012-10-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added new macros. Execute alerts after the

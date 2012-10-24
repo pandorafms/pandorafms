@@ -278,6 +278,9 @@ sub pandora_load_config {
 	# Self monitoring
 	$pa_config->{'self_monitoring'} = 0; 
 
+	# Process XML data files as a stack
+	$pa_config->{"dataserver_lifo"} = 0; # 5.0
+
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -614,6 +617,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^block_size\s+([0-9]*)/i) {
 			$pa_config->{'block_size'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^dataserver_lifo\s+([0-1])/i) {
+			$pa_config->{'dataserver_lifo'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

@@ -110,8 +110,12 @@ sub data_producer ($) {
 
 	# Temporarily disable warnings (some files may have been deleted)
 	{
-		no warnings; 
-		@tasks = sort { -C $pa_config->{'incomingdir'} . "/$b" <=> -C $pa_config->{'incomingdir'} . "/$a" } (@files);
+		no warnings;
+		if ($pa_config->{'dataserver_lifo'} == 0) {
+			@tasks = sort { -C $pa_config->{'incomingdir'} . "/$b" <=> -C $pa_config->{'incomingdir'} . "/$a" } (@files);
+		} else {
+			@tasks = sort { -C $pa_config->{'incomingdir'} . "/$a" <=> -C $pa_config->{'incomingdir'} . "/$b" } (@files);
+		}
 	}
 
 	return @tasks;

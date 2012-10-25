@@ -1,3 +1,14 @@
+2012-10-25  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php
+	operation/visual_console/render_view.php
+	operation/gis_maps/render_view.php
+	operation/events/events_list.php
+	operation/search_maps.php: Fixed various ACL 
+	Enterprise bugs
+
+	Fix #3577920
+
 2012-10-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_db.php,

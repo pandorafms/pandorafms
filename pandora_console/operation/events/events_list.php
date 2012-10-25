@@ -544,7 +544,7 @@ foreach ($result as $event) {
 		else {
 			$incidents_path = 'incidents/incident_detail&amp;insert_form';
 		}
-		$data[4] .= '<a href="index.php?sec=incidencias&amp;sec2=operation/'.$incidents_path.'&amp;from_event='.$event["id_evento"].'">';
+		$data[4] .= '<a href="index.php?sec=workspace&amp;sec2=operation/'.$incidents_path.'&amp;from_event='.$event["id_evento"].'">';
 		$data[4] .= html_print_image ("images/page_lightning.png", true,
 			array ("title" => __('Create incident from event')));
 		$data[4] .= '</a>';

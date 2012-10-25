@@ -933,7 +933,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					elseif ($layout_data['id_layout_linked'] > 0) {
 					
 						// Link to a map
-						echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 					
 					}
 					else {
@@ -1037,7 +1037,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						} 
 						elseif ($layout_data['id_layout_linked'] > 0) {
 							// Link to a map
-							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 							$endTagA = true;
 						}
 					}
@@ -1068,7 +1068,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						} 
 						elseif ($layout_data['id_layout_linked'] > 0) {
 							// Link to a map
-							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 							$endTagA = true;
 						}
 						elseif (preg_match('/^(http:\/\/)((.)+)$/i', $layout_data['label'])){
@@ -1154,7 +1154,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						elseif ($layout_data['id_layout_linked'] > 0) {
 						
 							// Link to a map
-							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 							$endTagA = true;
 						}
 					}
@@ -1292,7 +1292,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						elseif ($layout_data['id_layout_linked'] > 0) {
 						
 							// Link to a map
-							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 							$endTagA = true;
 						
 						}
@@ -1376,7 +1376,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							}
 						}
 						else {
-							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
+							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 						}
 					}
 					

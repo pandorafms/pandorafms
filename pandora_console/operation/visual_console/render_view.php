@@ -119,7 +119,7 @@ if ($config['pure'] && $config["refr"] != 0) {
 
 echo '<div style="height:30px">&nbsp;</div>';
 
-echo '<form method="post" action="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view">';
+echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view">';
 html_print_input_hidden ('pure', $config["pure"]);
 html_print_input_hidden ('id', $id_layout);
 html_print_table ($table);

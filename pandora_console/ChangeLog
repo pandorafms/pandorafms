@@ -1,3 +1,14 @@
+2012-10-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php,
+	  include/functions_netflow.php,
+	  include/functions.php,
+	  include/functions_reports.php,
+	  operation/reporting/reporting_xml.php,
+	  godmode/reporting/reporting_builder.php,
+	  godmode/reporting/reporting_builder.item_editor.php: Integrated
+	  netflow reports into custom reports.
+
 2012-10-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_extensions.php, extensions/pandora_logs.php,

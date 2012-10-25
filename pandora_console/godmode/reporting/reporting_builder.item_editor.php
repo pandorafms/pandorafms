@@ -78,6 +78,9 @@ $sla_sorted_by = 0;
 $id_agents = '';
 $inventory_modules = array();
 $date = null;
+$netflow_filter = 0;
+$max_values = 0;
+$resolution = 0;
 
 switch ($action) {
 	case 'new':
@@ -345,6 +348,18 @@ switch ($action) {
 			case 'group_configuration':
 				$group = $item['id_group'];
 				break;
+			case 'netflow_area':
+			case 'netflow_pie':
+			case 'netflow_data':
+			case 'netflow_statistics':
+			case 'netflow_summary':
+				$netflow_filter = $item['text']; // Filter
+				$period = $item['period'];
+				$description = $item['description'];
+				$resolution = $item ['top_n']; // Interval resolution
+				$max_values = $item ['top_n_value']; // Max values
+				break;
+
 		}
 		
 		//Restore db connection
@@ -386,6 +401,24 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		<tr id="row_netflow_filter" style="" class="datos">
+			<td><?php echo __('Filter');?></td>
+			<td><?php
+
+				$own_info = get_user_info ($config['id_user']);
+				
+				// Get group list that user has access
+				$groups_user = users_get_groups ($config['id_user'], "IW", $own_info['is_admin'], true);
+				$groups_id = array();
+				foreach($groups_user as $key => $groups){
+					$groups_id[] = $groups['id_grupo'];
+				}
+
+				$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',',$groups_id).")";
+				html_print_select_from_sql($sql, 'netflow_filter', $netflow_filter);
+				?>
+			</td>
+		</tr>
 		<tr id="row_description" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Description'); ?></td>
 			<td style="">
@@ -403,6 +436,17 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="">
 				<?php
 				html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
+				?></td>
+		</tr>
+		<tr id="row_resolution" style="" class="datos">
+			<td style="vertical-align: top;">
+				<?php
+				echo __('Resolution');
+				?>
+			</td>
+			<td style="">
+				<?php
+				html_print_extended_select_for_time ('resolution', $resolution, '', '', '0', 10);
 				?></td>
 		</tr>
 		<tr id="row_period1" style="" class="datos">
@@ -735,6 +779,10 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_quantity" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Quantity (n)'); ?></td>
 			<td style=""><?php html_print_input_text('quantity', $top_n_value, '', 5, 5); ?></td>
+		</tr>
+		<tr id="row_max_values" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Max. values'); ?></td>
+			<td style=""><?php html_print_input_text('max_values', $max_values, '', 5, 5); ?></td>
 		</tr>
 		<tr id="row_max_min_avg" style="" class="datos">
 			<td><?php echo __('Display');?></td>
@@ -1513,6 +1561,9 @@ function chooseType() {
 	$("#row_date").hide();
 	$("#row_agent_multi").hide();
 	$("#row_module_multi").hide();
+	$("#row_netflow_filter").hide();
+	$("#row_max_values").hide();
+	$("#row_resolution").hide();
 	
 	switch (type) {
 		case 'event_report_group':
@@ -1808,6 +1859,41 @@ function chooseType() {
 			break;
 		case 'group_configuration':
 			$("#row_group").show();
+			break;
+		case 'netflow_area':
+			$("#row_netflow_filter").show();
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_max_values").show();
+			$("#row_resolution").show();
+			break;
+		case 'netflow_pie':
+			$("#row_netflow_filter").show();
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_max_values").show();
+			$("#row_resolution").show();
+			break;
+		case 'netflow_data':
+			$("#row_netflow_filter").show();
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_max_values").show();
+			$("#row_resolution").show();
+			break;
+		case 'netflow_summary':
+			$("#row_netflow_filter").show();
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_max_values").show();
+			$("#row_resolution").show();
+			break;
+		case 'netflow_statistics':
+			$("#row_netflow_filter").show();
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_max_values").show();			
+			$("#row_resolution").show();
 			break;
 	}
 }

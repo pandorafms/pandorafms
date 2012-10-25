@@ -16,6 +16,7 @@
 include_once("include/functions_modules.php");
 include_once("include/functions_events.php");
 include_once ('include/functions_groups.php');
+include_once ('include/functions_netflow.php');
 enterprise_include_once ('include/functions_metaconsole.php');
 
 function xml_array ($array, $buffer_file = array()) {
@@ -1496,6 +1497,46 @@ foreach ($contents as $content) {
 			fclose($file);
 			/// 
 			
+			break;
+		case 'netflow_area':
+		case 'netflow_pie':
+		case 'netflow_data':
+		case 'netflow_statistics':
+		case 'netflow_summary':
+			
+				// Read the report item
+				$report_id = $report['id_report'];
+				$content_id = $content['id_rc'];
+				$max_aggregates= $content['top_n_value'];
+				$type = $content['show_graph'];
+				$description = io_safe_output ($content['description']);
+				$resolution = $content['top_n'];
+				$type = $content['type'];
+				$period = $content['period'];
+				
+				// Calculate the start and end dates
+				$end_date = $report['datetime'];
+				$start_date = $end_date - $period;
+				
+				// Get item filters
+				$filter = db_get_row_sql("SELECT * FROM tnetflow_filter WHERE id_sg = '" . (int)$content['text'] . "'", false, true);
+				if ($description == '') {
+					$description = io_safe_output ($filter['id_name']);
+				}
+				
+				// Build a unique id for the cache
+				$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
+							
+				$table->colspan[0][0] = 4;
+				if ($filter['aggregate'] != 'none') {
+					$data["title"] = $description . ' (' . __($filter['aggregate']) . '/' . __($filter['output']) . ')';
+				}
+				else { 
+					$data["title"] = $description . ' (' . __($filter['output']) . ')';
+				}
+				
+				$data["objdata"]["netflow"] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $unique_id, '', 'XML');
+				$buffer_file["objdata"] = $config['attachment_store'] . '/netflow_' . $time.'_'.$content['id_rc'] . '.tmp';
 			break;
 	}
 

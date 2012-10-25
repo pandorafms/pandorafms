@@ -1,3 +1,17 @@
+2012-10-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_extensions.php, extensions/pandora_logs.php,
+	extensions/update_manager.php, extensions/resource_registration.php,
+	extensions/resource_exportation.php, extensions/module_groups.php,
+	extensions/plugin_registration.php, extensions/snmp_explorer.php,
+	extensions/system_info.php, operation/menu.php: cleaned source code
+	style.
+	
+	* include/functions_menu.php: fixed the hidden icons the extensions
+	in  menu.
+	
+	Fixes: #3568966
+
 2012-10-25  Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/functions_reporting.php

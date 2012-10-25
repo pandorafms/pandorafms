@@ -39,7 +39,7 @@ if (isset($_GET['get_ptr'])) {
 		else {
 			$config['id_user'] = $_SESSION["id_usuario"];
 		}
-				
+		
 		
 		if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 			db_pandora_audit("ACL Violation", "Trying to access Setup Management");
@@ -84,9 +84,9 @@ function output_xml_resource($hook_enterprise) {
 
 function output_xml_report($id) {
 	global $config;
-
+	
 	require_once ($config['homedir'].'/include/functions_agents.php');
-
+	
 	$report = db_get_row('treport', 'id_report', $id);
 	
 	echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n"; 

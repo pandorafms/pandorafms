@@ -46,7 +46,7 @@ if (is_ajax ()) {
 		$is_enteprise = enterprise_hook('license_show_info');
 		
 		// If Open show info
-		if ($is_enteprise === ENTERPRISE_NOT_HOOK){		
+		if ($is_enteprise === ENTERPRISE_NOT_HOOK) {
 			$table->width = '98%';
 			$table->data = array ();
 			$table->style = array();

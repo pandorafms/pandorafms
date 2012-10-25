@@ -300,16 +300,20 @@ function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = 
 	global $config;
 	global $extension_file;
 	
-	/* $config['extension_file'] is set in extensions_load_extensions(), since that function must
-	   be called before any function the extension call, we are sure it will 
-	   be set. */
+	/*
+	$config['extension_file'] is set in extensions_load_extensions(),
+	since that function must be called before any function the extension
+	call, we are sure it will be set.
+	*/
 	$option_menu['name'] = $name;
-
+	
 	$extension = &$config['extensions'][$extension_file];
-	$option_menu['sec2'] = $extension['dir'].'/'.mb_substr ($extension_file, 0, -4);
+	
+	$option_menu['sec2'] = $extension['dir'] . '/' . mb_substr ($extension_file, 0, -4);
 	$option_menu['fatherId'] = $fatherId;
 	$option_menu['icon'] = $icon;
 	$option_menu['version'] = $version;
+	
 	$extension['operation_menu'] = $option_menu;
 }
 

@@ -52,13 +52,13 @@ function snmp_explorer() {
 	
 	$interfaces = array();
 	
-	if($snmpwalk) {	
+	if ($snmpwalk) {
 		
 		$snmpis = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 			$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
 			$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1", $tcp_port);
 		
-		if($snmpis === false) {
+		if ($snmpis === false) {
 			$snmpis = array();
 		}
 		
@@ -252,7 +252,7 @@ function snmp_explorer() {
 	
 	// Create the interface list for the interface
 	$interfaces_list = array();
-	foreach($interfaces as $interface){
+	foreach ($interfaces as $interface){
 		// Get the interface name, removing " " characters and avoid "blank" interfaces
 		if (isset($interface['ifName']) && $interface['ifName']['value'] != ""){
 				$ifname = $interface['ifName']['value'];
@@ -343,9 +343,6 @@ function snmp_explorer() {
 	unset($table);
 	
 	echo "</form>";
-	
-	//echo "</tr></table>";
-	//echo "</form>";
 	
 	if (!empty($interfaces_list)) {
 		echo '<span id="form_interfaces">';

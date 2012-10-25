@@ -27,20 +27,20 @@
 function menu_print_menu (&$menu) {
 	global $config;
 	static $idcounter = 0;
-
+	
 	echo '<div class="menu">';
 	
 	$sec = (string) get_parameter ('sec');
 	$sec2 = (string) get_parameter ('sec2');
 	
 	$allsec2 = explode('sec2=', $_SERVER['REQUEST_URI']);
-	if(isset($allsec2[1])) {
+	if (isset($allsec2[1])) {
 		$allsec2 = $allsec2[1];
 	}
 	else {
 		$allsec2 = $sec2;
 	}
-
+	
 	echo '<ul'.(isset ($menu['class']) ? ' class="'.$menu['class'].'"' : '').'>';
 	
 	foreach ($menu as $mainsec => $main) {
@@ -200,8 +200,10 @@ function menu_print_menu (&$menu) {
 				
 				//Ini Add icon extension
 				$secExtension = null;
-				if (array_key_exists('extension',$sub)) $secExtensionBool = $sub["extension"];
-				else $secExtensionBool = false;
+				if (array_key_exists('extension',$sub))
+					$secExtensionBool = $sub["extension"];
+				else
+					$secExtensionBool = false;
 				
 				if ($secExtensionBool) {
 					$imageIconDefault = 'images/extensions.png';
@@ -224,8 +226,8 @@ function menu_print_menu (&$menu) {
 					else {
 						$imageIcon = $imageIconDefault;
 					}
-					//Delete extension Icon before the was a style with background: url('.$imageIcon.') no-repeat; 
-					$submenu_output .= '<div style="width: 16px; height: 16px; float: left; margin: 5px 0px 0px 3px;">&nbsp;</div>';
+					
+					$submenu_output .= '<div style="background: url('.$imageIcon.') no-repeat; width: 16px; height: 16px; float: left; margin: 5px 0px 0px 3px;">&nbsp;</div>';
 				}
 				
 				
@@ -395,8 +397,8 @@ function menu_add_extras(&$menu) {
 				$menu_extra[$mm['sec']]['sub'][$kk]['text'] = $mm['text'];
 			}
 		}
-	}	
-
+	}
+	
 	$menu = array_merge_recursive($menu, $menu_extra);
 }
 
@@ -404,7 +406,7 @@ function menu_add_extras(&$menu) {
  * Get the sec list built in menu
  *
  * @param bool If true, the array returned will have the structure
- * 		to combo categories (optgroup)
+ * to combo categories (optgroup)
  * 
  * @return array Sections list
  */

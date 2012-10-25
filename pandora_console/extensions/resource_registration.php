@@ -35,7 +35,7 @@ function insert_item_report($report_id, $values) {
 	foreach ($report_id as $id => $name) {
 		$values['id_report'] = $id;
 		$result = (bool)db_process_sql_insert('treport_content', $values);
-
+		
 		ui_print_result_message($result,
 			sprintf(__("Success add '%s' item in report '%s'."), $values['type'], $name),
 			sprintf(__("Error create '%s' item in report '%s'."), $values['type'], $name));
@@ -91,7 +91,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 		
 		if (isset($reportElement->description))
 			$values['description'] = $reportElement->description;
-			
+		
 		$id_report = db_process_sql_insert ('treport', $values);
 		
 		ui_print_result_message($id_report,
@@ -403,7 +403,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				$posible_name = $values['name'] . " (" . (30 - $loops) . ")";
 			}
 		}
-			
+		
 		if ($exist) {
 			ui_print_error_message(
 				sprintf(
@@ -420,18 +420,18 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 		
 		$values['name'] = io_safe_input($posible_name);
 		$id_visual_map = db_process_sql_insert('tlayout', $values);
-			
+		
 		ui_print_result_message((bool)$id_visual_map,
 			sprintf(__("Success create '%s' visual map."), $posible_name),
 			sprintf(__("Error create '%s' visual map."), $posible_name));
-			
+		
 		if ($id_visual_map !== false) {
 			db_pandora_audit('CREATE VISUAL CONSOLE', $id_visual_map, $config['id_user']);
 		}
 		else {
 			break;
 		}
-	
+		
 		$relation_other_ids = array();
 		
 		foreach ($visual_map->item as $item) {
@@ -533,7 +533,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				ui_print_result_message((bool)$id_item,
 					sprintf(__("Success create item type '%d' visual map."), $values['type']),
 					sprintf(__("Error create item type '%d' visual map."), $values['type']));
-					
+				
 				if ($id_item !== false) {
 					db_pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'] . " - " . $id_item, $config['id_user']);
 				}
@@ -552,7 +552,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 						ui_print_result_message((bool)$id_item,
 							sprintf(__("Success create item for agent '%s' visual map."), $agent['name']),
 							sprintf(__("Error create item for agent '%s' visual map."), $agent['name']));
-							
+						
 						if ($id_item !== false) {
 							db_pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'] . " - " . $id_item, $config['id_user']);
 						}
@@ -567,7 +567,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 							ui_print_result_message((bool)$id_item,
 								sprintf(__("Success create item for agent '%s' visual map."), $agent['name']),
 								sprintf(__("Error create item for agent '%s' visual map."), $agent['name']));
-								
+							
 							if ($id_item !== false) {
 								db_pandora_audit('CREATE ITEM VISUAL CONSOLE', $values['id_layout'] . " - " . $id_item, $config['id_user']);
 							}

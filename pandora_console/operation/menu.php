@@ -319,7 +319,7 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 }
 
 if (check_acl ($config['id_user'], 0, "AR")) {
-
+	
 	// Messages
 	$sub["operation/messages/message_list"]["text"] = __('Messages');
 	$sub["operation/messages/message_list"]["refr"] = 0;	

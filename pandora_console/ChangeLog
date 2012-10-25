@@ -1,5 +1,10 @@
 2012-10-25 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_networkmap.php: updated the links and tooltips
+	for the nodes in the networkmap on metaconsole.
+
+2012-10-25 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_networkmap.php: added two parameters
 	(flag metaconsole, id_server) into the functions
 	"networkmap_create_group_node" and "networkmap_create_networkmap"

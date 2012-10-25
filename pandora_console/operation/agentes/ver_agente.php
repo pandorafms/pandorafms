@@ -513,7 +513,19 @@ if (is_ajax ()) {
 	
 	if ($get_agentmodule_status_tooltip) {
 		$id_module = (int) get_parameter ('id_module');
+		$metaconsole = (bool)get_parameter('metaconsole');
+		$id_server = (int)get_parameter('id_server');
+		
+		if ($metaconsole) {
+			$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
+			
+			if (metaconsole_connect($server) != NOERR) {
+				return;
+			}
+		}
+		
 		$module = db_get_row ('tagente_modulo', 'id_agente_modulo', $id_module);
+		
 		echo '<h3>';
 		echo html_print_image("images/brick.png", true) . '&nbsp;'; 
 		echo ui_print_truncate_text($module['nombre'], 'module_small', false, true, false).'</h3>';
@@ -552,6 +564,11 @@ if (is_ajax ()) {
 				echo '</ul>';
 			}
 		}
+		
+		if ($metaconsole) {
+			metaconsole_restore_db();
+		}
+		
 		return;
 	}
 	

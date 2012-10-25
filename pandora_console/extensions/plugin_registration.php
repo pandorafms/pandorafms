@@ -16,21 +16,21 @@
 
 function pluginreg_extension_main () {
 	global $config;
-
+	
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
 		return;
 	}
-
+	
 	ui_print_page_header (__('Plugin registration'), "images/extensions.png", false, "", true, "" );
-
+	
 	echo "<div class=notify>";
 	printf(__("This extension makes registration of server plugins more easy. Here you can upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please refer to documentation on how to obtain and use Pandora FMS Server Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource Library</a>") , "http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en");
 	echo "</div>";
 	
 	echo "<br><br>";
-
+	
 	if (!isset ($_FILES['plugin_upload']['tmp_name'])){
 		// Upload form
 		echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";
@@ -40,11 +40,11 @@ function pluginreg_extension_main () {
 		echo "</form></table>";
 		
 		return;
-	} 	
-
+	}
+	
 	$config["plugin_store"] = $config["attachment_store"] . "/plugin";
 	$zip = zip_open($_FILES['plugin_upload']['tmp_name']);
-
+	
 	if ($zip) {
 		while ($zip_entry = zip_read($zip)) {
 			if (zip_entry_open($zip, $zip_entry, "r")) {
@@ -65,7 +65,7 @@ function pluginreg_extension_main () {
 		}
 		zip_close($zip);
 	}
-
+	
 	// Parse with sections
 	if (! $ini_array = parse_ini_file($config["attachment_store"] . "/plugin_definition.ini", true)){
 		echo "<h2 class=error>".__("Cannot load INI file")."</h2>";
@@ -80,13 +80,13 @@ function pluginreg_extension_main () {
 	if(!isset($ini_array["plugin_definition"]["execution_postcommand"])) {
 		$ini_array["plugin_definition"]["execution_postcommand"] = '';
 	}
-
+	
 	// From Pandora 5.0 the pspz are in different format (version 2)
 	// If pspz is a version 1, we convert it to 2
 	if($version == 1) {
 		$ini_array["plugin_definition"] = pluginreg_convert_plugin_1_to_2($ini_array["plugin_definition"]);
 	}
-
+	
 	// Build plugin_exec
 	$exec_path = $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
 	
@@ -116,7 +116,7 @@ function pluginreg_extension_main () {
 	// Build macros
 	$macros = array();
 	$n = 1;
-	while(1) {
+	while (1) {
 		if(!isset($ini_array["plugin_definition"]["macro_desc_field".$n."_"])) {
 			break;
 		}
@@ -129,7 +129,7 @@ function pluginreg_extension_main () {
 		$n++;
 	}
 	
-	if(empty($macros)) {
+	if (empty($macros)) {
 		$macros = '';
 	}
 	else {

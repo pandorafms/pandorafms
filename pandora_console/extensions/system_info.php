@@ -43,7 +43,7 @@ function getPandoraDiagnostic(&$systemInfo) {
 	$systemInfo['ttrap'] = db_get_sql("SELECT COUNT(*) FROM ttrap");
 	$systemInfo['tusuario'] = db_get_sql("SELECT COUNT(*) FROM tusuario");
 	$systemInfo['tsesion'] = db_get_sql("SELECT COUNT(*) FROM tsesion");
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$systemInfo['db_scheme_version'] = db_get_sql("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_version'");
@@ -146,8 +146,8 @@ function getLastLinesLog($file, $numLines = 2000) {
 
 function show_logfile($file_name, $numLines = 2000) {
 	global $config;
-
-	if (!file_exists($file_name)){
+	
+	if (!file_exists($file_name)) {
 		echo "<h2 class=error>" . __("Cannot find file") . "(" . $file_name .
 			")</h2>";
 	} 
@@ -167,7 +167,7 @@ function show_logfile($file_name, $numLines = 2000) {
 
 function logFilesLines($file_name, $numLines) {
 	global $config;
-
+	
 	if (!file_exists($file_name)){
 		return '';
 	} 
@@ -260,14 +260,15 @@ function mainSystemInfo() {
 	echo '</div>';
 	
 	echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
-
+	
 	echo "<form method='post' action='index.php?extension_in_menu=gsetup&sec=gextensions&sec2=extensions/system_info'>";
 	$table = null;
 	$table->width = '98%';
 	$table->align = array();
 	$table->align[1] = 'right';
 	if ($pandora_diag) {
-		$table->data[0][0] = '<a href="#diag_info">' . __('Pandora Diagnostic info') . "</a>";
+		$table->data[0][0] = '<a href="#diag_info">' .
+			__('Pandora Diagnostic info') . "</a>";
 	}
 	else {
 		$table->data[0][0] = __('Pandora Diagnostic info');
@@ -291,7 +292,6 @@ function mainSystemInfo() {
 	$table->data[3][1] = html_print_input_text('log_num_lines', $log_num_lines, __('Number lines of log'), 5, 10, true);
 	html_print_table($table);
 	echo "<div style='width: " . $table->width . "; text-align: right;'>";
-	//html_print_submit_button(__('Show'), 'show', false, 'class="sub next"');
 		html_print_submit_button(__('Generate file'), 'generate', false, 'class="sub next"');
 	echo "</div>";
 	echo "</form>";
@@ -558,7 +558,7 @@ function consoleMode() {
 				fwrite($file, $output);
 				fclose($file);
 			}
-
+			
 			$file = fopen($tempDir . 'my.cnf', 'w');
 			if ($file !== false) {
 				ob_start();
@@ -567,7 +567,7 @@ function consoleMode() {
 				fwrite($file, $output);
 				fclose($file);
 			}
-
+			
 			$file = fopen($tempDir . 'pandora_server.conf', 'w');
 			if ($file !== false) {
 				ob_start();

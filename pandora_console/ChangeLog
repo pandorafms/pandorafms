@@ -1,3 +1,11 @@
+2012-10-25  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php
+	operation/visual_console/render_view.php
+	operation/gis_maps/render_view.php
+	operation/search_maps.php: Fixed some ACL Enterprise bugs
+	merged from 4.0.2
+
 2012-10-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_networkmap.php: updated the links and tooltips

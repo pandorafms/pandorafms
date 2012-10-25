@@ -801,7 +801,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	}
 	if (isset($other['data'][3])) {
 		// Filter by name
-		if ($other['data'][3] != ""){
+		if ($other['data'][3] != "") {
 			$where .= " AND nombre LIKE ('%" . $other['data'][3] . "%')";
 		}
 	}

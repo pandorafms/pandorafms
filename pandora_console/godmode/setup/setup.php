@@ -260,8 +260,8 @@ $(document).ready (function () {
 	});
 });
 </script>
-<?php
 
+<?php
 echo '<form id="form_setup" method="post">';
 echo "<fieldset>";
 echo "<legend>" . __('General options') . "</legend>";

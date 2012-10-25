@@ -879,7 +879,7 @@ function reporting_get_group_stats ($id_group = 0) {
 		// Store the groups where we are quering
 		$covered_groups = array();
 		
-		foreach ($id_group as $group){
+		foreach ($id_group as $group) {
 			$children = groups_get_childrens($group);
 
 			//Show empty groups only if they have children with agents
@@ -902,6 +902,7 @@ function reporting_get_group_stats ($id_group = 0) {
 			}
 
 			// If there are not groups to query, we jump to nextone
+			
 			if (empty($group_array)) {
 				continue;
 			}

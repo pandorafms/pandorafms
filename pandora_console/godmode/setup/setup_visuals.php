@@ -172,7 +172,7 @@ $table->data[22][0] = __('Default icon in GIS') . ui_print_help_tip(__('Agent ic
 
 $gis_default_icon = $config["gis_default_icon"];
 
-if($gis_default_icon == '') {
+if ($gis_default_icon == '') {
         $display_icons = 'none';
         // Hack to show no icon. Use any given image to fix not found image errors
         $path_without = "images/spinner.png";

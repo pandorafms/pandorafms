@@ -1,3 +1,16 @@
+2012-10-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/setup/setup.php, godmode/setup/setup_visuals.php,
+	include/functions_api.php, include/functions_reporting.php: cleaned
+	source code style.
+	
+	* install.php fixed the installation on DBs with names as for
+	example "name1.name2".
+	
+	Fixes: #3573766
+	
+	MERGED FROM TRUNK
+
 2012-10-25  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_visual_map.php

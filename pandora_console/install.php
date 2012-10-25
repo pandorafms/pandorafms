@@ -17,60 +17,56 @@
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<head>
-<title>Pandora FMS - Installation Wizard</title>
-<meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="resource-type" content="document">
-<meta name="distribution" content="global">
-<meta name="author" content="Pandora FMS Development Team">
-<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and many others">
-<meta name="keywords" content="pandora, fms, monitoring, network, system, GPL, software">
-<meta name="robots" content="index, follow">
-<link rel="icon" href="images/pandora.ico" type="image/ico">
-<link rel="stylesheet" href="include/styles/install.css" type="text/css">
-</head>
-
-<script type="text/javascript">
-options_text = new Array('An existing Database','A new Database');
-options_values = new Array('db_exist','db_new');
-function ChangeDBDrop(causer) {
-	if (causer.value != 'db_exist') {
-		window.document.step2_form.drop.checked=0;		
-		window.document.step2_form.drop.disabled=1;
-	}
-	else {
-		window.document.step2_form.drop.disabled=0;
-	}
-}
-function ChangeDBAction(causer) {
-	var i = 0;
-	if (causer.value == 'oracle') {
-		window.document.step2_form.db_action.length=1;
-	}
-	else {
-		window.document.step2_form.db_action.length=2;
-	}
-	while (i < window.document.step2_form.db_action.length) {
-		window.document.step2_form.db_action.options[i].value =options_values[i];
-		window.document.step2_form.db_action.options[i].text =options_text[i];
-		i++;
-	}
-	window.document.step2_form.db_action.options[window.document.step2_form.db_action.length-1].selected=1;
-	ChangeDBDrop(window.document.step2_form.db_action);
-}
-</script>
-<body>
-<div style='height: 10px'>
-
-
-<?php
-
-$version = '4.0.2';
-$build = '120625';
-$banner = "v$version Build $build";
-
-error_reporting(0);
+	<head>
+		<title>Pandora FMS - Installation Wizard</title>
+		<meta http-equiv="expires" content="0">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta name="resource-type" content="document">
+		<meta name="distribution" content="global">
+		<meta name="author" content="Pandora FMS Development Team">
+		<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and many others">
+		<meta name="keywords" content="pandora, fms, monitoring, network, system, GPL, software">
+		<meta name="robots" content="index, follow">
+		<link rel="icon" href="images/pandora.ico" type="image/ico">
+		<link rel="stylesheet" href="include/styles/install.css" type="text/css">
+	</head>
+	<script type="text/javascript">
+		options_text = new Array('An existing Database','A new Database');
+		options_values = new Array('db_exist','db_new');
+		function ChangeDBDrop(causer) {
+			if (causer.value != 'db_exist') {
+				window.document.step2_form.drop.checked = 0;
+				window.document.step2_form.drop.disabled = 1;
+			}
+			else {
+				window.document.step2_form.drop.disabled = 0;
+			}
+		}
+		function ChangeDBAction(causer) {
+			var i = 0;
+			if (causer.value == 'oracle') {
+				window.document.step2_form.db_action.length = 1;
+			}
+			else {
+				window.document.step2_form.db_action.length = 2;
+			}
+			while (i < window.document.step2_form.db_action.length) {
+				window.document.step2_form.db_action.options[i].value = options_values[i];
+				window.document.step2_form.db_action.options[i].text = options_text[i];
+				i++;
+			}
+			window.document.step2_form.db_action.options[window.document.step2_form.db_action.length-1].selected=1;
+			ChangeDBDrop(window.document.step2_form.db_action);
+		}
+	</script>
+	<body>
+		<div style='height: 10px'>
+			<?php
+			$version = '4.0.2';
+			$build = '120625';
+			$banner = "v$version Build $build";
+			
+			error_reporting(0);
 
 function check_extension ( $ext, $label ) {
 	echo "<tr><td>";
@@ -155,12 +151,12 @@ function check_writable ( $fullpath, $label ) {
 
 }
 
-function check_variable ( $var, $value, $label, $mode ){
+function check_variable ( $var, $value, $label, $mode ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
-	if ($mode == 1){
-		if ($var >= $value){
+	if ($mode == 1) {
+		if ($var >= $value) {
 			echo " <img src='images/dot_green.png'>";
 			return 0;
 		}
@@ -169,7 +165,7 @@ function check_variable ( $var, $value, $label, $mode ){
 			return 1;
 		}
 	}
-	elseif ($var == $value){
+	elseif ($var == $value) {
 		echo " <img src='images/dot_green.png'>";
 		return 0;
 	}
@@ -180,16 +176,16 @@ function check_variable ( $var, $value, $label, $mode ){
 	echo "</td></tr>";
 }
 
-function parse_mysql_dump($url){
-	if (file_exists($url)){
+function parse_mysql_dump($url) {
+	if (file_exists($url)) {
 		$file_content = file($url);
 		$query = "";
-		foreach($file_content as $sql_line){
-			if(trim($sql_line) != "" && strpos($sql_line, "--") === false){
+		foreach($file_content as $sql_line) {
+			if (trim($sql_line) != "" && strpos($sql_line, "--") === false) {
 				$query .= $sql_line;
-				if(preg_match("/;[\040]*\$/", $sql_line)){
+				if(preg_match("/;[\040]*\$/", $sql_line)) {
 					if (!$result = mysql_query($query)) {
-					 	echo mysql_error(); //Uncomment for debug
+						echo mysql_error(); //Uncomment for debug
 						echo "<i><br>$query<br></i>";
 						return 0;
 					}
@@ -209,7 +205,7 @@ function parse_postgresql_dump($connection, $url, $debug = false) {
 		
 		$query = "";
 		
-		foreach($file_content as $sql_line){
+		foreach ($file_content as $sql_line) {
 			$clean_line = trim($sql_line);
 			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);
 			if ($comment) {
@@ -259,7 +255,7 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 		$query = "";
 		$plsql_block = false;
 		
-		foreach($file_content as $sql_line){
+		foreach ($file_content as $sql_line) {
 			$clean_line = trim($sql_line);
 			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);
 			if ($comment) {
@@ -271,24 +267,24 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 			}
 			
 			//Support for PL/SQL blocks
-			if (preg_match("/^BEGIN$/", $clean_line)){
+			if (preg_match("/^BEGIN$/", $clean_line)) {
 				$query .= $clean_line . ' ';
 				$plsql_block = true;
-			}			
+			}
 			else{
 				$query .= $clean_line;
-			}			
+			}
 			
 			//Check query's end with a back slash and any returns in the end of line or if it's a PL/SQL block 'END;;' string
 			if ((preg_match("/;[\040]*\$/", $clean_line) && !$plsql_block) || 
-			    (preg_match("/^END;;[\040]*\$/", $clean_line) && $plsql_block)) {
+				(preg_match("/^END;;[\040]*\$/", $clean_line) && $plsql_block)) {
 				$plsql_block = false;
 				//Execute and clean buffer
 				
 				//Delete the last semicolon from current query
 				$query = substr($query, 0, strlen($query) - 1);
 				$sql = oci_parse($connection, $query);
-				$result = oci_execute($sql);				
+				$result = oci_execute($sql);
 				
 				if ($debug) {
 					var_dump($query);
@@ -317,33 +313,32 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 }
 
 function oracle_drop_all_objects ($connection) {
-
 	//Drop all objects of the current installation
 	$stmt = oci_parse($connection,
-			"BEGIN " .
-  				"FOR cur_rec IN (SELECT object_name, object_type " . 
-                  		"FROM   user_objects " .
-                  		"WHERE  object_type IN ('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE', 'SNAPSHOT', 'MATERIALIZED VIEW')) LOOP " .
-    				"BEGIN " . 
-      					"IF cur_rec.object_type = 'TABLE' THEN " .
-        					"EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" CASCADE CONSTRAINTS'; " .
-      					"ELSE " .
-        					"EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'; " .
-      					"END IF; " .
-    				"EXCEPTION " .
-      					"WHEN OTHERS THEN " .
-        					"DBMS_OUTPUT.put_line('FAILED: DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'); " .
-    					"END; " .
-  				"END LOOP; " .
-			"END; ");
-
+		"BEGIN " .
+			"FOR cur_rec IN (SELECT object_name, object_type " . 
+				"FROM   user_objects " .
+					"WHERE  object_type IN ('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE', 'SNAPSHOT', 'MATERIALIZED VIEW')) LOOP " .
+				"BEGIN " . 
+					"IF cur_rec.object_type = 'TABLE' THEN " .
+						"EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" CASCADE CONSTRAINTS'; " .
+					"ELSE " .
+						"EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'; " .
+					"END IF; " .
+				"EXCEPTION " .
+					"WHEN OTHERS THEN " .
+						"DBMS_OUTPUT.put_line('FAILED: DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'); " .
+					"END; " .
+			"END LOOP; " .
+		"END; ");
+	
 	$result = oci_execute($stmt);
 	oci_free_statement($stmt);
-
+	
 	return 0;
 }
 
-function random_name ($size){
+function random_name ($size) {
 	$temp = "";
 	for ($a=0;$a< $size;$a++)
 		$temp = $temp. chr(rand(122,97));
@@ -351,9 +346,9 @@ function random_name ($size){
 	return $temp;
 }
 
-function print_logo_status ($step, $step_total){
+function print_logo_status ($step, $step_total) {
 	global $banner;
-
+	
 	echo "
 		<div id='logo_img'>
 			<img src='images/pandora_logo.png' border='0'><br>
@@ -363,10 +358,9 @@ function print_logo_status ($step, $step_total){
 		</div>";
 }
 
-
 function install_step1() {
 	global $banner;
-
+	
 	echo "
 	<div id='install_container'>
 	<div id='wizard' style='height: 480px;'>
@@ -377,31 +371,29 @@ function install_step1() {
 			<p>For more information, please refer to documentation.<br>
 			<i>Pandora FMS Development Team</i></p>
 		";
-		if (file_exists("include/config.php")){
+		if (file_exists("include/config.php")) {
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file. 
 			Configuration and database would be overwritten if you continued.</div>";
 		}
-        echo "<br>";
+		echo "<br>";
 		echo "<table width=85%>";
 		$writable = check_writable ( "include", "Checking if ./include is writable");
 		if (file_exists("include/config.php"))
 			$writable += check_writable ( "include/config.php", "Checking if include/config.php is writable");
 		echo "</table>";
-
+		
 		echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> 
 		your existing Pandora FMS configuration and <b>Database</b>. Before continue, 
 		please <b>be sure that you have no valuable Pandora FMS data in your Database</b>.<br>
 		</div>";
-
+		
 		echo "<div class='info'><b>Upgrade</b>: 
 		If you want to upgrade from Pandora FMS 3.2.x to 4.0.x version, 
-		please use the migration tool inside /extras directory in this setup.</div>";
-	
-			
+		please use the migration tool inside /extras directory in this setup.</div>";	
 		echo "</div>";
-
+		
 		print_logo_status (1,6);
-
+		
 		echo "<div id='install_img'>";
 		if ($writable == 0) {
 			echo "
@@ -430,8 +422,8 @@ function install_step1_licence() {
 			<p>For more information, please refer to our website at http://pandorafms.org and contact us if you have any kind of question about the usage of Pandora FMS</p>
 <p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
 		";
-
-	if (!file_exists("COPYING")){
+	
+	if (!file_exists("COPYING")) {
 		echo "<div class='warn'><b>Licence file 'COPYING' is not present in your distribution. This means you have some 'partial' Pandora FMS distribution. We cannot continue without accepting the licence file.</b>";
 		echo "</div>";
 	}
@@ -444,9 +436,9 @@ function install_step1_licence() {
 		echo "<input type=submit value='Yes, I accept licence terms'>";
 	}
 	echo "</div>";
-
+	
 	print_logo_status (2,6);
-
+	
 	echo "</div>
 	<div style='clear: both;height: 1px;'><!-- --></div>
 	<div id='foot_install'>
@@ -457,7 +449,7 @@ function install_step1_licence() {
 }
 
 function install_step2() {
-
+	
 	echo "
 	<div id='install_container'>
 	<div id='wizard' style='min-height: 390px;'>
@@ -493,7 +485,7 @@ function install_step2() {
 			echo "</table>";
 		echo "</div>";
 		print_logo_status (3,6);
-
+		
 		echo "<div id='install_img'>";
 			if ($res > 0) {
 				echo "
@@ -589,8 +581,8 @@ function install_step3() {
 		echo "<td>";
 		echo " Installation in <br>";
 		echo "<select name='db_action' onChange=\"ChangeDBDrop(this)\">";
-		echo 	"<option value='db_new'>A new Database</option>";
-		echo 	"<option value='db_exist'>An existing Database</option>";
+		echo "<option value='db_new'>A new Database</option>";
+		echo "<option value='db_exist'>An existing Database</option>";
 		echo "</select>";
 	}
 	echo "		<tr><td>DB User with privileges<br>
@@ -621,33 +613,30 @@ function install_step3() {
 				</br>
 				<input class='login' type='text' name='url' style='width: 250px;' 
 				value='".dirname ($_SERVER["SCRIPT_NAME"])."'>
-				</table>
-				";
+			</table>
+			";
 	
 	if (!$error) {
-		echo "	<div align='right'><br>
-				<input type='image' src='images/arrow_next.png' value='Step #4' id='step4'>
-				</div>
-			";
-	}
-	echo "	</form>
+		echo "<div align='right'><br>
+			<input type='image' src='images/arrow_next.png' value='Step #4' id='step4'>
 			</div>";
-
+	}
+	echo "</form>
+		</div>";
+	
 	print_logo_status (4,6);
-
+	
 	echo "</div>
-
 		<div id='foot_install'>
 			<i>Pandora FMS is an OpenSource Software project registered at 
 			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 		</div>
-
 	</div>";
 }
 
 function install_step4() {
 	$pandora_config = "include/config.php";
-
+	
 	if ( (! isset($_POST["user"])) || (! isset($_POST["dbname"])) || (! isset($_POST["host"])) || 
 	(! isset($_POST["pass"])) || (!isset($_POST['engine'])) || (! isset($_POST["db_action"])) ) {
 		$dbpassword = "";
@@ -667,7 +656,7 @@ function install_step4() {
 			$dbdrop = $_POST["drop"];
 		else
 			$dbdrop = 0;
-				
+		
 		$dbname = $_POST["dbname"];
 		if (isset($_POST["url"]))
 			$url = $_POST["url"];
@@ -683,7 +672,7 @@ function install_step4() {
 	$step2=0;
 	$step3=0;
 	$step4=0; $step5=0; $step6=0; $step7=0;
-
+	
 	echo "
 	<div id='install_container'>
 	<div id='wizard' style='height: 480px;'>
@@ -700,15 +689,15 @@ function install_step4() {
 						
 						// Drop database if needed and don't want to install over an existing DB
 						if ($dbdrop == 1) {
-							mysql_query ("DROP DATABASE IF EXISTS $dbname");
+							mysql_query ("DROP DATABASE IF EXISTS `$dbname`");
 						}
 						
 						// Create schema
-						if ($dbaction == 'db_new' || $dbdrop == 1){
-							$step1 = mysql_query ("CREATE DATABASE $dbname");
+						if ($dbaction == 'db_new' || $dbdrop == 1) {
+							$step1 = mysql_query ("CREATE DATABASE `$dbname`");
 							check_generic ($step1, "Creating database '$dbname'");
 						}
-						else{
+						else {
 							$step = 1;
 						}
 						if ($step1 == 1) {
@@ -725,8 +714,8 @@ function install_step4() {
 							$host = 'localhost';
 							if ($dbhost != 'localhost')
 								$host = $_SERVER['SERVER_ADDR'];
-							$step5 = mysql_query ("GRANT ALL PRIVILEGES ON $dbname.* to pandora@$host 
-							IDENTIFIED BY '".$random_password."'");
+							$step5 = mysql_query ("GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host 
+								IDENTIFIED BY '".$random_password."'");
 							mysql_query ("FLUSH PRIVILEGES");
 							check_generic ($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
 							
@@ -765,7 +754,7 @@ function install_step4() {
 					break;
 				case 'oracle':
 					$connection = oci_connect($dbuser, $dbpassword, '//' . $dbhost . '/' . $dbname);
-					if (!$connection){
+					if (!$connection) {
 						check_generic(0, "Connection with Database");
 					}
 					else {
@@ -776,22 +765,22 @@ function install_step4() {
 							oracle_drop_all_objects($connection);
 						}
 						
-					 	$step1 = parse_oracle_dump($connection, "pandoradb.oracle.sql");
+						$step1 = parse_oracle_dump($connection, "pandoradb.oracle.sql");
 						
 						check_generic($step1, "Creating schema");
 						
 						if ($step1) {
 							$step2 = parse_oracle_dump($connection, "pandoradb.data.oracle.sql");
 						}
-
+						
 						check_generic ($step2, "Populating database");	
-
+						
 						echo "<tr><td><div class='warn'>Please, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file and set database password.</div></tr></td>";
 						
 						if ($step2) {
 							$step3 = is_writable("include");
 						}
-
+						
 						check_generic ($step3, "Write permissions to save config file in './include'");
 						
 						if ($step3) {
@@ -824,9 +813,9 @@ function install_step4() {
 						if (($step4 + $step3 + $step2 + $step1) == 4) {
 							$everything_ok = 1;
 						}
-
+						
 					}
-					break;			
+					break;
 				case 'pgsql':
 					$step1 = $step2 = $step3 = $step4 = $step5 = $step6 = $step7 = 0;
 					
@@ -842,7 +831,7 @@ function install_step4() {
 							$result = pg_query($connection, "DROP DATABASE \"" . $dbname . "\";");
 						}
 						
-						if ($dbaction != 'db_exist' || $dbdrop == 1){
+						if ($dbaction != 'db_exist' || $dbdrop == 1) {
 							pg_send_query($connection, "CREATE DATABASE \"" . $dbname . "\" WITH ENCODING 'utf8';");
 							$result = pg_get_result($connection);
 							if (pg_result_status($result) != PGSQL_FATAL_ERROR) {
@@ -851,7 +840,7 @@ function install_step4() {
 						
 							check_generic ($step1, "Creating database '$dbname'");
 						}
-						else{
+						else {
 							$step1 = 1;
 						}
 						
@@ -1007,7 +996,7 @@ function install_step4() {
 					break;
 			}
 		echo "</table></div>";
-
+		
 		print_logo_status(5,6);
 		
 		echo "<div id='install_img'>";
@@ -1024,7 +1013,7 @@ function install_step4() {
 					$info .= "objects ";
 				else
 					$info .= "schemes ";
- 
+				
 				$info .= "created in this step have been dropped. </p>
 				</div>";
 				echo $info;
@@ -1034,7 +1023,7 @@ function install_step4() {
 						if (mysql_error() != "") {
 							echo "<div class='warn'> <b>ERROR:</b> ". mysql_error().".</div>";
 						}
-							
+						
 						if ($step1 == 1) {
 							mysql_query ("DROP DATABASE $dbname");
 						}
@@ -1045,7 +1034,7 @@ function install_step4() {
 						oracle_drop_all_objects($connection);
 						break;
 				}
-			}		
+			}
 		echo "
 		</div>
 	</div>

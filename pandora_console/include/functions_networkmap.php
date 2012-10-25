@@ -456,13 +456,33 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10, $me
 			$name = groups_get_name($group['id_grupo']);
 		}
 		
+		if (defined("METACONSOLE")) {
+			$url = '';
+			$url_tooltip = '';
+		}
+		else {
+			$url = 'index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'];
+			$url_tooltip = 'ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'];
+		}
+		
 		$node = "\n" . $group['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>'.$img_node.'</TD></TR>
 		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
-		 shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'",
-		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];' . "\n";
+		 shape="invtrapezium", URL="' . $url . '",
+		 tooltip="' . $url_tooltip . '"];' . "\n";
 	}
 	else {
-		$node = "\n" . $group['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];' . "\n";
+		if (defined("METACONSOLE")) {
+			$url = '';
+			$url_tooltip = '';
+		}
+		else {
+			$url = 'index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'];
+			$url_tooltip = 'ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'];
+		}
+		
+		$node = "\n" . $group['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', shape="invtrapezium",
+			URL="' . $url . '", style="filled", fixedsize=true, width=0.20, height=0.20, label="",
+			tooltip="' . $url_tooltip . '"];' . "\n";
 	}
 	return $node;
 }
@@ -521,7 +541,8 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		}
 		
 		if (defined("METACONSOLE")) {
-			$url = 'TODO'; //TODO
+			$url = ui_meta_get_url_console_child($id_server,
+				"estado", "operation/agentes/ver_agente&id_agente=" . $agent['id_agente']);
 			$url_tooltip = '../../ajax.php?' .
 				'page=operation/agentes/ver_agente&' .
 				'get_agent_status_tooltip=1&' .
@@ -574,7 +595,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $
 	
 	if ($simple == 0) {
 		if (defined("METACONSOLE")) {
-			$url = 'TODO';
+			$url = '';
 			$url_tooltip = '../../ajax.php?' .
 				'page=operation/agentes/ver_agente&' .
 				'get_agentmodule_status_tooltip=1&' .
@@ -631,7 +652,7 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 			'action=get_networkmap_summary&' .
 			'stats='.$stats_json . '&' .
 			'metaconsole=1';
-		$url = 'index.php?sec=monitoring&sec2=monitoring/tree_view';
+		$url = 'index.php';
 	}
 	else {
 		$url_tooltip = 'ajax.php?page=include/ajax/networkmap.ajax&action=get_networkmap_summary&stats='.$stats_json.'", URL="index.php?sec=estado&sec2=operation/agentes/group_view';
@@ -760,7 +781,7 @@ function networkmap_get_filter ($layout) {
  * 
  * @return mixed New networkmap id if created. False if it could not be created.
  */
-function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'radial', $nooverlap = true, $simple = false, $regenerate = true, $font_size = 12, $id_group = 0, $id_module_group = 0, $depth = 'all', $only_modules_with_alerts = false, $hide_policy_modules = false, $zoom = 1, $distance_nodes = 2.5, $center = 0, $text_filter = '', $dont_show_subgroups = 0, $show_groups = false, $show_modules = false) {
+function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'radial', $nooverlap = true, $simple = false, $regenerate = true, $font_size = 12, $id_group = 0, $id_module_group = 0, $depth = 'all', $only_modules_with_alerts = false, $hide_policy_modules = false, $zoom = 1, $distance_nodes = 2.5, $center = 0, $text_filter = '', $dont_show_subgroups = 0, $show_groups = false, $show_modules = false, $pandoras_children = false) {
 	
 	global $config;
 	
@@ -784,6 +805,10 @@ function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'rad
 	$values['id_user'] = $config['id_user'];
 	$values['text_filter'] = $text_filter;
 	$values['dont_show_subgroups'] = $dont_show_subgroups;
+	
+	$values['pandoras_children'] = $pandoras_children;
+	$values['show_groups'] = $show_groups;
+	$values['show_modules'] = $show_modules;
 	
 	return @db_process_sql_insert ('tnetwork_map', $values);
 }

@@ -339,6 +339,12 @@ switch ($action) {
 				$inventory_modules = $es['inventory_modules'];
 				$id_agents = $es['id_agents'];
 				break;
+			case 'agent_configuration':
+				$idAgent = $item['id_agent'];
+				break;
+			case 'group_configuration':
+				$group = $item['id_group'];
+				break;
 		}
 		
 		//Restore db connection
@@ -1796,6 +1802,12 @@ function chooseType() {
 			updateInventoryDates();
 			break;
 		case 'inventory_changes':
+			break;
+		case 'agent_configuration':
+			$("#row_agent").show();
+			break;
+		case 'group_configuration':
+			$("#row_group").show();
 			break;
 	}
 }

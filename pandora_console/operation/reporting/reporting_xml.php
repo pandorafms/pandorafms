@@ -18,8 +18,15 @@ include_once("include/functions_events.php");
 include_once ('include/functions_groups.php');
 enterprise_include_once ('include/functions_metaconsole.php');
 
-function xml_array ($array) {
-	foreach ($array as $name => $value) {
+function xml_array ($array, $buffer_file = array()) {
+
+	foreach ($array as $name => $value) {			
+		//si coincide con el nivel de anidación y existe el fichero
+		$file_to_print = false;
+		if(isset($buffer_file[$name]) && file_exists($buffer_file[$name])) {
+			$file_to_print = $buffer_file[$name];
+		}
+		
 		if (is_int ($name)) {
 			echo "<object id=\"".$name."\">";
 			$name = "object";
@@ -27,9 +34,18 @@ function xml_array ($array) {
 		else {
 			echo "<".$name.">";
 		}
-		
+			
 		if (is_array ($value)) {
-			xml_array ($value);
+			//si es la ruta al fichero que contiene el xml
+			if(is_string($file_to_print)) {
+					$file = fopen($file_to_print, 'r');
+					while (!feof($file)) {
+						$buffer = fgets($file);
+						echo "$buffer";
+					}
+				$file_to_print = false;
+			}
+			xml_array ($value, $file_to_print);
 		}
 		else {
 			echo $value;
@@ -37,6 +53,136 @@ function xml_array ($array) {
 		
 		echo "</".$name.">";
 	}
+}
+
+function write_xml_file_agent_data ($agent_data = array(), $file_temp) {
+	
+	$file = fopen($file_temp, 'a+');
+		
+	$content_report = "		<name>". $agent_data['nombre']."</name>\n";
+	$content_report .= "		<description>". $agent_data['comentarios']."</description>\n";
+	$content_report .= "		<main_ipaddress>".$agent_data['direccion']."</main_ipaddress>\n";
+	$content_report .= "		<group>".$agent_data['id_grupo']."</group>\n";
+	$content_report .= "		<interval>". $agent_data['intervalo']."</interval>\n";
+	$content_report .= "		<os_type>".$agent_data['id_os']."</os_type>\n";
+	$content_report .= "		<parent>". agents_get_name ($agent_data['id_parent'])."</parent>\n";
+	$content_report .= "		<extra_id>".$agent_data['id_extra']."</extra_id>\n";
+	$content_report .= "		<disabled>".$agent_data['disabled']."</disabled>\n";
+	
+	$result = fwrite($file, $content_report);
+	$position++;
+
+	fclose($file);
+	return $position;
+}
+
+function write_xml_file_agent_conf ($modules = array(), $file_temp, $position = 0, $id_agent) {
+	
+	$file = fopen($file_temp, 'a+');
+	
+	foreach ($modules as $module) {
+		
+		$content_report = "	<object id=\"$position\">\n";
+	
+		$content_report .= "		<name>".$module['nombre']."</name>\n";
+		$content_report .= "		<id>".$module['id_agente_modulo']."</id>\n";
+		$content_report .= "		<type>".$module['id_tipo_modulo']."</type>\n";
+		$content_report .= "		<description>".$module['descripcion']."</description>\n";
+		$content_report .= "		<extended_info>". $module['extended_info']."</extended_info>\n";
+		$content_report .= "		<unit>". $module['unit']."</unit>\n";
+		$content_report .= "		<max>". $module['max']."</max>\n";
+		$content_report .= "		<min>".$module['min']."</min>\n";
+		$content_report .= "		<interval>". $module['module_interval']."</interval>\n";
+		$content_report .= "		<ff_interval>". $module['module_ff_interval']."</ff_interval>\n";
+		$content_report .= "		<tcp_port>". $module['tcp_port']."</tcp_port>\n";
+		$content_report .= "		<tcp_send>". $module['tcp_send']."</tcp_send>\n";
+		$content_report .= "		<tcp_rcv>". $module['tcp_rcv']."</tcp_rcv>\n";
+		$content_report .= "		<snmp_community>". $module['snmp_community']."</snmp_community>\n";
+		$content_report .= "		<snmp_oid>".$module['snmp_oid']."</snmp_oid>\n";
+		$content_report .= "		<ip>". $module['ip_target']."</ip>\n";
+		$content_report .= "		<module_group>".$module['id_module_group']."</module_group>\n";
+		$content_report .= "		<disabled>". $module['disabled']."</disabled>\n";
+		$content_report .= "		<id_plugin>".$module['id_plugin']."</id_plugin>\n";
+		$content_report .= "		<post_process>". $module['post_process']."</post_process>\n";
+		$content_report .= "		<min_warning>". $module['min_warning']."</min_warning>\n";
+		$content_report .= "		<max_warning>". $module['max_warning']."</max_warning>\n";
+		$content_report .= "		<str_warning>". $module['str_warning']."</str_warning>\n";
+		$content_report .= "		<min_critical>". $module['min_critical']."</min_critical>\n";
+		$content_report .= "		<max_critical>".$module['max_critical']."</max_critical>\n";
+		$content_report .= "		<str_critical>". $module['str_critical']."</str_critical>\n";
+		$content_report .= "		<id_policy_module>". $module['id_policy_module']."</id_policy_module>\n";
+		$content_report .= "		<wizard_level>".$module['wizard_level']."</wizard_level>\n";
+		$content_report .= "		<critical_instructions>". $module['critical_instructions']."</critical_instructions>\n";
+		$content_report .= "		<warning_instructions>". $module['warning_instructions']."</warning_instructions>\n";
+		$content_report .= "		<unknown_instructions>".$module['unknown_instructions']."</unknown_instructions>\n";
+		
+		$content_report .= "	</object>\n";
+		
+		$result = fwrite($file, $content_report);
+		$position++;
+	}
+	fclose($file);
+	return $position;
+}
+
+function write_xml_file_event ($events = array(), $file_temp, $position = 0, $id_agent) {
+	
+	$file = fopen($file_temp, 'a+');
+
+	foreach ($events as $event) {
+		
+		$content_report = "	<object id=\"$position\">\n";
+		$content_report .= "	<event>".$event['evento']."</event>\n";
+		$content_report .= "	<event_type>".$event['event_type']."</event_type>\n";
+		$content_report .= "	<criticity>".get_priority_name($event['criticity'])."</criticity>\n";
+		$content_report .= "	<count>".$event['count_rep']."</count>\n";
+		$content_report .= "	<timestamp>".$event['time2']."</timestamp>\n";
+		$content_report .= "	<module_name>".modules_get_agentmodule_name ($event['id_agentmodule'])."</module_name>\n";
+		$content_report .= "	<agent_name>".agents_get_name ($id_agent)."</agent_name>\n";
+		
+		if ($event['estado'] == 0)
+			$status = __('New');
+		else if ($event['estado'] == 1)
+			$status = __('Validated');
+		else if ($event['estado'] == 2)
+			$status = __('In process');
+		else 
+			$status = "";
+			
+		$content_report .= "	<event_status>".$status."</event_status>\n";
+		$content_report .= "	<user_comment>".$event['user_comment']."</user_comment>\n";
+		$content_report .= "	<tags>".$event['tags']."</tags>\n";
+		$content_report .= "	<event_source>".$event['source']."</event_source>\n";
+		$content_report .= "	<extra_id>".$event['id_extra']."</extra_id>\n";
+		$content_report .= "	<user_validation>".$event['owner_user']."</user_validation>\n";
+		$content_report .= "	</object>\n";
+		
+		$result = fwrite($file, $content_report);
+		$position++;
+		
+	}
+	fclose($file);
+	return $position;
+}
+
+function write_xml_file_graph ($data_module = array(), $file_temp, $position = 0) {
+	
+	$file = fopen($file_temp, 'a+');
+
+	foreach ($data_module as $data_m) {
+		
+		$content_report = "	<object id=\"$position\">\n";
+		$content_report .= "		<timestamp>".date ('Y-m-d H:i:s', $data_m['utimestamp'])."</timestamp>\n";
+		$content_report .= "		<utimestamp>".$data_m['utimestamp']."</utimestamp>\n";
+		$content_report .= "		<data>".$data_m['datos']."</data>\n";
+		$content_report .= "	</object>\n";
+
+		$result = fwrite($file, $content_report);
+		$position++;
+	}
+
+	fclose($file);
+	return $position;
 }
 
 // Login check
@@ -190,7 +336,7 @@ foreach ($contents as $content) {
 	$data["period"] = human_time_description_raw ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
-		
+
 	// Support for metaconsole
 	$server_name = $content ['server_name'];
 
@@ -206,54 +352,136 @@ foreach ($contents as $content) {
 
 		case 1:
 		case 'simple_graph':
-			
+
 			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
 			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
 			
 			$data["title"] = __('Simple graph');
-			
+			$data["objdata"] = array();
+
 			$date_end = time();
 			$date_init = $date_end - $content['period'];
+			///
+			$temp_file = $config['attachment_store'] . '/simple_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
 
-			$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+			$file = fopen ($temp_file, 'a+');
+
+			$buffer_file["objdata"] = $config['attachment_store'] . '/simple_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
+
+			$limit = 1000;
+			$offset = 0;
+				
+			$sql_count = "SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
 					AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+			$data_count = db_get_value_sql($sql_count);
 
-			$data_module = db_get_all_rows_sql($sql);
-			if ($data_module === false) {
-				$data_module = array();
+			if ($data_count == false) {
+				$content_report = "    <simple_graph/>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+			} else if ($data_count <= $limit) {
+				$content_report = "    <simple_graph>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+				
+				$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+								AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+
+				$data_module = db_get_all_rows_sql($sql);
+				write_xml_file_graph ($data_module, $temp_file);
+				
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    </simple_graph>\n";
+				$result = fwrite($file, $content_report);
+				
+
+			} else {
+				$content_report = "    <simple_graph>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+				
+				$position = 0;
+				while ($offset < $data_count) {
+					
+					$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+					AND (utimestamp>=$date_init AND utimestamp<=$date_end) LIMIT $offset,$limit";
+					$data_module = db_get_all_rows_sql($sql);
+					
+					$position = write_xml_file_graph ($data_module, $temp_file, $position);	
+					$offset += $limit;
+				}
+				
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    </simple_graph>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
 			}
-			$i = 0;
-			foreach ($data_module as $data_m) {
-				$data["objdata"][$content['type']][$i]["timestamp"] = date ('Y-m-d H:i:s', $data_m['utimestamp']);
-				$data["objdata"][$content['type']][$i]["utimestamp"] = $data_m['utimestamp'];
-				$data["objdata"][$content['type']][$i]["data"] = $data_m['datos'];
-				$i++;
-			}	
+			///
 			break;
 		case 'simple_baseline_graph':
 		
 			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
-			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
-			
+			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));	
 			$data["title"] = __('Simple baseline graph');
+			$data["objdata"] = array();
 			
 			$date_end = time();
 			$date_init = $date_end - $content['period'];
+			///
+			$temp_file = $config['attachment_store'] . '/simple_baseline_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
 
-			$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+			$file = fopen ($temp_file, 'a+');
+
+			$buffer_file["objdata"] = $config['attachment_store'] . '/simple_baseline_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
+
+			$limit = 1000;
+			$offset = 0;
+				
+			$sql_count = "SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
 					AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+			$data_count = db_get_value_sql($sql_count);
 
-			$data_module = db_get_all_rows_sql($sql);
-			if ($data_module === false) {
-				$data_module = array();
+			if ($data_count == false) {
+				$content_report = "    <simple_baseline_graph/>\n";
+				$result = fwrite($file, $content_report);
+			} else if ($data_count <= $limit) {
+				$content_report = "    <simple_baseline_graph>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+				
+				$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+								AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+
+				$data_module = db_get_all_rows_sql($sql);
+				write_xml_file_graph ($data_module, $temp_file);
+				
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    </simple_baseline_graph>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+
+			} else {
+				$content_report = "    <simple_baseline_graph>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+				
+				$position = 0;
+				while ($offset < $data_count) {
+					
+					$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+					AND (utimestamp>=$date_init AND utimestamp<=$date_end) LIMIT $offset,$limit";
+					$data_module = db_get_all_rows_sql($sql);
+					
+					$position = write_xml_file_graph ($data_module, $temp_file, $position);	
+					$offset += $limit;
+				}
+				
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    </simple_baseline_graph>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
 			}
-			$i = 0;
-			foreach ($data_module as $data_m) {
-				$data["objdata"][$content['type']][$i]["timestamp"] = date ('Y-m-d H:i:s', $data_m['utimestamp']);
-				$data["objdata"][$content['type']][$i]["utimestamp"] = $data_m['utimestamp'];
-				$data["objdata"][$content['type']][$i]["data"] = $data_m['datos'];
-				$i++;
-			}	
+			///
 			break;
 		case 2:
 		case 'custom_graph':
@@ -263,7 +491,7 @@ foreach ($contents as $content) {
 			
 			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 			$data["title"] = __('Custom graph');
-			$data["objdata"]["img_name"] = $graph["name"];
+			$data["objdata"] = array();
 			
 			$result = db_get_all_rows_field_filter ("tgraph_source","id_graph",$content['id_gs']);
 			$modules = array ();
@@ -280,21 +508,61 @@ foreach ($contents as $content) {
 			
 			$date_end = time();
 			$date_init = $date_end - $content['period'];
+			///
+			$temp_file = $config['attachment_store'] . '/custom_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
 
-			$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+			$file = fopen ($temp_file, 'a+');
+
+			$buffer_file["objdata"] = $config['attachment_store'] . '/custom_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
+
+			$limit = 1000;
+			$offset = 0;
+
+			$sql_count = "SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo=".$content2['id_agent_module']." 
 					AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+			$data_count = db_get_value_sql($sql_count);
 
-			$data_module = db_get_all_rows_sql($sql);
-			if ($data_module === false) {
-				$data_module = array();
+			if ($data_count == false) {
+				$content_report = "    <custom_graph/>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+			} else if ($data_count <= $limit) {
+				$content_report = "    <custom_graph>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+				
+				$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content2['id_agent_module']." 
+								AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+
+				$data_module = db_get_all_rows_sql($sql);
+				write_xml_file_graph ($data_module, $temp_file);
+				
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    </custom_graph>\n";
+				$result = fwrite($file, $content_report);
+
+			} else {
+				$content_report = "    <custom_graph>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+				
+				$position = 0;
+				while ($offset < $data_count) {
+					
+					$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+					AND (utimestamp>=$date_init AND utimestamp<=$date_end) LIMIT $offset,$limit";
+					$data_module = db_get_all_rows_sql($sql);
+					
+					$position = write_xml_file_graph ($data_module, $temp_file, $position);	
+					$offset += $limit;
+				}
+				
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    </custom_graph>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
 			}
-			$i = 0;
-			foreach ($data_module as $data_m) {
-				$data["objdata"][$content['type']][$i]["timestamp"] = date ('Y-m-d H:i:s', $data_m['utimestamp']);
-				$data["objdata"][$content['type']][$i]["utimestamp"] = $data_m['utimestamp'];
-				$data["objdata"][$content['type']][$i]["data"] = $data_m['datos'];
-				$i++;
-			}			
+			///
 			break;
 		case 3:
 		case 'SLA':
@@ -419,43 +687,76 @@ foreach ($contents as $content) {
 		case 'agent_detailed_event':
 		case 'event_report_agent':
 			$data["title"] = __('Agent detailed event');
-			
-			$data["objdata"]["event_report_agent"] = array ();
+			$data["objdata"] = array ();
 			
 			$date = get_system_time ();
-						
-			$events = events_get_agent ($content['id_agent'], $content['period'], $date );
-			if (empty ($events)) {
-				$events = array ();
-			}
-		
-			foreach ($events as $event) {
-				$objdata = array ();
-				$objdata['event'] = $event['evento'];
-				$objdata['event_type'] = $event['event_type'];
-				$objdata['criticity'] = get_priority_name($event['criticity']);
-				$objdata['count'] = $event['count_rep'];
-				$objdata['timestamp'] = $event['time2'];
-				$objdata['module_name'] = modules_get_agentmodule_name ($event['id_agentmodule']);
-				$objdata['agent_name'] = agents_get_name ($content['id_agent']);
+			///
+			$temp_file = $config['attachment_store'] . '/event_report_agent_' . $time.'_'.$content['id_rc'] . '.tmp';
+			$file = fopen ($temp_file, 'a+');
+			$buffer_file["objdata"] = $config['attachment_store'] . '/event_report_agent_' . $time.'_'.$content['id_rc'] . '.tmp';
+			
+			$limit = 1000;
+			$offset = 0;
+			
+			$datelimit = $date - $content['period'];
+			
+			$sql_count = "SELECT count(*) FROM (SELECT  count(*)
+				FROM tevento
+				WHERE id_agente =".$content['id_agent']." AND utimestamp > $datelimit AND utimestamp <= $date 
+				GROUP BY id_agentmodule, evento) t1";
+			$data_count = db_get_value_sql($sql_count);
+			
+			if ($data_count == false) {
+				$content_report = "    <event_report_agent/>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+			} else if ($data_count <= $limit) {
+				$content_report = "    <event_report_agent>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
 				
-				if ($event['estado'] == 0)
-					$status = __('New');
-				else if ($event['estado'] == 1)
-					$status = __('Validated');
-				else if ($event['estado'] == 2)
-					$status = __('In process');
-				else 
-					$status = "";
+				$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep,
+				max(timestamp) AS time2, id_agentmodule, estado, user_comment, tags, source, id_extra, owner_user
+				FROM tevento
+				WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d 
+				GROUP BY id_agentmodule, evento
+				ORDER BY time2 DESC', $content['id_agent'], $datelimit, $date);
+			
+				$events = db_get_all_rows_sql ($sql);
+				write_xml_file_event ($events, $temp_file,0, $content['id_agent']);
+				
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    </event_report_agent>\n";
+				$result = fwrite($file, $content_report);
+				
+
+			} else {
+				$content_report = "    <event_report_agent>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+				
+				$position = 0;
+				while ($offset < $data_count) {
 					
-				$objdata['event_status'] = $status;
-				$objdata['user_comment'] = $event['user_comment'];
-				$objdata['tags'] = $event['tags'];
-				$objdata['event_source'] = $event['source'];
-				$objdata['extra_id'] = $event['id_extra'];
-				$objdata['user_validation'] = $event['owner_user'];
-				array_push ($data["objdata"]["event_report_agent"], $objdata);
+					$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep,
+					max(timestamp) AS time2, id_agentmodule, estado, user_comment, tags, source, id_extra, owner_user
+					FROM tevento
+					WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d 
+					GROUP BY id_agentmodule, evento
+					ORDER BY time2 DESC LIMIT %d,%d', $content['id_agent'], $datelimit, $date, $offset,$limit);
+			
+					$events = db_get_all_rows_sql ($sql);
+					
+					$position = write_xml_file_event ($events, $temp_file, $position, $content['id_agent']);	
+					$offset += $limit;
+				}
+				
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    </event_report_agent>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
 			}
+			///
 			break;
 		case 'text':
 			$data["title"] = __('Text');
@@ -516,101 +817,146 @@ foreach ($contents as $content) {
 		case 'event_report_group':
 			$data["title"] = __('Group detailed event');
 			$data['group'] = groups_get_name($content['id_group'], true);
-			$data["objdata"]["event_report_group"] = array();
+			$data["objdata"] = array();
 			
 			$id_group = groups_safe_acl ($config["id_user"], $content['id_group'], "AR");
-
+			///
 			if (!empty ($id_group)) {
+
 				//An empty array means the user doesn't have access
 				$datelimit = $report["datetime"] - $content['period'];
 
-				$sql = sprintf ('SELECT * FROM tevento
+				$sql_count = sprintf ('SELECT count(*) FROM tevento
 					WHERE utimestamp > %d AND utimestamp <= %d
 					AND id_grupo IN (%s)
 					ORDER BY utimestamp ASC',
 					$datelimit, $report["datetime"], implode (",", $id_group));
-
-				$events = db_get_all_rows_sql($sql);
-				if ($events === false) {
-					$events = array();
-				}
-			} else {
-				$events = array();
-			}
-
-			foreach ($events as $event) {
-				$objdata = array();
-				
-				$objdata['event'] = $event['evento'];
-				$objdata['event_type'] = $event['event_type'];
-				$objdata['criticity'] = get_priority_name($event['criticity']);
-				$objdata['timestamp'] = $event['timestamp'];
-				$objdata['module_name'] = modules_get_agentmodule_name ($event['id_agentmodule']);
-				$objdata['agent_name'] = agents_get_name ($content['id_agent']);
-				
-				if ($event['estado'] == 0)
-					$status = __('New');
-				else if ($event['estado'] == 1)
-					$status = __('Validated');
-				else if ($event['estado'] == 2)
-					$status = __('In process');
-				else 
-					$status = "";
 					
-				$objdata['event_status'] = $status;
-				$objdata['user_comment'] = $event['user_comment'];
-				$objdata['tags'] = $event['tags'];
-				$objdata['event_source'] = $event['source'];
-				$objdata['extra_id'] = $event['id_extra'];
-				$objdata['user_validation'] = $event['owner_user'];
+				$data_count = db_get_value_sql($sql_count);
+			
+				$temp_file = $config['attachment_store'] . '/event_report_group_' . $time.'_'.$content['id_rc'] . '.tmp';
+				$file = fopen ($temp_file, 'a+');
+				$buffer_file["objdata"] = $config['attachment_store'] . '/event_report_group_' . $time.'_'.$content['id_rc'] . '.tmp';
 				
-				array_push($data["objdata"]["event_report_group"], $objdata);
+				$limit = 1000;
+				$offset = 0;
+				
+				if ($data_count == false) {
+					$content_report = "    <event_report_group/>\n";
+					$result = fwrite($file, $content_report);
+					fclose($file);
+				} else if ($data_count <= $limit) {
+					$content_report = "    <event_report_group>\n";
+					$result = fwrite($file, $content_report);
+					fclose($file);
+					
+					$sql = sprintf ('SELECT * FROM tevento
+					WHERE utimestamp > %d AND utimestamp <= %d
+					AND id_grupo IN (%s)
+					ORDER BY utimestamp ASC',
+					$datelimit, $report["datetime"], implode (",", $id_group));
+					$events = db_get_all_rows_sql($sql);
+					write_xml_file_event ($events, $temp_file, 0, $content['id_agent']);
+					
+					$file = fopen ($temp_file, 'a+');
+					$content_report = "    </event_report_group>\n";
+					$result = fwrite($file, $content_report);
+
+				} else {
+					$content_report = "    <event_report_group>\n";
+					$result = fwrite($file, $content_report);
+					fclose($file);
+					
+					$position = 0;
+					while ($offset < $data_count) {
+						
+						$sql = sprintf ('SELECT * FROM tevento
+						WHERE utimestamp > %d AND utimestamp <= %d
+						AND id_grupo IN (%s)
+						ORDER BY utimestamp ASC LIMIT %d,%d',
+						$datelimit, $report["datetime"], implode (",", $id_group), $offset,$limit);
+
+						$events = db_get_all_rows_sql($sql);
+						
+						$position = write_xml_file_event ($events, $temp_file, $position, $content['id_agent']);	
+						$offset += $limit;
+					}
+					
+					$file = fopen ($temp_file, 'a+');
+					$content_report = "    </event_report_group>\n";
+					$result = fwrite($file, $content_report);
+					fclose($file);
+				}
 			}
+			///
 			break;
 		case 'event_report_module':
+
 			$data["title"] = __('Agents detailed event');
-			$data["objdata"]["event_report_module"] = array();
+			$data["objdata"] = array();
 	
-			$datelimit = $report["datetime"] - $content['period'];
+			$date = get_system_time ();
+			$datelimit = $date - $content['period'];
+			///	
+			$sql_count = "SELECT count(*) FROM (SELECT  count(*)
+				FROM tevento
+				WHERE id_agente =".$content['id_agent']." AND utimestamp > $datelimit AND utimestamp <=". $date. 
+				" GROUP BY id_agentmodule, evento) t1";
+	
+			$data_count = db_get_value_sql($sql_count);
 			
-			$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2, id_agentmodule, estado, user_comment, tags, source, id_extra, owner_user
+			$temp_file = $config['attachment_store'] . '/event_report_module_' . $time.'_'.$content['id_rc'] . '.tmp';
+			$file = fopen ($temp_file, 'a+');
+			$buffer_file["objdata"] = $config['attachment_store'] . '/event_report_module_' . $time.'_'.$content['id_rc'] . '.tmp';
+				
+			$limit = 1000;
+			$offset = 0;
+				
+			if ($data_count == false) {
+				$content_report = "    <event_report_module/>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+			} else if ($data_count <= $limit) {
+				$content_report = "    <event_report_module>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+				
+				$sql = "SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2, id_agentmodule, estado, user_comment, tags, source, id_extra, owner_user
+				FROM tevento
+				WHERE id_agente =".$content['id_agent']." AND utimestamp > $datelimit AND utimestamp <=". $date. 
+				" GROUP BY id_agentmodule, evento";
+
+				$events = db_get_all_rows_sql($sql);
+
+				write_xml_file_event ($events, $temp_file, 0, $content['id_agent']);
+				
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    </event_report_module>\n";
+				$result = fwrite($file, $content_report);
+				
+			} else {
+				$content_report = "    <event_report_module>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+				
+				$position = 0;
+				while ($offset < $data_count) {
+					
+					$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2, id_agentmodule, estado, user_comment, tags, source, id_extra, owner_user
 					FROM tevento
 					WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d 
-					GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $content['id_agent_module'], $datelimit, $report["datetime"]);
+					GROUP BY id_agentmodule, evento ORDER BY time2 DESC LIMIT %d,%d', $content['id_agent_module'], $datelimit, $date, $offset,$limit);
 
-			$events = db_get_all_rows_sql($sql);
-			if ($events === false) {
-				$events = array();
-			}
-	
-			foreach ($events as $event) {
-				$objdata = array();
-				
-				$objdata['event'] = $event['evento'];
-				$objdata['event_type'] = $event['event_type'];
-				$objdata['criticity'] = get_priority_name($event['criticity']);
-				$objdata['count'] = $event['count_rep'];
-				$objdata['timestamp'] = $event['time2'];
-				$objdata['module_name'] = modules_get_agentmodule_name ($event['id_agentmodule']);
-				$objdata['agent_name'] = agents_get_name ($content['id_agent']);
-				
-				if ($event['estado'] == 0)
-					$status = __('New');
-				else if ($event['estado'] == 1)
-					$status = __('Validated');
-				else if ($event['estado'] == 2)
-					$status = __('In process');
-				else 
-					$status = "";
+					$events = db_get_all_rows_sql($sql);
 					
-				$objdata['event_status'] = $status;
-				$objdata['user_comment'] = $event['user_comment'];
-				$objdata['tags'] = $event['tags'];
-				$objdata['event_source'] = $event['source'];
-				$objdata['extra_id'] = $event['id_extra'];
-				$objdata['user_validation'] = $event['owner_user'];
+					$position = write_xml_file_event ($events, $temp_file, $position, $content['id_agent']);	
+					$offset += $limit;
+				}
 				
-				array_push($data["objdata"]["event_report_module"], $objdata);
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    </event_report_group>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
 			}
 			break;
 		case 'alert_report_module':
@@ -812,9 +1158,348 @@ foreach ($contents as $content) {
 			$data["objdata"]["inventory_changes"] = inventory_get_changes($id_agent, $module_name, $report["datetime"] - $content['period'], $report["datetime"], 'array');
 			
 			break;
+		case 'agent_configuration':
+
+			$agent_name = agents_get_name ($content['id_agent']);
+				
+			$sql = "SELECT * FROM tagente WHERE id_agente=".$content['id_agent'];
+			$agent_data = db_get_row_sql($sql);
+			
+			$data["title"] = __('Configuration report for agent ').$agent_name;
+			$data["agent"] = $agent_name;
+			$data["objdata"] = array();
+
+			/////
+			$temp_file = $config['attachment_store'] . '/agent_configuration_' . $time.'_'.$content['id_rc'] . '.tmp';
+			$file = fopen ($temp_file, 'a+');
+			$buffer_file["objdata"] = $config['attachment_store'] . '/agent_configuration_' . $time.'_'.$content['id_rc'] . '.tmp';
+			
+			$content_report = "    <configuration_report_agent>\n";
+			$result = fwrite($file, $content_report);
+			fclose($file);
+					
+			write_xml_file_agent_data($agent_data, $temp_file, $agent_name);
+			
+			$userGroups = users_get_groups($config['id_user'], 'AR', false);
+			if (empty($userGroups)) {
+				return array();
+			}
+			$id_groups = array_keys($userGroups);
+			if (!empty($id_groups)) {
+						
+				$sql_count = "SELECT count(*) FROM (SELECT *
+					FROM tagente_modulo WHERE
+					(
+						1 = (
+							SELECT is_admin
+							FROM tusuario
+							WHERE id_user = '".$config['id_user']."'
+							)
+					OR tagente_modulo.id_agente IN (
+								SELECT id_agente
+								FROM tagente
+								WHERE id_grupo IN (" . implode(',', $id_groups) . ")
+								)
+					OR 0 IN (
+							SELECT id_grupo
+							FROM tusuario_perfil
+							WHERE id_usuario ='".$config['id_user']."'
+							AND id_perfil IN (
+								SELECT id_perfil
+								FROM tperfil WHERE agent_view = 1
+								)
+							)
+					) AND id_agente=".$content['id_agent']." AND delete_pending = 0 
+					ORDER BY nombre) t1";
+				$data_count = db_get_value_sql($sql_count);
+				
+				$limit = 1000;
+				$offset = 0;
+				
+				if ($data_count == false) {
+
+					$content_report = "    	<module_configuration/>\n";
+					$content_report .= "   </configuration_report_agent>\n";
+					
+					$file = fopen ($temp_file, 'a+');
+					$result = fwrite($file, $content_report);
+					fclose($file);
+				} else if ($data_count <= $limit) {
+					$content_report = "    	<module_configuration>\n";
+					
+					$file = fopen ($temp_file, 'a+');
+					$result = fwrite($file, $content_report);
+					fclose($file);
+					
+					$sql = "SELECT *
+					FROM tagente_modulo WHERE
+					(
+						1 = (
+							SELECT is_admin
+							FROM tusuario
+							WHERE id_user = '".$config['id_user']."'
+							)
+					OR tagente_modulo.id_agente IN (
+								SELECT id_agente
+								FROM tagente
+								WHERE id_grupo IN (" . implode(',', $id_groups) . ")
+								)
+					OR 0 IN (
+							SELECT id_grupo
+							FROM tusuario_perfil
+							WHERE id_usuario ='".$config['id_user']."'
+							AND id_perfil IN (
+								SELECT id_perfil
+								FROM tperfil WHERE agent_view = 1
+								)
+							)
+					) AND id_agente=".$content['id_agent']." AND delete_pending = 0 
+					ORDER BY nombre";
+				
+					$modules = db_get_all_rows_sql ($sql);
+					write_xml_file_agent_conf ($modules, $temp_file,0, $content['id_agent']);
+					
+					$file = fopen ($temp_file, 'a+');
+					$content_report = "    	</module_configuration>\n";
+					$content_report .= "    </configuration_report_agent>\n";
+					$result = fwrite($file, $content_report);		
+
+				} else {
+					$content_report = "    	<module_configuration>\n";
+					
+					$file = fopen ($temp_file, 'a+');
+					$result = fwrite($file, $content_report);
+					fclose($file);
+					
+					$position = 0;
+					while ($offset < $data_count) {
+						
+						$sql = "SELECT *
+							FROM tagente_modulo WHERE
+							(
+								1 = (
+									SELECT is_admin
+									FROM tusuario
+									WHERE id_user = '".$config['id_user']."'
+									)
+							OR tagente_modulo.id_agente IN (
+										SELECT id_agente
+										FROM tagente
+										WHERE id_grupo IN (" . implode(',', $id_groups) . ")
+										)
+							OR 0 IN (
+									SELECT id_grupo
+									FROM tusuario_perfil
+									WHERE id_usuario ='".$config['id_user']."'
+									AND id_perfil IN (
+										SELECT id_perfil
+										FROM tperfil WHERE agent_view = 1
+										)
+									)
+							) AND id_agente=".$content['id_agent']." AND delete_pending = 0 
+							ORDER BY nombre
+							LIMIT $offset,$limit";
+				
+						$modules = db_get_all_rows_sql ($sql);
+						
+						$position = write_xml_file_agent_conf ($modules, $temp_file, $position, $content['id_agent']);	
+						$offset += $limit;
+					}
+					
+					$file = fopen ($temp_file, 'a+');
+					$content_report = "    		</module_configuration>\n";
+					$content_report .= "    </configuration_report_agent>\n";
+					$result = fwrite($file, $content_report);
+					fclose($file);
+				}
+		
+			}
+			
+			break;
+		case 'group_configuration':
+
+			$group_name = groups_get_name ($content['id_group'], true);
+			
+			$data["title"] = __('Configuration report for group ').$group_name;
+			$data["group"] = $group_name;
+			
+			///
+			$data["objdata"] = array();
+			$temp_file = $config['attachment_store'] . '/group_configuration_' . $time.'_'.$content['id_rc'] . '.tmp';
+			$file = fopen ($temp_file, 'a+');
+			$buffer_file["objdata"] = $config['attachment_store'] . '/group_configuration_' . $time.'_'.$content['id_rc'] . '.tmp';
+			
+			$content_report = "    <configuration_report_group>\n";
+			$content_report .= "    	<name>".$group_name."</name>\n";
+			$content_report .= "    	<id>".$content['id_group']."</id>\n";
+			$result = fwrite($file, $content_report);
+			fclose($file);
+			
+			$sql = "SELECT * FROM tagente WHERE id_grupo=".$content['id_group'];
+			$agents_list = db_get_all_rows_sql($sql);
+			if ($agents_list === false)
+				$agents_list = array();
+			$i = 0;
+			foreach ($agents_list as $key=>$agent) {
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "	<object id=\"$i\">\n";
+				$content_report .= "	<agent_data>\n";
+				$result = fwrite($file, $content_report);
+				write_xml_file_agent_data($agent, $temp_file);
+				
+				$userGroups = users_get_groups($config['id_user'], 'AR', false);
+				if (empty($userGroups)) {
+					return array();
+				}
+				$id_groups = array_keys($userGroups);
+				if (!empty($id_groups)) {
+					
+					$sql_count = "SELECT count(*) FROM (SELECT *
+						FROM tagente_modulo WHERE
+						(
+							1 = (
+								SELECT is_admin
+								FROM tusuario
+								WHERE id_user = '".$config['id_user']."'
+								)
+						OR tagente_modulo.id_agente IN (
+									SELECT id_agente
+									FROM tagente
+									WHERE id_grupo IN (" . implode(',', $id_groups) . ")
+									)
+						OR 0 IN (
+								SELECT id_grupo
+								FROM tusuario_perfil
+								WHERE id_usuario ='".$config['id_user']."'
+								AND id_perfil IN (
+									SELECT id_perfil
+									FROM tperfil WHERE agent_view = 1
+									)
+								)
+						) AND id_agente=".$agent['id_agente']." AND delete_pending = 0 
+						ORDER BY nombre) t1";
+
+					$data_count = db_get_value_sql($sql_count);
+					
+					$limit = 1000;
+					$offset = 0;
+					
+					if ($data_count == false) {
+						$content_report = "    	<module_configuration/>\n";
+						$content_report .= "   </agent_data>\n";
+						
+						$file = fopen ($temp_file, 'a+');
+						$result = fwrite($file, $content_report);
+						fclose($file);
+						
+					} else if ($data_count <= $limit) {
+						$content_report = "    	<module_configuration>\n";
+						
+						$file = fopen ($temp_file, 'a+');
+						$result = fwrite($file, $content_report);
+						fclose($file);
+						
+						$sql = "SELECT *
+						FROM tagente_modulo WHERE
+						(
+							1 = (
+								SELECT is_admin
+								FROM tusuario
+								WHERE id_user = '".$config['id_user']."'
+								)
+						OR tagente_modulo.id_agente IN (
+									SELECT id_agente
+									FROM tagente
+									WHERE id_grupo IN (" . implode(',', $id_groups) . ")
+									)
+						OR 0 IN (
+								SELECT id_grupo
+								FROM tusuario_perfil
+								WHERE id_usuario ='".$config['id_user']."'
+								AND id_perfil IN (
+									SELECT id_perfil
+									FROM tperfil WHERE agent_view = 1
+									)
+								)
+						) AND id_agente=".$agent['id_agente']." AND delete_pending = 0 
+						ORDER BY nombre";
+					
+						$modules = db_get_all_rows_sql ($sql);
+						write_xml_file_agent_conf ($modules, $temp_file, 0, $content['id_agent']);
+						
+						$file = fopen ($temp_file, 'a+');
+						$content_report = "    	</module_configuration>\n";
+						$content_report .= "   </agent_data>\n";
+						$result = fwrite($file, $content_report);
+						
+
+					} else {
+						$content_report = "    	<module_configuration>\n";
+						
+						$file = fopen ($temp_file, 'a+');
+						$result = fwrite($file, $content_report);
+						fclose($file);
+						
+						$position = 0;
+						while ($offset < $data_count) {
+							
+							$sql = "SELECT *
+								FROM tagente_modulo WHERE
+								(
+									1 = (
+										SELECT is_admin
+										FROM tusuario
+										WHERE id_user = '".$config['id_user']."'
+										)
+								OR tagente_modulo.id_agente IN (
+											SELECT id_agente
+											FROM tagente
+											WHERE id_grupo IN (" . implode(',', $id_groups) . ")
+											)
+								OR 0 IN (
+										SELECT id_grupo
+										FROM tusuario_perfil
+										WHERE id_usuario ='".$config['id_user']."'
+										AND id_perfil IN (
+											SELECT id_perfil
+											FROM tperfil WHERE agent_view = 1
+											)
+										)
+								) AND id_agente=".$agent['id_agente']." AND delete_pending = 0 
+								ORDER BY nombre
+								LIMIT $offset,$limit";
+					
+							$modules = db_get_all_rows_sql ($sql);
+							
+							$position = write_xml_file_agent_conf ($modules, $temp_file, $position, $content['id_agent']);	
+							$offset += $limit;
+						}
+						
+						$file = fopen ($temp_file, 'a+');
+						$content_report = "    		</module_configuration>\n";
+						$content_report .= "    </agent_data>\n";
+						$result = fwrite($file, $content_report);
+						fclose($file);
+					}
+			
+				}
+				$i++;
+				
+				$file = fopen ($temp_file, 'a+');
+				$content_report = "    	</object>\n";
+				$result = fwrite($file, $content_report);
+				fclose($file);
+			}	
+			$file = fopen ($temp_file, 'a+');
+			$content_report = "    </configuration_report_group>\n";
+			$result = fwrite($file, $content_report);
+			fclose($file);
+			/// 
+			
+			break;
 	}
 
-	xml_array ($data);
+	xml_array ($data, $buffer_file);
 	echo '</object>';
 	$counter++;
 	

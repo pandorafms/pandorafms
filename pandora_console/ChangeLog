@@ -1,3 +1,13 @@
+2012-10-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* pandoradb_data.sql: fixed the lost fields in the table "tgrupo"
+	when install.
+	 
+	* install.php: fixed the installation on DBs with names as for
+	example "name1.name2".
+	
+	Fixes: #3573766
+
 2012-10-25  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_visual_map.php

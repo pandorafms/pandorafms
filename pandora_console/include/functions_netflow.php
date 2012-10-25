@@ -22,6 +22,7 @@ enterprise_include_once ($config['homedir'] . '/enterprise/include/pdf_translato
 enterprise_include_once ($config['homedir'] . '/enterprise/include/functions_metaconsole.php');
 
 // Date format for nfdump
+global $nfdump_date_format;
 $nfdump_date_format = 'Y/m/d.H:i:s';
 
 /**
@@ -208,6 +209,8 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 	$end_date = date ($nfdump_date_format, $end_date);
 	$values = array();
 	$table->width = '50%';
+	$table->cellpadding = 0;
+	$table->cellspacing = 0;
 	$table->class = 'databox';
 	$table->data = array();
 	$j = 0;
@@ -273,6 +276,8 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate) {
 	$values = array();
 	$table->size = array ('50%');
 	$table->class = 'databox';
+	$table->cellpadding = 0;
+	$table->cellspacing = 0;
 	$table->data = array();
 	
 	$table->head = array();
@@ -317,6 +322,9 @@ function netflow_summary_table ($data) {
 	
 	$values = array();
 	$table->size = array ('50%');
+	$table->border = 1;
+	$table->cellpadding = 0;
+	$table->cellspacing = 0;
 	$table->class = 'databox';
 	$table->data = array();
 	
@@ -1028,6 +1036,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 	// Process item
 	switch ($type) {
 		case '0':
+		case 'netflow_area':
 			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($aggregate != 'none') {
 				if ($output == 'HTML') {
@@ -1049,6 +1058,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			}
 			break;
 		case '1':
+		case 'netflow_pie':
 			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($output == 'HTML') {
 				return graph_netflow_aggregate_pie ($data, $aggregate);
@@ -1059,6 +1069,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			}
 			break;
 		case '2':
+		case 'netflow_data':
 			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($output == 'HTML' || $output == 'PDF') {
 				return netflow_data_table ($data, $start_date, $end_date, $aggregate);
@@ -1068,6 +1079,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			}
 			break;
 		case '3':
+		case 'netflow_statistics':
 			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($output == 'HTML' || $output == 'PDF') {
 				return netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
@@ -1076,6 +1088,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			}
 			break;
 		case '4':
+		case 'netflow_summary':
 			$data = netflow_get_summary ($start_date, $end_date, $filter, $unique_id, $connection_name);
 			if ($output == 'HTML' || $output == 'PDF') {
 				return netflow_summary_table ($data);

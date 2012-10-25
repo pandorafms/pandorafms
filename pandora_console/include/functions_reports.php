@@ -596,6 +596,17 @@ function reports_get_report_types ($template = false) {
 		'name' => __('Agent configuration')); 
 	$types['group_configuration'] = array('optgroup' => __('Configuration'),
 		'name' => __('Group configuration')); 
+
+	$types['netflow_area'] = array('optgroup' => __('Netflow'),
+		'name' => __('Netflow area chart')); 
+	$types['netflow_pie'] = array('optgroup' => __('Netflow'),
+		'name' => __('Netflow pie chart')); 
+	$types['netflow_data'] = array('optgroup' => __('Netflow'),
+		'name' => __('Netflow data table')); 
+	$types['netflow_statistics'] = array('optgroup' => __('Netflow'),
+		'name' => __('Netflow statistics table')); 
+	$types['netflow_summary'] = array('optgroup' => __('Netflow'),
+		'name' => __('Netflow summary table')); 
 	
 	return $types;
 }

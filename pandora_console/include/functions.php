@@ -30,43 +30,43 @@ require_once('functions_io.php');
  *
  * @return bool true if all is ok, false if referer is not equal to current web page
  */
-function check_referer() {
-	global $config;
-	
-	//If it is disabled the check referer security
-	if (!$config["referer_security"])
-		return true;
-	
-	$referer = '';
-	if (isset($_SERVER['HTTP_REFERER'])) {
-		$referer = $_SERVER['HTTP_REFERER'];
-	}
-	
-	// If refresh is performed then dont't check referer
-	// This is done due to problems with HTTP_REFERER var when metarefresh is performed
-	if ($config["refr"] > 0) 
-		return true;
-	
-	//Check if the referer have a port (for example when apache run in other port to 80)
-	if (preg_match('/http(s?):\/\/.*:[0-9]*/', $referer) == 1) {
-		$url = $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $config["homeurl"];
-	}
-	else {
-		$url = ui_get_full_url();
-		$url = preg_replace('/http(s?):\/\//','',$url);
-	}
-	
-	// Remove protocol from referer
-	$referer = preg_replace('/http(s?):\/\//','',$referer);
-	$referer = preg_replace('/\?.*/','',$referer);
-	
-	if (strpos($url, $referer) === 0) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
+//function check_referer() {
+//	global $config;
+//	
+//	//If it is disabled the check referer security
+//	if (!$config["referer_security"])
+//		return true;
+//	
+//	$referer = '';
+//	if (isset($_SERVER['HTTP_REFERER'])) {
+//		$referer = $_SERVER['HTTP_REFERER'];
+//	}
+//	
+//	// If refresh is performed then dont't check referer
+//	// This is done due to problems with HTTP_REFERER var when metarefresh is performed
+//	if ($config["refr"] > 0) 
+//		return true;
+//	
+//	//Check if the referer have a port (for example when apache run in other port to 80)
+//	if (preg_match('/http(s?):\/\/.*:[0-9]*/', $referer) == 1) {
+//		$url = $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $config["homeurl"];
+//	}
+//	else {
+//		$url = ui_get_full_url();
+//		$url = preg_replace('/http(s?):\/\//','',$url);
+//	}
+//	
+//	// Remove protocol from referer
+//	$referer = preg_replace('/http(s?):\/\//','',$referer);
+//	$referer = preg_replace('/\?.*/','',$referer);
+//	
+//	if (strpos($url, $referer) === 0) {
+//		return true;
+//	}
+//	else {
+//		return false;
+//	}
+//}
 
 /**
  * Cleans an object or an array and casts all values as integers

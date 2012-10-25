@@ -416,7 +416,7 @@ function networkmap_create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom
 }
 
 // Returns a group node definition
-function networkmap_create_group_node ($group, $simple = 0, $font_size = 10) {
+function networkmap_create_group_node ($group, $simple = 0, $font_size = 10, $metaconsole = false, $id_server = null) {
 	$status = groups_get_status ($group['id_grupo']);
 	
 	// Set node status
@@ -547,38 +547,73 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 }
 
 // Returns a module node definition
-function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $metaconsole = true, $id_server = null) {
+function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $metaconsole = false, $id_server = null) {
+	
 	$status = modules_get_agentmodule_status($module['id_agente_modulo'],
 		false, $metaconsole, $id_server);
 	
 	// Set node status
 	switch($status) {
 		case 0: 
-				$status_color = '#8DFF1D'; // Normal monitor
+			$status_color = '#8DFF1D'; // Normal monitor
 			break;
 		case 1:
-				$status_color = '#FF1D1D'; // Critical monitor
+			$status_color = '#FF1D1D'; // Critical monitor
 			break;
 		case 2:
-				$status_color = '#FFE308'; // Warning monitor
+			$status_color = '#FFE308'; // Warning monitor
 			break;
 		case 4:
-				$status_color = '#FFA300'; // Alert fired
+			$status_color = '#FFA300'; // Alert fired
 			break;
 		default:
-				$status_color = '#BBBBBB'; // Unknown monitor
+			$status_color = '#BBBBBB'; // Unknown monitor
 			break;
 	}
 	
 	
-	if ($simple == 0){
-		$node = $module['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . ui_print_moduletype_icon ($module['id_tipo_modulo'], true, true, false). '</TD></TR>
-		 <TR><TD>'.io_safe_output($module['nombre']).'</TD></TR></TABLE>>,
-		 shape="circle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$module['id_agente'].'",
-		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'].'"];';
+	if ($simple == 0) {
+		if (defined("METACONSOLE")) {
+			$url = 'TODO';
+			$url_tooltip = '../../ajax.php?' .
+				'page=operation/agentes/ver_agente&' .
+				'get_agentmodule_status_tooltip=1&' .
+				'id_module='.$module['id_agente_modulo'] .
+				'&metaconsole=1' .
+				'&id_server=' . $module['id_server'];
+		}
+		else {
+			$url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$module['id_agente'];
+			$url_tooltip = 'ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'];
+		}
+		
+		$node = $module['id_node'].' [ color="' . $status_color .
+			'", fontsize='.$font_size.', style="filled", ' .
+			'fixedsize=true, width=0.30, height=0.30, ' .
+			'label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
+			ui_print_moduletype_icon ($module['id_tipo_modulo'], true, true, false). '</TD></TR>
+			<TR><TD>' . io_safe_output($module['nombre']) . '</TD></TR></TABLE>>,
+			shape="circle", URL="' . $url . '",
+			tooltip="' . $url_tooltip . '"];';
 	}
 	else {
-		$node = $module['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', shape="circle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$module['id_agente'].'", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'].'"];';
+		if (defined("METACONSOLE")) {
+			$url = 'TODO';
+			$url_tooltip = '../../ajax.php?page=operation/agentes/ver_agente' .
+				'&get_agentmodule_status_tooltip=1' .
+				'&id_module=' . $module['id_agente_modulo'] .
+				'&metaconsole=1' .
+				'&id_server=' . $module['id_server'];
+		}
+		else {
+			$url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$module['id_agente'];
+			$url_tooltip = 'ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'];
+		}
+		
+		$node = $module['id_node'] . ' [ color="'.$status_color .
+			'", fontsize='.$font_size.', shape="circle", URL="' . $url . '", ' .
+			'style="filled", fixedsize=true, width=0.20, ' .
+			'height=0.20, label="", tooltip="' . $url_tooltip . '"];';
 	}
 	return $node;
 }
@@ -725,7 +760,7 @@ function networkmap_get_filter ($layout) {
  * 
  * @return mixed New networkmap id if created. False if it could not be created.
  */
-function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'radial', $nooverlap = true, $simple = false, $regenerate = true, $font_size = 12, $id_group = 0, $id_module_group = 0, $depth = 'all', $only_modules_with_alerts = false, $hide_policy_modules = false, $zoom = 1, $distance_nodes = 2.5, $center = 0, $text_filter = '', $dont_show_subgroups = 0) {
+function networkmap_create_networkmap ($name, $type = 'topology', $layout = 'radial', $nooverlap = true, $simple = false, $regenerate = true, $font_size = 12, $id_group = 0, $id_module_group = 0, $depth = 'all', $only_modules_with_alerts = false, $hide_policy_modules = false, $zoom = 1, $distance_nodes = 2.5, $center = 0, $text_filter = '', $dont_show_subgroups = 0, $show_groups = false, $show_modules = false) {
 	
 	global $config;
 	

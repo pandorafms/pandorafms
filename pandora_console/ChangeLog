@@ -1,3 +1,17 @@
+2012-10-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_networkmap.php: added two parameters
+	(flag metaconsole, id_server) into the functions
+	"networkmap_create_group_node" and "networkmap_create_networkmap"
+	for to extract data in the metaconsole enviroments. And in the
+	function "networkmap_create_module_node" fixes the default value of
+	flag for metaconsole and the links and url tooltips for the
+	metaconsole networkmap.
+	
+	* operation/agentes/ver_agente.php: in the request for the
+	"get_agentmodule_status_tooltip" added code for get data in the
+	metaconsole.
+
 2012-10-24 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,

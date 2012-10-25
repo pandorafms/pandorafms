@@ -72,7 +72,7 @@ else {
 	$table->data = array ();
 	foreach ($maps as $map) {
 		array_push($table->data, array(
-			"<a href='?sec=visualc&sec2=operation/visual_console/render_view&id=" .
+			"<a href='?sec=reporting&sec2=operation/visual_console/render_view&id=" .
 			$map['id'] . "'>" . $map['name'] . "</a>",
 			ui_print_group_icon ($map["id_group"], true),
 			$map['count']

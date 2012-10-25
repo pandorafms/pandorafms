@@ -132,7 +132,7 @@ UNLOCK TABLES;
 --
 
 LOCK TABLES `tgrupo` WRITE;
-INSERT INTO `tgrupo` VALUES 
+INSERT INTO `tgrupo` (`id_grupo`, `nombre`, `icon`, `parent`, `propagate`, `disabled`, `custom_id`, `id_skin`, `other`) VALUES 
 (2,'Servers','server_database',0,0,0,'',1,''),
 (4,'Firewalls','firewall',0,0,0,'',1,''),
 (8,'Databases','database_gear',0,0,0,'',1,''),

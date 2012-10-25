@@ -4474,6 +4474,274 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			array_push ($table->data, $data);
 			break;
+		case 'agent_configuration':
+
+			reporting_header_content($mini, $content, $report, $table, __('Agent configuration: ').$agent_name);
+			
+			$agent_name = agents_get_name ($content['id_agent']);
+			$modules = agents_get_modules ($content['id_agent']);
+			
+			$data= array ();
+			$table->colspan[0][1] = 9;
+			
+			//Agent's data
+			$data[0] = '<b>'.__('Agent name').'</b>';
+			$data[1] = '<b>'.__('Group').'</b>';
+			$data[2] = '<b>'.__('SO').'</b>';
+			$data[3] = '<b>'.__('IP').'</b>';
+			$data[4] = '<b>'.__('Description').'</b>';
+			$data[5] = '<b>'.__('Status').'</b>';
+			
+			$table->colspan[1][1] = 2;
+			$table->colspan[1][2] = 2;
+			$table->colspan[1][4] = 3;
+			
+			array_push ($table->data, $data);
+			unset($data);
+						
+			$sql = "SELECT * FROM tagente WHERE id_agente=".$content['id_agent'];
+			$agent_data = db_get_row_sql($sql);
+			
+			$data[0] = $agent_data['nombre'];
+			$data[1] = ui_print_group_icon ($agent_data['id_grupo'], true, '', '', false);
+			$data[2] = ui_print_os_icon ($agent_data["id_os"], true, true);
+			$data[3] = $agent_data['direccion'];
+			$data[4] = $agent_data['comentarios'];
+			
+			if ($agent_data['disabled'] == 0)
+				$data[5] = __('Enabled');
+			else
+				$data[5] = __('Disabled');
+			
+			$table->colspan[2][1] = 2;
+			$table->colspan[2][2] = 2;
+			$table->colspan[2][4] = 3;	
+			array_push ($table->data, $data);
+			unset($data);
+			
+			//Agent's modules
+			$data[0] = '<b>'.agents_get_name ($content['id_agent'], 'upper').__(' MODULES').'</b>';
+			$data[1] = '';
+			$table->colspan[3][1] = 9;
+			
+			array_push ($table->data, $data);
+			unset($data);
+			
+			if ($modules == null) {
+				$modules = array();
+			} else {
+				$data[0] = '<b>'.__('Name').'</b>';
+				$data[1] = '<b>'.__('Type').'</b>';
+				$data[2] = '<b>'.__('Warning/Critical').'</b>';
+				$data[3] = '<b>'.__('Threshold').'</b>';
+				$data[4] = '<b>'.__('Group').'</b>';
+				$data[5] = '<b>'.__('Description').'</b>';
+				$data[6] = '<b>'.__('Interval').'</b>';
+				$data[7] = '<b>'.__('Unit').'</b>';
+				$data[8] = '<b>'.__('Status').'</b>';
+				$data[9] = '<b>'.__('Tags').'</b>';
+				
+				$table->style[0] = 'text-align: left';
+				$table->style[1] = 'text-align: center';
+				$table->style[2] = 'text-align: center';
+				$table->style[3] = 'text-align: center';
+				$table->style[4] = 'text-align: center';
+				$table->style[5] = 'text-align: left';
+				$table->style[6] = 'text-align: center';
+				$table->style[7] = 'text-align: center';
+				$table->style[8] = 'text-align: left';
+				$table->style[9] = 'text-align: left';
+				
+				array_push ($table->data, $data);
+			}
+			
+			foreach ($modules as $id_agent_module=>$module) {
+				$sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo=$id_agent_module"; 
+				$data_module = db_get_row_sql($sql);
+				
+				$data = array();
+				
+				if ($data_module['disabled'] == 0)
+					$disabled = '';
+				else 
+					$disabled = ' (Disabled)';
+				$data[0] = $data_module['nombre'].$disabled;
+				$data[1] = ui_print_moduletype_icon ($data_module['id_tipo_modulo'], true);
+				$data[2] = $data_module['max_warning'].'/'.$data_module['min_warning'].' - '.$data_module['max_critical'].'/'.$data_module['min_critical'];
+				$data[3] = $data_module['module_ff_interval'];
+				$data[4] = groups_get_name ($content['id_group'], true);
+				$data[5] = $data_module['descripcion'];
+				
+				if (($data_module['module_interval'] == 0) || ($data_module['module_interval'] == ''))
+					$data[6] = db_get_value('intervalo', 'tagente', 'id_agente', $content['id_agent']);
+				else
+					$data[6] = $data_module['module_interval'];
+					
+					
+				$data[7] = $data_module['unit'];
+				
+				$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $id_agent_module);
+				modules_get_status($id_agent_module, $module_status['estado'], $module_status['datos'], $status, $title);
+				$data[8] = ui_print_status_image($status, $title, true);
+				
+				$sql_tag = "SELECT name FROM ttag WHERE id_tag IN (
+								SELECT id_tag FROM ttag_module
+								WHERE id_agente_modulo=$id_agent_module)";
+				$tags = db_get_all_rows_sql($sql_tag);
+				if ($tags === false)
+					$tags = '';
+				else
+					$tags = implode (",", $tags);
+					
+				$data[9] = $tags;
+				array_push ($table->data, $data);
+			}
+			
+			break;
+		case 'group_configuration':
+			$group_name = groups_get_name($content['id_group']);
+			reporting_header_content($mini, $content, $report, $table, __('Group configuration: ').$group_name);
+			
+			$sql = "SELECT * FROM tagente WHERE id_grupo=".$content['id_group'];
+			$agents_list = db_get_all_rows_sql($sql);
+			if ($agents_list === false)
+				$agents_list = array();
+				
+			$table->colspan[0][1] = 9;
+			
+			$i = 1;
+			foreach ($agents_list as $agent) {
+				$data= array ();
+				
+				$table->colspan[$i][1] = 2;
+				$table->colspan[$i][2] = 2;
+				$table->colspan[$i][4] = 3;
+				$i++;
+				
+				//Agent's data
+				$data[0] = '<b>'.__('Agent name').'</b>';
+				$data[1] = '<b>'.__('Group').'</b>';
+				$data[2] = '<b>'.__('SO').'</b>';
+				$data[3] = '<b>'.__('IP').'</b>';
+				$data[4] = '<b>'.__('Description').'</b>';
+				$data[5] = '<b>'.__('Status').'</b>';
+				
+				array_push ($table->data, $data);
+				unset($data);
+				
+				$sql = "SELECT * FROM tagente WHERE id_agente=".$agent['id_agente'];
+				$agent_data = db_get_row_sql($sql);
+				
+				$data[0] = $agent_data['nombre'];
+				$data[1] = ui_print_group_icon ($agent_data['id_grupo'], true, '', '', false);
+				$data[2] = ui_print_os_icon ($agent_data["id_os"], true, true);
+				$data[3] = $agent_data['direccion'];
+				$data[4] = $agent_data['comentarios'];
+				
+				if ($agent_data['disabled'] == 0)
+					$data[5] = __('Enabled');
+				else
+					$data[5] = __('Disabled');
+
+				$table->colspan[$i][1] = 2;
+				$table->colspan[$i][2] = 2;
+				$table->colspan[$i][4] = 3;
+				$i++;
+				
+				array_push ($table->data, $data);
+				unset($data);
+				
+				
+				
+				$modules = agents_get_modules ($agent['id_agente']);
+
+				if ($modules == null) {
+					$modules = array();
+				} else {
+					
+					//Agent's modules
+					$data[0] = '<b>'.agents_get_name ($agent['id_agente'], 'upper').__(' MODULES').'</b>';
+					$data[1] = '';
+					$table->colspan[$i][1] = 9;
+					
+					$i++;
+					
+					array_push ($table->data, $data);
+					unset($data);
+				
+					$data[0] = '<b>'.__('Name').'</b>';
+					$data[1] = '<b>'.__('Type').'</b>';
+					$data[2] = '<b>'.__('Warning/Critical').'</b>';
+					$data[3] = '<b>'.__('Threshold').'</b>';
+					$data[4] = '<b>'.__('Group').'</b>';
+					$data[5] = '<b>'.__('Description').'</b>';
+					$data[6] = '<b>'.__('Interval').'</b>';
+					$data[7] = '<b>'.__('Unit').'</b>';
+					$data[8] = '<b>'.__('Status').'</b>';
+					$data[9] = '<b>'.__('Tags').'</b>';
+					
+					$table->style[0] = 'text-align: left';
+					$table->style[1] = 'text-align: center';
+					$table->style[2] = 'text-align: center';
+					$table->style[3] = 'text-align: center';
+					$table->style[4] = 'text-align: center';
+					$table->style[5] = 'text-align: left';
+					$table->style[6] = 'text-align: center';
+					$table->style[7] = 'text-align: center';
+					$table->style[8] = 'text-align: left';
+					$table->style[9] = 'text-align: left';
+					
+					array_push ($table->data, $data);
+					
+					$i++;
+				}
+				
+				foreach ($modules as $id_agent_module=>$module) {
+				$sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo=$id_agent_module"; 
+				$data_module = db_get_row_sql($sql);
+								
+				$data = array();
+				
+				if ($data_module['disabled'] == 0)
+					$disabled = '';
+				else 
+					$disabled = ' (Disabled)';
+				$data[0] = $data_module['nombre'].$disabled;
+				$data[1] = ui_print_moduletype_icon ($data_module['id_tipo_modulo'], true);
+				$data[2] = $data_module['max_warning'].'/'.$data_module['min_warning'].' - '.$data_module['max_critical'].'/'.$data_module['min_critical'];
+				$data[3] = $data_module['module_ff_interval'];
+				$data[4] = groups_get_name ($content['id_group'], true);
+				$data[5] = $data_module['descripcion'];
+				
+				if (($data_module['module_interval'] == 0) || ($data_module['module_interval'] == ''))
+					$data[6] = db_get_value('intervalo', 'tagente', 'id_agente', $content['id_agent']);
+				else
+					$data[6] = $data_module['module_interval'];
+					
+					
+				$data[7] = $data_module['unit'];
+				
+				$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $id_agent_module);
+				modules_get_status($id_agent_module, $module_status['estado'], $module_status['datos'], $status, $title);
+				$data[8] = ui_print_status_image($status, $title, true);
+				
+				$sql_tag = "SELECT name FROM ttag WHERE id_tag IN (
+								SELECT id_tag FROM ttag_module
+								WHERE id_agente_modulo=$id_agent_module)";
+				$tags = db_get_all_rows_sql($sql_tag);
+				if ($tags === false)
+					$tags = '';
+				else
+					$tags = implode (",", $tags);
+					
+				$data[9] = $tags;
+				array_push ($table->data, $data);
+				
+				$i++;
+			}
+			
+			}
+			break;
 	}
 	//Restore dbconnection
 	if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {

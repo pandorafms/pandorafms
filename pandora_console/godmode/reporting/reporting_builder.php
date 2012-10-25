@@ -663,7 +663,7 @@ switch ($action) {
 						
 						$values['id_agent_module'] = '';
 						if (isset($values['type'])) {
-							if (($values['type'] == 'alert_report_agent') or ($values['type'] == 'event_report_agent'))
+							if (($values['type'] == 'alert_report_agent') or ($values['type'] == 'event_report_agent') or ($values['type'] == 'agent_configuration') or ($values['type'] == 'group_configuration'))
 								$values['id_agent_module'] = '';
 							else
 								$values['id_agent_module'] = get_parameter('id_agent_module');
@@ -807,6 +807,14 @@ switch ($action) {
 								$values['external_source'] = json_encode($es);
 								$good_format = true;
 								break;
+							case 'agent_configuration':
+								$values['id_agent'] = get_parameter('id_agent');
+								$good_format = true;
+								break;
+							case 'group_configuration':
+								$values['id_group'] = get_parameter('id_group');
+								$good_format = true;
+								break;
 							default: 
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
@@ -817,7 +825,7 @@ switch ($action) {
 						
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
-						if (($values['type'] == 'alert_report_agent') or ($values['type'] == 'event_report_agent'))
+						if (($values['type'] == 'alert_report_agent') or ($values['type'] == 'event_report_agent') or ($values['type'] == 'agent_configuration') or ($values['type'] == 'group_configuration'))
 							$values['id_agent_module'] = '';
 						else
 							$values['id_agent_module'] = get_parameter('id_agent_module');

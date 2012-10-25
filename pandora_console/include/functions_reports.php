@@ -592,6 +592,11 @@ function reports_get_report_types ($template = false) {
 			'name' => __('Inventory changes'));
 	}
 	
+	$types['agent_configuration'] = array('optgroup' => __('Configuration'),
+		'name' => __('Agent configuration')); 
+	$types['group_configuration'] = array('optgroup' => __('Configuration'),
+		'name' => __('Group configuration')); 
+	
 	return $types;
 }
 ?>

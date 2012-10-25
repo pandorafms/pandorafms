@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -31,46 +31,71 @@
 		<link rel="stylesheet" href="include/styles/install.css" type="text/css">
 	</head>
 	<script type="text/javascript">
-	options_text = new Array('An existing Database','A new Database');
-	options_values = new Array('db_exist','db_new');
-	function ChangeDBDrop(causer) {
-		if (causer.value != 'db_exist') {
-			window.document.step2_form.drop.checked = 0;
-			window.document.step2_form.drop.disabled = 1;
+		options_text = new Array('An existing Database','A new Database');
+		options_values = new Array('db_exist','db_new');
+		function ChangeDBDrop(causer) {
+			if (causer.value != 'db_exist') {
+				window.document.step2_form.drop.checked = 0;
+				window.document.step2_form.drop.disabled = 1;
+			}
+			else {
+				window.document.step2_form.drop.disabled = 0;
+			}
 		}
-		else {
-			window.document.step2_form.drop.disabled = 0;
+		function ChangeDBAction(causer) {
+			var i = 0;
+			if (causer.value == 'oracle') {
+				window.document.step2_form.db_action.length = 1;
+			}
+			else {
+				window.document.step2_form.db_action.length = 2;
+			}
+			while (i < window.document.step2_form.db_action.length) {
+				window.document.step2_form.db_action.options[i].value = options_values[i];
+				window.document.step2_form.db_action.options[i].text = options_text[i];
+				i++;
+			}
+			window.document.step2_form.db_action.options[window.document.step2_form.db_action.length-1].selected=1;
+			ChangeDBDrop(window.document.step2_form.db_action);
 		}
-	}
-	function ChangeDBAction(causer) {
-		var i = 0;
-		if (causer.value == 'oracle') {
-			window.document.step2_form.db_action.length = 1;
-		}
-		else {
-			window.document.step2_form.db_action.length = 2;
-		}
-		while (i < window.document.step2_form.db_action.length) {
-			window.document.step2_form.db_action.options[i].value = options_values[i];
-			window.document.step2_form.db_action.options[i].text = options_text[i];
-			i++;
-		}
-		window.document.step2_form.db_action.options[window.document.step2_form.db_action.length-1].selected=1;
-		ChangeDBDrop(window.document.step2_form.db_action);
-	}
 	</script>
 	<body>
-<div style='height: 10px'>
-
+		<div style='height: 10px'>
+			<?php
+			$version = '5.0dev';
+			$build = '120621';
+			$banner = "v$version Build $build";
+			
+			error_reporting(0);
+			
+			// ---------------
+			// Main page code
+			// ---------------
+			
+			if (! isset($_GET["step"])) {
+				install_step1();
+			}
+			else {
+				$step = $_GET["step"];
+				switch ($step) {
+					case 11: install_step1_licence();
+						break;
+					case 2: install_step2();
+						break;
+					case 3: install_step3();
+						break;
+					case 4: install_step4();
+						break;
+					case 5: install_step5();
+						break;
+				}
+			}
+			?>
+		</div>
+	</body>
+</html>
 
 <?php
-
-$version = '5.0dev';
-$build = '120621';
-$banner = "v$version Build $build";
-
-error_reporting(0);
-
 function check_extension ( $ext, $label ) {
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
@@ -184,11 +209,11 @@ function parse_mysql_dump($url) {
 		$file_content = file($url);
 		$query = "";
 		foreach($file_content as $sql_line) {
-			if(trim($sql_line) != "" && strpos($sql_line, "--") === false) {
+			if (trim($sql_line) != "" && strpos($sql_line, "--") === false) {
 				$query .= $sql_line;
 				if(preg_match("/;[\040]*\$/", $sql_line)) {
 					if (!$result = mysql_query($query)) {
-					 	echo mysql_error(); //Uncomment for debug
+						echo mysql_error(); //Uncomment for debug
 						echo "<i><br>$query<br></i>";
 						return 0;
 					}
@@ -208,7 +233,7 @@ function parse_postgresql_dump($connection, $url, $debug = false) {
 		
 		$query = "";
 		
-		foreach($file_content as $sql_line) {
+		foreach ($file_content as $sql_line) {
 			$clean_line = trim($sql_line);
 			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);
 			if ($comment) {
@@ -258,7 +283,7 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 		$query = "";
 		$plsql_block = false;
 		
-		foreach($file_content as $sql_line) {
+		foreach ($file_content as $sql_line) {
 			$clean_line = trim($sql_line);
 			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);
 			if ($comment) {
@@ -273,10 +298,10 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 			if (preg_match("/^BEGIN$/", $clean_line)) {
 				$query .= $clean_line . ' ';
 				$plsql_block = true;
-			}			
+			}
 			else{
 				$query .= $clean_line;
-			}			
+			}
 			
 			//Check query's end with a back slash and any returns in the end of line or if it's a PL/SQL block 'END;;' string
 			if ((preg_match("/;[\040]*\$/", $clean_line) && !$plsql_block) || 
@@ -287,7 +312,7 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 				//Delete the last semicolon from current query
 				$query = substr($query, 0, strlen($query) - 1);
 				$sql = oci_parse($connection, $query);
-				$result = oci_execute($sql);				
+				$result = oci_execute($sql);
 				
 				if ($debug) {
 					var_dump($query);
@@ -361,7 +386,6 @@ function print_logo_status ($step, $step_total) {
 		</div>";
 }
 
-
 function install_step1() {
 	global $banner;
 	
@@ -385,12 +409,12 @@ function install_step1() {
 		if (file_exists("include/config.php"))
 			$writable += check_writable ( "include/config.php", "Checking if include/config.php is writable");
 		echo "</table>";
-
+		
 		echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> 
 		your existing Pandora FMS configuration and <b>Database</b>. Before continue, 
 		please <b>be sure that you have no valuable Pandora FMS data in your Database</b>.<br>
 		</div>";
-
+		
 		echo "<div class='info'><b>Upgrade</b>: 
 		If you want to upgrade from Pandora FMS 4.x to 5.0 version, please use the migration tool inside /extras directory in this setup.</div>";
 		
@@ -426,7 +450,7 @@ function install_step1_licence() {
 			<p>For more information, please refer to our website at http://pandorafms.org and contact us if you have any kind of question about the usage of Pandora FMS</p>
 <p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
 		";
-
+	
 	if (!file_exists("COPYING")) {
 		echo "<div class='warn'><b>Licence file 'COPYING' is not present in your distribution. This means you have some 'partial' Pandora FMS distribution. We cannot continue without accepting the licence file.</b>";
 		echo "</div>";
@@ -453,7 +477,7 @@ function install_step1_licence() {
 }
 
 function install_step2() {
-
+	
 	echo "
 	<div id='install_container'>
 	<div id='wizard' style='min-height: 390px;'>
@@ -489,7 +513,7 @@ function install_step2() {
 			echo "</table>";
 		echo "</div>";
 		print_logo_status (3,6);
-
+		
 		echo "<div id='install_img'>";
 			if ($res > 0) {
 				echo "
@@ -531,7 +555,7 @@ function install_step3() {
 	if (empty($options)) {
 		$error = true;
 	}
-
+	
 	echo "
 	<div id='install_container'>
 	<div id='wizard' style='height: 665px;'>
@@ -545,7 +569,7 @@ function install_step3() {
 			You need a privileged user to create database schema, this is usually <b>root</b> user.
 			Information about <b>root</b> user will not be used or stored anymore.	
 			</p>
-			<p>		
+			<p>
 			You can also deploy the scheme into an existing Database. 
 			In this case you need a privileged Database user and password of that instance. 
 			</p>
@@ -558,7 +582,7 @@ function install_step3() {
 			please <b>be sure that you have no valuable Pandora FMS data in your Database.</b>
 			<br><br>
 			</div>";
-
+			
 			if (extension_loaded("oci8")) {
 				echo  " <div class='warn'>For Oracle installation an existing Database with a privileged user is needed.</div>";
 			}
@@ -693,12 +717,12 @@ function install_step4() {
 						
 						// Drop database if needed and don't want to install over an existing DB
 						if ($dbdrop == 1) {
-							mysql_query ("DROP DATABASE IF EXISTS $dbname");
+							mysql_query ("DROP DATABASE IF EXISTS `$dbname`");
 						}
 						
 						// Create schema
 						if ($dbaction == 'db_new' || $dbdrop == 1) {
-							$step1 = mysql_query ("CREATE DATABASE $dbname");
+							$step1 = mysql_query ("CREATE DATABASE `$dbname`");
 							check_generic ($step1, "Creating database '$dbname'");
 						}
 						else {
@@ -718,14 +742,14 @@ function install_step4() {
 							$host = 'localhost';
 							if ($dbhost != 'localhost')
 								$host = $_SERVER['SERVER_ADDR'];
-							$step5 = mysql_query ("GRANT ALL PRIVILEGES ON $dbname.* to pandora@$host 
-							IDENTIFIED BY '".$random_password."'");
+							$step5 = mysql_query ("GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host 
+								IDENTIFIED BY '".$random_password."'");
 							mysql_query ("FLUSH PRIVILEGES");
 							check_generic ($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
 							
 							$step6 = is_writable("include");
 							check_generic ($step6, "Write permissions to save config file in './include'");
-								
+							
 							$cfgin = fopen ("include/config.inc.php","r");
 							$cfgout = fopen ($pandora_config,"w");
 							$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
@@ -777,14 +801,14 @@ function install_step4() {
 						check_generic(0, "Connection with Database");
 					}
 					else {
-						check_generic(1, "Connection with Database");					
+						check_generic(1, "Connection with Database");
 						
 						// Drop all objects if needed
 						if ($dbdrop == 1) {
 							oracle_drop_all_objects($connection);
 						}
 						
-					 	$step1 = parse_oracle_dump($connection, "pandoradb.oracle.sql");
+						$step1 = parse_oracle_dump($connection, "pandoradb.oracle.sql");
 						
 						check_generic($step1, "Creating schema");
 						
@@ -1120,31 +1144,4 @@ function install_step5() {
 	</div>
 </div>";
 }
-
-
-// ---------------
-// Main page code
-// ---------------
-
-if (! isset($_GET["step"])) {
-	install_step1();
-}
-else {
-	$step = $_GET["step"];
-	switch ($step) {
-		case 11: install_step1_licence();
-			break;
-		case 2: install_step2();
-			break;
-		case 3: install_step3();
-			break;
-		case 4: install_step4();
-			break;
-		case 5: install_step5();
-			break;
-	}
-}
-
 ?>
-</body>
-</html>

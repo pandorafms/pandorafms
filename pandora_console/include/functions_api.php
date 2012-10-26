@@ -807,7 +807,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	}
 	if (isset($other['data'][3])) {
 		// Filter by name
-		if ($other['data'][3] != ""){
+		if ($other['data'][3] != "") {
 			$where .= " AND nombre LIKE ('%" . $other['data'][3] . "%')";
 		}
 	}
@@ -2742,45 +2742,44 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_add_agent_policy($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_policy cannot be left blank.'));
-		return;			
+		return;
 	}
 	
-	if ($other['data'][0] == ""){
+	if ($other['data'][0] == "") {
 		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent cannot be left blank.'));
-		return;			
+		return;
 	}
 	
 	// Check if the agent exists
 	$result_agent = db_get_value ('id_agente', 'tagente', 'id_agente', (int) $other['data'][0]);
-
-	if (!$result_agent){
+	
+	if (!$result_agent) {
 		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent doesn\'t exists.'));
-		return;			
-	}	
-
+		return;
+	}
+	
 	// Check if the agent is already in the policy
 	$id_agent_policy = enterprise_hook('policies_get_agents', array($id, array('id_agent' => $other['data'][0]), 'id'));
-
+	
 	if ($id_agent_policy === ENTERPRISE_NOT_HOOK) {
 		returnError('error_add_agent_policy', __('Error adding agent to policy.'));
-		return;	
-	}	
+		return;
+	}
 	
-	if ($id_agent_policy === false){
+	if ($id_agent_policy === false) {
 		$success = enterprise_hook('policies_create_agent', array($other['data'][0], $id, true));
-	} 
+	}
 	else {
 		returnError('error_add_agent_policy', __('Error adding agent to policy. The agent is already in the policy.'));
-		return;			
+		return;
 	}
-
+	
 	if ($success)
 		returnData('string', array('type' => 'string', 'data' => $success));
 	else
 		returnError('error_add_agent_policy', 'Error adding agent to policy.');
-
 }
 
 /**
@@ -3575,11 +3574,11 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_apply_policy', __('Error applying policy. Id_policy cannot be left blank.'));
 		return;			
 	}
-
+	
 	# Check if this operation is duplicated
 	$duplicated = enterprise_hook('policies_get_policy_queue_status', array($id));
 	
@@ -3591,20 +3590,20 @@ function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
 		else {
 			returnError('error_apply_policy', __('Error applying policy.'));
 			return;
-		}	
+		}
 	}
-
+	
 	if ($duplicated == STATUS_IN_QUEUE_APPLYING or $duplicated == STATUS_IN_QUEUE_IN){
 		// We want to return a value
 		if ($other == "return") {
 			return -1;
 		}
-		else {		
+		else {
 			returnError('error_apply_policy', __('Error applying policy. This policy is already pending to apply.'));
-			return;	
-		}		
+			return;
+		}
 	}
-
+	
 	$id = enterprise_hook('add_policy_queue_operation', array($id, 0, 'apply'));
 	
 	if ($id === ENTERPRISE_NOT_HOOK) {
@@ -3612,24 +3611,24 @@ function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
 		if ($other == "return") {
 			return -1;
 		}
-		else {			
+		else {
 			returnError('error_apply_policy', __('Error applying policy.'));
-			return;	
+			return;
 		}
-	}	
+	}
 	
 	// We want to return a value
 	if ($other == "return") {
 		if ($id)
 			return $id;
 		else
-			return -1;		
+			return -1;
 	}
 	else {
 		if ($id)
 			returnData('string', array('type' => 'string', 'data' => $id));
 		else
-			returnError('error_apply_policy', 'Error applying policy.');		
+			returnError('error_apply_policy', 'Error applying policy.');
 	}
 }
 
@@ -3647,35 +3646,36 @@ function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
  *    
  * @param $thrash3 Don't use
  */
-function api_set_apply_all_policies($id, $thrash1, $other, $thrash3) {
+function api_set_apply_all_policies($thrash1, $thrash2, $other, $thrash3) {
 	$policies = array();
-
+	
 	# Get all policies
 	$policies = enterprise_hook('policies_get_policies', array(false, false, false, true));
-
-	if ($duplicated === ENTERPRISE_NOT_HOOK) {
+	
+	if ($policies === ENTERPRISE_NOT_HOOK) {
 		returnError('error_apply_all_policy', __('Error applying all policies.'));
-		return;	
-	}	
-
+		return;
+	}
+	
 	$num_policies = count($policies);
 	$count_results = 0;
-	foreach ($policies as $policy){
-		$return_value = set_apply_policy($policy['id'], '', 'return', '');
-
-		if ($return_value != -1){
+	foreach ($policies as $policy) {
+		$return_value = enterprise_hook('add_policy_queue_operation',
+			array($policy['id'], 0, 'apply'));
+		
+		if ($return_value != -1) {
 			$count_results++;
 		}
 	}
 	
-	if ($num_policies > $count_results){
+	if ($num_policies > $count_results) {
 		$errors = $num_policies - $count_results;
 		
 		returnError('error_apply_policy', 'Error applying policy. ' . $errors . ' failed. ');	
 	}
 	else {
 		returnData('string', array('type' => 'string', 'data' => $count_results));		
-	}		
+	}
 }
 
 /**
@@ -3700,26 +3700,26 @@ function api_set_apply_all_policies($id, $thrash1, $other, $thrash3) {
 function api_set_create_group($id, $thrash1, $other, $thrash3) {
 	$group_name = $id;
 	
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_create_group', __('Error in group creation. Group_name cannot be left blank.'));
-		return;		
+		return;
 	}
 	
-	if ($other['data'][0] == ""){
+	if ($other['data'][0] == "") {
 		returnError('error_create_group', __('Error in group creation. Icon_name cannot be left blank.'));
 		return;
-	}	
-
-	if ($other['data'][1] != ""){
+	}
+	
+	if ($other['data'][1] != "") {
 		$group = groups_get_group_by_id($other['data'][1]);
-
-		if ($group == false){
+		
+		if ($group == false) {
 			returnError('error_create_group', __('Error in group creation. Id_parent_group doesn\'t exists.'));
-			return;			
+			return;
 		}
 	}
 	
-	if ($other['data'][1] != ""){	
+	if ($other['data'][1] != "") {
 		$values = array(
 			'icon' => $other['data'][0],
 			'parent' => $other['data'][1]
@@ -3727,9 +3727,9 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 	}
 	else {
 		$values = array(
-			'icon' => $other['data'][0]		
+			'icon' => $other['data'][0]
 		);
-	}	
+	}
 	
 	$id_group = groups_create_group($group_name, $values);
 	

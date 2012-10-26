@@ -1,3 +1,10 @@
+2012-10-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php: fixed the function
+	"api_set_apply_all_policies".
+	
+	Fixes: #3576289
+
 2012-10-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/setup/setup.php, godmode/setup/setup_visuals.php,

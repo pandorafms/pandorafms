@@ -545,7 +545,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->data[1][1] .= html_print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
 		$table->data[1][1] .= html_print_input_hidden('hash2', md5($relative_directory . $config['dbpass']), true);
 		$table->data[1][1] .= html_print_input_hidden ('upload_file_or_zip', 1, true);
-		$table->data[1][1] .= '</form>';	
+		$table->data[1][1] .= '</form>';
 		$table->data[1][1] .= '</div>';
 		
 		$table->data[1][1] .= '<div id="create_text_file" style="display: none;">';
@@ -690,7 +690,7 @@ function filemanager_box_upload_file_complex($real_directory, $relative_director
 	
 	echo '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
 	html_print_table ($table);
-	echo '</form>';	
+	echo '</form>';
 }
 
 /**

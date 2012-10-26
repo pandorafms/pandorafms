@@ -341,7 +341,18 @@ foreach ($contents as $content) {
 	// Support for metaconsole
 	$server_name = $content ['server_name'];
 
-	if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+	// Disable remote connections for netflow report items
+	if ($content['type'] != 'netflow_area' &&
+	    $content['type'] != 'netflow_pie' &&
+	    $content['type'] != 'netflow_data' &&
+	    $content['type'] != 'netflow_statistics' &&
+	    $content['type'] != 'netflow_summary') {
+			$remote_connection = 1;
+	} else {
+			$remote_connection = 0;
+	}
+	
+	if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE') && $remote_connection == 1) {
 		$connection = metaconsole_get_connection($server_name);
 		if (metaconsole_connect($connection) != NOERR){
 			//ui_print_error_message ("Error connecting to ".$server_name);
@@ -1535,7 +1546,7 @@ foreach ($contents as $content) {
 					$data["title"] = $description . ' (' . __($filter['output']) . ')';
 				}
 				
-				$data["objdata"]["netflow"] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $unique_id, '', 'XML');
+				$data["objdata"]["netflow"] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $unique_id, $server_name, 'XML');
 				$buffer_file["objdata"] = $config['attachment_store'] . '/netflow_' . $time.'_'.$content['id_rc'] . '.tmp';
 			break;
 	}
@@ -1544,7 +1555,7 @@ foreach ($contents as $content) {
 	echo '</object>';
 	$counter++;
 	
-	if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+	if (($config ['metaconsole'] == 1) && defined('METACONSOLE') && $remote_connection == 1) {
 		//Restore db connection
 		metaconsole_restore_db();
 	}	

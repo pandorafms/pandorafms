@@ -370,13 +370,7 @@ switch ($action) {
 		break;
 }
 
-// Build link for sort actions: metaconsole and normal console
-$variable_link = ui_get_full_url(false);
-// Metaconsole
-if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
-	$variable_link .= '/enterprise/meta/';
-
-$urlForm = $variable_link . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
+$urlForm = $config['homeurl'] . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';
 html_print_input_hidden('id_item', $idItem);
@@ -1866,6 +1860,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_max_values").show();
 			$("#row_resolution").show();
+			$("#row_servers").show();
 			break;
 		case 'netflow_pie':
 			$("#row_netflow_filter").show();
@@ -1873,6 +1868,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_max_values").show();
 			$("#row_resolution").show();
+			$("#row_servers").show();
 			break;
 		case 'netflow_data':
 			$("#row_netflow_filter").show();
@@ -1880,6 +1876,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_max_values").show();
 			$("#row_resolution").show();
+			$("#row_servers").show();
 			break;
 		case 'netflow_summary':
 			$("#row_netflow_filter").show();
@@ -1887,6 +1884,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_max_values").show();
 			$("#row_resolution").show();
+			$("#row_servers").show();
 			break;
 		case 'netflow_statistics':
 			$("#row_netflow_filter").show();
@@ -1894,6 +1892,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_max_values").show();			
 			$("#row_resolution").show();
+			$("#row_servers").show();
 			break;
 	}
 }

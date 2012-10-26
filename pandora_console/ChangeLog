@@ -1,3 +1,12 @@
+2012-10-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php,
+	  operation/reporting/reporting_xml.php,
+	  godmode/reporting/reporting_builder.php,
+	  godmode/reporting/reporting_builder.item_editor.php: Integrated
+	  XML and PDF netflow reports into custom reports. Fixed some broken
+	  links.
+
 2012-10-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php,

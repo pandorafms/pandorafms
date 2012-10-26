@@ -2116,9 +2116,20 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		$sizgraph_w = '750';
 		$sizgraph_h = '230';
 	}
+
+	// Disable remote connections for netflow report items
+	if ($content['type'] != 'netflow_area' &&
+	    $content['type'] != 'netflow_pie' &&
+	    $content['type'] != 'netflow_data' &&
+	    $content['type'] != 'netflow_statistics' &&
+	    $content['type'] != 'netflow_summary') {
+			$remote_connection = 1;
+	} else {
+			$remote_connection = 0;
+	}
 	
 	$server_name = $content ['server_name'];
-	if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+	if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE') && $remote_connection == 1) {
 		$connection = metaconsole_get_connection($server_name);
 		if (metaconsole_load_external_db($connection) != NOERR) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
@@ -2432,8 +2443,14 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$sla_showed_values[] = $sla_value;
 				
 				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
-					//Restore db connection
-					metaconsole_restore_db();
+					if ($content['type'] != 'netflow_area' &&
+					    $content['type'] != 'netflow_pie' &&
+					    $content['type'] != 'netflow_data' &&
+					    $content['type'] != 'netflow_statistics' &&
+					    $content['type'] != 'netflow_summary') {
+						//Restore db connection
+						metaconsole_restore_db();
+					}
 				}
 			
 			}
@@ -4781,11 +4798,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 
 			$table->colspan[1][0] = 4;
-			$table->data[1][0] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $unique_id, '', 'HTML');
+			$table->data[1][0] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $unique_id, $server_name, 'HTML');
 			break;
 	}
 	//Restore dbconnection
-	if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+	if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE') && $remote_connection == 1) {
 		metaconsole_restore_db_force();
 	}
 }

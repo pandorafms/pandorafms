@@ -392,7 +392,7 @@ switch ($action) {
 				$data = array ();
 				
 				if (check_acl ($config["id_user"], $report["id_group"], "AW")) {
-					$data[0] = '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&action=edit&id_report='.
+					$data[0] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&action=edit&id_report='.
 						$report['id_report'].'">'.$report['name'].'</a>';
 				}
 				else {
@@ -402,9 +402,9 @@ switch ($action) {
 				
 				$data[1] = $report['description'];
 				
-				$data[2] = '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/operation/reporting/reporting_viewer&id='.$report['id_report'].'">' .
+				$data[2] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/operation/reporting/reporting_viewer&id='.$report['id_report'].'">' .
 					html_print_image("images/reporting.png", true) . '</a>';
-				$data[3] = '<a href="'. ui_get_full_url(false) . '/ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
+				$data[3] = '<a href="'. ui_get_full_url(false, false, false, false) . 'ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
 				
 				
 				//Calculate dinamically the number of the column

@@ -800,9 +800,17 @@ Returns:
 
 =cut
 ##############################################################################
-sub pandora_ping ($$) {
-	my ($pa_config, $host) = @_;
+sub pandora_ping ($$$$) {
+	my ($pa_config, $host, $timeout, $retries) = @_;
 	
+	# Adjust timeout and retry values
+	if ($timeout == 0) {
+		$timeout = $pa_config->{'networktimeout'};
+	}
+	if ($retries == 0) {
+		$retries = $pa_config->{'icmp_checks'};
+	}
+	 
 	my $output = 0;
 	my $i;
 	
@@ -811,8 +819,8 @@ sub pandora_ping ($$) {
 	
 	# Windows XP .. Windows 7
 	if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
-		my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
-		$output = `ping -n $pa_config->{'icmp_checks'} -w $ms_timeout $host`;
+		my $ms_timeout = $timeout * 1000;
+		$output = `ping -n $retries -w $ms_timeout $host`;
 		if ($output =~ /TTL/){
 			return 1;
 		}
@@ -830,7 +838,7 @@ sub pandora_ping ($$) {
 		# 'networktimeout' is not used by ping on Solaris.
 		
 		# Ping the host
-		`$ping_command -s -n $host 56 $pa_config->{'icmp_checks'} >/dev/null 2>&1`;
+		`$ping_command -s -n $host 56 $retries >/dev/null 2>&1`;
 		if ($? == 0) {
 			return 1;
 		}
@@ -838,7 +846,7 @@ sub pandora_ping ($$) {
 	}
 	
 	elsif ($OSNAME eq "freebsd"){
-		my $ping_command = "ping -t $pa_config->{'networktimeout'}";
+		my $ping_command = "ping -t $timeout";
 		
 		if ($host =~ /\d+:|:\d+/ ) {
 			$ping_command = "ping6";
@@ -848,7 +856,7 @@ sub pandora_ping ($$) {
 		# 'networktimeout' is not used by ping6 on FreeBSD.
 		
 		# Ping the host
-		`$ping_command -q -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
+		`$ping_command -q -n -c $retries $host >/dev/null 2>&1`;
 		if ($? == 0) {
 			return 1;
 		}
@@ -865,7 +873,7 @@ sub pandora_ping ($$) {
 		}
 		
 		# Ping the host
-		`$ping_command -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;	
+		`$ping_command -q -W $timeout -n -c $retries $host >/dev/null 2>&1`;	
 		if ($? == 0) {
 			return 1;
 		}
@@ -882,8 +890,16 @@ Ping the given host. Returns the average round-trip time.
 
 =cut
 ########################################################################
-sub pandora_ping_latency ($$) {
-	my ($pa_config, $host) = @_;
+sub pandora_ping_latency ($$$$) {
+	my ($pa_config, $host, $timeout, $retries) = @_;
+
+	# Adjust timeout and retry values
+	if ($timeout == 0) {
+		$timeout = $pa_config->{'networktimeout'};
+	}
+	if ($retries == 0) {
+		$retries = $pa_config->{'icmp_checks'};
+	}
 	
 	my $output = 0;
 	
@@ -900,8 +916,8 @@ sub pandora_ping_latency ($$) {
 		# If this fails, ping can be replaced by fping which also have the same format
 		# but always in english
 		
-		my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
-		$output = `ping -n $pa_config->{'icmp_checks'} -w $ms_timeout $host`;
+		my $ms_timeout = $timeout * 1000;
+		$output = `ping -n $retries -w $ms_timeout $host`;
 		
 		if ($output =~ m/\=\s([0-9]*)[a-z][a-z]\r/){
 			return $1;
@@ -922,7 +938,7 @@ sub pandora_ping_latency ($$) {
 		# 'networktimeout' is not used by ping on Solaris.
 		
 		# Ping the host
-		my @output = `$ping_command -s -n $host 56 $pa_config->{'icmp_checks'} 2>/dev/null`;
+		my @output = `$ping_command -s -n $host 56 $retries 2>/dev/null`;
 		
 		# Something went wrong
 		return 0 if ($? != 0);
@@ -934,7 +950,7 @@ sub pandora_ping_latency ($$) {
 	}
 	
 	elsif ($OSNAME eq "freebsd"){
-		my $ping_command = "ping";
+		my $ping_command = "ping -t $timeout";
 		
 		if ($host =~ /\d+:|:\d+/ ) {
 			$ping_command = "ping6";
@@ -946,7 +962,7 @@ sub pandora_ping_latency ($$) {
 		# 'networktimeout' is not used on FreeBSD.
 		
 		# Ping the host
-		my @output = `$ping_command -q -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
+		my @output = `$ping_command -q -n -c $retries $host 2>/dev/null`;
 		
 		# Something went wrong
 		return 0 if ($? != 0);
@@ -967,7 +983,7 @@ sub pandora_ping_latency ($$) {
 		
 		
 		# Ping the host
-		my @output = `$ping_command -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
+		my @output = `$ping_command -q -W $timeout -n -c $retries $host 2>/dev/null`;
 		
 		# Something went wrong
 		return 0 if ($? != 0);

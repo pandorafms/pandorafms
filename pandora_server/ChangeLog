@@ -1,3 +1,9 @@
+2012-10-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/Tools.pm: Added support for custom timeouts and retries
+	  to remote modules.
+
 2012-10-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf,

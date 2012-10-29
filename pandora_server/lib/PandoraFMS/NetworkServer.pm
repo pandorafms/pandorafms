@@ -146,7 +146,7 @@ sub data_consumer ($$) {
 #						 tcp_rcv, id_tipo_module, dbh)
 # Makes a call to TCP modules to get a value.
 ##########################################################################
-sub pandora_query_tcp ($$$$$$$$) {
+sub pandora_query_tcp ($$$$$$$$$$) {
 	my $pa_config = $_[0];
 	my $tcp_port = $_[1];
 	my $ip_target = $_[2];
@@ -155,18 +155,28 @@ sub pandora_query_tcp ($$$$$$$$) {
 	my $tcp_send = $_[5];
 	my $tcp_rcv = $_[6];
 	my $id_tipo_modulo = $_[7];
-
+	my $timeout = $_[8];
+	my $retries = $_[9];
+	
+	# Adjust timeout and retry values
+	if ($timeout == 0) {
+		$timeout = $pa_config->{'tcp_timeout'};
+	}
+	if ($retries == 0) {
+		$retries = $pa_config->{'tcp_checks'};
+	}
+	
     $tcp_send = decode_entities($tcp_send);
     $tcp_rcv = decode_entities($tcp_rcv);
 
         my $counter; 
-        for ($counter =0; $counter < $pa_config->{'tcp_checks'}; $counter++){
+        for ($counter =0; $counter < $retries; $counter++){
 	        my $temp; my $temp2;
 	        my $tam;
 	        my $handle=IO::Socket::INET6->new(
 		        Proto=>"tcp",
 		        PeerAddr=>$ip_target,
-		        Timeout=>$pa_config->{'tcp_timeout'},
+		        Timeout=>$timeout,
 		        PeerPort=>$tcp_port,
 			Multihomed=>1,
 		        Blocking=>0 ); # Non blocking !!, very important !
@@ -191,7 +201,7 @@ next_pair:
 		        if ((defined ($tcp_rcv)) && (($tcp_rcv ne "") || ($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11))) {
 			        # Receive data, non-blocking !!!! (VERY IMPORTANT!)
 			        $temp2 = "";
-			        for ($tam=0; $tam<($pa_config->{'tcp_timeout'}); $tam++){
+			        for ($tam=0; $tam<$timeout; $tam++){
 				        $handle->recv($temp,16000,0x40);
 				        $temp2 = $temp2.$temp;
 				        if ($temp ne ""){
@@ -206,11 +216,11 @@ next_pair:
 						}
  					        $$module_data = 1;
 					        $$module_result = 0;
-                                                $counter = $pa_config->{'tcp_checks'};
+					        $counter = $retries;
 				        } else {
 					        $$module_data = 0;
 					        $$module_result = 0;
-                                                $counter = $pa_config->{'tcp_checks'};
+					        $counter = $retries;
 				        }
 			        } elsif ($id_tipo_modulo == 10 ){ # TCP String (no int conversion)!
 				        $$module_data = $temp2;
@@ -220,23 +230,23 @@ next_pair:
 					        if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
 						        $$module_result = 1;
 						        $$module_data = 0; # invalid data
-                                                        $counter = $pa_config->{'tcp_checks'};
+						        $counter = $retries;
 					        } else {
 						        $$module_data = int($temp2);
 						        $$module_result = 0; # Successful
-                                                        $counter = $pa_config->{'tcp_checks'};
+						        $counter = $retries;
 					        }
 				        } else {
 						        $$module_result = 1; 
-                                                        $$module_data = 0; # invalid data
-                                                        $counter = $pa_config->{'tcp_checks'};
+						        $$module_data = 0; # invalid data
+						        $counter = $retries;
 					        }
 			        }
 		        } else { # No expected data to receive, if connected and tcp_proc type successful
 			        if ($id_tipo_modulo == 9){ # TCP Proc
 				        $$module_result = 0;
 				        $$module_data = 1;
-                                        $counter = $pa_config->{'tcp_checks'};
+				        $counter = $retries;
 			        }
 		        }
 		        $handle->close();
@@ -246,7 +256,7 @@ next_pair:
 		        if ($id_tipo_modulo == 9){ # TCP Proc
 			        $$module_result = 0;
 			        $$module_data = 0; # Failed, but data exists
-                                $counter = $pa_config->{'tcp_checks'};
+			        $counter = $retries;
 		        }
 	        }
         }
@@ -324,8 +334,8 @@ sub pandora_query_snmp ($$$) {
 		return (undef, 1) unless ($snmp_oid ne '');
 	}
 
-	my $snmp_timeout = $pa_config->{"snmp_timeout"};
-	my $snmp_retries = $pa_config->{'snmp_checks'};
+	my $snmp_timeout = $module->{"max_timeout"} != 0 ? $module->{"max_timeout"} : $pa_config->{"snmp_timeout"};
+	my $snmp_retries = $module->{"max_retries"} != 0 ? $module->{"max_retries"} : $pa_config->{'snmp_checks'};
 
 	my $module_result = 1; # by default error
 	my $module_data = 0; 
@@ -409,7 +419,9 @@ sub exec_network_module ($$$$) {
 	my $tcp_port = $module->{'tcp_port'};
 	my $tcp_send = $module->{'tcp_send'};
 	my $tcp_rcv = $module->{'tcp_rcv'};
-	
+	my $timeout = $module->{'max_timeout'};
+	my $retries = $module->{'max_retries'};
+
 	if ((defined($ip_target)) && ($ip_target)) {
 
 	    # -------------------------------------------------------
@@ -417,11 +429,11 @@ sub exec_network_module ($$$$) {
 	    # -------------------------------------------------------
 
 		if ($id_tipo_modulo == 6){ # ICMP (Connectivity only: Boolean)
-			$module_data = pandora_ping ($pa_config, $ip_target);
+			$module_data = pandora_ping ($pa_config, $ip_target, $timeout, $retries);
 			$module_result = 0; # Successful
 		}
 		elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
-			$module_data = pandora_ping_latency ($pa_config, $ip_target);
+			$module_data = pandora_ping_latency ($pa_config, $ip_target, $timeout, $retries);
 			$module_result = 0; # Successful
 		}
 
@@ -472,7 +484,7 @@ sub exec_network_module ($$$$) {
 				($id_tipo_modulo == 10) || 
 				($id_tipo_modulo == 11)) { # TCP Module
             if ((defined($tcp_port)) && ($tcp_port < 65536) && ($tcp_port > 0)) { # Port check
-			    pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo);
+			    pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo, $timeout, $retries);
 		    } else { 
 			    # Invalid port, get no check
 			    $module_result = 1;

@@ -38,7 +38,7 @@ if (is_ajax ()) {
 		
 		return;
 	}
-	
+		
 	if ($get_license_info) {
 		enterprise_include_once('include/functions_license.php');
 		
@@ -190,7 +190,7 @@ function pandora_update_manager_login () {
 		
 		$user_key = get_user_key ($settings);
 		
-		$package = um_client_check_latest_update ($settings, $user_key);
+		$package = @um_client_check_latest_update ($settings, $user_key);
 		
 		if (is_object ($package)) {
 			if ($package->id != 'ERROR_NON_NUMERIC_FOUND') {

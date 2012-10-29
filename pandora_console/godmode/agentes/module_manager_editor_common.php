@@ -373,6 +373,12 @@ $table_advanced->data[11][0] = __('Cron') . ui_print_help_tip (__('If cron is se
 $table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true);
 $table_advanced->colspan[11][1] = 4;
 
+$table_advanced->data[12][0] = __('Timeout');
+$table_advanced->data[12][1] = html_print_input_text ('max_timeout', $max_timeout, '', 5, 10, true);
+$table_advanced->data[12][2] = '';
+$table_advanced->data[12][3] = __('Retries');
+$table_advanced->data[12][4] = html_print_input_text ('max_retries', $max_retries, '', 5, 10, true);
+
 ?>
 
 <script type="text/javascript">

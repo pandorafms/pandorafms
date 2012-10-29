@@ -4790,13 +4790,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
 						
 			$table->colspan[0][0] = 4;
-			if ($filter['aggregate'] != 'none') {
-				$table->data[0][0] = '<h4>' . $description . ' (' . __($filter['aggregate']) . '/' . __($filter['output']) . ')</h4>';
-			}
-			else { 
-				$table->data[0][0] = '<h4>' . $description . ' (' . __($filter['output']) . ')</h4>';
-			}
-
+			$table->data[0][0] = '<h4>' . $description . '</h4>';
 			$table->colspan[1][0] = 4;
 			$table->data[1][0] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $unique_id, $server_name, 'HTML');
 			break;

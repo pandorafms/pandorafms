@@ -190,6 +190,7 @@ if ($id_agent_module) {
 	$prediction_module = $module['prediction_module'];
 	$custom_integer_2 = $module ['custom_integer_2'];
 	$max_timeout = $module['max_timeout'];
+	$max_retries = $module['max_retries'];
 	$custom_id = $module['custom_id'];
 	$history_data = $module['history_data'];
 	$min_warning = $module['min_warning'];
@@ -234,7 +235,8 @@ else {
 		$id_module_group = 1;
 		$id_module_type = 1;
 		$post_process = '';
-		$max_timeout = '';
+		$max_timeout = 0;
+		$max_retries = 0;
 		$min = '';
 		$max = '';
 		$interval = '';

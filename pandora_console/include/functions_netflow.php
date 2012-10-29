@@ -209,6 +209,7 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 	$end_date = date ($nfdump_date_format, $end_date);
 	$values = array();
 	$table->width = '50%';
+	$table->border = 1;
 	$table->cellpadding = 0;
 	$table->cellspacing = 0;
 	$table->class = 'databox';
@@ -276,6 +277,7 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate) {
 	$values = array();
 	$table->size = array ('50%');
 	$table->class = 'databox';
+	$table->border = 1;
 	$table->cellpadding = 0;
 	$table->cellspacing = 0;
 	$table->data = array();
@@ -1040,20 +1042,49 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($aggregate != 'none') {
 				if ($output == 'HTML') {
-					return graph_netflow_aggregate_area ($data, $interval, 660, 320, $unit);
+					$html = "<b>" . __('Unit') . ":</b> $unit";
+					$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> $aggregate";
+					if ($interval_length != 0) {
+						$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
+					}
+					$html .= graph_netflow_aggregate_area ($data, $interval, 660, 320, $unit);
+					return $html;
 				} else if ($output == 'PDF') {
-					return graph_netflow_aggregate_area ($data, $interval, 660, 320, $unit, 2, true);
+					$html = "<b>" . __('Unit') . ":</b> $unit";
+					$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> $aggregate";
+					if ($interval_length != 0) {
+						$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
+					}
+					$html .= graph_netflow_aggregate_area ($data, $interval, 660, 320, $unit, 2, true);
+					return $html;
 				} else if ($output == 'XML') {
-					return netflow_aggregate_area_xml ($data);
+					$xml = "<unit>$unit</unit>\n";
+					$xml .= "<aggregate>$aggregate</aggregate>\n";
+					$xml .= "<resolution>$interval_length</resolution>\n";
+					$xml .= netflow_aggregate_area_xml ($data);
+					return $xml;
 				}
 			}
 			else {
 				if ($output == 'HTML') {
-					return graph_netflow_total_area ($data, $interval, 660, 320, $unit);
+					$html = "<b>" . __('Unit') . ":</b> $unit";
+					if ($interval_length != 0) {
+						$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
+					}
+					$html .= graph_netflow_total_area ($data, $interval, 660, 320, $unit);
+					return $html;
 				} else if ($output == 'PDF') {
-					return graph_netflow_total_area ($data, $interval, 660, 320, $unit, 2, true);
+					$html = "<b>" . __('Unit') . ":</b> $unit";
+					if ($interval_length != 0) {
+						$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
+					}
+					$html .= graph_netflow_total_area ($data, $interval, 660, 320, $unit, 2, true);
+					return $html;
 				} else if ($output == 'XML') {
-					return netflow_total_area_xml ($data);
+					$xml = "<unit>$unit</unit>\n";
+					$xml .= "<resolution>$interval_length</resolution>\n";
+					$xml .= netflow_total_area_xml ($data);
+					return $xml;
 				}
 			}
 			break;
@@ -1061,21 +1092,40 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 		case 'netflow_pie':
 			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($output == 'HTML') {
-				return graph_netflow_aggregate_pie ($data, $aggregate);
+				$html = "<b>" . __('Unit') . ":</b> $unit";
+				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> $aggregate";
+				$html .= graph_netflow_aggregate_pie ($data, $aggregate);
+				return $html;
 			} else if ($output == 'PDF') {
-				return graph_netflow_aggregate_pie ($data, $aggregate, 2, true);
+				$html = "<b>" . __('Unit') . ":</b> $unit";
+				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> $aggregate";
+				$html .= graph_netflow_aggregate_pie ($data, $aggregate, 2, true);
+				return $html;
 			} else if ($output == 'XML') {
-				return netflow_aggregate_pie_xml ($data);
+				$xml = "<unit>$unit</unit>\n";
+				$xml .= "<aggregate>$aggregate</aggregate>\n";
+				$xml .= netflow_aggregate_pie_xml ($data);
+				return $xml;
 			}
 			break;
 		case '2':
 		case 'netflow_data':
 			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
 			if ($output == 'HTML' || $output == 'PDF') {
-				return netflow_data_table ($data, $start_date, $end_date, $aggregate);
+				$html = "<b>" . __('Unit') . ":</b> $unit";
+				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> $aggregate";
+				if ($interval_length != 0) {
+					$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
+				}
+				$html .= netflow_data_table ($data, $start_date, $end_date, $aggregate);
+				return $html;
 			} else if ($output == 'XML') {
+				$xml = "<unit>$unit</unit>\n";
+				$xml .= "<aggregate>$aggregate</aggregate>\n";
+				$xml .= "<resolution>$interval_length</resolution>\n";
 				// Same as netflow_aggregate_area_xml
-				return netflow_aggregate_area_xml ($data);
+				$xml .= netflow_aggregate_area_xml ($data);
+				return $xml;
 			}
 			break;
 		case '3':

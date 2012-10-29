@@ -78,6 +78,7 @@ if (isset ($_POST["template_id"])) {
 				'plugin_pass' => $row2["plugin_pass"],
 				'plugin_parameter' => $row2["plugin_parameter"],
 				'max_timeout' => $row2["max_timeout"],
+				'max_retries' => $row2["max_retries"],
 				'id_plugin' => $row2['id_plugin'],
 				'post_process' => $row2['post_process'],
 				'min_warning' => $row2['min_warning'],

@@ -1,3 +1,41 @@
+2012-10-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php,
+	  include/javascript/pandora_modules.js,
+	  include/functions_network_components.php,
+	  include/functions_api.php,
+	  include/functions_netflow.php,
+	  pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  extensions/resource_registration.php,
+	  extensions/plugin_registration.php,
+	  operation/menu.php,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  godmode/agentes/agent_template.php,
+	  godmode/agentes/module_manager_editor_common.php,
+	  godmode/agentes/configurar_agente.php,
+	  godmode/agentes/module_manager_editor.php,
+	  godmode/servers/plugin.php,
+	  godmode/menu.php,
+	  godmode/modules/manage_network_components_form.php,
+	  godmode/modules/manage_network_templates.php,
+	  godmode/modules/manage_network_components_form_wmi.php,
+	  godmode/modules/manage_network_components.php,
+	  godmode/reporting/reporting_builder.php,
+	  godmode/reporting/reporting_builder.item_editor.php: Added support for
+	  custom timeout and retries to remote modules.
+
+	* operation/netflow/nf_reporting.php,
+	  operation/netflow/nf_view.php,
+	  godmode/netflow/nf_report_item.php,
+	  godmode/netflow/nf_report.php,
+	  godmode/netflow/nf_report_form.php,
+	  godmode/netflow/nf.php: Deleted from repository. Netflow reports are
+	  now integrated into custom reports.
+
 2012-10-29  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

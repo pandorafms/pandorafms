@@ -156,6 +156,7 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `unknown_instructions` TEXT NOT NULL DEF
 ALTER TABLE `tagente_modulo` ADD COLUMN `critical_inverse` tinyint(1) unsigned default '0';
 ALTER TABLE `tagente_modulo` ADD COLUMN `warning_inverse` tinyint(1) unsigned default '0';
 ALTER TABLE `tagente_modulo` ADD COLUMN `cron_interval` varchar(100) default '';
+ALTER TABLE `tagente_modulo` ADD COLUMN `max_retries` int(4) UNSIGNED NOT NULL default 0;
 
 ------------------------------------------------------------------------
 -- Table `tnetwork_component`
@@ -170,6 +171,7 @@ ALTER TABLE `tnetwork_component` ADD COLUMN `warning_instructions` TEXT NOT NULL
 ALTER TABLE `tnetwork_component` ADD COLUMN `unknown_instructions` TEXT NOT NULL default '';
 ALTER TABLE `tnetwork_component` ADD COLUMN `critical_inverse` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `warning_inverse` tinyint(1) unsigned default '0';
+ALTER TABLE `tnetwork_component` ADD COLUMN `max_retries` int(4) UNSIGNED NOT NULL default 0;
 
 ------------------------------------------------------------------------
 -- Table `tgraph_source` Alter table to allow negative values in weight
@@ -291,6 +293,7 @@ CREATE TABLE IF NOT EXISTS `tpassword_history` (
 ------------------------------------------------------------------------
 ALTER TABLE tplugin ADD `macros` text;
 ALTER TABLE tplugin ADD `parameters` text;
+ALTER TABLE tplugin ADD `max_retries` int(4) UNSIGNED NOT NULL default 0;
 
 ------------------------------------------------------------------------
 -- Table `trecon_script`

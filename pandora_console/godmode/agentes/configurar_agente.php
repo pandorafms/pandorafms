@@ -681,6 +681,7 @@ if ($update_module || $create_module) {
 	$post_process = (string) get_parameter ('post_process', 0.0);
 	$prediction_module = 1;
 	$max_timeout = (int) get_parameter ('max_timeout');
+	$max_retries = (int) get_parameter ('max_retries');
 	$min = (int) get_parameter_post ("min");
 	$max = (int) get_parameter ('max');
 	$interval = (int) get_parameter ('module_interval', $intervalo);
@@ -839,6 +840,7 @@ if ($update_module) {
 		'post_process' => $post_process,
 		'prediction_module' => $prediction_module,
 		'max_timeout' => $max_timeout,
+		'max_retries' => $max_retries,
 		'custom_id' => $custom_id,
 		'history_data' => $history_data,
 		'min_warning' => $min_warning,
@@ -954,7 +956,8 @@ if ($create_module) {
 		'id_plugin' => $id_plugin, 
 		'post_process' => $post_process,
 		'prediction_module' => $prediction_module,
-		'max_timeout' => $max_timeout, 
+		'max_timeout' => $max_timeout,
+		'max_retries' => $max_retries,
 		'disabled' => $disabled,
 		'id_modulo' => $id_module,
 		'custom_id' => $custom_id,

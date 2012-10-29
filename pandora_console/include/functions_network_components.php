@@ -332,6 +332,7 @@ function network_components_create_module_from_network_component ($id_network_co
 			'plugin_pass',
 			'plugin_parameter',
 			'max_timeout',
+			'max_retries',
 			'history_data',
 			'min_warning',
 			'max_warning',
@@ -399,6 +400,7 @@ function network_components_duplicate_network_component ($id_local_component) {
 	$networkCopy['plugin_pass'] = $network['plugin_pass'];
 	$networkCopy['plugin_parameter'] = $network['plugin_parameter'];
 	$networkCopy['max_timeout'] = $network['max_timeout'];
+	$networkCopy['max_retries'] = $network['max_retries'];
 	$networkCopy['history_data'] = $network['history_data'];
 	$networkCopy['min_warning'] = $network['min_warning'];
 	$networkCopy['max_warning'] = $network['max_warning'];

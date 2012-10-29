@@ -60,6 +60,7 @@ if(!empty($macros)) {
 }
 
 $max_timeout = (int) get_parameter ('max_timeout');
+$max_retries = (int) get_parameter ('max_retries');
 $id_modulo = (int) get_parameter ('id_component_type');
 $id_plugin = (int) get_parameter ('id_plugin');
 $min_warning = (float) get_parameter ('min_warning');
@@ -151,6 +152,7 @@ if ($create_component) {
 				'plugin_parameter' => $plugin_parameter,
 				'macros' => $macros,
 				'max_timeout' => $max_timeout,
+				'max_retries' => $max_retries,
 				'history_data' => $history_data,
 				'min_warning' => $min_warning,
 				'max_warning' => $max_warning,
@@ -228,6 +230,7 @@ if ($update_component) {
 				'plugin_parameter' => $plugin_parameter,
 				'macros' => $macros,
 				'max_timeout' => $max_timeout,
+				'max_retries' => $max_retries,
 				'history_data' => $history_data,
 				'min_warning' => $min_warning,
 				'max_warning' => $max_warning,
@@ -348,6 +351,7 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'plugin_parameter' => false,
 	'macros' => false,
 	'max_timeout' => false,
+	'max_retries' => false,
 	'id_modulo' => false,
 	'id_plugin' => false,
 	'history_data' => false,

@@ -336,12 +336,9 @@ $menu_operation["workspace"]["sub"] = $sub;
 
 if (check_acl ($config['id_user'], 0, "IR")) {
 	if ($config['activate_netflow']) {
-		$menu_operation["netf"]["text"] = __('Netflow');
-		$menu_operation["netf"]["sec2"] = "operation/netflow/nf_reporting";
+		$menu_operation["netf"]["text"] = __('Netflow Live View');
+		$menu_operation["netf"]["sec2"] = "operation/netflow/nf_live_view";
 		$menu_operation["netf"]["id"] = "oper-netflow";
-		$sub = array ();
-		$sub["operation/netflow/nf_live_view"]["text"] = __('Live view');
-		$menu_operation["netf"]["sub"] = $sub;
 	}
 }
 // Rest of options, all with AR privilege (or should events be with incidents?)

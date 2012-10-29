@@ -1,3 +1,10 @@
+2012-10-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Move the number
+	  of retries for web modules from plugin_pass to max_retries.
+
 2012-10-29 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager.php: silenced the notice PHP message

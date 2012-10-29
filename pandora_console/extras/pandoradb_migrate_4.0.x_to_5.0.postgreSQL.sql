@@ -180,6 +180,9 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "warning_inverse" SMALLINT NOT NULL defa
 ALTER TABLE "tagente_modulo" ADD COLUMN "cron_interval" varchar(100) default '';
 ALTER TABLE "tagente_modulo" ADD COLUMN "max_retries" INTEGER default 0;
 
+-- Move the number of retries for web modules from plugin_pass to max_retries
+UPDATE "tagente_modulo" SET max_retries=plugin_pass WHERE id_modulo=7;
+
 -- -----------------------------------------------------
 -- Table "tevent_filter"
 -- -----------------------------------------------------

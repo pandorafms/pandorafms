@@ -1,17 +1,13 @@
 var original_command = "";
 
 function parse_alert_command (command) {
-	value = $("#text-field1").attr ("value");
-	re = /_FIELD1_/gi;
-	command = command.replace (re, value);
-	
-	value = $("#text-field2").attr ("value");
-	re = /_FIELD2_/gi;
-	command = command.replace (re, value);
-	
-	value = $("#textarea_field3").val();
-	re = /_FIELD3_/gi;
-	command = command.replace (re, value);
+	var nfield = 1;
+	$('.fields').each(function() {
+		var field = '_field'+nfield+'_';
+		nfield++;
+		var regex = new RegExp(field,"gi");
+		command = command.replace (regex, $(this).val());
+	});
 	
 	return command;
 }

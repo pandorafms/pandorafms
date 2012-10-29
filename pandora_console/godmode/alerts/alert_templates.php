@@ -120,13 +120,14 @@ if ($update_template) {
 	$id = (int) get_parameter ('id');
 	
 	$recovery_notify = (bool) get_parameter ('recovery_notify');
-	$field2_recovery = (string) get_parameter ('field2_recovery');
-	$field3_recovery = (string) get_parameter ('field3_recovery');
-	
-	$result = alerts_update_alert_template ($id,
-		array ('recovery_notify' => $recovery_notify,
-			'field2_recovery' => $field2_recovery,
-			'field3_recovery' => $field3_recovery));
+
+	$fields_recovery = array();
+	for($i=2;$i<=10;$i++) {
+		$fields_recovery['field'.$i.'_recovery'] = (string) get_parameter ('field'.$i);
+	}
+	$values = $fields_recovery;
+	$values['recovery_notify'] = $recovery_notify;
+	$result = alerts_update_alert_template ($id, $values);
 	
 	ui_print_result_message ($result,
 		__('Successfully updated'),

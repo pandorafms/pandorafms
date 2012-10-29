@@ -110,11 +110,19 @@ if ($copy_action) {
 if ($create_action) {
 	$name = (string) get_parameter ('name');
 	$id_alert_command = (int) get_parameter ('id_command');
-	$field1 = (string) get_parameter ('field1');
-	$field2 = (string) get_parameter ('field2');
-	$field3 = (string) get_parameter ('field3');
-	$group = (string) get_parameter ('group');
-	$action_threshold = (int) get_parameter ('action_threshold');
+	
+	$fields_descriptions = array();
+	$fields_values = array();
+	$info_fields = '';
+	$values = array();
+	for($i=1;$i<=10;$i++) {
+		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
+		$info_fields .= ' Field'.$i.': ' . $values['field'.$i];
+	}
+
+	$values['id_group'] = (string) get_parameter ('group');
+	$values['action_threshold'] = (int) get_parameter ('action_threshold');
+	
 	$name_check = db_get_value ('name', 'talert_actions', 'name', $name);
 	
 	if ($name_check) {
@@ -122,14 +130,10 @@ if ($create_action) {
 	}
 	else {
 		$result = alerts_create_alert_action ($name, $id_alert_command,
-			array ('field1' => $field1,
-				'field2' => $field2,
-				'field3' => $field3,
-				'id_group' => $group,
-				'action_threshold' => $action_threshold));
+			$values);
 		
 		$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
-			' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
+			$info_fields . ' Group: ' . $group .
 			' Action threshold: ' . $action_threshold;
 	}
 	
@@ -169,21 +173,22 @@ if ($update_action) {
 	
 	$name = (string) get_parameter ('name');
 	$id_alert_command = (int) get_parameter ('id_command');
-	$field1 = (string) get_parameter ('field1');
-	$field2 = (string) get_parameter ('field2');
-	$field3 = (string) get_parameter ('field3');
 	$group = get_parameter ('group');
 	$action_threshold = (int) get_parameter ('action_threshold');
 	
-	$values = array ();
+	$info_fields = '';
+	$values = array();
+
+	for($i=1;$i<=10;$i++) {
+		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
+		$info_fields .= ' Field1: ' . $values['field'.$i];
+	}
+	
 	$values['name'] = $name;
 	$values['id_alert_command'] = $id_alert_command;
-	$values['field1'] = $field1;
-	$values['field2'] = $field2;
-	$values['field3'] = $field3;
 	$values['id_group'] = $group;
 	$values['action_threshold'] = $action_threshold;
-	
+
 	if (!$name) {
 		$result = '';
 	}
@@ -191,7 +196,7 @@ if ($update_action) {
 		$result = alerts_update_alert_action ($id, $values);
 		
 		$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
-			' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
+			$info_fields . ' Group: ' . $group .
 			' Action threshold: ' . $action_threshold;
 	}
 	

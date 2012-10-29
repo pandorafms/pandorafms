@@ -170,7 +170,7 @@ function update_template ($step) {
 	
 	if (empty ($id))
 		return false;
-	
+
 	if ($step == 1) {
 		$name = (string) get_parameter ('name');
 		$description = (string) get_parameter ('description');
@@ -211,66 +211,57 @@ function update_template ($step) {
 		$threshold = (int) get_parameter ('threshold');
 		$max_alerts = (int) get_parameter ('max_alerts');
 		$min_alerts = (int) get_parameter ('min_alerts');
-		$field1 = (string) get_parameter ('field1');
-		$field2 = (string) get_parameter ('field2');
-		$field3 = (string) get_parameter ('field3');
+		
 		$default_action = (int) get_parameter ('default_action');
 		if (empty ($default_action)) {
 			$default_action = NULL;
 		}
+		
+		$values = array ('monday' => $monday,
+						'tuesday' => $tuesday,
+						'wednesday' => $wednesday,
+						'thursday' => $thursday,
+						'friday' => $friday,
+						'saturday' => $saturday,
+						'sunday' => $sunday,
+						'special_day' => $special_day,
+						'time_threshold' => $threshold,
+						'id_alert_action' => $default_action,
+						'field1' => $field1,
+						'field2' => $field2,
+						'field3' => $field3,
+						'max_alerts' => $max_alerts,
+						'min_alerts' => $min_alerts
+						);
+		
+		$fields = array();
+		for($i=1;$i<=10;$i++) {
+			$values['field'.$i] = $fields[$i] = (string) get_parameter ('field'.$i);
+		}
+		
+		// Different datetimes format for oracle
 		switch ($config['dbtype']){
 			case "mysql":
 			case "postgresql":
-				$values = array ('monday' => $monday,
-					'tuesday' => $tuesday,
-					'wednesday' => $wednesday,
-					'thursday' => $thursday,
-					'friday' => $friday,
-					'saturday' => $saturday,
-					'sunday' => $sunday,
-					'special_day' => $special_day,
-					'time_from' => $time_from,
-					'time_to' => $time_to,
-					'time_threshold' => $threshold,
-					'id_alert_action' => $default_action,
-					'field1' => $field1,
-					'field2' => $field2,
-					'field3' => $field3,
-					'max_alerts' => $max_alerts,
-					'min_alerts' => $min_alerts
-					);
+				$values['time_from'] = $time_from;
+				$values['time_to'] = $time_to;
 				break;
 			case "oracle":
-				$values = array ('monday' => $monday,
-					'tuesday' => $tuesday,
-					'wednesday' => $wednesday,
-					'thursday' => $thursday,
-					'friday' => $friday,
-					'saturday' => $saturday,
-					'sunday' => $sunday,
-					'special_day' => $special_day,
-					'time_from' => "#to_date('" . $time_from . "','hh24:mi:ss')",
-					'time_to' => "#to_date('" . $time_to . "','hh24:mi:ss')",
-					'time_threshold' => $threshold,
-					'id_alert_action' => $default_action,
-					'field1' => $field1,
-					'field2' => $field2,
-					'field3' => $field3,
-					'max_alerts' => $max_alerts,
-					'min_alerts' => $min_alerts
-					);
+				$values['time_from'] = "#to_date('" . $time_from . "','hh24:mi:ss')";
+				$values['time_to'] = "#to_date('" . $time_to . "','hh24:mi:ss')";
 				break;
 		}
+		
 		$result = alerts_update_alert_template ($id, $values);
 	}
 	elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
-		$field2_recovery = (string) get_parameter ('field2_recovery');
-		$field3_recovery = (string) get_parameter ('field3_recovery');
-		
-		$values = array ('recovery_notify' => $recovery_notify,
-			'field2_recovery' => $field2_recovery,
-			'field3_recovery' => $field3_recovery);
+		$fields_recovery = array();
+		for($i=2;$i<=10;$i++) {
+			$fields_recovery['field'.$i] = (string) get_parameter ('field'.$i);
+		}
+		$values = $fields_recovery;
+		$values['recovery_notify'] = $recovery_notify;
 		
 		$result = alerts_update_alert_template ($id, $values);
 	}
@@ -313,9 +304,10 @@ $saturday = true;
 $sunday = true;
 $special_day = false;
 $default_action = 0;
-$field1 = '';
-$field2 = '';
-$field3 = '';
+$fields = array();
+for($i=1;$i<=10;$i++) {
+	$fields[$i] = '';
+}
 $priority = 1;
 $min_alerts = 0;
 $max_alerts = 1;
@@ -338,29 +330,19 @@ if ($create_template) {
 	$id_group = get_parameter ("id_group");
 	$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
 	
-	switch ($config['dbtype']) {
-		case "mysql":
-		case "postgresql":
-			$values = array ('description' => $description,
-					'value' => $value,
-					'max_value' => $max,
-					'min_value' => $min,
-					'id_group' => $id_group,
-					'matches_value' => $matches,
-					'priority' => $priority);
-			break;
-		case "oracle":
-			$values = array ('description' => $description,
-					'value' => $value,
-					'max_value' => $max,
-					'min_value' => $min,
-					'id_group' => $id_group,
-					'matches_value' => $matches,
-					'priority' => $priority,
-					'field3' => ' ',
-					'field3_recovery' => ' ');
-			break;
+	$values = array ('description' => $description,
+			'value' => $value,
+			'max_value' => $max,
+			'min_value' => $min,
+			'id_group' => $id_group,
+			'matches_value' => $matches,
+			'priority' => $priority);
+					
+	if($config['dbtype'] == "oracle") {
+			$values['field3'] = ' ';
+			$values['field3_recovery'] = ' ';
 	}
+	
 	if (!$name_check) {
 		$result = alerts_create_alert_template ($name, $type, $values);
 	}
@@ -420,13 +402,18 @@ if ($id && ! $create_template) {
 	$max_alerts = $template['max_alerts'];
 	$min_alerts = $template['min_alerts'];
 	$threshold = $template['time_threshold'];
+	$fields = array();
+	for($i=1;$i<=10;$i++) {
+		$fields[$i] = $template['field'.$i];
+	}
 	$recovery_notify = $template['recovery_notify'];
-	$field2_recovery = $template['field2_recovery'];
-	$field3_recovery = $template['field3_recovery'];
+	
+	$fields_recovery = array();
+	for($i=2;$i<=10;$i++) {
+		$fields_recovery[$i] = $template['field'.$i.'_recovery'];
+	}
+
 	$default_action = $template['id_alert_action'];
-	$field1 = $template['field1'];
-	$field2 = $template['field2'];
-	$field3 = $template['field3'];
 	$priority = $template['priority'];
 	$id_group = $template["id_group"];
 }
@@ -446,9 +433,6 @@ if ($step == 2) {
 	/* Firing conditions and events */
 	$table->colspan = array ();
 	$table->colspan[4][1] = 3;
-	$table->colspan['field1'][1] = 3;
-	$table->colspan['field2'][1] = 3;
-	$table->colspan['field3'][1] = 3;
 	
 	$table->data[0][0] = __('Days of week');
 	$table->data[0][1] = __('Mon');
@@ -488,14 +472,23 @@ if ($step == 2) {
 	$table->data[3][3] = html_print_input_text ('max_alerts', $max_alerts, '',
 		5, 7, true);
 	
-	$table->data['field1'][0] = __('Field 1') . ui_print_help_icon ('alert_macros', true);
-	$table->data['field1'][1] = html_print_input_text ('field1', $field1, '', 70, 255, true);
-	
-	$table->data['field2'][0] = __('Field 2') . ui_print_help_icon ('alert_macros', true);
-	$table->data['field2'][1] = html_print_input_text ('field2', $field2, '', 70, 255, true);
-	
-	$table->data['field3'][0] = __('Field 3') . ui_print_help_icon ('alert_macros', true);
-	$table->data['field3'][1] = html_print_textarea ('field3', 10, 30, $field3, '', true);
+	$table->colspan['fields_switch'][0] = 4;
+	$table->data['fields_switch'][0] = '<a href="javascript:toggle_fields();">'.__('Advanced fields management').' '.html_print_image('images/down.png',true).'</a>';
+
+	for($i=1;$i<=10;$i++) {
+		if(isset($template[$name])) {
+			$value = $template[$name];
+		}
+		else {
+			$value = '';
+		}
+			
+		$table->colspan['field'.$i][1] = 3;
+		$table->rowclass['field'.$i] = 'row_field';
+
+		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) . ui_print_help_icon ('alert_macros', true);
+		$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px" class="fields"', true);
+	}
 	
 	$table->data[4][0] = __('Default action');
 	$usr_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM', true)));
@@ -518,6 +511,13 @@ else if ($step == 3) {
 		$table->rowstyle = array ();
 		$table->rowstyle['field2'] = 'display:none;';
 		$table->rowstyle['field3'] = 'display:none';
+		$table->rowstyle['field4'] = 'display:none';
+		$table->rowstyle['field5'] = 'display:none';
+		$table->rowstyle['field6'] = 'display:none';
+		$table->rowstyle['field7'] = 'display:none';
+		$table->rowstyle['field8'] = 'display:none';
+		$table->rowstyle['field9'] = 'display:none';
+		$table->rowstyle['field10'] = 'display:none';
 	}
 	$table->data[0][0] = __('Alert recovery');
 	$values = array (false => __('Disabled'), true => __('Enabled'));
@@ -525,13 +525,10 @@ else if ($step == 3) {
 		'recovery_notify', $recovery_notify, '', '', '', true, false,
 		false);
 	
-	$table->data['field2'][0] = __('Field 2');
-	$table->data['field2'][1] = html_print_input_text ('field2_recovery',
-		$field2_recovery, '', 35, 255, true);
-	
-	$table->data['field3'][0] = __('Field 3');
-	$table->data['field3'][1] = html_print_textarea ('field3_recovery', 10, 30,
-		$field3_recovery, '', true);
+	for($i=2;$i<=10;$i++) {
+	$table->data['field'.$i][0] = sprintf(__('Field %s'), $i);
+	$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields_recovery[$i]) ? $fields_recovery[$i] : '', 'style="min-height:40px" class="fields"', true);
+	}
 }
 else {
 	/* Step 1 by default */
@@ -714,6 +711,12 @@ function render_example () {
 	}
 }
 
+function toggle_fields() {
+	$('.row_field').toggle();
+}
+
+toggle_fields();
+	
 $(document).ready (function () {
 <?php
 if ($step == 1) {
@@ -876,10 +879,10 @@ elseif ($step == 3) {
 ?>
 	$("#recovery_notify").change (function () {
 		if (this.value == 1) {
-			$("#template-field2, #template-field3").show ();
+			$("#template-field2, #template-field3, #template-field4, #template-field5, #template-field6, #template-field7, #template-field8, #template-field9, #template-field10").show ();
 		}
 		else {
-			$("#template-field2, #template-field3").hide ();
+			$("#template-field2, #template-field3, #template-field4, #template-field5, #template-field6, #template-field7, #template-field8, #template-field9, #template-field10").hide ();
 		}
 	});
 <?php

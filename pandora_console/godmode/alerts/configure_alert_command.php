@@ -78,6 +78,12 @@ $table->data[2][1] = html_print_textarea ('description', 10, 30, $description, '
 for($i=1;$i<=10;$i++) {
 	
 	$table->data['field'.$i][0] = sprintf(__('Field %s description'), $i);
+	
+	// Only show help on first row
+	if($i == 1) {
+		$table->data['field'.$i][0] .= ui_print_help_icon ('alert_fields_description', true);
+	}
+	
 	if(!empty($fields_descriptions)) {
 		$field_description = $fields_descriptions[$i-1];
 	}
@@ -87,6 +93,12 @@ for($i=1;$i<=10;$i++) {
 	$table->data['field'.$i][1] = html_print_input_text ('field'.$i.'_description', $field_description, '', 35, 255, true);
 	
 	$table->data['field'.$i][2] = sprintf(__('Field %s values'), $i);
+	
+	// Only show help on first row
+	if($i == 1) {
+		$table->data['field'.$i][2] .= ui_print_help_icon ('alert_fields_values', true);
+	}
+
 	if(!empty($fields_values)) {
 		$field_values = $fields_values[$i-1];
 	}

@@ -1,3 +1,12 @@
+2012-10-29  Sergio Martin <sergio.martin@artica.es>
+
+	* include/help/en/help_alert_fields_description.php
+	include/help/en/help_alert_fields_values.php
+	include/help/es/help_alert_fields_description.php
+	include/help/es/help_alert_fields_values.php
+	godmode/alerts/configure_alert_command.php: Add help to the command
+	new fields system
+
 2012-10-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php,

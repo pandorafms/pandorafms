@@ -305,6 +305,9 @@ ALTER TABLE tagente_modulo ADD (quiet NUMBER(5, 0) default 0 NOT NULL);
 ALTER TABLE tagente_modulo ADD (cron_interval VARCHAR2(100) DEFAULT '');
 ALTER TABLE tagente_modulo ADD (max_retries NUMBER(10, 0) default 0);
 
+-- Move the number of retries for web modules from plugin_pass to max_retries
+UPDATE tagente_modulo SET max_retries=plugin_pass WHERE id_modulo=7;
+
 -- -----------------------------------------------------
 -- Table tplugin
 -- -----------------------------------------------------

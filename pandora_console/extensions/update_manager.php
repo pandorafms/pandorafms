@@ -31,7 +31,7 @@ if (is_ajax ()) {
 	$checking_online_enterprise_package =
 		(bool)get_parameter('checking_online_enterprise_package', false);
 	
-	$get_license_info = get_parameter('get_license_info', 0);	
+	$get_license_info = get_parameter('get_license_info', 0);
 	
 	if ($checking_online_enterprise_package) {
 		checking_online_enterprise_package();
@@ -41,21 +41,21 @@ if (is_ajax ()) {
 		
 	if ($get_license_info) {
 		enterprise_include_once('include/functions_license.php');
-
+		
 		// If Pandora enterprise check license 
 		$is_enteprise = enterprise_hook('license_show_info');
-
+		
 		// If Open show info
-		if ($is_enteprise === ENTERPRISE_NOT_HOOK){		
+		if ($is_enteprise === ENTERPRISE_NOT_HOOK) {
 			$table->width = '98%';
 			$table->data = array ();
 			$table->style = array();
 			$table->style[0] = 'text-align: left';
-
+			
 			echo '<div style="float: left; width: 20%; margin-top: 40px; margin-left: 20px;">'; 
 			html_print_image('images/lock_license.png', false);
 			echo '</div>';
-
+			
 			$table->data[0][0] = '<strong>'.__('Expires').'</strong>';
 			$table->data[0][1] = __('Never');
 			$table->data[1][0] = '<strong>'.__('Platform Limit').'</strong>';
@@ -65,12 +65,11 @@ if (is_ajax ()) {
 			$table->data[2][1] = $count_agents;
 			$table->data[3][0] = '<strong>'.__('License Mode').'</strong>';
 			$table->data[3][1] = __('Open Source Version');
-
+			
 			echo '<div style="width: 70%; margin-top: 30px; margin-left: 20px; float: right;">';
 			html_print_table ($table);
-			echo '</div>';		
+			echo '</div>';
 		}
-		
 	}
 	
 	return;
@@ -191,7 +190,7 @@ function pandora_update_manager_login () {
 		
 		$user_key = get_user_key ($settings);
 		
-		$package = um_client_check_latest_update ($settings, $user_key);
+		$package = @um_client_check_latest_update ($settings, $user_key);
 		
 		if (is_object ($package)) {
 			if ($package->id != 'ERROR_NON_NUMERIC_FOUND') {

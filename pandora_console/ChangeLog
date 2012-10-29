@@ -1,3 +1,10 @@
+2012-10-29 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager.php: silenced the notice PHP message
+	when it has connection to internet.
+	
+	Fixes: #3560632
+
 2012-10-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_api.php: fixed the function

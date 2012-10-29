@@ -605,6 +605,7 @@ function process_upload_xml_component($xml) {
 		$plugin_password = io_safe_input((string)$componentElement->plugin_password);
 		$plugin_parameters = io_safe_input((string)$componentElement->plugin_parameters);
 		$max_timeout = (int)$componentElement->max_timeout;
+		$max_retries = (int)$componentElement->max_retries;
 		$historical_data = (int)$componentElement->historical_data;
 		$min_war = (float)$componentElement->min_war;
 		$max_war = (float)$componentElement->max_war;
@@ -676,6 +677,7 @@ function process_upload_xml_component($xml) {
 						'plugin_pass' => $plugin_password,
 						'plugin_parameter' => $plugin_parameters,
 						'max_timeout' => $max_timeout,
+						'max_retries' => $max_retries,
 						'history_data' => $historical_data,
 						'min_warning' => $min_war,
 						'max_warning' => $max_war,
@@ -711,6 +713,7 @@ function process_upload_xml_component($xml) {
 						'plugin_pass' => $plugin_password,
 						'plugin_parameter' => $plugin_parameters,
 						'max_timeout' => $max_timeout,
+						'max_retries' => $max_retries,
 						'history_data' => $historical_data,
 						'min_warning' => $min_war,
 						'max_warning' => $max_war,
@@ -748,6 +751,7 @@ function process_upload_xml_component($xml) {
 						'plugin_pass' => $wmi_password, //work around
 						'plugin_parameter' => $plugin_parameters,
 						'max_timeout' => $max_timeout,
+						'max_retries' => $max_retries,
 						'history_data' => $historical_data,
 						'min_warning' => $min_war,
 						'max_warning' => $max_war,

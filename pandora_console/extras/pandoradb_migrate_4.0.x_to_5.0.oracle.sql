@@ -303,12 +303,14 @@ ALTER TABLE tagente_modulo ADD CONSTRAINT t_agente_modulo_wizard_level_cons CHEC
 ALTER TABLE tagente_modulo ADD (macros CLOB default '');
 ALTER TABLE tagente_modulo ADD (quiet NUMBER(5, 0) default 0 NOT NULL);
 ALTER TABLE tagente_modulo ADD (cron_interval VARCHAR2(100) DEFAULT '');
+ALTER TABLE tagente_modulo ADD (max_retries NUMBER(10, 0) default 0);
 
 -- -----------------------------------------------------
 -- Table tplugin
 -- -----------------------------------------------------
 ALTER TABLE tplugin ADD (macros CLOB default '');
 ALTER TABLE tplugin ADD (parameters CLOB default '');
+ALTER TABLE tplugin ADD (max_retries NUMBER(10, 0) default 0);
 
 -- -----------------------------------------------------
 -- Table trecon_task
@@ -338,6 +340,7 @@ ALTER TABLE tnetwork_component ADD (warning_instructions VARCHAR2(255) default '
 ALTER TABLE tnetwork_component ADD (unknown_instructions VARCHAR2(255) default '');
 ALTER TABLE tnetwork_component ADD (critical_inverse NUMBER(1, 0) default 0 NOT NULL);
 ALTER TABLE tnetwork_component ADD (warning_inverse NUMBER(1, 0) default 0 NOT NULL);
+ALTER TABLE tnetwork_component ADD (max_retries NUMBER(10, 0) default 0);
 evento
 
 ------------------------------------------------------------------------

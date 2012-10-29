@@ -178,6 +178,7 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "unknown_instructions" text default '';
 ALTER TABLE "tagente_modulo" ADD COLUMN "critical_inverse" SMALLINT NOT NULL default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "warning_inverse" SMALLINT NOT NULL default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "cron_interval" varchar(100) default '';
+ALTER TABLE "tagente_modulo" ADD COLUMN "max_retries" INTEGER default 0;
 
 -- -----------------------------------------------------
 -- Table "tevent_filter"
@@ -252,6 +253,7 @@ ALTER TABLE "talert_compound" ADD COLUMN "special_day" SMALLINT default 0;
 -- -----------------------------------------------------
 
 ALTER TABLE "tnetwork_component" ADD COLUMN "unit" text default '';
+ALTER TABLE "tnetwork_component" ADD COLUMN "max_retries" INTEGER default 0;
 
 -- -----------------------------------------------------
 -- Table "talert_commands"
@@ -310,6 +312,7 @@ ALTER TABLE "tnetwork_component" ADD COLUMN "macros" TEXT default '';
 
 ALTER TABLE "tplugin" ADD COLUMN "macros" TEXT default '';
 ALTER TABLE "tplugin" ADD COLUMN "parameters" TEXT default '';
+ALTER TABLE "tplugin" ADD COLUMN "max_retries" INTEGER default '0';
 
 ------------------------------------------------------------------------
 -- Table "trecon_task"

@@ -1882,7 +1882,6 @@ function chooseType() {
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
 			$("#row_period").show();
-			$("#row_max_values").show();
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;

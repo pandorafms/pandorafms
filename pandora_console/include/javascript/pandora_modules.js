@@ -236,6 +236,7 @@ function configure_modules_form () {
 				$("#oid, img#edit_oid").hide ();
 				$("#id_module_group option[value="+data["id_module_group"]+"]").select (1);
 				$("#max_timeout").attr ("value", data["max_timeout"]);
+				$("#max_retries").attr ("value", data["max_retries"]);
 				$("#id_plugin option[value="+data["id_plugin"]+"]").select (1);
 				$("#id_plugin").trigger('change');
 				$("#text-plugin_user").attr ("value", js_html_entity_decode (data["plugin_user"]));

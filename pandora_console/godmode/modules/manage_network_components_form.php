@@ -49,6 +49,7 @@ if ($create_network_from_module) {
 	$plugin_parameter = $data_module["plugin_parameter"];
 	$macros = $data_module["macros"];
 	$max_timeout = $data_module["max_timeout"];
+	$max_retries = $data_module["max_retries"];
 	$min_warning = $data_module["min_warning"];
 	$max_warning = $data_module["max_warning"];
 	$str_warning = $data_module["str_warning"];
@@ -95,6 +96,7 @@ if (isset ($id)) {
 		$plugin_parameter = $component["plugin_parameter"];
 		$macros = $component["macros"];
 		$max_timeout = $component["max_timeout"];
+		$max_retries = $component["max_retries"];
 		$min_warning = $component["min_warning"];
 		$max_warning = $component["max_warning"];
 		$str_warning = $component["str_warning"];

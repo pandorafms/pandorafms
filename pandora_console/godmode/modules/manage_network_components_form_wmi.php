@@ -75,6 +75,7 @@ if (! $id) {
 	$plugin_pass = "";
 	$plugin_parameter = "";
 	$max_timeout = 10;
+	$max_retries = 1;
 }
 
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components">';
@@ -139,6 +140,12 @@ echo '<input type="text" name="module_interval" size="5" value="'.$module_interv
 echo '<td class="datos2">' . __('Max. timeout') . '</td>';
 echo '<td class="datos2">';
 echo	'<input type="text" name="max_timeout" size="5" value="' . $max_timeout . '">';
+echo '</td></tr>';
+
+// Timeout
+echo '<td class="datos2">' . __('Max. retries') . '</td>';
+echo '<td class="datos2">';
+echo	'<input type="text" name="max_retries" size="5" value="' . $max_retries . '">';
 echo '</td></tr>';
 
 // WMI Query

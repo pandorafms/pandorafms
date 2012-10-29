@@ -650,6 +650,18 @@ switch ($action) {
 								$values['external_source'] = json_encode($es);
 								$good_format = true;
 								break;
+							case 'netflow_area':
+							case 'netflow_pie':
+							case 'netflow_data':
+							case 'netflow_statistics':
+							case 'netflow_summary':
+								$values['text'] = get_parameter('netflow_filter');
+								$values['description'] = get_parameter('description');
+								$values['period'] = get_parameter('period');
+								$values['top_n'] = get_parameter('resolution');
+								$values['top_n_value'] = get_parameter('max_values');
+								$good_format = true;
+								break;
 							default: 
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);

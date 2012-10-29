@@ -1,22 +1,22 @@
 -- -----------------------------------------------------
--- Table `tusuario`
+-- Table tusuario
 -- -----------------------------------------------------
-ALTER TABLE tusuario ADD COLUMN (disabled NUMBER(10,0) DEFAULT 0 NOT NULL);
-ALTER TABLE tusuario ADD COLUMN (shortcut NUMBER(5, 0) DEFAULT 0);
-ALTER TABLE tusuario ADD COLUMN (force_change_pass NUMBER(5,0) DEFAULT 0 NOT NULL);
-ALTER TABLE tusuario ADD COLUMN (last_pass_change TIMESTAMP DEFAULT 0);
-ALTER TABLE tusuario ADD COLUMN (last_failed_login TIMESTAMP DEFAULT 0);
-ALTER TABLE tusuario ADD COLUMN (failed_attempt NUMBER(5,0) DEFAULT 0 NOT NULL);
-ALTER TABLE tusuario ADD COLUMN (login_blocked NUMBER(5,0) DEFAULT 0 NOT NULL);
-ALTER TABLE tusuario ADD COLUMN disabled NUMBER(10, 0) NOT NULL DEFAULT 0;
-ALTER TABLE tusuario ADD COLUMN shortcut NUMBER(5, 0) DEFAULT 0;
-ALTER TABLE tusuario ADD COLUMN shortcut_data CLOB DEFAULT '';
+ALTER TABLE tusuario ADD ((disabled NUMBER(10,0) DEFAULT 0 NOT NULL);
+ALTER TABLE tusuario ADD ((shortcut NUMBER(5, 0) DEFAULT 0);
+ALTER TABLE tusuario ADD ((force_change_pass NUMBER(5,0) DEFAULT 0 NOT NULL);
+ALTER TABLE tusuario ADD ((last_pass_change TIMESTAMP DEFAULT 0);
+ALTER TABLE tusuario ADD ((last_failed_login TIMESTAMP DEFAULT 0);
+ALTER TABLE tusuario ADD ((failed_attempt NUMBER(5,0) DEFAULT 0 NOT NULL);
+ALTER TABLE tusuario ADD ((login_blocked NUMBER(5,0) DEFAULT 0 NOT NULL);
+ALTER TABLE tusuario ADD (disabled NUMBER(10, 0) NOT NULL DEFAULT 0;
+ALTER TABLE tusuario ADD (shortcut NUMBER(5, 0) DEFAULT 0;
+ALTER TABLE tusuario ADD (shortcut_data CLOB DEFAULT '';
 ALTER TABLE tusuario ADD (section VARCHAR2(255) NOT NULL);
 INSERT INTO tusuario (section) VALUES ('Default');
-ALTER TABLE tusuario ADD COLUMN (data_section VARCHAR2(255) NOT NULL);
-ALTER TABLE tusuario ADD COLUMN (metaconsole_access VARCHAR2(100) DEFAULT 'only_console' NOT NULL);
+ALTER TABLE tusuario ADD ((data_section VARCHAR2(255) NOT NULL);
+ALTER TABLE tusuario ADD ((metaconsole_access VARCHAR2(100) DEFAULT 'only_console' NOT NULL);
 ALTER TABLE tusuario ADD CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced','custom','all','only_console'));
-ALTER TABLE tusuario ADD COLUMN (not_login NUMBER(5,0) default 0 NOT NULL);
+ALTER TABLE tusuario ADD ((not_login NUMBER(5,0) default 0 NOT NULL);
 
 -- ---------------------------------------------------------------------
 -- Table "tnetflow_filter"
@@ -68,18 +68,18 @@ CREATE SEQUENCE tnetflow_report_content_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnetflow_report_content_inc BEFORE INSERT ON tnetflow_report_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_content_s.nextval INTO :NEW.ID_RC FROM dual; END tnetflow_report_content_inc;;
 
 -- -----------------------------------------------------
--- Table `tincidencia`
+-- Table tincidencia
 -- -----------------------------------------------------
 ALTER TABLE tincidencia ADD (id_agent NUMBER(10,0) default 0 NULL);
 
 -- -----------------------------------------------------
--- Table `tagente`
+-- Table tagente
 -- -----------------------------------------------------
 ALTER TABLE tagente ADD (url_address CLOB default '' NULL);
 ALTER TABLE tagente ADD (quiet NUMBER(5, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
--- Table `talert_special_days`
+-- Table talert_special_days
 -- -----------------------------------------------------
 CREATE TABLE talert_special_days (
 	id NUMBER(10,0) NOT NULL PRIMARY KEY,
@@ -93,12 +93,12 @@ CREATE SEQUENCE talert_special_days_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_special_days REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_special_days_s.nextval INTO :NEW.ID FROM dual; END talert_special_days_inc;;
 
 -- -----------------------------------------------------
--- Table `talert_templates`
+-- Table talert_templates
 -- -----------------------------------------------------
 ALTER TABLE talert_templates ADD (special_day NUMBER(5,0) default 0);
 
 -- -----------------------------------------------------
--- Table `talert_templates`
+-- Table talert_templates
 -- -----------------------------------------------------
 ALTER TABLE tplanned_downtime ADD (monday NUMBER(5, 0) default 0);
 ALTER TABLE tplanned_downtime ADD (tuesday NUMBER(5, 0) default 0);
@@ -116,7 +116,7 @@ ALTER TABLE tplanned_downtime ADD (type_execution VARCHAR2(100) NOT NULL default
 ALTER TABLE tplanned_downtime ADD (type_periodicity VARCHAR2(100) NOT NULL default 'weekly');
 
 -- -----------------------------------------------------
--- Table `tplanned_downtime_agents`
+-- Table tplanned_downtime_agents
 -- -----------------------------------------------------
 DELETE FROM tplanned_downtime_agents
 WHERE id_downtime NOT IN (SELECT id FROM tplanned_downtime);
@@ -129,7 +129,7 @@ references tplanned_downtime (id);
 ALTER TABLE tplanned_downtime_agents ADD (all_modules NUMBER(5, 0) default 1);
 
 -- -----------------------------------------------------
--- Table `tplanned_downtime_modules`
+-- Table tplanned_downtime_modules
 -- -----------------------------------------------------
 CREATE TABLE tplanned_downtime_modules (
 	id NUMBER(19, 0) NOT NULL PRIMARY KEY,
@@ -141,7 +141,7 @@ CREATE SEQUENCE tplanned_downtime_modules_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tplanned_downtime_modules_inc BEFORE INSERT ON tplanned_downtime_modules REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_modules_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_modules_inc;;
 
 -- -----------------------------------------------------
--- Table `tevento`
+-- Table tevento
 -- -----------------------------------------------------
 ALTER TABLE tevento ADD (source VARCHAR2(100) default '' NOT NULL);
 ALTER TABLE tevento ADD (id_extra VARCHAR2(100) default '' NOT NULL);
@@ -153,14 +153,14 @@ ALTER TABLE tevento ADD (owner_user VARCHAR2(100) NOT NULL default '0');
 ALTER TABLE tevento ADD (ack_utimestamp NUMBER(19, 0) NOT NULL default 0);
 
 -- -----------------------------------------------------  
--- Table `tgrupo`
+-- Table tgrupo
 -- -----------------------------------------------------
 ALTER TABLE tgrupo ADD (description CLOB);
 ALTER TABLE tgrupo ADD (contact CLOB);
 ALTER TABLE tgrupo ADD (other CLOB);
 
 -- -----------------------------------------------------
--- Table `talert_snmp`
+-- Table talert_snmp
 -- -----------------------------------------------------
 
 ALTER TABLE talert_snmp ADD (_snmp_f1_ CLOB default ''); 
@@ -173,7 +173,7 @@ ALTER TABLE talert_snmp ADD (trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL);
 ALTER TABLE talert_snmp ADD (single_value VARCHAR2(255) DEFAULT '');
 
 -- -----------------------------------------------------
--- Table `tevent_filter`
+-- Table tevent_filter
 -- -----------------------------------------------------
 CREATE TABLE tevent_filter (
   id_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
@@ -194,64 +194,64 @@ CREATE TABLE tevent_filter (
 );
 
 -- -----------------------------------------------------
--- Table `tconfig`
+-- Table tconfig
 -- -----------------------------------------------------
 ALTER TABLE tconfig MODIFY value TEXT NOT NULL;
 INSERT INTO tconfig (token, value) VALUES ('event_fields', 'evento,id_agente,estado,timestamp');
 
 -- -----------------------------------------------------
--- Table `treport_content_item`
+-- Table treport_content_item
 -- -----------------------------------------------------
 ALTER TABLE treport_content_item ADD FOREIGN KEY (id_report_content) REFERENCES treport_content(id_rc) ON DELETE CASCADE;
 
 -- -----------------------------------------------------
--- Table `treport`
+-- Table treport
 -- -----------------------------------------------------
 ALTER TABLE treport ADD (id_template NUMBER(10, 0) default 0 NOT NULL);
 ALTER TABLE treport ADD (id_group_edit  NUMBER(19, 0) default 0 NOT NULL);
 ALTER TABLE treport ADD (metaconsole NUMBER(5, 0) DEFAULT 0);
 
 -- -----------------------------------------------------
--- Table `tgraph`
+-- Table tgraph
 -- -----------------------------------------------------
 ALTER TABLE tgraph ADD (id_graph_template NUMBER(11, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
--- Table `ttipo_modulo`
+-- Table ttipo_modulo
 -- -----------------------------------------------------
 UPDATE ttipo_modulo SET descripcion='Generic data' WHERE id_tipo=1;
 UPDATE ttipo_modulo SET descripcion='Generic data incremental' WHERE id_tipo=4;
 
 -- -----------------------------------------------------
--- Table `treport_content_item`
+-- Table treport_content_item
 -- -----------------------------------------------------
 ALTER TABLE treport_content_item ADD (operation CLOB default '');
 
 -- -----------------------------------------------------
--- Table `tmensajes`
+-- Table tmensajes
 -- -----------------------------------------------------
 ALTER TABLE tmensajes MODIFY mensaje VARCHAR2(255) NOT NULL DEFAULT '';
 
 -- -----------------------------------------------------
--- Table `talert_compound`
+-- Table talert_compound
 -- -----------------------------------------------------
 
 ALTER TABLE talert_compound ADD (special_day NUMBER(5,0) default 0);
 
 -- -----------------------------------------------------
--- Table `tnetwork_component`
+-- Table tnetwork_component
 -- -----------------------------------------------------
 
-ALTER TABLE tnetwork_component ADD COLUMN unit CLOB default '';
+ALTER TABLE tnetwork_component ADD (unit CLOB default '';
 
 -- -----------------------------------------------------
--- Table `talert_commands`
+-- Table talert_commands
 -- -----------------------------------------------------
 
 INSERT INTO talert_commands (name, command, description, internal) VALUES ('Validate Event','Internal type','This alert validate the events matched with a module given the agent name (_field1_) and module name (_field2_)', 1);
 
 -- -----------------------------------------------------
--- Table `tconfig`
+-- Table tconfig
 -- -----------------------------------------------------
 
 INSERT INTO tconfig (token, value) VALUES ('enable_pass_policy', 0);
@@ -269,7 +269,7 @@ INSERT INTO tconfig (token, value) VALUES ('meta_style', 'meta_pandora');
 INSERT INTO tconfig (token, value) VALUES ('enable_refr', 0);
 
 -- -----------------------------------------------------
--- Table `tpassword_history`
+-- Table tpassword_history
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS tpassword_history (
   id_pass  NUMBER(10) NOT NULL PRIMARY KEY,
@@ -281,13 +281,13 @@ CREATE TABLE IF NOT EXISTS tpassword_history (
 CREATE SEQUENCE tpassword_history_s INCREMENT BY 1 START WITH 1;
 
 -- -----------------------------------------------------
--- Table `tconfig`
+-- Table tconfig
 -- -----------------------------------------------------
 UPDATE tconfig SET value='comparation'
 WHERE token='prominent_time';
 
 -- -----------------------------------------------------
--- Table `tnetwork_component`
+-- Table tnetwork_component
 -- -----------------------------------------------------
 ALTER TABLE tnetwork_component ADD (wizard_level VARCHAR2(100) default 'custom' NOT NULL);
 ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
@@ -296,7 +296,7 @@ ALTER TABLE tnetwork_component ADD (macros CLOB default '');
 
 
 -- -----------------------------------------------------
--- Table `tagente_modulo`
+-- Table tagente_modulo
 -- -----------------------------------------------------
 ALTER TABLE tagente_modulo ADD (wizard_level VARCHAR2(100) default 'nowizard' NOT NULL);
 ALTER TABLE tagente_modulo ADD CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
@@ -305,24 +305,24 @@ ALTER TABLE tagente_modulo ADD (quiet NUMBER(5, 0) default 0 NOT NULL);
 ALTER TABLE tagente_modulo ADD (cron_interval VARCHAR2(100) DEFAULT '');
 
 -- -----------------------------------------------------
--- Table `tplugin`
+-- Table tplugin
 -- -----------------------------------------------------
 ALTER TABLE tplugin ADD (macros CLOB default '');
 ALTER TABLE tplugin ADD (parameters CLOB default '');
 
 -- -----------------------------------------------------
--- Table `trecon_task`
+-- Table trecon_task
 -- -----------------------------------------------------
 ALTER TABLE trecon_task MODIFY subnet TEXT NOT NULL;
 ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL;
 
 -- -----------------------------------------------------
--- Table `tlayout_data`
+-- Table tlayout_data
 -- -----------------------------------------------------
 ALTER TABLE tlayout_data ADD (enable_link NUMBER(5, 0) NOT NULL default 1);
 
 -- -----------------------------------------------------
--- Table `tagente_modulo`
+-- Table tagente_modulo
 -- -----------------------------------------------------
 ALTER TABLE tagente_modulo ADD (critical_instructions VARCHAR2(255) default '');
 ALTER TABLE tagente_modulo ADD (warning_instructions VARCHAR2(255) default '');
@@ -331,7 +331,7 @@ ALTER TABLE tagente_modulo ADD (critical_inverse NUMBER(1, 0) default 0 NOT NULL
 ALTER TABLE tagente_modulo ADD (warning_inverse NUMBER(1, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
--- Table `tnetwork_component`
+-- Table tnetwork_component
 -- -----------------------------------------------------
 ALTER TABLE tnetwork_component ADD (critical_instructions VARCHAR2(255) default '');
 ALTER TABLE tnetwork_component ADD (warning_instructions VARCHAR2(255) default '');
@@ -341,7 +341,7 @@ ALTER TABLE tnetwork_component ADD (warning_inverse NUMBER(1, 0) default 0 NOT N
 evento
 
 ------------------------------------------------------------------------
--- Table `tnetwork_map`
+-- Table tnetwork_map
 ------------------------------------------------------------------------
 ALTER TABLE tnetwork_map ADD (text_filter VARCHAR(100) DEFAULT '');
 ALTER TABLE tnetwork_map ADD (dont_show_subgroups NUMBER(10, 0) default 0 NOT NULL);
@@ -350,12 +350,12 @@ ALTER TABLE tnetwork_map ADD (show_modules NUMBER(10, 0) default 0 NOT NULL);
 ALTER TABLE tnetwork_map ADD (show_groups NUMBER(10, 0) default 0 NOT NULL);
 
 ------------------------------------------------------------------------
--- Table `tagente_estado`
+-- Table tagente_estado
 ------------------------------------------------------------------------
 ALTER TABLE tagente_estado ADD (last_known_status  NUMBER(5, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
--- Table `tevent_response`
+-- Table tevent_response
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS tevent_response (
 	id  NUMBER(10) NOT NULL PRIMARY KEY,
@@ -370,3 +370,38 @@ CREATE TABLE IF NOT EXISTS tevent_response (
 	params CLOB
 );
 CREATE SEQUENCE tevent_response_s INCREMENT BY 1 START WITH 1;
+
+-- ----------------------------------------------------------------------
+-- Table talert_actions
+-- ----------------------------------------------------------------------
+ALTER TABLE talert_actions ADD (field4 CLOB NOT NULL;
+ALTER TABLE talert_actions ADD (field5 CLOB NOT NULL;
+ALTER TABLE talert_actions ADD (field6 CLOB NOT NULL;
+ALTER TABLE talert_actions ADD (field7 CLOB NOT NULL;
+ALTER TABLE talert_actions ADD (field8 CLOB NOT NULL;
+ALTER TABLE talert_actions ADD (field9 CLOB NOT NULL;
+ALTER TABLE talert_actions ADD (field10 CLOB NOT NULL;
+
+-- ----------------------------------------------------------------------
+-- Table talert_templates
+-- ----------------------------------------------------------------------
+ALTER TABLE talert_templates ADD (field4 CLOB default '');
+ALTER TABLE talert_templates ADD (field5 CLOB default '');
+ALTER TABLE talert_templates ADD (field6 CLOB default '');
+ALTER TABLE talert_templates ADD (field7 CLOB default '');
+ALTER TABLE talert_templates ADD (field8 CLOB default '');
+ALTER TABLE talert_templates ADD (field9 CLOB default '');
+ALTER TABLE talert_templates ADD (field10 CLOB default '');
+ALTER TABLE talert_templates ADD (field4_recovery CLOB default '');
+ALTER TABLE talert_templates ADD (field5_recovery CLOB default '');
+ALTER TABLE talert_templates ADD (field6_recovery CLOB default '');
+ALTER TABLE talert_templates ADD (field7_recovery CLOB default '');
+ALTER TABLE talert_templates ADD (field8_recovery CLOB default '');
+ALTER TABLE talert_templates ADD (field9_recovery CLOB default '');
+ALTER TABLE talert_templates ADD (field10_recovery CLOB default '');
+
+-- ----------------------------------------------------------------------
+-- Table talert_commands
+-- ----------------------------------------------------------------------
+ALTER TABLE talert_commands ADD (fields_descriptions CLOB default '');
+ALTER TABLE talert_commands ADD (fields_values CLOB default '');

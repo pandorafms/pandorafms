@@ -339,3 +339,38 @@ CREATE TABLE IF NOT EXISTS `tevent_response` (
 	`params` TEXT  NOT NULL,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `talert_actions`
+-- ----------------------------------------------------------------------
+ALTER TABLE `talert_actions` ADD COLUMN `field4` TEXT NOT NULL;
+ALTER TABLE `talert_actions` ADD COLUMN `field5` TEXT NOT NULL;
+ALTER TABLE `talert_actions` ADD COLUMN `field6` TEXT NOT NULL;
+ALTER TABLE `talert_actions` ADD COLUMN `field7` TEXT NOT NULL;
+ALTER TABLE `talert_actions` ADD COLUMN `field8` TEXT NOT NULL;
+ALTER TABLE `talert_actions` ADD COLUMN `field9` TEXT NOT NULL;
+ALTER TABLE `talert_actions` ADD COLUMN `field10` TEXT NOT NULL;
+
+-- ----------------------------------------------------------------------
+-- Table `talert_templates`
+-- ----------------------------------------------------------------------
+ALTER TABLE `talert_templates` ADD COLUMN `field4` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field5` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field6` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field7` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field8` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field9` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field10` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field4_recovery` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field5_recovery` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field6_recovery` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field7_recovery` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field8_recovery` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field9_recovery` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field10_recovery` TEXT NOT NULL;
+
+-- ----------------------------------------------------------------------
+-- Table `talert_commands`
+-- ----------------------------------------------------------------------
+ALTER TABLE `talert_commands` ADD COLUMN `fields_descriptions` TEXT;
+ALTER TABLE `talert_commands` ADD COLUMN `fields_values` TEXT;

@@ -1,5 +1,5 @@
 -- -----------------------------------------------------
--- Table `tusuario`
+-- Table "tusuario"
 -- -----------------------------------------------------
 ALTER TABLE "tusuario" ADD COLUMN "disabled" INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE "tusuario" ADD COLUMN "shortcut" SMALLINT DEFAULT 0;
@@ -19,7 +19,7 @@ ALTER TABLE "tusuario" ADD COLUMN "metaconsole_access" type_tusuario_metaconsole
 ALTER TABLE "tusuario" ADD COLUMN "not_login" SMALLINT NOT NULL default 0;
 
 -- -----------------------------------------------------
--- Table `tnetflow_filter`
+-- Table "tnetflow_filter"
 -- -----------------------------------------------------
 CREATE TABLE "tnetflow_filter" (
 	"id_sg" SERIAL NOT NULL PRIMARY KEY,
@@ -36,7 +36,7 @@ CREATE TABLE "tnetflow_filter" (
 );
 
 -- -----------------------------------------------------
--- Table `tnetflow_report`
+-- Table "tnetflow_report"
 -- -----------------------------------------------------
 CREATE TABLE "tnetflow_report" (
 	"id_report" SERIAL NOT NULL PRIMARY KEY,
@@ -47,7 +47,7 @@ CREATE TABLE "tnetflow_report" (
 );
 
 -- -----------------------------------------------------
--- Table `tnetflow_report_content`
+-- Table "tnetflow_report_content"
 -- -----------------------------------------------------
 CREATE TABLE "tnetflow_report_content" (
 	"id_rc" SERIAL NOT NULL PRIMARY KEY,
@@ -62,18 +62,18 @@ CREATE TABLE "tnetflow_report_content" (
 );
 
 -- -----------------------------------------------------
--- Table `tincidencia`
+-- Table "tincidencia"
 -- -----------------------------------------------------
 ALTER TABLE "tincidencia" ADD COLUMN "id_agent" INTEGER NULL DEFAULT 0;
 
 -- -----------------------------------------------------
--- Table `tagente`
+-- Table "tagente"
 -- -----------------------------------------------------
 ALTER TABLE "tagente" ADD COLUMN "url_address" text NULL default '';
 ALTER TABLE "tagente" ADD COLUMN "quiet" SMALLINT NOT NULL default 0;
 
 -- -----------------------------------------------------
--- Table `talert_special_days`
+-- Table "talert_special_days"
 -- -----------------------------------------------------
 
 CREATE TYPE type_talert_special_days_same_day AS ENUM ('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
@@ -85,13 +85,13 @@ CREATE TABLE "talert_special_days" (
 );
 
 -- -----------------------------------------------------
--- Table `talert_templates`
+-- Table "talert_templates"
 -- -----------------------------------------------------
 
 ALTER TABLE "talert_templates" ADD COLUMN "special_day" SMALLINT default 0;
 
 -- -----------------------------------------------------
--- Table `tplanned_downtime`
+-- Table "tplanned_downtime"
 -- -----------------------------------------------------
 ALTER TABLE "tplanned_downtime" ADD COLUMN "monday" SMALLINT default 0;
 ALTER TABLE "tplanned_downtime" ADD COLUMN "tuesday" SMALLINT default 0;
@@ -109,7 +109,7 @@ ALTER TABLE "tplanned_downtime" ADD COLUMN "type_execution" VARCHAR( 100 ) NOT N
 ALTER TABLE "tplanned_downtime" ADD COLUMN "type_periodicity" VARCHAR( 100 ) NOT NULL default 'weekly';
 
 -- -----------------------------------------------------
--- Table `tplanned_downtime_agents`
+-- Table "tplanned_downtime_agents"
 -- -----------------------------------------------------
 DELETE FROM "tplanned_downtime_agents"
 WHERE "id_downtime" NOT IN (SELECT "id" FROM "tplanned_downtime");
@@ -132,7 +132,7 @@ CREATE TABLE "tplanned_downtime_modules" (
 );
 
 ------------------------------------------------------------------------
--- Table `tevento`
+-- Table "tevento"
 ------------------------------------------------------------------------
 ALTER TABLE "tevento" ADD COLUMN "source" text NULL default '';
 ALTER TABLE "tevento" ADD COLUMN "id_extra" text NULL default '';
@@ -144,7 +144,7 @@ ALTER TABLE "tevento" ADD COLUMN "owner_user" varchar(100) NOT NULL default '0';
 ALTER TABLE "tevento" ADD COLUMN "ack_utimestamp" BIGINT NOT NULL default 0;
 	
 -- -----------------------------------------------------
--- Table `tgrupo`
+-- Table "tgrupo"
 -- -----------------------------------------------------
 
 ALTER TABLE "tgrupo" ADD COLUMN "description" text;
@@ -152,7 +152,7 @@ ALTER TABLE "tgrupo" ADD COLUMN "contact" text;
 ALTER TABLE "tgrupo" ADD COLUMN "other" text;
 
 -- -----------------------------------------------------
--- Table `talert_snmp`
+-- Table "talert_snmp"
 -- -----------------------------------------------------
 
 ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f1_" text DEFAULT ''; 
@@ -165,7 +165,7 @@ ALTER TABLE "talert_snmp" ADD COLUMN "trap_type" INTEGER NOT NULL DEFAULT '-1';
 ALTER TABLE "talert_snmp" ADD COLUMN "single_value" varchar(255) DEFAULT '';
 
 -- -----------------------------------------------------
--- Table `tagente_modulo`
+-- Table "tagente_modulo"
 -- -----------------------------------------------------
 ALTER TABLE "tagente_modulo" ADD COLUMN "module_ff_interval" INTEGER NOT NULL default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "quiet" SMALLINT NOT NULL default 0;
@@ -180,7 +180,7 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "warning_inverse" SMALLINT NOT NULL defa
 ALTER TABLE "tagente_modulo" ADD COLUMN "cron_interval" varchar(100) default '';
 
 -- -----------------------------------------------------
--- Table `tevent_filter`
+-- Table "tevent_filter"
 -- -----------------------------------------------------
 CREATE TABLE "tevent_filter" (
   "id_filter"  SERIAL NOT NULL PRIMARY KEY,
@@ -201,7 +201,7 @@ CREATE TABLE "tevent_filter" (
 );
 
 -- -----------------------------------------------------
--- Table `tconfig`
+-- Table "tconfig"
 -- -----------------------------------------------------
 ALTER TABLE "tconfig" ALTER COLUMN "value" TYPE TEXT;
 
@@ -209,58 +209,58 @@ INSERT INTO tconfig ("token", "value") SELECT 'list_ACL_IPs_for_API', array_to_s
 INSERT INTO "tconfig" ("token", "value") VALUES ('event_fields', 'evento,id_agente,estado,timestamp');
 
 -- -----------------------------------------------------
--- Table `treport_content_item`
+-- Table "treport_content_item"
 -- -----------------------------------------------------
  ALTER TABLE treport_content_item ADD FOREIGN KEY("id_report_content") REFERENCES treport_content("id_rc") ON UPDATE CASCADE ON DELETE CASCADE;
 
 -- -----------------------------------------------------
--- Table `treport`
+-- Table "treport"
 -- -----------------------------------------------------
 ALTER TABLE "treport" ADD COLUMN "id_template" INTEGER NOT NULL default 0;
 ALTER TABLE "treport" ADD COLUMN "id_group_edit" BIGINT NOT NULL default 0;
 ALTER TABLE "treport" ADD COLUMN "metaconsole" SMALLINT DEFAULT 0;
 
 -- -----------------------------------------------------
--- Table `tgraph`
+-- Table "tgraph"
 -- -----------------------------------------------------
 ALTER TABLE "tgraph" ADD COLUMN "id_graph_template" INTEGER NOT NULL default 0;
 
 -- -----------------------------------------------------
--- Table `ttipo_modulo`
+-- Table "ttipo_modulo"
 -- -----------------------------------------------------
 UPDATE "ttipo_modulo" SET "descripcion"='Generic data' WHERE "id_tipo"=1;
 UPDATE "ttipo_modulo" SET "descripcion"='Generic data incremental' WHERE "id_tipo"=4;
 
 -- -----------------------------------------------------
--- Table `treport_content_item`
+-- Table "treport_content_item"
 -- -----------------------------------------------------
 ALTER TABLE "treport_content_item" ADD COLUMN "operation" text default '';
 
 -- -----------------------------------------------------
--- Table `tmensajes`
+-- Table "tmensajes"
 -- -----------------------------------------------------
 ALTER TABLE "tmensajes" ALTER COLUMN "mensaje" TYPE TEXT;
 
 -- -----------------------------------------------------
--- Table `talert_compound`
+-- Table "talert_compound"
 -- -----------------------------------------------------
 
 ALTER TABLE "talert_compound" ADD COLUMN "special_day" SMALLINT default 0;
 
 -- -----------------------------------------------------
--- Table `tnetwork_component`
+-- Table "tnetwork_component"
 -- -----------------------------------------------------
 
 ALTER TABLE "tnetwork_component" ADD COLUMN "unit" text default '';
 
 -- -----------------------------------------------------
--- Table `talert_commands`
+-- Table "talert_commands"
 -- -----------------------------------------------------
 
 INSERT INTO "talert_commands" ("name", "command", "description", "internal") VALUES ('Validate Event','Internal type','This alert validate the events matched with a module given the agent name (_field1_) and module name (_field2_)', 1);
 
 -- -----------------------------------------------------
--- Table `tconfig`
+-- Table "tconfig"
 -- -----------------------------------------------------
 
 INSERT INTO "tconfig" ("token", "value") VALUES
@@ -279,7 +279,7 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('enable_refr', 0);
 
 -- -----------------------------------------------------
--- Table `tpassword_history`
+-- Table "tpassword_history"
 -- -----------------------------------------------------
 CREATE TABLE "tpassword_history" (
   "id_pass"  INTEGER NOT NULL PRIMARY KEY,
@@ -290,13 +290,13 @@ CREATE TABLE "tpassword_history" (
 );
 
 -- -----------------------------------------------------
--- Table `tconfig`
+-- Table "tconfig"
 -- -----------------------------------------------------
 UPDATE TABLE tconfig SET "value"='comparation'
 WHERE "token"='prominent_time';
 
 -- -----------------------------------------------------
--- Table `tnetwork_component`
+-- Table "tnetwork_component"
 -- -----------------------------------------------------
 
 CREATE TYPE type_tnetwork_component_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
@@ -305,25 +305,25 @@ ALTER TABLE "tnetwork_component" ADD COLUMN "only_metaconsole" INTEGER default '
 ALTER TABLE "tnetwork_component" ADD COLUMN "macros" TEXT default '';
 
 -- -----------------------------------------------------
--- Table `tplugin`
+-- Table "tplugin"
 -- -----------------------------------------------------
 
 ALTER TABLE "tplugin" ADD COLUMN "macros" TEXT default '';
 ALTER TABLE "tplugin" ADD COLUMN "parameters" TEXT default '';
 
 ------------------------------------------------------------------------
--- Table `trecon_task`
+-- Table "trecon_task"
 ------------------------------------------------------------------------
 ALTER TABLE "trecon_task" ALTER COLUMN "subnet" TYPE TEXT;
 ALTER TABLE "trecon_task" ALTER COLUMN "field1" TYPE TEXT;
 
 ------------------------------------------------------------------------
--- Table `tlayout_data`
+-- Table "tlayout_data"
 ------------------------------------------------------------------------
 ALTER TABLE "tlayout_data" ADD COLUMN "enable_link" SMALLINT NOT NULL default 1;
 
 ------------------------------------------------------------------------
--- Table `tnetwork_component`
+-- Table "tnetwork_component"
 ------------------------------------------------------------------------
 ALTER TABLE "tnetwork_component" ADD COLUMN "critical_instructions" text default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "warning_instructions" text default '';
@@ -332,7 +332,7 @@ ALTER TABLE "tnetwork_component" ADD COLUMN "critical_inverse" SMALLINT NOT NULL
 ALTER TABLE "tnetwork_component" ADD COLUMN "warning_inverse" SMALLINT NOT NULL default 0;
 
 ------------------------------------------------------------------------
--- Table `tnetwork_map`
+-- Table "tnetwork_map"
 ------------------------------------------------------------------------
 ALTER TABLE "tnetwork_map" ADD COLUMN "text_filter" VARCHAR(100) DEFAULT '';
 ALTER TABLE "tnetwork_map" ADD COLUMN "dont_show_subgroups" INTEGER NOT NULL DEFAULT 0;
@@ -341,12 +341,12 @@ ALTER TABLE "tnetwork_map" ADD COLUMN "show_modules" INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE "tnetwork_map" ADD COLUMN "show_groups" INTEGER NOT NULL DEFAULT 0;
 
 ------------------------------------------------------------------------
--- Table `tagente_estado`
+-- Table "tagente_estado"
 ------------------------------------------------------------------------
 ALTER TABLE "tagente_estado" ADD COLUMN "last_known_status" INTEGER default 0;
 
 -- -----------------------------------------------------
--- Table `tevent_response`
+-- Table "tevent_response"
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS "tevent_response" (
 	"id"  SERIAL NOT NULL PRIMARY KEY,
@@ -360,3 +360,39 @@ CREATE TABLE IF NOT EXISTS "tevent_response" (
 	"new_window" INTEGER NOT NULL DEFAULT 0,
 	"params" TEXT,
 );
+
+-- ----------------------------------------------------------------------
+-- Table "talert_actions"
+-- ----------------------------------------------------------------------
+ALTER TABLE "talert_actions" ADD COLUMN "field4" TEXT NOT NULL;
+ALTER TABLE "talert_actions" ADD COLUMN "field5" TEXT NOT NULL;
+ALTER TABLE "talert_actions" ADD COLUMN "field6" TEXT NOT NULL;
+ALTER TABLE "talert_actions" ADD COLUMN "field7" TEXT NOT NULL;
+ALTER TABLE "talert_actions" ADD COLUMN "field8" TEXT NOT NULL;
+ALTER TABLE "talert_actions" ADD COLUMN "field9" TEXT NOT NULL;
+ALTER TABLE "talert_actions" ADD COLUMN "field10" TEXT NOT NULL;
+
+-- ----------------------------------------------------------------------
+-- Table "talert_templates"
+-- ----------------------------------------------------------------------
+ALTER TABLE "talert_templates" ADD COLUMN "field4" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field5" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field6" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field7" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field8" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field9" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field10" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field4_recovery" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field5_recovery" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field6_recovery" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field7_recovery" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field8_recovery" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field9_recovery" TEXT NOT NULL;
+ALTER TABLE "talert_templates" ADD COLUMN "field10_recovery" TEXT NOT NULL;
+
+-- ----------------------------------------------------------------------
+-- Table "talert_commands"
+-- ----------------------------------------------------------------------
+ALTER TABLE "talert_commands" ADD COLUMN "fields_descriptions" TEXT;
+ALTER TABLE "talert_commands" ADD COLUMN "fields_values" TEXT;
+

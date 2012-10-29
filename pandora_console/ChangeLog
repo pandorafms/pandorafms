@@ -1,3 +1,25 @@
+2012-10-29  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	include/javascript/pandora_alerts.js
+	pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	godmode/alerts/configure_alert_template.php
+	godmode/alerts/alert_templates.php
+	godmode/alerts/configure_alert_action.php
+	godmode/alerts/configure_alert_command.php
+	godmode/alerts/alert_actions.php
+	godmode/alerts/alert_commands.php: Added 7 more fields to 
+	alert actions and adapted templates to this feature (recovery
+	included). Add the feature of custom the label and the possible
+	data (to use textarea or select) from the command
+
 2012-10-29  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_alert_macros.php: Translated new macros.

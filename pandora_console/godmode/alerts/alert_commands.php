@@ -39,6 +39,55 @@ if (is_ajax ()) {
 			$command['description'] = io_safe_input(str_replace("\r\n","<br>", io_safe_output($command['description'])));
 		}
 		
+		// Get the html rows of the fields form
+		
+		// Descriptions are stored in json
+		$fields_descriptions = empty($command['fields_descriptions']) ? '' : json_decode($command['fields_descriptions'], true);
+
+		// Fields values are stored in json
+		$fields_values = empty($command['fields_values']) ? '' : json_decode($command['fields_values'], true);
+
+		$fields_rows = array();
+		for($i=1;$i<=10;$i++) {
+			if(!empty($fields_descriptions[$i-1])) {
+				$fdesc = $fields_descriptions[$i-1].' <span style="font-size:xx-small; font-weight:normal;">('.sprintf(__('Field %s'), $i).')</span>';
+			}
+			else {
+				$fdesc = sprintf(__('Field %s'), $i);
+			}
+
+			if(!empty($fields_values[$i-1])) {
+				$fields_value_select = array();
+				$fv = $fields_values[$i-1];
+				$fv = explode(';', $fv);
+				
+				if(empty($fv)) {
+					$fv = array();
+				}
+				
+				foreach($fv as $fv_option) {
+					$fv_option = explode(',', $fv_option);
+					$fields_value_select[$fv_option[0]] = $fv_option[1];
+				}
+
+				$ffield = html_print_select($fields_value_select, 'field'.$i.'_value', '', '', '', 0, true, false, false);
+			}
+			else {
+				$ffield = html_print_textarea ('field'.$i.'_value', 1, 1, '', 'style="min-height:40px" class="fields"', true);
+			}
+			
+			$fields_rows[$i] = '<tr id="table1-field'.$i.'" class="datos">
+									<td style="font-weight:bold;width:20%" class="datos">
+									'.$fdesc.'
+									</td>
+									<td class="datos">
+									'.$ffield.'
+									</td>
+								</tr>';
+		}
+		
+		$command['fields_rows'] = $fields_rows;
+		
 		echo json_encode ($command);
 	}
 	return;
@@ -55,13 +104,28 @@ if ($create_command) {
 	$name = (string) get_parameter ('name');
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
+	
+	$fields_descriptions = array();
+	$fields_values = array();
+	$info_fields = '';
+	$values = array();
+	for($i=1;$i<=10;$i++) {
+		$fields_descriptions[] = (string) get_parameter ('field'.$i.'_description');
+		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
+		$info_fields .= ' Field'.$i.': ' . $values['field'.$i];
+	}
+
+	$values['fields_values'] = json_encode($fields_values);
+	$values['fields_descriptions'] = json_encode($fields_descriptions);
+	$values['description'] = $description;
+	
 	$name_check = db_get_value ('name', 'talert_commands', 'name', $name);
 	
 	if (!$name_check) {
 		$result = alerts_create_alert_command ($name, $command,
-			array ('description' => $description));
+			$values);
 		
-		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
+		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description. ' ' .$info_fields;
 	}
 	else {
 		$result = '';
@@ -87,11 +151,24 @@ if ($update_command) {
 		require ("general/noaccess.php");
 		exit;
 	}
+	
 	$name = (string) get_parameter ('name');
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
 	
-	$values = array ();
+	$fields_descriptions = array();
+	$fields_values = array();
+	$info_fields = '';
+	$values = array();
+	for($i=1;$i<=10;$i++) {
+		$fields_descriptions[] = (string) get_parameter ('field'.$i.'_description');
+		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
+		$info_fields .= ' Field'.$i.': ' . $values['field'.$i];
+	}
+
+	$values['fields_values'] = json_encode($fields_values);
+	$values['fields_descriptions'] = json_encode($fields_descriptions);
+	
 	$values['name'] = $name;
 	$values['command'] = $command;
 	$values['description'] = $description;
@@ -102,7 +179,7 @@ if ($update_command) {
 	}
 	else {
 		$result = alerts_update_alert_command ($id, $values);
-		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
+		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description. ' ' .$info_fields;
 	}
 	
 	if ($result) {

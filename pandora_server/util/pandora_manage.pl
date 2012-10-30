@@ -87,7 +87,7 @@ sub help_screen{
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
 	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
    	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
-    help_screen_line('--create_group', '<group_name> [<parent_group_name> <icon>]', 'Create an agent group');
+    help_screen_line('--create_group', '<group_name> [<parent_group_name> <icon> <description>]', 'Create an agent group');
 	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
 	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
@@ -2972,7 +2972,7 @@ sub cli_policy_add_agent() {
 ##############################################################################
 
 sub cli_create_group() {
-	my ($group_name,$parent_group_name,$icon) = @ARGV[2..4];
+	my ($group_name,$parent_group_name,$icon,$description) = @ARGV[2..5];
 		
 	my $group_id = get_group_id($dbh,$group_name);
 	non_exist_check($group_id, 'group name', $group_name);
@@ -2985,8 +2985,9 @@ sub cli_create_group() {
 	}
 
 	$icon = '' unless defined($icon);
+	$description = '' unless defined($description);
 
-	$group_id = pandora_create_group ($group_name, $icon, $parent_group_id, 0, 0, '', 0, $dbh);
+	$group_id = pandora_create_group ($group_name, $icon, $parent_group_id, 0, 0, '', 0, $description, $dbh);
 
 	if($group_id == -1) {
 		print "[ERROR] A problem has been ocurred creating group '$group_name'\n\n";
@@ -3357,7 +3358,7 @@ sub pandora_manage_main ($$$) {
 			cli_disable_policy_alerts();
 		}
 		elsif ($param eq '--create_group') {
-			param_check($ltotal, 3, 2);
+			param_check($ltotal, 4, 3);
 			cli_create_group();
 		}
 		elsif ($param eq '--add_agent_to_policy') {

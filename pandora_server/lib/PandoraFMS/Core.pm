@@ -2124,11 +2124,11 @@ sub pandora_update_table_from_hash ($$$$$$) {
 ##########################################################################
 ## Create a group
 ##########################################################################
-sub pandora_create_group ($$$$$$$$) {
-	my ($name, $icon, $parent, $propagate, $disabled, $custom_id, $id_skin, $dbh) = @_;
+sub pandora_create_group ($$$$$$$$$) {
+	my ($name, $icon, $parent, $propagate, $disabled, $custom_id, $id_skin, $description, $dbh) = @_;
 	
-	my $group_id = db_insert ($dbh, 'id_grupo', 'INSERT INTO tgrupo (nombre, icon, parent, propagate, disabled, custom_id, id_skin) VALUES (?, ?, ?, ?, ?, ?, ?)', safe_input($name), $icon, 
-			$parent, $propagate, $disabled, $custom_id, $id_skin);
+	my $group_id = db_insert ($dbh, 'id_grupo', 'INSERT INTO tgrupo (nombre, icon, parent, propagate, disabled, custom_id, id_skin, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', safe_input($name), $icon, 
+			$parent, $propagate, $disabled, $custom_id, $id_skin, $description);
 				 
 	return $group_id;
 }

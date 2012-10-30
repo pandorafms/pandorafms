@@ -1379,18 +1379,6 @@ CREATE TABLE "ttag_policy_module" (
 CREATE INDEX "ttag_poli_mod_id_pol_mo_idx" ON "ttag_policy_module"("id_policy_module");
 
 -- -----------------------------------------------------
--- Table "ttag_event"
--- -----------------------------------------------------
-
-CREATE TABLE "ttag_event" ( 
- id_tag INTEGER NOT NULL, 
- id_evento BIGINT NOT NULL DEFAULT 0, 
-   PRIMARY KEY  (id_tag, id_evento)
-); 
-
-CREATE INDEX "ttag_event_id_evento_idx" ON "ttag_event"("id_evento");
-
--- -----------------------------------------------------
 -- Table `tnetflow_filter`
 -- -----------------------------------------------------
 CREATE TABLE "tnetflow_filter" (

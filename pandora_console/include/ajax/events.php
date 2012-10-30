@@ -151,9 +151,8 @@ if($dialogue_event_response) {
 if($add_comment) { 
 	$comment = get_parameter ('comment');
 	$event_id = get_parameter ('event_id');
-	$similars = true;
-	
-	$return = events_comment_event ($event_id, $similars, $comment);
+
+	$return = events_comment ($event_id, $comment);
 
 	if ($return)
 		echo 'comment_ok';
@@ -213,7 +212,6 @@ if($get_extended_event) {
 	$similar_ids = get_parameter('similar_ids', $event_id);
 	$group_rep = get_parameter('group_rep',false);
 	$event_rep = get_parameter('event_rep',1);
-	$user_comment = base64_decode(get_parameter('user_comment',false));
 	$timestamp_first = get_parameter('timestamp_first', $event['utimestamp']);
 	$timestamp_last = get_parameter('timestamp_last', $event['utimestamp']);
 
@@ -221,11 +219,7 @@ if($get_extended_event) {
 	$event['timestamp_first'] = $timestamp_first;
 	$event['timestamp_last'] = $timestamp_last;
 	$event['event_rep'] = $event_rep;
-	
-	if($user_comment !== false) {
-		$event['user_comment'] = $user_comment;
-	}
-	
+
 	// Check ACLs
 	if (is_user_admin ($config["id_user"])) {
 		//Do nothing if you're admin, you get full access

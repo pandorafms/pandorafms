@@ -4538,16 +4538,16 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			unset($data);
 			
 			//Agent's modules
-			$data[0] = '';
-			$data[1] = '<b>'.agents_get_name ($content['id_agent'], 'upper').__(' MODULES').'</b>';
-			$table->colspan[3][1] = 10;
-			
-			array_push ($table->data, $data);
-			unset($data);
-			
 			if ($modules == null) {
 				$modules = array();
 			} else {
+				$data[0] = '';
+				$data[1] = '<b>'.agents_get_name ($content['id_agent'], 'upper').__(' MODULES').'</b>';
+				$table->colspan[3][1] = 10;
+				
+				array_push ($table->data, $data);
+				unset($data);
+			
 				$data[0] = '';
 				$data[1] = '<b>'.__('Name').'</b>';
 				$data[2] = '<b>'.__('Type').'</b>';

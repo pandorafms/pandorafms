@@ -242,7 +242,7 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1) {
 			break;
 	}
 	
-	events_comment_event($id_event, $similars, '', "Change status to $status_string");
+	events_comment($id_event, '', "Change status to $status_string");
 	
 	db_process_sql_begin ();
 	
@@ -426,7 +426,7 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment') {
 	
 	// If the event hasn't owner, assign the user as owner
 	events_change_owner ($id_event, $similars);
-			
+
 	// Give old ugly format to comment. TODO: Change this method for aux table or json
 	$comment = str_replace(array("\r\n", "\r", "\n"), '<br>', $comment);
 	
@@ -437,16 +437,14 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment') {
 		$commentbox = '';
 	}
 	
-	$comment = '<b>-- '.$action.' by '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
+	$comment = '<b>-- ' . $action . ' by '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox.'<br>';
 	
 	// Update comment
 	switch ($config['dbtype']) {
 		// Oldstyle SQL to avoid innecesary PHP foreach
 		case 'mysql':
 			$sql_validation = "UPDATE tevento 
-								   SET estado = " . $new_status .", 
-									   id_usuario = '" . $config['id_user'] . "', 
-									   user_comment = concat(user_comment, '" . $comment . "') 
+								   SET user_comment = concat('" . $comment . "', user_comment) 
 								   WHERE id_evento in (" . implode(',', $id_event) . ")";
 			   
 			$ret = db_process_sql($sql_validation);	
@@ -454,9 +452,7 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment') {
 		case 'postgresql':
 		case 'oracle':
 			$sql_validation = "UPDATE tevento 
-								   SET estado = " . $new_status . ", 
-									   id_usuario = '" . $config['id_user'] . "', 
-									   user_comment=user_comment || '" . $comment . "') 
+								   SET user_comment='" . $comment . "' || user_comment) 
 								   WHERE id_evento in (" . implode(',', $id_event) . ")";	
 								   
 			$ret = db_process_sql($sql_validation);							   					
@@ -1735,19 +1731,9 @@ function events_page_general ($event) {
 	$data[0] = __('Tags');
 
 	if ($event["tags"] != '') {
-		$tag_array = explode(',', $event["tags"]);
-		$data[1] = '';
-		foreach ($tag_array as $tag_element){
-			$blank_char_pos = strpos($tag_element, ' ');
-			$tag_name = substr($tag_element, 0, $blank_char_pos);
-			$tag_url = substr($tag_element, $blank_char_pos + 1);
-			$data[1] .= ' ' .$tag_name;
-			if (!empty($tag_url)){
-				$data[1] .= ' <a href="javascript: openURLTagWindow(\'' . $tag_url . '\');">' . html_print_image('images/lupa.png', true, array('title' => __('Click here to open a popup window with URL tag'))) . '</a> ';
-			}
-			$data[1] .= ',';
-		}
-		$data[1] = rtrim($table_general, ',');
+		$tags = str_replace(' ','',$event["tags"]);
+		$tags = str_replace(',',' , ',$tags);
+		$data[1] = $tags;
 	}
 	else {
 		$data[1] = '<i>' . __('N/A') . '</i>';
@@ -1776,6 +1762,7 @@ function events_page_comments ($event) {
 	// Split comments and put in table
 	$col = 0;
 	$data = array();
+
 	foreach($comments_array as $c) {	
 		switch($col) {
 			case 0:

@@ -42,15 +42,15 @@ if (is_ajax ()) {
 		// Get the html rows of the fields form
 		
 		// Descriptions are stored in json
-		$fields_descriptions = empty($command['fields_descriptions']) ? '' : json_decode($command['fields_descriptions'], true);
+		$fields_descriptions = empty($command['fields_descriptions']) ? '' : json_decode(io_safe_output($command['fields_descriptions']), true);
 
 		// Fields values are stored in json
-		$fields_values = empty($command['fields_values']) ? '' : json_decode($command['fields_values'], true);
+		$fields_values = empty($command['fields_values']) ? '' : json_decode(io_safe_output($command['fields_values']), true);
 
 		$fields_rows = array();
 		for($i=1;$i<=10;$i++) {
 			if(!empty($fields_descriptions[$i-1])) {
-				$fdesc = $fields_descriptions[$i-1].' <span style="font-size:xx-small; font-weight:normal;">('.sprintf(__('Field %s'), $i).')</span>';
+				$fdesc = $fields_descriptions[$i-1].' <br><span style="font-size:xx-small; font-weight:normal;">'.sprintf(__('Field %s'), $i).'</span>';
 			}
 			else {
 				$fdesc = sprintf(__('Field %s'), $i);

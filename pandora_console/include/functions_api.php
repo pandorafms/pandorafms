@@ -3690,7 +3690,7 @@ function api_set_apply_all_policies($thrash1, $thrash2, $other, $thrash3) {
  * 
  * @param string $id Name of the new group.
  * @param $thrash1 Don't use.
- * @param array $other it's array, $other as param is <icon_name>;<id_group_parent>; in this order
+ * @param array $other it's array, $other as param is <icon_name>;<id_group_parent>;<description> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  * 
@@ -3729,12 +3729,14 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 	if ($other['data'][1] != "") {
 		$values = array(
 			'icon' => $other['data'][0],
-			'parent' => $other['data'][1]
+			'parent' => $other['data'][1],
+			'description' => $other['data'][2]
 		);
 	}
 	else {
 		$values = array(
-			'icon' => $other['data'][0]
+			'icon' => $other['data'][0],
+			'description' => $other['data'][2]
 		);
 	}
 	

@@ -1,3 +1,9 @@
+2012-10-30  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Changed the unknown status treatment
+	as independent status to fit new needs. Change the internal command
+	to create event to have more parameters
+
 2012-10-30  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm, util/pandora_manage.pl: Added

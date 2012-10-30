@@ -777,20 +777,42 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 	logger($pa_config, "Executing action '" . safe_output($action->{'name'}) . "' for alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 10);
 
+	my $clean_name = safe_output($action->{'name'});
+	
 	my $field1 = $action->{'field1'} ne "" ? $action->{'field1'} : $alert->{'field1'};
 	my $field2 = $action->{'field2'} ne "" ? $action->{'field2'} : $alert->{'field2'};
 	my $field3 = $action->{'field3'} ne "" ? $action->{'field3'} : $alert->{'field3'};		
+	my $field4 = $action->{'field4'} ne "" ? $action->{'field4'} : $alert->{'field4'};		
+	my $field5 = $action->{'field5'} ne "" ? $action->{'field5'} : $alert->{'field5'};		
+	my $field6 = $action->{'field6'} ne "" ? $action->{'field6'} : $alert->{'field6'};		
+	my $field7 = $action->{'field7'} ne "" ? $action->{'field7'} : $alert->{'field7'};		
+	my $field8 = $action->{'field8'} ne "" ? $action->{'field8'} : $alert->{'field8'};		
+	my $field9 = $action->{'field9'} ne "" ? $action->{'field9'} : $alert->{'field9'};		
+	my $field10 = $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};		
 
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == 0){
 		$field2 = $alert->{'field2_recovery'} ne "" ? $alert->{'field2_recovery'} : "[RECOVER]" . $field2;
 		$field3 = $alert->{'field3_recovery'} ne "" ? $alert->{'field3_recovery'} : "[RECOVER]" . $field3;
+		$field4 = $alert->{'field4_recovery'} ne "" ? $alert->{'field4_recovery'} : "[RECOVER]" . $field4;
+		$field5 = $alert->{'field5_recovery'} ne "" ? $alert->{'field5_recovery'} : "[RECOVER]" . $field5;
+		$field6 = $alert->{'field6_recovery'} ne "" ? $alert->{'field6_recovery'} : "[RECOVER]" . $field6;
+		$field7 = $alert->{'field7_recovery'} ne "" ? $alert->{'field7_recovery'} : "[RECOVER]" . $field7;
+		$field8 = $alert->{'field8_recovery'} ne "" ? $alert->{'field8_recovery'} : "[RECOVER]" . $field8;
+		$field9 = $alert->{'field9_recovery'} ne "" ? $alert->{'field9_recovery'} : "[RECOVER]" . $field9;
+		$field10 = $alert->{'field10_recovery'} ne "" ? $alert->{'field10_recovery'} : "[RECOVER]" . $field10;
 	}
 
 	$field1 = decode_entities ($field1);
 	$field2 = decode_entities ($field2);
 	$field3 = decode_entities ($field3);
-
+	$field4 = decode_entities ($field4);
+	$field5 = decode_entities ($field5);
+	$field6 = decode_entities ($field6);
+	$field7 = decode_entities ($field7);
+	$field8 = decode_entities ($field8);
+	$field9 = decode_entities ($field9);
+	$field10 = decode_entities ($field10);
 
 	# Get group info
 	my $group = undef;
@@ -805,6 +827,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	my %macros = (_field1_ => $field1,
 				_field2_ => $field2,
 				_field3_ => $field3,
+				_field4_ => $field4,
+				_field5_ => $field5,
+				_field6_ => $field6,
+				_field7_ => $field7,
+				_field8_ => $field8,
+				_field9_ => $field9,
+				_field10_ => $field10,
 				_agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
 				_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',
@@ -839,12 +868,20 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			$macros{$macro} = $value;
 		}
 	}
-	
+
 	# User defined alerts
 	if ($action->{'internal'} == 0) {
 		$macros{_field1_} = subst_alert_macros ($field1, \%macros);
 		$macros{_field2_} = subst_alert_macros ($field2, \%macros);
 		$macros{_field3_} = subst_alert_macros ($field3, \%macros);
+		$macros{_field4_} = subst_alert_macros ($field4, \%macros);
+		$macros{_field5_} = subst_alert_macros ($field5, \%macros);
+		$macros{_field6_} = subst_alert_macros ($field6, \%macros);
+		$macros{_field7_} = subst_alert_macros ($field7, \%macros);
+		$macros{_field8_} = subst_alert_macros ($field8, \%macros);
+		$macros{_field9_} = subst_alert_macros ($field9, \%macros);
+		$macros{_field10_} = subst_alert_macros ($field10, \%macros);
+		
 		my $command = subst_alert_macros (decode_entities ($action->{'command'}), \%macros);
 		logger($pa_config, "Executing command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 8);
 		
@@ -858,12 +895,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		}
 	
 	# Internal Audit
-	} elsif ($action->{'name'} eq "Internal Audit") {
+	} elsif ($clean_name eq "Internal Audit") {
 		$field1 = subst_alert_macros ($field1, \%macros);
 		pandora_audit ($pa_config, $field1, defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A', 'Alert (' . safe_output($alert->{'description'}) . ')', $dbh);
 	
 	# Email
-	} elsif ($action->{'name'} eq "eMail") {
+	} elsif ($clean_name eq "eMail") {
 		$field2 = subst_alert_macros ($field2, \%macros);
 		$field3 = subst_alert_macros ($field3, \%macros);
 		foreach my $address (split (',', $field1)) {
@@ -872,12 +909,46 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			pandora_sendmail ($pa_config, $address, $field2, $field3);
 		}
 	
-	# Internal event
-	} elsif ($action->{'name'} eq "Pandora FMS Event") {
-		$field1 = subst_alert_macros ($field1, \%macros);
-		pandora_event ($pa_config, $field1, (defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $alert->{'priority'}, 0, 0, "alert_fired", 0, $dbh);
+	# Pandora FMS Event
+	} elsif ($clean_name eq "Pandora FMS Event") {
+		# Field 1 (event text)
+		my $event_text = subst_alert_macros ($field1, \%macros);
+		
+		# Field 2 (event type)
+		my $event_type = $field2;
+		if($event_type eq "") {
+			$event_type = "alert_fired";
+		}
+		
+		# Field 3 (source)
+		my $source = $field3;
+		
+		# Field 4 (agent name)
+		my $agent_name = $field4;
+		if($agent_name eq "") {
+			$agent_name = "_agent_";
+		}
+		$agent_name = subst_alert_macros ($agent_name, \%macros);
+		my $fullagent = get_agent_from_name ($dbh, $agent_name);
+		
+		# Field 5 (priority)
+		my $priority = $field5;
+		if($priority eq '') {
+			$priority = $alert->{'priority'};
+		}
+		
+		# Field 6 (id extra);
+		my $id_extra = $field6;
+		
+		# Field 7 (tags);
+		my $tags = $field7;
+		
+		# Field 8 (comments);
+		my $comment = $field8;
+		
+		pandora_event ($pa_config, $event_text, (defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($fullagent) ? $fullagent->{'id_agente'} : 0), $priority, 0, 0, $event_type, 0, $dbh, $source, '', $comment, $id_extra, $tags);
 	# Validate event (field1: agent name; field2: module name)
-	} elsif ($action->{'name'} eq "Validate Event") {
+	} elsif ($clean_name eq "Validate Event") {
 		my $agent_id = -1;
 		my $module_id = -1;
 		if($field1 ne '') {
@@ -978,7 +1049,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		return;
 	}
 	my $last_status = $agent_status->{'last_status'};
-	my $status = $agent_status->{'estado'} == 3 ? $last_status : $agent_status->{'estado'};
+	my $status = $agent_status->{'estado'};
 	my $status_changes = $agent_status->{'status_changes'};
 	my $last_data_value = $agent_status->{'datos'};
 	
@@ -3494,7 +3565,7 @@ sub pandora_module_unknown ($$) {
 		
 		# Set the module state to unknown
 		logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
-		db_do ($dbh, 'UPDATE tagente_estado SET last_status = estado, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+		db_do ($dbh, 'UPDATE tagente_estado SET last_known_status = estado, last_status = 3, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
 		
 		# Get agent information
 		my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});

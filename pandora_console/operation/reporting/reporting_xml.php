@@ -65,6 +65,18 @@ function write_xml_file_agent_data ($agent_data = array(), $file_temp) {
 	$content_report .= "		<main_ipaddress>".$agent_data['direccion']."</main_ipaddress>\n";
 	$content_report .= "		<group>".$agent_data['id_grupo']."</group>\n";
 	$content_report .= "		<interval>". $agent_data['intervalo']."</interval>\n";
+	
+	$sql = "SELECT t1.description, t2.name 
+			FROM tagent_custom_data t1, tagent_custom_fields t2
+			WHERE t1.id_agent=".$agent_data['id_agente']."
+			AND t1.id_field=t2.id_field";
+	$custom_fields = db_get_all_rows_sql($sql);
+	
+	if ($custom_fields !== false) {
+		foreach ($custom_fields as $field) {
+			$content_report .= "		<".$field['name'].">".$field['description']."<".$field['name'].">\n";
+		}
+	}
 	$content_report .= "		<os_type>".$agent_data['id_os']."</os_type>\n";
 	$content_report .= "		<parent>". agents_get_name ($agent_data['id_parent'])."</parent>\n";
 	$content_report .= "		<extra_id>".$agent_data['id_extra']."</extra_id>\n";

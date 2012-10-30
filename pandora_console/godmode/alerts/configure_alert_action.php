@@ -157,7 +157,7 @@ $(document).ready (function () {
 			$command = io_safe_output($command);
 			echo addslashes($command);
 			?>";
-		render_command_preview ();
+		render_command_preview (original_command);
 		command_description = "<?php echo str_replace("\r\n","<br>",addslashes(io_safe_output(alerts_get_alert_command_description ($id_command)))); ?>";
 		
 		render_command_description(command_description);
@@ -189,6 +189,10 @@ $(document).ready (function () {
 					$('#table1-field'+i).replaceWith(data["fields_rows"][i]);
 					$("[name=field"+i+"_value]").val(old_value);
 				}
+				
+				$(".fields").keyup (function() {
+					render_command_preview(original_command) 
+				});
 			},
 			"json"
 		);
@@ -196,7 +200,6 @@ $(document).ready (function () {
 	
 	// Charge the fields of the 
 	$("#id_command").trigger('change');
-	
-	$(".fields").keyup (render_command_preview);
 });
+
 </script>

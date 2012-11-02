@@ -74,7 +74,10 @@ function write_xml_file_agent_data ($agent_data = array(), $file_temp) {
 	
 	if ($custom_fields !== false) {
 		foreach ($custom_fields as $field) {
-			$content_report .= "		<".$field['name'].">".$field['description']."<".$field['name'].">\n";
+			$field['name'] = io_safe_output($field['name']);
+			//remove blank
+			$field['name'] = preg_replace('/\s/', '_', $field['name']);
+			$content_report .= "		<".$field['name'].">".$field['description']."</".$field['name'].">\n";
 		}
 	}
 	$content_report .= "		<os_type>".$agent_data['id_os']."</os_type>\n";

@@ -38,7 +38,7 @@ if (is_ajax ()) {
 		
 		return;
 	}
-		
+	
 	if ($get_license_info) {
 		enterprise_include_once('include/functions_license.php');
 		

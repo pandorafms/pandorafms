@@ -2416,7 +2416,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 	}
 	
 	// Javascript configurations
-	//-----------------------------------------
+	//------------------------------------------------------------------
 	$javascript_ajax_page = 'ajax.php'; //Default value
 	if (isset($parameters['javascript_ajax_page'])) {
 		$javascript_ajax_page = $parameters['javascript_ajax_page'];
@@ -2486,8 +2486,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 			}
 			
 			if ((' . ((int)$print_hidden_input_idagent) . ')
-						|| (' . ((int)$use_hidden_input_idagent) . ')) {
-						
+				|| (' . ((int)$use_hidden_input_idagent) . ')) {
+				
 				inputs.push ("id_agent=" + $("#' . $hidden_input_idagent_id . '").val());
 			}
 			
@@ -2659,7 +2659,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 								
 								//Set icon
 								$("#' . $input_id . '")
-									.css("background","url(\"' . $icon_image . '\") right center no-repeat");
+									.css("background",
+										"url(\"' . $icon_image . '\") right center no-repeat");
 								
 								return;
 							}
@@ -2749,12 +2750,106 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$javascript_tags = $parameters['javascript_tags'];
 	}
 	
+	$javascript_on_blur_function_name = 'function_on_blur_' . $input_name;//Default value
+	if (isset($parameters['javascript_on_blur_function_name'])) {
+		$javascript_on_blur_function_name = $parameters['javascript_on_blur_function_name'];
+	}
+	
+	//Default value
+	$javascript_on_blur = '
+		/*
+		This function is a callback when the autocomplete agent
+		input lost the focus.
+		*/
+		function ' . $javascript_on_blur_function_name . '() {
+			//Set loading
+			$("#' . $input_id . '")
+				.css("background",
+					"url(\"' . $spinner_image . '\") right center no-repeat");
+			
+			input_value = $("#' . $input_id . '").val();
+			
+			var term = input_value; //Word to search
+			
+			var data_params = {"page": "include/ajax/agent",
+				"search_agents_2": 1,
+				"id_group": 0,
+				"q": term};
+			
+			jQuery.ajax ({
+				data: data_params,
+				async: false,
+				type: "POST",
+				url: action="' . $javascript_ajax_page . '",
+				timeout: 10000,
+				dataType: "json",
+				success: function (data) {
+						if (data.length == 0) {
+							alert("' . __('Does not exist agent with this name.') . '");
+							
+							//Set icon
+							$("#' . $input_id . '")
+								.css("background",
+									"url(\"' . $icon_image . '\") right center no-repeat");
+							
+							return;
+						}
+						
+						var agent_name = data[0].name;
+						var agent_id = data[0].id;
+						var server_name;
+						
+						if (' . ((int)$metaconsole_enabled) . ') {
+							server_name = data[0].server;
+						}
+						else {
+							server_name = data[0].ip;
+						}
+						
+						if ((' . ((int)$print_hidden_input_idagent) . ')
+							|| (' . ((int)$use_hidden_input_idagent) . ')) {
+							$("#' . $hidden_input_idagent_id . '").val(agent_id);
+						}
+						
+						//Put the server id into the hidden input
+						if ((' . ((int)$use_input_server) . ')
+							|| (' . ((int)$print_input_server) . ')) {
+							$("#' . $input_server_id . '").val(server_name);
+						}
+						
+						//Call the function to select (example fill the modules)
+						if (' . ((int)$javascript_is_function_select) . ') {
+							' . $javascript_name_function_select . '(agent_name);
+						}
+						
+						//Function to call after the select
+						if (' . ((int)!empty($javascript_function_action_after_select_js_call)) . ') {
+							' . $javascript_function_action_after_select_js_call . '
+						}
+						
+						//Set icon
+						$("#' . $input_id . '")
+							.css("background",
+								"url(\"' . $icon_image . '\") right center no-repeat");
+						
+						return;
+					}
+				});
+		}
+		';
+	if (isset($parameters['javascript_on_blur'])) {
+		$javascript_on_blur = $parameters['javascript_on_blur'];
+	}
+	
 	//------------------------------------------------------------------
 	
 	$html = '';
 	
 	
-	$attrs = array('style' => 'background: url(' . $icon_image . ') no-repeat right;');
+	$attrs = array(
+		'style' =>
+			'background: url(' . $icon_image . ') no-repeat right;',
+		'onblur' => $javascript_on_blur_function_name . '()');
 	
 	$html = html_print_input_text_extended($input_name, $value,
 		$input_id, $helptip_text, $size, $maxlength, $disabled, '', $attrs, true);
@@ -2783,6 +2878,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 		if ($javascript_is_function_select) {
 			$html .= $javascript_code_function_select;
 		}
+		
+		$html .= $javascript_on_blur;
 		
 		if ($javascript_document_ready) {
 			$html .= '$(document).ready (function () {

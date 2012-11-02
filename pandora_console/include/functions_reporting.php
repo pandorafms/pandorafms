@@ -4509,7 +4509,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[3] = '<b>'.__('IP').'</b>';
 			$data[4] = '<b>'.__('Description').'</b>';
 			$data[5] = '<b>'.__('Status').'</b>';
-
+			
 			$table->colspan[1][3] = 2;
 			$table->colspan[1][4] = 4;
 			$table->colspan[1][5] = 2;
@@ -4530,7 +4530,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data[5] = __('Enabled');
 			else
 				$data[5] = __('Disabled');
-
+			
 			$table->colspan[2][3] = 2;
 			$table->colspan[2][4] = 4;
 			$table->colspan[2][5] = 2;
@@ -4639,7 +4639,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table->colspan[$i][4] = 4;
 				$table->colspan[$i][5] = 2;
 				$table->colspan[$i][5] = 2;
-			
+				
 				$i++;
 				
 				//Agent's data

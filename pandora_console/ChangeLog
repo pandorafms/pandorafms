@@ -1,3 +1,14 @@
+2012-11-02 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_reporting.php, extensions/update_manager.php:
+	cleaned source code style.
+	
+	* include/functions_ui.php: fixed or improved the function
+	"ui_print_agent_autocomplete_input" for to get the data when the
+	user stop to typing and lost the focus this widget.
+	
+	Fixes: #3573762
+
 2012-11-02  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/reporting/reporting_xml.php: Removed html entities.

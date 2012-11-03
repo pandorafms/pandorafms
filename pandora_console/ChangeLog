@@ -1,3 +1,12 @@
+2012-11-03 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/users/configure_user.php: cleaned source code style.
+	
+	* include/styles/pandora.css, godmode/users/user_list.php: improved
+	the row aspect of disabled users in the list.
+	
+	Pending task: #3540077
+
 2012-11-02 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_reporting.php, extensions/update_manager.php:

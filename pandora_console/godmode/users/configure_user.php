@@ -45,11 +45,14 @@ if (! check_acl ($config['id_user'], 0, "UM")) {
 	return;
 }
 
+/*
+ * Disabled at the moment.
 if (!check_referer()) {
 	require ("general/noaccess.php");
 	
 	return;
 }
+*/
 
 $tab = get_parameter('tab', 'user');
 
@@ -329,7 +332,7 @@ if ($delete_profile) {
 	$perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
 	$id_perfil = $perfilUser['id_perfil'];
 	$perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
-		
+	
 	db_pandora_audit("User management",
 		"Deleted profile for user ".io_safe_input($id2), false, false, 'The profile with id ' . $id_perfil . ' in the group ' . $perfilUser['id_grupo']);
 	

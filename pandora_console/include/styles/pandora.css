@@ -556,12 +556,19 @@ tr.rowOdd {
 tr.rowPair:hover {
 	background-color: #E0E0E0;
 }
+
 tr.rowOdd:hover {
 	background-color: #E0E0E0
 }
+
+tr.disabled_row_user * {
+	color: grey;
+}
+
 .bg { /* op menu */
 	background-color: #567953;
 }
+
 .bg2 { /* main page */
 	background-color: #0A160C;
 }

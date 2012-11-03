@@ -140,14 +140,14 @@ elseif (isset ($_GET["profile_del"])) { //delete profile
 elseif ($disable_user !== false) { //disable_user
 	$id_user = get_parameter ("id", 0);
 	
-	if($id_user !== 0) {
+	if ($id_user !== 0) {
 		$result = users_disable ($id_user, $disable_user);
 	}
 	else {
 		$result = false;
 	}
 	
-	if($disable_user == 1) {
+	if ($disable_user == 1) {
 		ui_print_result_message ($result, 
 			__('Successfully disabled'),
 			__('There was a problem disabling user'));
@@ -192,14 +192,14 @@ $info1 = get_users ($order, array ('offset' => (int) get_parameter ('offset'),
 	'limit' => (int) $config['block_size']));
 
 $info = array();
-$own_info = get_user_info ($config['id_user']);	
+$own_info = get_user_info ($config['id_user']);
 $own_groups = users_get_groups ($config['id_user'], 'AR', $own_info['is_admin']);
 
 if ($own_info['is_admin'])
 	$info = $info1;
 // If user is not admin then don't display admin users and user of others groups.
 else
-	foreach ($info1 as $key => $usr){
+	foreach ($info1 as $key => $usr) {
 		$u = get_user_info ($key);
 		$g = users_get_groups ($key, 'AR', $u['is_admin']);
 		$result = array_intersect($g, $own_groups);
@@ -220,26 +220,29 @@ foreach ($info as $user_id => $user_info) {
 	else
 		$table->rowclass[$iterator] = 'rowOdd';
 	$rowPair = !$rowPair;
+	if ($user_info['disabled']) {
+		$table->rowclass[$iterator] .= ' disabled_row_user';
+	}
 	$iterator++;
 	
 	$data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$user_id.'">'.$user_id.'</a>';
-	$data[1] = $user_info["fullname"].'<a href="#" class="tip"><span>';
-	$data[1] .= __('First name').': '.$user_info["firstname"].'<br />';
-	$data[1] .= __('Last name').': '.$user_info["lastname"].'<br />';
-	$data[1] .= __('Phone').': '.$user_info["phone"].'<br />';
-	$data[1] .= __('E-mail').': '.$user_info["email"].'<br />';
+	$data[1] = $user_info["fullname"] . '<a href="#" class="tip"><span>';
+	$data[1] .= __('First name') . ': ' . $user_info["firstname"].'<br />';
+	$data[1] .= __('Last name') . ': ' . $user_info["lastname"].'<br />';
+	$data[1] .= __('Phone') . ': ' . $user_info["phone"].'<br />';
+	$data[1] .= __('E-mail') . ': ' . $user_info["email"].'<br />';
 	$data[1] .= '</span></a>';
 	$data[2] = ui_print_timestamp ($user_info["last_connect"], true);
 	
 	if ($user_info["is_admin"]) {
 		$data[3] = html_print_image ("images/user_suit.png", true,
 			array ("alt" => __('Admin'),
-				"title" => __('Administrator'))).'&nbsp;';
+				"title" => __('Administrator'))) . '&nbsp;';
 	}
 	else {
 		$data[3] = html_print_image ("images/user_green.png", true,
 			array ("alt" => __('User'),
-				"title" => __('Standard User'))).'&nbsp;';
+				"title" => __('Standard User'))) . '&nbsp;';
 	}
 	
 	$data[3] .= '<a href="#" class="tip"><span>';
@@ -259,7 +262,7 @@ foreach ($info as $user_id => $user_info) {
 	
 	$data[4] = ui_print_string_substr ($user_info["comments"], 24, true);
 	
-	if($user_info['disabled'] == 0) {
+	if ($user_info['disabled'] == 0) {
 		$data[5] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list&amp;disable_user=1&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, array('title' => __('Disable'))).'</a>';
 	}
 	else {
@@ -289,6 +292,4 @@ else {
 	echo '<i>'.__('The current authentication scheme doesn\'t support creating users from Pandora FMS').'</i>';
 }
 echo '</div>';
-
-
 ?>

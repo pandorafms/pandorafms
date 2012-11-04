@@ -152,12 +152,16 @@ else {
 							$data[5] .= __('Sun');
 							$data[5] .= "&nbsp;";
 						}
+						$data[5] .= "&nbsp;(" . $downtime['periodically_time_from']; 
+                                                $data[5] .= "-" . $downtime['periodically_time_to'] . ")";
 						break;
 					case 'monthly':
 						$data[5] = __('Monthly:');
-						$data[5] .= $downtime['periodically_day_from'];
-						$data[5] .= "&nbsp;" . __('to') . "&nbsp;";
+						$data[5] .= __('From day') . "&nbsp;" . $downtime['periodically_day_from'];
+						$data[5] .= "/" . __('To day') . "&nbsp;";
 						$data[5] .= $downtime['periodically_day_to'];
+						$data[5] .= "&nbsp;(" . $downtime['periodically_time_from'];
+						$data[5] .= "-" . $downtime['periodically_time_to'] . ")";
 						break;
 				}
 				break;

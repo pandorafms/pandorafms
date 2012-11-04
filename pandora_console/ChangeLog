@@ -1,3 +1,8 @@
+2012-11-04  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/agentes/planned_downtime.list.php: Improved to show time
+	range of periodically planned downtime.
+
 2012-11-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/users/configure_user.php: cleaned source code style.

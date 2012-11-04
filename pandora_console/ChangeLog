@@ -1,5 +1,10 @@
 2012-11-04  Junichi Satoh  <junichi@rworks.jp>
 
+	* godmode/agentes/planned_downtime.editor.php: Fixed that time range
+	of once planned downtime cannot be changed.
+
+2012-11-04  Junichi Satoh  <junichi@rworks.jp>
+
 	* godmode/agentes/planned_downtime.list.php: Improved to show time
 	range of periodically planned downtime.
 

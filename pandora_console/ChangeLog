@@ -1,5 +1,13 @@
 2012-11-05 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/events/events_list.php: fixed the lost tag span (with
+	styles) in the Event description.
+	
+	* operation/events/events.php: fixed the default value for id_agent
+	set 0 (as All) in the filter of events.
+
+2012-11-05 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_ui.php: improved the function
 	"ui_print_agent_autocomplete_input" to get the default value for
 	"hidden_input_idagent_value" from the GET or POST instead to set

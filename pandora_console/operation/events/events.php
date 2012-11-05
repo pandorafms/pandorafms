@@ -166,7 +166,7 @@ $ev_group = (int) get_parameter ("ev_group", 0); //0 = all
 $event_type = get_parameter ("event_type", ''); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 3); // -1 all, 0 only new, 1 only validated, 2 only in process, 3 only not validated,
-$id_agent = (int) get_parameter ("id_agent", -2); //-2 search by text, -1 all, 0 system
+$id_agent = (int) get_parameter ("id_agent", 0);
 $id_event = (int) get_parameter ("id_event", -1);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);

@@ -2350,7 +2350,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$hidden_input_idagent_id = $parameters['hidden_input_idagent_id'];
 	}
 	
-	$hidden_input_idagent_value = 0; //Default value
+	$hidden_input_idagent_value = (int)get_parameter($hidden_input_idagent_name, 0); //Default value
 	if (isset($parameters['hidden_input_idagent_value'])) {
 		$hidden_input_idagent_value = $parameters['hidden_input_idagent_value'];
 	}

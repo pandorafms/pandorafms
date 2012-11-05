@@ -1,3 +1,10 @@
+2012-11-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/events/events.php: cleaned source code style.
+	
+	* operation/events/events_list.php: cleaned source code style and
+	fixed the lost id_agent when reload.
+
 2012-11-05  Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/reporting/reporting_xml.php: Moved functions

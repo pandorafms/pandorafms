@@ -41,13 +41,13 @@ if (is_ajax()) {
 	$save_event_filter = get_parameter('save_event_filter', 0);
 	$update_event_filter = get_parameter('update_event_filter', 0);
 	$get_event_filters = get_parameter('get_event_filters', 0);
-
+	
 	// Get db values of a single filter
 	if ($get_filter_values) {
 		$id_filter = get_parameter('id');
 		
 		$event_filter = events_get_event_filter($id_filter);
-
+		
 		$event_filter['tag'] = io_safe_output($event_filter['tag']);
 		$event_filter['id_name'] = io_safe_output($event_filter['id_name']);
 		
@@ -74,7 +74,7 @@ if (is_ajax()) {
 		
 		$result = db_process_sql_insert('tevent_filter', $values);
 		
-		if ($result === false){
+		if ($result === false) {
 			echo 'error';
 		}
 		else {
@@ -129,7 +129,7 @@ $tag = get_parameter("tag", "");
 if ($id_agent == 0) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
 	
-	if($text_agent != __('All')) {
+	if ($text_agent != __('All')) {
 		$id_agent = -1;
 	}
 }
@@ -157,7 +157,7 @@ if (!check_acl ($config["id_user"], 0, "PM")) {
 	$sql_post .= " AND id_grupo != 0";
 }
 
-switch($status) {
+switch ($status) {
 	case 0:
 	case 1:
 	case 2:
@@ -175,7 +175,8 @@ if ($search != "") {
 if ($event_type != "") {
 	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
 	// for the user so for him is presented only "warning, critical and normal"
-	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
+	if ($event_type == "warning" || $event_type == "critical"
+		|| $event_type == "normal") {
 		$sql_post .= " AND event_type LIKE '%$event_type%' ";
 	}
 	elseif ($event_type == "not_normal") {
@@ -189,7 +190,7 @@ if ($event_type != "") {
 if ($severity != -1)
 	$sql_post .= " AND criticity = ".$severity;
 
-switch($id_agent) {
+switch ($id_agent) {
 	case 0:
 		break;
 	case -1:
@@ -237,7 +238,7 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 
 echo "<br>";
 //Link to toggle filter
-if (!empty($id_name)){
+if (!empty($id_name)) {
 	echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/go.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
 }
 else{
@@ -292,7 +293,8 @@ html_print_select ($fields, 'status', $status, '', '', '');
 echo "</td></tr><tr>";
 
 // Free search
-echo "<td>".__('Free search')."</td><td>";
+echo "<td>" . __('Free search') . "</td>";
+echo "<td>";
 html_print_input_text ('search', io_safe_output($search), '', 15);
 echo '</td>';
 
@@ -305,6 +307,7 @@ $params['input_name'] = 'text_agent';
 $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_name'] = 'id_agent';
 $params['value'] = $text_agent;
+$params['hidden_input_idagent_value'] = $id_agent;
 ui_print_agent_autocomplete_input($params);
 echo '</td>';
 
@@ -327,14 +330,14 @@ echo "<td>";
 html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"]);
 echo "</td>";
 
-echo "<td>".__('Max. hours old')."</td>";
+echo "<td>" . __('Max. hours old') . "</td>";
 echo "<td>";
 html_print_input_text ('event_view_hr', $event_view_hr, '', 5);
 echo "</td>";
 
 
 echo "</tr><tr>";
-echo "<td>".__('User ack.')."</td>";
+echo "<td>" . __('User ack.') . "</td>";
 echo "<td>";
 $users = users_get_info ();
 html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0);
@@ -602,7 +605,7 @@ foreach ($result as $event) {
 	
 	//print status
 	$estado = $event["estado"];
-
+	
 	// Colored box
 	switch($estado) {
 		case 0:
@@ -642,9 +645,9 @@ foreach ($result as $event) {
 	$data[$i] .= html_print_input_hidden('event_rep_'.$event["id_evento"], $event['event_rep'], true);	
 	// Store concat comments to show in extended view	
 	$data[$i] .= html_print_input_hidden('user_comment_'.$event["id_evento"], base64_encode($event['user_comment']), true);		
-
+	
 	$i++;
-		
+	
 	if (in_array('estado',$show_fields)) {
 		$data[$i] = html_print_image ($img_st, true, 
 			array ("class" => "image_status",
@@ -691,7 +694,6 @@ foreach ($result as $event) {
 		$data[$i] .= '<span class="'.$myclass.'" style="font-size: 7.5pt;">' . ui_print_truncate_text (io_safe_output($event["evento"]), 160) . '</span>';
 		$data[$i] .= '</a></span>';
 		$i++;
-		
 	}
 	
 	if (in_array('id_agente', $show_fields)) {
@@ -750,7 +752,7 @@ foreach ($result as $event) {
 	
 	if (in_array('id_agentmodule',$show_fields)) {
 		$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">'
-			.db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]).'</a>';
+			. db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]).'</a>';
 		$i++;
 	}
 	
@@ -785,12 +787,12 @@ foreach ($result as $event) {
 		if ($event["tags"] != '') {
 			$tag_array = explode(',', $event["tags"]);
 			$data[$i] = '';
-			foreach ($tag_array as $tag_element){
+			foreach ($tag_array as $tag_element) {
 				$blank_char_pos = strpos($tag_element, ' ');
 				$tag_name = substr($tag_element, 0, $blank_char_pos);
 				$tag_url = substr($tag_element, $blank_char_pos + 1);
 				$data[$i] .= ' ' .$tag_name;
-				if (!empty($tag_url)){
+				if (!empty($tag_url)) {
 					$data[$i] .= ' <a href="javascript: openURLTagWindow(\'' . $tag_url . '\');">' . html_print_image('images/lupa.png', true, array('title' => __('Click here to open a popup window with URL tag'))) . '</a> ';
 				}
 				$data[$i] .= ',';
@@ -913,8 +915,7 @@ unset ($table);
 ?>
 
 <script language="javascript" type="text/javascript">
-/* 
- <![CDATA[ */
+/*<![CDATA[ */
 $(document).ready( function() {
 	// Don't collapse filter if update button has been pushed
 	if ($("#hidden-toogle_filter").val() == 'false'){
@@ -1026,7 +1027,7 @@ $(document).ready( function() {
 				"search" : $("#text-search").val(),
 				"text_agent" : $("#text_id_agent").val(),
 				"pagination" : $("#pagination").val(),
-				"event_view_hr" : $("#text-event_view_hr").val(),	
+				"event_view_hr" : $("#text-event_view_hr").val(),
 				"id_user_ack" : $("#id_user_ack").val(),
 				"group_rep" : $("#group_rep").val(),
 				"tag" : $("#tag").val(),
@@ -1119,22 +1120,22 @@ $(document).ready( function() {
 			$('#filter_id').append ($('<option></option>').html ( <?php echo "'" . __('none') . "'" ?> ).attr ("value", 0));	
 			// Reload filters select
 			jQuery.post ("ajax.php",
-							{"page" : "operation/events/events_list",
-							"get_event_filters" : 1
-						},
-						function (data) {
-							jQuery.each (data, function (i, val) {
-								s = js_html_entity_decode(val);
-								if (i == id_filter_update) {
-									$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
-								}
-								else {
-									$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));	  
-								}
-							});
-						},
-						"json"
-						);
+				{"page" : "operation/events/events_list",
+					"get_event_filters" : 1
+				},
+				function (data) {
+					jQuery.each (data, function (i, val) {
+						s = js_html_entity_decode(val);
+						if (i == id_filter_update) {
+							$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
+						}
+						else {
+							$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));
+						}
+					});
+				},
+				"json"
+				);
 			
 			return false;
 	});

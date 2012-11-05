@@ -1,5 +1,10 @@
 2012-11-05  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_graph.php: Fixed a bug of the events/alerts/unwknown
+	period calculation
+
+2012-11-05  Sergio Martin <sergio.martin@artica.es>
+
 	* include/help/en/help_alert_macros.php
 	include/help/es/help_alert_macros.php: Fixed typo in macro name
 

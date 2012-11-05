@@ -1,3 +1,9 @@
+2012-11-05  Vanessa Gil <vanessa.gil@artica.es>
+
+	* operation/reporting/reporting_xml.php: Moved functions
+	to functions_xml.php
+	* include/functions_xml.php: Added file.
+
 2012-11-05  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php: Fixed a bug of the events/alerts/unwknown

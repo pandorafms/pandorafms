@@ -14,7 +14,7 @@ The following macros are available:
 <li>_agent_ : Name of the agent that fired the alert.</li>
 <li>_agentdescription_ : Description of the agent who fired alert.</li>
 <li>_agentgroup_ : Agent group name.</li>
-<li>_agentstatus : Current status of the agent.</li>
+<li>_agentstatus_ : Current status of the agent.</li>
 <li>_address_ : Address of the agent that fired the alert.</li>
 <li>_timestamp_ : Time when the alert was fired (yy-mm-dd hh:mm:ss).</li>
 <li>_data_ : Module data that caused the alert to fire.</li>

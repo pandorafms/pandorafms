@@ -45,8 +45,8 @@ if (is_ajax ()) {
 		if ($event === false)
 			return;
 		
-		echo '<h3>'.__('Event').'</h3>';
-		echo '<strong>'.__('Type').': </strong><br />';
+		echo '<h3>' . __('Event') . '</h3>';
+		echo '<strong>' . __('Type') . ': </strong><br />';
 		
 		events_print_type_img ($event["event_type"]);
 		echo ' ';
@@ -61,11 +61,11 @@ if (is_ajax ()) {
 			echo '';
 		}
 		echo '<br />';
-		echo '<strong>'.__('Timestamp').': </strong><br />';
+		echo '<strong>' . __('Timestamp') . ': </strong><br />';
 		ui_print_timestamp ($event['utimestamp']);
 		
 		echo '<br />';
-		echo '<strong>'.__('Description').': </strong><br />';
+		echo '<strong>' . __('Description') . ': </strong><br />';
 		echo $event['evento'];
 		
 		return;
@@ -88,12 +88,13 @@ if (is_ajax ()) {
 		$new_status = get_parameter ('new_status');
 		
 		// Set off the standby mode when close an event
-		if($new_status == 1) {
+		if ($new_status == 1) {
 			$event = events_get_event ($id);
 			alerts_agent_module_standby ($event['id_alert_am'], 0);
 		}
 		
-		$return = events_validate_event ($id, $similars, $comment, $new_status);
+		$return = events_validate_event ($id, $similars, $comment,
+			$new_status);
 		if ($return)
 			echo 'ok';
 		else
@@ -123,25 +124,31 @@ if (is_ajax ()) {
 		$type = array();
 		$alert = get_parameter('alert_fired');
 		if ($alert == 'true') {
-			$resultAlert = alerts_get_event_status_group($idGroup, 'alert_fired', $query);
+			$resultAlert = alerts_get_event_status_group($idGroup,
+				'alert_fired', $query);
 		}
 		$critical = get_parameter('critical');
 		if ($critical == 'true') {
-			$resultCritical = alerts_get_event_status_group($idGroup, 'going_up_critical', $query);
+			$resultCritical = alerts_get_event_status_group($idGroup,
+				'going_up_critical', $query);
 		}
 		$warning = get_parameter('warning');
 		if ($warning == 'true') {
-			$resultWarning = alerts_get_event_status_group($idGroup, 'going_up_warning', $query);
+			$resultWarning = alerts_get_event_status_group($idGroup,
+				'going_up_warning', $query);
 		}
 		
 		if ($resultAlert) {
-			$return = array('fired' => $resultAlert, 'sound' => $config['sound_alert']);
+			$return = array('fired' => $resultAlert,
+				'sound' => $config['sound_alert']);
 		}
 		else if ($resultCritical) {
-			$return = array('fired' => $resultCritical, 'sound' => $config['sound_critical']);
+			$return = array('fired' => $resultCritical,
+				'sound' => $config['sound_critical']);
 		}
 		else if ($resultWarning) {
-			$return = array('fired' => $resultWarning, 'sound' => $config['sound_warning']);
+			$return = array('fired' => $resultWarning,
+				'sound' => $config['sound_warning']);
 		}
 		else {
 			$return = array('fired' => 0);
@@ -187,7 +194,7 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
 	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack;
-	
+
 // Header
 if ($config["pure"] == 0) {
 	$pss = get_user_info($config['id_user']);
@@ -245,7 +252,7 @@ if ($config["pure"] == 0) {
 			'sound_event' => $sound_event) ;
 	}
 	
-	switch ($section){
+	switch ($section) {
 		case 'sound_event':
 			$onheader['sound_event']['active'] = true;
 			break;
@@ -254,33 +261,34 @@ if ($config["pure"] == 0) {
 			break;
 	}
 	
-	ui_print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $onheader);
+	ui_print_page_header (__("Events"), "images/lightning_go.png",
+		false, "eventview", false, $onheader);
 	
 	?>
 	<script type="text/javascript">
-	function openSoundEventWindow() {
-		url = '<?php
-			echo ui_get_full_url('operation/events/sound_events.php');
-			?>';
+		function openSoundEventWindow() {
+			url = '<?php
+				echo ui_get_full_url('operation/events/sound_events.php');
+				?>';
+			
+			window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=yes'); 
+		}
 		
-		window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=yes'); 
-	}
-	
-	function openURLTagWindow(url) {
-		window.open(url, '','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
-	}
-	
+		function openURLTagWindow(url) {
+			window.open(url, '','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
+		}
 	</script>
 	<?php
 }
 else {
 	// Fullscreen
-	echo "<h2>".__('Events')." &raquo; ".__('Main event view'). "&nbsp;";
+	echo "<h2>" . __('Events') . " &raquo; " . __('Main event view') . "&nbsp;";
 	echo ui_print_help_icon ("eventview", true);
 	echo "&nbsp;";
 	
-	echo '<a target="_top" href="'.$url.'&amp;pure=0">';
-	html_print_image ("images/normalscreen.png", false, array ("title" => __('Back to normal mode')));
+	echo '<a target="_top" href="' . $url . '&amp;pure=0">';
+	html_print_image ("images/normalscreen.png", false,
+		array("title" => __('Back to normal mode')));
 	echo '</a>';
 	echo "</h2>";
 }
@@ -291,8 +299,8 @@ echo "</div>";
 
 
 if (($section == 'validate') && ($ids[0] == -1)) {
-		$section = 'list';
-		ui_print_error_message (__('No events selected'));
+	$section = 'list';
+	ui_print_error_message (__('No events selected'));
 }
 
 //Process validation (pass array or single value)
@@ -304,23 +312,24 @@ if ($validate) {
 	$standby_alert = (bool) get_parameter("standby-alert");
 	
 	// Avoid to re-set inprocess events
-	if($new_status == 2) {
-		foreach($ids as $key => $id) {
+	if ($new_status == 2) {
+		foreach ($ids as $key => $id) {
 			$event = events_get_event($id);
-			if($event['estado'] == 2) {
+			if ($event['estado'] == 2) {
 				unset($ids[$key]);
 			}
 		}
 	}
 	
-	if(isset($ids[0]) && $ids[0] != -1){
-		$return = events_validate_event ($ids, ($group_rep == 1), $comment, $new_status);
-		if($new_status == 1) {
+	if (isset($ids[0]) && $ids[0] != -1) {
+		$return = events_validate_event ($ids, ($group_rep == 1),
+			$comment, $new_status);
+		if ($new_status == 1) {
 			ui_print_result_message ($return,
 				__('Successfully validated'),
 				__('Could not be validated'));
 		}
-		else if($new_status == 2) {
+		elseif ($new_status == 2) {
 			ui_print_result_message ($return,
 				__('Successfully set in process'),
 				__('Could not be set in process'));
@@ -328,7 +337,7 @@ if ($validate) {
 	}
 	
 	if ($standby_alert) {
-		foreach($ids as $id) {
+		foreach ($ids as $id) {
 			$event = events_get_event ($id);
 			if ($event !== false) {
 				alerts_agent_module_standby ($event['id_alert_am'], 1);
@@ -350,7 +359,7 @@ if ($delete) {
 	require_once('operation/events/events_list.php');
 }
 else {
-	switch($section) {
+	switch ($section) {
 		case 'list':
 			require_once('operation/events/events_list.php');
 			break;
@@ -400,7 +409,7 @@ $(document).ready( function() {
 		$tr = $(this).parents ("tr");
 		
 		id = this.id.split ("-").pop ();
-
+		
 		var comment = $('#textarea_comment_'+id).val();
 		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process, 3 add comment
 		var checkbox_standby_alert = $('#checkbox-standby-alert-'+id).attr('checked');
@@ -440,7 +449,7 @@ $(document).ready( function() {
 					
 					// Refresh interface elements, don't reload (awfull)
 					// Validate
-					if (select_validate == 1){
+					if (select_validate == 1) {
 						$("#status_img_"+id).attr ("src", "images/spinner.gif");
 						// Change status description
 						$("#status_row_"+id).html(<?php echo "'" . __('Event validated') . "'"; ?>);
@@ -472,12 +481,14 @@ $(document).ready( function() {
 						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event validated') . "'"; ?>);
 						
 						// Remove row due to new state
-						if (($("#status").val() == 2) || ($("#status").val() == 0) || ($("#status").val() == 3)){
+						if (($("#status").val() == 2)
+							|| ($("#status").val() == 0)
+							|| ($("#status").val() == 3)) {
 							
-							$.each($tr, function(index, value){
+							$.each($tr, function(index, value) {
 								row = value;
 								
-								if ($(row).attr('id') != ''){
+								if ($(row).attr('id') != '') {
 									
 									row_id_name = $(row).attr('id').split('-').shift();
 									row_id_number = $(row).attr('id').split('-').pop() - 1;
@@ -496,7 +507,7 @@ $(document).ready( function() {
 						}
 						
 					} // In process
-					else if (select_validate == 2){
+					else if (select_validate == 2) {
 						$("#status_img_"+id).attr ("src", "images/spinner.gif");
 						// Change status description
 						$("#status_row_"+id).html(<?php echo "'" . __('Event in process') . "'"; ?>);
@@ -537,7 +548,7 @@ $(document).ready( function() {
 						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);
 						
 						// Remove row due to new state
-						if (($("#status").val() == 0) || ($("#status").val() == 1)){
+						if (($("#status").val() == 0) || ($("#status").val() == 1)) {
 							
 							$.each($tr, function(index, value){
 								row = value;
@@ -561,7 +572,7 @@ $(document).ready( function() {
 							
 						}
 					} // Add comment
-					else if (select_validate == 3){
+					else if (select_validate == 3) {
 						// Get event comment
 						jQuery.post ("ajax.php",
 							{"page" : "operation/events/events",
@@ -597,7 +608,7 @@ $(document).ready( function() {
 	
 	$("a.delete_event").click (function () {
 		confirmation = confirm("<?php echo __('Are you sure?'); ?>");
-		if (!confirmation){
+		if (!confirmation) {
 			return;
 		}
 		$tr = $(this).parents ("tr");
@@ -620,9 +631,9 @@ $(document).ready( function() {
 		);
 		return false;
 	});
-		
-	function toggleDiv (divid){
-		if (document.getElementById(divid).style.display == 'none'){
+	
+	function toggleDiv (divid) {
+		if (document.getElementById(divid).style.display == 'none') {
 			document.getElementById(divid).style.display = 'block';
 		}
 		else {
@@ -630,7 +641,6 @@ $(document).ready( function() {
 		}
 	}
 });
-/* ]]> */
 	
 	function toggleCommentForm(id_event) {
 		display = $('.event_form_' + id_event).css('display');
@@ -659,14 +669,14 @@ $(document).ready( function() {
 	
 	function validate_event_advanced(id, new_status) {
 		$tr = $('#validate-'+id).parents ("tr");
-
+		
 		var grouped = $('#group_rep').val();
 		
 		var similar_ids;
 		similar_ids = $('#hidden-similar_ids_'+id).val();
-				
+		
 		$("#status_img_"+id).attr ("src", "images/spinner.gif");
-
+		
 		jQuery.post ("ajax.php",
 			{"page" : "include/ajax/events",
 			"change_status" : 1,
@@ -674,10 +684,10 @@ $(document).ready( function() {
 			"new_status" : new_status
 			},
 			function (data, status) {
-				if (data == "status_ok") {	
+				if (data == "status_ok") {
 					// Refresh interface elements, don't reload (awful)
 					// Validate
-					if (new_status == 1){
+					if (new_status == 1) {
 						// Change status description
 						$("#status_row_"+id).html(<?php echo "'" . __('Event validated') . "'"; ?>);
 						
@@ -687,7 +697,7 @@ $(document).ready( function() {
 						$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event validated') . "'"; ?>);
 						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event validated') . "'"; ?>);
 					} // In process
-					else if (new_status == 2){
+					else if (new_status == 2) {
 						// Change status description
 						$("#status_row_"+id).html(<?php echo "'" . __('Event in process') . "'"; ?>);
 						
@@ -707,12 +717,13 @@ $(document).ready( function() {
 						$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);
 						
 						// Remove row due to new state
-						if (($("#status").val() == 0) || ($("#status").val() == 1)){
+						if (($("#status").val() == 0)
+							|| ($("#status").val() == 1)) {
 							
-							$.each($tr, function(index, value){
+							$.each($tr, function(index, value) {
 								row = value;
 								
-								if ($(row).attr('id') != ''){
+								if ($(row).attr('id') != '') {
 									
 									row_id_name = $(row).attr('id').split('-').shift();
 									row_id_number = $(row).attr('id').split('-').pop() - 1;
@@ -745,12 +756,13 @@ $(document).ready( function() {
 	
 	// Autoload event giving the id as POST/GET parameter
 	<?php
-		$load_event = get_parameter('load_event',0);
-		
-		if($load_event) {	
-	?>	
-			show_event_dialog(<?php echo $load_event; ?>, 1);
-	<?php	
-		}
+	$load_event = get_parameter('load_event',0);
+	
+	if ($load_event) {
 	?>
+		show_event_dialog(<?php echo $load_event; ?>, 1);
+	<?php
+	}
+	?>
+	/* ]]> */
 </script>

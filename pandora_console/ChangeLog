@@ -1,5 +1,12 @@
 2012-11-05 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_ui.php: improved the function
+	"ui_print_agent_autocomplete_input" to get the default value for
+	"hidden_input_idagent_value" from the GET or POST instead to set
+	as 0.
+
+2012-11-05 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/events/events.php: cleaned source code style.
 	
 	* operation/events/events_list.php: cleaned source code style and

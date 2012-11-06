@@ -328,6 +328,7 @@ ALTER TABLE tnetwork_map ADD `show_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT
 -- Table `tagente_estado`
 -- ----------------------------------------------------------------------
 ALTER TABLE `tagente_estado` ADD COLUMN `last_known_status` tinyint(4) NOT NULL DEFAULT 0;
+ALTER TABLE `tagente_estado` ADD COLUMN `last_error` int(4) NOT NULL DEFAULT '0',
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_response`

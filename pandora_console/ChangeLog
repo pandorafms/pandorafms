@@ -1,3 +1,13 @@
+2012-11-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added a new
+	  column to tagente_estado to store possible errors.
+
 2012-11-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/events/events_list.php: fixed the lost tag span (with

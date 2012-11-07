@@ -52,7 +52,8 @@ if(!empty($fields_values)) {
 }
 
 // Header
-ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert command'), "images/god2.png", false, "", true);
+ui_print_page_header (__('Alerts') . ' &raquo; ' .
+	__('Configure alert command'), "images/god2.png", false, "", true);
 
 $table->width = '98%';
 $table->style = array ();

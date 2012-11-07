@@ -165,16 +165,17 @@ if ($update_command) {
 		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
 		$info_fields .= ' Field'.$i.': ' . $values['field'.$i];
 	}
-
+	
 	$values['fields_values'] = json_encode($fields_values);
 	$values['fields_descriptions'] = json_encode($fields_descriptions);
 	
 	$values['name'] = $name;
 	$values['command'] = $command;
 	$values['description'] = $description;
-	$name_check = db_get_value ('name', 'talert_commands', 'name', $name);
 	
-	if (!$name || !$name_check) {
+	//Check it the new name is used in the other command.
+	$id_check = db_get_value ('id', 'talert_commands', 'name', $name);
+	if (($id_check != $id) && (!empty($id_check))) {
 		$result = '';
 	}
 	else {
@@ -258,7 +259,7 @@ foreach ($commands as $command) {
 	array_push ($table->data, $data);
 }
 
-if(isset($data)) {
+if (isset($data)) {
 	html_print_table ($table);
 }
 else {

@@ -311,6 +311,7 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 }
 elseif (! isset ($config['id_user'])) {
 	// There is no user connected
+	
 	require_once ('general/login_page.php');
 	while (@ob_end_flush ());
 	exit ("</html>");
@@ -434,7 +435,7 @@ else {
 		// Enterprise ACL check
 		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $sec, $sec2, true)) == false) {
 			require ("general/noaccess.php");
-		} 
+		}
 		elseif (file_exists ($page)) {
 			if (! extensions_is_extension ($page)) {
 				require_once($page);

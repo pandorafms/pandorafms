@@ -30,7 +30,7 @@ $id = (int) get_parameter ('id');
 $update = (string)get_parameter('update', 0);
 $create = (string)get_parameter('create', 0);
 
-if ($id){
+if ($id) {
 	$permission = events_check_event_filter_group ($id);
 	if (!$permission) { // User doesn't have permissions to see this filter
 		require ("general/noaccess.php");
@@ -43,10 +43,10 @@ $buttons = array(
 		'view' => array('active' => false, 
 			'text' => '<a href="index.php?sec=geventos&sec2=operation/events/events">' . 
 			html_print_image("images/zoom.png", true, array("title" => __('View events'))) . '</a>'),
-		'filter' => array('active' => true, 
+		'filter' => array('active' => true,
 			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter">' .
 			html_print_image("images/lightning_go.png", true, array ("title" => __('Create filter'))) . '</a>'),
-		'fields' => array('active' => false, 	
+		'fields' => array('active' => false,
 			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields">' .
 			html_print_image("images/god6.png", true, array ("title" => __('Custom fields'))) . '</a>'),
 	);
@@ -57,7 +57,7 @@ if ($id) {
 	$filter = events_get_event_filter ($id);
 	$id_group_filter = $filter['id_group_filter'];
 	$id_group = $filter['id_group'];
-	$id_name = $filter['id_name'];	
+	$id_name = $filter['id_name'];
 	$event_type = $filter['event_type'];
 	$severity = $filter['severity'];
 	$status = $filter['status'];
@@ -67,7 +67,8 @@ if ($id) {
 	$event_view_hr = $filter['event_view_hr'];
 	$id_user_ack = $filter['id_user_ack'];
 	$group_rep = $filter['group_rep'];
-	$tag = $filter['tag'];
+	$tag_with = io_safe_output($filter['tag_with']);
+	$tag_without = io_safe_output($filter['tag_without']);
 	$filter_only_alert = $filter['filter_only_alert'];
 }
 else {
@@ -83,7 +84,8 @@ else {
 	$event_view_hr = '';
 	$id_user_ack = '';
 	$group_rep = '';
-	$tag = '';
+	$tag_with = json_encode(array());
+	$tag_without = json_encode(array());
 	$filter_only_alert = '';
 }
 
@@ -100,7 +102,8 @@ if ($update) {
 	$event_view_hr = get_parameter('event_view_hr', '');
 	$id_user_ack = get_parameter('id_user_ack', '');
 	$group_rep = get_parameter('group_rep', '');
-	$tag = get_parameter('tag', '');
+	$tag_with = get_parameter('tag_with', json_encode(array()));
+	$tag_without = get_parameter('tag_without', json_encode(array()));
 	$filter_only_alert = get_parameter('filter_only_alert','');
 	
 	if ($id_name == '') {
@@ -120,7 +123,8 @@ if ($update) {
 			'event_view_hr' => $event_view_hr,
 			'id_user_ack' => $id_user_ack,
 			'group_rep' => $group_rep,
-			'tag' => $tag,
+			'tag_with' => $tag_with,
+			'tag_without' => $tag_without,
 			'filter_only_alert' => $filter_only_alert
 		);
 		
@@ -130,6 +134,9 @@ if ($update) {
 			__('Successfully updated'),
 			__('Not updated. Error updating data'));
 	}
+	
+	$tag_with = io_safe_output($tag_with);
+	$tag_without = io_safe_output($tag_without);
 }
 
 if ($create) {
@@ -145,25 +152,26 @@ if ($create) {
 	$event_view_hr = get_parameter('event_view_hr', '');
 	$id_user_ack = get_parameter('id_user_ack', '');
 	$group_rep = get_parameter('group_rep',' ');
-	$tag = get_parameter('tag', '');
+	$tag_with = get_parameter('tag_with', json_encode(array()));
+	$tag_without = get_parameter('tag_without', json_encode(array()));
 	$filter_only_alert = get_parameter('filter_only_alert', '');	
-
+	
 	$values = array (
-			'id_name' => $id_name,	
-			'id_group_filter' => $id_group_filter,
-			'id_group' => $id_group,
-			'event_type' => $event_type,
-			'severity' => $severity,
-			'status' => $status,
-			'search' => $search,
-			'text_agent' => $text_agent,
-			'pagination' => $pagination,
-			'event_view_hr' => $event_view_hr,
-			'id_user_ack' => $id_user_ack,
-			'group_rep' => $group_rep,
-			'tag' => $tag,
-			'filter_only_alert' => $filter_only_alert
-	);
+		'id_name' => $id_name,	
+		'id_group_filter' => $id_group_filter,
+		'id_group' => $id_group,
+		'event_type' => $event_type,
+		'severity' => $severity,
+		'status' => $status,
+		'search' => $search,
+		'text_agent' => $text_agent,
+		'pagination' => $pagination,
+		'event_view_hr' => $event_view_hr,
+		'id_user_ack' => $id_user_ack,
+		'group_rep' => $group_rep,
+		'tag_with' => $tag_with,
+		'tag_without' => $tag_without,
+		'filter_only_alert' => $filter_only_alert);
 	
 	$id = db_process_sql_insert('tevent_filter', $values);
 	
@@ -173,6 +181,9 @@ if ($create) {
 	else {
 		ui_print_success_message ('Filter created successfully');
 	}
+	
+	$tag_with = io_safe_output($tag_with);
+	$tag_without = io_safe_output($tag_without);
 }
 
 $own_info = get_user_info ($config['id_user']);
@@ -183,6 +194,8 @@ $table->cellspacing = 3;
 $table->cellpadding = 5;
 $table->class = "databox_color";
 $table->style[0] = 'vertical-align: top;';
+
+$table->valign[1] = 'top';
 
 $table->data = array ();
 $table->data[0][0] = '<b>'.__('Filter name').'</b>';
@@ -243,26 +256,89 @@ $table->data[10][1] = html_print_select ($users, "id_user_ack", $id_user_ack, ''
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
 $table->data[11][0] = '<b>' . __('Repeated') . '</b>';
-$table->data[11][1] = html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', '', true);	
+$table->data[11][1] = html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', '', true);
 
-$tags = tags_search_tag();
-if($tags === false) {
-	$tags = array();
+
+
+$tag_with = json_decode($tag_with, true);
+$tag_without = json_decode($tag_without, true);
+
+$tags = tags_search_tag(false, false, true);
+$tags_select_with = array();
+$tags_select_without = array();
+$tag_with_temp = array();
+$tag_without_temp = array();
+foreach ($tags as $id_tag => $tag) {
+	if (array_search($id_tag, $tag_with) === false) {
+		$tags_select_with[$id_tag] = $tag;
+	}
+	else {
+		$tag_with_temp[$id_tag] = $tag;
+	}
+	
+	if (array_search($id_tag, $tag_without) === false) {
+		$tags_select_without[$id_tag] = $tag;
+	}
+	else {
+		$tag_without_temp[$id_tag] = $tag;
+	}
 }
+$add_with_tag_disabled = empty($tags_select_with);
+$remove_with_tag_disabled = empty($tag_with_temp);
+$add_without_tag_disabled = empty($tags_select_without);
+$remove_without_tag_disabled = empty($tag_without_temp);
 
-$tags_name = array();
-foreach($tags as $t) {
-	$tags_name[$t['name']] = $t['name'];
-}
+$table->colspan[13][0] = '2';
+$table->data[13][0] = '<b>' . __('Events with following tags') . '</b>';
+$table->data[14][0] = html_print_select ($tags_select_with, 'select_with',
+	'', '', '', 0, true, false, true, '', false, 'width: 120px;');
+$table->data[14][1] = html_print_button(__('Add'), 'add_whith', $add_with_tag_disabled,
+	'', 'class="add sub"', true);
 
-$table->data[12][0] = '<b>' . __('Tag') . '</b>';
-$table->data[12][1] = html_print_select ($tags_name, "tag", $tag, '', __('All'), "", true);	
+$table->data[15][0] = html_print_select ($tag_with_temp,
+	'tag_with_temp', array(), '', '', 0, true, true,
+	true, '', false, "width: 120px; height: 50px;");
+$table->data[15][0] .= html_print_input_hidden('tag_with',
+	json_encode($tag_with), true);
+$table->data[15][1] = html_print_button(__('Remove'),
+	'remove_whith', $remove_with_tag_disabled, '', 'class="delete sub"', true);
 
-$table->data[13][0] = '<b>' . __('Alert events') . '</b>';
-$table->data[13][1] = html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '', true);
+
+
+$table->colspan[16][0] = '2';
+$table->data[16][0] = '<b>' . __('Events without following tags') . '</b>';
+$table->data[17][0] = html_print_select ($tags_select_without, 'select_without',
+	'', '', '', 0, true, false, true, '', false, 'width: 120px;');
+$table->data[17][1] = html_print_button(__('Add'), 'add_whithout', $add_without_tag_disabled,
+	'', 'class="add sub"', true);
+
+$table->data[18][0] = html_print_select ($tag_without_temp,
+	'tag_without_temp', array(), '', '', 0, true, true,
+	true, '', false, "width: 120px; height: 50px;");
+$table->data[18][0] .= html_print_input_hidden('tag_without',
+	json_encode($tag_without), true);
+$table->data[18][1] = html_print_button(__('Remove'), 'remove_whithout', $remove_without_tag_disabled,
+	'', 'class="delete sub"', true);
+
+
+
+
+
+
+
+
+
+$table->data[19][0] = '<b>' . __('Alert events') . '</b>';
+$table->data[19][1] = html_print_select(
+	array('-1' => __('All'),
+		'0' => __('Filter alert events'),
+		'1' => __('Only alert events')),
+	"filter_only_alert", $filter_only_alert, '', '', '', true);
 
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/event_edit_filter">';
 html_print_table ($table);
+
+
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
 	html_print_input_hidden ('update', 1);
@@ -277,4 +353,167 @@ echo '</div>';
 echo '</form>';
 
 ui_require_jquery_file ('bgiframe');
+ui_require_jquery_file('json');
 ?>
+<script language="javascript" type="text/javascript">
+/*<![CDATA[ */
+
+var select_with_tag_empty = <?php echo (int)$remove_with_tag_disabled;?>;
+var select_without_tag_empty = <?php echo (int)$remove_without_tag_disabled;?>;
+var origin_select_with_tag_empty = <?php echo (int)$add_with_tag_disabled;?>;
+var origin_select_without_tag_empty = <?php echo (int)$add_without_tag_disabled;?>;
+
+$(document).ready( function() {
+	$("#button-add_whith").click(function() {
+		click_button_add_tag("with");
+		});
+	
+	$("#button-add_whithout").click(function() {
+		click_button_add_tag("without");
+		});
+	
+	$("#button-remove_whith").click(function() {
+		click_button_remove_tag("with");
+	});
+	
+	$("#button-remove_whithout").click(function() {
+		click_button_remove_tag("without");
+	});
+	
+});
+
+
+function click_button_remove_tag(what_button) {
+	if (what_button == "with") {
+		id_select_origin = "#select_with";
+		id_select_destiny = "#tag_with_temp";
+		id_button_remove = "#button-remove_whith";
+		id_button_add = "#button-add_whith";
+		
+		select_origin_empty = origin_select_with_tag_empty;
+	}
+	else { //without
+		id_select_origin = "#select_without";
+		id_select_destiny = "#tag_without_temp";
+		id_button_remove = "#button-remove_whithout";
+		id_button_add = "#button-add_whithout";
+		
+		select_origin_empty = origin_select_without_tag_empty;
+	}
+	
+	if ($(id_select_destiny + " option:selected").length == 0) {
+		return; //Do nothing
+	}
+	
+	if (select_origin_empty) {
+		$(id_select_origin + " option").remove();
+		
+		if (what_button == "with") {
+			origin_select_with_tag_empty = false;
+		}
+		else { //without
+			origin_select_without_tag_empty = false;
+		}
+		
+		$(id_button_add).removeAttr('disabled');
+	}
+	
+	//Foreach because maybe the user select several items in
+	//the select.
+	jQuery.each($(id_select_destiny + " option:selected"), function(key, element) {
+		val = $(element).val();
+		text = $(element).text();
+		
+		$(id_select_origin).append($("<option value='" + val + "'>" + text + "</option>"));
+	});
+	
+	$(id_select_destiny + " option:selected").remove();
+	
+	if ($(id_select_destiny + " option").length == 0) {
+		$(id_select_destiny).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+		$(id_button_remove).attr('disabled', 'true');
+		
+		if (what_button == 'with') {
+			select_with_tag_empty = true;
+		}
+		else { //without
+			select_without_tag_empty = true;
+		}
+	}
+	
+	replace_hidden_tags(what_button);
+}
+
+function click_button_add_tag(what_button) {
+	if (what_button == 'with') {
+		id_select_origin = "#select_with";
+		id_select_destiny = "#tag_with_temp";
+		id_button_remove = "#button-remove_whith";
+		id_button_add = "#button-add_whith";
+		
+		select_destiny_empty = select_with_tag_empty;
+	}
+	else { //without
+		id_select_origin = "#select_without";
+		id_select_destiny = "#tag_without_temp";
+		id_button_remove = "#button-remove_whithout";
+		id_button_add = "#button-add_whithout";
+		
+		select_destiny_empty = select_without_tag_empty;
+	}
+	
+	without_val = $(id_select_origin).val();
+	without_text = $(id_select_origin + " option:selected").text();
+	
+	if (select_destiny_empty) {
+		$(id_select_destiny).empty();
+		
+		if (what_button == 'with') {
+			select_with_tag_empty = false;
+		}
+		else { //without
+			select_without_tag_empty = false;
+		}
+	}
+	
+	$(id_select_destiny).append($("<option value='" + without_val + "'>" + without_text + "</option>"));
+	$(id_select_origin + " option:selected").remove();
+	$(id_button_remove).removeAttr('disabled');
+	
+	if ($(id_select_origin + " option").length == 0) {
+		$(id_select_origin).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+		$(id_button_add).attr('disabled', 'true');
+		
+		if (what_button == 'with') {
+			origin_select_with_tag_empty = true;
+		}
+		else { //without
+			origin_select_without_tag_empty = true;
+		}
+	}
+	
+	replace_hidden_tags(what_button);
+}
+
+function replace_hidden_tags(what_button) {
+	if (what_button == 'with') {
+		id_select_destiny = "#tag_with_temp";
+		id_hidden = "#hidden-tag_with";
+	}
+	else { //without
+		id_select_destiny = "#tag_without_temp";
+		id_hidden = "#hidden-tag_without";
+	}
+	
+	value_store = [];
+	
+	jQuery.each($(id_select_destiny + " option"), function(key, element) {
+		val = $(element).val();
+		
+		value_store.push(val);
+	});
+	
+	$(id_hidden).val(jQuery.toJSON(value_store));
+}
+/* ]]> */
+</script>

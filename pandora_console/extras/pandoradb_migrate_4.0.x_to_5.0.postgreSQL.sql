@@ -142,7 +142,7 @@ ALTER TABLE "tevento" ADD COLUMN "unknown_instructions" text default '';
 ALTER TYPE type_tevento_event ADD VALUE 'going_unknown' BEFORE 'unknown';
 ALTER TABLE "tevento" ADD COLUMN "owner_user" varchar(100) NOT NULL default '0';
 ALTER TABLE "tevento" ADD COLUMN "ack_utimestamp" BIGINT NOT NULL default 0;
-	
+
 -- -----------------------------------------------------
 -- Table "tgrupo"
 -- -----------------------------------------------------
@@ -187,21 +187,22 @@ UPDATE "tagente_modulo" SET max_retries=plugin_pass WHERE id_modulo=7;
 -- Table "tevent_filter"
 -- -----------------------------------------------------
 CREATE TABLE "tevent_filter" (
-  "id_filter"  SERIAL NOT NULL PRIMARY KEY,
-  "id_group_filter" INTEGER NOT NULL default 0,
-  "id_name" varchar(600) NOT NULL,
-  "id_group" INTEGER NOT NULL default 0,
-  "event_type" TEXT NOT NULL default '',
-  "severity" INTEGER NOT NULL default -1,
-  "status" INTEGER NOT NULL default -1,
-  "search" TEXT default '',
-  "text_agent" TEXT default '', 
-  "pagination" INTEGER NOT NULL default 25,
-  "event_view_hr" INTEGER NOT NULL default 8,
-  "id_user_ack" TEXT,
-  "group_rep" INTEGER NOT NULL default 0,
-  "tag" varchar(600) NOT NULL default '',
-  "filter_only_alert" INTEGER NOT NULL default -1
+	"id_filter"  SERIAL NOT NULL PRIMARY KEY,
+	"id_group_filter" INTEGER NOT NULL default 0,
+	"id_name" varchar(600) NOT NULL,
+	"id_group" INTEGER NOT NULL default 0,
+	"event_type" TEXT NOT NULL default '',
+	"severity" INTEGER NOT NULL default -1,
+	"status" INTEGER NOT NULL default -1,
+	"search" TEXT default '',
+	"text_agent" TEXT default '', 
+	"pagination" INTEGER NOT NULL default 25,
+	"event_view_hr" INTEGER NOT NULL default 8,
+	"id_user_ack" TEXT,
+	"group_rep" INTEGER NOT NULL default 0,
+	"tag_with" text NOT NULL,
+	"tag_without" text NOT NULL,
+	"filter_only_alert" INTEGER NOT NULL default -1
 );
 
 -- -----------------------------------------------------

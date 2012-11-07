@@ -30,9 +30,9 @@ CREATE OR REPLACE LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION unix_timestamp(TIMESTAMP without time zone = CURRENT_TIMESTAMP) RETURNS double precision AS 'SELECT ceil(date_part(''epoch'', $1)); ' LANGUAGE SQL;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `taddress`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "taddress" (
 	"id_a" SERIAL NOT NULL PRIMARY KEY,
 	"ip" VARCHAR(60) NOT NULL default '',
@@ -40,9 +40,9 @@ CREATE TABLE "taddress" (
 );
 CREATE INDEX "taddress_ip_idx" ON "taddress"("ip");
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `taddress_agent`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "taddress_agent" (
 	"id_ag" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_a" BIGINT NOT NULL default 0,
@@ -130,9 +130,9 @@ CREATE TABLE "tagente_datos_log4x" (
 );
 CREATE INDEX "tagente_datos_log4x_id_agente_modulo_idx" ON "tagente_datos_log4x"("id_agente_modulo");
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente_estado`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tagente_estado" (
 	"id_agente_estado" SERIAL NOT NULL PRIMARY KEY,
 	"id_agente_modulo" INTEGER NOT NULL default 0,
@@ -451,6 +451,9 @@ CREATE TABLE "tconfig_os" (
 	"icon_name" varchar(100) default ''
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tevento`
+-- ---------------------------------------------------------------------
 CREATE TYPE type_tevento_event AS ENUM ('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change');
 CREATE TABLE "tevento" (
 	"id_evento" BIGSERIAL NOT NULL PRIMARY KEY,
@@ -479,6 +482,9 @@ CREATE INDEX "tevento_id_1_idx" ON "tevento"("id_agente", "id_evento");
 CREATE INDEX "tevento_id_2_idx" ON "tevento"("utimestamp", "id_evento");
 CREATE INDEX "tevento_id_agentmodule_idx" ON "tevento"("id_agentmodule");
 
+-- ---------------------------------------------------------------------
+-- Table `tgrupo`
+-- ---------------------------------------------------------------------
 -- Criticity: 0 - Maintance (grey)
 -- Criticity: 1 - Informational (blue)
 -- Criticity: 2 - Normal (green) (status 0)
@@ -498,6 +504,9 @@ CREATE TABLE "tgrupo" (
 	"other" text
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tincidencia`
+-- ---------------------------------------------------------------------
 CREATE TABLE "tincidencia" (
 	"id_incidencia" BIGSERIAL NOT NULL PRIMARY KEY,
 	"inicio" TIMESTAMP without time zone default '1970-01-01 00:00:00',
@@ -523,17 +532,26 @@ CREATE INDEX "tincidencia_id_agente_modulo_idx" ON "tincidencia"("id_agente_modu
 CREATE OR REPLACE FUNCTION update_tincidencia_actualizacion() RETURNS TRIGGER AS $$ BEGIN NEW.actualizacion = now(); RETURN NEW; END; $$ language 'plpgsql';
 CREATE TRIGGER trigger_tincidencia_actualizacion BEFORE UPDATE ON tincidencia FOR EACH ROW EXECUTE PROCEDURE update_tincidencia_actualizacion();
 
+-- ---------------------------------------------------------------------
+-- Table `tlanguage`
+-- ---------------------------------------------------------------------
 CREATE TABLE "tlanguage" (
 	"id_language" varchar(6) NOT NULL default '',
 	"name" varchar(100) NOT NULL default ''
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tlink`
+-- ---------------------------------------------------------------------
 CREATE TABLE "tlink" (
 	"id_link" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(100) NOT NULL default '',
 	"link" varchar(255) NOT NULL default ''
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tmensajes`
+-- ---------------------------------------------------------------------
 CREATE TABLE "tmensajes" (
 	"id_mensaje" SERIAL NOT NULL PRIMARY KEY,
 	"id_usuario_origen" varchar(60) NOT NULL default '',
@@ -544,11 +562,17 @@ CREATE TABLE "tmensajes" (
 	"estado" INTEGER NOT NULL default 0
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tmodule_group`
+-- ---------------------------------------------------------------------
 CREATE TABLE "tmodule_group" (
 	"id_mg" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(150) NOT NULL default ''
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_component`
+-- ---------------------------------------------------------------------
 CREATE TYPE type_tlocal_component_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
 CREATE TABLE "tnetwork_component" (
 	"id_nc" SERIAL NOT NULL PRIMARY KEY,
@@ -597,24 +621,36 @@ CREATE TABLE "tnetwork_component" (
 	"warning_inverse" SMALLINT NOT NULL default 0
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_component_group`
+-- ---------------------------------------------------------------------
 CREATE TABLE "tnetwork_component_group" (
 	"id_sg" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(200) NOT NULL default '',
 	"parent" BIGINT NOT NULL default 0
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_profile`
+-- ---------------------------------------------------------------------
 CREATE TABLE "tnetwork_profile" (
 	"id_np" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(100) NOT NULL default '',
 	"description" varchar(250) default ''
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_profile_component`
+-- ---------------------------------------------------------------------
 CREATE TABLE "tnetwork_profile_component" (
 	"id_nc" BIGINT NOT NULL default 0,
 	"id_np" BIGINT NOT NULL default 0
 );
 CREATE INDEX "tnetwork_profile_id_np_idx" ON "tnetwork_profile_component"("id_np");
 
+-- ---------------------------------------------------------------------
+-- Table `tnota`
+-- ---------------------------------------------------------------------
 CREATE TABLE "tnota" (
 	"id_nota" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_incident" BIGINT NOT NULL,
@@ -624,10 +660,16 @@ CREATE TABLE "tnota" (
 );
 CREATE INDEX "tnota_id_incident_idx" ON "tnota"("id_incident");
 
+-- ---------------------------------------------------------------------
+-- Table `torigen`
+-- ---------------------------------------------------------------------
 CREATE TABLE "torigen" (
 	"origen" varchar(100) NOT NULL default ''
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tperfil`
+-- ---------------------------------------------------------------------
 CREATE TABLE "tperfil" (
 	"id_perfil" SERIAL NOT NULL PRIMARY KEY,
 	"name" TEXT NOT NULL default '',
@@ -643,6 +685,9 @@ CREATE TABLE "tperfil" (
 	"pandora_management" SMALLINT NOT NULL default 0
 );
 
+-- ---------------------------------------------------------------------
+-- Table `trecon_script`
+-- ---------------------------------------------------------------------
 CREATE TABLE "trecon_script" (
 	"id_recon_script" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(100) default '',
@@ -650,6 +695,9 @@ CREATE TABLE "trecon_script" (
 	"script" varchar(250) default ''
 );
 
+-- ---------------------------------------------------------------------
+-- Table `trecon_task`
+-- ---------------------------------------------------------------------
 CREATE TABLE "trecon_task" (
 	"id_rt" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(100) NOT NULL default '',
@@ -1422,36 +1470,37 @@ CREATE TABLE "tnetflow_report_content" (
 	"order" INTEGER NOT NULL default 0
 );
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tevent_filter`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tevent_filter" (
-  "id_filter"  SERIAL NOT NULL PRIMARY KEY,
-  "id_group_filter" INTEGER NOT NULL default 0,
-  "id_name" varchar(600) NOT NULL,
-  "id_group" INTEGER NOT NULL default 0,
-  "event_type" TEXT NOT NULL default '',
-  "severity" INTEGER NOT NULL default -1,
-  "status" INTEGER NOT NULL default -1,
-  "search" TEXT default '',
-  "text_agent" TEXT default '', 
-  "pagination" INTEGER NOT NULL default 25,
-  "event_view_hr" INTEGER NOT NULL default 8,
-  "id_user_ack" TEXT,
-  "group_rep" INTEGER NOT NULL default 0,
-  "tag" varchar(600) NOT NULL default '',
-  "filter_only_alert" INTEGER NOT NULL default -1
+	"id_filter"  SERIAL NOT NULL PRIMARY KEY,
+	"id_group_filter" INTEGER NOT NULL default 0,
+	"id_name" varchar(600) NOT NULL,
+	"id_group" INTEGER NOT NULL default 0,
+	"event_type" TEXT NOT NULL default '',
+	"severity" INTEGER NOT NULL default -1,
+	"status" INTEGER NOT NULL default -1,
+	"search" TEXT default '',
+	"text_agent" TEXT default '', 
+	"pagination" INTEGER NOT NULL default 25,
+	"event_view_hr" INTEGER NOT NULL default 8,
+	"id_user_ack" TEXT,
+	"group_rep" INTEGER NOT NULL default 0,
+	"tag_with" text NOT NULL,
+	"tag_without" text NOT NULL,
+	"filter_only_alert" INTEGER NOT NULL default -1
 );
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tpassword_history`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tpassword_history" (
-  "id_pass"  INTEGER NOT NULL PRIMARY KEY,
-  "id_user" varchar(60) NOT NULL,
-  "password" varchar(45) default NULL,
-  "date_begin" BIGINT NOT NULL default 0,
-  "date_end" BIGINT NOT NULL default 0,
+	"id_pass"  INTEGER NOT NULL PRIMARY KEY,
+	"id_user" varchar(60) NOT NULL,
+	"password" varchar(45) default NULL,
+	"date_begin" BIGINT NOT NULL default 0,
+	"date_end" BIGINT NOT NULL default 0,
 );
 
 -- -----------------------------------------------------

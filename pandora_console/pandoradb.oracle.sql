@@ -27,9 +27,9 @@
 CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP (oracletime IN DATE DEFAULT SYSDATE) RETURN INTEGER AS unixtime INTEGER; BEGIN unixtime := (oracletime - to_date('19700101','YYYYMMDD')) * 86400; RETURN unixtime; END;;
 CREATE OR REPLACE FUNCTION NOW RETURN TIMESTAMP AS t_now TIMESTAMP; BEGIN SELECT LOCALTIMESTAMP INTO t_now FROM dual; RETURN t_now; END;;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `taddress`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE taddress (
 	id_a NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	ip VARCHAR(60) default '',
@@ -51,9 +51,9 @@ CREATE TABLE taddress_agent (
 CREATE SEQUENCE taddress_agent_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER taddress_agent_inc BEFORE INSERT ON taddress_agent REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT taddress_agent_s.nextval INTO :NEW.ID_AG FROM dual; END;;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE tagente (
 	id_agente NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	nombre VARCHAR2(600) default '',
@@ -515,6 +515,9 @@ CREATE TABLE talert_special_days (
 CREATE SEQUENCE talert_special_days_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_special_days REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_special_days_s.nextval INTO :NEW.ID FROM dual; END talert_special_days_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table `tattachment`
+-- ---------------------------------------------------------------------
 -- Priority : 0 - Maintance (grey)
 -- Priority : 1 - Low (green)
 -- Priority : 2 - Normal (blue)
@@ -530,19 +533,22 @@ CREATE TABLE tattachment (
 );
 
 CREATE SEQUENCE tattachment_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tattachment_inc BEFORE INSERT ON tattachment REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tattachment_s.nextval INTO :NEW.ID_ATTACHMENT FROM dual; END;;
 
+-- ---------------------------------------------------------------------
+-- Table `tconfig`
+-- ---------------------------------------------------------------------
 CREATE TABLE tconfig (
 	id_config NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	token VARCHAR2(100) default '',
 	value VARCHAR2(255) default '' 
 );
-
 CREATE SEQUENCE tconfig_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tconfig_inc BEFORE INSERT ON tconfig REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tconfig_s.nextval INTO :NEW.ID_CONFIG FROM dual; END;;
 
+-- ---------------------------------------------------------------------
+-- Table `tconfig_os`
+-- ---------------------------------------------------------------------
 CREATE TABLE tconfig_os (
 	id_os NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(100) default '',
@@ -550,6 +556,9 @@ CREATE TABLE tconfig_os (
 	icon_name VARCHAR2(100) default ''
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tevento`
+-- ---------------------------------------------------------------------
 -- use to_char(timestamp, 'hh24:mi:ss') function to retrieve timestamp field info
 CREATE TABLE tevento (
 	id_evento NUMBER(19, 0) NOT NULL PRIMARY KEY,
@@ -557,7 +566,7 @@ CREATE TABLE tevento (
 	id_usuario VARCHAR2(100) default '0' NOT NULL,
 	id_grupo NUMBER(10, 0) default 0 NOT NULL,
 	estado NUMBER(10, 0) default 0 NOT NULL,
-	timestamp TIMESTAMP default NULL, 			
+	timestamp TIMESTAMP default NULL,
 	evento CLOB default '',
 	utimestamp NUMBER(19, 0) default 0 NOT NULL,
 	event_type VARCHAR2(50) default 'unknown',
@@ -583,6 +592,9 @@ CREATE SEQUENCE tevento_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tevento_inc BEFORE INSERT ON tevento REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tevento_s.nextval INTO :NEW.ID_EVENTO FROM dual; END;;
 
+-- ---------------------------------------------------------------------
+-- Table `tgrupo`
+-- ---------------------------------------------------------------------
 -- Criticity: 0 - Maintance (grey)
 -- Criticity: 1 - Informational (blue)
 -- Criticity: 2 - Normal (green) (status 0)
@@ -606,6 +618,9 @@ CREATE SEQUENCE tgrupo_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tgrupo_inc BEFORE INSERT ON tgrupo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgrupo_s.nextval INTO :NEW.ID_GRUPO FROM dual; END;;
 
+-- ---------------------------------------------------------------------
+-- Table `tincidencia`
+-- ---------------------------------------------------------------------
 CREATE TABLE tincidencia (
 	id_incidencia NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	inicio TIMESTAMP default NULL,
@@ -634,11 +649,17 @@ CREATE SEQUENCE tincidencia_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tincidencia_inc BEFORE INSERT ON tincidencia REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tincidencia_s.nextval INTO :NEW.ID_INCIDENCIA FROM dual; END;;
 
+-- ---------------------------------------------------------------------
+-- Table `tlanguage`
+-- ---------------------------------------------------------------------
 CREATE TABLE tlanguage (
 	id_language VARCHAR2(6) default '',
 	name VARCHAR2(100) default ''
 );
 
+-- ---------------------------------------------------------------------
+-- Table `tlink`
+-- ---------------------------------------------------------------------
 CREATE TABLE tlink (
 	id_link NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(100) default '',
@@ -649,6 +670,9 @@ CREATE SEQUENCE tlink_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tlink_inc BEFORE INSERT ON tlink REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlink_s.nextval INTO :NEW.ID_LINK FROM dual; END;;
 
+-- ---------------------------------------------------------------------
+-- Table `tmensajes`
+-- ---------------------------------------------------------------------
 CREATE TABLE tmensajes (
 	id_mensaje NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_usuario_origen VARCHAR2(60) default '',
@@ -663,6 +687,9 @@ CREATE SEQUENCE tmensajes_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tmensajes_inc BEFORE INSERT ON tmensajes REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmensajes_s.nextval INTO :NEW.ID_MENSAJE FROM dual; END;;
 
+-- ---------------------------------------------------------------------
+-- Table `tmodule_group`
+-- ---------------------------------------------------------------------
 CREATE TABLE tmodule_group (
 	id_mg NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(150) default ''
@@ -1682,42 +1709,43 @@ show_graph VARCHAR2(60),
 CREATE SEQUENCE tnetflow_report_content_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnetflow_report_content_inc BEFORE INSERT ON tnetflow_report_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_content_s.nextval INTO :NEW.ID_RC FROM dual; END tnetflow_report_content_inc;;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tevent_filter`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE tevent_filter (
-  id_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
-  id_group_filter NUMBER(10, 0) default 0 NOT NULL,
-  id_name VARCHAR2(600) NOT NULL,
-  id_group NUMBER(10, 0) default 0 NOT NULL,
-  event_type CLOB default '' NOT NULL,
-  severity NUMBER(10, 0) default -1 NOT NULL,
-  status NUMBER(10, 0) default -1 NOT NULL,
-  search CLOB default '',
-  text_agent CLOB default '', 
-  pagination NUMBER(10, 0) default 25 NOT NULL,
-  event_view_hr NUMBER(10, 0) default 8 NOT NULL,
-  id_user_ack CLOB,
-  group_rep NUMBER(10, 0) default 0 NOT NULL,
-  tag VARCHAR2(600) default '' NOT NULL,
-  filter_only_alert NUMBER(10, 0) default -1 NOT NULL
+	id_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_group_filter NUMBER(10, 0) default 0 NOT NULL,
+	id_name VARCHAR2(600) NOT NULL,
+	id_group NUMBER(10, 0) default 0 NOT NULL,
+	event_type CLOB default '' NOT NULL,
+	severity NUMBER(10, 0) default -1 NOT NULL,
+	status NUMBER(10, 0) default -1 NOT NULL,
+	search CLOB default '',
+	text_agent CLOB default '', 
+	pagination NUMBER(10, 0) default 25 NOT NULL,
+	event_view_hr NUMBER(10, 0) default 8 NOT NULL,
+	id_user_ack CLOB,
+	group_rep NUMBER(10, 0) default 0 NOT NULL,
+	tag_with CLOB,
+	tag_without CLOB,
+	filter_only_alert NUMBER(10, 0) default -1 NOT NULL
 );
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tpassword_history`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS tpassword_history (
-  id_pass  NUMBER(10) NOT NULL PRIMARY KEY,
-  id_user varchar2(60) NOT NULL,
-  password varchar2(45) default '',
-  date_begin TIMESTAMP DEFAULT 0,
-  date_end TIMESTAMP DEFAULT 0
+	id_pass  NUMBER(10) NOT NULL PRIMARY KEY,
+	id_user varchar2(60) NOT NULL,
+	password varchar2(45) default '',
+	date_begin TIMESTAMP DEFAULT 0,
+	date_end TIMESTAMP DEFAULT 0
 );
 CREATE SEQUENCE tpassword_history_s INCREMENT BY 1 START WITH 1;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tevent_response`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS tevent_response (
 	id  NUMBER(10) NOT NULL PRIMARY KEY,
 	name varchar2(600) NOT NULL default '',

@@ -198,7 +198,8 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`event_view_hr` int(10) NOT NULL default 8,
 	`id_user_ack` TEXT,
 	`group_rep` int(10) NOT NULL default 0,
-	`tag` varchar(600) NOT NULL default '',
+	`tag_with` text NOT NULL,
+	`tag_without` text NOT NULL,
 	`filter_only_alert` int(10) NOT NULL default -1, 
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

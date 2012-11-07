@@ -527,9 +527,9 @@ CREATE TABLE IF NOT EXISTS  `tconfig_os` (
 	PRIMARY KEY  (`id_os`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tevento`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tevento` (
 	`id_evento` bigint(20) unsigned NOT NULL auto_increment,
 	`id_agente` int(10) NOT NULL default '0',
@@ -564,9 +564,9 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 -- Criticity: 3 - Warning (yellow) (status 2)
 -- Criticity: 4 - Critical (red) (status 1)
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tgrupo`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tgrupo` (
 	`id_grupo` mediumint(4) unsigned NOT NULL auto_increment,
 	`nombre` varchar(100) NOT NULL default '',
@@ -582,9 +582,9 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
  	PRIMARY KEY  (`id_grupo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tincidencia`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tincidencia` (
 	`id_incidencia` bigint(6) unsigned zerofill NOT NULL auto_increment,
 	`inicio` datetime NOT NULL default '1970-01-01 00:00:00',
@@ -607,9 +607,9 @@ CREATE TABLE IF NOT EXISTS `tincidencia` (
 	KEY `id_agente_modulo` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tlanguage`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlanguage` (
 	`id_language` varchar(6) NOT NULL default '',
 	`name` varchar(100) NOT NULL default '',
@@ -1604,7 +1604,6 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 -- ---------------------------------------------------------------------
 -- Table `tevent_filter`
 -- ---------------------------------------------------------------------
-
 CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`id_filter`  int(10) unsigned NOT NULL auto_increment,
 	`id_group_filter` int(10) NOT NULL default 0,
@@ -1619,14 +1618,15 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`event_view_hr` int(10) NOT NULL default 8,
 	`id_user_ack` TEXT,
 	`group_rep` int(10) NOT NULL default 0,
-	`tag` varchar(600) NOT NULL default '',
+	`tag_with` text NOT NULL,
+	`tag_without` text NOT NULL,
 	`filter_only_alert` int(10) NOT NULL default -1, 
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tpassword_history`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tpassword_history` (
 	`id_pass`  int(10) unsigned NOT NULL auto_increment,
 	`id_user` varchar(60) NOT NULL,

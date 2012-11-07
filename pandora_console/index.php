@@ -311,7 +311,6 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 }
 elseif (! isset ($config['id_user'])) {
 	// There is no user connected
-	
 	require_once ('general/login_page.php');
 	while (@ob_end_flush ());
 	exit ("</html>");

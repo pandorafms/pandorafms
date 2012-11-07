@@ -1,5 +1,27 @@
 2012-11-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* index.php: cleaned source code style.
+	
+	* pandoradb.sql, pandoradb.postgreSQL.sql, pandoradb.oracle.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: added the field
+	"tag_with" and "tag_without", and removed the field "tags" in the
+	table "tevent_filter".
+	* operation/events/events_list.php,
+	godmode/events/event_edit_filter.php: added widgets for to filter
+	the events by tags with the events or and tags without the
+	events.
+	
+	* include/functions_tags.php: cleaned source code style, and
+	clarifity the function "tags_search_tag".
+	
+	* include/functions_html.php: into the function
+	"html_print_input_hidden" fixed when the value have double quotes or
+	single quotes.
+
+2012-11-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/alerts/configure_alert_command.php, index.php: cleaned
 	source code style.
 	

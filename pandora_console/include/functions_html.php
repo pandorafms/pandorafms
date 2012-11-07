@@ -769,7 +769,16 @@ function html_print_input_hidden ($name, $value, $return = false, $class = false
 		$classText = '';
 	}
 	
-	$output = '<input id="hidden-' . $name . '" name="' . $name . '" type="hidden" ' . $classText . ' value="' . $value . '" />';
+	$separator = '"';
+	if (strstr($value, '"')) {
+		$separator = "'";
+	}
+	
+	$output = '<input id="hidden-' . $name . '" ' .
+		'name="' . $name . '" ' .
+		'type="hidden" ' .
+		$classText . ' ' .
+		'value=' . $separator . $value . $separator . ' />';
 	
 	if ($return)
 		return $output;

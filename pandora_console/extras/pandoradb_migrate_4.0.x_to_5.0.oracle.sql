@@ -140,9 +140,9 @@ CREATE TABLE tplanned_downtime_modules (
 CREATE SEQUENCE tplanned_downtime_modules_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tplanned_downtime_modules_inc BEFORE INSERT ON tplanned_downtime_modules REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_modules_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_modules_inc;;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table tevento
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 ALTER TABLE tevento ADD (source VARCHAR2(100) default '' NOT NULL);
 ALTER TABLE tevento ADD (id_extra VARCHAR2(100) default '' NOT NULL);
 ALTER TABLE tevento ADD (critical_instructions VARCHAR2(255) default '');
@@ -152,16 +152,16 @@ ALTER TABLE tevento MODIFY CONSTRAINT tevento_event_type_cons CHECK (event_type 
 ALTER TABLE tevento ADD (owner_user VARCHAR2(100) NOT NULL default '0');
 ALTER TABLE tevento ADD (ack_utimestamp NUMBER(19, 0) NOT NULL default 0);
 
--- -----------------------------------------------------  
+-- ---------------------------------------------------------------------
 -- Table tgrupo
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 ALTER TABLE tgrupo ADD (description CLOB);
 ALTER TABLE tgrupo ADD (contact CLOB);
 ALTER TABLE tgrupo ADD (other CLOB);
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table talert_snmp
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 
 ALTER TABLE talert_snmp ADD (_snmp_f1_ CLOB default ''); 
 ALTER TABLE talert_snmp ADD (_snmp_f2_ CLOB default ''); 
@@ -172,25 +172,26 @@ ALTER TABLE talert_snmp ADD (_snmp_f6_ CLOB default '');
 ALTER TABLE talert_snmp ADD (trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL);
 ALTER TABLE talert_snmp ADD (single_value VARCHAR2(255) DEFAULT '');
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table tevent_filter
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE tevent_filter (
-  id_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
-  id_group_filter NUMBER(10, 0) default 0 NOT NULL, 
-  id_name VARCHAR2(600) NOT NULL,
-  id_group NUMBER(10, 0) default 0 NOT NULL,
-  event_type CLOB default '' NOT NULL,
-  severity NUMBER(10, 0) default -1 NOT NULL,
-  status NUMBER(10, 0) default -1 NOT NULL,
-  search CLOB default '',
-  text_agent CLOB default '', 
-  pagination NUMBER(10, 0) default 25 NOT NULL,
-  event_view_hr NUMBER(10, 0) default 8 NOT NULL,
-  id_user_ack CLOB,
-  group_rep NUMBER(10, 0) default 0 NOT NULL,
-  tag VARCHAR2(600) default '' NOT NULL,
-  filter_only_alert NUMBER(10, 0) default -1 NOT NULL
+	id_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_group_filter NUMBER(10, 0) default 0 NOT NULL,
+	id_name VARCHAR2(600) NOT NULL,
+	id_group NUMBER(10, 0) default 0 NOT NULL,
+	event_type CLOB default '' NOT NULL,
+	severity NUMBER(10, 0) default -1 NOT NULL,
+	status NUMBER(10, 0) default -1 NOT NULL,
+	search CLOB default '',
+	text_agent CLOB default '', 
+	pagination NUMBER(10, 0) default 25 NOT NULL,
+	event_view_hr NUMBER(10, 0) default 8 NOT NULL,
+	id_user_ack CLOB,
+	group_rep NUMBER(10, 0) default 0 NOT NULL,
+	tag_with CLOB,
+	tag_without CLOB,
+	filter_only_alert NUMBER(10, 0) default -1 NOT NULL
 );
 
 -- -----------------------------------------------------

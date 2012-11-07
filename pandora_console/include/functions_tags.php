@@ -229,7 +229,7 @@ function tags_agent_warning ($id_tag) {
 	 
 	if (empty($id_tag))
 		return false;
-		
+	
 	// Agent critical status
 	$agents_critical = "SELECT tagente.id_agente 
 						FROM tagente_estado, tagente, tagente_modulo
@@ -239,8 +239,8 @@ function tags_agent_warning ($id_tag) {
 						AND tagente_modulo.disabled = 0
 						AND estado = 1 
 						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";	
-
+						group by tagente.id_agente";
+	
 	// Agent warning status	
 	$agents_warning = "SELECT tagente.id_agente 
 						FROM tagente_estado, tagente, tagente_modulo
@@ -250,18 +250,17 @@ function tags_agent_warning ($id_tag) {
 						AND tagente_modulo.disabled = 0
 						AND estado = 2 
 						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";	
-						
+						group by tagente.id_agente";
+	
 	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
 						FROM tagente, tagente_modulo, tagente_estado, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
 						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-
+						
 						AND ttag_module.id_tag = $id_tag
 						AND tagente.id_agente NOT IN ($agents_critical)
 						AND tagente.id_agente IN ($agents_warning)) AS t");
-						
 }
  
  /**
@@ -276,18 +275,24 @@ function tags_agent_warning ($id_tag) {
 function tags_search_tag ($tag_name_description = false, $filter = false, $only_names = false) {
 	global $config;
 	
-	if ($tag_name_description){
+	if ($tag_name_description) {
 		switch ($config["dbtype"]) {
 			case "mysql":
-						$sql = 'SELECT * FROM ttag WHERE ((name COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%") OR 
-								(description COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%"))';
+				$sql = 'SELECT *
+					FROM ttag
+					WHERE ((name COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%") OR 
+						(description COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%"))';
 				break;
 			case "postgresql":
-						$sql = 'SELECT * FROM ttag WHERE ((name COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\') OR
-								(description COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\'))';
+				$sql = 'SELECT *
+					FROM ttag
+					WHERE ((name COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\') OR
+						(description COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\'))';
 				break;
 			case "oracle":
-						$sql = 'SELECT * FROM ttag WHERE (UPPER(name) LIKE UPPER (\'%'. $tag_name_description .'%\') OR
+				$sql = 'SELECT *
+					FROM ttag
+					WHERE (UPPER(name) LIKE UPPER (\'%'. $tag_name_description .'%\') OR
 						UPPER(dbms_lob.substr(description, 4000, 1)) LIKE UPPER (\'%'. $tag_name_description .'%\'))';
 				break;
 		}
@@ -295,7 +300,7 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
 	else{
 		$sql = 'SELECT * FROM ttag';
 	}
-	if ($filter !== false){
+	if ($filter !== false) {
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$result = db_get_all_rows_sql ($sql . ' LIMIT ' . $filter['offset'] . ',' . $filter['limit']);
@@ -307,8 +312,8 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
 				$result = oracle_recode_query ($sql, $filter, 'AND', false);
 				if ($components != false) {
 					for ($i=0; $i < count($components); $i++) {
-						unset($result[$i]['rnum']);		
-					}			
+						unset($result[$i]['rnum']);
+					}
 				}
 				break;
 		}
@@ -316,19 +321,19 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
 	else {
 		$result = db_get_all_rows_sql ($sql);
 	}
+	
 	if ($result === false)
 		$result = array();
-	$result_tags = array();
+	
 	if ($only_names) {
-		foreach ($result as $tag){
-				$result_tags [$tag['id_tag']] = $tag['name'];
+		$result_tags = array();
+		foreach ($result as $tag) {
+			$result_tags[$tag['id_tag']] = $tag['name'];
 		}
 		$result = $result_tags;
 	}
-	if ($result === false)
-		return array (); //Return an empty array
-	else 
-		return $result;	
+	
+	return $result;
 }
 
 /**
@@ -338,9 +343,9 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
  *
  * @return mixed Tag id or false.
  */
-function tags_create_tag($values){
+function tags_create_tag($values) {
 	if (empty($values)){
-			return false;
+		return false;
 	}
 	
 	return db_process_sql_insert('ttag',$values);
@@ -353,7 +358,7 @@ function tags_create_tag($values){
  *
  * @return mixed Array with the seleted tag or false.
  */
-function tags_search_tag_id($id){
+function tags_search_tag_id($id) {
 	return db_get_row ('ttag', 'id_tag', $id);
 }
 

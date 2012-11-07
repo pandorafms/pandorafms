@@ -49,18 +49,20 @@ if ($create_command) {
 	$name = (string) get_parameter ('name');
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
-        $name_check = db_get_value ('name', 'talert_commands', 'name', $name);
-
+	$name_check = db_get_value ('name', 'talert_commands', 'name', $name);
+	
 	if (!$name_check) {
 		$result = alerts_create_alert_command ($name, $command,
 			array ('description' => $description));
 		
-		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
+		$info = 'Name: ' . $name .
+			' Command: ' . $command .
+			' Description: ' . $description;
 	}
 	else {
 		$result = '';
 	}
-
+	
 	if ($result) {
 		db_pandora_audit("Command management", "Create alert command " . $result, false, false, $info);
 	}
@@ -81,6 +83,7 @@ if ($update_command) {
 		require ("general/noaccess.php");
 		exit;
 	}
+	
 	$name = (string) get_parameter ('name');
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
@@ -89,16 +92,17 @@ if ($update_command) {
 	$values['name'] = $name;
 	$values['command'] = $command;
 	$values['description'] = $description;
-        $name_check = db_get_value ('name', 'talert_commands', 'name', $name);
 	
-	if (!$name || !$name_check) {
+	//Check it the new name is used in the other command.
+	$id_check = db_get_value ('id', 'talert_commands', 'name', $name);
+	if (($id_check != $id) && (!empty($id_check))) {
 		$result = '';
 	}
 	else {
 		$result = alerts_update_alert_command ($id, $values);
 		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
 	}
-
+	
 	if ($result) {
 		db_pandora_audit("Command management", "Create alert command " . $id, false, false, $info);
 	}
@@ -175,7 +179,7 @@ foreach ($commands as $command) {
 	array_push ($table->data, $data);
 }
 
-if(isset($data)) {
+if (isset($data)) {
 	html_print_table ($table);
 }
 else {

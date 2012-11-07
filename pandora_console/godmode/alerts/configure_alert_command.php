@@ -39,7 +39,8 @@ if ($id) {
 }
 
 // Header
-ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert command'), "images/god2.png", false, "", true);
+ui_print_page_header (__('Alerts') . ' &raquo; ' .
+	__('Configure alert command'), "images/god2.png", false, "", true);
 
 $table->width = '98%';
 $table->style = array ();
@@ -56,7 +57,8 @@ $table->data[1][1] = html_print_input_text ('command', $command, '', 80, 255, tr
 $table->data[2][0] = __('Description');
 $table->data[2][1] = html_print_textarea ('description', 10, 30, $description, '', true);
 
-echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_commands">';
+echo '<form method="post" ' .
+	'action="index.php?sec=galertas&sec2=godmode/alerts/alert_commands">';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -64,7 +66,8 @@ if ($id) {
 	html_print_input_hidden ('id', $id);
 	html_print_input_hidden ('update_command', 1);
 	html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
-} else {
+}
+else {
 	html_print_input_hidden ('create_command', 1);
 	html_print_submit_button (__('Create'), 'create', false, 'class="sub wand"');
 }

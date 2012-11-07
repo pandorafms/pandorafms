@@ -63,8 +63,8 @@ session_start ();
 require_once ("include/config.php");
 
 /* Enterprise support */
-if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
-	include_once (ENTERPRISE_DIR."/load_enterprise.php");
+if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+	include_once (ENTERPRISE_DIR . "/load_enterprise.php");
 }
 
 
@@ -247,6 +247,7 @@ if (isset ($_GET["bye"])) {
  * Load the basic configurations of extension and add extensions into menu.
  * Load here, because if not, some extensions not load well, I don't why.
  */
+
 extensions_load_extensions ($config['extensions']);
 if ($process_login) {
 	 /* Call all extensions login function */
@@ -373,6 +374,7 @@ if ($config["pure"] == 0) {
 else {
 	echo "</div>"; // main_pure
 }
+
 
 if ($config["pure"] == 0) {
 	echo '<div id="foot">';

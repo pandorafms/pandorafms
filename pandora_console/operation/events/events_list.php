@@ -480,7 +480,6 @@ else {
 			GROUP BY evento, id_agentmodule) AS t";
 }
 
-
 $total_events = (int) db_get_sql ($sql);
 if (empty ($result)) {
 	$result = array ();
@@ -646,9 +645,12 @@ foreach ($result as $event) {
 	// Store group data to show in extended view
 	$data[$i] .= html_print_input_hidden('similar_ids_'.$event["id_evento"], $similar_ids, true);
 	$data[$i] .= html_print_input_hidden('timestamp_first_'.$event["id_evento"], $timestamp_first, true);
-	$data[$i] .= html_print_input_hidden('timestamp_last_'.$event["id_evento"], $timestamp_last, true);	
-	$data[$i] .= html_print_input_hidden('event_rep_'.$event["id_evento"], $event['event_rep'], true);	
-	// Store concat comments to show in extended view	
+	$data[$i] .= html_print_input_hidden('timestamp_last_'.$event["id_evento"], $timestamp_last, true);
+	if (empty($event['event_rep'])) {
+		$event['event_rep'] = 0;
+	}
+	$data[$i] .= html_print_input_hidden('event_rep_'.$event["id_evento"], $event['event_rep'], true);
+	// Store concat comments to show in extended view
 	$data[$i] .= html_print_input_hidden('user_comment_'.$event["id_evento"], base64_encode($event['user_comment']), true);		
 	
 	$i++;

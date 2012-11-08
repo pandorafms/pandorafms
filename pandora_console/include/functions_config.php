@@ -672,7 +672,7 @@ function config_process_config () {
 			if (isset($config['id_user']))
 				$relative_path = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
 			else
-				$relative_path = enterprise_hook('skins_set_image_skin_path',array($_POST['nick']));
+				$relative_path = enterprise_hook('skins_set_image_skin_path',array(get_parameter('nick')));
 			$config['relative_path'] = $relative_path;
 		}
 	}

@@ -1,3 +1,11 @@
+2012-11-08 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/events/events.php, include/functions_tags.php: cleaned
+	source code style.
+	
+	* godmode/events/event_edit_filter.php: fixed the lost vars in
+	the javascript code for the none elements in the tag select widgets.
+
 2012-11-08  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

@@ -620,7 +620,7 @@ $(document).ready( function() {
 			"similars" : <?php echo ($group_rep ? 1 : 0) ?>
 			},
 			function (data, status) {
-				if (data == "ok") { 
+				if (data == "ok") {
 					$tr.remove ();
 					$('#show_message_error').html('<h3 class="suc"> <?php echo __('Successfully delete'); ?> </h3>');
 				}

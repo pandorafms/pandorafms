@@ -698,14 +698,14 @@ function tags_get_policy_module_tags ($id_policy_module){
  *
  * @return mixed Array with tags.
  */
-function tags_get_all_tags (){
+function tags_get_all_tags () {
 	$tags = db_get_all_fields_in_table('ttag', 'name');
 	
 	if ($tags === false)
 		return false;
 	
 	$return = array();
-	foreach ($tags as $id => $tag){
+	foreach ($tags as $id => $tag) {
 		$return[$id] = $tag['name'];
 	}
 	

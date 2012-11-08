@@ -363,6 +363,9 @@ var select_without_tag_empty = <?php echo (int)$remove_without_tag_disabled;?>;
 var origin_select_with_tag_empty = <?php echo (int)$add_with_tag_disabled;?>;
 var origin_select_without_tag_empty = <?php echo (int)$add_without_tag_disabled;?>;
 
+var val_none = 0;
+var text_none = "<?php echo __('None'); ?>";
+
 $(document).ready( function() {
 	$("#button-add_whith").click(function() {
 		click_button_add_tag("with");

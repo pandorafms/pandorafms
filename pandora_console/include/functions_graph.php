@@ -607,7 +607,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$graph_stats = get_statwin_graph_statistics($chart);
 
 	// Fix event and alert scale
-	$event_max = 10 + (float)$max_value * 1.05;
+	$event_max = 2 + (float)$max_value * 1.05;
 	foreach ($chart as $timestamp => $chart_data) {
 		if ($show_events && $chart_data['event'.$series_suffix] > 0) {
 			$chart[$timestamp]['event'.$series_suffix] = $event_max * 1.2;
@@ -1435,11 +1435,15 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 		"&colorRGB=". $colorRGB . "' />";
 }
 
-function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url, $ttl = 1) {
+function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url, $ttl = 1, $data = false) {
 	global $config;
 	
-	$data = reporting_get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
-	$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
+	// If the data is not provided, we got it
+	if($data === false) {
+		$data = reporting_get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
+	}
+	
+	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN, 5 => COL_NOTINIT);
 	
 	return slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'],
 		$config['round_corner'], $home_url, $ttl);

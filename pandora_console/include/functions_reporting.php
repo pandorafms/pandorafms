@@ -662,7 +662,82 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	$sql .= ' ORDER BY utimestamp ASC';
 	$interval_data = db_get_all_rows_sql ($sql, true);
 	
-	//--------calculate planned downtime dates--------------------------
+	if ($interval_data === false) {
+		$interval_data = array ();
+	}
+	
+	// Indexing data
+	$interval_data_indexed = array();
+	foreach($interval_data as $idata) {
+		$interval_data_indexed[$idata['utimestamp']]['data'] = $idata['datos'];
+	}
+		
+	//-----------Calculate unknown status events------------------------
+	$events_unknown = db_get_all_rows_filter ('tevento',
+		array ('id_agentmodule' => $id_agent_module,
+			"utimestamp > $datelimit",
+			"utimestamp < $date",
+			"event_type" => 'going_unknown',
+			'order' => 'utimestamp ASC'),
+		array ('id_evento', 'evento', 'timestamp', 'utimestamp', 'event_type'));
+
+	if ($events_unknown === false) {
+		$events_unknown = array ();
+	}
+	
+	// Add unknown periods to data
+	foreach($events_unknown as $eu) {
+		$interval_data_indexed[$eu['utimestamp']]['data'] = 0;
+		$interval_data_indexed[$eu['utimestamp']]['status'] = 4;
+	}
+
+	// Get the last event before inverval to know if graph start on unknown
+	$prev_event = db_get_row_filter ('tevento',
+		array ('id_agentmodule' => $id_agent_module,
+			"utimestamp <= $datelimit",
+			'order' => 'utimestamp DESC'));
+	if(isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
+		$start_unknown = true;
+	}
+	else {
+		$start_unknown = false;
+	}
+	//------------------------------------------------------------------
+
+	//-----------------Set limits of the interval-----------------------
+	// If the starting of the graph is unknown we set it
+	if($start_unknown) {
+		$interval_data_indexed[$datelimit]['data'] = 0;
+		$interval_data_indexed[$datelimit]['status'] = 4;
+	}
+	else {
+		// Get previous data (This adds the first data if the begin of module data is after the begin time interval)
+		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+		
+		if ($previous_data !== false) {
+			$interval_data_indexed[$datelimit]['data'] = $previous_data['data'];
+		}
+		else { // If there are not data befor interval set unknown
+			$interval_data_indexed[$datelimit]['data'] = 0;
+			$interval_data_indexed[$datelimit]['status'] = 4;
+		}
+	}
+
+	// Get next data (This adds data before the interval of the report)
+	$next_data = modules_get_next_data ($id_agent_module, $date);
+	if ($next_data !== false) {
+		$interval_data_indexed[$date]['data'] = $previous_data['data'];
+	}
+	else if (count ($interval_data_indexed) > 0) {
+		// Propagate the last known data to the end of the interval (if there is no module data at the end point)
+		ksort($interval_data_indexed);
+		$last_data = array_pop($interval_data_indexed);
+		$interval_data_indexed[$date] = $last_data;
+	}
+
+	//------------------------------------------------------------------
+	
+	//--------Calculate planned downtime dates--------------------------
 	$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	$sql_downtime = "SELECT id_downtime FROM tplanned_downtime_agents WHERE id_agent=$id_agent";
 	$downtimes = db_get_all_rows_sql($sql_downtime); 
@@ -671,46 +746,44 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	}
 	$i = 0;
 	$downtime_dates = array();
+
 	foreach ($downtimes as $downtime) {
 		$id_downtime = $downtime['id_downtime'];
 		$sql_date = "SELECT date_from, date_to FROM tplanned_downtime WHERE id=$id_downtime";
 		$date_downtime = db_get_row_sql($sql_date);
-		
+
 		if ($date_downtime != false) {
-			$downtime_dates[$i]['date_from'] = $date_downtime['date_from'];
-			$downtime_dates[$i]['date_to'] = $date_downtime['date_to'];
+			// Delete data of the planned downtime and put the last data on the upper limit
+			$interval_data_indexed[$date_downtime['date_from']]['data'] = 0;
+			$interval_data_indexed[$date_downtime['date_from']]['status'] = 5;
+			
+			$last_downtime_data = false;
+			foreach($interval_data_indexed as $idi_timestamp => $idi) {
+				if($idi_timestamp != $date_downtime['date_from'] && $idi_timestamp !=  $date_downtime['date_to'] && 
+						$idi_timestamp >= $date_downtime['date_from'] && $idi_timestamp <= $date_downtime['date_to']) {
+					$last_downtime_data = $idi['data'];
+					unset($interval_data_indexed[$idi_timestamp]);
+				} 
+			}
+			
+			// Set the last data of the interval as limit
+			if($last_downtime_data !== false) {
+				$interval_data_indexed[$date_downtime['date_to']]['data'] = $last_downtime_data;
+			}// If there arent data into the downtime, set unknown
+			else {
+				$interval_data_indexed[$date_downtime['date_to']]['data'] = 0;
+				$interval_data_indexed[$date_downtime['date_to']]['status'] = 4;				
+			}
 			$i++;
 		}
 	}
 	//------------------------------------------------------------------
 	
-	if ($interval_data === false) {
-		$interval_data = array ();
-	}
-	
-	// Get previous data (This adds the first data if the begin of module data is after the begin time interval)
-	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
-	if ($previous_data !== false) {
-		$previous_data['utimestamp'] = $datelimit;
-		array_unshift ($interval_data, $previous_data);
-	}
-	
-	// Get next data (This adds data before the interval of the report)
-	$next_data = modules_get_next_data ($id_agent_module, $date);
-	if ($next_data !== false) {
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
-	}
-	else if (count ($interval_data) > 0) {
-		// Propagate the last known data to the end of the interval (if there is no module data at the end point)
-		$next_data = array_pop ($interval_data);
-		array_push ($interval_data, $next_data);
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
-	}
-	
+	// Sort the array
+	ksort($interval_data_indexed);
+
 	// We need more or equal two points
-	if (count ($interval_data) < 2) {
+	if (count ($interval_data_indexed) < 2) {
 		return false;
 	}
 	
@@ -724,19 +797,19 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$percent = 0;
 	}
 	else {
-		// Getting 10% of $diff --> $percent = ($diff/100)*10, so...
+		// Getting 1I0% of $diff --> $percent = ($diff/100)*10, so...
 		$percent = $diff / 10;
 	}
 	
 	//Set initial conditions
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $date - $period;
-	
+
 	$previous_value = $first_data ['datos'];
 	$previous_status = 0;
 	
-	if ($previous_value < 0) {// 4 for the Unknown value
-		$previous_status = 4;
+	if (isset($first_data['status'])) { // 4 for the Unknown value amd 5 for planned downtime
+		$previous_status = $first_data['status'];
 	}
 	elseif ((($previous_value > ($min_value - $percent)) && ($previous_value < ($min_value + $percent))) || 
 			(($previous_value > ($max_value - $percent)) && ($previous_value < ($max_value + $percent)))) {//2 when value is within the edges
@@ -748,21 +821,17 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
 		$previous_status = 3;
 	}
-	
-	foreach ($downtime_dates as $date_dt) {
-		if (($date_dt['date_from'] <= $first_data['utimestamp']) AND ($date_dt['date_to'] >= $first_data['utimestamp'])) {
-			$previous_status = 1;
-		}
-	}
-	
+
 	$data_colors = array();
 	$i = 0;
 	
-	foreach ($interval_data as $data) {
+	foreach ($interval_data_indexed as $utimestamp => $data) {
 		$change = false;
-		$value = $data['datos'];
-		if ($value < 0) {// 4 for the Unknown value
-			$status = 4;
+		$value = $data['data'];
+		//~ $value = $data['datos'];
+		//$utimestamp = $data['utimestamp'];
+		if (isset($data['status'])) { // 4 for the Unknown value amd 5 for planned downtime
+			$status = $data['status'];
 		}
 		elseif ((($value > ($min_value - $percent)) && ($value < ($min_value + $percent))) || 
 				(($value > ($max_value - $percent)) && ($value < ($max_value + $percent)))) { //2 when value is within the edges
@@ -775,24 +844,18 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 			$status = 3;
 		}
 		
-		foreach ($downtime_dates as $date_dt) {
-			if (($date_dt['date_from'] <= $data['utimestamp']) AND ($date_dt['date_to'] >= $data['utimestamp'])) {
-				$status = 1;
-			}
-		}
-		
 		if ($status != $previous_status) {
 			$change = true;
 			$data_colors[$i]['data'] = $previous_status;
-			$data_colors[$i]['utimestamp'] = $data['utimestamp'] - $previous_utimestamp;
+			$data_colors[$i]['utimestamp'] = $utimestamp - $previous_utimestamp;
 			$i++;
 			$previous_status = $status;
-			$previous_utimestamp = $data['utimestamp'];
+			$previous_utimestamp = $utimestamp;
 		}
 	}
 	if ($change == false) {
 		$data_colors[$i]['data'] = $previous_status;
-		$data_colors[$i]['utimestamp'] = $data['utimestamp'] - $previous_utimestamp;
+		$data_colors[$i]['utimestamp'] = $date - $previous_utimestamp;
 	}
 	
 	return $data_colors;
@@ -2407,12 +2470,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data_graph[__('Out of limits')] = 0;
 			$data_graph[__('On the edge')] = 0;
 			$data_graph[__('Unknown')] = 0;
-			
-			$data_horin_graph = array ();
-			$data_horin_graph[__('Inside limits')]['g'] = 0;
-			$data_horin_graph[__('Out of limits')]['g'] = 0;
-			$data_horin_graph[__('On the edge')]['g'] = 0;
-			$data_horin_graph[__('Unknown')]['g'] = 0;
+			$data_graph[__('Plannified downtime')] = 0;
 			
 			$sla_failed = false;
 			$total_SLA = 0;
@@ -2431,28 +2489,67 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 				}
 				
+				//Get the array of the sla values
+				$data_sla = reporting_get_agentmodule_sla_array ($sla['id_agent_module'], $content['period'],
+						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
+						$content['time_to']);
+						
 				//Get the sla_value in % and store it on $sla_value
-				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
-				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
-				$content['time_to']);
+				$data_total = 0;
+				$data_pass = 0;
+				foreach($data_sla as $d) {
+					switch($d['data']) {
+						case 1:
+							$data_pass += $d['utimestamp'];
+							$data_total += $d['utimestamp'];
+							break;
+						case 2:
+							$data_pass += $d['utimestamp'];
+							$data_total += $d['utimestamp'];
+							break;
+						case 3:
+							$data_total += $d['utimestamp'];
+							break;
+						case 4:
+						case 5:
+							break;
+					}
+				}
+				
+				$sla_value = ($data_pass / $data_total) * 100;
 								
 				//Do not show right modules if 'only_display_wrong' is active
 				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
-			
-				$sla_showed[] = $sla;
-				$sla_showed_values[] = $sla_value;
 				
-				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
-					if ($content['type'] != 'netflow_area' &&
-					    $content['type'] != 'netflow_pie' &&
-					    $content['type'] != 'netflow_data' &&
-					    $content['type'] != 'netflow_statistics' &&
-					    $content['type'] != 'netflow_summary') {
-						//Restore db connection
-						metaconsole_restore_db();
+				// Calculate general pie graph data
+				foreach($data_sla as $d) {
+					switch($d['data']) {
+						case 1:
+							$data_graph[__('Inside limits')] += $d['utimestamp'];
+							break;
+						case 2:
+							$data_graph[__('On the edge')] += $d['utimestamp'];
+							break;
+						case 3:
+							$data_graph[__('Out of limits')] += $d['utimestamp'];
+							break;
+						case 4:
+							$data_graph[__('Unknown')] += $d['utimestamp'];
+							break;
+						case 5:
+							$data_graph[__('Plannified downtime')] += $d['utimestamp'];
+							break;
 					}
 				}
 			
+				$sla_showed[] = $sla;
+				$sla_showed_values[] = $sla_value;
+				$sla_data_arrays[] = $data_sla;
+				
+				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+					//Restore db connection
+					metaconsole_restore_db();
+				}
 			}
 			
 			// SLA items sorted descending ()
@@ -2491,25 +2588,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				else if ($sla_value < $sla['sla_limit']) {
 					$total_result_SLA = 'fail';
 				}
-				
-				//Fill the array data_graph for the pie graph
-				if ($sla_value === false) {
-					$data_graph[__('Unknown')]++;
-					$data_horin_graph[__('Unknown')]['g']++;
-				}
-				else if ($sla_value <= ($sla['sla_limit']+$edge_interval) && $sla_value >= ($sla['sla_limit']-$edge_interval)) {
-					$data_graph[__('On the edge')]++;
-					$data_horin_graph[__('On the edge')]['g']++;
-				}
-				else if ($sla_value > ($sla['sla_limit']+$edge_interval)) {
-					$data_graph[__('Inside limits')]++;
-					$data_horin_graph[__('Inside limits')]['g']++;
-				}
-				else if ($sla_value < ($sla['sla_limit']-$edge_interval)) {
-					$data_graph[__('Out of limits')]++;
-					$data_horin_graph[__('Out of limits')]['g']++;
-				}
-				
+								
 				$total_SLA += $sla_value;
 				
 				if ($show_table) {
@@ -2564,10 +2643,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$dataslice[0] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
 					$dataslice[0] .= "<br>";
 					$dataslice[0] .= modules_get_agentmodule_name ($sla['id_agent_module']);
-					
+
 					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
 						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
-						$content['time_to'], 650, 25, ui_get_full_url(false) . '/');
+						$content['time_to'], 650, 25, ui_get_full_url(false) . '/', 1, $sla_data_arrays[$k]);
 					
 					array_push ($tableslice->data, $dataslice);
 				}

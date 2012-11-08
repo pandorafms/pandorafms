@@ -110,12 +110,12 @@ switch ($config["dbtype"]) {
 
 
 /* Color constants */
-define('COL_CRITICAL','#cc0000');
-define('COL_WARNING','#ffcc00');
-define('COL_NORMAL','#8ae234');
-define('COL_NOTINIT','#ef2929');
-define('COL_UNKNOWN','#aaaaaa');
-define('COL_ALERTFIRED','#ff8800');
+define('COL_CRITICAL','#FF0000');
+define('COL_WARNING','#FFFF00');
+define('COL_NORMAL','#38B800');
+define('COL_NOTINIT','#3BA0FF');
+define('COL_UNKNOWN','#AAAAAA');
+define('COL_ALERTFIRED','#FF8800');
 
 
 

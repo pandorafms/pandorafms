@@ -1,3 +1,12 @@
+2012-11-08  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/pChart/pData.class.php
+	include/functions_reporting.php
+	include/constants.php: Improve performance to the SLA 
+	report items, added unknown periods and fix planned downtimes
+	in SLAs. Adapt the default pchart graph engine colors to pandora
+
 2012-11-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* index.php: cleaned source code style.

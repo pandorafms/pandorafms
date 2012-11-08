@@ -1,3 +1,18 @@
+2012-11-08 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/events/events.php: cleaned source code style.
+	
+	* operation/events/events_list.php,
+	godmode/events/event_edit_filter.php: added widgets for to filter
+	the events by tags with the events or and tags without the
+	events.
+	
+	* include/functions_tags.php: cleaned source code style, and
+	clarifity the function "tags_search_tag". And add the function
+	"tags_get_all_tags".
+	
+	MERGED FROM THE TRUNK.
+
 2012-11-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/alerts/configure_alert_command.php, index.php: cleaned

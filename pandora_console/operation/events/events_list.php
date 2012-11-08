@@ -35,7 +35,14 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
-$tag = get_parameter("tag", "");
+$tags = tags_search_tag(false, false, true);
+
+$tag_with_json = io_safe_output(get_parameter("tag_with"));
+$tag_with = json_decode($tag_with_json, true);
+if (empty($tag_with)) $tag_with = array();
+$tag_without_json = io_safe_output(get_parameter("tag_without"));
+$tag_without = json_decode($tag_without_json, true);
+if (empty($tag_without)) $tag_without = array();
 
 if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
@@ -91,7 +98,7 @@ if (!check_acl ($config["id_user"], 0, "PM")) {
 	$sql_post .= " AND id_grupo != 0";
 }
 
-switch($status) {
+switch ($status) {
 	case 0:
 	case 1:
 	case 2:
@@ -109,40 +116,58 @@ if ($search != "") {
 if ($event_type != "") {
 	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
 	// for the user so for him is presented only "warning, critical and normal"
-	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
+	if ($event_type == "warning" || $event_type == "critical"
+		|| $event_type == "normal") {
 		$sql_post .= " AND event_type LIKE '%$event_type%' ";
 	}
 	elseif ($event_type == "not_normal") {
 		$sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
 	}
 	else {
-		$sql_post .= " AND event_type = '".$event_type."'";
+		$sql_post .= " AND event_type = '" . $event_type."'";
 	}
 
 }
 if ($severity != -1)
-	$sql_post .= " AND criticity = ".$severity;
+	$sql_post .= " AND criticity = " . $severity;
 if ($id_agent != -1)
-	$sql_post .= " AND id_agente = ".$id_agent;
+	$sql_post .= " AND id_agente = " . $id_agent;
 if ($id_event != -1)
-	$sql_post .= " AND id_evento = ".$id_event;
+	$sql_post .= " AND id_evento = " . $id_event;
 
 if ($id_user_ack != "0")
-	$sql_post .= " AND id_usuario = '".$id_user_ack."'";
+	$sql_post .= " AND id_usuario = '" . $id_user_ack . "'";
 
 
 if ($event_view_hr > 0) {
 	$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
-	$sql_post .= " AND (utimestamp > ".$unixtime . " OR estado = 2)";
+	$sql_post .= " AND (utimestamp > " . $unixtime . " OR estado = 2)";
 }
 
 //Search by tag
-if ($tag != "") {
-	$sql_post .= " AND tags LIKE '%".io_safe_input($tag)."%'";
+if (!empty($tag_with)) {
+	$sql_post .= ' AND ( ';
+	$first = true;
+	foreach ($tag_with as $id_tag) {
+		if ($first) $first = false;
+		else $sql_post .= " OR ";
+		$sql_post .= "tags LIKE '%" . tags_get_name($id_tag) . "%'";
+	}
+	$sql_post .= ' ) ';
+}
+if (!empty($tag_without)) {
+	$sql_post .= ' AND ( ';
+	$first = true;
+	foreach ($tag_without as $id_tag) {
+		if ($first) $first = false;
+		else $sql_post .= " OR ";
+		$sql_post .= "tags NOT LIKE '%" . tags_get_name($id_tag) . "%'";
+	}
+	$sql_post .= ' ) ';
 }
 
 // Filter/Only alerts
-if (isset($filter_only_alert)){
+if (isset($filter_only_alert)) {
 	if ($filter_only_alert == 0)
 		$sql_post .= " AND event_type NOT LIKE '%alert%'";
 	else if ($filter_only_alert == 1)
@@ -150,13 +175,22 @@ if (isset($filter_only_alert)){
 }
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
-	rawurlencode(io_safe_input($search)) . "&amp;event_type=" . $event_type .
-	"&amp;severity=" . $severity . "&amp;status=" . $status . "&amp;ev_group=" .
-	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
-	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
-	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
-	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack . "&amp;tag=" .
-	$tag . "&amp;filter_only_alert=" . $filter_only_alert . "&amp;offset=" . $offset;
+	rawurlencode(io_safe_input($search)) .
+	"&amp;event_type=" . $event_type .
+	"&amp;severity=" . $severity .
+	"&amp;status=" . $status .
+	"&amp;ev_group=" . $ev_group .
+	"&amp;refr=" . $config["refr"] .
+	"&amp;id_agent=" . $id_agent .
+	"&amp;id_event=" . $id_event .
+	"&amp;pagination=" . $pagination .
+	"&amp;group_rep=" . $group_rep .
+	"&amp;event_view_hr=" . $event_view_hr .
+	"&amp;id_user_ack=" . $id_user_ack .
+	"&amp;tag_with=" . $tag_with .
+	"&amp;tag_without=" . $tag_without .
+	"&amp;filter_only_alert=" . $filter_only_alert .
+	"&amp;offset=" . $offset;
 
 echo "<br>";
 //Link to toggle filter
@@ -204,20 +238,25 @@ html_print_select ($fields, 'status', $status, '', '', '');
 echo "</td></tr><tr>";
 
 // Free search
-echo "<td>".__('Free search')."</td><td>";
+echo "<td>" . __('Free search') . "</td>";
+echo "<td>";
 html_print_input_text ('search', io_safe_output($search), '', 15);
 echo '</td>';
 
 //Agent search
 $src_code = html_print_image('images/lightning.png', true, false, true);
-echo "<td>".__('Agent search')."</td><td>";
+echo "<td>" . __('Agent search') . "</td>";
+echo '<td>';
 html_print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
 	array('style' => 'background: url(' . $src_code . ') no-repeat right;')) .
 	'<a href="#" class="tip">&nbsp;<span>' .
 	__("Type at least two characters to search") . '</span></a>';
+echo '</td>';
 
 
-echo "</td></tr>";
+
+
+echo "</tr>";
 
 // User selectable block size
 echo '<tr><td>';
@@ -233,14 +272,14 @@ echo "<td>";
 html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"]);
 echo "</td>";
 
-echo "<td>".__('Max. hours old')."</td>";
+echo "<td>" . __('Max. hours old') . "</td>";
 echo "<td>";
 html_print_input_text ('event_view_hr', $event_view_hr, '', 5);
 echo "</td>";
 
 
 echo "</tr><tr>";
-echo "<td>".__('User ack.')."</td>";
+echo "<td>" . __('User ack.') . "</td>";
 echo "<td>";
 $users = users_get_info ();
 html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0);
@@ -254,23 +293,88 @@ $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
 html_print_select ($repeated_sel, "group_rep", $group_rep, '');
 echo "</td></tr>";
-echo "<tr><td>";
-echo __("Tag") . "</td><td>";
-//html_print_input_text ('tag', $tag_search, '', 15);
-$tags = tags_search_tag();
 
-if($tags === false) {
-	$tags = array();
+
+
+
+
+
+echo "<tr>";
+echo "<td colspan='2'>" . __('Events with following tags') . "</td>";
+echo "<td colspan='2'>" . __('Events without following tags') . "</td>";
+echo "</tr>";
+
+echo "<tr>";
+$tags_select_with = array();
+$tags_select_without = array();
+$tag_with_temp = array();
+$tag_without_temp = array();
+foreach ($tags as $id_tag => $tag) {
+	if (array_search($id_tag, $tag_with) === false) {
+		$tags_select_with[$id_tag] = $tag;
+	}
+	else {
+		$tag_with_temp[$id_tag] = $tag;
+	}
+	
+	if (array_search($id_tag, $tag_without) === false) {
+		$tags_select_without[$id_tag] = $tag;
+	}
+	else {
+		$tag_without_temp[$id_tag] = $tag;
+	}
 }
 
-$tags_name = array();
-foreach($tags as $t) {
-	$tags_name[$t['name']] = $t['name'];
-}
-
-html_print_select ($tags_name, "tag", $tag, '', __('All'), "");
-
+$add_with_tag_disabled = empty($tags_select_with);
+$remove_with_tag_disabled = empty($tag_with_temp);
+$add_without_tag_disabled = empty($tags_select_without);
+$remove_without_tag_disabled = empty($tag_without_temp);
+echo "<td>";
+html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
+	false, false, true, '', false, 'width: 120px;');
 echo "</td>";
+echo "<td>";
+html_print_button(__('Add'), 'add_whith', $add_with_tag_disabled,
+	'', 'class="add sub"');
+echo "</td>";
+echo "<td>";
+html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
+	false, false, true, '', false, 'width: 120px;');
+echo "</td>";
+echo "<td>";
+html_print_button(__('Add'), 'add_whithout', $add_without_tag_disabled,
+	'', 'class="add sub"');
+echo "</td>";
+echo "</tr>";
+echo "<tr>";
+echo "<td valign='top'>";
+html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
+	0, false, true,
+	true, '', false, "width: 120px; height: 50px;");
+html_print_input_hidden('tag_with', json_encode($tag_with));
+echo "</td>";
+echo "<td valign='top'>";
+html_print_button(__('Remove'), 'remove_whith', $remove_with_tag_disabled,
+	'', 'class="delete sub"');
+echo "</td>";
+echo "<td valign='top'>";
+html_print_select ($tag_without_temp, 'tag_without_temp', array(), '',
+	'', 0, false, true,
+	true, '', false, "width: 120px; height: 50px;");
+html_print_input_hidden('tag_without', json_encode($tag_without));
+echo "</td>";
+echo "<td valign='top'>";
+html_print_button(__('Remove'), 'remove_whithout', $remove_without_tag_disabled,
+	'', 'class="delete sub"');
+echo "</td>";
+echo "</tr>";
+
+
+
+
+
+
+echo "<tr>";
 
 echo "<td>";
 echo __("Alert events") . "</td><td>";
@@ -297,12 +401,14 @@ if ($group_rep == 0) {
 		case "mysql":
 			$sql = "SELECT *
 				FROM tevento
-				WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+				WHERE 1=1 ".$sql_post."
+				ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 			break;
 		case "postgresql":
 			$sql = "SELECT *
 				FROM tevento
-				WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
+				WHERE 1=1 ".$sql_post."
+				ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
 			break;
 		case "oracle":
 			$set = array();
@@ -310,7 +416,8 @@ if ($group_rep == 0) {
 			$set['offset'] = $offset;
 			$sql = "SELECT *
 				FROM tevento
-				WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC"; 
+				WHERE 1=1 ".$sql_post."
+				ORDER BY utimestamp DESC"; 
 			$sql = oracle_recode_query ($sql, $set);
 			break;
 	}
@@ -361,16 +468,21 @@ $result = db_get_all_rows_sql ($sql);
 // Delete rnum field generated by oracle_recode_query() function
 if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 	for ($i=0; $i < count($result); $i++) {
-		unset($result[$i]['rnum']);	
+		unset($result[$i]['rnum']);
 	}
 }
 
 if ($group_rep == 0) {
-	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE 1=1 ".$sql_post;
+	$sql = "SELECT COUNT(id_evento)
+		FROM tevento
+		WHERE 1=1 " . $sql_post;
 }
 else {
-	$sql = "SELECT COUNT(1) FROM (SELECT 1 FROM tevento
-		WHERE 1=1 $sql_post GROUP BY evento, id_agentmodule) AS t";
+	$sql = "SELECT COUNT(1)
+		FROM (SELECT 1
+			FROM tevento
+			WHERE 1=1 " . $sql_post . "
+			GROUP BY evento, id_agentmodule) AS t";
 }
 
 //Count the events with this filter (TODO but not utimestamp).
@@ -431,7 +543,7 @@ foreach ($result as $event) {
 		$estado = $event["estado"];
 	}
 	
-	// Colored box	
+	// Colored box
 	switch($estado) {
 		case 0:
 			$img_st = "images/star.png";
@@ -766,7 +878,7 @@ if (!empty ($table->data)) {
 	
 	echo '<div style="width:'.$table->width.';" class="action-buttons">';
 	if (check_acl ($config["id_user"], 0, "IW") == 1) {
-		html_print_submit_button (__('Change status'), 'validate_btn', false, 'class="sub ok"');
+		html_print_submit_button(__('Change status'), 'validate_btn', false, 'class="sub ok"');
 	}
 	if (check_acl ($config["id_user"], 0,"IM") == 1) {
 		html_print_button(__('Delete'), 'delete_button', false, 'submit_delete();', 'class="sub delete"');
@@ -790,4 +902,170 @@ echo '</div>';
 
 unset ($table);
 
+ui_require_jquery_file('json');
 ?>
+<script language="javascript" type="text/javascript">
+/*<![CDATA[ */
+
+var select_with_tag_empty = <?php echo (int)$remove_with_tag_disabled;?>;
+var select_without_tag_empty = <?php echo (int)$remove_without_tag_disabled;?>;
+var origin_select_with_tag_empty = <?php echo (int)$add_with_tag_disabled;?>;
+var origin_select_without_tag_empty = <?php echo (int)$add_without_tag_disabled;?>;
+
+var val_none = 0;
+var text_none = "<?php echo __('None'); ?>";
+
+$(document).ready( function() {
+	$("#button-add_whith").click(function() {
+		click_button_add_tag("with");
+		});
+	
+	$("#button-add_whithout").click(function() {
+		click_button_add_tag("without");
+		});
+	
+	$("#button-remove_whith").click(function() {
+		click_button_remove_tag("with");
+	});
+	
+	$("#button-remove_whithout").click(function() {
+		click_button_remove_tag("without");
+	});
+	
+});
+
+function click_button_remove_tag(what_button) {
+	if (what_button == "with") {
+		id_select_origin = "#select_with";
+		id_select_destiny = "#tag_with_temp";
+		id_button_remove = "#button-remove_whith";
+		id_button_add = "#button-add_whith";
+		
+		select_origin_empty = origin_select_with_tag_empty;
+	}
+	else { //without
+		id_select_origin = "#select_without";
+		id_select_destiny = "#tag_without_temp";
+		id_button_remove = "#button-remove_whithout";
+		id_button_add = "#button-add_whithout";
+		
+		select_origin_empty = origin_select_without_tag_empty;
+	}
+	
+	if ($(id_select_destiny + " option:selected").length == 0) {
+		return; //Do nothing
+	}
+	
+	if (select_origin_empty) {
+		$(id_select_origin + " option").remove();
+		
+		if (what_button == "with") {
+			origin_select_with_tag_empty = false;
+		}
+		else { //without
+			origin_select_without_tag_empty = false;
+		}
+		
+		$(id_button_add).removeAttr('disabled');
+	}
+	
+	//Foreach because maybe the user select several items in
+	//the select.
+	jQuery.each($(id_select_destiny + " option:selected"), function(key, element) {
+		val = $(element).val();
+		text = $(element).text();
+		
+		$(id_select_origin).append($("<option value='" + val + "'>" + text + "</option>"));
+	});
+	
+	$(id_select_destiny + " option:selected").remove();
+	
+	if ($(id_select_destiny + " option").length == 0) {
+		$(id_select_destiny).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+		$(id_button_remove).attr('disabled', 'true');
+		
+		if (what_button == 'with') {
+			select_with_tag_empty = true;
+		}
+		else { //without
+			select_without_tag_empty = true;
+		}
+	}
+	
+	replace_hidden_tags(what_button);
+}
+
+function click_button_add_tag(what_button) {
+	if (what_button == 'with') {
+		id_select_origin = "#select_with";
+		id_select_destiny = "#tag_with_temp";
+		id_button_remove = "#button-remove_whith";
+		id_button_add = "#button-add_whith";
+		
+		select_destiny_empty = select_with_tag_empty;
+	}
+	else { //without
+		id_select_origin = "#select_without";
+		id_select_destiny = "#tag_without_temp";
+		id_button_remove = "#button-remove_whithout";
+		id_button_add = "#button-add_whithout";
+		
+		select_destiny_empty = select_without_tag_empty;
+	}
+	
+	without_val = $(id_select_origin).val();
+	without_text = $(id_select_origin + " option:selected").text();
+	
+	if (select_destiny_empty) {
+		$(id_select_destiny).empty();
+		
+		if (what_button == 'with') {
+			select_with_tag_empty = false;
+		}
+		else { //without
+			select_without_tag_empty = false;
+		}
+	}
+	
+	$(id_select_destiny).append($("<option value='" + without_val + "'>" + without_text + "</option>"));
+	$(id_select_origin + " option:selected").remove();
+	$(id_button_remove).removeAttr('disabled');
+	
+	if ($(id_select_origin + " option").length == 0) {
+		$(id_select_origin).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+		$(id_button_add).attr('disabled', 'true');
+		
+		if (what_button == 'with') {
+			origin_select_with_tag_empty = true;
+		}
+		else { //without
+			origin_select_without_tag_empty = true;
+		}
+	}
+	
+	replace_hidden_tags(what_button);
+}
+
+function replace_hidden_tags(what_button) {
+	if (what_button == 'with') {
+		id_select_destiny = "#tag_with_temp";
+		id_hidden = "#hidden-tag_with";
+	}
+	else { //without
+		id_select_destiny = "#tag_without_temp";
+		id_hidden = "#hidden-tag_without";
+	}
+	
+	value_store = [];
+	
+	jQuery.each($(id_select_destiny + " option"), function(key, element) {
+		val = $(element).val();
+		
+		value_store.push(val);
+	});
+	
+	$(id_hidden).val(jQuery.toJSON(value_store));
+}
+
+/* ]]> */
+</script>

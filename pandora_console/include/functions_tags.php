@@ -31,18 +31,24 @@
 function tags_search_tag ($tag_name_description = false, $filter = false, $only_names = false) {
 	global $config;
 	
-	if ($tag_name_description){
+	if ($tag_name_description) {
 		switch ($config["dbtype"]) {
 			case "mysql":
-						$sql = 'SELECT * FROM ttag WHERE ((name COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%") OR 
-								(description COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%"))';
+				$sql = 'SELECT *
+					FROM ttag
+					WHERE ((name COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%") OR 
+						(description COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%"))';
 				break;
 			case "postgresql":
-						$sql = 'SELECT * FROM ttag WHERE ((name COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\') OR
-								(description COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\'))';
+				$sql = 'SELECT *
+					FROM ttag
+					WHERE ((name COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\') OR
+						(description COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\'))';
 				break;
 			case "oracle":
-						$sql = 'SELECT * FROM ttag WHERE (UPPER(name) LIKE UPPER (\'%'. $tag_name_description .'%\') OR
+				$sql = 'SELECT *
+					FROM ttag
+					WHERE (UPPER(name) LIKE UPPER (\'%'. $tag_name_description .'%\') OR
 						UPPER(dbms_lob.substr(description, 4000, 1)) LIKE UPPER (\'%'. $tag_name_description .'%\'))';
 				break;
 		}
@@ -50,7 +56,7 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
 	else{
 		$sql = 'SELECT * FROM ttag';
 	}
-	if ($filter !== false){
+	if ($filter !== false) {
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$result = db_get_all_rows_sql ($sql . ' LIMIT ' . $filter['offset'] . ',' . $filter['limit']);
@@ -62,8 +68,8 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
 				$result = oracle_recode_query ($sql, $filter, 'AND', false);
 				if ($components != false) {
 					for ($i=0; $i < count($components); $i++) {
-						unset($result[$i]['rnum']);		
-					}			
+						unset($result[$i]['rnum']);
+					}
 				}
 				break;
 		}
@@ -71,19 +77,19 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
 	else {
 		$result = db_get_all_rows_sql ($sql);
 	}
+	
 	if ($result === false)
 		$result = array();
-	$result_tags = array();
+	
 	if ($only_names) {
-		foreach ($result as $tag){
-				$result_tags [$tag['id_tag']] = $tag['name'];
+		$result_tags = array();
+		foreach ($result as $tag) {
+			$result_tags[$tag['id_tag']] = $tag['name'];
 		}
 		$result = $result_tags;
 	}
-	if ($result === false)
-		return array (); //Return an empty array
-	else 
-		return $result;	
+	
+	return $result;
 }
 
 /**
@@ -93,9 +99,9 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
  *
  * @return mixed Tag id or false.
  */
-function tags_create_tag($values){
+function tags_create_tag($values) {
 	if (empty($values)){
-			return false;
+		return false;
 	}
 	
 	return db_process_sql_insert('ttag',$values);
@@ -108,7 +114,7 @@ function tags_create_tag($values){
  *
  * @return mixed Array with the seleted tag or false.
  */
-function tags_search_tag_id($id){
+function tags_search_tag_id($id) {
 	return db_get_row ('ttag', 'id_tag', $id);
 }
 
@@ -381,16 +387,16 @@ function tags_update_policy_module_tag ($id_policy_module, $tags, $autocommit = 
 	$result_tag = db_process_sql_delete ('ttag_policy_module', array('id_policy_module' => $id_policy_module));
 
 	$values = array();
-	foreach ($tags as $tag){
+	foreach ($tags as $tag) {
 		//Protect against default insert
 		if (empty($tag))
-			continue;		
+			continue;
 		
 		$values['id_tag'] = $tag;
 		$values['id_policy_module'] = $id_policy_module;
 		$result_tag = db_process_sql_insert('ttag_policy_module', $values, false);
 		if ($result_tag === false)
-			$errn++;		
+			$errn++;
 	}
 	
 }
@@ -407,7 +413,7 @@ function tags_get_module_tags ($id_agent_module){
 		return false;
 	
 	$tags = db_get_all_rows_filter('ttag_module', array('id_agente_modulo' => $id_agent_module), false);
-
+	
 	if ($tags === false)
 		return false;
 	
@@ -431,7 +437,7 @@ function tags_get_policy_module_tags ($id_policy_module){
 		return false;
 	
 	$tags = db_get_all_rows_filter('ttag_policy_module', array('id_policy_module' => $id_policy_module), false);
-
+	
 	if ($tags === false)
 		return false;
 	
@@ -443,5 +449,22 @@ function tags_get_policy_module_tags ($id_policy_module){
 	return $return;
 }
 
+/**
+ * Select all tags.
+ *
+ * @return mixed Array with tags.
+ */
+function tags_get_all_tags () {
+	$tags = db_get_all_fields_in_table('ttag', 'name');
 	
+	if ($tags === false)
+		return false;
+	
+	$return = array();
+	foreach ($tags as $id => $tag) {
+		$return[$id] = $tag['name'];
+	}
+	
+	return $return;
+}
 ?>

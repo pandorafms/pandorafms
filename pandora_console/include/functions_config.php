@@ -652,10 +652,11 @@ function config_process_config () {
 		config_update_value( 'api_password', '');
 	}
 	
-	if (!isset ($config['relative_path']) && (isset ($_POST['nick'])
+	if (!isset ($config['relative_path']) && ( get_parameter ("nick", "") != ""
 		|| isset ($config['id_user'])) && isset($config['enterprise_installed'])) {
 		
 		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			
 			// Try to update user table in order to refresh skin inmediatly
@@ -681,7 +682,7 @@ function config_process_config () {
 			if (isset($config['id_user']))
 				$relative_path = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
 			else
-				$relative_path = enterprise_hook('skins_set_image_skin_path',array($_POST['nick']));
+				$relative_path = enterprise_hook('skins_set_image_skin_path',array(get_parameter('nick')));
 			$config['relative_path'] = $relative_path;
 		}
 	}

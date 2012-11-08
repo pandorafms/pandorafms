@@ -1,3 +1,8 @@
+2012-11-08 Sancho Lerena <slerena@artica.es>
+
+	* include/functions_config.php: Fixed a XSS in login :-O. Thanks 
+	to gobejishvili for reporting.
+
 2012-11-08 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/events/events.php: cleaned source code style.

@@ -1,3 +1,7 @@
+2012-11-11  Junichi Satoh  <junichi@rworks.jp>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql: Fixed a typo.
+	
 2012-11-08  Sancho Lerena <slerena@artica.es>
 
 	 * include/functions_config.php: Fixed a XSS in login :-O. Thanks

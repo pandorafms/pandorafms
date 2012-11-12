@@ -1,3 +1,10 @@
+2012-11-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_reporting.php: cleaned source code style.
+	
+	* include/functions_api.php: fixed typo error that stoped the
+	execution of api.
+
 2012-11-11  Junichi Satoh  <junichi@rworks.jp>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql: Fixed a typo.

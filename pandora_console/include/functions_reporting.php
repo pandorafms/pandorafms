@@ -751,7 +751,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$id_downtime = $downtime['id_downtime'];
 		$sql_date = "SELECT date_from, date_to FROM tplanned_downtime WHERE id=$id_downtime";
 		$date_downtime = db_get_row_sql($sql_date);
-
+		
 		if ($date_downtime != false) {
 			// Delete data of the planned downtime and put the last data on the upper limit
 			$interval_data_indexed[$date_downtime['date_from']]['data'] = 0;
@@ -804,7 +804,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	//Set initial conditions
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $date - $period;
-
+	
 	$previous_value = $first_data ['datos'];
 	$previous_status = 0;
 	
@@ -2643,7 +2643,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$dataslice[0] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
 					$dataslice[0] .= "<br>";
 					$dataslice[0] .= modules_get_agentmodule_name ($sla['id_agent_module']);
-
+					
 					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
 						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
 						$content['time_to'], 650, 25, ui_get_full_url(false) . '/', 1, $sla_data_arrays[$k]);

@@ -1943,7 +1943,7 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 				'plugin_user' => '',
 				'plugin_pass' => '',		
 				'tcp_port' => $other['data'][21],
-				'id_modulo' => 2
+				'id_modulo' => 2,
 				'max_retries' => $other['data'][22],
 				);			
 	}

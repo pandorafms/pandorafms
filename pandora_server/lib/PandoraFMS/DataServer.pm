@@ -464,7 +464,10 @@ sub process_module_data ($$$$$$$$$) {
 	my $tags = {'name' => 0, 'data' => 0, 'type' => 0, 'description' => 0, 'max' => 0,
 	            'min' => 0, 'descripcion' => 0, 'post_process' => 0, 'module_interval' => 0, 'min_critical' => 0,
 	            'max_critical' => 0, 'min_warning' => 0, 'max_warning' => 0, 'disabled' => 0, 'min_ff_event' => 0,
-	            'datalist' => 0, 'status' => 0, 'unit' => 0, 'timestamp' => 0};
+	            'datalist' => 0, 'status' => 0, 'unit' => 0, 'timestamp' => 0, 'module_group' => 0, 'custom_id' => '', 
+	            'str_warning' => '', 'str_critical' => '', 'critical_instructions' => '', 'warning_instructions' => '',
+	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
+	            'module_ff_interval' => 0};
 
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -476,11 +479,20 @@ sub process_module_data ($$$$$$$$$) {
 		} else {
 			$module_conf->{'extended_info'} .= "$tag: " . get_tag_value ($data, $tag, '') . '<br/>';
 		}
-	}
+	}	
 	
+	# Delete tags that will not be stored in tagente_modulo
+	delete $module_conf->{'data'};
+	delete $module_conf->{'type'};
+		
 	# Description XML tag and column name don't match
 	$module_conf->{'descripcion'} = $module_conf->{'description'};
+	delete $module_conf->{'description'};
 	
+	# Name XML tag and column name don't match
+	$module_conf->{'nombre'} = safe_input($module_name);
+	delete $module_conf->{'name'};
+
 	# Calculate the module interval in seconds
 	$module_conf->{'module_interval'} *= $interval if (defined ($module_conf->{'module_interval'}));
 
@@ -506,66 +518,63 @@ sub process_module_data ($$$$$$$$$) {
 		}
 
 		# Get the module type
-		my $module_id = get_module_id ($dbh, $module_type);
-		if ($module_id <= 0) {
+		$module_conf->{'id_tipo_modulo'} = get_module_id ($dbh, $module_type);
+		if ($module_conf->{'id_tipo_modulo'} <= 0) {
 			logger($pa_config, "Invalid module type '$module_type' for module '$module_name' agent '$agent_name'.", 3);
 			$ModuleSem->up ();
 			return;
 		}
+	
+		# The group name has to be translated to a group ID
+		if (defined $module_conf->{'module_group'}) {
+			$module_conf->{'id_module_group'} = get_module_group_id ($dbh, $module_conf->{'module_group'});
+			delete $module_conf->{'module_group'};
+		}
 
-		# Set default values
-		$module_conf->{'max'} = 0 unless defined ($module_conf->{'max'});
-		$module_conf->{'min'} = 0 unless defined ($module_conf->{'min'});
-		$module_conf->{'descripcion'} = '' unless defined ($module_conf->{'descripcion'});
-		$module_conf->{'post_process'} = 0 unless defined ($module_conf->{'post_process'});
-		$module_conf->{'module_interval'} = $interval unless defined ($module_conf->{'module_interval'}); # 1 * $interval
-		$module_conf->{'min_critical'} = 0 unless defined ($module_conf->{'min_critical'});
-		$module_conf->{'max_critical'} = 0 unless defined ($module_conf->{'max_critical'});
-		$module_conf->{'min_warning'} = 0 unless defined ($module_conf->{'min_warning'});
-		$module_conf->{'max_warning'} = 0 unless defined ($module_conf->{'max_warning'});
-		$module_conf->{'disabled'} = 0 unless defined ($module_conf->{'disabled'});
-		$module_conf->{'min_ff_event'} = 0 unless defined ($module_conf->{'min_ff_event'});
-		$module_conf->{'extended_info'} = '' unless defined ($module_conf->{'extended_info'});
-		$module_conf->{'unit'} = '' unless defined ($module_conf->{'unit'});
+		$module_conf->{'id_modulo'} = 1;
+		$module_conf->{'id_agente'} = $agent->{'id_agente'};
 
+		my $module_tags = undef;
+		if(defined ($module_conf->{'tags'})) {
+			$module_tags = $module_conf->{'tags'};
+			delete $module_conf->{'tags'};
+		}
+		
 		# Create the module
-		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
-			$module_conf->{'max'}, $module_conf->{'min'}, $module_conf->{'post_process'},
-			$module_conf->{'descripcion'}, $module_conf->{'module_interval'}, $dbh);
+		my $module_id = pandora_create_module_from_hash ($pa_config, $module_conf, $dbh);
+
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
 			$ModuleSem->up ();
 			return;
 		}
-	} else {
 		
+		# Assign the tags on module if the specified tags exist
+		if(defined ($module_tags)) {
+			logger($pa_config, "Processing module tags '$module_tags' in module '$module_name' for agent '$agent_name'.", 10);
+			my @module_tags = split(/,/, $module_tags);
+			for(my $i=0;$i<=$#module_tags;$i++) {
+				my $tag_info = get_db_single_row ($dbh, 'SELECT * FROM ttag WHERE name = ?', safe_input($module_tags[$i]));
+				if (defined ($tag_info)) {
+					my $tag_module;
+					
+					$tag_module->{'id_tag'} = $tag_info->{'id_tag'};
+					$tag_module->{'id_agente_modulo'} = $module->{'id_agente_modulo'};
+					
+					db_process_insert($dbh, 'id_tag', 'ttag_module', $tag_module);
+				}
+			}
+		}
+		
+	} else {
 		# Control NULL columns
 		$module->{'descripcion'} = '' unless defined ($module->{'descripcion'});
 		$module->{'extended_info'} = '' unless defined ($module->{'extended_info'});
-		$module->{'unit'} = ''  unless defined ($module->{'unit'});
 		
 		# Set default values
-		$module_conf->{'max'} = $module->{'max'} unless defined ($module_conf->{'max'});
-		$module_conf->{'min'} = $module->{'min'} unless defined ($module_conf->{'min'});
 		$module_conf->{'descripcion'} = $module->{'descripcion'} unless defined ($module_conf->{'descripcion'});
-		$module_conf->{'unit'} = $module->{'unit'} unless defined ($module_conf->{'unit'});
-		$module_conf->{'post_process'} = $module->{'post_process'} unless defined ($module_conf->{'post_process'});
-		$module_conf->{'module_interval'} = $module->{'module_interval'} unless defined ($module_conf->{'module_interval'});
-		$module_conf->{'min_critical'} = $module->{'min_critical'} unless defined ($module_conf->{'min_critical'});
-		$module_conf->{'max_critical'} = $module->{'max_critical'} unless defined ($module_conf->{'max_critical'});
-		$module_conf->{'min_warning'} = $module->{'min_warning'} unless defined ($module_conf->{'min_warning'});
-		$module_conf->{'max_warning'} = $module->{'max_warning'} unless defined ($module_conf->{'max_warning'});
-		$module_conf->{'disabled'} = $module->{'disabled'} unless defined ($module_conf->{'disabled'});
-		$module_conf->{'min_ff_event'} = $module->{'min_ff_event'} unless defined ($module_conf->{'min_ff_event'});
 		$module_conf->{'extended_info'} = $module->{'extended_info'} unless defined ($module_conf->{'extended_info'});
-
-		# The group name has to be translated to a group ID
-		my $conf_group_id = -1;
-		if (defined $module_conf->{'group'}) {
-			my $conf_group_id = get_group_id ($dbh, $module_conf->{'group'});
-		}
-		$module_conf->{'id_module_group'} = ($conf_group_id == -1) ? $module->{'id_module_group'} : $conf_group_id;
 	}
 
 	# Update module configuration if in learning mode and not a policy module
@@ -649,22 +658,19 @@ sub update_module_configuration ($$$$) {
 	my ($pa_config, $dbh, $module, $module_conf) = @_;
 
 	# Update if at least one of the configuration tokens has changed
-	foreach my $conf_token ('min', 'max', 'descripcion', 'post_process', 'module_interval', 'min_critical', 'max_critical', 'min_warning', 'max_warning', 'disabled', 'min_ff_event', 'extended_info', 'unit') {
+	foreach my $conf_token ('descripcion', 'extended_info') {
 		if ($module->{$conf_token} ne $module_conf->{$conf_token}) {
 			logger ($pa_config, "Updating configuration for module '" . safe_output($module->{'nombre'})	. "'.", 10);
 
-			db_do ($dbh, 'UPDATE tagente_modulo SET unit = ?, min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?, min_critical = ?, max_critical = ?, min_warning = ?, max_warning = ?, disabled = ?, min_ff_event = ?, extended_info = ?
-				WHERE id_agente_modulo = ?', $module_conf->{'unit'}, $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
-				$module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module_conf->{'min_critical'}, $module_conf->{'max_critical'}, $module_conf->{'min_warning'}, $module_conf->{'max_warning'}, $module_conf->{'disabled'}, $module_conf->{'min_ff_event'}, $module_conf->{'extended_info'}, $module->{'id_agente_modulo'});
+			db_do ($dbh, 'UPDATE tagente_modulo SET descripcion = ?, extended_info = ?
+				WHERE id_agente_modulo = ?', $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
+				$module_conf->{'extended_info'}, $module->{'id_agente_modulo'});
 			last;
 		}
 	}
 	
 	# Update module hash
-	foreach my $conf_token ('min', 'max', 'post_process', 'module_interval', 'min_critical', 'max_critical', 'min_warning', 'max_warning', 'disabled', 'min_ff_event', 'extended_info', 'unit') {
-		$module->{$conf_token} = $module_conf->{$conf_token};
-	}
-	$module->{'unit'} = ($module_conf->{'unit'} eq '') ? $module->{'unit'} : $module_conf->{'unit'};
+	$module->{'extended_info'} = $module_conf->{'extended_info'} if (defined($module_conf->{'extended_info'})) ;
 	$module->{'descripcion'} = ($module_conf->{'descripcion'} eq '') ? $module->{'descripcion'} : $module_conf->{'descripcion'};
 }
 

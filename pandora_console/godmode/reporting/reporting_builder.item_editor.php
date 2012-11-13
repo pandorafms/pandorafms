@@ -359,11 +359,11 @@ switch ($action) {
 				$resolution = $item ['top_n']; // Interval resolution
 				$max_values = $item ['top_n_value']; // Max values
 				break;
-
 		}
 		
 		//Restore db connection
-		if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+		if (($config ['metaconsole'] == 1) && ($server_name != '')
+			&& defined('METACONSOLE')) {
 			metaconsole_restore_db();
 		}
 		
@@ -398,7 +398,7 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_netflow_filter" style="" class="datos">
 			<td><?php echo __('Filter');?></td>
 			<td><?php
-
+				
 				$own_info = get_user_info ($config['id_user']);
 				
 				// Get group list that user has access
@@ -407,7 +407,7 @@ html_print_input_hidden('id_item', $idItem);
 				foreach($groups_user as $key => $groups){
 					$groups_id[] = $groups['id_grupo'];
 				}
-
+				
 				$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',',$groups_id).")";
 				html_print_select_from_sql($sql, 'netflow_filter', $netflow_filter);
 				?>
@@ -460,7 +460,7 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_extended_select_for_time ('period1', $period_pg, '', '', '0', 10);
 				?>
 			</td>
-		</tr>	
+		</tr>
 		<tr id="row_estimate" style="" class="datos">
 			<td style="vertical-align: top;">
 				<?php
@@ -472,7 +472,7 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_extended_select_for_time ('period2', $projection_period, '', '', '0', 10);
 				?>
 			</td>
-		</tr>	
+		</tr>
 		<tr id="row_interval" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Data range') . ui_print_help_icon('prediction_date', true); ?></td>
 			<td><?php
@@ -480,8 +480,8 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_input_text('max_interval', $max_interval, '', 5, 10);
 				echo "&nbsp;" . __('Min') . "&nbsp;";
 				html_print_input_text('min_interval', $min_interval, '', 5, 10);
-				?></td>			
-		</tr>		
+				?></td>	
+		</tr>
 		<tr id="row_only_display_wrong" style="" class="datos">
 			<td><?php echo __('Only display wrong SLAs');?></td>
 			<td>
@@ -618,6 +618,8 @@ html_print_input_hidden('id_item', $idItem);
 			<td>
 				<?php 
 					$agents = enterprise_hook('inventory_get_agents');
+					if ((empty($agents)) || $agents == -1) $agents = array();
+					
 					$agents_select = array();
 					foreach($agents as $a) {
 						$agents_select[$a['id_agente']] = $a['nombre'];
@@ -951,6 +953,9 @@ function print_SLA_list($width, $action, $idItem = null) {
 								$params['add_none_module'] = false;
 								$params['use_input_server'] = true;
 								$params['input_server_id'] = 'hidden-server_name';
+								if (defined('METACONSOLE')) {
+									$params['disabled_javascript_on_blur_function'] = true;
+								}
 								ui_print_agent_autocomplete_input($params);
 								?>
 							<td><select id="id_agent_module_sla" name="id_agente_modulo_sla" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
@@ -1059,6 +1064,9 @@ function print_General_list($width, $action, $idItem = null) {
 								$params['add_none_module'] = false;
 								$params['use_input_server'] = true;
 								$params['input_server_id'] = 'hidden-server_name_general';
+								if (defined('METACONSOLE')) {
+									$params['disabled_javascript_on_blur_function'] = true;
+								}
 								ui_print_agent_autocomplete_input($params);
 								?>
 							</td>
@@ -1088,99 +1096,37 @@ $(document).ready (function () {
 	chooseSQLquery();
 	
 	$("#text-time_to, #text-time_from").timepicker({
-			showSecond: true,
-			timeFormat: 'hh:mm:ss',
-			timeOnlyTitle: '<?php echo __('Choose time');?>',
-			timeText: '<?php echo __('Time');?>',
-			hourText: '<?php echo __('Hour');?>',
-			minuteText: '<?php echo __('Minute');?>',
-			secondText: '<?php echo __('Second');?>',
-			currentText: '<?php echo __('Now');?>',
-			closeText: '<?php echo __('Close');?>'});
+		showSecond: true,
+		timeFormat: 'hh:mm:ss',
+		timeOnlyTitle: '<?php echo __('Choose time');?>',
+		timeText: '<?php echo __('Time');?>',
+		hourText: '<?php echo __('Hour');?>',
+		minuteText: '<?php echo __('Minute');?>',
+		secondText: '<?php echo __('Second');?>',
+		currentText: '<?php echo __('Now');?>',
+		closeText: '<?php echo __('Close');?>'});
 });
 
 function create_custom_graph() {
 	<?php 
-		global $config;
-		
-		// Metaconsole activated
-		if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
+	global $config;
+	
+	// Metaconsole activated
+	if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 	?>
-			var target_server = $("#meta_servers").val();
-			// If target server is not selected
-			if (target_server == 0) {
-				$("#meta_target_servers").fadeOut ('normal');
-				$("#meta_target_servers").fadeIn ('normal');
-				$("#meta_target_servers").css('display', 'inline');
-			}
-			else {
-				
-				var hash_data;
-				var params1 = [];
-				params1.push("get_metaconsole_hash_data=1");
-				params1.push("server_name=" + target_server);
-				params1.push("page=include/ajax/reporting.ajax");
-				jQuery.ajax ({
-					data: params1.join ("&"),
-					type: 'POST',
-					url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
-					async: false,
-					timeout: 10000,
-					success: function (data) {
-						hash_data = data;
-					}
-				});
-				
-				var server_url;
-				var params1 = [];
-				params1.push("get_metaconsole_server_url=1");
-				params1.push("server_name=" + target_server);
-				params1.push("page=include/ajax/reporting.ajax");
-				jQuery.ajax ({
-					data: params1.join ("&"),
-					type: 'POST',
-					url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
-					async: false,
-					timeout: 10000,
-					success: function (data) {
-						server_url = data;
-					}
-				});
-				
-				window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph" + hash_data;
-			}
-	<?php
+		var target_server = $("#meta_servers").val();
+		// If target server is not selected
+		if (target_server == 0) {
+			$("#meta_target_servers").fadeOut ('normal');
+			$("#meta_target_servers").fadeIn ('normal');
+			$("#meta_target_servers").css('display', 'inline');
 		}
 		else {
-	?>
-		window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph";
-	<?php
-		}
-	?>
-}
-
-function edit_custom_graph() {
-	var id_graph = $("#id_custom_graph").val();
-	<?php 
-		global $config;
-		
-		// Metaconsole activated
-		if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
-	?>
-			var agent_server_temp;
-			var id_element_graph;
-			var id_server;
-			
-			if (id_graph.indexOf("|") != -1){
-				agent_server_temp = id_graph.split('|');
-				id_element_graph = agent_server_temp[0];
-				id_server = agent_server_temp[1];
-			}
 			
 			var hash_data;
 			var params1 = [];
 			params1.push("get_metaconsole_hash_data=1");
-			params1.push("server_name=" + id_server);
+			params1.push("server_name=" + target_server);
 			params1.push("page=include/ajax/reporting.ajax");
 			jQuery.ajax ({
 				data: params1.join ("&"),
@@ -1196,7 +1142,7 @@ function edit_custom_graph() {
 			var server_url;
 			var params1 = [];
 			params1.push("get_metaconsole_server_url=1");
-			params1.push("server_name=" + id_server);
+			params1.push("server_name=" + target_server);
 			params1.push("page=include/ajax/reporting.ajax");
 			jQuery.ajax ({
 				data: params1.join ("&"),
@@ -1209,14 +1155,76 @@ function edit_custom_graph() {
 				}
 			});
 			
-			window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_element_graph + hash_data;		
-	<?php
+			window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph" + hash_data;
 		}
-		else {
+	<?php
+	}
+	else {
 	?>
-			window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_graph;
+		window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph";
 	<?php
+	}
+	?>
+}
+
+function edit_custom_graph() {
+	var id_graph = $("#id_custom_graph").val();
+	<?php 
+	global $config;
+	
+	// Metaconsole activated
+	if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
+	?>
+		var agent_server_temp;
+		var id_element_graph;
+		var id_server;
+		
+		if (id_graph.indexOf("|") != -1){
+			agent_server_temp = id_graph.split('|');
+			id_element_graph = agent_server_temp[0];
+			id_server = agent_server_temp[1];
 		}
+		
+		var hash_data;
+		var params1 = [];
+		params1.push("get_metaconsole_hash_data=1");
+		params1.push("server_name=" + id_server);
+		params1.push("page=include/ajax/reporting.ajax");
+		jQuery.ajax ({
+			data: params1.join ("&"),
+			type: 'POST',
+			url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				hash_data = data;
+			}
+		});
+		
+		var server_url;
+		var params1 = [];
+		params1.push("get_metaconsole_server_url=1");
+		params1.push("server_name=" + id_server);
+		params1.push("page=include/ajax/reporting.ajax");
+		jQuery.ajax ({
+			data: params1.join ("&"),
+			type: 'POST',
+			url: action= <?php echo '"' . ui_get_full_url(false) . '"'; ?> + "/ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				server_url = data;
+			}
+		});
+		
+		window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_element_graph + hash_data;		
+	<?php
+	}
+	else {
+	?>
+		window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_graph;
+	<?php
+	}
 	?>
 }
 
@@ -1889,7 +1897,7 @@ function chooseType() {
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
 			$("#row_period").show();
-			$("#row_max_values").show();			
+			$("#row_max_values").show();
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;

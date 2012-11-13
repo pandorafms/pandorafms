@@ -1017,7 +1017,12 @@ function ui_require_javascript_file ($name, $path = 'include/javascript/') {
 	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
 		return false;
 	
-	$config['js'][$name] = $filename;
+	if (defined('METACONSOLE')) {
+		$config['js'][$name] = "../../" . $filename;
+	}
+	else {
+		$config['js'][$name] = $filename;
+	}
 	
 	return true;
 }
@@ -1089,7 +1094,12 @@ function ui_require_jquery_file ($name, $path = 'include/javascript/') {
 	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
 		return false;
 	
-	$config['jquery'][$name] = $filename;
+	if (defined('METACONSOLE')) {
+		$config['jquery'][$name] = "../../" . $filename;
+	}
+	else {
+		$config['jquery'][$name] = $filename;
+	}
 	
 	return true;
 }

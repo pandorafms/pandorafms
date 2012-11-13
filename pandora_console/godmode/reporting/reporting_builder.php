@@ -166,7 +166,7 @@ switch ($action) {
 			}
 		break;
 	case 'delete_items':
-		$resultOperationDB = null;	
+		$resultOperationDB = null;
 		$ids_serialize = (string)get_parameter('ids_items_to_delete', '');
 		
 		if (!empty($ids_serialize)) {
@@ -342,7 +342,7 @@ switch ($action) {
 		
 		$reports = reports_get_reports ($filter,
 			array ('name', 'id_report', 'description', 'private',
-				'id_user', 'id_group'), $return_all_group, 'IR', $group);		
+				'id_user', 'id_group'), $return_all_group, 'IR', $group);
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';
@@ -366,7 +366,7 @@ switch ($action) {
 			
 			//Admin options only for IW flag
 			if (check_acl ($config['id_user'], 0, "IW")) {
-			
+				
 				$table->head[$next] = __('Private');
 				$table->size[$next] = '40px';
 				$table->align[$next] = 'center';
@@ -1146,8 +1146,8 @@ switch ($action) {
 									case 'down':
 										arsort($temp_sort);
 										break;
-								}	
-										
+								}
+								
 								foreach ($temp_sort as $temp_element_key => $temp_element_val) {
 									$ids[$i]['id_rc'] = $temp_element_key;
 									$ids[$i]['element_name'] = $temp_element_val;
@@ -1335,7 +1335,7 @@ if ($enterpriseEnable and defined('METACONSOLE')) {
 	// Bread crumbs
 	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder', 'text' => __('Reporting')));
 	
-	ui_meta_print_page_header($nav_bar);	
+	ui_meta_print_page_header($nav_bar);
 	
 	// Print header
 	ui_meta_print_header(__('Reporting'). $textReportName, "", $buttons);

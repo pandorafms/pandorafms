@@ -1,5 +1,11 @@
 2012-11-13 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	include/functions_ui.php: fixed the javascript urls.
+
+2012-11-13 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/db/mysql.php, include/functions_reporting.php,
 	include/ajax/agent.php: cleaned source code style.
 	

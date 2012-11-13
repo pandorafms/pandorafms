@@ -360,7 +360,19 @@ sub parse_conf_modules($) {
 				'intensive_conditions' => [],
 				'intensive_match' => 0,
 				'timestamp' => 0,
-				'unit' => '',
+				'unit' => undef,
+				'module_group' => undef,
+				'custom_id' => undef,
+				'str_warning' => undef,
+				'str_critical' => undef,
+				'critical_instructions' => undef,
+				'warning_instructions' => undef,
+				'unknown_instructions' => undef,
+				'tags' => undef,
+				'critical_inverse' => undef,
+				'warning_inverse' => undef,
+				'quiet' => undef,
+				'module_ff_interval' => undef,
 				'macros' => {},
 			};
 		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
@@ -517,10 +529,46 @@ sub parse_conf_modules($) {
 		} elsif ($line =~ /^\s*module_min_ff_event\s+(.*)\s*$/) {
 			$module->{'min_ff_event'} = $1;
 		# Unit
-		} elsif ($line =~ /^\s*module_unit\s+(\S+)\s*$/) {
+		} elsif ($line =~ /^\s*module_unit\s+(.*)\s*$/) {
 			$module->{'unit'} = $1;
+		# Module_group
+		} elsif ($line =~ /^\s*module_group\s+(\S+)\s*$/) {
+			$module->{'module_group'} = $1;
+		# Custom id
+		} elsif ($line =~ /^\s*module_custom_id\s+(.*)\s*$/) {
+			$module->{'custom_id'} = $1;
+		# Str warning
+		} elsif ($line =~ /^\s*module_str_warning\s+(.*)\s*$/) {
+			$module->{'str_warning'} = $1;
+		# Str critical
+		} elsif ($line =~ /^\s*module_str_critical\s+(.*)\s*$/) {
+			$module->{'str_critical'} = $1;
+		# Critical instructions
+		} elsif ($line =~ /^\s*module_critical_instructions\s+(.*)\s*$/) {
+			$module->{'critical_instructions'} = $1;
+		# Warning instructions
+		} elsif ($line =~ /^\s*module_warning_instructions\s+(.*)\s*$/) {
+			$module->{'warning_instructions'} = $1;
+		# Unknown instructions
+		} elsif ($line =~ /^\s*module_unknown_instructions\s+(.*)\s*$/) {
+			$module->{'unknown_instructions'} = $1;
+		# Tags
+		} elsif ($line =~ /^\s*module_tags\s+(.*)\s*$/) {
+			$module->{'tags'} = $1;
+		# Critical inverse
+		} elsif ($line =~ /^\s*module_critical_inverse\s+(\S+)\s*$/) {
+			$module->{'critical_inverse'} = $1;
+		# Warning inverse
+		} elsif ($line =~ /^\s*module_warning_inverse\s+(\S+)\s*$/) {
+			$module->{'warning_inverse'} = $1;
+		# Quiet
+		} elsif ($line =~ /^\s*module_quiet\s+(\S+)\s*$/) {
+			$module->{'quiet'} = $1;
+		# FF interval
+		} elsif ($line =~ /^\s*module_ff_interval\s+(\S+)\s*$/) {
+			$module->{'module_ff_interval'} = $1;
 		# Macros
-		} elsif ($line =~ /^\s*module_macro(\S+)\s+(\S+)\s*$/) {
+		} elsif ($line =~ /^\s*module_macro(\S+)\s+(.*)\s*$/) {
 			$module->{'macros'}{$1} = $2;
 		}
 	}
@@ -1582,7 +1630,7 @@ sub write_module_xml ($@) {
 	# Critical section
 	$Sem->down () if (defined ($Sem));
 
-	$Xml .= "	<module>\n" .
+	$Xml .= "<module>\n" .
 		"	<name><![CDATA[" . $module->{'name'} . "]]></name>\n" .
 		"	<description><![CDATA[" . $module->{'description'} . "]]></description>\n" . 
 		"	<type>" . $module->{'type'} . "</type>\n";
@@ -1618,8 +1666,44 @@ sub write_module_xml ($@) {
 	$Xml .= "	<min_ff_event>" . $module->{'min_ff_event'} . "</min_ff_event>\n" if (defined ($module->{'min_ff_event'}));
 	
 	# Unit
-	$Xml .= "	<unit>" . $module->{'unit'} . "</unit>\n" if (defined ($module->{'unit'}));
+	$Xml .= "	<unit><![CDATA[" . $module->{'unit'} . "]]></unit>\n" if (defined ($module->{'unit'}));
+	
+	# Module group
+	$Xml .= "	<module_group>" . $module->{'module_group'} . "</module_group>\n" if (defined ($module->{'module_group'}));
+	
+	# Custom ID
+	$Xml .= "	<custom_id><![CDATA[" . $module->{'custom_id'} . "]]></custom_id>\n" if (defined ($module->{'custom_id'}));
+	
+	# Str warning
+	$Xml .= "	<str_warning><![CDATA[" . $module->{'str_warning'} . "]]></str_warning>\n" if (defined ($module->{'str_warning'}));
+	
+	# Str critical
+	$Xml .= "	<str_critical><![CDATA[" . $module->{'str_critical'} . "]]></str_critical>\n" if (defined ($module->{'str_critical'}));
+	
+	# Critical instructions
+	$Xml .= "	<critical_instructions><![CDATA[" . $module->{'critical_instructions'} . "]]></critical_instructions>\n" if (defined ($module->{'critical_instructions'}));
+	
+	# Warning instructions
+	$Xml .= "	<warning_instructions><![CDATA[" . $module->{'warning_instructions'} . "]]></warning_instructions>\n" if (defined ($module->{'warning_instructions'}));
+	
+	# Unknown instructions
+	$Xml .= "	<unknown_instructions><![CDATA[" . $module->{'unknown_instructions'} . "]]></unknown_instructions>\n" if (defined ($module->{'unknown_instructions'}));
+	
+	# Tags
+	$Xml .= "	<tags><![CDATA[" . $module->{'tags'} . "]]></tags>\n" if (defined ($module->{'tags'}));
 
+	# Critical inverse
+	$Xml .= "	<critical_inverse>" . $module->{'critical_inverse'} . "</critical_inverse>\n" if (defined ($module->{'critical_inverse'}));
+	
+	# Warning inverse
+	$Xml .= "	<warning_inverse>" . $module->{'warning_inverse'} . "</warning_inverse>\n" if (defined ($module->{'warning_inverse'}));
+	
+	# Quiet
+	$Xml .= "	<quiet>" . $module->{'quiet'} . "</quiet>\n" if (defined ($module->{'quiet'}));
+	
+	# Module FF interval
+	$Xml .= "	<module_ff_interval>" . $module->{'module_ff_interval'} . "</module_ff_interval>\n" if (defined ($module->{'module_ff_interval'}));
+		
 	# Data list
 	if ($#data > 0) {
 		$Xml .= "	<datalist>\n";
@@ -1633,7 +1717,7 @@ sub write_module_xml ($@) {
 		chomp ($data[0]);
 		$Xml .= "	<data><![CDATA[$data[0]]]></data>\n";
 	}
-	$Xml .= "	</module>\n";
+	$Xml .= "</module>\n";
 
  	$Sem->up () if (defined ($Sem));
 }

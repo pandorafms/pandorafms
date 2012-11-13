@@ -1562,7 +1562,10 @@ CREATE TABLE tnetwork_map (
 	dont_show_subgroups NUMBER(10, 0) default 0 NOT NULL,
 	pandoras_children NUMBER(10, 0) default 0 NOT NULL,
 	show_groups NUMBER(10, 0) default 0 NOT NULL,
-	show_modules NUMBER(10, 0) default 0 NOT NULL
+	show_modules NUMBER(10, 0) default 0 NOT NULL,
+	id_agent NUMBER(10, 0) default 0 NOT NULL,
+	server_name VARCHAR(100)  NOT NULL,
+	show_modulegroup NUMBER(10, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tnetwork_map_s INCREMENT BY 1 START WITH 1;
@@ -1582,9 +1585,9 @@ CREATE SEQUENCE tsnmp_filter_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tsnmp_filter_inc BEFORE INSERT ON tsnmp_filter REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tsnmp_filter_s.nextval INTO :NEW.ID_SNMP_FILTER FROM dual; END tsnmp_filter_inc;;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tagent_custom_fields"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE tagent_custom_fields (
 	id_field NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(45) default '',
@@ -1595,9 +1598,9 @@ CREATE SEQUENCE tagent_custom_fields_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tagent_custom_fields_inc BEFORE INSERT ON tagent_custom_fields REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagent_custom_fields_s.nextval INTO :NEW.ID_FIELD FROM dual; END tagent_custom_fields_inc;;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tagent_custom_data"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE tagent_custom_data (
 	id_field NUMBER(10, 0) NOT NULL REFERENCES tagent_custom_fields(id_field) ON DELETE CASCADE,
 	id_agent NUMBER(10, 0) NOT NULL REFERENCES tagente(id_agente) ON DELETE CASCADE,
@@ -1615,24 +1618,23 @@ CREATE OR REPLACE TRIGGER tagent_custom_data_update1 AFTER UPDATE OF ID_AGENTE O
 CREATE OR REPLACE PROCEDURE insert_id (table_name IN VARCHAR2, sql_insert IN VARCHAR2, id OUT NUMBER) IS BEGIN EXECUTE IMMEDIATE sql_insert; EXECUTE IMMEDIATE 'SELECT ' ||table_name||'_s.currval FROM DUAL' INTO id; EXCEPTION WHEN others THEN RAISE_APPLICATION_ERROR(-20001, 'ERROR on insert_id procedure, please check input parameters or procedure logic.'); END insert_id;;
 
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "ttag"
--- -----------------------------------------------------
-
+-- ---------------------------------------------------------------------
 CREATE TABLE ttag ( 
- id_tag NUMBER(10, 0) NOT NULL PRIMARY KEY, 
- name VARCHAR2(100) default '' NOT NULL, 
- description CLOB default '' NOT NULL, 
- url CLOB default '' NOT NULL
+	id_tag NUMBER(10, 0) NOT NULL PRIMARY KEY, 
+	name VARCHAR2(100) default '' NOT NULL, 
+	description CLOB default '' NOT NULL, 
+	url CLOB default '' NOT NULL
 ); 
 
 CREATE SEQUENCE ttag_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER ttag_inc BEFORE INSERT ON ttag REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttag_s.nextval INTO :NEW.ID_TAG FROM dual; END ttag_inc;;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "ttag_module"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 
 CREATE TABLE ttag_module ( 
  id_tag NUMBER(10, 0) NOT NULL, 
@@ -1642,9 +1644,9 @@ CREATE TABLE ttag_module (
 
 CREATE INDEX ttag_module_id_ag_modulo_idx ON ttag_module(id_agente_modulo);
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "ttag_policy_module"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 
 CREATE TABLE ttag_policy_module ( 
  id_tag NUMBER(10, 0) NOT NULL, 
@@ -1659,17 +1661,17 @@ CREATE INDEX ttag_poli_mod_id_pol_mo_idx ON ttag_policy_module(id_policy_module)
 -- -----------------------------------------------------
 
 CREATE TABLE tnetflow_filter (
-id_sg NUMBER(10, 0) NOT NULL PRIMARY KEY,
-id_name VARCHAR2(600) NOT NULL,
-id_group NUMBER(10, 0),
-ip_dst CLOB NOT NULL,
-ip_src CLOB NOT NULL,
-dst_port CLOB NOT NULL,
-src_port CLOB NOT NULL,
-advanced_filter CLOB NOT NULL,
-filter_args CLOB NOT NULL,
-aggregate VARCHAR2(60),
-output VARCHAR2(60)
+	id_sg NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_name VARCHAR2(600) NOT NULL,
+	id_group NUMBER(10, 0),
+	ip_dst CLOB NOT NULL,
+	ip_src CLOB NOT NULL,
+	dst_port CLOB NOT NULL,
+	src_port CLOB NOT NULL,
+	advanced_filter CLOB NOT NULL,
+	filter_args CLOB NOT NULL,
+	aggregate VARCHAR2(60),
+	output VARCHAR2(60)
 );
 
 CREATE SEQUENCE tnetflow_filter_s INCREMENT BY 1 START WITH 1;
@@ -1680,11 +1682,11 @@ CREATE OR REPLACE TRIGGER tnetflow_filter_inc BEFORE INSERT ON tnetflow_filter R
 -- -----------------------------------------------------
 
 CREATE TABLE tnetflow_report (
-id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
-id_name VARCHAR2(100) NOT NULL,
-description CLOB default '',
-id_group NUMBER(10, 0)
-server_name CLOB default '',
+	id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_name VARCHAR2(100) NOT NULL,
+	description CLOB default '',
+	id_group NUMBER(10, 0)
+	server_name CLOB default '',
 );
 
 CREATE SEQUENCE tnetflow_report_s INCREMENT BY 1 START WITH 1;

@@ -567,6 +567,63 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	return $node;
 }
 
+function networkmap_create_module_group_node ($module_group, $simple = 0, $font_size = 10, $metaconsole = false, $id_server = null) {
+	
+	// Set node status
+	switch ($module_group['status']) {
+		case 0: 
+			$status_color = '#8DFF1D'; // Normal monitor
+			break;
+		case 1:
+			$status_color = '#FF1D1D'; // Critical monitor
+			break;
+		case 2:
+			$status_color = '#FFE308'; // Warning monitor
+			break;
+		case 4:
+			$status_color = '#FFA300'; // Alert fired
+			break;
+		default:
+			$status_color = '#BBBBBB'; // Unknown monitor
+			break;
+	}
+	
+	if ($simple == 0) {
+		if (defined("METACONSOLE")) {
+			$url = '';
+			$url_tooltip = '';
+		}
+		else {
+			$url = '';
+			$url_tooltip = '';
+		}
+		
+		$node = $module_group['id_node'].' [ color="' . $status_color .
+			'", fontsize='.$font_size.', style="filled", ' .
+			'fixedsize=true, width=0.30, height=0.30, ' .
+			'label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
+			io_safe_output($module_group['name']) . '</TD></TR></TABLE>>,
+			shape="square", URL="' . $url . '",
+			tooltip="' . $url_tooltip . '"];';
+	}
+	else {
+		if (defined("METACONSOLE")) {
+			$url = '';
+			$url_tooltip = '';
+		}
+		else {
+			$url = '';
+			$url_tooltip = '';
+		}
+		
+		$node = $module_group['id_node'] . ' [ color="'.$status_color .
+			'", fontsize='.$font_size.', shape="square", URL="' . $url . '", ' .
+			'style="filled", fixedsize=true, width=0.20, ' .
+			'height=0.20, label="", tooltip="' . $url_tooltip . '"];';
+	}
+	return $node;
+}
+
 // Returns a module node definition
 function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $metaconsole = false, $id_server = null) {
 	
@@ -574,7 +631,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $
 		false, $metaconsole, $id_server);
 	
 	// Set node status
-	switch($status) {
+	switch ($status) {
 		case 0: 
 			$status_color = '#8DFF1D'; // Normal monitor
 			break;

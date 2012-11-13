@@ -1,3 +1,21 @@
+2012-11-13 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/db/mysql.php, include/functions_reporting.php,
+	include/ajax/agent.php: cleaned source code style.
+	
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql, pandoradb.sql,
+	pandoradb.postgreSQL.sql, pandoradb.oracle.sql: added the fields
+	'id_agent', 'server_name' and 'show_modulegroup' in the table
+	'tnetwork_map'.
+	
+	* include/functions_ui.php: fixed the function
+	"ui_print_agent_autocomplete_input".
+	
+	* include/functions_networkmap.php: added function
+	"networkmap_create_module_group_node".
+
 2012-11-12 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_reporting.php: cleaned source code style.

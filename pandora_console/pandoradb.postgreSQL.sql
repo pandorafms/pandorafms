@@ -49,9 +49,9 @@ CREATE TABLE "taddress_agent" (
 	"id_agent" BIGINT NOT NULL default 0
 );
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tagente" (
 	"id_agente" SERIAL NOT NULL PRIMARY KEY,
 	"nombre" varchar(600) NOT NULL default '',
@@ -84,9 +84,9 @@ CREATE INDEX "tagente_direccion_idx" ON "tagente"("direccion");
 CREATE INDEX "tagente_disabled_idx" ON "tagente"("disabled");
 CREATE INDEX "tagente_id_grupo_idx" ON "tagente"("id_grupo");
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente_datos`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tagente_datos" (
 	"id_agente_modulo" INTEGER NOT NULL default 0,
 	"datos" DOUBLE PRECISION default NULL,
@@ -95,9 +95,9 @@ CREATE TABLE "tagente_datos" (
 CREATE INDEX "tagente_datos_id_agente_modulo_idx" ON "tagente_datos"("id_agente_modulo");
 CREATE INDEX "tagente_datos_utimestamp_idx" ON "tagente_datos"("utimestamp");
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente_datos_inc`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tagente_datos_inc" (
 	"id_adi" SERIAL NOT NULL PRIMARY KEY,
 	"id_agente_modulo" INTEGER NOT NULL default 0,
@@ -106,9 +106,9 @@ CREATE TABLE "tagente_datos_inc" (
 );
 CREATE INDEX "tagente_datos_inc_id_agente_modulo_idx" ON "tagente_datos_inc"("id_agente_modulo");
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tagente_datos_string`
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tagente_datos_string" (
 	"id_agente_modulo" INTEGER NOT NULL default 0,
 	"datos" TEXT NOT NULL,
@@ -1361,7 +1361,10 @@ CREATE TABLE "tnetwork_map" (
 	"dont_show_subgroups" INTEGER NOT NULL default 0,
 	"pandoras_children" INTEGER NOT NULL default 0,
 	"show_modules" INTEGER NOT NULL default 0,
-	"show_groups" INTEGER NOT NULL default 0
+	"show_groups" INTEGER NOT NULL default 0,
+	"id_agent" INTEGER NOT NULL default 0,
+	"server_name" VARCHAR(100)  NOT NULL,
+	"show_modulegroup" INTEGER NOT NULL default 0
 );
 
 ------------------------------------------------------------------------
@@ -1382,30 +1385,30 @@ CREATE TABLE "tagent_custom_fields" (
 	"display_on_front" SMALLINT NOT NULL default 0
 );
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tagent_custom_data"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tagent_custom_data" (
 	"id_field" INTEGER NOT NULL REFERENCES tagent_custom_fields("id_field") ON UPDATE CASCADE ON DELETE CASCADE,
 	"id_agent" INTEGER NOT NULL REFERENCES tagente("id_agente") ON UPDATE CASCADE ON DELETE CASCADE,
 	"description" text default '',
-  PRIMARY KEY  ("id_field", "id_agent")
+	PRIMARY KEY  ("id_field", "id_agent")
 );
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "ttag"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 
 CREATE TABLE "ttag" ( 
- "id_tag" SERIAL NOT NULL PRIMARY KEY, 
- "name" VARCHAR(100) NOT NULL default '', 
- "description" text NOT NULL default '', 
- "url" text NOT NULL default ''
+	"id_tag" SERIAL NOT NULL PRIMARY KEY, 
+	"name" VARCHAR(100) NOT NULL default '', 
+	"description" text NOT NULL default '', 
+	"url" text NOT NULL default ''
 ); 
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "ttag_module"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 
 CREATE TABLE "ttag_module" ( 
  "id_tag" INTEGER NOT NULL, 

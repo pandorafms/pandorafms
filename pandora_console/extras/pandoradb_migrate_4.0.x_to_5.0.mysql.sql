@@ -324,6 +324,9 @@ ALTER TABLE tnetwork_map ADD `dont_show_subgroups` TINYINT(1) UNSIGNED NOT NULL 
 ALTER TABLE tnetwork_map ADD `pandoras_children` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE tnetwork_map ADD `show_groups` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE tnetwork_map ADD `show_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE tnetwork_map ADD `id_agent` INT  NOT NULL DEFAULT 0;
+ALTER TABLE tnetwork_map ADD `server_name` VARCHAR(100)  NOT NULL;
+ALTER TABLE tnetwork_map ADD `show_modulegroup` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
 
 -- ----------------------------------------------------------------------
 -- Table `tagente_estado`

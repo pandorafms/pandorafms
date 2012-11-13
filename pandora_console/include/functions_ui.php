@@ -2750,6 +2750,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$javascript_tags = $parameters['javascript_tags'];
 	}
 	
+	$disabled_javascript_on_blur_function = false;//Default value
+	if (isset($parameters['disabled_javascript_on_blur_function'])) {
+		$disabled_javascript_on_blur_function = $parameters['disabled_javascript_on_blur_function'];
+	}
+	
 	$javascript_on_blur_function_name = 'function_on_blur_' . $input_name;//Default value
 	if (isset($parameters['javascript_on_blur_function_name'])) {
 		$javascript_on_blur_function_name = $parameters['javascript_on_blur_function_name'];
@@ -2846,10 +2851,13 @@ function ui_print_agent_autocomplete_input($parameters) {
 	$html = '';
 	
 	
-	$attrs = array(
-		'style' =>
-			'background: url(' . $icon_image . ') no-repeat right;',
-		'onblur' => $javascript_on_blur_function_name . '()');
+	$attrs = array();
+	$attrs['style'] =
+		'background: url(' . $icon_image . ') no-repeat right;';
+	
+	if (!$disabled_javascript_on_blur_function) {
+		$attrs['onblur'] = $javascript_on_blur_function_name . '()';
+	}
 	
 	$html = html_print_input_text_extended($input_name, $value,
 		$input_id, $helptip_text, $size, $maxlength, $disabled, '', $attrs, true);

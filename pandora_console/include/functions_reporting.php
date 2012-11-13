@@ -821,7 +821,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	elseif (($previous_value <= ($min_value - $percent)) || ($previous_value >= ($max_value + $percent))) { //3 when value is Wrong
 		$previous_status = 3;
 	}
-
+	
 	$data_colors = array();
 	$i = 0;
 	
@@ -2588,7 +2588,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				else if ($sla_value < $sla['sla_limit']) {
 					$total_result_SLA = 'fail';
 				}
-								
+				
 				$total_SLA += $sla_value;
 				
 				if ($show_table) {

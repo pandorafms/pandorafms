@@ -346,6 +346,9 @@ ALTER TABLE "tnetwork_map" ADD COLUMN "dont_show_subgroups" INTEGER NOT NULL DEF
 ALTER TABLE "tnetwork_map" ADD COLUMN "pandoras_children" INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE "tnetwork_map" ADD COLUMN "show_modules" INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE "tnetwork_map" ADD COLUMN "show_groups" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "tnetwork_map" ADD COLUMN "id_agent" INTEGER NOT NULL default 0;
+ALTER TABLE "tnetwork_map" ADD COLUMN "server_name" VARCHAR(100)  NOT NULL;
+ALTER TABLE "tnetwork_map" ADD COLUMN "show_modulegroup" INTEGER NOT NULL default 0;
 
 ------------------------------------------------------------------------
 -- Table "tagente_estado"

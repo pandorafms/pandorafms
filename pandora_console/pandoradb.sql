@@ -1478,6 +1478,9 @@ CREATE TABLE IF NOT EXISTS `tnetwork_map` (
 	`pandoras_children` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	`show_groups` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	`show_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`id_agent` INT  NOT NULL DEFAULT 0,
+	`server_name` VARCHAR(100)  NOT NULL,
+	`show_modulegroup` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id_networkmap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1529,7 +1532,6 @@ CREATE TABLE IF NOT EXISTS `ttag` (
 -- -----------------------------------------------------
 -- Table `ttag_module`
 -- -----------------------------------------------------
-
 CREATE TABLE IF NOT EXISTS `ttag_module` ( 
 	`id_tag` int(10) NOT NULL, 
 	`id_agente_modulo` int(10) NOT NULL DEFAULT 0, 
@@ -1537,10 +1539,9 @@ CREATE TABLE IF NOT EXISTS `ttag_module` (
 	KEY `idx_id_agente_modulo` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `ttag_policy_module`
--- -----------------------------------------------------
-
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttag_policy_module` ( 
 	`id_tag` int(10) NOT NULL, 
 	`id_policy_module` int(10) NOT NULL DEFAULT 0, 
@@ -1548,10 +1549,9 @@ CREATE TABLE IF NOT EXISTS `ttag_policy_module` (
 	KEY `idx_id_policy_module` (`id_policy_module`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`
--- -----------------------------------------------------
-
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
 	`id_sg`  int(10) unsigned NOT NULL auto_increment,
 	`id_name` varchar(600) NOT NULL default '0',
@@ -1567,10 +1567,9 @@ CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
 	PRIMARY KEY  (`id_sg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tnetflow_report`
--- -----------------------------------------------------
-
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetflow_report` (
 	`id_report` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
 	`id_name` varchar(150) NOT NULL default '',
@@ -1583,7 +1582,6 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report` (
 -- ---------------------------------------------------------------------
 -- Table `tnetflow_report_content`
 -- ---------------------------------------------------------------------
-
 CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 	`id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_report` INTEGER UNSIGNED NOT NULL default 0,

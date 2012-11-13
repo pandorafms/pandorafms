@@ -355,6 +355,9 @@ ALTER TABLE tnetwork_map ADD (dont_show_subgroups NUMBER(10, 0) default 0 NOT NU
 ALTER TABLE tnetwork_map ADD (pandoras_children NUMBER(10, 0) default 0 NOT NULL);
 ALTER TABLE tnetwork_map ADD (show_modules NUMBER(10, 0) default 0 NOT NULL);
 ALTER TABLE tnetwork_map ADD (show_groups NUMBER(10, 0) default 0 NOT NULL);
+ALTER TABLE tnetwork_map ADD (id_agent NUMBER(10, 0) default 0 NOT NULL);
+ALTER TABLE tnetwork_map ADD (server_name VARCHAR(100)  NOT NULL);
+ALTER TABLE tnetwork_map ADD (show_modulegroup NUMBER(10, 0) default 0 NOT NULL);
 
 ------------------------------------------------------------------------
 -- Table tagente_estado

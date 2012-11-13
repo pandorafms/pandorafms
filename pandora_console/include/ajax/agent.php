@@ -188,7 +188,9 @@ if ($search_agents_2 && (!defined('METACONSOLE'))) {
 	return;
 }
 elseif ($search_agents_2 && ($config['metaconsole'] == 1) && defined('METACONSOLE')) {
-	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup");
+	
+	$servers = db_get_all_rows_sql ("SELECT *
+		FROM tmetaconsole_setup");
 	if (!isset($servers)) {
 		return;
 	}

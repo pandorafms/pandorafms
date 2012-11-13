@@ -101,25 +101,26 @@ function mysql_db_get_all_rows_sql ($sql, $search_history_db = false, $cache = t
 function mysql_db_get_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d LIMIT 1",
-				$field, $table, $field_search, $condition);
+			$field, $table, $field_search, $condition);
 	}
 	else if (is_float ($condition) || is_double ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %f LIMIT 1",
-				$field, $table, $field_search, $condition);
+			$field, $table, $field_search, $condition);
 	}
 	else {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = '%s' LIMIT 1",
-				$field, $table, $field_search, $condition);
+			$field, $table, $field_search, $condition);
 	}
+	
 	$result = db_get_all_rows_sql ($sql, $search_history_db);
-
+	
 	if ($result === false)
 		return false;
 	
 	if ($field[0] == '`')
 		$field = str_replace ('`', '', $field);
 	
-		
+	
 	return $result[0][$field];
 }
 

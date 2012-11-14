@@ -1036,7 +1036,7 @@ if ($create_module) {
 // =================
 if ($delete_module) { // DELETE agent module !
 	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
-	$module_data = db_get_row ('tagente_modulo', 'id_agente_modulo', $id_borrar_modulo);
+	$module_data = db_get_row_sql ('SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente_modulo=' . $id_borrar_modulo);
 	$id_grupo = (int) agents_get_agent_group($id_agente);
 	
 	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
@@ -1069,8 +1069,23 @@ if ($delete_module) { // DELETE agent module !
 		'disabled' => 1,
 		'delete_pending' => 1);
 	$result = db_process_sql_update('tagente_modulo', $values, array('id_agente_modulo' => $id_borrar_modulo));
-	if ($result === false)
+	if ($result === false) {
 		$error++;
+	} else {
+		// Update module status count
+		if ($module_data['utimestamp'] == 0) {
+			db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module_data['id_agente']);
+		} else if ($module_data['estado'] == 0) {
+			db_process_sql ('UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module_data['id_agente']);
+		} else if ($module_data['estado'] == 1) {
+			db_process_sql ('UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module_data['id_agente']);
+		} else if ($module_data['estado'] == 2) {
+			db_process_sql ('UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module_data['id_agente']);
+		} else if ($module_data['estado'] == 3) {
+			db_process_sql ('UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module_data['id_agente']);
+		}
+		db_process_sql ('UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module_data['id_agente']);
+	}
 	
 	$result = db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_borrar_modulo));
 	if ($result === false)

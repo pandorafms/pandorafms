@@ -71,6 +71,12 @@ ALTER TABLE "tincidencia" ADD COLUMN "id_agent" INTEGER NULL DEFAULT 0;
 -- -----------------------------------------------------
 ALTER TABLE "tagente" ADD COLUMN "url_address" text NULL default '';
 ALTER TABLE "tagente" ADD COLUMN "quiet" SMALLINT NOT NULL default 0;
+ALTER TABLE "tagente" ADD COLUMN "normal_count" INTEGER NOT NULL default 0;
+ALTER TABLE "tagente" ADD COLUMN "warning_count" INTEGER NOT NULL default 0;
+ALTER TABLE "tagente" ADD COLUMN "critical_count" INTEGER NOT NULL default 0;
+ALTER TABLE "tagente" ADD COLUMN "unknown_count" INTEGER NOT NULL default 0;
+ALTER TABLE "tagente" ADD COLUMN "notinit_count" INTEGER NOT NULL default 0;
+ALTER TABLE "tagente" ADD COLUMN "total_count" INTEGER NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table "talert_special_days"

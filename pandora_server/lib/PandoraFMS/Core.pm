@@ -1052,6 +1052,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $status = $agent_status->{'estado'};
 	my $status_changes = $agent_status->{'status_changes'};
 	my $last_data_value = $agent_status->{'datos'};
+	my $last_known_status = $agent_status->{'last_known_status'};
 	
 	# Get new status
 	my $new_status = get_module_status ($processed_data, $module, $module_type);
@@ -1088,10 +1089,17 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	
 	# Change status
 	if ($status_changes == $module->{'min_ff_event'} && $status != $new_status) {
-		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $dbh);
+		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
 		$status = $new_status;
+
+		# Update module status count
+		update_module_status_count ($dbh, $agent, $status, $last_status, $agent_status->{'utimestamp'});
 	}
-	
+	# Update module status count for notinit modules that go to normal status
+	elsif ($agent_status->{'utimestamp'} == 0) {
+		update_module_status_count ($dbh, $agent, $status, $last_status, 0);
+	}
+		
 	$last_status = $new_status;
 		
 	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
@@ -2118,6 +2126,10 @@ sub pandora_create_module ($$$$$$$$$$) {
 	my $module_id = db_insert($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
 	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, last_try) VALUES (?, ?, \'1970-01-01 00:00:00\')', $module_id, $agent_id);
+	
+	# Update the module status count
+	db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $agent_id);
+	
 	return $module_id;
 }
 
@@ -2127,6 +2139,10 @@ sub pandora_create_module ($$$$$$$$$$) {
 sub pandora_delete_module ($$;$) {
 	my ($dbh, $module_id, $conf) = @_;
 
+	# Get module data
+	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente_modulo=?', $module_id);
+	return unless defined ($module);
+	
 	# Delete Graphs, layouts & reports
 	db_do ($dbh, 'DELETE FROM tgraph_source WHERE id_agent_module = ?', $module_id);
 	db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo = ?', $module_id);
@@ -2147,14 +2163,25 @@ sub pandora_delete_module ($$;$) {
 	# Set pending delete the module
 	db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1, delete_pending = 1, nombre = "delete_pending" WHERE id_agente_modulo = ?', $module_id);
 
-	my $agent_id = get_module_agent_id($dbh, $module_id);
-	
-	my $agent_name = get_agent_name($dbh, $agent_id);
-	my $module_name = get_module_name($dbh, $module_id);
+	my $agent_name = get_agent_name($dbh, $module->{'id_agente'});
 	
 	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')) {
-		enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module_name]);
+		enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module->{'nombre'}]);
 	}
+
+	# Update module status count
+	if ($module->{'utimestamp'} == 0) {
+		db_do ($dbh, 'UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module->{'id_agente'});
+	} elsif ($module->{'estado'} == 0) {
+		db_do ($dbh, 'UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module->{'id_agente'});
+	} elsif ($module->{'estado'} == 1) {
+		db_do ($dbh, 'UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module->{'id_agente'});
+	} elsif ($module->{'estado'} == 2) {
+		db_do ($dbh, 'UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module->{'id_agente'});
+	} elsif ($module->{'estado'} == 3) {
+		db_do ($dbh, 'UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module->{'id_agente'});
+	}
+	db_do ($dbh, 'UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module->{'id_agente'});
 }
 
 ##########################################################################
@@ -2168,6 +2195,9 @@ sub pandora_create_module_from_hash ($$$) {
 	my $module_id = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $parameters);
 
 	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, last_try) VALUES (?, ?, \'1970-01-01 00:00:00\')', $module_id, $parameters->{'id_agente'});
+
+	# Update the module status count
+	db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
 
 	return $module_id;
 }
@@ -2904,8 +2934,8 @@ sub pandora_validate_event ($$$) {
 ##########################################################################
 # Generates an event according to the change of status of a module.
 ##########################################################################
-sub generate_status_event ($$$$$$$) {
-	my ($pa_config, $data, $agent, $module, $status, $last_status, $dbh) = @_;
+sub generate_status_event ($$$$$$$$) {
+	my ($pa_config, $data, $agent, $module, $status, $last_status, $last_known_status, $dbh) = @_;
 	my ($event_type, $severity);
 	my $description = "Module " . safe_output($module->{'nombre'}) . " (".safe_output($data).") is ";
 
@@ -2924,12 +2954,12 @@ sub generate_status_event ($$$$$$$) {
 	} elsif ($status == 2) {
 		
 		# From normal
-		if ($last_status == 0) {
+		if ($last_known_status == 0) {
 			($event_type, $severity) = ('going_up_warning', 3);
 			$description .= "going to WARNING";
 			
 		# From critical
-		} elsif ($last_status == 1) {
+		} elsif ($last_known_status == 1) {
 			($event_type, $severity) = ('going_down_warning', 3);
 			$description .= "going to WARNING";
 		} else {
@@ -3550,7 +3580,7 @@ sub pandora_module_unknown ($$) {
 	my ($pa_config, $dbh) = @_;
 	
 	my @modules = get_db_rows ($dbh, 'SELECT tagente_modulo.*,
-			tagente_estado.id_agente_estado
+			tagente_estado.id_agente_estado, tagente_estado.estado
 		FROM tagente_modulo, tagente_estado, tagente 
 		WHERE tagente.id_agente = tagente_estado.id_agente 
 			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
@@ -3573,7 +3603,10 @@ sub pandora_module_unknown ($$) {
 			logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while executing unknown alerts for module '" . $module->{'nombre'} . "'.", 3);
 			return;
 		}
-		
+	
+		# Update module status count
+		update_module_status_count ($dbh, $agent, 3, $module->{'estado'});
+	
 		# Generate alerts
 		if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
 			pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
@@ -3615,8 +3648,43 @@ sub pandora_get_module_tags ($$$) {
 	
 	# Remove the trailing ','
 	chop ($tag_string);
-	
 	return $tag_string;
+}
+
+##########################################################################
+# Update the module status count of an agent.
+##########################################################################
+sub update_module_status_count ($$$$;$) {
+	my ($dbh, $agent, $new_status, $last_status, $utimestamp) = @_;
+
+	# Substract the previous status
+	my $query_sub = '';
+	if (defined ($utimestamp) && $utimestamp == 0) {
+		$query_sub .= 'notinit_count=notinit_count-1';
+	} elsif ($last_status == 0) {
+		$query_sub .= 'normal_count=normal_count-1';
+	} elsif ($last_status == 1) {
+		$query_sub .= 'critical_count=critical_count-1';
+	} elsif ($last_status == 2) {
+		$query_sub .= 'warning_count=warning_count-1';
+	} elsif ($last_status == 3) {
+		$query_sub .= 'unknown_count=unknown_count-1';
+	}
+	
+	# Add the new status
+	my $query_add = '';
+	if ($new_status == 0) {
+		$query_add .= 'normal_count=normal_count+1';
+	} elsif ($new_status == 1) {
+		$query_add .= 'critical_count=critical_count+1';
+	} elsif ($new_status == 2) {
+		$query_add .= 'warning_count=warning_count+1';
+	} elsif ($new_status == 3) {
+		$query_add .= 'unknown_count=unknown_count+1';
+	}
+
+	# Update the status count
+	db_do ($dbh, "UPDATE tagente SET $query_sub, $query_add WHERE id_agente=?", $agent->{'id_agente'});
 }
 
 # End of function declaration

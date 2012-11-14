@@ -105,6 +105,9 @@ if (isset ($_POST["template_id"])) {
 					'id_agente' => $id_agente,
 					'utimestamp' => 0);
 				db_process_sql_insert('tagente_estado', $values);
+				
+				// Update module status count
+				db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$id_agente);
 			}
 			else {
 				echo '<h3 class="error">'.__('Error adding module').'</h3>';

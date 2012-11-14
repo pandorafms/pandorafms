@@ -1,3 +1,20 @@
+2012-11-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_modules.php,
+	  pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  godmode/agentes/agent_template.php,
+	  godmode/agentes/module_manager.php,
+	  godmode/agentes/agent_manager.php: Added support for server-side
+	  module status calculation.
+
+	* godmode/agentes/configurar_agente.php: Show 'None' when no server is
+	  selected for an agent.
+
 2012-11-13 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/reporting_builder.php,

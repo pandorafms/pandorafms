@@ -77,6 +77,12 @@ ALTER TABLE tincidencia ADD (id_agent NUMBER(10,0) default 0 NULL);
 -- -----------------------------------------------------
 ALTER TABLE tagente ADD (url_address CLOB default '' NULL);
 ALTER TABLE tagente ADD (quiet NUMBER(5, 0) default 0 NOT NULL);
+ALTER TABLE tagente ADD (normal_count NUMBER(20, 0) default 0 NOT NULL);
+ALTER TABLE tagente ADD (warning_count NUMBER(20, 0) default 0 NOT NULL);
+ALTER TABLE tagente ADD (critical_count NUMBER(20, 0) default 0 NOT NULL);
+ALTER TABLE tagente ADD (unknown_count NUMBER(20, 0) default 0 NOT NULL);
+ALTER TABLE tagente ADD (notinit_count NUMBER(20, 0) default 0 NOT NULL);
+ALTER TABLE tagente ADD (total_count NUMBER(20, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table talert_special_days

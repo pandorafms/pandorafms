@@ -79,7 +79,13 @@ CREATE TABLE tagente (
 	 --set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and don\'t update it
 	update_gis_data NUMBER(5, 0) DEFAULT 1 NOT NULL,
 	url_address CLOB DEFAULT '' NULL,
-	quiet NUMBER(5, 0) default 0 NOT NULL
+	quiet NUMBER(5, 0) default 0 NOT NULL,
+	normal_count NUMBER(20, 0) default 0 NOT NULL,
+	warning_count NUMBER(20, 0) default 0 NOT NULL,
+	critical_count NUMBER(20, 0) default 0 NOT NULL,
+	unknown_count NUMBER(20, 0) default 0 NOT NULL,
+	notinit_count NUMBER(20, 0) default 0 NOT NULL,
+	total_count NUMBER(20, 0) default 0 NOT NULL
 );
 CREATE INDEX tagente_nombre_idx ON tagente(nombre);
 CREATE INDEX tagente_direccion_idx ON tagente(direccion);

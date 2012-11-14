@@ -132,9 +132,27 @@ if ($multiple_delete) {
 		// error. NOTICE that we don't delete all data here, just marking for deletion
 		// and delete some simple data.
 		$status = '';
+		$module = db_get_row_sql ('SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente_modulo=' . (int)$id_agent_module_del);
 		if (db_process_sql("UPDATE tagente_modulo
-			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del, "affected_rows", '', true, $status, false) === false)
+			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del, "affected_rows", '', true, $status, false) === false) {
 			$error++;
+		} else {	
+			// Update module status count
+			if ($module !== false) {
+				if ($module['utimestamp'] == 0) {
+					db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module['id_agente']);
+				} else if ($module['estado'] == 0) {
+					db_process_sql ('UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module['id_agente']);
+				} else if ($module['estado'] == 1) {
+					db_process_sql ('UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module['id_agente']);
+				} else if ($module['estado'] == 2) {
+					db_process_sql ('UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module['id_agente']);
+				} else if ($module['estado'] == 3) {
+					db_process_sql ('UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module['id_agente']);
+				}
+				db_process_sql ('UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module['id_agente']);
+			}
+	}
 		
 		switch ($config["dbtype"]) {
 			case "mysql":

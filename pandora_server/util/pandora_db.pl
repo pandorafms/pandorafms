@@ -475,6 +475,8 @@ sub pandora_checkdb_consistency {
 
 		# Delete the module
 		db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agente_modulo);
+		# Update the module status count
+		db_do ($dbh, 'UPDATE tagente SET total_count=total_count-1, notinit_count=notinit_count-1 WHERE id_agente=?', $module->{'id_agente'});
 
 		# Delete any alerts associated to the module
 		db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $id_agente_modulo);
@@ -482,7 +484,7 @@ sub pandora_checkdb_consistency {
 
 	print "[CHECKDB] Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days)... \n";
 	if ($conf{'_days_delete_unknown'} > 0) {
-		my @modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_estado WHERE estado = 3 AND utimestamp < UNIX_TIMESTAMP() - ?', 86400 * $conf{'_days_delete_unknown'});
+		my @modules = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_agente FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND estado = 3 AND utimestamp < UNIX_TIMESTAMP() - ?', 86400 * $conf{'_days_delete_unknown'});
 		foreach my $module (@modules) {
 			my $id_agente_modulo = $module->{'id_agente_modulo'};
 	
@@ -493,6 +495,9 @@ sub pandora_checkdb_consistency {
 			# Delete the module
 			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);;
 	
+			# Update the module status count
+			db_do ($dbh, 'UPDATE tagente SET total_count=total_count-1, unknown_count=unknown_count-1 WHERE id_agente=?', $module->{'id_agente'});
+
 			# Delete any alerts associated to the module
 			db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ? AND NOT EXISTS (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente_modulo = ?)', $id_agente_modulo, $id_agente_modulo);
 		}
@@ -525,6 +530,18 @@ sub pandora_checkdb_consistency {
 	
 		db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo = ?', $id_agente_modulo);
 		print "[CHECKDB] Deleting non-existing module $id_agente_modulo in state table \n";
+	}
+
+	print "[CHECKDB] Checking module status count... \n";
+	my @agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente WHERE normal_count+warning_count+critical_count+unknown_count+notinit_count<>total_count');
+	foreach my $agent (@agents) {
+		my $id_agente = $agent->{'id_agente'};
+		db_do ($dbh, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=0 AND utimestamp<>0),
+		critical_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=1),
+		warning_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=2),
+		unknown_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=3),
+		notinit_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND utimestamp=0)
+		WHERE id_agente = ' . $id_agente);
 	}
 }
 

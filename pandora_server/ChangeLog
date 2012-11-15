@@ -1,3 +1,9 @@
+2012-11-15  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm
+	lib/PandoraFMS/DataServer.pm: Added support for new agent data in
+	the XML as custom_id, url_address and custom fields
+
 2012-11-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Try to update module status count for all agents.

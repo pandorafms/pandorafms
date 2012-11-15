@@ -1869,7 +1869,7 @@ sub pandora_update_server ($$$$$;$$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_update_agent (I<$pa_config>, I<$agent_timestamp>, I<$agent_id>, I<$os_version>, I<$agent_version>, I<$agent_interval>, I<$dbh>, [I<$timezone_offset>], [I<$longitude>], [I<$latitude>], [I<$altitude>], [I<$position_description>]) [I<$parent_agent_name>]) >>
+=head2 C<< pandora_update_agent (I<$pa_config>, I<$agent_timestamp>, I<$agent_id>, I<$os_version>, I<$agent_version>, I<$agent_interval>, I<$dbh>, [I<$timezone_offset>], [I<$longitude>], [I<$latitude>], [I<$altitude>], [I<$position_description>], [I<$parent_agent_name>]) >>
 
 Update last contact, timezone fields in B<tagente> and current position (this
 can affect B<tgis_data_status> and B<tgis_data_history>). If the I<$parent_agent_id> is 
@@ -2235,18 +2235,27 @@ sub pandora_create_group ($$$$$$$$$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_create_agent (I<$pa_config>, I<$server_name>, I<$agent_name>, I<$address>, I<$group_id>, I<$parent_id>, I<$os_id>, I<$description>, I<$interval>, I<$dbh>, [I<$timezone_offset>], [I<$longitude>], [I<$latitude>], [I<$altitude>], [I<$position_description>]) >>
+=head2 C<< pandora_create_agent (I<$pa_config>, I<$server_name>, I<$agent_name>, I<$address>, I<$group_id>, I<$parent_id>, I<$os_id>, I<$description>, I<$interval>, I<$dbh>, [I<$timezone_offset>], [I<$longitude>], [I<$latitude>], [I<$altitude>], [I<$position_description>], [I<$custom_id>], [I<$url_address>]) >>
 
 Create a new entry in B<tagente> optionaly with position information
 
 =cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 	my ($pa_config, $server_name, $agent_name, $address,
 		$group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
-		$longitude, $latitude, $altitude, $position_description) = @_;
+		$longitude, $latitude, $altitude, $position_description,
+		$custom_id, $url_address) = @_;
 
+	if (!defined($custom_id)) {
+		$custom_id = '';
+	}
+	
+	if (!defined($url_address)) {
+		$url_address = '';
+	}
+	
 
 	if (!defined($group_id)) {
 		$group_id = $pa_config->{'autocreate_group'};
@@ -2257,13 +2266,13 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
 	my $agent_id;
 	# Test if the optional positional parameters are defined or GIS is disabled
 	if (!defined ($timezone_offset) ) {
-		$agent_id = db_insert ($dbh, 'id_agente', 'INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, server_name, intervalo, id_parent, modo)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', safe_input($agent_name), $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id);
+		$agent_id = db_insert ($dbh, 'id_agente', 'INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, server_name, intervalo, id_parent, modo, custom_id, url_address)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)', safe_input($agent_name), $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id, $custom_id, $url_address);
 	}
 	else {
 		 $agent_id = db_insert ($dbh, 'id_agente', 'INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, server_name, intervalo, id_parent, 
-				timezone_offset, modo ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', safe_input($agent_name), $address, 
-				 $description, $group_id, $os_id, $server_name, $interval, $parent_id, $timezone_offset);	
+				timezone_offset, modo, custom_id, url_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)', safe_input($agent_name), $address, 
+				 $description, $group_id, $os_id, $server_name, $interval, $parent_id, $timezone_offset, $custom_id, $url_address);	
 	}
 	if (defined ($longitude) && defined ($latitude ) && $pa_config->{'activate_gis'} == 1 ) {
 		if (!defined($altitude)) {
@@ -2273,7 +2282,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
 		my $utimestamp = time ();
 	 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 		
-		save_agent_position($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh, $timestamp,$position_description) ;
+		save_agent_position($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh, $timestamp, $position_description) ;
 	}
 
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);

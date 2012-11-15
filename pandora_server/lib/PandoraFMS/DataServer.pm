@@ -179,9 +179,10 @@ sub data_consumer ($$) {
 sub process_xml_data ($$$$$) {
 	my ($pa_config, $file_name, $data, $server_id, $dbh) = @_;
 
-	my ($agent_name, $agent_version, $timestamp, $interval, $os_version, $timezone_offset) =
+	my ($agent_name, $agent_version, $timestamp, $interval, $os_version, $timezone_offset, $custom_id, $url_address) =
 		($data->{'agent_name'}, $data->{'version'}, $data->{'timestamp'},
-		$data->{'interval'}, $data->{'os_version'}, $data->{'timezone_offset'});
+		$data->{'interval'}, $data->{'os_version'}, $data->{'timezone_offset'},
+		$data->{'custom_id'}, $data->{'url_address'});
 
 	# Timezone offset must be an integer beween -12 and +12
 	if (!defined($timezone_offset) || $timezone_offset !~ /[-+]?[0-9,11,12]/) {
@@ -330,17 +331,50 @@ sub process_xml_data ($$$$$) {
 		# Create the agent
 		if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0 ) {
 			logger($pa_config, "Creating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
-			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address, $group_id, $parent_id, $os, 
-												 $description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
 		}
 		else { # Ignore agent positional data
 			logger($pa_config, "Creating agent $agent_name", 5);
-			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address, $group_id, $parent_id, $os,
-												 $description, $interval, $dbh, $timezone_offset);
+			$longitude = undef;
+			$latitude = undef;
+			$altitude = undef;
+			$position_description = undef;
 		}
+		
+		$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address, $group_id, $parent_id, $os, 
+						$description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description, $custom_id, $url_address);
+												 
 		if (! defined ($agent_id)) {
 			$AgentSem->up ();
 			return;
+		}
+		
+		# Process custom fields
+		if(defined($data->{'custom_fields'})) {
+			foreach my $custom_fields (@{$data->{'custom_fields'}}) {
+				foreach my $custom_field (@{$custom_fields->{'field'}}) {
+					my $cf_name = get_tag_value ($custom_field, 'name', '');
+					logger($pa_config, "Processing custom field '" . $cf_name . "'", 10);
+					
+					# Check if the custom field exists
+					my $custom_field_info = get_db_single_row ($dbh, 'SELECT * FROM tagent_custom_fields WHERE name = ?', safe_input($cf_name));
+					
+					# If it exists add the value to the agent
+					if (defined ($custom_field_info)) {
+						my $cf_value = get_tag_value ($custom_field, 'value', '');
+
+						my $field_agent;
+						
+						$field_agent->{'id_agent'} = $agent_id;
+						$field_agent->{'id_field'} = $custom_field_info->{'id_field'};
+						$field_agent->{'description'} = $cf_value;
+						
+						db_process_insert($dbh, 'id_field', 'tagent_custom_data', $field_agent);
+					}
+					else {
+						logger($pa_config, "The custom field '" . $cf_name . "' does not exist. Discarded from XML", 5);
+					}
+				}
+			}
 		}
 	}
 	$AgentSem->up ();

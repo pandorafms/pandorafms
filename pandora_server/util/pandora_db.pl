@@ -533,7 +533,9 @@ sub pandora_checkdb_consistency {
 	}
 
 	print "[CHECKDB] Checking module status count... \n";
-	my @agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente WHERE normal_count+warning_count+critical_count+unknown_count+notinit_count<>total_count');
+	#my @agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente WHERE normal_count+warning_count+critical_count+unknown_count+notinit_count<>total_count');
+	# Try to update module status count for all agents. Further performance tests need to be done.
+	my @agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente');
 	foreach my $agent (@agents) {
 		my $id_agente = $agent->{'id_agente'};
 		db_do ($dbh, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=0 AND utimestamp<>0),

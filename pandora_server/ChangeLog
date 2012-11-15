@@ -1,3 +1,8 @@
+2012-11-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl: Try to update module status count for all agents.
+	  Further performance tests need to be done.
+
 2012-11-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm,

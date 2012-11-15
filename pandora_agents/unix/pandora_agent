@@ -157,6 +157,8 @@ my %Conf = (
 	'intensive_interval' => 0,
 	'timestamp' => 0,
 	'xml_buffer' => 0,
+	'custom_id' => '',
+	'url_address' => '',
 );
 
 # Modules
@@ -189,6 +191,9 @@ my %Parts = (
 
 # Collections
 my %Collections;
+
+# Custom fields
+my %Customfields;
 
 # $DevNull
 my $DevNull = '/dev/null';
@@ -337,7 +342,6 @@ sub parse_conf_modules($) {
 				'description' => '',
 				'func' => 0,
 				'params' => '',
-				'description' => '',
 				'interval' => 1,
 				'timeout' => 0,
 				'counter' => 0,
@@ -624,9 +628,16 @@ sub read_config (;$) {
 	foreach my $line (@file){
 		# Skip comments and empty lines
 		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
-
+		
 		# Replace CRLF with LF
 		$line =~ s/\r\n/\n/g;
+		
+		# Store the custom fields
+		
+		if (($line =~ m/^(custom_field\d+_name)\s+(.*)/) or ($line =~ m/^(custom_field\d+_value)\s+(.*)/)) {
+			$Customfields{$1} = $2;
+			next;
+		}
 		
 		# Token search
 		if (defined ($token)) {
@@ -1989,6 +2000,24 @@ while (1) {
 	# Clear the XML
 	$Xml = "";
 
+	# Custom fields
+	
+	my @customfieldskeys = keys(%Customfields);
+	if ($#customfieldskeys > -1) {
+		$Xml .= "<custom_fields>\n";
+		foreach my $customfieldkey (@customfieldskeys) {
+			if($customfieldkey =~ m/^(custom_field\d+_)name/) {
+				if(defined($Customfields{$1."value"})) {
+					$Xml .= "	<field>\n";
+					$Xml .= "		<name><![CDATA[". $Customfields{$1."name"} ."]]></name>\n";
+					$Xml .= "		<value><![CDATA[". $Customfields{$1."value"} ."]]></value>\n";
+					$Xml .= "	</field>\n";
+				}
+			}
+		}
+		$Xml .= "</custom_fields>\n";
+	}
+	
 	# Execute modules
 	foreach my $module (@Modules) {
 
@@ -2041,7 +2070,8 @@ while (1) {
 			"<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
 			"' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
 			"' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" . strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
-			"' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
+			"' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'} . 
+			"' custom_id='" . $Conf{'custom_id'} . "' url_address='". $Conf{'url_address'}; 
 	
 		if (defined ($Conf{'address'})) {
 			$xml_header .= "' address='" .$address;

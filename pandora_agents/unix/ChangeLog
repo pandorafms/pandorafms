@@ -1,3 +1,8 @@
+2012-11-15  Sergio Martin <sergio.martin@artica.es>
+
+	* pandora_agent: Added support to the new fields of the
+	agent in the XML: custom_id, url_addres and custom fields
+
 2012-11-13  Sergio Martin <sergio.martin@artica.es>
 
 	* pandora_agent: Added several fields to the XML

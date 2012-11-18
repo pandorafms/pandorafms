@@ -63,7 +63,6 @@ ALTER TABLE `tagente` ADD COLUMN `warning_count` bigint(20) unsigned NOT NULL de
 ALTER TABLE `tagente` ADD COLUMN `critical_count` bigint(20) unsigned NOT NULL default '0';
 ALTER TABLE `tagente` ADD COLUMN `unknown_count` bigint(20) unsigned NOT NULL default '0';
 ALTER TABLE `tagente` ADD COLUMN `notinit_count` bigint(20) unsigned NOT NULL default '0';
-ALTER TABLE `tagente` ADD COLUMN `critical_count` bigint(20) unsigned NOT NULL default '0';
 ALTER TABLE `tagente` ADD COLUMN `total_count` bigint(20) unsigned NOT NULL default '0';
 
 -- ---------------------------------------------------------------------

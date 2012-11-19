@@ -73,7 +73,7 @@ html_print_select ($groups, 'search_group', $search_group, '', '', 0, false, fal
 }
 echo '</td>';
 echo '<td>';
-html_print_submit_button (__('Search'));
+html_print_submit_button (__('Search'), '', false, "class='sub search'");
 echo '</td>';
 echo '</tr></table>';
 

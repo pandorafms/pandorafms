@@ -1,3 +1,14 @@
+2012-11-19 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/integria_incidents/incident.list.php,
+	operation/integria_incidents/incident.incident.php,
+	operation/integria_incidents/incident.php,
+	operation/integria_incidents/incident.files.php,
+	operation/integria_incidents/incident.workunits.php: Fixed several errors
+	in behavior, added messages about operation result and added style to buttons.
+
+	MERGED FROM 4.0.2
+
 2012-11-19  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/agentes/planned_downtime.editor.php: Allowed to change

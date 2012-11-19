@@ -32,7 +32,7 @@ $table->data[1][0] = "<b>".__('Description')."</b><br/>".html_print_textarea('de
 
 $form = "<form method='post' action=''>";
 $form .= html_print_table($table, true);
-$form .= html_print_submit_button(__('Add'), 'submit_button', false, '', true);
+$form .= html_print_submit_button(__('Add'), 'submit_button', false, 'class="sub next"', true);
 $form .= html_print_input_hidden('tab', 'workunits', true);
 $form .= html_print_input_hidden('create_workunit', '1', true);
 $form .= html_print_input_hidden('id_incident', $id_incident, true);

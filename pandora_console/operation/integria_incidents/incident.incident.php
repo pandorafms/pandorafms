@@ -127,7 +127,7 @@ else {
 	echo "<form method='post' action=''>";
 	html_print_table($table);
 	html_print_submit_button(__('Create'), 'submit_button');
-	html_print_input_hidden('tab', 'incident');
+	html_print_input_hidden('tab', 'list');
 	html_print_input_hidden('create_incident', '1');
 	echo "</form>";
 }

@@ -89,13 +89,23 @@ if($update_incident == 1) {
 	$params = implode($token, $values);
 
 	$url = $integria_api."&op=update_incident&token=".$token."&params=".$params;
+	
 	// Call the integria API
 	$result = incidents_call_api($url);
+	
+	$result_array = incidents_xml_to_array($result);
+	
+	if ($result_array['data']) {
+		ui_print_success_message (__("Incident updated"));
+	} else {
+		ui_print_error_message (__("There was a problem updating the incident, please check if any field was modified and the values are correct."));
+	}
 }
 
 $create_incident = get_parameter('create_incident', 0);
 
 if($create_incident == 1) {
+	
 	$values[0] = str_replace(" ", "%20", io_safe_output(get_parameter('title')));
 	$values[1] = get_parameter('group');
 	$values[2] = get_parameter('priority');
@@ -108,6 +118,14 @@ if($create_incident == 1) {
 
 	// Call the integria API
 	$result = incidents_call_api($url);
+	
+	$result_array = incidents_xml_to_array($result);
+	
+	if ($result_array['data']) {
+		ui_print_success_message (__("Incident created"));
+	} else {
+		ui_print_error_message (__("There was a problem creating incident"));
+	}
 }
 
 $attach_file = get_parameter('attach_file', 0);
@@ -129,31 +147,49 @@ if($attach_file == 1) {
 
 		// Call the integria API
 		$result = incidents_call_api($url, array('params' => $params));
+
+		$result_array = incidents_xml_to_array($result);
+	
+		if ($result_array['data'] == 0) {
+			ui_print_success_message (__("File uploaded"));
+		} else {
+			ui_print_error_message (__("There was a problem uploading file"));
+		}
 	}
 	else {
 		switch ($_FILES['new_file']['error']) {
 		case 1:
-			echo '<h3 class="error">'.__('File is too big').'</h3>';
+			ui_print_error_message (__('File is too big'));
 			break;
 		case 3:
-			echo '<h3 class="error">'.__('File was partially uploaded. Please try again').'</h3>';
+			ui_print_error_message (__('File was partially uploaded. Please try again'));
 			break;
 		case 4:
-			echo '<h3 class="error">'.__('No file was uploaded').'</h3>';
+			ui_print_error_message (__('No file was uploaded'));
 			break;
 		default:
-			echo '<h3 class="error">'.__('Generic upload error').'(Code: '.$_FILES['new_file']['error'].')</h3>';
+			ui_print_error_message (__('Generic upload error').'(Code: '.$_FILES['new_file']['error'].')');
 		}
 	}
 }
 
 $delete_file = get_parameter('delete_file', 0);
 
-if($delete_file != 0) {
+if($delete_file != 0 && !$attach_file) {
 	$url = $integria_api."&op=delete_file&params=".$delete_file;
 
 	// Call the integria API
 	$result = incidents_call_api($url);
+	
+	$result = incidents_call_api($url, array('params' => $params));
+
+	$result_array = incidents_xml_to_array($result);
+
+	if ($result_array['data'] == 0 || $result_array['data'] == -2) {
+		ui_print_success_message (__("File deleted"));
+	} else if ($result_array['data'] == -1) {
+		ui_print_error_message (__("You user doesn't have enough rights to delete this file"));
+	}		
 }
 
 $delete_incident = get_parameter('delete_incident', 0);
@@ -163,6 +199,14 @@ if($delete_incident != 0) {
 
 	// Call the integria API
 	$result = incidents_call_api($url);
+
+	$result_array = incidents_xml_to_array($result);
+
+	if ($result_array['data']) {
+		ui_print_success_message (__("Incident deleted"));
+	} else {
+		ui_print_error_message (__("There was a problem deteling incident"));
+	}		
 }
 
 $create_workunit = get_parameter('create_workunit', 0);
@@ -181,11 +225,22 @@ if($create_workunit == 1) {
 
 	// Call the integria API
 	$result = incidents_call_api($url);
+	
+	$result_array = incidents_xml_to_array($result);
+
+	if ($result_array['data']) {
+		ui_print_success_message (__("Workunit added"));
+	} else {
+		ui_print_error_message (__("There was a problem adding workunit"));
+	}		
 }
+
+$params = array();
 
 // Set the url with parameters to call the api
 switch($tab) {
 	case 'list':
+		
 		$search_string = get_parameter('search_string', "");
 		$params[0] = $search_string;
 		
@@ -194,7 +249,7 @@ switch($tab) {
 		
 		$search_group = get_parameter('search_group', 1);
 		$params[2] = $search_group;
-		
+			
 		$params = implode($token,$params);
 		
 		$url = $integria_api."&op=get_incidents&token=".$token."&params=".$params;

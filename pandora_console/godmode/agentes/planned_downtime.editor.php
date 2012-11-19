@@ -322,17 +322,13 @@ $table->data[1][0] = __('Group');
 $table->data[1][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', 0, true);
 $table->data[2][0] = __('Description');
 $table->data[2][1] = html_print_textarea ('description', 3, 35, $description, '', true);
-$disabled_type = false;
 
-if ($id_downtime > 0) {
-	$disabled_type = true;
-}
 $table->data[3][0] = __('Type');
 $table->data[3][1] = html_print_select(array('quiet' => __('Quiet'),
 	'disable_agents' => __('Disabled Agents'),
 	'disable_agents_alerts' => __('Disabled only Alerts')),
 	'type_downtime', $type_downtime, '', '', 0, true, false, true,
-	'', $disabled_type);
+	'');
 $table->data[4][0] = __('Execution');
 $table->data[4][1] = html_print_select(array('once' => __('once'),
 	'periodically' => __('Periodically')),

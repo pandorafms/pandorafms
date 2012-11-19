@@ -1,4 +1,10 @@
 2012-11-19  Sergio Martin <sergio.martin@artica.es>
+	
+	* modules/pandora_module.h
+	modules/pandora_module.cc: Fixed type conflicts in the
+	last changes
+
+2012-11-19  Sergio Martin <sergio.martin@artica.es>
 
 	* modules/pandora_module.h
 	modules/pandora_module_factory.cc

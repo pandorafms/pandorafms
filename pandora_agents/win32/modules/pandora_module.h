@@ -177,7 +177,7 @@ namespace Pandora_Modules {
 		unsigned char         intensive_match;
 		int                   intensive_interval;
 		string                unit, custom_id, str_warning, str_critical;
-		int 				  module_group, warning_inverse, critical_inverse, quiet, module_ff_interval;
+		string 		      module_group, warning_inverse, critical_inverse, quiet, module_ff_interval;
 		string                critical_instructions, warning_instructions, unknown_instructions, tags;
 
 	protected:

@@ -66,7 +66,7 @@ Pandora_Module::Pandora_Module (string name) {
 	this->timestamp       = 0;
 	this->intensive_match = 0;
 	this->unit            = "";
-	this->module_group    = 0;
+	this->module_group    = "";
 	this->custom_id       = "";
 	this->str_warning     = "";
 	this->str_critical    = "";
@@ -74,10 +74,10 @@ Pandora_Module::Pandora_Module (string name) {
 	this->warning_instructions = "";
 	this->unknown_instructions = "";
 	this->tags = "";
-	this->critical_inverse = 0;
-	this->warning_inverse = 0;
-	this->quiet = 0;
-	this->module_ff_interval = 0;
+	this->critical_inverse = "";
+	this->warning_inverse = "";
+	this->quiet = "";
+	this->module_ff_interval = "";
 }
 
 /** 
@@ -601,7 +601,7 @@ Pandora_Module::getXml () {
 	}
 	
 	/* Module group */
-	if (this->module_group != 0) {
+	if (this->module_group != "") {
 		module_xml += "\t<module_group>";
 		module_xml += this->module_group;
 		module_xml += "</module_group>\n";
@@ -657,28 +657,28 @@ Pandora_Module::getXml () {
 	}
 	
 	/* Critical inverse */
-	if (this->critical_inverse != 0) {
+	if (this->critical_inverse != "") {
 		module_xml += "\t<critical_inverse>";
 		module_xml += this->critical_inverse;
 		module_xml += "</critical_inverse>\n";
 	}
 	
 	/* Warning inverse */
-	if (this->warning_inverse != 0) {
+	if (this->warning_inverse != "") {
 		module_xml += "\t<warning_inverse>";
 		module_xml += this->warning_inverse;
 		module_xml += "</warning_inverse>\n";
 	}
 	
 	/* Quiet */
-	if (this->quiet != 0) {
+	if (this->quiet != "") {
 		module_xml += "\t<quiet>";
 		module_xml += this->quiet;
 		module_xml += "</quiet>\n";
 	}
 	
 	/* Module FF interval */
-	if (this->module_ff_interval != 0) {
+	if (this->module_ff_interval != "") {
 		module_xml += "\t<module_ff_interval>";
 		module_xml += this->module_ff_interval;
 		module_xml += "</module_ff_interval>\n";

@@ -369,6 +369,7 @@ string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
 	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name;
+	string        custom_id, url_address, latitude, longitude, altitude, position_description;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
 	
@@ -423,6 +424,42 @@ Pandora_Windows_Service::getXmlHeader () {
 		if(address != "") {
 			xml += "\" address=\"";
 			xml += address;
+		}
+	}
+	
+	// Get Custom ID
+	custom_id = conf->getValue ("custom_id");
+	if (custom_id != "") {
+		xml += "\" custom_id=\"";
+		xml += custom_id;
+	}
+	
+	// Get Url Address
+	url_address = conf->getValue ("url_address");
+	if (url_address != "") {
+		xml += "\" url_address=\"";
+		xml += url_address;
+	}
+	
+	// Get Coordinates
+	latitude = conf->getValue ("latitude");
+	longitude = conf->getValue ("longitude");
+	if(latitude != "" && longitude != "") {
+		xml += "\" latitude=\"";
+		xml += latitude;
+		xml += "\" longitude=\"";
+		xml += longitude;
+		
+		altitude = conf->getValue ("altitude");
+		if(altitude != "") {
+			xml += "\" altitude=\"";
+			xml += altitude;
+		}
+		
+		position_description = conf->getValue ("position_description");
+		if(position_description != "") {
+			xml += "\" position_description=\"";
+			xml += position_description;
 		}
 	}
 

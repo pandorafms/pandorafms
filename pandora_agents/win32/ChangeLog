@@ -1,4 +1,10 @@
 2012-11-19  Sergio Martin <sergio.martin@artica.es>
+
+	* pandora_windows_service.cc: Added new fields of 
+	agent in XML header like custom_id and url_address.
+	Added coordinates data (not gis_exec yet)
+
+2012-11-19  Sergio Martin <sergio.martin@artica.es>
 	
 	* modules/pandora_module.h
 	modules/pandora_module.cc: Fixed type conflicts in the

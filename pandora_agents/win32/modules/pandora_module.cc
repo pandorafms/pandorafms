@@ -65,6 +65,19 @@ Pandora_Module::Pandora_Module (string name) {
 	this->intensive_interval = 1;
 	this->timestamp       = 0;
 	this->intensive_match = 0;
+	this->unit            = "";
+	this->module_group    = 0;
+	this->custom_id       = "";
+	this->str_warning     = "";
+	this->str_critical    = "";
+	this->critical_instructions = "";
+	this->warning_instructions = "";
+	this->unknown_instructions = "";
+	this->tags = "";
+	this->critical_inverse = 0;
+	this->warning_inverse = 0;
+	this->quiet = 0;
+	this->module_ff_interval = 0;
 }
 
 /** 
@@ -580,6 +593,97 @@ Pandora_Module::getXml () {
 		module_xml += "]]></min_ff_event>\n";
 	}
 
+	/* Unit */
+	if (this->unit != "") {
+		module_xml += "\t<unit><![CDATA[";
+		module_xml += this->unit;
+		module_xml += "]]></unit>\n";
+	}
+	
+	/* Module group */
+	if (this->module_group != 0) {
+		module_xml += "\t<module_group>";
+		module_xml += this->module_group;
+		module_xml += "</module_group>\n";
+	}
+	
+	/* Custom ID */
+	if (this->custom_id != "") {
+		module_xml += "\t<custom_id>";
+		module_xml += this->custom_id;
+		module_xml += "</custom_id>\n";
+	}
+	
+	/* Str warning */
+	if (this->str_warning != "") {
+		module_xml += "\t<str_warning>";
+		module_xml += this->str_warning;
+		module_xml += "</str_warning>\n";
+	}
+	
+	/* Str critical */
+	if (this->str_critical != "") {
+		module_xml += "\t<str_critical>";
+		module_xml += this->str_critical;
+		module_xml += "</str_critical>\n";
+	}
+	
+	/* Critical instructions */
+	if (this->critical_instructions != "") {
+		module_xml += "\t<critical_instructions>";
+		module_xml += this->critical_instructions;
+		module_xml += "</critical_instructions>\n";
+	}
+	
+	/* Warning instructions */
+	if (this->warning_instructions != "") {
+		module_xml += "\t<warning_instructions>";
+		module_xml += this->warning_instructions;
+		module_xml += "</warning_instructions>\n";
+	}
+	
+	/* Unknown instructions */
+	if (this->unknown_instructions != "") {
+		module_xml += "\t<unknown_instructions>";
+		module_xml += this->unknown_instructions;
+		module_xml += "</unknown_instructions>\n";
+	}
+	
+	/* Tags */
+	if (this->tags != "") {
+		module_xml += "\t<tags>";
+		module_xml += this->tags;
+		module_xml += "</tags>\n";
+	}
+	
+	/* Critical inverse */
+	if (this->critical_inverse != 0) {
+		module_xml += "\t<critical_inverse>";
+		module_xml += this->critical_inverse;
+		module_xml += "</critical_inverse>\n";
+	}
+	
+	/* Warning inverse */
+	if (this->warning_inverse != 0) {
+		module_xml += "\t<warning_inverse>";
+		module_xml += this->warning_inverse;
+		module_xml += "</warning_inverse>\n";
+	}
+	
+	/* Quiet */
+	if (this->quiet != 0) {
+		module_xml += "\t<quiet>";
+		module_xml += this->quiet;
+		module_xml += "</quiet>\n";
+	}
+	
+	/* Module FF interval */
+	if (this->module_ff_interval != 0) {
+		module_xml += "\t<module_ff_interval>";
+		module_xml += this->module_ff_interval;
+		module_xml += "</module_ff_interval>\n";
+	}
+
     /* Write module data */
 	if (this->data_list && this->data_list->size () > 1) {
 		list<Pandora_Data *>::iterator iter;
@@ -659,7 +763,7 @@ Pandora_Module::setMin (int value) {
 /** 
  * Set the post process value for the module.
  *
- * @param value Post process value .
+ * @param value Post process value to set.
  */
 void
 Pandora_Module::setPostProcess (string value) {
@@ -669,7 +773,7 @@ Pandora_Module::setPostProcess (string value) {
 /** 
  * Set the min critical value for the module.
  *
- * @param value Min critical value .
+ * @param value Min critical value to set.
  */
 void
 Pandora_Module::setMinCritical (string value) {
@@ -679,7 +783,7 @@ Pandora_Module::setMinCritical (string value) {
 /** 
  * Set the max critical value for the module.
  *
- * @param value Max critical value .
+ * @param value Max critical value to set.
  */
 void
 Pandora_Module::setMaxCritical (string value) {
@@ -689,7 +793,7 @@ Pandora_Module::setMaxCritical (string value) {
 /** 
  * Set the min warning value for the module.
  *
- * @param value Min warning value .
+ * @param value Min warning value to set.
  */
 void
 Pandora_Module::setMinWarning (string value) {
@@ -699,7 +803,7 @@ Pandora_Module::setMinWarning (string value) {
 /** 
  * Set the max warning value for the module.
  *
- * @param value Max warning value .
+ * @param value Max warning value to set.
  */
 void
 Pandora_Module::setMaxWarning (string value) {
@@ -709,7 +813,7 @@ Pandora_Module::setMaxWarning (string value) {
 /** 
  * Set the disabled value for the module.
  *
- * @param value Disabled value .
+ * @param value Disabled value to set.
  */
 void
 Pandora_Module::setDisabled (string value) {
@@ -719,11 +823,141 @@ Pandora_Module::setDisabled (string value) {
 /** 
  * Set the min ff event value for the module.
  *
- * @param value Min ff event value .
+ * @param value Min ff event value to set.
  */
 void
 Pandora_Module::setMinFFEvent (string value) {
 	this->min_ff_event = value;
+}
+
+/** 
+ * Set the unit value for the module.
+ *
+ * @param value unit value to set.
+ */
+void
+Pandora_Module::setUnit (string value) {
+	this->unit = value;
+}
+
+/** 
+ * Set the module group for the module.
+ *
+ * @param value module group value to set.
+ */
+void
+Pandora_Module::setModuleGroup (string value) {
+	this->module_group = value;
+}
+
+/** 
+ * Set the custom id for the module.
+ *
+ * @param value custom id value to set.
+ */
+void
+Pandora_Module::setCustomId (string value) {
+	this->custom_id = value;
+}
+
+/** 
+ * Set the str warning for the module.
+ *
+ * @param value str warning value to set.
+ */
+void
+Pandora_Module::setStrWarning (string value) {
+	this->str_warning = value;
+}
+
+/** 
+ * Set the str critical for the module.
+ *
+ * @param value str critical value to set.
+ */
+void
+Pandora_Module::setStrCritical (string value) {
+	this->str_critical = value;
+}
+
+/** 
+ * Set the critical instructions for the module.
+ *
+ * @param value critical instructions value to set.
+ */
+void
+Pandora_Module::setCriticalInstructions (string value) {
+	this->critical_instructions = value;
+}
+
+/** 
+ * Set the warning instructions for the module.
+ *
+ * @param value warning instructions value to set.
+ */
+void
+Pandora_Module::setWarningInstructions (string value) {
+	this->warning_instructions = value;
+}
+
+/** 
+ * Set the unknown instructions for the module.
+ *
+ * @param value unknown instructions value to set.
+ */
+void
+Pandora_Module::setUnknownInstructions (string value) {
+	this->unknown_instructions = value;
+}
+
+/** 
+ * Set the tags for the module.
+ *
+ * @param value tags value to set.
+ */
+void
+Pandora_Module::setTags (string value) {
+	this->tags = value;
+}
+
+/** 
+ * Set the critical inverse for the module.
+ *
+ * @param value critical inverse value to set.
+ */
+void
+Pandora_Module::setCriticalInverse (string value) {
+	this->critical_inverse = value;
+}
+
+/** 
+ * Set the warning inverse for the module.
+ *
+ * @param value warning inverse value to set.
+ */
+void
+Pandora_Module::setWarningInverse (string value) {
+	this->warning_inverse = value;
+}
+
+/** 
+ * Set the quiet for the module.
+ *
+ * @param value quiet value to set.
+ */
+void
+Pandora_Module::setQuiet (string value) {
+	this->quiet = value;
+}
+
+/** 
+ * Set the module FF interval for the module.
+ *
+ * @param value module FF interval value to set.
+ */
+void
+Pandora_Module::setModuleFFInterval (string value) {
+	this->module_ff_interval = value;
 }
 
 /** 

@@ -1,3 +1,9 @@
+2012-11-19 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/integria_incidents/incident.php: Fixed an error
+	which doesn't show the create incident form, also fixed a bug
+	related to a wrong encoding on attached file description.
+
 2012-11-08 Sancho Lerena <slerena@artica.es>
 
 	* include/functions_config.php: Fixed a XSS in login :-O. Thanks 

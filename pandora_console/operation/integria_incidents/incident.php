@@ -119,7 +119,7 @@ if($attach_file == 1) {
 		$values[0] = $id_incident;
 		$values[1] = $_FILES['new_file']['name'];
 		$values[2] = $_FILES['new_file']['size'];
-		$values[3] = str_replace(" ", "%20", io_safe_output(get_parameter('description'), __('No description available')));
+		$values[3] = io_safe_output(get_parameter('description'), __('No description available'));
 		$values[4] = base64_encode($file_content);
 		
 		
@@ -203,8 +203,13 @@ switch($tab) {
 		$url_groups =  $integria_api."&op=get_groups&params=1";
 		break;
 	case 'incident':
-		$url = $integria_api."&op=get_incident_details&params=".$id_incident;
 	case 'editor':
+		//Request incident information if any
+		if ($id_incident) {
+			$url = $integria_api."&op=get_incident_details&params=".$id_incident;
+		} else {
+			$url = $integria_api."&op=get_incident_details";	
+		}
 		$url_resolutions =  $integria_api."&op=get_incidents_resolutions";
 		$url_status =  $integria_api."&op=get_incidents_status";
 		$url_sources =  $integria_api."&op=get_incidents_sources";

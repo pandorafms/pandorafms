@@ -107,7 +107,20 @@ using namespace Pandora_Strutils;
 #define TOKEN_SNMPOID       ("module_snmp_oid ")
 #define TOKEN_ADVANCEDOPTIONS ("module_advanced_options ")
 #define TOKEN_INTENSIVECONDITION ("module_intensive_condition ")
-
+#define TOKEN_UNIT ("module_unit ")
+#define TOKEN_MODULE_GROUP ("module_group ")
+#define TOKEN_CUSTOM_ID ("module_custom_id ")
+#define TOKEN_STR_WARNING ("module_str_warning ")
+#define TOKEN_STR_CRITICAL ("module_str_critical ")
+#define TOKEN_CRITICAL_INSTRUCTIONS ("module_critical_instructions ")
+#define TOKEN_WARNING_INSTRUCTIONS ("module_warning_instructions ")
+#define TOKEN_UNKNOWN_INSTRUCTIONS ("module_unknown_instructions ")
+#define TOKEN_TAGS ("module_tags ")
+#define TOKEN_CRITICAL_INVERSE ("module_critical_inverse ")
+#define TOKEN_WARNING_INVERSE ("module_warning_inverse ")
+#define TOKEN_QUIET ("module_quiet ")
+#define TOKEN_MODULE_FF_INTERVAL ("module_ff_interval ")
+	
 string
 parseLine (string line, string token) {
 	unsigned int pos;
@@ -156,6 +169,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_ping, module_ping_count, module_ping_timeout;
 	string                 module_snmpget, module_snmp_version, module_snmp_community, module_snmp_agent, module_snmp_oid;
 	string                 module_advanced_options, module_cooked, module_intensive_condition;
+	string                 module_unit, module_group, module_custom_id, module_str_warning, module_str_critical;
+	string                 module_critical_instructions, module_warning_instructions, module_unknown_instructions, module_tags;
+	string                 module_critical_inverse, module_warning_inverse, module_quiet, module_ff_interval;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -219,6 +235,19 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
     module_advanced_options = "";
     module_cooked        = "";
     module_intensive_condition = "";
+	module_unit          = "";
+	module_group         = "";
+	module_custom_id     = "";
+	module_str_warning   = "";
+	module_str_critical  = "";
+	module_critical_instructions = "";
+	module_warning_instructions = "";
+	module_unknown_instructions = "";
+	module_tags          = "";
+	module_critical_inverse = "";
+	module_warning_inverse = "";
+	module_quiet         = "";
+	module_ff_interval   = "";
     
 	stringtok (tokens, definition, "\n");
 	
@@ -430,6 +459,46 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 				module_intensive_condition = "";
 			}
 		}
+		if (module_unit == "") {
+			module_unit = parseLine (line, TOKEN_UNIT);
+		}
+		if (module_group == "") {
+			module_group = parseLine (line, TOKEN_MODULE_GROUP);
+		}
+		if (module_custom_id == "") {
+			module_custom_id = parseLine (line, TOKEN_CUSTOM_ID);
+		}
+		if (module_str_warning == "") {
+			module_str_warning = parseLine (line, TOKEN_STR_WARNING);
+		}
+		if (module_str_critical == "") {
+			module_str_critical = parseLine (line, TOKEN_STR_CRITICAL);
+		}
+		if (module_critical_instructions == "") {
+			module_critical_instructions = parseLine (line, TOKEN_CRITICAL_INSTRUCTIONS);
+		}
+		if (module_warning_instructions == "") {
+			module_warning_instructions = parseLine (line, TOKEN_WARNING_INSTRUCTIONS);
+		}
+		if (module_unknown_instructions == "") {
+			module_unknown_instructions = parseLine (line, TOKEN_UNKNOWN_INSTRUCTIONS);
+		}
+		if (module_tags == "") {
+			module_tags = parseLine (line, TOKEN_TAGS);
+		}
+		if (module_critical_inverse == "") {
+			module_critical_inverse = parseLine (line, TOKEN_CRITICAL_INVERSE);
+		}
+		if (module_warning_inverse == "") {
+			module_warning_inverse = parseLine (line, TOKEN_WARNING_INVERSE);
+		}
+		if (module_quiet == "") {
+			module_quiet = parseLine (line, TOKEN_QUIET);
+		}
+		if (module_ff_interval == "") {
+			module_ff_interval = parseLine (line, TOKEN_MODULE_FF_INTERVAL);
+		}
+	
 		iter++;
 	}
 
@@ -710,6 +779,58 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	if (module_min_ff_event != "") {
 		module->setMinFFEvent (module_min_ff_event);
 	}
-
+	
+	if (module_unit != "") {
+		module->setUnit (module_unit);
+	}
+	
+	if (module_group != "") {
+		module->setModuleGroup (module_group);
+	}
+	
+	if (module_custom_id != "") {
+		module->setCustomId (module_custom_id);
+	}
+	
+	if (module_str_warning != "") {
+		module->setStrWarning (module_str_warning);
+	}
+	
+	if (module_str_critical != "") {
+		module->setStrCritical (module_str_critical);
+	}
+	
+	if (module_critical_instructions != "") {
+		module->setCriticalInstructions (module_critical_instructions);
+	}
+	
+	if (module_warning_instructions != "") {
+		module->setWarningInstructions (module_warning_instructions);
+	}
+	
+	if (module_unknown_instructions != "") {
+		module->setUnknownInstructions (module_unknown_instructions);
+	}
+	
+	if (module_tags != "") {
+		module->setTags (module_tags);
+	}
+	
+	if (module_critical_inverse != "") {
+		module->setCriticalInverse (module_critical_inverse);
+	}
+	
+	if (module_warning_inverse != "") {
+		module->setWarningInverse (module_warning_inverse);
+	}
+	
+	if (module_quiet != "") {
+		module->setQuiet (module_quiet);
+	}
+	
+	if (module_ff_interval != "") {
+		module->setModuleFFInterval (module_ff_interval);
+	}
+	
 	return module;
 }

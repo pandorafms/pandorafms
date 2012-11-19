@@ -176,7 +176,9 @@ namespace Pandora_Modules {
 		time_t                timestamp;
 		unsigned char         intensive_match;
 		int                   intensive_interval;
-		
+		string                unit, custom_id, str_warning, str_critical;
+		int 				  module_group, warning_inverse, critical_inverse, quiet, module_ff_interval;
+		string                critical_instructions, warning_instructions, unknown_instructions, tags;
 
 	protected:
 		
@@ -263,6 +265,19 @@ namespace Pandora_Modules {
 		void        setMaxWarning  (string value);
 		void        setDisabled    (string value);
 		void        setMinFFEvent  (string value);
+		void        setUnit        (string value);
+		void        setModuleGroup (string value);
+		void        setCustomId    (string value);
+		void        setStrWarning  (string value);
+		void        setStrCritical (string value);
+		void        setCriticalInstructions  (string value);
+		void        setWarningInstructions  (string value);
+		void        setUnknownInstructions  (string value);
+		void        setTags        (string value);
+		void        setCriticalInverse  (string value);
+		void        setWarningInverse  (string value);
+		void        setQuiet       (string value);
+		void        setModuleFFInterval  (string value);
 		
 		void        setAsync       (bool async);
 		void        setSave        (string save);

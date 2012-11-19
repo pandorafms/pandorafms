@@ -1,3 +1,10 @@
+2012-11-19  Sergio Martin <sergio.martin@artica.es>
+
+	* modules/pandora_module.h
+	modules/pandora_module_factory.cc
+	modules/pandora_module.cc: Added several new module fields
+	to the XML
+
 2012-04-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module.cc: Default to generic_data if no module_type

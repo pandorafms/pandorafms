@@ -1,5 +1,12 @@
 2012-11-19 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* operation/integria_incidents/incident.workunits.php,
+	operation/integria_incidents/incident.list.php,
+	operation/integria_incidents/incident.incident.php,
+	operation/integria_incidents/incident.files.php: Added style to buttons.
+
+2012-11-19 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* operation/integria_incidents/incident.php: Added error and integria api
 	output control for incident management.
 	* operation/integria_incidents/incident.incident.php: Now after create an

@@ -117,7 +117,7 @@ $table->data[4][0] = "<b>".__('Resolution epilog')."</b><br/>".html_print_textar
 if(isset($result['id_incidencia'])) {
 	echo "<form method='post' action=''>";
 	html_print_table($table);
-	html_print_submit_button(__('Update'), 'submit_button');
+	html_print_submit_button(__('Update'), 'submit_button', false, "class='sub upd'");
 	html_print_input_hidden('tab', 'incident');
 	html_print_input_hidden('update_incident', '1');
 	html_print_input_hidden('id_incident', $result['id_incidencia']);
@@ -126,7 +126,7 @@ if(isset($result['id_incidencia'])) {
 else {
 	echo "<form method='post' action=''>";
 	html_print_table($table);
-	html_print_submit_button(__('Create'), 'submit_button');
+	html_print_submit_button(__('Create'), 'submit_button', false, "class='sub next'");
 	html_print_input_hidden('tab', 'list');
 	html_print_input_hidden('create_incident', '1');
 	echo "</form>";

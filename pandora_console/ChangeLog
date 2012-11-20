@@ -1,5 +1,12 @@
 2012-11-20 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* operation/integria_incidents/incident.list.php: Fixed a problem with
+	incident search, in incident integrated with Integria.
+
+	MERGED FROM 4.0.2
+
+2012-11-20 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* operation/integria_incidents/incident.incident.php,
 	operation/integria_incidents/incident.php: Fixed several fields of manage
 	incident form.

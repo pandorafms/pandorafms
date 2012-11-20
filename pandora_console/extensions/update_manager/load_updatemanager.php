@@ -82,7 +82,13 @@ function get_user_key ($settings) {
 		print_debug_message_trace("command_line >>> " . $command_line);
 		//html_debug_print($command_line, true);
 		
-		$user_key = exec ($command_line);
+		$user_key = exec ($command_line, $output, $return_exec);
+		
+		if ($return_exec != 0) {
+			//Maybe there is a error in the execution.
+			return array('result' => false,
+				'message' => __('Error in execution the keygen.'));
+		}
 		
 		print_debug_message_trace("user_key >>> " . $user_key);
 		//html_debug_print($user_key, true);

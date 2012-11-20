@@ -19,7 +19,7 @@
  * @subpackage UI
  */
 
-require_once($config['homedir'].'/include/functions_agents.php');
+require_once($config['homedir'] . '/include/functions_agents.php');
 require_once($config['homedir'] . '/include/functions_modules.php');
 require_once($config['homedir'] . '/include/functions.php');
 require_once($config['homedir'] . '/include/functions_groups.php');
@@ -104,7 +104,6 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 				$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';
 			}
 		}
-		
 		if ($showTextInAToopTip) {
 			if ($style !== false) {
 				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span style="' . $style . '">' . $text . '</span></a>';
@@ -476,7 +475,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 	
 	if($style == '')
 		$style = 'width: 16px; height: 16px;';
-		
+	
 	$output = '';
 	if ($link) 
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
@@ -1059,7 +1058,7 @@ function ui_require_jquery_file ($name, $path = 'include/javascript/') {
  */
 function ui_process_page_head ($string, $bitfield) {
 	global $config;
-
+	
 	if (isset ($config['ignore_callback']) && $config['ignore_callback'] == true) {
 		return;
 	}
@@ -1131,7 +1130,7 @@ function ui_process_page_head ($string, $bitfield) {
 	if ($login_ok and $isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		//Checks if user's skin is available 
 		$exists_skin = enterprise_hook('skins_is_path_set');
-		if ($exists_skin){
+		if ($exists_skin) {
 			$skin_path = enterprise_hook('skins_get_skin_path');
 			$skin_styles = themes_get_css ($skin_path . 'include/styles/');
 			$exists_css = !empty($skin_styles);
@@ -1139,7 +1138,7 @@ function ui_process_page_head ($string, $bitfield) {
 	}
 	//If skin's css files exists then add them
 	if ($exists_css) {
-		foreach ($skin_styles as $filename => $name){
+		foreach ($skin_styles as $filename => $name) {
 			$style = substr ($filename, 0, strlen ($filename) - 4);
 			$config['css'][$style] = $skin_path . 'include/styles/' . $filename; 
 		}
@@ -1184,7 +1183,7 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	//Pandora specific JavaScript should go first
 	$config['js'] = array_merge (array ("pandora" => "include/javascript/pandora.js"), $config['js']);
-		
+	
 	//Load other javascript
 	//We can't load empty
 	$loaded = array ('');

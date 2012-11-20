@@ -82,11 +82,13 @@ function safe_int ($value, $min = false, $max = false) {
 			$check = safe_int ($check, $min, $max);
 			if ($check !== false) {
 				$value[$key] = $check;
-			} else {
+			}
+			else {
 				unset ($value[$key]);
 			}
 		}
-	} else {
+	}
+	else {
 		$value = (int) $value; //Cast as integer
 		if (($min !== false && $value < $min) || ($max !== false && $value > $max)) {
 			//If it's smaller than min or larger than max return false
@@ -122,10 +124,10 @@ function output_clean_strict ($string) {
  * @return string Cleaned string
  */
 function safe_url_extraclean ($string, $default_string = '') {
-
+	
 	/* Strip the string to 125 characters */
 	$string = substr ($string, 0, 125);
-
+	
 	/* Search for unwanted characters */
 	if (preg_match ('/[^a-zA-Z0-9_\/\.\-]|(\/\/)|(\.\.)/', $string)) {
 		return $default_string;

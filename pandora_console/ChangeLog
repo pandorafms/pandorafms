@@ -1,3 +1,20 @@
+2012-11-20 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager.php,
+	extensions/update_manager/debug.php,
+	extensions/update_manager/load_updatemanager.php,
+	extensions/update_manager/lib/libupdate_manager_components.php,
+	extensions/update_manager/lib/libupdate_manager_updates.php,
+	extensions/update_manager/lib/libupdate_manager_client.php,
+	extensions/update_manager/lib/libupdate_manager.php: fixed the
+	execution of keygen when there is some wrong in the execution the
+	message for user is more clean now show "Error in execution the
+	keygen." instead the message "Error Server authorisation rejected".
+	And added other forms to get debugData for the update.
+	
+	* include/functions.php, include/config_process.php,
+	include/functions_ui.php: cleaned source code style.
+
 2012-11-20 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/integria_incidents/incident.list.php: Fixed a problem with

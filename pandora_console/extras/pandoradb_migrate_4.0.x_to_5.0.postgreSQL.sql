@@ -77,6 +77,7 @@ ALTER TABLE "tagente" ADD COLUMN "critical_count" INTEGER NOT NULL default 0;
 ALTER TABLE "tagente" ADD COLUMN "unknown_count" INTEGER NOT NULL default 0;
 ALTER TABLE "tagente" ADD COLUMN "notinit_count" INTEGER NOT NULL default 0;
 ALTER TABLE "tagente" ADD COLUMN "total_count" INTEGER NOT NULL default 0;
+ALTER TABLE "tagente" ADD COLUMN "fired_count" INTEGER NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table "talert_special_days"

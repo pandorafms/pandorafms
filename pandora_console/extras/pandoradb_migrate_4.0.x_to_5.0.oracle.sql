@@ -83,6 +83,7 @@ ALTER TABLE tagente ADD (critical_count NUMBER(20, 0) default 0 NOT NULL);
 ALTER TABLE tagente ADD (unknown_count NUMBER(20, 0) default 0 NOT NULL);
 ALTER TABLE tagente ADD (notinit_count NUMBER(20, 0) default 0 NOT NULL);
 ALTER TABLE tagente ADD (total_count NUMBER(20, 0) default 0 NOT NULL);
+ALTER TABLE tagente ADD (fired_count NUMBER(20, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table talert_special_days

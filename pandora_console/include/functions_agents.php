@@ -1892,15 +1892,7 @@ function agents_monitor_critical ($id_agent, $filter="") {
 		$filter = " AND ".$filter;
 	}
 	
-	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo)
-		FROM tagente_estado, tagente, tagente_modulo
-		WHERE tagente.disabled = 0
-			AND tagente_estado.utimestamp != 0
-			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			AND tagente_modulo.disabled = 0
-			AND estado = 1
-			AND tagente_estado.id_agente = tagente.id_agente
-			AND tagente.id_agente = $id_agent" . $filter);
+	return db_get_sql ("SELECT critical_count FROM tagente WHERE id_agente = $id_agent" . $filter);
 }
 
 // Get warning monitors by using the status code in modules.
@@ -1911,15 +1903,7 @@ function agents_monitor_warning ($id_agent, $filter="") {
 		$filter = " AND ".$filter;
 	}
 	
-	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo)
-		FROM tagente_estado, tagente, tagente_modulo
-		WHERE tagente.disabled = 0
-			AND tagente_estado.utimestamp != 0
-			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			AND tagente_modulo.disabled = 0
-			AND estado = 2
-			AND tagente_estado.id_agente = tagente.id_agente
-			AND tagente.id_agente = $id_agent" . $filter);
+	return db_get_sql ("SELECT warning_count FROM tagente WHERE id_agente = $id_agent" . $filter);
 }
 
 // Get unknown monitors by using the status code in modules.
@@ -1930,15 +1914,7 @@ function agents_monitor_unknown ($id_agent, $filter="") {
 		$filter = " AND ".$filter;
 	}
 	
-	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo)
-		FROM tagente_estado, tagente, tagente_modulo
-		WHERE tagente.disabled = 0
-			AND tagente_estado.utimestamp != 0
-			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			AND tagente_modulo.disabled = 0
-			AND estado = 3
-			AND tagente_estado.id_agente = tagente.id_agente
-			AND tagente.id_agente = $id_agent" . $filter);
+	return db_get_sql ("SELECT unknown_count FROM tagente WHERE id_agente = $id_agent" . $filter);
 }
 
 // Get ok monitors by using the status code in modules.
@@ -1948,15 +1924,7 @@ function agents_monitor_ok ($id_agent, $filter="") {
 		$filter = " AND ".$filter;
 	}
 	
-	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo)
-		FROM tagente_estado, tagente, tagente_modulo
-		WHERE tagente.disabled = 0
-			AND tagente_estado.utimestamp != 0
-			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			AND tagente_modulo.disabled = 0
-			AND estado = 0
-			AND tagente_estado.id_agente = tagente.id_agente
-			AND tagente.id_agente = $id_agent" . $filter);
+	return db_get_sql ("SELECT normal_count FROM tagente WHERE id_agente = $id_agent" . $filter);
 }
 
 /**
@@ -1990,14 +1958,7 @@ function agents_monitor_notinit ($id_agent, $filter="") {
 		$filter = " AND ".$filter;
 	}
 						
-	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente_modulo )
-			FROM tagente_estado, tagente, tagente_modulo 
-			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 
-				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23) 
-				AND utimestamp = 0
-				AND tagente.id_agente = $id_agent ".$filter);
+	return db_get_sql ("SELECT notinit_count FROM tagente WHERE id_agente = $id_agent" . $filter);
 }
 
 /**

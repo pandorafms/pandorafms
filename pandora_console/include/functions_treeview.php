@@ -201,21 +201,7 @@ function treeview_printTree($type) {
 	$avariableGroups = users_get_groups (); //db_get_all_rows_in_table('tgrupo', 'nombre');	
 	
 	//Get all groups with agents
-	$full_groups = db_get_all_rows_sql("SELECT DISTINCT tagente.id_grupo
-		FROM tagente, tagente_estado
-		WHERE tagente.id_agente = tagente_estado.id_agente AND
-			tagente_estado.utimestamp != 0 
-		UNION
-		SELECT tagente.id_grupo
-		FROM tagente 
-		WHERE disabled = 0 
-		AND id_agente NOT IN (SELECT tagente.id_agente
-			FROM tagente, tagente_modulo 
-			WHERE tagente.id_agente = tagente_modulo.id_agente
-				AND tagente.disabled = 0 
-				AND tagente_modulo.disabled = 0
-				group by tagente.id_agente
-				having COUNT(*) > 0)");
+	$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente WHERE total_count > 0");
 	
 	$fgroups = array();
 	
@@ -302,9 +288,7 @@ function treeview_printTree($type) {
 		default:
 		case 'os':
 			//Skip agent with all modules in not init status
-			
-			$sql_search .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
-				tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
+			$sql_search .= " AND total_count<>notinit_count";
 			
 			$sql = agents_get_agents(array (
 				'order' => 'nombre COLLATE utf8_general_ci ASC',
@@ -343,9 +327,7 @@ function treeview_printTree($type) {
 			break;
 		case 'module_group':
 			//Skip agents which only have not init modules
-			$sql_search .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
-				tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";	
-			
+			$sql_search .= " AND total_count<>notinit_count";	
 			$sql = agents_get_agents(array (
 				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'disabled' => 0,
@@ -357,14 +339,7 @@ function treeview_printTree($type) {
 				true);
 			
 			// Skip agents without modules
-			$sql .= ' AND id_agente IN
-				(SELECT tagente.id_agente
-				FROM tagente, tagente_modulo 
-				WHERE tagente.id_agente = tagente_modulo.id_agente
-					AND tagente.disabled = 0 
-					AND tagente_modulo.disabled = 0
-				GROUP BY tagente.id_agente
-					HAVING COUNT(*) > 0)';
+			$sql .= ' AND tagente.total_count>0';
 			
 			$sql_module_groups = sprintf("SELECT * FROM tmodule_group
 				WHERE id_mg IN (SELECT id_module_group FROM tagente_modulo WHERE id_agente IN (%s))", $sql);			
@@ -599,7 +574,7 @@ function treeview_printTree($type) {
 					$id = $item['id_os'];
 					$name = $item['name'];
 					$iconImg = html_print_image(str_replace('.png' ,'_small.png', ui_print_os_icon ($item['id_os'], false, true, false)) . " ", true);
-					$numh_ok = os_agents_ok($id);
+					$num_ok = os_agents_ok($id);
 					$num_critical = os_agents_critical($id);
 					$num_warning = os_agents_warning($id);
 					$num_unknown = os_agents_unknown($id);

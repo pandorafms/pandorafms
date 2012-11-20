@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`unknown_count` bigint(20) unsigned NOT NULL default '0',
 	`notinit_count` bigint(20) unsigned NOT NULL default '0',
 	`total_count` bigint(20) unsigned NOT NULL default '0',
+	`fired_count` bigint(20) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`),
 	KEY `direccion` (`direccion`),

@@ -1336,10 +1336,12 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	
 	/* Write custom fields */
 	int c = 1;
-	char numstr[21]; // enough to hold all numbers up to 64-bits
-	sprintf(numstr, "%d", c);
-	string token_name = conf->getValue ("custom_field"+numstr+"_name");
-	string token_value = conf->getValue ("custom_field"+numstr+"_value");
+	char custom_field_name_token[21]; // enough to hold all numbers up to 64-bits
+	char custom_field_value_token[21]; // enough to hold all numbers up to 64-bits
+	sprintf(custom_field_name_token, "custom_field%d_name", c);
+	sprintf(custom_field_value_token, "custom_field%d_value", c);
+	string token_name = conf->getValue (custom_field_name_token);
+	string token_value = conf->getValue (custom_field_value_token);
 	
 	if(token_name != "" && token_value != "") {
 		data_xml += "<custom_fields>\n";
@@ -1350,9 +1352,10 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 			data_xml += "	</field>\n";
 			
 			c++;
-			sprintf(numstr, "%d", c);
-			token_name = conf->getValue ("custom_field"+numstr+"_name");
-			token_value = conf->getValue ("custom_field"+numstr+"_value");
+			sprintf(custom_field_name_token, "custom_field%d_name", c);
+			sprintf(custom_field_value_token, "custom_field%d_value", c);
+			token_name = conf->getValue (custom_field_name_token);
+			token_value = conf->getValue (custom_field_value_token);
 		}
 		data_xml += "</custom_fields>\n";
 	}

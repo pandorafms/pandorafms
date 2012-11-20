@@ -1334,6 +1334,29 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	
 	data_xml = getXmlHeader ();
 	
+	/* Write custom fields */
+	int c = 1;
+	char numstr[21]; // enough to hold all numbers up to 64-bits
+	sprintf(numstr, "%d", c);
+	string token_name = conf->getValue ("custom_field"+numstr+"_name");
+	string token_value = conf->getValue ("custom_field"+numstr+"_value");
+	
+	if(token_name != "" && token_value != "") {
+		data_xml += "<custom_fields>\n";
+		while(token_name != "" && token_value != "") {
+			data_xml += "	<field>\n";
+			data_xml += "		<name><![CDATA["+ token_name +"]]></name>\n";
+			data_xml += "		<value><![CDATA["+ token_value +"]]></value>\n";
+			data_xml += "	</field>\n";
+			
+			c++;
+			sprintf(numstr, "%d", c);
+			token_name = conf->getValue ("custom_field"+numstr+"_name");
+			token_value = conf->getValue ("custom_field"+numstr+"_value");
+		}
+		data_xml += "</custom_fields>\n";
+	}
+	
 	/* Write module data */
 	if (modules != NULL) {
 		modules->goFirst ();

@@ -336,7 +336,7 @@ sub help_screen{
         print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 
 	print "Usage: $0 <path to pandora_server.conf> [options]\n\n";
-	print "\n\tAvailable options:\n\t\t-d  Debug output (very verbose).\n";
+	print "\n\tAvailable options:\n\n";
 	print "\t\t-v   Verbose output (more info on screen, not valid for use in a module).\n";
 	exit;
 }

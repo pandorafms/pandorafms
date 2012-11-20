@@ -173,11 +173,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_unit, module_group, module_custom_id, module_str_warning, module_str_critical;
 	string                 module_critical_instructions, module_warning_instructions, module_unknown_instructions, module_tags;
 	string                 module_critical_inverse, module_warning_inverse, module_quiet, module_ff_interval;
+	string                 macro;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
 	long                    agent_interval;
 	list<string>           macro_list;
+	list<string>::iterator macro_iter;
 	list<string>           condition_list, precondition_list, intensive_condition_list;
 	list<string>::iterator condition_iter, precondition_iter, intensive_condition_iter;
 	Pandora_Windows_Service *service = NULL;
@@ -250,6 +252,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_warning_inverse = "";
 	module_quiet         = "";
 	module_ff_interval   = "";
+	macro   = "";
     
 	stringtok (tokens, definition, "\n");
 	

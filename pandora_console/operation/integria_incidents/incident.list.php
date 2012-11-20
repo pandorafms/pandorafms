@@ -109,7 +109,7 @@ if(isset($result['incident'][0]) && is_array($result['incident'][0])){
 	$incidents = $result['incident'];
 }
 else {
-	$incidents = $result;
+	$incidents = array($result['incident']);
 }
 
 $rowPair = true;

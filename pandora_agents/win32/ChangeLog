@@ -1,3 +1,9 @@
+2012-11-20  Sergio Martin <sergio.martin@artica.es>
+
+	* modules/pandora_module_factory.cc: Added macros
+	support to the module_exec command of the module
+	configuration
+
 2012-11-19  Sergio Martin <sergio.martin@artica.es>
 
 	* pandora_windows_service.cc: Added new fields of 

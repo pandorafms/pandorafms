@@ -120,6 +120,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_WARNING_INVERSE ("module_warning_inverse ")
 #define TOKEN_QUIET ("module_quiet ")
 #define TOKEN_MODULE_FF_INTERVAL ("module_ff_interval ")
+#define TOKEN_MACRO ("module_macro")
 	
 string
 parseLine (string line, string token) {
@@ -176,6 +177,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	bool                   numeric;
 	Module_Type            type;
 	long                    agent_interval;
+	list<string>           macro_list;
 	list<string>           condition_list, precondition_list, intensive_condition_list;
 	list<string>::iterator condition_iter, precondition_iter, intensive_condition_iter;
 	Pandora_Windows_Service *service = NULL;
@@ -498,8 +500,45 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_ff_interval == "") {
 			module_ff_interval = parseLine (line, TOKEN_MODULE_FF_INTERVAL);
 		}
+		if (macro == "") {
+			macro = parseLine (line, TOKEN_MACRO);
+			
+			/* Queue the macro and keep looking for more */
+			if (macro != "") {
+				macro_list.push_back (macro);
+				macro = "";
+			}
+		}
 	
 		iter++;
+	}
+	
+	/* Subst macros */
+	unsigned int pos, pos_macro;
+	string macro_name, macro_value;
+	
+	if (macro_list.size () > 0) {
+		macro_iter = macro_list.begin ();
+		for (macro_iter = macro_list.begin ();
+		     macro_iter != macro_list.end ();
+		     macro_iter++) {
+				
+			macro_name = *macro_iter;
+			
+			// At this point macro_name is "macro_name macro_value"
+			pos = macro_name.find (" ");
+			if(pos != 0) {
+				// Split name of the macro y value
+				macro_value = macro_name.substr (pos);
+				macro_name.erase(pos, macro_name.size () - pos);
+				
+				// Search the macro in the module_exec and replace it
+				pos_macro = module_exec.find(macro_name);
+				if (pos_macro != string::npos){
+					module_exec.replace(pos_macro, macro_name.size(), macro_value);
+				}
+			}
+		}
 	}
 
 	/* Create module objects */

@@ -1,3 +1,14 @@
+2012-11-20 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager/load_updatemanager.php,
+	extensions/update_manager/debug.php: fixed the execution of keygen
+	when there is some wrong in the execution the message for user is
+	more clean now show "Error in execution the keygen." instead the
+	message "Error Server authorisation rejected". And added other forms
+	to get debugData for the update.
+	
+	MERGED FROM THE BRANCH PANDORA_4.0
+
 2012-11-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_groups.php,

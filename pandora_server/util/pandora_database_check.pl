@@ -58,6 +58,10 @@ my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ('mysql', $
 		$conf{'_history_db_host'}, '3306', $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
 
 $conf{'activate_gis'}=0;
+$conf{'max_log_size'}=1000;
+$conf{'logfile'}="/dev/null";
+$conf{'servername'}="performance";
+$conf{'servermode'}="";
 
 pandora_speedtest_main (\%conf, $dbh, $history_dbh);
 
@@ -240,9 +244,8 @@ sub pandora_data_speed {
 	if (defined($candidate)){
 	        my @random_data = get_db_rows ($dbh, 'SELECT * FROM tagente_datos WHERE id_agente_modulo = '.$candidate.' AND utimestamp > UNIX_TIMESTAMP() -  86400');
 	} else {
-		# No enough data for measuring. Aborting
-		print "0";
-		exit -1;	
+		# Skipping this test, not enough data
+		return;
 	}
 
 	#1. Take a random id module (generic_data_string) with valid data in last 24hr and history enabled.
@@ -288,6 +291,9 @@ sub pandora_agent_process {
 		db_do ($dbh, "DELETE FROM tagente_datos WHERE id_agente_modulo = $module_id");
 		db_do ($dbh, "DELETE FROM tagente_estado WHERE id_agente_modulo = $module_id");
 		db_do ($dbh, "DELETE FROM tagente_modulo WHERE id_agente_modulo = $module_id");
+
+		# Delete events of agent creation
+		db_do ($dbh, "DELETE FROM tevento WHERE evento LIKE '%created by performance%'");
 	}	
 			
 }

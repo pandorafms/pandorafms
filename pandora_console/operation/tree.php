@@ -90,9 +90,7 @@ if (is_ajax ())
 					case 'group':
 						
 						//Skip agents which only have not init modules
-						
-						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
-							tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
+						$search_sql .= " AND total_count<>notinit_count";
 						
 						$sql = agents_get_agents(array (
 							'order' => 'nombre COLLATE utf8_general_ci ASC',
@@ -107,10 +105,8 @@ if (is_ajax ())
 						break;
 					case 'os':
 						
-						//Skip agents which only have not init modules
-						
-						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM 
-							tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
+						//Skip agents which only have not init modules		
+						$search_sql .= " AND total_count<>notinit_count";
 						
 						
 						$sql = agents_get_agents(array (
@@ -126,13 +122,8 @@ if (is_ajax ())
 						break;
 					case 'module_group':
 						
-						//Skip agents which only have not init modules
-						
-						$search_sql .= " AND id_agente NOT IN (SELECT tagente_estado.id_agente FROM tagente_estado 
-							WHERE id_agente_modulo IN 
-							(SELECT id_agente_modulo FROM tagente_modulo 
-							WHERE id_module_group = $id) 
-							GROUP BY id_agente HAVING SUM(utimestamp) = 0)";
+						//Skip agents which only have not init modules		
+						$search_sql .= " AND total_count<>notinit_count";
 						
 						$sql = agents_get_agents(array (
 							'order' => 'nombre COLLATE utf8_general_ci ASC',
@@ -145,14 +136,10 @@ if (is_ajax ())
 							true);
 						
 						// Skip agents without modules
-						$sql .= ' AND id_agente IN
-							(SELECT tagente.id_agente
-							FROM tagente, tagente_modulo 
-							WHERE tagente.id_agente = tagente_modulo.id_agente
-							AND id_module_group = ' . $id . ' AND tagente.disabled = 0 
-							AND tagente_modulo.disabled = 0
-							group by tagente.id_agente
-							having COUNT(*) > 0)';
+						$sql .= ' AND total_count>0 AND disabled=0 AND id_agente IN
+							(SELECT DISTINCT (id_agente)
+							FROM tagente_modulo 
+							WHERE id_module_group = ' . $id . ')';
 						break;
 					case 'policies':
 						
@@ -221,10 +208,11 @@ if (is_ajax ())
 				}
 				
 				$sql .= ' AND tagente.disabled = 0'. $search_sql;
-				
-				$countRows = db_get_num_rows($sql);
 			}
-			
+
+			$rows = db_get_all_rows_sql($sql);
+			$countRows = count ($rows);
+
 			//Empty Branch
 			if ($countRows === 0) {
 				echo "<ul style='margin: 0; padding: 0;'>\n";
@@ -240,116 +228,21 @@ if (is_ajax ())
 			}
 			
 			//Branch with items
-			$new = true;
 			$count = 0;
 			echo "<ul style='margin: 0; padding: 0;'>\n";
 			
-			while($row = db_get_all_row_by_steps_sql($new, $result, $sql)) {
-				$new = false;
+			foreach ($rows as $row) {
 				$count++;
-				switch ($type) {
-					case 'group':
-					case 'os':
-						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], array("disabled" => 0));
-						
-						$agent_info["monitor_critical"] = agents_monitor_critical ($row["id_agente"]);
-						$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"]);
-						$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"]);
-						$agent_info["monitor_normal"] = agents_monitor_ok ($row["id_agente"]);
-						
-						$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
-						
-						$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
-							$agent_info["monitor_warning"],
-							$agent_info["monitor_unknown"]);
-						
-						//Count all modules
-						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
-						break;
-					case 'policies':
-						
-						$filter = "tagente_modulo.id_policy_module = 0";
-						
-						if ($id) {
-							$filter = "tagente_modulo.id_policy_module = " . $id . " ";
-						}
-						
-						$filter .=  " AND tagente_modulo.disabled = 0 ";
-						
-						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], $filter);
-						
-						$agent_info["monitor_critical"] = agents_monitor_critical ($row["id_agente"], $filter);
-						$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], $filter);
-						$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], $filter);
-						$agent_info["monitor_normal"] = agents_monitor_ok ($row["id_agente"], $filter);
-						
-						$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
-						
-						$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
-							$agent_info["monitor_warning"],
-							$agent_info["monitor_unknown"]);
-						
-						//Count all modules
-						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
-						break;
-					case 'module_group':
-						$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], "id_module_group = $id AND disabled = 0");
-						
-						$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], "tagente_modulo.id_module_group = $id");
-						$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], "tagente_modulo.id_module_group = $id");
-						$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], "tagente_modulo.id_module_group = $id");
-						$agent_info["monitor_normal"] = agents_monitor_ok ($row["id_agente"], "tagente_modulo.id_module_group = $id");
-						
-						$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
-						
-						$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
-							$agent_info["monitor_warning"],
-							$agent_info["monitor_unknown"]);
-						
-						//Count all modules
-						$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
-						
-						break;
-					case 'module':
-						switch ($config["dbtype"]) {
-							case "mysql":
-								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '" AND disabled = 0');
-								$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
-								$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
-								$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
-								$agent_info["monitor_normal"] = agents_monitor_ok ($row["id_agente"], ' tagente_modulo.nombre COLLATE utf8_general_ci = "' . $name . '"');
-								
-								$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
-								
-								$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
-									$agent_info["monitor_warning"],
-									$agent_info["monitor_unknown"]);
-								
-								//Count all modules
-								$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
-								
-								break;
-							case "postgresql":
-							case "oracle":
-								//TODO REVIEW ORACLE AND POSTGRESQL
-								$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\' AND disabled = 0');
-								$agent_info["monitor_critical"] = agents_monitor_critical($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
-								$agent_info["monitor_warning"] = agents_monitor_warning ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
-								$agent_info["monitor_unknown"] = agents_monitor_unknown ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
-								$agent_info["monitor_normal"] = agents_monitor_ok ($row["id_agente"], ' tagente_modulo.nombre = \'' . $name . '\'');
-								
-								$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
-								
-								$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
-									$agent_info["monitor_warning"],
-									$agent_info["monitor_unknown"]);
-								
-								//Count all modules
-								$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
-								break;
-						}
-						break;
-				}
+
+				$agent_info["monitor_alertsfired"] = $row["fired_count"];
+				$agent_info["monitor_critical"] = $row["critical_count"];
+				$agent_info["monitor_warning"] = $row["warning_count"];
+				$agent_info["monitor_unknown"] = $row["unknown_count"];
+				$agent_info["monitor_normal"] = $row["normal_count"];
+				$agent_info["modules"] = $row["total_count"];
+				
+				$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
+				$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"], $agent_info["monitor_warning"], $agent_info["monitor_unknown"]);
 				
 				// Filter by status (only in policy view)
 				if ($type == 'policies') {
@@ -497,8 +390,10 @@ if (is_ajax ())
 			}
 			// This line checks for initializated modules or (non-initialized) asyncronous modules	
 			$sql .= ' AND disabled = 0 AND (utimestamp > 0 OR id_tipo_modulo IN (21,22,23))';
-			$countRows = db_get_num_rows($sql);
-			
+
+			$rows = db_get_all_rows_sql($sql);
+			$countRows = count ($rows);
+						
 			if ($countRows === 0) {
 				echo "<ul style='margin: 0; padding: 0;'>\n";
 				echo "<li style='margin: 0; padding: 0;'>";
@@ -526,11 +421,9 @@ if (is_ajax ())
 				return;
 			}
 			
-			$new = true;
 			$count = 0;
 			echo "<ul style='margin: 0; padding: 0;'>\n";
-			while ($row = db_get_all_row_by_steps_sql($new, $result, $sql)) {
-				$new = false;
+			foreach ($rows as $row) {
 				$count++;
 				echo "<li style='margin: 0; padding: 0;'><span style='min-width: 300px; display: inline-block;'>";
 				

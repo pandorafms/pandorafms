@@ -1,3 +1,20 @@
+2012-11-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_groups.php,
+	  include/functions_agents.php,
+	  include/functions_modules.php,
+	  include/functions_treeview.php,
+	  include/functions_os.php,
+	  pandoradb.sql,
+	  pandoradb.postgreSQL.sql,
+	  install.php,
+	  pandoradb.oracle.sql,
+	  operation/tree.php,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Improved tree
+	  view performance.
+
 2012-11-20 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/integria_incidents/incident.list.php: Fixed a problem with

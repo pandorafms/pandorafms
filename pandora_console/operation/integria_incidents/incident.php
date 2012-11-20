@@ -84,7 +84,7 @@ if($update_incident == 1) {
 	$values[6] = get_parameter('source');
 	$values[7] = get_parameter('resolution');
 	$values[8] = get_parameter('status');
-	$values[9] = get_parameter('creator', get_parameter('creator_fix'));
+	$values[9] = get_parameter('id_user_assigned');
 
 	$params = implode($token, $values);
 

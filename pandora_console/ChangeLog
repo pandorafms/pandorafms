@@ -1,3 +1,9 @@
+2012-11-20 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/integria_incidents/incident.php,
+	operation/integria_incidents/incident.incident.php: Fixed a "Assigned User" 
+	parameter which was hidden and has errors.
+
 2012-11-19 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/integria_incidents/incident.workunits.php,

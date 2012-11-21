@@ -76,9 +76,9 @@ $integria_api = $config['integria_url']."/include/api.php?return_type=xml&user="
 
 if($update_incident == 1) {				
 	$values[0] = $id_incident;
-	$values[1] = str_replace(" ", "%20", io_safe_output(get_parameter('title')));
-	$values[2] = str_replace(" ", "%20", io_safe_output(get_parameter('description')));
-	$values[3] = str_replace(" ", "%20", io_safe_output(get_parameter('epilog')));
+	$values[1] = urlencode(io_safe_output(get_parameter('title')));
+	$values[2] = urlencode(io_safe_output(get_parameter('description')));
+	$values[3] = urlencode(io_safe_output(get_parameter('epilog')));
 	$values[4] = get_parameter('group');
 	$values[5] = get_parameter('priority');
 	$values[6] = get_parameter('source');
@@ -106,10 +106,10 @@ $create_incident = get_parameter('create_incident', 0);
 
 if($create_incident == 1) {
 	
-	$values[0] = str_replace(" ", "%20", io_safe_output(get_parameter('title')));
+	$values[0] = urlencode(io_safe_output(get_parameter('title')));
 	$values[1] = get_parameter('group');
 	$values[2] = get_parameter('priority');
-	$values[3] = str_replace(" ", "%20", io_safe_output(get_parameter('description')));
+	$values[3] = urlencode(io_safe_output(get_parameter('description')));
 	$values[4] = $config['integria_inventory'];
 	
 	$params = implode($token, $values);

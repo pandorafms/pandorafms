@@ -1,3 +1,8 @@
+2012-11-21 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* operation/integria_incidents/incident.php: Fixed an error in
+	Integria <-> Pandora integration for incident management.
+
 2012-11-20 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager.php,

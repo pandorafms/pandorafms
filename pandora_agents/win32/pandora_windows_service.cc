@@ -40,6 +40,8 @@
 #include <fstream>
 #include <unistd.h>
 
+#define BUFSIZE 4096
+
 using namespace std;
 using namespace Pandora;
 using namespace Pandora_Modules;
@@ -369,9 +371,10 @@ string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
 	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name;
-	string        custom_id, url_address, latitude, longitude, altitude, position_description;
+	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
+	unsigned int pos;
 	
 	// Get agent name
 	agent_name = conf->getValue ("agent_name");
@@ -442,24 +445,64 @@ Pandora_Windows_Service::getXmlHeader () {
 	}
 	
 	// Get Coordinates
-	latitude = conf->getValue ("latitude");
-	longitude = conf->getValue ("longitude");
-	if(latitude != "" && longitude != "") {
-		xml += "\" latitude=\"";
-		xml += latitude;
-		xml += "\" longitude=\"";
-		xml += longitude;
-		
-		altitude = conf->getValue ("altitude");
-		if(altitude != "") {
-			xml += "\" altitude=\"";
-			xml += altitude;
+	gis_exec = conf->getValue ("gis_exec");
+	
+	if(gis_exec != "") {
+		gis_result = getCoordinatesFromGisExec(gis_exec);
+		if(gis_result != "") {
+			// Delete carriage return if is provided
+			pos = gis_result.find("\n");
+			if(pos != string::npos) {
+				gis_result.erase(pos, gis_result.size () - pos);
+			}	
+			pos = gis_result.find("\r");
+			if(pos != string::npos) {
+				gis_result.erase(pos, gis_result.size () - pos);
+			}
+
+			// Process the result as "latitude,longitude,altitude"
+			pandoraDebug ("getCoordinatesFromGisExec: Parsing coordinates %s", gis_result.c_str ());
+			pos = gis_result.find(",");
+			if (pos != string::npos && pos != 0) {
+				latitude = gis_result;
+				gis_result = gis_result.substr(pos+1);	
+				latitude.erase(pos, latitude.size () - pos);
+				pos = gis_result.find(",");
+				if(pos != string::npos && pos != 0) {
+					longitude = gis_result;
+					altitude = gis_result.substr(pos+1);
+					longitude.erase(pos, longitude.size () - pos);
+				}
+				xml += "\" latitude=\"";
+				xml += latitude;
+				xml += "\" longitude=\"";
+				xml += longitude;
+				xml += "\" altitude=\"";
+				xml += altitude;
+			}	
 		}
-		
-		position_description = conf->getValue ("position_description");
-		if(position_description != "") {
-			xml += "\" position_description=\"";
-			xml += position_description;
+	}
+	else {
+		latitude = conf->getValue ("latitude");
+		longitude = conf->getValue ("longitude");
+		if(latitude != "" && longitude != "") {
+			xml += "\" latitude=\"";
+			xml += latitude;
+			xml += "\" longitude=\"";
+			xml += longitude;
+			
+			altitude = conf->getValue ("altitude");
+			if(altitude != "") {
+				xml += "\" altitude=\"";
+				xml += altitude;
+			}
+			
+			position_description = conf->getValue ("position_description");
+			position_description = "";
+			if(position_description != "") {
+				xml += "\" position_description=\"";
+				xml += position_description;
+			}
 		}
 	}
 
@@ -469,6 +512,131 @@ Pandora_Windows_Service::getXmlHeader () {
 	       "\" group=\"" + conf->getValue ("group") +
 	       "\" parent_agent_name=\"" + conf->getValue ("parent_agent_name") + "\">\n";
 	return xml;
+}
+
+string
+Pandora_Windows_Service::getCoordinatesFromGisExec (string gis_exec)
+{
+	PROCESS_INFORMATION pi;
+	STARTUPINFO         si;	
+
+	DWORD               retval, dwRet;
+	SECURITY_ATTRIBUTES attributes;
+	HANDLE              out, new_stdout, out_read, job;
+	string              working_dir;
+	string output = "";
+	int timeout = 30;
+		
+	/* Set the bInheritHandle flag so pipe handles are inherited. */
+	attributes.nLength = sizeof (SECURITY_ATTRIBUTES); 
+	attributes.bInheritHandle = TRUE; 
+	attributes.lpSecurityDescriptor = NULL;
+
+	/* Create a job to kill the child tree if it become zombie */
+	/* CAUTION: In order to compile this, WINVER should be defined to 0x0500.
+	This may need no change, since it was redefined by the 
+	program, but if needed, the macro is defined 
+	in <windef.h> */
+
+	job = CreateJobObject (&attributes, NULL);
+
+	if (job == NULL) {
+		pandoraLog ("getCoordinatesFromGisExec: CreateJobObject failed. Err: %d", GetLastError ());
+		return "";
+	}
+
+	/* Get the handle to the current STDOUT. */
+	out = GetStdHandle (STD_OUTPUT_HANDLE); 
+
+	if (! CreatePipe (&out_read, &new_stdout, &attributes, 0)) {
+		pandoraLog ("getCoordinatesFromGisExec: CreatePipe failed. Err: %d", GetLastError ());
+		return "";
+	}
+
+	/* Ensure the read handle to the pipe for STDOUT is not inherited */
+	SetHandleInformation (out_read, HANDLE_FLAG_INHERIT, 0);
+
+	
+	ZeroMemory (&si, sizeof (si));
+	GetStartupInfo (&si);
+
+	si.cb = sizeof (si);
+	si.dwFlags     = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+	si.wShowWindow = SW_HIDE;
+	si.hStdError   = new_stdout;
+	si.hStdOutput  = new_stdout;
+
+	/* Set up members of the PROCESS_INFORMATION structure. */
+	ZeroMemory (&pi, sizeof (pi));
+	
+	pandoraDebug ("Executing gis_exec: %s", gis_exec.c_str ());
+	
+	/* Create the child process. */
+	if (CreateProcess (NULL , (CHAR *)gis_exec.c_str (), NULL, NULL, TRUE,
+		CREATE_SUSPENDED | CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
+		pandoraLog ("getCoordinatesFromGisExec: %s CreateProcess failed. Err: %d",
+		gis_exec.c_str (), GetLastError ());
+		return "";
+	} else {
+		char          buffer[BUFSIZE + 1];
+		unsigned long read, avail;
+
+		if (! AssignProcessToJobObject (job, pi.hProcess)) {
+			pandoraLog ("getCoordinatesFromGisExec: could not assign proccess to job (error %d)",
+			GetLastError ());
+		}
+		ResumeThread (pi.hThread);
+
+		/*string output;*/
+		int tickbase = GetTickCount();
+		while ( (dwRet = WaitForSingleObject (pi.hProcess, 500)) != WAIT_ABANDONED ) {
+			PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
+			if (avail > 0) {
+				ReadFile (out_read, buffer, BUFSIZE, &read, NULL);
+				buffer[read] = '\0';
+				output += (char *) buffer;
+			}
+	
+			if (dwRet == WAIT_OBJECT_0) { 
+				break;
+			} else if(timeout < GetTickCount() - tickbase) {
+				/* STILL_ACTIVE */
+				TerminateProcess(pi.hThread, STILL_ACTIVE);
+				pandoraLog ("getCoordinatesFromGisExec: %s timed out (retcode: %d)", gis_exec.c_str (), STILL_ACTIVE);
+				break;
+			}
+		}
+
+		GetExitCodeProcess (pi.hProcess, &retval);
+
+		if (retval != 0) {
+			if (! TerminateJobObject (job, 0)) {
+				pandoraLog ("getCoordinatesFromGisExec: TerminateJobObject failed. (error %d)",
+				GetLastError ());
+			}
+			if (retval != STILL_ACTIVE) {
+				pandoraLog ("getCoordinatesFromGisExec: %s did not executed well (retcode: %d)",
+				gis_exec.c_str (), retval);
+			}
+			/* Close job, process and thread handles. */
+			CloseHandle (job);
+			CloseHandle (pi.hProcess);
+			CloseHandle (pi.hThread);
+			CloseHandle (new_stdout);
+			CloseHandle (out_read);
+			return "";
+		}
+	
+		/* Close job, process and thread handles. */
+		CloseHandle (job);
+		CloseHandle (pi.hProcess);
+		CloseHandle (pi.hThread);
+	}
+
+	CloseHandle (new_stdout);
+	CloseHandle (out_read);
+
+	return output;
 }
 
 int
@@ -1336,12 +1504,13 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	
 	/* Write custom fields */
 	int c = 1;
-	char custom_field_name_token[21]; // enough to hold all numbers up to 64-bits
-	char custom_field_value_token[21]; // enough to hold all numbers up to 64-bits
-	sprintf(custom_field_name_token, "custom_field%d_name", c);
-	sprintf(custom_field_value_token, "custom_field%d_value", c);
-	string token_name = conf->getValue (custom_field_name_token);
-	string token_value = conf->getValue (custom_field_value_token);
+	
+	char token_name_token[21]; // enough to hold all numbers up to 64-bits
+	char token_value_token[21]; // enough to hold all numbers up to 64-bits
+	sprintf(token_name_token, "custom_field%d_name", c);
+	sprintf(token_value_token, "custom_field%d_value", c);
+	string token_name = conf->getValue (token_name_token);
+	string token_value = conf->getValue (token_value_token);
 	
 	if(token_name != "" && token_value != "") {
 		data_xml += "<custom_fields>\n";
@@ -1352,10 +1521,10 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 			data_xml += "	</field>\n";
 			
 			c++;
-			sprintf(custom_field_name_token, "custom_field%d_name", c);
-			sprintf(custom_field_value_token, "custom_field%d_value", c);
-			token_name = conf->getValue (custom_field_name_token);
-			token_value = conf->getValue (custom_field_value_token);
+			sprintf(token_name_token, "custom_field%d_name", c);
+			sprintf(token_value_token, "custom_field%d_value", c);
+			token_name = conf->getValue (token_name_token);
+			token_value = conf->getValue (token_value_token);
 		}
 		data_xml += "</custom_fields>\n";
 	}

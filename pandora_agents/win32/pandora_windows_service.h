@@ -53,6 +53,7 @@ namespace Pandora {
 		
 		string        getXmlHeader    ();
 		int           copyDataFile    (string filename);
+		string        getCoordinatesFromGisExec (string gis_exec);
 		int           copyTentacleDataFile (string host,
 						     string filename,
 						     string port,

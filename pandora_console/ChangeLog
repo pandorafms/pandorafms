@@ -1,5 +1,10 @@
 2012-11-21 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* include/functions_api.php: Fixed an SQL which collects all agents
+	which looks for url_address that is not available on 4.0.2 
+
+2012-11-21 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* operation/integria_incidents/incident.php: Fixed an error in
 	Integria <-> Pandora integration for incident management.
 

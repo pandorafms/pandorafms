@@ -823,8 +823,8 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	// Initialization of array
 	$result_agents = array();
 	// Filter by state
-	$sql = "SELECT id_agente, nombre, direccion, comentarios, tconfig_os.name, url_address FROM tagente, tconfig_os WHERE tagente.id_os = tconfig_os.id_os AND disabled = 0 " . $where;
-	
+	$sql = "SELECT id_agente, nombre, direccion, comentarios, tconfig_os.name FROM tagente, tconfig_os WHERE tagente.id_os = tconfig_os.id_os AND disabled = 0 " . $where;
+
 	$all_agents = db_get_all_rows_sql($sql);
 	
 	// Filter by status: unknown, warning, critical, without modules 

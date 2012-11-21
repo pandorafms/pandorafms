@@ -293,7 +293,7 @@ sub pandora_agent_process {
 		db_do ($dbh, "DELETE FROM tagente_modulo WHERE id_agente_modulo = $module_id");
 
 		# Delete events of agent creation
-		db_do ($dbh, "DELETE FROM tevento WHERE evento LIKE '%created by performance%'");
+		db_do ($dbh, "DELETE FROM tevento WHERE id_grupo = 0 AND estado = 0 AND event_type = 'new_agent' and criticity = 2");
 	}	
 			
 }

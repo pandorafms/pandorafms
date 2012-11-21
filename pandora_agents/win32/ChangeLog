@@ -1,5 +1,11 @@
 2012-11-20  Sergio Martin <sergio.martin@artica.es>
 
+	* pandora_windows_service.h
+	  pandora_windows_service.cc: Added support for
+	gis_exec (Automatic gis coordinates)
+
+2012-11-20  Sergio Martin <sergio.martin@artica.es>
+
 	* pandora_windows_service.cc: Fixed some bugs
 	of the type conversions 
 

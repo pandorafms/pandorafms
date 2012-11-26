@@ -1,3 +1,12 @@
+2012-11-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_groups.php,
+	  include/functions_agents.php,
+	  include/functions_treeview.php,
+	  include/functions_os.php,
+	  include/functions_tags.php,
+	  operation/tree.php: Added metaconsole support to the tree view.
+
 2012-11-26  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_ui.php

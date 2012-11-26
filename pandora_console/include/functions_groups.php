@@ -558,6 +558,17 @@ function groups_get_name ($id_group, $returnAllGroup = false) {
 }
 
 /**
+ * Return the id of a group given its name.
+ *
+ * @param string Name of the group.
+ *
+ * @return int The id of the given group.
+ */
+function groups_get_id ($group_name, $returnAllGroup = false) {
+	return db_get_value ('id_grupo', 'tgrupo', 'nombre',  $group_name);
+}
+
+/**
  * Get all the users belonging to a group.
  *
  * @param int $id_group The group id to look for

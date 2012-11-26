@@ -191,17 +191,116 @@ function treeview_printTable($id_agente) {
 function treeview_printTree($type) {
 	global $config;
 	
-	$search_free = get_parameter('search_free', '');
-	$select_status = get_parameter('status', -1);
-	
 	echo '<table class="databox" style="width:98%">';
 	echo '<tr><td style="width:60%" valign="top">';
+	
+	if (! defined ('METACONSOLE')) {
+		$list = treeview_getData ($type);
+	}
+	else {
+		$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup WHERE disabled = 0");
+		if ($servers === false) {
+			$servers = array();
+		}
+		
+		$list = array ();
+		foreach ($servers as $server) {
+			if (metaconsole_connect($server) != NOERR) {
+				continue;
+			}
+			$server_list = treeview_getData ($type, $server);
+			foreach ($server_list as $server_item) {
+				if (! isset ($list[$server_item['_name_']])) {
+					$list[$server_item['_name_']] = $server_item;
+				}
+				// Merge!
+				else {
+					$list[$server_item['_name_']]['_num_ok_'] += $server_item['_num_ok_'];
+					$list[$server_item['_name_']]['_num_critical_'] += $server_item['_num_critical_'];
+					$list[$server_item['_name_']]['_num_warning_'] += $server_item['_num_warning_'];
+					$list[$server_item['_name_']]['_num_unknown_'] += $server_item['_num_unknown_'];
+				}
+			}
+			echo "<br/>";
+		}
+		
+		metaconsole_restore_db();
+	}
+
+	if ($list === false) {
+		ui_print_error_message("There aren't agents in this agrupation");
+		echo '</td></tr>';
+		echo '</table>';
+	}
+	else {
+		echo "<ul style='margin: 0; margin-top: 20px; padding: 0;'>\n";
+		
+		$first = true;
+		foreach ($list as $item) {		
+			$lessBranchs = 0;
+			if ($first) {
+				if ($item != end($list)) {
+					$img = html_print_image ("operation/tree/first_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $item['_id_'], "pos_tree" => "0"));
+					$first = false;
+				}
+				else {
+					$lessBranchs = 1;
+					$img = html_print_image ("operation/tree/one_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $item['_id_'], "pos_tree" => "1"));
+				}
+			}
+			else {
+				if ($item != end($list))
+					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $item['_id_'], "pos_tree" => "2"));
+				else
+				{
+					$lessBranchs = 1;
+					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $item['_id_'], "pos_tree" => "3"));
+				}
+			}
+			
+			echo "<li style='margin: 0px 0px 0px 0px;'>";
+			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $item['_id_'] . "\", " . $lessBranchs . ", \"\")'>";
+			
+			echo $img . $item['_iconImg_'] ."&nbsp;" . __($item['_name_']) . ' ('.
+				'<span class="green">'.'<b>'.$item['_num_ok_'].'</b>'.'</span>'. 
+				' : <span class="red">'.$item['_num_critical_'].'</span>' .
+				' : <span class="yellow">'.$item['_num_warning_'].'</span>'.
+				' : <span class="grey">'.$item['_num_unknown_'].'</span>'.') '. "</a>";
+			
+			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $item['_id_'] . "'></div>";
+			echo "</li>\n";
+		}
+		echo "</ul>\n";
+		echo '</td>';
+		echo '<td style="width:38%" valign="top">';
+		echo '<div id="cont">&nbsp;</div>';
+		echo '</td></tr>';
+		echo '</table>';
+	}
+}
+
+// Get data for the tree view
+function treeview_getData ($type, $server=false) {
+	global $config;
+	
+	if ($server !== false) {
+		if (metaconsole_connect ($server) != NOERR) {
+			return array ();
+		}
+	}
+	
+	$search_free = get_parameter('search_free', '');
+	$select_status = get_parameter('status', -1);
 	
 	//Get all groups
 	$avariableGroups = users_get_groups (); //db_get_all_rows_in_table('tgrupo', 'nombre');	
 	
 	//Get all groups with agents
-	$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente WHERE total_count > 0");
+	//$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente WHERE total_count > 0");
+	$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente");
+	if ($full_groups === false) {
+		return array ();
+	}
 	
 	$fgroups = array();
 	
@@ -268,10 +367,7 @@ function treeview_printTree($type) {
 		
 		// If there are not groups display error and return
 		if (empty($avariableGroups)) {
-			ui_print_error_message("There aren't agents in this agrupation");
-			echo '</td></tr>';
-			echo '</table>';
-			return;
+			return array ();
 		}
 	}
 	
@@ -285,7 +381,6 @@ function treeview_printTree($type) {
 	
 	
 	switch ($type) {
-		default:
 		case 'os':
 			//Skip agent with all modules in not init status
 			$sql_search .= " AND total_count<>notinit_count";
@@ -506,6 +601,7 @@ function treeview_printTree($type) {
 				array_push($list, array('id' => 0, 'name' => 'No policy'));
 			}
 			break;
+		default:
 		case 'module':
 			$avariableGroupsIds = implode(',',array_keys($avariableGroups));
 			if($avariableGroupsIds == ''){
@@ -554,105 +650,325 @@ function treeview_printTree($type) {
 			}
 			
 			break;
+		case 'tag':
+				$list = db_get_all_rows_sql('SELECT DISTINCT ttag.name 
+						FROM ttag, ttag_module, tagente_modulo 
+						WHERE ttag.id_tag = ttag_module.id_tag AND 
+							  ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo');
+			break;
 	}
+
+
+	foreach ($list as $key => $item) {
+		switch ($type) {
+			case 'os':
+				$id = $item['id_os'];
+				$list[$key]['_id_'] = $id;
+				$list[$key]['_name_'] = $item['name'];
+				$list[$key]['_iconImg_'] = html_print_image(str_replace('.png' ,'_small.png', ui_print_os_icon ($item['id_os'], false, true, false)) . " ", true);
+				$list[$key]['_num_ok_'] = os_agents_ok($id);
+				$list[$key]['_num_critical_'] = os_agents_critical($id);
+				$list[$key]['_num_warning_'] = os_agents_warning($id);
+				$list[$key]['_num_unknown_'] = os_agents_unknown($id);
+				break;
+			case 'group':
+				$id = $item['id_grupo'];
+				$list[$key]['_id_'] = $id;
+				$list[$key]['_name_'] = $item['nombre'];
+				$list[$key]['_iconImg_'] = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']).".png", true, array ("style" => 'vertical-align: middle; width: 16px; height: 16px;'));
+				$list[$key]['_num_ok_'] = groups_agent_ok($id);
+				$list[$key]['_num_critical_'] = groups_agent_critical($id);
+				$list[$key]['_num_warning_'] = groups_agent_warning($id);
+				$list[$key]['_num_unknown_'] = groups_agent_unknown ($id);
+				break;
+			case 'module_group':
+				$id = $item['id_mg'];
+				$list[$key]['_id_'] = $id;
+				$list[$key]['_name_'] = $item['name'];
+				$list[$key]['_iconImg_'] = '';
+				$list[$key]['_num_ok_'] = modules_group_agent_ok($id);
+				$list[$key]['_num_critical_'] = modules_group_agent_critical ($id);
+				$list[$key]['_num_warning_'] = modules_group_agent_warning($id);
+				$list[$key]['_num_unknown_'] = modules_group_agent_unknown($id);
+				break;
+			case 'policies':
+				$id = $item['id'];
+				$list[$key]['_id_'] = $id;
+				$list[$key]['_name_'] = $item['name'];
+				$list[$key]['_iconImg_'] = '';
+				$list[$key]['_num_ok_'] = policies_agents_ok($id);
+				$list[$key]['_num_critical_'] = policies_agents_critical($id);
+				$list[$key]['_num_warning_'] = policies_agents_warning($id);
+				$list[$key]['_num_unknown_'] = policies_agents_unknown($id);
+				break;
+			default:
+			case 'module':
+				$id = str_replace(array(' ','#','/'), array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_', '_articapandora_'.ord('/').'_pandoraartica_'),io_safe_output($item['nombre']));
+				$module_name = $item['nombre'];
+				$list[$key]['_id_'] = $id;
+				$list[$key]['_name_'] = io_safe_output($module_name);
+				$list[$key]['_iconImg_'] = '';
+				$list[$key]['_num_ok_'] = modules_agents_ok($module_name);
+				$list[$key]['_num_critical_'] = modules_agents_critical($module_name);
+				$list[$key]['_num_warning_'] = modules_agents_warning($module_name);
+				$list[$key]['_num_unknown_'] = modules_agents_unknown($module_name);
+				break;
+			case 'tag':
+				$id = db_get_value('id_tag', 'ttag', 'name', $item['name']);
+				$list[$key]['_id_'] = $id;
+				$list[$key]['_name_'] = $item['name'];
+				$list[$key]['_iconImg_'] = html_print_image ("images/tag_red.png", true, array ("style" => 'vertical-align: middle; width: 16px; height: 16px;'));
+				$list[$key]['_num_ok_'] = tags_agent_ok($id);
+				$list[$key]['_num_critical_'] = tags_agent_critical($id);
+				$list[$key]['_num_warning_'] = tags_agent_warning($id);
+				$list[$key]['_num_unknown_'] = tags_agent_unknown($id);
+				break;
+		}
+
+		if (defined ('METACONSOLE')) {
+			$list[$key]['_id_'] = $list[$key]['_name_'];
+		}
+	}
+
+	return $list;
+}
+
+// Get SQL for the first tree branch
+function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel, $search_free) {
+
+	if (empty($avariableGroupsIds)) {
+		return false;
+	}
+		
+	//TODO CHANGE POLICY ACL FOR TAG ACL
+	$extra_sql = '';
+	if($extra_sql != '') {
+		$extra_sql .= ' OR';
+	}
+	$groups_sql = implode(', ', $avariableGroupsIds);
 	
-	if ($list === false) {
-		ui_print_error_message("There aren't agents in this agrupation");
-		echo '</td></tr>';
-		echo '</table>';
+	if ($search_free != '') {
+		$search_sql = " AND nombre COLLATE utf8_general_ci LIKE '%$search_free%'";
 	}
 	else {
-		echo "<ul style='margin: 0; margin-top: 20px; padding: 0;'>\n";
-		
-		$first = true;
-		foreach ($list as $item) {
-			
-			$iconImg = '';
-			switch ($type) {
-				default:
-				case 'os':
-					$id = $item['id_os'];
-					$name = $item['name'];
-					$iconImg = html_print_image(str_replace('.png' ,'_small.png', ui_print_os_icon ($item['id_os'], false, true, false)) . " ", true);
-					$num_ok = os_agents_ok($id);
-					$num_critical = os_agents_critical($id);
-					$num_warning = os_agents_warning($id);
-					$num_unknown = os_agents_unknown($id);
-					break;
-				case 'group':
-					$id = $item['id_grupo'];
-					$name = $item['nombre'];
-					$iconImg = html_print_image ("images/groups_small/" . groups_get_icon($item['id_grupo']).".png", true, array ("style" => 'vertical-align: middle; width: 16px; height: 16px;'));
-					$num_ok = groups_agent_ok($id);
-					$num_critical = groups_agent_critical($id);
-					$num_warning = groups_agent_warning($id);
-					$num_unknown = groups_agent_unknown ($id);
-					break;
-				case 'module_group':
-					$id = $item['id_mg'];
-					$name = $item['name'];
-					$num_ok = modules_group_agent_ok($id);
-					$num_critical = modules_group_agent_critical ($id);
-					$num_warning = modules_group_agent_warning($id);
-					$num_unknown = modules_group_agent_unknown($id);
-					break;
-				case 'policies':
-					$id = $item['id'];
-					$name = $item['name'];
-					$num_ok = policies_agents_ok($id);
-					$num_critical = policies_agents_critical($id);
-					$num_warning = policies_agents_warning($id);
-					$num_unknown = policies_agents_unknown($id);
-					break;
-				case 'module':
-					$id = str_replace(array(' ','#','/'), array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_', '_articapandora_'.ord('/').'_pandoraartica_'),io_safe_output($item['nombre']));
-					$name = io_safe_output($item['nombre']);
-					$module_name = $item['nombre'];
-					$num_ok = modules_agents_ok($module_name);
-					$num_critical = modules_agents_critical($module_name);
-					$num_warning = modules_agents_warning($module_name);
-					$num_unknown = modules_agents_unknown($module_name);
-					break;
-			}
-			
-			$lessBranchs = 0;
-			if ($first) {
-				if ($item != end($list)) {
-					$img = html_print_image ("operation/tree/first_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "0"));
-					$first = false;
-				}
-				else {
-					$lessBranchs = 1;
-					$img = html_print_image ("operation/tree/one_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "1"));
-				}
-			}
-			else {
-				if ($item != end($list))
-					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "2"));
-				else
-				{
-					$lessBranchs = 1;
-					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image_" . $type . "_" . $id, "pos_tree" => "3"));
-				}
-			}
-			
-			echo "<li style='margin: 0px 0px 0px 0px;'>
-				<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\")'>" .
-				$img . $iconImg ."&nbsp;" . __($name) . ' ('.
-				'<span class="green">'.'<b>'.$num_ok.'</b>'.'</span>'. 
-				' : <span class="red">'.$num_critical.'</span>' .
-				' : <span class="yellow">'.$num_warning.'</span>'.
-				' : <span class="grey">'.$num_unknown.'</span>'.') '. "</a>";
-			
-			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $id . "'></div>";
-			echo "</li>\n";
-		}
-		echo "</ul>\n";
-		echo '</td>';
-		echo '<td style="width:38%" valign="top">';
-		echo '<div id="cont">&nbsp;</div>';
-		echo '</td></tr>';
-		echo '</table>';
+		$search_sql = '';
 	}
+	
+	//Extract all rows of data for each type
+	switch ($type) {
+		case 'group':
+
+			if (defined ('METACONSOLE')) {
+				$id = groups_get_id ($id);
+				if ($id == '') {
+					return false;
+				}
+			}
+
+			//Skip agents which only have not init modules
+			$search_sql .= " AND total_count<>notinit_count";
+			
+			$sql = agents_get_agents(array (
+				'order' => 'nombre COLLATE utf8_general_ci ASC',
+				'id_grupo' => $id,
+				'disabled' => 0,
+				'status' => $statusSel,
+				'search' => $search_sql),
+				array ('*'),
+				'AR',
+				false,
+				true);
+			break;
+		case 'os':
+			
+			//Skip agents which only have not init modules		
+			$search_sql .= " AND total_count<>notinit_count";
+			
+			
+			$sql = agents_get_agents(array (
+				'order' => 'nombre COLLATE utf8_general_ci ASC',
+				'id_os' => $id,
+				'disabled' => 0,
+				'status' => $statusSel,
+				'search' => $search_sql),
+				array ('*'),
+				'AR',
+				false,
+				true);
+			break;
+		case 'module_group':
+			
+			//Skip agents which only have not init modules		
+			$search_sql .= " AND total_count<>notinit_count";
+			
+			$sql = agents_get_agents(array (
+				'order' => 'nombre COLLATE utf8_general_ci ASC',
+				'disabled' => 0,
+				'status' => $statusSel,
+				'search' => $search_sql),
+				array ('*'),
+				'AR',
+				false,
+				true);
+			
+			// Skip agents without modules
+			$sql .= ' AND total_count>0 AND disabled=0 AND id_agente IN
+				(SELECT DISTINCT (id_agente)
+				FROM tagente_modulo 
+				WHERE id_module_group = ' . $id . ')';
+			break;
+		case 'policies':
+			
+			$sql = agents_get_agents(array (
+				'order' => 'nombre COLLATE utf8_general_ci ASC',
+				'disabled' => 0,
+				'search' => $search_sql),
+				
+				array ('*'),
+				'AR',
+				false,
+				true);
+			
+			if ($id != 0) {
+				// Skip agents without modules
+				$sql .= ' AND tagente.id_agente IN
+					(SELECT tagente.id_agente
+					FROM tagente, tagente_modulo, tagente_estado, tpolicy_modules
+					WHERE tagente.id_agente = tagente_modulo.id_agente
+					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+					AND tagente_modulo.id_policy_module = tpolicy_modules.id 
+					AND tagente.disabled = 0 
+					AND tagente_modulo.disabled = 0
+					AND tagente_estado.utimestamp != 0
+					AND tagente_modulo.id_policy_module != 0
+					AND tpolicy_modules.id_policy = ' . $id . '
+					group by tagente.id_agente
+					having COUNT(*) > 0)';
+			}
+			else if ($statusSel == 0) {
+				
+				// If status filter is NORMAL add void agents
+				$sql .= " UNION SELECT * FROM tagente 
+					WHERE tagente.disabled = 0
+					AND tagente.id_agente NOT IN (SELECT tagente_estado.id_agente 
+						FROM tagente_estado)";
+			}
+			break;
+		case 'module':
+			//Replace separator token "articapandora_32_pandoraartica_" for " "
+			//example:
+			//"Load_articapandora_32_pandoraartica_Average"
+			//result -> "Load Average"
+			$name = str_replace(array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_','_articapandora_'.ord('/').'_pandoraartica_'),array(' ','#','/'),$id);
+			
+			$name = io_safe_input($name);
+			
+			
+			$sql = agents_get_agents(array (
+				'order' => 'nombre COLLATE utf8_general_ci ASC',
+				'disabled' => 0,
+				'status' => $statusSel,
+				'search' => $search_sql),
+				
+				array ('*'),
+				'AR',
+				false,
+				true);
+			$sql .= sprintf('AND  id_agente IN (
+					SELECT id_agente
+					FROM tagente_modulo
+					WHERE nombre = \'%s\' AND disabled = 0
+				)
+				', $name);
+			break;
+		case 'tag':
+			$id = tags_get_id ($id);
+			if ($id === false) {
+				return false;
+			}
+	
+			$sql = "SELECT tagente.* 
+						FROM tagente, tagente_modulo, ttag_module 
+						WHERE tagente.id_agente = tagente_modulo.id_agente
+						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+						AND ttag_module.id_tag = " . $id;
+			break;
+	}
+		
+	$sql .= ' AND tagente.disabled = 0'. $search_sql;
+	return $sql;
 }
+
+// Get SQL for the second tree branch
+function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
+	global $config;
+
+	switch ($fatherType) {
+		case 'group':
+			$sql = 'SELECT * 
+				FROM tagente_modulo AS t1 
+				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+				WHERE t1.id_agente = ' . $id;
+			break;
+		case 'os':
+			$sql = 'SELECT * 
+				FROM tagente_modulo AS t1 
+				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+				WHERE t1.id_agente = ' . $id;
+			break;
+		case 'module_group':
+			$sql = 'SELECT * 
+				FROM tagente_modulo AS t1 
+				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+				WHERE t1.id_agente = ' . $id . ' AND id_module_group = ' . $id_father;
+			break;
+		case 'policies':
+			$whereQuery = '';
+			if ($id_father != 0)
+				$whereQuery = ' AND t1.id_policy_module IN 
+					(SELECT id FROM tpolicy_modules WHERE id_policy = ' . $id_father . ')';
+			else
+				$whereQuery = ' AND t1.id_policy_module = 0 '; 
+			
+			$sql = 'SELECT * 
+				FROM tagente_modulo AS t1 
+				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+				WHERE t1.id_agente = ' . $id . $whereQuery;
+			break;
+		default:
+		case 'module':
+			$name = str_replace(array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_','_articapandora_'.ord('/').'_pandoraartica_'),array(' ','#','/'),$id_father);
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$sql = 'SELECT * 
+						FROM tagente_modulo AS t1 
+						INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+						WHERE t1.id_agente = ' . $id . ' AND nombre = \'' . io_safe_input($name) . '\'';
+					break;
+				case "postgresql":
+				case "oracle":
+					$sql = 'SELECT * 
+						FROM tagente_modulo AS t1 
+						INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
+						WHERE t1.id_agente = ' . $id . ' AND nombre = \'' . io_safe_input($name) . '\'';
+					break;
+			}
+			break;
+		case 'tag':
+			$id_father = tags_get_id ($id_father);
+			if ($id_father === false) {
+				return false;
+			}
+			$sql = 'SELECT * FROM tagente_modulo, tagente_estado, ttag_module 
+					WHERE tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+					AND tagente_modulo.id_agente=' . $id . ' AND ttag_module.id_tag = ' . $id_father;
+			break;
+		}
+	
+		// This line checks for initializated modules or (non-initialized) asyncronous modules	
+		$sql .= ' AND disabled = 0 AND (utimestamp > 0 OR id_tipo_modulo IN (21,22,23))';
+		return $sql;
+}
+
 ?>

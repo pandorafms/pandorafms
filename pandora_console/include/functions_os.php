@@ -44,4 +44,9 @@ function os_agents_unknown ($id_os) {
 	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_os=$id_os");
 }
 
+// Get the name of a group given its id.
+function os_get_name ($id_os) {
+	return db_get_value ('name', 'tconfig_os', 'id_os', (int) $id_os);
+}
+
 ?>

@@ -16,8 +16,8 @@
 // Load global vars
 global $config;
 
-require_once ("include/functions_events.php"); //Event processing functions
-require_once ("include/functions_alerts.php"); //Alerts processing functions
+require_once ($config['homedir']."/include/functions_events.php"); //Event processing functions
+require_once ($config['homedir']."/include/functions_alerts.php"); //Alerts processing functions
 require_once ($config['homedir'].'/include/functions_agents.php'); //Agents functions
 require_once ($config['homedir'].'/include/functions_users.php'); //Users functions
 require_once ($config['homedir'].'/include/functions_graph.php');
@@ -361,7 +361,7 @@ if ($delete) {
 else {
 	switch ($section) {
 		case 'list':
-			require_once('operation/events/events_list.php');
+			require_once($config['homedir'].'/operation/events/events_list.php');
 			break;
 	}
 }

@@ -32,13 +32,22 @@ if (! check_acl ($config['id_user'], 0, "AR")
 require_once($config['homedir'] . '/include/functions_agents.php');
 require_once($config['homedir'] . '/include/functions_modules.php');
 require_once($config['homedir'] . '/include/functions_users.php');
+enterprise_include_once ('include/functions_metaconsole.php');
+
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
 // TODO: CLEAN extra_sql
 $extra_sql = '';
 
-ui_print_page_header ("Monitor detail", "images/brick.png", false);
+if (! defined ('METACONSOLE')) {
+	//Header
+	ui_print_page_header ("Monitor detail", "images/brick.png", false);
+} else {
+	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
+        array('link' => 'index.php?sec=estado&sec2=operation/agentes/status_monitor', 'text' => __('Monitor view')));
 
+	ui_meta_print_page_header($nav_bar);
+}
 
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');
@@ -565,14 +574,41 @@ switch ($config["dbtype"]) {
 		$sql = oracle_recode_query ($sql, $set);
 		break;
 }
-$result = db_get_all_rows_sql ($sql);
+	
+if (! defined ('METACONSOLE')) {
+	$result = db_get_all_rows_sql ($sql);
 
-if ($count > $config["block_size"]) {
-	ui_pagination ($count, false, $offset);
+	if ($count > $config["block_size"]) {
+		ui_pagination ($count, false, $offset);
+	}
+
+	if ($result === false) {
+		$result = array ();
+	}
 }
-
-if ($result === false) {
-	$result = array ();
+else {
+	// For each server defined and not disabled:
+	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup WHERE disabled = 0");
+	if ($servers === false)
+		$servers = array();
+		
+	$result = array();	
+	
+	foreach($servers as $server) {
+		// If connection was good then retrieve all data server
+		if (metaconsole_connect($server) == NOERR){
+			$connection = true;
+		}
+		else{
+			$connection = false;	
+		}
+		 
+		$result_server = db_get_all_rows_sql ($sql);
+		
+		if(!empty($result_server)) {
+			$result = array_merge($result, $result_server);
+		}
+	}
 }
 
 if (($config['dbtype'] == 'oracle') && ($result !== false)) {

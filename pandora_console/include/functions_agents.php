@@ -1566,6 +1566,44 @@ function agents_get_addresses ($id_agent) {
 }
 
 /**
+ * Get the worst status of all modules of a given agent from the counts.
+ *
+ * @param array agent to check.
+ *
+ * @return int Worst status of an agent for all of its modules.
+ * return -1 if the data are wrong
+ */
+function agents_get_status_from_counts($agent) {
+	// Check if in the data there are all the necessary values
+	if(!isset($agent['normal_count']) && 
+		!isset($agent['warning_count']) &&
+		!isset($agent['critical_count']) &&
+		!isset($agent['unknown_count']) &&
+		!isset($agent['notinit_count']) &&
+		!isset($agent['total_count'])) {
+		return -1;
+	}
+
+	if($agent['critical_count'] > 0) {
+		return AGENT_MODULE_STATUS_CRITICAL_BAD;
+	}
+	else if($agent['warning_count'] > 0) {
+		return AGENT_MODULE_STATUS_WARNING;
+	}
+	else if($agent['unknown_count'] > 0) {
+		return AGENT_MODULE_STATUS_UNKNOW;
+	}
+	else if($agent['normal_count'] == $agent['total_count']) {
+		return AGENT_MODULE_STATUS_NORMAL;
+	}
+	//~ else if($agent['notinit_count'] == $agent['total_count']) {
+		//~ return AGENT_MODULE_STATUS_NORMAL;
+	//~ }
+	
+	return -1;
+}
+
+/**
  * Get the worst status of all modules of a given agent.
  *
  * @param int Id agent to check.

@@ -1162,7 +1162,7 @@ sub pandora_planned_downtime_disabled_once_stop($$) {
 			SET executed = 0
 			WHERE id = ?', $downtime->{'id'});
 		
-		pandora_event ($pa_config, 'Server ' . $pa_config->{'servername'} . ' stopped planned downtime: ' . $downtime->{'description'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+		pandora_event ($pa_config, 'Server ' . $pa_config->{'servername'} . ' stopped planned downtime: ' . $downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_unset_disabled_elements($pa_config,
 			$dbh, $downtime);
@@ -1202,7 +1202,7 @@ sub pandora_planned_downtime_disabled_once_start($$) {
 			SET executed = 1
 			WHERE id = ?', $downtime->{'id'});
 		pandora_event ($pa_config,
-			"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_set_disabled_elements($pa_config,
 			$dbh, $downtime);
@@ -1398,7 +1398,7 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 			SET executed = 0
 			WHERE id = ?', $downtime->{'id'});
 		pandora_event ($pa_config,
-			"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_unset_quiet_elements($pa_config,
 			$dbh, $downtime->{'id'});
@@ -1438,7 +1438,7 @@ sub pandora_planned_downtime_quiet_once_start($$) {
 			SET executed = 1
 			WHERE id = ?', $downtime->{'id'});
 		pandora_event ($pa_config,
-			"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_set_quiet_elements($pa_config,
 			$dbh, $downtime->{'id'});
@@ -1473,7 +1473,9 @@ sub pandora_planned_downtime_monthly_start($$) {
 		FROM tplanned_downtime
 		WHERE type_periodicity="monthly"
 			AND executed = 0
-			AND periodically_day_from <= ?', $number_day_month);
+			AND periodically_day_from <= ?
+			AND periodically_day_to >= ?', 
+			$number_day_month, $number_day_month);
 	
 	foreach my $downtime (@downtimes) {
 		#Convert to identical type.
@@ -1503,7 +1505,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 				SET executed = 1
 				WHERE id = ?', $downtime->{'id'});
 			pandora_event ($pa_config,
-				"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+				"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 			
 			if ($downtime->{'type_downtime'} == "quiet") {
 				pandora_planned_downtime_set_quiet_elements($pa_config,
@@ -1591,7 +1593,7 @@ sub pandora_planned_downtime_monthly_stop($$) {
 				SET executed = 0
 				WHERE id = ?', $downtime->{'id'});
 			pandora_event ($pa_config,
-				"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+				"Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 			
 			if ($downtime->{'type_downtime'} == "quiet") {
 				pandora_planned_downtime_unset_quiet_elements($pa_config,
@@ -1677,8 +1679,10 @@ sub pandora_planned_downtime_weekly_start($$) {
 			#	"%H:%M:%S");
 			#
 			#if ($date_now_time >= $date_downtime) {
-			if (($time gt $downtime->{'periodically_time_from'})
-				|| ($time eq $downtime->{'periodically_time_from'})) {
+			if ((($time gt $downtime->{'periodically_time_from'})
+				|| ($time eq $downtime->{'periodically_time_from'}))
+				&& (($time lt $downtime->{'periodically_time_to'})
+                                || ($time eq $downtime->{'periodically_time_to'}))) {
 				if (!defined($downtime->{'description'})) {
 					$downtime->{'description'} = "N/A";
 				}
@@ -1693,7 +1697,7 @@ sub pandora_planned_downtime_weekly_start($$) {
 					SET executed = 1
 					WHERE id = ?', $downtime->{'id'});
 				pandora_event ($pa_config,
-					"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+					"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 				
 				if ($downtime->{'type_downtime'} == "quiet") {
 					pandora_planned_downtime_set_quiet_elements($pa_config,
@@ -1767,7 +1771,7 @@ sub pandora_planned_downtime_weekly_stop($$) {
 				SET executed = 0
 				WHERE id = ?', $downtime->{'id'});
 			pandora_event ($pa_config,
-				"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+				"Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 			
 			if ($downtime->{'type_downtime'} == "quiet") {
 				pandora_planned_downtime_unset_quiet_elements($pa_config,

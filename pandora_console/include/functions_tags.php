@@ -27,22 +27,12 @@
  * @return mixed Returns count of agents in critical status or false if they aren't.
  */
 function tags_agent_critical ($id_tag) {
-	 
-	if (empty($id_tag))
-		return false;
-		
-	//TODO REVIEW ORACLE AND POSTGRES
 
-	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) 
-						FROM tagente_estado, tagente, tagente_modulo, ttag_module
-						WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
-						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo 
-						AND tagente_estado.id_agente = tagente.id_agente						
-						AND tagente_modulo.disabled = 0 
-						AND estado = 1
-						AND tagente.disabled = 0 
-						AND tagente_estado.utimestamp != 0 
-						AND ttag_module.id_tag = $id_tag");
+	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
+						WHERE tagente.id_agente = tagente_modulo.id_agente
+						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+						AND ttag_module.id_tag = $id_tag
+						AND critical_count>0");
 }
 
  /**
@@ -53,54 +43,12 @@ function tags_agent_critical ($id_tag) {
  * @return mixed Returns count of agents in unknown status or false if they aren't.
  */
 function tags_agent_unknown ($id_tag) {
-	 
-	if (empty($id_tag))
-		return false;
-		
-	// Agent of module group X and critical status
-	$agents_critical = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 1 
-						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";		
 
-	// Agent of module group X and warning status	
-	$agents_warning = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 2 
-						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";
-
-	// Agent of module group X and unknown status		
-	$agents_unknown = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 3
-						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";		
-
-	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
-						FROM tagente, tagente_modulo, tagente_estado, ttag_module
+	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-
-						AND ttag_module.id_tag = $id_tag 
-						AND tagente.id_agente NOT IN ($agents_critical)
-						AND tagente.id_agente NOT IN ($agents_warning)
-						AND tagente.id_agente IN ($agents_unknown) ) AS t");
-
+						AND ttag_module.id_tag = $id_tag
+						AND critical_count=0 AND warning_count=0 AND unknown_count>0");
 }
 
 /**
@@ -125,29 +73,6 @@ function tags_total_agents ($id_tag) {
 		return db_get_sql ($total_agents);	
 }
 
-/**
- * Get total agents filtering by id_tag that are disabled.
- * 
- * @param int $id_tag Id of the tag to search total agents
- * 
- * @return mixed Returns count of agents with this tag or false if they aren't.
- */
-function tags_agent_disabled ($id_tag) {
-
-		// Avoid mysql error
-		if (empty($id_tag))
-			return;	
-	
-		$total_agents_disabled = "SELECT COUNT(DISTINCT tagente.id_agente) 
-						FROM tagente, tagente_modulo, ttag_module 
-						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-						AND tagente.disabled = 1
-						AND ttag_module.id_tag = " . $id_tag;
-						
-		return db_get_sql ($total_agents_disabled);	
-}
-
  /**
  * Get normal agents by using the status code in modules by filtering by id_tag.
  * 
@@ -156,66 +81,12 @@ function tags_agent_disabled ($id_tag) {
  * @return mixed Returns count of agents in normal status or false if they aren't.
  */
 function tags_agent_ok ($id_tag) {
-	 
-	if (empty($id_tag))
-		return false;
-		
-	// Agent of module group X and critical status
-	$agents_critical = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 1 
-						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";	
 
-	// Agent of module group X and warning status	
-	$agents_warning = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 2 
-						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";	
-
-	// Agent of module group X and unknown status		
-	$agents_unknown = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 3
-						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";
-						
-	// Agent of module group X and ok status		
-	$agents_ok = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 0
-						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";					
-
-	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
-						FROM tagente, tagente_modulo, tagente_estado, ttag_module 
+	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-
 						AND ttag_module.id_tag = $id_tag
-						AND tagente.id_agente NOT IN ($agents_critical)
-						AND tagente.id_agente NOT IN ($agents_warning)
-						AND tagente.id_agente NOT IN ($agents_unknown)
-						AND tagente.id_agente IN ($agents_ok)) AS t");
-
+						AND normal_count=total_count");
 }
 
  /**
@@ -227,40 +98,11 @@ function tags_agent_ok ($id_tag) {
  */
 function tags_agent_warning ($id_tag) {
 	 
-	if (empty($id_tag))
-		return false;
-	
-	// Agent critical status
-	$agents_critical = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 1 
-						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";
-	
-	// Agent warning status	
-	$agents_warning = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 2 
-						AND tagente_estado.utimestamp != 0
-						group by tagente.id_agente";
-	
-	return db_get_sql ("SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
-						FROM tagente, tagente_modulo, tagente_estado, ttag_module 
+	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-						
 						AND ttag_module.id_tag = $id_tag
-						AND tagente.id_agente NOT IN ($agents_critical)
-						AND tagente.id_agente IN ($agents_warning)) AS t");
+						AND critical_count=0 AND warning_count>0");
 }
  
  /**
@@ -371,6 +213,17 @@ function tags_search_tag_id($id) {
  */
 function tags_get_name($id){
 	return db_get_value_filter ('name', 'ttag', array('id_tag' => $id));
+}
+
+/**
+ * Get tag id given the tag name. 
+ * 
+ * @param string Tag name.
+ *
+ * @return int Tag id.
+ */
+function tags_get_id($name){
+	return db_get_value_filter ('id_tag', 'ttag', array('name' => $name));
 }
 
 /**

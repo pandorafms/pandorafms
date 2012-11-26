@@ -355,71 +355,31 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	}
 	
 	$status_sql = ' 1 = 1';
-	if (isset($filter['status'])) {
-		$normal_modules = 'SELECT tagente.id_agente
-			FROM tagente_estado, tagente, tagente_modulo 
-			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 0
-				AND (utimestamp != 0)';
-		
-		$warning_modules = 'SELECT tagente.id_agente
-			FROM tagente_estado, tagente, tagente_modulo 
-			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 2 AND tagente_estado.utimestamp != 0';
-		
-		
-		$critical_modules = 'SELECT tagente.id_agente
-			FROM tagente_estado, tagente, tagente_modulo 
-			WHERE tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente 
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 1 AND tagente_estado.utimestamp != 0';
-		
-		$unknown_modules = 'SELECT tagente.id_agente
-			FROM tagente_estado, tagente, tagente_modulo 
-			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 AND estado = 3 AND utimestamp != 0';
-		
-		$notinit_modules = 'SELECT tagente_estado.id_agente
-			FROM tagente_estado, tagente, tagente_modulo 
-			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente 
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.disabled = 0 
-				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23) 
-				AND utimestamp = 0';
-		
+	if (isset($filter['status'])) {		
 		switch ($filter['status']) {
 			// Normal
 			case 0: 
-				$status_sql = "id_agente IN ($normal_modules) && id_agente NOT IN ($warning_modules) &&
-				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($unknown_modules)"; //&& id_agente NOT IN ($notinit_modules)";
+				$status_sql = "normal_count=total_count";
 				break;
 			// Warning
 			case 2:
-				$status_sql = "id_agente IN ($warning_modules) &&
-				 id_agente NOT IN ($critical_modules)"; //&& id_agente NOT IN ($notinit_modules)";
+				$status_sql = "critical_count=0 AND warning_count>0";
 				break;
 			// Critical
 			case 1: 
-				$status_sql = "id_agente IN ($critical_modules)";
+				$status_sql = "critical_count>0";
 				break;
 			// Unknown
 			case 3:
-				$status_sql = "id_agente IN ($unknown_modules) &&
-				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($warning_modules)";
+				$status_sql = "critical_count=0 AND warning_count=0 AND unknown_count>0";
 				break;
 			// Not normal
 			case 4:
-				//$status_sql = "id_agente NOT IN ($normal_modules)";
-				$status_sql = "id_agente NOT IN ($normal_modules) || id_agente IN ($warning_modules) ||
-				 id_agente IN ($critical_modules) || id_agente IN ($unknown_modules)";
+				$status_sql = "normal_count<>total_count";
 				break;
 			// Not init
 			case 5:	
-				$status_sql = "id_agente NOT IN ($warning_modules) &&
-				 id_agente NOT IN ($critical_modules) && id_agente NOT IN ($unknown_modules) && id_agente NOT IN ($normal_modules)";
+				$status_sql = "notinit_count=total_count";
 				break;
 		}
 		unset($filter['status']);

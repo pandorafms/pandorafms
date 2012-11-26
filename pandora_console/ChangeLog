@@ -1,3 +1,11 @@
+2012-11-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php
+	operation/events/events_list.php
+	operation/events/events.php
+	operation/search_results.php
+	godmode/netflow/nf_edit.php: Fix paths problems
+
 2012-11-21 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/integria_incidents/incident.php: Fixed a bug in integration

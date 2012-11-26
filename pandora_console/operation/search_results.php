@@ -15,7 +15,7 @@
 // GNU General Public License for more details.
 
 global $config;
-require_once ("include/functions_reporting.php");
+require_once ($config['homedir']."/include/functions_reporting.php");
 
 // Load enterprise extensions
 enterprise_include ('operation/reporting/custom_reporting.php');

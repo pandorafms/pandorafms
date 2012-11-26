@@ -1,3 +1,12 @@
+2012-11-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_agents.php
+	include/functions_networkmap.php
+	operation/agentes/status_monitor.php
+	operation/netflow/nf_live_view.php: Improve the 
+	performance of networkmap with the new status counts.
+	Modify some common code between console and metaconsole
+
 2012-11-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_groups.php,

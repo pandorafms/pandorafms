@@ -77,14 +77,14 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0,
 		$filter['id_grupo'] = $group;
 		
 		$agents = agents_get_agents ($filter,
-			array ('id_grupo, nombre, id_os, id_parent, id_agente'));
+			array ('id_grupo, nombre, id_os, id_parent, id_agente, normal_count, warning_count, critical_count, unknown_count, total_count, notinit_count'));
 	}
 	else if ($group == -666) {
 		$agents = false;
 	}
 	else {
 		$agents = agents_get_agents ($filter,
-			array ('id_grupo, nombre, id_os, id_parent, id_agente'));
+			array ('id_grupo, nombre, id_os, id_parent, id_agente, normal_count, warning_count, critical_count, unknown_count, total_count, notinit_count'));
 	}
 	
 	if ($agents === false)
@@ -492,7 +492,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	global $config;
 	
 	if (defined('METACONSOLE')) {
-		$status = agents_meta_get_status($id_server, $agent['id_agente']);
+		$status = agents_get_status_from_counts($agent);
 	}
 	else {
 		$status = agents_get_status($agent['id_agente']);

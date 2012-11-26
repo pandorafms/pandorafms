@@ -19,12 +19,8 @@ global $config;
 include_once($config['homedir'] . "/include/functions_graph.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
-if (defined ('METACONSOLE')) {
-	ui_require_javascript_file ('calendar', '../../include/javascript/');
-} else {
-	ui_require_javascript_file ('calendar');
-}
 
+ui_require_javascript_file ('calendar');
 
 // ACL
 check_login ();
@@ -102,7 +98,7 @@ if (! defined ('METACONSOLE')) {
 	ui_print_page_header (__('Netflow live view'), "images/networkmap/so_cisco_new.png", false, "", false, array ());
 } else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
-        array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_live_view', 'text' => __('Netflow live view')));
+        array('link' => 'index.php?sec=netf&sec2=operation/netflow/nf_live_view', 'text' => __('Netflow live view')));
 
 	ui_meta_print_page_header($nav_bar);
 }
@@ -140,7 +136,7 @@ else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 // The filter name will not be needed anymore
 $filter['id_name'] = '';
 
-echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_live_view">';
+echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view">';
 
 	// Chart options table
 	$table->width = '100%';

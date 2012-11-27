@@ -1,3 +1,8 @@
+2012-11-27  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/massive/massive_delete_modules.php: Fixed a bug 
+	on massive delete modules due of a copypaste
+
 2012-11-26  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_agents.php

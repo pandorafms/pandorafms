@@ -1401,7 +1401,7 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value
 		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
 		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
-		"&colorRGB=". $colorRGB
+		"&colorRGB=". $colorRGB, false, false, false
 		);
 	
 	return "<img title='" . $title . "' alt='" . $title . "'" . $class_tag . $id_tag . 

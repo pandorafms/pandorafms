@@ -43,10 +43,8 @@ if (! defined ('METACONSOLE')) {
 	//Header
 	ui_print_page_header ("Monitor detail", "images/brick.png", false);
 } else {
-	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
-        array('link' => 'index.php?sec=estado&sec2=operation/agentes/status_monitor', 'text' => __('Monitor view')));
-
-	ui_meta_print_page_header($nav_bar);
+	
+	ui_meta_print_header(__("Monitor view"));
 }
 
 $ag_freestring = get_parameter ('ag_freestring');

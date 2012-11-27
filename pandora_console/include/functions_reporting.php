@@ -2493,7 +2493,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data_sla = reporting_get_agentmodule_sla_array ($sla['id_agent_module'], $content['period'],
 						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
 						$content['time_to']);
-						
+				
+				if($data_sla == false) {
+					$data_sla = array();
+				}
+				
 				//Get the sla_value in % and store it on $sla_value
 				$data_total = 0;
 				$data_pass = 0;
@@ -2516,8 +2520,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 				}
 				
-				$sla_value = ($data_pass / $data_total) * 100;
-								
+				if($data_total == 0) {
+					$sla_value = 0;
+				}
+				else {
+					$sla_value = ($data_pass / $data_total) * 100;
+				}	
+						
 				//Do not show right modules if 'only_display_wrong' is active
 				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
 				

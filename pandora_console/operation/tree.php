@@ -52,10 +52,22 @@ if (is_ajax ())
 	$statusSel = get_parameter('status');
 	$search_free = get_parameter('search_free', '');
 	$printTable = get_parameter('printTable', 0);
-	
+	$server_name = get_parameter('server_name', '');
 	if ($printTable) {
 		$id_agente = get_parameter('id_agente');
-		treeview_printTable($id_agente);
+		if (defined ('METACONSOLE')) {
+			$server = metaconsole_get_connection ($server_name);
+			metaconsole_connect($server);
+			$console_url = $server['server_url'] . '/';
+		} else {
+			$console_url = '';
+		}
+
+		treeview_printTable($id_agente, $console_url);
+		
+		if (defined ('METACONSOLE')) {
+			metaconsole_restore_db();
+		}
 	}
 	/*
 	 * It's a binary for branch (0 show - 1 hide)
@@ -100,6 +112,10 @@ if (is_ajax ())
 						if ($server_rows === false) {
 							$server_rows = array ();
 						}
+					}
+					// Add the server name
+					foreach ($server_rows as $key => $row) {
+						$server_rows[$key]['server_name'] = $server['server_name'];
 					}
 					$rows = array_merge($rows, $server_rows);
 				}
@@ -169,7 +185,7 @@ if (is_ajax ())
 				}
 				echo "<li style='margin: 0; padding: 0;'>";
 				echo "<a onfocus='JavaScript: this.blur()'
-					href='javascript: loadSubTree(\"agent_" . $type . "\"," . $row["id_agente"] . ", " . $less . ", \"" . $id . "\")'>";
+					href='javascript: loadSubTree(\"agent_" . $type . "\"," . $row["id_agente"] . ", " . $less . ", \"" . $id . "\", \"" . $row["server_name"] . "\")'>";
 				
 				if ($lessBranchs == 1)
 					html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
@@ -187,7 +203,7 @@ if (is_ajax ())
 						str_replace('img', 'img style="vertical-align: middle;"', $agent_info["alert_img"])
 					);
 				echo "<a onfocus='JavaScript: this.blur()'
-					href='javascript: loadTable(\"agent_" . $type . "\"," . $row["id_agente"] . ", " . $less . ", \"" . $id . "\")'>";
+					href='javascript: loadTable(\"agent_" . $type . "\"," . $row["id_agente"] . ", " . $less . ", \"" . $id . "\", \"" . $row['server_name'] . "\")'>";
 				echo " ";
 				
 				echo $row["nombre"];
@@ -229,26 +245,19 @@ if (is_ajax ())
 		case 'agent_tag':
 			$fatherType = str_replace('agent_', '', $type);
 
-			if (! defined ('METACONSOLE')) {
-				$sql = treeview_getSecondBranchSQL ($fatherType, $id, $id_father);
-				$rows = db_get_all_rows_sql($sql);
-			} else {
-				$rows = array ();
-				foreach ($servers as $server) {
-					if (metaconsole_connect($server) != NOERR) {
-						continue;
-					}
-					$sql = treeview_getSecondBranchSQL ($fatherType, $id, $id_father);
-					$server_rows = db_get_all_rows_sql($sql);
-					if ($server_rows === false) {
-						$server_rows = array ();
-					}
-					$rows = array_merge($rows, $server_rows);
+			if (defined ('METACONSOLE')) {
+				$server = metaconsole_get_connection ($server_name);
+				if (metaconsole_connect($server) != NOERR) {
+					continue;
 				}
-				
+			}
+			
+			$sql = treeview_getSecondBranchSQL ($fatherType, $id, $id_father);
+			$rows = db_get_all_rows_sql($sql);
+			$countRows = count ($rows);
+			if (defined ('METACONSOLE')) {
 				metaconsole_restore_db();
 			}
-			$countRows = count ($rows);
 						
 			if ($countRows === 0) {
 				echo "<ul style='margin: 0; padding: 0;'>\n";
@@ -344,10 +353,16 @@ if (is_ajax ())
 				echo " ";
 				$graph_type = return_graphtype ($row["id_tipo_modulo"]);
 				$win_handle=dechex(crc32($row["id_agente_modulo"] . $row["nombre"]));
-				$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["nombre"])."&refresh=600','day_".$win_handle."')";
+				
+				if (defined ('METACONSOLE')) {
+					$console_url = $server['server_url'] . '/';
+				} else {
+					$console_url = '';
+				}
+				$link ="winopeng('" . $console_url . "operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["nombre"])."&refresh=600','day_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'">' . html_print_image ("images/chart_curve.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . '</a>';
 				echo " ";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $row['id_agente'] . "&tab=data_view&period=86400&id=".$row["id_agente_modulo"]."'>" . html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
+				echo "<a href='" . $console_url . "index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $row['id_agente'] . "&tab=data_view&period=86400&id=".$row["id_agente_modulo"]."'>" . html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
 				echo " ";
 				echo io_safe_output($row['nombre']);
 				if ($row['quiet']) {
@@ -516,7 +531,7 @@ treeview_printTree($activeTab);
 	 * less_branchs int use in ajax php as binary structure 0b00, 0b01, 0b10 and 0b11
 	 * id_father int use in js and ajax php, its useful when you have a two subtrees with same agent for diferent each one
 	 */
-	 function loadSubTree(type, div_id, less_branchs, id_father) {
+	 function loadSubTree(type, div_id, less_branchs, id_father, server_name) {
 		hiddenDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv');
 		loadDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv');
 		pos = parseInt($('#tree_image'+id_father+'_'+type+'_'+div_id).attr('pos_tree'));
@@ -536,7 +551,7 @@ treeview_printTree($activeTab);
 				type: "POST",
 				url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
 				data: "page=<?php echo $_GET['sec2']; ?>&ajax_treeview=1&type=" + 
-					type + "&id=" + div_id + "&less_branchs=" + less_branchs + "&id_father=" + id_father + "&status=" + status + "&search_free=" + search_free,
+					type + "&id=" + div_id + "&less_branchs=" + less_branchs + "&id_father=" + id_father + "&status=" + status + "&search_free=" + search_free + "&server_name=" + server_name,
 				success: function(msg){
 					if (msg.length != 0) {
 						$('#tree_div'+id_father+'_'+type+'_'+div_id).hide();
@@ -640,17 +655,17 @@ treeview_printTree($activeTab);
 		);
 	}
 	
-	function loadTable(type, div_id, less_branchs, id_father) {
+	function loadTable(type, div_id, less_branchs, id_father, server_name) {
 		id_agent = div_id;
 		$.ajax({
 			type: "POST",
 			url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
-			data: "page=<?php echo $_GET['sec2']; ?>&printTable=1&id_agente=" + 
-			id_agent, success: function(data){
+			data: "page=<?php echo $_GET['sec2']; ?>&printTable=1&id_agente=" + id_agent + "&server_name=" + server_name,
+			success: function(data){
 				$('#cont').html(data);
 			}
 		});
 		
-		loadSubTree(type, div_id, less_branchs, id_father);
+		loadSubTree(type, div_id, less_branchs, id_father, server_name);
 	}
 </script>

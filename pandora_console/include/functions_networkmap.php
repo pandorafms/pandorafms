@@ -84,7 +84,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0,
 	}
 	else {
 		$agents = agents_get_agents ($filter,
-			array ('id_grupo, nombre, id_os, id_parent, id_agente, normal_count, warning_count, critical_count, unknown_count, total_count, notinit_count'));
+			array ('id_grupo, nombre, id_os, id_parent, id_agente, 
+				normal_count, warning_count, critical_count, unknown_count, total_count, notinit_count'));
 	}
 	
 	if ($agents === false)
@@ -277,7 +278,8 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 	if ($depth != 'group') {
 		// Get agents data
 		$agents = agents_get_agents ($filter,
-			array ('id_grupo, nombre, id_os, id_agente'));
+			array ('id_grupo, nombre, id_os, id_agente, 
+				normal_count, warning_count, critical_count, unknown_count, total_count, notinit_count'));
 		
 		if ($agents === false)
 			$agents = array();
@@ -490,13 +492,8 @@ function networkmap_create_group_node ($group, $simple = 0, $font_size = 10, $me
 // Returns a node definition
 function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cut_names = true, $relative = false, $metaconsole = false, $id_server = null) {
 	global $config;
-	
-	if (defined('METACONSOLE')) {
-		$status = agents_get_status_from_counts($agent);
-	}
-	else {
-		$status = agents_get_status($agent['id_agente']);
-	}
+
+	$status = agents_get_status_from_counts($agent);
 	
 	// Set node status
 	switch ($status) {

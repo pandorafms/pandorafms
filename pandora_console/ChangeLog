@@ -1,3 +1,9 @@
+2012-11-27  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php
+	operation/reporting/reporting_viewer.php: Fix some bugs of
+	reports on metaconsole
+
 2012-11-27 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php: Fixed progress_bar in metaconsole.

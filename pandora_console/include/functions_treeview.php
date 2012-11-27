@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function treeview_printTable($id_agente) {
+function treeview_printTable($id_agente, $console_url = '') {
 	global $config;
 	
 	require_once ("include/functions_agents.php");
@@ -99,7 +99,7 @@ function treeview_printTable($id_agente) {
 			echo __('There is no GIS data.');
 		}
 		else {
-			echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
+			echo '<a href="' . $console_url . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
 			if ($dataPositionAgent['description'] != "")
 				echo $dataPositionAgent['description'];
 			else
@@ -179,7 +179,7 @@ function treeview_printTable($id_agente) {
 	echo '</div>';
 	
 	
-	echo '<form id="agent_detail" method="post" action="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
+	echo '<form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
 		echo '<div class="action-buttons" style="width: '.$table->width.'">';
 			html_print_submit_button (__('Go to agent detail'), 'upd_button', false, 'class="sub upd"');
 		echo '</div>';
@@ -259,7 +259,7 @@ function treeview_printTree($type) {
 			}
 			
 			echo "<li style='margin: 0px 0px 0px 0px;'>";
-			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $item['_id_'] . "\", " . $lessBranchs . ", \"\")'>";
+			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $item['_id_'] . "\", " . $lessBranchs . ", \"\", \"\")'>";
 			
 			echo $img . $item['_iconImg_'] ."&nbsp;" . __($item['_name_']) . ' ('.
 				'<span class="green">'.'<b>'.$item['_num_ok_'].'</b>'.'</span>'. 

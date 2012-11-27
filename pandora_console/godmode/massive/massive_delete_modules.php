@@ -61,6 +61,8 @@ function process_manage_delete ($module_name, $id_agents) {
 	
 	db_process_sql_begin ();
 
+	$module_name = (array)$module_name;
+	
 	$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
 		sprintf('nombre IN ("%s")', implode('","',$module_name)), true);
 		
@@ -113,7 +115,10 @@ if ($delete) {
 		$agents_ = $agents_id;
 		$modules_ = $modules_select;
 	}
-	
+				
+	$count = 0;
+	$success = 0;
+
 	// If the option to select all of one group or module type is checked
 	if($force) {
 		if($force == 'type') {
@@ -131,7 +136,7 @@ if ($delete) {
 					$module_name = array();
 				}
 				foreach($module_name as $mod_name) {
-					$result = process_manage_edit ($mod_name['nombre'], $id_agent['id_agente']);
+					$result = process_manage_delete ($mod_name['nombre'], $id_agent['id_agente']);
 					$count ++;
 					$success += (int)$result;
 				}
@@ -145,7 +150,7 @@ if ($delete) {
 					$module_name = array();
 				}
 				foreach($module_name as $mod_name) {
-					$result = process_manage_edit ($mod_name['nombre'], $id_agent);
+					$result = process_manage_delete ($mod_name['nombre'], $id_agent);
 					$count ++;
 					$success += (int)$result;
 				}
@@ -159,11 +164,11 @@ if ($delete) {
 	$result = process_manage_delete ($modules_, $agents_);
 	if ($result) {
 		db_pandora_audit("Massive management", "Delete module ", false, false,
-			'Agent: ' . json_encode($id_agents) . ' Module: ' . $module_name);
+			'Agent: ' . json_encode($agents_) . ' Module: ' . $module_name);
 	}
 	else {
 		db_pandora_audit("Massive management", "Fail try to delete module", false, false,
-			'Agent: ' . json_encode($id_agents) . ' Module: ' . $module_name);
+			'Agent: ' . json_encode($agents_) . ' Module: ' . $module_name);
 	}
 }
 

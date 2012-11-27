@@ -1,3 +1,8 @@
+2012-11-27  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/massive/massive_delete_modules.php: Fixed a bug 
+	on massive delete modules due of a copypaste MERGED FROM TRUNK
+
 2012-11-21 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_api.php: Fixed an SQL which collects all agents

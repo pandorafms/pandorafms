@@ -67,13 +67,10 @@ $enable_init_date = get_parameter('enable_init_date', 0);
 
 // Build link for sort actions: metaconsole and normal console
 $variable_link = ui_get_full_url(false);
-// Metaconsole
-if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
-	$variable_link .= '/enterprise/meta/';
 
-$url = $variable_link . "index.php?sec=reporting&sec2=" . $config['homedir'] . "/operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time";
+$url = $variable_link . "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time";
 
-$options['setup'] = "<a href='" . $variable_link . "index.php?sec=reporting&sec2=" . $config['homedir'] . "/godmode/reporting/reporting_builder&action=new&tab=item_editor&id_report=$id_report'>"
+$options['setup'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=new&tab=item_editor&id_report=$id_report'>"
 . html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
 . "</a>";
 
@@ -91,7 +88,7 @@ else {
 // Page header for metaconsole
 if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
 	// Bread crumbs
-	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder', 'text' => __('Reporting')));
+	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder', 'text' => __('Reporting')));
 	
 	ui_meta_print_page_header($nav_bar);
 	

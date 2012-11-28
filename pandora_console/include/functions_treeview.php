@@ -259,7 +259,11 @@ function treeview_printTree($type) {
 			}
 			
 			echo "<li style='margin: 0px 0px 0px 0px;'>";
-			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $item['_id_'] . "\", " . $lessBranchs . ", \"\", \"\")'>";
+
+			// Convert the id to hexadecimal, since it will be used as a div id
+			$hex_id = unpack ('H*', $item['_id_']);
+			$hex_id = $hex_id[1];
+			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $hex_id . "\", " . $lessBranchs . ", \"\", \"\")'>";
 			
 			echo $img . $item['_iconImg_'] ."&nbsp;" . __($item['_name_']) . ' ('.
 				'<span class="green">'.'<b>'.$item['_num_ok_'].'</b>'.'</span>'. 
@@ -267,7 +271,7 @@ function treeview_printTree($type) {
 				' : <span class="yellow">'.$item['_num_warning_'].'</span>'.
 				' : <span class="grey">'.$item['_num_unknown_'].'</span>'.') '. "</a>";
 			
-			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $item['_id_'] . "'></div>";
+			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $hex_id . "'></div>";
 			echo "</li>\n";
 		}
 		echo "</ul>\n";
@@ -296,8 +300,7 @@ function treeview_getData ($type, $server=false) {
 	$avariableGroups = users_get_groups (); //db_get_all_rows_in_table('tgrupo', 'nombre');	
 	
 	//Get all groups with agents
-	//$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente WHERE total_count > 0");
-	$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente");
+	$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente WHERE total_count > 0");
 	if ($full_groups === false) {
 		return array ();
 	}
@@ -373,7 +376,7 @@ function treeview_getData ($type, $server=false) {
 	
 	if ($search_free != '') {
 		$sql_search = " AND id_grupo IN (SELECT id_grupo FROM tagente
-			WHERE nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
+			WHERE tagente.nombre COLLATE utf8_general_ci LIKE '%$search_free%')";
 	}
 	else {
 		$sql_search ='';
@@ -381,10 +384,7 @@ function treeview_getData ($type, $server=false) {
 	
 	
 	switch ($type) {
-		case 'os':
-			//Skip agent with all modules in not init status
-			$sql_search .= " AND total_count<>notinit_count";
-			
+		case 'os':		
 			$sql = agents_get_agents(array (
 				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'disabled' => 0,
@@ -421,8 +421,6 @@ function treeview_getData ($type, $server=false) {
 			}
 			break;
 		case 'module_group':
-			//Skip agents which only have not init modules
-			$sql_search .= " AND total_count<>notinit_count";	
 			$sql = agents_get_agents(array (
 				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'disabled' => 0,
@@ -651,10 +649,21 @@ function treeview_getData ($type, $server=false) {
 			
 			break;
 		case 'tag':
-				$list = db_get_all_rows_sql('SELECT DISTINCT ttag.name 
-						FROM ttag, ttag_module, tagente_modulo 
-						WHERE ttag.id_tag = ttag_module.id_tag AND 
-							  ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo');
+				$sql = 'SELECT DISTINCT ttag.name 
+						FROM ttag, ttag_module, tagente, tagente_modulo 
+						WHERE ttag.id_tag = ttag_module.id_tag
+						AND tagente.id_agente = tagente_modulo.id_agente
+						AND tagente.disabled = 0
+						AND ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo';
+				if ($search_free != '') {
+					$sql = "SELECT DISTINCT ttag.name 
+							FROM ttag, ttag_module, tagente, tagente_modulo 
+							WHERE ttag.id_tag = ttag_module.id_tag
+							AND tagente.id_agente = tagente_modulo.id_agente
+							AND tagente.disabled = 0
+							AND ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente.nombre COLLATE utf8_general_ci LIKE '%$search_free%'";
+				}
+				$list = db_get_all_rows_sql($sql);
 			break;
 	}
 
@@ -751,7 +760,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 	$groups_sql = implode(', ', $avariableGroupsIds);
 	
 	if ($search_free != '') {
-		$search_sql = " AND nombre COLLATE utf8_general_ci LIKE '%$search_free%'";
+		$search_sql = " AND tagente.nombre COLLATE utf8_general_ci LIKE '%$search_free%'";
 	}
 	else {
 		$search_sql = '';
@@ -762,14 +771,11 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 		case 'group':
 
 			if (defined ('METACONSOLE')) {
-				$id = groups_get_id ($id);
+				$id = groups_get_id (pack ('H*', $id));
 				if ($id == '') {
 					return false;
 				}
 			}
-
-			//Skip agents which only have not init modules
-			$search_sql .= " AND total_count<>notinit_count";
 			
 			$sql = agents_get_agents(array (
 				'order' => 'nombre COLLATE utf8_general_ci ASC',
@@ -782,11 +788,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				false,
 				true);
 			break;
-		case 'os':
-			
-			//Skip agents which only have not init modules		
-			$search_sql .= " AND total_count<>notinit_count";
-			
+		case 'os':		
 			
 			$sql = agents_get_agents(array (
 				'order' => 'nombre COLLATE utf8_general_ci ASC',
@@ -800,10 +802,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				true);
 			break;
 		case 'module_group':
-			
-			//Skip agents which only have not init modules		
-			$search_sql .= " AND total_count<>notinit_count";
-			
+
 			$sql = agents_get_agents(array (
 				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'disabled' => 0,
@@ -885,7 +884,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				', $name);
 			break;
 		case 'tag':
-			$id = tags_get_id ($id);
+			$id = tags_get_id (pack ('H*', $id));
 			if ($id === false) {
 				return false;
 			}

@@ -20,28 +20,28 @@ function os_agents_critical ($id_os) {
 	
 	//TODO REVIEW ORACLE AND POSTGRES
 	
-		return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE critical_count>0 AND id_os=$id_os");
+		return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count>0 AND id_os=$id_os");
 }
 
 // Get ok agents by using the status code in modules.
 
 function os_agents_ok($id_os) {
 
-		return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE normal_count=total_count AND id_os=$id_os");
+		return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_os=$id_os");
 }
 
 // Get warning agents by using the status code in modules.
 
 function os_agents_warning ($id_os) {
 
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE critical_count=0 AND warning_count>0 AND id_os=$id_os");
+	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count>0 AND id_os=$id_os");
 }
 
 // Get unknown agents by using the status code in modules.
 
 function os_agents_unknown ($id_os) {
 
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_os=$id_os");
+	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_os=$id_os");
 }
 
 // Get the name of a group given its id.

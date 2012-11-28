@@ -1,5 +1,11 @@
 2012-11-28  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/Tools.pm: Temporal fix to OID translation.
+
+2012-11-28  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Added fired alert count.
 
 	* lib/PandoraFMS/DataServer.pm: Do not process more than one XML from

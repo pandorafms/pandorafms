@@ -38,6 +38,8 @@ if (! defined ('METACONSOLE')) {
         array('link' => 'index.php?sec=netf&sec2=godmode/netflow/nf_edit', 'text' => __('Netflow filters')));
 
 	ui_meta_print_page_header($nav_bar);
+	
+	ui_meta_print_header(__("Netflow filters"));	
 }
 
 $delete = (bool) get_parameter ('delete');

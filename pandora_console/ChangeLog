@@ -1,3 +1,9 @@
+2012-11-28 Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* godmode/netflow/nf_edit.php,
+	operation/netflow/nf_live_view.php: Added title 
+	for metaconsole sections.
+
 2012-11-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_groups.php,

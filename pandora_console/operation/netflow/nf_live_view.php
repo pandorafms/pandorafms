@@ -101,6 +101,9 @@ if (! defined ('METACONSOLE')) {
         array('link' => 'index.php?sec=netf&sec2=operation/netflow/nf_live_view', 'text' => __('Netflow live view')));
 
 	ui_meta_print_page_header($nav_bar);
+	
+	ui_meta_print_header(__("Netflow live view"));
+	
 }
 
 // Save user defined filter

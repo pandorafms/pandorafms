@@ -46,6 +46,7 @@ $action = get_parameter('action', 'list');
 $idReport = get_parameter('id_report', 0);
 $offset = get_parameter('offset', 0);
 $idItem = get_parameter('id_item', 0);
+$pure = get_parameter('pure',0);
 
 //Other Checks for the edit the reports
 if ($idReport != 0) {
@@ -231,7 +232,7 @@ switch ($action) {
 	case 'list':
 		$buttons = array(
 			'list_reports' => array('active' => false,
-				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">' . 
+				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
 					html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
 			);
 		
@@ -255,7 +256,7 @@ switch ($action) {
 			// Bread crumbs
 			ui_meta_add_breadcrumb(
 				array(
-				'link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder',
+				'link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure,
 				'text' => __('Reporting')));
 			
 			ui_meta_print_page_header($nav_bar);
@@ -298,7 +299,7 @@ switch ($action) {
 		
 		$table_aux->data[0][6] = html_print_submit_button(__('Search'), 'search_submit', false, 'class="sub upd"', true);
 		
-		echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group='.$id_group'
+		echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
 			method='post'>";
 			html_print_table($table_aux);
 		echo "</form>";
@@ -393,7 +394,7 @@ switch ($action) {
 				
 				if (check_acl ($config["id_user"], $report["id_group"], "AW")) {
 					$data[0] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
-						$report['id_report'].'">'.$report['name'].'</a>';
+						$report['id_report'].'&pure='.$pure.'">'.$report['name'].'</a>';
 				}
 				else {
 					$data[0] = $report['name'];
@@ -402,7 +403,7 @@ switch ($action) {
 				
 				$data[1] = $report['description'];
 				
-				$data[2] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">' .
+				$data[2] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'&pure='.$pure.'">' .
 					html_print_image("images/reporting.png", true) . '</a>';
 				$data[3] = '<a href="'. ui_get_full_url(false, false, false, false) . 'ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
 				
@@ -423,7 +424,7 @@ switch ($action) {
 					$next++;
 					
 					
-					$data[$next] = ui_print_group_icon($report['id_group'], true);
+					$data[$next] = ui_print_group_icon($report['id_group'], true, "groups_small", '', !defined('METACONSOLE')); 
 					$next++;
 					
 					$type_access_selected = reports_get_type_access($report);
@@ -443,7 +444,7 @@ switch ($action) {
 					}
 					
 					if ($edit) {
-						$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit" style="display:inline">';
+						$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" style="display:inline">';
 						$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 						$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
 						$data[$next] .= '</form>';
@@ -468,7 +469,7 @@ switch ($action) {
 		
 		
 		if (check_acl ($config['id_user'], 0, "IW")) {
-			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new">';
+			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure=$pure">';
 			echo '<div class="action-buttons" style="width: 98%;">';
 			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 			echo "</div>";
@@ -1264,7 +1265,7 @@ switch ($action) {
 		if ($enterpriseEnable) {
 			$buttons = array(
 				'list_reports' => array('active' => false,
-					'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">' . 
+					'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
 						html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
 				);
 			
@@ -1299,13 +1300,13 @@ if ($enterpriseEnable) {
 
 $buttons = array(
 	'main' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $idReport . '">' . 
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $idReport . '&pure='.$pure.'">' . 
 			html_print_image("images/reporting_edit.png", true, array ("title" => __('Main'))) .'</a>'),
 	'list_items' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . '">' . 
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . '&pure='.$pure.'">' . 
 			html_print_image("images/god6.png", true, array ("title" => __('List items'))) .'</a>'),
 	'item_editor' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $idReport . '">' . 
+		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $idReport . '&pure='.$pure.'">' . 
 			html_print_image("images/config.png", true, array ("title" => __('Item editor'))) .'</a>')
 	);
 
@@ -1314,7 +1315,7 @@ if ($enterpriseEnable) {
 }
 
 $buttons['view'] = array('active' => false,
-	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $idReport . '">' . 
+	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $idReport . '&pure='.$pure.'">' . 
 		html_print_image("images/reporting.png", true, array ("title" => __('View report'))) .'</a>');
 
 $buttons[$activeTab]['active'] = true;
@@ -1333,7 +1334,7 @@ else {
 // Page header for metaconsole
 if ($enterpriseEnable and defined('METACONSOLE')) {
 	// Bread crumbs
-	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder', 'text' => __('Reporting')));
+	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure, 'text' => __('Reporting')));
 	
 	ui_meta_print_page_header($nav_bar);
 	

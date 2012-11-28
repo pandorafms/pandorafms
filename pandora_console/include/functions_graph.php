@@ -101,11 +101,11 @@ function get_statwin_graph_statistics ($chart_array) {
 	//Initialize stats array
 	$stats['sum'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
 	$stats['min'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-        $stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
+    $stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
 
 	foreach ($chart_array as $item) {
 		//Get stats for normal grap
-		if ($item['sum']) {
+		if (isset($item['sum']) && $item['sum']) {
 			//Sum all values later divide by the number of elements
 			$stats['sum']['avg'] = $stats['sum']['avg'] + $item['sum'];
 
@@ -126,46 +126,44 @@ function get_statwin_graph_statistics ($chart_array) {
 		}
 		
 		//Get stats for min graph
-                if ($item['min']) {
-                        //Sum all values later divide by the number of elements
-                        $stats['min']['avg'] = $stats['min']['avg'] + $item['min'];
+         if (isset($item['min']) && $item['min']) {
+			//Sum all values later divide by the number of elements
+			$stats['min']['avg'] = $stats['min']['avg'] + $item['min'];
 
-                        //Get minimum
-                        if ($stats['min']['min'] == null) {
-                                $stats['min']['min'] = $item['min'];
-                        } else if ($item['min'] < $stats['min']['min']) {
-                                $stats['min']['min'] = $item['min'];
-                        }
+			//Get minimum
+			if ($stats['min']['min'] == null) {
+					$stats['min']['min'] = $item['min'];
+			} else if ($item['min'] < $stats['min']['min']) {
+					$stats['min']['min'] = $item['min'];
+			}
 
-                        //Get maximum
-                        if ($stats['min']['max'] == null) {
-                                $stats['min']['max'] = $item['min'];
-                        } else if ($item['min'] > $stats['min']['max']) {
-                                $stats['min']['max'] = $item['min'];
-                        }
-
-                }
+			//Get maximum
+			if ($stats['min']['max'] == null) {
+					$stats['min']['max'] = $item['min'];
+			} else if ($item['min'] > $stats['min']['max']) {
+					$stats['min']['max'] = $item['min'];
+			}
+		}
 	
 		//Get stats for max graph
-                if ($item['max']) {
-                        //Sum all values later divide by the number of elements
-                        $stats['max']['avg'] = $stats['max']['avg'] + $item['max'];
+        if (isset($item['max']) && $item['max']) {
+			//Sum all values later divide by the number of elements
+			$stats['max']['avg'] = $stats['max']['avg'] + $item['max'];
 
-                        //Get minimum
-                        if ($stats['max']['min'] == null) {
-                                $stats['max']['min'] = $item['max'];
-                        } else if ($item['max'] < $stats['max']['min']) {
-                                $stats['max']['min'] = $item['max'];
-                        }
-                
-                        //Get maximum
-                        if ($stats['max']['max'] == null) {
-                                $stats['max']['max'] = $item['max'];
-                        } else if ($item['max'] > $stats['max']['max']) {
-                                $stats['max']['max'] = $item['max'];
-                        }
-
-                }
+			//Get minimum
+			if ($stats['max']['min'] == null) {
+					$stats['max']['min'] = $item['max'];
+			} else if ($item['max'] < $stats['max']['min']) {
+					$stats['max']['min'] = $item['max'];
+			}
+	
+			//Get maximum
+			if ($stats['max']['max'] == null) {
+					$stats['max']['max'] = $item['max'];
+			} else if ($item['max'] > $stats['max']['max']) {
+					$stats['max']['max'] = $item['max'];
+			}
+		}
         
 
 		//Count elements
@@ -173,15 +171,15 @@ function get_statwin_graph_statistics ($chart_array) {
 
 		//Get last data
 		if ($count == $size) {
-			if ($item['sum']) {
+			if (isset($item['sum']) && $item['sum']) {
 				$stats['sum']['last'] = $item['sum'];
 			}
 
-			if($item['min']) {
+			if(isset($item['min']) && $item['min']) {
 				$stats['min']['last'] = $item['min'];
 			}
 
-			if ($item['max']) {
+			if (isset($item['max']) && $item['max']) {
 				$stats['max']['last'] = $item['max'];
 			}
 		}

@@ -658,6 +658,9 @@ function treeview_getData ($type, $server=false) {
 			break;
 	}
 
+	if($list == false) {
+		$list = array();
+	}
 
 	foreach ($list as $key => $item) {
 		switch ($type) {

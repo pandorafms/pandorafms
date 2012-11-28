@@ -403,6 +403,7 @@ include_once($config['homedir'] . "/include/functions_reporting.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 
 global $config;
+$pure = get_parameter('pure', 0);
 
 $enterpriseEnable = false;
 if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
@@ -464,10 +465,10 @@ if (! defined ('METACONSOLE')) {
 	
 	$img_style = array ("class" => "top", "width" => 16);
 	$activeTab = get_parameter('tab','group');
-	$group_tab = array('text' => "<a href='index.php?sec=monitoring&sec2=operation/tree&refr=0&tab=group'>"
+	$group_tab = array('text' => "<a href='index.php?sec=monitoring&sec2=operation/tree&refr=0&tab=group&pure=$pure'>"
 								 . html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>", 
 					   'active' => $activeTab == "group");
-	$tags_tab = array('text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&tab=tag'>"
+	$tags_tab = array('text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&tab=tag&pure=$pure'>"
 				. html_print_image ("images/tag_red.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
 	$subsections = array('group' => $group_tab, 'tag' => $tags_tab);
 	switch ($activeTab) {
@@ -484,7 +485,7 @@ if (! defined ('METACONSOLE')) {
 }
 
 echo "<br>";
-echo '<form id="tree_search" method="post" action="index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'">';
+echo '<form id="tree_search" method="post" action="index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'&pure='.$pure.'">';
 echo "<b>" . __('Agent status') . "</b>";
 
 $search_free = get_parameter('search_free', '');

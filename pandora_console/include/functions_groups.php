@@ -850,6 +850,25 @@ function groups_create_group($group_name, $rest_values){
 	return $result;
 }
 
+// Get agents NOT INIT
+
+function groups_agent_not_init ($group_array) {
+
+	// If there are not groups to query, we jump to nextone
+	
+	if (empty ($group_array)) {
+		return 0;
+		
+	} else if (!is_array ($group_array)){
+		$group_array = array($group_array);
+	}
+			
+	$group_clause = implode (",", $group_array);
+	$group_clause = "(" . $group_clause . ")";
+	
+	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND notinit_count>0 AND id_grupo IN $group_clause");	
+}
+
 
 // Get unknown agents by using the status code in modules.
 

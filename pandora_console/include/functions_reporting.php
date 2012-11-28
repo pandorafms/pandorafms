@@ -893,6 +893,11 @@ function reporting_get_group_stats ($id_group = 0) {
 	$data["server_sanity"] = 100;
 	$data["total_not_init"] = 0;
 	$data["monitor_non_init"] = 0;
+	$data["agent_ok"] = 0;
+	$data["agent_warning"] = 0;
+	$data["agent_critical"] = 0;
+	$data["agent_unknown"] = 0;
+	$data["agent_not_init"] = 0;
 	
 	$cur_time = get_system_time ();
 	
@@ -951,12 +956,12 @@ function reporting_get_group_stats ($id_group = 0) {
 		
 		// Store the groups where we are quering
 		$covered_groups = array();
-		
+		$group_array = array();
 		foreach ($id_group as $group){	
 			$children = groups_get_childrens($group);
 			
 			//Show empty groups only if they have children with agents
-			$group_array = array();
+			//$group_array = array();
 			
 			foreach($children as $sub) {
 				// If the group is quering previously, we ingore it
@@ -979,6 +984,9 @@ function reporting_get_group_stats ($id_group = 0) {
 			if (empty($group_array)) {
 				continue;
 			}
+		}
+		
+		if (!empty($group_array)) {
 			
 			// Get unknown agents by using the status code in modules.
 						
@@ -1021,6 +1029,21 @@ function reporting_get_group_stats ($id_group = 0) {
 			
 			$data["total_not_init"] += $data["monitor_not_init"];
 			
+			// Get Agents OK
+			$data["agent_ok"] += groups_agent_ok($group_array);
+			
+			// Get Agents Warning 
+			$data["agent_warning"] += groups_agent_warning($group_array);
+			
+			// Get Agents Critical
+			$data["agent_critical"] += groups_agent_critical($group_array);
+			
+			// Get Agents Unknown
+			$data["agent_unknown"] += groups_agent_unknown($group_array);
+			
+			// Get Agents Not init
+			$data["agent_not_init"] += groups_agent_not_init($group_array);
+			
 			// Get total count of monitors for this group, except disabled.
 			
 			$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
@@ -1029,7 +1052,7 @@ function reporting_get_group_stats ($id_group = 0) {
 
 		// Get total count of monitors for this group, except disabled.
 
-                $data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
+		$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
 		
 		/*
 		 Monitor health (percentage)

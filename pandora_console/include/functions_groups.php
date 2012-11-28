@@ -865,7 +865,7 @@ function groups_agent_unknown ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo IN $group_clause");
+	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo IN $group_clause");
 }
 
 // Get ok agents by using the status code in modules.
@@ -883,7 +883,7 @@ function groups_agent_ok ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE normal_count=total_count AND id_grupo IN $group_clause");
+	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo IN $group_clause");
 }
 
 // Get critical agents by using the status code in modules.
@@ -901,7 +901,7 @@ function groups_agent_critical ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE critical_count>0 AND id_grupo IN $group_clause");
+	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count>0 AND id_grupo IN $group_clause");
 	
 }
 
@@ -919,7 +919,7 @@ function groups_agent_warning ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE critical_count=0 AND warning_count>0 AND id_grupo IN $group_clause");	
+	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo IN $group_clause");	
 }
 
 

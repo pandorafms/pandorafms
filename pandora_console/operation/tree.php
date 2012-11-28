@@ -485,7 +485,11 @@ if (! defined ('METACONSOLE')) {
 }
 
 echo "<br>";
-echo '<form id="tree_search" method="post" action="index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'&pure='.$pure.'">';
+if (! defined ('METACONSOLE')) {
+	echo '<form id="tree_search" method="post" action="index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'&pure='.$pure.'">';
+} else {
+	echo '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$activeTab.'&pure='.$pure.'">';
+}
 echo "<b>" . __('Agent status') . "</b>";
 
 $search_free = get_parameter('search_free', '');

@@ -30,6 +30,7 @@ function tags_agent_critical ($id_tag) {
 
 	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
+						AND tagente.disabled=0
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
 						AND ttag_module.id_tag = $id_tag
 						AND critical_count>0");
@@ -46,6 +47,7 @@ function tags_agent_unknown ($id_tag) {
 
 	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
+						AND tagente.disabled=0
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
 						AND ttag_module.id_tag = $id_tag
 						AND critical_count=0 AND warning_count=0 AND unknown_count>0");
@@ -84,6 +86,7 @@ function tags_agent_ok ($id_tag) {
 
 	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
+						AND tagente.disabled=0
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
 						AND ttag_module.id_tag = $id_tag
 						AND normal_count=total_count");
@@ -100,6 +103,7 @@ function tags_agent_warning ($id_tag) {
 	 
 	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
+						AND tagente.disabled=0
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
 						AND ttag_module.id_tag = $id_tag
 						AND critical_count=0 AND warning_count>0");

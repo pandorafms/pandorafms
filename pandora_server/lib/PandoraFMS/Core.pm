@@ -476,6 +476,11 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
 				 internal_counter = 0 WHERE id = ?', $id);
 
+		# Update fired alert count
+		if (defined ($agent)) {
+			db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente=?', $agent->{'id_agente'});
+		}
+
 		# Critical_instructions, warning_instructions, unknown_instructions
 		my $critical_instructions = get_db_value ($dbh, 'SELECT critical_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
 		my $warning_instructions = get_db_value ($dbh, 'SELECT warning_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
@@ -507,6 +512,11 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		# Reset action thresholds
 		if (defined ($alert->{'id_template_module'})) {
 			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
+		}
+
+		# Update fired alert count
+		if (defined ($agent)) {
+			db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente=?', $agent->{'id_agente'});
 		}
 
 		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, $extra_macros);
@@ -550,6 +560,12 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = ?,
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
+		
+		# Update fired alert count
+		if (defined ($agent)) {
+			db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count+1 WHERE id_agente=?', $agent->{'id_agente'});
+		}
+
 		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh, $timestamp, $extra_macros);
 		return;
 	}

@@ -3540,8 +3540,7 @@ sub pandora_self_monitoring ($$) {
 		                                       AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 		                                       AND tagente_modulo.disabled = 0
 		                                       AND running_by = $my_data_server
-		                                       AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24,100)
-		                                       AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)");
+		                                       AND estado = 3");
 		$agents_unknown = 0 if (!defined($agents_unknown));
 	}
 

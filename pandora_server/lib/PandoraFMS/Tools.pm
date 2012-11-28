@@ -1036,23 +1036,18 @@ sub month_have_days($$) {
 ###############################################################################
 # Convert a text obj tag to an OID and update the module configuration.
 ###############################################################################
-sub translate_obj ($$$) {
-	my ($dbh, $obj, $module_id) = @_;
+sub translate_obj ($$) {
+	my ($dbh, $obj) = @_;
 
 	# SNMP is not thread safe
-	$SNMPSem->down ();
-	my $oid = SNMP::translateObj ($obj);
-	$SNMPSem->up ();
-	
-	# Could not translate OID, disable the module
-	if (! defined ($oid)) {
-		db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1 WHERE id_agente_modulo = ?', $module_id);
-		return '';
+	if (defined ($SNMPSem)) {
+		$SNMPSem->down ();
 	}
-
-	# Update module configuration
-	db_do ($dbh, 'UPDATE tagente_modulo SET snmp_oid = ? WHERE id_agente_modulo = ?', $oid, $module_id);
-	
+	my $oid = SNMP::translateObj ($obj);
+	if (defined ($SNMPSem)) {
+		$SNMPSem->up ();
+	}
+		
 	return $oid;
 }
 

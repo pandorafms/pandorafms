@@ -624,8 +624,13 @@ function networkmap_create_module_group_node ($module_group, $simple = 0, $font_
 // Returns a module node definition
 function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $metaconsole = false, $id_server = null) {
 	
-	$status = modules_get_agentmodule_status($module['id_agente_modulo'],
-		false, $metaconsole, $id_server);
+	if(isset($module['status'])) {
+		$status = $module['status'];
+	}
+	else {
+		$status = modules_get_agentmodule_status($module['id_agente_modulo'],
+			false, $metaconsole, $id_server);
+	}
 	
 	// Set node status
 	switch ($status) {

@@ -713,9 +713,9 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	else {
 		// Get previous data (This adds the first data if the begin of module data is after the begin time interval)
 		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
-		
-		if ($previous_data !== false) {
-			$interval_data_indexed[$datelimit]['data'] = $previous_data['data'];
+
+		if ($previous_data !== false ) {
+			$interval_data_indexed[$datelimit]['data'] = $previous_data['datos'];
 		}
 		else { // If there are not data befor interval set unknown
 			$interval_data_indexed[$datelimit]['data'] = 0;
@@ -726,7 +726,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	// Get next data (This adds data before the interval of the report)
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
-		$interval_data_indexed[$date]['data'] = $previous_data['data'];
+		$interval_data_indexed[$date]['data'] = $previous_data['datos'];
 	}
 	else if (count ($interval_data_indexed) > 0) {
 		// Propagate the last known data to the end of the interval (if there is no module data at the end point)

@@ -2765,6 +2765,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$javascript_on_blur_function_name = $parameters['javascript_on_blur_function_name'];
 	}
 	
+	$check_only_empty_javascript_on_blur_function = false;//Default value
+	if (isset($parameters['check_only_empty_javascript_on_blur_function'])) {
+		$check_only_empty_javascript_on_blur_function = $parameters['check_only_empty_javascript_on_blur_function'];
+	}
+	
 	//Default value
 	$javascript_on_blur = '
 		/*
@@ -2772,12 +2777,33 @@ function ui_print_agent_autocomplete_input($parameters) {
 		input lost the focus.
 		*/
 		function ' . $javascript_on_blur_function_name . '() {
+			input_value = $("#' . $input_id . '").val();
+			
+			if (input_value.length == 0) {
+				if ((' . ((int)$print_hidden_input_idagent) . ')
+					|| (' . ((int)$use_hidden_input_idagent) . ')) {
+					$("#' . $hidden_input_idagent_id . '").val(0);
+				}
+				
+				//Put the server id into the hidden input
+				if ((' . ((int)$use_input_server) . ')
+					|| (' . ((int)$print_input_server) . ')) {
+					$("#' . $input_server_id . '").val("");
+				}
+				
+				return;
+			}
+			
+			if (' . ((int)$check_only_empty_javascript_on_blur_function) . ') {
+				return
+			}
+			
 			//Set loading
 			$("#' . $input_id . '")
 				.css("background",
 					"url(\"' . $spinner_image . '\") right center no-repeat");
 			
-			input_value = $("#' . $input_id . '").val();
+			
 			
 			var term = input_value; //Word to search
 			

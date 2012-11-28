@@ -49,6 +49,8 @@ if ($report['id_group'] != 0 &&
 	return;
 }
 
+$pure = get_parameter('pure',0);
+
 // Get different date to search the report.
 $date = (string) get_parameter ('date', date ('Y-m-j'));
 $time = (string) get_parameter ('time', date ('h:iA'));
@@ -65,21 +67,23 @@ $enable_init_date = get_parameter('enable_init_date', 0);
 
 // Standard header
 
-$url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time";
+$url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time&pure=$pure";
 
-$options['setup'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=new&tab=item_editor&id_report=$id_report'>"
+$options['setup'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=new&tab=item_editor&id_report=$id_report&pure=$pure'>"
 . html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
 . "</a>";
 
-if ($config["pure"] == 0) {
-	$options['screen'] = "<a href='$url&pure=1&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>"
-		. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
-		. "</a>";
-}
-else {
-	$options['screen'] = "<a href='$url&pure=0&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>"
-		. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
-		. "</a>";
+if(!defined('METACONSOLE')) {
+	if ($config["pure"] == 0) {
+		$options['screen'] = "<a href='$url&pure=1&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>"
+			. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+			. "</a>";
+	}
+	else {
+		$options['screen'] = "<a href='$url&pure=0&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>"
+			. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+			. "</a>";
+	}
 }
 
 // Page header for metaconsole

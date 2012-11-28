@@ -45,6 +45,7 @@ our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 # Global variables
 my @TaskQueue :shared;
 my %PendingTasks :shared;
+my %Agents :shared;
 my $Sem :shared = Thread::Semaphore->new;
 my $TaskSem :shared = Thread::Semaphore->new (0);
 my $AgentSem :shared = Thread::Semaphore->new (1);
@@ -96,8 +97,18 @@ sub data_producer ($) {
  	while (my $file = readdir (DIR)) {
 		
 		# Data files must have the extension .data
-		next if ($file !~ /^.*\.data$/);
+		next if ($file !~ /^(.*)[\._]\d+\.data$/);
 		
+		# Do not process more than one XML from the same agent at the same time
+		my $agent_name = $1;		
+		$AgentSem->down ();
+		if (defined ($Agents{$agent_name})) {
+			$AgentSem->up ();
+			next;
+		}
+		$Agents{$agent_name} = 1;
+		$AgentSem->up ();
+
 		push (@files, $file);
 		$file_count++;
 
@@ -128,6 +139,8 @@ sub data_consumer ($$) {
 	my ($self, $task) = @_;
 	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
 
+	return unless ($task =~ /^(.*)[\._]\d+\.data$/);
+	my $agent_name = $1;		
 	my $file_name = $pa_config->{'incomingdir'};
 	my $xml_err;
 	
@@ -136,7 +149,11 @@ sub data_consumer ($$) {
 	$file_name .= $task;
 
 	# Double check that the file exists
-	return unless (-f $file_name);
+	if (! -f $file_name) {
+		$AgentSem->down ();
+		delete ($Agents{$agent_name});
+		$AgentSem->up ();
+	}
 
 	# Try to parse the XML 2 times, with a delay between tries of 2 seconds
 	my $xml_data;
@@ -162,15 +179,25 @@ sub data_consumer ($$) {
 		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
 
 		# Double check that the file exists
-		return unless (-f $file_name);
+		if (! -f $file_name) {
+			$AgentSem->down ();
+			delete ($Agents{$agent_name});
+			$AgentSem->up ();
+		}
 
 		unlink ($file_name);
 		process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
+		$AgentSem->down ();
+		delete ($Agents{$agent_name});
+		$AgentSem->up ();
 		return;	
 	}
 
 	rename($file_name, $file_name . '_BADXML');
 	pandora_event ($pa_config, "Unable to process XML data file '$file_name': $xml_err", 0, 0, 0, 0, 0, 'error', 0, $dbh);
+	$AgentSem->down ();
+	delete ($Agents{$agent_name});
+	$AgentSem->up ();
 }
 
 ###############################################################################
@@ -303,12 +330,10 @@ sub process_xml_data ($$$$$) {
 	$address = $data->{'address'} if (defined ($data->{'address'}));
 
 	# Get agent id
-	$AgentSem->down ();
 	my $agent_id = get_agent_id ($dbh, $agent_name);
 	if ($agent_id < 1) {
 		if ($pa_config->{'autocreate'} == 0) {
 			logger($pa_config, "ERROR: There is no agent defined with name $agent_name", 3);
-			$AgentSem->up ();
 			return;
 		}
 		
@@ -320,7 +345,6 @@ sub process_xml_data ($$$$$) {
 			$group_id = $pa_config->{'autocreate_group'};
 			if (! defined (get_group_name ($dbh, $group_id))) {
 				logger($pa_config, "Group id $group_id does not exist (check autocreate_group config token)", 3);
-				$AgentSem->up ();
 				return;
 			}
 		}
@@ -344,7 +368,6 @@ sub process_xml_data ($$$$$) {
 						$description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description, $custom_id, $url_address);
 												 
 		if (! defined ($agent_id)) {
-			$AgentSem->up ();
 			return;
 		}
 		
@@ -377,7 +400,6 @@ sub process_xml_data ($$$$$) {
 			}
 		}
 	}
-	$AgentSem->up ();
 
 	# Check if agent is disabled and return if it's disabled. Disabled agents doesnt process data
 	# in order to avoid not only events, also possible invalid data coming from agents.

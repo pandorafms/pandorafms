@@ -562,7 +562,7 @@ function netflow_get_command ($filter) {
 	global $config;
 	
 	// Build command
-	$command = 'nfdump -N -m';
+	$command = 'nfdump -N -Otstart';
 	
 	// Netflow data path
 	if (isset($config['netflow_path']) && $config['netflow_path'] != '') {
@@ -824,6 +824,7 @@ function netflow_parse_file ($start_date, $end_date, $interval_length, $file, &$
 		}
 		while ($read_flag == 1);
 		
+		$no_data = 1;
 		if ($aggregate != 'none') {
 			foreach ($interval_total as $agg => $val) {
 				
@@ -842,6 +843,7 @@ function netflow_parse_file ($start_date, $end_date, $interval_length, $file, &$
 				
 				// Calculate interval data
 				$values['data'][$timestamp][$agg] = (int) $interval_total[$agg];
+				$no_data = 0;
 				
 				// Add previous data
 				if ($previous_value != 0) {
@@ -866,6 +868,7 @@ function netflow_parse_file ($start_date, $end_date, $interval_length, $file, &$
 			
 			// Calculate interval data
 			$values[$timestamp]['data'] = (int) $interval_total;
+			$no_data = 0;
 			
 			// Add previous data
 			if ($previous_value != 0) {
@@ -877,6 +880,12 @@ function netflow_parse_file ($start_date, $end_date, $interval_length, $file, &$
 	}
 	
 	fclose ($fh);
+
+	// No data!
+	if ($no_data == 1) {
+		$values = array ();
+	}
+
 	return $last_timestamp;
 }
 
@@ -1040,6 +1049,9 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 		case '0':
 		case 'netflow_area':
 			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
+			if (empty ($data)) {
+				break;
+			}
 			if ($aggregate != 'none') {
 				if ($output == 'HTML') {
 					$html = "<b>" . __('Unit') . ":</b> $unit";
@@ -1091,6 +1103,9 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 		case '1':
 		case 'netflow_pie':
 			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
+			if (empty ($data)) {
+				break;
+			}
 			if ($output == 'HTML') {
 				$html = "<b>" . __('Unit') . ":</b> $unit";
 				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> $aggregate";
@@ -1111,6 +1126,9 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 		case '2':
 		case 'netflow_data':
 			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $unique_id, $aggregate, $max_aggregates, $unit, $connection_name);
+			if (empty ($data)) {
+				break;
+			}
 			if ($output == 'HTML' || $output == 'PDF') {
 				$html = "<b>" . __('Unit') . ":</b> $unit";
 				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> $aggregate";
@@ -1131,6 +1149,9 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 		case '3':
 		case 'netflow_statistics':
 			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
+			if (empty ($data)) {
+				break;
+			}
 			if ($output == 'HTML' || $output == 'PDF') {
 				return netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
 			} else if ($output == 'XML') {
@@ -1140,6 +1161,9 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 		case '4':
 		case 'netflow_summary':
 			$data = netflow_get_summary ($start_date, $end_date, $filter, $unique_id, $connection_name);
+			if (empty ($data)) {
+				break;
+			}
 			if ($output == 'HTML' || $output == 'PDF') {
 				return netflow_summary_table ($data);
 			} else if ($output == 'XML') {
@@ -1147,10 +1171,11 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			}
 			break;
 		default:
-			if ($output == 'HTML' || $output == 'PDF') {
-				return fs_error_image();
-			}
 			break;
+	}
+
+	if ($output == 'HTML' || $output == 'PDF') {
+		return fs_error_image();
 	}
 }
 

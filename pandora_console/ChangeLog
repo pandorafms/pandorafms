@@ -17,6 +17,11 @@
 
 2012-11-29  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/functions_netflow.php: Detect empty intervals. Changed
+	  the call to nfdump to make it work with the latest version.
+
+2012-11-29  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/config_process.php: Reverted an accidental commit.
 
 2012-11-29  Ramon Novoa  <rnovoa@artica.es>

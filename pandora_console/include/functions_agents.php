@@ -355,7 +355,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	}
 	
 	$status_sql = ' 1 = 1';
-	if (isset($filter['status'])) {		
+	if (isset($filter['status'])) {
 		switch ($filter['status']) {
 			// Normal
 			case 0: 
@@ -430,13 +430,14 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		$fields[1] = "nombre";
 	}
 	
-	if(isset($order['field'])) {
+	if (isset($order['field'])) {
 		if(!isset($order['order'])) {
 			$order['order'] = 'ASC';
 		}
 		if (!isset($order['field2'])) {
 			$order = 'ORDER BY '.$order['field'] . ' ' . $order['order'];
-		} else {
+		}
+		else {
 			$order = 'ORDER BY '.$order['field'] . ' ' . $order['order'] . ', ' . $order['field2'];
 		}
 	}
@@ -457,7 +458,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		$where_nogroup = '1 = 1';
 	}
 	
-	if($extra) { 
+	if ($extra) { 
 		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s', $sql_extra, $where, $where_nogroup, $status_sql, $search);	
 	}
 	else {
@@ -474,7 +475,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				$limit_sql = " LIMIT $offset, $limit "; 
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
-			
+			//html_debug_print($sql, true);
 			if ($return)
 				return $sql;
 			else

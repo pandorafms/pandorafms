@@ -190,41 +190,42 @@ if ($search_agents_2 && (!defined('METACONSOLE'))) {
 elseif ($search_agents_2 && ($config['metaconsole'] == 1) && defined('METACONSOLE')) {
 	
 	$servers = db_get_all_rows_sql ("SELECT *
-		FROM tmetaconsole_setup");
+		FROM tmetaconsole_setup
+		WHERE disabled = 0");
 	if (!isset($servers)) {
 		return;
 	}
+	
+	$id_agent = (int) get_parameter ('id_agent');
+	$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
+	$id_group = (int) get_parameter('id_group');
+	$addedItems = html_entity_decode((string) get_parameter('add'));
+	$addedItems = json_decode($addedItems);
+	
+	if ($addedItems != null) {
+		foreach ($addedItems as $item) {
+			echo $item . "|\n";
+		}
+	}
+	
+	$filter = array ();
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+			break;
+		case "oracle":
+			$filter[] = '(UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
+			break;
+	}
+	
+	$filter['id_grupo'] = $id_group;
 	
 	$data = array();
 	foreach ($servers as $server) {
 		if (metaconsole_load_external_db ($server) != NOERR) {
 			continue;
 		}
-		
-		$id_agent = (int) get_parameter ('id_agent');
-		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
-		$id_group = (int) get_parameter('id_group');
-		$addedItems = html_entity_decode((string) get_parameter('add'));
-		$addedItems = json_decode($addedItems);
-		
-		if ($addedItems != null) {
-			foreach ($addedItems as $item) {
-				echo $item . "|\n";
-			}
-		}
-		
-		$filter = array ();
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
-				break;
-			case "oracle":
-				$filter[] = '(UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
-				break;
-		}
-		
-		$filter['id_grupo'] = $id_group;
 		
 		$agents = agents_get_agents ($filter, array ('id_agente','nombre', 'direccion'));
 		if ($agents === false)

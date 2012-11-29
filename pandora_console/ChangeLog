@@ -1,3 +1,11 @@
+2012-11-29 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/ajax/agent.php: optimiced the ajax hook "search_agents_2"
+	for the metaconsoles.
+	
+	*include/functions_ui.php, include/functions_agents.php: cleaned
+	source code style.
+
 2012-11-29  Vanessa Gil <vanessa.gil@artica.es>
 
 	* godmode/menu.php: Changed netflow title.

@@ -49,11 +49,11 @@ if (! defined ('METACONSOLE')) {
 
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');
-$ag_group = (int) get_parameter ('ag_group', 0);
-$offset = (int) get_parameter ('offset');
+$ag_group = get_parameter ('ag_group', 0);
+$offset = (int) get_parameter ('offset', 0);
 $status = (int) get_parameter ('status', 4);
-$modulegroup = (int) get_parameter ('modulegroup', -1);
-$tag_filter = (int) get_parameter('tag_filter', 0);
+$modulegroup = get_parameter ('modulegroup', -1);
+$tag_filter = get_parameter('tag_filter', 0);
 $sql_extra = '';
 $refr = get_parameter('refr', 0);
 // Sort functionality
@@ -66,59 +66,7 @@ echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agente
 echo '<table cellspacing="4" cellpadding="4" width="98%" class="databox">
 	<tr>';
 
-
-
-echo '
-		<td valign="middle">' . __('Group') . '</td>
-		<td valign="middle">' . 
-			html_print_select_groups(false, "AR", true, "ag_group",
-				$ag_group, '', '', '0', true, false, false, 'w130',
-				false, 'width:150px;') . '
-		</td>';
-		echo '<td>' . __('Monitor status') . "</td>";
-
-
-
-echo "<td>";
-$fields = array ();
-$fields[0] = __('Normal'); 
-$fields[1] = __('Warning');
-$fields[2] = __('Critical');
-$fields[3] = __('Unknown');
-$fields[4] = __('Not normal'); //default
-$fields[5] = __('Not init');
-
-html_print_select ($fields, "status", $status, '', __('All'), -1,
-	false, false, true, '', false, 'width: 125px;');
-echo '</td>';
-
-
-
-echo '<td valign="middle">' . __('Module group') . '</td>';
-echo '<td valign="middle">';
-$rows = db_get_all_rows_sql("SELECT *
-	FROM tmodule_group ORDER BY name");
-$rows = io_safe_output($rows);
-$rows_select = array();
-if (!empty($rows))
-	foreach ($rows as $module_group)
-		$rows_select[$module_group['id_mg']] = $module_group['name'];
-
-$rows_select[0] = __('Not assigned');
-
-html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'), -1);
-echo '</td>';
-
-
-
-echo '</tr>';
-
-echo '<tr>';
-
-
-
-echo '<td valign="middle">' . __('Module name') . '</td>';
-echo '<td valign="middle">';
+// Get Groups and profiles from user
 $user_groups = implode (",", array_keys (users_get_groups ()));
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -214,7 +162,140 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-$modules = db_get_all_rows_sql($sql);
+$modules = array();
+$tags = array();
+$rows_select = array();
+$rows_temp_processed = array();
+$groups_select[0] = __('All');	
+
+if (defined('METACONSOLE')) {
+	
+	// For each server defined and not disabled:
+	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup WHERE disabled = 0");
+	if ($servers === false)
+		$servers = array();
+		
+	$result = array();	
+	
+	foreach($servers as $server) {
+		// If connection was good then retrieve all data server
+		if (metaconsole_connect($server) == NOERR){
+			$connection = true;
+		}
+		else{
+			$connection = false;	
+		}
+		
+		// Get all info for filters of all nodes
+		$modules_temp = db_get_all_rows_sql($sql);
+		
+		$tags_temp = db_get_all_rows_sql('SELECT name, name
+									FROM ttag
+									WHERE id_tag IN (SELECT ttag_module.id_tag
+										FROM ttag_module)');
+										
+		$rows_temp = db_get_all_rows_sql("SELECT distinct name
+			FROM tmodule_group ORDER BY name");
+		$rows_temp = io_safe_output($rows_temp);
+		
+		if (!empty($rows_temp)) {
+			foreach ($rows_temp as $module_group_key => $modules_group_val)
+				$rows_temp_processed[$modules_group_val['name']] = $modules_group_val['name'];
+		
+			$rows_select = array_unique(array_merge($rows_select, $rows_temp_processed));
+		}	
+		
+		$groups_temp = users_get_groups_for_select(false, "AR", true, true, false);									
+
+		$groups_temp_processed = array();
+		
+		foreach ($groups_temp as $group_temp_key => $group_temp_val) {
+			$new_key = str_replace('&nbsp;','',$group_temp_val);
+			$groups_temp_processed[$new_key] = $group_temp_val;
+		}
+		
+		if (!empty($groups_temp_processed)) {
+			$groups_select = array_unique(array_merge($groups_select, $groups_temp_processed));
+		}
+	
+		if (!empty($modules_temp))
+			$modules = array_merge($modules, $modules_temp);
+		if (!empty($tags_temp))
+			$tags = array_merge($tags, $tags_temp);		
+		
+		metaconsole_restore_db();
+	}
+	unset($groups_select[__('All')]);
+
+}
+
+if (!defined('METACONSOLE')) {
+echo '
+		<td valign="middle">' . __('Group') . '</td>
+		<td valign="middle">' . 
+			html_print_select_groups(false, "AR", true, "ag_group",
+				$ag_group, '', '', '0', true, false, false, 'w130',
+				false, 'width:150px;') . '
+		</td>';
+}
+else {
+echo '
+		<td valign="middle">' . __('Group') . '</td>
+		<td valign="middle">' . 
+			html_print_select($groups_select, "ag_group",
+				$ag_group, '', '', '0', true, false, false, 'w130',
+				false, 'width:150px;') . '
+		</td>';	
+}
+		echo '<td>' . __('Monitor status') . "</td>";
+
+
+
+echo "<td>";
+$fields = array ();
+$fields[0] = __('Normal'); 
+$fields[1] = __('Warning');
+$fields[2] = __('Critical');
+$fields[3] = __('Unknown');
+$fields[4] = __('Not normal'); //default
+$fields[5] = __('Not init');
+
+html_print_select ($fields, "status", $status, '', __('All'), -1,
+	false, false, true, '', false, 'width: 125px;');
+echo '</td>';
+
+
+
+echo '<td valign="middle">' . __('Module group') . '</td>';
+echo '<td valign="middle">';
+if (!defined('METACONSOLE')) {
+	$rows = db_get_all_rows_sql("SELECT *
+		FROM tmodule_group ORDER BY name");
+	$rows = io_safe_output($rows);
+	$rows_select = array();
+	if (!empty($rows))
+		foreach ($rows as $module_group)
+			$rows_select[$module_group['id_mg']] = $module_group['name'];
+}
+
+$rows_select[0] = __('Not assigned');
+
+html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'), -1);
+echo '</td>';
+
+
+
+echo '</tr>';
+
+echo '<tr>';
+
+
+
+echo '<td valign="middle">' . __('Module name') . '</td>';
+echo '<td valign="middle">';
+
+if (!defined('METACONSOLE'))
+	$modules = db_get_all_rows_sql($sql);
 
 html_print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
 	$ag_modulename, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
@@ -228,17 +309,22 @@ echo '<td valign="middle" align="right">' .
 	ui_print_help_tip(__('Only it is show tags in use.'), true) .
 	'</td>';
 echo '<td>';
-$tags = db_get_all_rows_sql('SELECT id_tag, name
-	FROM ttag
-	WHERE id_tag IN (SELECT ttag_module.id_tag
-		FROM ttag_module)');
+if (!defined('METACONSOLE'))
+	$tags = db_get_all_rows_sql('SELECT id_tag, name
+		FROM ttag
+		WHERE id_tag IN (SELECT ttag_module.id_tag
+			FROM ttag_module)');
 
 if (empty($tags)) {
 	echo __('None tag');
 }
 else {
-	html_print_select (index_array($tags, 'id_tag', 'name'), "tag_filter",
-		$tag_filter, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
+	if (!defined('METACONSOLE'))
+		html_print_select (index_array($tags, 'id_tag', 'name'), "tag_filter",
+			$tag_filter, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
+	else
+		html_print_select (index_array($tags, 'name', 'name'), "tag_filter",
+			$tag_filter, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
 }
 echo '</td>';
 
@@ -395,17 +481,34 @@ $sql = " FROM tagente, tagente_modulo, tagente_estado
 		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
 
 // Agent group selector
-if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
-	$sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
+if (!defined('METACONSOLE')) {
+	if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
+		$sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
+	}
+	elseif($user_groups != '') {
+		// User has explicit permission on group 1 ?
+		$sql .= " AND tagente.id_grupo IN (".$user_groups.")";
+	}
 }
-elseif($user_groups != '') {
-	// User has explicit permission on group 1 ?
-	$sql .= " AND tagente.id_grupo IN (".$user_groups.")";
+else {
+	if ($ag_group != "0" && check_acl ($config["id_user"], $ag_group, "AR")) {
+		$sql .= sprintf (" AND tagente.id_grupo IN ( SELECT id_grupo FROM tgrupo where nombre = '%s') ", $ag_group);
+	}
+	elseif($user_groups != '') {
+		// User has explicit permission on group 1 ?
+		$sql .= " AND tagente.id_grupo IN (".$user_groups.")";
+	}	
 }
 
 // Module group
-if ($modulegroup > -1) {
+if (defined('METACONSOLE')) {
+	if ($modulegroup != '-1')
+		$sql .= sprintf (" AND tagente_modulo.id_module_group IN (SELECT id_mg 
+							FROM tmodule_group WHERE name = '%s')", $modulegroup);	
+}
+else if ($modulegroup > -1) {
 	$sql .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
+
 }
 
 // Module name selector
@@ -444,17 +547,43 @@ elseif ($status == 5) { //Not init
 }
 
 //Filter by tag
-if ($tag_filter != 0) {
-	$sql .= " AND tagente_modulo.id_agente_modulo IN (
-		SELECT ttag_module.id_agente_modulo
-		FROM ttag_module
-		WHERE ttag_module.id_tag = " . $tag_filter . "
-		)";
+if ($tag_filter !== 0) {
+	if (defined('METACONSOLE')) {
+		$sql .= " AND tagente_modulo.id_agente_modulo IN (
+			SELECT ttag_module.id_agente_modulo
+			FROM ttag_module
+			WHERE ttag_module.id_tag IN (SELECT id_tag FROM ttag where name LIKE '%" . $tag_filter . "%')
+			)";
+	}
+	else{
+		$sql .= " AND tagente_modulo.id_agente_modulo IN (
+			SELECT ttag_module.id_agente_modulo
+			FROM ttag_module
+			WHERE ttag_module.id_tag = " . $tag_filter . "
+			)";
+
+	}
 }
 
 // Build final SQL sentences
-$count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) " .
-	$sql . ")");
+if (!defined('METACONSOLE')) 
+	$count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) " .
+		$sql . ")");
+	
+if (defined('METACONSOLE')) {
+	// Offset will be used to get the subset of modules
+	$inferior_limit = $offset;
+	$superior_limit = $config["block_size"] + $offset;
+	// Offset reset to get all elements
+	$offset = 0;
+	if (!isset($config["meta_num_elements"]))
+		$config["meta_num_elements"] = 100;
+		
+	$limit_sql = $config["meta_num_elements"];
+}
+else
+	$limit_sql = $config["block_size"];
+	
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = "SELECT
@@ -492,7 +621,7 @@ switch ($config["dbtype"]) {
 			tagente_modulo.warning_instructions,
 			tagente_modulo.unknown_instructions,
 			tagente_estado.utimestamp AS utimestamp".$sql.") ORDER BY " . $order['field'] . " " . $order['order'] 
-			. " LIMIT ".$offset.",".$config["block_size"];
+			. " LIMIT ".$offset.",".$limit_sql;
 		break;
 	case "postgresql":
 		$sql = "SELECT
@@ -529,11 +658,11 @@ switch ($config["dbtype"]) {
 			tagente_modulo.critical_instructions,
 			tagente_modulo.warning_instructions,
 			tagente_modulo.unknown_instructions,
-			tagente_estado.utimestamp AS utimestamp".$sql.") LIMIT " . $config["block_size"] . " OFFSET " . $offset;
+			tagente_estado.utimestamp AS utimestamp".$sql.") LIMIT " . $limit_sql . " OFFSET " . $offset;
 		break;
 	case "oracle":
 		$set = array();
-		$set['limit'] = $config["block_size"];
+		$set['limit'] = $limit_sql;
 		$set['offset'] = $offset;
 		$sql = "SELECT
 			(SELECT  wmsys.wm_concat(ttag.name)
@@ -572,7 +701,7 @@ switch ($config["dbtype"]) {
 		$sql = oracle_recode_query ($sql, $set);
 		break;
 }
-	
+
 if (! defined ('METACONSOLE')) {
 	$result = db_get_all_rows_sql ($sql);
 
@@ -589,9 +718,9 @@ else {
 	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup WHERE disabled = 0");
 	if ($servers === false)
 		$servers = array();
-		
-	$result = array();	
 	
+	$result = array();	
+	$count_modules = 0;
 	foreach($servers as $server) {
 		// If connection was good then retrieve all data server
 		if (metaconsole_connect($server) == NOERR){
@@ -602,11 +731,48 @@ else {
 		}
 		 
 		$result_server = db_get_all_rows_sql ($sql);
-		
+
 		if(!empty($result_server)) {
+			
+			$pwd = $server["auth_token"];            					// Create HASH login info
+			$auth_serialized = json_decode($pwd,true);
+			
+			if (is_array($auth_serialized)) {
+				$pwd = $auth_serialized["auth_token"];
+				$api_password = $auth_serialized["api_password"];
+				$console_user = $auth_serialized["console_user"];
+				$console_password = $auth_serialized["console_password"];
+			}
+			
+			$user = $config["id_user"];
+			$hashdata = $user.$pwd;
+			$hashdata = md5($hashdata);
+			$url_hash = "&loginhash=auto&loginhash_data=$hashdata&loginhash_user=$user";
+			
+			foreach ($result_server as $result_element_key => $result_element_value) {
+					
+				$result_server[$result_element_key]['server_name'] = $server["server_name"];
+				$result_server[$result_element_key]['server_url'] = $server["server_url"]."/";
+				$result_server[$result_element_key]['hashdata'] = $hashdata;
+				$result_server[$result_element_key]['user'] = $config["id_user"];
+				
+				$count_modules++;
+				
+			}
+			
 			$result = array_merge($result, $result_server);
 		}
+		
+		metaconsole_restore_db();
+		
+	}	
+	
+	if ($count_modules > $config["block_size"]) {
+		ui_pagination ($count_modules, false, $offset);
 	}
+
+	// Get number of elements of the pagination
+	$result = ui_meta_get_subset_array($result, $inferior_limit, $superior_limit);
 }
 
 if (($config['dbtype'] == 'oracle') && ($result !== false)) {
@@ -628,24 +794,41 @@ $table->align = array ();
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 	$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 
-$table->head[1] = __('Agent') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=agent_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentNameUp, "alt" => "up"))  . '</a>' .
+$table->head[1] = __('Agent'); 
+if (! defined ('METACONSOLE')) {
+	$table->head[1] .=' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=agent_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=agent_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentNameDown, "alt" => "down")) . '</a>';
+}
 
-$table->head[2] = __('Type'). ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up"))  . '</a>' .
+$table->head[2] = __('Type');
+if (! defined ('METACONSOLE')) {
+	$table->head[2] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=type&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
+}
 $table->align[2] = "left";
 
-$table->head[3] = __('Module name') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=module_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp, "alt" => "up"))  . '</a>' .
+$table->head[3] = __('Module name'); 
+if (! defined ('METACONSOLE')) {
+	$table->head[3] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=module_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=module_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown, "alt" => "down")) . '</a>';
+}
 
 $table->head[4] = __('Tags');
 
-$table->head[5] = __('Interval') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up"))  . '</a>' .
+$table->head[5] = __('Interval'); 
+if (! defined ('METACONSOLE')) {
+	$table->head[5] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
+}
+
 $table->align[5] = "center";
 
-$table->head[6] = __('Status') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=status&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up"))  . '</a>' .
+$table->head[6] = __('Status');
+if (! defined ('METACONSOLE')) {
+	$table->head[6] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=status&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=status&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
+}
+
 $table->align[6] = "center";
 
 $table->head[7] = __('Graph');
@@ -654,12 +837,20 @@ $table->align[7] = "center";
 $table->head[8] = __('Warn');
 $table->align[8] = "left";
 
-$table->head[9] = __('Data') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up"))  . '</a>' .
+$table->head[9] = __('Data');
+if (! defined ('METACONSOLE')) {	
+	$table->head[9] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
+}
+
 $table->align[9] = "left";
 
-$table->head[10] = __('Timestamp') . ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=timestamp&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTimestampUp, "alt" => "up"))  . '</a>' .
+$table->head[10] = __('Timestamp');
+if (! defined ('METACONSOLE')) {
+	 $table->head[10] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=timestamp&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTimestampUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=timestamp&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTimestampDown, "alt" => "down")) . '</a>';
+}
+
 $table->align[10] = "right";
 
 $rowPair = true;
@@ -714,18 +905,25 @@ foreach ($result as $row) {
 		}
 	}
 	
-	$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row["id_agent"].'">';
-	$data[1] .= ui_print_truncate_text($row["agent_name"], 'agent_medium', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
-	$data[1] .= '</a></strong>';
+	if (defined('METACONSOLE')) {
+		$data[1] = '<strong><a href="'. $row["server_url"] .'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='. $row["id_agent"] . '&amp;loginhash=auto&amp;loginhash_data=' . $row["hashdata"] . '&amp;loginhash_user=' . $row["user"] . '">'; 
+		$data[1] .= ui_print_truncate_text($row["agent_name"], 'agent_small', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
+		$data[1] .= '</a></strong>';		
+	}
+	else {
+		$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row["id_agent"].'">';
+		$data[1] .= ui_print_truncate_text($row["agent_name"], 'agent_medium', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
+		$data[1] .= '</a></strong>';
+	}
 	
 	$data[2] = html_print_image("images/" . modules_show_icon_type ($row["module_type"]), true); 
 	
-	$data[3] = ui_print_truncate_text($row["module_name"], 'module_small', false, true, true);
+	$data[3] = ui_print_truncate_text($row["module_name"], 'agent_small', false, true, true);
 	if ($row["extended_info"] != "") {
 		$data[3] .= ui_print_help_tip ($row["extended_info"], true, '/images/comments.png');
 	}
 	
-	$data[4] = $row['tags'];
+	$data[4] = ui_print_truncate_text($row['tags'], 'agent_small', false, true, true, '[&hellip;]', 'font-size:7pt;');
 	
 	$data[5] = ($row['module_interval'] == 0) ? human_time_description_raw($row['agent_interval']) : human_time_description_raw($row['module_interval']);
 	
@@ -768,10 +966,17 @@ foreach ($result as $row) {
 		$url = 'include/procesos.php?agente='.$row["id_agente_modulo"];
 		$win_handle=dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
 		
-		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["module_name"])."&refresh=600','day_".$win_handle."')";
+		if (defined('METACONSOLE'))
+			$link ="winopeng('" . $row['server_url'] . "operation/agentes/stat_win.php?type=$graph_type&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . $row["user"] . "&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["module_name"])."&refresh=600','day_".$win_handle."')";
+		else
+			$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["module_name"])."&refresh=600','day_".$win_handle."')";
 		
 		$data[7] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
-		$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
+		if (defined('METACONSOLE'))
+			$data[7] .= "&nbsp;<a href='" . $row['server_url'] . "index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . $row["user"] . "&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
+		else	
+			$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
+		
 	}
 	
 	$data[8] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);
@@ -782,6 +987,7 @@ foreach ($result as $row) {
 		// Show units ONLY in numeric data types
 		if (isset($row["unit"])) {
 			$salida .= "&nbsp;" . '<i>'. io_safe_output($row["unit"]) . '</i>';
+			$salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
 		}
 	}
 	else {
@@ -825,9 +1031,8 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 }
 else {
-	echo '<div class="nf">' .
-		__('This group doesn\'t have any monitor') .
-		'</div>';
+	ui_print_error_message(
+		__('This group doesn\'t have any monitor') );
 }
 ?>
 <script type="text/javascript">

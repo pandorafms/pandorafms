@@ -29,6 +29,8 @@ if (! check_acl ($config["id_user"], 0, "AW")) {
 	require ("general/noaccess.php");
 	return;
 }
+
+$pure = get_parameter('pure', 0);
 		
 //Header
 if (! defined ('METACONSOLE')) {
@@ -131,13 +133,10 @@ $total_filters = $total_filters[0]['total'];
 foreach ($filters as $filter) {
 	$data = array ();
 	
-	$data[0] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&id='.$filter['id_sg'].'">'.$filter['id_name'].'</a>';
-	$group = db_get_value('nombre','tgrupo', 'id_grupo', $filter['id_group']);
-	if ($group == '')
-		$group = 'All';
-	$data[1] = $group;
+	$data[0] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&id='.$filter['id_sg'].'&pure='.$pure.'">'.$filter['id_name'].'</a>';
+	$data[1] = ui_print_group_icon($filter['id_group'], true, "groups_small", '', !defined('METACONSOLE'));
 	$data[2] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
-		href='" . $config['homeurl'] . "index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id=".$filter['id_sg']."&offset=0'>" . 
+		href='" . $config['homeurl'] . "index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id=".$filter['id_sg']."&offset=0&pure=$pure'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $filter['id_sg'], false, false, '', 'class="check_delete"', true);
 	
@@ -145,7 +144,7 @@ foreach ($filters as $filter) {
 }
 
 if(isset($data)) {
-	echo "<form method='post' action='" . $config['homeurl'] . "index.php?sec=netf&sec2=godmode/netflow/nf_edit'>";
+	echo "<form method='post' action='" . $config['homeurl'] . "index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure=$pure'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
@@ -157,7 +156,7 @@ else {
 	echo "<div class='nf'>".__('There are no defined filters')."</div>";
 }
 
-	echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">';
+	echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
 	html_print_submit_button (__('Create filter'), 'crt', false, 'class="sub wand"');
 	echo "</div>";

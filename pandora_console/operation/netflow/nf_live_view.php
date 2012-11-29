@@ -31,6 +31,8 @@ if (! check_acl ($config["id_user"], 0, "AR")) {
 	return;
 }
 
+$pure = get_parameter('pure', 0);
+
 // Ajax callbacks
 if (is_ajax()){
 	$get_filter_type = get_parameter('get_filter_type', 0);
@@ -139,7 +141,7 @@ else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 // The filter name will not be needed anymore
 $filter['id_name'] = '';
 
-echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view">';
+echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
 
 	// Chart options table
 	$table->width = '100%';

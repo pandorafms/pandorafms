@@ -1,5 +1,9 @@
 2012-11-29  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/config_process.php: Reverted an accidental commit.
+
+2012-11-29  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/functions_treeview.php,
 	  include/config_process.php,
 	  operation/tree.php,

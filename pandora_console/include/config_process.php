@@ -33,7 +33,7 @@ if (empty($script_tz)){
 
 global $develop_bypass;
 /* Help to debug problems. Override global PHP configuration */
-$develop_bypass = 1;
+if (!isset($develop_bypass)) $develop_bypass = 0;
 
 if ($develop_bypass != 1) {
 	// error_reporting(E_ALL);

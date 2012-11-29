@@ -36,6 +36,8 @@ $name = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id);
 $update = (string)get_parameter('update', 0);
 $create = (string)get_parameter('create', 0);
 
+$pure = get_parameter('pure', 0);
+
 if ($id){
 	$permission = netflow_check_filter_group ($id);
 	if (!$permission) { //no tiene permisos para acceder a un filtro
@@ -61,6 +63,8 @@ if (! defined ('METACONSOLE')) {
         array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form', 'text' => __('Add filter')));
 
 	ui_meta_print_page_header($nav_bar);
+	
+	ui_meta_print_header(__("Netflow filters"));	
 }
 
 if ($id) {
@@ -215,7 +219,7 @@ $show_output = array();
 $show_output = array ('packets' => __('Packets'), 'bytes' => __('Bytes'), 'flows' =>__('Flows'));
 $table->data[9][1] = html_print_select ($show_output, 'output', $output, '', '', 0, true, false, true, '', false);
 
-echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form">';
+echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form&pure='.$pure.'">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {

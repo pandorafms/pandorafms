@@ -1,3 +1,7 @@
+2012-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/agentes/status_monitor.php: Added check in group filter.
+
 2012-11-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_netflow.php: Detect errors when retrieving stats.

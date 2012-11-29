@@ -238,20 +238,21 @@ echo '
 				false, 'width:150px;') . '
 		</td>';
 }
-else {
+else { 
 echo '
-		<td valign="middle">' . __('Group') . '</td>
-		<td valign="middle">' . 
-			html_print_select($groups_select, "ag_group",
-				$ag_group, '', '', '0', true, false, false, 'w130',
-				false, 'width:150px;') . '
-		</td>';	
+                <td valign="middle">' . __('Group') . '</td>
+                <td valign="middle">' .
+                        html_print_select($groups_select, "ag_group",
+                                io_safe_output($ag_group), '', '', '0', true, false, false, 'w130',
+                                false, 'width:150px;') . '
+                </td>';
 }
-		echo '<td>' . __('Monitor status') . "</td>";
+                echo '<td>' . __('Monitor status') . "</td>";
 
 
 
 echo "<td>";
+
 $fields = array ();
 $fields[0] = __('Normal'); 
 $fields[1] = __('Warning');

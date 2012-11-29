@@ -1761,7 +1761,8 @@ function ui_toggle($code, $name, $title = '', $hidde_default = true, $return = f
 	
 	// Link to toggle
 	$output = '';
-	$output .= '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br /><br />';
+	$output .= '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a>';
+	$output .= '<br /><br />';
 	
 	// Code into a div
 	$output .= "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";

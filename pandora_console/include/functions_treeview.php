@@ -16,7 +16,7 @@
 
 function treeview_printTable($id_agente, $console_url = '') {
 	global $config;
-	
+
 	require_once ("include/functions_agents.php");
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	include_graphs_dependencies();

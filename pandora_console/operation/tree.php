@@ -69,6 +69,7 @@ if (is_ajax ())
 			metaconsole_restore_db();
 		}
 	}
+	
 	/*
 	 * It's a binary for branch (0 show - 1 hide)
 	 * and there are 2 position
@@ -119,7 +120,6 @@ if (is_ajax ())
 					}
 					$rows = array_merge($rows, $server_rows);
 				}
-				
 				metaconsole_restore_db();
 			}
 			$countRows = count ($rows);

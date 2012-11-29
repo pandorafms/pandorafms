@@ -1,3 +1,11 @@
+2012-11-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_treeview.php,
+	  include/config_process.php,
+	  operation/tree.php,
+	  godmode/setup/setup.php: Manually defined DateTimeZone constants
+	  since they don't seem to be available in certain PHP versions.
+
 2012-11-29  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/netflow/nf_live_view.php

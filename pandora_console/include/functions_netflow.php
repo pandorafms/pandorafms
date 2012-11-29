@@ -492,6 +492,9 @@ function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $
 		$end_date = strtotime ($date." ".$time);
 		$values[$i]['datetime'] = $end_date;
 		$values[$i]['agg'] = $val[4];
+		if (! isset ($val[7])) {
+			return array ();
+		}
 		
 		switch ($unit){
 			case "flows":

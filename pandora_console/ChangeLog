@@ -1,3 +1,7 @@
+2012-11-29  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/reporting_builder.php: Fix a pure fail
+
 2012-11-29 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* operation/agentes/status_monitor.php: Added check in group filter.

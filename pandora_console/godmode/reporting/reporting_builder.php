@@ -469,7 +469,7 @@ switch ($action) {
 		
 		
 		if (check_acl ($config['id_user'], 0, "IW")) {
-			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure=$pure">';
+			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
 			echo '<div class="action-buttons" style="width: 98%;">';
 			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 			echo "</div>";

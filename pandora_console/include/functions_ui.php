@@ -106,10 +106,10 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 		}
 		if ($showTextInAToopTip) {
 			if ($style !== false) {
-				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span style="' . $style . '">' . $text . '</span></a>';
+				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span style="' . $style . '">' . $text . '</span>' . html_print_image ('images/tip.png', true) . '</a>';
 			}
 			else {
-				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span>' . $text . '</span></a>';
+				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span>' . $text . '</span>' . html_print_image ('images/tip.png', true) . '</a>';
 			}
 		}
 		else {

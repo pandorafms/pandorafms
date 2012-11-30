@@ -1,3 +1,9 @@
+2012-11-30  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/SNMPServer.pm: Added missing safe_output()
+	for trap filters. This fixed a bug that a backslash could not
+	escape its following character.
+
 2012-10-20  Sancho Lerena <slerena@artica.es>
 
 	* pandora_database_check.pl: First attempt to create a tool

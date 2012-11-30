@@ -230,7 +230,7 @@ sub matches_filter ($$$) {
 	# Get filters
 	my @filters = get_db_rows ($dbh, 'SELECT filter FROM tsnmp_filter');
 	foreach my $filter (@filters) {
-		my $regexp = $filter->{'filter'};
+		my $regexp = safe_output($filter->{'filter'}) ;
 		if ($string =~ m/$regexp/i) {
 			logger($pa_config, "Trap '$string' matches filter '$regexp'. Discarding...", 10);
 			return 1;

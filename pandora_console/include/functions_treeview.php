@@ -267,7 +267,7 @@ function treeview_printTree($type) {
 			} else {
 				$id = $item['_id_'];
 			}
-			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $hex_id . "\", " . $lessBranchs . ", \"\", \"\")'>";
+			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\", \"\")'>";
 			
 			echo $img . $item['_iconImg_'] ."&nbsp;" . __($item['_name_']) . ' ('.
 				'<span class="green">'.'<b>'.$item['_num_ok_'].'</b>'.'</span>'. 
@@ -275,7 +275,7 @@ function treeview_printTree($type) {
 				' : <span class="yellow">'.$item['_num_warning_'].'</span>'.
 				' : <span class="grey">'.$item['_num_unknown_'].'</span>'.') '. "</a>";
 			
-			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $hex_id . "'></div>";
+			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $id . "'></div>";
 			echo "</li>\n";
 		}
 		echo "</ul>\n";

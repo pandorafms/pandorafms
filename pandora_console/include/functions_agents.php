@@ -401,6 +401,8 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	elseif (! is_array ($filter['id_grupo'])) {
 		$all_groups = false;
 		//If group is specified but not allowed, return false
+echo "GROUP: " . $filter['id_grupo'] . ":";
+print_r ($groups);
 		if (! in_array ($filter['id_grupo'], $groups)) {
 			return false;
 		}

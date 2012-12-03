@@ -261,8 +261,12 @@ function treeview_printTree($type) {
 			echo "<li style='margin: 0px 0px 0px 0px;'>";
 
 			// Convert the id to hexadecimal, since it will be used as a div id
-			$hex_id = unpack ('H*', $item['_id_']);
-			$hex_id = $hex_id[1];
+			if (defined ('METACONSOLE')) {
+				$id = unpack ('H*', $item['_id_']);
+				$id = $hex_id[1];
+			} else {
+				$id = $item['_id_'];
+			}
 			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $hex_id . "\", " . $lessBranchs . ", \"\", \"\")'>";
 			
 			echo $img . $item['_iconImg_'] ."&nbsp;" . __($item['_name_']) . ' ('.
@@ -769,14 +773,6 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 	//Extract all rows of data for each type
 	switch ($type) {
 		case 'group':
-
-			if (defined ('METACONSOLE')) {
-				$id = groups_get_id (pack ('H*', $id));
-				if ($id == '') {
-					return false;
-				}
-			}
-			
 			$sql = agents_get_agents(array (
 				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'id_grupo' => $id,
@@ -787,6 +783,14 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				'AR',
 				false,
 				true);
+
+			if (defined ('METACONSOLE')) {
+				$id = groups_get_id (pack ('H*', $id));
+				if ($id == '') {
+					return false;
+				}
+			}
+
 			break;
 		case 'os':		
 			
@@ -884,19 +888,24 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				', $name);
 			break;
 		case 'tag':
-			$id = tags_get_id (pack ('H*', $id));
-			if ($id === false) {
-				return false;
-			}
-	
 			$sql = "SELECT tagente.* 
 						FROM tagente, tagente_modulo, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
 						AND ttag_module.id_tag = " . $id;
+
+			$id = tags_get_id (pack ('H*', $id));
+			if ($id === false) {
+				return false;
+			}
+
 			break;
 	}
-		
+	
+	if ($sql === false || $sql == '') {
+		return false;
+	}
+	
 	$sql .= ' AND tagente.disabled = 0'. $search_sql;
 	return $sql;
 }

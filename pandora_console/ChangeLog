@@ -1,5 +1,9 @@
 2012-12-03  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/functions_agents.php: Removed debugging code.
+
+2012-12-03  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/functions_agents.php,
 	  include/functions_treeview.php: Improved error detection and small fixes.
 

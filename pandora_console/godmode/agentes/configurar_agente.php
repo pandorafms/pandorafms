@@ -856,6 +856,7 @@ if ($update_module) {
 		'custom_integer_2' => $custom_integer_2,
 		'min_ff_event' => $ff_event,
 		'unit' => $unit,
+		'macros' => $macros,
 		'quiet' => $quiet_module,
 		'critical_instructions' => $critical_instructions,
 		'warning_instructions' => $warning_instructions,

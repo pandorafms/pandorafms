@@ -1,3 +1,9 @@
+2012-12-03  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+        * include/functions_html.php: Use "autocomplete=off" in all
+	password fields (this is re-apply of rev5823, that was
+	dropped at rev6607).  Merged from branch 4.x.
+
 2012-12-03  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/setup/setup.php: Changed not to depend on DateTimeZone

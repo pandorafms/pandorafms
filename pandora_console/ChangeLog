@@ -1,5 +1,9 @@
 2012-12-03  Ramon Novoa  <rnovoa@artica.es>
 
+	* operation/tree.php: Fixed the icon of the last element of a sub-tree.
+
+2012-12-03  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/functions_treeview.php: Fixed a typo.
 
 2012-12-03  Sergio Martin <sergio.martin@artica.es>

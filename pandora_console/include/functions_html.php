@@ -522,7 +522,7 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 		"onfocus", "onblur", "onselect", "onchange", "onclick", "ondblclick", "onmousedown", 
 		"onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup");
 
-	$output = '<input '.($password ? 'type="password" ' : 'type="text" ');
+	$output = '<input '.($password ? 'type="password" autocomplete="off" ' : 'type="text" ');
 
 	if ($disabled && (!is_array ($attributes) || !array_key_exists ("disabled", $attributes))) {
 		$output .= 'readonly="readonly" ';

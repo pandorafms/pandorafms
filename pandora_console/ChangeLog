@@ -1,3 +1,9 @@
+2012-12-03  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+        * include/functions_html.php: Use "autocomplete=off" in all
+	password fields (this is re-apply of rev5823, that was
+	dropped at rev6607).
+
 2012-11-27  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_delete_modules.php: Fixed a bug 

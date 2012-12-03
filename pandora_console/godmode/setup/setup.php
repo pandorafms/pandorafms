@@ -18,19 +18,6 @@ global $config;
 
 check_login ();
 
-// See http://php.net/manual/es/class.datetimezone.php
-define ("AFRICA", 1);
-define ("AMERICA", 2);
-define ("ANTARCTICA", 4);
-define ("ARCTIC", 8);
-define ("ASIA", 16);
-define ("ATLANTIC", 32);
-define ("AUSTRALIA", 64);
-define ("EUROPE", 128);
-define ("INDIAN", 256);
-define ("PACIFIC", 512);
-define ("UTC", 1024);
-
 if (is_ajax ()) {
 	$get_os_icon = (bool) get_parameter ('get_os_icon');
 	$select_timezone = get_parameter ('select_timezone', 0);
@@ -44,44 +31,13 @@ if (is_ajax ()) {
 	if ($select_timezone) {
 		$zone = get_parameter('zone');
 		
-		switch ($zone) {
-			case 'Africa':
-				$timezones = timezone_identifiers_list(AFRICA);
-				break;
-			case 'America':
-				$timezones = timezone_identifiers_list(AMERICA);
-				break;
-			case 'Antarctica':
-				$timezones = timezone_identifiers_list(ANTARCTICA);
-				break;
-			case 'Arctic':
-				$timezones = timezone_identifiers_list(ARCTIC);
-				break;
-			case 'Asia':
-				$timezones = timezone_identifiers_list(ASIA);
-				break;
-			case 'Atlantic':
-				$timezones = timezone_identifiers_list(ATLANTIC);
-				break;
-			case 'Australia':
-				$timezones = timezone_identifiers_list(AUSTRALIA);
-				break;
-			case 'Europe':
-				$timezones = timezone_identifiers_list(EUROPE);
-				break;
-			case 'Indian':
-				$timezones = timezone_identifiers_list(INDIAN);
-				break;
-			case 'Pacific':
-				$timezones = timezone_identifiers_list(PACIFIC);
-				break;
-			case 'UTC':
-				$timezones = timezone_identifiers_list(UTC);
-				break;
-			default:
-				$timezones = array();
-				break;
+		$timezones = timezone_identifiers_list();
+		foreach ($timezones as $timezone_key => $timezone) {
+			if (strpos($timezone, $zone) === false) {
+				unset($timezones[$timezone_key]);
+			}
 		}
+
 		echo json_encode($timezones);
 	}
 	return;
@@ -261,46 +217,11 @@ if ($zone_selected == "") {
 	}
 }
 
-switch ($zone_selected) {
-	case 'Africa':
-		$timezones = timezone_identifiers_list(AFRICA);
-		break;
-	case 'America':
-		$timezones = timezone_identifiers_list(AMERICA);
-		break;
-	case 'Antarctica':
-		$timezones = timezone_identifiers_list(ANTARCTICA);
-		break;
-	case 'Arctic':
-		$timezones = timezone_identifiers_list(ARCTIC);
-		break;
-	case 'Asia':
-		$timezones = timezone_identifiers_list(ASIA);
-		break;
-	case 'Atlantic':
-		$timezones = timezone_identifiers_list(ATLANTIC);
-		break;
-	case 'Australia':
-		$timezones = timezone_identifiers_list(AUSTRALIA);
-		break;
-	case 'Europe':
-		$timezones = timezone_identifiers_list(EUROPE);
-		break;
-	case 'Indian':
-		$timezones = timezone_identifiers_list(INDIAN);
-		break;
-	case 'Pacific':
-		$timezones = timezone_identifiers_list(PACIFIC);
-		break;
-	case 'UTC':
-		$timezones = timezone_identifiers_list(UTC);
-		break;
-	default:
-		$timezones = array();
-		break;
-}
+$timezones = timezone_identifiers_list();
 foreach ($timezones as $timezone) {
-	$timezone_n[$timezone] = $timezone;
+	if (strpos($timezone, $zone_selected) !== false) { 
+        	$timezone_n[$timezone] = $timezone;
+	}
 }
 
 $table->data[23][0] = __('Timezone setup');

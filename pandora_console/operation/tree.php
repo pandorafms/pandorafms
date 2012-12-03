@@ -181,7 +181,7 @@ if (is_ajax ())
 					$img = html_print_image ("operation/tree/closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"], "pos_tree" => "2"));
 				else {
 					$less = $less + 2; // $less = $less or 0b10
-					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $row["id_agente"], "pos_tree" => "3"));
+					$img = html_print_image ("operation/tree/last_closed.png", true, array ("style" => 'vertical-align: middle;', "id" => "tree_image" . $id . "_agent_" . $type . "_" . $row["id_agente"], "pos_tree" => "3"));
 				}
 				echo "<li style='margin: 0; padding: 0;'>";
 				echo "<a onfocus='JavaScript: this.blur()'

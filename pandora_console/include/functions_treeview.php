@@ -263,7 +263,7 @@ function treeview_printTree($type) {
 			// Convert the id to hexadecimal, since it will be used as a div id
 			if (defined ('METACONSOLE')) {
 				$id = unpack ('H*', $item['_id_']);
-				$id = $hex_id[1];
+				$id = $id[1];
 			} else {
 				$id = $item['_id_'];
 			}
@@ -773,6 +773,13 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 	//Extract all rows of data for each type
 	switch ($type) {
 		case 'group':
+			if (defined ('METACONSOLE')) {
+				$id = groups_get_id (pack ('H*', $id));
+				if ($id == '') {
+					return false;
+				}
+			}
+			
 			$sql = agents_get_agents(array (
 				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'id_grupo' => $id,
@@ -783,14 +790,6 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				'AR',
 				false,
 				true);
-
-			if (defined ('METACONSOLE')) {
-				$id = groups_get_id (pack ('H*', $id));
-				if ($id == '') {
-					return false;
-				}
-			}
-
 			break;
 		case 'os':		
 			
@@ -888,16 +887,15 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				', $name);
 			break;
 		case 'tag':
+			$id = tags_get_id (pack ('H*', $id));
+			if ($id === false) {
+				return false;
+			}
 			$sql = "SELECT tagente.* 
 						FROM tagente, tagente_modulo, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
 						AND ttag_module.id_tag = " . $id;
-
-			$id = tags_get_id (pack ('H*', $id));
-			if ($id === false) {
-				return false;
-			}
 
 			break;
 	}

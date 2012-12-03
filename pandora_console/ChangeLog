@@ -1,3 +1,8 @@
+2012-12-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_treeview.php: Fixed id decoding under the
+	  metaconsole.
+
 2012-12-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb_data.sql

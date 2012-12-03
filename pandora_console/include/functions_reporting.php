@@ -940,6 +940,19 @@ function reporting_get_group_stats ($id_group = 0) {
 			$data["total_agents"] += $group_stat[0]["agents"];
 			$data["agents_unknown"] += $group_stat[0]["agents_unknown"];
 			$data["utimestamp"] = $group_stat[0]["utimestamp"];
+			
+			// This fields are not in database
+			// Get Agents OK
+			$data["agent_ok"] += groups_agent_ok($group);
+			// Get Agents Warning 
+			$data["agent_warning"] += groups_agent_warning($group);
+			// Get Agents Critical
+			$data["agent_critical"] += groups_agent_critical($group);
+			// Get Agents Unknown
+			$data["agent_unknown"] += groups_agent_unknown($group);
+			// Get Agents Not init
+			$data["agent_not_init"] += groups_agent_not_init($group);			
+			
 		}
 		
 	// -------------------------------------------------------------------

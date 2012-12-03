@@ -166,7 +166,9 @@ $modules = array();
 $tags = array();
 $rows_select = array();
 $rows_temp_processed = array();
-$groups_select[0] = __('All');	
+$groups_select = array();
+if ($flag_is_admin)
+	$groups_select[0] = __('All');	
 
 if (defined('METACONSOLE')) {
 	

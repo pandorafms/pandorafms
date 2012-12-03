@@ -1,5 +1,12 @@
 2012-12-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* pandoradb_data.sql
+	 pandoradb.data.postgreSQL.sql
+	 pandoradb.data.oracle.sql: Added meta_num_elements token in tconfig
+	 to support metaconsole views with a lot of elements.
+
+2012-12-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_reporting.php: Added agent statistics for 
 	batch statistic branch in function reporting_get_group_stats. 
 	 operation/agentes/status_monitor.php: Cleaned code.

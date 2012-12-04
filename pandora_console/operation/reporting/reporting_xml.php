@@ -469,7 +469,7 @@ foreach ($contents as $content) {
 						//ui_print_error_message ("Error connecting to ".$server_name);
 						continue;
 					}
-				}				
+				}
 				
 				$sla_data = array ();
 				$sla_data["agent"] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
@@ -491,8 +491,8 @@ foreach ($contents as $content) {
 				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
 					//Restore db connection
 					metaconsole_restore_db();
-				}				
-					
+				}
+				
 			}
 			break;
 		case 6:
@@ -592,7 +592,8 @@ foreach ($contents as $content) {
 				$content_report = "    <event_report_agent/>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
-			} else if ($data_count <= $limit) {
+			}
+			else if ($data_count <= $limit) {
 				$content_report = "    <event_report_agent>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
@@ -603,7 +604,7 @@ foreach ($contents as $content) {
 				WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d 
 				GROUP BY id_agentmodule, evento
 				ORDER BY time2 DESC', $content['id_agent'], $datelimit, $date);
-			
+				
 				$events = db_get_all_rows_sql ($sql);
 				xml_file_event ($events, $temp_file,0, $content['id_agent']);
 				
@@ -611,8 +612,9 @@ foreach ($contents as $content) {
 				$content_report = "    </event_report_agent>\n";
 				$result = fwrite($file, $content_report);
 				
-
-			} else {
+				
+			}
+			else {
 				$content_report = "    <event_report_agent>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);

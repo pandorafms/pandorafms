@@ -42,6 +42,7 @@ switch ($activeTab) {
 				$background = '';
 				$visualConsoleName = '';
 				break;
+			
 			case 'update':
 			case 'save':
 				$idGroup = get_parameter('id_group');
@@ -50,10 +51,10 @@ switch ($activeTab) {
 				
 				$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background);
 				
-				// If the background is changed the size is reseted 			
+				// If the background is changed the size is reseted
 				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				$background_now = $visualConsole['background'];
-				if($background_now != $background && $background) {
+				if ($background_now != $background && $background) {
 					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
 					$values['width'] = $sizeBackground[0];
 					$values['height'] = $sizeBackground[1];
@@ -74,8 +75,8 @@ switch ($activeTab) {
 							$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be update.').'</h3>');
 						}
 						break;
+					
 					case 'save':
-						
 						if($values['name'] != "" && $values['background'])
 							$idVisualConsole = db_process_sql_insert('tlayout', $values);
 						else
@@ -94,6 +95,7 @@ switch ($activeTab) {
 				}
 				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				break;
+			
 			case 'edit':
 				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
 				$visualConsoleName = $visualConsole['name'];
@@ -102,6 +104,7 @@ switch ($activeTab) {
 				break;
 		}
 		break;
+	
 	case 'list_elements':
 		switch ($action) {
 			case 'update':

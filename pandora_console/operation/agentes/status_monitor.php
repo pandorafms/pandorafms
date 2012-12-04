@@ -203,12 +203,12 @@ if (defined('METACONSOLE')) {
 		if (!empty($rows_temp)) {
 			foreach ($rows_temp as $module_group_key => $modules_group_val)
 				$rows_temp_processed[$modules_group_val['name']] = $modules_group_val['name'];
-		
+			
 			$rows_select = array_unique(array_merge($rows_select, $rows_temp_processed));
-		}	
+		}
 		
 		$groups_temp = users_get_groups_for_select(false, "AR", true, true, false);									
-
+		
 		$groups_temp_processed = array();
 		
 		foreach ($groups_temp as $group_temp_key => $group_temp_val) {
@@ -219,7 +219,7 @@ if (defined('METACONSOLE')) {
 		if (!empty($groups_temp_processed)) {
 			$groups_select = array_unique(array_merge($groups_select, $groups_temp_processed));
 		}
-	
+		
 		if (!empty($modules_temp))
 			$modules = array_merge($modules, $modules_temp);
 		if (!empty($tags_temp))
@@ -228,11 +228,11 @@ if (defined('METACONSOLE')) {
 		metaconsole_restore_db();
 	}
 	unset($groups_select[__('All')]);
-
+	
 }
 
 if (!defined('METACONSOLE')) {
-echo '
+	echo '
 		<td valign="middle">' . __('Group') . '</td>
 		<td valign="middle">' . 
 			html_print_select_groups(false, "AR", true, "ag_group",
@@ -241,15 +241,15 @@ echo '
 		</td>';
 }
 else { 
-echo '
-                <td valign="middle">' . __('Group') . '</td>
-                <td valign="middle">' .
-                        html_print_select($groups_select, "ag_group",
-                                io_safe_output($ag_group), '', '', '0', true, false, false, 'w130',
-                                false, 'width:150px;') . '
-                </td>';
+	echo '
+		<td valign="middle">' . __('Group') . '</td>
+		<td valign="middle">' .
+			html_print_select($groups_select, "ag_group",
+				io_safe_output($ag_group), '', '', '0', true, false, false, 'w130',
+				false, 'width:150px;') . '
+		</td>';
 }
-                echo '<td>' . __('Monitor status') . "</td>";
+echo '<td>' . __('Monitor status') . "</td>";
 
 
 
@@ -500,14 +500,14 @@ else {
 	elseif($user_groups != '') {
 		// User has explicit permission on group 1 ?
 		$sql .= " AND tagente.id_grupo IN (".$user_groups.")";
-	}	
+	}
 }
 
 // Module group
 if (defined('METACONSOLE')) {
 	if ($modulegroup != '-1')
 		$sql .= sprintf (" AND tagente_modulo.id_module_group IN (SELECT id_mg 
-							FROM tmodule_group WHERE name = '%s')", $modulegroup);	
+			FROM tmodule_group WHERE name = '%s')", $modulegroup);	
 }
 else if ($modulegroup > -1) {
 	$sql .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
@@ -564,7 +564,7 @@ if ($tag_filter !== 0) {
 			FROM ttag_module
 			WHERE ttag_module.id_tag = " . $tag_filter . "
 			)";
-
+	
 	}
 }
 
@@ -572,7 +572,7 @@ if ($tag_filter !== 0) {
 if (!defined('METACONSOLE')) 
 	$count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) " .
 		$sql . ")");
-	
+
 if (defined('METACONSOLE')) {
 	// Offset will be used to get the subset of modules
 	$inferior_limit = $offset;
@@ -581,12 +581,12 @@ if (defined('METACONSOLE')) {
 	$offset = 0;
 	if (!isset($config["meta_num_elements"]))
 		$config["meta_num_elements"] = 100;
-		
+	
 	$limit_sql = $config["meta_num_elements"];
 }
 else
 	$limit_sql = $config["block_size"];
-	
+
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = "SELECT
@@ -707,11 +707,11 @@ switch ($config["dbtype"]) {
 
 if (! defined ('METACONSOLE')) {
 	$result = db_get_all_rows_sql ($sql);
-
+	
 	if ($count > $config["block_size"]) {
 		ui_pagination ($count, false, $offset);
 	}
-
+	
 	if ($result === false) {
 		$result = array ();
 	}
@@ -722,7 +722,7 @@ else {
 	if ($servers === false)
 		$servers = array();
 	
-	$result = array();	
+	$result = array();
 	$count_modules = 0;
 	foreach($servers as $server) {
 		// If connection was good then retrieve all data server
@@ -730,14 +730,15 @@ else {
 			$connection = true;
 		}
 		else{
-			$connection = false;	
+			$connection = false;
 		}
 		 
 		$result_server = db_get_all_rows_sql ($sql);
-
-		if(!empty($result_server)) {
+		
+		if (!empty($result_server)) {
 			
-			$pwd = $server["auth_token"];            					// Create HASH login info
+			// Create HASH login info
+			$pwd = $server["auth_token"];
 			$auth_serialized = json_decode($pwd,true);
 			
 			if (is_array($auth_serialized)) {
@@ -753,7 +754,7 @@ else {
 			$url_hash = "&loginhash=auto&loginhash_data=$hashdata&loginhash_user=$user";
 			
 			foreach ($result_server as $result_element_key => $result_element_value) {
-					
+				
 				$result_server[$result_element_key]['server_name'] = $server["server_name"];
 				$result_server[$result_element_key]['server_url'] = $server["server_url"]."/";
 				$result_server[$result_element_key]['hashdata'] = $hashdata;
@@ -768,12 +769,12 @@ else {
 		
 		metaconsole_restore_db();
 		
-	}	
+	}
 	
 	if ($count_modules > $config["block_size"]) {
 		ui_pagination ($count_modules, false, $offset);
 	}
-
+	
 	// Get number of elements of the pagination
 	$result = ui_meta_get_subset_array($result, $inferior_limit, $superior_limit);
 }
@@ -1039,11 +1040,11 @@ else {
 }
 ?>
 <script type="text/javascript">
-function toggle_full_value(id) {
-	value_title = $("#hidden-value_replace_module_" + id).val();
-	
-	$("#hidden-value_replace_module_" + id).val($("#value_module_text_" + id).html());
-	
-	$("#value_module_text_" + id).html(value_title);
-}
+	function toggle_full_value(id) {
+		value_title = $("#hidden-value_replace_module_" + id).val();
+		
+		$("#hidden-value_replace_module_" + id).val($("#value_module_text_" + id).html());
+		
+		$("#value_module_text_" + id).html(value_title);
+	}
 </script>

@@ -1164,9 +1164,12 @@ switch ($action) {
 							break;
 						// Type case only depends of local database
 						case 'type':
-							$sql = "SELECT id_rc FROM treport_content WHERE %s ORDER BY type %s";
+							$sql = "SELECT id_rc
+								FROM treport_content
+								WHERE %s ORDER BY type %s";
 							
-							$sql = sprintf($sql, 'id_report = ' . $idReport, '%s');
+							$sql = sprintf($sql,
+								'id_report = ' . $idReport, '%s');
 							switch ($dir) {
 								case 'up':
 									$sql = sprintf($sql, 'ASC');
@@ -1224,15 +1227,18 @@ switch ($action) {
 				switch ($config["dbtype"]) {
 					case "mysql":
 						$resultOperationDB = db_process_sql_update('treport_content',
-							array('`order`' => $oldOrder), array('`order`' => $newOrder, 'id_report' => $idReport));
+							array('`order`' => $oldOrder),
+							array('`order`' => $newOrder, 'id_report' => $idReport));
 						break;
 					case "postgresql":
 						$resultOperationDB = db_process_sql_update('treport_content',
-							array('"order"' => $oldOrder), array('"order"' => $newOrder, 'id_report' => $idReport));
+							array('"order"' => $oldOrder),
+							array('"order"' => $newOrder, 'id_report' => $idReport));
 						break;
 					case "oracle":
 						$resultOperationDB = db_process_sql_update('treport_content',
-							array('"order"' => $oldOrder), array('"order"' => $newOrder, 'id_report' => $idReport), 'AND', false);
+							array('"order"' => $oldOrder),
+							array('"order"' => $newOrder, 'id_report' => $idReport), 'AND', false);
 						break;
 				}
 				if ($resultOperationDB !== false) {

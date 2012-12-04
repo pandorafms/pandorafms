@@ -85,14 +85,14 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['image_row']['items'] = array('static_graph', 'icon', 'datos');
 			$form_items['image_row']['html'] = '<td>' . __('Image') . '</td>
 				<td>'. html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', '', true) .'</td>';
-				
+			
 			$form_items['enable_link_row'] = array();
 			$form_items['enable_link_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'label', 'datos'. 'icon');
 			$form_items['enable_link_row']['html'] = '<td style="">' . __('Enable link') .'</td>
 							<td style="">'. html_print_checkbox('enable_link', '', 'enable_link', true) .'</td>';
-		
+			
 			$form_items['preview_row'] = array();
 			$form_items['preview_row']['items'] = array('static_graph', 'datos icon');
 			$form_items['preview_row']['html'] = '<td colspan="2" style="text-align: right;"><div id="preview" style="text-align: right;"></div></td>';

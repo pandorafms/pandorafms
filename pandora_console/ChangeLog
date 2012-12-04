@@ -1,3 +1,19 @@
+2012-12-04 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/map_builder.php,
+	godmode/reporting/visual_console_builder.php,
+	godmode/reporting/visual_console_builder.data.php,
+	include/functions_visual_map_editor.php,
+	operation/reporting/reporting_xml.php,
+	operation/agentes/exportdata.excel.php,
+	operation/agentes/ver_agente.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/alerts_status.php,
+	operation/agentes/exportdata.csv.php: uploaded the changes of source
+	code style previous to my next commit for to make the next commit
+	more easy.
+
 2012-12-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_treeview.php: Fixed id decoding under the

@@ -317,11 +317,12 @@ if (is_ajax ()) {
 		else
 			$search = false;
 		
-		if ($config ['metaconsole'] == 1 and !$force_local_modules and defined('METACONSOLE')) { 
+		if ($config ['metaconsole'] == 1 and !$force_local_modules and defined('METACONSOLE')) {
 			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
 				$connection = metaconsole_get_connection($server_name);
 				
 				if (metaconsole_load_external_db($connection) == NOERR) {
+					
 					/* Get all agents if no agent was given */
 					if ($id_agent == 0)
 						$id_agent = array_keys (
@@ -332,6 +333,7 @@ if (is_ajax ()) {
 					$agent_modules = agents_get_modules ($id_agent,
 						($fields != '' ? explode (',', $fields) : "*"),
 						($filter != '' ? $filter : false), $indexed);
+					
 				}
 				// Restore db connection
 				metaconsole_restore_db();
@@ -350,6 +352,7 @@ if (is_ajax ()) {
 		foreach($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
+		
 		
 		//Hack to translate text "any" in PHP to javascript
 		//$agent_modules['any_text'] = __('Any');

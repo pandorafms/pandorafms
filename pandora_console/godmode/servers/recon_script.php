@@ -37,11 +37,14 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 	return;
 }
 
+/*
+ * Disabled at the moment.
 if (!check_referer()) {
 	require ("general/noaccess.php");
 	
 	return;
 }
+*/
 
 $view = get_parameter ("view", "");
 $create = get_parameter ("create", "");

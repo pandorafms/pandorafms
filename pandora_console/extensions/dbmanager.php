@@ -89,11 +89,14 @@ function dbmgr_extension_main () {
 		return;
 	}
 	
+	/*
+	 * Disabled at the moment.
 	if (!check_referer()) {
 		require ("general/noaccess.php");
 		
 		return;
 	}
+	*/
 	
 	$sql = (string) get_parameter ('sql');
 	

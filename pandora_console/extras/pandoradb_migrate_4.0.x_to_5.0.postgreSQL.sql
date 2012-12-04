@@ -96,6 +96,8 @@ CREATE TABLE "talert_special_days" (
 -- -----------------------------------------------------
 
 ALTER TABLE "talert_templates" ADD COLUMN "special_day" SMALLINT default 0;
+CREATE TYPE type_talert_templates_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
+ALTER TABLE "talert_templates" ADD COLUMN "wizard_level" type_talert_templates_wizard_level default 'nowizard';
 
 -- -----------------------------------------------------
 -- Table "tplanned_downtime"

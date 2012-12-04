@@ -1,3 +1,14 @@
+2012-12-04  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	godmode/alerts/configure_alert_template.php: Add wizard_level flag to the
+	alert templates table
+
 2012-12-04 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/reporting_builder.php,

@@ -305,6 +305,7 @@ CREATE TABLE "talert_actions" (
 );
 
 CREATE TYPE type_talert_templates_alert_template AS ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always');
+CREATE TYPE type_talert_templates_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
 CREATE TABLE "talert_templates" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"name" text default '',
@@ -349,7 +350,8 @@ CREATE TABLE "talert_templates" (
 	"field10_recovery" text NOT NULL default '',
 	"priority" INTEGER NOT NULL default 0,
 	"id_group" INTEGER NOT NULL default 0,
-	"special_day" SMALLINT default 0
+	"special_day" SMALLINT default 0,
+	"wizard_level" type_talert_templates_wizard_level default 'nowizard'
 );
 CREATE INDEX "talert_templates_id_alert_action_idx" ON "talert_templates"("id_alert_action");
 

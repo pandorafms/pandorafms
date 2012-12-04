@@ -179,6 +179,7 @@ function update_template ($step) {
 		$max = (float) get_parameter ('max');
 		$min = (float) get_parameter ('min');
 		$matches = (bool) get_parameter ('matches_value');
+		$wizard_level = (string) get_parameter ('wizard_level');
 		$priority = (int) get_parameter ('priority');
 		$id_group = get_parameter ("id_group");
 		$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
@@ -191,7 +192,8 @@ function update_template ($step) {
 			'min_value' => $min,
 			'id_group' => $id_group,
 			'matches_value' => $matches,
-			'priority' => $priority);
+			'priority' => $priority,
+			'wizard_level' => $wizard_level);
 		
 		$result = alerts_update_alert_template ($id,$values);
 	}
@@ -327,6 +329,7 @@ if ($create_template) {
 	$min = (float) get_parameter ('min');
 	$matches = (bool) get_parameter ('matches_value');
 	$priority = (int) get_parameter ('priority');
+	$wizard_level = (string) get_parameter ('wizard_level');
 	$id_group = get_parameter ("id_group");
 	$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
 	
@@ -336,7 +339,8 @@ if ($create_template) {
 			'min_value' => $min,
 			'id_group' => $id_group,
 			'matches_value' => $matches,
-			'priority' => $priority);
+			'priority' => $priority,
+			'wizard_level' => $wizard_level);
 					
 	if($config['dbtype'] == "oracle") {
 			$values['field3'] = ' ';
@@ -415,7 +419,8 @@ if ($id && ! $create_template) {
 
 	$default_action = $template['id_alert_action'];
 	$priority = $template['priority'];
-	$id_group = $template["id_group"];
+	$id_group = $template['id_group'];
+	$wizard_level = $template['wizard_level'];
 }
 
 print_alert_template_steps ($step, $id);
@@ -582,6 +587,14 @@ else {
 	$table->data[2][0] = __('Priority');
 	$table->data[2][1] = html_print_select (get_priorities (), 'priority',
 		$priority, '', 0, 0, true, false, false);
+		
+	$table->data[2][0] = __('Wizard level');
+	$wizard_levels = array('nowizard' => __('No wizard'),
+							'basic' => __('Basic'),
+							'advanced' => __('Advanced'),
+							//'custom' => __('Custom'),
+							);
+	$table->data[2][1] = html_print_select($wizard_levels,'wizard_level',$wizard_level,'','',-1,true, false, false);
 	
 	$table->data[3][0] = __('Condition type');
 	$table->data[3][1] = html_print_select (alerts_get_alert_templates_types (), 'type',

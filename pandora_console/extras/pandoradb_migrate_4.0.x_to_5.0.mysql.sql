@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS `talert_special_days` (
 -- Table `talert_templates`
 -- ---------------------------------------------------------------------
 ALTER TABLE `talert_templates` ADD COLUMN `special_day` tinyint(1) DEFAULT '0';
+ALTER TABLE `talert_templates` ADD COLUMN `wizard_level` enum('basic','advanced','custom','nowizard') DEFAULT 'nowizard';
 
 ------------------------------------------------------------------------
 -- Table `tplanned_downtime`

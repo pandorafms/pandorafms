@@ -417,7 +417,7 @@ $table->data = array ();
 
 foreach ($alerts['alerts_combined'] as $alert) {
 	array_push ($table->data, ui_format_alert_row ($alert, true, $print_agent));
-}	
+}
 
 if (!empty ($table->data)) {
 	ui_pagination ($countAlertsCombined, $url, $offset_combined, 0, false, 'offset_combined');

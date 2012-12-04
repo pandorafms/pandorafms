@@ -101,27 +101,27 @@ if (!empty ($module)) {
 
 	// Show header
 	echo $datastart;
-
+	
 	foreach ($module as $selected) {
-
+		
 		$output = "";
 		$work_period = 120000;
 		if ($work_period > $period) {
 			$work_period = $period;
 		}
-
+		
 		$work_end = $end - $period + $work_period;
 		//Buffer to get data, anyway this will report a memory exhaustin
-
+		
 		while ($work_end <= $end) {
-
+			
 			$data = array (); // Reinitialize array for each module chunk
 			if ($export_type == "avg") {
 				$arr = array ();
 				$arr["data"] = reporting_get_agentmodule_data_average ($selected, $work_period, $work_end);
 				if ($arr["data"] === false) {
 					continue;
-				}	
+				}
 				$arr["module_name"] = modules_get_agentmodule_name ($selected);
 				$arr["agent_name"] = modules_get_agentmodule_agent_name ($selected);
 				$arr["agent_id"] = modules_get_agentmodule_agent ($selected);
@@ -160,9 +160,9 @@ if (!empty ($module)) {
 		$output = "";
 	} // main foreach
 	echo $dataend;
-
+	
 	exit; // Necesary for CSV export, if not give problems
-		
+	
 }
 
 else {

@@ -120,7 +120,7 @@ if (!empty ($module)) {
 				$arr["data"] = reporting_get_agentmodule_data_average ($selected, $work_period, $work_end);
 				if ($arr["data"] === false) {
 					continue;
-				}	
+				}
 				$arr["module_name"] = modules_get_agentmodule_name ($selected);
 				$arr["agent_name"] = modules_get_agentmodule_agent_name ($selected);
 				$arr["agent_id"] = modules_get_agentmodule_agent ($selected);
@@ -147,7 +147,7 @@ if (!empty ($module)) {
 			}
 			
 			echo $output;
-				
+			
 			unset($output);
 			$output = "";
 			unset($data);

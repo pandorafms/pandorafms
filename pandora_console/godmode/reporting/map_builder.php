@@ -61,13 +61,13 @@ if ($copy_layout) {
 	
 	$idNewVisualConsole = $result;
 	
-	if($result) {
+	if ($result) {
 		$ninsert = 1;
-
+		
 		// Return from DB the items of the source layout
 		$data_layout_src = db_get_all_rows_filter ("tlayout_data", "id_layout = " . $id_layout);
 		
-		if(!empty($data_layout_src)) {
+		if (!empty($data_layout_src)) {
 			
 			//By default the id parent 0 is always 0.
 			$id_relations = array(0 => 0);
@@ -91,7 +91,7 @@ if ($copy_layout) {
 					$id_relations[$old_id] = $result; 
 				}
 				
-				if($result)
+				if ($result)
 					$ninsert++;
 			}// for each item of console
 				
@@ -127,7 +127,7 @@ if ($copy_layout) {
 	else {
 		echo '<h3 class="error">'.__('Not copied. Error copying data').'</h3>';
 	}
-		
+	
 }
 
 $table->width = '98%';
@@ -138,7 +138,7 @@ $table->head[1] = __('Group');
 $table->head[2] = __('Items');
 
 //Only for IW flag
-if(check_acl ($config['id_user'], 0, "IW")) {
+if (check_acl ($config['id_user'], 0, "IW")) {
 	$table->head[3] = __('Copy');
 	$table->head[4] = __('Delete');
 }

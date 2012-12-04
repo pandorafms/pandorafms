@@ -103,6 +103,8 @@ CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_specia
 -- Table talert_templates
 -- -----------------------------------------------------
 ALTER TABLE talert_templates ADD (special_day NUMBER(5,0) default 0);
+ALTER TABLE talert_templates ADD (wizard_level VARCHAR2(100) default 'nowizard' NOT NULL);
+ALTER TABLE talert_templates ADD CONSTRAINT t_alert_templates_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
 
 -- -----------------------------------------------------
 -- Table talert_templates
@@ -297,7 +299,7 @@ WHERE token='prominent_time';
 -- -----------------------------------------------------
 -- Table tnetwork_component
 -- -----------------------------------------------------
-ALTER TABLE tnetwork_component ADD (wizard_level VARCHAR2(100) default 'custom' NOT NULL);
+ALTER TABLE tnetwork_component ADD (wizard_level VARCHAR2(100) default 'nowizard' NOT NULL);
 ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
 ALTER TABLE tnetwork_component ADD (only_metaconsole NUMBER(5, 0) default 0 NOT NULL);
 ALTER TABLE tnetwork_component ADD (macros CLOB default '');

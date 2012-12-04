@@ -382,7 +382,9 @@ CREATE TABLE talert_templates (
 	priority NUMBER(10, 0) default 0 NOT NULL,
 	id_group NUMBER(10, 0) default 0 NOT NULL, 
 	special_day NUMBER(5, 0) default 0,
-	CONSTRAINT t_alert_templates_type_cons CHECK (type IN ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always'))
+	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
+	CONSTRAINT t_alert_templates_type_cons CHECK (type IN ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always')),
+	CONSTRAINT t_alert_templates_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'))
 );
 CREATE INDEX talert_templates_id_al_act_idx ON talert_templates(id_alert_action);
 

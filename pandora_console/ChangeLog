@@ -1,3 +1,8 @@
+2012-12-05  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php: Fix a statistics bug on
+	compared graphs merged from 4.0.x
+
 2012-12-04  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/dbmanager.php

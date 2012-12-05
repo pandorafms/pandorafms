@@ -209,14 +209,12 @@ $table->data[7][0] = ui_print_help_icon ('pcap_filter', true);
 $table->data[7][1] = html_print_textarea ('advanced_filter', 4, 40, $advanced_filter, '', true);
 
 $table->data[8][0] = '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true);
-$aggregate_list = array();
 $aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
 
 $table->data[8][1] = html_print_select ($aggregate_list, "aggregate", $aggregate, '', '', 0, true, false, true, '', false);
 
 $table->data[9][0] = '<b>'.__('Output format').'</b>';
-$show_output = array();
-$show_output = array ('packets' => __('Packets'), 'bytes' => __('Bytes'), 'flows' =>__('Flows'));
+$show_output = array ('kilobytes' => __('Kilobytes'), 'megabytes' => __('Megabytes'), 'kilobytespersecond' => __('Kilobytes per second'), 'megabytespersecond' => __('Megabytes per second'));
 $table->data[9][1] = html_print_select ($show_output, 'output', $output, '', '', 0, true, false, true, '', false);
 
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form&pure='.$pure.'">';

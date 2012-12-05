@@ -66,7 +66,7 @@ if (is_ajax()){
 
 // Read filter configuration
 $filter_id = (int) get_parameter ('filter_id', 0);
-$filter['id_name'] = (string) get_parameter ('name', '');
+$filter['id_name'] = get_parameter ('name', '');
 $filter['id_group'] = (int) get_parameter ('assign_group', 0);
 $filter['aggregate'] = get_parameter('aggregate','');
 $filter['output'] = get_parameter('output','bytes');
@@ -74,6 +74,7 @@ $filter['ip_dst'] = get_parameter('ip_dst','');
 $filter['ip_src'] = get_parameter('ip_src','');
 $filter['dst_port'] = get_parameter('dst_port','');
 $filter['src_port'] = get_parameter('src_port','');
+$filter['advanced_filter'] = get_parameter('advanced_filter','');
 $filter['advanced_filter'] = get_parameter('advanced_filter','');
 
 // Read chart configuration
@@ -84,6 +85,7 @@ $update_date = (int) get_parameter('update_date', 0);
 $date = get_parameter_post ('date', date ("Y/m/d", get_system_time ()));
 $time = get_parameter_post ('time', date ("H:i:s", get_system_time ()));
 $connection_name = get_parameter('connection_name', '');
+$interval_length = (int) get_parameter('interval_length', 0);
 
 // Read buttons
 $draw = get_parameter('draw_button', '');
@@ -157,8 +159,10 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	
 	$table->data[0][2] = '<b>'.__('Interval').'</b>';
 	$table->data[0][3] = html_print_select (netflow_get_valid_intervals (), 'period', $period, '', '', 0, true, false, false);
-	$table->data[0][4] = '<b>'.__('Type').'</b>';
-	$table->data[0][5] = html_print_select (netflow_get_chart_types (), 'chart_type', $chart_type,'','',0,true);
+	$table->data[0][4] = '<b>'.__('Subinterval') . ui_print_help_tip (__("The interval will be divided in chunks the length of the subinterval"), true) . '</b>';
+	$table->data[0][5] = html_print_select (netflow_get_valid_subintervals (), 'interval_length', $interval_length, '', '', 0, true, false, false);
+	$table->data[0][6] = '<b>'.__('Type').'</b>';
+	$table->data[0][7] = html_print_select (netflow_get_chart_types (), 'chart_type', $chart_type,'','',0,true);
 	$max_values = array ('2' => '2',
 		'5' => '5',
 		'10' => '10',
@@ -167,8 +171,8 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		'25' => '25',
 		'50' => '50'
 	);
-	$table->data[0][6] = '<b>'.__('Max. values').'</b>';
-	$table->data[0][7] = html_print_select ($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true);
+	$table->data[0][8] = '<b>'.__('Max. values').'</b>';
+	$table->data[0][9] = html_print_select ($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true);
 
 	if (defined ('METACONSOLE')) {
 		$table->data[0][8] = '<b>'.__('Connection').'</b>';
@@ -232,8 +236,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	$table->data[6][1] = html_print_select ($aggregate_list, "aggregate", $filter['aggregate'], '', '', 0, true, false, true, '', false);
 	
 	$table->data[6][2] = '<b>'.__('Output format').'</b>';
-	$show_output = array();
-	$show_output = array ('packets' => __('Packets'), 'bytes' => __('Bytes'), 'flows' =>__('Flows'));
+	$show_output = array ('kilobytes' => __('Kilobytes'), 'megabytes' => __('Megabytes'), 'kilobytespersecond' => __('Kilobytes per second'), 'megabytespersecond' => __('Megabytes per second'));
 	$table->data[6][3] = html_print_select ($show_output, 'output', $filter['output'], '', '', 0, true, false, true, '', false);
 	
 	html_print_table ($table);
@@ -254,7 +257,7 @@ if  ($draw != '') {
 	$unique_id = 'live_view__' . ($end_date - $start_date);
 	
 	// Draw
-	echo netflow_draw_item ($start_date, $end_date, 0, $chart_type, $filter, $max_aggregates, $unique_id, $connection_name);
+	echo netflow_draw_item ($start_date, $end_date, $interval_length, $chart_type, $filter, $max_aggregates, $unique_id, $connection_name);
 }
 ?>
 

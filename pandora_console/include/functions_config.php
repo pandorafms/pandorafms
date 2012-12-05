@@ -255,6 +255,7 @@ function config_update_config () {
 			config_update_value ('netflow_path', get_parameter ('netflow_path'));
 			config_update_value ('netflow_interval', get_parameter ('netflow_interval'));
 			config_update_value ('netflow_daemon', get_parameter ('netflow_daemon'));
+			config_update_value ('netflow_nfdump', get_parameter ('netflow_nfdump'));
 			break;
 	}
 	
@@ -497,6 +498,10 @@ function config_process_config () {
 	
 	if (!isset ($config['netflow_daemon'])) {
 		config_update_value ( 'netflow_daemon', '/usr/bin/nfcapd');
+	}
+
+	if (!isset ($config['netflow_nfdump'])) {
+		config_update_value ( 'netflow_nfdump', '/usr/bin/nfdump');
 	}
 	
 	if (!isset ($config['auth'])) {

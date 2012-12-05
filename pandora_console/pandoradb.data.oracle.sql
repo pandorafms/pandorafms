@@ -90,6 +90,7 @@ INSERT INTO tconfig (token, value) VALUES ('integria_url', ' ');
 INSERT INTO tconfig (token, value) VALUES ('netflow_path', '/var/spool/pandora/data_in/netflow');
 INSERT INTO tconfig (token, value) VALUES ('netflow_interval', '300');
 INSERT INTO tconfig (token, value) VALUES ('netflow_daemon', '/usr/bin/nfcapd');
+INSERT INTO tconfig (token, value) VALUES ('netflow_nfdump', '/usr/bin/nfdump');
 INSERT INTO tconfig (token, value) VALUES ('event_fields', 'evento,id_agente,estado,timestamp');
 INSERT INTO tconfig (token, value) VALUES ('list_ACL_IPs_for_API', '127.0.0.1');
 INSERT INTO tconfig (token, value) VALUES ('enable_pass_policy', 0);

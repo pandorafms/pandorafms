@@ -50,6 +50,8 @@ $table->data[1][0] = '<b>'.__('Daemon interval').'</b>';
 $table->data[1][1] = html_print_input_text ('netflow_interval', $config['netflow_interval'], false, 50, 200, true);
 $table->data[2][0] = '<b>'.__('Daemon binary path').'</b>';
 $table->data[2][1] = html_print_input_text ('netflow_daemon', $config['netflow_daemon'], false, 50, 200, true);
+$table->data[3][0] = '<b>'.__('Nfdump binary path').'</b>';
+$table->data[3][1] = html_print_input_text ('netflow_nfdump', $config['netflow_nfdump'], false, 50, 200, true);
 	
 echo '<form id="netflow_setup" method="post">';
 			

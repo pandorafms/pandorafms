@@ -1,3 +1,17 @@
+2012-12-05  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql,
+	  include/functions_config.php,
+	  include/functions_netflow.php,
+	  operation/netflow/nf_live_view.php,
+	  pandoradb.data.postgreSQL.sql,
+	  pandoradb.data.oracle.sql,
+	  godmode/setup/setup_netflow.php,
+	  godmode/netflow/nf_edit_form.php: Performance improvements. Use csv
+	  output to avoid using regular expressions. Removed byte, flow and
+	  packet unit and added kilobyte, megabyte, kilobytes per second and
+	  megabytes per second.
+
 2012-12-05  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php

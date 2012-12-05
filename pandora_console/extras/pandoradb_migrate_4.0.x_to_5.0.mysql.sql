@@ -165,6 +165,7 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `critical_inverse` tinyint(1) unsigned d
 ALTER TABLE `tagente_modulo` ADD COLUMN `warning_inverse` tinyint(1) unsigned default '0';
 ALTER TABLE `tagente_modulo` ADD COLUMN `cron_interval` varchar(100) default '';
 ALTER TABLE `tagente_modulo` ADD COLUMN `max_retries` int(4) UNSIGNED NOT NULL default 0;
+ALTER TABLE `tagente_modulo` ADD COLUMN `id_category` int(10) NOT NULL DEFAULT '0';
 
 -- Move the number of retries for web modules from plugin_pass to max_retries
 UPDATE `tagente_modulo` SET max_retries=plugin_pass WHERE id_modulo=7;
@@ -183,6 +184,7 @@ ALTER TABLE `tnetwork_component` ADD COLUMN `unknown_instructions` TEXT NOT NULL
 ALTER TABLE `tnetwork_component` ADD COLUMN `critical_inverse` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `warning_inverse` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `max_retries` int(4) UNSIGNED NOT NULL default 0;
+ALTER TABLE `tnetwork_component` ADD COLUMN `id_category` int(10) NOT NULL DEFAULT '0';
 
 ------------------------------------------------------------------------
 -- Table `tgraph_source` Alter table to allow negative values in weight
@@ -393,3 +395,14 @@ ALTER TABLE `talert_templates` ADD COLUMN `field10_recovery` TEXT NOT NULL;
 -- ----------------------------------------------------------------------
 ALTER TABLE `talert_commands` ADD COLUMN `fields_descriptions` TEXT;
 ALTER TABLE `talert_commands` ADD COLUMN `fields_values` TEXT;
+
+------------------------------------------------------------------------
+-- Table `tcategory`
+------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tcategory` ( 
+	`id` int(10) unsigned NOT NULL auto_increment, 
+	`name` varchar(600) NOT NULL default '', 
+	PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+

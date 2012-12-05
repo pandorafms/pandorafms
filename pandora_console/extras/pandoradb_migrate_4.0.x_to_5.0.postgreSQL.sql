@@ -188,6 +188,7 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "critical_inverse" SMALLINT NOT NULL def
 ALTER TABLE "tagente_modulo" ADD COLUMN "warning_inverse" SMALLINT NOT NULL default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "cron_interval" varchar(100) default '';
 ALTER TABLE "tagente_modulo" ADD COLUMN "max_retries" INTEGER default 0;
+ALTER TABLE "tagente_modulo" ADD COLUMN "id_category" INTEGER default 0;
 
 -- Move the number of retries for web modules from plugin_pass to max_retries
 UPDATE "tagente_modulo" SET max_retries=plugin_pass WHERE id_modulo=7;
@@ -267,6 +268,7 @@ ALTER TABLE "talert_compound" ADD COLUMN "special_day" SMALLINT default 0;
 
 ALTER TABLE "tnetwork_component" ADD COLUMN "unit" text default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "max_retries" INTEGER default 0;
+ALTER TABLE "tnetwork_component" ADD COLUMN "id_category" INTEGER default 0;
 
 -- -----------------------------------------------------
 -- Table "talert_commands"
@@ -416,3 +418,10 @@ ALTER TABLE "talert_templates" ADD COLUMN "field10_recovery" TEXT NOT NULL;
 ALTER TABLE "talert_commands" ADD COLUMN "fields_descriptions" TEXT;
 ALTER TABLE "talert_commands" ADD COLUMN "fields_values" TEXT;
 
+-- ---------------------------------------------------------------------
+-- Table "tcategory"
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS "tcategory" (
+	"id"  SERIAL NOT NULL PRIMARY KEY,
+	"name" varchar(600) NOT NULL default '',
+);

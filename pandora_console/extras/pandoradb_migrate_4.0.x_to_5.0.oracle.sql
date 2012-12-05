@@ -253,6 +253,7 @@ ALTER TABLE talert_compound ADD (special_day NUMBER(5,0) default 0);
 -- -----------------------------------------------------
 
 ALTER TABLE tnetwork_component ADD (unit CLOB default '';
+ALTER TABLE tnetwork_component ADD (id_category NUMBER(10, 0) default 0);
 
 -- -----------------------------------------------------
 -- Table talert_commands
@@ -344,6 +345,7 @@ ALTER TABLE tagente_modulo ADD (warning_instructions VARCHAR2(255) default '');
 ALTER TABLE tagente_modulo ADD (unknown_instructions VARCHAR2(255) default '');
 ALTER TABLE tagente_modulo ADD (critical_inverse NUMBER(1, 0) default 0 NOT NULL);
 ALTER TABLE tagente_modulo ADD (warning_inverse NUMBER(1, 0) default 0 NOT NULL);
+ALTER TABLE tagente_modulo ADD (id_category NUMBER(10, 0) default 0);
 
 -- -----------------------------------------------------
 -- Table tnetwork_component
@@ -425,3 +427,11 @@ ALTER TABLE talert_templates ADD (field10_recovery CLOB default '');
 -- ----------------------------------------------------------------------
 ALTER TABLE talert_commands ADD (fields_descriptions CLOB default '');
 ALTER TABLE talert_commands ADD (fields_values CLOB default '');
+
+-- ---------------------------------------------------------------------
+-- Table "tcategory"
+-- ---------------------------------------------------------------------
+CREATE TABLE tcategory ( 
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY, 
+	name VARCHAR2(600) default '' NOT NULL
+); 

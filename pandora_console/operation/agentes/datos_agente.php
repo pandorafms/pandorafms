@@ -230,9 +230,30 @@ foreach ($result as $row) {
 	$data = array ();
 
 	foreach($columns as $col => $attr) {
-		$data[] = $attr[1] ($row[$attr[0]]);
-	}
+		if ($attr[1] != "modules_format_data")
+			$data[] = $attr[1] ($row[$attr[0]]);
 
+		// Its a single-data, multiline data (data snapshot) ?
+		elseif (preg_match ("/[\n]+/i", $row[$attr[0]])){
+
+			// Detect string data with \n and convert to <br>'s
+			$datos = preg_replace ('/\n/i','<br>',$row[$attr[0]]);
+			$datos = preg_replace ('/\s/i','&nbsp;',$datos);
+			
+			// Because this *SHIT* of print_table monster, I cannot format properly this cells
+			// so, eat this, motherfucker :))
+
+			$datos = "<span style='font-family: lucida console'>".$datos."</span>";
+	
+			// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
+			$data[$attr[1]]=$datos;
+
+		} else {
+		// Just a string of alphanumerical data... just do print
+
+			$data[$attr[1]]=$row[$attr[0]];	
+		}
+	}
 	array_push ($table->data, $data);
 	if (count($table->data) > 200) break;
 }

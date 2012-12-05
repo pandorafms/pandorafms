@@ -10,9 +10,15 @@ function toggleDiv (divid){
 }
 
 function winopeng (url, wid) {
-	open (url, wid,"width=640,height=340,status=no,toolbar=no,menubar=no,scrollbar=no");
+	open (url, wid,"width=640,height=340,status=no,toolbar=no,menubar=no,scrollbar=no,location=0");
 	// WARNING !! Internet Explorer DOESNT SUPPORT "-" CARACTERS IN WINDOW HANDLE VARIABLE
-	status =wid;
+	status = wid;
+}
+
+function winopeng_var (url, wid, width, height) {
+	open (url, wid,"width="+width+",height="+height+",status=no,toolbar=no,menubar=no,scrollbar=yes");
+        // WARNING !! Internet Explorer DOESNT SUPPORT "-" CARACTERS IN WINDOW HANDLE VARIABLE
+        status = wid;
 }
 
 function open_help (help_id) {

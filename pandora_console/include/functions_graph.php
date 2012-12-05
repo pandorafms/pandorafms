@@ -84,7 +84,7 @@ function get_graph_statistics ($chart_array) {
 	return $stats;
 }
 
-function get_statwin_graph_statistics ($chart_array) {
+function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 
 	/// IMPORTANT!
 	///
@@ -104,6 +104,12 @@ function get_statwin_graph_statistics ($chart_array) {
     $stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
 
 	foreach ($chart_array as $item) {
+		if($series_suffix != '') {
+			$item['sum'] = $item['sum'.$series_suffix];
+			$item['min'] = $item['min'.$series_suffix];
+			$item['max'] = $item['max'.$series_suffix];
+		}
+		
 		//Get stats for normal grap
 		if (isset($item['sum']) && $item['sum']) {
 			//Sum all values later divide by the number of elements
@@ -118,11 +124,10 @@ function get_statwin_graph_statistics ($chart_array) {
 
 			//Get maximum
 			if ($stats['sum']['max'] == null) {
-                                $stats['sum']['max'] = $item['sum'];
-                        } else if ($item['sum'] > $stats['sum']['max']) {
-                                $stats['sum']['max'] = $item['sum'];
-                        }
-
+					$stats['sum']['max'] = $item['sum'];
+			} else if ($item['sum'] > $stats['sum']['max']) {
+					$stats['sum']['max'] = $item['sum'];
+			}
 		}
 		
 		//Get stats for min graph
@@ -602,7 +607,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		return $chart;
 	}
 	
-	$graph_stats = get_statwin_graph_statistics($chart);
+	$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
 
 	// Fix event and alert scale
 	$event_max = 2 + (float)$max_value * 1.05;
@@ -2451,14 +2456,14 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			}
 			else {
 				$chart[$timestamp]['sum'.$series_suffix] = $total;
-				$chart[$timestamp + 1] = array ('sum' => 0,
+				$chart[$timestamp + 1] = array ('sum'.$series_suffix => 0,
 					//'count' => 0,
 					//'timestamp_bottom' => $timestamp,
 					//'timestamp_top' => $timestamp + $interval,
-					'min' => 0,
-					'max' => 0,
-					'event' => $event_value,
-					'alert' => $alert_value);
+					'min'.$series_suffix => 0,
+					'max'.$series_suffix => 0,
+					'event'.$series_suffix => $event_value,
+					'alert'.$series_suffix => $alert_value);
 			}
 			$previous_data = 0;
 		}
@@ -2495,7 +2500,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 		
 	// Get min, max and avg (less efficient but centralized for all modules and reports)
-	$graph_stats = get_statwin_graph_statistics($chart);
+	$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
 
 	// Fix event and alert scale
 	foreach ($chart as $timestamp => $chart_data) {

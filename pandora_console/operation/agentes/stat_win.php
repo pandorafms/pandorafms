@@ -185,7 +185,18 @@ $draw_events = get_parameter ("draw_events", 0);
 $graph_type = get_parameter ("type", "sparse");
 $zoom = get_parameter ("zoom", 1);
 $baseline = get_parameter ("baseline", 0);
+$time_compare_separated = get_parameter ("time_compare_separated", 0);
+$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 
+$time_compare = false;
+
+if($time_compare_separated) {
+	$time_compare = 'separated';
+}
+else if($time_compare_overlapped) {
+	$time_compare = 'overlapped';
+}
+		
 if ($zoom > 1) {
 	$height = $height * ($zoom / 2.1);
 	$width = $width * ($zoom / 1.4);
@@ -209,12 +220,13 @@ echo '<div style="margin-left: 30px">';
 switch ($graph_type) {
 	case 'boolean':
 		echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-				$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage);
+				$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage,
+				$time_compare);
 		break;
 	case 'sparse':
 		echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
 			$label, null, $draw_alerts, $avg_only, false, $date, '', $baseline,
-			0, true, false, $urlImage);
+			0, true, false, $urlImage, 1, false, $time_compare);
 		break;
 	case 'string':
 		echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
@@ -285,7 +297,17 @@ if ($config['enterprise_installed'] && $graph_type == "sparse") {
 	html_print_checkbox ("baseline", 1, (bool) $baseline);
 }
 
-echo '</td><td>';
+echo '</td></tr><tr><td>'.__('Time compare').' ('.__('Overlapped').')</td><td>';
+
+html_print_checkbox ("time_compare_overlapped",
+				1, (bool) $time_compare_overlapped);
+
+echo '</td></tr><tr><td>'.__('Time compare').' ('.__('Separated').')</td><td>';
+
+html_print_checkbox ("time_compare_separated",
+				1, (bool) $time_compare_separated);
+
+echo '</td></tr><tr><td></td><td style="text-align:right;">';
 
 html_print_submit_button ('Reload', "submit", false, 'class="sub next"');
 
@@ -293,3 +315,11 @@ echo '</td></tr></table></form></div><div id="show_menu" style="position: relati
 ?>
 </body>
 </html>
+<script>
+	$('#checkbox-time_compare_separated').click(function() {
+		$('#checkbox-time_compare_overlapped').removeAttr('checked');
+	});
+	$('#checkbox-time_compare_overlapped').click(function() {
+		$('#checkbox-time_compare_separated').removeAttr('checked');
+	});
+</script>

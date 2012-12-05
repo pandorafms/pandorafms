@@ -84,13 +84,13 @@ function get_graph_statistics ($chart_array) {
 	return $stats;
 }
 
-function get_statwin_graph_statistics ($chart_array) {
+function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 
 	/// IMPORTANT!
 	///
 	/// The calculus for AVG, MIN and MAX values are in this function
-	/// because it must be done based on graph array data not using reporting 
 	/// function to get coherent data between stats and graph visualization
+	/// because it must be done based on graph array data not using reporting 
 	
 	$stats = array ();
 
@@ -101,9 +101,15 @@ function get_statwin_graph_statistics ($chart_array) {
 	//Initialize stats array
 	$stats['sum'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
 	$stats['min'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-        $stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
+    $stats['max'] = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
 
 	foreach ($chart_array as $item) {
+		if($series_suffix != '') {
+			$item['sum'] = $item['sum'.$series_suffix];
+			$item['min'] = $item['min'.$series_suffix];
+			$item['max'] = $item['max'.$series_suffix];
+		}
+		
 		//Get stats for normal grap
 		if ($item['sum']) {
 			//Sum all values later divide by the number of elements
@@ -118,54 +124,53 @@ function get_statwin_graph_statistics ($chart_array) {
 
 			//Get maximum
 			if ($stats['sum']['max'] == null) {
-                                $stats['sum']['max'] = $item['sum'];
-                        } else if ($item['sum'] > $stats['sum']['max']) {
-                                $stats['sum']['max'] = $item['sum'];
-                        }
+					$stats['sum']['max'] = $item['sum'];
+			} else if ($item['sum'] > $stats['sum']['max']) {
+					$stats['sum']['max'] = $item['sum'];
+			}
 
 		}
 		
 		//Get stats for min graph
-                if ($item['min']) {
-                        //Sum all values later divide by the number of elements
-                        $stats['min']['avg'] = $stats['min']['avg'] + $item['min'];
+		if ($item['min']) {
+				//Sum all values later divide by the number of elements
+				$stats['min']['avg'] = $stats['min']['avg'] + $item['min'];
 
-                        //Get minimum
-                        if ($stats['min']['min'] == null) {
-                                $stats['min']['min'] = $item['min'];
-                        } else if ($item['min'] < $stats['min']['min']) {
-                                $stats['min']['min'] = $item['min'];
-                        }
+				//Get minimum
+				if ($stats['min']['min'] == null) {
+						$stats['min']['min'] = $item['min'];
+				} else if ($item['min'] < $stats['min']['min']) {
+						$stats['min']['min'] = $item['min'];
+				}
 
-                        //Get maximum
-                        if ($stats['min']['max'] == null) {
-                                $stats['min']['max'] = $item['min'];
-                        } else if ($item['min'] > $stats['min']['max']) {
-                                $stats['min']['max'] = $item['min'];
-                        }
+				//Get maximum
+				if ($stats['min']['max'] == null) {
+						$stats['min']['max'] = $item['min'];
+				} else if ($item['min'] > $stats['min']['max']) {
+						$stats['min']['max'] = $item['min'];
+				}
 
-                }
+		}
 	
 		//Get stats for max graph
-                if ($item['max']) {
-                        //Sum all values later divide by the number of elements
-                        $stats['max']['avg'] = $stats['max']['avg'] + $item['max'];
+		if ($item['max']) {
+				//Sum all values later divide by the number of elements
+				$stats['max']['avg'] = $stats['max']['avg'] + $item['max'];
 
-                        //Get minimum
-                        if ($stats['max']['min'] == null) {
-                                $stats['max']['min'] = $item['max'];
-                        } else if ($item['max'] < $stats['max']['min']) {
-                                $stats['max']['min'] = $item['max'];
-                        }
-                
-                        //Get maximum
-                        if ($stats['max']['max'] == null) {
-                                $stats['max']['max'] = $item['max'];
-                        } else if ($item['max'] > $stats['max']['max']) {
-                                $stats['max']['max'] = $item['max'];
-                        }
-
-                }
+				//Get minimum
+				if ($stats['max']['min'] == null) {
+						$stats['max']['min'] = $item['max'];
+				} else if ($item['max'] < $stats['max']['min']) {
+						$stats['max']['min'] = $item['max'];
+				}
+		
+				//Get maximum
+				if ($stats['max']['max'] == null) {
+						$stats['max']['max'] = $item['max'];
+				} else if ($item['max'] > $stats['max']['max']) {
+						$stats['max']['max'] = $item['max'];
+				}
+		}
         
 
 		//Count elements
@@ -189,7 +194,6 @@ function get_statwin_graph_statistics ($chart_array) {
 
 	//End the calculus for average
 	if ($count > 0) {
-
 		$stats['sum']['avg'] = $stats['sum']['avg'] / $count;
 		$stats['min']['avg'] = $stats['min']['avg'] / $count;
 		$stats['max']['avg'] = $stats['max']['avg'] / $count;
@@ -214,16 +218,32 @@ function get_statwin_graph_statistics ($chart_array) {
 	return $stats;
 }
 
-function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
+function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 				$width, $height , $title = '', $unit_name = null,
 				$show_alerts = false, $avg_only = 0, $pure = false,
 				$date = 0, $unit = '', $baseline = 0, $return_data = 0, $show_title = true,
-				$only_image = false, $homeurl = '', $ttl = 1, $projection = false) {
+				$only_image = false, $homeurl = '', $ttl = 1, $projection = false, $compare = false,
+				$series_suffix = '', $series_suffix_str = '') {
 	
 	global $config;
+	global $chart;
+	global $color;
+	global $legend;
+	global $long_index;
+	global $series_type;
+	global $chart_extra_data;
+	global $warning_min;
+	global $critical_min;
 	global $graphic_type;
+	global $max_value;
 	
-	enterprise_include_once("include/functions_reporting.php");
+	$chart = array();
+	$color = array();
+	$legend = array();
+	$long_index = array();
+	$warning_min = 0;
+	$critical_min = 0;
+	$start_unknown = false;
 	
 	// Set variables
 	if ($date == 0) $date = get_system_time();
@@ -433,14 +453,14 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		// Data
 		if ($count > 0) {
 			if ($avg_only) {
-				$chart[$timestamp]['sum'] = $total;
+				$chart[$timestamp]['sum'.$series_suffix] = $total;
 			}
 			else {
 				//$chart[$timestamp]['utimestamp'] = $timestamp;
 				//$chart[$timestamp]['datos'] = $total;
-				$chart[$timestamp]['sum'] = $total;
-				$chart[$timestamp]['min'] = $interval_min;
-				$chart[$timestamp]['max'] = $interval_max;
+				$chart[$timestamp]['sum'.$series_suffix] = $total;
+				$chart[$timestamp]['min'.$series_suffix] = $interval_min;
+				$chart[$timestamp]['max'.$series_suffix] = $interval_max;
 			}
 			$previous_data = $total;
 		// Compressed data
@@ -448,22 +468,22 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		else {
 			if ($uncompressed_module || ($timestamp > time ())) {
 				if ($avg_only) {
-					$chart[$timestamp]['sum'] = 0;
+					$chart[$timestamp]['sum'.$series_suffix] = 0;
 				}
 				else {
-					$chart[$timestamp]['sum'] = 0;
-					$chart[$timestamp]['min'] = 0;
-					$chart[$timestamp]['max'] = 0;
+					$chart[$timestamp]['sum'.$series_suffix] = 0;
+					$chart[$timestamp]['min'.$series_suffix] = 0;
+					$chart[$timestamp]['max'.$series_suffix] = 0;
 				}
 			}
 			else {
 				if ($avg_only) {
-					$chart[$timestamp]['sum'] = $previous_data;
+					$chart[$timestamp]['sum'.$series_suffix] = $previous_data;
 				}
 				else {
-					$chart[$timestamp]['sum'] = $previous_data;
-					$chart[$timestamp]['min'] = $previous_data;
-					$chart[$timestamp]['max'] = $previous_data;
+					$chart[$timestamp]['sum'.$series_suffix] = $previous_data;
+					$chart[$timestamp]['min'.$series_suffix] = $previous_data;
+					$chart[$timestamp]['max'.$series_suffix] = $previous_data;
 				}
 			}
 		}
@@ -474,15 +494,15 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
 		/////////
 		if($show_events) {
-			$chart[$timestamp]['event'] = $event_value;
+			$chart[$timestamp]['event'.$series_suffix] = $event_value;
 		}
 		if($show_alerts) {
-			$chart[$timestamp]['alert'] = $alert_value;
+			$chart[$timestamp]['alert'.$series_suffix] = $alert_value;
 		}
 		if ($baseline) {
-			$chart[$timestamp]['baseline'] = array_shift ($baseline_data);
-			if ($chart[$timestamp]['baseline'] == NULL) {
-				$chart[$timestamp]['baseline'] = 0;
+			$chart[$timestamp]['baseline'.$series_suffix] = array_shift ($baseline_data);
+			if ($chart[$timestamp]['baseline'.$series_suffix] == NULL) {
+				$chart[$timestamp]['baseline'.$series_suffix] = 0;
 			}
 		}
 	}
@@ -492,16 +512,16 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		return $chart;
 	}	
 	
-	$graph_stats = get_statwin_graph_statistics($chart);
+	$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
 
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;
 	foreach ($chart as $timestamp => $chart_data) {
-		if ($show_events && $chart_data['event'] > 0) {
-			$chart[$timestamp]['event'] = $event_max;
+		if ($show_events && $chart_data['event'.$series_suffix] > 0) {
+			$chart[$timestamp]['event'.$series_suffix] = $event_max;
 		}
 		if ($show_alerts && $chart_data['alert'] > 0) {
-			$chart[$timestamp]['alert'] = $event_max;
+			$chart[$timestamp]['alert'.$series_suffix] = $event_max;
 		}
 	}
 
@@ -515,29 +535,105 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	///////
 	// Color commented not to restrict serie colors
 	$color = array();
-	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
+	$color['sum'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	if($show_events) {
-		$color['event'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
+		$color['event'.$series_suffix] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
 	}
 	if($show_alerts) {
-		$color['alert'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
+		$color['alert'.$series_suffix] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
 	}
-	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
-	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
-	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
-	$color['unit'] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
+	$color['max'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
+	$color['min'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
+	$color['baseline'.$series_suffix] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
+	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
 	
 	$legend = array();
-	$legend['sum'] = __('Data').': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
+	$legend['sum'.$series_suffix] = __('Data'). $series_suffix_str .': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
 	if($show_events) {
-		$legend['event'] = __('Events');
+		$legend['event'.$series_suffix] = __('Events'). $series_suffix_str;
 	}
 	if($show_alerts) {
-		$legend['alert'] = __('Alerts');
+		$legend['alert'.$series_suffix] = __('Alerts'). $series_suffix_str;
 	}
-	$legend['max'] = __('Max').': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
-	$legend['min'] = __('Min').': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
-	$legend['baseline'] = __('Baseline');
+	$legend['max'.$series_suffix] = __('Max').': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
+	$legend['min'.$series_suffix] = __('Min').': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
+	$legend['baseline'.$series_suffix] = __('Baseline');
+}
+
+function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
+				$width, $height , $title = '', $unit_name = null,
+				$show_alerts = false, $avg_only = 0, $pure = false,
+				$date = 0, $unit = '', $baseline = 0, $return_data = 0, $show_title = true,
+				$only_image = false, $homeurl = '', $ttl = 1, $projection = false, $compare = false) {
+	
+	global $config;
+	global $graphic_type;
+	
+	global $chart;
+	global $color;
+	global $legend;
+	global $long_index;
+	global $series_type;
+	global $chart_extra_data;
+	global $warning_min;
+	global $critical_min;
+	
+	enterprise_include_once("include/functions_reporting.php");
+	
+	
+	$series_suffix_str = '';
+	if($compare !== false) {
+		$series_suffix = '2';
+		$series_suffix_str = ' ('.__('Previous').')';
+		// Build the data of the previous period
+		grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
+			$width, $height, $title, $unit_name,
+			$show_alerts, $avg_only, $pure,
+			$date-$period, $unit, $baseline, $return_data, $show_title,
+			$only_image, $homeurl, $ttl, $projection, $compare,
+			$series_suffix, $series_suffix_str);
+
+		switch($compare) {
+			case 'separated':
+				// Store the chart calculated
+				$chart_prev = $chart;
+				$legend_prev = $legend;
+				$long_index_prev = $long_index;
+				$series_type_prev = $series_type;
+				$color_prev = $color;
+				break;
+			case 'overlapped':
+				// Store the chart calculated deleting index, because will be over the current period
+				$chart_prev = array_values($chart);
+				$legend_prev = $legend;
+				$series_type_prev = $series_type;
+				break;
+		}
+	}
+	
+	// Build the data of the current period
+	$data_returned = grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
+				$width, $height , $title, $unit_name,
+				$show_alerts, $avg_only, $pure,
+				$date, $unit, $baseline, $return_data, $show_title,
+				$only_image, $homeurl, $ttl, $projection, $compare);
+
+	if ($return_data) {
+		return $data_returned;
+	}
+	
+	if($compare === 'overlapped') {
+		$i = 0;
+		foreach($chart as $k=>$v) {
+			if(!isset($chart_prev[$i])) {
+				continue;
+			}
+			$chart[$k] = array_merge($v,$chart_prev[$i]);
+			$i++;
+		}
+		
+		$legend = array_merge($legend, $legend_prev);
+	}
 	
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
@@ -547,12 +643,27 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($flash_chart) {
 		include_flash_chart_script($homeurl);
 	}
-
-	// Color commented not to restrict serie colors
-	return area_graph($flash_chart, $chart, $width, $height, $color ,$legend,
-		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
-		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size'], $unit, $ttl);
+	
+	if ($compare === 'separated') {
+		// Color commented not to restrict serie colors
+		return area_graph($flash_chart, $chart, $width, $height, $color ,$legend,
+			$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			 $config['homedir'] .  "/images/logo_vertical_water.png",
+			 $config['fontpath'], $config['font_size'], $unit, $ttl).
+			 '<br>'.
+			 area_graph($flash_chart, $chart_prev, $width, $height, $color_prev ,$legend_prev,
+			$long_index_prev, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			 $config['homedir'] .  "/images/logo_vertical_water.png",
+			 $config['fontpath'], $config['font_size'], $unit, $ttl);
+			 
+	}
+	else {
+		// Color commented not to restrict serie colors
+		return area_graph($flash_chart, $chart, $width, $height, $color ,$legend,
+			$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			 $config['homedir'] .  "/images/logo_vertical_water.png",
+			 $config['fontpath'], $config['font_size'], $unit, $ttl);
+	}
 }
 
 function graph_get_formatted_date($timestamp, $format1, $format2) {
@@ -1951,14 +2062,24 @@ function fs_error_image () {
 }
 
 
-function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
-	 $width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
-	 $date = 0, $only_image = false, $homeurl = '') {
-	global $config;
-	global $graphic_type;
-	
-	include_flash_chart_script($homeurl);
+function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
+	 $unit_name, $show_alerts, $avg_only = 0, $pure = 0,
+	 $date = 0, $only_image = false, $series_suffix = '', $series_suffix_str = '') {
 
+	global $config;
+	global $chart;
+	global $color;
+	global $legend;
+	global $long_index;
+	global $series_type;
+	global $chart_extra_data;
+	
+	$chart = array();
+	$color = array();
+	$legend = array();
+	$long_index = array();
+	$start_unknown = false;
+	
 	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
@@ -2119,34 +2240,34 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		// Data and zeroes (draw a step)
 		if ($zero == 1 && $count > 0) {
 			if ($avg_only) {
-				$chart[$timestamp]['sum'] = $total;
+				$chart[$timestamp]['sum'.$series_suffix] = $total;
 			}
 			else {
-				$chart[$timestamp]['sum'] = $total;
-				$chart[$timestamp + 1] = array ('sum' => 0,
+				$chart[$timestamp]['sum'.$series_suffix] = $total;
+				$chart[$timestamp + 1] = array ('sum'.$series_suffix => 0,
 			                                //'count' => 0,
 			                                //'timestamp_bottom' => $timestamp,
 			                                //'timestamp_top' => $timestamp + $interval,
-			                                'min' => 0,
-			                                'max' => 0,
-			                                'event' => $event_value,
-			                                'alert' => $alert_value);
+			                                'min'.$series_suffix => 0,
+			                                'max'.$series_suffix => 0,
+			                                'event'.$series_suffix => $event_value,
+			                                'alert'.$series_suffix => $alert_value);
 			}
 			$previous_data = 0;
 		// Just zeros
 		} else if ($zero == 1) {
-			$chart[$timestamp]['sum'] = 0;
+			$chart[$timestamp]['sum'.$series_suffix] = 0;
 			$previous_data = 0;
 		// No zeros
 		} else if ($count > 0) {
-			$chart[$timestamp]['sum'] = $total;
+			$chart[$timestamp]['sum'.$series_suffix] = $total;
 			$previous_data = $total;
 		// Compressed data
 		} else {
 			if ($uncompressed_module || ($timestamp > time ())) {
-				$chart[$timestamp]['sum'] = 0;
+				$chart[$timestamp]['sum'.$series_suffix] = 0;
 			} else {
-				$chart[$timestamp]['sum'] = $previous_data;
+				$chart[$timestamp]['sum'.$series_suffix] = $previous_data;
 			}
 		}
 
@@ -2154,40 +2275,37 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		//$chart[$timestamp]['timestamp_bottom'] = $timestamp;
 		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
 		if (!$avg_only) {		
-			$chart[$timestamp]['min'] = 0;
-			$chart[$timestamp]['max'] = 0;
+			$chart[$timestamp]['min'.$series_suffix] = 0;
+			$chart[$timestamp]['max'.$series_suffix] = 0;
 		}	
 		if($show_events) {
-			$chart[$timestamp]['event'] = $event_value;
+			$chart[$timestamp]['event'.$series_suffix] = $event_value;
 		}
 		else {
-			unset($chart[$timestamp]['event']);
+			unset($chart[$timestamp]['event'.$series_suffix]);
 		}
 		if ($show_alerts) {
-			$chart[$timestamp]['alert'] = $alert_value;
+			$chart[$timestamp]['alert'.$series_suffix] = $alert_value;
 		}
 		else {
-			unset($chart[$timestamp]['alert']);
+			unset($chart[$timestamp]['alert'.$series_suffix]);
 		}
-		
-		
-		
 	}
 
 	// Get min, max and avg (less efficient but centralized for all modules and reports)
-	$graph_stats = get_statwin_graph_statistics($chart);
+	$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
 
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;
 	foreach ($chart as $timestamp => $chart_data) {
 		if($show_events) {
-			if ($chart_data['event'] > 0) {
-				$chart[$timestamp]['event'] = $event_max;
+			if ($chart_data['event'.$series_suffix] > 0) {
+				$chart[$timestamp]['event'.$series_suffix] = $event_max;
 			}
 		}
 		if ($show_alerts) {
-			if ($chart_data['alert'] > 0) {
-				$chart[$timestamp]['alert'] = $event_max;
+			if ($chart_data['alert'.$series_suffix] > 0) {
+				$chart[$timestamp]['alert'.$series_suffix] = $event_max;
 			}
 		}
 	}
@@ -2216,39 +2334,115 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	/////////////////////////////////////////////////////////////////////////////////////////
 	$legend = array();
 	if($show_events) {
-		$legend['event'] = __('Events');
+		$legend['event'.$series_suffix] = __('Events').$series_suffix_str;
 	}
 	if($show_alerts) {
-		$legend['alert'] = __('Alerts');
+		$legend['alert'.$series_suffix] = __('Alerts').$series_suffix_str;
 	}
-	$legend['sum'] = __('Data').': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
-        $legend['max'] = __('Max').': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
-        $legend['min'] = __('Min').': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
-	$legend['baseline'] = __('Baseline');
+	$legend['sum'.$series_suffix] = __('Data').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
+        $legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
+        $legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
+	$legend['baseline'.$series_suffix] = __('Baseline').$series_suffix_str;
 	/////////////////////////////////////////////////////////////////////////////////////////
 	$color = array();
-	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
+	$color['sum'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
 	if($show_events) {
-		$color['event'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
+		$color['event'.$series_suffix] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
 	}
 	if($show_alerts) {
-		$color['alert'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
+		$color['alert'.$series_suffix] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
 	}
-	$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
-	$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
-	$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
+	$color['max'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
+	$color['min'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
+	$color['baseline'.$series_suffix] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
 	/////////////////////////////////////////////////////////////////////////////////////////
+}
+
+function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
+	 $width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure = 0,
+	 $date = 0, $only_image = false, $homeurl = '', $compare = false) {
+	global $config;
+	global $graphic_type;
 	
+	include_flash_chart_script($homeurl);
+
+	global $chart;
+	global $color;
+	global $legend;
+	global $long_index;
+	global $series_type;
+	global $chart_extra_data;
+
+	//~ grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
+	 //~ $width, $height , $title, $unit_name, $show_alerts, $avg_only, $pure,
+	 //~ $date, $only_image);
+	 
+
+	$series_suffix_str = '';
+	if ($compare !== false) {
+		$series_suffix = '2';
+		$series_suffix_str = ' ('.__('Previous').')';
+		// Build the data of the previous period
+		grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
+		$unit_name, $show_alerts, $avg_only, $pure, $date-$period, $only_image, $series_suffix, 
+		$series_suffix_str, $show_unknown);
+		switch($compare) {
+			case 'separated':
+				// Store the chart calculated
+				$chart_prev = $chart;
+				$legend_prev = $legend;
+				$long_index_prev = $long_index;
+				$series_type_prev = $series_type;
+				$chart_extra_data_prev = $chart_extra_data;
+				$chart_extra_data = array();
+				$color_prev = $color;
+				break;
+			case 'overlapped':
+				// Store the chart calculated deleting index, because will be over the current period
+				$chart_prev = array_values($chart);
+				$legend_prev = $legend;
+				$series_type_prev = $series_type;
+				break;
+		}
+	}
+	grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
+	$unit_name, $show_alerts, $avg_only, $pure, $date);
+
+	if ($compare === 'overlapped') {
+		$i = 0;
+		foreach($chart as $k=>$v) {
+			$chart[$k] = array_merge($v,$chart_prev[$i]);
+			$i++;
+		}
+		
+		$legend = array_merge($legend, $legend_prev);
+	}
 	
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
 	}
+
+	if ($compare === 'separated') {
+		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
+			$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			 $config['homedir'] .  "/images/logo_vertical_water.png",
+			 $config['fontpath'], $config['font_size'], $unit).
+			 '<br>'.
+			 area_graph($flash_chart, $chart_prev, $width, $height, $color_prev, $legend_prev,
+			$long_index_prev, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			 $config['homedir'] .  "/images/logo_vertical_water.png",
+			 $config['fontpath'], $config['font_size'], $unit);
+	}
+	else {
+		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
+			$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
+			 $config['homedir'] .  "/images/logo_vertical_water.png",
+			 $config['fontpath'], $config['font_size'], $unit);
+	}
 	
-	return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-		$long_index, "images/image_problem.opaque.png", "", $unit, $homeurl,
-		 $config['homedir'] .  "/images/logo_vertical_water.png",
-		 $config['fontpath'], $config['font_size'], $unit);
+	
+
 }
 
 

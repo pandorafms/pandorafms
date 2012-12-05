@@ -210,6 +210,8 @@ if ($id_agent_module) {
 	$critical_inverse = $module['critical_inverse'];
 	$warning_inverse = $module['warning_inverse'];
 	
+	$id_category = $module['id_category'];
+	
 	$cron_interval = explode (" ", $module['cron_interval']);
 	if (isset ($cron_interval[4])) {
 		$minute = $cron_interval[0];
@@ -284,6 +286,8 @@ else {
 		
 		$critical_inverse = '';
 		$warning_inverse = '';
+		
+		$id_category = 0;
 		
 		$cron_interval = '* * * * *';
 		$hour = '*';

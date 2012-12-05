@@ -790,6 +790,8 @@ if ($update_module || $create_module) {
 	$critical_inverse = (int) get_parameter('critical_inverse');
 	$warning_inverse = (int) get_parameter('warning_inverse');
 	
+	$id_category = (int) get_parameter('id_category');
+	
 	$hour = get_parameter('hour');
 	$minute = get_parameter('minute');
 	$mday = get_parameter('mday');
@@ -863,7 +865,8 @@ if ($update_module) {
 		'unknown_instructions' => $unknown_instructions,
 		'critical_inverse' => $critical_inverse,
 		'warning_inverse' => $warning_inverse,
-		'cron_interval' => $cron_interval);
+		'cron_interval' => $cron_interval,
+		'id_category' => $id_category);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$result = false;

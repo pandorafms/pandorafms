@@ -15,6 +15,7 @@
 // GNU General Public License for more details.
 
 include_once("include/functions_modules.php");
+include_once("include/functions_categories.php");
 
 function prepend_table_simple ($row, $id = false) {
 	global $table_simple;
@@ -379,6 +380,11 @@ $table_advanced->data[12][2] = '';
 $table_advanced->data[12][3] = __('Retries');
 $table_advanced->data[12][4] = html_print_input_text ('max_retries', $max_retries, '', 5, 10, true);
 
+if (check_acl ($config['id_user'], 0, "PM")) {
+	$table_advanced->data[13][0] = __('Category');
+	$table_advanced->data[13][1] = html_print_select(categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true); 
+	$table_advanced->colspan[13][1] = 4;
+}
 ?>
 
 <script type="text/javascript">

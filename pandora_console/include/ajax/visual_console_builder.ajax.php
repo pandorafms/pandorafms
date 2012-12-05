@@ -74,21 +74,31 @@ switch ($action) {
 		$return['font'] = $config['fontpath'];
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'get_image_sparse':
 		$img = grafico_modulo_sparse($id_agent_module,
 			$period, false, $width, $height, '', null, false, 1, false, 0, '', 0, 0,
 			true, true);
 		
-		preg_match("/src='(.*)'/", $img, $matches);
+		preg_match("/src=[\'\"](.*)[\'\"]/", $img, $matches);
 		$url = $matches[1];
 		
 		echo $url;
 		break;
+	
+	
+	
 	case 'get_layout_data':
-		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+		$layoutData = db_get_row_filter('tlayout_data',
+			array('id' => $id_element));
 		
 		echo json_encode($layoutData);
 		break;
+	
+	
+	
 	case 'get_module_value':
 		$unit_text = false;
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
@@ -104,7 +114,9 @@ switch ($action) {
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
 			default:
-				$returnValue = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+				$returnValue = db_get_sql ('SELECT datos
+					FROM tagente_estado
+					WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 				
 				//html_debug_print($value_show);
 				//html_debug_print($layoutData);
@@ -114,7 +126,9 @@ switch ($action) {
 					if ($value_show == 'value') {
 						$returnValue = format_for_graph($returnValue, 2);
 						
-						$unit_text_db = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+						$unit_text_db = db_get_sql ('SELECT unit
+							FROM tagente_modulo
+							WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 						$unit_text_db = trim(io_safe_output($unit_text_db));
 						
 						if ($value_show == 'value') {
@@ -129,6 +143,7 @@ switch ($action) {
 					}
 				}
 				break;
+			
 		}
 		
 		// Linked to other layout ?? - Only if not module defined
@@ -198,6 +213,9 @@ switch ($action) {
 		
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'get_color_line':
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		
@@ -205,6 +223,9 @@ switch ($action) {
 		$return['color_line'] = visual_map_get_color_line_status($layoutData);
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'get_image':
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 		
@@ -212,6 +233,9 @@ switch ($action) {
 		$return['image'] = visual_map_get_image_status_element($layoutData);
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'update':
 	case 'move':
 		$values = array();
@@ -332,6 +356,9 @@ switch ($action) {
 				break;
 		}
 		break;
+	
+	
+	
 	case 'load':
 		switch ($type) {
 			case 'background':
@@ -345,7 +372,8 @@ switch ($action) {
 			case 'simple_value':
 			case 'label':
 			case 'icon':
-				$elementFields = db_get_row_filter('tlayout_data', array('id' => $id_element));
+				$elementFields = db_get_row_filter('tlayout_data',
+					array('id' => $id_element));
 				$elementFields['agent_name'] = io_safe_output(agents_get_name($elementFields['id_agent']));
 				//Make the html of select box of modules about id_agent.
 				if ($elementFields['id_agent'] != 0) {
@@ -378,10 +406,12 @@ switch ($action) {
 							$elementFields['type_percentile'] = 'bubble';
 						}
 						break;
+					
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];
 						break;
+					
 				}
 				//Support for max, min and svg process on simple value items
 				if ($type == 'simple_value') {
@@ -400,14 +430,19 @@ switch ($action) {
 							break;
 					}
 				}
+				
 				$elementFields['label'] = io_safe_output($elementFields['label']);
 				echo json_encode($elementFields);
 				break;
+			
 			default:
 				enterprise_hook("enterprise_ajax_load_values", array($type, $id_element));
 				break;
 		}
 		break;
+	
+	
+	
 	case 'insert':
 		$values = array();
 		$values['id_layout'] = $id_visual_console;
@@ -484,6 +519,9 @@ switch ($action) {
 		}
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'delete':
 		if (db_process_sql_delete('tlayout_data', array('id' => $id_element, 'id_layout' => $id_visual_console)) === false) {
 			$return['correct'] = 0;
@@ -494,6 +532,9 @@ switch ($action) {
 		
 		echo json_encode($return);
 		break;
+	
+	
+	
 	case 'get_original_size_background':
 		$replace = strlen($config["homeurl"] . '/');
 		
@@ -504,9 +545,15 @@ switch ($action) {
 		
 		echo json_encode($size);
 		break;
+	
+	
+	
 	default:
 		enterprise_hook("enterprise_visualmap_ajax");
 		break;
+	
+	
+	
 }
 
 /* visual map element status check  */

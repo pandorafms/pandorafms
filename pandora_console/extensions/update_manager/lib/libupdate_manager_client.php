@@ -171,7 +171,7 @@ function um_client_db_save_package ($package, $settings) {
 	return true;
 }
 
-function um_client_db_save_update ($update) {	
+function um_client_db_save_update ($update) {
 	$fields = get_object_vars ($update);
 	
 	$fields['data'] = base64_encode($fields['data']);

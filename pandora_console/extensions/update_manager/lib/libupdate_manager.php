@@ -171,7 +171,7 @@ function um_db_delete_package ($id_package) {
 	return true;
 }
 
-function um_db_get_package ($id_package) {	
+function um_db_get_package ($id_package) {
 	$result = db_process_sql ('SELECT * FROM '.DB_PREFIX.'tupdate_package WHERE id = ' . $id_package . ' LIMIT 1');
 	if ($result === false) {
 		echo '<strong>Error getting package info</strong><br />';

@@ -194,7 +194,7 @@ function html_print_select_style ($fields, $name, $selected = '', $style='', $sc
  * @param array Array with dropdown values. Example: $fields["value"] = "label"
  * @param string Select form name
  * @param variant Current selected value. Can be a single value or an
- * array of selected values (in combination with multiple)
+ *        array of selected values (in combination with multiple)
  * @param string Javascript onChange code.
  * @param string Label when nothing is selected.
  * @param variant Value when nothing is selected
@@ -211,13 +211,18 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
 	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $id_group = false) {
 	global $config;
 	
-	$fields = users_get_groups_for_select($id_user, $privilege, $returnAllGroup, true, $id_group);
+	$fields = users_get_groups_for_select($id_user, $privilege,
+		$returnAllGroup, true, $id_group);
 
-	$output = html_print_select ($fields, $name, $selected, $script, $nothing, $nothing_value,
-		$return, $multiple, false, $class, $disabled, $style, $option_style);
+	$output = html_print_select ($fields, $name, $selected, $script,
+		$nothing, $nothing_value, $return, $multiple, false, $class,
+		$disabled, $style, $option_style);
 	
 	if ($return) {
 		return $output;
+	}
+	else {
+		echo $output;
 	}
 }
 
@@ -229,7 +234,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
  * @param array Array with dropdown values. Example: $fields["value"] = "label"
  * @param string Select form name
  * @param variant Current selected value. Can be a single value or an
- * array of selected values (in combination with multiple)
+ *        array of selected values (in combination with multiple)
  * @param string Javascript onChange code.
  * @param string Label when nothing is selected.
  * @param variant Value when nothing is selected

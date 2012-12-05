@@ -120,6 +120,7 @@ function visual_map_print_item($layoutData) {
 			echo $text;
 			echo "</div>";
 			break;
+		
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
 			$module_value = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $id_module);
@@ -128,7 +129,9 @@ function visual_map_print_item($layoutData) {
 				$value_text = false;
 			}
 			elseif ($layoutData['image'] == 'value') {
-				$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
+				$unit_text = db_get_sql ('SELECT unit
+					FROM tagente_modulo
+					WHERE id_agente_modulo = ' . $id_module);
 				$unit_text = trim(io_safe_output($unit_text));
 				
 				$value_text = format_for_graph($module_value, 2);
@@ -157,6 +160,7 @@ function visual_map_print_item($layoutData) {
 			echo '</div>';
 			
 			break;
+		
 		case MODULE_GRAPH:
 			$img = grafico_modulo_sparse($id_module, $period, 0, $width,
 				$height, '', null, false, 1, false, 0, '', 0, 0, true, true);
@@ -725,11 +729,13 @@ function visual_map_get_status_element($layoutData) {
 					$id_agent = 0;
 				}
 				break;
+			
 			default:
 				//If it's a graph, a progress bar or a data tag, ALWAYS report status OK
 				//(=0) to avoid confussions here.
 				$status = VISUAL_MAP_STATUS_NORMAL;
 				break;
+			
 		}
 	}
 	

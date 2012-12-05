@@ -304,11 +304,11 @@ $buttons = array(
 		'text' => '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $idVisualConsole . '&refr=' . $view_refresh . '">' .
 			html_print_image ("images/eye.png", true, array ("title" => __('View'))) .'</a>'),);
 
-if ($action == 'new' || $idVisualConsole === false){
+if ($action == 'new' || $idVisualConsole === false) {
 	$buttons = array('data' => $buttons['data']); //Show only the data tab
 	// If it is a fail try, reset the values
 	$action = 'new';
-	$visualConsoleName = "";
+	$visualConsoleName = __("New visual console");
 }
 
 $buttons[$activeTab]['active'] = true;

@@ -21,8 +21,8 @@ include_once ('include/functions_xml.php');
 enterprise_include_once ('include/functions_metaconsole.php');
 
 function xml_array ($array, $buffer_file = array()) {
-
-	foreach ($array as $name => $value) {			
+	
+	foreach ($array as $name => $value) {
 		//si coincide con el nivel de anidación y existe el fichero
 		$file_to_print = false;
 		if(isset($buffer_file[$name]) && file_exists($buffer_file[$name])) {

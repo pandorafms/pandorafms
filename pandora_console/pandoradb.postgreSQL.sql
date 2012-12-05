@@ -233,7 +233,8 @@ CREATE TABLE "tagente_modulo" (
     "unknown_instructions" TEXT default '',
     "quiet" SMALLINT NOT NULL default 0,
 	"critical_inverse" SMALLINT NOT NULL default 0,
-	"warning_inverse" SMALLINT NOT NULL default 0
+	"warning_inverse" SMALLINT NOT NULL default 0,
+	"id_category" INTEGER NOT NULL default 0
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");
@@ -627,7 +628,8 @@ CREATE TABLE "tnetwork_component" (
 	"warning_instructions" TEXT default '',
 	"unknown_instructions" TEXT default '',
 	"critical_inverse" SMALLINT NOT NULL default 0,
-	"warning_inverse" SMALLINT NOT NULL default 0
+	"warning_inverse" SMALLINT NOT NULL default 0,
+	"id_category" INTEGER NOT NULL default 0
 );
 
 -- ---------------------------------------------------------------------
@@ -1529,4 +1531,12 @@ CREATE TABLE IF NOT EXISTS "tevent_response" (
 	"modal_height" INTEGER NOT NULL DEFAULT 0,
 	"new_window" INTEGER NOT NULL DEFAULT 0,
 	"params" TEXT,
+);
+
+-- ---------------------------------------------------------------------
+-- Table "tcategory"
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS "tcategory" (
+	"id"  SERIAL NOT NULL PRIMARY KEY,
+	"name" varchar(600) NOT NULL default '',
 );

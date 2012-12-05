@@ -46,7 +46,7 @@ foreach ($all_images as $image_file) {
 }
 
 $table->width = '100%';
-$table->head = array ();
+$table->head = array();
 $table->head['icon'] = '';
 $table->head[0] = __('Label') . ' / ' . __('Agent');
 $table->head[1] = __('Image') . ' / ' . __('Module');

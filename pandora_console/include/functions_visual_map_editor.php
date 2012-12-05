@@ -112,7 +112,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$params['size'] = 20;
 			$params['selectbox_id'] = 'module';
 			$params['javascript_is_function_select'] = true;
-			$form_items['agent_row']['html'] .= '<td>' . ui_print_agent_autocomplete_input($params);
+			$form_items['agent_row']['html'] .= '<td>' .
+				ui_print_agent_autocomplete_input($params);
 			
 			
 			

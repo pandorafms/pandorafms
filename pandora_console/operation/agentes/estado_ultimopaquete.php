@@ -387,7 +387,8 @@ foreach ($modules as $module) {
 	}
 	$nombre_grupomodulo = modules_get_modulegroup_name ($module["id_module_group"]);
 	if ($nombre_grupomodulo != "") {
-		if (($label_group == 0) || ($last_label != $nombre_grupomodulo)){	// Show label module group
+		// Show label module group
+		if (($label_group == 0) || ($last_label != $nombre_grupomodulo)) {
 			$label_group = -1;
 			$last_label = $nombre_grupomodulo;
 			$texto = $texto. "
@@ -415,7 +416,7 @@ foreach ($modules as $module) {
 		echo $intervalo_agente;
 		$real_interval = $intervalo_agente;
 	}
-
+	
 	if (($module["id_tipo_modulo"] != 3)
 	AND ($module["id_tipo_modulo"] != 10)
 	AND ($module["id_tipo_modulo"] != 17)

@@ -1,3 +1,30 @@
+2012-12-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/update_manager/lib/libupdate_manager_client.php,
+	extensions/update_manager/lib/libupdate_manager.php,
+	operation/agentes/ver_agente.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/estado_agente.php,
+	operation/integria_incidents/incident.php,
+	operation/reporting/reporting_xml.php,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.elements.php,
+	include/functions_visual_map.php,
+	include/functions_visual_map_editor.php: uploaded the changes of
+	source code style previous to my next commit for to make the next
+	commit more easy.
+	
+	* godmode/reporting/visual_console_builder.php: set empty string
+	for the new visualmap.
+	
+	* include/ajax/visual_console_builder.ajax.php: fixed the regular
+	expresion to extract the url for the graph.
+	
+	* include/functions_html.php: fixed into the function
+	"html_print_select_groups" lost code for to show the selectbox.
+
 2012-12-05  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.sql

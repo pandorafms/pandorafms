@@ -74,7 +74,7 @@ $buttons[$tab]['active'] = true;
 
 ui_print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, $buttons);
 
-if($update_incident == 1) {				
+if($update_incident == 1) {	
 	$values[0] = $id_incident;
 	$values[1] = urlencode(io_safe_output(get_parameter('title')));
 	$values[2] = urlencode(io_safe_output(get_parameter('description')));
@@ -85,9 +85,9 @@ if($update_incident == 1) {
 	$values[7] = get_parameter('resolution');
 	$values[8] = get_parameter('status');
 	$values[9] = get_parameter('id_user_assigned');
-
+	
 	$params = implode($token, $values);
-
+	
 	$url = $integria_api."&op=update_incident&token=".$token."&params=".$params;
 	
 	// Call the integria API
@@ -97,7 +97,8 @@ if($update_incident == 1) {
 	
 	if ($result_array['data']) {
 		ui_print_success_message (__("Incident updated"));
-	} else {
+	}
+	else {
 		ui_print_error_message (__("There was a problem updating the incident, please check if any field was modified and the values are correct."));
 	}
 }
@@ -113,9 +114,9 @@ if($create_incident == 1) {
 	$values[4] = $config['integria_inventory'];
 	
 	$params = implode($token, $values);
-
+	
 	$url = $integria_api."&op=create_incident&token=".$token."&params=".$params;
-
+	
 	// Call the integria API
 	$result = incidents_call_api($url);
 	
@@ -123,7 +124,8 @@ if($create_incident == 1) {
 	
 	if ($result_array['data']) {
 		ui_print_success_message (__("Incident created"));
-	} else {
+	}
+	else {
 		ui_print_error_message (__("There was a problem creating incident"));
 	}
 }
@@ -142,76 +144,79 @@ if($attach_file == 1) {
 		
 		
 		$params = implode($token, $values);
-
+		
 		$url = $integria_api."&op=attach_file&token=".$token;
-
+		
 		// Call the integria API
 		$result = incidents_call_api($url, array('params' => $params));
-
+		
 		$result_array = incidents_xml_to_array($result);
-	
+		
 		if ($result_array['data'] == 0) {
 			ui_print_success_message (__("File uploaded"));
-		} else {
+		}
+		else {
 			ui_print_error_message (__("There was a problem uploading file"));
 		}
 	}
 	else {
 		switch ($_FILES['new_file']['error']) {
-		case 1:
-			ui_print_error_message (__('File is too big'));
-			break;
-		case 3:
-			ui_print_error_message (__('File was partially uploaded. Please try again'));
-			break;
-		case 4:
-			ui_print_error_message (__('No file was uploaded'));
-			break;
-		default:
-			ui_print_error_message (__('Generic upload error').'(Code: '.$_FILES['new_file']['error'].')');
+			case 1:
+				ui_print_error_message (__('File is too big'));
+				break;
+			case 3:
+				ui_print_error_message (__('File was partially uploaded. Please try again'));
+				break;
+			case 4:
+				ui_print_error_message (__('No file was uploaded'));
+				break;
+			default:
+				ui_print_error_message (__('Generic upload error').'(Code: '.$_FILES['new_file']['error'].')');
 		}
 	}
 }
 
 $delete_file = get_parameter('delete_file', 0);
 
-if($delete_file != 0 && !$attach_file) {
+if ($delete_file != 0 && !$attach_file) {
 	$url = $integria_api."&op=delete_file&params=".$delete_file;
-
+	
 	// Call the integria API
 	$result = incidents_call_api($url);
 	
 	$result = incidents_call_api($url);
-
+	
 	$result_array = incidents_xml_to_array($result);
-
+	
 	if ($result_array['data'] == 0 || $result_array['data'] == -2) {
 		ui_print_success_message (__("File deleted"));
-	} else if ($result_array['data'] == -1) {
+	}
+	else if ($result_array['data'] == -1) {
 		ui_print_error_message (__("You user doesn't have enough rights to delete this file"));
-	}		
+	}
 }
 
 $delete_incident = get_parameter('delete_incident', 0);
 
-if($delete_incident != 0) {
+if ($delete_incident != 0) {
 	$url = $integria_api."&op=delete_incident&params=".$delete_incident;
-
+	
 	// Call the integria API
 	$result = incidents_call_api($url);
-
+	
 	$result_array = incidents_xml_to_array($result);
-
+	
 	if ($result_array['data']) {
 		ui_print_success_message (__("Incident deleted"));
-	} else {
+	}
+	else {
 		ui_print_error_message (__("There was a problem deteling incident"));
-	}		
+	}
 }
 
 $create_workunit = get_parameter('create_workunit', 0);
 
-if($create_workunit == 1) {
+if ($create_workunit == 1) {
 	$values[0] = $id_incident;
 	$values[1] = str_replace(" ", "%20", io_safe_output(get_parameter('description')));
 	$values[2] = get_parameter('time_used');
@@ -222,23 +227,24 @@ if($create_workunit == 1) {
 	$params = implode($token, $values);
 	
 	$url = $integria_api."&op=create_workunit&token=".$token."&params=".$params;
-
+	
 	// Call the integria API
 	$result = incidents_call_api($url);
 	
 	$result_array = incidents_xml_to_array($result);
-
+	
 	if ($result_array['data']) {
 		ui_print_success_message (__("Workunit added"));
-	} else {
+	}
+	else {
 		ui_print_error_message (__("There was a problem adding workunit"));
-	}		
+	}
 }
 
 $params = array();
 
 // Set the url with parameters to call the api
-switch($tab) {
+switch ($tab) {
 	case 'list':
 		
 		$search_string = get_parameter('search_string', "");
@@ -262,7 +268,8 @@ switch($tab) {
 		//Request incident information if any
 		if ($id_incident) {
 			$url = $integria_api."&op=get_incident_details&params=".$id_incident;
-		} else {
+		}
+		else {
 			$url = $integria_api."&op=get_incident_details";	
 		}
 		$url_resolutions =  $integria_api."&op=get_incidents_resolutions";
@@ -282,7 +289,7 @@ switch($tab) {
 		break;
 }
 
-if(isset($url)) {
+if (isset($url)) {
 	// Call the integria API
 	$xml = incidents_call_api($url);
 }
@@ -291,7 +298,7 @@ else {
 }
 
 // If is a valid XML, parse it
-if(xml_parse(xml_parser_create(), $xml)) {
+if (xml_parse(xml_parser_create(), $xml)) {
 	// Check if xml is empty
 	if($xml == "<xml>\n</xml>\n") {
 		$result = false;

@@ -56,7 +56,7 @@ function cancel_button_palette_callback() {
 	}
 }
 
-function update_button_palette_callback() { 
+function update_button_palette_callback() {
 	var values = {};
 	
 	values = readFields();
@@ -388,7 +388,7 @@ function loadFieldsFromDB(item) {
 					if (key == 'height') $("input[name=height]").val(val);
 					if (key == 'label') $("input[name=label]").val(val);
 					if (key == 'enable_link') $("input[name=enable_link]").val(val);
-
+					
 					if (key == 'image') {
 						//Load image preview
 						$("select[name=image]").val(val);
@@ -1291,12 +1291,16 @@ function deleteDB(idElement) {
 				if (data['correct']) {
 					$("#parent > option[value=" + idElement + "]").remove();
 					
+					
+					
 					jQuery.each(lines, function(i, line) {
 						if ((line['id'] == idElement) || (line['node_begin'] == idElement)) {
 							lines.splice(i);
 						}
 					});
 					refresh_lines(lines, 'background', true);
+					
+					
 					
 					$('#' + idElement).remove();
 					activeToolboxButton('delete_item', false);

@@ -29,11 +29,12 @@ require_once($config['homedir'] . "/include/functions_agents.php");
 
 $table->id = 'wizard_table';
 $table->width = '98%';
-$table->data = array ();
+
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align: text-top;';
 $table->style[1] = 'font-weight: bold; vertical-align: top;';
 $table->style[2] = 'font-weight: bold; vertical-align: top';
+
 $table->size = array ();
 $table->size[0] = "20%";
 $table->size[1] = "20%";
@@ -58,8 +59,7 @@ $type_list = array(
 	STATIC_GRAPH => __('Static Graph'),
 	PERCENTILE_BAR => __('Percentile Item'),
 	MODULE_GRAPH => __('Module graph'),
-	SIMPLE_VALUE => __('Simple value')
-);
+	SIMPLE_VALUE => __('Simple value'));
 
 $table->rowstyle["all_0"] = 'display: none;';
 $table->data["all_0"][0] = __('Type');
@@ -75,12 +75,14 @@ $table->data["all_1"][1] = html_print_input_text ('range', 50, '', 5, 5, true);
 
 $table->rowstyle["staticgraph_modulegraph"] = 'display: none;';
 $table->data["staticgraph_modulegraph"][0] = __('Size (px)');
-$table->data["staticgraph_modulegraph"][1] = __('Width').': '.html_print_input_text ('width', 0, '', 5, 5, true);
+$table->data["staticgraph_modulegraph"][1] = __('Width').': ' .
+	html_print_input_text ('width', 0, '', 5, 5, true);
 $table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' . __('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
 
 $table->rowstyle["modulegraph_simplevalue"] = 'display: none;';
 $table->data["modulegraph_simplevalue"][0] = __('Period');
-$table->data["modulegraph_simplevalue"][1] = html_print_extended_select_for_time ('period', '', '', '', '', false, true);
+$table->data["modulegraph_simplevalue"][1] =
+	html_print_extended_select_for_time ('period', '', '', '', '', false, true);
 
 $table->rowstyle["simplevalue"] = 'display: none;';
 $table->data["simplevalue"][0] = __('Process');
@@ -91,15 +93,18 @@ $table->data["simplevalue"][1] = html_print_select (
 
 $table->rowstyle["percentileitem_1"] = 'display: none;';
 $table->data["percentileitem_1"][0] = __('Width (px)');
-$table->data["percentileitem_1"][1] = html_print_input_text ('percentileitem_width', 0, '', 5, 5, true);
+$table->data["percentileitem_1"][1] =
+	html_print_input_text ('percentileitem_width', 0, '', 5, 5, true);
 
 $table->rowstyle["percentileitem_2"] = 'display: none;';
 $table->data["percentileitem_2"][0] = __('Max value');
-$table->data["percentileitem_2"][1] = html_print_input_text ('max_value', 0, '', 5, 5, true);
+$table->data["percentileitem_2"][1] =
+	html_print_input_text ('max_value', 0, '', 5, 5, true);
 
 $table->rowstyle["percentileitem_3"] = 'display: none;';
 $table->data["percentileitem_3"][0] = __('Type');
-$table->data["percentileitem_3"][1] = html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', 'style="float: left;"', true) .
+$table->data["percentileitem_3"][1] =
+	html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', 'style="float: left;"', true) .
 	html_print_radio_button_extended('type_percentile', 'bubble', ('Bubble'), 'percentile', false, '', 'style="float: left;"', true);
 
 $table->rowstyle["percentileitem_4"] = 'display: none;';
@@ -109,8 +114,8 @@ $table->data["percentileitem_4"][1] = html_print_radio_button_extended('value_sh
 
 $table->rowstyle["all_2"] = 'display: none;';
 $table->data["all_2"][0] = __('Groups');
-$table->data["all_2"][1] = html_print_select_groups($config['id_user'], "AR", true,
-	'groups', '', '', '', 0, true); 
+$table->data["all_2"][1] = html_print_select_groups(
+	$config['id_user'], "AR", true, 'groups', '', '', '', 0, true); 
 
 $table->rowstyle["all_one_item_per_agent"] = 'display: none';
 $table->data["all_one_item_per_agent"][0] = __('One item per agent');

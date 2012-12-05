@@ -60,7 +60,8 @@ if (is_ajax ()) {
 		}
 		
 		$filter = " WHERE id_grupo IN (". implode(',', $groups) .")";
-		$agents = db_get_all_rows_sql("SELECT id_agente, nombre FROM tagente". $filter);
+		$agents = db_get_all_rows_sql("SELECT id_agente, nombre
+			FROM tagente" . $filter);
 		
 		echo json_encode($agents);
 		return;
@@ -215,7 +216,7 @@ if (is_ajax ()) {
 				
 				// Add elements to array
 				if (!empty($temp)) {
-				
+					
 					// Add agent and server
 					foreach ($temp as $element_key => $element_value) {
 						

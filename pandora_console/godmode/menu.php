@@ -86,6 +86,10 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/tag/tag"]["text"] = __('Manage tags');
 	$sub["godmode/tag/tag"]["subsecs"] = "godmode/tag/edit_tag";
 	
+	// Category
+	$sub["godmode/category/category"]["text"] = __('Manage categories');
+	$sub["godmode/category/category"]["subsecs"] = "godmode/category/edit_category";
+	
 	$sub["godmode/modules/module_list"]["text"] = __('Module types');
 	
 	$menu_godmode["gmodules"]["sub"] = $sub;

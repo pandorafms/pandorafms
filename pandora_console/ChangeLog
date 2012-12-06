@@ -1,5 +1,15 @@
 2012-12-06 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_agents.php, include/functions_html.php,
+	include/functions_netflow.php: cleaned source code style.
+	
+	* include/db/mysql.php: fixed into the function
+	"mysql_db_process_sql" a big bug that runs fine the select querys in
+	a metaconsole enviorement with several DBs but the insert querys
+	make in the previous connection.
+
+2012-12-06 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_agents.php,
 	operation/integria_incidents/incident.php,
 	godmode/massive/massive_delete_modules.php,

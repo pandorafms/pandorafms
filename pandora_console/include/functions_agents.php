@@ -1314,7 +1314,9 @@ function agents_get_agent_id ($agent_name, $io_safe_input = false) {
  * @return string Name of the given agent.
  */
 function agents_get_name ($id_agent, $case = "none") {
-	$agent = (string) db_get_value ('nombre', 'tagente', 'id_agente', (int) $id_agent);
+	$agent = (string) db_get_value ('nombre',
+		'tagente', 'id_agente', (int) $id_agent);
+	
 	// Version 3.0 has enforced case sensitive agent names
 	// so we always should show real case names.
 	switch ($case) {

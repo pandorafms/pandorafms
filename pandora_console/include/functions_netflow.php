@@ -458,7 +458,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $u
 	if ($aggregate == 'none') {
 		netflow_save_cache ($values, $cache_file);
 	}
-
+	
 	return $values;
 }
 
@@ -489,14 +489,14 @@ function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $
 	// Execute nfdump
 	$command .= " -o csv -q -s $aggregate/bytes -n $max -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 	exec($command, $string);
-
+	
 	if (! is_array($string)) {
 		return array ();
 	}
-
+	
 	// Remove the first line
 	$string[0] = '';
-
+	
 	$i = 0;
 	$values = array();
 	$interval_length = $end_date - $start_date;
@@ -542,7 +542,7 @@ function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $
 		}
 		$i++;
 	}
-
+	
 	sort_netflow_data ($values);
 	
 	return $values;
@@ -575,7 +575,7 @@ function netflow_get_summary ($start_date, $end_date, $filter, $unique_id, $conn
 	$temp_file = $config['attachment_store'] . '/netflow_' . $unique_id . '.tmp';
 	$command .= " -o \"fmt: \" -t " .date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 	exec("$command > $temp_file");
-
+	
 	// Parse data file
 	// We must parse from $start_date to avoid creating new intervals!
 	$values = array ();
@@ -823,7 +823,7 @@ function netflow_parse_file ($start_date, $end_date, $interval_length, $file, &$
 				$flow['timestamp'] = strtotime ($flow['datetime']);
 				$last_timestamp = $flow['timestamp'];
 			}
-
+			
 			if ($flow['timestamp'] >= $timestamp && $flow['timestamp'] <= $timestamp + $interval_length) {
 				$read_flag = 1;
 				if ($aggregate != 'none') {
@@ -847,7 +847,7 @@ function netflow_parse_file ($start_date, $end_date, $interval_length, $file, &$
 		$no_data = 1;
 		if ($aggregate != 'none') {
 			foreach ($interval_total as $agg => $val) {
-
+				
 				// No data for this interval/aggregate
 				if ($interval_count[$agg] == 0) {
 					continue;

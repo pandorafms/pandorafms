@@ -275,12 +275,13 @@ function mysql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = 
 	}
 	else {
 		$start = microtime (true);
+		
 		if ($dbconnection == '') { 
-			$result = mysql_query ($sql);
+			$dbconnection = $config['dbconnection'];
 		}
-		else { 
-			$result = mysql_query ($sql, $dbconnection);
-		}
+		
+		$result = mysql_query ($sql, $dbconnection);
+		
 		$time = microtime (true) - $start;
 		if ($result === false) {
 			$backtrace = debug_backtrace ();
@@ -313,7 +314,7 @@ function mysql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = 
 			while ($row = mysql_fetch_assoc ($result)) {
 				array_push ($retval, $row);
 			}
-
+			
 			if ($cache === true)
 				$sql_cache[$sql] = $retval;
 			mysql_free_result ($result);

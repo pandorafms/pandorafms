@@ -213,7 +213,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR", $returnAl
 	
 	$fields = users_get_groups_for_select($id_user, $privilege,
 		$returnAllGroup, true, $id_group);
-
+	
 	$output = html_print_select ($fields, $name, $selected, $script,
 		$nothing, $nothing_value, $return, $multiple, false, $class,
 		$disabled, $style, $option_style);

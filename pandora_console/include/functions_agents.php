@@ -359,27 +359,32 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 		switch ($filter['status']) {
 			// Normal
 			case 0: 
-				$status_sql = "normal_count=total_count";
+				$status_sql =
+					"normal_count = total_count";
 				break;
 			// Warning
 			case 2:
-				$status_sql = "critical_count=0 AND warning_count>0";
+				$status_sql =
+					"critical_count = 0 AND warning_count > 0";
 				break;
 			// Critical
 			case 1: 
-				$status_sql = "critical_count>0";
+				$status_sql =
+					"critical_count > 0";
 				break;
 			// Unknown
 			case 3:
-				$status_sql = "critical_count=0 AND warning_count=0 AND unknown_count>0";
+				$status_sql =
+					"critical_count = 0 AND warning_count = 0
+						AND unknown_count > 0";
 				break;
 			// Not normal
 			case 4:
-				$status_sql = "normal_count<>total_count";
+				$status_sql = "normal_count <> total_count";
 				break;
 			// Not init
 			case 5:	
-				$status_sql = "notinit_count=total_count";
+				$status_sql = "notinit_count = total_count";
 				break;
 		}
 		unset($filter['status']);
@@ -459,10 +464,12 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	}
 	
 	if ($extra) { 
-		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s', $sql_extra, $where, $where_nogroup, $status_sql, $search);	
+		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s',
+			$sql_extra, $where, $where_nogroup, $status_sql, $search);	
 	}
 	else {
-		$where = sprintf('%s AND %s AND (%s) %s', $where, $where_nogroup, $status_sql, $search);
+		$where = sprintf('%s AND %s AND (%s) %s',
+			$where, $where_nogroup, $status_sql, $search);
 	}
 	$sql = sprintf('SELECT %s
 		FROM tagente

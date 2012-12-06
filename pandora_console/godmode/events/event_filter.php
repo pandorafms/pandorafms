@@ -77,7 +77,7 @@ if ($multiple_delete) {
 	
 	db_process_sql_begin();
 	
-	foreach ($ids as $id) {	
+	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tevent_filter',
 			array ('id_filter' => $id));
 		
@@ -117,7 +117,7 @@ $table->head[2] = __('Event type');
 $table->head[3] = __('Event status');
 $table->head[4] = __('Severity');
 $table->head[5] = __('Action') .
-		html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
+	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
@@ -156,7 +156,7 @@ foreach ($filters as $filter) {
 	array_push ($table->data, $data);
 }
 
-if(isset($data)) {
+if (isset($data)) {
 	echo "<form method='post' action='index.php?sec=geventos&sec2=godmode/events/event_filter'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);

@@ -1,3 +1,17 @@
+2012-12-06 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php,
+	operation/integria_incidents/incident.php,
+	godmode/massive/massive_delete_modules.php,
+	godmode/modules/manage_network_templates_form.php,
+	godmode/modules/manage_network_components_form_plugin.php,
+	godmode/agentes/fields_manager.php,
+	godmode/agentes/module_manager.php, godmode/users/profile_list.php,
+	godmode/events/event_filter.php: cleaned source code style.
+	
+	* operation/tree.php: fixed the url to childrem consoles from the
+	metaconsole tree.
+
 2012-12-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql,

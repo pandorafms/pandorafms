@@ -61,7 +61,7 @@ if ($delete_profile) {
 	if ($ret === false) {
 		ui_print_error_message(__('There was a problem deleting the profile'));
 	}
-	else {		
+	else {
 		db_pandora_audit("Profile management",
 			"Delete profile ". $profile['name']);
 		
@@ -117,7 +117,7 @@ if ($update_profile) {
 		}
 	}
 	else {
-		 ui_print_error_message(__('Profile name cannot be empty'));
+		ui_print_error_message(__('Profile name cannot be empty'));
 	}
 	$id_profile = 0;
 }
@@ -151,7 +151,7 @@ if ($create_profile) {
 
 	if ($name) {
 		$ret = db_process_sql_insert('tperfil', $values);
-	
+		
 		if ($ret !== false) {
 			ui_print_success_message(__('Successfully created'));
 			
@@ -169,7 +169,7 @@ if ($create_profile) {
 		}
 	}
 	else {
-		 ui_print_error_message(__('There was a problem creating this profile'));
+		ui_print_error_message(__('There was a problem creating this profile'));
 	}
 	$id_profile = 0;
 }
@@ -202,7 +202,7 @@ $table->align = array_fill (1, 11, "center");
 $table->size = array_fill (1, 10, 40);
 
 $profiles = db_get_all_rows_in_table ("tperfil");
-if($profiles === false) {
+if ($profiles === false) {
 	$profiles = array();
 }
 
@@ -224,19 +224,18 @@ foreach ($profiles as $profile) {
 	$data[11] .= '&nbsp;&nbsp;<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
 	array_push ($table->data, $data);
 }
-	
-	echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_profile">';
-	if(isset($data)) {
-		html_print_table ($table);
-	}
-	else {
-		echo "<div class='nf'>".__('There are no defined profiles')."</div>";
-	}
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	html_print_input_hidden ('new_profile', 1);
-	html_print_submit_button (__('Create'), "crt", false, 'class="sub next"');
-	echo "</div>";
-	echo '</form>';
-	unset ($table);
 
+echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_profile">';
+if (isset($data)) {
+	html_print_table ($table);
+}
+else {
+	echo "<div class='nf'>".__('There are no defined profiles')."</div>";
+}
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+html_print_input_hidden ('new_profile', 1);
+html_print_submit_button (__('Create'), "crt", false, 'class="sub next"');
+echo "</div>";
+echo '</form>';
+unset ($table);
 ?>

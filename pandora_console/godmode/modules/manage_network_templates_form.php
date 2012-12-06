@@ -75,7 +75,7 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 	//Submitted form
 	$name = get_parameter_post ("name");
 	$description = get_parameter_post ("description");
-	if ($name != "") {		
+	if ($name != "") {
 		if ($id_np > 0) {
 			//Profile exists
 			$values = array(
@@ -120,7 +120,7 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 elseif ($id_np > 0) {
 	//Profile exists
 	$row = db_get_row ("tnetwork_profile", "id_np", $id_np);
-		
+	
 	$description = $row["description"];
 	$name = $row["name"];
 

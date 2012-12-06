@@ -55,7 +55,7 @@ if ($create_field) {
 /* Update field */
 if ($update_field) {
 	/*Check if name field is empty*/
-	if( $name != "") {	
+	if( $name != "") {
 		$values = array('name' => $name, 'display_on_front' => $display_on_front);
 		
 		$result = db_process_sql_update('tagent_custom_fields', $values, array('id_field' => $id_field));

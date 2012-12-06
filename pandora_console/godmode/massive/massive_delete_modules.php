@@ -96,14 +96,14 @@ $selection_mode = get_parameter('selection_mode', 'modules');
 $recursion = get_parameter('recursion');
 
 if ($delete) {
-	if($selection_mode == 'modules') {	
+	if ($selection_mode == 'modules') {
 		$force = get_parameter('force_type', false);
 		
-		if($agents_select == false) {
+		if ($agents_select == false) {
 			$agents_select = array();
 			$agents_ = array();
 		}
-
+		
 		foreach($agents_select as $agent_name) {
 			$agents_[] = agents_get_agent_id($agent_name);
 		}
@@ -111,40 +111,40 @@ if ($delete) {
 	}
 	else if($selection_mode == 'agents') {
 		$force = get_parameter('force_group', false);
-
+		
 		$agents_ = $agents_id;
 		$modules_ = $modules_select;
 	}
-				
+	
 	$count = 0;
 	$success = 0;
-
+	
 	// If the option to select all of one group or module type is checked
-	if($force) {
-		if($force == 'type') {
+	if ($force) {
+		if ($force == 'type') {
 			$condition = '';
-			if($module_type != 0)
+			if ($module_type != 0)
 				$condition = ' AND t2.id_tipo_modulo = '.$module_type;
 				
 			$agents_ = db_get_all_rows_sql('SELECT DISTINCT(t1.id_agente)
 				FROM tagente t1, tagente_modulo t2
 				WHERE t1.id_agente = t2.id_agente');
-			foreach($agents_ as $id_agent) {
+			foreach ($agents_ as $id_agent) {
 				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type),'nombre');
-
-				if($module_name == false) {
+				
+				if ($module_name == false) {
 					$module_name = array();
 				}
-				foreach($module_name as $mod_name) {
+				foreach ($module_name as $mod_name) {
 					$result = process_manage_delete ($mod_name['nombre'], $id_agent['id_agente']);
 					$count ++;
 					$success += (int)$result;
 				}
 			}
 		}
-		else if($force == 'group') {
+		else if ($force == 'group') {
 			$agents_ = array_keys (agents_get_group_agents ($group_select, false, "none"));
-			foreach($agents_ as $id_agent) {
+			foreach ($agents_ as $id_agent) {
 				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent),'nombre');
 				if($module_name == false) {
 					$module_name = array();
@@ -291,7 +291,7 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 ui_require_jquery_file ('form');
 ui_require_jquery_file ('pandora.controls');
 
-if($selection_mode == 'modules'){
+if ($selection_mode == 'modules'){
 	$modules_row = '';
 	$agents_row = 'none';
 }
@@ -378,7 +378,7 @@ $(document).ready (function () {
 	}
 	
 	$('input[type=checkbox]').change (
-		function () {			
+		function () {
 			if(this.id == "checkbox-force_type"){
 				if(this.checked) {
 					$(".select_modules_row_2").css('display', 'none');

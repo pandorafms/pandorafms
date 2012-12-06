@@ -35,46 +35,46 @@ $update_incident = get_parameter('update_incident', 0);
 $integria_api = $config['integria_url']."/include/api.php?return_type=xml&user=".$config['id_user']."&pass=".$config['integria_api_password'];
 
 // Header
-if($tab == 'list' || $tab == 'editor') {
+if ($tab == 'list' || $tab == 'editor') {
 	$buttons = array(
-			'list' => array(
-				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
-					html_print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
-			'editor' => array(
-				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=editor">' . 
-					html_print_image ("images/add.png", true, array ("title" => __('New Incident'))) .'</a>'));
+		'list' => array(
+			'active' => false,
+			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
+				html_print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
+		'editor' => array(
+			'active' => false,
+			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=editor">' . 
+				html_print_image ("images/add.png", true, array ("title" => __('New Incident'))) .'</a>'));
 }
 else {
 	$buttons = array(
-			'list' => array(
-				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
-					html_print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
-			'incident' => array(
-				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$id_incident.'">' . 
-					html_print_image ("images/eye.png", true, array ("title" => __('Incident details'))) .'</a>'),
-			'workunits' => array(
-				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=workunits&id_incident='.$id_incident.'">' . 
-					html_print_image ("images/computer.png", true, array ("title" => __('Workunits'))) .'</a>'),
-			'files' => array(
-				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=files&id_incident='.$id_incident.'"">' . 
-					html_print_image ("images/file.png", true, array ("title" => __('Files'))) .'</a>'),
-			'tracking' => array(
-				'active' => false,
-				'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=tracking&id_incident='.$id_incident.'"">' . 
-					html_print_image ("images/comments.png", true, array ("title" => __('Tracking'))) .'</a>'));
+		'list' => array(
+			'active' => false,
+			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
+				html_print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
+		'incident' => array(
+			'active' => false,
+			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=incident&id_incident='.$id_incident.'">' . 
+				html_print_image ("images/eye.png", true, array ("title" => __('Incident details'))) .'</a>'),
+		'workunits' => array(
+			'active' => false,
+			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=workunits&id_incident='.$id_incident.'">' . 
+				html_print_image ("images/computer.png", true, array ("title" => __('Workunits'))) .'</a>'),
+		'files' => array(
+			'active' => false,
+			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=files&id_incident='.$id_incident.'"">' . 
+				html_print_image ("images/file.png", true, array ("title" => __('Files'))) .'</a>'),
+		'tracking' => array(
+			'active' => false,
+			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=tracking&id_incident='.$id_incident.'"">' . 
+				html_print_image ("images/comments.png", true, array ("title" => __('Tracking'))) .'</a>'));
 }
-	
+
 $buttons[$tab]['active'] = true;
 
 ui_print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, $buttons);
 
-if($update_incident == 1) {	
+if ($update_incident == 1) {
 	$values[0] = $id_incident;
 	$values[1] = urlencode(io_safe_output(get_parameter('title')));
 	$values[2] = urlencode(io_safe_output(get_parameter('description')));
@@ -105,7 +105,7 @@ if($update_incident == 1) {
 
 $create_incident = get_parameter('create_incident', 0);
 
-if($create_incident == 1) {
+if ($create_incident == 1) {
 	
 	$values[0] = urlencode(io_safe_output(get_parameter('title')));
 	$values[1] = get_parameter('group');
@@ -132,8 +132,8 @@ if($create_incident == 1) {
 
 $attach_file = get_parameter('attach_file', 0);
 
-if($attach_file == 1) {
-	if($_FILES['new_file']['name'] != "" && $_FILES['new_file']['error'] == 0) {
+if ($attach_file == 1) {
+	if ($_FILES['new_file']['name'] != "" && $_FILES['new_file']['error'] == 0) {
 		$file_content = file_get_contents($_FILES["new_file"]["tmp_name"]);
 		
 		$values[0] = $id_incident;
@@ -172,6 +172,7 @@ if($attach_file == 1) {
 				break;
 			default:
 				ui_print_error_message (__('Generic upload error').'(Code: '.$_FILES['new_file']['error'].')');
+				break;
 		}
 	}
 }

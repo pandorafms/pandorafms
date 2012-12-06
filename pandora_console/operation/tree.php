@@ -44,6 +44,7 @@ if (is_ajax ())
 	if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
 		$enterpriseEnable = true;
 		require_once ('enterprise/include/functions_policies.php');
+		require_once ('enterprise/meta/include/functions_ui_meta.php');
 	}
 	
 	$type = get_parameter('type');
@@ -59,10 +60,11 @@ if (is_ajax ())
 			$server = metaconsole_get_connection ($server_name);
 			metaconsole_connect($server);
 			$console_url = $server['server_url'] . '/';
-		} else {
+		}
+		else {
 			$console_url = '';
 		}
-
+		
 		treeview_printTable($id_agente, $console_url);
 		
 		if (defined ('METACONSOLE')) {
@@ -123,7 +125,7 @@ if (is_ajax ())
 				metaconsole_restore_db();
 			}
 			$countRows = count ($rows);
-
+			
 			//Empty Branch
 			if ($countRows === 0) {
 				echo "<ul style='margin: 0; padding: 0;'>\n";
@@ -144,7 +146,7 @@ if (is_ajax ())
 			
 			foreach ($rows as $row) {
 				$count++;
-
+				
 				$agent_info["monitor_alertsfired"] = $row["fired_count"];
 				$agent_info["monitor_critical"] = $row["critical_count"];
 				$agent_info["monitor_warning"] = $row["warning_count"];
@@ -223,7 +225,7 @@ if (is_ajax ())
 				if ($agent_info["monitor_normal"] > 0)
 					echo ' : <span class="green">'.$agent_info["monitor_normal"].'</span>';
 				echo ")";
-
+				
 				if ($row['quiet']) {
 					echo "&nbsp;";
 					html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
@@ -244,7 +246,7 @@ if (is_ajax ())
 		case 'agent_module':
 		case 'agent_tag':
 			$fatherType = str_replace('agent_', '', $type);
-
+			
 			if (defined ('METACONSOLE')) {
 				$server = metaconsole_get_connection ($server_name);
 				if (metaconsole_connect($server) != NOERR) {
@@ -258,7 +260,7 @@ if (is_ajax ())
 			if (defined ('METACONSOLE')) {
 				metaconsole_restore_db();
 			}
-						
+			
 			if ($countRows === 0) {
 				echo "<ul style='margin: 0; padding: 0;'>\n";
 				echo "<li style='margin: 0; padding: 0;'>";
@@ -356,14 +358,64 @@ if (is_ajax ())
 				
 				if (defined ('METACONSOLE')) {
 					$console_url = $server['server_url'] . '/';
-				} else {
+				}
+				else {
 					$console_url = '';
 				}
-				$link ="winopeng('" . $console_url . "operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".base64_encode($row["nombre"])."&refresh=600','day_".$win_handle."')";
-				echo '<a href="javascript:'.$link.'">' . html_print_image ("images/chart_curve.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . '</a>';
+				
+				
+				//Icon and link to the Module graph.
+				if (defined('METACONSOLE')) {
+					$url_module_graph = ui_meta_get_url_console_child(
+						$server['id'], null, null, null, null,
+						"operation/agentes/stat_win.php?" .
+						"type=$graph_type&" .
+						"period=86400&" .
+						"id=" . $row["id_agente_modulo"] . "&" .
+						"label=" . base64_encode($row["nombre"]) . "&" .
+						"refresh=600");
+				}
+				else {
+					$url_module_graph = $console_url .
+						"operation/agentes/stat_win.php?" .
+						"type=$graph_type&" .
+						"period=86400&" .
+						"id=" . $row["id_agente_modulo"] . "&" .
+						"label=" . base64_encode($row["nombre"]) . "&" .
+						"refresh=600";
+				}
+				$link ="winopeng('" . $url_module_graph . "','day_".$win_handle."')";
+				echo '<a href="javascript: '.$link.'">' . html_print_image ("images/chart_curve.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . '</a>';
+				
+				
 				echo " ";
-				echo "<a href='" . $console_url . "index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $row['id_agente'] . "&tab=data_view&period=86400&id=".$row["id_agente_modulo"]."'>" . html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
+				
+				
+				//Icon and link to the Module data.
+				if (defined('METACONSOLE')) {
+					
+					$url_module_data =  ui_meta_get_url_console_child(
+						$server['id'],
+						"estado", "operation/agentes/ver_agente",
+						"id_agente=" . $row['id_agente'] . "&" .
+						"tab=data_view&" .
+						"period=86400&" .
+						"id=" . $row["id_agente_modulo"]);
+				}
+				else {
+					$url_module_data = $console_url .
+						"index.php?" .
+						"sec=estado&" .
+						"sec2=operation/agentes/ver_agente&" .
+						"id_agente=" . $row['id_agente'] . "&" .
+						"tab=data_view&" .
+						"period=86400&" .
+						"id=" . $row["id_agente_modulo"];
+				}
+				echo "<a href='" . $url_module_data . "'>" . html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
+				
 				echo " ";
+				
 				echo io_safe_output($row['nombre']);
 				if ($row['quiet']) {
 					echo "&nbsp;";

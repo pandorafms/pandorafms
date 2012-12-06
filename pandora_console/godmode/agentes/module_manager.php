@@ -136,7 +136,8 @@ if ($multiple_delete) {
 		if (db_process_sql("UPDATE tagente_modulo
 			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del, "affected_rows", '', true, $status, false) === false) {
 			$error++;
-		} else {	
+		}
+		else {
 			// Update module status count
 			if ($module !== false) {
 				if ($module['utimestamp'] == 0) {
@@ -152,7 +153,7 @@ if ($multiple_delete) {
 				}
 				db_process_sql ('UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module['id_agente']);
 			}
-	}
+		}
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
@@ -184,7 +185,7 @@ if ($multiple_delete) {
 			if ($result === false)
 				$error++;
 		} // Trick to detect if we are deleting components of synthetics modules (avg or arithmetic)
-		else{
+		else {
 			$result_components = enterprise_hook('modules_get_synthetic_components', array($id_agent_module_del));
 			$count_components = 1;
 			if (!empty($result_components)){

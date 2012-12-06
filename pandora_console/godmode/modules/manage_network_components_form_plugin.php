@@ -42,19 +42,19 @@ $table->rowstyle['macro_field'] = 'display:none';
 push_table_row ($data, 'macro_field');
 
 // If there are $macros, we create the form fields
-if(!empty($macros)) {
+if (!empty($macros)) {
 	$macros = json_decode($macros, true);
-
-	foreach($macros as $k => $m) {		
+	
+	foreach ($macros as $k => $m) {
 		$data = array ();
 		$data[0] = $m['desc'];
-		if(!empty($m['help'])) {
+		if (!empty($m['help'])) {
 			$data[0] .= ui_print_help_tip ($m['help'], true);
 		}
 		$data[1] = html_print_input_text($m['macro'], $m['value'], '', 15, 60, true);
 		$table->colspan['macro'.$m['macro']][1] = 3;
 		$table->rowclass['macro'.$m['macro']] = 'macro_field';
-
+		
 		push_table_row ($data, 'macro'.$m['macro']);
 	}
 }

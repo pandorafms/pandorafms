@@ -2794,7 +2794,7 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
-	return area_graph($flash_chart, $chart, $width, $height, array (), array (),
+	return area_graph($flash_chart, $chart, $width, $height, array (), false,
 		array (), ui_get_full_url("images/image_problem.opaque.png"), "", "", $homeurl,
 		$water_mark,
 		$config['fontpath'], $config['font_size'], $unit, $ttl);

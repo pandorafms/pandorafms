@@ -4922,9 +4922,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$description = $filter['id_name'];
 			}
 
-			// Build a unique id for the cache
-			$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
-						
+			// Generate a unique id for the cache
+			$unique_id = netflow_generate_unique_id ($content["type"], $filter, $start_date);
+
 			$table->colspan[0][0] = 4;
 			$table->data[0][0] = '<h4>' . $description . '</h4>';
 			$table->colspan[1][0] = 4;

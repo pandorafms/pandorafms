@@ -385,6 +385,10 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$table_advanced->data[13][1] = html_print_select(categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true); 
 	$table_advanced->colspan[13][1] = 4;
 }
+else {
+	// Store in a hidden field if is not visible to avoid delete the value
+	$table_advanced->data[12][4] .= html_print_input_hidden ('id_category', $id_category, true);
+}
 ?>
 
 <script type="text/javascript">

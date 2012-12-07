@@ -21,7 +21,7 @@ if (function_exists ('mb_internal_encoding')) {
 
 // Set to 1 to do not check for installer or config file (for development!).
 // Activate gives more error information, not useful for production sites
-$develop_bypass = 0;
+$develop_bypass = 1;
 
 if ($develop_bypass != 1) {
 	// If no config file, automatically try to install
@@ -289,12 +289,14 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	else { //login wrong
 		$blocked = false;
 		
-		if (!is_user_admin($nick) || $config['enable_pass_policy_admin']) {
+		if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && defined('PANDORA_ENTERPRISE')) {
 			$blocked = login_check_blocked($nick);
 		}
 		
 		if (!$blocked) {
-			login_check_failed($nick); //Checks failed attempts
+			if (defined('PANDORA_ENTERPRISE')) {
+				login_check_failed($nick); //Checks failed attempts
+			}
 			$login_failed = true;
 			require_once ('general/login_page.php');
 			db_pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);

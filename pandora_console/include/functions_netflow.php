@@ -209,8 +209,6 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 	$end_date = date ($nfdump_date_format, $end_date);
 	$values = array();
 	$table->width = '50%';
-	$table->border = 1;
-	$table->cellpadding = 0;
 	$table->cellspacing = 0;
 	$table->class = 'databox';
 	$table->data = array();
@@ -218,20 +216,22 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 	$x = 0;
 	
 	$table->head = array ();
-	$table->head[0] = '<b>' . __($aggregate) . '</b>';
-	$table->head[1] = '<b>' . __($unit) . '</b>';
-	
+	$table->head[0] = '<b>' . netflow_format_aggregate ($aggregate) . '</b>';
+	$table->head[1] = '<b>' . netflow_format_unit ($unit) . '</b>';
+	$table->style[0] = 'border: 1px solid black; padding: 4px';
+	$table->style[1] = 'border: 1px solid black; padding: 4px';
+
 	while (isset ($data[$j])) {
 		$agg = $data[$j]['agg'];
 		if (!isset($values[$agg])){
 			$values[$agg] = $data[$j]['data'];
 			$table->data[$x][0] = $agg;
-			$table->data[$x][1] = format_numeric ($data[$j]['data']);
+			$table->data[$x][1] = format_numeric ($data[$j]['data']) . '&nbsp;' . netflow_format_unit ($unit);
 		}
 		else {
 			$values[$agg] += $data[$j]['data'];
 			$table->data[$x][0] = $agg;
-			$table->data[$x][1] = format_numeric ($data[$j]['data']);
+			$table->data[$x][1] = format_numeric ($data[$j]['data']) . '&nbsp;' . netflow_format_unit ($unit);
 		}
 		$j++;
 		$x++;
@@ -250,7 +250,7 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
  *
  * @return The statistics table.
  */
-function netflow_data_table ($data, $start_date, $end_date, $aggregate) {
+function netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit) {
 	global $nfdump_date_format;
 	
 	$period = $end_date - $start_date;
@@ -277,25 +277,30 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate) {
 	$values = array();
 	$table->size = array ('50%');
 	$table->class = 'databox';
-	$table->border = 1;
-	$table->cellpadding = 0;
 	$table->cellspacing = 0;
 	$table->data = array();
 	
 	$table->head = array();
 	$table->head[0] = '<b>'.__('Timestamp').'</b>';
-
+	$table->style[0] = 'border: 1px solid black;padding: 4px';
+	
 	$j = 0;
 	$source_index = array ();
 	$source_count = 0;
-	foreach ($data['sources'] as $source => $null) {
-		$table->align[$j+1] = "right";
-		$table->head[$j+1] = $source;
-		$source_index[$j] = $source;
-		$source_count++;
-		$j++;
+	
+	if (isset ($data['sources'])) {
+		foreach ($data['sources'] as $source => $null) {
+			$table->style[$j+1] = 'border: 1px solid black;padding: 4px';
+			$table->align[$j+1] = "right";
+			$table->head[$j+1] = $source;
+			$source_index[$j] = $source;
+			$source_count++;
+			$j++;
+		}
+	} else {
+		$table->style[1] = 'border: 1px solid black;padding: 4px';
 	}
-
+	
 	// No aggregates
 	if ($source_count == 0) {
 		$table->head[1] = __('Data');
@@ -303,7 +308,7 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate) {
 		$i = 0;
 		foreach ($data as $timestamp => $value) {
 			$table->data[$i][0] = date ($time_format, $timestamp);
-			$table->data[$i][1] = format_numeric ($value['data']);
+			$table->data[$i][1] = format_numeric ($value['data']) . '&nbsp;' . netflow_format_unit ($unit);
 			$i++;
 		}
 	}
@@ -314,10 +319,10 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate) {
 			$table->data[$i][0] = date ($time_format, $timestamp);
 			for ($j = 0; $j < $source_count; $j++) {
 				if (isset ($values[$source_index[$j]])) {
-					$table->data[$i][$j+1] = format_numeric ($values[$source_index[$j]]);
+					$table->data[$i][$j+1] = format_numeric ($values[$source_index[$j]]) . '&nbsp;' . netflow_format_unit ($unit);
 				}
 				else {
-					$table->data[$i][$j+1] = 0;
+					$table->data[$i][$j+1] = 0 . '&nbsp;' . netflow_format_unit ($unit);
 				}
 			}
 			$i++;
@@ -339,12 +344,12 @@ function netflow_summary_table ($data) {
 	
 	$values = array();
 	$table->size = array ('50%');
-	$table->border = 1;
-	$table->cellpadding = 0;
 	$table->cellspacing = 0;
 	$table->class = 'databox';
 	$table->data = array();
 	
+	$table->style[0] = 'border: 1px solid black;padding: 4px';
+	$table->style[1] = 'border: 1px solid black;padding: 4px';
 	$table->data[0][0] = '<b>'.__('Total flows').'</b>';
 	$table->data[0][1] = format_numeric ($data['totalflows']);
 	$table->data[1][0] = '<b>'.__('Total megabytes').'</b>';
@@ -357,7 +362,6 @@ function netflow_summary_table ($data) {
 	$table->data[4][1] = format_numeric ($data['avgpps']);
 	$table->data[5][0] = '<b>'.__('Average bytes per packet').'</b>';
 	$table->data[5][1] = format_numeric ($data['avgbpp']);
-	
 	
 	return html_print_table ($table, true);
 }
@@ -436,17 +440,22 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $u
 	}
 	
 	// Load cache
-	$cache_file = $config['attachment_store'] . '/netflow_' . $unique_id . '.cache';
-	$last_timestamp = netflow_load_cache ($values, $cache_file, $start_date, $end_date, $interval_length, $aggregate);
+	if ($unique_id != '') {
+		$cache_file = $config['attachment_store'] . '/netflow_' . $unique_id . '.cache';
+		$last_timestamp = netflow_load_cache ($values, $cache_file, $start_date, $end_date, $interval_length, $aggregate);
+	} else {
+		$last_timestamp = $start_date;
+	}
+	
 	if ($last_timestamp < $end_date) {
 		
 		$last_timestamp++;
 		
 		// Execute nfdump and save its output in a temporary file
-		$temp_file = $config['attachment_store'] . '/netflow_' . $unique_id . '.tmp';
+		$temp_file = tempnam($config['attachment_store'], 'netflow_tmp_');
 		$command .= ' -t '.date($nfdump_date_format, $last_timestamp).'-'.date($nfdump_date_format, $end_date);
 		exec("$command > $temp_file");
-		
+
 		// Parse data file
 		// We must parse from $start_date to avoid creating new intervals!
 		netflow_parse_file ($start_date, $end_date, $interval_length, $temp_file, $values, $aggregate, $unit);
@@ -455,7 +464,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $u
 	}
 	
 	// Save cache
-	if ($aggregate == 'none') {
+	if ($unique_id != '') {
 		netflow_save_cache ($values, $cache_file);
 	}
 	
@@ -1189,7 +1198,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 				if ($interval_length != 0) {
 					$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
 				}
-				$html .= netflow_data_table ($data, $start_date, $end_date, $aggregate);
+				$html .= netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit);
 				return $html;
 			} else if ($output == 'XML') {
 				$xml = "<unit>$unit</unit>\n";
@@ -1207,13 +1216,15 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 				break;
 			}
 			if ($output == 'HTML' || $output == 'PDF') {
-				return netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
+				$html = netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
+				return $html;
 			} else if ($output == 'XML') {
 				return netflow_stat_xml ($data);
 			}
 			break;
 		case '4':
 		case 'netflow_summary':
+		
 			$data = netflow_get_summary ($start_date, $end_date, $filter, $unique_id, $connection_name);
 			if (empty ($data)) {
 				break;
@@ -1293,7 +1304,7 @@ function netflow_xml_report ($id, $start_date, $end_date, $interval_length = 0) 
 		echo "    </filter>\n";
 
 		// Build a unique id for the cache
-		$unique_id = $report['id_report'] . '_' . $content['id_rc'] . '_' . ($end_date - $start_date);
+		$unique_id = netflow_generate_unique_id ($content["type"], $filter, $start_date);
 
 		echo netflow_draw_item ($start_date, $end_date, $interval_length, $content['show_graph'], $filter, $content['max'], $unique_id, $report['server_name'], 'XML');
 
@@ -1419,6 +1430,81 @@ function netflow_summary_xml ($data) {
 	$xml .= "</summary>\n";
 	
 	return $xml;
+}
+
+/**
+ * Generate a unique id for the netflow cache.
+ *
+ * @param string Chart type.
+ * @param string Netflow filter.
+ * @param string Chart start date.
+ */
+function netflow_generate_unique_id ($type, $filter, $start_date) {
+
+	switch ($type) {
+		case '0':
+		case 'netflow_area':
+		case '2':
+		case 'netflow_data':
+			$source = 'data';
+			break;
+		case '1':
+		case 'netflow_pie':
+		case '3':
+		case 'netflow_statistics':
+			$source = 'stats';
+			break;
+		case '4':
+		case 'netflow_summary':		
+			$source = 'summary';
+			break;
+		default:
+			return '';
+	}
+	
+	return $source . '_' . $filter['id_sg'] . '_' . $start_date;
+}
+
+/**
+ * Return a string describing the given unit.
+ *
+ * @param string Netflow unit.
+ */
+function netflow_format_unit ($unit) {
+		switch ($unit){
+			case 'megabytes':
+				return __('MBytes');
+			case 'megabytespersecond':
+				return __('MBytes/s');
+			case 'kilobytes':
+				return __('kBytes');
+			case 'kilobytespersecond':
+				return __('kBytes/s');
+			default:
+				return '';
+		}
+}
+
+/**
+ * Return a string describing the given aggregate.
+ *
+ * @param string Netflow aggregate.
+ */
+function netflow_format_aggregate ($aggregate) {
+		switch ($aggregate){
+			case 'dstport':
+				return __('Dst port');
+			case 'dstip':
+				return __('Dst IP');
+			case 'proto':
+				return __('Protocol');
+			case 'srcip':
+				return __('Src IP');
+			case 'srcport':
+				return __('Src port');
+			default:
+				return '';
+		}
 }
 
 ?>

@@ -85,7 +85,7 @@ $update_date = (int) get_parameter('update_date', 0);
 $date = get_parameter_post ('date', date ("Y/m/d", get_system_time ()));
 $time = get_parameter_post ('time', date ("H:i:s", get_system_time ()));
 $connection_name = get_parameter('connection_name', '');
-$interval_length = (int) get_parameter('interval_length', 0);
+$interval_length = (int) get_parameter('interval_length', 300);
 
 // Read buttons
 $draw = get_parameter('draw_button', '');
@@ -159,7 +159,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	
 	$table->data[0][2] = '<b>'.__('Interval').'</b>';
 	$table->data[0][3] = html_print_select (netflow_get_valid_intervals (), 'period', $period, '', '', 0, true, false, false);
-	$table->data[0][4] = '<b>'.__('Subinterval') . ui_print_help_tip (__("The interval will be divided in chunks the length of the subinterval"), true) . '</b>';
+	$table->data[0][4] = '<b>'.__('Resolution') . ui_print_help_tip (__("The interval will be divided in chunks the length of the resolution."), true) . '</b>';
 	$table->data[0][5] = html_print_select (netflow_get_valid_subintervals (), 'interval_length', $interval_length, '', '', 0, true, false, false);
 	$table->data[0][6] = '<b>'.__('Type').'</b>';
 	$table->data[0][7] = html_print_select (netflow_get_chart_types (), 'chart_type', $chart_type,'','',0,true);
@@ -253,10 +253,11 @@ if  ($draw != '') {
 	// Get the command to call nfdump
 	$command = netflow_get_command ($filter);
 	
-	// Build a unique id for the cache
-	$unique_id = 'live_view__' . ($end_date - $start_date);
+	// Disable the netflow cache
+	$unique_id = '';
 	
 	// Draw
+	echo "<br/>";
 	echo netflow_draw_item ($start_date, $end_date, $interval_length, $chart_type, $filter, $max_aggregates, $unique_id, $connection_name);
 }
 ?>

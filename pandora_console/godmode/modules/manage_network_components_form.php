@@ -66,6 +66,7 @@ if ($create_network_from_module) {
 	$unknown_instructions = $data_module["unknown_instructions"];
 	$critical_inverse = $data_module["critical_inverse"];
 	$warning_inverse = $data_module["warning_inverse"];	
+	$id_category = $data_module["id_category"];	
 }
 
 $id_component_type = (int) get_parameter ('id_component_type');
@@ -114,6 +115,7 @@ if (isset ($id)) {
 		$unknown_instructions = $component["unknown_instructions"];
 		$critical_inverse = $component["critical_inverse"];
 		$warning_inverse = $component["warning_inverse"];
+		$id_category = $component["id_category"];
 		
 		if ($type >= 15 && $type <= 18) {
 			// New support for snmp v3
@@ -160,6 +162,7 @@ if (isset ($id)) {
 		$unknown_instructions = '';
 		$critical_inverse = 0;
 		$warning_inverse = 0;
+		$id_category = 0;
 		
 		$snmp_version = 1;
 		$snmp3_auth_user = '';

@@ -137,7 +137,15 @@ function configure_modules_form () {
 				$("#text-warning_inverse").attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
-			
+				if($("#id_category").is("select")) {
+					$("#id_category option[value="+data["id_category"]+"]").select (1);
+					console.log('select');
+				}
+				else {
+					$("#hidden-id_category").val(data["id_category"]);
+					console.log('hidden');
+				}
+
 				// Delete macro fields
 				$('.macro_field').remove();
 				
@@ -145,7 +153,7 @@ function configure_modules_form () {
 
 				var legend = '';
 				// If exist macros, load the fields
-				if(data["macros"] != '') {
+				if(data["macros"] != '' && data["macros"] != null) {
 					$('#hidden-macros').val(Base64.encode(data["macros"]));
 					
 					var obj = jQuery.parseJSON(data["macros"]);
@@ -259,14 +267,20 @@ function configure_modules_form () {
 				$("#text-warning_inverse").attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
-				
+				if($("#id_category").is("select")) {
+					$("#id_category option[value="+data["id_category"]+"]").select (1);
+				}
+				else {
+					$("#hidden-id_category").val(data["id_category"]);
+				}
+
 				// Delete macro fields
 				$('.macro_field').remove();
 				
 				$('#hidden-macros').val('');
 
 				// If exist macros, load the fields
-				if(data["macros"] != '') {
+				if(data["macros"] != '' && data["macros"] != null) {
 					$('#hidden-macros').val(Base64.encode(data["macros"]));
 					
 					var obj = jQuery.parseJSON(data["macros"]);

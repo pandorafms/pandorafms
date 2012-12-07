@@ -134,4 +134,15 @@ $table->data[8][2] = $table->data[8][3] = '';
 $table->data[9][0] = __('Unknown instructions'). ui_print_help_tip(__("Instructions when the status is unknown"), true);
 $table->data[9][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
 $table->data[9][2] = $table->data[9][3] = '';
+
+if (check_acl ($config['id_user'], 0, "PM")) {
+	$table->data[10][0] = __('Category');
+	$table->data[10][1] = html_print_select(categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true);
+	$table->data[10][2] = $table->data[9][3] = '';
+}
+else {
+	// Store in a hidden field if is not visible to avoid delete the value
+	$table->data[9][2] .= html_print_input_hidden ('id_category', $id_category, true);
+}
+
 ?>

@@ -29,6 +29,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 ui_print_page_header (__('Module management').' &raquo; '.__('Network component management'), "", false, "network_component", true);
 
 require_once ('include/functions_network_components.php');
+include_once("include/functions_categories.php");
 
 $type = (int) get_parameter ('type');
 $name = (string) get_parameter ('name');
@@ -81,6 +82,7 @@ $warning_instructions = (string) get_parameter('warning_instructions');
 $unknown_instructions = (string) get_parameter('unknown_instructions');
 $critical_inverse = (int) get_parameter('critical_inverse');
 $warning_inverse = (int) get_parameter('warning_inverse');
+$id_category = (int) get_parameter('id_category');
 
 $snmp_version = (string) get_parameter('snmp_version');
 $snmp3_auth_user = (string) get_parameter('snmp3_auth_user');
@@ -173,7 +175,8 @@ if ($create_component) {
 				'warning_instructions' => $warning_instructions,
 				'unknown_instructions' => $unknown_instructions,
 				'critical_inverse' => $critical_inverse,
-				'warning_inverse' => $warning_inverse));
+				'warning_inverse' => $warning_inverse,
+				'id_category' => $id_category));
 	}
 	else {
 		$id = '';
@@ -251,7 +254,8 @@ if ($update_component) {
 				'warning_instructions' => $warning_instructions,
 				'unknown_instructions' => $unknown_instructions,
 				'critical_inverse' => $critical_inverse,
-				'warning_inverse' => $warning_inverse));
+				'warning_inverse' => $warning_inverse,
+				'id_category' => $id_category));
 	}
 	else {
 		$result = '';
@@ -367,7 +371,8 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'warning_instructions' => false,
 	'unknown_instructions' => false,
 	'critical_inverse' => false,
-	'warning_inverse' => false));
+	'warning_inverse' => false,
+	'id_category' => false));
 
 
 $search_id_group = (int) get_parameter ('search_id_group');

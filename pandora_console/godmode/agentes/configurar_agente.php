@@ -986,7 +986,8 @@ if ($create_module) {
 		'unknown_instructions' => $unknown_instructions,
 		'critical_inverse' => $critical_inverse,
 		'warning_inverse' => $warning_inverse,
-		'cron_interval' => $cron_interval);
+		'cron_interval' => $cron_interval,
+		'id_category' => $id_category);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$id_agent_module = false;

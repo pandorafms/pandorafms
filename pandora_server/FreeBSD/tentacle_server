@@ -2,7 +2,7 @@
 
 # **********************************************************************
 # Tentacle Server Daemon launcher for FreeBSD
-# (c) 2010 Junichi Satoh <junichi@rworks.jp>
+# (c) 2010-2012 Junichi Satoh <junichi@rworks.jp>
 #
 # **********************************************************************
 
@@ -38,7 +38,7 @@ procname="/usr/bin/perl"
 
 start_postcmd()
 {
-	TENTACLE_PID=`pgrep -f -j none $name`
+	TENTACLE_PID=`pgrep -f -j none "$procname $command"`
 	echo $TENTACLE_PID > $pidfile
 }
 

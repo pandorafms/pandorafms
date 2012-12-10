@@ -773,10 +773,13 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	my $unknown_instructions = get_db_value ($dbh, 'SELECT unknown_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
 	
 	# Generate an event
-	my ($text, $event) = ($alert_mode == 0) ? ('recovered', 'alert_recovered') : ('fired', 'alert_fired');
-
+	#If we've spotted an alert recovered, we set the new event's severity to 0, otherwise the original value is maintained.
+	my $severity;
+	my ($text, $event, $severity) = ($alert_mode == 0) ? ('recovered', 'alert_recovered', 0) : ('fired', 'alert_fired', $alert->{'priority'});
+	
+	
 	pandora_event ($pa_config, "Alert $text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
-			(defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $alert->{'priority'}, (defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
+ 			(defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $alert->{'priority'}, (defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
 			(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), $event, 0, $dbh, 'Pandora', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 }
 

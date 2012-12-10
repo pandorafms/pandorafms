@@ -116,6 +116,7 @@ if (isset ($id)) {
 		$critical_inverse = $component["critical_inverse"];
 		$warning_inverse = $component["warning_inverse"];
 		$id_category = $component["id_category"];
+		$tags = $component["tags"];
 		
 		if ($type >= 15 && $type <= 18) {
 			// New support for snmp v3
@@ -163,6 +164,7 @@ if (isset ($id)) {
 		$critical_inverse = 0;
 		$warning_inverse = 0;
 		$id_category = 0;
+		$tags = '';
 		
 		$snmp_version = 1;
 		$snmp3_auth_user = '';
@@ -382,6 +384,44 @@ function type_change () {
 }
 
 $(document).ready (function () {
+	$("#right").click (function () {
+		jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
+			tag_name = $(value).html();
+			if (tag_name != <?php echo "'".__('None')."'"; ?>) {
+				id_tag = $(value).attr('value');
+				$("select[name='id_tag_selected[]']").append($("<option></option>").val(id_tag).html('<i>' + tag_name + '</i>'));
+				$("#id_tag_available").find("option[value='" + id_tag + "']").remove();
+				$("#id_tag_selected").find("option[value='']").remove();
+				if($("#id_tag_available option").length == 0) {
+					$("select[name='id_tag_available[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
+				}
+			}
+		});
+	});
+	$("#left").click (function () {
+		jQuery.each($("select[name='id_tag_selected[]'] option:selected"), function (key, value) {
+				tag_name = $(value).html();
+				if (tag_name != <?php echo "'".__('None')."'"; ?>) {
+					id_tag = $(value).attr('value');
+					$("select[name='id_tag_available[]']").append($("<option>").val(id_tag).html('<i>' + tag_name + '</i>'));
+					$("#id_tag_selected").find("option[value='" + id_tag + "']").remove();
+					$("#id_tag_available").find("option[value='']").remove();
+					if($("#id_tag_selected option").length == 0) {
+						$("select[name='id_tag_selected[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
+					}
+				}
+		});
+	});
+	$("#submit-crt").click(function () {
+		$('#id_tag_selected option').map(function(){
+			$(this).attr('selected','selected');
+		});
+	});
+	$("#submit-upd").click(function () {
+		$('#id_tag_selected option').map(function(){
+			$(this).attr('selected','selected');
+		});
+	});
 	if ($("#snmp_version").value == "3"){
 		$("input[name=snmp3_auth_user]").css({backgroundColor: '#fff'});
 		$("input[name=snmp3_auth_user]").removeAttr('disabled');

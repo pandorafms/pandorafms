@@ -139,13 +139,46 @@ function configure_modules_form () {
 				$("#id_module_type").change ();
 				if($("#id_category").is("select")) {
 					$("#id_category option[value="+data["id_category"]+"]").select (1);
-					console.log('select');
 				}
 				else {
 					$("#hidden-id_category").val(data["id_category"]);
-					console.log('hidden');
 				}
 
+				var tags = data["tags"];
+				
+				// Reset the selection of tags (put all of them into available box)
+				$("#id_tag_selected option").each(function(){
+					if($(this).attr('value') != '') {
+						$("#id_tag_selected").find("option[value='" + $(this).attr('value') + "']").remove();
+						$("select[name='id_tag_available[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
+					}
+				});
+				if($("#id_tag_available option").length > 1) {
+					$("#id_tag_available").find("option[value='']").remove();
+				}
+				if($("#id_tag_selected option").length == 0) {
+					$("select[name='id_tag_selected[]']").append($("<option></option>").val('').html('<i>None</i>'));
+				}
+				
+				if(tags != '') {
+					tags = tags.split(',');
+
+					// Fill the selected tags box with select ones
+					for(i=0; i<tags.length; i++){
+						$("#id_tag_available option").each(function(){
+							if(tags[i] == $(this).text()) {
+								$("#id_tag_available").find("option[value='" + $(this).attr('value') + "']").remove();
+								$("select[name='id_tag_selected[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
+								$("#id_tag_selected").find("option[value='']").remove();
+							}
+						});
+						
+						if($("#id_tag_available option").length == 0) {
+							$("select[name='id_tag_available[]']").append($("<option></option>").val('').html('<i>None</i>'));
+						}
+					}
+				}
+				
 				// Delete macro fields
 				$('.macro_field').remove();
 				
@@ -272,6 +305,41 @@ function configure_modules_form () {
 				}
 				else {
 					$("#hidden-id_category").val(data["id_category"]);
+				}
+				
+				var tags = data["tags"];
+				
+				// Reset the selection of tags (put all of them into available box)
+				$("#id_tag_selected option").each(function(){
+					if($(this).attr('value') != '') {
+						$("#id_tag_selected").find("option[value='" + $(this).attr('value') + "']").remove();
+						$("select[name='id_tag_available[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
+					}
+				});
+				if($("#id_tag_available option").length > 1) {
+					$("#id_tag_available").find("option[value='']").remove();
+				}
+				if($("#id_tag_selected option").length == 0) {
+					$("select[name='id_tag_selected[]']").append($("<option></option>").val('').html('<i>None</i>'));
+				}
+				
+				if(tags != '') {
+					tags = tags.split(',');
+
+					// Fill the selected tags box with select ones
+					for(i=0; i<tags.length; i++){
+						$("#id_tag_available option").each(function(){
+							if(tags[i] == $(this).text()) {
+								$("#id_tag_available").find("option[value='" + $(this).attr('value') + "']").remove();
+								$("select[name='id_tag_selected[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
+								$("#id_tag_selected").find("option[value='']").remove();
+							}
+						});
+						
+						if($("#id_tag_available option").length == 0) {
+							$("select[name='id_tag_available[]']").append($("<option></option>").val('').html('<i>None</i>'));
+						}
+					}
 				}
 
 				// Delete macro fields

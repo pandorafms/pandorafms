@@ -125,24 +125,59 @@ $table->data[6][2] = $table->data[6][3] = '';
 
 $table->data[7][0] = __('Critical instructions'). ui_print_help_tip(__("Instructions when the status is critical"), true);
 $table->data[7][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
-$table->data[7][2] = $table->data[7][3] = '';
+$table->colspan[7][1] = 3;
 
 $table->data[8][0] = __('Warning instructions'). ui_print_help_tip(__("Instructions when the status is warning"), true);
 $table->data[8][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, '', true);
-$table->data[8][2] = $table->data[8][3] = '';
+$table->colspan[8][1] = 3;
 
 $table->data[9][0] = __('Unknown instructions'). ui_print_help_tip(__("Instructions when the status is unknown"), true);
 $table->data[9][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
-$table->data[9][2] = $table->data[9][3] = '';
+$table->colspan[9][1] = 3;
+
+$next_row = 10;
 
 if (check_acl ($config['id_user'], 0, "PM")) {
-	$table->data[10][0] = __('Category');
-	$table->data[10][1] = html_print_select(categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true);
-	$table->data[10][2] = $table->data[9][3] = '';
+	$table->data[$next_row][0] = __('Category');
+	$table->data[$next_row][1] = html_print_select(categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true);
+	$table->data[$next_row][2] = $table->data[$next_row][3] = $table->data[$next_row][4] = '';
+	$next_row++;
 }
 else {
 	// Store in a hidden field if is not visible to avoid delete the value
-	$table->data[9][2] .= html_print_input_hidden ('id_category', $id_category, true);
+	$table->data[9][1] .= html_print_input_hidden ('id_category', $id_category, true);
 }
 
+$table->data[$next_row][0] =  __('Tags');
+
+if($tags == '') {
+	$tags_condition_not = '1 = 1';
+	$tags_condition_in = '1 = 0';
+}
+else {
+	$tags = str_replace(",", "','", $tags);
+	$tags_condition_not = "name NOT IN ('".$tags."')";
+	$tags_condition_in = "name IN ('".$tags."')";
+}
+
+$table->data[$next_row][1] = '<b>' . __('Tags available') . '</b><br>';
+$table->data[$next_row][1] .= html_print_select_from_sql (
+	"SELECT name, name
+	FROM ttag 
+	WHERE $tags_condition_not
+		ORDER BY name", 'id_tag_available[]', '', '','','',
+	true, true, false, false, 'width: 200px', '5');
+$table->data[$next_row][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
+$table->data[$next_row][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete tags to module'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
+
+$table->data[$next_row][3] = '<b>' . __('Tags selected') . '</b><br>';
+$table->data[$next_row][3] .=  html_print_select_from_sql (
+	"SELECT name, name
+	FROM ttag 
+	WHERE $tags_condition_in
+		ORDER BY name",
+	'id_tag_selected[]', '', '','','', true, true, false,
+	false, 'width: 200px', '5');
+	
+$next_row++;
 ?>

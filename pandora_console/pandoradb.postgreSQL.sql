@@ -629,7 +629,8 @@ CREATE TABLE "tnetwork_component" (
 	"unknown_instructions" TEXT default '',
 	"critical_inverse" SMALLINT NOT NULL default 0,
 	"warning_inverse" SMALLINT NOT NULL default 0,
-	"id_category" INTEGER NOT NULL default 0
+	"id_category" INTEGER NOT NULL default 0,
+	"tags" text NOT NULL
 );
 
 -- ---------------------------------------------------------------------

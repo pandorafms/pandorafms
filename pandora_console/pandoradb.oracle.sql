@@ -756,6 +756,7 @@ CREATE TABLE tnetwork_component (
 	critical_inverse NUMBER(1, 0) default 0 NOT NULL,
 	warning_inverse NUMBER(1, 0) default 0 NOT NULL,
 	id_category NUMBER(10, 0) default 0 NOT NULL,
+	tags CLOB,
 	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'))
 );
 

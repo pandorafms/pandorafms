@@ -348,6 +348,7 @@ ALTER TABLE "tnetwork_component" ADD COLUMN "warning_instructions" text default 
 ALTER TABLE "tnetwork_component" ADD COLUMN "unknown_instructions" text default '';
 ALTER TABLE "tnetwork_component" ADD COLUMN "critical_inverse" SMALLINT NOT NULL default 0;
 ALTER TABLE "tnetwork_component" ADD COLUMN "warning_inverse" SMALLINT NOT NULL default 0;
+ALTER TABLE "tnetwork_component" ADD COLUMN "tags" text default '';
 
 ------------------------------------------------------------------------
 -- Table "tnetwork_map"

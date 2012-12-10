@@ -185,6 +185,7 @@ ALTER TABLE `tnetwork_component` ADD COLUMN `critical_inverse` tinyint(1) unsign
 ALTER TABLE `tnetwork_component` ADD COLUMN `warning_inverse` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `max_retries` int(4) UNSIGNED NOT NULL default 0;
 ALTER TABLE `tnetwork_component` ADD COLUMN `id_category` int(10) NOT NULL DEFAULT '0';
+ALTER TABLE `tnetwork_component` ADD COLUMN `tags` TEXT NOT NULL default '';
 
 ------------------------------------------------------------------------
 -- Table `tgraph_source` Alter table to allow negative values in weight

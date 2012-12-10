@@ -356,7 +356,7 @@ ALTER TABLE tnetwork_component ADD (unknown_instructions VARCHAR2(255) default '
 ALTER TABLE tnetwork_component ADD (critical_inverse NUMBER(1, 0) default 0 NOT NULL);
 ALTER TABLE tnetwork_component ADD (warning_inverse NUMBER(1, 0) default 0 NOT NULL);
 ALTER TABLE tnetwork_component ADD (max_retries NUMBER(10, 0) default 0);
-evento
+ALTER TABLE tnetwork_component ADD (tags VARCHAR2(255) default '');
 
 ------------------------------------------------------------------------
 -- Table tnetwork_map

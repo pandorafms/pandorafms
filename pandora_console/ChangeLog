@@ -1,3 +1,13 @@
+2012-12-10  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added
+	tags column to the network components table
+
 2012-12-09  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb.sql: Replaced ^---.. comments with "-- -.." to avoid problems

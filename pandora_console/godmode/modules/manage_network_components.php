@@ -76,13 +76,21 @@ $post_process = (float) get_parameter('post_process');
 $unit = (string) get_parameter('unit');
 $id = (int) get_parameter ('id');
 $wizard_level = get_parameter ('wizard_level');
-$only_metaconsole = get_parameter ('only_metaconsole');
+$only_metaconsole = (int) get_parameter ('only_metaconsole');
 $critical_instructions = (string) get_parameter('critical_instructions');
 $warning_instructions = (string) get_parameter('warning_instructions');
 $unknown_instructions = (string) get_parameter('unknown_instructions');
 $critical_inverse = (int) get_parameter('critical_inverse');
 $warning_inverse = (int) get_parameter('warning_inverse');
 $id_category = (int) get_parameter('id_category');
+$id_tag_selected = (array) get_parameter('id_tag_selected');
+
+if(count($id_tag_selected) == 1 && empty($id_tag_selected[0])) {
+	$tags = '';
+}
+else {
+	$tags = implode(',',$id_tag_selected);
+}
 
 $snmp_version = (string) get_parameter('snmp_version');
 $snmp3_auth_user = (string) get_parameter('snmp3_auth_user');
@@ -134,6 +142,8 @@ if ($create_component) {
 		$custom_string_3 = $snmp3_security_level;
 			$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	}
+
+
 	if ($name && !$name_check) {
 	
 		$id = network_components_create_network_component ($name, $type, $id_group, 
@@ -176,18 +186,20 @@ if ($create_component) {
 				'unknown_instructions' => $unknown_instructions,
 				'critical_inverse' => $critical_inverse,
 				'warning_inverse' => $warning_inverse,
-				'id_category' => $id_category));
+				'id_category' => $id_category,
+				'tags' => $tags));
 	}
 	else {
 		$id = '';
 	}
+	
 	if ($id === false || !$id) {
 		db_pandora_audit("Module management", "Fail try to create network component");
 		ui_print_error_message (__('Could not be created'));
 		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
 	}
-	db_pandora_audit("Module management", "Create network component group #$id");
+	db_pandora_audit("Module management", "Create network component #$id");
 	ui_print_success_message (__('Created successfully'));
 	$id = 0;
 }
@@ -255,7 +267,8 @@ if ($update_component) {
 				'unknown_instructions' => $unknown_instructions,
 				'critical_inverse' => $critical_inverse,
 				'warning_inverse' => $warning_inverse,
-				'id_category' => $id_category));
+				'id_category' => $id_category,
+				'tags' => $tags));
 	}
 	else {
 		$result = '';
@@ -372,7 +385,8 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'unknown_instructions' => false,
 	'critical_inverse' => false,
 	'warning_inverse' => false,
-	'id_category' => false));
+	'id_category' => false,
+	'tags' => false));
 
 
 $search_id_group = (int) get_parameter ('search_id_group');

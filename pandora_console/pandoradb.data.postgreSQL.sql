@@ -102,7 +102,8 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('compare_pass', 3),
 ('meta_style', 'meta_pandora'),
 ('enable_refr', '0'),
-('meta_num_elements', 100);
+('meta_num_elements', 100),
+('update_manager_installed', 1);
 
 COMMIT WORK;
 
@@ -453,3 +454,5 @@ INSERT INTO "tagent_custom_fields" VALUES (1,'Serial&#x20;Number',0),(2,'Departm
 INSERT INTO "ttag" VALUES (1,'network','Network&#x20;equipment','http://artica.es'),(2,'critical','Critical&#x20;modules',''),(3,'dmz','DMZ&#x20;Network&#x20;Zone',''),(4,'performance','Performance&#x20;anda&#x20;capacity&#x20;modules',''),(5,'configuration','','');
 
 INSERT INTO "tevent_response" VALUES (1,'Ping&#x20;to&#x20;host','Ping&#x20;to&#x20;the&#x20;agent&#x20;host','ping&#x20;-c&#x20;5&#x20;_agent_address_','command',0,620,500,0,''),(2,'SSH&#x20;to&#x20;host','Connect&#x20;via&#x20;SSH&#x20;to&#x20;the&#x20;agent','http://192.168.70.164:8022/anyterm.html?param=_User_@_agent_address_','url',0,800,450,0,'User'),(3,'Create&#x20;incident&#x20;from&#x20;event','Create&#x20;a&#x20;incident&#x20;from&#x20;the&#x20;event&#x20;with&#x20;the&#x20;standard&#x20;incidents&#x20;system&#x20;of&#x20;Pandora&#x20;FMS','index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event=_event_id_','url',0,0,0,1,''),(4,'Create&#x20;Integria&#x20;IMS&#x20;incident&#x20;from&#x20;event','Create&#x20;a&#x20;incident&#x20;from&#x20;the&#x20;event&#x20;with&#x20;integria&#x20;incidents&#x20;system&#x20;of&#x20;Pandora&#x20;FMS.&#x20;&#x0d;&#x0a;&#x0d;&#x0a;Is&#x20;necessary&#x20;to&#x20;enable&#x20;and&#x20;configure&#x20;the&#x20;Integria&#x20;incidents&#x20;in&#x20;Pandora&#x20;FMS&#x20;setup.','index.php?sec=workspace&amp;sec2=operation/integria_incidents/incident&amp;tab=editor&amp;from_event=_event_id_','url',0,0,0,1,''),(5,'Restart&#x20;agent','Restart&#x20;the&#x20;agent&#x20;with&#x20;using&#x20;UDP&#x20;protocol.&#x0d;&#x0a;&#x0d;&#x0a;To&#x20;use&#x20;this&#x20;response&#x20;is&#x20;necessary&#x20;to&#x20;have&#x20;installed&#x20;Pandora&#x20;FMS&#x20;server&#x20;and&#x20;console&#x20;in&#x20;the&#x20;same&#x20;machine.','/usr/share/pandora_server/udp_client.pl&#x20;_agent_address_&#x20;41122&#x20;&quot;REFRESH&#x20;AGENT&quot;','command',0,620,500,0,'');
+
+INSERT INTO "tupdate_settings" VALUES ('current_update', '412'), ('customer_key', 'PANDORA-FREE'), ('keygen_path', '/usr/share/pandora_server/keygen.i386.static'), ('update_server_host', 'www.artica.es'), ('update_server_port', '80'), ('update_server_path', '/pandoraupdate4/server.php'), ('updating_binary_path', 'Path where the updated binary files will be stored'), ('updating_code_path', 'Path where the updated code is stored'), ('dbname', ''), ('dbhost', ''), ('dbpass', ''), ('dbuser', ''), ('dbport', ''), ('proxy', ''), ('proxy_port', ''), ('proxy_user', ''), ('proxy_pass', '');

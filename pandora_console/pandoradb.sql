@@ -694,7 +694,6 @@ CREATE TABLE IF NOT EXISTS `tsesion` (
   `fecha` datetime NOT NULL default '1970-01-01 00:00:00',
   `utimestamp` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_sesion`),
-  KEY `idx_utimestamp` (`utimestamp`),
   KEY `idx_user` (`id_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

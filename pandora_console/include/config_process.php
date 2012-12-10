@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC120625';
-$pandora_version = 'v4.0.2';
+$build_version = 'PC121210';
+$pandora_version = 'v4.0.3';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();

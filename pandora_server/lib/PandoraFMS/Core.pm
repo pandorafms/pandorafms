@@ -2193,10 +2193,8 @@ sub update_agent_position($$$$$$;$$$$$) {
 	my ($pa_config, $current_longitude, $current_latitude, $current_altitude,
 		 $agent_id, $dbh, $stored_longitude, $stored_latitude, $stored_altitude, $start_timestamp, $description) = @_;
 	if (defined($stored_longitude) && defined($stored_latitude) && defined($start_timestamp) ) {
-		# Upadate all the position data of the agent
-		logger($pa_config, "Updating agent position: current_longitude=$current_longitude, current_latitude=$current_latitude,
-						 current_altitude=$current_altitude, stored_longitude=$stored_longitude, stored_latitude=$stored_latitude,
-						 stored_altitude=$stored_altitude, start_timestamp=$start_timestamp, agent_id=$agent_id", 10);
+		# Update all the position data of the agent
+		logger($pa_config, "Updating agent position: current_longitude=$current_longitude, current_latitude=$current_latitude, current_altitude=$current_altitude, stored_longitude=$stored_longitude, stored_latitude=$stored_latitude, stored_altitude=$stored_altitude, start_timestamp=$start_timestamp, agent_id=$agent_id", 10);
 		db_do ($dbh, 'UPDATE tgis_data_status SET current_longitude = ?, current_latitude = ?, current_altitude = ?,
 				stored_longitude = ?,stored_latitude = ?,stored_altitude = ?, start_timestamp = ?, description = ?,
 				number_of_packages = 1 WHERE tagente_id_agente = ?', 

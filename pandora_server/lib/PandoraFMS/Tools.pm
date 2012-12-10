@@ -441,7 +441,10 @@ sub md5check {
 ##########################################################################
 sub logger ($$;$) {
 	my ($pa_config, $message, $level) = @_;
-	
+
+	# Clean any string and ready to be printed in screen/file
+	$message = safe_output ($message);
+
 	$level = 1 unless defined ($level);
 	return if ($level > $pa_config->{'verbosity'});
 	

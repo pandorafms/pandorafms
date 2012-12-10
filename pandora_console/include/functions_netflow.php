@@ -275,14 +275,14 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit) {
 	}
 	
 	$values = array();
-	$table->size = array ('50%');
-	$table->class = 'databox';
+	$table->size = array ('60%');
+	$table->class = 'databox_grid';
 	$table->cellspacing = 0;
 	$table->data = array();
 	
 	$table->head = array();
 	$table->head[0] = '<b>'.__('Timestamp').'</b>';
-	$table->style[0] = 'border: 1px solid black;padding: 4px';
+	$table->style[0] = 'padding: 4px';
 	
 	$j = 0;
 	$source_index = array ();
@@ -290,7 +290,7 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit) {
 	
 	if (isset ($data['sources'])) {
 		foreach ($data['sources'] as $source => $null) {
-			$table->style[$j+1] = 'border: 1px solid black;padding: 4px';
+			$table->style[$j+1] = 'padding: 4px';
 			$table->align[$j+1] = "right";
 			$table->head[$j+1] = $source;
 			$source_index[$j] = $source;
@@ -298,7 +298,7 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit) {
 			$j++;
 		}
 	} else {
-		$table->style[1] = 'border: 1px solid black;padding: 4px';
+		$table->style[1] = 'padding: 4px;';
 	}
 	
 	// No aggregates

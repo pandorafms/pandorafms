@@ -1,5 +1,15 @@
 2012-12-09  Sancho Lerena <slerena@artica.es>
 
+	* pandoradb.sql: Replaced ^---.. comments with "-- -.." to avoid problems
+	with MySQL 5.0.x
+	
+	* include/config_process.php: Fixed some problems with default timezone, because
+	config function was called before timezone was setup.
+	
+	* include/styles/pandora.css: Added new style for netflow report render (HTML).
+	
+	* include/functions_netflow.php: Replaced some code for use new CSS styles.
+	
 	Ported new feature (Command Snapshot) from 4.0.3 code.
 
         *  include/javascript/pandora.js: Added new javascript function

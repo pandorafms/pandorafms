@@ -1188,3 +1188,50 @@ CREATE TABLE "ttag_event" (
 ); 
 
 CREATE INDEX "ttag_event_id_evento_idx" ON "ttag_event"("id_evento");
+
+-- -----------------------------------------------------
+-- Table `tupdate_settings`
+-- -----------------------------------------------------
+CREATE TABLE "tupdate_settings" ( 
+	"key" varchar(255) default '' PRIMARY KEY, 
+	"value" varchar(255) default ''
+);
+
+-- -----------------------------------------------------
+-- Table `tupdate_package`
+-- -----------------------------------------------------
+CREATE TABLE "tupdate_package"( 
+	"id" SERIAL NOT NULL PRIMARY KEY, 
+	"timestamp"  TIMESTAMP without time zone default NULL, 
+	"description" varchar(255) default ''
+);
+
+CREATE TYPE type_tupdate_type AS ENUM ('code', 'db_data', 'db_schema', 'binary');
+
+-- -----------------------------------------------------
+-- Table `tupdate`
+-- -----------------------------------------------------
+CREATE TABLE "tupdate" ( 
+	"id" SERIAL NOT NULL PRIMARY KEY, 
+	"type" type_tupdate_type, 
+	"id_update_package" INTEGER default 0 REFERENCES "tupdate_package"("id") ON UPDATE CASCADE ON DELETE CASCADE, 
+	"filename" varchar(250) default '', 
+	"checksum" varchar(250) default '', 
+	"previous_checksum" varchar(250) default '', 
+	"svn_version" INTEGER default 0, 
+	"data" TEXT default '', 
+	"data_rollback" TEXT default '', 
+	"description" TEXT default '', 
+	"db_table_name" varchar(140) default '', 
+	"db_field_name" varchar(140) default '', 
+	"db_field_value" varchar(1024) default ''
+);
+
+-- -----------------------------------------------------
+-- Table `tupdate_journal`
+-- -----------------------------------------------------
+CREATE TABLE "tupdate_journal" ( 
+	"id" SERIAL NOT NULL PRIMARY KEY, 
+	"id_update" INTEGER default 0 REFERENCES "tupdate"("id") ON UPDATE CASCADE ON DELETE CASCADE
+);
+

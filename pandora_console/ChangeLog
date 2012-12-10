@@ -1,3 +1,15 @@
+2012-12-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandoradb_data.sql
+	 pandoradb.sql
+	 pandoradb.postgreSQL.sql
+	 pandoradb.oracle.sql
+	 extensions/update_manager.php
+	 pandoradb.data.postgreSQL.sql
+	 pandoradb.data.oracle.sql: Added table tupdate_settings;
+	 
+	 Merged from trunk.
+
 2012-12-05  Sancho Lerena <slerena@artica.es>
 
 	*  include/javascript/pandora.js: Added new javascript function

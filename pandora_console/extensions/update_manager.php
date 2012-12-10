@@ -97,6 +97,10 @@ function pandora_update_manager_install () {
 	
 	load_update_manager_lib ();
 	
+	if ($config['update_manager_installed'] == 1) {
+		return;
+	}
+
 	/* SQL installation */
 	switch ($config['dbtype']) {
 		case 'mysql':

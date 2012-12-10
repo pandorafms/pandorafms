@@ -1474,3 +1474,60 @@ CREATE TABLE ttag_event (
 ); 
 
 CREATE INDEX ttag_event_id_evento_idx ON ttag_event(id_evento);
+
+-- ---------------------------------------------------------------------
+-- Table `tupdate_settings`
+-- ---------------------------------------------------------------------
+CREATE TABLE tupdate_settings ( 
+	key VARCHAR2(255) default '' PRIMARY KEY, 
+	value VARCHAR2(255) default ''
+);
+
+-- ---------------------------------------------------------------------
+-- Table `tupdate_package`
+-- ---------------------------------------------------------------------
+CREATE TABLE tupdate_package( 
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY, 
+	timestamp  TIMESTAMP default NULL, 
+	description VARCHAR2(255) default ''
+);
+
+CREATE SEQUENCE tupdate_package_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tupdate_package_inc BEFORE INSERT ON tupdate_package REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_package_s.nextval INTO :NEW.ID FROM dual; END tupdate_package_inc;;
+
+-- ---------------------------------------------------------------------
+-- Table `tupdate`
+-- ---------------------------------------------------------------------
+CREATE TABLE tupdate ( 
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY, 
+	type VARCHAR2(15), 
+	id_update_package NUMBER(10, 0) default 0 REFERENCES tupdate_package(id) ON DELETE CASCADE, 
+	filename VARCHAR2(250) default '', 
+	checksum VARCHAR2(250) default '', 
+	previous_checksum VARCHAR2(250) default '', 
+	svn_version NUMBER(10, 0) default 0, 
+	data CLOB default '', 
+	data_rollback CLOB default '', 
+	description CLOB default '', 
+	db_table_name VARCHAR2(140) default '', 
+	db_field_name VARCHAR2(140) default '', 
+	db_field_value VARCHAR2(1024) default '', 
+	CONSTRAINT tupdate_type_cons CHECK (type IN ('code', 'db_data', 'db_schema', 'binary'))
+);
+
+CREATE SEQUENCE tupdate_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tupdate_inc BEFORE INSERT ON tupdate REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_s.nextval INTO :NEW.ID FROM dual; END;;
+CREATE OR REPLACE TRIGGER tupdate_update AFTER UPDATE OF ID ON tupdate_package FOR EACH ROW BEGIN UPDATE tupdate SET ID_UPDATE_PACKAGE = :NEW.ID WHERE ID_UPDATE_PACKAGE = :OLD.ID; END;;
+
+-- ---------------------------------------------------------------------
+-- Table `tupdate_journal`
+-- ---------------------------------------------------------------------
+CREATE TABLE tupdate_journal ( 
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY, 
+	id_update NUMBER(10, 0) default 0 REFERENCES tupdate(id) ON DELETE CASCADE
+);
+
+CREATE SEQUENCE tupdate_journal_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tupdate_journal_inc BEFORE INSERT ON tupdate_journal REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_journal_s.nextval INTO :NEW.ID FROM dual; END;;
+CREATE OR REPLACE TRIGGER tupdate_journal_update AFTER UPDATE OF ID ON tupdate FOR EACH ROW BEGIN UPDATE tupdate_journal SET ID = :NEW.ID WHERE ID = :OLD.ID; END;;
+

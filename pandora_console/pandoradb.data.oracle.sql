@@ -85,6 +85,7 @@ INSERT INTO tconfig (token, value) VALUES ('integria_api_password', ' ');
 INSERT INTO tconfig (token, value) VALUES ('integria_inventory', '0');
 INSERT INTO tconfig (token, value) VALUES ('integria_url', ' ');
 INSERT INTO tconfig (token, value) VALUES ('list_ACL_IPs_for_API_0', '127.0.0.1');
+INSERT INTO tconfig (token, value) VALUES ('update_manager_installed', 1);
 COMMIT;
 END;;
 
@@ -576,3 +577,22 @@ treport_custom_sql_insert(4, 'Group&#x20;view','&lt;&#x20;&#40;select&#x20;count
 COMMIT;
 END;;
 
+INSERT INTO tupdate_settings VALUES ('current_update', '412');
+INSERT INTO tupdate_settings VALUES ('customer_key', 'PANDORA-FREE');
+INSERT INTO tupdate_settings VALUES ('keygen_path', '/usr/share/pandora_server/keygen.i386.static');
+INSERT INTO tupdate_settings VALUES ('update_server_host', 'www.artica.es');
+INSERT INTO tupdate_settings VALUES ('update_server_port', '80');
+INSERT INTO tupdate_settings VALUES ('update_server_path', '/pandoraupdate4/server.php');
+INSERT INTO tupdate_settings VALUES ('updating_binary_path', 'Path where the updated binary files will be stored');
+INSERT INTO tupdate_settings VALUES ('updating_code_path', 'Path where the updated code is stored');
+INSERT INTO tupdate_settings VALUES ('dbname', '');
+INSERT INTO tupdate_settings VALUES ('dbhost', '');
+INSERT INTO tupdate_settings VALUES ('dbpass', '');
+INSERT INTO tupdate_settings VALUES ('dbuser', '');
+INSERT INTO tupdate_settings VALUES ('dbport', '');
+INSERT INTO tupdate_settings VALUES ('proxy', '');
+INSERT INTO tupdate_settings VALUES ('proxy_port', '');
+INSERT INTO tupdate_settings VALUES ('proxy_user', '');
+INSERT INTO tupdate_settings VALUES ('proxy_pass', '');
+
+COMMIT;

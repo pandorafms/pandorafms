@@ -79,7 +79,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('integria_enabled', '0'),
 ('integria_api_password', ''),
 ('integria_inventory', '0'),
-('integria_url', '');
+('integria_url', ''),
+('update_manager_installed', 1);
 
 UNLOCK TABLES;
 
@@ -429,4 +430,6 @@ INSERT INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `execute`, `n
 INSERT INTO `tagent_custom_fields` VALUES (1,'Serial&#x20;Number',0),(2,'Department',0),(3,'Additional&#x20;ID',0);
 
 INSERT INTO `ttag` VALUES (1,'network','Network&#x20;equipment','http://artica.es'),(2,'critical','Critical&#x20;modules',''),(3,'dmz','DMZ&#x20;Network&#x20;Zone',''),(4,'performance','Performance&#x20;anda&#x20;capacity&#x20;modules',''),(5,'configuration','','');
+
+INSERT INTO `tupdate_settings` VALUES  ('current_update', '412'), ('customer_key', 'PANDORA-FREE'), ('keygen_path', '/usr/share/pandora_server/keygen.i386.static'), ('update_server_host', 'www.artica.es'), ('update_server_port', '80'), ('update_server_path', '/pandoraupdate4/server.php'), ('updating_binary_path', 'Path where the updated binary files will be stored'), ('updating_code_path', 'Path where the updated code is stored'), ('dbname', ''), ('dbhost', ''), ('dbpass', ''), ('dbuser', ''), ('dbport', ''), ('proxy', ''), ('proxy_port', ''), ('proxy_user', ''), ('proxy_pass', '');
 

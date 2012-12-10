@@ -1,3 +1,7 @@
+2012-12-10 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* db/mysql.php: finish to fixed the insert in the metaconsoles.
+
 2012-12-10  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.sql

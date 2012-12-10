@@ -1,5 +1,7 @@
 2012-12-10  Sancho Lerena <slerena@artica.es>
 
+	* pandoradb.sql: removed utimestamp index on tsesion.
+
 	* include/config_process.php,
 	install.php,
 	index.php: Version build update.

@@ -104,12 +104,19 @@ if (! defined ('ENTERPRISE_DIR'))
 
 require_once ($ownDir. 'functions_config.php');
 
+// We need a timezone BEFORE calling config_process_config. 
+// If not we will get ugly warnings. Set Europe/Madrid by default
+// Later will be replaced by the good one.
+
+date_default_timezone_set("Europe/Madrid");
+
 config_process_config();
 
 // Set a the system timezone default 
 if ((!isset($config["timezone"])) OR ($config["timezone"] == "")){
 	$config["timezone"] = "Europe/Berlin";
 }
+
 date_default_timezone_set($config["timezone"]);
 
 require_once ($ownDir . 'streams.php');

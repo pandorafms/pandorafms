@@ -890,11 +890,28 @@ span.rmess, span.nrmess {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
-	
 }
 .databox {
 	background-color: #f4f5f4;
 }
+
+/* For use in Netflow */
+
+table.databox_grid {
+	margin: 25px;
+}
+
+table.databox_grid th {
+	font-size: 12px;
+}
+
+table.databox_grid td {
+	padding: 6px;
+	margin: 4px;
+	border-bottom: 1px solid #acacac;
+	border-right: 1px solid #acacac;
+}
+
 table.alternate tr:nth-child(odd) td{
 	background-color: #e4e5e4;
 }

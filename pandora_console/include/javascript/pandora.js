@@ -142,7 +142,7 @@ function isEmptyObject(obj) {
  */
 function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	// Hack to add custom condition
-	if($("#hidden-custom_condition").val() != undefined) {
+	if ($("#hidden-custom_condition").val() != undefined) {
 		custom_condition = $("#hidden-custom_condition").val();
 	}
 	else {
@@ -166,7 +166,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	}
 	
 	var selection_mode = $('#modules_selection_mode').val();
-	if(selection_mode == undefined) {
+	if (selection_mode == undefined) {
 		selection_mode = 'common';
 	}
 	
@@ -181,10 +181,22 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	
 	// Check if homedir was received like a JSON
 	homedir = '';
-	if (event.data == null)
+	if (typeof(event) == 'undefined') {
 		homedir += '.';
-	else
-		homedir  = event.data.homedir;
+	}
+	else {
+		if (event.data == null)
+			homedir += '.';
+		else
+			homedir  = event.data.homedir;
+		
+		if (event.data.metaconsole != null) {
+			id_server = $("#" + event.data.id_server).val();
+		}
+		else {
+			id_server = 0;
+		}
+	}
 	
 	jQuery.post (homedir + '/ajax.php', 
 		{"page": "operation/agentes/ver_agente",
@@ -193,7 +205,8 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 		"all": find_modules,
 		"custom_condition": custom_condition,
 		"selection_mode": selection_mode,
-		"serialized": serialized 
+		"serialized": serialized,
+		"id_server": id_server
 		},
 		function (data) {
 			$('#module').empty ();

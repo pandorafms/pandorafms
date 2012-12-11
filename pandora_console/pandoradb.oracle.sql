@@ -927,6 +927,9 @@ CREATE SEQUENCE tsesion_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER tsesion_inc BEFORE INSERT ON tsesion REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tsesion_s.nextval INTO :NEW.ID_SESION FROM dual; END tsesion_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "ttipo_modulo"
+-- ---------------------------------------------------------------------
 CREATE TABLE ttipo_modulo (
 	id_tipo NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	nombre VARCHAR2(100) default '',
@@ -934,11 +937,12 @@ CREATE TABLE ttipo_modulo (
 	descripcion VARCHAR2(100) default '',
 	icon VARCHAR2(100) default NULL
 );
-
 CREATE SEQUENCE ttipo_modulo_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER ttipo_modulo_inc BEFORE INSERT ON ttipo_modulo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttipo_modulo_s.nextval INTO :NEW.ID_TIPO FROM dual; END ttipo_modulo_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "ttrap"
+-- ---------------------------------------------------------------------
 CREATE TABLE ttrap (
 	id_trap NUMBER(19, 0) NOT NULL PRIMARY KEY,
 	source VARCHAR2(50) default '',
@@ -957,9 +961,7 @@ CREATE TABLE ttrap (
 	description VARCHAR2(255) default '',
 	severity NUMBER(10, 0) default 2 NOT NULL
 );
-
 CREATE SEQUENCE ttrap_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER ttrap_inc BEFORE INSERT ON ttrap REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttrap_s.nextval INTO :NEW.ID_TRAP FROM dual; END ttrap_inc;;
 
 -- -----------------------------------------------------
@@ -1009,11 +1011,12 @@ CREATE TABLE tusuario_perfil (
 	assigned_by VARCHAR2(100) default '',
 	id_policy NUMBER(10, 0) DEFAULT 0 NOT NULL
 );
-
 CREATE SEQUENCE tusuario_perfil_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tusuario_perfil_inc BEFORE INSERT ON tusuario_perfil REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tusuario_perfil_s.nextval INTO :NEW.ID_UP FROM dual; END tusuario_perfil_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "tnews"
+-- ---------------------------------------------------------------------
 CREATE TABLE tnews (
 	id_news NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	author VARCHAR2(255) DEFAULT '',
@@ -1021,11 +1024,12 @@ CREATE TABLE tnews (
 	text CLOB NOT NULL,
 	timestamp TIMESTAMP default NULL
 );
-
 CREATE SEQUENCE tnews_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tnews_inc BEFORE INSERT ON tnews REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnews_s.nextval INTO :NEW.ID_NEWS FROM dual; END tnews_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "tgraph"
+-- ---------------------------------------------------------------------
 CREATE TABLE tgraph (
 	id_graph NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_user VARCHAR2(100) default '',
@@ -1040,22 +1044,24 @@ CREATE TABLE tgraph (
 	id_group NUMBER(19, 0) default 0 NOT NULL,
 	id_graph_template NUMBER(11, 0) default 0 NOT NULL 
 );
-
 CREATE SEQUENCE tgraph_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tgraph_inc BEFORE INSERT ON tgraph REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgraph_s.nextval INTO :NEW.ID_GRAPH FROM dual; END tgraph_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "tgraph_source"
+-- ---------------------------------------------------------------------
 CREATE TABLE tgraph_source (
 	id_gs NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_graph NUMBER(19, 0) default 0 NOT NULL,
 	id_agent_module  NUMBER(19, 0) default 0 NOT NULL,
 	weight BINARY_DOUBLE default 0
 );
-
 CREATE SEQUENCE tgraph_source_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tgraph_source_inc BEFORE INSERT ON tgraph_source REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgraph_source_s.nextval INTO :NEW.ID_GS FROM dual; END tgraph_source_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "treport"
+-- ---------------------------------------------------------------------
 CREATE TABLE treport (
 	id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_user VARCHAR2(100) default '',
@@ -1072,9 +1078,7 @@ CREATE TABLE treport (
 	id_group_edit NUMBER(19, 0) default 0 NOT NULL,
 	metaconsole NUMBER(5, 0) DEFAULT 0
 );
-
 CREATE SEQUENCE treport_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER treport_inc BEFORE INSERT ON treport REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_s.nextval INTO :NEW.ID_REPORT FROM dual; END treport_inc;;
 
 -- -----------------------------------------------------
@@ -1170,6 +1174,9 @@ CREATE SEQUENCE treport_custom_sql_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER treport_custom_sql_inc BEFORE INSERT ON treport_custom_sql REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_custom_sql_s.nextval INTO :NEW.ID FROM dual; END treport_custom_sql_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "tlayout"
+-- ---------------------------------------------------------------------
 CREATE TABLE tlayout (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name varchar(50)  NOT NULL,
@@ -1179,11 +1186,12 @@ CREATE TABLE tlayout (
 	height NUMBER(10, 0) default 0 NOT NULL,
 	width NUMBER(10, 0) default 0 NOT NULL
 );
-
 CREATE SEQUENCE tlayout_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tlayout_inc BEFORE INSERT ON tlayout REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlayout_s.nextval INTO :NEW.ID FROM dual; END tlayout_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "tlayout_data"
+-- ---------------------------------------------------------------------
 CREATE TABLE tlayout_data (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	id_layout NUMBER(10, 0) default 0 NOT NULL,
@@ -1201,26 +1209,28 @@ CREATE TABLE tlayout_data (
 	parent_item NUMBER(10, 0) default 0 NOT NULL,
 	label_color varchar(20) DEFAULT '',
 	no_link_color NUMBER(5, 0) default 0 NOT NULL,
-	enable_link NUMBER(5, 0) default 1 NOT NULL
+	enable_link NUMBER(5, 0) default 1 NOT NULL,
+	id_metaconsole NUMBER(10, 0) default 0 NOT NULL
 );
-
 CREATE SEQUENCE tlayout_data_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tlayout_data_inc BEFORE INSERT ON tlayout_data REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlayout_data_s.nextval INTO :NEW.ID FROM dual; END tlayout_data_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "tplugin"
+-- ---------------------------------------------------------------------
 CREATE TABLE tplugin (
-  	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-  	name VARCHAR2(200) NOT NULL,
-  	description CLOB,
-  	max_timeout NUMBER(10, 0) default 0 NOT NULL,
+	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	name VARCHAR2(200) NOT NULL,
+	description CLOB,
+	max_timeout NUMBER(10, 0) default 0 NOT NULL,
 	max_retries NUMBER(10, 0) default 0,
-  	execute VARCHAR2(250) NOT NULL,
-  	net_dst_opt VARCHAR2(50) default '',
-  	net_port_opt VARCHAR2(50) default '',
-  	user_opt VARCHAR2(50) default '',
-  	pass_opt VARCHAR2(50) default '',
-  	plugin_type NUMBER(5, 0) default 0 NOT NULL,
-  	macros CLOB default '',
+	execute VARCHAR2(250) NOT NULL,
+	net_dst_opt VARCHAR2(50) default '',
+	net_port_opt VARCHAR2(50) default '',
+	user_opt VARCHAR2(50) default '',
+	pass_opt VARCHAR2(50) default '',
+	plugin_type NUMBER(5, 0) default 0 NOT NULL,
+	macros CLOB default '',
 	parameters CLOB default ''
 ); 
 

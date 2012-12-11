@@ -57,6 +57,13 @@ function cancel_button_palette_callback() {
 }
 
 function update_button_palette_callback() {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	var values = {};
 	
 	values = readFields();
@@ -81,7 +88,7 @@ function update_button_palette_callback() {
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
-				url: action="ajax.php",
+				url: url_ajax,
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -142,7 +149,7 @@ function update_button_palette_callback() {
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
-				url: action="ajax.php",
+				url: url_ajax,
 				async: false,
 				timeout: 10000,
 				success: function (data) {
@@ -177,6 +184,8 @@ function update_button_palette_callback() {
 }
 
 function readFields() {
+	metaconsole = $("input[name='metaconsole']").val();
+	
 	var values = {};
 	
 	values['label'] = $("input[name=label]").val(); 
@@ -199,7 +208,16 @@ function readFields() {
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
 	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
 	values['value_show'] = $("input[name=value_show]:checked").val();
-	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0; 
+	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
+	
+	if (metaconsole) {
+		values['metaconsole'] = 1;
+		values['id_agent'] = $("#hidden-agent").val();
+		values['server_name'] = $("#id_server_name").val();
+	}
+	else {
+		values['metaconsole'] = 0;
+	}
 	
 	if (typeof(enterprise_readFields) == 'function') {
 		//The parameter is a object and the function can change or add
@@ -365,6 +383,13 @@ function toggle_item_palette() {
 }
 
 function loadFieldsFromDB(item) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "load"});
@@ -374,7 +399,7 @@ function loadFieldsFromDB(item) {
 	
 	jQuery.ajax({
 		async: false,
-		url: "ajax.php",
+		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -459,6 +484,15 @@ function loadFieldsFromDB(item) {
 						else {
 							$("input[name=value_show][value=value]")
 								.attr("checked", "checked");
+						}
+					}
+					
+					if (metaconsole) {
+						if (key == 'id_agent') {
+							$("#hidden-agent").val(val);
+						}
+						if (key == 'id_server_name') {
+							$("#id_server_name").val(val);
 						}
 					}
 				});
@@ -628,6 +662,13 @@ function cleanFields() {
 }
 
 function getModuleGraph(id_data) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	var parameter = Array();
 	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -635,7 +676,7 @@ function getModuleGraph(id_data) {
 	parameter.push ({name: "id_element", value: id_data});
 	jQuery.ajax({
 		async: false,
-		url: "ajax.php",
+		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -646,6 +687,9 @@ function getModuleGraph(id_data) {
 			height = data['height'];
 			width = data['width'];
 			period = data['period'];
+			if (metaconsole) {
+				id_metaconsole = data['id_metaconsole'];
+			}
 		}
 	});
 	
@@ -655,12 +699,15 @@ function getModuleGraph(id_data) {
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_image_sparse"});
 	parameter.push ({name: "id_agent_module", value: id_agente_modulo});
+	if (metaconsole) {
+		parameter.push ({name: "id_metaconsole", value: id_metaconsole});
+	}
 	parameter.push ({name: "height", value: height});
 	parameter.push ({name: "width", value: width});
 	parameter.push ({name: "period", value: period});
 	jQuery.ajax({
 		async: false,
-		url: "ajax.php",
+		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'text', //The ajax return the data as text.
@@ -674,6 +721,13 @@ function getModuleGraph(id_data) {
 }
 
 function getModuleValue(id_data, process_simple_value, period) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
@@ -684,7 +738,7 @@ function getModuleValue(id_data, process_simple_value, period) {
 	}
 	jQuery.ajax({
 		async: false,
-		url: "ajax.php",
+		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -698,6 +752,15 @@ function getModuleValue(id_data, process_simple_value, period) {
 }
 
 function getPercentileBar(id_data, values) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	var url_hack_metaconsole = '';
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+		url_hack_metaconsole = '../../';
+	}
+	
 	max_percentile = values['max_percentile'];
 	width_percentile = values['width_percentile'];
 	
@@ -709,7 +772,7 @@ function getPercentileBar(id_data, values) {
 	parameter.push ({name: "value_show", value: values['value_show']});
 	jQuery.ajax({
 		async: false,
-		url: "ajax.php",
+		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -735,7 +798,7 @@ function getPercentileBar(id_data, values) {
 	parameter.push ({name: "action", value: "get_font"});
 	jQuery.ajax({
 		async: false,
-		url: "ajax.php",
+		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -758,7 +821,7 @@ function getPercentileBar(id_data, values) {
 		value_text = module_value + " " + unit_text;
 	}
 	
-	var img = 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
+	var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
 		'width=' + width_percentile + '&mode=1&progress=' + percentile +
 		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
 	
@@ -766,6 +829,15 @@ function getPercentileBar(id_data, values) {
 }
 
 function getPercentileBubble(id_data, values) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	var url_hack_metaconsole = '';
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+		url_hack_metaconsole = '../../';
+	}
+	
 	max_percentile = values['max_percentile'];
 	width_percentile = values['width_percentile'];
 	
@@ -777,7 +849,7 @@ function getPercentileBubble(id_data, values) {
 	parameter.push ({name: "value_show", value: values['value_show']});
 	jQuery.ajax({
 		async: false,
-		url: "ajax.php",
+		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -800,7 +872,7 @@ function getPercentileBubble(id_data, values) {
 	parameter.push ({name: "action", value: "get_font"});
 	jQuery.ajax({
 		async: false,
-		url: "ajax.php",
+		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -823,7 +895,7 @@ function getPercentileBubble(id_data, values) {
 		value_text = module_value + " " + unit_text;
 	}
 	
-	var img = 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' + 
+	var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' + 
 		'width=' + width_percentile + '&mode=1&progress=' + percentile +
 		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
 	
@@ -832,6 +904,13 @@ function getPercentileBubble(id_data, values) {
 }
 
 function getImageElement(id_data) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_image"});
@@ -841,7 +920,7 @@ function getImageElement(id_data) {
 	
 	jQuery.ajax({
 		async: false,
-		url: "ajax.php",
+		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -855,6 +934,13 @@ function getImageElement(id_data) {
 }
 
 function visual_map_get_color_line_status(id) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_color_line"});
@@ -864,7 +950,7 @@ function visual_map_get_color_line_status(id) {
 	
 	jQuery.ajax({
 		async: false,
-		url: "ajax.php",
+		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -881,6 +967,12 @@ function createItem(type, values, id_data) {
 	var sizeStyle = '';
 	var imageSize = '';
 	var item = null;
+	
+	metaconsole = $("input[name='metaconsole']").val();
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
 	
 	switch (type) {
 		case 'static_graph':
@@ -899,9 +991,16 @@ function createItem(type, values, id_data) {
 			parameter.push ({name: "get_element_status", value: "1"});
 			parameter.push ({name: "id_element", value: id_data});
 			
+			if (metaconsole) {
+				parameter.push ({name: "metaconsole", value: 1});
+			}
+			else {
+				parameter.push ({name: "metaconsole", value: 0});
+			}
+			
 			jQuery.ajax ({
 				type: 'POST',
-				url: action="ajax.php",
+				url: url_ajax,
 				data: parameter,
 				async: false,
 				timeout: 10000,
@@ -919,7 +1018,7 @@ function createItem(type, values, id_data) {
 			
 			jQuery.ajax ({
 				type: 'POST',
-				url: action="ajax.php",
+				url: url_ajax,
 				data: parameter,
 				async: false,
 				timeout: 10000,
@@ -1005,7 +1104,7 @@ function createItem(type, values, id_data) {
 			
 			jQuery.ajax ({
 				type: 'POST',
-				url: action="ajax.php",
+				url: url_ajax,
 				data: parameter,
 				async: false,
 				timeout: 10000,
@@ -1049,6 +1148,13 @@ function addItemSelectParents(id_data, text) {
 }
 
 function insertDB(type, values) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	var id = null;
 	
 	parameter = Array();
@@ -1061,7 +1167,7 @@ function insertDB(type, values) {
 	});
 	
 	jQuery.ajax({
-		url: "ajax.php",
+		url: url_ajax,
 		async: false,
 		data: parameter,
 		type: "POST",
@@ -1083,6 +1189,12 @@ function insertDB(type, values) {
 }
 
 function updateDB_visual(type, idElement , values, event, top, left) {
+	metaconsole = $("input[name='metaconsole']").val();
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	switch (type) {
 		case 'module_graph':
 			$("#image_" + idElement).attr("src", getModuleGraph(idElement));
@@ -1094,9 +1206,16 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				parameter.push ({name: "get_element_status", value: "1"});
 				parameter.push ({name: "id_element", value: idElement});
 				
+				if (metaconsole) {
+					parameter.push ({name: "metaconsole", value: 1});
+				}
+				else {
+					parameter.push ({name: "metaconsole", value: 0});
+				}
+				
 				jQuery.ajax ({
 					type: 'POST',
-					url: action="ajax.php",
+					url: url_ajax,
 					data: parameter,
 					async: false,
 					timeout: 10000,
@@ -1137,7 +1256,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				jQuery.ajax ({
 					data: params.join ("&"),
 					type: 'POST',
-					url: action="ajax.php",
+					url: url_ajax,
 					async: false,
 					timeout: 10000,
 					success: function (data) {
@@ -1202,6 +1321,13 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 }
 
 function updateDB(type, idElement , values, event) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	var top = 0;
 	var left = 0;
 	
@@ -1261,7 +1387,7 @@ function updateDB(type, idElement , values, event) {
 	}
 	else {
 		jQuery.ajax({
-			url: "ajax.php",
+			url: url_ajax,
 			data: parameter,
 			type: "POST",
 			dataType: 'text',
@@ -1274,6 +1400,13 @@ function updateDB(type, idElement , values, event) {
 }
 
 function deleteDB(idElement) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "delete"});
@@ -1281,7 +1414,7 @@ function deleteDB(idElement) {
 	parameter.push ({name: "id_element", value: idElement});
 	
 	jQuery.ajax({
-		url: "ajax.php",
+		url: url_ajax,
 		async: false,
 		data: parameter,
 		type: "POST",
@@ -1682,6 +1815,8 @@ function click_button_toolbox(id) {
 }
 
 function showPreview(image) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
 	switch (toolbuttonActive) {
 		case 'static_graph':
 			showPreviewStaticGraph(image);
@@ -1693,6 +1828,13 @@ function showPreview(image) {
 }
 
 function showPreviewStaticGraph(staticGraph) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	$("#preview").empty();
 	$("#preview").css('text-align', 'right');
 	
@@ -1706,7 +1848,7 @@ function showPreviewStaticGraph(staticGraph) {
 		
 		jQuery.ajax ({
 			type: 'POST',
-			url: action="ajax.php",
+			url: url_ajax,
 			data: parameter,
 			async: false,
 			dataType: 'json',
@@ -1721,6 +1863,13 @@ function showPreviewStaticGraph(staticGraph) {
 }
 
 function showPreviewIcon(icon) {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_ajax = "ajax.php";
+	if (metaconsole) {
+		url_ajax = "../../ajax.php";
+	}
+	
 	$("#preview").empty();
 	$("#preview").css('text-align', 'left');
 	
@@ -1734,7 +1883,7 @@ function showPreviewIcon(icon) {
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: action="ajax.php",
+			url: url_ajax,
 			async: false,
 			timeout: 10000,
 			success: function (data) {
@@ -1745,12 +1894,20 @@ function showPreviewIcon(icon) {
 }
 
 function showGrid() {
+	metaconsole = $("input[name='metaconsole']").val();
+	
+	var url_hack_metaconsole = '';
+	if (metaconsole) {
+		url_hack_metaconsole = '../../';
+	}
+	
 	var display = $("#background_grid").css('display');
 	if (display == 'none') {
 		$("#background_grid").css('display', '');
 		$("#background_img").css('opacity', '0.55');
 		$("#background_img").css('filter', 'alpha(opacity=55)');
-		$("#background_grid").css('background', 'url("images/console/background/white_boxed.jpg")');
+		$("#background_grid").css('background',
+			'url("' + url_hack_metaconsole + 'images/console/background/white_boxed.jpg")');
 		
 		//Snap to grid all elements.
 		jQuery.each($(".item"), function(key, value) {

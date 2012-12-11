@@ -24,26 +24,52 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
-require_once ('include/functions_visual_map.php');
-require_once ('include/functions_users.php');
+require_once ($config['homedir'] . '/include/functions_visual_map.php');
+require_once ($config['homedir'] . '/include/functions_users.php');
+
+$pure = get_parameter('pure', 0);
 
 switch ($action) {
 	case 'new':
-		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "'>";
-		html_print_input_hidden('action', 'save');
+		if (!defined('METACONSOLE')) {
+			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "'>";
+			html_print_input_hidden('action', 'save');
+		}
+		else {
+			echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post">';
+			html_print_input_hidden('action2', 'save');
+		}
+		
 		break;
 	case 'update':
 	case 'save':
-		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "'>";
-		html_print_input_hidden('action', 'update');
+		if (!defined('METACONSOLE')) {
+			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "'>";
+			html_print_input_hidden('action', 'update');
+		}
+		else {
+			//echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post">';
+			echo "<form action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&action=visualmap' method='post' >";
+			html_print_input_hidden('action2', 'update');
+		}
 		break;
 	case 'edit':
-		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "'>";
-		html_print_input_hidden('action', 'update');
+		if (!defined('METACONSOLE')) {
+			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "'>";
+			html_print_input_hidden('action', 'update');
+		}
+		else {
+			echo "<form action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&action=visualmap' method='post' >";
+			html_print_input_hidden('action2', 'update');
+		}
 		break;
 }
 
 $table->width = '98%';
+if (defined('METACONSOLE')) {
+	$table->align[0] = 'left';
+	$table->align[1] = 'left';
+}
 $table->data = array ();
 $table->data[0][0] = __('Name:'). ui_print_help_tip (__("Use [ or ( as first character, for example '[*] Map name', to render this map name in main menu"), true);
 
@@ -59,8 +85,8 @@ else
 	$display_all_group = false;
 
 $table->data[1][1] = html_print_select_groups($config['id_user'], "AR", $display_all_group, 'id_group', $idGroup, '', '', '', true);
-$backgrounds_list = list_files ('images/console/background/', "jpg", 1, 0);
-$backgrounds_list = array_merge ($backgrounds_list, list_files ('images/console/background/', "png", 1, 0));
+$backgrounds_list = list_files ($config['homedir'] . '/images/console/background/', "jpg", 1, 0);
+$backgrounds_list = array_merge ($backgrounds_list, list_files ($config['homedir'] . '/images/console/background/', "png", 1, 0));
 $table->data[2][0] = __('Background');
 $table->data[2][1] = html_print_select ($backgrounds_list, 'background', $background, '', '', 0, true);
 if ($action == 'new') {

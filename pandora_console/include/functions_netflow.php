@@ -455,7 +455,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $u
 		$temp_file = tempnam($config['attachment_store'], 'netflow_tmp_');
 		$command .= ' -t '.date($nfdump_date_format, $last_timestamp).'-'.date($nfdump_date_format, $end_date);
 		exec("$command > $temp_file");
-
+		
 		// Parse data file
 		// We must parse from $start_date to avoid creating new intervals!
 		netflow_parse_file ($start_date, $end_date, $interval_length, $temp_file, $values, $aggregate, $unit);

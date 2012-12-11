@@ -24,11 +24,20 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
-require_once ('include/functions_visual_map.php');
+require_once ($config['homedir'] . '/include/functions_visual_map.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 
 $table->id = 'wizard_table';
-$table->width = '98%';
+if (!defined('METACONSOLE')) {
+	$metaconsole_hack = '';
+	$table->width = '98%';
+}
+else {
+	$metaconsole_hack = '../../';
+	$table->width = '600';
+	
+	require_once($config['homedir'] . "/enterprise/meta/include/functions_html_meta.php");
+}
 
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align: text-top;';
@@ -40,10 +49,18 @@ $table->size[0] = "20%";
 $table->size[1] = "20%";
 $table->size[2] = "20%";
 $table->size[3] = "20%";
+
+$table->align = array();
+$table->align[0] = 'left';
+$table->align[1] = 'left';
+$table->align[2] = 'left';
+$table->align[3] = 'left';
+
 $table->data = array ();
 
 $images_list = array ();
-$all_images = list_files ('images/console/icons/', "png", 1, 0);
+$all_images = list_files (
+	$config['homedir'] . '/images/console/icons/', "png", 1, 0);
 foreach ($all_images as $image_file) {
 	if (strpos ($image_file, "_bad"))
 		continue;
@@ -61,28 +78,34 @@ $type_list = array(
 	MODULE_GRAPH => __('Module graph'),
 	SIMPLE_VALUE => __('Simple value'));
 
+
 $table->rowstyle["all_0"] = 'display: none;';
 $table->data["all_0"][0] = __('Type');
 $table->data["all_0"][1] = html_print_select ($type_list, 'type', '', 'hidden_rows()', '', '', true, false, false);
+
 
 $table->rowstyle["staticgraph"] = 'display: none;';
 $table->data["staticgraph"][0] = __('Image');
 $table->data["staticgraph"][1] = html_print_select ($images_list, 'image', '', '', '', '', true);
 
+
 $table->rowstyle["all_1"] = 'display: none;';
 $table->data["all_1"][0] = __('Range between elements (px)');
 $table->data["all_1"][1] = html_print_input_text ('range', 50, '', 5, 5, true);
 
+$table->colspan["staticgraph_modulegraph"][1] = "2";
 $table->rowstyle["staticgraph_modulegraph"] = 'display: none;';
 $table->data["staticgraph_modulegraph"][0] = __('Size (px)');
 $table->data["staticgraph_modulegraph"][1] = __('Width').': ' .
 	html_print_input_text ('width', 0, '', 5, 5, true);
 $table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' . __('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
 
+
 $table->rowstyle["modulegraph_simplevalue"] = 'display: none;';
 $table->data["modulegraph_simplevalue"][0] = __('Period');
 $table->data["modulegraph_simplevalue"][1] =
 	html_print_extended_select_for_time ('period', '', '', '', '', false, true);
+
 
 $table->rowstyle["simplevalue"] = 'display: none;';
 $table->data["simplevalue"][0] = __('Process');
@@ -91,15 +114,18 @@ $table->data["simplevalue"][1] = html_print_select (
 	PROCESS_VALUE_MAX => __('Max value'),
 	PROCESS_VALUE_AVG => __('Avg value')), 'process_value', PROCESS_VALUE_AVG, '', __('None'), PROCESS_VALUE_NONE, true);
 
+
 $table->rowstyle["percentileitem_1"] = 'display: none;';
 $table->data["percentileitem_1"][0] = __('Width (px)');
 $table->data["percentileitem_1"][1] =
 	html_print_input_text ('percentileitem_width', 0, '', 5, 5, true);
 
+
 $table->rowstyle["percentileitem_2"] = 'display: none;';
 $table->data["percentileitem_2"][0] = __('Max value');
 $table->data["percentileitem_2"][1] =
 	html_print_input_text ('max_value', 0, '', 5, 5, true);
+
 
 $table->rowstyle["percentileitem_3"] = 'display: none;';
 $table->data["percentileitem_3"][0] = __('Type');
@@ -107,15 +133,26 @@ $table->data["percentileitem_3"][1] =
 	html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', 'style="float: left;"', true) .
 	html_print_radio_button_extended('type_percentile', 'bubble', ('Bubble'), 'percentile', false, '', 'style="float: left;"', true);
 
+
 $table->rowstyle["percentileitem_4"] = 'display: none;';
 $table->data["percentileitem_4"][0] = __('Value to show');
 $table->data["percentileitem_4"][1] = html_print_radio_button_extended('value_show', 'percent', ('Percent'), 'value', false, '', 'style="float: left;"', true) .
 	html_print_radio_button_extended('value_show', 'value', ('Value'), 'value', false, '', 'style="float: left;"', true);
 
-$table->rowstyle["all_2"] = 'display: none;';
-$table->data["all_2"][0] = __('Groups');
-$table->data["all_2"][1] = html_print_select_groups(
+
+if (defined('METACONSOLE')) {
+	$table->rowstyle["all_2"] = 'display: none;';
+	$table->data["all_2"][0] = __('Servers');
+	$table->data["all_2"][1] = html_meta_print_select_servers(false,
+		false, 'servers', '', '', '', 0, true);
+}
+
+
+$table->rowstyle["all_3"] = 'display: none;';
+$table->data["all_3"][0] = __('Groups');
+$table->data["all_3"][1] = html_print_select_groups(
 	$config['id_user'], "AR", true, 'groups', '', '', '', 0, true); 
+
 
 $table->rowstyle["all_one_item_per_agent"] = 'display: none';
 $table->data["all_one_item_per_agent"][0] = __('One item per agent');
@@ -123,36 +160,50 @@ $table->data["all_one_item_per_agent"][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_
 $table->data["all_one_item_per_agent"][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('item_per_agent', 0, '', 0, false, 'item_per_agent_change(0)', '', true);
 $table->data["all_one_item_per_agent"][1] .= html_print_input_hidden ('item_per_agent_test', 0, true);
 
-$table->rowstyle["all_3"] = 'display: none;';
-$table->data["all_3"][0] = __('Agents');
 
-$table->data["all_3"][1] = html_print_select (agents_get_group_agents (0, false, "none", false, true),
+$table->rowstyle["all_4"] = 'display: none;';
+$table->data["all_4"][0] = __('Agents');
+$table->data["all_4"][1] = html_print_select (agents_get_group_agents (0, false, "none", false, true),
 	'id_agents[]', 0, false, '', '', true, true);
+$table->data["all_4"][2] = ' <span style="vertical-align: top;">' . __('Modules') . '</span>';
+$table->data["all_4"][3] = html_print_select (array (), 'module[]', 0, false, __('None'), -1, true, true);
 
-$table->data["all_3"][2] = ' <span style="vertical-align: top;">' . __('Modules') . '</span>';
 
-$table->data["all_3"][3] = html_print_select (array (), 'module[]', 0, false, __('None'), -1, true, true);
-
-$table->rowstyle["all_5"] = 'display: none;';
-$table->data["all_5"][0] = __('Label');
+$table->rowstyle["all_6"] = 'display: none;';
+$table->data["all_6"][0] = __('Label');
 $label_type = array ('agent_module' => __('Agent - Module'),
 	'module' => __('Module'),
 	'agent' => __('Agent'),
 	'none' => __('None'));
-$table->data["all_5"][1] = html_print_select ($label_type, 'label_type', 'agent_module', '', '', '', true);
+$table->data["all_6"][1] = html_print_select ($label_type, 'label_type', 'agent_module', '', '', '', true);
 
-$table->data["all_6"][0] = __('Enable link agent');
-$table->data["all_6"][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('enable_link', 1, '', 1, false, '', '', true).'&nbsp;&nbsp;';
-$table->data["all_6"][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('enable_link', 0, '', 1, false, '', '', true);
 
-echo '<form method="post"
-	action="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '"
-	onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
+$table->data["all_7"][0] = __('Enable link agent');
+$table->data["all_7"][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('enable_link', 1, '', 1, false, '', '', true).'&nbsp;&nbsp;';
+$table->data["all_7"][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('enable_link', 0, '', 1, false, '', '', true);
+
+if (defined('METACONSOLE')) {
+	$pure = get_parameter('pure', 0);
+	
+	echo '<form method="post"
+		action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&tab=wizard&id_visual_console=' . $visualConsole["id"] . '"
+		onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
+}
+else {
+	echo '<form method="post"
+		action="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '"
+		onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
+}
 
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_input_hidden ('action', 'update');
+if (defined('METACONSOLE')) {
+	html_print_input_hidden ('action2', 'update');
+}
+else {
+	html_print_input_hidden ('action', 'update');
+}
 html_print_input_hidden ('id_visual_console', $visualConsole["id"]);
 html_print_submit_button (__('Add'), 'go', false, 'class="sub wizard wand"');
 echo '</div>';
@@ -165,6 +216,16 @@ echo '<span id="loading_text" style="display: none;">' . __('Loading...') . '</s
 ?>
 <script type="text/javascript">
 var show_only_enabled_modules = true;
+
+<?php
+if (defined('METACONSOLE')) {
+	echo 'var url_ajax = "../../ajax.php";';
+}
+else {
+	echo 'var url_ajax = "ajax.php";';
+}
+?>
+
 $(document).ready (function () {
 	hidden_rows();
 	
@@ -189,13 +250,19 @@ $(document).ready (function () {
 		var data_params = {"page": "include/ajax/agent",
 			"get_agents_group": 1,
 			"id_group": $("#groups").val(),
-			"mode": "json"};
+			<?php
+			if (defined('METACONSOLE')) {
+				echo '"id_server": $("#servers").val(),' . "\n";
+			}
+			?>
+			"mode": "json"
+			};
 		
 		jQuery.ajax ({
 			data: data_params,
 			async: false,
 			type: 'POST',
-			url: action="ajax.php",
+			url: url_ajax,
 			timeout: 10000,
 			dataType: 'json',
 			success: function (data) {
@@ -228,8 +295,20 @@ $(document).ready (function () {
 	
 	$("#id_agents").change ( function() {
 		if ($("#hidden-item_per_agent_test").val() == 0) 
-			agent_changed_by_multiple_agents();
+			agent_changed_by_multiple_agents(
+			<?php
+			if (defined('METACONSOLE')) {
+				echo "{'data': {'id_server': 'servers', 'metaconsole': 1, 'homedir': '../../'}}";
+			}
+			?>
+			);
 	});
+	
+	<?php
+	if (defined('METACONSOLE')) {
+		echo "metaconsole_init();";
+	}
+	?>
 });
 
 function check_fields() {
@@ -296,5 +375,28 @@ function item_per_agent_change(itemPerAgent) {
 		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr('value', 'none'));
 	
 	}
+}
+
+function metaconsole_init() {
+	/*
+	var count_servers = $("#servers option").length;
+	var count_groups = $("#groups option").length;
+	
+	if (count_servers > 1) {
+		servers = $("#servers option");
+		value = $(servers[1]).val();
+		
+		$("#servers option[value=" + value + "]").attr('selected', 'true');
+	}
+	
+	if (count_groups > 1) {
+		groups = $("#groups option");
+		value = $(groups[1]).val();
+		
+		$("#groups option[value=" + value + "]").attr('selected', 'true');
+	}
+	*/
+	
+	$("#groups").trigger('change');
 }
 </script>

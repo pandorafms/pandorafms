@@ -123,7 +123,19 @@ function visual_map_print_item($layoutData) {
 		
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
-			$module_value = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $id_module);
+			//Metaconsole db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				$connection = db_get_row_filter ('tmetaconsole_setup',
+					array('id' => $layoutData['id_metaconsole']));
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					//ui_print_error_message ("Error connecting to ".$server_name);
+					continue;
+				}
+			}
+			
+			$module_value = db_get_sql ('SELECT datos
+				FROM tagente_estado
+				WHERE id_agente_modulo = ' . $id_module);
 			$value_text = false;
 			if ($layoutData['image'] == 'percent') {
 				$value_text = false;
@@ -137,6 +149,11 @@ function visual_map_print_item($layoutData) {
 				$value_text = format_for_graph($module_value, 2);
 				if (!empty($unit_text))
 					$value_text .= " " . $unit_text;
+			}
+			
+			//Restore db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				metaconsole_restore_db();
 			}
 			
 			if ( $max_percentile > 0)
@@ -162,8 +179,24 @@ function visual_map_print_item($layoutData) {
 			break;
 		
 		case MODULE_GRAPH:
+			//Metaconsole db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				$connection = db_get_row_filter ('tmetaconsole_setup',
+					$layoutData['id_metaconsole']);
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					//ui_print_error_message ("Error connecting to ".$server_name);
+					continue;
+				}
+			}
+			
 			$img = grafico_modulo_sparse($id_module, $period, 0, $width,
 				$height, '', null, false, 1, false, 0, '', 0, 0, true, true);
+			
+			//Restore db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				metaconsole_restore_db();
+			}
+			
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
 			
 			echo '<div id="' . $id . '" class="item module_graph" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
@@ -177,7 +210,24 @@ function visual_map_print_item($layoutData) {
 		case SIMPLE_VALUE_AVG:
 			echo '<div id="' . $id . '" class="item simple_value" style="z-index: 1; left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text;
+			
+			//Metaconsole db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				$connection = db_get_row_filter ('tmetaconsole_setup',
+					array('id' => $layoutData['id_metaconsole']));
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					//ui_print_error_message ("Error connecting to ".$server_name);
+					continue;
+				}
+			}
+			
 			$value = visual_map_get_simple_value($type, $id_module, $period);
+			
+			//Restore db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				metaconsole_restore_db();
+			}
+			
 			echo ' <span id="simplevalue_' . $id . '" style="font-weight:bold;">' . $value . '</span>';
 			echo '</div>';
 			break;
@@ -401,7 +451,9 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range,
  */
 function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
-	$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link = true) {
+	$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link = true,
+	$id_server = 0) {
+	
 	if (empty ($id_modules)) {
 		$return = ui_print_error_message (__('No modules selected'), '', true);
 		return $return;
@@ -419,8 +471,44 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 			$pos_y = $pos_y + $range;
 		}
 		
+		if ($id_server != 0) {
+			$connection = db_get_row_filter('tmetaconsole_setup',
+				array('id' => $id_server));
+			if (metaconsole_load_external_db($connection) != NOERR) {
+				$return = ui_print_error_message(
+					"Error connecting to " . $server_name, '', true);
+				
+				return $return;
+			}
+		}
+		
 		$id_agent = modules_get_agentmodule_agent ($id_module);
 		
+		switch ($label_type) {
+			case 'agent_module':
+			default:
+				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
+				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
+				$label = $agent_label . " - " . $module_label;
+				break;
+			case 'module':
+				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
+				$label = $module_label;
+				break;
+			case 'agent':
+				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
+				$label = $agent_label;
+				break;
+			case 'none':
+				$label = '';
+				break;
+		}
+		$label = io_safe_input($label);
+		
+		//Restore db connection
+		if ($id_server != 0) {
+			metaconsole_restore_db();
+		}
 		
 		$value_height = $height;
 		$value_image = $image;
@@ -458,27 +546,6 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 				break;
 		}
 		
-		switch ($label_type) {
-			case 'agent_module':
-			default:
-				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
-				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
-				$label = $agent_label . " - " . $module_label;
-				break;
-			case 'module':
-				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
-				$label = $module_label;
-				break;
-			case 'agent':
-				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
-				$label = $agent_label;
-				break;
-			case 'none':
-				$label = '';
-				break;
-		}
-		$label = io_safe_input($label);
-		
 		$values = array ('type' => $value_type,
 			'id_layout' => $id_layout,
 			'pos_x' => $pos_x,
@@ -491,7 +558,8 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 			'period' => $period,
 			'height' => $value_height,
 			'label_color' => '#000000',
-			'enable_link' => $enable_link);
+			'enable_link' => $enable_link,
+			'id_metaconsole' => $id_server);
 		
 		db_process_sql_insert ('tlayout_data', $values);
 		
@@ -517,7 +585,10 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
  */
 function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
-	$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link = 1) {
+	$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link = 1,
+	$id_server = 0) {
+	
+	global $config;
 	
 	if (empty ($id_agents)) {
 		$return = ui_print_error_message (__('No agents selected'), '', true);
@@ -573,9 +644,23 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 				break;
 		}
 		
+		if ($id_server != 0) {
+			$connection = db_get_row_filter('tmetaconsole_setup',
+				array('id' => $id_server));
+			if (metaconsole_load_external_db($connection) != NOERR) {
+				$return = ui_print_error_message(
+					"Error connecting to " . $server_name, '', true);
+				
+				return $return;
+			}
+		}
+		
+		
 		switch ($label_type) {
 			case 'agent':
-				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
+				$agent_label = ui_print_truncate_text(
+					agents_get_name($id_agent),
+					'agent_small', false, true, false, '…', false);
 				$label = $agent_label;
 				break;
 			case 'none':
@@ -583,6 +668,11 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 				break;
 		}
 		$label = io_safe_input($label);
+		
+		//Restore db connection
+		if ($id_server != 0) {
+			metaconsole_restore_db();
+		}
 		
 		$values = array ('type' => $value_type,
 			'id_layout' => $id_layout,
@@ -596,7 +686,8 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 			'period' => $period,
 			'height' => $value_height,
 			'label_color' => '#000000',
-			'enable_link' => $enable_link);
+			'enable_link' => $enable_link,
+			'id_metaconsole' => $id_server);
 		
 		db_process_sql_insert ('tlayout_data', $values);
 		
@@ -713,6 +804,18 @@ function visual_map_get_status_element($layoutData) {
 	else {
 		switch ($layoutData["type"]) {
 			case STATIC_GRAPH:
+				if ($layoutData['id_metaconsole'] != 0) {
+					//Metaconsole db connection
+					$connection = db_get_row_filter ('tmetaconsole_setup',
+						array('id' => $layoutData['id_metaconsole']));
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+				
+				
+				
 				//Status for a simple module
 				if ($layoutData['id_agente_modulo'] != 0) {
 					$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
@@ -727,6 +830,11 @@ function visual_map_get_status_element($layoutData) {
 				else {
 					$status = VISUAL_MAP_STATUS_UNKNOW;
 					$id_agent = 0;
+				}
+				
+				if ($layoutData['id_metaconsole'] != 0) {
+					//Restore db connection
+					metaconsole_restore_db();
 				}
 				break;
 			
@@ -755,6 +863,11 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	//TODO: USE THE SAME CODE THAT THE VISUAL MAP EDITOR
 	global $config;
 	
+	$metaconsole_hack = '/';
+	if (defined('METACONSOLE')) {
+		$metaconsole_hack = '../../';
+	}
+	
 	$layout = db_get_row ('tlayout', 'id', $id_layout);
 	
 	$resizedMap = false;
@@ -776,70 +889,88 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 	else {
 		$mapWidth = $layout["width"];
 		$mapHeight = $layout["height"];
-		$backgroundImage = '/images/console/background/'.io_safe_input ($layout["background"]);
+		$backgroundImage = $metaconsole_hack . 'images/console/background/'.io_safe_input ($layout["background"]);
+	}
+	
+	if (defined('METACONSOLE')) {
+		echo "<div style='width: 750px; overflow:auto;'>";
 	}
 	
 	echo '<div id="layout_map"
-		style="margin:0px auto;text-align:center;z-index: 0; position:relative; width:'.$mapWidth.'px; height:'.$mapHeight.'px;">';
+		style="margin:0px auto;
+			text-align:center;
+			z-index: 0;
+			position:relative;
+			width:'.$mapWidth.'px;
+			height:'.$mapHeight.'px;">';
 	echo "<img src='" . ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
+	
+	
 	$layout_datas = db_get_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	if (empty($layout_datas))
 		$layout_datas = array();
+	
 	$lines = array ();
 	
 	foreach ($layout_datas as $layout_data) {
-		$enable_link = db_get_value('enable_link', 'tlayout_data', 'id', $layout_data['id']);
 		
-		switch ($layout_data['type']) {
-			case STATIC_GRAPH:
-			case PERCENTILE_BAR:
-			case MODULE_GRAPH:
-			case SIMPLE_VALUE:
-			case SIMPLE_VALUE_MAX:
-			case SIMPLE_VALUE_MIN:
-			case SIMPLE_VALUE_AVG:
-			case PERCENTILE_BUBBLE:
-				// Pending delete and disable modules must be ignored
-				$delete_pending_module = db_get_value ("delete_pending",
-					"tagente_modulo", "id_agente_modulo",
-					$layout_data["id_agente_modulo"]);
-				$disabled_module = db_get_value ("disabled", "tagente_modulo",
-					"id_agente_modulo", $layout_data["id_agente_modulo"]);
-				
-				if ($delete_pending_module == 1 || $disabled_module == 1)
-					continue;
-				break;
-			case SERVICE:
-				break;
-			default:
-				break;
+		//Check the items are from disabled or pending delete modules
+		if ($layout_data['id_agente_modulo'] != 0 &&
+			(($layout_data['type'] != LABEL)
+			|| ($layout_data['type'] != ICON)
+			|| ($layout_data['type'] != SERVICE))) {
+			
+			$delete_pending_module = db_get_value ("delete_pending",
+				"tagente_modulo", "id_agente_modulo",
+				$layout_data["id_agente_modulo"]);
+			$disabled_module = db_get_value ("disabled", "tagente_modulo",
+				"id_agente_modulo", $layout_data["id_agente_modulo"]);
+			
+			if ($delete_pending_module == 1 || $disabled_module == 1)
+				continue;
 		}
 		
-		$id_agent = 0;
 		$layout_data['label'] = io_safe_output($layout_data['label']);
+		
+		
 		
 		// *************************************************************
 		// Get parent status (Could be an agent, module, map,
 		// others doesnt have parent info)
-		// **************************************************************
-		
+		// *************************************************************
 		if ($layout_data["parent_item"] != 0) {
-			$id_agent_module_parent = db_get_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
-			
 			$layout_data_parent = db_get_row_filter('tlayout_data',
 				array('id' => $layout_data["parent_item"]));
 			
 			$status_parent = visual_map_get_status_element($layout_data_parent);
-		}
-		else {
-			$id_agent_module_parent = 0;
-			$status_parent = 3;
+			
+			$line['id'] = $layout_data['id'];
+			$line['node_begin'] = 'layout-data-'.$layout_data["parent_item"];
+			$line['node_end'] = 'layout-data-'.$layout_data["id"];
+			switch ($status_parent) {
+				default:
+				case VISUAL_MAP_STATUS_UNKNOW:
+					$line["color"] = "#ccc"; // Gray
+					break;
+				case VISUAL_MAP_STATUS_WARNING:
+					$line["color"] = "#20f6f6"; // Yellow
+					break;
+				case VISUAL_MAP_STATUS_NORMAL:
+					$line["color"] = "#00ff00"; // Green
+					break;
+				case VISUAL_MAP_STATUS_CRITICAL_ALERT:
+				case VISUAL_MAP_STATUS_CRITICAL_BAD:
+					$line["color"] = "#ff0000"; // Red
+					break;
+			}
+			array_push ($lines, $line);
 		}
 		
 		
-		// ****************************************************************	
+		
+		// *************************************************************
 		// Get STATUS of current object
-		// ****************************************************************
+		// *************************************************************
 		$status = visual_map_get_status_element($layout_data);
 		
 		
@@ -883,50 +1014,51 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				if ($resizedMap)
 					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				else
-					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">'; 
-
-				if ($layout_data['id_agente_modulo'] != 0) {
-					$id_agent = db_get_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
-				}
-				elseif ($layout_data['id_agent'] != 0) {
-					
-					$id_agent = $layout_data["id_agent"];
-				}
-				else {
-					$id_agent = 0;
-				}
-
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				
 				if ($show_links) {
-
-					if (!isset($id_agent)) $id_agent = 0;
-
-					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {					
-						if ($enable_link) {
+					
+					if (!empty($layout_data['id_agent']) && empty($layout_data['id_layout_linked'])) {
+						if ($layout_data['enable_link']) {
 							
-							//Extract id service if it is a prediction module.
-							$id_service = db_get_value_filter('custom_integer_1',
-								'tagente_modulo',
-								array('id_agente_modulo' => $layout_data['id_agente_modulo'],
-									'prediction_module' => 1));
-							
-							if ($id_service === false) {
-								$id_service = 0;
+							$id_service = false;
+							if (!defined('METACONSOLE')) {
+								//Extract id service if it is a prediction module.
+								$id_service = db_get_value_filter(
+									'custom_integer_1',
+									'tagente_modulo',
+									array('id_agente_modulo' => $layout_data['id_agente_modulo'],
+										'prediction_module' => 1));
 							}
 							
-							if ($id_service != 0) {
+							if (!empty($id_service)) {
 								//Link to an service page
 								echo '<a href="'.$config['homeurl'].'index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
 									$id_service . '&offset=0">';
 							}
 							else {
+								if (!defined('METACONSOLE')) {
+									$url = $config['homeurl'] . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $layout_data['id_agent'];
+								}
+								else {
+									$url = ui_meta_get_url_console_child(
+										$layout_data['id_metaconsole'],
+										"estado", "operation/agentes/ver_agente&amp;id_agente=" . $layout_data['id_agent']);
+								}
 								// Link to an agent
-								echo '<a href="'.$config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+								echo '<a href="' . $url . '">';
 							}
 						}
 					}
 					elseif ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
-						echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						if (!defined('METACONSOLE')) {
+							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						}
+						else {
+							$pure = get_parameter('pure', 0);
+							echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0">';
+						}
 					
 					}
 					else {
@@ -944,7 +1076,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					$img_style["height"] = $layout_data["height"];
 				}
 				
-				$img = "images/console/icons/".$layout_data["image"];
+				$img =  "images/console/icons/" . $layout_data["image"];
 				
 				switch ($status) {
 					case VISUAL_MAP_STATUS_CRITICAL_BAD:
@@ -968,12 +1100,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				$borderStyle = '';
 				if (substr($img,0,1) == '4') {
-					$img_style['border'] ='2px solid #ffa300;';
+					$img_style['border'] = '2px solid #ffa300;';
 					$img = substr_replace($img, '', 0,1);
 				}
 				
-				if (is_file($img))
-					$infoImage = getimagesize($img);
+				if (is_file($config['homedir'] . '/' . $img))
+					$infoImage = getimagesize($config['homedir'] . '/' . $img);
 				
 				if (!empty ($layout_data["width"])) {
 					if ($resizedMap)
@@ -993,7 +1125,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				else
 					$img_style["height"] = (integer)($proportion * $infoImage[1]);
 				
-				html_print_image ($img, false, $img_style);
+				html_print_image ($metaconsole_hack . $img, false, $img_style);
 				
 				// Print label if valid label_color (only testing for starting with #) otherwise print nothing
 				if ($layout_data['label_color'][0] == '#') {
@@ -1004,11 +1136,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				echo "</a>";
 				break;
-			case PERCENTILE_BAR:
-				break;
-			case MODULE_GRAPH:
-				break;
-
+			
 			case LABEL:
 				$z_index = 4;
 				if ($resizedMap)
@@ -1018,15 +1146,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				$endTagA = false;
 				if ($show_links) {
-					if (!isset($id_agent)) $id_agent = 0;
-					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
-						if ($enable_link) {
-							// Link to an agent
-							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
-							$endTagA = true;
-						}
-					} 
-					elseif ($layout_data['id_layout_linked'] > 0) {
+					if ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
 						echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 						$endTagA = true;
@@ -1048,21 +1168,18 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				$endTagA = false;
 				if ($show_links) {
-					if (!isset($id_agent)) $id_agent = 0;
-					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
-						
-						if ($enable_link) {
-							// Link to an agent
-							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
-							$endTagA = true;
-						}
-					} 
-					elseif ($layout_data['id_layout_linked'] > 0) {
+					if ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
-						echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						if (!defined('METACONSOLE')) {
+							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						}
+						else {
+							$pure = get_parameter('pure', 0);
+							echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0">';
+						}
 						$endTagA = true;
 					}
-					elseif (preg_match('/^(http:\/\/)((.)+)$/i', $layout_data['label'])){
+					elseif (preg_match('/^(http:\/\/)((.)+)$/i', $layout_data['label'])) {
 						// Link to an URL
 						echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="' . $layout_data['label'] .'">';
 						$endTagA = true;
@@ -1081,8 +1198,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				
 				$img = "images/console/icons/".$layout_data["image"] . ".png";
 				
-				if (is_file($img))
-					$infoImage = getimagesize($img);
+				if (is_file($config['homedir'] . '/' . $img))
+					$infoImage = getimagesize($config['homedir'] . '/' . $img);
 				
 				if (!empty ($layout_data["width"])) {
 					if ($resizedMap)
@@ -1102,7 +1219,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				else
 					$img_style["height"] = (integer)($proportion * $infoImage[1]);
 				
-				html_print_image ($img, false, $img_style);
+				html_print_image ($metaconsole_hack . $img, false, $img_style);
 				
 				if ($endTagA) echo "</a>";
 				
@@ -1112,7 +1229,28 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			case SIMPLE_VALUE_MAX:
 			case SIMPLE_VALUE_MIN:
 			case SIMPLE_VALUE_AVG:
-				$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
+				
+				
+				//Metaconsole db connection
+				if ($layout_data['id_metaconsole'] != 0) {
+					$connection = db_get_row_filter ('tmetaconsole_setup',
+						array('id' => $layout_data['id_metaconsole']));
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+				
+				$unit_text = db_get_sql ('SELECT unit
+					FROM tagente_modulo
+					WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
+				
+				//Restore db connection
+				if ($layout_data['id_metaconsole'] != 0) {
+					metaconsole_restore_db();
+				}
+				
+				
 				$unit_text = trim(io_safe_output($unit_text));
 				
 				if ($resizedMap)
@@ -1135,7 +1273,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					
 					if ($id_service != 0) {
 						
-						if ($enable_link) { 
+						if ($layout_data['enable_link']) { 
 							//Link to an service page
 							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
 								$id_service . '&offset=0">';
@@ -1143,25 +1281,71 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						}
 					}
 					elseif ($layout_data['id_layout_linked'] > 0) {
-					
 						// Link to a map
-						echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						if (!defined('METACONSOLE')) {
+							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						}
+						else {
+							$pure = get_parameter('pure', 0);
+							echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0">';
+						}
 						$endTagA = true;
 					}
 				}
 				
-				echo '<strong>'.$layout_data['label']. ' ';
+				echo '<strong>' . $layout_data['label']. ' ';
 				//TODO: change interface to add a period parameter, now is set to 1 day
 				switch ($layout_data['type']) {
 					case SIMPLE_VALUE:
-						$value = db_get_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
+						
+						
+						//Metaconsole db connection
+						if ($layout_data['id_metaconsole'] != 0) {
+							$connection = db_get_row_filter ('tmetaconsole_setup',
+								array('id' => $layout_data['id_metaconsole']));
+							if (metaconsole_load_external_db($connection) != NOERR) {
+								//ui_print_error_message ("Error connecting to ".$server_name);
+								continue;
+							}
+						}
+						
+						$value = db_get_value ('datos',
+							'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
+						
+						//Restore db connection
+						if ($layout_data['id_metaconsole'] != 0) {
+							metaconsole_restore_db();
+						}
+						
+						
 						$value = format_for_graph($value, 2);
 						if (!empty($unit_text))
 							$value .= " " . $unit_text;
 						echo $value;
 						break;
 					case SIMPLE_VALUE_MAX:
-						$value = reporting_get_agentmodule_data_max ($layout_data['id_agente_modulo'], $layout_data['period'], 0);
+						
+						
+						//Metaconsole db connection
+						if ($layout_data['id_metaconsole'] != 0) {
+							$connection = db_get_row_filter ('tmetaconsole_setup',
+								array('id' => $layout_data['id_metaconsole']));
+							if (metaconsole_load_external_db($connection) != NOERR) {
+								//ui_print_error_message ("Error connecting to ".$server_name);
+								continue;
+							}
+						}
+						
+						$value = reporting_get_agentmodule_data_max(
+							$layout_data['id_agente_modulo'],
+							$layout_data['period'], 0);
+						
+						//Restore db connection
+						if ($layout_data['id_metaconsole'] != 0) {
+							metaconsole_restore_db();
+						}
+						
+						
 						if ($value === false) {
 							$value = __('Unknown');
 						}
@@ -1173,7 +1357,28 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						echo $value;
 						break;
 					case SIMPLE_VALUE_MIN:
-						$value = reporting_get_agentmodule_data_min ($layout_data['id_agente_modulo'], $layout_data['period'], 0);
+						
+						
+						//Metaconsole db connection
+						if ($layout_data['id_metaconsole'] != 0) {
+							$connection = db_get_row_filter ('tmetaconsole_setup',
+								array('id' => $layout_data['id_metaconsole']));
+							if (metaconsole_load_external_db($connection) != NOERR) {
+								//ui_print_error_message ("Error connecting to ".$server_name);
+								continue;
+							}
+						}
+						
+						$value = reporting_get_agentmodule_data_min(
+							$layout_data['id_agente_modulo'],
+							$layout_data['period'], 0);
+						
+						//Restore db connection
+						if ($layout_data['id_metaconsole'] != 0) {
+							metaconsole_restore_db();
+						}
+						
+						
 						if ($value === false) {
 							$value = __('Unknown');
 						}
@@ -1185,7 +1390,29 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						echo $value;
 						break;
 					case SIMPLE_VALUE_AVG:
-						$value = reporting_get_agentmodule_data_average($layout_data['id_agente_modulo'], $layout_data['period'], 0);
+						
+						
+						//Metaconsole db connection
+						if ($layout_data['id_metaconsole'] != 0) {
+							$connection = db_get_row_filter ('tmetaconsole_setup',
+								array('id' => $layout_data['id_metaconsole']));
+							if (metaconsole_load_external_db($connection) != NOERR) {
+								//ui_print_error_message ("Error connecting to ".$server_name);
+								continue;
+							}
+						}
+						
+						$value = reporting_get_agentmodule_data_average(
+							$layout_data['id_agente_modulo'],
+							$layout_data['period'], 0);
+						
+						//Restore db connection
+						if ($layout_data['id_metaconsole'] != 0) {
+							metaconsole_restore_db();
+						}
+						
+						
+						
 						if ($value === false) {
 							$value = __('Unknown');
 						}
@@ -1209,7 +1436,32 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				else
 					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				$valor = db_get_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
+				
+				
+				//Metaconsole db connection
+				if ($layout_data['id_metaconsole'] != 0) {
+					$connection = db_get_row_filter ('tmetaconsole_setup',
+						array('id' => $layout_data['id_metaconsole']));
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+				
+				$valor = db_get_sql ('SELECT datos
+					FROM tagente_estado
+					WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
+				
+				$unit_text = db_get_sql ('SELECT unit
+					FROM tagente_modulo
+					WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
+				
+				//Restore db connection
+				if ($layout_data['id_metaconsole'] != 0) {
+					metaconsole_restore_db();
+				}
+				
+				
 				$width = $layout_data['width'];
 				if ( $layout_data['height'] > 0)
 					$percentile = $valor / $layout_data['height'] * 100;
@@ -1224,10 +1476,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				echo "<br>";
 				
 				if ($show_links) {
-					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
+					if (!empty($layout_data['id_agent']) && empty($layout_data['id_layout_linked'])) {
 						
 						
-						if ($enable_link) {
+						if ($layout_data['enable_link']) {
 						
 							//Extract id service if it is a prediction module.
 							$id_service = db_get_value_filter('custom_integer_1',
@@ -1247,15 +1499,32 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							}
 							else {
 								// Link to an agent
-								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+								if (!defined('METACONSOLE')) {
+									$url = $config['homeurl'] .
+										'index.php?' .
+										'sec=estado&amp;' .
+										'sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data['id_agent'];
+								}
+								else {
+									$url = ui_meta_get_url_console_child(
+										$layout_data['id_metaconsole'],
+										"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layout_data['id_agent']);
+								}
+								echo '<a href="' . $url .'">';
 								$endTagA = true;
 							}
 						}
 					}
 					elseif ($layout_data['id_layout_linked'] > 0) {
-					
+						
 						// Link to a map
-						echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						if (!defined('METACONSOLE')) {
+							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						}
+						else {
+							$pure = get_parameter('pure', 0);
+							echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0">';
+						}
 						$endTagA = true;
 					
 					}
@@ -1271,7 +1540,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					$value_text = false;
 				}
 				elseif ($layout_data['image'] == 'value') {
-					$unit_text = db_get_sql ('SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ' . $layout_data['id_agente_modulo']);
 					$unit_text = trim(io_safe_output($unit_text));
 					
 					$value_text = format_for_graph($valor, 2);
@@ -1298,10 +1566,14 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				break;
 			case MODULE_GRAPH:
 				if ($resizedMap) {
-					$layout_data['width'] = ((integer)($proportion * $layout_data['width']));
-					$layout_data['height'] = ((integer)($proportion * $layout_data['height']));
-					$layout_data['pos_x'] = ((integer)($proportion * $layout_data['pos_x']));
-					$layout_data['pos_y'] = ((integer)($proportion * $layout_data['pos_y']));
+					$layout_data['width'] =
+						((integer)($proportion * $layout_data['width']));
+					$layout_data['height'] =
+						((integer)($proportion * $layout_data['height']));
+					$layout_data['pos_x'] =
+						((integer)($proportion * $layout_data['pos_x']));
+					$layout_data['pos_y'] =
+						((integer)($proportion * $layout_data['pos_y']));
 				}
 				
 				echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
@@ -1314,7 +1586,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				if ($show_links) {
 					if (($layout_data['id_layout_linked'] == "") || ($layout_data['id_layout_linked'] == 0)) {
 						
-						if ($enable_link) {
+						if ($layout_data['enable_link']) {
 						
 							//Extract id service if it is a prediction module.
 							$id_service = db_get_value_filter('custom_integer_1',
@@ -1332,12 +1604,41 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 									$id_service . '&offset=0">';
 							}
 							else {
-								echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data">';
+								if (!defined('METACONSOLE')) {
+									$url = $config['homeurl'] . 
+										'index.php?' .
+										'sec=estado&amp;'.
+										'sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data';
+								}
+								else {
+									$url = ui_meta_get_url_console_child(
+										$layout_data['id_metaconsole'],
+										"estado", 'operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data');
+								}
+								echo '<a href="' . $url . '">';
 							}
 						}
 					}
 					else {
-						echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
+						// Link to a map
+						if (!defined('METACONSOLE')) {
+							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+						}
+						else {
+							$pure = get_parameter('pure', 0);
+							echo '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visualmap=' . $layout_data["id_layout_linked"] . '&refr=0">';
+						}
+					}
+				}
+				
+				
+				//Metaconsole db connection
+				if ($layout_data['id_metaconsole'] != 0) {
+					$connection = db_get_row_filter ('tmetaconsole_setup',
+						array('id' => $layout_data['id_metaconsole']));
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
 					}
 				}
 				
@@ -1347,6 +1648,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					false, $layout_data['width'], $layout_data['height'],
 					'', null, false, 1, false, 0, '', 0, 0, true, true, $home_url, 2);
 				
+				//Restore db connection
+				if ($layout_data['id_metaconsole'] != 0) {
+					metaconsole_restore_db();
+				}
+				
+				
 				echo "</a>";
 				echo "</div>";
 				break;
@@ -1354,33 +1661,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				enterprise_hook("enterprise_visual_map_print_item",
 					array($layout_data, $status, $colorStatus, 'operation'));
 				break;
-		}
-		
-		// ****************************************************************
-		// Lines joining objects
-		// ****************************************************************
-		// Get parent relationship - Create line data
-		if ($layout_data["parent_item"] != "" && $layout_data["parent_item"] != 0) {
-			$line['id'] = $layout_data['id'];
-			$line['node_begin'] = 'layout-data-'.$layout_data["parent_item"];
-			$line['node_end'] = 'layout-data-'.$layout_data["id"];
-			switch ($status_parent) {
-				default:
-				case VISUAL_MAP_STATUS_UNKNOW:
-					$line["color"] = "#ccc"; // Gray
-					break;
-				case VISUAL_MAP_STATUS_WARNING:
-					$line["color"] = "#20f6f6"; // Yellow
-					break;
-				case VISUAL_MAP_STATUS_NORMAL:
-					$line["color"] = "#00ff00"; // Green
-					break;
-				case VISUAL_MAP_STATUS_CRITICAL_ALERT:
-				case VISUAL_MAP_STATUS_CRITICAL_BAD:
-					$line["color"] = "#ff0000"; // Red
-					break;
-			}
-			array_push ($lines, $line);
 		}
 	}
 	
@@ -1393,12 +1673,17 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 		echo 'var lines = Array ();'."\n";
 		
 		foreach ($lines as $line) {
-			echo 'lines.push (eval ('.json_encode ($line).'));'."\n";
+			echo 'lines.push (eval (' . json_encode ($line) . '));' . "\n";
 		}
 		echo '/* ]]> */</script>';
 	}
 	// End main div
 	echo "</div>";
+	
+	
+	if (defined('METACONSOLE')) {
+		echo "</div>";
+	}
 }
 
 /**

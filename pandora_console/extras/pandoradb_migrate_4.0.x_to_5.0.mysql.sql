@@ -326,6 +326,7 @@ ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL DEFAULT '';
 -- Table `tlayout_data
 ------------------------------------------------------------------------
 ALTER TABLE tlayout_data ADD COLUMN `enable_link` tinyint(1) UNSIGNED NOT  NULL default 1;
+ALTER TABLE tlayout_data ADD COLUMN `id_metaconsole` int(10) NOT NULL default 0;
 
 ------------------------------------------------------------------------
 -- Table `tnetwork_map`

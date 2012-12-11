@@ -24,16 +24,18 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
-require_once ('include/functions_visual_map.php');
+require_once ($config['homedir'].'/include/functions_visual_map.php');
 require_once ($config['homedir'].'/include/functions_agents.php');
 enterprise_include_once('include/functions_visual_map.php');
+enterprise_include_once('meta/include/functions_agents_meta.php');
+enterprise_include_once('meta/include/functions_users_meta.php');
 
 //Arrays for select box.
-$backgrounds_list = list_files('images/console/background/', "jpg", 1, 0);
-$backgrounds_list = array_merge($backgrounds_list, list_files ('images/console/background/', "png", 1, 0));
+$backgrounds_list = list_files($config['homedir'] . '/images/console/background/', "jpg", 1, 0);
+$backgrounds_list = array_merge($backgrounds_list, list_files ($config['homedir'] . '/images/console/background/', "png", 1, 0));
 
 $images_list = array ();
-$all_images = list_files ('images/console/icons/', "png", 1, 0);
+$all_images = list_files ($config['homedir'] . '/images/console/icons/', "png", 1, 0);
 foreach ($all_images as $image_file) {
 	if (strpos ($image_file, "_bad"))
 		continue;
@@ -45,7 +47,12 @@ foreach ($all_images as $image_file) {
 	$images_list[$image_file] = $image_file;
 }
 
-$table->width = '100%';
+if (!defined('METACONSOLE')) {
+	$table->width = '100%';
+}
+else {
+	$table->width = '780';
+}
 $table->head = array();
 $table->head['icon'] = '';
 $table->head[0] = __('Label') . ' / ' . __('Agent');
@@ -53,13 +60,22 @@ $table->head[1] = __('Image') . ' / ' . __('Module');
 $table->head[2] = __('Width x Height<br>Max value');
 $table->head[3] = __('Period') . ' / ' . __('Position');
 $table->head[4] = __('Parent') . ' / ' . __('Map linked');
-$table->head[5] = __('Action');
+$table->head[5] = '<span title="' . __('Action') . '">' .
+	__('A.') . '</span>';
 
-$table->align[0] = "center";
-$table->align[1] = "center";
+$table->size = array();
+$table->size['icon'] = '1%';
+$table->size[0] = '25%';
+
+$table->style = array();
+$table->style[1] = 'background-color: #ffffff;';
+
+$table->align = array();
+$table->align[0] = "left";
+$table->align[1] = "right";
 $table->align[2] = "center";
 $table->align[3] = "center";
-$table->align[4] = "center";
+$table->align[4] = "right";
 $table->align[5] = "center";
 
 $table->data = array();
@@ -67,7 +83,7 @@ $table->data = array();
 //Background
 $table->data[0]['icon'] = '';
 $table->data[0][0] = __('Background');
-$table->data[0][1] = html_print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 100px;');
+$table->data[0][1] = html_print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 120px;');
 $table->data[0][2] = html_print_input_text('width', $visualConsole['width'], '', 3, 5, true) .
 	'x' .
 	html_print_input_text('height', $visualConsole['height'], '', 3, 5, true);
@@ -143,30 +159,39 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Image
 	if (($layoutData['type'] == STATIC_GRAPH) || ($layoutData['type'] == ICON)) {
-		$table->data[$i + 1][1] = html_print_select ($images_list, 'image_' . $idLayoutData, $layoutData['image'], '', 'None', '', true);
+		$table->data[$i + 1][1] = html_print_select ($images_list, 'image_' . $idLayoutData, $layoutData['image'], '', 'None', '', true,  false, true, '', false, "width: 120px");
 	}
 	else {
 		$table->data[$i + 1][1] = '';
 	}
 	
 	//Width and height
-	$table->data[$i + 1][2] = html_print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 3, 5, true) .
+	$table->data[$i + 1][2] = html_print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 2, 5, true) .
 		'x' .
-		html_print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 3, 5, true);
+		html_print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 2, 5, true);
 	
 	//Position
-	$table->data[$i + 1][3] = '(' . html_print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 3, 5, true) .
-		',' . html_print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 3, 5, true) .
+	$table->data[$i + 1][3] = '(' . html_print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 2, 5, true) .
+		',' . html_print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 2, 5, true) .
 		')';
 	
 	//Parent
 	$table->data[$i + 1][4] = html_print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '. $idVisualConsole . ' AND id !=' . $idLayoutData,
-		'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true);
+		'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true, false, true, false, 'width: 120px;');
 	
 	//Delete row button
-	$table->data[$i + 1][5] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' .
-		$activeTab  . '&action=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
-		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
+	if (!defined('METACONSOLE')) {
+		$table->data[$i + 1][5] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' .
+			$activeTab  . '&action=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
+			'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
+	}
+	else {
+		$pure = get_parameter('pure', 0);
+		
+		$table->data[$i + 1][5] = '<a href="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap' .
+			'&pure=' . $pure . '&tab=list_elements&action2=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
+			'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
+	}
 	
 	
 	//Second row
@@ -187,10 +212,31 @@ foreach ($layoutDatas as $layoutData) {
 				$params = array();
 				$params['return'] = true;
 				$params['show_helptip'] = true;
+				$params['size'] = 20;
 				$params['input_name'] = 'agent_' . $idLayoutData;
-				$params['value'] = agents_get_name($layoutData['id_agent']);
 				$params['javascript_is_function_select'] = true;
 				$params['selectbox_id'] = 'module_' . $idLayoutData;
+				if (defined('METACONSOLE')) {
+					$params['javascript_ajax_page'] = '../../ajax.php';
+					$params['disabled_javascript_on_blur_function'] = true;
+					
+					$params['print_input_server'] = true;
+					$params['input_server_id'] = 
+						$params['input_server_name'] = 'id_server_name_' . $idLayoutData;
+					$params['input_server_value'] =
+						db_get_value('server_name', 'tmetaconsole_setup', 'id', $layoutData['id_metaconsole']);
+					$params['metaconsole_enabled'] = true;
+					$params['print_hidden_input_idagent'] = true;
+					$params['hidden_input_idagent_name'] = 'id_agent_' . $idLayoutData;
+					$params['hidden_input_idagent_value'] = $layoutData['id_agent'];
+					
+					$params['value'] = agents_meta_get_name($layoutData['id_agent'],
+						"none", $layoutData['id_metaconsole'], true);
+				}
+				else {
+					$params['value'] = agents_get_name($layoutData['id_agent']);
+				}
+				
 				$table->data[$i + 2][0] = ui_print_agent_autocomplete_input($params);
 			}
 			else {
@@ -211,12 +257,20 @@ foreach ($layoutDatas as $layoutData) {
 				$cell_content_enterprise = enterprise_visual_map_print_list_element('module', $layoutData);
 			}
 			if ($cell_content_enterprise === false) {
-				$modules = agents_get_modules($layoutData['id_agent']);
+				if (!defined('METACONSOLE')) {
+					$modules = agents_get_modules($layoutData['id_agent']);
+				}
+				else {
+					if ($layoutData['id_agent'] != 0) {
+						$modules = agents_meta_get_modules($layoutData['id_metaconsole'],
+							$layoutData['id_agent']);
+					}
+				}
 				
 				$modules = io_safe_output($modules);
 				
 				$table->data[$i + 2][1] = html_print_select($modules,
-					'module_' . $idLayoutData, $layoutData['id_agente_modulo'], '', '---', 0, true);
+					'module_' . $idLayoutData, $layoutData['id_agente_modulo'], '', '---', 0, true,  false, true, '', false, "width: 120px");
 			}
 			else {
 				$table->data[$i + 2][1] = $cell_content_enterprise;
@@ -242,7 +296,7 @@ foreach ($layoutDatas as $layoutData) {
 	
 	//Map linked
 	$table->data[$i + 2][4] = html_print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
-		'map_linked_' . $idLayoutData, $layoutData['id_layout_linked'], '', 'None', '', true);
+		'map_linked_' . $idLayoutData, $layoutData['id_layout_linked'], '', 'None', '', true,  false, true, '', false, "width: 120px");
 	$table->data[$i + 2][5] = '';
 	
 	if ($alternativeStyle) {
@@ -258,10 +312,21 @@ foreach ($layoutDatas as $layoutData) {
 	$i = $i + 3;
 }
 
+$pure = get_parameter('pure', 0);
 
-echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '">';
+if (!defined('METACONSOLE')) {
+	echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '">';
+}
+else {
+	echo "<form method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=" . $idVisualConsole . "'>";
+}
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_input_hidden ('action', 'update');
+if (!defined('METACONSOLE')) {
+	html_print_input_hidden ('action', 'update');
+}
+else {
+	html_print_input_hidden ('action2', 'update');
+}
 html_print_input_hidden ('id_visual_console', $visualConsole["id"]);
 html_print_submit_button (__('Update'), 'go', false, 'class="sub next"');
 echo '</div>';

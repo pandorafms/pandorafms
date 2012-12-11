@@ -1043,11 +1043,15 @@ function ui_require_javascript_file ($name, $path = 'include/javascript/') {
  *
  * @return bool True if the file was added. False if the file doesn't exist.
  */
-function ui_require_javascript_file_enterprise($name) {
-	
+function ui_require_javascript_file_enterprise($name, $disabled_metaconsole = false) {
 	global $config;
 	
-	$filename = ENTERPRISE_DIR . '/include/javascript/' .$name.'.js';
+	$metaconsole_hack = '';
+	if ($disabled_metaconsole) {
+		$metaconsole_hack = '../../';
+	}
+	
+	$filename = $metaconsole_hack . ENTERPRISE_DIR . '/include/javascript/' .$name.'.js';
 	
 	if (! isset ($config['js']))
 		$config['js'] = array ();

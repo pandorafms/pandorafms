@@ -24,13 +24,23 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
-require_once ('include/functions_visual_map.php');
+require_once ($config['homedir'] . '/include/functions_visual_map.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 enterprise_include_once('include/functions_visual_map.php');
 
-$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), 'new');
+$pure = (int)get_parameter('pure', 0);
+
+$idVisualConsole = get_parameter('id_visual_console', $idVisualConsole);
+
+if (!defined('METACONSOLE')) {
+	$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), 'new');
+}
+else {
+	$action = get_parameterBetweenListValues('action2', array('new', 'save', 'edit', 'update', 'delete'), 'new');
+}
+
 $activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'editor'), 'data');
-$idVisualConsole = get_parameter('id_visual_console', 0);
+
 
 //Save/Update data in DB
 $statusProcessInDB = null;
@@ -63,7 +73,7 @@ switch ($activeTab) {
 				switch ($action) {
 					case 'update':
 						$result = false;
-						if($values['name'] != "" && $values['background'])
+						if ($values['name'] != "" && $values['background'])
 							$result = db_process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
 						if ($result !== false && $values['background']) {
 							db_pandora_audit( "Visual console builder", "Update visual console #$idVisualConsole");
@@ -77,19 +87,24 @@ switch ($activeTab) {
 						break;
 					
 					case 'save':
-						if($values['name'] != "" && $values['background'])
-							$idVisualConsole = db_process_sql_insert('tlayout', $values);
-						else
-							$idVisualConsole = false;
-						
-						if ($idVisualConsole !== false) {
-							db_pandora_audit( "Visual console builder", "Create visual console #$idVisualConsole");
-							$action = 'edit';
-							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully created.').'</h3>');
+						if (!defined('METACONSOLE')) {
+							if ($values['name'] != "" && $values['background'])
+								$idVisualConsole = db_process_sql_insert('tlayout', $values);
+							else
+								$idVisualConsole = false;
+							
+							if ($idVisualConsole !== false) {
+								db_pandora_audit( "Visual console builder", "Create visual console #$idVisualConsole");
+								$action = 'edit';
+								$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully created.').'</h3>');
+							}
+							else {
+								db_pandora_audit( "Visual console builder", "Fail try to create visual console");
+								$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be created.').'</h3>');
+							}
 						}
 						else {
-							db_pandora_audit( "Visual console builder", "Fail try to create visual console");
-							$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be created.').'</h3>');
+							
 						}
 						break;
 				}
@@ -114,17 +129,22 @@ switch ($activeTab) {
 				$width = get_parameter('width');
 				$height = get_parameter('height');
 				
-				if($width == 0 && $height == 0) {
-					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
+				if ($width == 0 && $height == 0) {
+					$sizeBackground = getimagesize(
+						$config['homedir'] . '/images/console/background/' . $background);
 					$width = $sizeBackground[0];
 					$height = $sizeBackground[1];
 				}
 				
-				db_process_sql_update('tlayout', array('background' => $background,
-					'width' => $width, 'height' => $height), array('id' => $idVisualConsole));
+				db_process_sql_update('tlayout',
+					array('background' => $background,
+						'width' => $width,
+						'height' => $height),
+					array('id' => $idVisualConsole));
 				
 				//Update elements in visual map
-				$idsElements = db_get_all_rows_filter('tlayout_data', array('id_layout' => $idVisualConsole), array('id'));
+				$idsElements = db_get_all_rows_filter('tlayout_data',
+					array('id_layout' => $idVisualConsole), array('id'));
 				
 				if ($idsElements === false){
 					$idsElements = array();
@@ -149,7 +169,16 @@ switch ($activeTab) {
 							break;
 					}
 					$agentName = get_parameter('agent_' .  $id, '');
-					$values['id_agent'] = agents_get_agent_id($agentName);
+					if (defined('METACONSOLE')) {
+						$values['id_metaconsole'] = db_get_value('id',
+							'tmetaconsole_setup', 'server_name',
+							get_parameter('id_server_name_' . $id, ''));
+						$values['id_agent'] =
+							(int)get_parameter('id_agent_' . $id, 0);
+					}
+					else {
+						$values['id_agent'] = agents_get_agent_id($agentName);
+					}
 					$values['id_agente_modulo'] = get_parameter('module_' . $id, 0);
 					$values['parent_item'] = get_parameter('parent_' . $id, 0);
 					$values['id_layout_linked'] = get_parameter('map_linked_' . $id, 0);
@@ -198,6 +227,7 @@ switch ($activeTab) {
 				$enable_link = get_parameter ("enable_link", 'enable_link');
 				// This var switch between creation of items, item_per_agent = 0 => item per module; item_per_agent <> 0  => item per agent
 				$item_per_agent = get_parameter ("item_per_agent", 0);
+				$id_server = (int)get_parameter('servers', 0);
 				
 				$message = '';
 				
@@ -207,61 +237,128 @@ switch ($activeTab) {
 					foreach ($id_agents as $id_agent_key => $id_agent_id)
 						$id_agents_result[] = $id_agent_id;
 					
-					$message .= visual_map_process_wizard_add_agents($id_agents_result,
-						$image, $idVisualConsole, $range, $width, $height,
-						$period, $process_value, $percentileitem_width,
-						$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link);	
+					$message .= visual_map_process_wizard_add_agents(
+						$id_agents_result,
+						$image,
+						$idVisualConsole,
+						$range,
+						$width,
+						$height,
+						$period,
+						$process_value,
+						$percentileitem_width,
+						$max_value,
+						$type_percentile,
+						$value_show,
+						$label_type,
+						$type,
+						$enable_link,
+						$id_server);
 						
-					$statusProcessInDB = array('flag' => true, 'message' => $message);						
+					$statusProcessInDB = array('flag' => true,
+						'message' => $message);
 					
 				}
 				else {
 					// One item per module
 					if (empty($name_modules)) {
-						$statusProcessInDB = array('flag' => true, 'message' => ui_print_error_message (__('No modules selected'), '', true));
+						$statusProcessInDB = array('flag' => true,
+							'message' => ui_print_error_message (
+								__('No modules selected'), '', true));
 					}
 					else {
 						//Any module
 						if ($name_modules[0] == '0') {
 							$id_modules = array();
-							foreach ($id_agents as $id_agent) {
-								$id_modulo = agents_get_modules($id_agent, array('id_agente_modulo'));
-								if (empty($id_modulo)) $id_modulo = array();
-								
-								foreach ($id_modulo as $id) {
-									$id_modules[] = $id['id_agente_modulo'];
+							
+							if ($id_server != 0) {
+								foreach ($name_modules as $serial_data) {
+									$modules_serial = explode(';', $serial_data);
+									
+									foreach ($modules_serial as $data_serialized) {
+										$data = explode('|', $data_serialized);
+										$id_modules[] = $data[0];
+									}
+								}
+							}
+							else {
+								foreach ($id_agents as $id_agent) {
+									$id_modulo = agents_get_modules($id_agent, array('id_agente_modulo'));
+									if (empty($id_modulo)) $id_modulo = array();
+									
+									foreach ($id_modulo as $id) {
+										$id_modules[] = $id['id_agente_modulo'];
+									}
 								}
 							}
 							
-							$message .= visual_map_process_wizard_add_modules($id_modules,
-								$image, $idVisualConsole, $range, $width, $height,
-								$period, $process_value, $percentileitem_width,
-								$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link);
+							$message .= visual_map_process_wizard_add_modules(
+								$id_modules,
+								$image,
+								$idVisualConsole,
+								$range,
+								$width,
+								$height,
+								$period,
+								$process_value,
+								$percentileitem_width,
+								$max_value,
+								$type_percentile,
+								$value_show,
+								$label_type,
+								$type,
+								$enable_link,
+								$id_server);
 						}
 						else {
 							$id_modules = array();
 							
-							foreach ($name_modules as $mod) {
-								foreach ($id_agents as $ag) {
-									$id_module = agents_get_modules($ag,
-										array('id_agente_modulo'),
-										array('nombre' => $mod));
-										
-									if (empty($id_module))
-										continue;
-									else {
-										$id_module = reset($id_module);
-										$id_module = $id_module['id_agente_modulo'];
-									}
+							if ($id_server != 0) {
+								foreach ($name_modules as $serial_data) {
+									$modules_serial = explode(';', $serial_data);
 									
-									$id_modules[] = $id_module;
+									foreach ($modules_serial as $data_serialized) {
+										$data = explode('|', $data_serialized);
+										$id_modules[] = $data[0];
+									}
+								}
+							}
+							else {
+								foreach ($name_modules as $mod) {
+									foreach ($id_agents as $ag) {
+										$id_module = agents_get_modules($ag,
+											array('id_agente_modulo'),
+											array('nombre' => $mod));
+											
+										if (empty($id_module))
+											continue;
+										else {
+											$id_module = reset($id_module);
+											$id_module = $id_module['id_agente_modulo'];
+										}
+										
+										$id_modules[] = $id_module;
+									}
 								}
 							}
 							
-							$message .= visual_map_process_wizard_add_modules($id_modules,
-								$image, $idVisualConsole, $range, $width, $height,
-								$period, $process_value, $percentileitem_width,
-								$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link);
+							$message .= visual_map_process_wizard_add_modules(
+								$id_modules,
+								$image,
+								$idVisualConsole,
+								$range,
+								$width,
+								$height,
+								$period,
+								$process_value,
+								$percentileitem_width,
+								$max_value,
+								$type_percentile,
+								$value_show,
+								$label_type,
+								$type,
+								$enable_link,
+								$id_server);
 						}
 						$statusProcessInDB = array('flag' => true, 'message' => $message);
 					}
@@ -272,9 +369,12 @@ switch ($activeTab) {
 		break;
 	case 'editor':
 		switch ($action) {
+			case 'new':
 			case 'update':
 			case 'edit':
-				$visualConsole = db_get_row_filter('tlayout', array('id' => $idVisualConsole));
+				$visualConsole = db_get_row_filter('tlayout',
+					array('id' => $idVisualConsole));
+				
 				$visualConsoleName = $visualConsole['name'];
 				$action = 'edit';
 				break;
@@ -287,21 +387,30 @@ if (isset($config['vc_refr']) and $config['vc_refr'] != 0)
 else
 	$view_refresh = '60';
 
+if (!defined('METACONSOLE')) {
+	$url_base = 'index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&action=';
+	$url_view = 'index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $idVisualConsole . '&refr=' . $view_refresh;
+}
+else {
+	$url_base = 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&action2=';
+	$url_view = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap=' . $idVisualConsole . '&refr=' . $view_refresh;
+}
+
 $buttons = array(
 	'data' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=data&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' . 
+		'text' => '<a href="' . $url_base . $action . '&tab=data&id_visual_console=' . $idVisualConsole . '">' . 
 			html_print_image ("images/god9.png", true, array ("title" => __('Data'))) .'</a>'),
 	'list_elements' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=list_elements&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
+		'text' => '<a href="' . $url_base . $action . '&tab=list_elements&id_visual_console=' . $idVisualConsole . '">' .
 			html_print_image ("images/god6.png", true, array ("title" => __('List elements'))) .'</a>'),
 	'wizard' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=wizard&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
+		'text' => '<a href="' . $url_base . $action . '&tab=wizard&id_visual_console=' . $idVisualConsole . '">' .
 			html_print_image ("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>'),
 	'editor' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=editor&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
+		'text' => '<a href="' . $url_base . $action . '&tab=editor&id_visual_console=' . $idVisualConsole . '">' .
 			html_print_image ("images/config.png", true, array ("title" => __('Editor'))) .'</a>'),
 	'view' => array('active' => false,
-		'text' => '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $idVisualConsole . '&refr=' . $view_refresh . '">' .
+		'text' => '<a href="' . $url_view . '">' .
 			html_print_image ("images/eye.png", true, array ("title" => __('View'))) .'</a>'),);
 
 if ($action == 'new' || $idVisualConsole === false) {
@@ -313,7 +422,12 @@ if ($action == 'new' || $idVisualConsole === false) {
 
 $buttons[$activeTab]['active'] = true;
  
-ui_print_page_header(__('Visual console') . " &raquo; " . $visualConsoleName, "images/reporting_edit.png", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
+if (!defined('METACONSOLE'))
+	ui_print_page_header(__('Visual console') . " &raquo; " . $visualConsoleName, "images/reporting_edit.png", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
+else {
+	// Print header
+	//ui_meta_print_header(__('Visual console') . " &raquo; " . $visualConsoleName, "", $buttons);
+}
 
 //The source code for PAINT THE PAGE
 if ($statusProcessInDB !== null) {
@@ -322,16 +436,16 @@ if ($statusProcessInDB !== null) {
 
 switch ($activeTab) {
 	case 'wizard':
-		require_once('godmode/reporting/visual_console_builder.wizard.php');
+		require_once($config['homedir'] . '/godmode/reporting/visual_console_builder.wizard.php');
 		break;
 	case 'data':
-		require_once('godmode/reporting/visual_console_builder.data.php');
+		require_once($config['homedir'] . '/godmode/reporting/visual_console_builder.data.php');
 		break;
 	case 'list_elements':
-		require_once('godmode/reporting/visual_console_builder.elements.php');
+		require_once($config['homedir'] . '/godmode/reporting/visual_console_builder.elements.php');
 		break;
 	case 'editor':
-		require_once('godmode/reporting/visual_console_builder.editor.php');
+		require_once($config['homedir'] . '/godmode/reporting/visual_console_builder.editor.php');
 		break;
 }
 ?>

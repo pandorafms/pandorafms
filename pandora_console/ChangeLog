@@ -1,3 +1,35 @@
+2012-12-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql, pandoradb.sql,
+	pandoradb.postgreSQL.sql, pandoradb.oracle.sql: in the table
+	"tlayout_data" added the column "id_metaconsole" for to show
+	visualmaps in the metaconsole.
+	
+	* operation/visual_console/render_view.php,
+	include/functions_visual_map.php, operation/agentes/ver_agente.php,
+	godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.php,
+	godmode/reporting/visual_console_builder.data.php,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.elements.php,
+	godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/map_builder.php,
+	include/ajax/visual_console_builder.ajax.php,
+	include/ajax/agent.php, include/functions_visual_map_editor.php,
+	
+	
+	* operation/agentes/datos_agente.php,
+	include/functions_netflow.php: cleaned source code style.
+	
+	* include/functions_ui.php: in function 
+	"ui_require_javascript_file_enterprise" fixed when need a
+	enterprise javascript instead metaconsole enterprise path.
+	
+	* include/javascript/pandora.js: fixed the function
+	"agent_changed_by_multiple_agents" that needs in the metaconsole.
+
 2012-12-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_groups.php: Fixed propagate parameter in 

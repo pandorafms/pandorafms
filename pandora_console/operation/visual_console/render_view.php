@@ -13,13 +13,18 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
 
 // Login check
-require ('include/functions_visual_map.php');
+require ($config['homedir'] . '/include/functions_visual_map.php');
 
 check_login ();
 
-$id_layout = (int) get_parameter ('id');
+if (!defined('METACONSOLE'))
+	$id_layout = (int) get_parameter ('id');
+else
+	$id_layout = (int) get_parameter ('id_visualmap');
+
 $refr = (int) get_parameter ('refr', $config['vc_refr']);
 $vc_refr = false;
 
@@ -60,29 +65,50 @@ if (check_acl ($config["id_user"], $id_group, "AW")) {
 	
 	$hash = md5($config["dbpass"]. $id_layout. $config["id_user"]);
 	
-	$url = ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"]);
+	if (!defined('METACONSOLE'))
+		$url = ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"]);
+	else
+		$url = ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"], false, false, false);
 	$options['public_link']['text'] = '<a href="' . $url . '">'.
 	
 	html_print_image ("images/camera.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
 	$options['public_link']['active'] = false;
 	
-	$options['setup']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=editor&action=edit&id_visual_console='.$id_layout.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+	if (!defined('METACONSOLE'))
+		$options['setup']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=editor&action=edit&id_visual_console='.$id_layout.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+	else {
+		$pure = get_parameter('pure', 0);
+		$options['setup']['text'] = '<a href="index.php?action2=edit&tab=editor&operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_visual_console='.$id_layout.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+	}
 	$options['setup']['active'] = false;
 }
 
-if ($config["pure"] == 0) {
-	$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">' . html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
-		. "</a>";
+if (!defined('METACONSOLE')) {
+	if ($config["pure"] == 0) {
+		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">' . html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+			. "</a>";
+	}
+	else {
+		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">'
+			. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+			. "</a>";
+	}
+	$options['pure']['active'] = false;
+}
+
+
+if (!defined('METACONSOLE'))
+	ui_print_page_header (__("Visual console") . " &raquo; " . $layout_name, "images/reporting.png", false, '', false, $options);
+else
+	//ui_meta_print_header(__('Visual console') . " &raquo; " . $layout_name, "", $options);
+
+//Set the hidden value for the javascript
+if (defined('METACONSOLE')) {
+	html_print_input_hidden('metaconsole', 1);
 }
 else {
-	$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">'
-		. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
-		. "</a>";
+	html_print_input_hidden('metaconsole', 0);
 }
-$options['pure']['active'] = false;
-
-
-ui_print_page_header (__("Visual console") . " &raquo; " . $layout_name, "images/reporting.png", false, '', false, $options);
 
 visual_map_print_visual_map ($id_layout);
 
@@ -122,9 +148,16 @@ if ($config['pure'] && $config["refr"] != 0) {
 
 echo '<div style="height:30px">&nbsp;</div>';
 
-echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view">';
+if (!defined('METACONSOLE'))
+	echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view">';
+else
+	echo '<form method="post" action="index.php?sec=screen&sec2=screens/screens&action=visualmap">';
+
 html_print_input_hidden ('pure', $config["pure"]);
-html_print_input_hidden ('id', $id_layout);
+if (!defined('METACONSOLE'))
+	html_print_input_hidden ('id', $id_layout);
+else
+	html_print_input_hidden ('id_visualmap', $id_layout);
 html_print_table ($table);
 echo '</form>';
 

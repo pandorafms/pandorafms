@@ -433,6 +433,7 @@ function html_print_select_from_sql ($sql, $name, $selected = '',
 
 function html_print_extended_select_for_time ($name, $selected = '', $script = '', $nothing = '',
 	$nothing_value = '0', $size = false, $return = false, $select_style = false, $unique_name = true) {
+	global $config;
 	
 	$fields = get_periods();
 	
@@ -447,6 +448,22 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 		SECONDS_1DAY => __('days'),
 		SECONDS_1MONTH => __('months'),
 		SECONDS_1YEAR => __('years'));
+	
+	// The advanced control is only for admins
+	if(!is_user_admin($config['id_user'])) {
+		unset($fields[-1]);
+		
+		$returnString = html_print_select ($fields, $name, $selected,"" . $script,
+			$nothing, $nothing_value, true, false, false, '', false, 'font-size: xx-small;'.$select_style);
+		
+		if ($return) {
+			return $returnString;
+		}
+		else {
+			echo $returnString;
+			return;
+		}
+	}
 	
 	if ($unique_name === true) {
 		$uniq_name = uniqid($name);

@@ -38,8 +38,21 @@ require_once ($config['homedir'].'/include/functions_agents.php');
 require_once ($config['homedir'].'/include/functions_modules.php');
 require_once ($config['homedir'].'/include/functions_users.php');
 
+$pure = get_parameter('pure', 0);
+
+if (defined('METACONSOLE')) {
+
+	$sec = 'advanced';
+
+}
+else {
+
+	$sec = 'galertas';
+
+}
+
 // Table for filter controls
-$form_filter = '<form method="post" action="index.php?sec=galertas&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
+$form_filter = '<form method="post" action="index.php?sec='.$sec.'&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
 $form_filter .= "<input type='hidden' name='search' value='1' />\n";
 $form_filter .= '<table style="width: 98%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
 $form_filter .= "<tr>\n";
@@ -65,6 +78,8 @@ $params['show_helptip'] = true;
 $params['input_name'] = 'agent_name';
 $params['value'] = $agentName;
 $params['size'] = 12;
+$params['metaconsole_enabled'] = false;
+
 $form_filter .=  ui_print_agent_autocomplete_input($params);
 
 
@@ -295,18 +310,19 @@ if ($id_agente) {
 	ui_pagination ($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente);
 }
 else {
-	ui_pagination ($total, 'index.php?sec=galertas&sec2=godmode/alerts/alert_list&search=1' . '&template_name=' . $templateName . '&agent_name=' . $agentName . '&module_name=' . $moduleName . '&action_id=' . $actionID . '&field_content=' . $fieldContent. '&priority=' . $priority . '&enabledisable=' . $enabledisable . '&standby=' . $standby);
+	ui_pagination ($total, 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&search=1' . '&template_name=' . $templateName . '&agent_name=' . $agentName . '&module_name=' . $moduleName . '&action_id=' . $actionID . '&field_content=' . $fieldContent. '&priority=' . $priority . '&enabledisable=' . $enabledisable . '&standby=' . $standby);
 }
 $simple_alerts = agents_get_alerts_simple (array_keys ($agents), false,
 	array ('offset' => (int) get_parameter ('offset'),
 		'limit' => $config['block_size'], 'order' => $order), $where, false);
 
 $offset = get_parameter('offset');
+
 if (!$id_agente) {
-	$url = 'index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&offset=' . $offset;
+	$url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'&offset=' . $offset;
 }
 else {
-	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente;
+	$url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente=' . $id_agente;
 }
 	
 $table->class = 'alert_list';
@@ -324,8 +340,8 @@ if (! $id_agente) {
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold';
 	$table->head[0] = __('Agent') . '<br>' .
-		'<a href="' . $url . '&sort_field=agent&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
-		'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
+		'<a href="' . $url . '&sort_field=agent&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+		'<a href="' . $url . '&sort_field=agent&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
 	$table->size[0] = '20%';
 	$table->size[1] = '15%';
 	$table->size[2] = '15%';
@@ -350,11 +366,11 @@ else {
 }
 
 $table->head[1] = __('Module') . '<br>' .
-	'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
-	'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
+	'<a href="' . $url . '&sort_field=module&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=module&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 $table->head[2] = __('Template') . '<br>' .
-	'<a href="' . $url . '&sort_field=template&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
-	'<a href="' . $url . '&sort_field=template&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
+	'<a href="' . $url . '&sort_field=template&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=template&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 /*if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	$table->head[5] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 }*/
@@ -407,9 +423,9 @@ foreach ($simple_alerts as $alert) {
 		modules_get_agentmodule_name ($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	
 	$data[2] = ' <a class="template_details"
-		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">' .
+		href="'.ui_get_full_url(false,false,false,false).'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">' .
 		html_print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help")) . '</a> ';
-	$data[2] .= "<a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
+	$data[2] .= "<a href='index.php?sec=".$sec."&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
 	$data[2] .= ui_print_truncate_text(
 		alerts_get_alert_template_name ($alert['id_alert_template']), GENERIC_SIZE_TEXT, false, true, true, '[&hellip;]', 'font-size: 7.1pt');
 	$data[2] .= "</a>";
@@ -488,9 +504,9 @@ foreach ($simple_alerts as $alert) {
 	$data[3] .= html_print_input_text ('fires_min', -1, '', 4, 10, true);
 	$data[3] .= ' '.__('to').' ';
 	$data[3] .= html_print_input_text ('fires_max', -1, '', 4, 10, true);
-	$data[3] .= ui_print_help_icon ("alert-matches", true);
+	$data[3] .= ui_print_help_icon ("alert-matches", true, ui_get_full_url(false, false, false, false));
 	$data[3] .= '<br />' . __('Threshold');
-	$data[3] .= html_print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true);
+	$data[3] .= html_print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
 	$data[3] .= '</span>';
 	$data[3] .= '<div class="right">';
 	$data[3] .= html_print_submit_button (__('Add'), 'add_action', false, 'class="sub next"', true);
@@ -546,7 +562,7 @@ foreach ($simple_alerts as $alert) {
 		else {
 			$img = 'images/policies.png';
 				
-			$data[5] .= '&nbsp;&nbsp;<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id'] . '">' . 
+			$data[5] .= '&nbsp;&nbsp;<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id=' . $policyInfo['id'] . '">' . 
 				html_print_image($img,true, array('title' => $policyInfo['name'])) .
 				'</a>';
 		}
@@ -576,7 +592,7 @@ if (isset($dont_display_alert_create_bttn))
 
 if ($display_create){
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder">';
+	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">';
 	html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
 	echo '</form>';
 	echo '</div>';

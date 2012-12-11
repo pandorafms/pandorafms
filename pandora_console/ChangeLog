@@ -1,3 +1,17 @@
+2012-12-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/ajax/agent.php
+	include/functions_ui.php
+	include/javascript/pandora.js
+	godmode/alerts/alert_list.list.php
+	godmode/alerts/alert_list.php
+	godmode/alerts/alert_list.builder.php
+	godmode/users/user_list.php
+	godmode/users/profile_list.php
+	godmode/users/configure_user.php
+	godmode/users/configure_profile.php: Added user and alert editor
+	in metaconsole.
+
 2012-12-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_netflow.php: Added a new way of retrieving netflow

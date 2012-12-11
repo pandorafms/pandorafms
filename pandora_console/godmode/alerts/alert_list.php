@@ -25,10 +25,11 @@ if (! check_acl ($config['id_user'], 0, "LW")) {
 	exit;
 }
 
-require_once ('include/functions_agents.php');
-require_once ('include/functions_alerts.php');
-require_once ('include/functions_users.php');
+require_once ($config['homedir'] . '/include/functions_agents.php');
+require_once ($config['homedir'] . '/include/functions_alerts.php');
+require_once ($config['homedir'] . '/include/functions_users.php');
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
+enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 $id_group = 0;
 /* Check if this page is included from a agent edition */
@@ -60,7 +61,7 @@ $priority = get_parameter('priority','');
 $searchFlag = get_parameter('search',0);
 $enabledisable = get_parameter('enabledisable','');
 $standby = get_parameter('standby','');
-
+$pure = get_parameter('pure', 0);
 $messageAction = '';
 
 if ($create_alert) {
@@ -263,23 +264,31 @@ if ($id_agente) {
 	return;
 }
 else {
-	$buttons = array(
-		'list' => array(
-			'active' => false,
-			'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list">' . 
-				html_print_image ("images/god6.png", true, array ("title" => __('List alerts'))) .'</a>'),
-		'builder' => array(
-			'active' => false,
-			'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder">' . 
-				html_print_image ("images/config.png", true, array ("title" => __('Builder alert'))) .'</a>'));
-	
-	$buttons[$tab]['active'] = true;
-	
-	if ($tab == 'list') {
-		ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
-	}
+	if (!defined('METACONSOLE')) {
+		$buttons = array(
+			'list' => array(
+				'active' => false,
+				'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">' . 
+					html_print_image ("images/god6.png", true, array ("title" => __('List alerts'))) .'</a>'),
+			'builder' => array(
+				'active' => false,
+				'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">' . 
+					html_print_image ("images/config.png", true, array ("title" => __('Builder alert'))) .'</a>'));
+		
+		$buttons[$tab]['active'] = true;
+		
+		if ($tab == 'list') {
+				ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+		}
+		else {
+			ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+		}		
+		
+	} 
 	else {
-		ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+
+		alerts_meta_print_header();
+		
 	}
 	
 	echo $messageAction;
@@ -294,7 +303,7 @@ else {
 			}
 			$agents = agents_get_group_agents (array_keys ($groups), false, "none");
 			
-			require_once('godmode/alerts/alert_list.list.php');
+			require_once($config['homedir'] . '/godmode/alerts/alert_list.list.php');
 			
 			return;
 			break;
@@ -306,7 +315,7 @@ else {
 				$groups = array(0 => __('All'));
 			}
 			
-			require_once('godmode/alerts/alert_list.builder.php');
+			require_once($config['homedir'] . '/godmode/alerts/alert_list.builder.php');
 			
 			return;
 			break;

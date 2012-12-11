@@ -21,6 +21,7 @@ check_login ();
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
+enterprise_include_once ('meta/include/functions_users_meta.php');
 
 if (! check_acl ($config['id_user'], 0, "UM")) {
 	db_pandora_audit("ACL Violation",
@@ -32,6 +33,7 @@ if (! check_acl ($config['id_user'], 0, "UM")) {
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $tab = get_parameter('tab', 'user');
+$pure = get_parameter('pure', 0);
 
 $selected = 'border: 1px solid black;';
 $selectUserIDUp = '';
@@ -90,20 +92,33 @@ switch ($sortField) {
 		break;
 }
 
-$buttons = array(
-	'user' => array(
-		'active' => false,
-		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user">' . 
-			html_print_image ("images/god3.png", true, array ("title" => __('User management'))) .'</a>'),
-	'profile' => array(
-		'active' => false,
-		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile">' . 
-			html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
 			
 $buttons[$tab]['active'] = true;
 
 // Header
-ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true, $buttons);
+if (defined('METACONSOLE')) {
+
+	user_meta_print_header();
+	$sec = 'advanced';
+	
+}
+else {
+	
+	$buttons = array(
+		'user' => array(
+			'active' => false,
+			'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">' . 
+				html_print_image ("images/god3.png", true, array ("title" => __('User management'))) .'</a>'),
+		'profile' => array(
+			'active' => false,
+			'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">' . 
+				html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
+
+	ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true, $buttons);	
+
+	$sec = 'gusuarios';
+	
+}
 
 $disable_user = get_parameter ("disable_user", false);
 
@@ -169,14 +184,14 @@ $table->align = array ();
 $table->size = array ();
 
 $table->head[0] = __('User ID') . ' ' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectUserIDUp)) . '</a>' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectUserIDDown)) . '</a>';
+	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=id_user&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectUserIDUp)) . '</a>' .
+	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=id_user&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectUserIDDown)) . '</a>';
 $table->head[1] = __('Name') . ' ' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectFullnameUp )) . '</a>' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectFullnameDown)) . '</a>';
+	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=fullname&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectFullnameUp )) . '</a>' .
+	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=fullname&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectFullnameDown)) . '</a>';
 $table->head[2] = __('Last contact') . ' ' . 
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastConnectUp )) . '</a>' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastConnectDown)) . '</a>';
+	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_connect&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastConnectUp )) . '</a>' .
+	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_connect&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastConnectDown)) . '</a>';
 $table->head[3] = __('Profile');
 $table->head[4] = __('Description');
 $table->head[5] = '<span title="Operations">' . __('Op.') . '</span>';
@@ -225,7 +240,7 @@ foreach ($info as $user_id => $user_info) {
 	}
 	$iterator++;
 	
-	$data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$user_id.'">'.$user_id.'</a>';
+	$data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.$user_id.'</a>';
 	$data[1] = $user_info["fullname"] . '<a href="#" class="tip"><span>';
 	$data[1] .= __('First name') . ': ' . $user_info["firstname"].'<br />';
 	$data[1] .= __('Last name') . ': ' . $user_info["lastname"].'<br />';
@@ -263,14 +278,14 @@ foreach ($info as $user_id => $user_info) {
 	$data[4] = ui_print_string_substr ($user_info["comments"], 24, true);
 	
 	if ($user_info['disabled'] == 0) {
-		$data[5] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list&amp;disable_user=1&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, array('title' => __('Disable'))).'</a>';
+		$data[5] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, array('title' => __('Disable'))).'</a>';
 	}
 	else {
-		$data[5] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list&amp;disable_user=0&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb_off.png', true, array('title' => __('Enable'))).'</a>';
+		$data[5] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=0&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb_off.png', true, array('title' => __('Enable'))).'</a>';
 	}
-	$data[5] .= '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, array('title' => __('Edit'))).'</a>';
+	$data[5] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, array('title' => __('Edit'))).'</a>';
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
-		$data[5] .= "&nbsp;&nbsp;<a href='index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
+		$data[5] .= "&nbsp;&nbsp;<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
 	}
 	else {
 		$data[5] .= ''; //Delete button not in this mode
@@ -283,7 +298,7 @@ html_print_table ($table);
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
 unset ($table);
 if ($config["admin_can_add_user"] !== false) {
-	echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user">';
+	echo '<form method="post" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'">';
 	html_print_input_hidden ('new_user', 1);
 	html_print_submit_button (__('Create user'), "crt", false, 'class="sub next"');
 	echo '</form>';

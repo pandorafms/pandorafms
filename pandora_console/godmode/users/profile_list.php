@@ -29,23 +29,32 @@ if (! check_acl ($config['id_user'], 0, "UM")) {
 	exit;
 }
 
-$tab = get_parameter('tab', 'profile');
+enterprise_include_once ('meta/include/functions_users_meta.php');
 
-$buttons = array(
+$tab = get_parameter('tab', 'profile');
+$pure = get_parameter('pure', 0);
+
+// Header
+if (!defined('METACONSOLE')) {
+	$buttons = array(
 	'user' => array(
 		'active' => false,
-		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user">' . 
+		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">' . 
 			html_print_image ("images/god3.png", true, array ("title" => __('User management'))) .'</a>'),
 	'profile' => array(
 		'active' => false,
-		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile">' . 
+		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">' . 
 			html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
 			
-$buttons[$tab]['active'] = true;
+	$buttons[$tab]['active'] = true;
 
-
-// Header
-ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "profile", true, $buttons);
+	ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "profile", true, $buttons);	
+	$sec = 'gusuarios';
+}
+else {
+	user_meta_print_header();
+	$sec = 'advanced';
+}
 
 $delete_profile = (bool) get_parameter ('delete_profile');
 $create_profile = (bool) get_parameter ('create_profile');
@@ -209,7 +218,7 @@ if ($profiles === false) {
 $img = html_print_image ("images/ok.png", true, array ("border" => 0)); 
 
 foreach ($profiles as $profile) {
-	$data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'"><b>'.$profile["name"].'</b></a>';
+	$data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'.$profile["name"].'</b></a>';
 	$data[1] = ($profile["incident_view"] ? $img : '');
 	$data[2] = ($profile["incident_edit"] ? $img : '');
 	$data[3] = ($profile["incident_management"] ? $img : '');
@@ -220,12 +229,12 @@ foreach ($profiles as $profile) {
 	$data[8] = ($profile["db_management"] ? $img : '');
 	$data[9] = ($profile["alert_management"] ? $img : '');
 	$data[10] = ($profile["pandora_management"] ? $img : '');
-	$data[11] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
-	$data[11] .= '&nbsp;&nbsp;<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
+	$data[11] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
+	$data[11] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
 	array_push ($table->data, $data);
 }
 
-echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_profile">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/configure_profile&pure='.$pure.'">';
 if (isset($data)) {
 	html_print_table ($table);
 }

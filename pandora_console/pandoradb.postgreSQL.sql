@@ -1024,9 +1024,9 @@ CREATE TABLE "tlayout" (
 	"width" INTEGER NOT NULL default 0
 );
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tlayout_data"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tlayout_data" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_layout" INTEGER NOT NULL default 0,
@@ -1044,30 +1044,40 @@ CREATE TABLE "tlayout_data" (
 	"parent_item" INTEGER NOT NULL default 0,
 	"label_color" varchar(20) DEFAULT '',
 	"no_link_color" SMALLINT NOT NULL default 0,
-	"enable_link" SMALLINT NOT NULL default 1
+	"enable_link" SMALLINT NOT NULL default 1,
+	"id_metaconsole" INTEGER NOT NULL default 0
 );
 
+-- ---------------------------------------------------------------------
+-- Table "tplugin"
+-- ---------------------------------------------------------------------
 CREATE TABLE "tplugin" (
-  	"id" SERIAL NOT NULL PRIMARY KEY,
-  	"name" varchar(200) NOT NULL,
-  	"description" TEXT,
-  	"max_timeout" INTEGER NOT NULL default 0,
-  	"max_retries" INTEGER NOT NULL default 0,
-  	"execute" varchar(250) NOT NULL,
-  	"net_dst_opt" varchar(50) default '',
-  	"net_port_opt" varchar(50) default '',
-  	"user_opt" varchar(50) default '',
-  	"pass_opt" varchar(50) default '',
-  	"plugin_type" SMALLINT NOT NULL default 0,
-  	"macros" TEXT default '',
-  	"parameters" TEXT default ''
+	"id" SERIAL NOT NULL PRIMARY KEY,
+	"name" varchar(200) NOT NULL,
+	"description" TEXT,
+	"max_timeout" INTEGER NOT NULL default 0,
+	"max_retries" INTEGER NOT NULL default 0,
+	"execute" varchar(250) NOT NULL,
+	"net_dst_opt" varchar(50) default '',
+	"net_port_opt" varchar(50) default '',
+	"user_opt" varchar(50) default '',
+	"pass_opt" varchar(50) default '',
+	"plugin_type" SMALLINT NOT NULL default 0,
+	"macros" TEXT default '',
+	"parameters" TEXT default ''
 ); 
 
+-- ---------------------------------------------------------------------
+-- Table "tmodule"
+-- ---------------------------------------------------------------------
 CREATE TABLE "tmodule" (
 	"id_module" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(100) NOT NULL default ''
 );
 
+-- ---------------------------------------------------------------------
+-- Table "tserver_export"
+-- ---------------------------------------------------------------------
 CREATE TYPE type_tserver_export_connect_mode AS ENUM ('tentacle', 'ssh', 'local');
 CREATE TABLE "tserver_export" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
@@ -1086,6 +1096,9 @@ CREATE TABLE "tserver_export" (
 	"timezone_offset" SMALLINT NOT NULL default 0
 );
 
+-- ---------------------------------------------------------------------
+-- Table "tserver_export_data"
+-- ---------------------------------------------------------------------
 -- id_export_server is real pandora fms export server process that manages this server
 -- id is the "destination" server to export
 CREATE TABLE "tserver_export_data" (
@@ -1098,9 +1111,9 @@ CREATE TABLE "tserver_export_data" (
 	"timestamp" TIMESTAMP without time zone default '1970-01-01 00:00:00'
 );
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tplanned_downtime"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tplanned_downtime" (
 	"id" BIGSERIAL NOT NULL PRIMARY KEY,
 	"name" VARCHAR( 100 ) NOT NULL,

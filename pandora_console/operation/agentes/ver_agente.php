@@ -168,6 +168,12 @@ if (is_ajax ()) {
 		$custom_condition = get_parameter('custom_condition', '');
 		$selection_mode = get_parameter('selection_mode', 'common');
 		$serialized = get_parameter('serialized', '');
+		$id_server = (int)get_parameter('id_server', 0);
+		$metaconsole_server_name = null;
+		if ($id_server != 0) {
+			$metaconsole_server_name = db_get_value('server_name',
+				'tmetaconsole_setup', 'id', $id_server);
+		}
 		
 		$all = (string)get_parameter('all', 'all');
 		switch ($all) {
@@ -190,10 +196,15 @@ if (is_ajax ()) {
 			$first_elements = array();
 			
 			foreach ($idAgents as $idA) {
-				
-				$row = explode ('|', $idA);
-				$server_name = $row[0];
-				$id_agent = $row [1];
+				if (empty($metaconsole_server_name)) {
+					$row = explode ('|', $idA);
+					$server_name = $row[0];
+					$id_agent = $row [1];
+				}
+				else {
+					$id_agent = $idA;
+					$server_name = $metaconsole_server_name;
+				}
 				// New iteration
 				$counter++;
 				

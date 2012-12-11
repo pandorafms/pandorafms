@@ -32,7 +32,7 @@ CREATE TABLE "tnetflow_filter" (
 	"advanced_filter" TEXT NOT NULL,
 	"filter_args" TEXT NOT NULL,
 	"aggregate" varchar(60),
- 	"output" varchar(60)
+	"output" varchar(60)
 );
 
 -- -----------------------------------------------------
@@ -339,6 +339,7 @@ ALTER TABLE "trecon_task" ALTER COLUMN "field1" TYPE TEXT;
 -- Table "tlayout_data"
 ------------------------------------------------------------------------
 ALTER TABLE "tlayout_data" ADD COLUMN "enable_link" SMALLINT NOT NULL default 1;
+ALTER TABLE "tlayout_data" ADD COLUMN "id_metaconsole" INTEGER NOT NULL default 0;
 
 ------------------------------------------------------------------------
 -- Table "tnetwork_component"

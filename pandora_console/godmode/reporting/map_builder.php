@@ -15,9 +15,16 @@
 
 global $config;
 
-require_once ('include/functions_visual_map.php');
+require_once ($config['homedir'] . '/include/functions_visual_map.php');
 
-ui_print_page_header (__('Reporting').' &raquo; '.__('Visual Console'), "images/reporting.png", false, "map_builder");
+$pure = (int)get_parameter('pure', 0);
+$hack_metaconsole = '';
+if (defined('METACONSOLE'))
+	$hack_metaconsole = '../../';
+
+if (!defined('METACONSOLE')) {
+	ui_print_page_header (__('Reporting') .' &raquo; ' . __('Visual Console'), "images/reporting.png", false, "map_builder");
+}
 
 $id_layout = (int) get_parameter ('id_layout');
 $copy_layout = (bool) get_parameter ('copy_layout');
@@ -144,6 +151,7 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 }
 
 $table->align = array ();
+$table->align[0] = 'left';
 $table->align[1] = 'center';
 $table->align[2] = 'center';
 $table->align[3] = 'center';
@@ -164,23 +172,40 @@ else {
 		
 		$data = array ();
 		
-		$data[0] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.
-			$map['id'].'&amp;refr=' . $refr . '">'.$map['name'].'</a>';
+		if (!defined('METACONSOLE')) {
+			$data[0] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.
+				$map['id'].'&amp;refr=' . $refr . '">'.$map['name'].'</a>';
+		}
+		else {
+			$data[0] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure .
+				'&id_visualmap=' . $map['id'].'&amp;refr=' . $refr . '">'.$map['name'].'</a>';
+		}
 		
 		$data[1] = ui_print_group_icon ($map['id_group'], true);
 		$data[2] = db_get_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
 		
 		if (check_acl ($config['id_user'], 0, "IW")) {
 			
-			$data[3] = '<a href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
-			$data[4] = '<a href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
+			if (!defined('METACONSOLE')) {
+				$data[3] = '<a href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
+				$data[4] = '<a href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
+			}
+			else {
+				
+				
+				$data[3] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
+				$data[4] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
+			}
 		}
 		array_push ($table->data, $data);
 	}
 	html_print_table ($table);
 }
 if (!$maps) {
-	echo '<div class="action-buttons" style="width: 0px;">';
+	if (!defined('METACONSOLE'))
+		echo '<div class="action-buttons" style="width: 0px;">';
+	else
+		echo '<div class="action-buttons" style="width: 500px; text-align: right;">';
 }
 else {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -188,7 +213,11 @@ else {
 
 //Only for IW flag
 if (check_acl ($config['id_user'], 0, "IW")) {
-	echo '<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
+	if (!defined('METACONSOLE'))
+		echo '<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
+	else {		
+		echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post">';
+	}
 	html_print_input_hidden ('edit_layout', 1);
 	html_print_submit_button (__('Create'), '', false, 'class="sub next"');
 	echo '</form>';

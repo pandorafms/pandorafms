@@ -62,6 +62,10 @@ $id_agent_module = get_parameter('id_agent_module', 0);
 $process_simple_value = get_parameter('process_simple_value', PROCESS_VALUE_NONE);
 $type_percentile = get_parameter('type_percentile', 'percentile');
 $value_show = get_parameter('value_show', 'percent');
+$metaconsole = get_parameter('metaconsole', 0);
+$server_name = get_parameter('server_name', null);
+$id_agent = get_parameter('id_agent', null);
+$id_metaconsole = get_parameter('id_metaconsole', null);
 
 $get_element_status = get_parameter('get_element_status', 0);
 $get_image_path_status = get_parameter('get_image_path_status', 0);
@@ -78,9 +82,24 @@ switch ($action) {
 	
 	
 	case 'get_image_sparse':
+		//Metaconsole db connection
+		if (!empty($id_metaconsole)) {
+			$connection = db_get_row_filter ('tmetaconsole_setup',
+				$id_metaconsole);
+			if (metaconsole_load_external_db($connection) != NOERR) {
+				//ui_print_error_message ("Error connecting to ".$server_name);
+				continue;
+			}
+		}
+		
 		$img = grafico_modulo_sparse($id_agent_module,
 			$period, false, $width, $height, '', null, false, 1, false, 0, '', 0, 0,
 			true, true);
+		
+		//Restore db connection
+		if (!empty($id_metaconsole)) {
+			metaconsole_restore_db();
+		}
 		
 		preg_match("/src=[\'\"](.*)[\'\"]/", $img, $matches);
 		$url = $matches[1];
@@ -108,12 +127,40 @@ switch ($action) {
 			case SIMPLE_VALUE_MIN:
 			case SIMPLE_VALUE_AVG:
 				$type = visual_map_get_simple_value_type($process_simple_value);
+				
+				
+				//Metaconsole db connection
+				if ($layoutData['id_metaconsole'] != 0) {
+					$connection = db_get_row_filter ('tmetaconsole_setup',
+						array('id' => $layoutData['id_metaconsole']));
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+				
 				$returnValue = visual_map_get_simple_value($type,
 					$layoutData['id_agente_modulo'], $period);
+				
+				//Restore db connection
+				if ($layoutData['id_metaconsole'] != 0) {
+					metaconsole_restore_db();
+				}
 				break;
+			
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
 			default:
+				//Metaconsole db connection
+				if ($layoutData['id_metaconsole'] != 0) {
+					$connection = db_get_row_filter ('tmetaconsole_setup',
+						array('id' => $layoutData['id_metaconsole']));
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+				
 				$returnValue = db_get_sql ('SELECT datos
 					FROM tagente_estado
 					WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
@@ -141,6 +188,11 @@ switch ($action) {
 						if (!empty($unit_text_db))
 							$unit_text = $unit_text_db;
 					}
+				}
+				
+				//Restore db connection
+				if ($layoutData['id_metaconsole'] != 0) {
+					metaconsole_restore_db();
 				}
 				break;
 			
@@ -274,7 +326,18 @@ switch ($action) {
 				if ($top !== null) { 
 					$values['pos_y'] = $top;
 				}
-				if ($agent !== null) {
+				
+				if (defined('METACONSOLE') && $metaconsole) {
+					if ($server_name !== null) {
+						$values['id_metaconsole'] = db_get_value('id',
+							'tmetaconsole_setup', 'server_name', $server_name);
+					}
+					
+					if ($id_agent !== null) {
+						$values['id_agent'] = $id_agent;
+					}
+				}
+				else if ($agent !== null) {
 					$id_agent = agents_get_agent_id($agent);
 					$values['id_agent'] = $id_agent;
 				}
@@ -374,7 +437,26 @@ switch ($action) {
 			case 'icon':
 				$elementFields = db_get_row_filter('tlayout_data',
 					array('id' => $id_element));
-				$elementFields['agent_name'] = io_safe_output(agents_get_name($elementFields['id_agent']));
+				
+				//Metaconsole db connection
+				if ($elementFields['id_metaconsole'] != 0) {
+					$connection = db_get_row_filter ('tmetaconsole_setup',
+						array('id' => $elementFields['id_metaconsole']));
+					
+					$elementFields['id_server_name'] =
+						$connection['server_name'];
+					
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+				
+				
+				$elementFields['agent_name'] =
+					io_safe_output(agents_get_name($elementFields['id_agent']))
+					. " (" . io_safe_output($connection['server_name']) . ")";
+				
 				//Make the html of select box of modules about id_agent.
 				if ($elementFields['id_agent'] != 0) {
 					$modules = agents_get_modules($elementFields['id_agent'], false, array('disabled' => 0, 'id_agente' => $elementFields['id_agent']));
@@ -387,6 +469,12 @@ switch ($action) {
 				else  {
 					$elementFields['modules_html'] = '<option value="0">' . __('Any') . '</option>';
 				}
+				
+				//Restore db connection
+				if ($elementFields['id_metaconsole'] != 0) {
+					metaconsole_restore_db();
+				}
+				
 				switch ($type) {
 					case 'percentile_item':
 					case 'percentile_bar':
@@ -449,10 +537,18 @@ switch ($action) {
 		$values['label'] = $label;
 		$values['pos_x'] = $left;
 		$values['pos_y'] = $top;
-		if ($agent != '')
-			$values['id_agent'] = agents_get_agent_id($agent);
-		else
-			$values['id_agent'] = 0;
+		
+		if (defined('METACONSOLE') && $metaconsole) {
+			$values['id_metaconsole'] = db_get_value('id',
+				'tmetaconsole_setup', 'server_name', $server_name);
+			$values['id_agent'] = $id_agent;
+		}
+		else {
+			if ($agent != '')
+				$values['id_agent'] = agents_get_agent_id($agent);
+			else
+				$values['id_agent'] = 0;
+		}
 		$values['id_agente_modulo'] = $id_module;
 		$values['id_layout_linked'] = $map_linked;
 		$values['label_color'] = $label_color;

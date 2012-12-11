@@ -32,10 +32,38 @@ $get_agents_group = (bool) get_parameter('get_agents_group', false);
 if ($get_agents_group) {
 	$id_group = (int)get_parameter('id_group', -1);
 	$mode = (string)get_parameter('mode', 'json');
+	$id_server = (int)get_parameter('id_server', 0);
 	
 	$return = array();
 	if ($id_group != -1) {
-		$return = agents_get_group_agents($id_group);
+		if (defined('METACONSOLE')) {
+			
+			if ($id_server == 0) {
+				$servers = $servers = db_get_all_rows_sql ("SELECT *
+					FROM tmetaconsole_setup
+					WHERE disabled = 0");
+			}
+			else {
+				$servers = db_get_all_rows_sql ("SELECT *
+					FROM tmetaconsole_setup
+					WHERE id = " . $id_server . "
+						AND disabled = 0");
+			}
+			
+			foreach ($servers as $server) {
+				if (metaconsole_load_external_db ($server) != NOERR) {
+					continue;
+				}
+				
+				$return = agents_get_group_agents($id_group);
+				
+				//Restore db connection
+				metaconsole_restore_db();
+			}
+		}
+		else {
+			$return = agents_get_group_agents($id_group);
+		}
 	}
 	
 	switch ($mode) {
@@ -212,10 +240,10 @@ elseif ($search_agents_2 && ($config['metaconsole'] == 1) && defined('METACONSOL
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+			$filter[] = '(nombre COLLATE utf8_general_ci LIKE "'.$string.'%" OR direccion LIKE "'.$string.'%")';
 			break;
 		case "oracle":
-			$filter[] = '(UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
+			$filter[] = '(UPPER(nombre)  LIKE UPPER(\''.$string.'%\') OR UPPER(direccion) LIKE UPPER(\''.$string.'%\'))';
 			break;
 	}
 	

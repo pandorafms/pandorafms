@@ -24,8 +24,14 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
-require_once ('include/functions_visual_map.php');
-require_once ('include/functions_visual_map_editor.php');
+$metaconsole_hack = '';
+if (defined('METACONSOLE')) {
+	$metaconsole_hack = '../../';
+}
+
+
+require_once($config['homedir'] . '/include/functions_visual_map.php');
+require_once($config['homedir'] . '/include/functions_visual_map_editor.php');
 enterprise_include_once('include/functions_visual_map_editor.php');
 
 visual_map_editor_print_toolbox();
@@ -39,10 +45,22 @@ $layoutDatas = db_get_all_rows_field_filter ('tlayout_data',
 if ($layoutDatas === false)
 	$layoutDatas = array();
 
+//Set the hidden value for the javascript
+if (defined('METACONSOLE')) {
+	html_print_input_hidden('metaconsole', 1);
+}
+else {
+	html_print_input_hidden('metaconsole', 0);
+}
 
 visual_map_editor_print_item_palette($visualConsole['id'], $background);
 
-echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll;">';
+if (!defined('METACONSOLE')) {
+	echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll;">';
+}
+else {
+	echo '<div id="frame_view" style="width: 700px; height: 500px; overflow: scroll;">';
+}
 echo '<div id="background" class="" style="
 	margin: 0px auto;border: 2px black solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';
 echo "<div id='background_grid'
@@ -57,14 +75,14 @@ foreach ($layoutDatas as $layoutData) {
 	$delete_pending_module = db_get_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
 	$disabled_module = db_get_value ("disabled", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
 	
-	if($delete_pending_module == 1 || $disabled_module == 1)
+	if ($delete_pending_module == 1 || $disabled_module == 1)
 		continue;
 	
 	visual_map_print_item($layoutData);
 	html_print_input_hidden('status_'.$layoutData['id'], visual_map_get_status_element($layoutData));
 }
 
-echo "<img style='position: absolute; top: 0px; left: 0px;' id='background_img' src='images/console/background/" . $background . "' width='100%' height='100%' />";
+echo "<img style='position: absolute; top: 0px; left: 0px;' id='background_img' src='" . $metaconsole_hack . "images/console/background/" . $background . "' width='100%' height='100%' />";
 
 echo '</div>';
 echo '</div>';
@@ -72,7 +90,7 @@ echo '</div>';
 html_print_input_hidden('background_width', $widthBackground);
 html_print_input_hidden('background_height', $heightBackground);
 
-$backgroundSizes = getimagesize('images/console/background/' . $background);
+$backgroundSizes = getimagesize($config['homedir'] . '/images/console/background/' . $background);
 html_print_input_hidden('background_original_width', $backgroundSizes[0]);
 html_print_input_hidden('background_original_height', $backgroundSizes[1]);
 
@@ -88,7 +106,7 @@ ui_require_jquery_file('colorpicker');
 ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
 ui_require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
-ui_require_javascript_file_enterprise('functions_visualmap');
+ui_require_javascript_file_enterprise('functions_visualmap', true);
 
 // Javascript file for base 64 encoding of label parameter 
 ui_require_javascript_file ('encode_decode_base64');

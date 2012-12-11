@@ -231,7 +231,7 @@ foreach($columns as $col => $attr) {
 
 foreach ($result as $row) {
 	$data = array ();
-
+	
 	foreach($columns as $col => $attr) {
 		if ($attr[1] != "modules_format_data")
 			$data[] = $attr[1] ($row[$attr[0]]);

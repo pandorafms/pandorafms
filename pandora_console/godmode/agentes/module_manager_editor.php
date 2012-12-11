@@ -242,6 +242,7 @@ else {
 		$min = '';
 		$max = '';
 		$interval = '';
+		$quiet_module = 0;
 		$unit = '';
 		$prediction_module = '';
 		$custom_integer_2 = 0;
@@ -329,6 +330,7 @@ if($is_function_policies !== ENTERPRISE_NOT_HOOK) {
 global $__code_from;
 $__code_from = 'modules';
 $remote_conf = false;
+
 switch ($moduletype) {
 	case "dataserver":
 	case 1:

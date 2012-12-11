@@ -340,7 +340,7 @@ $table_advanced->data[6][1] = html_print_select_from_sql (
 		SELECT a.id_tag
 		FROM ttag a, $__table_modules b 
 		WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
-		ORDER BY name", 'id_tag_available[]', $id_tag, '','','',
+		ORDER BY name", 'id_tag_available[]', '', '','','',
 	true, true, false, false, 'width: 200px', '5');
 $table_advanced->data[6][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table_advanced->data[6][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete tags to module'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
@@ -351,7 +351,7 @@ $table_advanced->data[6][4] =  html_print_select_from_sql (
 	FROM ttag a, $__table_modules b
 	WHERE a.id_tag = b.id_tag AND $__id_where = $__id
 	ORDER BY name",
-	'id_tag_selected[]', $id_tag, '','','', true, true, false,
+	'id_tag_selected[]', '', '','','', true, true, false,
 	false, 'width: 200px', '5');
 $table_advanced->data[7][0] = __('Quiet');
 $table_advanced->data[7][0] .= ui_print_help_tip(__('The module still stores data but the alerts and events will be stop'), true);
@@ -423,6 +423,12 @@ $(document).ready (function () {
 		});
 	});
 	$("#submit-updbutton").click(function () {
+		$('#id_tag_selected option').map(function(){
+			$(this).attr('selected','selected');
+		});
+	});
+
+	$("#submit-crtbutton").click(function () {
 		$('#id_tag_selected option').map(function(){
 			$(this).attr('selected','selected');
 		});

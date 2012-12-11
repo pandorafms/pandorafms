@@ -22,8 +22,8 @@ function winopeng_var (url, wid, width, height) {
         status = wid;
 }
 
-function open_help (help_id) {
-	open ("general/pandora_help.php?id="+help_id, "pandorahelp", "width=650,height=500,status=0,toolbar=0,menubar=0,scrollbars=1,location=0");
+function open_help (help_id, home_url) {
+	open (home_url+"general/pandora_help.php?id="+help_id, "pandorahelp", "width=650,height=500,status=0,toolbar=0,menubar=0,scrollbars=1,location=0");
 }
 
 /**

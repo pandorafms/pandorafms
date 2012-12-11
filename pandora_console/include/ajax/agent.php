@@ -28,6 +28,7 @@ enterprise_include_once ('include/functions_metaconsole.php');
 $search_agents = (bool) get_parameter ('search_agents');
 $search_agents_2 = (bool) get_parameter ('search_agents_2');
 $get_agents_group = (bool) get_parameter('get_agents_group', false);
+$force_local = (bool) get_parameter('force_local', false);
 
 if ($get_agents_group) {
 	$id_group = (int)get_parameter('id_group', -1);
@@ -163,7 +164,7 @@ elseif ($search_agents && ($config['metaconsole'] == 1)) {
 	return;
 }
 
-if ($search_agents_2 && (!defined('METACONSOLE'))) {
+if ($search_agents_2 && ((!defined('METACONSOLE')) || $force_local)) {
 	
 	require_once ('include/functions_agents.php');
 	

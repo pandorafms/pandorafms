@@ -25,22 +25,34 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
+enterprise_include_once ('meta/include/functions_users_meta.php');
+
 $tab = get_parameter('tab', 'profile');
-
-$buttons = array(
-	'user' => array(
-		'active' => false,
-		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user">' . 
-			html_print_image ("images/god3.png", true, array ("title" => __('User management'))) .'</a>'),
-	'profile' => array(
-		'active' => false,
-		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile">' . 
-			html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
-
-$buttons[$tab]['active'] = true;
+$pure = get_parameter('pure', 0);
 
 // Header
-ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "", true, $buttons);
+if (!defined('METACONSOLE')) {
+	$buttons = array(
+		'user' => array(
+			'active' => false,
+			'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">' . 
+				html_print_image ("images/god3.png", true, array ("title" => __('User management'))) .'</a>'),
+		'profile' => array(
+			'active' => false,
+			'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">' . 
+				html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
+
+	$buttons[$tab]['active'] = true;
+
+	ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "", true, $buttons);
+	$sec2 = 'gusuarios';
+}
+else {
+	
+	user_meta_print_header();	
+	$sec2 = 'advanced';	
+	
+}
 
 $new_profile = (bool) get_parameter ('new_profile');
 $id_profile = (int) get_parameter ('id');
@@ -136,7 +148,7 @@ if ($id_profile || $new_profile) {
 	$table->data[10][0] = __('Pandora management');
 	$table->data[10][1] = html_print_checkbox ('pandora_management', 1, $pandora_management, true);
 	
-	echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/profile_list">';
+	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&pure='.$pure.'">';
 	
 	html_print_table ($table);
 	

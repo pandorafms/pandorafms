@@ -939,14 +939,17 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  * 
  * @param string Id of the help article
  * @param bool Whether to return or output the result
+ * @param string Home url if its necessary 
  * 
  * @return string The help tip
  */
-function ui_print_help_icon ($help_id, $return = false) {
+function ui_print_help_icon ($help_id, $return = false, $home_url = '') {
+	if (empty($home_url))
+		$home_url = "";
 	$output = '&nbsp;'.html_print_image ("images/help.png", true, 
 		array ("class" => "img_help",
 			"title" => __('Help'),
-			"onclick" => "open_help ('".$help_id."')"));
+			"onclick" => "open_help ('".$help_id."','".$home_url."')"));
 	if (!$return)
 		echo $output;
 	
@@ -2427,7 +2430,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 	
 	// Javascript configurations
 	//------------------------------------------------------------------
-	$javascript_ajax_page = 'ajax.php'; //Default value
+	$javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false); //Default value
 	if (isset($parameters['javascript_ajax_page'])) {
 		$javascript_ajax_page = $parameters['javascript_ajax_page'];
 	}
@@ -2491,6 +2494,10 @@ function ui_print_agent_autocomplete_input($parameters) {
 			inputs.push ("get_agent_modules_json=1");
 			inputs.push ("page=operation/agentes/ver_agente");
 			
+			if (' . ((int) !$metaconsole_enabled) . ') {
+				inputs.push ("force_local_modules=1");
+			}			
+			
 			if (' . ((int)$metaconsole_enabled) . ') {
 				inputs.push ("server_name=" + $("#' . $input_server_id . '").val());
 			}
@@ -2551,6 +2558,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 				return group_id;
 			}',
 		'q' => 'term');
+		
+	if (!$metaconsole_enabled) {
+		$javascript_change_ajax_params_original['force_local'] = 1;
+	}	
+		
 	if (isset($parameters['javascript_change_ajax_params'])) {
 		$javascript_change_ajax_params = array();
 		
@@ -2815,7 +2827,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 			var data_params = {"page": "include/ajax/agent",
 				"search_agents_2": 1,
 				"id_group": 0,
-				"q": term};
+				"q": term};		
+				
+			if (' . ((int) !$metaconsole_enabled) . ') {
+				data_params[\'force_local\'] = 1;
+			}					
 			
 			jQuery.ajax ({
 				data: data_params,

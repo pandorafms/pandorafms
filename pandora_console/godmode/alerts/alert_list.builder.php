@@ -28,6 +28,8 @@ if (! check_acl ($config['id_user'], 0, "LW")) {
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 
+$pure = get_parameter('pure', 0);
+
 $table->id = 'add_alert_table';
 $table->class = 'databox';
 $table->width = '98%';
@@ -52,6 +54,7 @@ if (! $id_agente) {
 	$params['input_name'] = 'id_agent';
 	$params['selectbox_id'] = 'id_agent_module';
 	$params['javascript_is_function_select'] = true;
+	$params['metaconsole_enabled'] = false;
 	$table->data['agent'][1] = ui_print_agent_autocomplete_input($params);
 }
 
@@ -84,7 +87,7 @@ $table->data[1][1] .= ' <a class="template_details invisible" href="#">' .
 	html_print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
 if (check_acl ($config['id_user'], 0, "LM")) {
 	$table->data[1][1] .= html_print_image ('images/add.png', true);
-	$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template">';
+	$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
 	$table->data[1][1] .= __('Create Template');
 	$table->data[1][1] .= '</a>';
 }
@@ -114,18 +117,18 @@ $table->data[2][1] .= __('Number of alerts match from').' ';
 $table->data[2][1] .= html_print_input_text ('fires_min', '', '', 4, 10, true);
 $table->data[2][1] .= ' '.__('to').' ';
 $table->data[2][1] .= html_print_input_text ('fires_max', '', '', 4, 10, true);
-$table->data[2][1] .= ui_print_help_icon ("alert-matches", true);
+$table->data[2][1] .= ui_print_help_icon ("alert-matches", true, ui_get_full_url(false, false, false, false));
 $table->data[2][1] .= '</span>';
 $table->data[2][1] .= '</div>';
 if (check_acl ($config['id_user'], 0, "LM")) {
 	$table->data[2][1] .= html_print_image ('images/add.png', true);
-	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action">';
+	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
 	$table->data[2][1] .= __('Create Action');
 	$table->data[2][1] .= '</a>';
 }
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_extended_select_for_time ('module_action_threshold', 0, '', 0,
-	__('None'), false, true) . ui_print_help_icon ('action_threshold', true);
+	__('None'), false, true) . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
 
 echo '<form class="add_alert_form" method="post">';
 
@@ -163,7 +166,7 @@ $(document).ready (function () {
 			return;
 		}
 		$a.unbind ()
-			.attr ("href", "ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template="+id)
+			.attr ("href",<?php echo "'" . ui_get_full_url(false, false, false, false) . "'"; ?> + "ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template="+id)
 			.show ()
 			.cluetip ({
 				arrows: true,
@@ -190,7 +193,7 @@ $(document).ready (function () {
 		var $value = $(this).siblings ("span#latest_value").hide ();
 		var $loading = $(this).siblings ("span#module_loading").show ();
 		$("#value", $value).empty ();
-		jQuery.post ("ajax.php",
+		jQuery.post (<?php echo "'" . ui_get_full_url(false, false, false, false) . "'"; ?> + "ajax.php",
 			{"page" : "operation/agentes/estado_agente",
 			"get_agent_module_last_value" : 1,
 			"id_agent_module" : this.value

@@ -269,8 +269,9 @@ function groups_get_parents($parent, $onlyPropagate = false, $groups = null) {
 		if ($group['id_grupo'] == 0) {
 			continue;
 		}
+		
 		if (($group['id_grupo'] == $parent) && ($group['propagate'] || !$onlyPropagate)) {
-			$return = $return + array($group['id_grupo'] => $group) + groups_get_parents($group['parent'], $groups);
+			$return = $return + array($group['id_grupo'] => $group) + groups_get_parents($group['parent'], $onlyPropagate, $groups);
 		}
 	}
 

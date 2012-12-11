@@ -236,6 +236,41 @@ function config_update_config () {
 			config_update_value ('gis_label', get_parameter ('gis_label'));
 			config_update_value ('gis_default_icon', get_parameter ('gis_default_icon'));
 			
+			$interval_values = get_parameter ('interval_values');
+			
+			// Add new interval value if is provided
+			$interval_value = (float) get_parameter ('interval_value', 0);
+
+			if($interval_value > 0) {
+				$interval_unit = (int) get_parameter ('interval_unit');
+				$new_interval = $interval_value * $interval_unit;
+				
+				if($interval_values === '') {
+					$interval_values = $new_interval;
+				}
+				else {
+					$interval_values_array = explode(',',$interval_values);
+					if(!in_array($new_interval, $interval_values_array)) {
+						$interval_values_array[] = $new_interval;
+						$interval_values = implode(',',$interval_values_array);
+					}
+				}
+			}
+			
+			// Delete interval value if is required
+			$interval_to_delete = (float) get_parameter('interval_to_delete');
+			if($interval_to_delete > 0) {
+				$interval_values_array = explode(',',$interval_values);
+				foreach($interval_values_array as $k => $iva) {
+					if($interval_to_delete == $iva) {
+						unset($interval_values_array[$k]);
+					}
+				}
+				$interval_values = implode(',',$interval_values_array);
+			}
+
+			config_update_value ('interval_values', $interval_values);
+			
 			/////////////
 			break;
 		case 'enterprise/godmode/setup/setup_history':
@@ -728,6 +763,10 @@ function config_process_config () {
 	
 	if (!isset($config['gis_default_icon'])) {
 		config_update_value ('gis_default_icon', "marker");
+	}
+	
+	if (!isset($config['interval_values'])) {
+		config_update_value ('interval_values', "");
 	}
 	
 	if (!isset($config['public_url'])) {

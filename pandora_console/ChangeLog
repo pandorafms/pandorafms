@@ -1,3 +1,13 @@
+2012-12-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/functions.php
+	include/functions_config.php
+	godmode/setup/setup_visuals.php: Add interval values
+	configuration into visual setup and limit the 
+	advanced control of interval combos only for
+	administrators
+
 2012-12-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,

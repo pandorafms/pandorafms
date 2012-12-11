@@ -1583,27 +1583,49 @@ function get_user_dashboards ($id_user) {
 /**
  * Get all the possible periods in seconds.
  *
+ * @param bool Flag to show or not custom fist option
+ * @param bool Show the periods by default if it is empty
+ * 
  * @return The possible periods in an associative array.
  */
-function get_periods () {
+function get_periods ($custom = true, $show_default = true) {
+	global $config;
+	
+	
 	$periods = array ();
 	
-	$periods[-1] = __('custom');
-	$periods[SECONDS_5MINUTES] = sprintf(__('%s minutes'), '5');
-	$periods[SECONDS_30MINUTES] = sprintf(__('%s minutes'), '30 ');
-	$periods[SECONDS_1HOUR] = __('1 hour');
-	$periods[SECONDS_6HOURS] = sprintf(__('%s hours'), '6 ');
-	$periods[SECONDS_12HOURS] = sprintf(__('%s hours'), '12 ');
-	$periods[SECONDS_1DAY] = __('1 day');
-	$periods[SECONDS_1WEEK] = __('1 week');
-	$periods[SECONDS_15DAYS] = __('15 days');
-	$periods[SECONDS_1MONTH] = __('1 month');
-	$periods[SECONDS_3MONTHS] = sprintf(__('%s months'), '3 ');
-	$periods[SECONDS_6MONTHS] = sprintf(__('%s months'), '6 ');
-	$periods[SECONDS_1YEAR] = __('1 year');
-	$periods[SECONDS_2YEARS] = sprintf(__('%s years'), '2 ');
-	$periods[SECONDS_3YEARS] = sprintf(__('%s years'), '3 ');
+	if($custom) {
+		$periods[-1] = __('custom');
+	}	
 	
+	if(empty($config['interval_values'])) {
+		if($show_default) {
+			$periods[SECONDS_5MINUTES] = sprintf(__('%s minutes'), '5');
+			$periods[SECONDS_30MINUTES] = sprintf(__('%s minutes'), '30 ');
+			$periods[SECONDS_1HOUR] = __('1 hour');
+			$periods[SECONDS_6HOURS] = sprintf(__('%s hours'), '6 ');
+			$periods[SECONDS_12HOURS] = sprintf(__('%s hours'), '12 ');
+			$periods[SECONDS_1DAY] = __('1 day');
+			$periods[SECONDS_1WEEK] = __('1 week');
+			$periods[SECONDS_15DAYS] = __('15 days');
+			$periods[SECONDS_1MONTH] = __('1 month');
+			$periods[SECONDS_3MONTHS] = sprintf(__('%s months'), '3 ');
+			$periods[SECONDS_6MONTHS] = sprintf(__('%s months'), '6 ');
+			$periods[SECONDS_1YEAR] = __('1 year');
+			$periods[SECONDS_2YEARS] = sprintf(__('%s years'), '2 ');
+			$periods[SECONDS_3YEARS] = sprintf(__('%s years'), '3 ');
+		}
+		else {
+			$periods[-1] = __('Empty').': '.__('Default values will be used');
+		}
+	}
+	else {
+		$values = explode(',',$config['interval_values']);
+		foreach($values as $v) {
+			$periods[$v] = human_time_description_raw ($v, true);
+		}
+	}
+
 	return $periods;
 }
 

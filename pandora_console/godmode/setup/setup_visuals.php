@@ -45,9 +45,13 @@ ui_print_page_header (__('Visual configuration'), "", false, "", true);
 $table->width = '98%';
 $table->data = array ();
 
-$table->data[1][0] = __('Date format string') . ui_print_help_icon("date_format", true);
-$table->data[1][1] = '<em>'.__('Example').'</em> '.date ($config["date_format"]);
-$table->data[1][1] .= html_print_input_text ('date_format', $config["date_format"], '', 30, 100, true);
+$row = 1;
+
+$table->data[$row][0] = __('Date format string') . ui_print_help_icon("date_format", true);
+$table->data[$row][1] = '<em>'.__('Example').'</em> '.date ($config["date_format"]);
+$table->data[$row][1] .= html_print_input_text ('date_format', $config["date_format"], '', 30, 100, true);
+
+$row++;
 
 if($config['prominent_time'] == 'comparation') {
 	$timestamp = false;
@@ -58,47 +62,91 @@ else if ($config['prominent_time'] == 'timestamp') {
 	$comparation = false;
 }
 
-$table->data[2][0] = __('Timestamp or time comparation') . ui_print_help_icon ("time_stamp-comparation", true);
-$table->data[2][1] = __('Comparation in rollover').' ';
-$table->data[2][1] .= html_print_radio_button ('prominent_time', "comparation", '', $comparation, true);
-$table->data[2][1] .= '<br />'.__('Timestamp in rollover').' ';
-$table->data[2][1] .= html_print_radio_button ('prominent_time', "timestamp", '', $timestamp, true);
+$table->data[$row][0] = __('Timestamp or time comparation') . ui_print_help_icon ("time_stamp-comparation", true);
+$table->data[$row][1] = __('Comparation in rollover').' ';
+$table->data[$row][1] .= html_print_radio_button ('prominent_time', "comparation", '', $comparation, true);
+$table->data[$row][1] .= '<br />'.__('Timestamp in rollover').' ';
+$table->data[$row][1] .= html_print_radio_button ('prominent_time', "timestamp", '', $timestamp, true);
 
-$table->data[3][0] = __('Graph color (min)');
-$table->data[3][1] = html_print_input_text ('graph_color1', $config["graph_color1"], '', 8, 8, true);
+$row++;
 
-$table->data[4][0] = __('Graph color (avg)');
-$table->data[4][1] = html_print_input_text ('graph_color2', $config["graph_color2"], '', 8, 8, true);
+$table->data[$row][0] = __('Graph color (min)');
+$table->data[$row][1] = html_print_input_text ('graph_color1', $config["graph_color1"], '', 8, 8, true);
 
-$table->data[5][0] = __('Graph color (max)');
-$table->data[5][1] = html_print_input_text ('graph_color3', $config["graph_color3"], '', 8, 8, true);
+$row++;
 
-$table->data[6][0] = __('Graphic resolution (1-low, 5-high)');
-$table->data[6][1] = html_print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
+$table->data[$row][0] = __('Graph color (avg)');
+$table->data[$row][1] = html_print_input_text ('graph_color2', $config["graph_color2"], '', 8, 8, true);
 
-$table->data[7][0] = __('Style template');
-$table->data[7][1] = html_print_select (themes_get_css (), 'style', $config["style"].'.css', '', '', '', true);
+$row++;
 
-$table->data[8][0] = __('Block size for pagination');
-$table->data[8][1] = html_print_input_text ('block_size', $config["global_block_size"], '', 5, 5, true);
+$table->data[$row][0] = __('Graph color (max)');
+$table->data[$row][1] = html_print_input_text ('graph_color3', $config["graph_color3"], '', 8, 8, true);
 
-$table->data[9][0] = __('Use round corners');
-$table->data[9][1] = __('Yes').'&nbsp;'.html_print_radio_button ('round_corner', 1, '', $config["round_corner"], true).'&nbsp;&nbsp;';
-$table->data[9][1] .= __('No').'&nbsp;'.html_print_radio_button ('round_corner', 0, '', $config["round_corner"], true);
+$row++;
 
-$table->data[10][0] = __('Status icon set');
+$table->data[$row][0] = __('Graphic resolution (1-low, 5-high)');
+$table->data[$row][1] = html_print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
+
+$row++;
+
+$table->data[$row][0] = __('Interval values');
+
+$units = array(
+	1 => __('seconds'),
+	SECONDS_1MINUTE => __('minutes'),
+	SECONDS_1HOUR => __('hours'),
+	SECONDS_1DAY => __('days'),
+	SECONDS_1MONTH => __('months'),
+	SECONDS_1YEAR => __('years'));
+	
+$table->data[$row][1] = __('Add new custom value to intervals').': ';
+$table->data[$row][1] .= html_print_input_text ('interval_value', '', '', 5, 5, true);
+$table->data[$row][1] .= html_print_select ($units, 'interval_unit', 1, "", '', '', true, false, false);
+$table->data[$row][1] .= html_print_button (__('Add'), 'interval_add_btn', false, "", 'class="sub next"', true);
+$table->data[$row][1] .= '<br><br>';
+
+$table->data[$row][1] .= __('Delete interval').': ';
+$table->data[$row][1] .= html_print_select (get_periods(false, false), 'intervals', "", "", '', '', true);
+$table->data[$row][1] .= html_print_button (__('Delete'), 'interval_del_btn', empty($config["interval_values"]), "", 'class="sub cancel"', true);
+
+$table->data[$row][1] .= html_print_input_hidden ('interval_values', $config["interval_values"], true);
+// This hidden field will be filled from jQuery before submit
+$table->data[$row][1] .= html_print_input_hidden ('interval_to_delete', '', true);
+
+$row++;
+
+$table->data[$row][0] = __('Style template');
+$table->data[$row][1] = html_print_select (themes_get_css (), 'style', $config["style"].'.css', '', '', '', true);
+
+$row++;
+
+$table->data[$row][0] = __('Block size for pagination');
+$table->data[$row][1] = html_print_input_text ('block_size', $config["global_block_size"], '', 5, 5, true);
+
+$row++;
+
+$table->data[$row][0] = __('Use round corners');
+$table->data[$row][1] = __('Yes').'&nbsp;'.html_print_radio_button ('round_corner', 1, '', $config["round_corner"], true).'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No').'&nbsp;'.html_print_radio_button ('round_corner', 0, '', $config["round_corner"], true);
+
+$row++;
+
+$table->data[$row][0] = __('Status icon set');
 $iconsets["default"] = __('Colors');
 $iconsets["faces"] = __('Faces');
 $iconsets["color_text"] = __('Colors and text');
-$table->data[10][1] = html_print_select ($iconsets, 'status_images_set', $config["status_images_set"], '', '', '', true);
+$table->data[$row][1] = html_print_select ($iconsets, 'status_images_set', $config["status_images_set"], '', '', '', true);
 
+$row++;
 
-$table->data[11][0] = __('Font path');
+$table->data[$row][0] = __('Font path');
 $fonts = load_fonts();
-$table->data[11][1] = html_print_select($fonts, 'fontpath', $config["fontpath"], '', '', 0, true);
+$table->data[$row][1] = html_print_select($fonts, 'fontpath', $config["fontpath"], '', '', 0, true);
 
+$row++;
 
-$table->data[12][0] = __('Font size');
+$table->data[$row][0] = __('Font size');
 
 $font_size_array = array( 1 => 1,
 			2 => 2,
@@ -116,16 +164,20 @@ $font_size_array = array( 1 => 1,
 			14 => 14,
 			15 => 15);
 
-$table->data[12][1] = html_print_select($font_size_array, 'font_size', $config["font_size"], '', '', 0, true); 
+$table->data[$row][1] = html_print_select($font_size_array, 'font_size', $config["font_size"], '', '', 0, true); 
 
-$table->data[13][0] = __('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
-$table->data[13][1] = __('Yes').'&nbsp;'.html_print_radio_button ('flash_charts', 1, '', $config["global_flash_charts"], true).'&nbsp;&nbsp;';
-$table->data[13][1] .= __('No').'&nbsp;'.html_print_radio_button ('flash_charts', 0, '', $config["global_flash_charts"], true);
+$row++;
 
+$table->data[$row][0] = __('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
+$table->data[$row][1] = __('Yes').'&nbsp;'.html_print_radio_button ('flash_charts', 1, '', $config["global_flash_charts"], true).'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No').'&nbsp;'.html_print_radio_button ('flash_charts', 0, '', $config["global_flash_charts"], true);
 
-$table->data[14][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
-$table->data[14][1] = html_print_select (list_files ('images/custom_logo', "png", 1, 0), 'custom_logo', $config["custom_logo"], '', '', '', true);
+$row++;
 
+$table->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
+$table->data[$row][1] = html_print_select (list_files ('images/custom_logo', "png", 1, 0), 'custom_logo', $config["custom_logo"], '', '', '', true);
+
+$row++;
 
 $values = array ();
 $values[5] = human_time_description_raw (5);
@@ -136,35 +188,49 @@ $values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
 $values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
 $values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
 
-$table->data[15][0] = __('Enable refresh for all pages');
-$table->data[15][1] = __('Yes').'&nbsp;'.html_print_radio_button ('enable_refr', 1, '', $config["enable_refr"], true).'&nbsp;&nbsp;';
-$table->data[15][1] .= __('No').'&nbsp;'.html_print_radio_button ('enable_refr', 0, '', $config["enable_refr"], true);
+$table->data[$row][0] = __('Enable refresh for all pages');
+$table->data[$row][1] = __('Yes').'&nbsp;'.html_print_radio_button ('enable_refr', 1, '', $config["enable_refr"], true).'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No').'&nbsp;'.html_print_radio_button ('enable_refr', 0, '', $config["enable_refr"], true);
 
-$table->data[16][0] = __('Global default interval for refresh') . ui_print_help_tip(__('This interval will affect all pages'), true);
-$table->data[16][1] = html_print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);
+$row++;
 
-$table->data[17][0] = __('Default interval for refresh on Visual Console') . ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
-$table->data[17][1] = html_print_select ($values, 'vc_refr', $config["vc_refr"], '', 'N/A', 0, true, false, false);
+$table->data[$row][0] = __('Global default interval for refresh') . ui_print_help_tip(__('This interval will affect all pages'), true);
+$table->data[$row][1] = html_print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);
 
-$table->data[18][0] = __('Agent size text') . ui_print_help_tip(__('When the agent name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table->data[18][1] = __('Small:') . html_print_input_text ('agent_size_text_small', $config["agent_size_text_small"], '', 3, 3, true);
-$table->data[18][1] .= ' ' . __('Normal:') . html_print_input_text ('agent_size_text_medium', $config["agent_size_text_medium"], '', 3, 3, true);
+$row++;
 
-$table->data[19][0] = __('Module size text') . ui_print_help_tip(__('When the module name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table->data[19][1] = __('Small:') . html_print_input_text ('module_size_text_small', $config["module_size_text_small"], '', 3, 3, true);
-$table->data[19][1] .= ' ' . __('Normal:') . html_print_input_text ('module_size_text_medium', $config["module_size_text_medium"], '', 3, 3, true);
+$table->data[$row][0] = __('Default interval for refresh on Visual Console') . ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
+$table->data[$row][1] = html_print_select ($values, 'vc_refr', $config["vc_refr"], '', 'N/A', 0, true, false, false);
 
-$table->data[20][0] = __('Description size text') . ui_print_help_tip(__('When the description name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table->data[20][1] = html_print_input_text ('description_size_text', $config["description_size_text"], '', 3, 3, true);
+$row++;
 
-$table->data[21][0] = __('Item title size text') . ui_print_help_tip(__('When the item title name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table->data[21][1] = html_print_input_text ('item_title_size_text', $config["item_title_size_text"], '', 3, 3, true);
+$table->data[$row][0] = __('Agent size text') . ui_print_help_tip(__('When the agent name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table->data[$row][1] = __('Small:') . html_print_input_text ('agent_size_text_small', $config["agent_size_text_small"], '', 3, 3, true);
+$table->data[$row][1] .= ' ' . __('Normal:') . html_print_input_text ('agent_size_text_medium', $config["agent_size_text_medium"], '', 3, 3, true);
 
+$row++;
 
-$table->data[22][0] = __('GIS Labels') . ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
-$table->data[22][1] = __('Yes').'&nbsp;'.html_print_radio_button ('gis_label', 1, '', $config["gis_label"], true).'&nbsp;&nbsp;';
-$table->data[22][1] .= __('No').'&nbsp;'.html_print_radio_button ('gis_label', 0, '', $config["gis_label"], true);
+$table->data[$row][0] = __('Module size text') . ui_print_help_tip(__('When the module name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table->data[$row][1] = __('Small:') . html_print_input_text ('module_size_text_small', $config["module_size_text_small"], '', 3, 3, true);
+$table->data[$row][1] .= ' ' . __('Normal:') . html_print_input_text ('module_size_text_medium', $config["module_size_text_medium"], '', 3, 3, true);
 
+$row++;
+
+$table->data[$row][0] = __('Description size text') . ui_print_help_tip(__('When the description name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table->data[$row][1] = html_print_input_text ('description_size_text', $config["description_size_text"], '', 3, 3, true);
+
+$row++;
+
+$table->data[$row][0] = __('Item title size text') . ui_print_help_tip(__('When the item title name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table->data[$row][1] = html_print_input_text ('item_title_size_text', $config["item_title_size_text"], '', 3, 3, true);
+
+$row++;
+
+$table->data[$row][0] = __('GIS Labels') . ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
+$table->data[$row][1] = __('Yes').'&nbsp;'.html_print_radio_button ('gis_label', 1, '', $config["gis_label"], true).'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No').'&nbsp;'.html_print_radio_button ('gis_label', 0, '', $config["gis_label"], true);
+
+$row++;
 
 $listIcons = gis_get_array_list_icons();
 
@@ -173,7 +239,7 @@ foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
 
-$table->data[23][0] = __('Default icon in GIS') . ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
+$table->data[$row][0] = __('Default icon in GIS') . ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
 
 $gis_default_icon = $config["gis_default_icon"];
 
@@ -195,8 +261,9 @@ else {
 	$path_warning = $path . $gis_default_icon . ".warning.png";
 }
 
-$table->data[23][1] = html_print_select($arraySelectIcon, "gis_default_icon", $gis_default_icon, "changeIcons();", __('None'), '', true) .  '&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .  '&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) . '&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
+$table->data[$row][1] = html_print_select($arraySelectIcon, "gis_default_icon", $gis_default_icon, "changeIcons();", __('None'), '', true) .  '&nbsp;' . html_print_image($path_ok, true, array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .  '&nbsp;' . html_print_image($path_bad, true, array("id" => "icon_bad", "style" => "display:".$display_icons.";")) . '&nbsp;' . html_print_image($path_warning, true, array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
 
+$row++;
 
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);
@@ -231,5 +298,15 @@ $(document).ready (function () {
 	$("#form_setup #text-graph_color1").attachColorPicker();
 	$("#form_setup #text-graph_color2").attachColorPicker();
 	$("#form_setup #text-graph_color3").attachColorPicker();
+	
+	$("#button-interval_del_btn").click( function()  {
+		var interval_selected = $('#intervals option:selected').val();
+		$('#hidden-interval_to_delete').val(interval_selected);
+		$('#submit-update_button').trigger('click');
+	});
+	
+	$("#button-interval_add_btn").click( function() {
+		$('#submit-update_button').trigger('click');
+	});
 });
 </script>

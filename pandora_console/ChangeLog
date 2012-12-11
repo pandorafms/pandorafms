@@ -1,3 +1,9 @@
+2012-12-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extensions/update_manager.php: Check UM is installed. 
+
+	Merged from trunk.
+
 2012-12-10  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb.sql: removed utimestamp index on tsesion.

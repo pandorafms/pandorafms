@@ -143,6 +143,10 @@ else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 // The filter name will not be needed anymore
 $filter['id_name'] = '';
 
+if (! is_executable ($config['netflow_nfdump'])) {
+	ui_print_error_message(__('nfdump binary not found!'));
+}
+
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
 
 	// Chart options table

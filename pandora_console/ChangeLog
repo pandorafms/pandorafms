@@ -1,3 +1,15 @@
+2012-12-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql,
+	  include/functions_config.php,
+	  include/functions_netflow.php,
+	  operation/netflow/nf_live_view.php,
+	  pandoradb.data.postgreSQL.sql,
+	  pandoradb.data.oracle.sql,
+	  godmode/setup/setup_netflow.php: Added the maximum netflow chart
+	  resolution to the setup. Added byte and byteperseconds units.
+	  Small improvements.
+
 2012-12-12  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_config.php: Added configuration

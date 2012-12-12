@@ -1,3 +1,9 @@
+2012-12-12  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/reporting_builder.list_items.php: Fixed the
+	modules/agents shown in the table of report items in inventory
+	kind
+
 2012-12-12  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* godmode/agentes/module_manager_editor_common.php

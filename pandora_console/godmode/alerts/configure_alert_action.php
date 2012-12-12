@@ -16,8 +16,9 @@
 // Load global vars
 global $config;
 
-require_once ('include/functions_alerts.php');
-require_once ('include/functions_users.php');
+require_once ($config['homedir'] . '/include/functions_alerts.php');
+require_once ($config['homedir'] . '/include/functions_users.php');
+enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
@@ -31,6 +32,12 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 $id = (int) get_parameter ('id');
 
 $al_action = alerts_get_alert_action ($id);
+$pure = get_parameter('pure', 0);
+
+if (defined('METACONSOLE'))
+	$sec = 'advanced';
+else
+	$sec = 'galertas';
 
 if ($al_action !== false){
 	// If user tries to edit an action with group=ALL
@@ -42,9 +49,13 @@ if ($al_action !== false){
 			require ("general/noaccess.php");
 			exit;
 		}
-		else
+		else {
 			// Header
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+			if (defined('METACONSOLE'))
+				alerts_meta_print_header();
+			else
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+		}
 	} // If user tries to edit an action of others groups
 	else {
 		$own_info = get_user_info ($config['id_user']);
@@ -54,9 +65,13 @@ if ($al_action !== false){
 			$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 		$is_in_group = in_array($al_action['id_group'], $own_groups);
 		// Then action group have to be in his own groups
-		if ($is_in_group)
+		if ($is_in_group) {
 			// Header
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+			if (defined('METACONSOLE'))
+				alerts_meta_print_header();
+			else
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);		
+		}
 		else {
 			db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
@@ -65,9 +80,13 @@ if ($al_action !== false){
 		}
 	}
 }
-else
+else {
 	// Header
-	ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);	
+	if (defined('METACONSOLE'))
+		alerts_meta_print_header();
+	else
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+}
 
 $name = '';
 $id_command = '';
@@ -109,14 +128,14 @@ $table->data[2][1] = html_print_select_from_sql ('SELECT id, name FROM talert_co
 $table->data[2][1] .= ' ';
 if (check_acl ($config['id_user'], 0, "PM")){
 	$table->data[2][1] .= html_print_image ('images/add.png', true);
-	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command">';
+	$table->data[2][1] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
 	$table->data[2][1] .= __('Create Command');
 	$table->data[2][1] .= '</a>';
 }
 $table->data[2][1] .= '<div id="command_description" style=""></div>';
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
-$table->data[3][1] .= ' '.__('seconds') . ui_print_help_icon ('action_threshold', true);
+$table->data[3][1] .= ' '.__('seconds') . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
 $table->data[4][0] = __('Command preview');
 $table->data[4][1] = html_print_textarea ('command_preview', 10, 30, '', 'disabled="disabled"', true);
 $row = 5;
@@ -127,7 +146,7 @@ for($i=1;$i<=10;$i++) {
 	$table->data['field'.$i][1] .= html_print_input_hidden('field'.$i.'_value', isset($action['field'.$i]) ? $action['field'.$i] : '', true);
 }
 
-echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_actions">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&pure='.$pure.'">';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -172,7 +191,7 @@ $(document).ready (function () {
 			value: "1"});
 		values.push ({name: "id",
 			value: this.value});
-		jQuery.get ("ajax.php",
+		jQuery.get (<?php echo "'" . ui_get_full_url(false, false, false, false) . "'"; ?> + "ajax.php",
 			values,
 			function (data, status) {
 				original_command = js_html_entity_decode (data["command"]);

@@ -15,7 +15,8 @@
 
 // Load global vars
 global $config;
-require_once ("include/functions_alerts.php");
+require_once ($config['homedir'] . "/include/functions_alerts.php");
+enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
@@ -27,6 +28,7 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 }
 
 $id = (int) get_parameter ('id');
+$pure = get_parameter('pure', 0);	
 
 $name = '';
 $command = '';
@@ -52,8 +54,11 @@ if(!empty($fields_values)) {
 }
 
 // Header
-ui_print_page_header (__('Alerts') . ' &raquo; ' .
-	__('Configure alert command'), "images/god2.png", false, "", true);
+if (defined('METACONSOLE'))
+	alerts_meta_print_header();
+else
+	ui_print_page_header (__('Alerts') . ' &raquo; ' .
+		__('Configure alert command'), "images/god2.png", false, "", true);
 
 $table->width = '98%';
 $table->style = array ();
@@ -69,7 +74,7 @@ $table->data[0][2] = html_print_input_text ('name', $name, '', 35, 255, true);
 
 $table->colspan[1][1] = 3;
 $table->data[1][0] = __('Command');
-$table->data[1][0] .= ui_print_help_icon ('alert_macros', true);
+$table->data[1][0] .= ui_print_help_icon ('alert_macros', true, ui_get_full_url(false, false, false, false));
 $table->data[1][1] = html_print_input_text ('command', $command, '', 80, 255, true);
 
 $table->colspan[2][1] = 3;
@@ -82,7 +87,7 @@ for($i=1;$i<=10;$i++) {
 	
 	// Only show help on first row
 	if($i == 1) {
-		$table->data['field'.$i][0] .= ui_print_help_icon ('alert_fields_description', true);
+		$table->data['field'.$i][0] .= ui_print_help_icon ('alert_fields_description', true, ui_get_full_url(false, false, false, false));
 	}
 	
 	if(!empty($fields_descriptions)) {
@@ -97,7 +102,7 @@ for($i=1;$i<=10;$i++) {
 	
 	// Only show help on first row
 	if($i == 1) {
-		$table->data['field'.$i][2] .= ui_print_help_icon ('alert_fields_values', true);
+		$table->data['field'.$i][2] .= ui_print_help_icon ('alert_fields_values', true, ui_get_full_url(false, false, false, false));
 	}
 
 	if(!empty($fields_values)) {
@@ -109,7 +114,7 @@ for($i=1;$i<=10;$i++) {
 	$table->data['field'.$i][3] = html_print_input_text ('field'.$i.'_values', $field_values, '', 65, 255, true);
 }
 
-echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_commands">';
+echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&pure='.$pure.'">';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

@@ -16,9 +16,10 @@
 // Load global vars
 global $config;
 
-require_once ('include/functions_alerts.php');
-require_once ('include/functions_users.php');
-require_once ('include/functions_groups.php');
+require_once ($config['homedir'] . '/include/functions_alerts.php');
+require_once ($config['homedir'] . '/include/functions_users.php');
+require_once ($config['homedir'] . '/include/functions_groups.php');
+enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
@@ -110,12 +111,25 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 
 $update_template = (bool) get_parameter ('update_template');
 $delete_template = (bool) get_parameter ('delete_template');
+$pure = get_parameter('pure', 0);
+
+if (defined('METACONSOLE')) {
+	$sec = 'advanced';
+}
+else {
+	$sec = 'galertas';
+}
 
 // This prevents to duplicate the header in case delete_templete action is performed
-if (!$delete_template) 
-// Header
-ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
-
+if (!$delete_template) {
+	// Header
+	if (defined('METACONSOLE')) {
+		alerts_meta_print_header ();
+	}
+	else {
+		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
+	}
+}
 if ($update_template) {
 	$id = (int) get_parameter ('id');
 	
@@ -148,10 +162,14 @@ if ($delete_template) {
 				require ("general/noaccess.php");
 				exit;
 			}
-			else
-				// Header
-				ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
-			
+			else {
+				if (defined('METACONSOLE')) {
+					alerts_meta_print_header ();
+				}
+				else {
+					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
+				}			
+			}
 		} // If user tries to delete a template of others groups
 		else {
 			$own_info = get_user_info ($config['id_user']);
@@ -161,9 +179,14 @@ if ($delete_template) {
 				$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 			$is_in_group = in_array($al_template['id_group'], $own_groups);
 			// Then template group have to be is his own groups
-			if ($is_in_group)
-				// Header
-				ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+			if ($is_in_group) {
+				if (defined('METACONSOLE')) {
+					alerts_meta_print_header ();
+				}
+				else {
+					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
+				}		
+			}
 			else {
 				db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
@@ -173,8 +196,12 @@ if ($delete_template) {
 		}
 	}
 	else {
-		// Header
-		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+		if (defined('METACONSOLE')) {
+			alerts_meta_print_header ();
+		}
+		else {
+			ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
+		}		
 	}
 	
 	$result = alerts_delete_alert_template ($id);
@@ -262,13 +289,13 @@ foreach ($templates as $template) {
 	
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'">'.
+	$data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'&pure='.$pure.'">'.
 		$template['name'].'</a>';
 	
 	$data[1] = ui_print_group_icon ($template["id_group"], true);
 	$data[3] = alerts_get_alert_templates_type_name ($template['type']);
 	
-	$data[4] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
+	$data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';
 	$data[4] .= html_print_input_hidden ('duplicate_template', 1, true);
 	$data[4] .= html_print_input_hidden ('source_id', $template['id'], true);
 	$data[4] .= html_print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
@@ -291,7 +318,7 @@ else {
 	echo "<div class='nf'>".__('No alert templates defined')."</div>";
 }
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
 html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 html_print_input_hidden ('create_alert', 1);
 echo '</form>';

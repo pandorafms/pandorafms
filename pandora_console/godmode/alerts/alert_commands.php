@@ -17,7 +17,8 @@
 // Load global vars
 global $config;
 
-require_once ("include/functions_alerts.php");
+require_once ($config['homedir'] . "/include/functions_alerts.php");
+enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
@@ -27,6 +28,13 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 	require ("general/noaccess.php");
 	exit;
 }
+
+if (defined('METACONSOLE'))
+	$sec = 'advanced';
+else
+	$sec = 'galertas';
+	
+$pure = get_parameter('pure', 0);	
 
 if (is_ajax ()) {
 	$get_alert_command = (bool) get_parameter ('get_alert_command');
@@ -94,7 +102,10 @@ if (is_ajax ()) {
 }
 
 // Header
-ui_print_page_header (__('Alerts').' &raquo; '.__('Alert commands'), "images/god2.png", false, "alert_command", true);
+if (defined('METACONSOLE'))
+	alerts_meta_print_header();
+else
+	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert commands'), "images/god2.png", false, "alert_command", true);
 
 $update_command = (bool) get_parameter ('update_command');
 $create_command = (bool) get_parameter ('create_command');
@@ -104,7 +115,7 @@ if ($create_command) {
 	$name = (string) get_parameter ('name');
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
-	
+
 	$fields_descriptions = array();
 	$fields_values = array();
 	$info_fields = '';
@@ -112,7 +123,7 @@ if ($create_command) {
 	for($i=1;$i<=10;$i++) {
 		$fields_descriptions[] = (string) get_parameter ('field'.$i.'_description');
 		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
-		$info_fields .= ' Field'.$i.': ' . $values['field'.$i];
+		$info_fields .= ' Field'.$i.': ' . $fields_values[$i - 1];
 	}
 
 	$values['fields_values'] = json_encode($fields_values);
@@ -163,7 +174,7 @@ if ($update_command) {
 	for($i=1;$i<=10;$i++) {
 		$fields_descriptions[] = (string) get_parameter ('field'.$i.'_description');
 		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
-		$info_fields .= ' Field'.$i.': ' . $values['field'.$i];
+		$info_fields .= ' Field'.$i.': ' . $fields_values[$i - 1];
 	}
 	
 	$values['fields_values'] = json_encode($fields_values);
@@ -243,7 +254,7 @@ foreach ($commands as $command) {
 	
 	$data[0] = '<span style="font-size: 7.5pt">';
 	if (! $command['internal'])
-		$data[0] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command&id='.$command['id'].'">'.
+		$data[0] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&id='.$command['id'].'&pure='.$pure.'">'.
 			$command['name'].'</a>';
 	else
 		$data[0] .= $command['name'];
@@ -252,7 +263,7 @@ foreach ($commands as $command) {
 	$data[2] = str_replace("\r\n","<br>",io_safe_output($command['description']));
 	$data[3] = '';
 	if (! $command['internal'])
-		$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'"
+		$data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 			html_print_image("images/cross.png", true) . '</a>';
 	
@@ -267,7 +278,7 @@ else {
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
 html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 html_print_input_hidden ('create_alert', 1);
 echo '</form>';

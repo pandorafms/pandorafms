@@ -16,9 +16,10 @@
 // Load global vars
 global $config;
 
-require_once ("include/functions_alerts.php");
-require_once ('include/functions_users.php');
-require_once ('include/functions_groups.php');
+require_once ($config['homedir'] . "/include/functions_alerts.php");
+require_once ($config['homedir'] . '/include/functions_users.php');
+require_once ($config['homedir'] . '/include/functions_groups.php');
+enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
@@ -45,10 +46,24 @@ $update_action = (bool) get_parameter ('update_action');
 $create_action = (bool) get_parameter ('create_action');
 $delete_action = (bool) get_parameter ('delete_action');
 $copy_action = (bool) get_parameter ('copy_action');
+$pure = get_parameter('pure', 0);
 
-if ((!$copy_action) && (!$delete_action) && (!$update_action))
-	// Header
-	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+if (defined('METACONSOLE')) {
+	$sec = 'advanced';
+}
+else {	
+	$sec = 'galertas';
+}
+
+if ((!$copy_action) && (!$delete_action) && (!$update_action)) {
+	// Header	
+	if (defined('METACONSOLE')) {
+		alerts_meta_print_header ();
+	}
+	else {	
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+	}
+}
 
 if ($copy_action) {
 	$id = get_parameter ('id');
@@ -66,8 +81,13 @@ if ($copy_action) {
 				exit;
 			}
 			else {
-				// Header
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+				// Header	
+				if (defined('METACONSOLE')) {
+					alerts_meta_print_header ();
+				}
+				else {	
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+				}			
 			}
 		} // If user tries to copy an action of others groups
 		else {
@@ -78,9 +98,15 @@ if ($copy_action) {
 				$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 			$is_in_group = in_array($al_action['id_group'], $own_groups);
 			// Then action group have to be in his own groups
-			if ($is_in_group)
-				// Header
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+			if ($is_in_group) {
+				// Header	
+				if (defined('METACONSOLE')) {
+					alerts_meta_print_header ();
+				}
+				else {	
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+				}			
+			}
 			else {
 				db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
@@ -88,11 +114,15 @@ if ($copy_action) {
 				exit;
 			}
 		}		
-	}else
-		// Header
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
-
-	
+	} else {
+		// Header	
+		if (defined('METACONSOLE')) {
+			alerts_meta_print_header ();
+		}
+		else {	
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+		}
+	}
 	$result = alerts_clone_alert_action ($id);
 	
 	if ($result) {
@@ -133,8 +163,8 @@ if ($create_action) {
 			$values);
 		
 		$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
-			$info_fields . ' Group: ' . $group .
-			' Action threshold: ' . $action_threshold;
+			$info_fields . ' Group: ' . $values['id_group'] .
+			' Action threshold: ' . $values['action_threshold'];
 	}
 	
 	if ($result) {
@@ -162,13 +192,25 @@ if ($update_action) {
 				require ("general/noaccess.php");
 				exit;
 			}
-			else
-				// Header
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+			else {
+				// Header	
+				if (defined('METACONSOLE')) {
+					alerts_meta_print_header ();
+				}
+				else {	
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+				}			
+			}
 		}
-	}else
-		// Header
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+	} else {
+		// Header	
+		if (defined('METACONSOLE')) {
+			alerts_meta_print_header ();
+		}
+		else {	
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+		}
+	}
 	
 	
 	$name = (string) get_parameter ('name');
@@ -227,9 +269,15 @@ if ($delete_action) {
 				require ("general/noaccess.php");
 				exit;
 			}
-			else
-				// Header
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+			else {
+				// Header	
+				if (defined('METACONSOLE')) {
+					alerts_meta_print_header ();
+				}
+				else {	
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+				}
+			}
 		// If user tries to delete an action of others groups
 		}
 		else {
@@ -240,9 +288,15 @@ if ($delete_action) {
 				$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 			$is_in_group = in_array($al_action['id_group'], $own_groups);
 			// Then action group have to be in his own groups
-			if ($is_in_group)
-				// Header
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+			if ($is_in_group) {
+				// Header	
+				if (defined('METACONSOLE')) {
+					alerts_meta_print_header ();
+				}
+				else {	
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+				}
+			}
 			else {
 				db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
@@ -304,13 +358,13 @@ foreach ($actions as $action) {
 	
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'">'.
+	$data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'&pure='.$pure.'">'.
 		$action['name'].'</a>';
 	$data[1] = ui_print_group_icon ($action["id_group"], true) .'&nbsp;';
-	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'"
+	$data[2] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'&pure='.$pure.'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 		html_print_image("images/copy.png", true) . '</a>';
-	$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'"
+	$data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'&pure='.$pure.'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 		html_print_image("images/cross.png", true) . '</a>';
 	
@@ -324,7 +378,7 @@ else {
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
 html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 html_print_input_hidden ('create_alert', 1);
 echo '</form>';

@@ -483,6 +483,11 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 		$style = 'width: 16px; height: 16px;';
 	
 	$output = '';
+	
+	// Don't show link in metaconsole
+	if (defined('METACONSOLE'))
+		$link = false;
+	
 	if ($link) 
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	

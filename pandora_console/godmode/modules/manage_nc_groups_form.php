@@ -25,9 +25,14 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-require_once ('include/functions_network_components.php');
+require_once ($config['homedir'] . '/include/functions_network_components.php');
 
 $id = (int) get_parameter ('id');
+
+if (defined('METACONSOLE'))
+	$sec = 'advanced';
+else
+	$sec = 'gmodules';
 
 if ($id) {
 	$group = network_components_get_group ($id);
@@ -51,7 +56,7 @@ $table->data[1][0] = __('Parent');
 $table->data[1][1] = html_print_select (network_components_get_groups (),
 	'parent', $parent, false, __('None'), 0, true, false, false);
 
-echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_nc_groups">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {

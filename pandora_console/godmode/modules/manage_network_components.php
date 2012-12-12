@@ -25,11 +25,19 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-// Header
-ui_print_page_header (__('Module management').' &raquo; '.__('Network component management'), "", false, "network_component", true);
+require_once ($config['homedir'] . '/include/functions_network_components.php');
+include_once($config['homedir'] . "/include/functions_categories.php");
+enterprise_include_once ('meta/include/functions_components_meta.php');
 
-require_once ('include/functions_network_components.php');
-include_once("include/functions_categories.php");
+// Header
+if (defined('METACONSOLE')) {
+	components_meta_print_header();
+	$sec = 'advanced';
+}
+else {
+ui_print_page_header (__('Module management').' &raquo; '.__('Network component management'), "", false, "network_component", true);
+	$sec = 'gmodules';	
+}
 
 $type = (int) get_parameter ('type');
 $name = (string) get_parameter ('name');
@@ -84,6 +92,7 @@ $critical_inverse = (int) get_parameter('critical_inverse');
 $warning_inverse = (int) get_parameter('warning_inverse');
 $id_category = (int) get_parameter('id_category');
 $id_tag_selected = (array) get_parameter('id_tag_selected');
+$pure = get_parameter('pure', 0);
 
 if(count($id_tag_selected) == 1 && empty($id_tag_selected[0])) {
 	$tags = '';
@@ -338,7 +347,7 @@ if ($multiple_delete) {
 }
 
 if ($id || $new_component || $create_network_from_module) {
-	include_once ('godmode/modules/manage_network_components_form.php');
+	include_once ($config['homedir'] . '/godmode/modules/manage_network_components_form.php');
 	return;
 }
 
@@ -453,7 +462,7 @@ foreach ($components as $component) {
 		$component['max'] = $component['min'] = __('N/A');
 	}
 	
-	$data[0] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'">';
+	$data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'">';
 	$data[0] .= io_safe_output($component['name']);
 	$data[0] .= '</a>';
 	$data[1] = ui_print_moduletype_icon ($component['type'], true);
@@ -474,7 +483,7 @@ foreach ($components as $component) {
 }
 
 if (isset($data)) {
-	echo "<form method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&search_id_group=0search_string='>";
+	echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure=".$pure."'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";

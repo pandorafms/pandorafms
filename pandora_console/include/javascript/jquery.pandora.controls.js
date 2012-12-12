@@ -212,9 +212,15 @@
 					$(this).change (function () {
 						var id_os = this.value;
 						
+						var home_url;
+						if (typeof(settings) == 'undefined')
+							home_url = './';
+						else
+							home_url = settings.home_url;
+						
 						$(config.spanPreview).fadeOut ('fast', function () {
 							$("img", config.spanPreview).remove ();
-							jQuery.post ('ajax.php', 
+							jQuery.post (home_url + 'ajax.php', 
 								{"page": "godmode/setup/setup",
 								"get_os_icon": 1,
 								"id_os": id_os

@@ -62,7 +62,7 @@ if(enterprise_installed()) {
 	$table->data[0][3] .= html_print_checkbox('only_metaconsole',1,(int)$only_metaconsole,true).__('Only for metaconsole');
 }
 
-$table->data[1][0] = __('Type') . ' ' . ui_print_help_icon ('module_type', true);
+$table->data[1][0] = __('Type') . ' ' . ui_print_help_icon ('module_type', true, ui_get_full_url(false, false, false, false));
 $sql = sprintf ('SELECT id_tipo, descripcion
 	FROM ttipo_modulo
 	WHERE categoria IN (%s)
@@ -109,7 +109,7 @@ $table->data[3][3] .= html_print_input_text ('str_critical', $str_critical,
 $table->data[3][3] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table->data[3][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
 
-$table->data[4][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);
+$table->data[4][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true, ui_get_full_url(false, false, false, false));
 $table->data[4][1] = html_print_input_text ('ff_event', $ff_event,
 	'', 5, 15, true);
 $table->data[4][2] = __('Historical data');

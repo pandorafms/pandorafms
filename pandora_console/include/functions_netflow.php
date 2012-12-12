@@ -352,8 +352,8 @@ function netflow_summary_table ($data) {
 	$table->style[1] = 'border: 1px solid black;padding: 4px';
 	$table->data[0][0] = '<b>'.__('Total flows').'</b>';
 	$table->data[0][1] = format_numeric ($data['totalflows']);
-	$table->data[1][0] = '<b>'.__('Total megabytes').'</b>';
-	$table->data[1][1] = format_numeric ((int)($data['totalbytes'] / 1048576));
+	$table->data[1][0] = '<b>'.__('Total bytes').'</b>';
+	$table->data[1][1] = format_numeric ($data['totalbytes']);
 	$table->data[2][0] = '<b>'.__('Total packets').'</b>';
 	$table->data[2][1] = format_numeric ($data['totalpackets']);
 	$table->data[3][0] = '<b>'.__('Average bits per second'). '</b>';
@@ -506,8 +506,8 @@ function netflow_get_data_from_summary ($start_date, $end_date, $interval_length
 	}
 
 	// Set a max number of intervals
-	if ($num_intervals > 100) {
-		$num_intervals = 50;
+	if ($num_intervals > $config['netflow_max_resolution']) {
+		$num_intervals = $config['netflow_max_resolution'];
 		$interval_length = (int) ($period / $num_intervals);
 	}
 
@@ -623,23 +623,7 @@ $total += $values[$interval_start]['data'];
 					continue;
 				}
 
-				switch ($unit){
-					case "megabytes":
-						$values['data'][$interval_start][$line['agg']] = $line['data'] / 1024;
-						break;
-					case "megabytespersecond":
-						$values['data'][$interval_start][$line['agg']] = $line['data'] / 1024 / ($end_date - $start_date);
-						break;
-					case "kilobytes":
-						$values['data'][$interval_start][$line['agg']] = $line['data'];
-						break;
-					case "kilobytespersecond":
-						$values['data'][$interval_start][$line['agg']] = $line['data'] / ($end_date - $start_date);
-						break;
-					default:
-						$values['data'][$interval_start][$line['agg']] = $line['data'] * 1024;
-						break;
-				}
+				$values['data'][$interval_start][$line['agg']] = $line['data'];
 			}
 		}
 	}
@@ -727,7 +711,11 @@ function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $
 				$values[$i]['data'] = $val[9] / 1024 / $interval_length;
 				break;
 			default:
+			case "bytes":
 				$values[$i]['data'] = $val[9];
+				break;
+			case "bytespersecond":
+				$values[$i]['data'] = $val[9] / $interval_length;
 				break;
 		}
 		$i++;
@@ -1075,7 +1063,11 @@ function netflow_parse_file ($start_date, $end_date, $interval_length, $file, &$
 						$values['data'][$timestamp][$agg] = $interval_total[$agg] / 1024 / $interval_length;
 						break;
 					default:
+					case 'bytes': 
 						$values['data'][$timestamp][$agg] = $interval_total[$agg];
+						break;
+					case 'bytespersecond': 
+						$values['data'][$timestamp][$agg] = $interval_total[$agg] / $interval_length;
 						break;
 				}
 				
@@ -1092,20 +1084,24 @@ function netflow_parse_file ($start_date, $end_date, $interval_length, $file, &$
 			
 			// Calculate interval data
 			switch ($unit) {
-				case 'megabytes': 
+				case 'megabytes':
 					$values[$timestamp]['data'] = $interval_total / 1048576;
 					break;
-				case 'megabytespersecond': 
+				case 'megabytespersecond':
 					$values[$timestamp]['data'] = $interval_total / 1048576 / $interval_length;
 					break;
-				case 'kilobytes': 
+				case 'kilobytes':
 					$values[$timestamp]['data'] = $interval_total / 1024;
 					break;
-				case 'kilobytespersecond': 
+				case 'kilobytespersecond':
 					$values[$timestamp]['data'] = $interval_total / 1024 / $interval_length;
 					break;
 				default:
+				case 'bytes':
 					$values[$timestamp]['data'] = $interval_total;
+					break;
+				case 'bytespersecond':
+					$values[$timestamp]['data'] = $interval_total / $interval_length;
 					break;
 			}
 						
@@ -1679,6 +1675,10 @@ function netflow_format_unit ($unit) {
 				return __('kB');
 			case 'kilobytespersecond':
 				return __('kB/s');
+			case 'bytes':
+				return __('B');
+			case 'bytespersecond':
+				return __('B/s');
 			default:
 				return '';
 		}

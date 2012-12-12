@@ -297,6 +297,7 @@ function config_update_config () {
 			config_update_value ('netflow_interval', get_parameter ('netflow_interval'));
 			config_update_value ('netflow_daemon', get_parameter ('netflow_daemon'));
 			config_update_value ('netflow_nfdump', get_parameter ('netflow_nfdump'));
+			config_update_value ('netflow_max_resolution', get_parameter ('netflow_max_resolution'));
 			break;
 	}
 	
@@ -558,7 +559,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['netflow_interval'])) {
-		config_update_value ( 'netflow_interval', SECONDS_5MINUTES);
+		config_update_value ( 'netflow_interval', SECONDS_10MINUTES);
 	}
 	
 	if (!isset ($config['netflow_daemon'])) {
@@ -569,6 +570,10 @@ function config_process_config () {
 		config_update_value ( 'netflow_nfdump', '/usr/bin/nfdump');
 	}
 	
+	if (!isset ($config['netflow_max_resolution'])) {
+		config_update_value ( 'netflow_max_resolution', '50');
+	}
+
 	if (!isset ($config['auth'])) {
 		config_update_value ( 'auth', 'mysql');
 	}

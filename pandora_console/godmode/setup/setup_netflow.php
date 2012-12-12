@@ -52,7 +52,9 @@ $table->data[2][0] = '<b>'.__('Daemon binary path').'</b>';
 $table->data[2][1] = html_print_input_text ('netflow_daemon', $config['netflow_daemon'], false, 50, 200, true);
 $table->data[3][0] = '<b>'.__('Nfdump binary path').'</b>';
 $table->data[3][1] = html_print_input_text ('netflow_nfdump', $config['netflow_nfdump'], false, 50, 200, true);
-	
+$table->data[4][0] = '<b>'.__('Maximum chart resolution').'</b>' . ui_print_help_tip (__("Maximum number of points that a netflow area chart will display. The higher the resolution the performance. Values between 50 and 100 are recommended."), true);
+$table->data[4][1] = html_print_input_text ('netflow_max_resolution', $config['netflow_max_resolution'], false, 50, 200, true);
+
 echo '<form id="netflow_setup" method="post">';
 			
 html_print_table ($table);

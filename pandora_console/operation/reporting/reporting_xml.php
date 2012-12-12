@@ -209,19 +209,21 @@ foreach ($contents as $content) {
 	$data["period"] = human_time_description_raw ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
-
+	
 	// Support for metaconsole
 	$server_name = $content ['server_name'];
-
+	
 	// Disable remote connections for netflow report items
 	if ($content['type'] != 'netflow_area' &&
-	    $content['type'] != 'netflow_pie' &&
-	    $content['type'] != 'netflow_data' &&
-	    $content['type'] != 'netflow_statistics' &&
-	    $content['type'] != 'netflow_summary') {
-			$remote_connection = 1;
-	} else {
-			$remote_connection = 0;
+		$content['type'] != 'netflow_pie' &&
+		$content['type'] != 'netflow_data' &&
+		$content['type'] != 'netflow_statistics' &&
+		$content['type'] != 'netflow_summary') {
+		
+		$remote_connection = 1;
+	}
+	else {
+		$remote_connection = 0;
 	}
 	
 	if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE') && $remote_connection == 1) {
@@ -229,11 +231,11 @@ foreach ($contents as $content) {
 		if (metaconsole_connect($connection) != NOERR){
 			//ui_print_error_message ("Error connecting to ".$server_name);
 		}
-	}	
+	}
 	
 	$session_id = session_id();	
 	switch ($content["type"]) {
-
+		
 		case 1:
 		case 'simple_graph':
 			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
@@ -241,43 +243,47 @@ foreach ($contents as $content) {
 			
 			$data["title"] = __('Simple graph');
 			$data["objdata"] = array();
-
+			
 			$date_end = time();
 			$date_init = $date_end - $content['period'];
 			///
 			$temp_file = $config['attachment_store'] . '/simple_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
 			$file = fopen ($temp_file, 'a+');
-
+			
 			$buffer_file["objdata"] = $config['attachment_store'] . '/simple_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
-
+			
 			$limit = 1000;
 			$offset = 0;
-				
-			$sql_count = "SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+			
+			$sql_count = "SELECT COUNT(id_agente_modulo)
+				FROM tagente_datos
+				WHERE id_agente_modulo=".$content['id_agent_module']." 
 					AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
 			$data_count = db_get_value_sql($sql_count);
-
+			
 			if ($data_count == false) {
 				$content_report = "    <simple_graph/>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
-			} else if ($data_count <= $limit) {
+			}
+			else if ($data_count <= $limit) {
 				$content_report = "    <simple_graph>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
 				
-				$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
-								AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
-
+				$sql = 	"SELECT *
+					FROM tagente_datos
+					WHERE id_agente_modulo=".$content['id_agent_module']." 
+						AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+				
 				$data_module = db_get_all_rows_sql($sql);
 				xml_file_graph ($data_module, $temp_file);
 				
 				$file = fopen ($temp_file, 'a+');
 				$content_report = "    </simple_graph>\n";
 				$result = fwrite($file, $content_report);
-				
-
-			} else {
+			}
+			else {
 				$content_report = "    <simple_graph>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
@@ -285,8 +291,10 @@ foreach ($contents as $content) {
 				$position = 0;
 				while ($offset < $data_count) {
 					
-					$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
-					AND (utimestamp>=$date_init AND utimestamp<=$date_end) LIMIT $offset,$limit";
+					$sql = 	"SELECT *
+						FROM tagente_datos
+						WHERE id_agente_modulo=".$content['id_agent_module']." 
+							AND (utimestamp>=$date_init AND utimestamp<=$date_end) LIMIT $offset,$limit";
 					$data_module = db_get_all_rows_sql($sql);
 					
 					$position = xml_file_graph ($data_module, $temp_file, $position);	
@@ -298,10 +306,9 @@ foreach ($contents as $content) {
 				$result = fwrite($file, $content_report);
 				fclose($file);
 			}
-			///
 			break;
 		case 'simple_baseline_graph':
-		
+			
 			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
 			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));	
 			$data["title"] = __('Simple baseline graph');
@@ -309,31 +316,36 @@ foreach ($contents as $content) {
 			
 			$date_end = time();
 			$date_init = $date_end - $content['period'];
-			///
+			
 			$temp_file = $config['attachment_store'] . '/simple_baseline_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
-
+			
 			$file = fopen ($temp_file, 'a+');
-
+			
 			$buffer_file["objdata"] = $config['attachment_store'] . '/simple_baseline_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
-
+			
 			$limit = 1000;
 			$offset = 0;
-				
-			$sql_count = "SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
+			
+			$sql_count = "SELECT COUNT(id_agente_modulo)
+				FROM tagente_datos
+				WHERE id_agente_modulo=".$content['id_agent_module']." 
 					AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
 			$data_count = db_get_value_sql($sql_count);
-
+			
 			if ($data_count == false) {
 				$content_report = "    <simple_baseline_graph/>\n";
 				$result = fwrite($file, $content_report);
-			} else if ($data_count <= $limit) {
+			}
+			else if ($data_count <= $limit) {
 				$content_report = "    <simple_baseline_graph>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
 				
-				$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content['id_agent_module']." 
-								AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
-
+				$sql = "SELECT *
+					FROM tagente_datos
+					WHERE id_agente_modulo=".$content['id_agent_module']." 
+						AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+				
 				$data_module = db_get_all_rows_sql($sql);
 				xml_file_graph ($data_module, $temp_file);
 				
@@ -341,8 +353,9 @@ foreach ($contents as $content) {
 				$content_report = "    </simple_baseline_graph>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
-
-			} else {
+				
+			}
+			else {
 				$content_report = "    <simple_baseline_graph>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);

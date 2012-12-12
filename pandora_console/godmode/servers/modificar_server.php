@@ -45,8 +45,8 @@ if (isset($_GET["server"])) {
 	$table->data[] = array (__('IP Address'),html_print_input_text ('address',$row["ip_address"],'',50,0,true));
 	$table->data[] = array (__('Description'),html_print_input_text ('description',$row["description"],'',50,0,true));
 	html_print_table ($table);
-
-
+	
+	
 	echo '<div class="action-buttons" style="width: 98%">';
 	echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
 	echo "</div>";
@@ -83,24 +83,24 @@ else {
 		}
 	}
 	
-
-
+	
+	
 	$servers = servers_get_info ();
 	if ($servers === false) {
 		echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
 		return;
 	}
-
+	
 	$table->width = '98%';
 	$table->size = array ();
-
+	
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold';
-
+	
 	$table->align = array ();
 	$table->align[1] = 'center';
 	$table->align[8] = 'center';
-
+	
 	$table->head = array ();
 	$table->head[0] = __('Name');
 	$table->head[1] = __('Status');
@@ -111,15 +111,15 @@ else {
 	$table->head[6] = __('T/Q') . ui_print_help_tip (__("Threads / Queued modules currently"), true);
 	// This will have a column of data such as "6 hours"
 	$table->head[7] = __('Updated');
-
+	
 	//Only Pandora Administrator can delete servers
 	if (check_acl ($config["id_user"], 0, "PM")) {
 		$table->head[8] = '<span title="Operations">' . __('Op.') . '</span>';
 	}
-
+	
 	$table->data = array ();
-
-
+	
+	
 	foreach ($servers as $server) {
 		$data = array ();
 		
@@ -156,10 +156,10 @@ else {
 				$data[5] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
 				break;
 		}
-
+		
 		$data[6] = $server['threads'].' : '.$server['queued_modules'];
 		$data[7] = ui_print_timestamp ($server['keepalive'], true);
-
+		
 		//Only Pandora Administrator can delete servers
 		if (check_acl ($config["id_user"], 0, "PM")) {
 			$data[8] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">';
@@ -169,15 +169,15 @@ else {
 			$data[8] .= '&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
 			$data[8] .= html_print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
 			$data[8] .= '</a>';
-		}	
+		}
 		
 		array_push ($table->data, $data);
 	}
-
+	
 	html_print_table ($table);
-
+	
 	//Legend
-
+	
 	echo "<table>";
 	echo "<tr><td colspan='5'>" . __('Legend') . "</td></tr>";
 	echo "<tr>";
@@ -196,5 +196,4 @@ else {
 	echo '<td><span class="prediction">'.__('Prediction server').'</span></td>';
 	echo "</tr></table>";
 }
-
 ?>

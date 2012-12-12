@@ -56,7 +56,7 @@ $selected = 'border: 1px solid black;';
 
 if ($searchAgents) {
 	$agents_tab = array('text' => "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-			. html_print_image ("images/bricks.png", true, array ("title" => __('Agents'))) . "</a>", 'active' => $searchTab == "agents");
+		. html_print_image ("images/bricks.png", true, array ("title" => __('Agents'))) . "</a>", 'active' => $searchTab == "agents");
 }
 else {
 	$agents_tab = '';
@@ -64,7 +64,7 @@ else {
 
 if ($searchUsers) {
 	$users_tab = array('text' => "<a href='index.php?search_category=users&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-			. html_print_image ("images/group.png", true, array ("title" => __('Users'))) . "</a>", 'active' => $searchTab == "users");
+		. html_print_image ("images/group.png", true, array ("title" => __('Users'))) . "</a>", 'active' => $searchTab == "users");
 }
 else {
 	$users_tab = '';
@@ -72,15 +72,15 @@ else {
 
 if ($searchAlerts) {
 	$alerts_tab = array('text' => "<a href='index.php?search_category=alerts&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-			. html_print_image ("images/god2.png", true, array ("title" => __('Alerts'))) . "</a>", 'active' => $searchTab == "alerts");
+		. html_print_image ("images/god2.png", true, array ("title" => __('Alerts'))) . "</a>", 'active' => $searchTab == "alerts");
 }
 else {
 	$alerts_tab = '';
-}				
-		
+}
+
 if ($searchGraphs) {
 	$graphs_tab = array('text' => "<a href='index.php?search_category=graphs&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-			. html_print_image ("images/chart_curve.png", true, array ("title" => __('Graphs'))) . "</a>", 'active' => $searchTab == "graphs");
+		. html_print_image ("images/chart_curve.png", true, array ("title" => __('Graphs'))) . "</a>", 'active' => $searchTab == "graphs");
 }
 else {
 	$graphs_tab = '';
@@ -88,7 +88,7 @@ else {
 
 if ($searchReports) {
 	$reports_tab = array('text' => "<a href='index.php?search_category=reports&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-			. html_print_image ("images/reporting.png", true, array ("title" => __('Reports'))) . "</a>", 'active' => $searchTab == "reports");
+		. html_print_image ("images/reporting.png", true, array ("title" => __('Reports'))) . "</a>", 'active' => $searchTab == "reports");
 }
 else {
 	$reports_tab = '';
@@ -96,7 +96,7 @@ else {
 
 if ($searchMaps) {
 	$maps_tab = array('text' => "<a href='index.php?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-			. html_print_image ("images/camera.png", true, array ("title" => __('Maps'))) . "</a>", 'active' => $searchTab == "maps");
+		. html_print_image ("images/camera.png", true, array ("title" => __('Maps'))) . "</a>", 'active' => $searchTab == "maps");
 }
 else {
 	$maps_tab = '';
@@ -104,17 +104,17 @@ else {
 
 if ($searchModules) {
 	$modules_tab = array('text' => "<a href='index.php?search_category=modules&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
-			. html_print_image ("images/lightbulb.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $searchTab == "modules");
+		. html_print_image ("images/lightbulb.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $searchTab == "modules");
 }
 else {
 	$modules_tab = '';
 }
 
 $onheader = array('agents' => $agents_tab, 'users' => $users_tab, 
-				'alerts' => $alerts_tab, 'graphs' => $graphs_tab,
-				'reports' => $reports_tab, 'maps' => $maps_tab,
-				'modules' => $modules_tab);
-		
+	'alerts' => $alerts_tab, 'graphs' => $graphs_tab,
+	'reports' => $reports_tab, 'maps' => $maps_tab,
+	'modules' => $modules_tab);
+
 ui_print_page_header (__("Search").": \"".$config['search_keywords']."\"", "images/zoom.png", false, "", false, $onheader);
 
 switch ($searchTab) {

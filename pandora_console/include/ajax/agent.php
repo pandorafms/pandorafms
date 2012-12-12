@@ -241,10 +241,10 @@ elseif ($search_agents_2 && ($config['metaconsole'] == 1) && defined('METACONSOL
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$filter[] = '(nombre COLLATE utf8_general_ci LIKE "'.$string.'%" OR direccion LIKE "'.$string.'%")';
+			$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
 			break;
 		case "oracle":
-			$filter[] = '(UPPER(nombre)  LIKE UPPER(\''.$string.'%\') OR UPPER(direccion) LIKE UPPER(\''.$string.'%\'))';
+			$filter[] = '(UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\'))';
 			break;
 	}
 	

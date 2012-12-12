@@ -46,7 +46,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 	echo '<div id="properties_panel" style="display: none; position: absolute; border: 2px solid #114105; padding: 5px; background: white; z-index: 90;">';
 	//----------------------------Hiden Form----------------------------
 	?>
-	<table class="databox" border="0" cellpadding="4" cellspacing="4" width="300">
+	<table class="databox" border="0" cellpadding="4" cellspacing="4" width="350">
 		<caption>
 			<?php
 			$titles = array(
@@ -110,7 +110,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$params['return'] = true;
 			$params['show_helptip'] = true;
 			$params['input_name'] = 'agent';
-			$params['size'] = 20;
+			$params['size'] = 30;
 			$params['selectbox_id'] = 'module';
 			$params['javascript_is_function_select'] = true;
 			if (defined('METACONSOLE')) {

@@ -1,3 +1,10 @@
+2012-12-12  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/reporting_builder.list_items.php: Fixed the
+	modules/agents shown in the table of report items in inventory
+	kind
+	merged from 4.0.2
+
 2012-12-12 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map_editor.php: increased the size of

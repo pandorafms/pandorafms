@@ -49,7 +49,7 @@ $table->data[2][0] = __('Autocreate profile');
 $profile_list = profile_get_profiles ();
 if ($profile_list === false) {
 	$profile_list = array ();
-}	
+}
 $table->data[2][1] = html_print_select ($profile_list, 'default_remote_profile', $config['default_remote_profile'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
 $table->data[3][0] = __('Autocreate profile group');
 $table->data[3][1] = html_print_select_groups ($config['id_user'], "AR", true, 'default_remote_group', $config['default_remote_group'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
@@ -96,7 +96,7 @@ echo '</form>';
 <script type="text/javascript">
 	function show_selected_rows () {
 		var auth_method = $("#auth").val ();
-
+		
 		$(".remote").css("display", "none");
 		$(".ldap").css("display", "none");
 		$(".ad").css("display", "none");
@@ -109,10 +109,10 @@ echo '</form>';
 		}
 		$("." + auth_method).css('display', '');
 	}
-		
+	
 	function enable_profile_options () {
 		var remote_auto = $("input:radio[name=autocreate_remote_users]:checked").val();
-
+		
 		if (remote_auto == 0) {
 			$("#default_remote_profile").attr("disabled", true);
 			$("#default_remote_group").attr("disabled", true);

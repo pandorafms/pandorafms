@@ -1,3 +1,25 @@
+2012-12-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_visual_map_editor.php: increased the size of
+	agent autocomplete widget.
+	
+	* include/functions_visual_map.php: in the function
+	"visual_map_print_visual_map" changed for to print corretly the
+	urls in public view in metaconsole.
+	
+	* include/ajax/agent.php: restore the search for any string in
+	the autocomplete agent.
+	
+	* operation/reporting/reporting_xml.php,
+	operation/search_results.php,
+	operation/visual_console/public_console.php,
+	godmode/setup/setup_auth.php, godmode/servers/modificar_server.php:
+	cleaned source code style.
+	
+	* godmode/reporting/visual_console_builder.editor.js: fixed when
+	finish a resize action or put the grid, before these actions
+	was make a corrupt data of items.
+
 2012-12-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql,

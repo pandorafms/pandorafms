@@ -46,7 +46,7 @@ $config["id_user"] = get_parameter ('id_user');
 $myhash = md5($config["dbpass"].$id_layout. $config["id_user"]);
 
 // Check input hash
-if ( $myhash != $hash){
+if ( $myhash != $hash) {
 	exit;
 }
 

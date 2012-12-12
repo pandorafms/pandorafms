@@ -868,6 +868,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 		$metaconsole_hack = '../../';
 	}
 	
+	enterprise_include_once("meta/include/functions_ui_meta.php");
+	
 	$layout = db_get_row ('tlayout', 'id', $id_layout);
 	
 	$resizedMap = false;
@@ -1037,7 +1039,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 									$id_service . '&offset=0">';
 							}
 							else {
-								if (!defined('METACONSOLE')) {
+								if (empty($layout_data['id_metaconsole'])) {
 									$url = $config['homeurl'] . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $layout_data['id_agent'];
 								}
 								else {
@@ -1052,7 +1054,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					}
 					elseif ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
-						if (!defined('METACONSOLE')) {
+						if (empty($layout_data['id_metaconsole'])) {
 							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 						}
 						else {
@@ -1170,7 +1172,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				if ($show_links) {
 					if ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
-						if (!defined('METACONSOLE')) {
+						if (empty($layout_data['id_metaconsole'])) {
 							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 						}
 						else {
@@ -1282,7 +1284,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					}
 					elseif ($layout_data['id_layout_linked'] > 0) {
 						// Link to a map
-						if (!defined('METACONSOLE')) {
+						if (empty($layout_data['id_metaconsole'])) {
 							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 						}
 						else {
@@ -1499,7 +1501,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 							}
 							else {
 								// Link to an agent
-								if (!defined('METACONSOLE')) {
+								if (empty($layout_data['id_metaconsole'])) {
 									$url = $config['homeurl'] .
 										'index.php?' .
 										'sec=estado&amp;' .
@@ -1518,7 +1520,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					elseif ($layout_data['id_layout_linked'] > 0) {
 						
 						// Link to a map
-						if (!defined('METACONSOLE')) {
+						if (empty($layout_data['id_metaconsole'])) {
 							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 						}
 						else {
@@ -1604,7 +1606,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 									$id_service . '&offset=0">';
 							}
 							else {
-								if (!defined('METACONSOLE')) {
+								if (empty($layout_data['id_metaconsole'])) {
 									$url = $config['homeurl'] . 
 										'index.php?' .
 										'sec=estado&amp;'.
@@ -1621,7 +1623,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					}
 					else {
 						// Link to a map
-						if (!defined('METACONSOLE')) {
+						if (empty($layout_data['id_metaconsole'])) {
 							echo '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 						}
 						else {

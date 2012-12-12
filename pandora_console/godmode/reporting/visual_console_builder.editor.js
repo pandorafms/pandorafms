@@ -1199,7 +1199,8 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'module_graph':
 			$("#image_" + idElement).attr("src", getModuleGraph(idElement));
 		case 'static_graph':
-			if (event != 'dragstop') {
+			if ((event != 'resizestop') && (event != 'show_grid')
+				&& (event != 'dragstop')) {
 				var element_status= null;
 				var parameter = Array();
 				parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -1336,6 +1337,7 @@ function updateDB(type, idElement , values, event) {
 	//Check if the event parameter in function is passed in the call.
 	if (event != null) {
 		switch (event) {
+			case 'show_grid':
 			case 'resizestop':
 			//Force to move action when resize a background, for to avoid
 			//lost the label.
@@ -1626,7 +1628,7 @@ function eventsBackground() {
 			values['width'] = $('#background').css('width').replace('px', '');
 			values['height'] = $('#background').css('height').replace('px', '');
 			
-			updateDB('background', 0, values);
+			updateDB('background', 0, values, 'resizestop');
 			
 			width = ui.size['width'];
 			height = ui.size['height'];
@@ -1687,7 +1689,7 @@ function move_elements_resize(original_width, original_height, width, height) {
 		values['absolute_left'] = new_width; 
 		values['absolute_top'] = new_height; 
 		
-		updateDB(classItem, idItem, values);
+		updateDB(classItem, idItem, values, "resizestop");
 	});
 }
 
@@ -1928,7 +1930,7 @@ function showGrid() {
 			values['absolute_left'] = pos_x; 
 			values['absolute_top'] = pos_y; 
 			
-			updateDB(classItem, idItem, values);
+			updateDB(classItem, idItem, values, 'show_grid');
 		});
 		
 		eventsItems([SIZE_GRID, SIZE_GRID]);

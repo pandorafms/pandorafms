@@ -18,15 +18,13 @@ global $config;
 
 check_login ();
 
-echo "<h3>".__('Plugin component').'</h3>';
-
 $data = array ();
 $data[0] = __('Plugin');
 $data[1] = html_print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',
 	'id_plugin', $id_plugin, 'javascript: load_plugin_macros_fields(\'network_component-macro\')', __('None'), 0, true, false, false);
 // Store the macros in base64 into a hidden control to move between pages
 $data[1] .= html_print_input_hidden('macros',base64_encode($macros),true);
-$data[2] = __('Post process') . ' ' . ui_print_help_icon ('postprocess', true);
+$data[2] = __('Post process') . ' ' . ui_print_help_icon ('postprocess', true, ui_get_full_url(false, false, false, false));
 $data[3] = html_print_input_text ('post_process', $post_process, '', 12, 25, true);
 
 push_table_row ($data, 'plugin_1');

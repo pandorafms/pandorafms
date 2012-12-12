@@ -25,11 +25,18 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
+enterprise_include_once ('meta/include/functions_components_meta.php');
+require_once ($config['homedir'] . '/include/functions_network_components.php');
+
 // Header
-ui_print_page_header (__('Module management').' &raquo; '. __('Component group management'), "", false, "component_groups", true);
-
-
-require_once ('include/functions_network_components.php');
+if (defined('METACONSOLE')) {
+	components_meta_print_header();
+	$sec = 'advanced';
+}
+else {
+	ui_print_page_header (__('Module management').' &raquo; '. __('Component group management'), "", false, "component_groups", true);
+	$sec = 'gmodules';
+}
 
 $create = (bool) get_parameter ('create');
 $update = (bool) get_parameter ('update');
@@ -37,6 +44,7 @@ $delete = (bool) get_parameter ('delete');
 $new = (bool) get_parameter ('new');
 $id = (int) get_parameter ('id');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
+$pure = get_parameter('pure', 0);
 	
 if ($create) {
 	$name = (string) get_parameter ('name');
@@ -193,12 +201,12 @@ ui_pagination ($total_groups, $url);
 foreach ($groups as $group) {
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
+	$data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
 	
 	$data[1] = network_components_get_group_name ($group['parent']);
 	
 	$data[2] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
-		href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id=".$group['id_sg']."&offset=0'>" . 
+		href='index.php?sec=".$sec."&sec2=godmode/modules/manage_nc_groups&delete=1&id=".$group['id_sg']."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $group['id_sg'], false, false, '', 'class="check_delete"', true);
 	
@@ -206,7 +214,7 @@ foreach ($groups as $group) {
 }
 
 if(isset($data)) {
-	echo "<form method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups'>";
+	echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_nc_groups'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";

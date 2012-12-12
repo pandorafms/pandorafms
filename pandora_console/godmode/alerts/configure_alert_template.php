@@ -15,8 +15,9 @@
 
 // Load global vars
 global $config;
-require_once ('include/functions_alerts.php');
-require_once ('include/functions_users.php');
+require_once ($config['homedir'] . '/include/functions_alerts.php');
+require_once ($config['homedir'] . '/include/functions_users.php');
+enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
@@ -30,6 +31,7 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 
 $duplicate_template = (bool) get_parameter ('duplicate_template');
 $id = (int) get_parameter ('id');
+$pure = get_parameter('pure', 0);
 
 // If user tries to duplicate/edit a template with group=ALL then must have "PM" access privileges 
 if ($duplicate_template) {
@@ -38,6 +40,15 @@ if ($duplicate_template) {
 }
 else {
 	$a_template = alerts_get_alert_template($id);
+}
+
+if (defined('METACONSOLE')) {
+
+	$sec = 'advanced';
+}
+else {
+
+	$sec = 'galertas';
 }
 
 if ($a_template !== false) {
@@ -50,9 +61,19 @@ if ($a_template !== false) {
 			require ("general/noaccess.php");
 			exit;
 		}
-		else
+		else {
 			// Header
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+			if (defined('METACONSOLE')) {
+				
+				alerts_meta_print_header();
+
+			}
+			else {
+				
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+
+			}
+		}
 		 
 	} // If user tries to duplicate/edit a template of others groups
 	else {
@@ -63,9 +84,19 @@ if ($a_template !== false) {
 			$own_groups = array_keys(users_get_groups($config['id_user'], "LM", false));
 		$is_in_group = in_array($a_template['id_group'], $own_groups);
 		// Then template group have to be in his own groups
-		if ($is_in_group)
+		if ($is_in_group) {
 			// Header
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+			if (defined('METACONSOLE')) {
+				
+				alerts_meta_print_header();
+
+			}
+			else {
+				
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+
+			}
+		}
 		else {
 			db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
@@ -74,9 +105,19 @@ if ($a_template !== false) {
 		}	
 	}		
 // This prevents to duplicate the header in case duplicate/edit_template action is performed
-} else
+} else {
 	// Header
-	ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+	if (defined('METACONSOLE')) {
+		
+		alerts_meta_print_header();
+
+	}
+	else {
+	
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+
+	}
+}
 
 
 if ($duplicate_template) {
@@ -100,6 +141,17 @@ if ($duplicate_template) {
 function print_alert_template_steps ($step, $id) {
 	echo '<ol class="steps">';
 	
+	if (defined('METACONSOLE')) {
+
+		$sec = 'advanced';
+	}
+	else {
+
+		$sec = 'galertas';
+	}	
+	
+	$pure = get_parameter('pure', 0);
+	
 	/* Step 1 */
 	if ($step == 1)
 		echo '<li class="first current">';
@@ -109,7 +161,7 @@ function print_alert_template_steps ($step, $id) {
 		echo '<li class="first">';
 	
 	if ($id) {
-		echo '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$id.'">';
+		echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&pure='.$pure.'">';
 		echo __('Step').' 1 &raquo; ';
 		echo '<span>'.__('Conditions').'</span>';
 		echo '</a>';
@@ -129,7 +181,7 @@ function print_alert_template_steps ($step, $id) {
 		echo '<li>';
 	
 	if ($id) {
-		echo '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=2">';
+		echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=2&pure='.$pure.'">';
 		echo __('Step').' 2 &raquo; ';
 		echo '<span>'.__('Firing').'</span>';
 		echo '</a>';
@@ -149,7 +201,7 @@ function print_alert_template_steps ($step, $id) {
 		echo '<li class="last">';
 	
 	if ($id) {
-		echo '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3">';
+		echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3&pure='.$pure.'">';
 		echo __('Step').' 3 &raquo; ';
 		echo '<span>'.__('Recovery').'</span>';
 		echo '</a>';
@@ -170,6 +222,15 @@ function update_template ($step) {
 	
 	if (empty ($id))
 		return false;
+		
+	if (defined('METACONSOLE')) {
+
+		$sec = 'advanced';
+	}
+	else {
+
+		$sec = 'galertas';
+	}		
 
 	if ($step == 1) {
 		$name = (string) get_parameter ('name');
@@ -229,9 +290,6 @@ function update_template ($step) {
 						'special_day' => $special_day,
 						'time_threshold' => $threshold,
 						'id_alert_action' => $default_action,
-						'field1' => $field1,
-						'field2' => $field2,
-						'field3' => $field3,
 						'max_alerts' => $max_alerts,
 						'min_alerts' => $min_alerts
 						);
@@ -319,6 +377,7 @@ $field2_recovery = '';
 $field3_recovery = '';
 $matches = true;
 $id_group = 0;
+$wizard_level = -1;
 
 if ($create_template) {
 	$name = (string) get_parameter ('name');
@@ -491,8 +550,8 @@ if ($step == 2) {
 		$table->colspan['field'.$i][1] = 3;
 		$table->rowclass['field'.$i] = 'row_field';
 
-		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) . ui_print_help_icon ('alert_macros', true);
-		$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px" class="fields"', true);
+		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) . ui_print_help_icon ('alert_macros', true, ui_get_full_url(false, false, false, false));
+		$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px;" class="fields"', true);
 	}
 	
 	$table->data[4][0] = __('Default action');
@@ -632,7 +691,7 @@ else {
 
 /* If it's the last step it will redirect to template lists */
 if ($step >= LAST_STEP) {
-	echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_templates">';
+	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_templates&pure='.$pure.'">';
 }
 else {
 	echo '<form method="post">';
@@ -664,19 +723,19 @@ ui_require_jquery_file ("ui-timepicker-addon");
 
 <script type="text/javascript">
 /* <![CDATA[ */
-var matches = "<?php echo __('The alert would fire when the value matches <span id=\"value\"></span>');?>";
-var matches_not = "<?php echo __('The alert would fire when the value doesn\'t match <span id=\"value\"></span>');?>";
-var is = "<?php echo __('The alert would fire when the value is <span id=\"value\"></span>');?>";
-var is_not = "<?php echo __('The alert would fire when the value is not <span id=\"value\"></span>');?>";
-var between = "<?php echo __('The alert would fire when the value is between <span id=\"min\"></span> and <span id=\"max\"></span>');?>";
-var between_not = "<?php echo __('The alert would fire when the value is not between <span id=\"min\"></span> and <span id=\"max\"></span>');?>";
-var under = "<?php echo __('The alert would fire when the value is below <span id=\"min\"></span>');?>";
-var over = "<?php echo __('The alert would fire when the value is above <span id=\"max\"></span>');?>";
-var warning = "<?php echo __('The alert would fire when the module is in warning status');?>";
-var critical = "<?php echo __('The alert would fire when the module is in critical status');?>";
-var onchange = "<?php echo __('The alert would fire when the module value changes');?>";
-var onchange_not = "<?php echo __('The alert would fire when the module value does not change');?>";
-var unknown = "<?php echo __('The alert would fire when the module is in unknown status');?>";
+var matches = <?php echo "'" . __("The alert would fire when the value matches <span id=\"value\"></span>") . "'";?>;
+var matches_not = <?php echo "'" . __("The alert would fire when the value doesn\'t match <span id=\"value\"></span>") . "'";?>;
+var is = <?php echo "'" . __("The alert would fire when the value is <span id=\"value\"></span>") . "'";?>;
+var is_not = <?php echo "'" . __("The alert would fire when the value is not <span id=\"value\"></span>") . "'";?>;
+var between = <?php echo "'" . __("The alert would fire when the value is between <span id=\"min\"></span> and <span id=\"max\"></span>") . "'";?>;
+var between_not = <?php echo "'" . __("The alert would fire when the value is not between <span id=\"min\"></span> and <span id=\"max\"></span>") . "'";?>;
+var under = <?php echo "'" . __("The alert would fire when the value is below <span id=\"min\"></span>") . "'";?>;
+var over = <?php echo "'" . __("The alert would fire when the value is above <span id=\"max\"></span>") . "'";?>;
+var warning = <?php echo "'" . __("The alert would fire when the module is in warning status") . "'";?>;
+var critical = <?php echo "'" . __("The alert would fire when the module is in critical status") . "'";?>;
+var onchange_msg = <?php echo "'" . __("The alert would fire when the module value changes") . "'";?>;
+var onchange_not = <?php echo "'" . __("The alert would fire when the module value does not change") . "'";?>;
+var unknown = <?php echo "'" . __("The alert would fire when the module is in unknown status") . "'";?>;
 
 function check_regex () {
 	if ($("#type").attr ('value') != 'regex') {
@@ -724,11 +783,23 @@ function render_example () {
 	}
 }
 
+// Fix for metaconsole toggle
+$('.row_field').css("display", "none");
+var hided = true;
+
 function toggle_fields() {
 	$('.row_field').toggle();
+	if (hided) {
+		$('.row_field').css("display", "");
+		hided = false;
+	}
+	else {
+		$('.row_field').css("display", "none");
+		hided = true;
+	}
 }
 
-toggle_fields();
+//toggle_fields();
 	
 $(document).ready (function () {
 <?php
@@ -810,7 +881,7 @@ if ($step == 1) {
 			
 			/* Show example */
 			if ($("#checkbox-matches_value")[0].checked)
-				$("span#example").empty ().append (onchange);
+				$("span#example").empty ().append (onchange_msg);
 			else
 				$("span#example").empty ().append (onchange_not);
 			break;
@@ -850,7 +921,7 @@ if ($step == 1) {
 		}
 		else if (type == "onchange") {
 			if (enabled) {
-				$("span#example").empty ().append (onchange);
+				$("span#example").empty ().append (onchange_msg);
 			}
 			else {
 				$("span#example").empty ().append (onchange_not);

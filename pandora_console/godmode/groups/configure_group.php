@@ -26,6 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 
 include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . '/include/functions_users.php');
+enterprise_include_once ('meta/include/functions_users_meta.php');
 
 // Init vars
 $icon = "";
@@ -37,6 +38,7 @@ $propagate = 0;
 $skin = 0;
 $contact = "";
 $other = "";
+$description = "";
 
 $create_group = (bool) get_parameter ('create_group');
 $id_group = (int) get_parameter ('id_group');
@@ -70,11 +72,21 @@ if ($id_group) {
 }
 
 // Header
-if ($id_group) {
-	ui_print_page_header (__("Update group"), "images/god1.png", false, "", true, "");
+if (defined('METACONSOLE')) {
+
+	user_meta_print_header();
+	$sec = 'advanced';
+	
 }
 else {
-	ui_print_page_header (__("Create group"), "images/god1.png", false, "", true, "");
+	if ($id_group)
+		$title_in_header = __("Update group");
+	else
+		$title_in_header = __("Create group");
+	
+	ui_print_page_header ($title_in_header, "images/god1.png", false, "", true, "");
+	$sec = 'gagente';
+
 }
 
 $table->width = '98%';

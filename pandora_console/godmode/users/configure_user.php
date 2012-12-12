@@ -522,10 +522,14 @@ foreach ($result as $profile) {
 	
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec=gusaurios&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.profile_get_name ($profile['id_perfil']).'</a>';
-	$data[1] = ui_print_group_icon($profile["id_grupo"], true) .
-		' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'&pure='.$pure.'">' .
-		ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), GENERIC_SIZE_TEXT).'</a>';
+	$data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.profile_get_name ($profile['id_perfil']).'</a>';
+	$data[1] = ui_print_group_icon($profile["id_grupo"], true);
+	if (!defined('METACONSOLE')) 
+		$data[1] .= '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'&pure='.$pure.'">';
+		
+	$data[1] .= '&nbsp;' . ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), GENERIC_SIZE_TEXT);
+	if (!defined('METACONSOLE'))
+		$data[1] .= '</a>';
 	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[2] .= html_print_input_hidden ('delete_profile', 1, true);
 	$data[2] .= html_print_input_hidden ('id_user_profile', $profile['id_up'], true);

@@ -19,9 +19,10 @@ global $config;
 
 check_login();
 
-require_once("include/functions_groups.php");
+require_once($config['homedir'] . "/include/functions_groups.php");
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . '/include/functions_users.php');
+enterprise_include_once ('meta/include/functions_users_meta.php');
 
 if (is_ajax ()) {
 	if (! check_acl($config['id_user'], 0, "AR")) {
@@ -133,11 +134,23 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 }
 
 // Header
-ui_print_page_header (__("Groups defined in Pandora"), "images/god1.png", false, "", true, "");
+if (defined('METACONSOLE')) {
+
+	user_meta_print_header();
+	$sec = 'advanced';
+	
+}
+else {
+	
+	ui_print_page_header (__("Groups defined in Pandora"), "images/god1.png", false, "", true, "");
+	$sec = 'gagente';
+
+}
 
 $create_group = (bool) get_parameter ('create_group');
 $update_group = (bool) get_parameter ('update_group');
 $delete_group = (bool) get_parameter ('delete_group');
+$pure = get_parameter('pure', 0);
 
 /* Create group */
 if ($create_group) {
@@ -363,10 +376,10 @@ if (!empty($groups)) {
 			$data[5] = '';
 		}
 		else {
-			$data[5] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
+			$data[5] = '<a href="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'&pure='.$pure.'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
 			//Check if there is only a group to unable delete it
 			if ((count($groups) > 3) || (count($groups) <= 3 && $group['parent'] != 0)) {
-				$data[5] .= '&nbsp;&nbsp;<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+				$data[5] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
 			}
 		}
 		
@@ -380,7 +393,7 @@ else {
 	echo "<div class='nf'>".__('There are no defined groups')."</div>";
 }
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_group">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
 echo '</div>';

@@ -236,12 +236,12 @@ $table_advanced->data[0][1] = html_print_textarea ('description', 2, 65,
 $table_advanced->data[1][0] = __('Custom ID');
 $table_advanced->colspan[1][1] = 2;
 $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id,
-	'', 20, 65, true);
+	'', 20, 65, true, $disabledBecauseInPolicy);
 
 $table_advanced->data[2][0] = __('Interval');
 
 $table_advanced->colspan[2][1] = 2;
-$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true, false, false);
+$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true, false, false, $disabledBecauseInPolicy);
 	
 $table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
 $table_advanced->data[2][4] = html_print_input_text ('post_process',
@@ -269,7 +269,7 @@ $table_advanced->data[4][1] = html_print_select_from_sql ('SELECT id, name FROM 
 $table_advanced->colspan[4][1] = 3;
 $table_advanced->data[5][0] = __('Unit');
 $table_advanced->data[5][1] = html_print_input_text ('unit', $unit,
-	'', 20, 65, true);
+	'', 20, 65, true, $disabledBecauseInPolicy);
 /* Tags */
 // This var comes from module_manager_editor.php or policy_modules.php
 global $__code_from;
@@ -294,7 +294,7 @@ $table_advanced->data[6][1] = html_print_select_from_sql ("SELECT id_tag, name
 											FROM ttag a, $__table_modules b 
 											WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
 											ORDER BY name",
-	'id_tag_available[]', $id_tag, '','','', true, true, false, false, 'width: 200px', '5');
+	'id_tag_available[]', $id_tag, '','','', true, true, false, $disabledBecauseInPolicy, 'width: 200px', '5');
 $table_advanced->data[6][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table_advanced->data[6][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete tags to module'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
 	
@@ -303,7 +303,7 @@ $table_advanced->data[6][4] =  html_print_select_from_sql ("SELECT a.id_tag, nam
 										FROM ttag a, $__table_modules b
 										WHERE a.id_tag = b.id_tag AND $__id_where = $__id
 										ORDER BY name",
-	'id_tag_selected[]', $id_tag, '','','', true, true, false, false, 'width: 200px', '5');
+	'id_tag_selected[]', $id_tag, '','','', true, true, false, $disabledBecauseInPolicy, 'width: 200px', '5');
 //$table_advanced->data[6][4] .= html_print_input_hidden('id_tag_serialize', '');
 
 ?>

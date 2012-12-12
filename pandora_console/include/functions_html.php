@@ -424,12 +424,13 @@ function html_print_select_from_sql ($sql, $name, $selected = '', $script = '', 
  * @param integer $size Size of the input.
  * @param bool Whether to return an output string or echo now (optional, echo by default).
  * @param bool Wherter to assign to combo a unique name (to have more than one on same page, like dashboard)
+ * @param bool If true, disable the select (e.g. if being under policy control).
  * 
  * @return string HTML code if return parameter is true.
  */
 
 function html_print_extended_select_for_time ($name, $selected = '', $script = '', $nothing = '',
-	$nothing_value = '0', $size = false, $return = false, $select_style = false, $unique_name = true) {
+	$nothing_value = '0', $size = false, $return = false, $select_style = false, $unique_name = true, $disabled = false) {
 	
 	$fields = get_periods();
 	
@@ -455,9 +456,11 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 	ob_start();
 	
 	echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
-		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'))).'</a>';
+		if( ! $disabled ) {
+			echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'))).'</a>';
+		}
 		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
-			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+			$nothing, $nothing_value, false, false, false, '', $disabled, 'font-size: xx-small;'.$select_style);
 	echo '</div>';
 	
 	echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';

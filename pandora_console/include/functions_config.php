@@ -127,6 +127,12 @@ function config_update_config () {
 			config_update_value ('metaconsole', get_parameter ('metaconsole'));
 			config_update_value ('collection_max_size', get_parameter('collection_max_size'));
 			config_update_value ('activate_netflow', (bool) get_parameter ('activate_netflow'));
+			config_update_value ('event_replication', (int)get_parameter('event_replication'));
+			config_update_value ('replication_interval', (int)get_parameter('replication_interval'));
+			config_update_value ('replication_host', (string)get_parameter('replication_host'));
+			config_update_value ('replication_database', (string)get_parameter('replication_database'));
+			config_update_value ('replication_user', (string)get_parameter('replication_user'));
+			config_update_value ('replication_password', (string)get_parameter('replication_password'));
 			
 			config_update_value ('public_url', get_parameter('public_url'));
 			config_update_value ('referer_security', get_parameter('referer_security'));
@@ -426,6 +432,30 @@ function config_process_config () {
 	
 	if (!isset ($config["collection_max_size"])) {
 		config_update_value ('collection_max_size', 1000000);
+	}
+	
+	if (!isset ($config["event_replication"])) {
+		config_update_value ('event_replication', 0);
+	}
+	
+	if (!isset ($config["replication_interval"])) {
+		config_update_value ('replication_interval', 120);
+	}
+	
+	if (!isset ($config["replication_host"])) {
+		config_update_value ('replication_host', "");
+	}
+	
+	if (!isset ($config["replication_database"])) {
+		config_update_value ('replication_database', "");
+	}
+	
+	if (!isset ($config["replication_user"])) {
+		config_update_value ('replication_user', "");
+	}
+	
+	if (!isset ($config["replication_password"])) {
+		config_update_value ('replication_password', "");
 	}
 	
 	if (!isset ($config["font_size"])) {

@@ -1,3 +1,11 @@
+2012-12-12  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* godmode/agentes/module_manager_editor.php: Fixed a bug only
+	for the Enterprise version.  When 'Remote Configuration' is
+	enabled and you try to create new module, which name includes
+	meta characters, you will get the error "The field name and
+	name in module_name in data configuration are different."
+
 2012-12-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extensions/update_manager.php: Check UM is installed. 

@@ -357,7 +357,7 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
 
     while (1) {
         // Load the DLL
-        module = LoadLibraryEx (dll_start, 0, DONT_RESOLVE_DLL_REFERENCES);
+        module = LoadLibraryEx (dll_start, 0, 0x20 | 2);
         if(module == NULL) {
             pandoraDebug("LoadLibraryEx error %d. Exe file path %s.", GetLastError(), exe_file_path);
         } else {

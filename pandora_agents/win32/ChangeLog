@@ -1,3 +1,9 @@
+2012-12-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_logevent.cc: Merged from trunk. Changed the
+	  flags of LoadLibraryEx. Fixes a bug when loading event descriptions
+	  from exe files.
+
 2012-04-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module.cc: Small changes merged from trunk.

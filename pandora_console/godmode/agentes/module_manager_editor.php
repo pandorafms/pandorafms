@@ -470,11 +470,11 @@ $(document).ready (function () {
 				//Check the name
 				name = $("#text-name").val();
 				remote_config = $("#textarea_configuration_data").val();
-
+				
 				regexp_name = new RegExp('module_name\\s*' + name.replace(/([^0-9A-Za-z_])/g, "\\$1") +"\n");
-
+				
 				regexp_plugin = new RegExp('^module_plugin\\s*');
-
+				
 				if (remote_config == '' || remote_config.match(regexp_name) ||
 					remote_config.match(regexp_plugin) ||
 					$("#id_module_type").val()==100 ||

@@ -37,7 +37,7 @@ if (is_ajax ()) {
 				unset($timezones[$timezone_key]);
 			}
 		}
-
+		
 		echo json_encode($timezones);
 	}
 	return;
@@ -75,13 +75,16 @@ $table->size[1] = '70%';
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$current_system_lang = db_get_sql ('SELECT `value` FROM tconfig WHERE `token` = "language"');
+		$current_system_lang = db_get_sql ('SELECT `value`
+			FROM tconfig WHERE `token` = "language"');
 		break;
 	case "postgresql":
-		$current_system_lang = db_get_sql ('SELECT "value" FROM tconfig WHERE "token" = \'language\'');
+		$current_system_lang = db_get_sql ('SELECT "value"
+			FROM tconfig WHERE "token" = \'language\'');
 		break;
 	case "oracle":
-		$current_system_lang = db_get_sql ('SELECT value FROM tconfig WHERE token = \'language\'');
+		$current_system_lang = db_get_sql ('SELECT value
+			FROM tconfig WHERE token = \'language\'');
 		break;
 }
 
@@ -90,10 +93,12 @@ if ($current_system_lang == "") {
 }
 
 $table->data[0][0] = __('Language code for Pandora');
-$table->data[0][1] = html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
+$table->data[0][1] = html_print_select_from_sql (
+	'SELECT id_language, name FROM tlanguage',
 	'language', $current_system_lang , '', '', '', true);
 
-$table->data[1][0] = __('Remote config directory') . ui_print_help_tip (__("Directory where agent remote configuration is stored."), true);
+$table->data[1][0] = __('Remote config directory') .
+	ui_print_help_tip (__("Directory where agent remote configuration is stored."), true);
 
 $table->data[1][1] = html_print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
 

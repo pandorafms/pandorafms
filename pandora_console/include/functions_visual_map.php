@@ -182,7 +182,7 @@ function visual_map_print_item($layoutData) {
 			//Metaconsole db connection
 			if ($layoutData['id_metaconsole'] != 0) {
 				$connection = db_get_row_filter ('tmetaconsole_setup',
-					$layoutData['id_metaconsole']);
+					array('id' => $layoutData['id_metaconsole']));
 				if (metaconsole_load_external_db($connection) != NOERR) {
 					//ui_print_error_message ("Error connecting to ".$server_name);
 					continue;

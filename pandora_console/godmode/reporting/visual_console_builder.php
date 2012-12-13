@@ -30,7 +30,12 @@ enterprise_include_once('include/functions_visual_map.php');
 
 $pure = (int)get_parameter('pure', 0);
 
-$idVisualConsole = get_parameter('id_visual_console', $idVisualConsole);
+if (!empty($idVisualConsole)) {
+	$idVisualConsole = get_parameter('id_visual_console', $idVisualConsole);
+}
+else {
+	$idVisualConsole = get_parameter('id_visual_console', 0);
+}
 
 if (!defined('METACONSOLE')) {
 	$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), 'new');
@@ -329,7 +334,7 @@ switch ($activeTab) {
 										$id_module = agents_get_modules($ag,
 											array('id_agente_modulo'),
 											array('nombre' => $mod));
-											
+										
 										if (empty($id_module))
 											continue;
 										else {

@@ -60,7 +60,7 @@ function update_button_palette_callback() {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -210,7 +210,7 @@ function readFields() {
 	values['value_show'] = $("input[name=value_show]:checked").val();
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
 	
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		values['metaconsole'] = 1;
 		values['id_agent'] = $("#hidden-agent").val();
 		values['server_name'] = $("#id_server_name").val();
@@ -386,7 +386,7 @@ function loadFieldsFromDB(item) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -487,7 +487,7 @@ function loadFieldsFromDB(item) {
 						}
 					}
 					
-					if (metaconsole) {
+					if (metaconsole != 0) {
 						if (key == 'id_agent') {
 							$("#hidden-agent").val(val);
 						}
@@ -665,7 +665,7 @@ function getModuleGraph(id_data) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -687,7 +687,7 @@ function getModuleGraph(id_data) {
 			height = data['height'];
 			width = data['width'];
 			period = data['period'];
-			if (metaconsole) {
+			if (metaconsole != 0) {
 				id_metaconsole = data['id_metaconsole'];
 			}
 		}
@@ -699,7 +699,7 @@ function getModuleGraph(id_data) {
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_image_sparse"});
 	parameter.push ({name: "id_agent_module", value: id_agente_modulo});
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		parameter.push ({name: "id_metaconsole", value: id_metaconsole});
 	}
 	parameter.push ({name: "height", value: height});
@@ -724,7 +724,7 @@ function getModuleValue(id_data, process_simple_value, period) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -756,7 +756,7 @@ function getPercentileBar(id_data, values) {
 	
 	var url_ajax = "ajax.php";
 	var url_hack_metaconsole = '';
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 		url_hack_metaconsole = '../../';
 	}
@@ -833,7 +833,7 @@ function getPercentileBubble(id_data, values) {
 	
 	var url_ajax = "ajax.php";
 	var url_hack_metaconsole = '';
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 		url_hack_metaconsole = '../../';
 	}
@@ -907,7 +907,7 @@ function getImageElement(id_data) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -937,7 +937,7 @@ function visual_map_get_color_line_status(id) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -970,7 +970,7 @@ function createItem(type, values, id_data) {
 	
 	metaconsole = $("input[name='metaconsole']").val();
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -991,7 +991,7 @@ function createItem(type, values, id_data) {
 			parameter.push ({name: "get_element_status", value: "1"});
 			parameter.push ({name: "id_element", value: id_data});
 			
-			if (metaconsole) {
+			if (metaconsole != 0) {
 				parameter.push ({name: "metaconsole", value: 1});
 			}
 			else {
@@ -1151,7 +1151,7 @@ function insertDB(type, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -1191,7 +1191,7 @@ function insertDB(type, values) {
 function updateDB_visual(type, idElement , values, event, top, left) {
 	metaconsole = $("input[name='metaconsole']").val();
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -1207,7 +1207,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				parameter.push ({name: "get_element_status", value: "1"});
 				parameter.push ({name: "id_element", value: idElement});
 				
-				if (metaconsole) {
+				if (metaconsole != 0) {
 					parameter.push ({name: "metaconsole", value: 1});
 				}
 				else {
@@ -1325,7 +1325,7 @@ function updateDB(type, idElement , values, event) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -1405,7 +1405,7 @@ function deleteDB(idElement) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -1833,7 +1833,7 @@ function showPreviewStaticGraph(staticGraph) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -1868,7 +1868,7 @@ function showPreviewIcon(icon) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
 	}
 	
@@ -1899,7 +1899,7 @@ function showGrid() {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_hack_metaconsole = '';
-	if (metaconsole) {
+	if (metaconsole != 0) {
 		url_hack_metaconsole = '../../';
 	}
 	

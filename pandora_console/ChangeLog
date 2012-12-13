@@ -1,3 +1,15 @@
+2012-12-13 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/javascript/pandora.js: fixed lost var id_server.
+	
+	* operation/agentes/ver_agente.php: fixed call of get modules for
+	to get modules.
+	
+	* godmode/reporting/visual_console_builder.php: fixed lost var.
+	
+	* godmode/reporting/visual_console_builder.editor.js: fixed check
+	the var metaconsole in firefox.
+
 2012-12-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_netflow.php,

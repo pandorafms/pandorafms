@@ -181,6 +181,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	
 	// Check if homedir was received like a JSON
 	homedir = '';
+	id_server = 0;
 	if (typeof(event) == 'undefined') {
 		homedir += '.';
 	}
@@ -192,9 +193,6 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 		
 		if (event.data.metaconsole != null) {
 			id_server = $("#" + event.data.id_server).val();
-		}
-		else {
-			id_server = 0;
 		}
 	}
 	

@@ -281,6 +281,12 @@ sub pandora_load_config {
 	# Process XML data files as a stack
 	$pa_config->{"dataserver_lifo"} = 0; # 5.0
 
+	# Patrol process of policies queue
+	$pa_config->{"policy_manager"} = 0; # 5.0
+
+	# Event replication process
+	$pa_config->{"event_replication"} = 0; # 5.0
+
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -620,6 +626,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^dataserver_lifo\s+([0-1])/i) {
 			$pa_config->{'dataserver_lifo'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^policy_manager\s+([0-1])/i) {
+			$pa_config->{'policy_manager'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_replication\s+([0-1])/i) {
+			$pa_config->{'event_replication'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

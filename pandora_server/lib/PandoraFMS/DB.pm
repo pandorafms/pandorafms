@@ -56,6 +56,7 @@ our @EXPORT = qw(
 		get_db_rows
 		get_db_single_row
 		get_db_value
+		get_first_server_name
 		get_group_id
 		get_group_name
 		get_module_agent_id
@@ -166,6 +167,17 @@ sub get_server_id ($$$) {
 					WHERE name = ? AND server_type = ?",
 					$server_name, $server_type);
 	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+## Return the first enabled server name found.
+########################################################################
+sub get_first_server_name ($) {
+	my ($dbh) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT name FROM tserver");
+					
+	return defined ($rc) ? $rc : "";
 }
 
 ########################################################################

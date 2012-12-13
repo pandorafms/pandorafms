@@ -1,3 +1,14 @@
+2012-12-13  Sergio Martin <sergio.martin@artica.es>
+
+	* conf/pandora_server.conf
+	lib/PandoraFMS/Config.pm
+	lib/PandoraFMS/DB.pm
+	lib/PandoraFMS/Core.pm
+	bin/pandora_server: Added new thread to the
+	event replication process (enterprise feature) 
+	and control this one and the policy queue patrol 
+	process with new two configuration parameters
+
 2012-12-10  Sancho Lerena <slerena@artica.es>
 	
 	* Core.pm: Applied patch 3576115 from Axel: implemented maintance

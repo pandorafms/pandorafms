@@ -1414,6 +1414,10 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value
 function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false) {
 	global $config;
 	
+	$hack_metaconsole = '';
+	if (defined('METACONSOLE'))
+		$hack_metaconsole = '../../';
+	
 	$out_of_lim_str = __("Out of limits");
 	$title = "";
 	
@@ -1431,7 +1435,7 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 	include_graphs_dependencies($config['homedir'].'/');
 	
 	return "<img title='" . $title . "' alt='" . $title . "'" .
-		" src='" . $config['homeurl'] . "/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble" .
+		" src='" . $config['homeurl'] . $hack_metaconsole . "/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble" .
 		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
 		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 

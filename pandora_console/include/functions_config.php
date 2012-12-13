@@ -90,7 +90,7 @@ function config_update_config () {
 	switch($sec2) {
 		case 'godmode/setup/setup':
 			//////// MAIN SETUP
-			config_update_value ('language', (string) get_parameter ('language'));	
+			config_update_value ('language', (string) get_parameter ('language'));
 			config_update_value ('remote_config', (string) get_parameter ('remote_config'));
 			config_update_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd'));
 			config_update_value ('timesource', (string) get_parameter ('timesource'));

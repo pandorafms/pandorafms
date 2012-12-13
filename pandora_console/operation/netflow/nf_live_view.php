@@ -257,12 +257,9 @@ if  ($draw != '') {
 	// Get the command to call nfdump
 	$command = netflow_get_command ($filter);
 	
-	// Disable the netflow cache
-	$unique_id = '';
-	
 	// Draw
 	echo "<br/>";
-	echo netflow_draw_item ($start_date, $end_date, $interval_length, $chart_type, $filter, $max_aggregates, $unique_id, $connection_name);
+	echo netflow_draw_item ($start_date, $end_date, $interval_length, $chart_type, $filter, $max_aggregates, $connection_name);
 }
 ?>
 

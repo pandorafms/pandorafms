@@ -1,3 +1,9 @@
+2012-12-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php,
+	  operation/netflow/nf_live_view.php: Fixes to the metaconsole part of
+	  the viewer.
+
 2012-12-13  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/datos_agente.php: Uses "mono" instead

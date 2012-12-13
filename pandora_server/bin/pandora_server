@@ -259,9 +259,16 @@ if ($Config{'daemon'} == 1) {
 	pandora_daemonize (\%Config);
 }
 
-# Start thread to patrol policy queue
-if (enterprise_load (\%Config) != 0 && $Config{'pandora_master'} == 1) {
-	my $thr = threads->create('pandora_process_policy_queue', (\%Config));
+if (enterprise_load (\%Config) != 0) {
+	if($Config{'policy_manager'} == 1) {
+		# Start thread to patrol policy queue
+		my $thr_policy_queue = threads->create('pandora_process_policy_queue', (\%Config));
+	}
+	
+	if($Config{'event_replication'} == 1) {
+		# Start thread to process event replication
+		my $thr_event_replication = threads->create('pandora_process_event_replication', (\%Config));
+	}
 }
 
 # Start the servers

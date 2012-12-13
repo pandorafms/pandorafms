@@ -154,6 +154,7 @@ our @EXPORT = qw(
 	pandora_exec_forced_alerts
 	pandora_generate_alerts
 	pandora_generate_compound_alerts
+	pandora_get_config_value
 	pandora_get_module_tags
 	pandora_module_keep_alive
 	pandora_module_keep_alive_nd
@@ -172,11 +173,13 @@ our @EXPORT = qw(
 	pandora_planned_downtime_weekly_start
 	pandora_planned_downtime_weekly_stop
 	pandora_process_alert
+	pandora_process_event_replication
 	pandora_process_module
 	pandora_reset_server
 	pandora_server_keep_alive
 	pandora_update_agent
 	pandora_update_agent_address
+	pandora_update_config_token
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
 	pandora_update_server
@@ -774,7 +777,6 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	
 	# Generate an event
 	#If we've spotted an alert recovered, we set the new event's severity to 0, otherwise the original value is maintained.
-	my $severity;
 	my ($text, $event, $severity) = ($alert_mode == 0) ? ('recovered', 'alert_recovered', 0) : ('fired', 'alert_fired', $alert->{'priority'});
 	
 	
@@ -2258,6 +2260,36 @@ sub pandora_create_group ($$$$$$$$$) {
 }
 
 ##########################################################################
+## Create or update a token of tconfig table
+##########################################################################
+sub pandora_update_config_token ($$$) {
+	my ($dbh, $token, $value) = @_;
+	
+	my $config_value = pandora_get_config_value($dbh, $token);
+	
+	my $result = undef;
+	if($config_value ne '') {
+		$result = db_update ($dbh, 'UPDATE tconfig SET value = ? WHERE token = ?', $value, $token);
+	}
+	else {
+		$result = db_insert ($dbh, 'id_config', 'INSERT INTO tconfig (token, value) VALUES (?, ?)', $token, $value);
+	}	
+	 
+	return $result;
+}
+
+##########################################################################
+## Get value of  a token of tconfig table
+##########################################################################
+sub pandora_get_config_value ($$) {
+	my ($dbh, $token) = @_;
+	
+	my $config_value = get_db_value($dbh, 'SELECT value FROM tconfig WHERE token = ?',$token);
+	
+	return (defined ($config_value) ? $config_value : "");
+}
+
+##########################################################################
 =head2 C<< pandora_create_agent (I<$pa_config>, I<$server_name>, I<$agent_name>, I<$address>, I<$group_id>, I<$parent_id>, I<$os_id>, I<$description>, I<$interval>, I<$dbh>, [I<$timezone_offset>], [I<$longitude>], [I<$latitude>], [I<$altitude>], [I<$position_description>], [I<$custom_id>], [I<$url_address>]) >>
 
 Create a new entry in B<tagente> optionaly with position information
@@ -3319,6 +3351,69 @@ Process groups statistics for statistics table
 
 =cut
 ##########################################################################
+sub pandora_process_event_replication ($) {
+	my $pa_config = shift;
+	
+	my %pa_config = %{$pa_config};
+
+	# Get the console DB connection
+	my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, $pa_config{'dbport'},
+						$pa_config{'dbuser'}, $pa_config{'dbpass'});
+
+	my $is_event_replication_enabled = enterprise_hook('get_event_replication_flag', [$dbh]);
+	my $replication_interval = enterprise_hook('get_event_replication_interval', [$dbh]);
+		
+	# If there are not installed the enterprise version,  
+	# desactivated the event replication or the replication
+	# interval is wrong: abort
+	if($is_event_replication_enabled == 0) {
+		return;
+	}
+	
+	if($replication_interval <= 0) {
+		logger($pa_config, "Replication interval configuration is not a value greater than 0. Event replication thread is will be aborted.", 1);
+		return;
+	}
+	
+	# Get the metaconsole DB connection
+	my $dbh_metaconsole = enterprise_hook('get_metaconsole_dbh', [$pa_config, $dbh]);
+
+	if($dbh_metaconsole eq '') {
+		logger($pa_config, "Metaconsole DB connection error. Event replication thread is will be aborted.", 1);
+		return;
+	}
+	
+	# Get server id on metaconsole
+	my $server_name = get_first_server_name($dbh);
+	my $metaconsole_server_id = -1;
+	if($server_name ne '') {
+		$metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh_metaconsole,$server_name]);
+	}
+
+	# If the server name is not found in metaconsole setup: abort
+	if($metaconsole_server_id == -1) {
+		logger($pa_config, "The server name is not configured in metaconsole. Event replication thread is will be aborted.", 1);
+		return;
+	}
+	
+	my $replication_mode = enterprise_hook('get_event_replication_mode', [$dbh]);
+				
+	logger($pa_config, "Starting replication events process.", 1);
+
+	while(1) { 
+		# Check the queue each N seconds
+		sleep ($replication_interval);
+		enterprise_hook('pandora_replicate_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
+	}
+}
+
+##########################################################################
+=head2 C<< pandora_process_policy_queue (I<$pa_config>, I<$dbh>) >>
+
+Process groups statistics for statistics table
+
+=cut
+##########################################################################
 sub pandora_process_policy_queue ($) {
 	my $pa_config = shift;
 	
@@ -3326,6 +3421,8 @@ sub pandora_process_policy_queue ($) {
 	
 	my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, $pa_config{'dbport'},
 						$pa_config{'dbuser'}, $pa_config{'dbpass'});
+
+	logger($pa_config, "Starting policy queue patrol process.", 1);
 
 	while(1) {
 		# Check the queue each 5 seconds

@@ -4922,13 +4922,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$description = $filter['id_name'];
 			}
 
-			// Generate a unique id for the cache
-			$unique_id = netflow_generate_unique_id ($content["type"], $filter, $start_date);
-
 			$table->colspan[0][0] = 4;
 			$table->data[0][0] = '<h4>' . $description . '</h4>';
 			$table->colspan[1][0] = 4;
-			$table->data[1][0] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $unique_id, $server_name, 'HTML');
+			$table->data[1][0] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $server_name, 'HTML');
 			break;
 	}
 	//Restore dbconnection

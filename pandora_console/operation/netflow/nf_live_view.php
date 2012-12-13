@@ -100,6 +100,9 @@ $start_date = $end_date - $period;
 if (! defined ('METACONSOLE')) {
 	//Header
 	ui_print_page_header (__('Netflow live view'), "images/networkmap/so_cisco_new.png", false, "", false, array ());
+	if (! is_executable ($config['netflow_nfdump'])) {
+		ui_print_error_message(__('nfdump binary not found!'));
+	}
 } else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
         array('link' => 'index.php?sec=netf&sec2=operation/netflow/nf_live_view', 'text' => __('Netflow live view')));
@@ -143,10 +146,6 @@ else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 // The filter name will not be needed anymore
 $filter['id_name'] = '';
 
-if (! is_executable ($config['netflow_nfdump'])) {
-	ui_print_error_message(__('nfdump binary not found!'));
-}
-
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
 
 	// Chart options table
@@ -179,8 +178,8 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	$table->data[0][9] = html_print_select ($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true);
 
 	if (defined ('METACONSOLE')) {
-		$table->data[0][8] = '<b>'.__('Connection').'</b>';
-		$table->data[0][9] = html_print_select (metaconsole_get_connection_names (), 'connection_name', $connection_name, '', '', 0, true, false, false);
+		$table->data[0][10] = '<b>'.__('Connection').'</b>';
+		$table->data[0][11] = html_print_select (metaconsole_get_connection_names (), 'connection_name', $connection_name, '', '', 0, true, false, false);
 	}
 	
 	html_print_table ($table);

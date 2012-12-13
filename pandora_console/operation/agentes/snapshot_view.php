@@ -65,7 +65,7 @@ echo "</h2>";
 $datos = io_safe_output($row["datos"]);
 $datos = preg_replace ('/\n/i','<br>',$datos);
 $datos =  preg_replace ('/\s/i','&nbsp;',$datos);
-echo "<div style='padding: 10px; font-size: 14px; line-height: 16px; font-family: mono; text-align: left'>";
+echo "<div style='padding: 10px; font-size: 14px; line-height: 16px; font-family: mono, monospace; text-align: left'>";
 echo $datos;
 echo "</div>";
 

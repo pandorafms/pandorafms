@@ -243,7 +243,7 @@ foreach ($result as $row) {
 			// Because this *SHIT* of print_table monster, I cannot format properly this cells
 			// so, eat this, motherfucker :))
 
-			$datos = "<span style='font-family: mono;'>".$datos."</span>";
+			$datos = "<span style='font-family: mono, monospace;'>".$datos."</span>";
 	
 			// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
 			$data[$attr[1]]=$datos;

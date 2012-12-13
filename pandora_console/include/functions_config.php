@@ -129,10 +129,12 @@ function config_update_config () {
 			config_update_value ('activate_netflow', (bool) get_parameter ('activate_netflow'));
 			config_update_value ('event_replication', (int)get_parameter('event_replication'));
 			config_update_value ('replication_interval', (int)get_parameter('replication_interval'));
-			config_update_value ('replication_host', (string)get_parameter('replication_host'));
-			config_update_value ('replication_database', (string)get_parameter('replication_database'));
-			config_update_value ('replication_user', (string)get_parameter('replication_user'));
-			config_update_value ('replication_password', (string)get_parameter('replication_password'));
+			config_update_value ('replication_dbhost', (string)get_parameter('replication_dbhost'));
+			config_update_value ('replication_dbname', (string)get_parameter('replication_dbname'));
+			config_update_value ('replication_dbuser', (string)get_parameter('replication_dbuser'));
+			config_update_value ('replication_dbpass', (string)get_parameter('replication_dbpass'));
+			config_update_value ('replication_dbport', (string)get_parameter('replication_dbport'));
+			config_update_value ('replication_mode', (string)get_parameter('replication_mode'));
 			
 			config_update_value ('public_url', get_parameter('public_url'));
 			config_update_value ('referer_security', get_parameter('referer_security'));
@@ -443,20 +445,28 @@ function config_process_config () {
 		config_update_value ('replication_interval', 120);
 	}
 	
-	if (!isset ($config["replication_host"])) {
-		config_update_value ('replication_host', "");
+	if (!isset ($config["replication_dbhost"])) {
+		config_update_value ('replication_dbhost', "");
 	}
 	
-	if (!isset ($config["replication_database"])) {
-		config_update_value ('replication_database', "");
+	if (!isset ($config["replication_dbname"])) {
+		config_update_value ('replication_dbname', "");
 	}
 	
-	if (!isset ($config["replication_user"])) {
-		config_update_value ('replication_user', "");
+	if (!isset ($config["replication_dbuser"])) {
+		config_update_value ('replication_dbuser', "");
 	}
 	
-	if (!isset ($config["replication_password"])) {
-		config_update_value ('replication_password', "");
+	if (!isset ($config["replication_dbpass"])) {
+		config_update_value ('replication_dbpass', "");
+	}
+	
+	if (!isset ($config["replication_dbport"])) {
+		config_update_value ('replication_dbport', "");
+	}
+	
+	if (!isset ($config["replication_mode"])) {
+		config_update_value ('replication_mode', "only_validated");
 	}
 	
 	if (!isset ($config["font_size"])) {

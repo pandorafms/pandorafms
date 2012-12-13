@@ -5578,7 +5578,7 @@ function api_get_tactical_view($trash1, $trash2, $trash3, $returnType) {
 	
 }
 
-// http://localhost/pandora_console/include/api.php?op=get&op2=netflow_get_data&other=1348562410|1348648810|0|base64_encode(json_encode($filter))|_1_1234|none|50|bytes&other_mode=url_encode_separator_|&apipass=pandora&user=pandora&pass=pandora'
+// http://localhost/pandora_console/include/api.php?op=get&op2=netflow_get_data&other=1348562410|1348648810|0|base64_encode(json_encode($filter))|none|50|bytes&other_mode=url_encode_separator_|&apipass=pandora&user=pandora&pass=pandora'
 function api_get_netflow_get_data ($discard_1, $discard_2, $params) {
 	
 	// Parse function parameters
@@ -5586,13 +5586,12 @@ function api_get_netflow_get_data ($discard_1, $discard_2, $params) {
 	$end_date = $params['data'][1];
 	$interval_length = $params['data'][2];
 	$filter = json_decode (base64_decode ($params['data'][3]), true);
-	$unique_id = $params['data'][4];
-	$aggregate = $params['data'][5];
-	$max = $params['data'][6];
-	$unit = $params['data'][7];
+	$aggregate = $params['data'][4];
+	$max = $params['data'][5];
+	$unit = $params['data'][6];
 	
 	// Get netflow data
-	$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $unique_id, $aggregate, $max, $unit);
+	$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max, $unit);
 
 	returnData('json', $data);
 	return;
@@ -5616,17 +5615,16 @@ function api_get_netflow_get_stats ($discard_1, $discard_2, $params) {
 	return;
 }
 
-// http://localhost/pandora_console/include/api.php?op=get&op2=netflow_get_summary&other=1348562410|1348648810|_base64_encode(json_encode($filter))|_1_1234&other_mode=url_encode_separator_|&apipass=pandora&user=pandora&pass=pandora'
+// http://localhost/pandora_console/include/api.php?op=get&op2=netflow_get_summary&other=1348562410|1348648810|_base64_encode(json_encode($filter))&other_mode=url_encode_separator_|&apipass=pandora&user=pandora&pass=pandora'
 function api_get_netflow_get_summary ($discard_1, $discard_2, $params) {
 	
 	// Parse function parameters
 	$start_date = $params['data'][0];
 	$end_date = $params['data'][1];
 	$filter = json_decode (base64_decode ($params['data'][2]), true);
-	$unique_id = $params['data'][3];
 	
 	// Get netflow data
-	$data = netflow_get_summary ($start_date, $end_date, $filter, $unique_id);
+	$data = netflow_get_summary ($start_date, $end_date, $filter);
 	returnData('json', $data);
 	return;
 }

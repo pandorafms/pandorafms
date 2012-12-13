@@ -193,14 +193,16 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	$table->data = array ();
 	
 	$table->data[0][0] = ui_print_error_message ('Define a name for the filter and click on Save as new filter again', '', true);
-	$table->colspan[0][0] = 4;
-	
+	$table->colspan[0][0] = 4;	
 	$table->data[1][0] = '<span id="filter_name_color"><b>'.__('Name').'</b></span>';
 	$table->data[1][1] = html_print_input_text ('name', $filter['id_name'], false, 20, 80, true);
 	$own_info = get_user_info ($config['id_user']);
 	$table->data[1][2] = '<span id="filter_group_color"><b>'.__('Group').'</b></span>';
 	$table->data[1][3] = html_print_select_groups($config['id_user'], "IW",	$own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false);
 	
+	$table->rowstyle[0] = 'display: none';
+	$table->rowstyle[1] = 'display: none';
+
 	// Read filter type
 	if ($filter['advanced_filter'] != '') {
 		$filter_type = 1;
@@ -312,11 +314,7 @@ if  ($draw != '') {
 	else {
 		displayAdvancedFilter ();
 	}
-	
-	// Hide filter name and group
-	document.getElementById("table2-0").style.display = 'none';
-	document.getElementById("table2-1").style.display = 'none';
-	
+		
 	$("#filter_id").change(function () {
 		var filter_type;
 		

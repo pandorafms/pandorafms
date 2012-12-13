@@ -911,7 +911,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 					if ($interval_length != 0) {
 						$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
 					}
-					$html .= graph_netflow_aggregate_area ($data, $interval, 660, 320, netflow_format_unit ($unit));
+					$html .= graph_netflow_aggregate_area ($data, $interval, 850, 320, netflow_format_unit ($unit));
 					return $html;
 				} else if ($output == 'PDF') {
 					$html = "<b>" . __('Unit') . ":</b> " . netflow_format_unit ($unit);
@@ -919,7 +919,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 					if ($interval_length != 0) {
 						$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
 					}
-					$html .= graph_netflow_aggregate_area ($data, $interval, 660, 320, netflow_format_unit ($unit), 2, true);
+					$html .= graph_netflow_aggregate_area ($data, $interval, 850, 320, netflow_format_unit ($unit), 2, true);
 					return $html;
 				} else if ($output == 'XML') {
 					$xml = "<unit>$unit</unit>\n";

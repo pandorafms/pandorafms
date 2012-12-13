@@ -1,3 +1,8 @@
+2012-12-13  Sancho Lerena <slerena@artica.es>
+
+	* operation/agentes/datos_agente.php: Uses "mono" instead
+	"lucida console" because CSS doesn't speak proper font language :)
+
 2012-12-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_api.php,

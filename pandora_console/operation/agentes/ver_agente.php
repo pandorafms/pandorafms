@@ -302,9 +302,9 @@ if (is_ajax ()) {
 			$result = array();
 			foreach($nameModules as $nameModule) {
 				if (empty($serialized))
-					$result[$nameModule['nombre']] = io_safe_output($nameModule['nombre']);
+					$result[io_safe_output($nameModule['nombre'])] = io_safe_output($nameModule['nombre']);
 				else
-					$result[$nameModule['nombre'].'$*$'.implode('|', $idAgents)] = io_safe_output($nameModule['nombre']);
+					$result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = io_safe_output($nameModule['nombre']);
 			}
 		}
 		

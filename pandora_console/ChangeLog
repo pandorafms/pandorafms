@@ -1,3 +1,8 @@
+2012-12-14  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events.php: Disable the events view
+	when event replication is enabled
+
 2012-12-10  Sancho Lerena <slerena@artica.es>
 
         * datos_agente.php, snapshot.php: Seems some browsers

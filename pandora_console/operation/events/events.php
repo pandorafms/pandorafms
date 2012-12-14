@@ -32,6 +32,13 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
+if(isset($config['event_replication']) &&  $config['event_replication'] == 1) {
+	db_pandora_audit("ACL Violation",
+		"Trying to access event viewer. View disabled due event replication.");
+	ui_print_error_message('Event viewer is disabled due event replication. For more information, please contact with the administrator');
+	return;
+}
+
 if (is_ajax ()) {
 	$get_event_tooltip = (bool) get_parameter ('get_event_tooltip');
 	$validate_event = (bool) get_parameter ('validate_event');

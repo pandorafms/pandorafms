@@ -385,7 +385,7 @@ $(document).ready( function() {
 				extraParams: {
 					page: "operation/agentes/exportdata",
 					search_agents: 1,
-					add: '<?php echo json_encode(array('-1' => "All", '0' => "System"));?>',
+					add: '<?php echo json_encode(array('-1' => __("All"), '0' => __("System")));?>',
 					id_group: function() { return $("#id_group").val(); }
 				},
 				formatItem: function (data, i, total) {

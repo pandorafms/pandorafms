@@ -33,6 +33,13 @@ if (! check_acl ($config["id_user"], 0, "AR") && ! check_acl ($config["id_user"]
 
 global $config;
 
+// loading l10n tables, because of being invoked not through index.php.
+$l10n = NULL;
+if (file_exists ($config['homedir'].'/include/languages/'.$user_language.'.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ($config['homedir'].'/include/languages/'.$user_language.'.mo'));
+	$l10n->load_tables();
+}
+
 $offset = (int) get_parameter ("offset");
 $ev_group = (int) get_parameter ("ev_group"); // group
 //$search = (int) get_parameter ("search"); // free search
@@ -81,7 +88,7 @@ if ($id_agent == -2) {
 		case __('All'):
 			$id_agent = -1;
 			break;
-		case __('Server'):
+		case __('System'):
 			$id_agent = 0;
 			break;
 		default:
@@ -96,7 +103,7 @@ else {
 			$text_agent = __('All');
 			break;
 		case 0:
-			$text_agent = __('Server');
+			$text_agent = __('System');
 			break;
 		default:
 			$text_agent = agents_get_name($id_agent);

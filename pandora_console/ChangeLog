@@ -1,3 +1,15 @@
+2012-12-14  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* operation/events/export_csv.php: Fix a bug: If 'Search
+	Agent' column at the Event Control Filter is default
+	(= localized 'All'), when you click the 'export CSV' icon at
+	the right-upper corner on the screen, you will get no data
+	exported.
+
+	* operation/events/events.php: Localized special keywords
+	'All' and 'System', which are displayed as auto-completion
+	candidates in 'Agent Search' at the Event Control filter.
+
 2012-12-10  Sancho Lerena <slerena@artica.es>
 
 	* datos_agente.php, snapshot.php: Seems some browsers

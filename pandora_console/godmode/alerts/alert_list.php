@@ -278,15 +278,15 @@ else {
 		$buttons[$tab]['active'] = true;
 		
 		if ($tab == 'list') {
-				ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+			ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
 		}
 		else {
 			ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
-		}		
+		}
 		
 	} 
 	else {
-
+		
 		alerts_meta_print_header();
 		
 	}

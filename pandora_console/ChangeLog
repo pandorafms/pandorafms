@@ -1,5 +1,19 @@
 2012-12-17 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/alerts/alert_list.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/alert_list.builder.php,
+	operation/messages/message_edit.php, include/functions_api.php,
+	operation/reporting/reporting_xml.php,
+	godmode/reporting/graph_builder.graph_editor.php: cleaned source
+	code style.
+	
+	* include/functions_io.php: improved the function "__" for to hook
+	the translations from metaconsole.
+
+2012-12-17 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/setup/file_manager.php, include/functions_filemanager.php:
 	some fixes and added support for the metaconsole.
 	

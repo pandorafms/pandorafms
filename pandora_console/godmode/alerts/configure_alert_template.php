@@ -102,20 +102,21 @@ if ($a_template !== false) {
 			"Trying to access Alert Management");
 			require ("general/noaccess.php");
 			exit;
-		}	
-	}		
+		}
+	}
 // This prevents to duplicate the header in case duplicate/edit_template action is performed
-} else {
+}
+else {
 	// Header
 	if (defined('METACONSOLE')) {
 		
 		alerts_meta_print_header();
-
+		
 	}
 	else {
-	
+		
 		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
-
+		
 	}
 }
 
@@ -142,13 +143,13 @@ function print_alert_template_steps ($step, $id) {
 	echo '<ol class="steps">';
 	
 	if (defined('METACONSOLE')) {
-
+		
 		$sec = 'advanced';
 	}
 	else {
-
+		
 		$sec = 'galertas';
-	}	
+	}
 	
 	$pure = get_parameter('pure', 0);
 	
@@ -217,21 +218,21 @@ function print_alert_template_steps ($step, $id) {
 
 function update_template ($step) {
 	global $config;
-
+	
 	$id = (int) get_parameter ('id');
 	
 	if (empty ($id))
 		return false;
-		
+	
 	if (defined('METACONSOLE')) {
-
+		
 		$sec = 'advanced';
 	}
 	else {
-
+		
 		$sec = 'galertas';
-	}		
-
+	}
+	
 	if ($step == 1) {
 		$name = (string) get_parameter ('name');
 		$description = (string) get_parameter ('description');
@@ -280,19 +281,19 @@ function update_template ($step) {
 			$default_action = NULL;
 		}
 		
-		$values = array ('monday' => $monday,
-						'tuesday' => $tuesday,
-						'wednesday' => $wednesday,
-						'thursday' => $thursday,
-						'friday' => $friday,
-						'saturday' => $saturday,
-						'sunday' => $sunday,
-						'special_day' => $special_day,
-						'time_threshold' => $threshold,
-						'id_alert_action' => $default_action,
-						'max_alerts' => $max_alerts,
-						'min_alerts' => $min_alerts
-						);
+		$values = array (
+			'monday' => $monday,
+			'tuesday' => $tuesday,
+			'wednesday' => $wednesday,
+			'thursday' => $thursday,
+			'friday' => $friday,
+			'saturday' => $saturday,
+			'sunday' => $sunday,
+			'special_day' => $special_day,
+			'time_threshold' => $threshold,
+			'id_alert_action' => $default_action,
+			'max_alerts' => $max_alerts,
+			'min_alerts' => $min_alerts);
 		
 		$fields = array();
 		for($i=1;$i<=10;$i++) {
@@ -393,17 +394,17 @@ if ($create_template) {
 	$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
 	
 	$values = array ('description' => $description,
-			'value' => $value,
-			'max_value' => $max,
-			'min_value' => $min,
-			'id_group' => $id_group,
-			'matches_value' => $matches,
-			'priority' => $priority,
-			'wizard_level' => $wizard_level);
-					
+		'value' => $value,
+		'max_value' => $max,
+		'min_value' => $min,
+		'id_group' => $id_group,
+		'matches_value' => $matches,
+		'priority' => $priority,
+		'wizard_level' => $wizard_level);
+	
 	if($config['dbtype'] == "oracle") {
-			$values['field3'] = ' ';
-			$values['field3_recovery'] = ' ';
+		$values['field3'] = ' ';
+		$values['field3_recovery'] = ' ';
 	}
 	
 	if (!$name_check) {

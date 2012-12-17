@@ -141,7 +141,7 @@ if (($new_msg) && ($dst_group!='') && (!$reply)) {
 	ui_print_result_message ($return,
 		__('Message successfully sent'),
 		__('Error sending message to group %s', groups_get_name ($dst_group)));
-}	
+}
 
 //message creation form
 

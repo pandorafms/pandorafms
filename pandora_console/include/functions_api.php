@@ -2660,31 +2660,31 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
 		foreach ($policy_alerts as $policy_alert){
 			$result_pol_alerts[] = $policy_alert['id'];
 		}
-
+		
 		$id_pol_alerts = implode(',', $result_pol_alerts);
-				
+		
 		// If the policy has alerts
 		if (count($result_pol_alerts) != 0){
 			$sql = sprintf ("SELECT id  
 				FROM talert_template_modules 
 				WHERE id_policy_alerts IN (%s)", 
 				$id_pol_alerts);
-
-			$id_alerts = db_get_all_rows_sql($sql);		
-						
+			
+			$id_alerts = db_get_all_rows_sql($sql);
+			
 			$result_alerts = array();
 			foreach ($id_alerts as $id_alert){
 				$result_alerts[] = $id_alert['id'];
-			}	
+			}
 			
 			// Validate alerts of these modules
 			foreach ($result_alerts as $result_alert){	
 				$result = alerts_validate_alert_agent_module($result_alert, true);
-
-				if ($result){
+				
+				if ($result) {
 					$count_results++;
 				}
-			}		
+			}
 		}
 		
 	}
@@ -2693,7 +2693,7 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
 	if ($total_alerts > $count_results){
 		$errors = $total_alerts - $count_results;	
 		returnError('error_validate_all_alerts', __('Error validate all policy alerts. Failed ' . $errors . '.'));
-	}	
+	}
 	else {
 		returnData('string', array('type' => 'string', 'data' => __('Correct validating of all policy alerts.')));	
 	}

@@ -1378,7 +1378,7 @@ foreach ($contents as $content) {
 						$result = fwrite($file, $content_report);
 						fclose($file);
 					}
-			
+				
 				}
 				$i++;
 				
@@ -1386,7 +1386,7 @@ foreach ($contents as $content) {
 				$content_report = "    	</object>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
-			}	
+			}
 			$file = fopen ($temp_file, 'a+');
 			$content_report = "    </configuration_report_group>\n";
 			$result = fwrite($file, $content_report);
@@ -1399,7 +1399,7 @@ foreach ($contents as $content) {
 		case 'netflow_data':
 		case 'netflow_statistics':
 		case 'netflow_summary':
-			
+				
 				// Read the report item
 				$report_id = $report['id_report'];
 				$content_id = $content['id_rc'];
@@ -1422,7 +1422,7 @@ foreach ($contents as $content) {
 				
 				// Build a unique id for the cache
 				$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
-							
+				
 				$table->colspan[0][0] = 4;
 				if ($filter['aggregate'] != 'none') {
 					$data["title"] = $description . ' (' . __($filter['aggregate']) . '/' . __($filter['output']) . ')';
@@ -1435,7 +1435,7 @@ foreach ($contents as $content) {
 				$buffer_file["objdata"] = $config['attachment_store'] . '/netflow_' . $time.'_'.$content['id_rc'] . '.tmp';
 			break;
 	}
-
+	
 	xml_array ($data, $buffer_file);
 	echo '</object>';
 	$counter++;
@@ -1443,7 +1443,7 @@ foreach ($contents as $content) {
 	if (($config ['metaconsole'] == 1) && defined('METACONSOLE') && $remote_connection == 1) {
 		//Restore db connection
 		metaconsole_restore_db();
-	}	
+	}
 	
 }
 

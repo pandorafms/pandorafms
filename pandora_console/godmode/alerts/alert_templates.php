@@ -168,7 +168,7 @@ if ($delete_template) {
 				}
 				else {
 					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
-				}			
+				}
 			}
 		} // If user tries to delete a template of others groups
 		else {
@@ -185,7 +185,7 @@ if ($delete_template) {
 				}
 				else {
 					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
-				}		
+				}
 			}
 			else {
 				db_pandora_audit("ACL Violation",
@@ -201,7 +201,7 @@ if ($delete_template) {
 		}
 		else {
 			ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
-		}		
+		}
 	}
 	
 	$result = alerts_delete_alert_template ($id);

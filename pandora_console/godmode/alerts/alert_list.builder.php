@@ -79,7 +79,7 @@ else{
 	$filter_groups = '';
 	$filter_groups = implode(',', array_keys($usr_groups));
 	$templates = alerts_get_alert_templates (array ('id_group IN (' . $filter_groups . ')'), array ('id', 'name'));
-}	
+}
 
 $table->data[1][1] = html_print_select (index_array ($templates, 'id', 'name'),
 	'template', '', '', __('Select'), 0, true);

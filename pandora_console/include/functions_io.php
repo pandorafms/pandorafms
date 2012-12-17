@@ -363,42 +363,52 @@ function io_unsafe_string ($string) {
  */
 function __ ($string /*, variable arguments */) {
 	global $l10n;
-
+	
 	$extensions = extensions_get_extensions();
-	if (empty($extensions)) $extensions = array();
-
+	if (empty($extensions))
+		$extensions = array();
+	
 	global $config;
-
-	if ($config['enterprise_installed'] && 
+	
+	if (defined('METACONSOLE')) {
+		enterprise_include_once ('meta/include/functions_meta.php');
+		
+		$tranlateString = meta_get_defined_translation($string);
+		
+		if ($tranlateString !== false) {
+			return $tranlateString;
+		}
+	}
+	elseif ($config['enterprise_installed'] && 
 				isset($config['translate_string_extension_installed']) && 
 				$config['translate_string_extension_installed'] == 1 &&
 				array_key_exists('translate_string.php', $extensions)) {
 		
 		enterprise_include_once('extensions/translate_string/functions.php');
-
+		
 		$tranlateString = get_defined_translation($string);
-
+		
 		if ($tranlateString !== false) {
 			return $tranlateString;
 		}
 	}
-
+	
 	if ($string == '') {
 		return $string;
 	}
-
+	
 	if (func_num_args () == 1) {
 		if (is_null ($l10n))
 		return $string;
 		return $l10n->translate ($string);
 	}
-
+	
 	$args = func_get_args ();
 	$string = array_shift ($args);
-
+	
 	if (is_null ($l10n))
-	return vsprintf ($string, $args);
-
+		return vsprintf ($string, $args);
+	
 	return vsprintf ($l10n->translate ($string), $args);
 }
 

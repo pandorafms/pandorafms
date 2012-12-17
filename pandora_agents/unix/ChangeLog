@@ -1,3 +1,13 @@
+2012-12-17  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent: Updated version
+
+	* plugins/who.sh,
+	plugins/top.sh: New plugins for command snapshots.
+
+	* plugins/inventory: Merged with fixes and new kernel module from
+	4.0.3 branch. Tested on Redhat and SUSE.
+
 2012-11-15  Sergio Martin <sergio.martin@artica.es>
 
 	* pandora_agent: Added support to the new fields of the

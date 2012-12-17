@@ -12,7 +12,7 @@ pandora_agent - Pandora FMS Agent
 
 =head1 VERSION
 
-Version 4.0
+Version 5.0
 
 =head1 USAGE
 
@@ -41,7 +41,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '5.0dev';
-use constant AGENT_BUILD => '120621';
+use constant AGENT_BUILD => '121217';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {

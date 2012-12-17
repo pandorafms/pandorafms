@@ -152,6 +152,18 @@ sub get_users ($$) {
         }
 }
 
+# Show Kernel Information
+sub get_kernel_info ($$) {
+        my ($name, $modules) = @_;
+        my $script = `uname -a | tr -d \";\"`;
+        my %module;
+
+        $module{'Kernel'} = $script;
+        $module{'_keys'} = ['Kernel'];
+        push (@{$modules->{$name}}, \%module);
+}
+
+
 # Get a list of installed programs
 sub get_software_module_data ($$) {
 	my ($name, $modules) = @_;
@@ -160,21 +172,20 @@ sub get_software_module_data ($$) {
 	my $distrib_id = "";
 
 	if ( -e "/etc/SuSE-release"){
-			$distrib_id = "SUSE";
+		$distrib_id = "SUSE";
+	} elsif ( -e "/etc/redhat-release"){
+		$distrib_id = "REDHAT";
 	} else {
-		open (RELEASE_FILE, '< /etc/lsb-release') or return;
-		$distrib_id = <RELEASE_FILE>;
-		last unless ($distrib_id =~ m/DISTRIB_ID\s*=\s*(\S+)/);
-		$distrib_id = $1;
+		$distrib_id = "DEBIAN";
 	}
 
 	# List installed programs
 	my @soft;
-	if ($distrib_id eq 'Ubuntu') {
+	if ($distrib_id eq 'DEBIAN') {
 		@soft = `dpkg -l | grep ii`;
 	} else {
 
-		@soft = `rpm -q -a --qf "ii\t%{NAME}\t%{VERSION}\t%{SUMMARY}\n"`;
+		@soft = `rpm -q -a --qf "ii %{NAME} %{VERSION} %{SUMMARY}\n"`;
 	}
 
 
@@ -285,7 +296,7 @@ sub print_module ($$) {
 
 # Check command line parameters
 if ($#ARGV < 0) {
-	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem] [users] [process] [ip] [route]\n\n";
+	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem] [users] [process] [ip] [route] [kernel] \n\n";
 	exit 1;
 }
 
@@ -423,6 +434,11 @@ if ($enable_all == 1 || $enabled{'ip'} == 1) {
 #route
 if ($enable_all == 1 || $enabled{'route'} == 1) {
 	get_route_table('Routes', \%modules);
+}
+
+#kernel
+if ($enable_all == 1 || $enabled{'kernel'} == 1){
+	get_kernel_info ('Kernel', \%modules);
 }
 
 # Print module data

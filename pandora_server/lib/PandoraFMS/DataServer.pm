@@ -540,6 +540,7 @@ sub process_module_data ($$$$$$$$$) {
 	# Delete tags that will not be stored in tagente_modulo
 	delete $module_conf->{'data'};
 	delete $module_conf->{'type'};
+	delete $module_conf->{'datalist'};
 		
 	# Description XML tag and column name don't match
 	$module_conf->{'descripcion'} = $module_conf->{'description'};

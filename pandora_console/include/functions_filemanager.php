@@ -164,7 +164,8 @@ if ($upload_file) {
 				$nombre_archivo = $real_directory .'/'. $filename;
 			}
 			else {
-				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
+				$nombre_archivo = $config['homedir'] . '/' .
+					$directory . '/' . $filename;
 			}
 			
 			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
@@ -177,7 +178,7 @@ if ($upload_file) {
 				// Delete temporal file
 				unlink ($_FILES['file']['tmp_name']);
 			}
-		}		
+		}
 	}
 }
 
@@ -202,7 +203,7 @@ if ($create_text_file) {
 	$filename = io_safe_output(get_parameter('name_file'));
 	
 	if ($filename != "") {
-
+		
 		$real_directory = (string) get_parameter('real_directory');
 		$real_directory = io_safe_output($real_directory);
 		$directory = (string) get_parameter ('directory');
@@ -216,11 +217,13 @@ if ($create_text_file) {
 		}
 		else {
 			if ($directory == '') {
-				$nombre_archivo = $real_directory .'/'. $filename;
+				$nombre_archivo = $real_directory . '/' . $filename;
 			}
 			else {
-				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
+				$nombre_archivo = $config['homedir'] . '/' .
+					$directory . '/' . $filename;
 			}
+			
 			if (! @touch($nombre_archivo)) {
 				$config['filemanager']['message'] = ui_print_error_message(__('Error creating file'), '', true);
 			}
@@ -314,8 +317,10 @@ if ($create_dir) {
 	else {
 		$dirname = (string) get_parameter ('dirname');
 		$dirname = io_safe_output($dirname);
+		
 		if ($dirname != '') {
-			@mkdir ($directory.'/'.$dirname);
+			@mkdir ($config['homedir'] . '/' .
+				$directory . '/' . $dirname);
 			$config['filemanager']['message'] = ui_print_success_message(__('Directory created'), '', true);
 			
 			$config['filemanager']['correct_create_dir'] = 1;
@@ -345,6 +350,7 @@ if ($delete_file) {
 	}
 	else {
 		$config['filemanager']['message'] = ui_print_success_message(__('Deleted'), '', true);
+		
 		if (is_dir ($filename)) {
 			rmdir ($filename);
 			$config['filemanager']['delete'] = 1;
@@ -430,6 +436,10 @@ function filemanager_read_recursive_dir($dir, $relative_path = '') {
 function filemanager_file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false, $readOnly = false) {
 	global $config;
 	
+	$hack_metaconsole = '';
+	if (defined('METACONSOLE'))
+		$hack_metaconsole = '../../';
+	
 	?>
 	<script type="text/javascript">
 	function show_form_create_folder() {
@@ -479,9 +489,9 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	$table->head = array ();
 	$table->size = array ();
 	
-	$table->align[1] = 'center';
+	$table->align[1] = 'left';
 	$table->align[2] = 'center';
-	$table->align[3] = 'center';
+	$table->align[3] = 'left';
 	$table->align[4] = 'center';
 	
 	$table->size[0] = '24px';
@@ -513,11 +523,6 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		$table->rowstyle[1] = 'display: none;';
 		$table->data[1][0] = '';
 		$table->data[1][1] = '';
-//		$table->data[1][1] -= '<div id="main_buttons">';
-//		$table->data[1][1] .= html_print_button(__('Create folder'), 'folder', false, 'show_form_create_folder();', "class='sub'", true);
-//		$table->data[1][1] .= html_print_button(__('Upload file/s'), 'up_files', false, 'show_upload_file();', "class='sub'", true);
-//		$table->data[1][1] .= html_print_button(__('Create text file'), 'create_file', false, 'show_create_text_file();', "class='sub'", true);
-//		$table->data[1][1] .= '</div>';
 		
 		$table->data[1][1] .= '<div id="create_folder" style="display: none;">';
 		$table->data[1][1] .= html_print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub' style='float: left;'", true);
@@ -564,6 +569,8 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	}
 	
 	foreach ($files as $fileinfo) {
+		$relative_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $fileinfo['realpath']);
+		
 		$data = array ();
 		
 		switch ($fileinfo['mime']) {
@@ -588,8 +595,8 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 			$data[1] = '<a href="' . $url . '&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2=' . md5($relative_directory.'/'.$fileinfo['name'].$config['dbpass']) . '">'.$fileinfo['name'].'</a>';
 		}
 		else {
-			$hash = md5($fileinfo['url'] . $config['dbpass']);
-			$data[1] = '<a href="include/get_file.php?file='.base64_encode($fileinfo['url']).'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
+			$hash = md5($relative_path . $config['dbpass']);
+			$data[1] = '<a href="' . $hack_metaconsole . 'include/get_file.php?file='.base64_encode($relative_path).'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
 		}
 		$data[2] = ui_print_timestamp ($fileinfo['last_modified'], true,
 			array ('prominent' => true));

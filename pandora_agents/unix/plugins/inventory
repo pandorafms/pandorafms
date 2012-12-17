@@ -31,12 +31,7 @@ my $Separator;
 sub get_module_data ($$$$) {
 	my ($name, $hwinfo, $keys, $modules) = @_;
 	my %module;
-		
-	# Store keys	
-	foreach my $key (@{$keys}) {
-		push (@{$module{'_keys'}}, $key);
-	}
-		
+
 	# Parse module data
 	while (my $line = shift (@{$hwinfo})) {
 		if ($line =~ /$Separator/) {
@@ -46,8 +41,7 @@ sub get_module_data ($$$$) {
 		foreach my $key (@{$keys}) {
 			if ($line =~ /$key:\s+(.+)/) {
 				$module{$key} = $1;
-				# Replace semicolon by comma to avoid parse errors 
-				$module{$key} =~ s/;/,/g;
+				push (@{$module{'_keys'}}, $key);
 			}
 		}
 	}
@@ -81,29 +75,22 @@ sub get_file_system($$) {
 # Get a list of services init in machine
 sub get_servicies_init_machine($$) {
 	my ($name, $modules) = @_;
-	my $runlevel = `who -r | awk '{print \$2}'`;
+	my $runlevel = `runlevel | cut -d' ' -f2`;
 
 	#ini trim($runlevel)
 		$runlevel =~ s/^\s*//; #ltrim
 		$runlevel =~ s/\s*$//; #rtrim
 	#end trim($runlevel)
 
-	my $script = "";
-	
-	if (-e "/etc/rc" . $runlevel .".d/") {
-		$script = "ls /etc/rc" . $runlevel .".d/ -l | grep \"^l.*\" | awk \"{print \\\$NF}\" | sed -e \"s/\\.\\.\\///g\" | sed -e \"s/.*init\\.d\\///g\"";
-	}
-	else {
-		$script = "ls /etc/rc.d/rc" . $runlevel .".d/ -l | grep \"^l.*\" | grep \" S.* \" | awk \"{print \\\$NF}\" | sed -e \"s/\\.\\.\\///g\" | sed -e \"s/.*init\\.d\\///g\"";
+	# We ned to strip ";" characters because will be used as field separator!
+	my $script = "ls /etc/rc" . $runlevel .".d/ -l | grep \"^l.*\" | grep \" S.* \" | cut -d' ' -f11 | tr -d \";\" ";
 
-	}
-	
 	my @services = `$script`;
 	foreach my $row (@services) {
+		next unless ($row =~ /^\S+\/(\S+)$/);
                 
 		my %module;
-				$row =~ s/\n//;
-                $module{'service'} = $row;
+                $module{'service'} = $1;
                 $module{'_keys'} = ['service'];
                 push (@{$modules->{$name}}, \%module);
 	}
@@ -113,15 +100,15 @@ sub get_servicies_init_machine($$) {
 sub get_processes ($$) {
 	my ($name, $modules) = @_;
 
-	my $script = "ps -eo command";
+	# We ned to strip ";" characters because will be used as field separator!
+	my $script = "ps -eo command |  tr -d \";\" ";
 
         my @services = `$script`;
         foreach my $row (@services) {
                 my %module;
 				# Remove carriage returns				
 				$row =~ s/[\n\l\f]//g;
-				# Replace semicolon by comma to avoid parse errors 
-				$row =~ s/;/,/g;
+			
                 $module{'service'} = $row;
                 $module{'_keys'} = ['service'];
                 push (@{$modules->{$name}}, \%module);
@@ -152,6 +139,18 @@ sub get_users ($$) {
         }
 }
 
+# Show Kernel Information
+sub get_kernel_info ($$) {
+        my ($name, $modules) = @_;
+        my $script = `uname -a | tr -d \";\"`;
+        my %module;
+
+        $module{'Kernel'} = $script;
+        $module{'_keys'} = ['Kernel'];
+        push (@{$modules->{$name}}, \%module);
+}
+
+
 # Get a list of installed programs
 sub get_software_module_data ($$) {
 	my ($name, $modules) = @_;
@@ -160,21 +159,20 @@ sub get_software_module_data ($$) {
 	my $distrib_id = "";
 
 	if ( -e "/etc/SuSE-release"){
-			$distrib_id = "SUSE";
+		$distrib_id = "SUSE";
+	} elsif ( -e "/etc/redhat-release"){
+		$distrib_id = "REDHAT";
 	} else {
-		open (RELEASE_FILE, '< /etc/lsb-release') or return;
-		$distrib_id = <RELEASE_FILE>;
-		last unless ($distrib_id =~ m/DISTRIB_ID\s*=\s*(\S+)/);
-		$distrib_id = $1;
+		$distrib_id = "DEBIAN";
 	}
 
 	# List installed programs
 	my @soft;
-	if ($distrib_id eq 'Ubuntu') {
+	if ($distrib_id eq 'DEBIAN') {
 		@soft = `dpkg -l | grep ii`;
 	} else {
 
-		@soft = `rpm -q -a --qf "ii\t%{NAME}\t%{VERSION}\t%{SUMMARY}\n"`;
+		@soft = `rpm -q -a --qf "ii %{NAME} %{VERSION} %{SUMMARY}\n"`;
 	}
 
 
@@ -186,80 +184,11 @@ sub get_software_module_data ($$) {
 		$module{'program'} = $1;
 		$module{'version'} = $2;
 		$module{'description'} = $3;
-		# Replace semicolon by comma to avoid parse errors 
-		$module{'program'} =~ s/;/,/g;
-		$module{'version'} =~ s/;/,/g;
-		$module{'description'} =~ s/;/,/g;
 		$module{'_keys'} = ['program', 'version','description'];
 		push (@{$modules->{$name}}, \%module);
 	}
 }
 
-#Get the list of interfaces with the ip assigned
-sub get_ips ($$) {
-	my ($name, $modules) = @_;
-
-	my $ifconfig = `ifconfig`;
-		
-	my @ifconfig_array = split("\n", $ifconfig);
-	
-	for(my $i = 0; $i<$#ifconfig_array; $i++) {		
-	
-		#Check for an interface
-		if ($ifconfig_array[$i] =~ /Link/) {
-			my %info;
-			
-			my @line_split = split(" ", $ifconfig_array[$i]);
-			
-			#Get interface name
-			$info{'interface'} = $line_split[0];
-
-			#Get IP address
-			my $line = $ifconfig_array[$i+1];
-	
-			$line =~ s/\s+//g;
-
-			@line_split = split(":", $line);
-			
-			if($line_split[1] =~ /(\d+\.\d+\.\d+\.\d+).+/) {
-				$info{'ip'} = $1;
-			}
-			
-			$info{'_keys'} = ['interface', 'ip'];
-			push (@{$modules->{$name}}, \%info);
-			
-		}		
-	}
-}
-
-#Get route table
-sub get_route_table ($$) {
-	my ($name, $modules) = @_;
-	
-	my $route_table = `route`;
-	
-	my @table_split = split("\n", $route_table);
-	
-	for (my $i=2; $i<=$#table_split; $i++) {
-		
-		my @split = split(" ", $table_split[$i]);
-			
-		my %info;
-		
-		$info{'destination'} = $split[0];
-		$info{'gateway'} = $split[1];
-		$info{'mask'} = $split[2];
-		$info{'flags'} = $split[3];
-		$info{'metric'} = $split[4];
-		$info{'ref'} = $split[5];
-		$info{'use'} = $split[6];
-		$info{'interface'} = $split[7];
-				
-		$info{'_keys'} = ['destination', 'gateway', 'mask', 'flags', 'metric', 'use', 'interface'];
-		
-		push (@{$modules->{$name}}, \%info);
-	}
-}
 # Print module data
 sub print_module ($$) {
 	my ($name, $module) = @_;
@@ -269,12 +198,10 @@ sub print_module ($$) {
 	print "    <datalist>\n";
 	foreach my $item (@{$module}) {
 		# Compose module data
-		my $data = undef;
+		my $data = '';
 		foreach my $key (@{$item->{'_keys'}}) {
-			$data = (!defined($data) ? '' : "$data;");
-			if (defined($item->{$key})) {
-				$data .= $item->{$key};
-			}
+			next unless defined ($item->{$key});
+			$data .= ($data eq '' ? '' : ';') . $item->{$key};
 		}
 
 		print "      <data><![CDATA[$data]]></data>\n";
@@ -285,7 +212,7 @@ sub print_module ($$) {
 
 # Check command line parameters
 if ($#ARGV < 0) {
-	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem] [users] [process] [ip] [route]\n\n";
+	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem] [users] [process] [kernel] \n\n";
 	exit 1;
 }
 
@@ -319,7 +246,7 @@ close (FILE);
 
 # Retrieve hardware information
 $Mode = 'LSHW';
-$Separator = '\s+\*\-';
+$Separator = '';
 my @hwinfo = `lshw 2>/dev/null`;
 if ($? != 0) {
 	$Mode = 'HWINFO';
@@ -363,13 +290,13 @@ while (my $line = shift (@hwinfo)) {
 	# NIC
 	if (($line =~ /\*\-network/ || $line =~ /Hardware Class: network/) && ($enable_all == 1 || $enabled{'nic'} == 1)) {
 		if ($Mode eq 'LSHW') {
-			get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor', 'serial'], \%modules);
+			get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
 		} else {
 			# Spaces before Device and Vendor are intentional to avoid matching SubDevice and SubVendor
-			get_module_data ('NIC', \@hwinfo, ['Model', ' Device', ' Vendor', 'HW Address'], \%modules);
+			get_module_data ('NIC', \@hwinfo, ['Model', ' Device', ' Vendor'], \%modules);
 		}
 	}
-	
+
 	# CDROM
 	if (($line =~ /\*\-cdrom/ || $line =~ /Hardware Class: cdrom/) && ($enable_all == 1 || $enabled{'cdrom'} == 1)) {
 		if ($Mode eq 'LSHW') {
@@ -415,14 +342,9 @@ if ($enable_all == 1 || $enabled{'users'} == 1){
 	get_users ('Users', \%modules);
 }
 
-#ip
-if ($enable_all == 1 || $enabled{'ip'} == 1) {
-	get_ips('IP', \%modules);
-}
-
-#route
-if ($enable_all == 1 || $enabled{'route'} == 1) {
-	get_route_table('Routes', \%modules);
+#kernel
+if ($enable_all == 1 || $enabled{'kernel'} == 1){
+	get_kernel_info ('Kernel', \%modules);
 }
 
 # Print module data

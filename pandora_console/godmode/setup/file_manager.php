@@ -60,7 +60,7 @@ if (isset ($banned_directories[$directory]))
 // Current directory
 $available_directories[$directory] = $directory;
 
-$real_directory = realpath ($config['homedir'].'/'.$directory);
+$real_directory = realpath ($config['homedir'] . '/' . $directory);
 
 echo '<h4>' . __('Index of %s', $directory) . '</h4>';
 

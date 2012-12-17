@@ -193,7 +193,8 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	$table->data = array ();
 	
 	$table->data[0][0] = ui_print_error_message ('Define a name for the filter and click on Save as new filter again', '', true);
-	$table->colspan[0][0] = 4;	
+	$table->colspan[0][0] = 4;
+	
 	$table->data[1][0] = '<span id="filter_name_color"><b>'.__('Name').'</b></span>';
 	$table->data[1][1] = html_print_input_text ('name', $filter['id_name'], false, 20, 80, true);
 	$own_info = get_user_info ($config['id_user']);

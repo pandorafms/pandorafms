@@ -1,3 +1,15 @@
+2012-12-17 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/setup/file_manager.php, include/functions_filemanager.php:
+	some fixes and added support for the metaconsole.
+	
+	* include/get_file.php: fixed lost check "is_user".
+	
+	* operation/netflow/nf_live_view.php: cleaned source code style.
+	
+	* include/functions_config.php: added check the flag of "is_admin"
+	when try to change some config from setup.
+
 2012-12-14  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events.php: Disable the events view

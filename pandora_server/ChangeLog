@@ -1,3 +1,9 @@
+2012-12-17  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_db.pl: Added feature to delete
+	inventory data older than X days (taken from
+	deletion for regular data).
+
 2012-12-17  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Unset a missed data of the

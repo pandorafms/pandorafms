@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2012 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "4.0.2 PS120625";
+my $version = "4.0.3 PS121217";
 
 # Pandora server configuration
 my %conf;
@@ -110,6 +110,35 @@ sub pandora_purgedb ($$) {
 		print "[PURGE] No data in tagente_datos\n";
 	}
 
+
+    # Delete inventory data, only if enterprise is enabled
+    # We use the same value than regular data purge interval
+
+    if (enterprise_load (\%conf) != 0) {
+
+        print "[PURGE] Deleting old inventory data... \n";
+
+	    # This could be very timing consuming, so make 
+        # this operation in $BIG_OPERATION_STEP 
+	    # steps (100 fixed by default)
+	    # Starting from the oldest record on the table
+
+	    $first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_inventory ORDER BY utimestamp ASC LIMIT 1');
+	    if (defined ($first_mark)) {
+		    $total_time = $ulimit_timestamp - $first_mark;
+		    $purge_steps = int($total_time / $BIG_OPERATION_STEP);
+	
+		    for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+			    db_do ($dbh, "DELETE FROM tagente_datos_inventory WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
+			    print "[PURGE] Inventory data deletion Progress %$ax .. \r";
+		    }
+	        print "\n";
+	    } else {
+		    print "[PURGE] No data in tagente_datos_inventory\n";
+	    }
+    }
+
+
 	#
 	# Now the log4x data
 	#
@@ -175,6 +204,7 @@ sub pandora_purgedb ($$) {
 	
     my $trap_limit = time() - 86400 * $conf->{'_trap_purge'};
     $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime($trap_limit));
+    print "[PURGE] Deleting old SNMP traps data (More than " . $conf->{'__trap_purge'} . " days)... \n";
 	db_do($dbh, "DELETE FROM ttrap WHERE timestamp < '$trap_limit'");
 	
     # Delete policy queue data
@@ -187,6 +217,7 @@ sub pandora_purgedb ($$) {
 
     my $gis_limit = time() - 86400 * $conf->{'_gis_purge'};
     $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime($gis_limit));
+    print "[PURGE] Deleting old GID data (More than " . $conf->{'__gis_purge'} . " days)... \n";
 	db_do($dbh, "DELETE FROM tgis_data_history WHERE end_timestamp < '$gis_limit'");
 
     # Delete pending modules
@@ -198,7 +229,7 @@ sub pandora_purgedb ($$) {
         my $buffer = 1000;
         my $id_module = $module->{'id_agente_modulo'};
         
-		print " Deleting data for module " . $id_module . "\n";
+		print " + Deleting data for module " . $id_module . "\n";
 		
 		while(1) {
 			my $nstate = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_estado WHERE id_agente_modulo=?', $id_module);
@@ -344,15 +375,6 @@ sub pandora_init ($) {
 		help_screen () if ($param =~ m/--*h\w*\z/i );
 		if ($param =~ m/-p\z/i) {
 			$conf->{'_onlypurge'} = 1;
-		}
-		elsif ($param =~ m/-v\z/i) {
-			$conf->{'_verbose'} = 1;
-		}
-		elsif ($param =~ m/-q\z/i) {
-			$conf->{'_quiet'} = 1;
-		}
-		elsif ($param =~ m/-d\z/i) {
-			$conf->{'_debug'} = 1;
 		}
 	}
 
@@ -533,11 +555,8 @@ sub pandora_checkdb_consistency {
 ##############################################################################
 sub help_screen{
 	print "Usage: $0 <path to pandora_server.conf> [options]\n\n";
-	print "\n\tAvailable options:\n\t\t-d  Debug output (very verbose).\n";
-	print "\t\t-v   Verbose output.\n";
-	print "\t\t-q   Quiet output.\n";
 	print "\t\t-p   Only purge and consistency check, skip compact.\n\n";
-	exit;
+	exit -1;
 }
 
 ###############################################################################
@@ -572,5 +591,6 @@ sub pandoradb_main ($$$) {
 	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
 	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
 
-	print "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
+	print "\nEnding at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
+    exit 0;
 }

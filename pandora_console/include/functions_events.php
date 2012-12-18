@@ -15,6 +15,7 @@
 // GNU General Public License for more details.
 
 include_once($config['homedir'] . "/include/functions_ui.php");
+enterprise_include_once ('meta/include/functions_events_meta.php');
 
 /**
  * @package Include
@@ -64,8 +65,17 @@ function events_get_event ($id, $fields = false) {
 	return $event;
 }
 
-function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1) {
+function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $meta = false) {
 	global $config; 
+	
+	if($meta) {
+		$table = 'tmetaconsole_event';
+		$groupby_extra = ', server_id';
+	}
+	else {
+		$table = 'tevento';
+		$groupby_extra = '';
+	}
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -75,9 +85,9 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1) {
 					GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
 					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
 					MIN(utimestamp) AS timestamp_rep_min
-				FROM tevento
+				FROM $table
 				WHERE 1=1 ".$sql_post."
-				GROUP BY estado, evento, id_agentmodule
+				GROUP BY estado, evento, id_agentmodule".$groupby_extra."
 				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
 			break;
 		case "postgresql":
@@ -85,9 +95,9 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1) {
 					array_to_string(array_agg(DISTINCT id_evento), ',') AS similar_ids,
 					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
 					MIN(utimestamp) AS timestamp_rep_min
-				FROM tevento
+				FROM $table
 				WHERE 1=1 ".$sql_post."
-				GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra
+				GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra".$groupby_extra."
 				ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
 			break;
 		case "oracle":
@@ -102,9 +112,9 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1) {
 				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
 				LISTAGG(id_evento, '') AS similar_ids,
 				MIN(utimestamp) AS timestamp_rep_min
-				FROM tevento 
+				FROM $table
 				WHERE 1=1 ".$sql_post." 
-				GROUP BY estado, to_char(evento), id_agentmodule) b 
+				GROUP BY estado, to_char(evento), id_agentmodule".$groupby_extra.") b 
 				WHERE a.id_evento=b.id_evento AND 
 				to_char(a.evento)=to_char(b.evento) 
 				AND a.id_agentmodule=b.id_agentmodule";
@@ -152,11 +162,19 @@ function events_get_similar_ids ($id) {
  *
  * @param mixed Event ID or array of events
  * @param bool Whether to delete similar events too.
+ * @param bool Metaconsole mode flag
  *
  * @return bool Whether or not it was successful
  */
-function events_delete_event ($id_event, $similar = true) {
+function events_delete_event ($id_event, $similar = true, $meta = false) {
 	global $config;
+	
+	if($meta) {
+		$table_event = 'tmetaconsole_event';
+	}
+	else {
+		$table_event = 'tevento';
+	}
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
@@ -171,25 +189,36 @@ function events_delete_event ($id_event, $similar = true) {
 	
 	$errors = 0;
 	
-	foreach ($id_event as $event) {
-		$ret = db_process_sql_delete('tevento', array('id_evento' => $event));
+	foreach ($id_event as $event) {		
+		if($meta) {
+			$event_group = events_get_group ($event);
+		}
+		else {
+			$event_group = events_meta_get_group ($event);
+		}
 		
-		if (check_acl ($config["id_user"], events_get_group ($event), "IM") == 0) {
+		if (check_acl ($config["id_user"], $event_group, "IM") == 0) { 
 			//Check ACL
 			db_pandora_audit("ACL Violation", "Attempted deleting event #".$event);
+			$errors++;
 		}
-		elseif ($ret !== false) {
-			db_pandora_audit("Event deleted", "Deleted event #".$event);
-			//ACL didn't fail nor did return
-			continue;
+		else {
+			$ret = db_process_sql_delete($table_event, array('id_evento' => $event));
 
+			if(!$ret) {
+				$errors++;
+			}
+			else {
+				db_pandora_audit("Event deleted", "Deleted event #".$event);
+				//ACL didn't fail nor did return
+				continue;
+			}
 		}
 		
-		$errors++;
 		break;
 	}
 	
-	if ($errors > 1) {
+	if ($errors > 0) {
 		return false;
 	} else {
 		return true;
@@ -201,11 +230,20 @@ function events_delete_event ($id_event, $similar = true) {
  *
  * @param mixed Event ID or array of events
  * @param bool Whether to validate similar events or not.
+ * @param int New status for the event 0=new;1=validated;2=inprocess
+ * @param bool Metaconsole mode flag
  *
  * @return bool Whether or not it was successful
  */	
-function events_validate_event ($id_event, $similars = true, $new_status = 1) {
+function events_validate_event ($id_event, $similars = true, $new_status = 1, $meta = false) {
 	global $config;
+	
+	if($meta) {
+		$table_event = 'tmetaconsole_event';
+	}
+	else {
+		$table_event = 'tevento';
+	}
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
@@ -246,8 +284,24 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1) {
 	
 	db_process_sql_begin ();
 	
+	$alerts = array();
+	
 	foreach ($id_event as $event) {
-		if (check_acl ($config["id_user"], events_get_group ($event), "IW") == 0) {
+		if($meta) {
+			$event_group = events_meta_get_group ($event);
+			$event = events_meta_get_event ($event);
+			$server_id = $event['server_id'];
+		}
+		else {
+			$event_group = events_get_group ($event);
+			$event = events_get_event ($event);
+		}
+		
+		if($event['id_alert_am'] > 0 && !in_array($event['id_alert_am'], $alerts)) {
+			$alerts[] = $event['id_alert_am'];
+		}
+		
+		if (check_acl ($config["id_user"], $event_group, "IW") == 0) {
 			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
 			
 			return false;
@@ -258,7 +312,7 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1) {
 			'id_usuario' => $ack_user,
 			'ack_utimestamp' => $ack_utimestamp);
 			
-		$ret = db_process_sql_update('tevento', $values,
+		$ret = db_process_sql_update($table_event, $values,
 			array('id_evento' => $event), 'AND', false);
 		
 		if (($ret === false) || ($ret === 0)) {
@@ -268,6 +322,28 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1) {
 	}
 	
 	db_process_sql_commit ();
+	
+	if($meta && !empty($alerts)) {
+		$server = metaconsole_get_connection_by_id ($server_id);
+		metaconsole_connect($server);
+	}
+		
+	// Put the alerts in standby or not depends the new status
+	foreach($alerts as $alert) {
+		switch($new_status) {
+			case EVENT_NEW:
+			case EVENT_VALIDATE:
+				alerts_agent_module_standby ($alert, 0);
+				break;
+			case EVENT_PROCESS:
+				alerts_agent_module_standby ($alert, 1);
+				break;
+		}
+	}
+	
+	if($meta && !empty($alerts)) {
+		metaconsole_restore_db();
+	}
 	
 	return true;
 }
@@ -282,8 +358,15 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1) {
  *
  * @return bool Whether or not it was successful
  */	
-function events_change_status ($id_event, $new_status) { 
+function events_change_status ($id_event, $new_status, $meta) { 
 	global $config;
+	
+	if($meta) {
+		$event_table = 'tmetaconsole_event';
+	}
+	else {
+		$event_table = 'tevento';
+	}
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
@@ -313,8 +396,24 @@ function events_change_status ($id_event, $new_status) {
 			break;
 	}
 		
+	$alerts = array();
+
 	foreach ($id_event as $k => $id) {
-		if (check_acl ($config["id_user"], events_get_group ($id), "IW") == 0) {
+		if($meta) {
+			$event_group = events_meta_get_group ($id);
+			$event = events_meta_get_event ($id);
+			$server_id = $event['server_id'];
+		}
+		else {
+			$event_group = events_get_group ($id);
+			$event = events_get_event ($id);
+		}
+		
+		if($event['id_alert_am'] > 0 && !in_array($event['id_alert_am'], $alerts)) {
+			$alerts[] = $event['id_alert_am'];
+		}
+		
+		if (check_acl ($config["id_user"], $event_group, "IW") == 0) {
 			db_pandora_audit("ACL Violation", "Attempted updating event #".$id);
 			
 			unset($id_event[$k]);
@@ -330,7 +429,7 @@ function events_change_status ($id_event, $new_status) {
 		'id_usuario' => $ack_user,
 		'ack_utimestamp' => $ack_utimestamp);
 		
-	$ret = db_process_sql_update('tevento', $values,
+	$ret = db_process_sql_update($event_table, $values,
 		array('id_evento' => $id_event));
 	
 	if (($ret === false) || ($ret === 0)) {
@@ -338,6 +437,28 @@ function events_change_status ($id_event, $new_status) {
 	}
 	
 	events_comment($id_event, '', "Change status to $status_string");
+	
+	if($meta && !empty($alerts)) {
+		$server = metaconsole_get_connection_by_id ($server_id);
+		metaconsole_connect($server);
+	}
+		
+	// Put the alerts in standby or not depends the new status
+	foreach($alerts as $alert) {
+		switch($new_status) {
+			case EVENT_NEW:
+			case EVENT_VALIDATE:
+				alerts_agent_module_standby ($alert, 0);
+				break;
+			case EVENT_PROCESS:
+				alerts_agent_module_standby ($alert, 1);
+				break;
+		}
+	}
+	
+	if($meta && !empty($alerts)) {
+		metaconsole_restore_db();
+	}
 	
 	return true;
 }
@@ -348,17 +469,31 @@ function events_change_status ($id_event, $new_status) {
  * @param mixed Event ID or array of events
  * @param string id_user of the new owner. If is false, the current owner will be setted
  * @param bool flag to force the change or not (not force is change only when it hasn't owner)
- *
+ * @param bool metaconsole mode flag
+ * 
  * @return bool Whether or not it was successful
  */	
-function events_change_owner ($id_event, $new_owner = false, $force = false) {
+function events_change_owner ($id_event, $new_owner = false, $force = false, $meta = false) {
 	global $config;
+	
+	if($meta) {
+		$event_table = 'tmetaconsole_event';
+	}
+	else {
+		$event_table = 'tevento';
+	}
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
 			
 	foreach ($id_event as $k => $id) {
-		if (check_acl ($config["id_user"], events_get_group ($id), "IW") == 0) {
+		if($meta) {
+			$event_group = events_meta_get_group ($id);
+		}
+		else {
+			$event_group = events_get_group ($id);
+		}
+		if (check_acl ($config["id_user"], $event_group, "IW") == 0) {
 			db_pandora_audit("ACL Violation", "Attempted updating event #".$id);
 			unset($id_event[$k]);
 		}
@@ -387,7 +522,7 @@ function events_change_owner ($id_event, $new_owner = false, $force = false) {
 		$where['owner_user'] = '<>';
 	}
 	
-	$ret = db_process_sql_update('tevento', $values,
+	$ret = db_process_sql_update($event_table, $values,
 		$where, 'AND', false);
 	
 	if (($ret === false) || ($ret === 0)) {
@@ -403,17 +538,31 @@ function events_change_owner ($id_event, $new_owner = false, $force = false) {
  * @param mixed Event ID or array of events
  * @param string comment to be registered
  * @param string action performed with the comment. Bu default just Added comment
+ * @param bool Flag of metaconsole mode
  *
  * @return bool Whether or not it was successful
  */	
-function events_comment ($id_event, $comment = '', $action = 'Added comment') {
+function events_comment ($id_event, $comment = '', $action = 'Added comment', $meta = false) {
 	global $config;
 
+	if($meta) {
+		$event_table = 'tmetaconsole_event';
+	}
+	else {
+		$event_table = 'tevento';
+	}
+	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
 	
 	foreach ($id_event as $k => $id) {
-		if (check_acl ($config["id_user"], events_get_group ($id), "IW") == 0) {
+		if($meta) {
+			$event_group = events_meta_get_group ($id);
+		}
+		else {
+			$event_group = events_get_group ($id);
+		}
+		if (check_acl ($config["id_user"], $event_group, "IW") == 0) {
 			db_pandora_audit("ACL Violation", "Attempted updating event #".$id);
 			
 			unset($id_event[$k]);
@@ -443,7 +592,7 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment') {
 	switch ($config['dbtype']) {
 		// Oldstyle SQL to avoid innecesary PHP foreach
 		case 'mysql':
-			$sql_validation = "UPDATE tevento 
+			$sql_validation = "UPDATE $event_table 
 								   SET user_comment = concat('" . $comment . "', user_comment) 
 								   WHERE id_evento in (" . implode(',', $id_event) . ")";
 			   
@@ -451,7 +600,7 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment') {
 			break;				
 		case 'postgresql':
 		case 'oracle':
-			$sql_validation = "UPDATE tevento 
+			$sql_validation = "UPDATE $event_table 
 								   SET user_comment='" . $comment . "' || user_comment) 
 								   WHERE id_evento in (" . implode(',', $id_event) . ")";	
 								   
@@ -1256,8 +1405,10 @@ function events_page_responses ($event) {
 	// Delete
 	$data = array();
 	$data[0] = __('Delete event');
-	$data[1] = '<form method="post" response="index.php?sec=eventos&sec2=operation/events/events&section=list&delete=1&eventid='.$event['id_evento'].'">';
+	$data[1] = '<form method="post">';
 	$data[1] .= html_print_button(__('Delete event'),'delete_button',false,'if(!confirm(\''.__('Are you sure?').'\')) { return false; } this.form.submit();','class="sub cancel"',true);
+	$data[1] .= html_print_input_hidden('delete', 1, true);
+	$data[1] .= html_print_input_hidden('validate_ids', $event['id_evento'], true);
 	$data[1] .= '</form>';
 
 	$table_responses->data[] = $data;
@@ -1383,8 +1534,9 @@ function events_page_custom_fields ($event) {
 	return $custom_fields;
 }
 
-function events_page_details ($event) {
+function events_page_details ($event, $server = "") {
 	global $img_sev;
+	global $config;
 	
 	/////////
 	// Details
@@ -1489,7 +1641,19 @@ function events_page_details ($event) {
 		
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Graph').'</div>';
-		$data[1] = '<a href="javascript:winopeng(\'operation/agentes/stat_win.php?type=sparse&period=86400&id='.$event["id_agentmodule"].'&label=L2Rldi9zZGE2&refresh=600\',\'day_5f80228c\')">';
+		$graph_type = return_graphtype ($module["module_type"]);
+
+		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["module_name"]));
+		
+		if (!empty($server)) { 
+			$hashdata = metaconsole_get_server_hashdata($server);
+			$link ="winopeng('" . $server['server_url'] . "/operation/agentes/stat_win.php?type=".$graph_type."&period=86400&loginhash=auto&loginhash_data=" . $hashdata . "&loginhash_user=" . $config["id_user"] . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($module["module_name"])."&refresh=600','day_".$win_handle."')";
+		}
+		else {
+			$link ="winopeng('operation/agentes/stat_win.php?type=".$graph_type."&period=86400&id=" . $module["id_agentmodule"] . "&label=" . base64_encode($module["module_name"]) . "&refresh=600','day_".$win_handle."')";
+		}
+		
+		$data[1] = '<a href="javascript:'.$link.'">';
 		$data[1] .= html_print_image('images/chart_curve.png',true);
 		$data[1] .= '</a>';
 		$table_details->data[] = $data;

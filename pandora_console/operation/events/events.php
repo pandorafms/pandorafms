@@ -32,6 +32,11 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
+$meta = false;
+if(enterprise_installed() && defined("METACONSOLE")) {
+	$meta = true;
+}
+
 if(isset($config['event_replication']) &&  $config['event_replication'] == 1) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer. View disabled due event replication.");
@@ -45,6 +50,7 @@ if (is_ajax ()) {
 	$delete_event = (bool) get_parameter ('delete_event');
 	$get_events_fired = (bool) get_parameter('get_events_fired');
 	$standby_alert = (bool) get_parameter('standby_alert');
+	$meta = get_parameter('meta', 0);
 	
 	if ($get_event_tooltip) {
 		$id = (int) get_parameter ('id');
@@ -78,16 +84,6 @@ if (is_ajax ()) {
 		return;
 	}
 	
-	if ($standby_alert) {
-		$id = (int) get_parameter ('id');
-		$event = events_get_event ($id);
-		if ($event === false)
-			return;
-		
-		alerts_agent_module_standby ($event['id_alert_am'], 1);
-		return;
-	}
-	
 	if ($validate_event) {
 		$id = (int) get_parameter ("id");
 		$similars = (bool) get_parameter ('similars');
@@ -100,8 +96,7 @@ if (is_ajax ()) {
 			alerts_agent_module_standby ($event['id_alert_am'], 0);
 		}
 		
-		$return = events_validate_event ($id, $similars, $comment,
-			$new_status);
+		$return = events_change_status ($id, $new_status, $meta);
 		if ($return)
 			echo 'ok';
 		else
@@ -113,7 +108,7 @@ if (is_ajax ()) {
 		$id = (array) get_parameter ("id");
 		$similars = (bool) get_parameter ('similars');
 		
-		$return = events_delete_event ($id, $similars);
+		$return = events_delete_event ($id, $similars, $meta);
 		if ($return)
 			echo 'ok';
 		else
@@ -267,9 +262,19 @@ if ($config["pure"] == 0) {
 			$onheader['list']['active'] = true;
 			break;
 	}
-	
-	ui_print_page_header (__("Events"), "images/lightning_go.png",
-		false, "eventview", false, $onheader);
+
+	if (! defined ('METACONSOLE')) {
+		ui_print_page_header (__("Events"), "images/lightning_go.png",
+			false, "eventview", false, $onheader);
+	}
+	else {
+		unset($onheader['rss']);
+		unset($onheader['marquee']);
+		unset($onheader['csv']);
+		unset($onheader['sound_event']);
+		unset($onheader['fullscreen']);
+		ui_meta_print_header(__("Events"), $section, $onheader);
+	}
 	
 	?>
 	<script type="text/javascript">
@@ -329,8 +334,8 @@ if ($validate) {
 	}
 	
 	if (isset($ids[0]) && $ids[0] != -1) {
-		$return = events_validate_event ($ids, ($group_rep == 1),
-			$comment, $new_status);
+		$return = events_change_status ($ids, $new_status, $meta);
+
 		if ($new_status == 1) {
 			ui_print_result_message ($return,
 				__('Successfully validated'),
@@ -342,15 +347,6 @@ if ($validate) {
 				__('Could not be set in process'));
 		}
 	}
-	
-	if ($standby_alert) {
-		foreach ($ids as $id) {
-			$event = events_get_event ($id);
-			if ($event !== false) {
-				alerts_agent_module_standby ($event['id_alert_am'], 1);
-			}
-		}
-	}
 }
 
 //Process deletion (pass array or single value)
@@ -358,12 +354,12 @@ if ($delete) {
 	$ids = (array) get_parameter ("validate_ids", -1);
 	
 	if ($ids[0] != -1) {
-		$return = events_delete_event ($ids, ($group_rep == 1));
+		$return = events_delete_event ($ids, ($group_rep == 1), $meta);
 		ui_print_result_message ($return,
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	}
-	require_once('operation/events/events_list.php');
+	require_once($config['homedir'].'/operation/events/events_list.php');
 }
 else {
 	switch ($section) {
@@ -392,12 +388,6 @@ $(document).ready( function() {
 	
 	$('#select_validate').change (function() {
 		$option = $('#select_validate').val();
-		if ($option == 2) {
-			$(".standby_alert_checkbox").css('display', '');
-		}
-		else {
-			$(".standby_alert_checkbox").css('display', 'none');
-		}
 	});
 	
 	$("#tgl_event_control").click (function () {
@@ -419,31 +409,13 @@ $(document).ready( function() {
 		
 		var comment = $('#textarea_comment_'+id).val();
 		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process, 3 add comment
-		var checkbox_standby_alert = $('#checkbox-standby-alert-'+id).attr('checked');
 		var similars = $('#group_rep').val();
 		
 		if (!select_validate) {
 			select_validate = 1;
 		}
 		
-		if (checkbox_standby_alert) {
-			jQuery.post ("ajax.php",
-				{"page" : "operation/events/events",
-				"standby_alert" : 1,
-				"id" : id
-				},
-				function (data, status) {
-					if (data != "ok") {
-						$("#result")
-							.showMessage ("<?php echo __('Could not set standby alert')?>")
-							.addClass ("error");
-					}
-				},
-				"html"
-			);
-		}
-		
-		jQuery.post ("ajax.php",
+		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 			{"page" : "operation/events/events",
 			"validate_event" : 1,
 			"id" : id,
@@ -462,7 +434,7 @@ $(document).ready( function() {
 						$("#status_row_"+id).html(<?php echo "'" . __('Event validated') . "'"; ?>);
 						
 						// Get event comment
-						jQuery.post ("ajax.php",
+						jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 							{"page" : "operation/events/events",
 							"get_comment" : 1,
 							"id" : id
@@ -472,7 +444,7 @@ $(document).ready( function() {
 							});
 						
 						// Get event comment in header
-						jQuery.post ("ajax.php",
+						jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 							{"page" : "operation/events/events",
 							"get_comment_header" : 1,
 							"id" : id
@@ -520,7 +492,7 @@ $(document).ready( function() {
 						$("#status_row_"+id).html(<?php echo "'" . __('Event in process') . "'"; ?>);
 						
 						// Get event comment
-						jQuery.post ("ajax.php",
+						jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 							{"page" : "operation/events/events",
 							"get_comment" : 1,
 							"id" : id
@@ -530,7 +502,7 @@ $(document).ready( function() {
 							});
 						
 						// Get event comment in header
-						jQuery.post ("ajax.php",
+						jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 							{"page" : "operation/events/events",
 							"get_comment_header" : 1,
 							"id" : id
@@ -581,7 +553,7 @@ $(document).ready( function() {
 					} // Add comment
 					else if (select_validate == 3) {
 						// Get event comment
-						jQuery.post ("ajax.php",
+						jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 							{"page" : "operation/events/events",
 							"get_comment" : 1,
 							"id" : id
@@ -591,7 +563,7 @@ $(document).ready( function() {
 							});
 							
 						// Get event comment in header
-						jQuery.post ("ajax.php",
+						jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 							{"page" : "operation/events/events",
 							"get_comment_header" : 1,
 							"id" : id
@@ -618,13 +590,16 @@ $(document).ready( function() {
 		if (!confirmation) {
 			return;
 		}
+		meta = $('#hidden-meta').val();
+		
 		$tr = $(this).parents ("tr");
 		id = this.id.split ("-").pop ();
-		jQuery.post ("ajax.php",
+		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 			{"page" : "operation/events/events",
 			"delete_event" : 1,
 			"id" : id,
-			"similars" : <?php echo ($group_rep ? 1 : 0) ?>
+			"similars" : <?php echo ($group_rep ? 1 : 0) ?>,
+			"meta" : meta
 			},
 			function (data, status) {
 				if (data == "ok") {
@@ -654,19 +629,12 @@ $(document).ready( function() {
 		
 		$('#select_validate_' + id_event).change (function() {
 			$option = $('#select_validate_' + id_event).val();
-			if ($option == 2) {
-				$("#standby_alert_checkbox_" + id_event).css('display', '');
-			}
-			else {
-				$("#standby_alert_checkbox_" + id_event).css('display', 'none');
-			}
 		});
 		
 		if (display != 'none') {
 			$('.event_form_' + id_event).css('display', 'none');
 			// Hide All showed rows
 			$('.event_form').css('display', 'none');
-			$(".standby_alert_checkbox").css('display', 'none');
 			$(".select_validate").find('option:first').attr('selected', 'selected').parent('select');
 		}
 		else {
@@ -681,14 +649,16 @@ $(document).ready( function() {
 		
 		var similar_ids;
 		similar_ids = $('#hidden-similar_ids_'+id).val();
+		meta = $('#hidden-meta').val();
 		
 		$("#status_img_"+id).attr ("src", "images/spinner.gif");
 		
-		jQuery.post ("ajax.php",
+		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 			{"page" : "include/ajax/events",
 			"change_status" : 1,
 			"event_ids" : similar_ids,
-			"new_status" : new_status
+			"new_status" : new_status,
+			"meta" : meta
 			},
 			function (data, status) {
 				if (data == "status_ok") {

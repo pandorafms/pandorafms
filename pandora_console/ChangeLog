@@ -1,3 +1,15 @@
+2012-12-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/ajax/events.php
+	include/functions_graph.php
+	include/functions_events.php
+	include/javascript/pandora_events.js
+	operation/events/events_list.php
+	operation/events/events.php
+	godmode/events/custom_events.php
+	godmode/events/events.php: Add compatibility 
+	with metaconsole in the event viewer
+
 2012-12-18  Hirofumi Kosaka  <kosaka@rworks.jp>
 
         * include/functions_events.php: Fixed a typo (have a small

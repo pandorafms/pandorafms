@@ -19,6 +19,8 @@ require_once ('include/functions_ui.php');
 require_once ('include/functions_db.php');
 require_once ('include/functions_io.php');
 require_once ('include/functions.php');
+enterprise_include_once ('meta/include/functions_events_meta.php');
+enterprise_include_once ('include/functions_metaconsole.php');
 
 $get_events_details = (bool) get_parameter ('get_events_details');
 $get_extended_event = (bool) get_parameter ('get_extended_event');
@@ -32,11 +34,17 @@ $get_response_target = (bool) get_parameter ('get_response_target');
 $get_response_params = (bool) get_parameter ('get_response_params');
 $get_response_description = (bool) get_parameter ('get_response_description');
 $get_event_name = (bool) get_parameter ('get_event_name');
+$meta = get_parameter ('meta', 0);
 
 if($get_event_name) {	
 	$event_id = get_parameter ('event_id');
 	
-	$name = db_get_value('evento','tevento','id_evento',$event_id);
+	if($meta) {
+		$name = events_meta_get_event_name($event_id);
+	}
+	else {
+		$name = db_get_value('evento','tevento','id_evento',$event_id);
+	}
 	
 	if($name === false) {
 		return;
@@ -152,7 +160,7 @@ if($add_comment) {
 	$comment = get_parameter ('comment');
 	$event_id = get_parameter ('event_id');
 
-	$return = events_comment ($event_id, $comment);
+	$return = events_comment ($event_id, $comment, 'Added comment', $meta);
 
 	if ($return)
 		echo 'comment_ok';
@@ -166,7 +174,7 @@ if($change_status) {
 	$event_ids = get_parameter ('event_ids');
 	$new_status = get_parameter ('new_status');
 	
-	$return = events_change_status (explode(',',$event_ids), $new_status);
+	$return = events_change_status (explode(',',$event_ids), $new_status, $meta); 
 
 	if ($return)
 		echo 'status_ok';
@@ -200,11 +208,16 @@ if($get_extended_event) {
 	
 	$event_id = get_parameter('event_id',false);
 
-	$event = events_get_event($event_id);
-	
+	if($meta) {
+		$event = events_meta_get_event($event_id);
+	}
+	else {
+		$event = events_get_event($event_id);
+	}
+
 	// If the event is not found, we abort
 	if(empty($event)) {
-		echo 'not found';
+		ui_print_error_message('Event not found');
 		return false;
 	}
 
@@ -214,6 +227,7 @@ if($get_extended_event) {
 	$event_rep = get_parameter('event_rep',1);
 	$timestamp_first = get_parameter('timestamp_first', $event['utimestamp']);
 	$timestamp_last = get_parameter('timestamp_last', $event['utimestamp']);
+	$server_id = get_parameter('server_id', 0);
 
 	$event['similar_ids'] = $similar_ids;
 	$event['timestamp_first'] = $timestamp_first;
@@ -289,10 +303,21 @@ if($get_extended_event) {
 	
 	$responses = events_page_responses($event);
 	
-	$details = events_page_details($event);
+	$console_url = '';
+	// If metaconsole switch to node to get details and custom fields
+	if($meta) {
+		$server = metaconsole_get_connection_by_id ($server_id);
+		metaconsole_connect($server);
+	}
+	
+	$details = events_page_details($event, $server);
 	
 	$custom_fields = events_page_custom_fields($event);
 
+	if($meta) {
+		metaconsole_restore_db();
+	}
+	
 	$general = events_page_general($event);
 	
 	$comments = events_page_comments($event);

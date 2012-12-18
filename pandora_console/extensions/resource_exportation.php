@@ -123,6 +123,7 @@ function output_xml_report($id) {
 					break;
 				case 2:
 				case 'custom_graph':
+				case 'automatic_custom_graph':
 					$graph = db_get_value('name', 'tgraph', 'id_graph', $item['id_gs']);
 					echo "<graph><![CDATA[" . io_safe_output($graph) . "]]></graph>\n";
 					break;

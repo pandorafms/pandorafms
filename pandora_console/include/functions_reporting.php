@@ -2393,7 +2393,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 			
 		case 2:
-		case 'custom_graph':
+		case 'custom_graph':		
+		case 'automatic_custom_graph':
 			$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 			
 			reporting_header_content($mini, $content, $report, $table, __('Custom graph'),

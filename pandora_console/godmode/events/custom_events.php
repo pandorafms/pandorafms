@@ -113,7 +113,7 @@ if ($fields_selected[0]!='') {
 				$result = __('ACK Timestamp');
 				break;
 			case 'server_name':
-				$result = __('Server');
+				$result = __('Server name');
 				break;
 		}
 		$result_selected[$field_selected] = $result;

@@ -797,7 +797,7 @@ foreach ($result as $event) {
 			$data[$i] = db_get_value('server_name','tmetaconsole_setup','id',$event["server_id"]);
 		}
 		else {
-			$data[$i] = db_get_value('name','tserver','id_server',$event["server_id"]);
+			$data[$i] = db_get_value('name','tserver');
 		}
 		$i++;
 	}
@@ -850,7 +850,7 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('id_agente', $show_fields)) {
-		$data[$i] = '<span style="color: #000000">';
+		$data[$i] = '<span class="'.$myclass.'">';
 		
 		if ($event["id_agente"] > 0) {
 			// Agent name

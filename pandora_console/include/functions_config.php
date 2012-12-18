@@ -317,11 +317,13 @@ function config_process_config () {
 	global $config;
 	
 	//Check if the user have the admin flag.
-	$is_admin = (bool)db_get_value('is_admin',
-		'tusuario', 'id_user', $_SESSION['id_usuario']);
-	if (!$is_admin) {
-		return false;
-		exit;
+	if (isset($_SESSION['id_usuario'])) {
+		$is_admin = (bool)db_get_value('is_admin',
+			'tusuario', 'id_user', $_SESSION['id_usuario']);
+		if (!$is_admin) {
+			return false;
+			exit;
+		}
 	}
 	
 	$configs = db_get_all_rows_in_table ('tconfig');

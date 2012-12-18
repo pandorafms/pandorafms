@@ -1,3 +1,8 @@
+
+2012-12-18 Sancho Lerena <slerena@artica.es>
+
+        * include/db/mysql.php: Removed trace for tevento table.
+
 2012-12-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/db/mysql.php: Fixed return value in function 

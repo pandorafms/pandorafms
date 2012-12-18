@@ -692,7 +692,6 @@ function mysql_db_get_all_rows_filter ($table, $filter = array(), $fields = fals
 	}
 
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
-	if ($table == 'tevento') html_debug_print($sql, "/tmp/pp");
 	if ($returnSQL)
 		return $sql;
 	else

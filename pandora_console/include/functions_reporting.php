@@ -2949,9 +2949,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array();
 			$table->colspan[2][0] = 3;
 			$data[0] = '<iframe id="item_' . $content['id_rc'] . '" src ="' . $content["external_source"] . '" width="100%" height="100%"></iframe>';
+			// TODO: make this dynamic and get the height if the iframe to resize this item
 			$data[0] .= '<script>
 				$(document).ready (function () {
-					$("#item_' . $content['id_rc'] . '").height($(document.body).height() + 0);
+					$("#item_' . $content['id_rc'] . '").height(500);
 			});</script>';
 			
 			array_push ($table->data, $data);

@@ -274,18 +274,19 @@ function mysql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = 
 	}
 	else {
 		$start = microtime (true);
+		
 		if ($dbconnection == '') { 
-			$result = mysql_query ($sql);
+			$dbconnection = $config['dbconnection'];
 		}
-		else { 
-			$result = mysql_query ($sql, $dbconnection);
-		}
+		
+		$result = mysql_query ($sql, $dbconnection);
+		
 		$time = microtime (true) - $start;
 		if ($result === false) {
 			$backtrace = debug_backtrace ();
 			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
 				mysql_error (), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
-			db_add_database_debug_trace ($sql, mysql_error ());
+			db_add_database_debug_trace ($sql, mysql_error ($dbconnection));
 			set_error_handler ('db_sql_error_handler');
 			trigger_error ($error);
 			restore_error_handler ();
@@ -293,26 +294,26 @@ function mysql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = 
 		}
 		elseif ($result === true) {
 			if ($rettype == "insert_id") {
-				$result = mysql_insert_id ();
+				$result = mysql_insert_id ($dbconnection);
 			}
 			elseif ($rettype == "info") {
-				$result = mysql_info ();
+				$result = mysql_info ($dbconnection);
 			}
 			else {
-				$result = mysql_affected_rows ();
+				$result = mysql_affected_rows ($dbconnection);
 			}
 			
-			db_add_database_debug_trace ($sql, $result, mysql_affected_rows (),
+			db_add_database_debug_trace ($sql, $result, mysql_affected_rows ($dbconnection),
 				array ('time' => $time));
 			return $result;
 		}
 		else {
-			db_add_database_debug_trace ($sql, 0, mysql_affected_rows (), 
+			db_add_database_debug_trace ($sql, 0, mysql_affected_rows ($dbconnection), 
 				array ('time' => $time));
 			while ($row = mysql_fetch_assoc ($result)) {
 				array_push ($retval, $row);
 			}
-
+			
 			if ($cache === true)
 				$sql_cache[$sql] = $retval;
 			mysql_free_result ($result);
@@ -691,7 +692,7 @@ function mysql_db_get_all_rows_filter ($table, $filter = array(), $fields = fals
 	}
 
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
-	
+	if ($table == 'tevento') html_debug_print($sql, "/tmp/pp");
 	if ($returnSQL)
 		return $sql;
 	else

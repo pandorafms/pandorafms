@@ -1,3 +1,8 @@
+2012-12-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/db/mysql.php: Fixed return value in function 
+	mysql_db_process_sql.
+
 2012-12-18  Hirofumi Kosaka  <kosaka@rworks.jp>
 
         * include/functions_events.php: Fixed a typo (have a small

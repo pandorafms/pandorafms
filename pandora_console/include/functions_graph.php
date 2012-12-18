@@ -1850,8 +1850,9 @@ function graphic_incident_source($width = 320, $height = 200) {
  * @param integer width pie graph width
  * @param integer height pie graph height
  * @param string url
+ * @param bool if the graph required is or not for metaconsole
  */
-function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
+function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -1864,25 +1865,37 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	//remove bad strings from the query so queries like ; DELETE FROM  don't pass
 	$url = str_ireplace ($badstrings, "", $url);
 		
+	// Choose the table where search if metaconsole or not
+	if($meta) {
+		$event_table = 'tmetaconsole_event';
+		$field_extra = ', agent_name';
+		$groupby_extra = ', server_id';
+	}
+	else {
+		$event_table = 'tevento';
+		$field_extra = '';
+		$groupby_extra = '';
+	}
+
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
 	//is required if both DISTINCT() and COUNT() are in the statement 
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
-					id_grupo, COUNT(id_agente) AS count
-				FROM tevento
+					id_grupo, COUNT(id_agente) AS count'.$field_extra.'
+				FROM '.$event_table.'
 				WHERE 1=1 %s
-				GROUP BY id_agente
+				GROUP BY id_agente'.$groupby_extra.'
 				ORDER BY count DESC', $url); 
 			break;
 		case "postgresql":
 		case "oracle":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
-					id_grupo, COUNT(id_agente) AS count
-				FROM tevento
+					id_grupo, COUNT(id_agente) AS count'.$field_extra.'
+				FROM '.$event_table.'
 				WHERE 1=1 %s
-				GROUP BY id_agente, id_grupo
+				GROUP BY id_agente, id_grupo'.$groupby_extra.'
 				ORDER BY count DESC', $url); 
 			break;
 	}
@@ -1892,30 +1905,49 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 		$result = array();
 	}
 	
+	$system_events = 0;
+	$other_events = 0;
+	
 	foreach ($result as $row) {
 		if (!check_acl ($config["id_user"], $row["id_grupo"], "AR") == 1)
 			continue;
 		
-		if ($loop >= NUM_PIECES_PIE) {
-			if (!isset ($data[__('Other')]))
-				$data[__('Other')] = 0;
-			$data[__('Other')] += $row["count"];
+		if ($loop >= NUM_PIECES_PIE) {		
+			$other_events += $row["count"];
 		} 
 		else {
 			if ($row["id_agente"] == 0) {
-				$name = __('SYSTEM')." (".$row["count"].")";
+				$system_events  += $row["count"];
 			}
 			else {
-				$name = mb_substr (agents_get_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+				if($meta) {
+					$name = mb_substr (io_safe_output($row['agent_name']), 0, 14)." (".$row["count"].")";
+				}
+				else {
+					$name = mb_substr (agents_get_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+				}
+				$data[$name] = $row["count"];
 			}
-			$data[$name] = $row["count"];
 		}
 		$loop++;
 	}
 	
+	if($system_events > 0) {
+		$name = __('SYSTEM')." (".$system_events.")";
+		$data[$name] = $system_events;
+	}
+	
+	if($other_events > 0) {
+		$name = __('Other')." (".$other_events.")";
+		$data[$name] = $other_events;
+	}
+	
+	// Sort the data
+	arsort($data);
+	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
-		
+		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false, false));
+
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size']);

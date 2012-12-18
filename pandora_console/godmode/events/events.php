@@ -33,7 +33,7 @@ $buttons = array(
 		'view' => array('active' => false, 
 			'text' => '<a href="index.php?sec=eventos&sec2=operation/events/events">' . 
 			html_print_image("images/zoom.png", true, array("title" => __('View events'))) . '</a>'),
-		'separator' => array(),
+		'separator' => '',
 		'filter' => array('active' => false, 
 			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter">' .
 			html_print_image("images/lightning_go.png", true, array ("title" => __('Create filter'))) . '</a>'),
@@ -67,18 +67,24 @@ switch ($section) {
 		break;
 }
 
-ui_print_page_header (__("Manage events") . $subpage, "images/lightning_go.png", false, "", true, $buttons);
+	if (! defined ('METACONSOLE')) {
+		ui_print_page_header (__("Manage events") . $subpage, "images/lightning_go.png", false, "", true, $buttons);
+	}
+	else {
+		ui_meta_print_header(__("Manage events") . $subpage, "", $buttons);
+	}
 
+include_once($config["homedir"] . '/include/functions_events.php');
 
 switch($section) {
 	case 'filter':
-		require_once('godmode/events/event_filter.php');
+		require_once($config["homedir"] . '/godmode/events/event_filter.php');
 		break;
 	case 'fields':
-		require_once('godmode/events/custom_events.php');
+		require_once($config["homedir"] . '/godmode/events/custom_events.php');
 		break;
 	case 'responses':
-		require_once('godmode/events/event_responses.php');
+		require_once($config["homedir"] . '/godmode/events/event_responses.php');
 		break;
 }
 

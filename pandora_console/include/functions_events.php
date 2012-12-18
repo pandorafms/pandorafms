@@ -412,7 +412,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->data = array ();
 		$table->align = array ();
 		
-		$table->head[0] = "<span title='" . __('Validate') . "'>" . __('V.') . "</span>";
+		$table->head[0] = "<span title='" . __('Validated') . "'>" . __('V.') . "</span>";
 		$table->align[0] = 'center';
 		
 		$table->head[1] = "<span title='" . __('Severity') . "'>" . __('S.') . "</span>";

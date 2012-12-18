@@ -419,6 +419,9 @@ function get_report_name ($type, $template = false) {
 	$types = reports_get_report_types ($template);
 	if (! isset ($types[$type]))
 		return __('Unknown');
+		
+	if ($type == 'automatic_custom_graph')
+		return __('Custom graph');
 	
 	return $types[$type]['name'];
 }
@@ -451,7 +454,8 @@ function get_report_type_data_source ($type) {
 			return 'module';
 			break;
 		case 2:
-		case 'custom_graph':
+		case 'custom_graph':		
+		case 'automatic_custom_graph':
 			return 'custom-graph';
 			break;
 		case 3:
@@ -477,10 +481,11 @@ function get_report_type_data_source ($type) {
  * Get report types in an array.
  * 
  * @param boolean $template Set true for to get types for templates. By default false.
+ * @param boolean $not_editor When this function is not used in item editors.
  * 
  * @return array An array with all the possible reports in Pandora where the array index is the report id.
  */
-function reports_get_report_types ($template = false) {
+function reports_get_report_types ($template = false, $not_editor = false) {
 	global $config;
 	
 	$types = array ();
@@ -489,6 +494,9 @@ function reports_get_report_types ($template = false) {
 		'name' => __('Simple graph'));
 	$types['simple_baseline_graph'] = array('optgroup' => __('Graphs'),
 		'name' => __('Simple baseline graph'));
+	if ($not_editor == false)
+		$types['automatic_custom_graph'] = array('optgroup' => __('Graphs'),
+			'name' => __('Custom graph'));
 	$types['custom_graph'] = array('optgroup' => __('Graphs'),
 		'name' => __('Custom graph'));
 	# Only pandora managers have access to the whole database
@@ -597,16 +605,19 @@ function reports_get_report_types ($template = false) {
 	$types['group_configuration'] = array('optgroup' => __('Configuration'),
 		'name' => __('Group configuration')); 
 
-	$types['netflow_area'] = array('optgroup' => __('Netflow'),
-		'name' => __('Netflow area chart')); 
-	$types['netflow_pie'] = array('optgroup' => __('Netflow'),
-		'name' => __('Netflow pie chart')); 
-	$types['netflow_data'] = array('optgroup' => __('Netflow'),
-		'name' => __('Netflow data table')); 
-	$types['netflow_statistics'] = array('optgroup' => __('Netflow'),
-		'name' => __('Netflow statistics table')); 
-	$types['netflow_summary'] = array('optgroup' => __('Netflow'),
-		'name' => __('Netflow summary table')); 
+
+	if (!$template) {
+		$types['netflow_area'] = array('optgroup' => __('Netflow'),
+			'name' => __('Netflow area chart')); 
+		$types['netflow_pie'] = array('optgroup' => __('Netflow'),
+			'name' => __('Netflow pie chart')); 
+		$types['netflow_data'] = array('optgroup' => __('Netflow'),
+			'name' => __('Netflow data table')); 
+		$types['netflow_statistics'] = array('optgroup' => __('Netflow'),
+			'name' => __('Netflow statistics table')); 
+		$types['netflow_summary'] = array('optgroup' => __('Netflow'),
+			'name' => __('Netflow summary table')); 
+	}
 	
 	return $types;
 }

@@ -463,11 +463,7 @@ switch ($action) {
 			}
 			html_print_table ($table);
 		}
-		else {
-			ui_print_error_message(__('There are no defined reportings'));
-		}
-		
-		
+				
 		if (check_acl ($config['id_user'], 0, "IW")) {
 			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
 			echo '<div class="action-buttons" style="width: 98%;">';
@@ -706,14 +702,14 @@ switch ($action) {
 						if ($values['server_name'] == '')
 							$values['server_name'] = get_parameter ('combo_server');
 						
-						if (($values['type'] == 'custom_graph') && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
+						if ((($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
 							$resultOperationDB = false;
 							break;
 						}
 						
 						// If metaconsole is activated
-						if ($config['metaconsole'] == 1) {
-							if ($values['type'] == 'custom_graph') {
+						if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
+							if (($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) {
 								$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
 								if ($id_gs !== false) {
 									$server_name = strstr($values ['id_gs'], '|');
@@ -899,13 +895,13 @@ switch ($action) {
 						if ($values['server_name'] == '')
 							$values['server_name'] = get_parameter ('combo_server');
 						
-						if (($values['type'] == 'custom_graph') && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
+						if ((($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
 							$resultOperationDB = false;
 							break;
 						}
 						
 						if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
-							if ($values['type'] == 'custom_graph') {
+							if (($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) {
 								$id_gs = substr ($values['id_gs'], 0, strpos ($values['id_gs'], '|'));
 								if ($id_gs !== false && $id_gs !== '') {
 									$server_name = strstr($values ['id_gs'], '|');

@@ -1,3 +1,15 @@
+2012-12-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_reporting.php
+	include/functions_reports.php
+	extensions/resource_registration.php
+	extensions/resource_exportation.php
+	operation/reporting/reporting_xml.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php: Fixed report
+	templates.
+
 2012-12-18 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php: fixed check if it set the id_user

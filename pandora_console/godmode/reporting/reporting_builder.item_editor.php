@@ -85,6 +85,7 @@ $resolution = 0;
 switch ($action) {
 	case 'new':
 		$actionParameter = 'save';
+		
 		$type = get_parameter('type', 'SLA');
 		$description = null;
 		$sql = null;
@@ -92,279 +93,309 @@ switch ($action) {
 		$show_in_landscape = 0;
 		$server_name = '';
 		break;
+	case 'save':		
 	default:
-		$actionParameter = 'update';
-		$item = db_get_row_filter('treport_content', array('id_rc' => $idItem));
-		$server_name = $item ['server_name'];
-		
-		// Metaconsole db connection
-		if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
-			$connection = metaconsole_get_connection($server_name);
-			if (metaconsole_load_external_db($connection) != NOERR) {
-				//ui_print_error_message ("Error connecting to ".$server_name);
-			}
-		}
-		
-		$style = json_decode(io_safe_output($item['style']), true);
-		$show_in_two_columns = $style['show_in_two_columns'];
-		$show_in_landscape = $style['show_in_landscape'];
-		$type = $item['type'];
-		
+		$actionParameter = 'update';	
+	
+		// If we are creating a new report item then clean interface and display creation view
+		$type = get_parameter('type', 'SLA');
 		switch ($type) {
-			case 'avg_value':
-				$period = $item['period'];
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				break;
-			case 'simple_baseline_graph':
-			case 'simple_graph':
-			case 'projection_graph':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$period = $item['period'];
-				// 'top_n_value' field will be reused for projection report
-				if ($type == 'projection_graph'){
-					$projection_period = $item['top_n_value'];
-					$period_pg = $item['period'];
-				}
-				break;
-			case 'prediction_date':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				// 'top_n' field will be reused for prediction_date report
-				$max_interval = $item['top_n'];
-				$min_interval = $item['top_n_value'];
-				$intervals_text = $item['text'];
-				// Parse intervals text field
-				$max_interval = substr($intervals_text, 0, strpos($intervals_text, ';'));
-				$min_interval = substr($intervals_text, strpos($intervals_text, ';') + 1);
-				// 'top_n_value' field will be reused for prediction_date report			
-				$period_pg = $item['period'];
-				break;
-			case 'custom_graph':
-				$description = $item['description'];
-				$period = $item['period'];
-				$idCustomGraph = $item['id_gs'];
-				break;
 			case 'SLA':
-				$description = $item['description'];
-				$period = $item['period'];
-				$only_display_wrong = $item['only_display_wrong'];
-				$monday = $item['monday'];
-				$tuesday = $item['tuesday'];
-				$wednesday = $item['wednesday'];
-				$thursday = $item['thursday'];
-				$friday = $item['friday'];
-				$saturday = $item['saturday'];
-				$sunday = $item['sunday'];
-				$time_from = $item['time_from'];
-				$time_to = $item['time_to'];
-				$show_graph = $item['show_graph'];
-				// 'top_n' filed will be reused for SLA sort option
-				$sla_sorted_by = $item['top_n'];
-				break;
-			case 'monitor_report':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$idAgentModule = $item['id_agent_module'];
-				$period = $item['period'];
-				break;
-			case 'avg_value':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$idAgentModule = $item['id_agent_module'];
-				$period = $item['period'];
-				break;
-			case 'max_value':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$idAgentModule = $item['id_agent_module'];
-				$period = $item['period'];
-				break;
-			case 'min_value':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$idAgentModule = $item['id_agent_module'];
-				$period = $item['period'];
-				break;
-			case 'sumatory':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$idAgentModule = $item['id_agent_module'];
-				$period = $item['period'];
-				break;
-			case 'text':
-				$description = $item['description'];
-				$text = $item['text'];
-				break;
-			case 'sql':
-				$description = $item['description'];
-				$sql = $item['external_source'];
-				$idCustom = $item['treport_custom_sql_id'];
-				$header = $item['header_definition'];
-				$period = 0;
-				break;
-			case 'sql_graph_pie':
-				$description = $item['description'];
-				$sql = $item['external_source'];
-				$idCustom = $item['treport_custom_sql_id'];
-				$period = 0;
-				break;
-			case 'sql_graph_vbar':
-				$description = $item['description'];
-				$sql = $item['external_source'];
-				$idCustom = $item['treport_custom_sql_id'];
-				$period = 0;
-				break;
-			case 'sql_graph_hbar':
-				$description = $item['description'];
-				$sql = $item['external_source'];
-				$idCustom = $item['treport_custom_sql_id'];
-				$period = 0;
-				break;
-			case 'url':
-				$description = $item['description'];
-				$url = $item['external_source'];
-				break;
-			case 'database_serialized':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$header = $item['header_definition'];
-				$field = $item['column_separator'];
-				$line = $item['line_separator'];
-				$period = $item['period'];
-				break;
-			case 'TTRT':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$period = $item['period'];
-				break;
-			case 'TTO':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$period = $item['period'];
-				break;
-			case 'MTBF':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$period = $item['period'];
-				break;
-			case 'MTTR':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$period = $item['period'];
-				break;
-			case 'alert_report_module':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$period = $item['period'];
-				break;
-			case 'alert_report_agent':
-				$description = $item['description'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente' => $item['id_agent']));
-				$period = $item['period'];
-				break;
-			case 'event_report_agent':
-				$description = $item['description'];
-				$idAgent = $item['id_agent'];
-				$period = $item['period'];
-				break;
-			case 'event_report_group':
-				$description = $item['description'];
-				$period = $item['period'];
-				$group = $item['id_group'];
-				break;
-			case 'event_report_module':
-				$description = $item['description'];
-				$idAgentModule = $item['id_agent_module'];
-				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-				$period = $item['period'];
-				break;
-			case 'general':
-				$description = $item['description'];
-				$group_by_agent = $item['group_by_agent'];
-				$period = $item['period'];
-				$order_uptodown = $item['order_uptodown'];
-				$show_resume = $item['show_resume'];
-				$show_graph = $item['show_graph'];
-				break;
-			case 'group_report':
-				$group = $item['id_group'];
-				break;
 			case 'top_n':
-				$description = $item['description'];
-				$period = $item['period'];
-				$top_n = $item ['top_n'];
-				$top_n_value = $item ['top_n_value'];
-				$show_resume = $item['show_resume'];
-				$show_graph = $item['show_graph'];
-				$order_uptodown = $item['order_uptodown'];
-				break;
 			case 'exception':
-				$description = $item['description'];
-				$period = $item['period'];
-				$exception_condition = $item['exception_condition'];
-				$exception_condition_value = $item['exception_condition_value'];
-				$show_resume = $item['show_resume'];
-				$show_graph = $item['show_graph'];
-				$order_uptodown = $item['order_uptodown'];
+			case 'general':
+				$get_data_editor = true;
 				break;
-			case 'agent_module':
-				$description = $item['description'];
-				$group = $item['id_group'];
-				$modulegroup = $item ['id_module_group'];
+			default:
+				$actionParameter = 'save';
+				$action = 'new';
+				
+				$type = 'SLA';
+				$description = null;
+				$sql = null;
+				$show_in_two_columns = 0;
+				$show_in_landscape = 0;
+				$server_name = '';
+				$get_data_editor = false;
 				break;
-			case 'inventory':
-				$description = $item['description'];
-				$es = json_decode($item['external_source'], true);
-				$date = $es['date'];
-				$inventory_modules = $es['inventory_modules'];
-				$id_agents = $es['id_agents'];
-				break;
-			case 'inventory_changes':
-				$period = $item['period'];
-				$description = $item['description'];
-				$es = json_decode($item['external_source'], true);
-				$inventory_modules = $es['inventory_modules'];
-				$id_agents = $es['id_agents'];
-				break;
-			case 'agent_configuration':
-				$idAgent = $item['id_agent'];
-				break;
-			case 'group_configuration':
-				$group = $item['id_group'];
-				break;
-			case 'netflow_area':
-			case 'netflow_pie':
-			case 'netflow_data':
-			case 'netflow_statistics':
-			case 'netflow_summary':
-				$netflow_filter = $item['text']; // Filter
-				$period = $item['period'];
-				$description = $item['description'];
-				$resolution = $item ['top_n']; // Interval resolution
-				$max_values = $item ['top_n_value']; // Max values
-				break;
-		}
+		}	
+	
+		// Get data to fill editor if type is not SLA, top_n, exception, general
+		if ($get_data_editor) {
 		
-		//Restore db connection
-		if (($config ['metaconsole'] == 1) && ($server_name != '')
-			&& defined('METACONSOLE')) {
-			metaconsole_restore_db();
+			$item = db_get_row_filter('treport_content', array('id_rc' => $idItem));
+			$server_name = $item ['server_name'];
+			
+			// Metaconsole db connection
+			if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+				$connection = metaconsole_get_connection($server_name);
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					//ui_print_error_message ("Error connecting to ".$server_name);
+				}
+			}
+			
+			$style = json_decode(io_safe_output($item['style']), true);
+			$show_in_two_columns = $style['show_in_two_columns'];
+			$show_in_landscape = $style['show_in_landscape'];
+			$type = $item['type'];
+			
+			switch ($type) {
+				case 'avg_value':
+					$period = $item['period'];
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					break;
+				case 'simple_baseline_graph':
+				case 'simple_graph':
+				case 'projection_graph':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$period = $item['period'];
+					// 'top_n_value' field will be reused for projection report
+					if ($type == 'projection_graph'){
+						$projection_period = $item['top_n_value'];
+						$period_pg = $item['period'];
+					}
+					break;
+				case 'prediction_date':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					// 'top_n' field will be reused for prediction_date report
+					$max_interval = $item['top_n'];
+					$min_interval = $item['top_n_value'];
+					$intervals_text = $item['text'];
+					// Parse intervals text field
+					$max_interval = substr($intervals_text, 0, strpos($intervals_text, ';'));
+					$min_interval = substr($intervals_text, strpos($intervals_text, ';') + 1);
+					// 'top_n_value' field will be reused for prediction_date report			
+					$period_pg = $item['period'];
+					break;
+				case 'custom_graph':
+				case 'automatic_custom_graph':
+					$description = $item['description'];
+					$period = $item['period'];
+					$idCustomGraph = $item['id_gs'];
+					break;
+				case 'SLA':
+					$description = $item['description'];
+					$period = $item['period'];
+					$only_display_wrong = $item['only_display_wrong'];
+					$monday = $item['monday'];
+					$tuesday = $item['tuesday'];
+					$wednesday = $item['wednesday'];
+					$thursday = $item['thursday'];
+					$friday = $item['friday'];
+					$saturday = $item['saturday'];
+					$sunday = $item['sunday'];
+					$time_from = $item['time_from'];
+					$time_to = $item['time_to'];
+					$show_graph = $item['show_graph'];
+					// 'top_n' filed will be reused for SLA sort option
+					$sla_sorted_by = $item['top_n'];
+					break;
+				case 'monitor_report':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$idAgentModule = $item['id_agent_module'];
+					$period = $item['period'];
+					break;
+				case 'avg_value':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$idAgentModule = $item['id_agent_module'];
+					$period = $item['period'];
+					break;
+				case 'max_value':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$idAgentModule = $item['id_agent_module'];
+					$period = $item['period'];
+					break;
+				case 'min_value':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$idAgentModule = $item['id_agent_module'];
+					$period = $item['period'];
+					break;
+				case 'sumatory':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$idAgentModule = $item['id_agent_module'];
+					$period = $item['period'];
+					break;
+				case 'text':
+					$description = $item['description'];
+					$text = $item['text'];
+					break;
+				case 'sql':
+					$description = $item['description'];
+					$sql = $item['external_source'];
+					$idCustom = $item['treport_custom_sql_id'];
+					$header = $item['header_definition'];
+					$period = 0;
+					break;
+				case 'sql_graph_pie':
+					$description = $item['description'];
+					$sql = $item['external_source'];
+					$idCustom = $item['treport_custom_sql_id'];
+					$period = 0;
+					break;
+				case 'sql_graph_vbar':
+					$description = $item['description'];
+					$sql = $item['external_source'];
+					$idCustom = $item['treport_custom_sql_id'];
+					$period = 0;
+					break;
+				case 'sql_graph_hbar':
+					$description = $item['description'];
+					$sql = $item['external_source'];
+					$idCustom = $item['treport_custom_sql_id'];
+					$period = 0;
+					break;
+				case 'url':
+					$description = $item['description'];
+					$url = $item['external_source'];
+					break;
+				case 'database_serialized':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$header = $item['header_definition'];
+					$field = $item['column_separator'];
+					$line = $item['line_separator'];
+					$period = $item['period'];
+					break;
+				case 'TTRT':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$period = $item['period'];
+					break;
+				case 'TTO':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$period = $item['period'];
+					break;
+				case 'MTBF':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$period = $item['period'];
+					break;
+				case 'MTTR':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$period = $item['period'];
+					break;
+				case 'alert_report_module':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$period = $item['period'];
+					break;
+				case 'alert_report_agent':
+					$description = $item['description'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente' => $item['id_agent']));
+					$period = $item['period'];
+					break;
+				case 'event_report_agent':
+					$description = $item['description'];
+					$idAgent = $item['id_agent'];
+					$period = $item['period'];
+					break;
+				case 'event_report_group':
+					$description = $item['description'];
+					$period = $item['period'];
+					$group = $item['id_group'];
+					break;
+				case 'event_report_module':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$period = $item['period'];
+					break;
+				case 'general':
+					$description = $item['description'];
+					$group_by_agent = $item['group_by_agent'];
+					$period = $item['period'];
+					$order_uptodown = $item['order_uptodown'];
+					$show_resume = $item['show_resume'];
+					$show_graph = $item['show_graph'];
+					break;
+				case 'group_report':
+					$group = $item['id_group'];
+					break;
+				case 'top_n':
+					$description = $item['description'];
+					$period = $item['period'];
+					$top_n = $item ['top_n'];
+					$top_n_value = $item ['top_n_value'];
+					$show_resume = $item['show_resume'];
+					$show_graph = $item['show_graph'];
+					$order_uptodown = $item['order_uptodown'];
+					break;
+				case 'exception':
+					$description = $item['description'];
+					$period = $item['period'];
+					$exception_condition = $item['exception_condition'];
+					$exception_condition_value = $item['exception_condition_value'];
+					$show_resume = $item['show_resume'];
+					$show_graph = $item['show_graph'];
+					$order_uptodown = $item['order_uptodown'];
+					break;
+				case 'agent_module':
+					$description = $item['description'];
+					$group = $item['id_group'];
+					$modulegroup = $item ['id_module_group'];
+					break;
+				case 'inventory':
+					$description = $item['description'];
+					$es = json_decode($item['external_source'], true);
+					$date = $es['date'];
+					$inventory_modules = $es['inventory_modules'];
+					$id_agents = $es['id_agents'];
+					break;
+				case 'inventory_changes':
+					$period = $item['period'];
+					$description = $item['description'];
+					$es = json_decode($item['external_source'], true);
+					$inventory_modules = $es['inventory_modules'];
+					$id_agents = $es['id_agents'];
+					break;
+				case 'agent_configuration':
+					$idAgent = $item['id_agent'];
+					break;
+				case 'group_configuration':
+					$group = $item['id_group'];
+					break;
+				case 'netflow_area':
+				case 'netflow_pie':
+				case 'netflow_data':
+				case 'netflow_statistics':
+				case 'netflow_summary':
+					$netflow_filter = $item['text']; // Filter
+					$period = $item['period'];
+					$description = $item['description'];
+					$resolution = $item ['top_n']; // Interval resolution
+					$max_values = $item ['top_n_value']; // Max values
+					break;
+			}
+			
+			//Restore db connection
+			if (($config ['metaconsole'] == 1) && ($server_name != '')
+				&& defined('METACONSOLE')) {
+				metaconsole_restore_db();
+			}
 		}
 		
 		break;
@@ -382,7 +413,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="">
 				<?php
 				if ($action == 'new') { 
-					html_print_select(reports_get_report_types(), 'type', $type, 'chooseType();', '', '');
+					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '');
 				}
 				else {
 					$report_type = reports_get_report_types($type);
@@ -1500,20 +1531,10 @@ function addGeneralRow() {
 					$("input[name=id_agent_general]").val('');
 					$("input[name=server_name_general]").val('');
 					$("input[name=agent_general]").val('');
+					$("#id_operation_module_general").val('avg');
 					$("#id_agent_module_general").empty();
 					$("#id_agent_module_general").attr('disabled', 'true');
-					$("#id_agent_module_general").append(
-						$("<option></option>")
-						.attr ("value", 0)
-						.html ($("#module_general_text").html()));
-						
-					$("#id_operation_module_general").empty();
-					$("#id_operation_module_general").attr('disabled', 'true');
-					$("#id_operation_module_general").append(
-					$("<option></option>")
-						.attr ("value", 0)
-						//.html ($("#id_operation_general_text").html()));
-						.html ($("#operation_general_text").html()));
+
 				}
 			}
 		});
@@ -1601,7 +1622,8 @@ function chooseType() {
 			$("#row_interval").show();
 			$("#row_show_in_two_columns").show();
 			break;
-		case 'custom_graph':
+		case 'custom_graph':		
+		case 'automatic_custom_graph':
 			$("#row_description").show();
 			$("#row_period").show();
 			$("#row_custom_graph").show();

@@ -122,7 +122,10 @@ else {
 	
 	$types = array();
 	foreach ($rows as $row) {
-		$types[$row['type']] = get_report_name($row['type']);
+		if ($row['type'] == 'automatic_custom_graph')
+			$types['custom_graph'] = get_report_name($row['type']);
+		else
+			$types[$row['type']] = get_report_name($row['type']);
 	}
 }
 
@@ -163,7 +166,10 @@ echo '</div>';
 
 $where = '1=1';
 if ($typeFilter != '0') {
-	$where .= ' AND type = "' . $typeFilter . '"';
+	if ($typeFilter == 'custom_graph')
+		$where .= ' AND (type = "' . $typeFilter . '" or type = "automatic_custom_graph") ';
+	else	
+		$where .= ' AND type = "' . $typeFilter . '"';
 }
 if ($agentFilter != 0) {
 	$where .= ' AND id_agent = ' . $agentFilter;

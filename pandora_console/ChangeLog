@@ -1,5 +1,10 @@
 2012-12-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_users.php: Fixed warning when chat log file
+	doesn't exists.
+
+2012-12-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* extensions/module_groups.php: Fixed view, colors in cells were
 	bad printed and alert popup also had sql errors.
 	

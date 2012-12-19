@@ -713,9 +713,13 @@ function users_get_last_type_message() {
 			$text_encode = @file_get_contents($log_chat_file);
 			$log = json_decode($text_encode, true);
 			
-			$last = end($log);
-			
-			$return = $last['type'];
+			// Prevent from error when chat file log doesn't exists 
+			if (empty($log))
+				$return = false;
+			else {
+				$last = end($log);
+				$return = $last['type'];
+			}
 			
 			fclose($fp_global_counter);
 		}

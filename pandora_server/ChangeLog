@@ -1,3 +1,12 @@
+2012-12-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* DEBIAN/control,
+	  DEBIAN/make_deb_package.sh,
+	  conf/pandora_server.conf,
+	  pandora_server.spec,
+	  util/pandora_db.pl,
+	  util/pandora_manage.pl: Updated version strings.
+
 2012-12-27  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_db.pl: Implemented deletion of old inventory

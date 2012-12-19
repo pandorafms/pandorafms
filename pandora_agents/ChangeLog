@@ -1,3 +1,27 @@
+2012-12-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* shellscript/aix/pandora_agent.conf,
+	  shellscript/bsd-ipso/pandora_agent.conf,
+	  shellscript/hp-ux/pandora_agent.conf,
+	  shellscript/linux/pandora_agent.conf,
+	  shellscript/mac_osx/pandora_agent.conf,
+	  shellscript/openWRT/pandora_agent.conf,
+	  shellscript/solaris/pandora_agent.conf,
+	  unix/AIX/pandora_agent.conf,
+	  unix/DEBIAN/control,
+	  unix/DEBIAN/make_deb_package.sh,
+	  unix/FreeBSD/pandora_agent.conf,
+	  unix/HP-UX/pandora_agent.conf,
+	  unix/Linux/pandora_agent.conf,
+	  unix/NT4/pandora_agent.conf,
+	  unix/SunOS/pandora_agent.conf,
+	  unix/pandora_agent,
+	  unix/pandora_agent.spec,
+	  win32/bin/pandora_agent.conf,
+	  win32/installer/pandora.mpi,
+	  win32/pandora.cc,
+	  win32/versioninfo.rc: Updated version strings.
+
 2012-08-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/modules/pandora_module_logevent.cc: Merged from trunk. Get the

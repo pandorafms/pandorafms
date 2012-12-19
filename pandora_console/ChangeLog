@@ -1,3 +1,10 @@
+2012-12-19  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Added function
+	'api_get_pandora_servers'.
+
+        * include/functions_servers.php: Fixed a type.
+
 2012-12-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_reporting.php

@@ -1084,7 +1084,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$current_interval = cron_next_execution ($module->{'cron_interval'});
 	}
 	elsif ($module->{'module_interval'} == 0) {
-		$current_interval = 300;
+		$current_interval = $agent->{'intervalo'};
 	}
 	else {
 		$current_interval = $module->{'module_interval'};
@@ -3716,41 +3716,76 @@ sub pandora_module_unknown ($$) {
 			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
 			AND tagente.disabled = 0 
 			AND tagente_modulo.disabled = 0 
-			AND tagente_estado.estado <> 3 
-			AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100) 
+			AND ((tagente_estado.estado <> 3 AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100))
+			    OR (tagente_estado.estado <> 0 AND tagente_modulo.id_tipo_modulo IN (21, 22, 23)))
 			AND tagente_estado.utimestamp != 0
 			AND (tagente_estado.current_interval * 2) + tagente_estado.utimestamp < UNIX_TIMESTAMP()');
 	
 	foreach my $module (@modules) {
+
+		# Async
+		if ($module->{'id_tipo_modulo'} == 21 ||
+		    $module->{'id_tipo_modulo'} == 22 ||
+		    $module->{'id_tipo_modulo'} == 23) {
+
+			# Set the module state to normal
+			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to NORMAL", 10);
+			db_do ($dbh, 'UPDATE tagente_estado SET last_known_status = estado, last_status = 0, estado = 0 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+
+			# Get agent information
+			my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
+			if (! defined ($agent)) {
+				logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while executing unknown alerts for module '" . $module->{'nombre'} . "'.", 3);
+				return;
+			}
 		
-		# Set the module state to unknown
-		logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
-		db_do ($dbh, 'UPDATE tagente_estado SET last_known_status = estado, last_status = 3, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+			# Update module status count
+			update_module_status_count ($dbh, $agent, 0, $module->{'estado'});
+
+			# Generate alerts
+			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
+				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
+			}
+			else {
+				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
+			}
+
+			# Generate event with severity minor
+			my ($event_type, $severity) = ('going_down_normal', 5);
+			my $description = "Module " . safe_output($module->{'nombre'}) . " is going to NORMAL";
+			pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
+				$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+		}
+		# Regular module
+		else {	 
+			# Set the module state to unknown
+			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
+			db_do ($dbh, 'UPDATE tagente_estado SET last_known_status = estado, last_status = 3, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+			
+			# Get agent information
+			my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
+			if (! defined ($agent)) {
+				logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while executing unknown alerts for module '" . $module->{'nombre'} . "'.", 3);
+				return;
+			}
 		
-		# Get agent information
-		my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
-		if (! defined ($agent)) {
-			logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while executing unknown alerts for module '" . $module->{'nombre'} . "'.", 3);
-			return;
-		}
-	
-		# Update module status count
-		update_module_status_count ($dbh, $agent, 3, $module->{'estado'});
-	
-		# Generate alerts
-		if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
-			pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
-		}
-		else {
-			logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
-		}
+			# Update module status count
+			update_module_status_count ($dbh, $agent, 3, $module->{'estado'});
 		
-		# Generate event with severity minor
-		my ($event_type, $severity) = ('going_unknown', 5);
-		my $description = "Module " . safe_output($module->{'nombre'}) . " is going to UNKNOWN";
-		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
-	
+			# Generate alerts
+			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
+				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
+			}
+			else {
+				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
+			}
+			
+			# Generate event with severity minor
+			my ($event_type, $severity) = ('going_unknown', 5);
+			my $description = "Module " . safe_output($module->{'nombre'}) . " is going to UNKNOWN";
+			pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
+				$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+		}
 	}
 }
 

@@ -2992,7 +2992,8 @@ sub pandora_validate_event ($$$) {
 	}
 
 	logger($pa_config, "Validating events for id_agentmodule #$id_agentmodule", 10);
-	db_do ($dbh, 'UPDATE tevento SET estado = 1 WHERE estado = 0 AND id_agentmodule = '.$id_agentmodule);
+	my $now = time();
+	db_do ($dbh, 'UPDATE tevento SET estado = 1, ack_utimestamp = ? WHERE estado = 0 AND id_agentmodule = '.$id_agentmodule, $now);
 }
 
 ##########################################################################
@@ -3371,7 +3372,7 @@ sub pandora_process_event_replication ($) {
 	}
 	
 	if($replication_interval <= 0) {
-		logger($pa_config, "Replication interval configuration is not a value greater than 0. Event replication thread is will be aborted.", 1);
+		logger($pa_config, "Replication interval configuration is not a value greater than 0. Event replication thread will be aborted.", 1);
 		return;
 	}
 	
@@ -3379,7 +3380,7 @@ sub pandora_process_event_replication ($) {
 	my $dbh_metaconsole = enterprise_hook('get_metaconsole_dbh', [$pa_config, $dbh]);
 
 	if($dbh_metaconsole eq '') {
-		logger($pa_config, "Metaconsole DB connection error. Event replication thread is will be aborted.", 1);
+		logger($pa_config, "Metaconsole DB connection error. Event replication thread will be aborted.", 1);
 		return;
 	}
 	
@@ -3392,7 +3393,7 @@ sub pandora_process_event_replication ($) {
 
 	# If the server name is not found in metaconsole setup: abort
 	if($metaconsole_server_id == -1) {
-		logger($pa_config, "The server name is not configured in metaconsole. Event replication thread is will be aborted.", 1);
+		logger($pa_config, "The server name is not configured in metaconsole. Event replication thread will be aborted.", 1);
 		return;
 	}
 	
@@ -3403,7 +3404,8 @@ sub pandora_process_event_replication ($) {
 	while(1) { 
 		# Check the queue each N seconds
 		sleep ($replication_interval);
-		enterprise_hook('pandora_replicate_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
+		enterprise_hook('pandora_replicate_update_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id]);
+		enterprise_hook('pandora_replicate_copy_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
 	}
 }
 

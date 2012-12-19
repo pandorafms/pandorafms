@@ -45,12 +45,38 @@ if (is_ajax ()) {
 						$template = db_get_row('talert_templates', 'id' , $alert['id_alert_template']);
 						echo '<strong>' . __('Alert template') . ': </strong>';
 						echo io_safe_output($template['name']) . '<br />';
-						$sql = 'SELECT *
+						
+						// This prevent from templates without predefined actions
+						if (empty($template['id_alert_action']))
+							$template_id_alert_action = "''";
+						else
+							$template_id_alert_action = $template['id_alert_action'];
+						
+						// True if the alert only has the default template action
+						$default_action = false;
+						// Try to get actions for the current alert	
+						$sql = 'SELECT t2.name
 							FROM talert_template_module_actions AS t1
-								INNER JOIN talert_actions AS t2 ON t1.id_alert_action = t2.id
-							WHERE t1.id_alert_template_module = ' . $template['id'] . '
-								OR t2.id = ' . $template['id_alert_action'] . ';';			
+								INNER JOIN talert_actions AS t2
+								INNER JOIN talert_template_modules AS t3
+								ON t3.id = t1.id_alert_template_module
+								AND t1.id_alert_action = t2.id
+							WHERE (t3.id_alert_template = ' . $template['id'] . ' AND
+								  t3.id_agent_module = ' . $module['id_agente_modulo'] . ');';
+						
 						$actions = db_get_all_rows_sql($sql);
+						
+						// If this alert doesn't have actions try to get default action from template
+						if ($actions === false) {
+							$sql = 'SELECT name
+								FROM talert_actions
+								WHERE (id = ' . $template_id_alert_action . ');';
+							
+							$default_action = true;
+							
+							$actions = db_get_all_rows_sql($sql);							
+						}
+
 						if ($actions === false) {
 							$actions = array();
 						}
@@ -58,7 +84,10 @@ if (is_ajax ()) {
 						echo '<strong>' . __('Actions') . ': </strong>' . '<br />';
 						echo '<ul style="margin-top: 0px; margin-left: 30px;">';
 						foreach ($actions as $action) {
-							echo '<li style="list-style: disc;">' . $action['name'] . '</li>';
+							echo '<li style="list-style: disc;">';
+							if ($default_action)
+								echo 'Default:&nbsp;';
+							echo $action['name'] . '</li>';
 						}
 						echo '</ul>';
 						if ($alert != end($alerts)) {
@@ -163,16 +192,15 @@ function mainModuleGroups() {
 		//The content of table
 		$tableData = array();
 		
-		$fired = false;
-		
 		//Create rows and cells
 		foreach ($agentGroups as $idAgentGroup => $name) {
-			
+			$fired = false;
 			$row = array();
 			
 			array_push($row, ui_print_truncate_text($name, GENERIC_SIZE_TEXT));
 			
 			foreach ($modelGroups as $idModelGroup => $modelGroup) {
+				$fired = false;
 				$query = sprintf($sql,$idAgentGroup, $idModelGroup);
 				
 				$rowsDB = db_get_all_rows_sql ($query);

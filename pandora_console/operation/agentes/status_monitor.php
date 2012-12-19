@@ -92,8 +92,12 @@ echo '<td valign="middle">';
 $rows = db_get_all_rows_sql("SELECT *
 	FROM tmodule_group ORDER BY name");
 $rows = io_safe_output($rows);
-$rows[0] = __('Not assigned');
-html_print_select($rows, 'modulegroup', $modulegroup, '', __('All'), -1);
+$module_groups_select = array();
+foreach ($rows as $row) {
+	$module_groups_select[$row['id_mg']] = $row['name'];
+}
+$module_groups_select[0] = __('Not assigned');
+html_print_select($module_groups_select, 'modulegroup', $modulegroup, '', __('All'), -1);
 
 echo '</td>';
 

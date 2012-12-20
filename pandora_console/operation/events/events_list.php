@@ -360,7 +360,7 @@ echo '</td>';
 echo "<td>" . __('Agent search') . "</td>";
 echo '<td class="datos">';
 $params = array();
-$params['show_helptip'] = false;
+$params['show_helptip'] = true;
 $params['input_name'] = 'text_agent';
 $params['value'] = $text_agent;
 

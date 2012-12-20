@@ -258,7 +258,7 @@ if (is_ajax ())
 			$rows = db_get_all_rows_sql($sql);
 			$countRows = count ($rows);
 			if (defined ('METACONSOLE')) {
-				metaconsole_restore_db();
+				metaconsole_restore_db_force();
 			}
 			
 			if ($countRows === 0) {

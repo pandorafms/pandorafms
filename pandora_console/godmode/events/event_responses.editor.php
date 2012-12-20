@@ -38,6 +38,10 @@ else {
 	$event_response['type'] = '';
 	$event_response['target'] = '';
 	$event_response['id'] = 0;
+	$event_response['new_window'] = 1;
+	$event_response['modal_width'] = 0;
+	$event_response['modal_height'] = 0;
+	$event_response['params'] = '';
 }
 
 $table->width = '90%';
@@ -98,7 +102,7 @@ $types = array('url' => __('URL'), 'command' => __('Command'));
 $table->data[4] = $data;
 
 if($event_response_id == 0) {
-	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response">';
+	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'].'">';
 	html_print_table($table);
 	echo '<br><br><div style="width:90%;text-align:right;">';
 	html_print_submit_button(__('Create'), 'create_response_button', false, array('class' => 'sub next'));
@@ -106,7 +110,7 @@ if($event_response_id == 0) {
 	echo '</form>';
 }
 else {
-	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=update_response">';
+	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=update_response&amp;pure='.$config['pure'].'">';
 	html_print_table($table);
 	echo '<br><br><div style="width:90%;text-align:right;">';
 	html_print_submit_button(__('Update'), 'update_response_button', false, array('class' => 'sub next'));

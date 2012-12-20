@@ -2552,7 +2552,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 	}
 	
 	$javascript_change_ajax_params_original = array('page' => '"' . $javascript_page . '"',
-		'search_agents_2' => 1,
+		'search_agents' => 1,
 		'id_group' => 'function() {
 				var group_id = 0;
 				
@@ -2829,10 +2829,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 			
 			var term = input_value; //Word to search
 			
-			var data_params = {"page": "include/ajax/agent",
-				"search_agents_2": 1,
-				"id_group": 0,
-				"q": term};		
+			' . $javascript_change_ajax_params_text . '		
 				
 			if (' . ((int) !$metaconsole_enabled) . ') {
 				data_params[\'force_local\'] = 1;

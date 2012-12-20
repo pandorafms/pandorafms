@@ -49,6 +49,8 @@ define ('ERR_NOCHANGES', -60000);
 define ('ERR_NODATA', -70000);
 define ('ERR_CONNECTION', -80000);
 define ('ERR_DISABLED', -90000);
+define ('ERR_WRONG', -100000);
+define ('ERR_WRONG_NAME', -100001);
 
 /* Event status code */
 define ('EVENT_STATUS_NEW',0);

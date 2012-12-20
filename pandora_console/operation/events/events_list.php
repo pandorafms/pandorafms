@@ -141,12 +141,10 @@ $tag_without_json = io_safe_output(get_parameter("tag_without"));
 $tag_without = json_decode($tag_without_json, true);
 if (empty($tag_without)) $tag_without = array();
 
-if ($id_agent == 0) {
-	$text_agent = (string) get_parameter("text_agent", __("All"));
-	
-	if ($text_agent != __('All')) {
-		$id_agent = -1;
-	}
+$text_agent = (string) get_parameter("text_agent", __("All"));
+
+if ($id_agent == 0 && $text_agent != __('All')) {
+	$id_agent = -1;
 }
 
 $groups = users_get_groups($config['id_user'], 'IR');
@@ -205,16 +203,24 @@ if ($event_type != "") {
 if ($severity != -1)
 	$sql_post .= " AND criticity = " . $severity;
 
-switch ($id_agent) {
-	case 0:
-		break;
-	case -1:
-		// Agent doesnt exist. No results will returned
-		$sql_post .= " AND 1 = 0";
-		break;
-	default:
-		$sql_post .= " AND id_agente = " . $id_agent;
-		break;
+// In metaconsole mode the agent search is performed by name
+if($meta) {
+	if($text_agent != __('All')) {
+		$sql_post .= " AND agent_name LIKE '%$text_agent%'";
+	}
+}
+else {
+	switch ($id_agent) {
+		case 0:
+			break;
+		case -1:
+			// Agent doesnt exist. No results will returned
+			$sql_post .= " AND 1 = 0";
+			break;
+		default:
+			$sql_post .= " AND id_agente = " . $id_agent;
+			break;
+	}
 }
 
 if ($id_event != -1)
@@ -349,10 +355,17 @@ echo '<td class="datos">';
 $params = array();
 $params['show_helptip'] = false;
 $params['input_name'] = 'text_agent';
-$params['print_hidden_input_idagent'] = true;
-$params['hidden_input_idagent_name'] = 'id_agent';
 $params['value'] = $text_agent;
-$params['hidden_input_idagent_value'] = $id_agent;
+
+if($meta) {
+	$params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
+}
+else {
+	$params['print_hidden_input_idagent'] = true;
+	$params['hidden_input_idagent_name'] = 'id_agent';
+	$params['hidden_input_idagent_value'] = $id_agent;
+}
+
 ui_print_agent_autocomplete_input($params);
 echo '</td>';
 

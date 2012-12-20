@@ -178,7 +178,7 @@ $table->data[0][1] = '';
 $table->data[0][2] = '<b>' . __('Fields selected') . '</b>';
 $table->data[1][2] =  html_print_select($result_selected, 'fields_selected[]', true, '', '', '', true, true, false, '', false, 'width: 200px');	
 
-echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields">';
+echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields&amp;pure='.$config['pure'].'">';
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

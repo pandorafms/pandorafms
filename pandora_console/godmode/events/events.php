@@ -30,19 +30,19 @@ $section = (string) get_parameter ("section", "filter");
 
 // Draws header
 $buttons = array(
-		'view' => array('active' => false, 
-			'text' => '<a href="index.php?sec=eventos&sec2=operation/events/events">' . 
-			html_print_image("images/zoom.png", true, array("title" => __('View events'))) . '</a>'),
-		'separator' => '',
 		'filter' => array('active' => false, 
-			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter">' .
+			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
 			html_print_image("images/lightning_go.png", true, array ("title" => __('Create filter'))) . '</a>'),
 		'responses' => array('active' => false, 	
-			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=responses">' .
+			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">' .
 			html_print_image("images/cog.png", true, array ("title" => __('Event responses'))) . '</a>'),
 		'fields' => array('active' => false, 	
-			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields">' .
-			html_print_image("images/god6.png", true, array ("title" => __('Custom fields'))) . '</a>'),
+			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">' .
+			html_print_image("images/pencil.png", true, array ("title" => __('Custom fields'))) . '</a>'),
+		'separator' => '',
+		'view' => array('active' => false, 
+			'text' => '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">' . 
+			html_print_image("images/god6.png", true, array("title" => __('View events'))) . '</a>'),
 	);
 
 switch ($section) {
@@ -77,6 +77,9 @@ switch ($section) {
 include_once($config["homedir"] . '/include/functions_events.php');
 
 switch($section) {
+	case 'edit_filter':
+		require_once($config["homedir"] . '/godmode/events/event_edit_filter.php');
+		break;
 	case 'filter':
 		require_once($config["homedir"] . '/godmode/events/event_filter.php');
 		break;

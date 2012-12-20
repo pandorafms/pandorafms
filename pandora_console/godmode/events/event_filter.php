@@ -28,24 +28,6 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 $delete = (bool) get_parameter ('delete', 0);
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 
-// Show header in delete action
-if ($delete or $multiple_delete){
-	// Prints header tabs
-	$buttons = array(
-			'view' => array('active' => false, 
-				'text' => '<a href="index.php?sec=geventos&sec2=operation/events/events">' . 
-				html_print_image("images/zoom.png", true, array("title" => __('View events'))) . '</a>'),
-			'filter' => array('active' => true, 
-				'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter">' .
-				html_print_image("images/lightning_go.png", true, array ("title" => __('Create filter'))) . '</a>'),
-			'fields' => array('active' => false, 	
-				'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields">' .
-				html_print_image("images/god6.png", true, array ("title" => __('Custom fields'))) . '</a>'),
-		);
-		
-	ui_print_page_header (__("Manage events") . ' - ' . __('Filters'), "images/lightning_go.png", false, "", true, $buttons);		
-}
-
 if ($delete){
 	
 	$id = (int) get_parameter('id');
@@ -143,13 +125,13 @@ $total_filters = $total_filters[0]['total'];
 foreach ($filters as $filter) {
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/event_edit_filter&id='.$filter['id_filter'].'">'.$filter['id_name'].'</a>';
+	$data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&id='.$filter['id_filter'].'">'.$filter['id_name'].'</a>';
 	$data[1] = ui_print_group_icon ($filter['id_group_filter'], true);
 	$data[2] = events_get_event_types($filter['event_type']);
 	$data[3] = events_get_status($filter['status']);
 	$data[4] = events_get_severity_types($filter['severity']);
 	$data[5] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
-		href='index.php?sec=geventos&sec2=godmode/events/event_filter&delete=1&id=".$filter['id_filter']."&offset=0'>" . 
+		href='index.php?sec=geventos&sec2=godmode/events/events&section=filter&delete=1&id=".$filter['id_filter']."&offset=0&pure=".$config['pure']."'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $filter['id_filter'], false, false, '', 'class="check_delete"', true);
 	
@@ -157,7 +139,7 @@ foreach ($filters as $filter) {
 }
 
 if (isset($data)) {
-	echo "<form method='post' action='index.php?sec=geventos&sec2=godmode/events/event_filter'>";
+	echo "<form method='post' action='index.php?sec=geventos&sec2=godmode/events/events&amp;pure=".$config['pure']."'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
@@ -169,7 +151,7 @@ else {
 	echo "<div class='nf'>".__('There are no defined filters')."</div>";
 }
 
-echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/event_edit_filter">';
+echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
 	html_print_submit_button (__('Create filter'), 'crt', false, 'class="sub wand"');
 	echo "</div>";

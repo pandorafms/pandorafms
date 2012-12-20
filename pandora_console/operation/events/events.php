@@ -198,7 +198,7 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack;
 
 // Header
-if ($config["pure"] == 0) {
+if ($config["pure"] == 0 || defined ('METACONSOLE')) {
 	$pss = get_user_info($config['id_user']);
 	$hashup = md5($config['id_user'] . $pss['password']);
 	
@@ -209,7 +209,7 @@ if ($config["pure"] == 0) {
 	
 	// Event list
 	$list['active'] = false;
-	$list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events">' . 
+	$list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">' . 
 		html_print_image("images/god6.png", true, array("title" => __('Event list'))) . '</a>';
 	$rss['active'] = false;
 	$rss['text'] = '<a href="operation/events/events_rss.php?user=' . $config['id_user'] . '&hashup=' . $hashup . 
@@ -233,17 +233,18 @@ if ($config["pure"] == 0) {
 	if (check_acl ($config["id_user"], 0, "IW")) {
 		// Manage events
 		$manage_events['active'] = false;
-		$manage_events['text'] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter">' .
+		$manage_events['text'] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
 			html_print_image("images/setup.png", true, array ("title" => __('Manage events'))) . '</a>';
 		
-		$onheader = array('manage_events' => $manage_events,
+		$onheader = array(
 			'separator' => '',
 			'fullscreen' => $fullscreen,
 			'list' => $list,
 			'rss' => $rss,
 			'marquee' => $marquee,
 			'csv' => $csv,
-			'sound_event' => $sound_event) ;
+			'sound_event' => $sound_event,
+			'manage_events' => $manage_events) ;
 	}
 	else {
 		$onheader = array('fullscreen' => $fullscreen,

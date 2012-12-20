@@ -39,20 +39,6 @@ if ($id) {
 	}
 }
 
-$buttons = array(
-		'view' => array('active' => false, 
-			'text' => '<a href="index.php?sec=geventos&sec2=operation/events/events">' . 
-			html_print_image("images/zoom.png", true, array("title" => __('View events'))) . '</a>'),
-		'filter' => array('active' => true,
-			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter">' .
-			html_print_image("images/lightning_go.png", true, array ("title" => __('Create filter'))) . '</a>'),
-		'fields' => array('active' => false,
-			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields">' .
-			html_print_image("images/god6.png", true, array ("title" => __('Custom fields'))) . '</a>'),
-	);
-	
-ui_print_page_header (__("Manage events") . ' - ' . __('Filters'), "images/lightning_go.png", false, "", true, $buttons);	
-
 if ($id) {
 	$filter = events_get_event_filter ($id);
 	$id_group_filter = $filter['id_group_filter'];
@@ -234,8 +220,15 @@ $params = array();
 $params['return'] = true;
 $params['show_helptip'] = true;
 $params['input_name'] = 'text_agent';
-$params['selectbox_group'] = 'id_group';
 $params['value'] = $text_agent;
+$params['selectbox_group'] = 'id_group';
+
+if(defined('METACONSOLE')) {
+	$params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
+}
+
+ui_print_agent_autocomplete_input($params);
+
 $table->data[7][1] = ui_print_agent_autocomplete_input($params);
 
 $lpagination[25] = 25;
@@ -261,13 +254,20 @@ $table->data[11][1] = html_print_select ($repeated_sel, "group_rep", $group_rep,
 
 
 $tag_with = json_decode($tag_with, true);
+if(empty($tag_with)) {
+	$tag_with = array();
+}
 $tag_without = json_decode($tag_without, true);
+if(empty($tag_without)) {
+	$tag_without = array();
+}
 
 $tags = tags_search_tag(false, false, true);
 $tags_select_with = array();
 $tags_select_without = array();
 $tag_with_temp = array();
 $tag_without_temp = array();
+
 foreach ($tags as $id_tag => $tag) {
 	if (array_search($id_tag, $tag_with) === false) {
 		$tags_select_with[$id_tag] = $tag;
@@ -335,7 +335,7 @@ $table->data[19][1] = html_print_select(
 		'1' => __('Only alert events')),
 	"filter_only_alert", $filter_only_alert, '', '', '', true);
 
-echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/event_edit_filter">';
+echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&pure='.$config['pure'].'">';
 html_print_table ($table);
 
 

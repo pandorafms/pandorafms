@@ -26,7 +26,7 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 }
 
 echo '<br><br><div style="width:90%;text-align:right;">';
-echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor">';
+echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
 html_print_submit_button(__('Create response'), 'create_response_button', false, array('class' => 'sub next'));
 echo '</form>';
 echo '</div>';
@@ -58,11 +58,11 @@ $table->data = array();
 
 foreach($event_responses as $response) {
 	$data = array();
-	$data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'">'.$response['name'].'</a>';
+	$data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.$response['name'].'</a>';
 	$data[1] = $response['description'];
 	$data[2] = ui_print_group_icon ($response['id_group'], true);
-	$data[3] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&action=delete_response&id_response='.$response['id'].'">'.html_print_image('images/cross.png', true, array('title'=>__('Delete'))).'</a>';
-	$data[3] .= '&nbsp;<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'">'.html_print_image('images/pencil.png', true, array('title'=>__('Edit'))).'</a>';
+	$data[3] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&action=delete_response&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image('images/cross.png', true, array('title'=>__('Delete'))).'</a>';
+	$data[3] .= '&nbsp;<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image('images/pencil.png', true, array('title'=>__('Edit'))).'</a>';
 	$table->data[] = $data;
 }
 

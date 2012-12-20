@@ -151,8 +151,15 @@ $groups = users_get_groups($config['id_user'], 'IR');
 
 //Group selection
 if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
-	//If a group is selected and it's in the groups allowed
-	$sql_post = " AND id_grupo = $ev_group";
+	if($meta) {
+		// In metaconsole the group search is performed by name
+		$group_name = groups_get_name ($ev_group);
+		$sql_post = " AND group_name = '$group_name'";
+	}
+	else {
+		//If a group is selected and it's in the groups allowed
+		$sql_post = " AND id_grupo = $ev_group";
+	}
 }
 else {
 	if (is_user_admin ($config["id_user"])) {

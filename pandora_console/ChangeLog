@@ -1,5 +1,13 @@
 2012-12-20  Sergio Martin <sergio.martin@artica.es>
 
+	* include/ajax/events.php
+	include/functions_events.php
+	include/javascript/pandora_events.js: Adapt responses
+	to metaconsole connection (retrieving of event address macro)
+	and set format to tags in event view
+
+2012-12-20  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_groups.php: Added missed translation of 
 	All group name
 

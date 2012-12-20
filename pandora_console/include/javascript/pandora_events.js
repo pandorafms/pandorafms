@@ -76,7 +76,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 }
 
 // Check the response type and open it in a modal dialog or new window 
-function execute_response(event_id) {
+function execute_response(event_id, server_id) {
 	var response_id = $('#select_custom_response option:selected').val();
 	
 	var response = get_response(response_id);
@@ -86,7 +86,7 @@ function execute_response(event_id) {
 		return;
 	}
 		
-	response['target'] = get_response_target(event_id, response_id);
+	response['target'] = get_response_target(event_id, response_id, server_id);
 	
 	switch(response['type']) {
 		case 'command':
@@ -252,7 +252,7 @@ function add_row_param(id_table, param) {
 }
 
 // Get an event response from db
-function get_response_target(event_id, response_id) {
+function get_response_target(event_id, response_id, server_id) {
 	var ajax_file = $('#hidden-ajax_file').val();
 
 	var target = '';
@@ -263,6 +263,7 @@ function get_response_target(event_id, response_id) {
 	params.push("get_response_target=1");
 	params.push("event_id="+event_id);
 	params.push("response_id="+response_id);
+	params.push("server_id="+server_id);
 	
 	jQuery.ajax ({
 		data: params.join ("&"),

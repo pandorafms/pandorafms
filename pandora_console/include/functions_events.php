@@ -15,6 +15,7 @@
 // GNU General Public License for more details.
 
 include_once($config['homedir'] . "/include/functions_ui.php");
+include_once($config['homedir'] . "/include/functions_tags.php");
 enterprise_include_once ('meta/include/functions_events_meta.php');
 
 /**
@@ -1427,7 +1428,15 @@ function events_page_responses ($event) {
 			$responses[$v['id']] = $v['name'];
 		}
 		$data[1] .= html_print_select($responses,'select_custom_response','','','','',true, false, false);
-		$data[1] .= html_print_button(__('Execute'),'custom_response_button',false,'execute_response('.$event['id_evento'].')',"class='sub next'",true);
+		
+		if(isset($event['server_id'])) {
+			$server_id = $event['server_id'];
+		}
+		else {
+			$server_id = 0;
+		}
+		
+		$data[1] .= html_print_button(__('Execute'),'custom_response_button',false,'execute_response('.$event['id_evento'].','.$server_id.')',"class='sub next'",true);
 	}
 
 	$table_responses->data[] = $data;
@@ -1460,19 +1469,36 @@ function events_page_responses ($event) {
 }
 
 // Replace macros in the target of a response and return it
-function events_get_response_target($event_id, $response_id) {
+// If server_id > 0, is a metaconsole query
+function events_get_response_target($event_id, $response_id, $server_id) {
+	global $config;
 	$event_response = db_get_row('tevent_response','id',$response_id);
-		
-	$event = db_get_row('tevento','id_evento',$event_id);
 
+	if($server_id > 0) {
+		$event = db_get_row('tmetaconsole_event','id_evento', $event_id);
+	}
+	else {
+		$event = db_get_row('tevento','id_evento',$event_id);
+	}
+		
 	$macros = array_keys(events_get_macros());
 	
 	$target = io_safe_output($event_response['target']);
+	
 	foreach($macros as $macro) {
 		$subst = '';
 		switch($macro) {
 			case '_agent_address_':
+				if($server_id > 0) {
+					$server = metaconsole_get_connection_by_id ($server_id);
+					metaconsole_connect($server);
+				}
+				
 				$subst = agents_get_address($event['id_agente']);
+
+				if($server_id > 0) {
+					metaconsole_restore_db_force();
+				}
 				break;
 			case '_agent_id_':
 				$subst = $event['id_agente'];
@@ -1895,8 +1921,27 @@ function events_page_general ($event) {
 	$data[0] = __('Tags');
 
 	if ($event["tags"] != '') {
-		$tags = str_replace(' ','',$event["tags"]);
+		$tags_array = explode(',',$event["tags"]);
+		
+		$tags = array();
+		foreach($tags_array as $t) {
+			$tag_url = explode(' ', $t);
+			$tag = $tag_url[0];
+			if(isset($tag_url[1]) && $tag_url[1] != '') {
+				$title = __($tag_url[1]); 
+				$link = '<a href="'.$tag_url[1].'" target="_blank">'.html_print_image('images/zoom.png',true, array('alt' => $title, 'title' => $title)).'</a>';
+			}
+			else {
+				$link = '';
+			}
+			
+			$tags[] = $tag.$link;
+		}
+
+		$tags = implode(',',$tags);
+		
 		$tags = str_replace(',',' , ',$tags);
+		
 		$data[1] = $tags;
 	}
 	else {

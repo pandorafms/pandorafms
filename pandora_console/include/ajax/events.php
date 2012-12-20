@@ -89,6 +89,7 @@ if($get_response_params) {
 if($get_response_target) {	
 	$response_id = get_parameter ('response_id');
 	$event_id = get_parameter ('event_id');
+	$server_id = get_parameter ('server_id', 0);
 	
 	$event_response = db_get_row('tevent_response','id',$response_id);
 	
@@ -96,7 +97,7 @@ if($get_response_target) {
 		return;
 	}
 	
-	echo events_get_response_target($event_id, $response_id);
+	echo events_get_response_target($event_id, $response_id, $server_id);
 	
 	return;
 }
@@ -315,7 +316,7 @@ if($get_extended_event) {
 	$custom_fields = events_page_custom_fields($event);
 
 	if($meta) {
-		metaconsole_restore_db();
+		metaconsole_restore_db_force();
 	}
 	
 	$general = events_page_general($event);

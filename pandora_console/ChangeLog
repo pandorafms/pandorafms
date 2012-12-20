@@ -1,3 +1,12 @@
+2012-12-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/ajax/agent.php
+	include/functions_ui.php
+	include/constants.php
+	operation/events/events_list.php: Modify the event list
+	filter to adapt the agent search to metaconsole.
+	Fix little bug of autocomplete control too
+
 2012-12-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_users.php: Fixed warning when chat log file

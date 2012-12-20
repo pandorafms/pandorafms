@@ -26,7 +26,6 @@ enterprise_include_once ('include/functions_metaconsole.php');
 // * q
 // * id_group
 $search_agents = (bool) get_parameter ('search_agents');
-$search_agents_2 = (bool) get_parameter ('search_agents_2');
 $get_agents_group = (bool) get_parameter('get_agents_group', false);
 $force_local = (bool) get_parameter('force_local', false);
 
@@ -76,96 +75,7 @@ if ($get_agents_group) {
 	return;
 }
 
-if ($search_agents && ($config['metaconsole'] == 0)) {
-	
-	require_once ('include/functions_agents.php');
-	
-	$id_agent = (int) get_parameter ('id_agent');
-	$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
-	$id_group =  get_parameter('id_group', -1);
-	$addedItems = html_entity_decode((string) get_parameter('add'));
-	$addedItems = json_decode($addedItems);
-	
-	if ($addedItems != null) {
-		foreach ($addedItems as $item) {
-			echo $item . "|\n";
-		}
-	}
-	
-	$filter = array ();
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
-			break;
-		case "oracle":
-				$filter[] = '(UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
-			break;
-	}
-	
-	if ($id_group != -1)
-		$filter['id_grupo'] = $id_group;
-	
-	$agents = agents_get_agents ($filter, array ('id_agente','nombre', 'direccion'));
-	if ($agents === false)
-		return;
-	
-	foreach ($agents as $agent) {
-		echo io_safe_output($agent['nombre']) . "|" . io_safe_output($agent['id_agente']) . "|" . io_safe_output($agent['direccion']) . "\n";
-	}
-	
-	return;
-}
-elseif ($search_agents && ($config['metaconsole'] == 1)) {
-	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup");
-	if (!isset($servers)) {
-		return;
-	}
-	
-	foreach ($servers as $server) {
-		if (metaconsole_load_external_db ($server) != NOERR) {
-			continue;
-		}
-		
-		$id_agent = (int) get_parameter ('id_agent');
-		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
-		$id_group = (int) get_parameter('id_group');
-		$addedItems = html_entity_decode((string) get_parameter('add'));
-		$addedItems = json_decode($addedItems);
-		
-		if ($addedItems != null) {
-			foreach ($addedItems as $item) {
-				echo $item . "|\n";
-			}
-		}
-		
-		$filter = array ();
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-					$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
-				break;
-			case "oracle":
-					$filter[] = '(UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR UPPER(direccion) LIKE UPPER(\'%'.$string.'%\') OR UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
-				break;
-		}
-		
-		$filter['id_grupo'] = $id_group;
-		
-		$agents = agents_get_agents ($filter, array ('id_agente','nombre', 'direccion'));
-		if ($agents === false)
-			continue;
-		foreach ($agents as $agent) {
-			echo io_safe_output($agent['nombre']) . " (" . io_safe_output($server['server_name']) . ") " . "|" . io_safe_output($agent['id_agente']) . "|" . io_safe_output($server['server_name']) . "|" . io_safe_output($agent['direccion']) . "|". "\n";
-		}
-		//Restore db connection
-		metaconsole_restore_db();
-	}
-	return;
-}
-
-if ($search_agents_2 && ((!defined('METACONSOLE')) || $force_local)) {
-	
+if ($search_agents && ((!defined('METACONSOLE')) || $force_local)) {
 	require_once ('include/functions_agents.php');
 	
 	$id_agent = (int) get_parameter ('id_agent');
@@ -194,8 +104,16 @@ if ($search_agents_2 && ((!defined('METACONSOLE')) || $force_local)) {
 			break;
 	}
 	
-	if ($id_group != -1)
-	$filter['id_grupo'] = $id_group;
+	if ($id_group != -1) {
+		if($id_group == 0) {
+			$user_groups = users_get_groups ($config['id_user'], "AR", true);
+
+			$filter['id_grupo'] = array_keys ($user_groups);
+		}
+		else {
+			$filter['id_grupo'] = $id_group;
+		}
+	}
 	
 	switch ($all) {
 		case 'enabled':
@@ -216,8 +134,7 @@ if ($search_agents_2 && ((!defined('METACONSOLE')) || $force_local)) {
 	
 	return;
 }
-elseif ($search_agents_2 && ($config['metaconsole'] == 1) && defined('METACONSOLE')) {
-	
+elseif ($search_agents && ($config['metaconsole'] == 1) && defined('METACONSOLE')) {
 	$servers = db_get_all_rows_sql ("SELECT *
 		FROM tmetaconsole_setup
 		WHERE disabled = 0");
@@ -227,7 +144,7 @@ elseif ($search_agents_2 && ($config['metaconsole'] == 1) && defined('METACONSOL
 	
 	$id_agent = (int) get_parameter ('id_agent');
 	$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
-	$id_group = (int) get_parameter('id_group');
+	$id_group = (int) get_parameter('id_group', -1);
 	$addedItems = html_entity_decode((string) get_parameter('add'));
 	$addedItems = json_decode($addedItems);
 	
@@ -248,8 +165,17 @@ elseif ($search_agents_2 && ($config['metaconsole'] == 1) && defined('METACONSOL
 			break;
 	}
 	
-	$filter['id_grupo'] = $id_group;
-	
+	if ($id_group != -1) {
+		if($id_group == 0) {
+			$user_groups = users_get_groups ($config['id_user'], "AR", true);
+
+			$filter['id_grupo'] = array_keys ($user_groups);
+		}
+		else {
+			$filter['id_grupo'] = $id_group;
+		}
+	}
+		
 	$data = array();
 	foreach ($servers as $server) {
 		if (metaconsole_load_external_db ($server) != NOERR) {

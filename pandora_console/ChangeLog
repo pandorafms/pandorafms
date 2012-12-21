@@ -1,3 +1,11 @@
+2012-12-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/agentes/agent_template.php,
+	  godmode/agentes/configurar_agente.php,
+	  godmode/agentes/module_manager.php,
+	  include/functions_modules.php: Implemented a real not-init status.
+	  Small fixes.
+
 2012-12-21  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_ui.php

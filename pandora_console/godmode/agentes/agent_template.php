@@ -95,19 +95,30 @@ if (isset ($_POST["template_id"])) {
 				);
 			$id_agente_modulo = db_process_sql_insert('tagente_modulo', $values);
 			
+			// Set the initial module status
+			if ($row2["type"] == 21 || $row2["type"] == 22 || $row2["type"] == 23) {
+				$status = 0;
+			} else {
+				$status = 4;
+			}
+			
 			// Create with different estado if proc type or data type
 			if ($id_agente_modulo !== false) {
 				$values = array(
 					'id_agente_modulo' => $id_agente_modulo,
 					'datos' => 0,
 					'timestamp' => '01-01-1970 00:00:00',
-					'estado' => 0,
+					'estado' => $status,
 					'id_agente' => $id_agente,
 					'utimestamp' => 0);
 				db_process_sql_insert('tagente_estado', $values);
 				
 				// Update module status count
-				db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$id_agente);
+				if ($status == 4) {
+					db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$id_agente);
+				} else {
+					db_process_sql ('UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=' . (int)$id_agente);
+				}
 			}
 			else {
 				echo '<h3 class="error">'.__('Error adding module').'</h3>';

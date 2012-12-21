@@ -140,9 +140,7 @@ if ($multiple_delete) {
 		else {
 			// Update module status count
 			if ($module !== false) {
-				if ($module['utimestamp'] == 0) {
-					db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module['id_agente']);
-				} else if ($module['estado'] == 0) {
+				if ($module['estado'] == 0) {
 					db_process_sql ('UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module['id_agente']);
 				} else if ($module['estado'] == 1) {
 					db_process_sql ('UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module['id_agente']);
@@ -150,7 +148,10 @@ if ($multiple_delete) {
 					db_process_sql ('UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module['id_agente']);
 				} else if ($module['estado'] == 3) {
 					db_process_sql ('UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module['id_agente']);
+				} else if ($module['estado'] == 4) {
+					db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module['id_agente']);
 				}
+
 				db_process_sql ('UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module['id_agente']);
 			}
 		}

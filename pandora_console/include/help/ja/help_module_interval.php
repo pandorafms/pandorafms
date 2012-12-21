@@ -1,12 +1,11 @@
 <?php
-/* Include package help/es
+/* Include package help/ja
 */
 ?>
 
-<p> The module interval defines the periodicity with which the module should return data. If twice the module interval has elapsed and there is no new data, one of two things can happen:
+<p>モジュールインターバル(module interval)は、モジュールがデータを返す間隔を定義します。この設定値の 2倍の時間が経過しても新たなデータがない場合は、以下のいずれかの状態となります。
 <ol>
-<li>If the module is asynchronous it's status is reset to normal.</li>
-<li>If the module is synchronous it's status is set to unknown.</li>
+<li>非同期(asynchronous)モジュールの場合は、状態が正常にリセットされます。</li>
+<li>同期(synchronous)モジュールの場合は、状態が不明になります。</li>
 </ol>
 </p>
-

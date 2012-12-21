@@ -218,9 +218,7 @@ function modules_delete_agent_module ($id_agent_module) {
 	db_process_sql_delete('ttag_module', $where);
 	
 	// Update module status count
-	if ($module['utimestamp'] == 0) {
-		db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module['id_agente']);
-	} else if ($module['estado'] == 0) {
+	if ($module['estado'] == 0) {
 		db_process_sql ('UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module['id_agente']);
 	} else if ($module['estado'] == 1) {
 		db_process_sql ('UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module['id_agente']);
@@ -228,6 +226,8 @@ function modules_delete_agent_module ($id_agent_module) {
 		db_process_sql ('UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module['id_agente']);
 	} else if ($module['estado'] == 3) {
 		db_process_sql ('UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module['id_agente']);
+	} else if ($module['estado'] == 4) {
+		db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module['id_agente']);
 	}
 	db_process_sql ('UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module['id_agente']);
 
@@ -337,18 +337,26 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	
 		return ERR_DB;
 	}
-	
+
+	if (isset ($values['id_tipo_modulo']) && ($values['id_tipo_modulo'] == 21 || $values['id_tipo_modulo'] == 22 || $values['id_tipo_modulo'] == 23)) {
+		// Async modules start in normal status
+		$status = 0;
+	} else {
+		// Sync modules start in unknown status
+		$status = 4;
+	}
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$result = db_process_sql_insert ('tagente_estado',
 				array ('id_agente_modulo' => $id_agent_module,
 					'datos' => 0,
 					'timestamp' => '01-01-1970 00:00:00',
-					'estado' => 0,
+					'estado' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
-					'last_status' => 0
+					'last_status' => $status,
+					'last_known_status' => $status
 				));
 			break;
 		case "postgresql":
@@ -356,11 +364,12 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 				array ('id_agente_modulo' => $id_agent_module,
 					'datos' => 0,
 					'timestamp' => null,
-					'estado' => 0,
+					'estado' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
-					'last_status' => 0
+					'last_status' => $status,
+					'last_known_status' => $status
 				));
 			break;
 		case "oracle":
@@ -368,11 +377,12 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 				array ('id_agente_modulo' => $id_agent_module,
 					'datos' => 0,
 					'timestamp' => '#to_date(\'1970-01-01 00:00:00\', \'YYYY-MM-DD HH24:MI:SS\')',
-					'estado' => 0,
+					'estado' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
-					'last_status' => 0
+					'last_status' => $status,
+					'last_known_status' => $status
 				));
 			break;
 	}
@@ -385,7 +395,12 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	}
 
 	// Update module status count
-	db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$id_agent);
+	if ($status == 0) {
+		db_process_sql ('UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=' . (int)$id_agent);
+	} else {
+		db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$id_agent);		
+	}
+
 
 	return $id_agent_module;
 }
@@ -1335,8 +1350,8 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 	$title = "";
 
 	// This module is initialized ? (has real data)
-	$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
-	if ($module_init == 0) {
+	//$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
+	if ($db_status == 4) {
 		$status = STATUS_MODULE_NO_DATA;
 		$title = __('NOT INIT');
 	}

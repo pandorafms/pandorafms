@@ -89,7 +89,8 @@ else {
 	}
 	else {
 		//Otherwise select all groups the user has rights to.
-		$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+		$sql_post = " AND id_grupo IN (" .
+			implode (",", array_keys ($groups)) . ")";
 	}
 }
 
@@ -102,7 +103,7 @@ switch ($status) {
 	case 0:
 	case 1:
 	case 2:
-		$sql_post .= " AND estado = ".$status;
+		$sql_post .= " AND estado = " . $status;
 		break;
 	case 3:
 		$sql_post .= " AND (estado = 0 OR estado = 2)";
@@ -110,7 +111,7 @@ switch ($status) {
 }
 
 if ($search != "") {
-	$sql_post .= " AND evento LIKE '%".io_safe_input($search)."%'";
+	$sql_post .= " AND evento LIKE '%" . io_safe_input($search) . "%'";
 }
 
 if ($event_type != "") {
@@ -532,9 +533,11 @@ foreach ($result as $event) {
 	if ($group_rep != 0) {
 		if ($event["max_estado"] == 2) {
 			$estado = 2;
-		} else if ($event["min_estado"] == 0) {
+		}
+		else if ($event["min_estado"] == 0) {
 			$estado = 0;
-		} else {
+		}
+		else {
 			$estado = 1;
 		}
 	}
@@ -586,17 +589,17 @@ foreach ($result as $event) {
 	}
 	
 	// Event description
-	$data[1] = '<span title="'.$event["evento"].'" class="f9">';
+	$data[1] = '<span title="' . $event["evento"] . '" class="f9">';
 	
 	
 	$data[1] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $event["id_evento"] . ');">';
 	
-	$data[1] .= '<span class="'.$myclass.'" style="font-size: 7.5pt;">' .
+	$data[1] .= '<span class="' . $myclass . '" style="font-size: 7.5pt;">' .
 		ui_print_truncate_text (io_safe_output($event["evento"]), 160) . '</span>';
 	$data[1] .= '</a></span>';
 	
 	
-	$data[2] = '<span class="'.$myclass.'">';
+	$data[2] = '<span class="' . $myclass . '">';
 	if ($event["event_type"] == "system") {
 		$data[2] .= __('System');
 	}
@@ -610,7 +613,7 @@ foreach ($result as $event) {
 	$data[2] .= '</span>';
 	
 	//Time
-	$data[3] = '<span class="'.$myclass.'">';
+	$data[3] = '<span class="' . $myclass . '">';
 	if ($group_rep == 1) {
 		$data[3] .= ui_print_timestamp ($event['timestamp_rep'], true);
 	}
@@ -630,7 +633,7 @@ foreach ($result as $event) {
 	}
 	else {
 	/*	$data[4] .= html_print_image ("images/tick.png", true,
-			array ("title" => __('Event validated'))).'&nbsp;';		*/	
+			array ("title" => __('Event validated'))).'&nbsp;';		*/
 		$data[4] .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 	}
 	// Delete event
@@ -678,18 +681,19 @@ foreach ($result as $event) {
 	$string .= '<div style="text-align:center;">';
 	$string .= html_print_input_hidden('event_rep_'.$event["id_evento"],$event['event_rep'],true);
 	$string .= html_print_input_hidden('validated_limit_time_'.$event["id_evento"],$event_view_hr,true);
-	if($event["estado"] == 0) {
+	if ($event["estado"] == 0) {
 		$string .= html_print_select(array('1' => __('Validate'), '2' => __('Set in process')), 'select_validate_'.$event["id_evento"], '', '', '', 0, true, false, false, 'select_validate').'<br><br>';
 	}
 	$string .= '<a class="validate_event" href="javascript: toggleCommentForm(' . $event['id_evento'] . ')" id="validate-'.$event["id_evento"].'">';
-	if($event["estado"] == 2) {
+	if ($event["estado"] == 2) {
 		$string .= html_print_button (__('Validate'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
-	}else {
+	}
+	else {
 		$string .= html_print_button (__('Change status'), 'validate', false, '', 'class="sub ok validate_event" id="validate-'.$event["id_evento"].'"', true).'</div>';
 	}
 	$string .= '</a>';
 	$string .= '</td><td width="400px">';
-	if($event["id_alert_am"] != 0) {
+	if ($event["id_alert_am"] != 0) {
 		$string .= '<div class="standby_alert_checkbox" style="display: none">'.__('Set alert on standby').'<br>'.html_print_checkbox('standby-alert-'.$event["id_evento"], 'ff2', false, true).'</div>';
 	}
 	$string .= '</td></tr></table>'; //</form>';	

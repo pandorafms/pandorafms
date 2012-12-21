@@ -504,6 +504,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 					return "<img src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie2d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
 			case "3d":
+					//return "<img width='" . ($width / 2) . "' height='" . ($height / 2) . "' src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 					return "<img src='" . $homedir . "include/graphs/functions_pchart.php?graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
 		}

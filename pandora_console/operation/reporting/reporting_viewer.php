@@ -164,7 +164,7 @@ $(document).ready (function () {
 <?php
 
 if ($datetime === false || $datetime == -1) {
-	echo '<h3 class="error">'.__('Invalid date selected').'</h3>';
+	echo '<h3 class="error">' . __('Invalid date selected') . '</h3>';
 	return;
 }
 
@@ -182,13 +182,16 @@ $report["group_name"] = groups_get_name ($report['id_group']);
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$contents = db_get_all_rows_field_filter ("treport_content", "id_report", $id_report, "`order`");
+		$contents = db_get_all_rows_field_filter ("treport_content",
+			"id_report", $id_report, "`order`");
 		break;
 	case "postgresql":
-		$contents = db_get_all_rows_field_filter ("treport_content", "id_report", $id_report, '"order"');
+		$contents = db_get_all_rows_field_filter ("treport_content",
+			"id_report", $id_report, '"order"');
 		break;
 	case "oracle":
-		$contents = db_get_all_rows_field_filter ("treport_content", "id_report", $id_report, '"order"');
+		$contents = db_get_all_rows_field_filter ("treport_content",
+			"id_report", $id_report, '"order"');
 		break;
 }
 if ($contents === false) {
@@ -207,13 +210,13 @@ foreach ($contents as $content) {
 		$datetime_init = strtotime ($date_init.' '.$time_init);
 		$new_interval = $report['datetime'] - $datetime_init; 		
 		$content['period'] = $new_interval;
-	}		
+	}
 	
 	reporting_render_report_html_item ($content, $table, $report);
-
+	
 	if ($content['type'] == 'agent_module')
 		echo '<div style="width: 99%; overflow: auto;">';
-		
+	
 	html_print_table ($table);
 	
 	if ($content['type'] == 'agent_module')
@@ -224,35 +227,38 @@ foreach ($contents as $content) {
 ?>
 
 <script type="text/javascript">
-
-$(document).ready (function () {
-	$("*", "#table1-0").css("display", ""); //Re-show the first row of form.
-	
-	$("#loading").slideUp ();
-	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
-	$("#text-date").datepicker ();
-
-	$('[id^=text-date_init]').datepicker ();
-	$('[id^=text-time_init]').timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
-
-	$.datepicker.regional["<?php echo $config['language']; ?>"];
-	
-	/* Show/hide begin date reports controls */
-	$("#checkbox-enable_init_date").click(function() {
-		flag = $("#checkbox-enable_init_date").is(':checked');
-		if (flag == true) {
-			$("#table1-1-1").css("display", "");
-			$("#table1-1-2").css("display", "");
-			$("#string_to").show();
-			$("#string_items").hide();
-		}
-		else {
-			$("#table1-1-1").css("display", "none");
-			$("#table1-1-2").css("display", "");
-			$("#string_to").hide();
-			$("#string_items").show();
-		}
+	$(document).ready (function () {
+		//Re-show the first row of form.
+		$("*", "#table1-0").css("display", "");
+		
+		$("#loading").slideUp ();
+		$("#text-time").timeEntry (
+			{spinnerImage: 'images/time-entry.png',
+				spinnerSize: [20, 20, 0]});
+		$("#text-date").datepicker ();
+		
+		$('[id^=text-date_init]').datepicker ();
+		$('[id^=text-time_init]').timeEntry (
+			{spinnerImage: 'images/time-entry.png',
+				spinnerSize: [20, 20, 0]});
+		
+		$.datepicker.regional["<?php echo $config['language']; ?>"];
+		
+		/* Show/hide begin date reports controls */
+		$("#checkbox-enable_init_date").click(function() {
+			flag = $("#checkbox-enable_init_date").is(':checked');
+			if (flag == true) {
+				$("#table1-1-1").css("display", "");
+				$("#table1-1-2").css("display", "");
+				$("#string_to").show();
+				$("#string_items").hide();
+			}
+			else {
+				$("#table1-1-1").css("display", "none");
+				$("#table1-1-2").css("display", "");
+				$("#string_to").hide();
+				$("#string_items").show();
+			}
+		});
 	});
-});
-
 </script>

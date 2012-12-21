@@ -208,6 +208,8 @@ function output_xml_report($id) {
 					break; 
 				case 'alert_report_agent':
 					break;
+				case 'alert_report_group':
+					break;
 				case 'url':
 					echo "<url><![CDATA[" . io_safe_output($values["external_source"]) . "]]></url>";
 					break;

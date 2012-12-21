@@ -58,7 +58,7 @@ $exception_condition_value = 10;
 $modulegroup = 0;
 $period = 86400;
 // Added support for projection graphs
-$period_pg = 432000; 	
+$period_pg = 432000;
 $projection_period = 432000;
 $only_display_wrong = 0;
 // Added support for prediction date report
@@ -79,6 +79,16 @@ $id_agents = '';
 $inventory_modules = array();
 $date = null;
 
+//Added for events items
+$filter_event_validated = false;
+$filter_event_critical = false;
+$filter_event_warning = false;
+
+$event_graph_by_agent = false;
+$event_graph_by_user_validator = false;
+$event_graph_by_criticity = false;
+$event_graph_validated_vs_unvalidated = false;
+
 switch ($action) {
 	case 'new':
 		$actionParameter = 'save';
@@ -91,7 +101,9 @@ switch ($action) {
 		break;
 	default:
 		$actionParameter = 'update';
-		$item = db_get_row_filter('treport_content', array('id_rc' => $idItem));
+		$item = db_get_row_filter('treport_content',
+			array('id_rc' => $idItem));
+		
 		$server_name = $item ['server_name'];
 		
 		// Metaconsole db connection
@@ -101,12 +113,13 @@ switch ($action) {
 				//ui_print_error_message ("Error connecting to ".$server_name);
 			}
 		}
-
+		
 		$style = json_decode(io_safe_output($item['style']), true);
 		$show_in_two_columns = $style['show_in_two_columns'];
 		$show_in_landscape = $style['show_in_landscape'];
+		
 		$type = $item['type'];
-
+		
 		switch ($type) {
 			case 'avg_value':
 				$period = $item['period'];
@@ -138,7 +151,7 @@ switch ($action) {
 				// Parse intervals text field
 				$max_interval = substr($intervals_text, 0, strpos($intervals_text, ';'));
 				$min_interval = substr($intervals_text, strpos($intervals_text, ';') + 1);
-				// 'top_n_value' field will be reused for prediction_date report			
+				// 'top_n_value' field will be reused for prediction_date report
 				$period_pg = $item['period'];
 				break;
 			case 'custom_graph':
@@ -275,15 +288,40 @@ switch ($action) {
 				$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente' => $item['id_agent']));
 				$period = $item['period'];
 				break;
+			case 'alert_report_group':
+				$description = $item['description'];
+				$period = $item['period'];
+				$group = $item['id_group'];
+				break;
 			case 'event_report_agent':
 				$description = $item['description'];
 				$idAgent = $item['id_agent'];
 				$period = $item['period'];
+				
+				//Added for events items
+				$filter_event_validated = $style['filter_event_validated'];
+				$filter_event_critical = $style['filter_event_critical'];
+				$filter_event_warning = $style['filter_event_warning'];
+				
+				$event_graph_by_agent = $style['event_graph_by_agent'];
+				$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+				$event_graph_by_criticity = $style['event_graph_by_criticity'];
+				$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 				break;
 			case 'event_report_group':
 				$description = $item['description'];
 				$period = $item['period'];
 				$group = $item['id_group'];
+				
+				//Added for events items
+				$filter_event_validated = $style['filter_event_validated'];
+				$filter_event_critical = $style['filter_event_critical'];
+				$filter_event_warning = $style['filter_event_warning'];
+				
+				$event_graph_by_agent = $style['event_graph_by_agent'];
+				$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+				$event_graph_by_criticity = $style['event_graph_by_criticity'];
+				$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 				break;
 			case 'event_report_module':
 				$description = $item['description'];
@@ -406,7 +444,7 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_extended_select_for_time ('period1', $period_pg, '', '', '0', 10);
 				?>
 			</td>
-		</tr>	
+		</tr>
 		<tr id="row_estimate" style="" class="datos">
 			<td style="vertical-align: top;">
 				<?php
@@ -418,7 +456,7 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_extended_select_for_time ('period2', $projection_period, '', '', '0', 10);
 				?>
 			</td>
-		</tr>	
+		</tr>
 		<tr id="row_interval" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Data range') . ui_print_help_icon('prediction_date', true); ?></td>
 			<td><?php
@@ -426,8 +464,8 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_input_text('max_interval', $max_interval, '', 5, 10);
 				echo "&nbsp;" . __('Min') . "&nbsp;";
 				html_print_input_text('min_interval', $min_interval, '', 5, 10);
-				?></td>			
-		</tr>		
+				?></td>
+		</tr>
 		<tr id="row_only_display_wrong" style="" class="datos">
 			<td><?php echo __('Only display wrong SLAs');?></td>
 			<td>
@@ -463,7 +501,8 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Group');?></td>
 			<td style="">
-				<?php html_print_select_groups($config['id_user'], "AR", true, 'combo_group', $group, '');?>
+				<?php html_print_select_groups($config['id_user'],
+					"AR", true, 'combo_group', $group, '');?>
 			</td>
 		</tr>
 		<tr id="row_module_group" style="" class="datos">
@@ -480,11 +519,11 @@ html_print_input_hidden('id_item', $idItem);
 				if ($config['metaconsole'] == 1) {
 					$connection = metaconsole_get_connection($server_name);
 					$agent_name = '';
-
+					
 					if (metaconsole_load_external_db($connection))
 						$agent_name = db_get_value_filter('nombre', 'tagente', array('id_agente' => $idAgent));	
 						// Append server name
-						if (!empty($agent_name))		
+						if (!empty($agent_name))
 							$agent_name .= ' (' . $server_name . ')';
 					//Restore db connection
 					metaconsole_restore_db();
@@ -510,13 +549,13 @@ html_print_input_hidden('id_item', $idItem);
 					
 					if ($config['metaconsole'] == 1) {
 						$connection = metaconsole_get_connection($server_name);
-
+						
 						if (metaconsole_load_external_db($connection)) {
 							$agent_name_temp = db_get_all_rows_sql($sql);
 							
 							if ($agent_name_temp === false)
 								$agent_name_temp = array();
-								
+							
 							$result_select = array();
 							foreach ($agent_name_temp as $module_element) {
 								$result_select[$module_element['id_agente_modulo']] = $module_element['nombre'];
@@ -528,11 +567,11 @@ html_print_input_hidden('id_item', $idItem);
 						//Restore db connection
 						metaconsole_restore_db();
 					}
-					else {		
+					else {
 						html_print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');					
-					}	
+					}
 				}
-				else {	
+				else {
 					?>
 					<select style="max-width: 180px" id="id_agent_module" name="id_agent_module" disabled="disabled">
 						<option value="0"><?php echo __('Select an Agent first'); ?></option>
@@ -572,7 +611,7 @@ html_print_input_hidden('id_item', $idItem);
 				if($dates === ENTERPRISE_NOT_HOOK) {
 					$dates = array();
 				}
-
+				
 				html_print_select($dates, 'date', '', '', __('Last'), 0, false, false, false, '', false, "min-width: 180px");
 				html_print_input_hidden('date_selected',$date);
 				?>
@@ -600,7 +639,7 @@ html_print_input_hidden('id_item', $idItem);
 					}
 					html_print_select_from_sql($query_sql, 'id_custom_graph', $idCustomGraph, 'change_custom_graph();', __('None'), 0);
 				}
-					
+				
 				$style_button_create_custom_graph = 'style="display: none;"';
 				$style_button_edit_custom_graph = '';
 				if (empty($idCustomGraph)) {
@@ -649,12 +688,14 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_servers" style="" class="datos">			
 			<td style="vertical-align: top;"><?php echo __('Server'); ?></td>
-			<td style=""><?php
+			<td style="">
+				<?php
 				if ($config ['metaconsole'] != 1)
 					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0, false, false, true, '', true);
 				else
 					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0);
-				 ?></td>
+				?>
+			</td>
 		</tr>
 		<tr id="row_header" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Serialized header') . ui_print_help_tip(__("The separator character is |"), true);?></td>
@@ -738,6 +779,35 @@ html_print_input_hidden('id_item', $idItem);
 			<td><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
 			<td><?php html_print_checkbox('checkbox_show_resume', 1, $show_resume);?></td>
 		</tr>
+		<tr id="row_event_filter" style="" class="datos">
+			<td><?php echo __('Event filter'); ?></td>
+			<td>
+				<?php
+				echo __('Validated');
+				html_print_checkbox ('filter_event_validated', true, $filter_event_validated);
+				echo __('Critical');
+				html_print_checkbox ('filter_event_critical', true, $filter_event_critical);
+				echo __('Warning');
+				html_print_checkbox ('filter_event_warning', true, $filter_event_warning);
+				?>
+			</td>
+		</tr>
+		</tr>
+		<tr id="row_event_graphs" style="" class="datos">
+			<td><?php echo __('Event graphs'); ?></td>
+			<td>
+				<?php
+				echo __('By agent');
+				html_print_checkbox ('event_graph_by_agent', true, $event_graph_by_agent);
+				echo __('By user validator');
+				html_print_checkbox ('event_graph_by_user_validator', true, $event_graph_by_user_validator);
+				echo __('By criticity');
+				html_print_checkbox ('event_graph_by_criticity', true, $event_graph_by_criticity);
+				echo __('Validated vs unvalidated');
+				html_print_checkbox ('event_graph_validated_vs_unvalidated', true, $event_graph_validated_vs_unvalidated);
+				?>
+			</td>
+		</tr>
 		<tr id="row_show_in_two_columns" style="" class="datos">
 			<td><?php echo __('Show in two columns');?></td>
 			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns, false,
@@ -746,11 +816,16 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_sort" style="" class="datos">
 			<td><?php echo __('Order') . ui_print_help_tip(__('SLA items sorted by fulfillment value'), true);?></td>
 			<td><?php html_print_select ($show_sort_options, 'combo_sla_sort_options', $sla_sorted_by, '', __('None'), 0); ?></td>
-		</tr>		
+		</tr>
 		<tr id="row_show_in_landscape" style="" class="datos">
 			<td><?php echo __('Show in landscape');?></td>
-			<td><?php html_print_checkbox('show_in_landscape', 1, $show_in_landscape, false, false,
-				'if ($(\'input[name=show_in_landscape]\').is(\':checked\')) $(\'input[name=show_in_two_columns]\').attr(\'checked\', false);');?></td>
+			<td>
+				<?php
+				html_print_checkbox('show_in_landscape', 1,
+					$show_in_landscape, false, false,
+					'if ($(\'input[name=show_in_landscape]\').is(\':checked\')) $(\'input[name=show_in_two_columns]\').attr(\'checked\', false);');
+				?>
+			</td>
 		</tr>
 	</tbody>
 </table>
@@ -957,7 +1032,7 @@ function print_General_list($width, $action, $idItem = null) {
 	<span style="display: none" id="module_general_text"><?php echo __('Select an Agent first'); ?></span>
 	<?php
 }
-			
+
 ui_require_javascript_file ('pandora_inventory', ENTERPRISE_DIR.'/include/javascript/');
 
 ?>
@@ -966,10 +1041,10 @@ $(document).ready (function () {
 	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module', '#hidden-server_name');
 	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla', '#hidden-server_name');
 	agent_module_autocomplete('#text-agent_general', '#hidden-id_agent_general', '#id_agent_module_general', '#hidden-server_name_general', '#id_operation_module_general');
-
+	
 	chooseType();
 	chooseSQLquery();
-
+	
 	$("#text-time_to, #text-time_from").timeEntry ({
 		spinnerImage: 'images/time-entry.png',
 		spinnerSize: [20, 20, 0],
@@ -980,85 +1055,23 @@ $(document).ready (function () {
 
 function create_custom_graph() {
 	<?php 
-		global $config;
+	global $config;
 	
-		// Metaconsole activated
-		if ($config['metaconsole'] == 1) {
+	// Metaconsole activated
+	if ($config['metaconsole'] == 1) {
 	?>
-			var target_server = $("#meta_servers").val();
-			// If target server is not selected
-			if (target_server == 0) {
-				$("#meta_target_servers").fadeIn ('normal');
-				$("#meta_target_servers").css('display', 'inline');
-			}
-			else {
-				
-				var hash_data;
-				var params1 = [];
-				params1.push("get_metaconsole_hash_data=1");
-				params1.push("server_name=" + target_server);
-				params1.push("page=include/ajax/reporting.ajax");
-				jQuery.ajax ({
-					data: params1.join ("&"),
-					type: 'POST',
-					url: action="ajax.php",
-					async: false,
-					timeout: 10000,
-					success: function (data) {
-						hash_data = data;
-					}
-				});
-				
-				var server_url;
-				var params1 = [];
-				params1.push("get_metaconsole_server_url=1");
-				params1.push("server_name=" + target_server);
-				params1.push("page=include/ajax/reporting.ajax");
-				jQuery.ajax ({
-					data: params1.join ("&"),
-					type: 'POST',
-					url: action="ajax.php",
-					async: false,
-					timeout: 10000,
-					success: function (data) {
-						server_url = data;
-					}
-				});					
-					
-				window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph" + hash_data;
-			}
-	<?php		
+		var target_server = $("#meta_servers").val();
+		// If target server is not selected
+		if (target_server == 0) {
+			$("#meta_target_servers").fadeIn ('normal');
+			$("#meta_target_servers").css('display', 'inline');
 		}
 		else {
-	?>	
-		window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph";
-	<?php
-		}
-	?>
-}
-
-function edit_custom_graph() {
-	var id_graph = $("#id_custom_graph").val();
-	<?php 
-		global $config;
-	
-		// Metaconsole activated
-		if ($config['metaconsole'] == 1) {
-	?>
-			var agent_server_temp;
-			var id_element_graph;
-			var id_server;
-		
-			if (id_graph.indexOf("|") != -1){
-				agent_server_temp = id_graph.split('|');
-				id_element_graph = agent_server_temp[0];
-				id_server = agent_server_temp[1];
-			}
 			
 			var hash_data;
 			var params1 = [];
 			params1.push("get_metaconsole_hash_data=1");
-			params1.push("server_name=" + id_server);
+			params1.push("server_name=" + target_server);
 			params1.push("page=include/ajax/reporting.ajax");
 			jQuery.ajax ({
 				data: params1.join ("&"),
@@ -1074,7 +1087,7 @@ function edit_custom_graph() {
 			var server_url;
 			var params1 = [];
 			params1.push("get_metaconsole_server_url=1");
-			params1.push("server_name=" + id_server);
+			params1.push("server_name=" + target_server);
 			params1.push("page=include/ajax/reporting.ajax");
 			jQuery.ajax ({
 				data: params1.join ("&"),
@@ -1085,16 +1098,78 @@ function edit_custom_graph() {
 				success: function (data) {
 					server_url = data;
 				}
-			});			
-					
-			window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_element_graph + hash_data;		
-	<?php		
+			});
+			
+			window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph" + hash_data;
 		}
-		else {
-	?>
-			window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_graph;
 	<?php
+	}
+	else {
+	?>
+		window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&create=Create graph";
+	<?php
+	}
+	?>
+}
+
+function edit_custom_graph() {
+	var id_graph = $("#id_custom_graph").val();
+	<?php 
+	global $config;
+	
+	// Metaconsole activated
+	if ($config['metaconsole'] == 1) {
+	?>
+		var agent_server_temp;
+		var id_element_graph;
+		var id_server;
+		
+		if (id_graph.indexOf("|") != -1){
+			agent_server_temp = id_graph.split('|');
+			id_element_graph = agent_server_temp[0];
+			id_server = agent_server_temp[1];
 		}
+		
+		var hash_data;
+		var params1 = [];
+		params1.push("get_metaconsole_hash_data=1");
+		params1.push("server_name=" + id_server);
+		params1.push("page=include/ajax/reporting.ajax");
+		jQuery.ajax ({
+			data: params1.join ("&"),
+			type: 'POST',
+			url: action="ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				hash_data = data;
+			}
+		});
+		
+		var server_url;
+		var params1 = [];
+		params1.push("get_metaconsole_server_url=1");
+		params1.push("server_name=" + id_server);
+		params1.push("page=include/ajax/reporting.ajax");
+		jQuery.ajax ({
+			data: params1.join ("&"),
+			type: 'POST',
+			url: action="ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				server_url = data;
+			}
+		});
+		
+		window.location.href = server_url + "/index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_element_graph + hash_data;		
+	<?php
+	}
+	else {
+	?>
+		window.location.href = "index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id=" + id_graph;
+	<?php
+	}
 	?>
 }
 
@@ -1116,7 +1191,7 @@ function change_custom_graph() {
 
 function chooseSQLquery() {
 	var idCustom = $("#id_custom").val();
-
+	
 	if (idCustom == 0) {
 		$("#sql_example").html('');
 	}
@@ -1204,7 +1279,7 @@ function addSLARow() {
 	var slaMin = $("input[name=sla_min]").val();
 	var slaMax = $("input[name=sla_max]").val();
 	var slaLimit = $("input[name=sla_limit]").val();
-
+	
 	if ((idAgent != '') && (slaMin != '') && (slaMax != '')
 		&& (slaLimit != '')) {
 			//Truncate nameAgent
@@ -1246,7 +1321,7 @@ function addSLARow() {
 			params.push("sla_max=" + slaMax);
 			params.push("sla_limit=" + slaLimit);
 			params.push("server_name=" + serverName);
-		
+			
 			params.push("page=include/ajax/reporting.ajax");
 			jQuery.ajax ({
 				data: params.join ("&"),
@@ -1291,7 +1366,7 @@ function addGeneralRow() {
 	var serverName = $("input[name=server_name_general]").val();
 	var idModule = $("#id_agent_module_general").val();
 	var nameModule = $("#id_agent_module_general :selected").text();
-
+	
 	if (idAgent != '') {
 		//Truncate nameAgent
 		var params = [];
@@ -1347,7 +1422,7 @@ function addGeneralRow() {
 					$(".delete_button", row).attr('href', 'javascript: deleteGeneralRow(' + data['id'] + ');');
 					
 					$("#list_general").append($(row).html());
-				
+					
 					$("input[name=id_agent_general]").val('');
 					$("input[name=server_name_general]").val('');
 					$("input[name=agent_general]").val('');
@@ -1406,7 +1481,9 @@ function chooseType() {
 	$("#row_date").hide();
 	$("#row_agent_multi").hide();
 	$("#row_module_multi").hide();
-
+	$("#row_event_filter").hide();
+	$("#row_event_graphs").hide();
+	
 	switch (type) {
 		case 'event_report_group':
 			$("#row_description").show();
@@ -1414,6 +1491,8 @@ function chooseType() {
 			$("#row_servers").show();
 			$("#row_group").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_event_filter").show();
+			$("#row_event_graphs").show();
 			break;
 		case 'simple_graph':
 		case 'simple_baseline_graph':
@@ -1440,7 +1519,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_interval").show();
 			$("#row_show_in_two_columns").show();
-			break;			
+			break;
 		case 'custom_graph':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -1590,6 +1669,12 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		case 'alert_report_group':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_group").show();
+			break;
 		case 'alert_report_agent':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -1601,6 +1686,8 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_event_filter").show();
+			$("#row_event_graphs").show();
 			break;
 		case 'event_report_module':
 			$("#row_description").show();
@@ -1672,7 +1759,7 @@ function chooseType() {
 			$("#row_module_multi").show();
 			$("#row_date").show();
 			$("#row_show_in_two_columns").show();
-
+			
 			$("#id_agents").change(agent_changed_by_multiple_agents_inventory);
 			$("#id_agents").trigger('change');
 			

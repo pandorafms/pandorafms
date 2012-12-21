@@ -1719,28 +1719,31 @@ function graphic_incident_source($width = 320, $height = 200) {
 function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	global $config;
 	global $graphic_type;
-
-	$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES); //It was urlencoded, so we urldecode it
+	
+	//It was urlencoded, so we urldecode it
+	$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES);
 	$data = array ();
 	$loop = 0;
-	define ('NUM_PIECES_PIE', 6);	
-
-	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ", "EXEC");	
+	define ('NUM_PIECES_PIE', 6);
+	
+	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ", "EXEC");
 	//remove bad strings from the query so queries like ; DELETE FROM  don't pass
 	$url = str_ireplace ($badstrings, "", $url);
-		
+	
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
 	//is required if both DISTINCT() and COUNT() are in the statement 
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
+			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
+					id_grupo, COUNT(id_agente) AS count
 				FROM tevento WHERE 1=1 %s
 				GROUP BY id_agente ORDER BY count DESC', $url); 
 			break;
 		case "postgresql":
 		case "oracle":
-			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
+			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
+					id_grupo, COUNT(id_agente) AS count
 				FROM tevento WHERE 1=1 %s
 				GROUP BY id_agente, id_grupo ORDER BY count DESC', $url); 
 			break;
@@ -1750,7 +1753,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	if ($result === false) {
 		$result = array();
 	}
- 
+	
 	foreach ($result as $row) {
 		if (!check_acl ($config["id_user"], $row["id_grupo"], "AR") == 1)
 			continue;
@@ -1759,7 +1762,8 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 			if (!isset ($data[__('Other')]))
 				$data[__('Other')] = 0;
 			$data[__('Other')] += $row["count"];
-		} else {
+		}
+		else {
 			if ($row["id_agente"] == 0) {
 				$name = __('SYSTEM')." (".$row["count"].")";
 			} else {
@@ -1769,9 +1773,45 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 		}
 		$loop++;
 	}
-	if ($config['flash_charts']){
+	
+	if ($config['flash_charts']) {
 		include_flash_chart_script();
 	}
+	
+	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
+}
+
+
+function graph_events_validated($width = 300, $height = 200, $url = "") {
+	global $config;
+	global $graphic_type;
+	
+	$sql = 'SELECT estado,
+		COUNT(*) AS count
+		FROM tevento
+		GROUP BY estado
+		ORDER BY count DESC';
+	
+	$rows = db_get_all_rows_sql ($sql);
+	
+	$data = array();
+	$data[__('Validated')] = 0;
+	$data[__('Not validated')] = 0;
+	foreach ($rows as $row) {
+		if ($row['estado'] == 1) {
+			$data[__('Validated')] += $row['count'];
+		}
+		else {
+			$data[__('Not validated')] += $row['count'];
+		}
+	}
+	
+	if ($config['flash_charts']) {
+		include_flash_chart_script();
+	}
+	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']);
@@ -1785,37 +1825,42 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 function grafico_eventos_total($filter = "") {
 	global $config;
 	global $graphic_type;
-
+	
 	$filter = str_replace  ( "\\" , "", $filter);
 	$data = array ();
 	$legend = array ();
 	$total = 0;
 	
-	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 0 $filter";
+	$sql = "SELECT COUNT(id_evento)
+		FROM tevento WHERE criticity = 0 $filter";
 	$data[__('Maintenance')] = db_get_sql ($sql);
 	if ($data[__('Maintenance')] == 0) {
 		unset($data[__('Maintenance')]);
 	}
 	
-	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 1 $filter";
+	$sql = "SELECT COUNT(id_evento)
+		FROM tevento WHERE criticity = 1 $filter";
 	$data[__('Informational')] = db_get_sql ($sql);
 	if ($data[__('Informational')] == 0) {
 		unset($data[__('Informational')]);
 	}
-
-	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 2 $filter";
+	
+	$sql = "SELECT COUNT(id_evento)
+		FROM tevento WHERE criticity = 2 $filter";
 	$data[__('Normal')] = db_get_sql ($sql);
 	if ($data[__('Normal')] == 0) {
 		unset($data[__('Normal')]);
 	}
-
-	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 3 $filter";
+	
+	$sql = "SELECT COUNT(id_evento)
+		FROM tevento WHERE criticity = 3 $filter";
 	$data[__('Warning')] = db_get_sql ($sql);
 	if ($data[__('Warning')] == 0) {
 		unset($data[__('Warning')]);
 	}
-
-	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE criticity = 4 $filter";
+	
+	$sql = "SELECT COUNT(id_evento)
+		FROM tevento WHERE criticity = 4 $filter";
 	$data[__('Critical')] = db_get_sql ($sql);
 	if ($data[__('Critical')] == 0) {
 		unset($data[__('Critical')]);
@@ -1837,7 +1882,7 @@ function grafico_eventos_total($filter = "") {
 function grafico_eventos_usuario ($width, $height) {
 	global $config;
 	global $graphic_type;
-
+	
 	$data = array ();
 	$max_items = 5;
 	switch ($config["dbtype"]) {
@@ -1856,7 +1901,7 @@ function grafico_eventos_usuario ($width, $height) {
 			break;
 	}
 	$events = db_get_all_rows_sql ($sql);
-
+	
 	if ($events === false) {
 		$events = array();
 	}
@@ -1869,7 +1914,7 @@ function grafico_eventos_usuario ($width, $height) {
 			$data[$event['id_usuario']] = $event['events'];
 		}
 	}
-
+	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size']);

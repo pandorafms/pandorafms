@@ -31,19 +31,32 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 //header
 ui_print_page_header (__('Statistics'), "images/lightning_go.png",false, false);
 echo "<table width=95%>";
-echo "<tr><td valign='top'>";
-echo "<h3>".__('Event graph')."</h3>";
+echo "<tr>";
+
+echo "<td valign='top'>";
+echo "<h3>" . __('Event graph') . "</h3>";
 echo grafico_eventos_total();
+echo "</td>";
 
-echo "</td><td valign='top'>";
-echo "<h3>".__('Event graph by user')."</h3>";
+echo "<td valign='top'>";
+echo "<h3>" . __('Event graph by user') . "</h3>";
 echo grafico_eventos_usuario(300, 200);
+echo "</td>";
 
-echo "</td></tr>";
-echo "<tr><td>";
-echo "<h3>".__('Event graph by group')."</h3>";
+echo "</tr>";
+
+echo "<tr>";
+
+echo "<td>";
+echo "<h3>" . __('Event graph by group') . "</h3>";
 echo grafico_eventos_grupo(300, 200);
+echo "</td>";
 
-echo '</td></tr>';
+echo "<td>";
+echo "<h3>" . __('Amount events validated') . "</h3>";
+echo graph_events_validated(300, 200);
+echo "</td>";
+
+echo "</tr>";
 echo "</table>";
 ?>

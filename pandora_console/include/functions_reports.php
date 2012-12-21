@@ -544,6 +544,8 @@ function get_report_types () {
 			'name' => __('Alert report module')); 
 	$types['alert_report_agent'] = array('optgroup' => __('Alerts'),
 			'name' => __('Alert report agent'));
+	$types['alert_report_group'] = array('optgroup' => __('Alerts'),
+			'name' => __('Alert report group'));
 	
 	
 	

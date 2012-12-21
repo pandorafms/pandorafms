@@ -78,7 +78,7 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($interval_data, $previous_data);
 		}
-	
+		
 		// Get next data
 		$next_data = modules_get_next_data ($id_agent_module, $date);
 		if ($next_data !== false) {
@@ -1159,7 +1159,18 @@ function reporting_alert_reporting_agent ($id_agent, $period = 0, $date = 0, $re
 					WHERE id_alert_template_module = ' . $alert['id'] . ');');
 			$data[2] = '<ul class="action_list">';
 			if ($actions === false) {
-				$actions = array();
+				$row = db_get_row_sql('SELECT id_alert_action
+					FROM talert_templates
+					WHERE id IN (SELECT id_alert_template
+						FROM talert_template_modules
+						WHERE id = ' . $alert['id'] . ')');
+				$id_action = 0;
+				if (!empty($row))
+					$id_action = $row['id_alert_action'];
+				
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id = ' . $id_action);
 			}
 			
 			if ($actions === false)
@@ -1171,6 +1182,7 @@ function reporting_alert_reporting_agent ($id_agent, $period = 0, $date = 0, $re
 			$data[2] .= '</ul>';
 			
 			$data[3] = '<ul style="list-style-type: disc; margin-left: 10px;">';
+			
 			$firedTimes = get_agent_alert_fired($id_agent, $alert['id'], (int) $period, (int) $date);
 			if ($firedTimes === false) {
 				$firedTimes = array();
@@ -1191,6 +1203,130 @@ function reporting_alert_reporting_agent ($id_agent, $period = 0, $date = 0, $re
 			
 			array_push ($table->data, $data);
 		}
+	}
+	
+	if ($html) {
+		return html_print_table ($table, $return);
+	}
+	else {
+		return $table;
+	}
+}
+
+/**
+ * Get a report for alerts of group.
+ *
+ * It prints the numbers of alerts defined, fired and not fired of agent.
+ *
+ * @param int $id_agent_module Module to get info of the alerts.
+ * @param int $period Period of time of the desired alert report.
+ * @param int $date Beggining date of the report (current date by default).
+ * @param bool $return Flag to return or echo the report (echo by default).
+ * @param bool Flag to return the html or table object, by default html.
+ * 
+ * @return mixed A table object (XHTML) or object table is false the html.
+ */
+function reporting_alert_reporting_group ($id_group, $period = 0, $date = 0, $return = true, $html = true) {
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if (empty ($period)) {
+		global $config;
+		$period = $config["sla_period"];
+	}
+	
+	$table->width = '99%';
+	$table->data = array ();
+	$table->head = array ();
+	
+	$table->head[0] = __('Agent');
+	$table->head[1] = __('Module');
+	$table->head[2] = __('Template');
+	$table->head[3] = __('Actions');
+	$table->head[4] = __('Fired');
+	
+	
+	$alerts = db_get_all_rows_sql('
+		SELECT *
+		FROM talert_template_modules
+		WHERE disabled = 0
+			AND id_agent_module IN (
+				SELECT id_agente_modulo
+				FROM tagente_modulo
+				WHERE id_agente IN (
+					SELECT id_agente
+					FROM tagente WHERE id_grupo = ' . $id_group . '))');
+	
+	if ($alerts === false) {
+		$alerts = array();
+	}
+	
+	$i = 0;
+	foreach ($alerts as $alert) {
+		$data = array();
+		
+		$data[] = io_safe_output(
+			agents_get_name(
+				agents_get_agent_id_by_module_id(
+					$alert['id_agent_module'])));
+		
+		$data[] = io_safe_output(
+			modules_get_agentmodule_name($alert['id_agent_module']));
+		
+		$data[] = db_get_value_filter('name',
+			'talert_templates',
+			array('id' => $alert['id_alert_template']));
+		
+		$actions = db_get_all_rows_sql('SELECT name 
+			FROM talert_actions 
+			WHERE id IN (SELECT id_alert_action 
+				FROM talert_template_module_actions 
+				WHERE id_alert_template_module = ' . $alert['id_agent_module'] . ');');
+		$list = '<ul class="action_list">';
+		if ($actions === false) {
+			$row = db_get_row_sql('SELECT id_alert_action
+				FROM talert_templates
+				WHERE id IN (SELECT id_alert_template
+					FROM talert_template_modules
+					WHERE id = ' . $alert['id'] . ')');
+			$id_action = 0;
+			if (!empty($row))
+				$id_action = $row['id_alert_action'];
+			
+			$actions = db_get_all_rows_sql('SELECT name 
+				FROM talert_actions 
+				WHERE id = ' . $id_action);
+		}
+		foreach ($actions as $action) {
+			$list .= '<li>' . $action['name'] . '</li>';
+		}
+		$list .= '</ul>';
+		$data[] = $list;
+		
+		$list = '<ul style="list-style-type: disc; margin-left: 10px;">';
+		
+		$firedTimes = get_module_alert_fired(
+			$alert['id_agent_module'],
+			$alert['id'], (int) $period, (int) $date);
+		
+		if ($firedTimes === false) {
+			$firedTimes = array();
+		}
+		foreach ($firedTimes as $fireTime) {
+			$list .= '<li>' . $fireTime['timestamp'] . '</li>';
+		}
+		$list .= '</ul>';
+		
+		if ($alert['disabled']) {
+			$table->rowstyle[$i] = 'color: grey; font-style: italic;';
+		}
+		$i++;
+		$data[] = $list;
+		
+		array_push ($table->data, $data);
 	}
 	
 	if ($html) {
@@ -1238,7 +1374,7 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 		FROM talert_template_modules AS t1
 			INNER JOIN talert_templates AS t2 ON t1.id_alert_template = t2.id
 		WHERE id_agent_module = ' . $id_agent_module);
-
+	
 	if ($alerts === false) {
 		$alerts = array();
 	}
@@ -1254,7 +1390,18 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 				WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ');');
 		$data[2] = '<ul class="action_list">';
 		if ($actions === false) {
-			$actions = array();
+			$row = db_get_row_sql('SELECT id_alert_action
+				FROM talert_templates
+				WHERE id IN (SELECT id_alert_template
+					FROM talert_template_modules
+					WHERE id = ' . $alert['id_alert_template_module'] . ')');
+			$id_action = 0;
+			if (!empty($row))
+				$id_action = $row['id_alert_action'];
+			
+			$actions = db_get_all_rows_sql('SELECT name 
+				FROM talert_actions 
+				WHERE id = ' . $id_action);
 		}
 		foreach ($actions as $action) {
 			$data[2] .= '<li>' . $action['name'] . '</li>';
@@ -1311,7 +1458,7 @@ function reporting_alert_reporting ($id_group, $period = 0, $date = 0, $return =
 	if (sizeof ($alerts) > 0)
 		$fired_percentage = round (sizeof ($alerts_fired) / sizeof ($alerts) * 100, 2);
 	$not_fired_percentage = 100 - $fired_percentage;
-		
+	
 	$data = array ();
 	$data[__('Alerts fired')] = $fired_percentage;
 	$data[__('Alerts not fired')] = $not_fired_percentage;
@@ -1340,6 +1487,7 @@ function reporting_alert_reporting ($id_group, $period = 0, $date = 0, $return =
 	
 	if (!$return)
 		echo $output;
+	
 	return $output;
 }
 
@@ -1415,7 +1563,7 @@ function reporting_get_monitors_down_table ($monitors_down) {
 	$table->head[1] = __('Monitor');
 	
 	$agents = array ();
-	if ($monitors_down){
+	if ($monitors_down) {
 		foreach ($monitors_down as $monitor) {
 			/* Add monitors fired to $agents_fired_alerts indexed by id_agent */
 			$id_agent = $monitor['id_agente'];
@@ -1435,7 +1583,8 @@ function reporting_get_monitors_down_table ($monitors_down) {
 					$data[0] = '';
 				if ($monitor['descripcion'] != '') {
 					$data[1] = $monitor['descripcion'];
-				} else {
+				}
+				else {
 					$data[1] = $monitor['nombre'];
 				}
 				array_push ($table->data, $data);
@@ -1691,7 +1840,10 @@ function reporting_agents_get_group_agents_detailed ($id_group, $period = 0, $da
  * 
  * @return A table object (XHTML)
  */
-function reporting_get_agents_detailed_event ($id_agents, $period = 0, $date = 0, $return = false) {
+function reporting_get_agents_detailed_event ($id_agents, $period = 0,
+	$date = 0, $return = false, $filter_event_validated = false,
+	$filter_event_critical = false, $filter_event_warning = false) {
+	
 	$id_agents = (array)safe_int ($id_agents, 1);
 	
 	if (!is_numeric ($date)) {
@@ -1706,18 +1858,32 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0, $date = 0
 	}
 	
 	$table->width = '99%';
+	
+	$table->align = array();
+	$table->align[0] = 'center';
+	$table->align[2] = 'center';
+	$table->align[3] = 'center';
+	
 	$table->data = array ();
+	
 	$table->head = array ();
-	$table->head[0] = __('Event name');
-	$table->head[1] = __('Event type');
-	$table->head[2] = __('Criticity');
-	$table->head[3] = __('Count');
-	$table->head[4] = __('Timestamp');
+	$table->head[0] = __('Status');
+	$table->head[1] = __('Count');
+	$table->head[2] = __('Name');
+	$table->head[3] = __('Type');
+	$table->head[4] = __('Criticity');
+	$table->head[5] = __('Val. by');
+	$table->head[6] = __('Timestamp');
 	
 	$events = array ();
 	
 	foreach ($id_agents as $id_agent) {
-		$event = events_get_agent ($id_agent, (int) $period, (int) $date);
+		$event = events_get_agent ($id_agent,
+			(int)$period,
+			(int)$date,
+			$filter_event_validated, $filter_event_critical,
+			$filter_event_warning);
+		
 		if (!empty ($event)) {
 			array_push ($events, $event);
 		}
@@ -1725,18 +1891,50 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0, $date = 0
 	
 	if ($events)
 	foreach ($events as $eventRow) {
-		foreach ($eventRow as $event) { 
+		foreach ($eventRow as $event) {
+			//First pass along the class of this row
+			$table->rowclass[] =
+				get_priority_class ($event["criticity"]);
+			
 			$data = array ();
-			$data[0] = io_safe_output($event['evento']);
-			$data[1] = $event['event_type'];
-			$data[2] = get_priority_name ($event['criticity']);
-			$data[3] = $event['count_rep'];
-			$data[4] = $event['time2'];
+			// Colored box
+			switch ($event['estado']) {
+				case 0:
+					$img_st = "images/star.png";
+					$title_st = __('New event');
+					break;
+				case 1:
+					$img_st = "images/tick.png";
+					$title_st = __('Event validated');
+					break;
+				case 2:
+					$img_st = "images/hourglass.png";
+					$title_st = __('Event in process');
+					break;
+			}
+			$data[] = html_print_image ($img_st, true, 
+				array ("class" => "image_status",
+					"width" => 16,
+					"height" => 16,
+					"title" => $title_st));
+			
+			$data[] = $event['count_rep'];
+			
+			$data[] = ui_print_truncate_text(
+				io_safe_output($event['evento']),
+				140, false, true);
+			//$data[] = $event['event_type'];
+			$data[] = events_print_type_img ($event["event_type"], true);
+			
+			$data[] = get_priority_name ($event['criticity']);
+			$data[] = io_safe_output($event['user_name']);
+			$data[] = '<font style="font-size: 6pt;">' .
+				$event['time2'] . '</font>';
 			array_push ($table->data, $data);
 		}
 	}
-
-	if ($events)	
+	
+	if ($events)
 		return html_print_table ($table, $return);
 }
 
@@ -1751,7 +1949,11 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0, $date = 0
  *
  * @return string Report of groups's events
  */
-function reporting_get_group_detailed_event ($id_group, $period = 0, $date = 0, $return = false, $html = true) {
+function reporting_get_group_detailed_event ($id_group, $period = 0,
+	$date = 0, $return = false, $html = true,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
+	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
@@ -1764,22 +1966,72 @@ function reporting_get_group_detailed_event ($id_group, $period = 0, $date = 0, 
 	}
 	
 	$table->width = '99%';
-	$table->data = array ();
-	$table->head = array ();
-	$table->head[0] = __('Event name');
-	$table->head[1] = __('Event type');
-	$table->head[2] = __('Criticity');
-	$table->head[3] = __('Timestamp');
 	
-	$events = events_get_group_events($id_group, $period, $date);
+	$table->align = array();
+	$table->align[0] = 'center';
+	$table->align[2] = 'center';
+	
+	$table->data = array ();
+	
+	$table->head = array ();
+	$table->head[0] = __('Status');
+	$table->head[1] = __('Name');
+	$table->head[2] = __('Type');
+	$table->head[3] = __('Agent');
+	$table->head[4] = __('Criticity');
+	$table->head[5] = __('Val. by');
+	$table->head[6] = __('Timestamp');
+	
+	$events = events_get_group_events($id_group, $period, $date,
+		$filter_event_validated, $filter_event_critical,
+		$filter_event_warning);
 	
 	if ($events) {
 		foreach ($events as $event) {
+			//First pass along the class of this row
+			$table->rowclass[] =
+				get_priority_class ($event["criticity"]);
+			
 			$data = array ();
-			$data[0] = io_safe_output($event['evento']);
-			$data[1] = $event['event_type'];
-			$data[2] = get_priority_name ($event['criticity']);
-			$data[3] = $event['timestamp'];
+			
+			// Colored box
+			switch ($event['estado']) {
+				case 0:
+					$img_st = "images/star.png";
+					$title_st = __('New event');
+					break;
+				case 1:
+					$img_st = "images/tick.png";
+					$title_st = __('Event validated');
+					break;
+				case 2:
+					$img_st = "images/hourglass.png";
+					$title_st = __('Event in process');
+					break;
+			}
+			$data[] = html_print_image ($img_st, true, 
+				array ("class" => "image_status",
+					"width" => 16,
+					"height" => 16,
+					"title" => $title_st,
+					"id" => 'status_img_' . $event["id_evento"]));
+			
+			$data[] = ui_print_truncate_text(
+				io_safe_output($event['evento']),
+				140, false, true);
+			
+			//$data[1] = $event['event_type'];
+			$data[] = events_print_type_img ($event["event_type"], true);
+			
+			if (!empty($event['agent_name']))
+				$data[] = $event['agent_name'];
+			else
+				$data[] = __('Pandora System');
+			$data[] = get_priority_name ($event['criticity']);
+			$data[] = io_safe_output($event['user_name']);
+			$data[] = '<font style="font-size: 6pt;">' .
+				$event['timestamp'] .
+				'</font>';
 			array_push ($table->data, $data);
 		}
 		
@@ -1793,6 +2045,137 @@ function reporting_get_group_detailed_event ($id_group, $period = 0, $date = 0, 
 	else {
 		return false;
 	}
+}
+
+/**
+ * Gets a detailed reporting of groups's events.  
+ *
+ * @param unknown_type $id_group Id of the group.
+ * @param unknown_type $period Time period of the report.
+ * @param unknown_type $date Date of the report.
+ * @param unknown_type $return Whether to return or not.
+ * @param unknown_type $html Whether to return HTML code or not.
+ *
+ * @return string Report of groups's events
+ */
+function reporting_get_count_events_by_agent ($id_group, $period = 0,
+	$date = 0,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if (empty ($period)) {
+		global $config;
+		
+		$period = $config["sla_period"];
+	}
+	
+	return events_get_count_events_by_agent($id_group, $period, $date,
+		$filter_event_validated, $filter_event_critical,
+		$filter_event_warning);
+}
+
+/**
+ * Gets a detailed reporting of groups's events.  
+ *
+ * @param unknown_type $filter.
+ * @param unknown_type $period Time period of the report.
+ * @param unknown_type $date Date of the report.
+ * @param unknown_type $return Whether to return or not.
+ * @param unknown_type $html Whether to return HTML code or not.
+ *
+ * @return string Report of groups's events
+ */
+function reporting_get_count_events_validated_by_user ($filter, $period = 0,
+	$date = 0,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if (empty ($period)) {
+		global $config;
+		
+		$period = $config["sla_period"];
+	}
+	
+	return events_get_count_events_validated_by_user($filter, $period, $date,
+		$filter_event_validated, $filter_event_critical,
+		$filter_event_warning);
+}
+
+/**
+ * Gets a detailed reporting of groups's events.  
+ *
+ * @param unknown_type $id_group Id of the group.
+ * @param unknown_type $period Time period of the report.
+ * @param unknown_type $date Date of the report.
+ * @param unknown_type $return Whether to return or not.
+ * @param unknown_type $html Whether to return HTML code or not.
+ *
+ * @return string Report of groups's events
+ */
+function reporting_get_count_events_by_criticity ($filter, $period = 0,
+	$date = 0,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if (empty ($period)) {
+		global $config;
+		
+		$period = $config["sla_period"];
+	}
+	
+	return events_get_count_events_by_criticity($filter, $period, $date,
+		$filter_event_validated, $filter_event_critical,
+		$filter_event_warning);
+}
+/**
+ * Gets a detailed reporting of groups's events.  
+ *
+ * @param unknown_type $id_group Id of the group.
+ * @param unknown_type $period Time period of the report.
+ * @param unknown_type $date Date of the report.
+ * @param unknown_type $return Whether to return or not.
+ * @param unknown_type $html Whether to return HTML code or not.
+ *
+ * @return string Report of groups's events
+ */
+function reporting_get_count_events_validated ($filter, $period = 0,
+	$date = 0,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if (empty ($period)) {
+		global $config;
+		
+		$period = $config["sla_period"];
+	}
+	
+	return events_get_count_events_validated($filter, $period, $date,
+		$filter_event_validated, $filter_event_critical,
+		$filter_event_warning);
 }
 
 /** 
@@ -2109,7 +2492,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		$agent_name = agents_get_name($content['id_agent']);
 	}
 	
-	
 	switch ($content["type"]) {
 		case 1:
 		case 'simple_graph':
@@ -2339,7 +2721,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$slas = db_get_all_rows_field_filter ('treport_content_sla_combined',
 				'id_report_content', $content['id_rc']);
-
+			
 			if ($slas === false) {
 				$data = array ();
 				$table->colspan[$next_row][0] = 3;
@@ -2402,10 +2784,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$sla_value = reporting_get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
 				$content['time_to']);
-								
+				
 				//Do not show right modules if 'only_display_wrong' is active
 				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
-			
+				
 				$sla_showed[] = $sla;
 				$sla_showed_values[] = $sla_value;
 			}
@@ -2437,8 +2819,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						//ui_print_error_message ("Error connecting to ".$server_name);
 						continue;
 					}
-				}	
-		
+				}
+				
 				if ($sla_value === false) {
 					if ($total_result_SLA != 'fail')
 						$total_result_SLA = 'unknown';
@@ -2546,13 +2928,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			if ($show_graphs && !empty($slas)) {
 				$data[0] = pie3d_graph(false, $data_graph,
 					500, 150, __("other"), "", $config['homedir'] .  "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']); 
+					$config['fontpath'], $config['font_size']);
 				
 				
 				//Print resume
 				$table_resume = null;
 				$table_resume->head[0] = __('Average Value');
-
+				
 				$table_resume->data[0][0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
 				$table_resume->data[0][0] .= format_numeric($total_SLA / count($sla_showed), 2);
 				$table_resume->data[0][0] .= "%</span>";
@@ -2733,26 +3115,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			
 			break;
-		case 'agent_detailed_event':
-		case 'event_report_agent':
-			reporting_header_content($mini, $content, $report, $table, __('Agent detailed event'),
-				ui_print_truncate_text(agents_get_name($content['id_agent']), 'agent_medium', false));
-			
-			//RUNNING
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$data[0] = reporting_get_agents_detailed_event ($content['id_agent'], $content['period'], $report["datetime"], true);
-			array_push ($table->data, $data);
-			break;
 		case 'text':
 			reporting_header_content($mini, $content, $report, $table, __('Text'),
 				"", "");
@@ -2803,7 +3165,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			else {
 				$sql = io_safe_output ($content['external_source']);
 			}
-
+			
 			// Do a security check on SQL coming from the user
 			$sql = check_sql ($sql);
 			
@@ -2864,8 +3226,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push($table->data, $data);
 			break;
 		case 'event_report_group':
-			reporting_header_content($mini, $content, $report, $table, __('Group detailed event'),
-				ui_print_truncate_text(groups_get_name($content['id_group'], true), 60, false));
+			reporting_header_content($mini, $content, $report, $table,
+				__('Group detailed event'),
+				ui_print_truncate_text(
+					groups_get_name($content['id_group'], true),
+				60, false));
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
@@ -2878,8 +3243,214 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			
-			$data[0] = reporting_get_group_detailed_event($content['id_group'], $content['period'], $report["datetime"], true);
+			$style = json_decode(io_safe_output($content['style']), true);
+			
+			$filter_event_validated = $style['filter_event_validated'];
+			$filter_event_critical = $style['filter_event_critical'];
+			$filter_event_warning = $style['filter_event_warning'];
+			
+			$event_graph_by_agent = $style['event_graph_by_agent'];
+			$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+			$event_graph_by_criticity = $style['event_graph_by_criticity'];
+			$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
+			
+			$data[0] = reporting_get_group_detailed_event(
+				$content['id_group'], $content['period'],
+				$report["datetime"], true, true,
+				$filter_event_validated,
+				$filter_event_critical,
+				$filter_event_warning);
 			array_push ($table->data, $data);
+			
+			if ($event_graph_by_agent) {
+				$data_graph = reporting_get_count_events_by_agent(
+					$content['id_group'], $content['period'],
+					$report["datetime"],
+					$filter_event_validated,
+					$filter_event_critical,
+					$filter_event_warning);
+				
+				$table_event_graph = null;
+				$table_event_graph->head[0] = __('Events by agent');
+				
+				$table_event_graph->data[0][0] = pie3d_graph(
+					false, $data_graph, 500, 150, __("other"), "",
+					$config['homedir'] .  "/images/logo_vertical_water.png",
+					$config['fontpath'], $config['font_size']);
+				
+				$data[0] = html_print_table($table_event_graph, true);
+				
+				$table->colspan[2][0] = 3;
+				array_push ($table->data, $data);
+			}
+			
+			if ($event_graph_by_user_validator) {
+				$data_graph = reporting_get_count_events_validated_by_user(
+					array('id_group' => $content['id_group']), $content['period'],
+					$report["datetime"],
+					$filter_event_validated,
+					$filter_event_critical,
+					$filter_event_warning);
+				
+				$table_event_graph = null;
+				$table_event_graph->head[0] = __('Events validated by user');
+				
+				$table_event_graph->data[0][0] = pie3d_graph(
+					false, $data_graph, 500, 150, __("other"), "",
+					$config['homedir'] .  "/images/logo_vertical_water.png",
+					$config['fontpath'], $config['font_size']);
+				
+				$data[0] = html_print_table($table_event_graph, true);
+				
+				$table->colspan[2][0] = 3;
+				array_push ($table->data, $data);
+			}
+			
+			if ($event_graph_by_criticity) {
+				$data_graph = reporting_get_count_events_by_criticity(
+					array('id_group' => $content['id_group']), $content['period'],
+					$report["datetime"],
+					$filter_event_validated,
+					$filter_event_critical,
+					$filter_event_warning);
+				
+				$table_event_graph = null;
+				$table_event_graph->head[0] = __('Events by criticity');
+				
+				$table_event_graph->data[0][0] = pie3d_graph(
+					false, $data_graph, 500, 150, __("other"), "",
+					$config['homedir'] .  "/images/logo_vertical_water.png",
+					$config['fontpath'], $config['font_size']);
+				
+				$data[0] = html_print_table($table_event_graph, true);
+				
+				$table->colspan[2][0] = 3;
+				array_push ($table->data, $data);
+			}
+			
+			if ($event_graph_validated_vs_unvalidated) {
+				$data_graph = reporting_get_count_events_validated(
+					array('id_group' => $content['id_group']), $content['period'],
+					$report["datetime"],
+					$filter_event_validated,
+					$filter_event_critical,
+					$filter_event_warning);
+				
+				$table_event_graph = null;
+				$table_event_graph->head[0] = __('Amount events validated');
+				
+				$table_event_graph->data[0][0] = pie3d_graph(
+					false, $data_graph, 500, 150, __("other"), "",
+					$config['homedir'] .  "/images/logo_vertical_water.png",
+					$config['fontpath'], $config['font_size']);
+				
+				$data[0] = html_print_table($table_event_graph, true);
+				
+				$table->colspan[2][0] = 3;
+				array_push ($table->data, $data);
+			}
+			break;
+		case 'agent_detailed_event':
+		case 'event_report_agent':
+			reporting_header_content($mini, $content, $report, $table, __('Agent detailed event'),
+				ui_print_truncate_text(agents_get_name($content['id_agent']), 'agent_medium', false));
+			
+			$style = json_decode(io_safe_output($content['style']), true);
+			
+			$filter_event_validated = $style['filter_event_validated'];
+			$filter_event_critical = $style['filter_event_critical'];
+			$filter_event_warning = $style['filter_event_warning'];
+			
+			$event_graph_by_agent = $style['event_graph_by_agent'];
+			$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+			$event_graph_by_criticity = $style['event_graph_by_criticity'];
+			$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
+			
+			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
+			if ($content["description"] != "") {
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = reporting_get_agents_detailed_event(
+				$content['id_agent'], $content['period'],
+				$report["datetime"], true,
+				$filter_event_validated,
+				$filter_event_critical,
+				$filter_event_warning);
+				
+			array_push ($table->data, $data);
+			
+			
+			if ($event_graph_by_user_validator) {
+				$data_graph = reporting_get_count_events_validated_by_user(
+					array('id_agent' => $content['id_agent']), $content['period'],
+					$report["datetime"],
+					$filter_event_validated,
+					$filter_event_critical,
+					$filter_event_warning);
+				
+				$table_event_graph = null;
+				$table_event_graph->head[0] = __('Events validated by user');
+				
+				$table_event_graph->data[0][0] = pie3d_graph(
+					false, $data_graph, 500, 150, __("other"), "",
+					$config['homedir'] .  "/images/logo_vertical_water.png",
+					$config['fontpath'], $config['font_size']);
+				
+				$data[0] = html_print_table($table_event_graph, true);
+				
+				$table->colspan[2][0] = 3;
+				array_push ($table->data, $data);
+			}
+			
+			if ($event_graph_by_criticity) {
+				$data_graph = reporting_get_count_events_by_criticity(
+					array('id_agent' => $content['id_agent']), $content['period'],
+					$report["datetime"],
+					$filter_event_validated,
+					$filter_event_critical,
+					$filter_event_warning);
+				
+				$table_event_graph = null;
+				$table_event_graph->head[0] = __('Events by criticity');
+				
+				$table_event_graph->data[0][0] = pie3d_graph(
+					false, $data_graph, 500, 150, __("other"), "",
+					$config['homedir'] .  "/images/logo_vertical_water.png",
+					$config['fontpath'], $config['font_size']);
+				
+				$data[0] = html_print_table($table_event_graph, true);
+				
+				$table->colspan[2][0] = 3;
+				array_push ($table->data, $data);
+			}
+			
+			if ($event_graph_validated_vs_unvalidated) {
+				$data_graph = reporting_get_count_events_validated(
+					array('id_agent' => $content['id_agent']), $content['period'],
+					$report["datetime"],
+					$filter_event_validated,
+					$filter_event_critical,
+					$filter_event_warning);
+				
+				$table_event_graph = null;
+				$table_event_graph->head[0] = __('Amount events validated');
+				
+				$table_event_graph->data[0][0] = pie3d_graph(
+					false, $data_graph, 500, 150, __("other"), "",
+					$config['homedir'] .  "/images/logo_vertical_water.png",
+					$config['fontpath'], $config['font_size']);
+				
+				$data[0] = html_print_table($table_event_graph, true);
+				
+				$table->colspan[2][0] = 3;
+				array_push ($table->data, $data);
+			}
 			break;
 		case 'event_report_module':
 			reporting_header_content($mini, $content, $report, $table, __('Module detailed event'),
@@ -2899,6 +3470,27 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$data[0] = reporting_get_module_detailed_event($content['id_agent_module'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
 			break;
+		case 'alert_report_group':
+			reporting_header_content($mini, $content, $report, $table, __('Alert report group'),
+				ui_print_truncate_text(
+					groups_get_name($content['id_group'], true),
+				60, false));
+			
+			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
+			if ($content["description"] != "") {
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = reporting_alert_reporting_group(
+				$content['id_group'], $content['period'],
+				$report["datetime"], true);
+			array_push ($table->data, $data);
+			break;
 		case 'alert_report_module':
 			reporting_header_content($mini, $content, $report, $table, __('Alert report module'),
 				ui_print_truncate_text($agent_name, 'agent_medium', false) .
@@ -2916,7 +3508,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[2][0] = 3;
 			$data[0] = reporting_alert_reporting_module ($content['id_agent_module'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
-			break; 
+			break;
 		case 'alert_report_agent':
 			reporting_header_content($mini, $content, $report, $table, __('Alert report agent'),
 				ui_print_truncate_text($agent_name, 'agent_medium', false));
@@ -3402,7 +3994,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 									
 									if ($value_avg === false) {
 										$data[$i] = '--';
-									} else {
+									}
+									else {
 										$data[$i] = format_for_graph($value_avg, 2) . " " . $unit;
 									}
 									$found = true;
@@ -3429,7 +4022,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					break;
 			}
 			if ($content['show_resume'] && count($generals) > 0) {
-
+				
 				//Get the first valid value and assign it to $min & $max
 				$min = false;
 				$i=0;
@@ -3451,7 +4044,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					if (($config ['metaconsole'] == 1) && $server_name != '') {
 						metaconsole_restore_db();
 					}
-				} while ($min === false && $i < count($generals));
+				}
+				while ($min === false && $i < count($generals));
 				$max = $min;
 				$avg = 0;
 				$length = 0;
@@ -3509,7 +4103,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table_summary->data[0][0] = format_for_graph($min,2);
 				$table_summary->data[0][1] = format_for_graph($avg,2);
 				$table_summary->data[0][2] = format_for_graph($max,2);
-							
+				
 				$table->colspan[3][0] = 3;
 				array_push ($table->data, array('<b>'.__('Summary').'</b>'));
 				$table->colspan[4][0] = 3;
@@ -3685,7 +4279,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$data_hbar[$item_name]['g'] = $dt; 
 					$data_pie_graph[$item_name] = $dt;
 					
-					if  ($show_graph == 0 || $show_graph == 1) {
+					if ($show_graph == 0 || $show_graph == 1) {
 						$data = array();
 						$data[0] = $agent_name[$i];
 						$data[1] = $module_name[$i];
@@ -3818,14 +4412,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
 			}
 			//Get all the related data
-			$sql = sprintf("select id_agent_module, server_name from treport_content_item
-							where id_report_content = %d", $content['id_rc']);
+			$sql = sprintf("SELECT id_agent_module, server_name
+				FROM treport_content_item
+				WHERE id_report_content = %d", $content['id_rc']);
 			
 			$exceptions = db_process_sql ($sql);
 			if ($exceptions === false) {
@@ -4043,7 +4638,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				array_push ($table->data, $data);
 			}
-
+			
 			if ($content['show_resume'] && $i>0) {
 				unset($table_summary);
 				
@@ -4057,7 +4652,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table_summary->data[0][0] = format_for_graph($min,2);
 				$table_summary->data[0][1] = format_for_graph($avg,2);
 				$table_summary->data[0][2] = format_for_graph($max,2);
-							
+				
 				$table->colspan[5][0] = 3;
 				array_push ($table->data, array('<b>'.__('Summary').'</b>'));
 				$table->colspan[6][0] = 3;
@@ -4066,7 +4661,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		case 'agent_module':
 			reporting_header_content($mini, $content, $report, $table, __('Agents/Modules'));
-		
+			
 			$id_group = $content['id_group'];
 			$id_module_group = $content['id_module_group'];
 			$offset = get_parameter('offset', 0);
@@ -4083,13 +4678,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$agents = '';
-			if($id_group > 0) {
+			if ($id_group > 0) {
 				$agents = agents_get_group_agents($id_group);
 				$agents = array_keys($agents);
 			}
 			
 			$filter_module_groups = false;	
-			if($id_module_group > 0) {
+			if ($id_module_group > 0) {
 				$filter_module_groups['id_module_group'] = $id_module_group;
 			}
 			
@@ -4099,8 +4694,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$name = '';
 			$cont = 0;
 			
-			foreach($all_modules as $key => $module) {
-				if($module == $name) {
+			foreach ($all_modules as $key => $module) {
+				if ($module == $name) {
 					$modules_by_name[$cont-1]['id'][] = $key;
 				}
 				else {
@@ -4110,8 +4705,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$cont ++;
 				}
 			}
-
-			if($config["pure"] == 1) {
+			
+			if ($config["pure"] == 1) {
 				$block = count($modules_by_name);
 			}
 			
@@ -4125,7 +4720,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$agents = agents_get_agents ($filter_groups);
 			$nagents = count($agents);
 			
-			if($all_modules == false || $agents == false) {
+			if ($all_modules == false || $agents == false) {
 				$data = array ();
 				$table->colspan[2][0] = 3;
 				$data[0] = __('There are no agents with modules');
@@ -4153,7 +4748,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}*/
 			
 			$filter_agents = false;
-			if($id_group > 0) {
+			if ($id_group > 0) {
 				$filter_agents = array('id_grupo' => $id_group);
 			}
 			// Prepare pagination
@@ -4233,7 +4828,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 							$match = true;
 						}
 					}
-								
+					
 					if(!$match) {
 						$table_data .= "<td style='background-color: #DDD;'></td>";
 					}
@@ -4241,7 +4836,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$table_data .= "</tr>";
 			}
-
+			
 			$table_data .= "</table>";
 			
 			$table_data .= "<br><br><p>" . __("The colours meaning:") .
@@ -4282,7 +4877,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$module_name = $es['inventory_modules'];
 			$date = $es['date'];
 			$description = $content['description'];
-						
+			
 			$data = array ();
 			$table->colspan[1][0] = 2;
 			$table->colspan[2][0] = 2;
@@ -4290,9 +4885,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data[0] = $description;
 				array_push ($table->data, $data);
 			}
-
+			
 			$inventory_data = inventory_get_data((array)$id_agent,(array)$module_name,$date,'',false);
-
+			
 			if ($inventory_data == ERR_NODATA) {
 				$inventory_data = "<div class='nf'>".__('No data found.')."</div>";
 				$inventory_data .= "&nbsp;</td></tr><tr><td>";				
@@ -4318,17 +4913,17 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$data = array ();
-
+			
 			$table->colspan[1][0] = 2;
-
+			
 			if($description != '') {
 				$data[0] = $description;
 				array_push ($table->data, $data);
 			}
-
+			
 			$data[0] = $inventory_changes;
 			$table->colspan[2][0] = 2;
-
+			
 			array_push ($table->data, $data);
 			break;
 	}

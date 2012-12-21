@@ -137,7 +137,6 @@ function events_get_similar_ids ($id, $status = 0, $validated_limit_time = 0) {
 function events_delete_event ($id_event, $similar = true, $validated_limit_time = 0, $events_rep = array()) {
 	global $config;
 	
-	html_debug_print($validated_limit_time,true);
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
 	
@@ -174,7 +173,8 @@ function events_delete_event ($id_event, $similar = true, $validated_limit_time 
 	
 	if ($errors > 1) {
 		return false;
-	} else {
+	}
+	else {
 		return true;
 	}
 }
@@ -193,10 +193,10 @@ function events_delete_event ($id_event, $similar = true, $validated_limit_time 
  */	
 function events_validate_event ($id_event, $similars = true, $comment = '', $new_status = 1, $validated_limit_time = 0, $events_rep = array()) {
 	global $config;
-
+	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
-
+	
 	/* We must validate all events like the selected */
 	if ($similars && $new_status == 1) {
 		foreach ($id_event as $k => $id) {
@@ -204,12 +204,12 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 			if(!empty($events_rep) && $events_rep[$k] == 1) {
 				continue;
 			}
-
+			
 			$id_event = array_merge ($id_event, events_get_similar_ids ($id, $new_status, $validated_limit_time));
 		}
 		$id_event = array_unique($id_event);
 	}
-
+	
 	$events_similar = array();
 	
 	// Now check ACLs, discart no valid ACL events
@@ -226,7 +226,7 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 			$events_similar[] = $event; 
 		
 		}
-				
+		
 		$id_event = $events_similar;
 		
 	}
@@ -268,8 +268,8 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 				$sql_validation .= " AND estado NOT IN (1,2)";
 			   
 			$ret = db_process_sql($sql_validation);
-				
-			break;				
+			
+			break;
 		case 'postgresql':
 		case 'oracle':
 			$sql_validation = "UPDATE tevento 
@@ -277,14 +277,14 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 									   id_usuario = '" . $config['id_user'] . "', 
 									   user_comment=user_comment || '" . $comment . "') 
 								   WHERE id_evento in (" . implode(',', $id_event) . ")";	
-								   
+			
 			if ($new_status == 1)
 				$sql_validation .= " AND estado <> 1";
 			else if ($new_status == 2)
 				$sql_validation .= " AND estado NOT IN (1,2)";
-				
-			$ret = db_process_sql($sql_validation);							   					
-
+			
+			$ret = db_process_sql($sql_validation);
+			
 			break;
 	}
 	
@@ -295,7 +295,7 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 	foreach ($id_event as $event) {
 		db_pandora_audit("Event validated", "Validated event #".$event);
 	}
-
+	
 	return true;
 }
 
@@ -711,25 +711,313 @@ function events_print_type_description ($type, $return = false) {
  *
  * @return array An array with all the events happened.
  */
-function events_get_group_events ($id_group, $period, $date) {
+function events_get_group_events ($id_group, $period, $date,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
 	global $config;
-
+	
 	$id_group = groups_safe_acl ($config["id_user"], $id_group, "AR");
-
+	
 	if (empty ($id_group)) {
 		//An empty array means the user doesn't have access
 		return false;
 	}
-
+	
 	$datelimit = $date - $period;
-
-	$sql = sprintf ('SELECT * FROM tevento
+	
+	$sql_where = ' AND 1 = 1 ';
+	if ($filter_event_critical) {
+		$sql_where .= ' AND criticity = 4 ';
+	}
+	if ($filter_event_warning) {
+		$sql_where .= ' AND criticity = 3 ';
+	}
+	if ($filter_event_validated) {
+		$sql_where .= ' AND estado = 1 ';
+	}
+	
+	$sql = sprintf ('SELECT *,
+		(SELECT t2.nombre
+			FROM tagente AS t2
+			WHERE t2.id_agente = t3.id_agente) AS agent_name,
+		(SELECT t2.fullname
+			FROM tusuario AS t2
+			WHERE t2.id_user = t3.id_usuario) AS user_name
+		FROM tevento AS t3
 		WHERE utimestamp > %d AND utimestamp <= %d
-		AND id_grupo IN (%s)
+			AND id_grupo IN (%s) ' . $sql_where . '
 		ORDER BY utimestamp ASC',
 		$datelimit, $date, implode (",", $id_group));
-
+	
 	return db_get_all_rows_sql ($sql);
+}
+
+/**
+ * Get all the events happened in a group during a period of time.
+ *
+ * The returned events will be in the time interval ($date - $period, $date]
+ *
+ * @param mixed $id_group Group id to get events for.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ *
+ * @return array An array with all the events happened.
+ */
+function events_get_count_events_by_agent ($id_group, $period, $date,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
+	global $config;
+	
+	$id_group = groups_safe_acl ($config["id_user"], $id_group, "AR");
+	
+	if (empty ($id_group)) {
+		//An empty array means the user doesn't have access
+		return false;
+	}
+	
+	$datelimit = $date - $period;
+	
+	$sql_where = ' AND 1 = 1 ';
+	if ($filter_event_critical) {
+		$sql_where .= ' AND criticity = 4 ';
+	}
+	if ($filter_event_warning) {
+		$sql_where .= ' AND criticity = 3 ';
+	}
+	if ($filter_event_validated) {
+		$sql_where .= ' AND estado = 1 ';
+	}
+	
+	$sql = sprintf ('SELECT id_agente,
+		(SELECT t2.nombre
+			FROM tagente AS t2
+			WHERE t2.id_agente = t3.id_agente) AS agent_name,
+		COUNT(*) AS count
+		FROM tevento AS t3
+		WHERE utimestamp > %d AND utimestamp <= %d
+			AND id_grupo IN (%s) ' . $sql_where . '
+		GROUP BY id_agente',
+		$datelimit, $date, implode (",", $id_group));
+	
+	$rows = db_get_all_rows_sql ($sql);
+	
+	$return = array();
+	foreach ($rows as $row) {
+		$agent_name = $row['agent_name'];
+		if (empty($row['agent_name'])) {
+			$agent_name = __('Pandora System');
+		}
+		$return[$agent_name] = $row['count'];
+	}
+	
+	return $return;
+}
+
+/**
+ * Get all the events happened in a group during a period of time.
+ *
+ * The returned events will be in the time interval ($date - $period, $date]
+ *
+ * @param mixed $id_group Group id to get events for.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ *
+ * @return array An array with all the events happened.
+ */
+function events_get_count_events_validated_by_user ($filter, $period, $date,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
+	global $config;
+	
+	$sql_filter = ' AND 1=1 ';
+	if (isset($filter['id_group'])) {
+		$id_group = groups_safe_acl ($config["id_user"], $filter['id_group'], "AR");
+		
+		if (empty ($id_group)) {
+			//An empty array means the user doesn't have access
+			return false;
+		}
+		
+		$sql_filter .= 
+			sprintf(' AND id_grupo IN (%s) ', implode (",", $id_group));
+	}
+	if (!empty($filter['id_agent'])) {
+		$sql_filter .= 
+			sprintf(' AND id_agente = %d ', $filter['id_agent']);
+	}
+	
+	$datelimit = $date - $period;
+	
+	$sql_where = ' AND 1 = 1 ';
+	if ($filter_event_critical) {
+		$sql_where .= ' AND criticity = 4 ';
+	}
+	if ($filter_event_warning) {
+		$sql_where .= ' AND criticity = 3 ';
+	}
+	if ($filter_event_validated) {
+		$sql_where .= ' AND estado = 1 ';
+	}
+	
+	$sql = sprintf ('SELECT id_usuario,
+		(SELECT t2.fullname
+			FROM tusuario AS t2
+			WHERE t2.id_user = t3.id_usuario) AS user_name,
+		COUNT(*) AS count
+		FROM tevento AS t3
+		WHERE utimestamp > %d AND utimestamp <= %d
+			%s ' . $sql_where . '
+		GROUP BY id_usuario',
+		$datelimit, $date, $sql_filter);
+	
+	$rows = db_get_all_rows_sql ($sql);
+	
+	$return = array();
+	foreach ($rows as $row) {
+		$user_name = $row['user_name'];
+		if (empty($row['user_name'])) {
+			$user_name = __('Unknown');
+		}
+		$return[$user_name] = $row['count'];
+	}
+	
+	return $return;
+}
+
+/**
+ * Get all the events happened in a group during a period of time.
+ *
+ * The returned events will be in the time interval ($date - $period, $date]
+ *
+ * @param mixed $id_group Group id to get events for.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ *
+ * @return array An array with all the events happened.
+ */
+function events_get_count_events_by_criticity ($filter, $period, $date,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
+	global $config;
+	
+	$sql_filter = ' AND 1=1 ';
+	if (isset($filter['id_group'])) {
+		$id_group = groups_safe_acl ($config["id_user"], $filter['id_group'], "AR");
+		
+		if (empty ($id_group)) {
+			//An empty array means the user doesn't have access
+			return false;
+		}
+		
+		$sql_filter .= 
+			sprintf(' AND id_grupo IN (%s) ', implode (",", $id_group));
+	}
+	if (!empty($filter['id_agent'])) {
+		$sql_filter .= 
+			sprintf(' AND id_agente = %d ', $filter['id_agent']);
+	}
+	
+	$datelimit = $date - $period;
+	
+	$sql_where = ' AND 1 = 1 ';
+	if ($filter_event_critical) {
+		$sql_where .= ' AND criticity = 4 ';
+	}
+	if ($filter_event_warning) {
+		$sql_where .= ' AND criticity = 3 ';
+	}
+	if ($filter_event_validated) {
+		$sql_where .= ' AND estado = 1 ';
+	}
+	
+	$sql = sprintf ('SELECT criticity,
+		COUNT(*) AS count
+		FROM tevento
+		WHERE utimestamp > %d AND utimestamp <= %d
+			%s ' . $sql_where . '
+		GROUP BY criticity',
+		$datelimit, $date, $sql_filter);
+	
+	$rows = db_get_all_rows_sql ($sql);
+	
+	$return = array();
+	foreach ($rows as $row) {
+		$return[get_priority_name($row['criticity'])] = $row['count'];
+	}
+	
+	return $return;
+}
+
+/**
+ * Get all the events happened in a group during a period of time.
+ *
+ * The returned events will be in the time interval ($date - $period, $date]
+ *
+ * @param mixed $id_group Group id to get events for.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ *
+ * @return array An array with all the events happened.
+ */
+function events_get_count_events_validated ($filter, $period, $date,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
+	global $config;
+	
+	$sql_filter = ' AND 1=1 ';
+	if (isset($filter['id_group'])) {
+		$id_group = groups_safe_acl ($config["id_user"], $filter['id_group'], "AR");
+		
+		if (empty ($id_group)) {
+			//An empty array means the user doesn't have access
+			return false;
+		}
+		
+		$sql_filter .= 
+			sprintf(' AND id_grupo IN (%s) ', implode (",", $id_group));
+	}
+	if (!empty($filter['id_agent'])) {
+		$sql_filter .= 
+			sprintf(' AND id_agente = %d ', $filter['id_agent']);
+	}
+	
+	$datelimit = $date - $period;
+	
+	$sql_where = ' AND 1 = 1 ';
+	if ($filter_event_critical) {
+		$sql_where .= ' AND criticity = 4 ';
+	}
+	if ($filter_event_warning) {
+		$sql_where .= ' AND criticity = 3 ';
+	}
+	if ($filter_event_validated) {
+		$sql_where .= ' AND estado = 1 ';
+	}
+	
+	$sql = sprintf ('SELECT estado,
+		COUNT(*) AS count
+		FROM tevento
+		WHERE utimestamp > %d AND utimestamp <= %d
+			%s ' . $sql_where . '
+		GROUP BY estado',
+		$datelimit, $date, $sql_filter);
+	//html_debug_print("events_get_count_events_validated", true);
+	//html_debug_print($sql, true);
+	$rows = db_get_all_rows_sql ($sql);
+	//html_debug_print($rows, true);
+	$return = array();
+	$return[__('Validated')] = 0;
+	$return[__('Not validated')] = 0;
+	foreach ($rows as $row) {
+		if ($row['estado'] == 1) {
+			$return[__('Validated')] += $row['count'];
+		}
+		else {
+			$return[__('Not validated')] += $row['count'];
+		}
+	}
+	
+	return $return;
 }
 
 /**
@@ -743,23 +1031,42 @@ function events_get_group_events ($id_group, $period, $date) {
  *
  * @return array An array with all the events happened.
  */
-function events_get_agent ($id_agent, $period, $date = 0) {
+function events_get_agent ($id_agent, $period, $date = 0,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false) {
+	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-
+	
 	$datelimit = $date - $period;
-
-	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep,
-			max(timestamp) AS time2
-		FROM tevento
-		WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d 
+	
+	$sql_where = ' AND 1 = 1 ';
+	if ($filter_event_critical) {
+		$sql_where .= ' AND criticity = 4 ';
+	}
+	if ($filter_event_warning) {
+		$sql_where .= ' AND criticity = 3 ';
+	}
+	if ($filter_event_validated) {
+		$sql_where .= ' AND estado = 1 ';
+	}
+	
+	$sql = sprintf ('SELECT id_usuario,
+			(SELECT t2.fullname
+				FROM tusuario AS t2
+				WHERE t2.id_user = t3.id_usuario) AS user_name,
+			estado, id_agentmodule, evento, event_type, criticity,
+			count(*) AS count_rep, max(timestamp) AS time2
+		FROM tevento as t3
+		WHERE id_agente = %d AND utimestamp > %d
+			AND utimestamp <= %d ' . $sql_where . '
 		GROUP BY id_agentmodule, evento
 		ORDER BY time2 DESC', $id_agent, $datelimit, $date);
-
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -781,15 +1088,14 @@ function events_get_module ($id_agent_module, $period, $date = 0) {
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-
+	
 	$datelimit = $date - $period;
-
+	
 	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2
 		FROM tevento
 		WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d 
 		GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $id_agent_module, $datelimit, $date);
-
+	
 	return db_get_all_rows_sql ($sql);
 }
-
 ?>

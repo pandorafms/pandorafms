@@ -1,5 +1,20 @@
 2012-12-21 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	include/functions_reports.php, include/functions_graph.php,
+	include/functions_reporting.php, include/functions_alerts.php,
+	include/functions_events.php, include/graphs/fgraph.php,
+	extensions/resource_registration.php,
+	extensions/resource_exportation.php,
+	operation/reporting/reporting_viewer.php,
+	operation/events/events_list.php,
+	operation/events/event_statistics.php: uploaded fixes and changes
+	in the item events. And added new item report, the
+	"Alert report (group)".
+
+2012-12-21 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* ChangeLog: uploaded lost lines from the last commit.
 
 2012-12-21 Miguel de Dios <miguel.dedios@artica.es>

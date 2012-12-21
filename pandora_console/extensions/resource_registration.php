@@ -299,6 +299,8 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 					break; 
 				case 'alert_report_agent':
 					break;
+				case 'alert_report_group':
+					break;
 				case 'url':
 					$values["external_source"] = io_safe_input($item['url']);
 					break;

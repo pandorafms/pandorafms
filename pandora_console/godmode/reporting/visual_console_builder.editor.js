@@ -1087,6 +1087,7 @@ function updateDB(type, idElement , values, event) {
 	//Check if the event parameter in function is passed in the call.
 	if (event != null) {
 		switch (event) {
+			case 'show_grid':
 			case 'resizestop':
 			//Force to move action when resize a background, for to avoid
 			//lost the label.
@@ -1097,14 +1098,14 @@ function updateDB(type, idElement , values, event) {
 	}
 	
 	parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: action});
-	parameter.push ({name: "id_visual_console", value: id_visual_console});
-	parameter.push ({name: "type", value: type});
-	parameter.push ({name: "id_element", value: idElement});
+	parameter.push({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push({name: "action", value: action});
+	parameter.push({name: "id_visual_console", value: id_visual_console});
+	parameter.push({name: "type", value: type});
+	parameter.push({name: "id_element", value: idElement});
 	
 	jQuery.each(values, function(key, val) {
-		parameter.push ({name: key, value: val});
+		parameter.push({name: key, value: val});
 	});
 	
 	if ((typeof(values['mov_left']) != 'undefined') &&

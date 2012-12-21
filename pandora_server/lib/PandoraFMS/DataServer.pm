@@ -544,6 +544,7 @@ sub process_module_data ($$$$$$$$$) {
 		
 	# Description XML tag and column name don't match
 	$module_conf->{'descripcion'} = $module_conf->{'description'};
+	$module_conf->{'descripcion'} = '' unless defined ($module_conf->{'descripcion'});
 	delete $module_conf->{'description'};
 	
 	# Name XML tag and column name don't match

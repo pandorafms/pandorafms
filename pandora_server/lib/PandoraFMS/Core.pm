@@ -1114,11 +1114,17 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$status = $new_status;
 
 		# Update module status count
-		update_module_status_count ($dbh, $agent, $status, $last_status, $agent_status->{'utimestamp'});
+		update_module_status_count ($dbh, $agent, $status, $last_status);
 	}
-	# Update module status count for notinit modules that go to normal status
-	elsif ($agent_status->{'utimestamp'} == 0) {
-		update_module_status_count ($dbh, $agent, $status, $last_status, 0);
+	# Set unknown modules to normal even if min_ff_event is set
+	elsif ($status == 4) {
+		$new_status = 0;
+		
+		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
+		$status = $new_status;
+
+		# Update module status count
+		update_module_status_count ($dbh, $agent, $status, $last_status);
 	}
 		
 	$last_status = $new_status;
@@ -2148,12 +2154,22 @@ sub pandora_create_module ($$$$$$$$$$) {
 	$min = 0 if ($min eq '');
 	$post_process = 0 if ($post_process eq '');
 
+	# Set the initial status of the module
+	my $status = 4;
+	if ($module_type_id == 21 || $module_type_id == 22 || $module_type_id == 23) {
+		$status = 0;
+	}
+	
 	my $module_id = db_insert($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
-	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, last_try) VALUES (?, ?, \'1970-01-01 00:00:00\')', $module_id, $agent_id);
+	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')', $module_id, $agent_id, $status, $status, $status);
 	
 	# Update the module status count
-	db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $agent_id);
+	if ($status == 4) {
+		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $agent_id);
+	} else {
+		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=?', $agent_id);
+	}
 	
 	return $module_id;
 }
@@ -2219,10 +2235,19 @@ sub pandora_create_module_from_hash ($$$) {
 
 	my $module_id = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $parameters);
 
-	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, last_try) VALUES (?, ?, \'1970-01-01 00:00:00\')', $module_id, $parameters->{'id_agente'});
+	my $status = 4;
+	if (defined ($parameters->{'id_tipo_modulo'}) && ($parameters->{'id_tipo_modulo'} == 21 || $parameters->{'id_tipo_modulo'} == 22 || $parameters->{'id_tipo_modulo'} == 23)) {
+		$status = 0;
+	}
+	
+	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')', $module_id, $parameters->{'id_agente'}, $status, $status, $status);
 
 	# Update the module status count
-	db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
+	if ($status == 4) {
+		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
+	} else {
+		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
+	}
 
 	return $module_id;
 }
@@ -3482,51 +3507,8 @@ sub pandora_group_statistics ($$) {
 		$group = $group_row->{'id_grupo'};
 
 		# NOTICE - Calculations done here MUST BE the same than used in PHP code to have
-		# the same criteria. PLEASE, double check any changes here and in functions_group.php
-		
-		my $agents_critical_query = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 1 
-						AND tagente_estado.utimestamp != 0
-						AND tagente.id_grupo = $group
-						group by tagente.id_agente";		
-
-		my $agents_warning_query = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 2 
-						AND tagente_estado.utimestamp != 0
-						AND tagente.id_grupo = $group
-						group by tagente.id_agente";
-	
-		my $agents_unknown_query = "SELECT tagente.id_agente 
-						FROM tagente_estado, tagente, tagente_modulo
-						WHERE tagente_estado.id_agente = tagente.id_agente
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND estado = 3
-						AND tagente_estado.utimestamp != 0
-						AND tagente.id_grupo = $group
-						group by tagente.id_agente";
-								
-		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM ( SELECT DISTINCT tagente.id_agente
-						FROM tagente, tagente_modulo, tagente_estado 
-						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-
-						AND tagente.id_grupo = $group 
-						AND tagente.id_agente NOT IN ($agents_critical_query)
-						AND tagente.id_agente NOT IN ($agents_warning_query)
-						AND tagente.id_agente IN ($agents_unknown_query) ) AS t");
-		
+		# the same criteria. PLEASE, double check any changes here and in functions_groups.php
+		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);
 		$agents_unknown = 0 unless defined ($agents_unknown);
 
 		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE id_grupo = $group AND disabled = 0");
@@ -3535,56 +3517,32 @@ sub pandora_group_statistics ($$) {
 		$modules = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0");
 		$modules = 0 unless defined ($modules);
 		
-		$normal = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado)
-				FROM tagente_estado, tagente, tagente_modulo
-				WHERE tagente.id_grupo = $group AND tagente.disabled = 0
-					AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado = 0 
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.utimestamp != 0");
+		$normal = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo=?", $group);
 		$normal = 0 unless defined ($normal);
 		
-		$critical = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado)
-				FROM tagente_estado, tagente, tagente_modulo
-				WHERE tagente.id_grupo = $group AND tagente.disabled = 0
-					AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado = 1 
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.utimestamp != 0");
+		$critical = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count>0 AND id_grupo=?", $group);
 		$critical = 0 unless defined ($critical);
 		
-		$warning = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado)
-				FROM tagente_estado, tagente, tagente_modulo
-				WHERE tagente.id_grupo = $group AND tagente.disabled = 0
-					AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado = 2 
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.utimestamp != 0");
+		$warning = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo=?", $group);
 		$warning = 0 unless defined ($warning);
 	
-		$unknown = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado)
-				FROM tagente_estado, tagente, tagente_modulo
-				WHERE tagente.id_grupo = $group AND tagente.disabled = 0
-					AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.estado = 3 
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.utimestamp != 0");	
+		$unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);	
 		$unknown = 0 unless defined ($unknown);
 		
-		$non_init = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado)
-				FROM tagente_estado, tagente, tagente_modulo
-				WHERE tagente.id_grupo = $group AND tagente.disabled = 0 
-					AND tagente.id_agente = tagente_estado.id_agente
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-					AND tagente_modulo.disabled = 0
-					AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24) AND utimestamp = 0");
+		$non_init = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND notinit_count>0 AND id_grupo=?", $group);
 		$non_init = 0 unless defined ($non_init);
 		
 		$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
+				FROM talert_template_modules, tagente_modulo, tagente
 				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0  			
 					AND	talert_template_modules.disabled = 0 
 					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
 		$alerts = 0 unless defined ($alerts);
 		
 		$alerts_fired = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
+				FROM talert_template_modules, tagente_modulo, tagente
 				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 
 					AND talert_template_modules.disabled = 0 
 					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
@@ -3592,9 +3550,7 @@ sub pandora_group_statistics ($$) {
 		$alerts_fired = 0 unless defined ($alerts_fired);
 		
 		# Update the record.
-
 		db_do ($dbh, "DELETE FROM tgroup_stat WHERE id_group = $group");
-
 		db_do ($dbh, "INSERT INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . db_reserved_word ('non-init') . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
 
 	}
@@ -3819,14 +3775,12 @@ sub pandora_get_module_tags ($$$) {
 ##########################################################################
 # Update the module status count of an agent.
 ##########################################################################
-sub update_module_status_count ($$$$;$) {
-	my ($dbh, $agent, $new_status, $last_status, $utimestamp) = @_;
+sub update_module_status_count ($$$$) {
+	my ($dbh, $agent, $new_status, $last_status) = @_;
 
 	# Substract the previous status
 	my $query_sub = '';
-	if (defined ($utimestamp) && $utimestamp == 0) {
-		$query_sub .= 'notinit_count=notinit_count-1';
-	} elsif ($last_status == 0) {
+	if ($last_status == 0) {
 		$query_sub .= 'normal_count=normal_count-1';
 	} elsif ($last_status == 1) {
 		$query_sub .= 'critical_count=critical_count-1';
@@ -3834,6 +3788,8 @@ sub update_module_status_count ($$$$;$) {
 		$query_sub .= 'warning_count=warning_count-1';
 	} elsif ($last_status == 3) {
 		$query_sub .= 'unknown_count=unknown_count-1';
+	} elsif ($last_status == 4) {
+		$query_sub .= 'notinit_count=notinit_count-1';
 	}
 	
 	# Add the new status
@@ -3846,6 +3802,8 @@ sub update_module_status_count ($$$$;$) {
 		$query_add .= 'warning_count=warning_count+1';
 	} elsif ($new_status == 3) {
 		$query_add .= 'unknown_count=unknown_count+1';
+	} elsif ($new_status == 4) {
+		$query_add .= 'notinit_count=notinit_count+1';
 	}
 
 	# Update the status count

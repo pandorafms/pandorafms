@@ -488,7 +488,7 @@ sub pandora_checkdb_consistency {
 	# 1. Check for modules that do not have tagente_estado but have tagente_module
 
 	print "[CHECKDB] Deleting non-init data... \n";
-	my @modules = get_db_rows ($dbh, 'SELECT id_agente_modulo,id_agente FROM tagente_estado WHERE utimestamp = 0');
+	my @modules = get_db_rows ($dbh, 'SELECT id_agente_modulo,id_agente FROM tagente_estado WHERE estado = 4');
 	foreach my $module (@modules) {
 		my $id_agente_modulo = $module->{'id_agente_modulo'};
 

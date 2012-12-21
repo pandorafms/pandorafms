@@ -1564,6 +1564,17 @@ function events_page_details ($event, $server = "") {
 	global $img_sev;
 	global $config;
 	
+	// If server is provided, get the hash parameters
+	if (!empty($server)) { 
+		$hashdata = metaconsole_get_server_hashdata($server);
+		$hashstring = "&amp;loginhash=auto&loginhash_data=" . $hashdata . "&loginhash_user=" . $config["id_user"];
+		$serverstring = $server['server_url'] . "/";
+	}
+	else {
+		$hashstring = "";
+		$serverstring = "";
+	}
+		
 	/////////
 	// Details
 	/////////
@@ -1600,7 +1611,7 @@ function events_page_details ($event, $server = "") {
 	if (!empty($agent)) {
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
-		$data[1] = ui_print_agent_name ($event["id_agente"], true);
+		$data[1] = ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, $serverstring, $hashstring);
 		$table_details->data[] = $data;
 
 		$data = array();
@@ -1645,7 +1656,7 @@ function events_page_details ($event, $server = "") {
 		// Module name
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
-		$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data"><b>';
+		$data[1] = '<a href="'.$serverstring.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data'.$hashstring.'"><b>';
 		$data[1] .= $module['nombre'];
 		$data[1] .= '</b></a>';
 		$table_details->data[] = $data;
@@ -1659,7 +1670,7 @@ function events_page_details ($event, $server = "") {
 		}
 		else {
 			$module_group = db_get_value('name', 'tmodule_group', 'id_mg', $id_module_group);
-			$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . '">';
+			$data[1] = '<a href="'.$serverstring.'index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . $hashstring.'">';
 			$data[1] .= $module_group;
 			$data[1] .= '</a>';
 		}
@@ -1670,15 +1681,9 @@ function events_page_details ($event, $server = "") {
 		$graph_type = return_graphtype ($module["module_type"]);
 
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["module_name"]));
-		
-		if (!empty($server)) { 
-			$hashdata = metaconsole_get_server_hashdata($server);
-			$link ="winopeng('" . $server['server_url'] . "/operation/agentes/stat_win.php?type=".$graph_type."&period=86400&loginhash=auto&loginhash_data=" . $hashdata . "&loginhash_user=" . $config["id_user"] . "&id=".$module["id_agente_modulo"]."&label=".base64_encode($module["module_name"])."&refresh=600','day_".$win_handle."')";
-		}
-		else {
-			$link ="winopeng('operation/agentes/stat_win.php?type=".$graph_type."&period=86400&id=" . $module["id_agentmodule"] . "&label=" . base64_encode($module["module_name"]) . "&refresh=600','day_".$win_handle."')";
-		}
-		
+
+		$link ="winopeng('".$serverstring."operation/agentes/stat_win.php?type=".$graph_type."&period=86400&id=" . $module["id_agente_modulo"] . "&label=" . base64_encode($module["module_name"].$hashstring) . "&refresh=600','day_".$win_handle."')";
+
 		$data[1] = '<a href="javascript:'.$link.'">';
 		$data[1] .= html_print_image('images/chart_curve.png',true);
 		$data[1] .= '</a>';
@@ -1693,7 +1698,7 @@ function events_page_details ($event, $server = "") {
 	if($event["id_alert_am"] != 0) {
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Source').'</div>';
-		$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">';
+		$data[1] = '<a href="'.$serverstring.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert'.$hashstring.'">';
 		$standby = db_get_value('standby', 'talert_template_modules', 'id', $event["id_alert_am"]);
 		if(!$standby) {
 			$data[1] .= html_print_image ("images/bell.png", true,

@@ -1,3 +1,12 @@
+2012-12-21 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* ChangeLog: uploaded lost lines from the last commit.
+
+2012-12-21 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/visual_console_builder.editor.js: uploaded lost
+	changes and fixes from the trunk.
+
 2012-12-19 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extensions/module_groups.php: Fixed view, colors in cells were

@@ -603,16 +603,18 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
  * @param bool Whether to return the string or echo it too
  * @param int Now uses styles to accomplish this
  * @param string Style of name in css.
+ * @param string server url to concatenate at the begin of the link
+ * @param string extra parameters to concatenate in the link
  * 
  * @return string HTML with agent name and link
  */
-function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_medium', $style = '', $cutname = false) {
+function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_medium', $style = '', $cutname = false, $server_url = '', $extra_params = '') {
 	$agent_name = (string) agents_get_name ($id_agent);
 	$agent_name_full = $agent_name;
 	if ($cutname) {
 		$agent_name = ui_print_truncate_text($agent_name, $cutoff, true, true, true, '[&hellip;]', $style);
 	}
-	$output = '<a style="' . $style . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name_full.'"><b><span style="'.$style.'">'.$agent_name.'</span></b></a>';
+	$output = '<a style="' . $style . '" href="'.$server_url.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.$extra_params.'" title="'.$agent_name_full.'"><b><span style="'.$style.'">'.$agent_name.'</span></b></a>';
 	
 	//TODO: Add a pretty javascript (using jQuery) popup-box with agent details
 	

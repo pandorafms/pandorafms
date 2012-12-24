@@ -569,11 +569,11 @@ sub pandora_checkdb_consistency {
 	my @agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente');
 	foreach my $agent (@agents) {
 		my $id_agente = $agent->{'id_agente'};
-		db_do ($dbh, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=0 AND utimestamp<>0 AND disabled=0),
+		db_do ($dbh, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=0 disabled=0),
 		critical_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=1 AND disabled=0),
 		warning_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=2 AND disabled=0),
 		unknown_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=3 AND disabled=0),
-		notinit_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND utimestamp=0 AND disabled=0),
+		notinit_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=4 AND disabled=0),
 		total_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND disabled=0)
 		WHERE id_agente = ' . $id_agente);
 	}

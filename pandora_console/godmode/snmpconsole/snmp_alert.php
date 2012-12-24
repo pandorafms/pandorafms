@@ -270,7 +270,6 @@ if (isset ($_GET["update_alert"])) {
 	$result = db_get_all_rows_in_table ("talert_snmp");
 	if ($result === false) {
 		$result = array ();
-		echo "<div class='nf'>".__('There are no SNMP alerts')."</div>";
 	}
 	
 	$table->data = array ();
@@ -342,7 +341,7 @@ if (isset ($_GET["update_alert"])) {
 	
 	unset ($table);	
 	
-	echo '<div style="text-align:right; width:98%">';
+	echo '<div style="text-align:right; width:98%; margin-top: 5px;">';
 	echo '<form name="agente" method="post" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';
 	html_print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
 	echo "</form></div>";

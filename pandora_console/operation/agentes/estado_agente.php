@@ -548,8 +548,6 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 	ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
 	unset ($table);
-} else {
-	echo '<div class="nf">'.__('There are no defined agents').'</div>';
 }
 
 /* Godmode controls SHOULD NOT BE HERE 

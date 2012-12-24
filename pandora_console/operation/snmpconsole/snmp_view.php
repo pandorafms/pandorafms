@@ -148,7 +148,6 @@ if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 
 // No traps 
 if (empty ($traps)) {
-	echo '<div class="nf">'.__('There are no SNMP traps in database').'</div>';
 	return;
 }
 

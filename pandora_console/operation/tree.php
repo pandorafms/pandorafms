@@ -912,7 +912,7 @@ function printTree_($type) {
 
 		// If there are not groups display error and return
 		if (empty($avariableGroups)) {
-			ui_print_error_message("There aren't agents in this agrupation");
+
 			echo '</td></tr>';
 			echo '</table>';		
 			return;
@@ -1023,6 +1023,10 @@ function printTree_($type) {
 			
 			if ($search_free != '') {
 
+				// Avoid error when there are no groups
+				if (empty($groups))
+					$groups = '"0"';
+
 				$sql = "SELECT DISTINCT tpolicies.id, tpolicies.name FROM tpolicies, tpolicy_modules, tagente_estado, tagente, tagente_modulo WHERE 
 				tagente.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND 
 				tagente_estado.utimestamp != 0 AND tagente_modulo.id_policy_module != 0 AND tpolicy_modules.id = tagente_modulo.id_policy_module AND tpolicies.id = tpolicy_modules.id_policy AND
@@ -1086,7 +1090,11 @@ function printTree_($type) {
 								
 				array_push($list, array('id' => 0, 'name' => 'No policy'));				
 			} else {
-				
+
+				// Avoid error when there are no groups
+				if (empty($groups))
+					$groups = '"0"';
+									
 				$list = db_get_all_rows_sql("SELECT DISTINCT tpolicies.id, tpolicies.name FROM tpolicies, tpolicy_modules, tagente_estado, tagente, tagente_modulo WHERE 
 				tagente.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente = tagente_estado.id_agente AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND 
 				tagente_estado.utimestamp != 0 AND tagente_modulo.id_policy_module != 0 AND tpolicy_modules.id = tagente_modulo.id_policy_module AND tpolicies.id = tpolicy_modules.id_policy AND
@@ -1187,7 +1195,7 @@ function printTree_($type) {
 	}
 	
 	if ($list === false) {
-		ui_print_error_message("There aren't agents in this agrupation");
+
 		echo '</td></tr>';
 		echo '</table>';
 	}

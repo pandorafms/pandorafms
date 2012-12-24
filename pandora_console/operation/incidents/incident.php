@@ -227,9 +227,7 @@ html_print_input_image ("submit", "images/zoom.png", __('Search'), 'padding:0;',
 echo "</td></tr></table>";
 echo '</form>';
 
-if ($count < 1) {
-	echo '<div class="nf">'.__('No incidents match your search filter').'</div><br />';
-} else {
+if ($count >= 1) {
 	// TOTAL incidents
 	$url = "index.php?sec=workspace&amp;sec2=operation/incidents/incident";
 

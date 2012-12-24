@@ -95,9 +95,7 @@ if ($show_sent) { //sent view
 	$messages = messages_get_overview ();
 }
 
-if (empty ($messages)) {
-	echo '<div class="nf">'.__('There are no messages').'</div>';
-} else {
+if (!empty ($messages)) {
 	$table->width = "98%";
 	$table->class = "databox";
 	$table->cellpadding = 4;
@@ -205,7 +203,7 @@ if (empty ($messages)) {
 }
 
 echo '<form method="post" action="index.php?sec=workspace&sec2=operation/messages/message_edit">';
-echo '<div class="action-buttons" style="width: 98%;">';
+echo '<div class="action-buttons" style="width: 98%; margin-top: 5px;">';
 html_print_submit_button (__('Create message'), 'create', false, 'class="sub next"');
 echo "</div>";
 echo "</form>";

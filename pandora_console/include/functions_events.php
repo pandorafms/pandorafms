@@ -801,6 +801,9 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 	
 	$rows = db_get_all_rows_sql ($sql);
 	
+	if ($rows == false)
+		$rows = array();
+	
 	$return = array();
 	foreach ($rows as $row) {
 		$agent_name = $row['agent_name'];
@@ -871,6 +874,9 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 		$datelimit, $date, $sql_filter);
 	
 	$rows = db_get_all_rows_sql ($sql);
+
+	if ($rows == false)
+		$rows = array();
 	
 	$return = array();
 	foreach ($rows as $row) {
@@ -940,6 +946,9 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
 	
 	$rows = db_get_all_rows_sql ($sql);
 	
+	if ($rows == false)
+		$rows = array();
+	
 	$return = array();
 	foreach ($rows as $row) {
 		$return[get_priority_name($row['criticity'])] = $row['count'];
@@ -1001,10 +1010,12 @@ function events_get_count_events_validated ($filter, $period, $date,
 			%s ' . $sql_where . '
 		GROUP BY estado',
 		$datelimit, $date, $sql_filter);
-	//html_debug_print("events_get_count_events_validated", true);
-	//html_debug_print($sql, true);
+
 	$rows = db_get_all_rows_sql ($sql);
-	//html_debug_print($rows, true);
+
+	if ($rows == false)
+		$rows = array();
+
 	$return = array();
 	$return[__('Validated')] = 0;
 	$return[__('Not validated')] = 0;

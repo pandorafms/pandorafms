@@ -1,3 +1,52 @@
+2012-12-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php
+	include/functions_events.php
+	include/functions_reporting.php
+	include/functions_agents.php
+	extensions/net_tools.php
+	extensions/agents_modules.php
+	extensions/users_connected.php
+	extensions/module_groups.php
+	operation/incidents/incident.php
+	operation/tree.php
+	operation/agentes/status_monitor.php
+	operation/agentes/alerts_status.php
+	operation/agentes/datos_agente.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/custom_fields.php
+	operation/agentes/estado_agente.php
+	operation/agentes/sla_view.php
+	operation/agentes/networkmap_list.php
+	operation/agentes/group_view.php
+	operation/servers/recon_view.php
+	operation/snmpconsole/snmp_view.php
+	operation/gis_maps/index.php
+	operation/events/events_list.php
+	operation/messages/message_list.php
+	operation/reporting/graph_viewer.php
+	godmode/groups/group_list.php
+	godmode/agentes/agent_template.php
+	godmode/agentes/fields_manager.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/modificar_agente.php
+	godmode/agentes/planned_downtime.php
+	godmode/alerts/alert_list.list.php
+	godmode/alerts/alert_list.builder.php
+	godmode/snmpconsole/snmp_alert.php
+	godmode/snmpconsole/snmp_filters.php
+	godmode/massive/massive_delete_agents.php
+	godmode/massive/massive_edit_agents.php
+	godmode/massive/massive_delete_modules.php
+	godmode/massive/massive_delete_alerts.php
+	godmode/massive/massive_edit_modules.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/map_builder.php
+	godmode/reporting/graphs.php
+	godmode/tag/tag.php: Fixed some bugs and remove error messages
+	when views are empty.
+
 2012-12-21 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/reporting_builder.php,

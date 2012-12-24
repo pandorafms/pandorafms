@@ -153,9 +153,7 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else
 	$maps = visual_map_get_user_layouts ($config['id_user'], false, false, false);
 
-if (!$maps) {
-	echo '<div class="nf">'.('No maps defined').'</div>';
-} else {
+if ($maps) {
 	foreach ($maps as $map) {			
 		
 		$data = array ();
@@ -177,10 +175,10 @@ if (!$maps) {
 	html_print_table ($table);
 }
 if (!$maps) {
-	echo '<div class="action-buttons" style="width: 0px;">';
+	echo '<div class="action-buttons" style="width: 98%; margin-top: 5px;">';
 }
 else {
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 5px;">';
 }
 
 //Only for IW flag

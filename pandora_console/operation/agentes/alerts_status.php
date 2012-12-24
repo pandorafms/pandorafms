@@ -379,9 +379,6 @@ if (!empty ($table->data)) {
 	ui_pagination ($countAlertsSimple, $url,  $offset_simple, 0, false, 'offset_simple');
 	html_print_table ($table);
 }
-else {
-	echo '<div class="nf">'.__('No simple alerts found').'</div>';
-}
 
 $table->title = __('Compound alerts');
 $table->titlestyle = "background-color:#799E48;";

@@ -558,12 +558,12 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 	global $config;
 
 	if (empty ($source_id_agent)) {
-		echo '<h3 class="error">'.__('No source agent to copy').'</h3>';
+		ui_print_error_message(__('No source agent to copy'));
 		return false;
 	}
 	
 	if (empty ($destiny_id_agents)) {
-		echo '<h3 class="error">'.__('No destiny agent(s) to copy').'</h3>';
+		ui_print_error_message(__('No destiny agent(s) to copy'));
 		return false;
 	}
 	
@@ -588,7 +588,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 	
 	if (empty ($target_modules)) {
 		if (! $copy_alerts) {
-			echo '<h3 class="error">'.__('No modules have been selected').'</h3>';
+			ui_print_error_message(__('No modules have been selected'));
 			return false;
 		}
 		$target_modules = array ();
@@ -694,7 +694,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 	}
 	
 	if ($error) {
-		echo '<h3 class="error">'.__('There was an error copying the agent configuration, the copy has been cancelled').'</h3>';
+		ui_print_error_message(__('There was an error copying the agent configuration, the copy has been cancelled'));
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
@@ -705,7 +705,7 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 				break;
 		}
 	} else {
-		echo '<h3 class="suc">'.__('Successfully copied').'</h3>';
+		ui_print_success_message(__('Successfully copied'));
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
@@ -777,14 +777,6 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
 	$id_agent = safe_int ($id_agent, 1);
 
 	$where = '';
-	if (! empty ($id_agent)) {
-		$where = sprintf (' WHERE t2.id_agent_module = t1.id_agente_modulo AND delete_pending = 0
-			AND id_agente IN (%s) AND (
-				SELECT count(nombre)
-				FROM tagente_modulo t3, talert_template_modules t4
-				WHERE t4.id_agent_module = t3.id_agente_modulo AND delete_pending = 0
-					AND t1.nombre = t3.nombre AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
-	}
 	
 	if (! empty ($filter)) {
 		$where .= ' AND ';
@@ -797,14 +789,59 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
 		} else {
 			$where .= $filter;
 		}
-	}
+	}	
 	
-	$sql = sprintf ('SELECT DISTINCT(t1.id_agente_modulo)
-		FROM tagente_modulo t1, talert_template_modules t2
-		%s
-		ORDER BY nombre',
-		$where);
-	$result = db_get_all_rows_sql ($sql);
+	if (! empty ($id_agent)) {
+		// Get module_name-template repetitions over agents selected
+		// Group by if there is more than one agent
+		$group_by = '';
+		if (count((array)$id_agent) > 1)
+			$group_by = 'having count(*) > 1'; 
+			
+		$sql = sprintf ('SELECT t1.nombre, t2.id_alert_template, count(*) 
+		FROM tagente_modulo t1, talert_template_modules t2 
+		WHERE t2.id_agent_module = t1.id_agente_modulo 
+			AND delete_pending = 0 
+			AND id_agente IN (%s) %s group by nombre, id_alert_template %s'
+			, implode (",", (array) $id_agent)
+			, $where
+			,$group_by);	
+		
+		$result_tmp = db_get_all_rows_sql ($sql);
+		
+		$result = array();
+		if ($result_tmp != false) {
+			
+			foreach ($result_tmp as $module_template) {
+
+					$sql_modules = sprintf ('SELECT t1.id_agente_modulo
+										FROM tagente_modulo t1, talert_template_modules t2 
+										WHERE t1.id_agente_modulo = t2.id_agent_module 
+										AND delete_pending = 0 
+										AND t1.nombre = \'%s\' AND t2.id_alert_template = %s'
+						, $module_template['nombre']
+						, $module_template['id_alert_template']);
+						
+					$id_modules_template = db_get_all_rows_sql ($sql_modules);
+
+					if ($id_modules_template !=  false) 
+						foreach ($id_modules_template as $id_module_template)
+							$result[] = $id_module_template;
+							
+			}
+			
+		}	
+	}
+	else {
+	
+		$sql = sprintf ('SELECT DISTINCT(t1.id_agente_modulo)
+			FROM tagente_modulo t1, talert_template_modules t2
+			%s
+			ORDER BY nombre',
+			$where);
+		$result = db_get_all_rows_sql ($sql);
+	
+	}
 
 	if (empty ($result)) {
 		return array ();

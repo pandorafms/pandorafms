@@ -105,8 +105,6 @@ foreach ($groups as $id_group => $group) {
 
 echo "</table>";
 
-} else {
-	echo "<div class='nf'>".__('There are no defined agents')."</div>";
 }
 
 ?>

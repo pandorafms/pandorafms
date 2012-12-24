@@ -400,13 +400,13 @@ echo '</div>';
 if ($group_rep == 0) {
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = "SELECT *
+			$sql = "SELECT *, 1 event_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 			break;
 		case "postgresql":
-			$sql = "SELECT *
+			$sql = "SELECT *, 1 event_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
@@ -415,7 +415,7 @@ if ($group_rep == 0) {
 			$set = array();
 			$set['limit'] = $pagination;
 			$set['offset'] = $offset;
-			$sql = "SELECT *
+			$sql = "SELECT *, 1 event_rep
 				FROM tevento
 				WHERE 1=1 ".$sql_post."
 				ORDER BY utimestamp DESC"; 
@@ -899,9 +899,7 @@ if (!empty ($table->data)) {
 	}
 	echo '</div></form>';
 }
-else {
-	echo '<div class="nf">'.__('No events').'</div>';
-}
+
 echo '</div>';
 
 unset ($table);

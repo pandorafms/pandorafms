@@ -165,10 +165,7 @@ foreach ($servers as $serverItem) {
 		array_push ($table->data, $data);
 	}
 
-	if (empty ($table->data)) {
-		echo '<div class="nf">'.__("This server has no recon tasks assigned").'</div>';
-	}
-	else {
+	if (!empty ($table->data)) {
 		html_print_table ($table);
 	}
 	unset ($table);

@@ -1168,6 +1168,10 @@ function reporting_alert_reporting_agent ($id_agent, $period = 0, $date = 0, $re
 				if (!empty($row))
 					$id_action = $row['id_alert_action'];
 				
+				// Prevent from void action
+				if (empty($id_action))
+					$id_action = 0;
+					
 				$actions = db_get_all_rows_sql('SELECT name 
 					FROM talert_actions 
 					WHERE id = ' . $id_action);
@@ -1296,10 +1300,18 @@ function reporting_alert_reporting_group ($id_group, $period = 0, $date = 0, $re
 			if (!empty($row))
 				$id_action = $row['id_alert_action'];
 			
+			// Prevent from void action
+			if (empty($id_action))
+				$id_action = 0;
+			
 			$actions = db_get_all_rows_sql('SELECT name 
 				FROM talert_actions 
 				WHERE id = ' . $id_action);
 		}
+		
+		if ($actions == false)
+			$actions = array();
+		
 		foreach ($actions as $action) {
 			$list .= '<li>' . $action['name'] . '</li>';
 		}
@@ -1399,10 +1411,18 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 			if (!empty($row))
 				$id_action = $row['id_alert_action'];
 			
+			// Prevent from void action
+			if (empty($id_action))
+				$id_action = 0;
+			
 			$actions = db_get_all_rows_sql('SELECT name 
 				FROM talert_actions 
 				WHERE id = ' . $id_action);
 		}
+		
+		if ($actions == false)
+			$actions = array();
+		
 		foreach ($actions as $action) {
 			$data[2] .= '<li>' . $action['name'] . '</li>';
 		}

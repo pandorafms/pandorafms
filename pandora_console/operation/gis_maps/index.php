@@ -72,8 +72,7 @@ if ($maps !== false) {
 
 if (!empty ($table->data)) {
 	html_print_table ($table);
-} else {
-	echo '<div class="nf">'.__('No maps found').'</div>';
 }
+
 unset ($table);
 ?>

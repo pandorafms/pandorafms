@@ -121,11 +121,7 @@ if (!$user_info['is_admin']) {
 $network_maps = db_get_all_rows_filter('tnetwork_map',
 	$where);
 
-if ($network_maps === false) {
-	echo "<div class='warn'>" . __('Not networkmap defined.') .
-		"</div>";
-}
-else {
+if ($network_maps !== false) {
 	$table->data = array();
 	foreach ($network_maps as $network_map) {
 		// If enterprise not loaded then skip this code

@@ -40,7 +40,12 @@ $table->size[1] = '80%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
 $table->align[0] = 'left';
 $table->align[1] = 'left';
-
+// This is because if this view is reused after list alert view then 
+// styles in the previous view can affect this table.
+$table->rowstyle[0] = '';
+$table->rowstyle[1] = '';
+$table->rowstyle[2] = '';
+$table->rowstyle[3] = '';
 
 /* Add an agent selector */
 if (! $id_agente) {

@@ -111,7 +111,6 @@ if ($edit_filter > -2) {
 	$result = db_get_all_rows_in_table ("tsnmp_filter");
 	if ($result === false) {
 		$result = array ();
-		echo "<div class='nf'>".__('There are no SNMP filters')."</div>";
 	}
 	
 	$table->data = array ();
@@ -146,7 +145,7 @@ if ($edit_filter > -2) {
 	
 	unset ($table);	
 	
-	echo '<div style="text-align:right; width:98%">';
+	echo '<div style="text-align:right; width:98%; margin-top: 5px;">';
 	echo '<form name="agente" method="post" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters&edit_filter=-1">';
 	html_print_submit_button (__('Create'), 'submit_button', false, 'class="sub next"');
 	echo '</form></div>';

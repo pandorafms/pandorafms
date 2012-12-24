@@ -43,7 +43,7 @@ function main_net_tools () {
 	$id_agente = get_parameter ("id_agente");
 	$ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
 	if ($ip == "") {
-		echo "<h3 class=error>The agent hasn't got IP</h3>";
+		echo "<div class='error' style='margin-top:5px'>The agent hasn't got IP</div>";
 		return;
 	}
 	echo "<div>";

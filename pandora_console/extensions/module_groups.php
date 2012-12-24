@@ -172,7 +172,7 @@ function mainModuleGroups() {
 	$agentGroups = users_get_groups ($config['id_user'], "AR", false);
 	$modelGroups = users_get_all_model_groups();
 	
-	if(!empty($agentGroups) && !empty($modelGroups)) {
+	if (!empty($agentGroups) && !empty($modelGroups)) {
 		array_walk($modelGroups, 'translate'); //Translate all head titles to language is set
 		
 		foreach ($modelGroups as $i => $n) {
@@ -245,17 +245,17 @@ function mainModuleGroups() {
 					if ($fired) {
 						$color = '#ffa300'; //Orange when the cell for this model group and agent has at least one alert fired.
 					}
-					else if (array_key_exists(1,$states)) {
+					else if (array_key_exists(1, $states)) {
 						$color = '#cc0000'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
 						$font_color = '#ffffff';
 					}
-					elseif (array_key_exists(2,$states)) {
+					elseif (array_key_exists(2, $states)) {
 						$color = '#fce94f'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
 					}
-					elseif (array_key_exists(3,$states)) {
+					elseif (array_key_exists(3, $states)) {
 						$color = '#babdb6'; //Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
 					}
-					elseif (array_key_exists(0,$states)) {
+					elseif (array_key_exists(0, $states)) {
 						$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
 					}
 					
@@ -305,9 +305,6 @@ function mainModuleGroups() {
 				'</li>' .
 			"</ul>" .
 		"</p>";
-	}
-	else {
-		echo "<div class='nf'>".__('There are no defined groups or module groups')."</div>";
 	}
 	
 	ui_require_css_file('cluetip');

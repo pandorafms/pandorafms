@@ -332,10 +332,7 @@ if (($first_create != 0) OR ($first_update != 0)){
 				AND tplanned_downtime_agents.id_downtime = %d ",$id_downtime);
 
 		$downtimes = db_get_all_rows_sql ($sql);
-		if ($downtimes === false) {
-			echo '<div class="nf">'. __('There are no scheduled downtimes').'</div>';
-		}
-		else {
+		if ($downtimes !== false) {
 			$table->class = 'databox';
 			$table->width = '98%';
 			$table->data = array ();
@@ -401,10 +398,7 @@ else {
 			$downtimes = array();
 		}
 
-		if (!$downtimes) {
-			echo '<div class="nf">'.__('No planned downtime').'</div>';
-		}
-		else {
+		if ($downtimes) {
 			foreach ($downtimes as $downtime) {
 				$data = array();
 				$total  = db_get_sql ("SELECT COUNT(id_agent) FROM tplanned_downtime_agents WHERE id_downtime = ".$downtime["id"]);
@@ -446,7 +440,7 @@ else {
 			}
 			html_print_table ($table);
 		}
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 5px;">';
 
 	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
 	html_print_input_hidden ("first_create", 1);

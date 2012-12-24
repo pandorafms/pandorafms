@@ -249,16 +249,11 @@ switch ($action) {
 				
 			}
 			html_print_table ($table);
-		}
-		else {
-			echo "<div class='nf'>" .
-				__('There are no defined reportings') . "</div>";
-		}
-		
+		}		
 		
 		if (check_acl ($config['id_user'], 0, "IW")) {
 			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new">';
-			echo '<div class="action-buttons" style="width: 98%;">';
+			echo '<div class="action-buttons" style="width: 98%; margin-top: 5px;">';
 			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 			echo "</div>";
 			echo "</form>";

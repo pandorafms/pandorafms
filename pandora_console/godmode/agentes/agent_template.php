@@ -194,8 +194,6 @@ foreach ($result as $row) {
 if (!empty ($table->data)) {
 	html_print_table ($table);
 	unset ($table);
-} else {
-	echo '<div class="nf">No modules</div>';
 }
 
 ?>

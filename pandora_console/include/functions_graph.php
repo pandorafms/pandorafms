@@ -110,8 +110,8 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 			$item['max'] = $item['max'.$series_suffix];
 		}
 		
-		//Get stats for normal grap
-		if ($item['sum']) {
+		//Get stats for normal graph
+		if (isset($item['sum']) && $item['sum']) {
 			//Sum all values later divide by the number of elements
 			$stats['sum']['avg'] = $stats['sum']['avg'] + $item['sum'];
 
@@ -132,7 +132,7 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 		}
 		
 		//Get stats for min graph
-		if ($item['min']) {
+		if (isset($item['min']) && $item['min']) {
 				//Sum all values later divide by the number of elements
 				$stats['min']['avg'] = $stats['min']['avg'] + $item['min'];
 
@@ -153,7 +153,7 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 		}
 	
 		//Get stats for max graph
-		if ($item['max']) {
+		if (isset($item['max']) && $item['max']) {
 				//Sum all values later divide by the number of elements
 				$stats['max']['avg'] = $stats['max']['avg'] + $item['max'];
 
@@ -178,15 +178,15 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 
 		//Get last data
 		if ($count == $size) {
-			if ($item['sum']) {
+			if (isset($item['sum']) && $item['sum']) {
 				$stats['sum']['last'] = $item['sum'];
 			}
 
-			if($item['min']) {
+			if (isset($item['min']) && $item['min']) {
 				$stats['min']['last'] = $item['min'];
 			}
 
-			if ($item['max']) {
+			if (isset($item['max']) && $item['max']) {
 				$stats['max']['last'] = $item['max'];
 			}
 		}

@@ -41,7 +41,6 @@ $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
 if($fields === false) {
 	$fields = array();
-	echo "<div class='nf'>". __("No fields defined"). "</div>";
 } else {
 	$table->width = '98%';
 	$table->head = array ();

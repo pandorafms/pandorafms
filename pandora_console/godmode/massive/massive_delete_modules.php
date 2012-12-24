@@ -50,12 +50,12 @@ if (is_ajax ()) {
 
 function process_manage_delete ($module_name, $id_agents) {
 	if (empty ($module_name)) {
-		echo '<h3 class="error">'.__('No module selected').'</h3>';
+		ui_print_error_message(__('No module selected'));
 		return false;
 	}
 	
 	if (empty ($id_agents)) {
-		echo '<h3 class="error">'.__('No agents selected').'</h3>';
+		ui_print_error_message(__('No agents selected'));
 		return false;
 	}
 	
@@ -63,19 +63,40 @@ function process_manage_delete ($module_name, $id_agents) {
 
 	$module_name = (array)$module_name;
 	
-	$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
-		sprintf('nombre IN ("%s")', implode('","',$module_name)), true);
-		
+	// We are selecting "any" agent for the selected modules
+	if (($id_agents[0] == 0) and (is_array($id_agents)) and (count($id_agents) == 1))
+		$id_agents = NULL;
+	
+	$selection_delete_mode = get_parameter('selection_mode', 'modules');	
+
+	// Selection mode by Agents
+	if ($selection_delete_mode == 'agents') {
+		// We are selecting "any" module for the selecteds agents
+		if (($module_name[0] == 0) and (is_array($module_name)) and (count($module_name) == 1))
+			$filter_for_module_deletion = false;
+		else
+			$filter_for_module_deletion = sprintf('nombre IN ("%s")', implode('","',$module_name));
+			
+		$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
+		$filter_for_module_deletion, true);
+			
+	}
+	else {
+		$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
+			sprintf('nombre IN ("%s")', implode('","',$module_name)), true);
+	}
+
+	$count_deleted_modules = count($modules);
+	
 	$success = modules_delete_agent_module ($modules);
 	if (! $success) {
-		echo '<h3 class="error">'.__('There was an error deleting the modules, the operation has been cancelled').'</h3>';
-		echo '<h4>'.__('Could not delete modules').'</h4>';
+		ui_print_error_message(__('There was an error deleting the modules, the operation has been cancelled'));
 		db_process_sql_rollback ();
 		
 		return false;
 	}
 	else {
-		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+		ui_print_success_message(__('Successfully deleted') . '&nbsp;(' . $count_deleted_modules . ')');
 		db_process_sql_commit ();
 		
 		return true;
@@ -128,9 +149,9 @@ if ($delete) {
 				
 			$agents_ = db_get_all_rows_sql('SELECT DISTINCT(t1.id_agente)
 				FROM tagente t1, tagente_modulo t2
-				WHERE t1.id_agente = t2.id_agente');
+				WHERE t1.id_agente = t2.id_agente AND t2.delete_pending = 0 ' . $condition);
 			foreach($agents_ as $id_agent) {
-				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type),'nombre');
+				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent['id_agente'], 'id_tipo_modulo' =>  $module_type, 'delete_pending' => 0),'nombre');
 
 				if($module_name == false) {
 					$module_name = array();
@@ -149,11 +170,10 @@ if ($delete) {
 				if($module_name == false) {
 					$module_name = array();
 				}
-				foreach($module_name as $mod_name) {
-					$result = process_manage_delete ($mod_name['nombre'], $id_agent);
-					$count ++;
-					$success += (int)$result;
+				else {
+					$result = process_manage_delete (array(0 => 0), $id_agent);
 				}
+				$success += (int)$result;
 			}
 		}
 		
@@ -161,7 +181,9 @@ if ($delete) {
 		$agents_ = array();
 	}
 	
-	$result = process_manage_delete ($modules_, $agents_);
+	if (!$force)
+		$result = process_manage_delete ($modules_, $agents_);
+		
 	if ($result) {
 		db_pandora_audit("Massive management", "Delete module ", false, false,
 			'Agent: ' . json_encode($agents_) . ' Module: ' . $module_name);

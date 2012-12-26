@@ -422,6 +422,10 @@ function config_process_config () {
 		config_update_value ('collection_max_size', 1000000);
 	}
 	
+	if (!isset ($config["inventory_changes_blacklist"])) {
+		config_update_value ('inventory_changes_blacklist', "");
+	}
+	
 	if (!isset ($config["font_size"])) {
 		config_update_value ('font_size', 6);
 	}

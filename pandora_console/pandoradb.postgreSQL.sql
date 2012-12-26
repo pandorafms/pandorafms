@@ -694,7 +694,13 @@ CREATE TABLE "tperfil" (
 	"user_management" SMALLINT NOT NULL default 0,
 	"db_management" SMALLINT NOT NULL default 0,
 	"alert_management" SMALLINT NOT NULL default 0,
-	"pandora_management" SMALLINT NOT NULL default 0
+	"pandora_management" SMALLINT NOT NULL default 0,
+	"report_view" SMALLINT NOT NULL default 0,
+	"report_edit" SMALLINT NOT NULL default 0,
+	"report_management" SMALLINT NOT NULL default 0,
+	"event_view" SMALLINT NOT NULL default 0,
+	"event_edit" SMALLINT NOT NULL default 0,
+	"event_management" SMALLINT NOT NULL default 0
 );
 
 -- ---------------------------------------------------------------------

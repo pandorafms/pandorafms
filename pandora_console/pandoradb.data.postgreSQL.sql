@@ -284,7 +284,7 @@ SELECT setval('tusuario_perfil_id_up_seq', (SELECT (SELECT MAX(id_up) FROM tusua
 --
 -- Dumping data for table "tperfil"
 --
-INSERT INTO "tperfil" VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0),(3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,1,0),(4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,0,0),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1);
+INSERT INTO "tperfil" VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0,1,0,0,0,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0,1,1,0,0,0,0),(3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,1,0,1,1,1,1,0,0),(4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,0),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
 SELECT setval('tperfil_id_perfil_seq', (SELECT (SELECT MAX(id_perfil) FROM tperfil)));
 
 --

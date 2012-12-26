@@ -812,7 +812,13 @@ CREATE TABLE tperfil (
 	user_management NUMBER(5, 0) default 0 NOT NULL,
 	db_management NUMBER(5, 0) default 0 NOT NULL,
 	alert_management NUMBER(5, 0) default 0 NOT NULL,
-	pandora_management NUMBER(5, 0) default 0 NOT NULL
+	pandora_management NUMBER(5, 0) default 0 NOT NULL,
+	report_view NUMBER(5, 0) default 0 NOT NULL,
+	report_edit NUMBER(5, 0) default 0 NOT NULL,
+	report_management NUMBER(5, 0) default 0 NOT NULL,
+	event_view NUMBER(5, 0) default 0 NOT NULL,
+	event_edit NUMBER(5, 0) default 0 NOT NULL,
+	event_management NUMBER(5, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tperfil_s INCREMENT BY 1 START WITH 1;

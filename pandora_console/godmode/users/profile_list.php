@@ -84,8 +84,8 @@ if ($delete_profile) {
 	$id_profile = 0;
 }
 
-// Update profile
-if ($update_profile) {
+// Store the variables when create or update
+if($create_profile || $update_profile) {
 	$name = get_parameter ("name");
 	$incident_view = (bool) get_parameter ("incident_view");
 	$incident_edit = (bool) get_parameter ("incident_edit");
@@ -97,24 +97,46 @@ if ($update_profile) {
 	$db_management = (bool) get_parameter ("db_management");
 	$alert_management = (bool) get_parameter ("alert_management");
 	$pandora_management = (bool) get_parameter ("pandora_management");
+	$report_view = (bool) get_parameter ("report_view");
+	$report_edit = (bool) get_parameter ("report_edit");
+	$report_management = (bool) get_parameter ("report_management");
+	$event_view = (bool) get_parameter ("event_view");
+	$event_edit = (bool) get_parameter ("event_edit");
+	$event_management = (bool) get_parameter ("event_management");
 	
+	$values = array(
+		'name' => $name,
+		'incident_view' => $incident_view,
+		'incident_edit' => $incident_edit,
+		'incident_management' => $incident_management,
+		'agent_view' => $agent_view,
+		'agent_edit' => $agent_edit,
+		'alert_edit' => $alert_edit,
+		'user_management' => $user_management,
+		'db_management' => $db_management,
+		'alert_management' => $alert_management,
+		'pandora_management' => $pandora_management,
+		'report_view' => $report_view,
+		'report_edit' => $report_edit,
+		'report_management' => $report_management,
+		'event_view' => $event_view,
+		'event_edit' => $event_edit,
+		'event_management' => $event_management);
+}
+
+// Update profile
+if ($update_profile) {
 	if ($name) {
-		$sql = sprintf ('UPDATE tperfil SET 
-			name = "%s", incident_view = %d, incident_edit = %d,
-			incident_management = %d, agent_view = %d, agent_edit = %d,
-			alert_edit = %d, user_management = %d, db_management = %d,
-			alert_management = %d, pandora_management = %d 	WHERE id_perfil = %d',
-			$name, $incident_view, $incident_edit, $incident_management,
-			$agent_view, $agent_edit, $alert_edit, $user_management,
-			$db_management, $alert_management, $pandora_management,
-			$id_profile);
-		$ret = db_process_sql ($sql);
+		$ret = db_process_sql_update('tperfil', $values, array('id_perfil' => $id_profile));
 		if ($ret !== false) {
 			$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
 				' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
 				' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
 				' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
 				' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
+				' Report view: ' . $report_view . ' Report edit: ' . $report_edit .
+				' Report management: ' . $report_management . ' Event view: ' . $event_view .
+				' Event edit: ' . $event_edit . ' Event management: ' . $event_management .
 				' Pandora Management: ' . $pandora_management;
 			db_pandora_audit("User management",
 				"Update profile ". $name, false, false, $info);
@@ -133,31 +155,6 @@ if ($update_profile) {
 
 // Create profile
 if ($create_profile) {
-	$name = get_parameter ("name");
-	$incident_view = (bool) get_parameter ("incident_view");
-	$incident_edit = (bool) get_parameter ("incident_edit");
-	$incident_management = (bool) get_parameter ("incident_management");
-	$agent_view = (bool) get_parameter ("agent_view");
-	$agent_edit = (bool) get_parameter ("agent_edit");
-	$alert_edit = (bool) get_parameter ("alert_edit");	
-	$user_management = (bool) get_parameter ("user_management");
-	$db_management = (bool) get_parameter ("db_management");
-	$alert_management = (bool) get_parameter ("alert_management");
-	$pandora_management = (bool) get_parameter ("pandora_management");
-	
-	$values = array(
-		'name' => $name,
-		'incident_view' => $incident_view,
-		'incident_edit' => $incident_edit,
-		'incident_management' => $incident_management,
-		'agent_view' => $agent_view,
-		'agent_edit' => $agent_edit,
-		'alert_edit' => $alert_edit,
-		'user_management' => $user_management,
-		'db_management' => $db_management,
-		'alert_management' => $alert_management,
-		'pandora_management' => $pandora_management);
-
 	if ($name) {
 		$ret = db_process_sql_insert('tperfil', $values);
 		
@@ -169,6 +166,9 @@ if ($create_profile) {
 				' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
 				' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
 				' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
+				' Report view: ' . $report_view . ' Report edit: ' . $report_edit .
+				' Report management: ' . $report_management . ' Event view: ' . $event_view .
+				' Event edit: ' . $event_edit . ' Event management: ' . $event_management .
 				' Pandora Management: ' . $pandora_management;
 			db_pandora_audit("User management",
 				"Created profile ". $name, false, false, $info);
@@ -204,8 +204,14 @@ $table->head[6] = "LW" . ui_print_help_tip (__('Alerts editing'), true);
 $table->head[7] = "UM" . ui_print_help_tip (__('Users management'), true);
 $table->head[8] = "DM" . ui_print_help_tip (__('Database management'), true);
 $table->head[9] = "LM" . ui_print_help_tip (__('Alerts management'), true);
-$table->head[10] = "PM" . ui_print_help_tip (__('Systems management'), true);
-$table->head[11] = '<span title="Operations">' . __('Op.') . '</span>';
+$table->head[10] = "RR" . ui_print_help_tip (__('Reports reading'), true);
+$table->head[11] = "RW" . ui_print_help_tip (__('Reports writing'), true);
+$table->head[12] = "RM" . ui_print_help_tip (__('Reports management'), true);
+$table->head[13] = "ER" . ui_print_help_tip (__('Events reading'), true);
+$table->head[14] = "EW" . ui_print_help_tip (__('Events writing'), true);
+$table->head[15] = "EM" . ui_print_help_tip (__('Events management'), true);
+$table->head[16] = "PM" . ui_print_help_tip (__('Systems management'), true);
+$table->head[17] = '<span title="Operations">' . __('Op.') . '</span>';
 
 $table->align = array_fill (1, 11, "center");
 $table->size = array_fill (1, 10, 40);
@@ -228,9 +234,15 @@ foreach ($profiles as $profile) {
 	$data[7] = ($profile["user_management"] ? $img : '');
 	$data[8] = ($profile["db_management"] ? $img : '');
 	$data[9] = ($profile["alert_management"] ? $img : '');
-	$data[10] = ($profile["pandora_management"] ? $img : '');
-	$data[11] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
-	$data[11] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
+	$data[10] = ($profile["report_view"] ? $img : '');
+	$data[11] = ($profile["report_edit"] ? $img : '');
+	$data[12] = ($profile["report_management"] ? $img : '');
+	$data[13] = ($profile["event_view"] ? $img : '');
+	$data[14] = ($profile["event_edit"] ? $img : '');
+	$data[15] = ($profile["event_management"] ? $img : '');
+	$data[16] = ($profile["pandora_management"] ? $img : '');
+	$data[17] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
+	$data[17] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
 	array_push ($table->data, $data);
 }
 

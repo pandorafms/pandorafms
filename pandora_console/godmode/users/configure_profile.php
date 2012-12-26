@@ -72,6 +72,12 @@ if ($id_profile || $new_profile) {
 		$db_management = 0;
 		$alert_management = 0;
 		$pandora_management = 0;
+		$report_view = 0;
+		$report_edit = 0;
+		$report_management = 0;
+		$event_view = 0;
+		$event_edit = 0;
+		$event_management = 0;
 		
 		$page_title = __('Create profile');
 	}
@@ -102,6 +108,12 @@ if ($id_profile || $new_profile) {
 		$db_management = (bool) $profile["db_management"];
 		$alert_management = (bool) $profile["alert_management"];
 		$pandora_management = (bool) $profile["pandora_management"];
+		$report_view = (bool) $profile["report_view"];
+		$report_edit = (bool) $profile["report_edit"];
+		$report_management = (bool) $profile["report_management"];
+		$event_view = (bool) $profile["event_view"];
+		$event_edit = (bool) $profile["event_edit"];
+		$event_management = (bool) $profile["event_management"];
 		
 		$id_audit = db_pandora_audit("User management",
 			"Edit profile ". $name);
@@ -111,6 +123,9 @@ if ($id_profile || $new_profile) {
 			' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
 			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
 			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
+			' Report view: ' . $report_view . ' Report edit: ' . $report_edit .
+			' Report management: ' . $report_management . ' Event view: ' . $event_view .
+			' Event edit: ' . $event_edit . ' Event management: ' . $event_management .
 			' Pandora Management: ' . $pandora_management;
 		enterprise_hook('audit_pandora_enterprise', array($id_audit, $info));
 		
@@ -145,8 +160,20 @@ if ($id_profile || $new_profile) {
 	$table->data[8][1] = html_print_checkbox ('db_management', 1, $db_management, true);
 	$table->data[9][0] = __('Manage alerts');
 	$table->data[9][1] = html_print_checkbox ('alert_management', 1, $alert_management, true);
-	$table->data[10][0] = __('Pandora management');
-	$table->data[10][1] = html_print_checkbox ('pandora_management', 1, $pandora_management, true);
+	$table->data[10][0] = __('View reports');
+	$table->data[10][1] = html_print_checkbox ('report_view', 1, $report_view, true);
+	$table->data[11][0] = __('Edit reports');
+	$table->data[11][1] = html_print_checkbox ('report_edit', 1, $report_edit, true);
+	$table->data[12][0] = __('Manage reports');
+	$table->data[12][1] = html_print_checkbox ('report_management', 1, $report_management, true);
+	$table->data[13][0] = __('View events');
+	$table->data[13][1] = html_print_checkbox ('event_view', 1, $event_view, true);
+	$table->data[14][0] = __('Edit events');
+	$table->data[14][1] = html_print_checkbox ('event_edit', 1, $event_edit, true);
+	$table->data[15][0] = __('Manage events');
+	$table->data[15][1] = html_print_checkbox ('event_management', 1, $event_management, true);
+	$table->data[16][0] = __('Pandora management');
+	$table->data[16][1] = html_print_checkbox ('pandora_management', 1, $pandora_management, true);
 	
 	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&pure='.$pure.'">';
 	

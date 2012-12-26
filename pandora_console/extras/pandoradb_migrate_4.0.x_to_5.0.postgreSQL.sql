@@ -427,3 +427,19 @@ CREATE TABLE IF NOT EXISTS "tcategory" (
 	"id"  SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(600) NOT NULL default '',
 );
+
+-- ----------------------------------------------------------------------
+-- Table "tperfil"
+-- ----------------------------------------------------------------------
+ALTER TABLE "tperfil" ADD COLUMN "report_view" SMALLINT NOT NULL default 0;
+ALTER TABLE "tperfil" ADD COLUMN "report_edit" SMALLINT NOT NULL default 0;
+ALTER TABLE "tperfil" ADD COLUMN "report_management" SMALLINT NOT NULL default 0;
+ALTER TABLE "tperfil" ADD COLUMN "event_view" SMALLINT NOT NULL default 0;
+ALTER TABLE "tperfil" ADD COLUMN "event_edit" SMALLINT NOT NULL default 0;
+ALTER TABLE "tperfil" ADD COLUMN "event_management" SMALLINT NOT NULL default 0;
+
+UPDATE tperfil SET "report_view"= 1 WHERE id_perfil = 1 AND name = 'Operator&#x20;&#40;Read&#41;';
+UPDATE tperfil SET "report_view"= 1, "report_edit"= 1 WHERE id_perfil = 2 AND name = 'Operator&#x20;&#40;Write&#41;';
+UPDATE tperfil SET "report_view"= 1, "report_edit"= 1, "report_management"= 1 WHERE id_perfil = 3 AND name = 'Chief&#x20;Operator';
+UPDATE tperfil SET "report_view"= 1, "report_edit"= 1, "report_management"= 1, "event_view"= 1, "event_edit"= 1 WHERE id_perfil = 4 AND name = 'Group&#x20;coordinator';
+UPDATE tperfil SET "report_view"= 1, "report_edit"= 1, "report_management"= 1, "event_view"= 1, "event_edit"= 1, "event_management"= 1 WHERE id_perfil = 5 AND name = 'Pandora&#x20;Administrator';

@@ -1,3 +1,8 @@
+2012-12-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php: erased double check for admin user
+	in action to update config.
+
 2012-12-26  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

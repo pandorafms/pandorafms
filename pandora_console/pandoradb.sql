@@ -776,6 +776,12 @@ CREATE TABLE IF NOT EXISTS `tperfil` (
 	`db_management` tinyint(3) NOT NULL default '0',
 	`alert_management` tinyint(3) NOT NULL default '0',
 	`pandora_management` tinyint(3) NOT NULL default '0',
+	`report_view` tinyint(3) NOT NULL default '0',
+	`report_edit` tinyint(3) NOT NULL default '0',
+	`report_management` tinyint(3) NOT NULL default '0',
+	`event_view` tinyint(3) NOT NULL default '0',
+	`event_edit` tinyint(3) NOT NULL default '0',
+	`event_management` tinyint(3) NOT NULL default '0',
 	PRIMARY KEY  (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

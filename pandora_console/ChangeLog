@@ -1,3 +1,8 @@
+2012-12-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_config.php: Store the new configuration
+	of inventory changes blacklist when update setup 
+
 2012-12-24 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php

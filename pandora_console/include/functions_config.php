@@ -170,6 +170,16 @@ function config_update_config () {
 			config_update_value ('metaconsole', get_parameter ('metaconsole'));
 			config_update_value ('collection_max_size', get_parameter('collection_max_size'));
 			
+			$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
+			
+			foreach($inventory_changes_blacklist as $icb) {
+				if(empty($icb)) {
+					continue;
+				}
+			}
+			
+			config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist));
+			
 			config_update_value ('referer_security', get_parameter('referer_security'));
 			/////////////
 			break;

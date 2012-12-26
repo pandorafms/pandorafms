@@ -618,6 +618,10 @@ if ($update_module || $create_module) {
 	$tcp_send = (string) get_parameter ('tcp_send');
 	$tcp_rcv = (string) get_parameter ('tcp_rcv');
 	$tcp_port = (int) get_parameter ('tcp_port');
+	// Correction in order to not insert 0 as port
+	$is_port_empty = get_parameter ('tcp_port');
+	if (empty($is_port_empty))
+		$tcp_port = NULL;
 	$configuration_data = (string) get_parameter ('configuration_data');
 	$old_configuration_data = (string) get_parameter ('old_configuration_data');
 

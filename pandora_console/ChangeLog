@@ -1,3 +1,27 @@
+2012-12-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_modules.php
+	include/functions_network_components.php
+	extensions/module_groups.php
+	godmode/extensions.php
+	godmode/agentes/configurar_agente.php
+	godmode/servers/recon_script.php
+	godmode/servers/plugin.php
+	godmode/servers/manage_recontask.php
+	godmode/alerts/alert_compounds.php
+	godmode/alerts/alert_templates.php
+	godmode/alerts/alert_actions.php
+	godmode/alerts/alert_commands.php
+	godmode/setup/os.list.php
+	godmode/setup/news.php
+	godmode/setup/links.php
+	godmode/users/profile_list.php
+	godmode/gis_maps/index.php
+	godmode/modules/manage_network_templates.php
+	godmode/modules/manage_network_components.php
+	godmode/modules/manage_nc_groups.php: Fixed some bugs and remove 
+	error messages when views are empty.
+
 2012-12-26  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_config.php: Create latest configuration

@@ -126,10 +126,8 @@ else {  // Main list view for Links editor
 		$rows = array();
 	}
 
-	if (empty($rows)) {
-		echo '<div class="nf">'.__("There isn't links").'</div>';
-	
-	} else {
+	if (!empty($rows)) {
+
 		echo "<table cellpadding='4' cellspacing='4' class='databox' style='width:98%'>";
 		echo "<th width='180px'>".__('Link name')."</th>";
 		echo "<th width='80px'>".__('Delete')."</th>";

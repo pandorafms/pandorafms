@@ -128,12 +128,15 @@ if (isset($_GET["update"])) {
 		
 	$where = array('id_rt' => $id);
 	
+	$reason = '';
 	if ($name != "") {
 		if (($id_recon_script == 'NULL') && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 			$result = db_process_sql_update('trecon_task', $values, $where);
 		elseif ($id_recon_script != 'NULL')
 			$result = db_process_sql_update('trecon_task', $values, $where);
 		else  {
+			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+				$reason = __('Incorrect format in Subnet field');			
 			$result = false; 
         }
 	}
@@ -145,6 +148,7 @@ if (isset($_GET["update"])) {
 	}
 	else {
 		echo '<h3 class="error">'.__('Error updating recon task').'</h3>';
+        echo $reason;		
 	}
 }
 
@@ -186,6 +190,8 @@ if (isset($_GET["create"])) {
 			$result = db_process_sql_insert('trecon_task', $values);
 		}
 		else {
+			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+				$reason = __('Incorrect format in Subnet field');
 			$result = false;
         }
 	}
@@ -193,10 +199,10 @@ if (isset($_GET["create"])) {
 		$result = false;
 		
 	if ($result !== false) {
-		echo '<h3 class="suc">'.__('Successfully created recon task').'</h3>';
+		ui_print_success_message(__('Successfully created recon task'));
 	}
 	else {
-		echo '<h3 class="error">'.__('Error creating recon task').'</h3>';
+		ui_print_error_message(__('Error creating recon task'));
         echo $reason;
 	}
 }
@@ -293,11 +299,9 @@ if ($result !== false) {
 	
 	html_print_table ($table);
 	unset ($table);
-} else {
-	echo '<div class="nf">'.__('There are no recon task configured').'</div>';
 }
 
-echo '<div class="action-buttons" style="width: 99%;">';
+echo '<div class="action-buttons" style="width: 99%; margin-top: 5px;">';
 echo '<form method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create">';
 echo html_print_submit_button (__('Create'),"crt",false,'class="sub next"',true);
 echo '</form>';

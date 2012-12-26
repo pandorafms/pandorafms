@@ -185,13 +185,9 @@ if(isset($data)) {
 	echo "</div>";
 	echo "</form>";
 }
-else {
-	echo "<div class='nf'>".__('There are no defined component groups')."</div>";
-}
-
 
 echo '<form method="post">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 5px;">';
 html_print_input_hidden ('new', 1);
 html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
 echo '</div>';

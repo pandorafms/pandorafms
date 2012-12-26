@@ -390,13 +390,9 @@ if(isset($data)) {
 	echo "</div>";
 	echo "</form>";
 }
-else {
-	echo "<div class='nf'>".__('There are no defined network components')."</div>";
-}
-
 
 echo '<form method="post" action="'.$url.'">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: '.$table->width.';margin-top: 5px;">';
 html_print_input_hidden ('new_component', 1);
 html_print_select (array (2 => __('Create a new network component'),
 	4 => __('Create a new plugin component'),

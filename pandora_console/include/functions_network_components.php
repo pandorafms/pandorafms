@@ -402,6 +402,7 @@ function network_components_duplicate_network_component ($id_local_component) {
 	$networkCopy['max_critical'] = $network['max_critical'];
 	$networkCopy['str_critical'] = $network['str_critical'];
 	$networkCopy['min_ff_event'] = $network['min_ff_event'];
+	$networkCopy['post_process'] = $network['post_process'];
 	
 	return network_components_create_network_component ($name, $network['type'], $network['id_group'], $networkCopy);
 }

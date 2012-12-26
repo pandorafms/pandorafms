@@ -203,7 +203,6 @@ else {
 		echo "</table>";
 	}
 	else {
-		echo '<div class="nf">'. __('There are no recon scripts in the system') . '</div>';
 		echo "<br>";
 	}
 	echo "<table width=98%>";

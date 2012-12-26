@@ -229,10 +229,8 @@ foreach ($profiles as $profile) {
 	if(isset($data)) {
 		html_print_table ($table);
 	}
-	else {
-		echo "<div class='nf'>".__('There are no defined profiles')."</div>";
-	}
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+
+	echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 5px;">';
 	html_print_input_hidden ('new_profile', 1);
 	html_print_submit_button (__('Create'), "crt", false, 'class="sub next"');
 	echo "</div>";

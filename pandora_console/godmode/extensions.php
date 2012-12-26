@@ -29,7 +29,6 @@ ui_print_page_header (__('Extensions'). " &raquo; ". __('Defined extensions'), "
 if (sizeof ($config['extensions']) == 0) {
 	$extensions = extensions_get_extension_info();
 	if (empty($extensions)) {
-		echo '<h3>'.__('There are no extensions defined').'</h3>';
 		return;
 	}
 }
@@ -217,7 +216,7 @@ foreach ($extensions as $file => $extension) {
                         $data[] = $config['extensions'][$file]['operation_menu']['version'];
                 } else if ($config['extensions'][$file]['godmode_menu']) {
                         $data[] = $config['extensions'][$file]['godmode_menu']['version'];
-                } else if ($config['extensions'][$file]['extension_ope_tab']) {
+                } else if (isset($config['extensions'][$file]['extension_ope_tab'])) {
 		        $data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
                 } else if ($config['extensions'][$file]['extension_god_tab']) {
                         $data[] = $config['extensions'][$file]['extension_god_tab']['version'];

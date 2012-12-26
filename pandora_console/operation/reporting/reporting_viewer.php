@@ -172,6 +172,7 @@ ui_require_jquery_file ("ui-timepicker-addon");
 <script language="javascript" type="text/javascript">
 
 $(document).ready (function () {
+	
 	$("#loading").slideUp ();
 	$("#text-time").timepicker({
 			showSecond: true,
@@ -185,6 +186,21 @@ $(document).ready (function () {
 			closeText: '<?php echo __('Close');?>'});
 	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo $config['language']; ?>"]);
 	$("#text-date").datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
+	
+	
+	$('[id^=text-time_init]').timepicker({
+			showSecond: true,
+			timeFormat: 'hh:mm:ss',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'});	
+	
+	$('[id^=text-date_init]').datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
+	
 });
 </script>
 
@@ -256,15 +272,6 @@ foreach ($contents as $content) {
 
 $(document).ready (function () {
 	$("*", "#table1-0").css("display", ""); //Re-show the first row of form.
-	
-	$("#loading").slideUp ();
-	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
-	$("#text-date").datepicker ();
-	
-	$('[id^=text-date_init]').datepicker ();
-	$('[id^=text-time_init]').timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
-	
-	$.datepicker.regional["<?php echo $config['language']; ?>"];
 	
 	/* Show/hide begin date reports controls */
 	$("#checkbox-enable_init_date").click(function() {

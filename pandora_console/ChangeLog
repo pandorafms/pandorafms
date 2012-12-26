@@ -1,3 +1,9 @@
+2012-12-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_graph.php: Fixed typos.
+	* operation/reporting/reporting_viewer.php: Fixed range selector
+	in report viewer.
+
 2012-12-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_config.php: erased double check for admin user

@@ -110,7 +110,7 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 			$item['max'] = $item['max'.$series_suffix];
 		}
 		
-		//Get stats for normal grap
+		//Get stats for normal graph
 		if (isset($item['sum']) && $item['sum']) {
 			//Sum all values later divide by the number of elements
 			$stats['sum']['avg'] = $stats['sum']['avg'] + $item['sum'];
@@ -180,7 +180,7 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 				$stats['sum']['last'] = $item['sum'];
 			}
 
-			if(isset($item['min']) && $item['min']) {
+			if (isset($item['min']) && $item['min']) {
 				$stats['min']['last'] = $item['min'];
 			}
 

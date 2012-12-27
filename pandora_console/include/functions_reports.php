@@ -596,8 +596,10 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 	if($config['enterprise_installed']) {
 		$types['inventory'] = array('optgroup' => __('Inventory'),
 			'name' => __('Inventory')); 
-		$types['inventory_changes'] = array('optgroup' => __('Inventory'),
-			'name' => __('Inventory changes'));
+		if (!$template) {
+			$types['inventory_changes'] = array('optgroup' => __('Inventory'),
+				'name' => __('Inventory changes'));
+		}
 	}
 	
 	$types['agent_configuration'] = array('optgroup' => __('Configuration'),

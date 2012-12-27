@@ -3747,101 +3747,117 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			reporting_header_content($mini, $content, $report, $table, __('Group report').': "'.$group_name.'"');
 			
-			$data = array ();
-			$table->colspan[0][0] = 7;
-			$table->colspan[1][1] = 3;
-			$table->colspan[1][4] = 3;
-			$table->colspan[2][1] = 3;
-			$table->colspan[2][4] = 3;
-			$table->colspan[5][1] = 3;
-			$table->colspan[5][4] = 3;
-			$table->colspan[6][1] = 3;
-			$table->colspan[6][4] = 3;
-			$table->colspan[7][1] = 6;
-			$table->colspan[8][1] = 6;
+			$table->colspan[1][0] = 3;
 			
-			$data = array();
-			$data[0] = '';
-			$data[1] = "<div class='cellBold cellCenter'>".__('Total')."</div>";
-			$data[4] = "<div class='cellBold cellCenter'>".__('Unknown')."</div>";
-			array_push ($table->data, $data);
-			
-			$data = array();
-			$data[0] = "<div class='cellBold'>".__('Agents')."</div>";
-			$data[1] = "<div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$group_stats['total_agents']."</div>";
-			$data[4] = "<div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$group_stats['agents_unknown']."</div>";
-			array_push ($table->data, $data);	
-			
-			$data = array();
-			$data[0] = '';
-			$data[1] = "<div class='cellBold cellCenter'>".__('Total')."</div>";
-			$data[2] = "<div class='cellBold cellCenter'>".__('Normal')."</div>";
-			$data[3] = "<div class='cellBold cellCenter'>".__('Critical')."</div>";
-			$data[4] = "<div class='cellBold cellCenter'>".__('Warning')."</div>";
-			$data[5] = "<div class='cellBold cellCenter'>".__('Unknown')."</div>";
-			$data[6] = "<div class='cellBold cellCenter'>".__('Not init')."</div>";
-			array_push ($table->data, $data);
-			
-			$data = array();
-			$data[0] = "<div class='cellBold'>".__('Monitors')."</div>";
-			$data[1] = "<div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$group_stats['monitor_checks']."</div>";
-			$data[2] = "<div class='cellBold cellCenter cellNormal cellBorder1 cellBig'>".$group_stats['monitor_ok']."</div>";
-			$data[3] = "<div class='cellBold cellCenter cellCritical cellBorder1 cellBig'>".$group_stats['monitor_critical']."</div>";
-			$data[4] = "<div class='cellBold cellCenter cellWarning cellBorder1 cellBig'>".$group_stats['monitor_warning']."</div>";
-			$data[5] = "<div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>".$group_stats['monitor_unknown']."</div>";
-			$data[6] = "<div class='cellBold cellCenter cellNotInit cellBorder1 cellBig'>".$group_stats['monitor_not_init']."</div>";
-			array_push ($table->data, $data);
-			
-			$data = array();
-			$data[0] = '';
-			$data[1] = "<div class='cellBold cellCenter'>".__('Defined')."</div>";
-			$data[4] = "<div class='cellBold cellCenter'>".__('Fired')."</div>";
-			array_push ($table->data, $data);
-			
-			$data = array();
-			$data[0] = "<div class='cellBold'>".__('Alerts')."</div>";
-			$data[1] = "<div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$group_stats['monitor_alerts']."</div>";
-			$data[4] = "<div class='cellBold cellCenter cellAlert cellBorder1 cellBig'>".$group_stats['monitor_alerts_fired']."</div>";
-			array_push ($table->data, $data);
-			
-			$data = array();
-			$data[0] = '';
-			$data[1] = "<div class='cellBold cellCenter'>".__('Last 8 hours')."</div>";
-			array_push ($table->data, $data);
-			
-			$data = array();
-			$data[0] = "<div class='cellBold'>".__('Events')."</div>";
-			$data[1] = "<div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".count($events)."</div>";
-			array_push ($table->data, $data);
+			$table->data[1][0] = html_print_table($table2, true) .
+				"<table width='100%'>
+					<tr>
+						<td></td>
+						<td colspan='3'><div class='cellBold cellCenter'>" .
+							__('Total') . "</div></td>
+						<td colspan='3'><div class='cellBold cellCenter'>" .
+							__('Unknown') . "</div></td>
+					</tr>
+					<tr>
+						<td><div class='cellBold cellCenter'>" .
+							__('Agents') . "</div></td>
+						<td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
+							$group_stats['total_agents'] . "</div></td>
+						<td colspan='3'><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>" .
+							$group_stats['agents_unknown'] . "</div></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><div class='cellBold cellCenter'>" .
+							__('Total') . "</div></td>
+						<td><div class='cellBold cellCenter'>" .
+							__('Normal') . "</div></td>
+						<td><div class='cellBold cellCenter'>" .
+							__('Critical') . "</div></td>
+						<td><div class='cellBold cellCenter'>" .
+							__('Warning') . "</div></td>
+						<td><div class='cellBold cellCenter'>" .
+							__('Unknown') . "</div></td>
+						<td><div class='cellBold cellCenter'>" .
+							__('Not init') . "</div></td>
+					</tr>
+					<tr>
+						<td><div class='cellBold cellCenter'>" .
+							__('Monitors') . "</div></td>
+						<td><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
+							$group_stats['monitor_checks'] . "</div></td>
+						<td><div class='cellBold cellCenter cellNormal cellBorder1 cellBig'>" .
+							$group_stats['monitor_ok'] ."</div></td>
+						<td><div class='cellBold cellCenter cellCritical cellBorder1 cellBig'>" .
+							$group_stats['monitor_critical'] . "</div></td>
+						<td><div class='cellBold cellCenter cellWarning cellBorder1 cellBig'>" .
+							$group_stats['monitor_warning'] . "</div></td>
+						<td><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>" .
+							$group_stats['monitor_unknown'] . "</div></td>
+						<td><div class='cellBold cellCenter cellNotInit cellBorder1 cellBig'>" .
+							$group_stats['monitor_not_init'] . "</div></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td colspan='3'><div class='cellBold cellCenter'>" .
+							__('Defined') . "</div></td>
+						<td colspan='3'><div class='cellBold cellCenter'>" .
+							__('Fired') . "</div></td>
+					</tr>
+					<tr>
+						<td><div class='cellBold cellCenter'>" .
+							__('Alerts') . "</div></td>
+						<td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
+							$group_stats['monitor_alerts'] . "</div></td>
+						<td colspan='3'><div class='cellBold cellCenter cellAlert cellBorder1 cellBig'>" .
+							$group_stats['monitor_alerts_fired'] . "</div></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td colspan='6'><div class='cellBold cellCenter'>" .
+							__('Last 8 hours') . "</div></td>
+					</tr>
+					<tr>
+						<td><div class='cellBold cellCenter'>" .
+							__('Events') . "</div></td>
+						<td colspan='6'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
+							count($events)."</div></td>
+					</tr>
+				</table>";
 			
 			break;
 		case 'general':
-			reporting_header_content($mini, $content, $report, $table, __('General'));
+			reporting_header_content($mini, $content, $report, $table,
+				__('General'));
 			
 			$group_by_agent = $content['group_by_agent'];
 			$order_uptodown = $content['order_uptodown'];
-		
+			
 			$table->style[1] = 'text-align: right';
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
+				array_push($table->data, $data_desc);
 			}
 			
 			switch ($group_by_agent) {
 				//0 means not group by agent
 				case 0:
-					$sql = sprintf("select id_agent_module, server_name from treport_content_item
-						where id_report_content = %d", $content['id_rc']);
+					$sql = sprintf("SELECT id_agent_module,
+							server_name
+						FROM treport_content_item
+						WHERE id_report_content = %d",
+						$content['id_rc']);
 					
 					$generals = db_process_sql ($sql);
 					if ($generals === false) {
 						$data = array ();
 						$table->colspan[2][0] = 3;
-						$data[0] = __('There are no Agent/Modules defined');
+						$data[0] =
+							__('There are no Agent/Modules defined');
 						array_push ($table->data, $data);
 						break;
 					}
@@ -4895,6 +4911,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$id_agent = $es['id_agents'];
 			$module_name = $es['inventory_modules'];
+			if (empty($module_name)) {
+				$module_name = array(0 => 0);
+			}
 			$date = $es['date'];
 			$description = $content['description'];
 			
@@ -4910,7 +4929,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			if ($inventory_data == ERR_NODATA) {
 				$inventory_data = "<div class='nf'>".__('No data found.')."</div>";
-				$inventory_data .= "&nbsp;</td></tr><tr><td>";				
+				$inventory_data .= "&nbsp;</td></tr><tr><td>";
 			}
 			
 			$data[0] = $inventory_data;
@@ -4929,7 +4948,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			if ($inventory_changes == ERR_NODATA) {
 				$inventory_changes = "<div class='nf'>".__('No changes found.')."</div>";
-				$inventory_changes .= "&nbsp;</td></tr><tr><td>";				
+				$inventory_changes .= "&nbsp;</td></tr><tr><td>";
 			}
 			
 			$data = array ();
@@ -4964,7 +4983,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
  * @return float The MTBF value in the interval.
  */
 function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
-
+	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
@@ -4977,7 +4996,7 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 	if ($module === false) {
 		return false;
 	}
-
+	
 	$critical_min = $module['min_critical'];
 	$critical_max = $module['max_critical'];
 	$module_type = $module['id_tipo_modulo'];
@@ -4996,14 +5015,14 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 		' AND utimestamp < ' . (int) $date .
 		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -5017,11 +5036,11 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-
+	
 	if (count ($interval_data) < 2) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
@@ -5035,7 +5054,7 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 		$previous_status = 0;
 		$critical_count = 0;
 	}
-
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {
@@ -5056,11 +5075,11 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 		
 		$previous_utimestamp = $data['utimestamp'];
 	}
-
+	
 	if ($critical_count == 0) {
 		return 0;
 	}
-
+	
 	return ($period - $critical_period) / $critical_count;
 }
 
@@ -5075,7 +5094,7 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
  * @return float The MTTR value in the interval.
  */
 function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
-
+	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
@@ -5088,7 +5107,7 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 	if ($module === false) {
 		return false;
 	}
-
+	
 	$critical_min = $module['min_critical'];
 	$critical_max = $module['max_critical'];
 	$module_type = $module['id_tipo_modulo'];
@@ -5107,14 +5126,14 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 		' AND utimestamp < ' . (int) $date .
 		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -5128,11 +5147,11 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-
+	
 	if (count ($interval_data) < 2) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
@@ -5146,7 +5165,7 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 		$previous_status = 0;
 		$critical_count = 0;
 	}
-
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {
@@ -5167,11 +5186,11 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 		
 		$previous_utimestamp = $data['utimestamp'];
 	}
-
+	
 	if ($critical_count == 0) {
 		return 0;
 	}
-
+	
 	return $critical_period / $critical_count;
 }
 
@@ -5185,7 +5204,7 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
  * @return float The TTO value in the interval.
  */
 function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
-
+	
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
@@ -5198,7 +5217,7 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 	if ($module === false) {
 		return false;
 	}
-
+	
 	$critical_min = $module['min_critical'];
 	$critical_max = $module['max_critical'];
 	$module_type = $module['id_tipo_modulo'];
@@ -5209,7 +5228,7 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 		($critical_min == 0 && $critical_max == 0)) {
 		$critical_min = 1;
 	}
-
+	
 	// Get module data
 	$interval_data = db_get_all_rows_sql ('SELECT * FROM tagente_datos 
 		WHERE id_agente_modulo = ' . (int) $id_agent_module .
@@ -5217,14 +5236,14 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 		' AND utimestamp < ' . (int) $date .
 		' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
-
+	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -5238,23 +5257,23 @@ function reporting_get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-
+	
 	if (count ($interval_data) < 2) {
 		return false;
 	}
-
+	
 	// Set initial conditions
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $first_data['utimestamp'];
 	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
 			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
-		$previous_status = 1;	
+		$previous_status = 1;
 	}
 	else {
 		$previous_status = 0;
 	}
-
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {

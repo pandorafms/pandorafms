@@ -1,3 +1,12 @@
+2012-12-27 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* install.php: cleaned source code style.
+	
+	* godmode/reporting/reporting_builder.item_editor.php,
+	godmode/reporting/reporting_builder.list_items.php,
+	include/styles/pandora.css, include/functions_reporting.php: fixed
+	the "group_report" and the inventory.
+
 2012-12-27  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* general/logon_ok.php: Fixed typo. (fixed a bug that the

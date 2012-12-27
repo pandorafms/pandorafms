@@ -36,7 +36,7 @@ if ($config ['metaconsole'] == 1) {
 }
 else {
 	//FORM FILTER
-	switch ($config['dbtype']){
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
 			$rows = db_get_all_rows_sql('
@@ -208,7 +208,9 @@ if ($items) {
 	$table->size[6] = '50px';
 	$table->size[7] = '30px';
 	
-	$table->head[0] = '<span title="' . __('Position') . '">' . __('P.') . '</span>';
+	$table->head[0] = '<span title="' . __('Position') . '">' .
+		__('P.') . '</span>';
+	
 	$table->head[1] = __('Type');
 	if (!$filterEnable) {
 		$table->head[1] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report=' . $idReport . $urlFilter . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
@@ -226,7 +228,8 @@ if ($items) {
 	}
 	$table->head[4] = __('Period');
 	$table->head[5] = __('Description');
-	$table->head[6] = '<span title="' . __('Options') . '">' . __('Op.') . '</span>';
+	$table->head[6] = '<span title="' . __('Options') . '">' .
+		__('Op.') . '</span>';
 	$table->head[7] = __('Sort');
 	
 	$table->align[6] = 'center';
@@ -276,7 +279,8 @@ foreach ($items as $item) {
 	}
 	
 	if ($item['id_agent'] == 0) {
-		$is_inventory_item = $item['type'] == 'inventory' || $item['type'] == 'inventory_changes';
+		$is_inventory_item = $item['type'] == 'inventory'
+			|| $item['type'] == 'inventory_changes';
 		// Due to SLA or top N or general report items
 		if (!$is_inventory_item && ($item['id_agent_module'] == '' || $item['id_agent_module'] == 0)) {
 			$row[2] = '';
@@ -284,21 +288,37 @@ foreach ($items as $item) {
 		}
 		else {
 			// The inventory items have the agents and modules in json format in the field external_source
-			if($is_inventory_item) {
+			if ($is_inventory_item) {
 				$external_source = json_decode($item['external_source'], true);
 				$agents = $external_source['id_agents'];
-				$modules = $external_source['id_agents'];
+				$modules = $external_source['inventory_modules'];
 				
 				$agent_name_db = array();
-				foreach($agents as $a) {
-					$agent_name_db[] = agents_get_name($a);
+				foreach ($agents as $a) {
+					if ($a == -1) {
+						$agent_name_db[] = __('All');
+					}
+					else {
+						$agent_name_db[] = agents_get_name($a);
+					}
 				}
-				$agent_name_db = implode('<br>',$agent_name_db);
+				$agent_name_db = implode('<br />',$agent_name_db);
 				
 				$module_name_db = array();
-				foreach($modules as $m) {
-					$module_name_raw = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $m));
-					$module_name_db[] = ui_print_truncate_text(io_safe_output($module_name_raw), 'module_small');
+				if (empty($modules)) {
+					$module_name_db[] = __('Any');
+				}
+				else {
+					foreach ($modules as $m) {
+						if (empty($m) || $m === '0') {
+							$module_name_db[] = __('Any');
+						}
+						else {
+							$module_name_raw = db_get_value_filter('nombre',
+								'tagente_modulo', array('id_agente_modulo' => $m));
+							$module_name_db[] = ui_print_truncate_text(io_safe_output($module_name_raw), 'module_small');
+						}
+					}
 				}
 				$module_name_db = implode('<br>',$module_name_db);
 			}

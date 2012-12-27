@@ -587,7 +587,7 @@ html_print_input_hidden('id_item', $idItem);
 				<?php 
 					$agents = enterprise_hook('inventory_get_agents');
 					$agents_select = array();
-					foreach($agents as $a) {
+					foreach ($agents as $a) {
 						$agents_select[$a['id_agente']] = $a['nombre'];
 					}
 					html_print_select($agents_select, 'id_agents[]', $id_agents, $script = '', __('All'), -1, false, true, true, '', false, "min-width: 180px");
@@ -599,7 +599,13 @@ html_print_input_hidden('id_item', $idItem);
 			<td>
 				<?php 
 					html_print_select(array(), 'inventory_modules[]', '', $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
-					html_print_input_hidden('inventory_modules_selected',implode(',',$inventory_modules));
+					if (empty($inventory_modules)) {
+						$array_inventory_modules = array(0 => 0);
+					}
+					else {
+						$array_inventory_modules = implode(',', $inventory_modules);
+					}
+					html_print_input_hidden('inventory_modules_selected', $array_inventory_modules);
 				?>
 			</td>
 		</tr>

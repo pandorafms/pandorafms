@@ -131,7 +131,7 @@ $cells[5]["color"] = "#aaa";
 $cells[5]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=3";
 
 $cells[6][0] = __('Alerts defined');
-$cells[6][1] = $data["total_alerts"];
+$cells[6][1] = $data["monitor_alerts"];
 $cells[6]["color"] = "#000";
 $cells[6]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
 

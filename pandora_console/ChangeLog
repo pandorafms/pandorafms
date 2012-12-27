@@ -1,5 +1,9 @@
 2012-12-27 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_reporting.php: cleaned source code style.
+
+2012-12-27 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* install.php: cleaned source code style.
 	
 	* godmode/reporting/reporting_builder.item_editor.php,

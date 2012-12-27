@@ -366,8 +366,12 @@ switch ($action) {
 			case 'inventory':
 				$description = $item['description'];
 				$es = json_decode($item['external_source'], true);
+				$idAgent = $es['id_agents'];
+				
 				$date = $es['date'];
 				$inventory_modules = $es['inventory_modules'];
+				$idAgentModule = $inventory_modules;
+				
 				$id_agents = $es['id_agents'];
 				break;
 			case 'inventory_changes':
@@ -613,12 +617,15 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Date'); ?></td>
 			<td style="max-width: 180px">
 				<?php
-				$dates = enterprise_hook('inventory_get_dates',array($idAgentModule, $idAgent, $group));
-				if($dates === ENTERPRISE_NOT_HOOK) {
+				$dates = enterprise_hook(
+					'inventory_get_dates',
+						array($idAgentModule, $idAgent, $group));
+				
+				if ($dates === ENTERPRISE_NOT_HOOK) {
 					$dates = array();
 				}
 				
-				html_print_select($dates, 'date', '', '', __('Last'), 0, false, false, false, '', false, "min-width: 180px");
+				html_print_select($dates, 'date', $date, '', __('Last'), 0, false, false, false, '', false, "min-width: 180px");
 				html_print_input_hidden('date_selected',$date);
 				?>
 			</td>
@@ -1785,7 +1792,8 @@ function chooseType() {
 				updateInventoryDates();
 			});
 			
-			updateInventoryDates();
+			if (!$("#hidden-date_selected").val())
+				updateInventoryDates();
 			break;
 		case 'inventory_changes':
 			break;

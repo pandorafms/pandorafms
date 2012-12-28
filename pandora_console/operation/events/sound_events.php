@@ -34,7 +34,7 @@ check_login ();
 $config["id_user"] = $_SESSION["id_usuario"];
 
 
-if (! check_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "ER")) {
 	db_pandora_audit("ACL Violation","Trying to access event viewer");
 	require ("general/noaccess.php");
 	
@@ -72,7 +72,7 @@ $table->size[1] = '90%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, "AR", true, 'group', '', 'changeGroup();', '', 0, true);
+$table->data[0][1] = html_print_select_groups(false, "ER", true, 'group', '', 'changeGroup();', '', 0, true);
 $table->data[1][0] = __('Type');
 $table->data[1][1] = html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
 	html_print_checkbox('critical', 'critical', true, true, false, 'changeType();') . __('Monitor critical') . '<br />' .

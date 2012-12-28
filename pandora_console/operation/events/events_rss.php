@@ -228,7 +228,7 @@ if (empty ($result)) {
 }
 
 foreach ($result as $row) {
-	if (!check_acl($user, $row["id_group"], "AR")) {
+	if (!check_acl($user, $row["id_group"], "ER")) {
 		continue;
 	}
 	if ($row["event_type"] == "system") {

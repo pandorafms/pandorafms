@@ -17,13 +17,6 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IR")) {
-	db_pandora_audit("ACL Violation",
-		"Trying to access report builder");
-	require ("general/noaccess.php");
-	exit;
-}
-
 $get_image_path = get_parameter('get_image_path', 0);
 
 /* skins image checks */

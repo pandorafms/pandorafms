@@ -17,7 +17,7 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "RW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -75,7 +75,7 @@ $table->data[0][0] = __('Name:'). ui_print_help_tip (__("Use [ or ( as first cha
 
 $table->data[0][1] = html_print_input_text ('name', $visualConsoleName, '', 80, 100, true);
 $table->data[1][0] = __('Group:');
-$groups = users_get_groups ($config['id_user']);
+$groups = users_get_groups ($config['id_user'], 'RW');
 
 $own_info = get_user_info($config['id_user']);
 // Only display group "All" if user is administrator or has "PM" privileges
@@ -84,7 +84,7 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else	
 	$display_all_group = false;
 
-$table->data[1][1] = html_print_select_groups($config['id_user'], "AR", $display_all_group, 'id_group', $idGroup, '', '', '', true);
+$table->data[1][1] = html_print_select_groups($config['id_user'], "RW", $display_all_group, 'id_group', $idGroup, '', '', '', true);
 $backgrounds_list = list_files ($config['homedir'] . '/images/console/background/', "jpg", 1, 0);
 $backgrounds_list = array_merge ($backgrounds_list, list_files ($config['homedir'] . '/images/console/background/', "png", 1, 0));
 $table->data[2][0] = __('Background');

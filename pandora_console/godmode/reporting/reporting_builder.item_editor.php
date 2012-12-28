@@ -16,7 +16,7 @@ global $config;
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "RW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -433,7 +433,7 @@ html_print_input_hidden('id_item', $idItem);
 				$own_info = get_user_info ($config['id_user']);
 				
 				// Get group list that user has access
-				$groups_user = users_get_groups ($config['id_user'], "IW", $own_info['is_admin'], true);
+				$groups_user = users_get_groups ($config['id_user'], "RW", $own_info['is_admin'], true);
 				$groups_id = array();
 				foreach($groups_user as $key => $groups){
 					$groups_id[] = $groups['id_grupo'];

@@ -145,7 +145,7 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 	}
 }
 
-if (check_acl ($config['id_user'], 0, "IW")) {
+if (check_acl ($config['id_user'], 0, "EW")) {
 	// Manage events
 	$menu_godmode["geventos"]["text"] = __('Manage events');
 	$menu_godmode["geventos"]["sec2"] = "godmode/events/events&amp;section=filter";
@@ -153,8 +153,12 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 	
 	// Custom event fields
 	$sub = array ();
-	$sub["godmode/events/events&amp;section=fields"]["text"] = __('Custom events');
-	$sub["godmode/events/events&amp;section=responses"]["text"] = __('Event responses');
+	$sub["godmode/events/events&amp;section=filter"]["text"] = __('Event filters');
+	
+	if (check_acl ($config['id_user'], 0, "PM")) {
+		$sub["godmode/events/events&amp;section=fields"]["text"] = __('Custom events');
+		$sub["godmode/events/events&amp;section=responses"]["text"] = __('Event responses');
+	}
 	
 	$menu_godmode["geventos"]["sub"] = $sub;
 }

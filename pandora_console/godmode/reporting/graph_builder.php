@@ -46,7 +46,7 @@ if (is_ajax ()) {
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "RW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access graph builder");
 	include ("general/noaccess.php");

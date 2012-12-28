@@ -482,7 +482,6 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				$limit_sql = " LIMIT $offset, $limit "; 
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
-			//html_debug_print($sql, true);
 			if ($return)
 				return $sql;
 			else

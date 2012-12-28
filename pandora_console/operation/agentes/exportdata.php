@@ -24,7 +24,7 @@ require_once ('include/functions_users.php');
 
 check_login();
 
-if (!check_acl ($config['id_user'], 0, "AR")) {
+if (!check_acl ($config['id_user'], 0, "RR")) {
 	require ("general/noaccess.php");
 	return;
 }
@@ -186,10 +186,10 @@ if (empty($export_btn)) {
 	//Group selector
 	$table->data[0][0] = '<b>'.__('Group').'</b>';
 	
-	$groups = users_get_groups ($config['id_user'], "AR");
-	
+	$groups = users_get_groups ($config['id_user'], "RR", users_can_manage_group_all());
+
 	$table->data[0][1] = html_print_select_groups($config['id_user'],
-		"AR", true, "group", $group, '', '', 0, true, false, true,
+		"RR", users_can_manage_group_all(), "group", $group, '', '', 0, true, false, true,
 		'w130', false);
 	
 	//Agent selector
@@ -203,7 +203,7 @@ if (empty($export_btn)) {
 	}
 	
 	$agents = array ();
-	$rows = agents_get_agents ($filter, false, 'AR');
+	$rows = agents_get_agents ($filter, false, 'RR');
 	if ($rows == null) $rows = array();
 	foreach ($rows as $row) {
 		$agents[$row['id_agente']] = $row['nombre'];

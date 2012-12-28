@@ -31,7 +31,7 @@ if (! $id_report) {
 $report = db_get_row ('treport', 'id_report', $id_report);
 
 // Check ACL on the report to see if user has access to the report.
-if (! check_acl ($config['id_user'], $report['id_group'], "AR")) {
+if (! check_acl ($config['id_user'], $report['id_group'], "RR")) {
 	db_pandora_audit("ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
 	exit;
@@ -42,12 +42,6 @@ require_once ($config['homedir'] . '/include/functions_reporting.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
 
 enterprise_include("include/functions_reporting.php");
-
-if ($report['id_group'] != 0 &&
-	!is_user_admin ($config['id_user'])) {
-	include ("general/noaccess.php");
-	return;
-}
 
 $pure = get_parameter('pure',0);
 

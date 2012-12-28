@@ -30,6 +30,7 @@ if (check_acl ($config['id_user'], 0, "AW") ||
 	check_acl ($config['id_user'], 0, "UM") ||
 	check_acl ($config['id_user'], 0, "LW") ||
 	check_acl ($config['id_user'], 0, "IW") ||
+	check_acl ($config['id_user'], 0, "EW") ||
 	check_acl ($config['id_user'], 0, "DW")) {
 	
 	echo '<div class="tit bg3">:: '.__('Administration').' ::</div>';

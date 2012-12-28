@@ -25,7 +25,7 @@ require_once ($config['homedir'].'/include/functions_ui.php');
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "IR")) {
+if (! check_acl ($config["id_user"], 0, "ER")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
@@ -185,7 +185,7 @@ $id_group = (int) get_parameter('id_group', 0);
 
 $search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
 
-users_get_groups ($config["id_user"], "IR");
+users_get_groups ($config["id_user"], "ER");
 
 $ids = (array) get_parameter ("eventid", -1);
 
@@ -230,7 +230,7 @@ if ($config["pure"] == 0 || defined ('METACONSOLE')) {
 	$sound_event['text'] = '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>';
 	
 	// If the user has administrator permission display manage tab
-	if (check_acl ($config["id_user"], 0, "IW")) {
+	if (check_acl ($config["id_user"], 0, "EW")) {
 		// Manage events
 		$manage_events['active'] = false;
 		$manage_events['text'] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
@@ -384,8 +384,29 @@ $(document).ready( function() {
 	
 	$("input[name=all_validate_box]").change (function() {
 		$("input[name='validate_ids[]']").attr('checked', $(this).attr('checked'));
+		$("input[name='validate_ids[]']").trigger('change');
 	});
 	
+	// If some of the checkbox checked cahnnot be deleted disable the delete button
+	$("input[name='validate_ids[]']").change (function() {
+		var canDeleted = 1;
+		$("input[name='validate_ids[]']").each(function() {
+			if($(this).attr('checked') == 'checked') {
+				var classs = $(this).attr('class');
+				classs = classs.split(' ');
+				if(classs[0] != 'candeleted') {
+					canDeleted = 0;
+				}
+			}
+		});
+		
+		if(canDeleted == 0) {
+			$('#button-delete_button').attr('disabled','disabled');
+		}
+		else {
+			$('#button-delete_button').removeAttr('disabled');
+		}
+	});
 	
 	$('#select_validate').change (function() {
 		$option = $('#select_validate').val();
@@ -595,6 +616,9 @@ $(document).ready( function() {
 		
 		$tr = $(this).parents ("tr");
 		id = this.id.split ("-").pop ();
+		
+		$("#delete_cross_"+id).attr ("src", "images/spinner.gif");
+
 		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 			{"page" : "operation/events/events",
 			"delete_event" : 1,

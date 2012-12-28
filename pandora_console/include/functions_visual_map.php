@@ -1706,9 +1706,9 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	$where = db_format_array_where_clause_sql ($filter);
 	
 	if ($returnAllGroup)
-		$groups = users_get_groups ($id_user);
+		$groups = users_get_groups ($id_user, 'RR');
 	else
-		$groups = users_get_groups ($id_user, 'IR', false);
+		$groups = users_get_groups ($id_user, 'RR', false);
 	
 	if (!empty($groups)) {
 		if ($where != '') {

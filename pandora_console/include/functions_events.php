@@ -61,7 +61,7 @@ function events_get_event ($id, $fields = false) {
 	}
 	
 	$event = db_get_row ('tevento', 'id_evento', $id, $fields);
-	if (! check_acl ($config['id_user'], $event['id_grupo'], 'IR'))
+	if (! check_acl ($config['id_user'], $event['id_grupo'], 'ER'))
 		return false;
 	return $event;
 }
@@ -192,13 +192,13 @@ function events_delete_event ($id_event, $similar = true, $meta = false) {
 	
 	foreach ($id_event as $event) {		
 		if($meta) {
-			$event_group = events_get_group ($event);
-		}
-		else {
 			$event_group = events_meta_get_group ($event);
 		}
+		else {
+			$event_group = events_get_group ($event);
+		}
 		
-		if (check_acl ($config["id_user"], $event_group, "IM") == 0) { 
+		if (check_acl ($config["id_user"], $event_group, "EM") == 0) { 
 			//Check ACL
 			db_pandora_audit("ACL Violation", "Attempted deleting event #".$event);
 			$errors++;
@@ -302,7 +302,7 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1, $m
 			$alerts[] = $event['id_alert_am'];
 		}
 		
-		if (check_acl ($config["id_user"], $event_group, "IW") == 0) {
+		if (check_acl ($config["id_user"], $event_group, "EW") == 0) {
 			db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
 			
 			return false;
@@ -414,7 +414,7 @@ function events_change_status ($id_event, $new_status, $meta) {
 			$alerts[] = $event['id_alert_am'];
 		}
 		
-		if (check_acl ($config["id_user"], $event_group, "IW") == 0) {
+		if (check_acl ($config["id_user"], $event_group, "EW") == 0) {
 			db_pandora_audit("ACL Violation", "Attempted updating event #".$id);
 			
 			unset($id_event[$k]);
@@ -494,7 +494,7 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 		else {
 			$event_group = events_get_group ($id);
 		}
-		if (check_acl ($config["id_user"], $event_group, "IW") == 0) {
+		if (check_acl ($config["id_user"], $event_group, "EW") == 0) {
 			db_pandora_audit("ACL Violation", "Attempted updating event #".$id);
 			unset($id_event[$k]);
 		}
@@ -563,7 +563,7 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment', $m
 		else {
 			$event_group = events_get_group ($id);
 		}
-		if (check_acl ($config["id_user"], $event_group, "IW") == 0) {
+		if (check_acl ($config["id_user"], $event_group, "EW") == 0) {
 			db_pandora_audit("ACL Violation", "Attempted updating event #".$id);
 			
 			unset($id_event[$k]);
@@ -748,7 +748,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->align[5] = "right";
 		
 		foreach ($result as $event) {
-			if (! check_acl ($config["id_user"], $event["id_grupo"], "AR")) {
+			if (! check_acl ($config["id_user"], $event["id_grupo"], "ER")) {
 				continue;
 			}
 			$data = array ();
@@ -1052,7 +1052,7 @@ function events_print_type_description ($type, $return = false) {
 function events_get_group_events ($id_group, $period, $date) {
 	global $config;
 
-	$id_group = groups_safe_acl ($config["id_user"], $id_group, "AR");
+	$id_group = groups_safe_acl ($config["id_user"], $id_group, "ER");
 
 	if (empty ($id_group)) {
 		//An empty array means the user doesn't have access
@@ -1274,7 +1274,7 @@ function events_check_event_filter_group ($id_filter) {
 	$id_group = db_get_value('id_group', 'tevent_filter', 'id_filter', $id_filter);	
 	$own_info = get_user_info ($config['id_user']);
 	// Get group list that user has access
-	$groups_user = users_get_groups ($config['id_user'], "IW", $own_info['is_admin'], true);
+	$groups_user = users_get_groups ($config['id_user'], "EW", $own_info['is_admin'], true);
 	$groups_id = array();
 	$has_permission = false;
 	
@@ -1326,7 +1326,10 @@ function events_get_event_filter ($id_filter, $filter = false, $fields = false) 
 function events_get_event_filter_select(){
 	global $config;
 	
-	$user_groups = users_get_groups ($config['id_user'], "AW", true, true);
+	$user_groups = users_get_groups ($config['id_user'], "EW", true, true);
+	if(empty($user_groups)) {
+		return array();
+	}
 	$sql = "SELECT id_filter, id_name FROM tevent_filter WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
 
 	$event_filters = db_get_all_rows_sql($sql);
@@ -1362,38 +1365,67 @@ function events_page_responses ($event) {
 	$table_responses->style[1] = 'text-align: left;';
 	$table_responses->class = "databox alternate";
 
-	// Owner
-	$data = array();
-	$data[0] = __('Change owner');
+	if (check_acl ($config["id_user"], $event["id_grupo"], "EM") == 1) {
+		// Owner
+		$data = array();
+		$data[0] = __('Change owner');
+			
+		$users = groups_get_users(array_keys(users_get_groups(false, "EM", false)));
 		
-	$users = groups_get_users(array_keys(users_get_groups(false, "AR", false)));
-	
-	foreach($users as $u) {
-		$owners[$u['id_user']] = $u['fullname'];
+		foreach($users as $u) {
+			$owners[$u['id_user']] = $u['fullname'];
+		}
+		
+		if($event['owner_user'] == '') {
+			$owner_name = __('None');
+		}
+		else {
+			$owner_name = db_get_value('fullname', 'tusuario', 'id_user', $event['owner_user']);
+			$owners[$event['owner_user']] = $owner_name;
+		}
+		
+		$data[1] = html_print_select($owners, 'id_owner', $event['owner_user'], '', __('None'), -1, true);
+		$data[1] .= html_print_button(__('Update'),'owner_button',false,'event_change_owner();','class="sub next"',true);
+		
+		$table_responses->data[] = $data;
 	}
-	
-	if($event['owner_user'] == '') {
-		$owner_name = __('None');
-	}
-	else {
-		$owner_name = db_get_value('fullname', 'tusuario', 'id_user', $event['owner_user']);
-		$owners[$event['owner_user']] = $owner_name;
-	}
-	
-	$data[1] = html_print_select($owners, 'id_owner', $event['owner_user'], '', __('None'), -1, true);
-	$data[1] .= html_print_button(__('Update'),'owner_button',false,'event_change_owner();','class="sub next"',true);
-	
-	$table_responses->data[] = $data;
 	
 	// Status
 	$data = array();
 	$data[0] = __('Change status');
 	
-	$status = array(0 => __('New'), 2 => __('In process'), 1 => __('Validated'));
+	$status_blocked = false;
+	
+	if (check_acl ($config["id_user"], $event["id_grupo"], "EM") == 1) {
+		// If the user has manager acls, the status can be changed to all possibilities always
+		$status = array(0 => __('New'), 2 => __('In process'), 1 => __('Validated'));
+	}
+	else {
+		switch($event['estado']) {
+			case 0:
+				// If the user hasnt manager acls and the event is new. The status can be changed
+				$status = array(2 => __('In process'), 1 => __('Validated'));
+				break;
+			case 1:
+				// If the user hasnt manager acls and the event is validated. The status cannot be changed
+				$status = array(1 => __('Validated'));
+				$status_blocked = true;
+				break;
+			case 2:
+				// If the user hasnt manager acls and the event is in process. The status only can be changed to validated
+				$status = array(1 => __('Validated'));
+				break;
+		}
 
-	$data[1] = html_print_select($status, 'estado', $event['estado'], '', '', 0, true, false, false);
-	$data[1] .= html_print_button(__('Update'),'status_button',false,'event_change_status(\''.$event['similar_ids'] .'\');','class="sub next"',true);
+	}
 
+	// The change status option will be enabled only when is possible change the status
+	$data[1] = html_print_select($status, 'estado', $event['estado'], '', '', 0, true, false, false, '', $status_blocked);
+	
+	if(!$status_blocked) {
+		$data[1] .= html_print_button(__('Update'),'status_button',false,'event_change_status(\''.$event['similar_ids'] .'\');','class="sub next"',true);
+	}
+	
 	$table_responses->data[] = $data;
 	
 	// Comments
@@ -1403,16 +1435,18 @@ function events_page_responses ($event) {
 
 	$table_responses->data[] = $data;
 	
-	// Delete
-	$data = array();
-	$data[0] = __('Delete event');
-	$data[1] = '<form method="post">';
-	$data[1] .= html_print_button(__('Delete event'),'delete_button',false,'if(!confirm(\''.__('Are you sure?').'\')) { return false; } this.form.submit();','class="sub cancel"',true);
-	$data[1] .= html_print_input_hidden('delete', 1, true);
-	$data[1] .= html_print_input_hidden('validate_ids', $event['id_evento'], true);
-	$data[1] .= '</form>';
+	if (check_acl ($config["id_user"], $event["id_grupo"], "EM") == 1) {
+		// Delete
+		$data = array();
+		$data[0] = __('Delete event');
+		$data[1] = '<form method="post">';
+		$data[1] .= html_print_button(__('Delete event'),'delete_button',false,'if(!confirm(\''.__('Are you sure?').'\')) { return false; } this.form.submit();','class="sub cancel"',true);
+		$data[1] .= html_print_input_hidden('delete', 1, true);
+		$data[1] .= html_print_input_hidden('validate_ids', $event['id_evento'], true);
+		$data[1] .= '</form>';
 
-	$table_responses->data[] = $data;
+		$table_responses->data[] = $data;
+	}
 	
 	// Custom responses
 	$data = array();
@@ -2009,8 +2043,13 @@ function events_page_comments ($event) {
 		$table_comments->data[] = $data;
 	}
 	
-	$comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea("comment", 3, 10, '', 'style="min-height: 15px; width: 100%;"', true);
-	$comments_form .= '<br><div style="text-align:right;">'.html_print_button(__('Add comment'),'comment_button',false,'event_comment();','class="sub next"',true).'</div><br></div>';
+    if (check_acl ($config['id_user'], $event['id_grupo'], "EW") || check_acl ($config['id_user'], $event['id_grupo'], "EM")) {
+		$comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea("comment", 3, 10, '', 'style="min-height: 15px; width: 100%;"', true);
+		$comments_form .= '<br><div style="text-align:right;">'.html_print_button(__('Add comment'),'comment_button',false,'event_comment();','class="sub next"',true).'</div><br></div>';
+	}
+	else {
+		$comments_form = '';
+	}
 	
 	$comments = '<div id="extended_event_comments_page" class="extended_event_pages">'.$comments_form.html_print_table($table_comments, true).'</div>';
 	

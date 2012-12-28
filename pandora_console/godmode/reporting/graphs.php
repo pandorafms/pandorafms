@@ -20,7 +20,7 @@ require_once ('include/functions_custom_graphs.php');
 // Check user credentials
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IR")) {
+if (! check_acl ($config['id_user'], 0, "RR")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Inventory Module Management");
 	require ("general/noaccess.php");
@@ -69,7 +69,7 @@ ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/r
 
 // Delete module SQL code
 if ($delete_graph) {
-	if (check_acl ($config['id_user'], 0, "AW")) {
+	if (check_acl ($config['id_user'], 0, "RW")) {
 		$result = db_process_sql_delete("tgraph_source", array('id_graph' =>$id));
 		
 		if ($result)
@@ -131,13 +131,9 @@ if ($multiple_delete) {
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));
 }
-$own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-	$return_all_group = true;
-else
-	$return_all_group = false;
 
-$graphs = custom_graphs_get_user ($config['id_user'], false, $return_all_group, "IW");
+
+$graphs = custom_graphs_get_user ($config['id_user'], false, true, "RR");
 
 if (! empty ($graphs)) {
 	$table->width = '98%';
@@ -152,7 +148,7 @@ if (! empty ($graphs)) {
 	$table->size[3] = '50px';
 	$table->align[2] = 'center';
 	$table->align[3] = 'center';
-	if (check_acl ($config['id_user'], 0, "AW")) {
+	if (check_acl ($config['id_user'], 0, "RW")) {
 		$table->align[4] = 'center';
 		$table->head[4] = __('Op.');
 		$table->size[4] = '70px';
@@ -170,7 +166,7 @@ if (! empty ($graphs)) {
 		$data[2] = $graph["graphs_count"];
 		$data[3] = ui_print_group_icon($graph['id_group'],true);
 		
-		if (check_acl ($config['id_user'], 0, "AW")) {
+		if (check_acl ($config['id_user'], 0, "RW") && users_can_manage_group_all($graph['id_group'])) {
 			$data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.
 			$graph['id_graph'].'">'.html_print_image("images/config.png", true).'</a>';
 			
@@ -194,10 +190,10 @@ if (! empty ($graphs)) {
 	echo "</form>";
 }
 else {
-	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
+	echo "<div class='nf'>".__('There are no defined graphs')."</div>";
 }
 
-if (check_acl ($config['id_user'], 0, "AW")) {
+if (check_acl ($config['id_user'], 0, "RW")) {
 	echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder">';
 	echo '<div class="action-buttons" style="width: 98%;">';
 	html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next"');

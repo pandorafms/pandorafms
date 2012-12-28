@@ -1475,7 +1475,10 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 				tperfil.incident_management, tperfil.agent_view,
 				tperfil.agent_edit, tperfil.alert_edit,
 				tperfil.alert_management, tperfil.pandora_management,
-				tperfil.db_management, tperfil.user_management
+				tperfil.db_management, tperfil.user_management,
+				tperfil.report_view, tperfil.report_edit,
+				tperfil.report_management, tperfil.event_view,
+				tperfil.event_edit, tperfil.event_management
 			FROM tusuario_perfil, tperfil
 			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
 				AND tusuario_perfil.id_usuario = '%s'", $id_user);
@@ -1486,14 +1489,17 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 				tperfil.incident_management, tperfil.agent_view,
 				tperfil.agent_edit, tperfil.alert_edit,
 				tperfil.alert_management, tperfil.pandora_management,
-				tperfil.db_management, tperfil.user_management
+				tperfil.db_management, tperfil.user_management,
+				tperfil.report_view, tperfil.report_edit,
+				tperfil.report_management, tperfil.event_view,
+				tperfil.event_edit, tperfil.event_management
 			FROM tusuario_perfil, tperfil
 			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
 				AND tusuario_perfil.id_usuario = '%s'
 				AND (tusuario_perfil.id_grupo IN (%s)
 				OR tusuario_perfil.id_grupo = 0)", $id_user, implode(', ', $parents_id));
 	}
-	
+
 	$rowdup = db_get_all_rows_sql ($query);
 	
 	if (empty ($rowdup))
@@ -1532,6 +1538,24 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 				break;
 			case "UM":
 				$result += $row["user_management"];
+				break;
+			case "RR":
+				$result += $row["report_view"];
+				break;
+			case "RW":
+				$result += $row["report_edit"];
+				break;
+			case "RM":
+				$result += $row["report_management"];
+				break;
+			case "ER":
+				$result += $row["event_view"];
+				break;
+			case "EW":
+				$result += $row["event_edit"];
+				break;
+			case "EM":
+				$result += $row["event_management"];
 				break;
 		}
 	}

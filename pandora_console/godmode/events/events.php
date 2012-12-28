@@ -18,7 +18,7 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "IW")) {
+if (! check_acl ($config["id_user"], 0, "EW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event manage");
 	require ("general/noaccess.php");
@@ -29,21 +29,22 @@ if (! check_acl ($config["id_user"], 0, "IW")) {
 $section = (string) get_parameter ("section", "filter");
 
 // Draws header
-$buttons = array(
-		'filter' => array('active' => false, 
+$buttons['filter'] = array('active' => false, 
 			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
-			html_print_image("images/lightning_go.png", true, array ("title" => __('Create filter'))) . '</a>'),
-		'responses' => array('active' => false, 	
-			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">' .
-			html_print_image("images/cog.png", true, array ("title" => __('Event responses'))) . '</a>'),
-		'fields' => array('active' => false, 	
-			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">' .
-			html_print_image("images/pencil.png", true, array ("title" => __('Custom fields'))) . '</a>'),
-		'separator' => '',
-		'view' => array('active' => false, 
+			html_print_image("images/lightning_go.png", true, array ("title" => __('Create filter'))) . '</a>');
+
+if (check_acl ($config["id_user"], 0, "PM")) {
+	$buttons['responses'] = array('active' => false, 	
+				'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">' .
+				html_print_image("images/cog.png", true, array ("title" => __('Event responses'))) . '</a>');
+	$buttons['fields'] = array('active' => false, 	
+				'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">' .
+				html_print_image("images/pencil.png", true, array ("title" => __('Custom fields'))) . '</a>');
+}
+$buttons['separator'] = '';
+$buttons['view'] = array('active' => false, 
 			'text' => '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">' . 
-			html_print_image("images/god6.png", true, array("title" => __('View events'))) . '</a>'),
-	);
+			html_print_image("images/god6.png", true, array("title" => __('View events'))) . '</a>');
 
 switch ($section) {
 	case 'filter':

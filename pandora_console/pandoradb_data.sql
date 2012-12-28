@@ -287,7 +287,7 @@ INSERT INTO `tusuario_perfil` VALUES (1,'admin',5,0,'admin',0);
 -- Dumping data for table `tperfil`
 --
 
-INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0,1,0,0,0,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0,1,1,0,0,0,0),(3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0),(4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0,1,0,0,1,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0,1,1,0,1,1,0),(3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,0),(4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
 
 --
 -- Dumping data for table `tnews`

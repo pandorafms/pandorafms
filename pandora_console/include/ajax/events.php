@@ -247,14 +247,14 @@ if($get_extended_event) {
 	}
 	else {
 		// Get your groups
-		$groups = users_get_groups($config['id_user'], 'IR');
+		$groups = users_get_groups($config['id_user'], 'ER');
 		
 		if(in_array ($event['id_grupo'], array_keys ($groups))) {
 			//If the event group is among the groups of the user, you get access
 		}
 		else {
 			// If all the access types fail, abort
-			echo 'fail';
+			echo 'Access denied';
 			return false;
 		}
 	}
@@ -267,13 +267,15 @@ if($get_extended_event) {
 	}
 	
 	// Tabs
-	$tabs = "<ul style='background:#eeeeee;border:0px'>
-      <li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png',true).__('General')."</a></li>
-      <li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true).__('Details')."</a></li>
-      <li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/note.png',true).__('Agent fields')."</a></li>
-      <li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true).__('Comments')."</a></li>
-      <li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/cog.png',true).__('Responses')."</a></li>
-   </ul>";
+	$tabs = "<ul style='background:#eeeeee;border:0px'>";
+    $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png',true).__('General')."</a></li>";
+    $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true).__('Details')."</a></li>";
+    $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/note.png',true).__('Agent fields')."</a></li>";
+    $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true).__('Comments')."</a></li>";
+    if (check_acl ($config['id_user'], 0, "EW") || check_acl ($config['id_user'], 0, "EM")) {
+		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/cog.png',true).__('Responses')."</a></li>";
+	}
+    $tabs .= "</ul>";
 	
 	// Get criticity image
 	switch ($event["criticity"]) {
@@ -300,9 +302,13 @@ if($get_extended_event) {
 			$img_sev = "images/status_sets/default/severity_major.png";
 			break;
 	}
-
 	
-	$responses = events_page_responses($event);
+    if (check_acl ($config['id_user'], $event['id_grupo'], "EW") || check_acl ($config['id_user'], $event['id_grupo'], "EM")) {
+		$responses = events_page_responses($event);
+	}
+	else {
+		$responses = '';
+	}
 	
 	$console_url = '';
 	// If metaconsole switch to node to get details and custom fields

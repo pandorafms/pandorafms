@@ -782,4 +782,23 @@ function users_check_users() {
 	
 	return;
 }
+
+// Check if a user can manage a group when group is all
+// This function dont check acls of the group, only if the 
+// user is admin or pandora manager and the group is all
+function users_can_manage_group_all($id_group = 0) {
+	global $config;
+	
+	if($id_group != 0) {
+		return true;
+	}
+	
+	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
+
+	if (check_acl ($config['id_user'], 0, "PM") || $is_admin) {
+		return true;
+	}
+	
+	return false;
+}
 ?>

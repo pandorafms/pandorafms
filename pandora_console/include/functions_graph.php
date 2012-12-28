@@ -1534,7 +1534,7 @@ function grafico_db_agentes_paquetes($width = 380, $height = 300) {
 	$data = array ();
 	$legend = array ();
 	
-	$agents = agents_get_group_agents (array_keys (users_get_groups ()), false, "none");
+	$agents = agents_get_group_agents (array_keys (users_get_groups (false, 'RR')), false, "none");
 	$count = agents_get_modules_data_count (array_keys ($agents));
 	unset ($count["total"]);
 	arsort ($count, SORT_NUMERIC);
@@ -1909,7 +1909,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	$other_events = 0;
 	
 	foreach ($result as $row) {
-		if (!check_acl ($config["id_user"], $row["id_grupo"], "AR") == 1)
+		if (!check_acl ($config["id_user"], $row["id_grupo"], "ER") == 1)
 			continue;
 		
 		if ($loop >= NUM_PIECES_PIE) {		

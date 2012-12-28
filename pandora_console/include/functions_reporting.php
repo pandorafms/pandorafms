@@ -902,12 +902,12 @@ function reporting_get_group_stats ($id_group = 0) {
 	$cur_time = get_system_time ();
 	
 	//Check for access credentials using check_acl. More overhead, much safer
-	if (!check_acl ($config["id_user"], $id_group, "AR")) {
+	if (!check_acl ($config["id_user"], $id_group, "RR")) {
 		return $data;
 	}
 	
 	if ($id_group == 0) {
-		$id_group = array_keys (users_get_groups ($config['id_user'], "AR", false));
+		$id_group = array_keys (users_get_groups ($config['id_user'], "RR", false));
 	}
 	
 	// -----------------------------------------------------------------
@@ -2017,7 +2017,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	$return["alert_img"] = ui_print_status_image (STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
 	$return["agent_group"] = agents_get_agent_group ($id_agent);
 	
-	if (!check_acl ($config["id_user"], $return["agent_group"], "AR")) {
+	if (!check_acl ($config["id_user"], $return["agent_group"], "RR")) {
 		return $return;
 	} 
 	
@@ -3306,6 +3306,10 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$group_stats = reporting_get_group_stats($content['id_group']);
 			// Get events of the last 8 hours
 			$events = events_get_group_events ($content['id_group'], 28800, $report['datetime']);
+			
+			if($events === false) {
+				$events = array();
+			}
 			
 			reporting_header_content($mini, $content, $report, $table, __('Group report').': "'.$group_name.'"');
 			
@@ -5371,7 +5375,7 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
  *
  * @return template graphs of a an user. Empty array if none.
  */
-function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'IR') {
+function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'RR') {
 	global $config;
 	
 	if (!$id_user) {

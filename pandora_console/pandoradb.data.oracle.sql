@@ -313,10 +313,10 @@ END;;
 --
 BEGIN
 LOCK TABLE tperfil IN EXCLUSIVE MODE;
-INSERT INTO tperfil VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0,1,0,0,0,0,0);
-INSERT INTO tperfil VALUES (2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0,1,1,0,0,0,0);
-INSERT INTO tperfil VALUES (3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,1,0,1,1,1,1,0,0);
-INSERT INTO tperfil VALUES (4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,0);
+INSERT INTO tperfil VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0,1,0,0,1,0,0);
+INSERT INTO tperfil VALUES (2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0,1,1,0,1,1,0);
+INSERT INTO tperfil VALUES (3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,1,0,1,1,1,1,1,0);
+INSERT INTO tperfil VALUES (4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1);
 INSERT INTO tperfil VALUES (5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
 COMMIT;
 END;;

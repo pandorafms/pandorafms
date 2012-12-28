@@ -16,7 +16,7 @@ global $config;
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "RW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -57,12 +57,7 @@ $table->data['name'][1] = html_print_input_text('name', $reportName,
 	__('Name'), 80, 100, true);
 
 $table->data['group'][0] = __('Group');
-$own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-	$return_all_groups = true;
-else
-	$return_all_groups = false;
-$table->data['group'][1] = html_print_select_groups(false, "AR", $return_all_groups, 'id_group', $idGroupReport, false, '', '', true);
+$table->data['group'][1] = html_print_select_groups(false, "RW", users_can_manage_group_all(), 'id_group', $idGroupReport, false, '', '', true);
 
 if ($report_id_user == $config['id_user'] ||
 	is_user_admin ($config["id_user"])) {
@@ -81,7 +76,7 @@ if ($report_id_user == $config['id_user'] ||
 		$style = "";
 	$table->data['access'][1] .= '<span style="' . $style . '" class="access_subform" id="group_edit">
 		' .
-		html_print_select_groups(false, "AR", false,
+		html_print_select_groups(false, "RW", false,
 			'id_group_edit', $id_group_edit, false, '', '', true) . '
 		</span>';
 }

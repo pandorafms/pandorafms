@@ -20,7 +20,7 @@ global $config;
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "RR")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -55,10 +55,10 @@ if ($idReport != 0) {
 	$edit = false;
 	switch ($type_access_selected) {
 		case 'group_view':
-			$edit = check_acl($config['id_user'], $report['id_group'], "IW");
+			$edit = check_acl($config['id_user'], $report['id_group'], "RW");
 			break;
 		case 'group_edit':
-			$edit = check_acl($config['id_user'], $report['id_group_edit'], "IW");
+			$edit = check_acl($config['id_user'], $report['id_group_edit'], "RW");
 			break;
 		case 'user_edit':
 			if ($config['id_user'] == $report['id_user'] ||
@@ -343,7 +343,7 @@ switch ($action) {
 		
 		$reports = reports_get_reports ($filter,
 			array ('name', 'id_report', 'description', 'private',
-				'id_user', 'id_group'), $return_all_group, 'IR', $group);
+				'id_user', 'id_group'), $return_all_group, 'RR', $group);
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';
@@ -366,7 +366,7 @@ switch ($action) {
 			}
 			
 			//Admin options only for IW flag
-			if (check_acl ($config['id_user'], 0, "IW")) {
+			if (check_acl ($config['id_user'], 0, "RM")) {
 				
 				$table->head[$next] = __('Private');
 				$table->size[$next] = '40px';
@@ -384,15 +384,15 @@ switch ($action) {
 			foreach ($reports as $report) {
 				if (!is_user_admin ($config["id_user"])){
 					if ($report["private"] && $report["id_user"] != $config['id_user'])
-						if (!check_acl ($config["id_user"], $report["id_group"], "AR"))
+						if (!check_acl ($config["id_user"], $report["id_group"], "RR"))
 							continue;
-					if (!check_acl ($config["id_user"], $report["id_group"], "AR"))
+					if (!check_acl ($config["id_user"], $report["id_group"], "RR"))
 						continue;
 				}
 				
 				$data = array ();
 				
-				if (check_acl ($config["id_user"], $report["id_group"], "AW")) {
+				if (check_acl ($config["id_user"], $report["id_group"], "RW") && users_can_manage_group_all($report["id_group"])) {
 					$data[0] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
 						$report['id_report'].'&pure='.$pure.'">'.$report['name'].'</a>';
 				}
@@ -414,48 +414,47 @@ switch ($action) {
 					$next = 6;
 				}
 				
-				//Admin options only for IW flag
-				if (check_acl ($config['id_user'], 0, "IW")) {
-					if ($report["private"] == 1)
-						$data[$next] = __('Yes');
-					else
-						$data[$next] = __('No');
+
+				if ($report["private"] == 1)
+					$data[$next] = __('Yes');
+				else
+					$data[$next] = __('No');
+				
+				$next++;
+				
+				
+				$data[$next] = ui_print_group_icon($report['id_group'], true, "groups_small", '', !defined('METACONSOLE')); 
+				$next++;
+				
+				$type_access_selected = reports_get_type_access($report);
+				$edit = false;
+				switch ($type_access_selected) {
+					case 'group_view':
+						$edit = check_acl($config['id_user'], $report['id_group'], "RW") && users_can_manage_group_all($report["id_group"]);
+						break;
+					case 'group_edit':
+						$edit = check_acl($config['id_user'], $report['id_group_edit'], "RW") && users_can_manage_group_all($report["id_group_edit"]);
+						break;
+					case 'user_edit':
+						if ($config['id_user'] == $report['id_user'] ||
+							is_user_admin ($config["id_user"]))
+							$edit = true;
+						break;
+				}
+				
+				
+				if ($edit) {
+					$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" style="display:inline">';
+					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
+					$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
+					$data[$next] .= '</form>';
 					
-					$next++;
-					
-					
-					$data[$next] = ui_print_group_icon($report['id_group'], true, "groups_small", '', !defined('METACONSOLE')); 
-					$next++;
-					
-					$type_access_selected = reports_get_type_access($report);
-					$edit = false;
-					switch ($type_access_selected) {
-						case 'group_view':
-							$edit = check_acl($config['id_user'], $report['id_group'], "IW");
-							break;
-						case 'group_edit':
-							$edit = check_acl($config['id_user'], $report['id_group_edit'], "IW");
-							break;
-						case 'user_edit':
-							if ($config['id_user'] == $report['id_user'] ||
-								is_user_admin ($config["id_user"]))
-								$edit = true;
-							break;
-					}
-					
-					if ($edit) {
-						$data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" style="display:inline">';
-						$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
-						$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
-						$data[$next] .= '</form>';
-						
-						$data[$next] .= '&nbsp;&nbsp;<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-						$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
-						$data[$next] .= html_print_input_hidden ('action','delete_report', true);
-						$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
-							true, array ('title' => __('Delete')));
-						$data[$next] .= '</form>';
-					}
+					$data[$next] .= '&nbsp;&nbsp;<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
+					$data[$next] .= html_print_input_hidden ('action','delete_report', true);
+					$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
+						true, array ('title' => __('Delete')));
+					$data[$next] .= '</form>';
 				}
 				
 				array_push ($table->data, $data);
@@ -464,7 +463,7 @@ switch ($action) {
 			html_print_table ($table);
 		}
 				
-		if (check_acl ($config['id_user'], 0, "IW")) {
+		if (check_acl ($config['id_user'], 0, "RW")) {
 			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
 			echo '<div class="action-buttons" style="width: 98%;">';
 			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');

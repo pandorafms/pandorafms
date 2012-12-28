@@ -18,7 +18,7 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "IR")) {
+if (! check_acl ($config["id_user"], 0, "EW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
@@ -83,7 +83,7 @@ if ($multiple_delete) {
 
 $own_info = get_user_info ($config['id_user']);
 // Get group list that user has access
-$groups_user = users_get_groups ($config['id_user'], "AW", $own_info['is_admin'], true);
+$groups_user = users_get_groups ($config['id_user'], "EW", users_can_manage_group_all(), true);
 
 $sql = "SELECT * FROM tevent_filter WHERE id_group_filter IN (".implode(',', array_keys ($groups_user)).")";
 $filters = db_get_all_rows_sql($sql);

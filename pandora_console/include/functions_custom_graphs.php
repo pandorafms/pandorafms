@@ -39,15 +39,15 @@ require_once ($config['homedir'] . '/include/functions_users.php');
  *
  * @return Custom graphs of a an user. Empty array if none.
  */
-function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'IR') {
+function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'RR') {
 	global $config;
 	
 	if (!$id_user) {
 		$id_user = $config['id_user'];
 	}
-	
+
 	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
-	
+
 	$all_graphs = db_get_all_rows_in_table ('tgraph', 'name');
 	if ($all_graphs === false)
 		return array ();

@@ -62,7 +62,7 @@ function reports_get_report ($id_report, $filter = false, $fields = false) {
 	
 	$report = db_get_row_filter ('treport', $filter, $fields);
 	
-	if (! check_acl ($config['id_user'], $report['id_group'], 'AR'))
+	if (! check_acl ($config['id_user'], $report['id_group'], 'RR'))
 		return false;
 	
 	return $report;
@@ -82,7 +82,7 @@ function reports_get_report ($id_report, $filter = false, $fields = false) {
  *
  * @return array An array with all the reports the user can view.
  */
-function reports_get_reports ($filter = false, $fields = false, $returnAllGroup = true, $privileges = 'IR', $group = false) {
+function reports_get_reports ($filter = false, $fields = false, $returnAllGroup = true, $privileges = 'RR', $group = false) {
 	global $config;
 	
 	if (! is_array ($filter))
@@ -118,7 +118,7 @@ function reports_get_reports ($filter = false, $fields = false, $returnAllGroup 
 			if (!in_array($report['id_group'], array_keys($groups)))
 				continue;
 			if ($config['id_user'] != $report['id_user']
-				&& ! check_acl ($config['id_user'], $report['id_group'], 'AR'))
+				&& ! check_acl ($config['id_user'], $report['id_group'], 'RR'))
 				continue;
 		}
 		array_push ($reports, $report);

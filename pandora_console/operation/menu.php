@@ -104,7 +104,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$menu_operation["network"]["sub"] = $sub;
 	//End networkview
 	
-	
+}	
+
+// Reports read
+if (check_acl ($config['id_user'], 0, "RR")) {
 	// Reporting
 	$menu_operation["reporting"]["text"] = __('Reporting');
 	$menu_operation["reporting"]["sec2"] = "godmode/reporting/reporting_builder";
@@ -190,7 +193,11 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$menu_operation["reporting"]["sub"] = $sub;
 	//End reporting
+}
+
 	
+// Agent read, Server read
+if (check_acl ($config['id_user'], 0, "AR")) {	
 	
 	//INI GIS Maps
 	if ($config['activate_gis']) {
@@ -231,8 +238,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//END GIS Maps
 }
 
-// Rest of options, all with AR privilege (or should events be with incidents?)
-if (check_acl ($config['id_user'], 0, "AR")) {
+// Events reading
+if (check_acl ($config['id_user'], 0, "ER")) {
 	// Events
 	$menu_operation["eventos"]["text"] = __('View events'); 
 	$menu_operation["eventos"]["refr"] = 0;

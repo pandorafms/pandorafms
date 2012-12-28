@@ -52,7 +52,7 @@ $bheight = $layout["height"];
 
 $pure_url = "&pure=".$config["pure"];
 
-if (! check_acl ($config["id_user"], $id_group, "AR")) {
+if (! check_acl ($config["id_user"], $id_group, "RR")) {
 	db_pandora_audit("ACL Violation", "Trying to access visual console without group access");
 	require ("general/noaccess.php");
 	exit;
@@ -61,7 +61,7 @@ if (! check_acl ($config["id_user"], $id_group, "AR")) {
 // Render map
 $options = array();
 
-if (check_acl ($config["id_user"], $id_group, "AW")) {
+if (check_acl ($config["id_user"], $id_group, "RW")) {
 	
 	$hash = md5($config["dbpass"]. $id_layout. $config["id_user"]);
 	

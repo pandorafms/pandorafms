@@ -27,7 +27,7 @@ session_write_close ();
 
 $config["id_user"] = $_SESSION["id_usuario"];
 
-if (! check_acl ($config["id_user"], 0, "AR") && ! check_acl ($config["id_user"], 0, "AW")) {
+if (! check_acl ($config["id_user"], 0, "ER") && ! check_acl ($config["id_user"], 0, "EW")) {
 	exit;
 }
 
@@ -146,7 +146,7 @@ $sql .= $filter_state . $timestamp_filter . ' ORDER BY timestamp DESC';
 $new = true;
 while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	$new = false;
-	if (!check_acl($config["id_user"], $event["id_grupo"], "AR") ||
+	if (!check_acl($config["id_user"], $event["id_grupo"], "ER") ||
 		(!check_acl($config["id_user"], 0, "PM") && $event["event_type"] == 'system'))
 		continue;
 	

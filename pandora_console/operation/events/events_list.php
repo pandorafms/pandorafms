@@ -29,7 +29,7 @@ require_once ($config["homedir"] . '/include/functions_tags.php');
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "IR")) {
+if (! check_acl ($config["id_user"], 0, "ER")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
@@ -147,7 +147,7 @@ if ($id_agent == 0 && $text_agent != __('All')) {
 	$id_agent = -1;
 }
 
-$groups = users_get_groups($config['id_user'], 'IR');
+$groups = users_get_groups($config['id_user'], 'ER');
 
 //Group selection
 if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
@@ -317,12 +317,12 @@ echo "</td>";
 
 // Filter group
 echo "<td id='filter_group_color'>".__('Filter group')."</td><td>";
-html_print_select_groups($config["id_user"], "IR", true, 'id_group', $id_group, '', '', 0, false, false, false, 'w130');
+html_print_select_groups($config["id_user"], "ER", true, 'id_group', $id_group, '', '', 0, false, false, false, 'w130');
 echo "</td></tr>";
 
 // Group combo
 echo "<td>".__('Group')."</td><td>";
-html_print_select_groups($config["id_user"], "IR", true, 'ev_group', $ev_group, '', '', 0, false, false, false, 'w130');
+html_print_select_groups($config["id_user"], "ER", true, 'ev_group', $ev_group, '', '', 0, false, false, false, 'w130');
 echo "</td>";
 
 // Event type
@@ -735,7 +735,7 @@ if ($i != 0) {
 	$table->align[$i] = 'center';
 	$table->size[$i] = '80px';
 	$i++;
-	if (check_acl ($config["id_user"], 0, "IW") == 1) {
+	if (check_acl ($config["id_user"], 0, "EW") == 1) {
 		$table->head[$i] = html_print_checkbox ("all_validate_box", "1", false, true);
 		$table->align[$i] = 'center';
 	}
@@ -1023,19 +1023,17 @@ foreach ($result as $event) {
 		//Actions
 		$data[$i] = '';
 		// Validate event
-		if (($event["estado"] != 1) and (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1)) {
+		if (($event["estado"] != 1) and (check_acl ($config["id_user"], $event["id_grupo"], "EW") == 1)) {
 			$data[$i] .= '<a href="javascript:validate_event_advanced('.$event["id_evento"].', 1)" id="validate-'.$event["id_evento"].'">';
 			$data[$i] .= html_print_image ("images/ok.png", true,
 				array ("title" => __('Validate event')));
 			$data[$i] .= '</a>&nbsp;';
 		}
-		else {
-			$data[$i] .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-		}
+
 		// Delete event
-		if (check_acl ($config["id_user"], $event["id_grupo"], "IM") == 1) {
+		if (check_acl ($config["id_user"], $event["id_grupo"], "EM") == 1) {
 			if($event['estado'] != 2) {
-				$data[$i] .= '<a class="delete_event" href="#" id="delete-'.$event['id_evento'].'">';
+				$data[$i] .= '<a class="delete_event" href="javascript:" id="delete-'.$event['id_evento'].'">';
 				$data[$i] .= html_print_image ("images/cross.png", true,
 					array ("title" => __('Delete event'), "id" => 'delete_cross_' . $event['id_evento']));
 				$data[$i] .= '</a>&nbsp;';
@@ -1053,10 +1051,19 @@ foreach ($result as $event) {
 		$data[$i] .= '</a>&nbsp;';
 		$i++;
 		
-		if (check_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
+		if (check_acl ($config["id_user"], $event["id_grupo"], "EM") == 1) {
+			//Checkbox
+			// Class 'candeleted' must be the fist class to be parsed from javascript. Dont change
+			$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="candeleted chk_val"', true);
+		}
+		else if (check_acl ($config["id_user"], $event["id_grupo"], "EW") == 1) {
 			//Checkbox
 			$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="chk_val"', true);
 		}
+		else if (isset($table->header[$i]) || true) {
+			$data[$i] = '';
+		}
+		
 		array_push ($table->data, $data);
 	}
 	
@@ -1074,10 +1081,10 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 	
 	echo '<div style="width:'.$table->width.';" class="action-buttons">';
-	if (check_acl ($config["id_user"], 0, "IW") == 1) {
+	if (check_acl ($config["id_user"], 0, "EW") == 1) {
 		html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected();', 'class="sub ok"');
 	}
-	if (check_acl ($config["id_user"], 0,"IM") == 1) {
+	if (check_acl ($config["id_user"], 0,"EM") == 1) {
 		html_print_button(__('Delete selected'), 'delete_button', false, 'delete_selected();', 'class="sub delete"');
 		?>
 		<script type="text/javascript">

@@ -16,7 +16,7 @@ global $config;
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IW")) {
+if (! check_acl ($config['id_user'], 0, "RW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -247,7 +247,9 @@ if ($items) {
 	}
 	$table->head[4] = __('Period');
 	$table->head[5] = __('Description');
-	$table->head[6] = '<span title="' . __('Options') . '">' . __('Op.') . '</span>';
+	if (check_acl ($config['id_user'], 0, "RM")) {
+		$table->head[6] = '<span title="' . __('Options') . '">' . __('Op.') . '</span>';
+	}
 	$table->head[7] = __('Sort');
 	
 	$table->align[6] = 'center';
@@ -367,11 +369,12 @@ foreach ($items as $item) {
 	
 	$row[6] = '';
 	
-	$row[6] .= '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
-	$row[6] .= '&nbsp;&nbsp;';
-	$row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
-	$row[6] .= html_print_checkbox_extended ('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
-	
+	if (check_acl ($config['id_user'], $item['id_group'], "RM")) {
+		$row[6] .= '<a href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '">' . html_print_image("images/wrench_orange.png", true, array("title" => __('Edit'))) . '</a>';
+		$row[6] .= '&nbsp;&nbsp;';
+		$row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=' . $config['homedir'] . '/godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . $urlFilter . '">' . html_print_image("images/cross.png", true, array("title" => __('Delete'))) .'</a>';
+		$row[6] .= html_print_checkbox_extended ('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
+	}
 	$row[7] = '';
 	//You can sort the items if the filter is not enable.
 	if (!$filterEnable) {

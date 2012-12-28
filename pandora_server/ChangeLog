@@ -1,3 +1,8 @@
+2012-12-28  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* util/pandora_manage.pl: Added operation logging by
+	logger() with verbose level 10.
+
 2012-12-24  Ramon Novoa  <rnovoa@artica.es>
 	
 	* bin/pandora_server: Re-calculate module status count upon server

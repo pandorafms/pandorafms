@@ -16,6 +16,7 @@ use DBI;				# DB interface with MySQL
 use POSIX qw(strftime);
 use POSIX;
 use HTML::Entities;		# Encode or decode strings with HTML entities
+use File::Basename;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -27,6 +28,9 @@ use PandoraFMS::Config;
 
 # version: define current version
 my $version = "5.0dev PS120621";
+
+# save program name for logging
+my $progname = basename($0);
 
 # Parameter
 my $param;
@@ -560,10 +564,23 @@ sub pandora_get_planned_downtime_id ($$) {
 ###############################################################################
 
 ###############################################################################
+# log wrapper
+###############################################################################
+sub print_log ($) {
+	my $msg = $@;
+
+	print $msg;					# show message
+
+	$msg =~ s/\n+$//;
+	logger( $conf, "($progname) $msg", 10);		# save to logging file
+}
+
+###############################################################################
 # Print a parameter error and exit the program.
 ###############################################################################
 sub param_error ($$) {
     print (STDERR "[ERROR] Parameters error: $_[1] received | $_[0] necessary.\n\n");
+    logger( $conf, "($progname) [ERROR] Parameters error: $_[1] received | $_[0] necessary.", 10);
     
     help_screen ();
     exit 1;
@@ -574,6 +591,7 @@ sub param_error ($$) {
 ###############################################################################
 sub notexists_error ($$) {
     print (STDERR "[ERROR] Error: The $_[0] '$_[1]' not exists.\n\n");
+    logger( $conf, "($progname) [ERROR] Error: The $_[0] '$_[1]' not exists.", 10);
     exit 1;
 }
 
@@ -582,6 +600,7 @@ sub notexists_error ($$) {
 ###############################################################################
 sub exists_error ($$) {
     print (STDERR "[ERROR] Error: The $_[0] '$_[1]' already exists.\n\n");
+    logger( $conf, "($progname) [ERROR] Error: The $_[0] '$_[1]' already exists.", 10);
     exit 1;
 }
 
@@ -651,13 +670,13 @@ sub cli_disable_group() {
 	my $id_group;
 	
 	if($group_name eq "All") {
-		print "[INFO] Disabling all groups\n\n";
+		print_log "[INFO] Disabling all groups\n\n";
 		$id_group = 0;
 	}
 	else {
 		$id_group = get_group_id($dbh, $group_name);
 		exist_check($id_group,'group',$group_name);
-		print "[INFO] Disabling group '$group_name'\n\n";
+		print_log "[INFO] Disabling group '$group_name'\n\n";
 	}
 	
 	pandora_disable_group ($conf, $dbh, $id_group);
@@ -674,12 +693,12 @@ sub cli_enable_group() {
 	
 	if($group_name eq "All") {
 		$id_group = 0;
-		print "[INFO] Enabling all groups\n\n";
+		print_log "[INFO] Enabling all groups\n\n";
 	}
 	else {
 		$id_group = get_group_id($dbh, $group_name);
 		exist_check($id_group,'group',$group_name);
-		print "[INFO] Enabling group '$group_name'\n\n";
+		print_log "[INFO] Enabling group '$group_name'\n\n";
 	}
 	
 	pandora_enable_group ($conf, $dbh, $id_group);
@@ -693,7 +712,7 @@ sub cli_enable_group() {
 sub cli_create_agent() {
 	my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval) = @ARGV[2..8];
 	
-	print "[INFO] Creating agent '$agent_name'\n\n";
+	print_log "[INFO] Creating agent '$agent_name'\n\n";
 	
 	$address = '' unless defined ($address);
 	$description = (defined ($description) ? safe_input($description)  : '' );	# safe_input() might be better at pandora_create_agent() (when passing 'description' to db_insert())
@@ -717,7 +736,7 @@ sub cli_delete_agent() {
 	my $agent_name = @ARGV[2];
 	
 	$agent_name = decode_entities($agent_name);
-	print "[INFO] Deleting agent '$agent_name'\n\n";
+	print_log "[INFO] Deleting agent '$agent_name'\n\n";
 	
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
@@ -863,7 +882,7 @@ sub cli_create_data_module($) {
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name);
 		
-		print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
@@ -872,7 +891,7 @@ sub cli_create_data_module($) {
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
 		non_exist_check($policy_module_exist,'policy module',$module_name);
 		
-		print "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
+		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}
 
 	# If the module is local and is not to policy, we add it to the conf file
@@ -911,12 +930,12 @@ sub cli_create_data_module($) {
 
 	if(defined($definition_file) && $module_type ne $module_type_def) {
 		$module_type = $module_type_def;
-		print "[INFO] The module type has been forced to '$module_type' by the definition file\n\n";
+		print_log "[INFO] The module type has been forced to '$module_type' by the definition file\n\n";
 	}
 	
 	if(defined($definition_file) && $module_name ne $module_name_def) {
 		$module_name = $module_name_def;
-		print "[INFO] The module name has been forced to '$module_name' by the definition file\n\n";
+		print_log "[INFO] The module name has been forced to '$module_name' by the definition file\n\n";
 	}
 	
 	# The get_module_id has wrong name. Change in future
@@ -924,7 +943,7 @@ sub cli_create_data_module($) {
 	exist_check($module_type_id,'module type',$module_type);
 
 	if ($module_type !~ m/.?generic.?/ && $module_type !~ m/.?async.?/ && $module_type ne 'log4x' && $module_type ne 'keep_alive') {
-			print "[ERROR] '$module_type' is not valid type for data modules. Try with generic, asyncronous, keep alive or log4x types\n\n";
+			print_log "[ERROR] '$module_type' is not valid type for data modules. Try with generic, asyncronous, keep alive or log4x types\n\n";
 			exit;
 	}
 		
@@ -1049,7 +1068,7 @@ sub cli_create_network_module($) {
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name);
 		
-		print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
@@ -1058,17 +1077,17 @@ sub cli_create_network_module($) {
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
 		non_exist_check($policy_module_exist,'policy module',$module_name);
 		
-		print "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
+		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}
 
 	if ($module_type =~ m/.?snmp.?/) {
-		print "[ERROR] '$module_type' is not a valid type. For snmp modules use --create_snmp_module parameter\n\n";
+		print_log "[ERROR] '$module_type' is not a valid type. For snmp modules use --create_snmp_module parameter\n\n";
 		$param = '--create_snmp_module';
 		help_screen ();
 		exit 1;
 	}
 	if ($module_type !~ m/.?icmp.?/ && $module_type !~ m/.?tcp.?/) {
-			print "[ERROR] '$module_type' is not valid type for (not snmp) network modules. Try with icmp or tcp types\n\n";
+			print_log "[ERROR] '$module_type' is not valid type for (not snmp) network modules. Try with icmp or tcp types\n\n";
 			exit;
 	}
 	
@@ -1085,11 +1104,11 @@ sub cli_create_network_module($) {
 	
 	if ($module_type !~ m/.?icmp.?/) {
 		if (not defined($module_port)) {
-			print "[ERROR] Port error. Agents of type distinct of icmp need port\n\n";
+			print_log "[ERROR] Port error. Agents of type distinct of icmp need port\n\n";
 			exit;
 		}
 		if ($module_port > 65535 || $module_port < 1) {
-			print "[ERROR] Port error. Port must into [1-65535]\n\n";
+			print_log "[ERROR] Port error. Port must into [1-65535]\n\n";
 			exit;
 		}
 	}
@@ -1176,7 +1195,7 @@ sub cli_create_snmp_module($) {
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name);
 		
-		print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
@@ -1185,7 +1204,7 @@ sub cli_create_snmp_module($) {
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
 		non_exist_check($policy_module_exist,'policy module',$module_name);
 		
-		print "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
+		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}	
 	
 	# The get_module_id has wrong name. Change in future
@@ -1200,12 +1219,12 @@ sub cli_create_snmp_module($) {
 	}
 	
 	if ($module_type !~ m/.?snmp.?/) {
-		print "[ERROR] '$module_type' is not a valid snmp type\n\n";
+		print_log "[ERROR] '$module_type' is not a valid snmp type\n\n";
 		exit;
 	}
 	
 	if ($module_port > 65535 || $module_port < 1) {
-		print "[ERROR] Port error. Port must into [1-65535]\n\n";
+		print_log "[ERROR] Port error. Port must into [1-65535]\n\n";
 		exit;
 	}
 	
@@ -1307,7 +1326,7 @@ sub cli_create_plugin_module($) {
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name);
 		
-		print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
@@ -1316,7 +1335,7 @@ sub cli_create_plugin_module($) {
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
 		non_exist_check($policy_module_exist,'policy module',$module_name);
 		
-		print "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
+		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}
 	
 	# The get_module_id has wrong name. Change in future
@@ -1324,7 +1343,7 @@ sub cli_create_plugin_module($) {
 	exist_check($module_type_id,'module type',$module_type);
 
 	if ($module_type !~ m/.?generic.?/ && $module_type ne 'log4x') {
-			print "[ERROR] '$module_type' is not valid type for plugin modules. Try with generic or log4x types\n\n";
+			print_log "[ERROR] '$module_type' is not valid type for plugin modules. Try with generic or log4x types\n\n";
 			exit;
 	}
 		
@@ -1335,7 +1354,7 @@ sub cli_create_plugin_module($) {
 	exist_check($plugin_id,'plugin',$plugin_name);
 	
 	if ($module_port > 65535 || $module_port < 1) {
-		print "[ERROR] Port error. Port must into [1-65535]\n\n";
+		print_log "[ERROR] Port error. Port must into [1-65535]\n\n";
 		exit;
 	}
 
@@ -1400,7 +1419,7 @@ sub cli_create_plugin_module($) {
 sub cli_delete_module() {
 	my ($module_name,$agent_name) = @ARGV[2..3];
 	
-	print "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
+	print_log "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
 	
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
@@ -1430,7 +1449,7 @@ sub cli_delete_not_policy_modules() {
 	my $file;
 	my $filemd5;
 	
-	print "[INFO] Deleting modules without policy from conf files \n\n";
+	print_log "[INFO] Deleting modules without policy from conf files \n\n";
 	foreach $file (@files)
 	{
 		if($file ne '.' && $file ne '..') {
@@ -1458,7 +1477,7 @@ sub cli_delete_not_policy_modules() {
 sub cli_create_template_module() {
 	my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
 	
-	print "[INFO] Adding template '$template_name' to module '$module_name' from agent '$agent_name' \n\n";
+	print_log "[INFO] Adding template '$template_name' to module '$module_name' from agent '$agent_name' \n\n";
 	
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
@@ -1478,7 +1497,7 @@ sub cli_create_template_module() {
 sub cli_delete_template_module() {
 	my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
 
-	print "[INFO] Delete template '$template_name' from module '$module_name' from agent '$agent_name' \n\n";
+	print_log "[INFO] Delete template '$template_name' from module '$module_name' from agent '$agent_name' \n\n";
 
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
@@ -1501,7 +1520,7 @@ sub cli_delete_template_module() {
 sub cli_create_template_action() {
 	my ($action_name,$template_name,$module_name,$agent_name,$fires_min,$fires_max) = @ARGV[2..7];
 	
-	print "[INFO] Adding action '$action_name' to template '$template_name' in module '$module_name' from agent '$agent_name' with $fires_min min. fires and $fires_max max. fires\n\n";
+	print_log "[INFO] Adding action '$action_name' to template '$template_name' in module '$module_name' from agent '$agent_name' with $fires_min min. fires and $fires_max max. fires\n\n";
 	
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
@@ -1535,7 +1554,7 @@ sub cli_create_template_action() {
 sub cli_delete_template_action() {
 	my ($action_name,$template_name,$module_name,$agent_name) = @ARGV[2..5];
 	
-	print "[INFO] Deleting action '$action_name' from template '$template_name' in module '$module_name' from agent '$agent_name')\n\n";
+	print_log "[INFO] Deleting action '$action_name' from template '$template_name' in module '$module_name' from agent '$agent_name')\n\n";
 
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
@@ -1562,7 +1581,7 @@ sub cli_data_module() {
 	
 	if(defined($datetime)) {
 		if ($datetime !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9])/) {
-			print "[ERROR] Invalid datetime $datetime. (Correct format: YYYY-MM-DD HH:mm)\n";
+			print_log "[ERROR] Invalid datetime $datetime. (Correct format: YYYY-MM-DD HH:mm)\n";
 			exit;
 		}
 		# Add the seconds
@@ -1587,14 +1606,14 @@ sub cli_data_module() {
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND id_tipo_modulo = ?', $id_agent, $module_type_id);
 
 	if(not defined($module->{'module_interval'})) {
-		print "[ERROR] No module data finded. \n\n";
+		print_log "[ERROR] No module data finded. \n\n";
 		exit;
 	}
 
 	my %data = ('data' => 1);
 	pandora_process_module ($conf, \%data, '', $module, $module_type, '', $utimestamp, $server_id, $dbh);
 	
-	print "[INFO] Inserting data to module '$module_name'\n\n";
+	print_log "[INFO] Inserting data to module '$module_name'\n\n";
 }
 
 ##############################################################################
@@ -1610,7 +1629,7 @@ sub cli_create_user() {
 	my $user_exists = get_user_exists ($dbh, $user_name);
 	non_exist_check($user_exists,'user',$user_name);
 	
-	print "[INFO] Creating user '$user_name'\n\n";
+	print_log "[INFO] Creating user '$user_name'\n\n";
 	
 	pandora_create_user ($dbh, $user_name, md5($password), $is_admin, $comments);
 }
@@ -1634,18 +1653,18 @@ sub cli_user_update() {
 	}
 	elsif($field eq 'password') {
 		if($new_value eq '') {
-			print "[ERROR] Field '$field' cannot be empty\n\n";
+			print_log "[ERROR] Field '$field' cannot be empty\n\n";
 			exit;
 		}
 		
 		$new_value = md5($new_value);
 	}
 	else {
-		print "[ERROR] Field '$field' doesnt exist\n\n";
+		print_log "[ERROR] Field '$field' doesnt exist\n\n";
 		exit;
 	}
 		
-	print "[INFO] Updating field '$field' in user '$user_id'\n\n";
+	print_log "[INFO] Updating field '$field' in user '$user_id'\n\n";
 	
 	my $update;
 	
@@ -1716,11 +1735,11 @@ sub cli_agent_update() {
 		$field = 'direccion';
 	}
 	else {
-		print "[ERROR] Field '$field' doesnt exist\n\n";
+		print_log "[ERROR] Field '$field' doesnt exist\n\n";
 		exit;
 	}
 		
-	print "[INFO] Updating field '$field' in agent '$agent_name'\n\n";
+	print_log "[INFO] Updating field '$field' in agent '$agent_name'\n\n";
 	
 	my $update;
 	
@@ -1753,7 +1772,7 @@ sub cli_alert_template_update() {
 	}
 	elsif($field eq 'priority') {
 		if($new_value < 0 || $new_value > 4) {
-			print "[ERROR] Field '$field' is out of interval (0-4)\n\n";
+			print_log "[ERROR] Field '$field' is out of interval (0-4)\n\n";
 			exit;
 		}
 	}
@@ -1772,11 +1791,11 @@ sub cli_alert_template_update() {
 		$field = 'id_group';
 	}
 	else {
-		print "[ERROR] Field '$field' doesnt exist\n\n";
+		print_log "[ERROR] Field '$field' doesnt exist\n\n";
 		exit;
 	}
 		
-	print "[INFO] Updating field '$field' in alert template '$template_name'\n\n";
+	print_log "[INFO] Updating field '$field' in alert template '$template_name'\n\n";
 	
 	my $update;
 	
@@ -1792,7 +1811,7 @@ sub cli_alert_template_update() {
 sub pandora_check_data_module_fields($) {
 	my $field_value = shift;
 	
-	print "[ERROR] The field '".$field_value->{'field'}."' is not available for data modules\n\n";
+	print_log "[ERROR] The field '".$field_value->{'field'}."' is not available for data modules\n\n";
 	
 	exit;
 }
@@ -1829,13 +1848,13 @@ sub pandora_check_network_module_fields($) {
 	}
 	elsif($field_value->{'field'} eq 'module_port') {
 		if ($field_value->{'new_value'} > 65535 || $field_value->{'new_value'} < 1) {
-			print "[ERROR] Port error. Port must into [1-65535]\n\n";
+			print_log "[ERROR] Port error. Port must into [1-65535]\n\n";
 			exit;
 		}
 		$field_value->{'field'} = 'tcp_port';
 	}
 	else {
-		print "[ERROR] The field '".$field_value->{'field'}."' is not available for network modules\n\n";
+		print_log "[ERROR] The field '".$field_value->{'field'}."' is not available for network modules\n\n";
 		exit;
 	}
 }
@@ -1899,13 +1918,13 @@ sub pandora_check_snmp_module_fields($) {
 	}
 	elsif($field_value->{'field'} eq 'module_port') {
 		if ($field_value->{'new_value'} > 65535 || $field_value->{'new_value'} < 1) {
-			print "[ERROR] Port error. Port must into [1-65535]\n\n";
+			print_log "[ERROR] Port error. Port must into [1-65535]\n\n";
 			exit;
 		}
 		$field_value->{'field'} = 'tcp_port';
 	}
 	else {
-		print "[ERROR] The field '".$field_value->{'field'}."' is not available for SNMP modules\n\n";
+		print_log "[ERROR] The field '".$field_value->{'field'}."' is not available for SNMP modules\n\n";
 		exit;
 	}
 }
@@ -1961,7 +1980,7 @@ sub pandora_check_plugin_module_fields($) {
 		$field_value->{'field'} = 'tcp_port';
 	}
 	else {
-		print "[ERROR] The field '".$field_value->{'field'}."' is not available for plugin modules\n\n";
+		print_log "[ERROR] The field '".$field_value->{'field'}."' is not available for plugin modules\n\n";
 		exit;
 	}
 }
@@ -2012,7 +2031,7 @@ sub cli_module_update() {
 		exist_check($id_agent_change,'agent',$new_value);
 		my $id_agent_module_exist = get_agent_module_id ($dbh, $module_name, $id_agent_change);
 		if($id_agent_module_exist != -1) {
-			print "[ERROR] A module called '$module_name' already exist in the agent '$new_value'\n\n";
+			print_log "[ERROR] A module called '$module_name' already exist in the agent '$new_value'\n\n";
 			exit;
 		}
 		$field = 'id_agente';
@@ -2021,7 +2040,7 @@ sub cli_module_update() {
 	elsif($field eq 'module_name') {
 		my $id_agent_module_change = get_agent_module_id ($dbh, $new_value, $id_agent);
 		if($id_agent_module_change != -1) {
-			print "[ERROR] A module called '$new_value' already exist in the agent '$agent_name'\n\n";
+			print_log "[ERROR] A module called '$new_value' already exist in the agent '$agent_name'\n\n";
 			exit;
 		}
 		$field = 'nombre';
@@ -2035,7 +2054,7 @@ sub cli_module_update() {
 		my $module_group_id = get_module_group_id($dbh,$new_value);
 
 		if($module_group_id == -1) {
-			print "[ERROR] Module group '$new_value' doesnt exist\n\n";
+			print_log "[ERROR] Module group '$new_value' doesnt exist\n\n";
 			exit;
 		}
 		$field = 'id_module_group';
@@ -2062,14 +2081,14 @@ sub cli_module_update() {
 			pandora_check_plugin_module_fields(\%field_value);
 		}
 		else {
-			print "[ERROR] The field '$field' is not available for this type of module\n\n";
+			print_log "[ERROR] The field '$field' is not available for this type of module\n\n";
 		}
 		
 		$field = $field_value{'field'};
 		$new_value = $field_value{'new_value'};
 	}
 	
-	print "[INFO] Updating field '$field' in module '$module_name' of agent '$agent_name' with new value '$new_value'\n\n";
+	print_log "[INFO] Updating field '$field' in module '$module_name' of agent '$agent_name' with new value '$new_value'\n\n";
 	
 	my $update;
 	
@@ -2099,7 +2118,7 @@ sub cli_exec_from_file() {
 		elsif($c == 3) {
 			$file = $opt;
 			if(!(-e $file)) {
-				print "[ERROR] File '$file' not exists or cannot be opened\n\n";
+				print_log "[ERROR] File '$file' not exists or cannot be opened\n\n";
 				exit;
 			}
 		}
@@ -2199,7 +2218,7 @@ sub cli_user_add_profile() {
 		$group_name = 'All';
 	}
 		
-	print "[INFO] Adding profile '$profile_name' to user '$user_id' in group '$group_name'\n\n";
+	print_log "[INFO] Adding profile '$profile_name' to user '$user_id' in group '$group_name'\n\n";
 		
 	pandora_add_profile_to_user ($dbh, $user_id, $profile_id, $group_id);
 }
@@ -2212,7 +2231,7 @@ sub cli_user_add_profile() {
 sub cli_delete_user() {
 	my $user_name = @ARGV[2];
 	
-	print "[INFO] Deleting user '$user_name' \n\n";
+	print_log "[INFO] Deleting user '$user_name' \n\n";
 	
 	my $result = pandora_delete_user($dbh,$user_name);
 	exist_check($result,'user',$user_name);
@@ -2226,7 +2245,7 @@ sub cli_delete_user() {
 sub cli_delete_alert_template() {
 	my $template_name = @ARGV[2];
 	
-	print "[INFO] Deleting template '$template_name' \n\n";
+	print_log "[INFO] Deleting template '$template_name' \n\n";
 	
 	my $result = pandora_delete_alert_template($dbh,$template_name);
 	exist_check($result,'alert template',$template_name);
@@ -2247,12 +2266,12 @@ sub cli_create_profile() {
 	
 	if($group_name eq "All") {
 		$id_group = 0;
-		print "[INFO] Adding profile '$profile_name' to all groups for user '$user_name') \n\n";
+		print_log "[INFO] Adding profile '$profile_name' to all groups for user '$user_name') \n\n";
 	}
 	else {
 		$id_group = get_group_id($dbh,$group_name);
 		exist_check($id_group,'group',$group_name);
-		print "[INFO] Adding profile '$profile_name' to group '$group_name' for user '$user_name') \n\n";
+		print_log "[INFO] Adding profile '$profile_name' to group '$group_name' for user '$user_name') \n\n";
 	}
 	
 	pandora_create_user_profile ($dbh, $user_name, $id_profile, $id_group);
@@ -2273,12 +2292,12 @@ sub cli_delete_profile() {
 	
 	if($group_name eq "All") {
 		$id_group = 0;
-		print "[INFO] Deleting profile '$profile_name' from all groups for user '$user_name') \n\n";
+		print_log "[INFO] Deleting profile '$profile_name' from all groups for user '$user_name') \n\n";
 	}
 	else {
 		$id_group = get_group_id($dbh,$group_name);
 		exist_check($id_group,'group',$group_name);
-		print "[INFO] Deleting profile '$profile_name' from group '$group_name' for user '$user_name') \n\n";
+		print_log "[INFO] Deleting profile '$profile_name' from group '$group_name' for user '$user_name') \n\n";
 	}
 	
 	pandora_delete_user_profile ($dbh, $user_name, $id_profile, $id_group);
@@ -2350,7 +2369,7 @@ sub cli_create_event() {
 	if (defined($comment) && $comment ne '') {
 		$comment = '<b>-- Added comment by '.$user_name. ' ['. localtime(time).'] --</b><br>'.$comment.'<br>';
 	}
-	print "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
+	print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 	pandora_event ($conf, $event, $id_group, $id_agent, $severity,
 		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags);
@@ -2378,7 +2397,7 @@ sub cli_validate_event() {
 
 	if(defined($datetime_min) && $datetime_min ne '') {
 		if ($datetime_min !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9])/) {
-			print "[ERROR] Invalid datetime_min format. (Correct format: YYYY-MM-DD HH:mm)\n";
+			print_log "[ERROR] Invalid datetime_min format. (Correct format: YYYY-MM-DD HH:mm)\n";
 			exit;
 		}
 		# Add the seconds
@@ -2387,7 +2406,7 @@ sub cli_validate_event() {
 	
 	if(defined($datetime_max) && $datetime_max ne '') {
 		if ($datetime_max !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9])/) {
-			print "[ERROR] Invalid datetime_max $datetime_max. (Correct format: YYYY-MM-DD HH:mm)\n";
+			print_log "[ERROR] Invalid datetime_max $datetime_max. (Correct format: YYYY-MM-DD HH:mm)\n";
 			exit;
 		}
 		# Add the seconds
@@ -2404,7 +2423,7 @@ sub cli_validate_event() {
 	}
 				
 	pandora_validate_event_filter ($conf, $id_agentmodule, $id_agent, $datetime_min, $datetime_max, $user_name, $id_alert_agent_module, $criticity, $dbh);
-	print "[INFO] Validating event for agent '$agent_name'\n\n";
+	print_log "[INFO] Validating event for agent '$agent_name'\n\n";
 }
 
 ##############################################################################
@@ -2418,7 +2437,7 @@ sub cli_validate_event_id() {
 	my $event_name = pandora_get_event_name($dbh, $id_event);
 	exist_check($event_name,'event',$id_event);
 	
-	print "[INFO] Validating event '$id_event'\n\n";
+	print_log "[INFO] Validating event '$id_event'\n\n";
 				
 	my $result = pandora_validate_event_id ($conf, $id_event, $dbh);
 	exist_check($result,'event',$id_event);
@@ -2493,7 +2512,7 @@ sub cli_create_incident() {
 	exist_check($id_group,'group',$group_name);
 				
 	pandora_create_incident ($conf, $dbh, $title, $description, $priority, $status, $origin, $id_group, $owner);
-	print "[INFO] Creating incident '$title'\n\n";
+	print_log "[INFO] Creating incident '$title'\n\n";
 }
 
 ##############################################################################
@@ -2514,7 +2533,7 @@ sub cli_delete_data($) {
 		my $id_module = get_agent_module_id($dbh,$name,$id_agent);
 		exist_check($id_module,'module',$name);
 	
-		print "DELETING THE DATA OF THE MODULE $name OF THE AGENT $name2\n\n";
+		print_log "DELETING THE DATA OF THE MODULE $name OF THE AGENT $name2\n\n";
 		
 		pandora_delete_data($dbh, 'module', $id_module);
 	}
@@ -2523,7 +2542,7 @@ sub cli_delete_data($) {
 		my $id_agent = get_agent_id($dbh,$name);
 		exist_check($id_agent,'agent',$name);
 		
-		print "DELETING THE DATA OF THE AGENT $name\n\n";
+		print_log "DELETING THE DATA OF THE AGENT $name\n\n";
 		
 		pandora_delete_data($dbh, 'module', $id_agent);
 	}
@@ -2532,12 +2551,12 @@ sub cli_delete_data($) {
 		my $id_group = get_group_id($dbh,$name);
 		exist_check($id_group,'group',$name);
 		
-		print "DELETING THE DATA OF THE GROUP $name\n\n";
+		print_log "DELETING THE DATA OF THE GROUP $name\n\n";
 		
 		pandora_delete_data($dbh, 'group', $id_group);
 	}
 	else {
-		print "[ERROR] Invalid parameter '$opt'.\n\n";
+		print_log "[ERROR] Invalid parameter '$opt'.\n\n";
 		help_screen ();
 		exit;
 	}
@@ -2557,11 +2576,11 @@ sub cli_apply_policy() {
 	my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy_id, 'apply']);
 	
 	if($ret == -1) {
-		print "[ERROR] Operation 'apply' cannot be added to policy '$policy_name' because is duplicated in queue or incompatible with others operations\n\n";
+		print_log "[ERROR] Operation 'apply' cannot be added to policy '$policy_name' because is duplicated in queue or incompatible with others operations\n\n";
 		exit;
 	}
 	
-	print "[INFO] Added operation 'apply' to policy '$policy_name'\n\n";
+	print_log "[INFO] Added operation 'apply' to policy '$policy_name'\n\n";
 }
 
 ##############################################################################
@@ -2574,20 +2593,20 @@ sub cli_apply_all_policies() {
 	
 	my $npolicies = scalar(@{$policies});
 	
-	print "[INFO] $npolicies policies found\n\n";
+	print_log "[INFO] $npolicies policies found\n\n";
 	
 	my $added = 0;
 	foreach my $policy (@{$policies}) {
 		my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy->{'id'}, 'apply']);
 		if($ret != -1) {
 			$added++;
-			print "[INFO] Added operation 'apply' to policy '".safe_output($policy->{'name'})."'\n";
+			print_log "[INFO] Added operation 'apply' to policy '".safe_output($policy->{'name'})."'\n";
 		}
 	}
 		
 	if($npolicies > $added) {
 		my $failed = $npolicies - $added;
-		print "[ERROR] $failed policies cannot be added to apply queue. Maybe the queue already contains these operations.\n";
+		print_log "[ERROR] $failed policies cannot be added to apply queue. Maybe the queue already contains these operations.\n";
 	}
 }
 
@@ -2597,12 +2616,12 @@ sub cli_apply_all_policies() {
 ##############################################################################
 
 sub cli_validate_all_alerts() {
-	print "[INFO] Validating all the alerts\n\n";
+	print_log "[INFO] Validating all the alerts\n\n";
 		
 	my $res = db_update ($dbh, "UPDATE talert_template_modules SET times_fired = 0, internal_counter = 0");
 	
 	if($res == -1) {
-		print "[ERROR] Alerts cannot be validated\n\n";
+		print_log "[ERROR] Alerts cannot be validated\n\n";
 	}
 }
 
@@ -2629,17 +2648,17 @@ sub cli_validate_policy_alerts() {
 	}
 	
 	if($#policy_alerts_id_array == -1) {
-		print "[INFO] No alerts found in the policy '$policy_name'\n\n";
+		print_log "[INFO] No alerts found in the policy '$policy_name'\n\n";
 	}
 	
 	$policy_alerts_id = join(',',@policy_alerts_id_array);
 	
-	print "[INFO] Validating the alerts of the policy '$policy_name'\n\n";
+	print_log "[INFO] Validating the alerts of the policy '$policy_name'\n\n";
 		
 	my $res = db_update ($dbh, "UPDATE talert_template_modules SET times_fired = 0, internal_counter = 0 WHERE id_policy_alerts IN (?)", $policy_alerts_id);
 	
 	if($res == -1) {
-		print "[ERROR] Alerts cannot be validated\n\n";
+		print_log "[ERROR] Alerts cannot be validated\n\n";
 	}
 }
 
@@ -2693,7 +2712,7 @@ sub cli_get_agent_modules() {
 	my $modules = pandora_get_agent_modules ($dbh, $id_agent);
 
 	if(scalar(@{$modules}) == 0) {
-		print "[INFO] The agent '$agent_name' have not modules\n\n";
+		print_log "[INFO] The agent '$agent_name' have not modules\n\n";
 	}
 	
 	print "id_module, module_name\n";
@@ -2738,14 +2757,14 @@ sub cli_get_policies() {
 		$policies = enterprise_hook('get_agent_policies',[$dbh,$id_agent]);
 
 		if(scalar(@{$policies}) == 0) {
-			print "[INFO] No policies found on agent '$agent_name'\n\n";
+			print_log "[INFO] No policies found on agent '$agent_name'\n\n";
 			exit;
 		}
 	}
 	else {
 		$policies = enterprise_hook('get_policies',[$dbh]);
 		if(scalar(@{$policies}) == 0) {
-			print "[INFO] No policies found\n\n";
+			print_log "[INFO] No policies found\n\n";
 			exit;
 		}
 	}
@@ -2804,7 +2823,7 @@ sub cli_get_agents() {
 	my @agents = get_db_rows ($dbh, "SELECT * FROM tagente WHERE $condition");	
 
 	if(scalar(@agents) == 0) {
-		print "[INFO] No agents found\n\n";
+		print_log "[INFO] No agents found\n\n";
 		exit;
 	}
 	
@@ -2826,7 +2845,7 @@ sub cli_get_agents() {
 	}
 	
 	if($head_print == 0) {
-		print "[INFO] No agents found\n\n";
+		print_log "[INFO] No agents found\n\n";
 	}
 }
 
@@ -2851,10 +2870,10 @@ sub cli_delete_conf_file() {
 	}
 	
 	if($conf_deleted == 1 || $md5_deleted == 1) {
-		print "[INFO] Local conf files of the agent '$agent_name' has been deleted succesfully\n\n";
+		print_log "[INFO] Local conf files of the agent '$agent_name' has been deleted succesfully\n\n";
 	}
 	else {
-		print "[ERROR] Local conf file of the agent '$agent_name' didn't found\n\n";
+		print_log "[ERROR] Local conf file of the agent '$agent_name' didn't found\n\n";
 		exit;
 	}
 }
@@ -2872,7 +2891,7 @@ sub cli_clean_conf_file() {
 		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
 			$result = enterprise_hook('pandora_clean_conf_file',[$conf, md5($agent_name)]);
 			if($result != -1) {
-				print "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.md5($agent_name).".conf has been cleaned'\n\n";
+				print_log "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.md5($agent_name).".conf has been cleaned'\n\n";
 			}
 		}
 	}
@@ -2886,7 +2905,7 @@ sub cli_clean_conf_file() {
 			my @filesplit = split('.',$file);
 			$result = enterprise_hook('pandora_clean_conf_file',[$conf,$filesplit[0]]);
 			if($result != -1) {
-				print "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.$filesplit[0].".conf has been cleaned'\n\n";
+				print_log "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.$filesplit[0].".conf has been cleaned'\n\n";
 			}
 		}
 	}
@@ -2922,7 +2941,7 @@ sub cli_get_bad_conf_files() {
 	}
 	
 	if($bad_files == 0) {
-		print "[INFO] No bad files found\n\n";
+		print_log "[INFO] No bad files found\n\n";
 	}
 }
 
@@ -2959,10 +2978,10 @@ sub cli_policy_add_agent() {
 	my $policy_agent_id = enterprise_hook('pandora_policy_add_agent',[$policy_id, $agent_id, $dbh]);
 	
 	if($policy_agent_id == -1) {
-		print "[ERROR] A problem has been ocurred adding agent '$agent_name' to policy '$policy_name'\n\n";
+		print_log "[ERROR] A problem has been ocurred adding agent '$agent_name' to policy '$policy_name'\n\n";
 	}
 	else {
-		print "[INFO] Added agent '$agent_name' to policy '$policy_name'. Is necessary to apply the policy in order to changes take effect.\n\n";
+		print_log "[INFO] Added agent '$agent_name' to policy '$policy_name'. Is necessary to apply the policy in order to changes take effect.\n\n";
 	}
 }
 
@@ -2990,10 +3009,10 @@ sub cli_create_group() {
 	$group_id = pandora_create_group ($group_name, $icon, $parent_group_id, 0, 0, '', 0, $description, $dbh);
 
 	if($group_id == -1) {
-		print "[ERROR] A problem has been ocurred creating group '$group_name'\n\n";
+		print_log "[ERROR] A problem has been ocurred creating group '$group_name'\n\n";
 	}
 	else {
-		print "[INFO] Created group '$group_name'\n\n";
+		print_log "[INFO] Created group '$group_name'\n\n";
 	}
 }
 
@@ -3004,7 +3023,7 @@ sub cli_create_group() {
 sub cli_disable_alerts ($$) {
 	my ($conf, $dbh) = @_;
 
-	print "[INFO] Disabling all alerts \n\n";
+	print_log "[INFO] Disabling all alerts \n\n";
 
 	# This works by disabling alerts in each defined group
     # If you have previously a group with alert disabled, and you disable 
@@ -3022,7 +3041,7 @@ sub cli_disable_alerts ($$) {
 sub cli_enable_alerts ($$) {
 	my ($conf, $dbh) = @_;
 
-	print "[INFO] Enabling all alerts \n\n";
+	print_log "[INFO] Enabling all alerts \n\n";
 
 	db_do ($dbh, "UPDATE tgrupo SET disabled = 0");
 
@@ -3036,7 +3055,7 @@ sub cli_enable_alerts ($$) {
 sub cli_disable_eacl ($$) {
 	my ($conf, $dbh) = @_;
 			
-	print "[INFO] Disabling Enterprise ACL system (system wide)\n\n";
+	print_log "[INFO] Disabling Enterprise ACL system (system wide)\n\n";
 
 	db_do ($dbh, "UPDATE tconfig SET `value` ='0' WHERE `token` = 'acl_enterprise'");
 
@@ -3050,7 +3069,7 @@ sub cli_disable_eacl ($$) {
 sub cli_enable_eacl ($$) {
 	my ($conf, $dbh) = @_;
 
-	print "[INFO] Enabling Enterprise ACL system (system wide)\n\n";
+	print_log "[INFO] Enabling Enterprise ACL system (system wide)\n\n";
 
     db_do ($dbh, "UPDATE tconfig SET `value` ='1' WHERE `token` = 'acl_enterprise'");
     	
@@ -3069,11 +3088,11 @@ sub cli_user_enable () {
 	exist_check($user_disabled,'user',$user_id);
 
 	if($user_disabled == 0) {
-		print "[INFO] The user '$user_id' is already enabled. Nothing to do.\n\n";
+		print_log "[INFO] The user '$user_id' is already enabled. Nothing to do.\n\n";
 		exit;
 	}
 	
-	print "[INFO] Enabling user '$user_id'\n\n";
+	print_log "[INFO] Enabling user '$user_id'\n\n";
 
 	$user_id = safe_input($user_id);
 
@@ -3094,11 +3113,11 @@ sub cli_user_disable () {
 	exist_check($user_disabled,'user',$user_id);
 
 	if($user_disabled == 1) {
-		print "[INFO] The user '$user_id' is already disabled. Nothing to do.\n\n";
+		print_log "[INFO] The user '$user_id' is already disabled. Nothing to do.\n\n";
 		exit;
 	}
 	
-	print "[INFO] Disabling user '$user_id'\n\n";
+	print_log "[INFO] Disabling user '$user_id'\n\n";
 
 	$user_id = safe_input($user_id);
 	
@@ -3121,11 +3140,11 @@ sub cli_stop_downtime () {
 	my $downtime_date_to = get_db_value ($dbh, 'SELECT date_to FROM tplanned_downtime WHERE id=?', $downtime_id);
 	
 	if($current_time >= $downtime_date_to) {
-		print "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
+		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
 		exit;
 	}
 
-	print "[INFO] Stopping planned downtime '$downtime_name'\n\n";
+	print_log "[INFO] Stopping planned downtime '$downtime_name'\n\n";
 		
 	my $parameters->{'date_to'} = time;
 		
@@ -3146,7 +3165,7 @@ sub cli_module_get_data () {
 	exist_check($module_id, 'module name', $module_name);
 	
 	if($interval <= 0) {
-		print "[ERROR] Interval must be a possitive value\n\n";
+		print_log "[ERROR] Interval must be a possitive value\n\n";
 	}
 	
 	$csv_separator = '|' unless defined($csv_separator);
@@ -3220,7 +3239,7 @@ sub pandora_manage_main ($$$) {
 
  	# Has read setup file ok ?
  	if ( $ltotal == 0 ) {
-		print "[ERROR] No valid arguments\n\n";
+		print_log "[ERROR] No valid arguments\n\n";
 		help_screen();
 		exit;
  	}
@@ -3480,7 +3499,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_network_module_from_component();
 		}
 		else {
-			print "[ERROR] Invalid option '$param'.\n\n";
+			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';
 			help_screen ();
 			exit;

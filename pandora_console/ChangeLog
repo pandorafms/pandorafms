@@ -1,5 +1,13 @@
 2012-12-27 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/reporting/reporting_builder.item_editor.php: re-added lost
+	edit the description in the item "custom_graph".
+	
+	* include/functions_reporting.php: some fixes and changes in the
+	reports.
+
+2012-12-27 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/reporting/reporting_builder.item_editor.php: fixed the
 	dates of inventory thank to Juan Manuel Ramon.
 

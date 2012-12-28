@@ -2671,13 +2671,14 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// Put description at the end of the module (if exists)
 			
 			$table->colspan[2][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
 			}
 			
-			$result = db_get_all_rows_field_filter ("tgraph_source", "id_graph", $content['id_gs']);
+			$result = db_get_all_rows_field_filter ("tgraph_source",
+				"id_graph", $content['id_gs']);
 			$modules = array ();
 			$weights = array ();
 			if ($result === false)
@@ -2866,7 +2867,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$data_graph[__('Out of limits')]++;
 					$data_horin_graph[__('Out of limits')]['g']++;
 				}
-
+				
 				$total_SLA += $sla_value;
 				
 				if ($show_table) {
@@ -3750,7 +3751,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[1][0] = 3;
 			
-			$table->data[1][0] = html_print_table($table2, true) .
+			if ($content["description"] != "") {
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$table->colspan[2][0] = 3;
+			
+			$table->data[2][0] = html_print_table($table2, true) .
 				"<table width='100%'>
 					<tr>
 						<td></td>
@@ -4500,7 +4509,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				if (($config ['metaconsole'] == 1) && $server_name != '') {
 					metaconsole_restore_db();
 				}
-			} while ($min === false && $i < count($exceptions));
+			}
+			while ($min === false && $i < count($exceptions));
 			$max = $min;
 			$avg = 0;
 			
@@ -4697,7 +4707,17 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			break;
 		case 'agent_module':
-			reporting_header_content($mini, $content, $report, $table, __('Agents/Modules'));
+			$group_name = groups_get_name($content['id_group']);
+			if ($content['id_module_group'] == 0) {
+				$module_group_name = __('All');
+			}
+			else {
+				$module_group_name = db_get_value('name', 'tmodule_group',
+					'id_mg',  $content['id_module_group']);
+			}
+			
+			reporting_header_content($mini, $content, $report, $table, __('Agents/Modules'),
+				$group_name . ' - ' . $module_group_name);
 			
 			$id_group = $content['id_group'];
 			$id_module_group = $content['id_module_group'];
@@ -4708,7 +4728,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[1][0] = 3;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);

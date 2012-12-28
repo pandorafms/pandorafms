@@ -338,6 +338,7 @@ switch ($action) {
 				$show_graph = $item['show_graph'];
 				break;
 			case 'group_report':
+				$description = $item['description'];
 				$group = $item['id_group'];
 				break;
 			case 'top_n':
@@ -1721,6 +1722,7 @@ function chooseType() {
 		case 'group_report':
 			$("#row_group").show();
 			$("#row_servers").show();
+			$("#row_description").show();
 			break;
 		case 'top_n':
 			$("#row_description").show();

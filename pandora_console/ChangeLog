@@ -1,5 +1,10 @@
 2012-12-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/reporting/reporting_builder.php: Fixes in template
+	metaconsole editor.
+
+2012-12-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* pandoradb_data.sql
 	pandoradb.sql
 	pandoradb.postgreSQL.sql

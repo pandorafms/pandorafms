@@ -1,5 +1,10 @@
 2012-12-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/tag/tag.php
+	 godmode/tag/edit_tag.php: Tag editor compatible with metaconsole.
+	 
+2012-12-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/reporting/reporting_builder.php: Fixes in template
 	metaconsole editor.
 

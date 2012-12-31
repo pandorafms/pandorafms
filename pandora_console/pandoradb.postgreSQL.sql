@@ -1434,7 +1434,8 @@ CREATE TABLE "ttag" (
 	"id_tag" SERIAL NOT NULL PRIMARY KEY, 
 	"name" VARCHAR(100) NOT NULL default '', 
 	"description" text NOT NULL default '', 
-	"url" text NOT NULL default ''
+	"url" text NOT NULL default '',
+	"email" text NULL
 ); 
 
 -- ---------------------------------------------------------------------

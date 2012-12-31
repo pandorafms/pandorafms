@@ -236,7 +236,7 @@ switch ($action) {
 					html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
 			);
 		
-		if ($enterpriseEnable and !defined('METACONSOLE')) {
+		if ($enterpriseEnable) {
 			$buttons = reporting_enterprise_add_main_Tabs($buttons);
 		}
 		

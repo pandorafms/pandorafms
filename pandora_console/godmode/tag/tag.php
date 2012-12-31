@@ -140,12 +140,13 @@ if (!empty($result)) {
 	$table->style[1] = 'text-align:center';
 	$table->style[2] = 'text-align:center';	
 	$table->style[3] = 'text-align:center'; 
-	$table->style[4] = 'text-align:center';
+	$table->style[5] = 'text-align:center';
 	$table->head[0] = __('Tag name');
 	$table->head[1] = __('Description');
 	$table->head[2] = __('Detail information');
 	$table->head[3] = __('Number of modules affected');
-	$table->head[4] = __('Actions');
+	$table->head[4] = __('Email');
+	$table->head[5] = __('Actions');
 	
 	foreach ($result as $tag) {
 		if ($rowPair)
@@ -165,8 +166,9 @@ if (!empty($result)) {
 			html_print_image("images/zoom.png", true, array("id" => 'tag-details-'.$tag['id_tag'], "class" => "img_help")) . '</a> ';
 		
 		$data[3] .= tags_get_modules_count($tag["id_tag"]);
-		$data[4] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
-		$data[4] .= '<a  href="index.php?sec=gmodules&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
+		$data[4] = $tag["email"];
+		$data[5] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
+		$data[5] .= '<a  href="index.php?sec=gmodules&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
 		array_push ($table->data, $data);
 	}
 	

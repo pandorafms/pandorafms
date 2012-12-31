@@ -2434,6 +2434,13 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if (isset($parameters['metaconsole_enabled'])) {
 		$metaconsole_enabled = $parameters['metaconsole_enabled'];
 	}
+	else {
+		// If metaconsole_enabled param is not setted then pick source configuration
+		if (defined('METACONSOLE'))
+			$metaconsole_enabled = true;
+		else
+			$metaconsole_enabled = false;
+	}
 	
 	// Javascript configurations
 	//------------------------------------------------------------------

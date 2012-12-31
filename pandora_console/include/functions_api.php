@@ -799,7 +799,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 	if (isset($other['data'][0])){
 		// Filter by SO
 		if ($other['data'][0] != ""){
-			$where .= " AND id_os = " . $other['data'][0];
+			$where .= " AND tconfig_os.id_os = " . $other['data'][0];
 		}
 	}
 	if (isset($other['data'][1])){	
@@ -858,7 +858,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 						$result_agents[] = $agent;
 					}
 				}
-				// filter by NORMAL, WARNING, CRITICAL, UNKNOWN
+				// filter by NORMAL, WARNING, CRITICAL, UNKNOWN, ALERT_FIRED
 				else {
 					$status = agents_get_status($agent['id_agente'], true);
 					// Filter by status
@@ -880,6 +880,11 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 							break;
 						case 'normal':
 							if ($status == 0) {
+								$result_agents[] = $agent;
+							}
+							break;
+						case 'alert_fired':
+							if ($status == 4) {
 								$result_agents[] = $agent;
 							}
 							break;

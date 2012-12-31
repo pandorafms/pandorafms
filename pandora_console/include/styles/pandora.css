@@ -1042,9 +1042,9 @@ div#main_pure {
 #loading {
 	position:fixed;
 	width: 200px;
-	margin-left: 250px;
+	margin-left: 30%;
 	text-align:center;
-	top:300px;
+	top: 50%;
 	background-color: #999999;
 	padding: 20px;
 }

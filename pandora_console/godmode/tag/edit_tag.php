@@ -34,6 +34,7 @@ $name_tag = (string) get_parameter ("name_tag", "");
 $description_tag = (string) get_parameter ("description_tag", "");
 $description_tag = io_safe_input(strip_tags(io_safe_output($description_tag)));
 $url_tag = (string) get_parameter ("url_tag", "");
+$email_tag = (string) get_parameter ("email_tag", "");
 $tab = (string) get_parameter ("tab", "list");
 
 $buttons = array(
@@ -58,6 +59,7 @@ if ($update_tag && $id_tag != 0) {
 	$values['name'] = $name_tag;
 	$values['description'] = $description_tag;
 	$values['url'] = $url_tag;
+	$values['email'] = $email_tag;
 	
 	$result = false;
 	if ($values['name'] != '')
@@ -85,6 +87,7 @@ if ($create_tag) {
 	$data['name'] = $name_tag;
 	$data['description'] = $description_tag;
 	$data['url'] = $url_tag;
+	$data['email'] = $email_tag;
 	
 	// DB insert
 	$return_create = false;
@@ -112,11 +115,13 @@ if ($action == "update" && $id_tag != 0){
 	$name_tag = $result_tag["name"]; 
 	$description_tag = $result_tag["description"];
 	$url_tag = $result_tag["url"];
+	$email_tag = $result_tag["email"];
 } // If current action is create (new) or somethig goes wrong fields are filled with void value
 else {
 	$name_tag = "";
 	$description_tag = "";
 	$url_tag = "";
+	$email_tag = "";
 }
 
 // Create/Update tag form 
@@ -148,6 +153,15 @@ echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 		echo "</td>";
 		echo "<td align=center>";
 		html_print_input_text ('url_tag', $url_tag);
+		echo "</td>";
+	echo "</tr>";
+	echo "<tr>";
+		echo "<td align=left>";
+		echo '<b>' . __("Email") . '</b>'; 
+		echo ui_print_help_tip (__("Associated Email direction to use later in alerts associated to Tags."), true);
+		echo "</td>";
+		echo "<td align=center>";
+		html_print_input_text ('email_tag', $email_tag);
 		echo "</td>";
 	echo "</tr>";
 	echo "<tr>";

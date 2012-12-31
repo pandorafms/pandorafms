@@ -1653,7 +1653,8 @@ CREATE TABLE ttag (
 	id_tag NUMBER(10, 0) NOT NULL PRIMARY KEY, 
 	name VARCHAR2(100) default '' NOT NULL, 
 	description CLOB default '' NOT NULL, 
-	url CLOB default '' NOT NULL
+	url CLOB default '' NOT NULL,
+	email CLOB NULL
 ); 
 
 CREATE SEQUENCE ttag_s INCREMENT BY 1 START WITH 1;

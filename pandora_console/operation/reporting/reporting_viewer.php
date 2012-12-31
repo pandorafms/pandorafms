@@ -153,7 +153,7 @@ html_print_table ($table);
 html_print_input_hidden ('id_report', $id_report);
 echo '</form>';
 
-echo '<div id="loading">';
+echo '<div id="loading" style="text-align: center;">';
 echo html_print_image("images/wait.gif", true, array("border" => '0'));
 echo '<strong>'.__('Loading').'...</strong>';
 echo '</div>';
@@ -194,6 +194,26 @@ $(document).ready (function () {
 			closeText: '<?php echo __('Close');?>'});	
 	
 	$('[id^=text-date_init]').datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
+	
+	
+	$("*", "#table1-0").css("display", ""); //Re-show the first row of form.
+
+	/* Show/hide begin date reports controls */
+	$("#checkbox-enable_init_date").click(function() {
+		flag = $("#checkbox-enable_init_date").is(':checked');
+		if (flag == true) {
+			$("#table1-1-1").css("display", "");
+			$("#table1-1-2").css("display", "");
+			$("#string_to").show();
+			$("#string_items").hide();
+		}
+		else {
+			$("#table1-1-1").css("display", "none");
+			$("#table1-1-2").css("display", "");
+			$("#string_to").hide();
+			$("#string_items").show();
+		}
+	});	
 	
 });
 </script>
@@ -261,27 +281,3 @@ foreach ($contents as $content) {
 	flush ();
 }
 ?>
-
-<script type="text/javascript">
-
-$(document).ready (function () {
-	$("*", "#table1-0").css("display", ""); //Re-show the first row of form.
-	
-	/* Show/hide begin date reports controls */
-	$("#checkbox-enable_init_date").click(function() {
-		flag = $("#checkbox-enable_init_date").is(':checked');
-		if (flag == true) {
-			$("#table1-1-1").css("display", "");
-			$("#table1-1-2").css("display", "");
-			$("#string_to").show();
-			$("#string_items").hide();
-		}
-		else {
-			$("#table1-1-1").css("display", "none");
-			$("#table1-1-2").css("display", "");
-			$("#string_to").hide();
-			$("#string_items").show();
-		}
-	});
-});
-</script>

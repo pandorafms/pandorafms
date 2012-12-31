@@ -1,3 +1,29 @@
+2012-12-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandoradb_data.sql
+	pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql: Added new column email to ttag table.
+
+
+	* include/styles/pandora.css: Fixed loading class.
+
+	* include/functions_api.php: Fixed get_all_agents api function. 
+	 
+	* include/functions_ui.php
+	include/javascript/pandora.js: Improvement in agent_autocomplete
+	function.
+	
+	* operation/reporting/reporting_viewer.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/reporting_builder.item_editor.php: Fixes in report
+	viewer for metaconsole.
+	
+	* godmode/tag/tag.php
+	godmode/tag/edit_tag.php: Added email fields in editors.
+
 2012-12-28  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

@@ -315,11 +315,7 @@ function config_update_config () {
  */
 function config_process_config () {
 	global $config;
-<<<<<<< .mine
-
-=======
 	
->>>>>>> .r7341
 	$configs = db_get_all_rows_in_table ('tconfig');
 
 	if (empty ($configs)) {

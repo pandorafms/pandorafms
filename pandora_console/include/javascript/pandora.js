@@ -188,11 +188,12 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	else {
 		if (event.data == null)
 			homedir += '.';
-		else
+		else {
 			homedir  = event.data.homedir;
 		
-		if (event.data.metaconsole != null) {
-			id_server = $("#" + event.data.id_server).val();
+			if (event.data.metaconsole != null) {
+				id_server = $("#" + event.data.id_server).val();
+			}
 		}
 	}
 	

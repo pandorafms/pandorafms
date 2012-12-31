@@ -56,16 +56,31 @@ if (is_ajax ()) {
 	return;
 }
 
+if (defined('METACONSOLE')) 
+	$sec = 'advanced';
+else
+	$sec = 'gmodules';
+
 $buttons = array(
 	'list' => array(
 		'active' => false,
-		'text' => '<a href="index.php?sec=galertas&sec2=godmode/tag/tag&tab=list">' . 
+		'text' => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">' . 
 			html_print_image ("images/god6.png", true, array ("title" => __('List tags'))) .'</a>'));
 
 $buttons[$tab]['active'] = true;
 
-// Header
-ui_print_page_header (__('Tags configuration'), "images/setup.png", false, "", true, $buttons);
+if (defined('METACONSOLE')) {
+	
+	// Print header
+	ui_meta_print_header(__('Tags'), "", $buttons);	
+	
+}
+else {
+
+	// Header
+	ui_print_page_header (__('Tags configuration'), "images/setup.png", false, "", true, $buttons);
+
+}
 
 // Two actions can performed in this page: search and delete tags
 
@@ -106,7 +121,7 @@ echo "<td>";
 	echo '<b>' . __("Name") . "/" . __("Description") . '</b>';
 echo "</td>";
 echo "<td align=center>";
-	echo '<form method=post action="index.php?sec=gmodules&sec2=godmode/tag/tag&delete_tag=0">';
+	echo '<form method=post action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
 	html_print_input_hidden ("search_tag", "1");
 	html_print_input_text ('tag_name', $tag_name, '', 30, 255, false);
 	echo "&nbsp;&nbsp;&nbsp;";
@@ -114,7 +129,7 @@ echo "<td align=center>";
 	echo "</form>";
 echo "</td>";
 echo "<td align=right>";
-	echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=new">';
+	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=new">';
 	html_print_input_hidden ("create_tag", "1", true);
 	html_print_submit_button (__('Create tag'), 'create_button', false, 'class="sub next"');
 	echo "</form>";
@@ -158,25 +173,21 @@ if (!empty($result)) {
 		
 		$data = array ();
 		
-		$data[0] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=" . $tag["id_tag"] . "'>" . $tag["name"] . "</a>";  
+		$data[0] = "<a href='index.php?sec=".$sec."&sec2=godmode/tag/edit_tag&action=update&id_tag=" . $tag["id_tag"] . "'>" . $tag["name"] . "</a>";  
 		$data[1] = ui_print_truncate_text($tag["description"], 'description', false);
 		$data[2] = '<a href="' . $tag["url"] . '">' . $tag["url"] . '</a>';
 		$data[3] = ' <a class="tag_details"
-			href="ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag=' . $tag['id_tag'] . '">' .
+			href="' . ui_get_full_url(false, false, false, false) . '/ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag=' . $tag['id_tag'] . '">' .
 			html_print_image("images/zoom.png", true, array("id" => 'tag-details-'.$tag['id_tag'], "class" => "img_help")) . '</a> ';
 		
 		$data[3] .= tags_get_modules_count($tag["id_tag"]);
 		$data[4] = $tag["email"];
-		$data[5] = "<a href='index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
-		$data[5] .= '<a  href="index.php?sec=gmodules&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
+		$data[5] = "<a href='index.php?sec=".$sec."&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
+		$data[5] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
 		array_push ($table->data, $data);
 	}
 	
 	html_print_table ($table);
-}
-else {
-	// No tags available or selected
-	echo "<div class='nf'>".__('No tags selected')."</div>";
 }
 
 ui_require_css_file ('cluetip');

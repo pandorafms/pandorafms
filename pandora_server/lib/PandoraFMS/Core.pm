@@ -156,6 +156,7 @@ our @EXPORT = qw(
 	pandora_generate_compound_alerts
 	pandora_get_config_value
 	pandora_get_module_tags
+	pandora_get_module_url_tags
 	pandora_module_keep_alive
 	pandora_module_keep_alive_nd
 	pandora_module_unknown
@@ -882,6 +883,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
 				_policy_ => (defined ($module)) ? enterprise_hook('get_policy_name', [$dbh, $module->{'id_policy_module'}]) : '',
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
+				_email_tag_ => (defined ($module)) ? pandora_get_module_url_tags ($pa_config, $dbh, $module->{'id_agente_modulo'}) : '',
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -922,6 +924,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Email
 	} elsif ($clean_name eq "eMail") {
+		$field1 = subst_alert_macros ($field1, \%macros);
 		$field2 = subst_alert_macros ($field2, \%macros);
 		$field3 = subst_alert_macros ($field3, \%macros);
 		foreach my $address (split (',', $field1)) {
@@ -3770,6 +3773,33 @@ sub pandora_get_module_tags ($$$) {
 	# Remove the trailing ','
 	chop ($tag_string);
 	return $tag_string;
+}
+
+##########################################################################
+=head2 C<< get_module_url_tags (I<$pa_config>, I<$dbh>, I<$id_agentmodule>) >> 
+
+Get a list of email module tags in the format: |email|email| ... |email|
+
+=cut
+##########################################################################
+sub pandora_get_module_url_tags ($$$) {
+	my ($pa_config, $dbh, $id_agentmodule) = @_;
+	
+	my @email_tags = get_db_rows ($dbh, 'SELECT ttag.email FROM ttag, ttag_module
+	                               WHERE ttag.id_tag = ttag_module.id_tag
+	                               AND ttag_module.id_agente_modulo = ?', $id_agentmodule);
+	
+	# No tags found
+	return '' if ($#email_tags < 0);
+
+	my $email_tag_string = '';
+	foreach my $email_tag (@email_tags) {
+		$email_tag_string .=  $email_tag->{'email'} . ',';
+	}
+	
+	# Remove the trailing ','
+	chop ($email_tag_string);
+	return $email_tag_string;
 }
 
 ##########################################################################

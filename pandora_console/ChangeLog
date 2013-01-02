@@ -1,3 +1,10 @@
+2013-01-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	 extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	 extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added email
+	 field to ttag table.
+
 2012-12-31 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/tag/tag.php

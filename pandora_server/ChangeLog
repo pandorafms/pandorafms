@@ -1,3 +1,10 @@
+2013-01-02  Sancho Lerena <slerena@artica.es>
+
+	Patch from Axel.
+
+	* lib/PandoraFMS/Core.pm,
+	lib/PandoraFMS/DataServer.pm: Now is possible to import Module Group from XML.
+
 2012-12-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* DEBIAN/control,

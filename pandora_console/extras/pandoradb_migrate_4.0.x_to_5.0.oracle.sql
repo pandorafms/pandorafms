@@ -452,3 +452,8 @@ UPDATE tperfil SET report_view= 1, report_edit= 1, event_view= 1, event_edit= 1 
 UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_view= 1, event_edit= 1 WHERE id_perfil = 3 AND name = 'Chief&#x20;Operator';
 UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_view= 1, event_edit= 1, event_management= 1 WHERE id_perfil = 4 AND name = 'Group&#x20;coordinator';
 UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_view= 1, event_edit= 1, event_management= 1 WHERE id_perfil = 5 AND name = 'Pandora&#x20;Administrator';
+
+-- ---------------------------------------------------------------------
+-- Table `ttag`
+-- ---------------------------------------------------------------------
+ALTER TABLE ttag ADD (email CLOB NULL);

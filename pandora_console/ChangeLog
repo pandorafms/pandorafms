@@ -1,5 +1,16 @@
 2013-01-03 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* extensions/agents_modules.php,
+	extensions/update_manager/lib/libupdate_manager.php,
+	extensions/update_manager/lib/libupdate_manager_client.php,
+	operation/reporting/reporting_viewer.php: cleaned source code from
+	the trunk because they will be more easy to merge with the trunk.
+	
+	* include/functions_reporting.php: fixed when have a
+	"alerts of group" content with the "all" group.
+
+2013-01-03 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* extensions/resource_registration.php,
 	extensions/resource_exportation.php,
 	operation/reporting/reporting_viewer.php, operation/menu.php,

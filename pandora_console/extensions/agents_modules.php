@@ -24,7 +24,7 @@ function mainAgentsModules() {
 	// Load global vars
 	require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
-
+	
 	check_login ();
 	// ACL Check
 	if (! check_acl ($config['id_user'], 0, "AR")) {
@@ -33,7 +33,7 @@ function mainAgentsModules() {
 		require ("general/noaccess.php");
 		exit;
 	}
-
+	
 	// Update network modules for this group
 	// Check for Network FLAG change request
 	// Made it a subquery, much faster on both the database and server side
@@ -50,8 +50,8 @@ function mainAgentsModules() {
 			exit;
 		}
 	}
-
-
+	
+	
 	if ($config["realtimestats"] == 0) {
 		$updated_info = __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 	}

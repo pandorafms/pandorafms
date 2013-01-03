@@ -1264,17 +1264,27 @@ function reporting_alert_reporting_group ($id_group, $period = 0, $date = 0, $re
 	$table->head[3] = __('Actions');
 	$table->head[4] = __('Fired');
 	
-	
-	$alerts = db_get_all_rows_sql('
-		SELECT *
-		FROM talert_template_modules
-		WHERE disabled = 0
-			AND id_agent_module IN (
-				SELECT id_agente_modulo
-				FROM tagente_modulo
-				WHERE id_agente IN (
-					SELECT id_agente
-					FROM tagente WHERE id_grupo = ' . $id_group . '))');
+	if ($id_group == 0) {
+		$alerts = db_get_all_rows_sql('
+			SELECT *
+			FROM talert_template_modules
+			WHERE disabled = 0
+				AND id_agent_module IN (
+					SELECT id_agente_modulo
+					FROM tagente_modulo)');
+	}
+	else {
+		$alerts = db_get_all_rows_sql('
+			SELECT *
+			FROM talert_template_modules
+			WHERE disabled = 0
+				AND id_agent_module IN (
+					SELECT id_agente_modulo
+					FROM tagente_modulo
+					WHERE id_agente IN (
+						SELECT id_agente
+						FROM tagente WHERE id_grupo = ' . $id_group . '))');
+	}
 	
 	if ($alerts === false) {
 		$alerts = array();
@@ -1413,6 +1423,7 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 				FROM talert_template_module_actions 
 				WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ');');
 		$data[2] = '<ul class="action_list">';
+		
 		if ($actions === false) {
 			$row = db_get_row_sql('SELECT id_alert_action
 				FROM talert_templates
@@ -1435,6 +1446,7 @@ function reporting_alert_reporting_module ($id_agent_module, $period = 0, $date 
 		if ($actions == false) {
 			$actions = array();
 		}
+		
 		foreach ($actions as $action) {
 			$data[2] .= '<li>' . $action['name'] . '</li>';
 		}
@@ -2567,7 +2579,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Put description at the end of the module (if exists)
 			$table->colspan[2][0] = 4;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -2578,7 +2590,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$output_projection = forecast_projection_graph($content['id_agent_module'], $content['period'], $content['top_n_value']);
 			
 			// If projection doesn't have data then don't draw graph
-			if ($output_projection ==  NULL){
+			if ($output_projection ==  NULL) {
 				$output_projection = false;
 			}
 			

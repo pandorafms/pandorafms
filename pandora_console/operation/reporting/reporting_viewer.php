@@ -207,9 +207,9 @@ foreach ($contents as $content) {
 	$table->rowstyle = array ();
 	
 	// Calculate new inteval for all reports
-	if ($enable_init_date){
+	if ($enable_init_date) {
 		$datetime_init = strtotime ($date_init.' '.$time_init);
-		$new_interval = $report['datetime'] - $datetime_init; 		
+		$new_interval = $report['datetime'] - $datetime_init;
 		$content['period'] = $new_interval;
 	}
 	

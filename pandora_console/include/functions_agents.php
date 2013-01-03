@@ -43,6 +43,17 @@ function agents_check_agent_exists($id_agent, $show_disabled = true) {
 }
 
 /**
+ * Get agent id from a module id that it has.
+ *
+ * @param int $id_module Id module is list modules this agent.
+ *
+ * @return int Id from the agent of the given id module.
+ */
+function agents_get_agent_id_by_module_id ($id_agente_modulo) {
+	return (int) db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
+}
+
+/**
  * Creates an agent
  *
  * @param string Agent name.

@@ -382,6 +382,7 @@ switch ($action) {
 			}
 			
 			foreach ($reports as $report) {
+				
 				if (!is_user_admin ($config["id_user"])){
 					if ($report["private"] && $report["id_user"] != $config['id_user'])
 						if (!check_acl ($config["id_user"], $report["id_group"], "RR"))
@@ -414,7 +415,7 @@ switch ($action) {
 					$next = 6;
 				}
 				
-
+				
 				if ($report["private"] == 1)
 					$data[$next] = __('Yes');
 				else
@@ -462,10 +463,10 @@ switch ($action) {
 			}
 			html_print_table ($table);
 		}
-				
+		
 		if (check_acl ($config['id_user'], 0, "RW")) {
 			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
-			echo '<div class="action-buttons" style="width: 98%;">';
+			echo '<div class="action-buttons" style="width: 98%; margin-top: 5px;">';
 			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 			echo "</div>";
 			echo "</form>";
@@ -485,7 +486,8 @@ switch ($action) {
 				break;
 			case 'item_editor':
 				$resultOperationDB = null;
-				$report = db_get_row_filter('treport', array('id_report' => $idReport));
+				$report = db_get_row_filter('treport',
+					array('id_report' => $idReport));
 				
 				$reportName = $report['name'];
 				$idGroupReport = $report['id_group'];
@@ -658,7 +660,7 @@ switch ($action) {
 								$values['top_n_value'] = get_parameter('max_values');
 								$good_format = true;
 								break;
-							default: 
+							default:
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
 								$values['top_n_value'] = get_parameter('quantity');
@@ -705,6 +707,14 @@ switch ($action) {
 							$resultOperationDB = false;
 							break;
 						}
+						$filter_event_validated = get_parameter('filter_event_validated', 0);
+						$filter_event_critical = get_parameter('filter_event_critical', 0);
+						$filter_event_warning = get_parameter('filter_event_warning', 0);
+						
+						$event_graph_by_agent = get_parameter('event_graph_by_agent', 0);
+						$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
+						$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
+						$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
 						
 						// If metaconsole is activated
 						if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
@@ -732,8 +742,9 @@ switch ($action) {
 									// Will update server_name variable
 									$values['server_name'] = trim($server_name);
 									$agent_name = substr($agent_name_server, 0, $separator_pos);
-								
+									
 								}
+								
 							}
 						}
 						
@@ -757,9 +768,25 @@ switch ($action) {
 						$style = array();
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
+						
+						switch ($values['type']) {
+							case 'event_report_agent':
+							case 'event_report_group':
+								//Added for events items
+								$style['filter_event_validated'] = $filter_event_validated;
+								$style['filter_event_critical'] = $filter_event_critical;
+								$style['filter_event_warning'] = $filter_event_warning;
+								
+								$style['event_graph_by_agent'] = $event_graph_by_agent;
+								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
+								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
+								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
+								break;
+						}
+						
 						$values['style'] = io_safe_input(json_encode($style));
 						
-						if ($good_format){
+						if ($good_format) {
 							$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
 						}
 						else{
@@ -856,7 +883,7 @@ switch ($action) {
 								break;
 							case "oracle":
 								$only_display_wrong_tmp = get_parameter('checkbox_only_display_wrong');
-								if (empty($only_display_wrong_tmp)){
+								if (empty($only_display_wrong_tmp)) {
 									$values['only_display_wrong'] = 0;
 								}
 								else{
@@ -932,10 +959,35 @@ switch ($action) {
 						$style = array();
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
+						
+						switch ($values['type']) {
+							case 'event_report_agent':
+							case 'event_report_group':
+								$filter_event_validated = get_parameter('filter_event_validated', 0);
+								$filter_event_critical = get_parameter('filter_event_critical', 0);
+								$filter_event_warning = get_parameter('filter_event_warning', 0);
+								
+								$event_graph_by_agent = get_parameter('event_graph_by_agent', 0);
+								$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
+								$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
+								$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
+								//Added for events items
+								$style['filter_event_validated'] = $filter_event_validated;
+								$style['filter_event_critical'] = $filter_event_critical;
+								$style['filter_event_warning'] = $filter_event_warning;
+								
+								$style['event_graph_by_agent'] = $event_graph_by_agent;
+								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
+								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
+								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
+								break;
+						}
+						
 						$values['style'] = io_safe_input(json_encode($style));
 						
 						if ($good_format) {
-							$result = db_process_sql_insert('treport_content', $values);
+							$result = db_process_sql_insert(
+								'treport_content', $values);
 							
 							if ($result === false) {
 								$resultOperationDB = false;
@@ -945,13 +997,17 @@ switch ($action) {
 								
 								switch ($config["dbtype"]) {
 									case "mysql":
-										$max = db_get_all_rows_sql('SELECT max(`order`) AS max 
-											FROM treport_content WHERE id_report = ' . $idReport . ';');
+										$max = db_get_all_rows_sql(
+											'SELECT max(`order`) AS max 
+											FROM treport_content
+											WHERE id_report = ' . $idReport . ';');
 										break;
 									case "postgresql":
 									case "oracle":
-										$max = db_get_all_rows_sql('SELECT max("order") AS max 
-											FROM treport_content WHERE id_report = ' . $idReport);
+										$max = db_get_all_rows_sql(
+											'SELECT max("order") AS max 
+											FROM treport_content
+											WHERE id_report = ' . $idReport);
 										break;
 								}
 								if ($max === false) {
@@ -980,7 +1036,6 @@ switch ($action) {
 				}
 				break;
 			default:
-				
 				if ($enterpriseEnable and $activeTab != 'advanced') {
 					$resultOperationDB = reporting_enterprise_update_action();
 				}

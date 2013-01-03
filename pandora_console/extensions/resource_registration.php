@@ -173,7 +173,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 				case 'simple_baseline_graph':
 					break;
 				case 2:
-				case 'custom_graph':				
+				case 'custom_graph':
 				case 'automatic_custom_graph':
 					$group = db_get_value('id_grupo', 'tgrupo', 'nombre', io_safe_input($item['graph']));
 					$values['id_gs'] = $group;
@@ -300,6 +300,8 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 				case 'alert_report_module':
 					break; 
 				case 'alert_report_agent':
+					break;
+				case 'alert_report_group':
 					break;
 				case 'url':
 					$values["external_source"] = io_safe_input($item['url']);

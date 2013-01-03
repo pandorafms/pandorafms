@@ -248,7 +248,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if (empty($chart_data)) {
-		return '<img src="'.$no_data_image.'">';
+		return '<img src="' . $no_data_image . '" />';
 	}
 	
 	if ($flash_chart) {
@@ -268,7 +268,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 		$graph['font_size'] = $font_size;
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
-	
+		
 		return "<img src='" . ui_get_full_url (false, false, false, false) . "include/graphs/functions_pchart.php?static_graph=1&graph_type=area&ttl=".$ttl."&id_graph=" . $id_graph . "'>";
 	}
 }
@@ -280,7 +280,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height, $color,
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	if (empty($chart_data)) {
-		return '<img src="'.$no_data_image.'">';
+		return '<img src="' . $no_data_image . '" />';
 	}
 	
 	if($flash_chart) {
@@ -315,7 +315,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height, $color,
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	if (empty($chart_data)) {
-		return '<img src="'.$no_data_image.'">';
+		return '<img src="' . $no_data_image . '" />';
 	}
 	
 	if($flash_chart) {
@@ -350,7 +350,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	if (empty($chart_data)) {
-		return '<img src="'.$no_data_image.'">';
+		return '<img src="' . $no_data_image . '" />';
 	}
 	
 	if($flash_chart) {
@@ -377,7 +377,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 
 function kiviat_graph($graph_type, $flash_chart, $chart_data, $width, $height, $no_data_image, $ttl = 1, $homedir="") {
 	if (empty($chart_data)) {
-		return '<img src="'.$no_data_image.'">';
+		return '<img src="' . $no_data_image . '" />';
 	}
 	
 	$graph = array();
@@ -447,7 +447,7 @@ function pie2d_graph($flash_chart, $chart_data, $width, $height,
 
 function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '', $font_size = '', $ttl = 1) {
-		
+	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	// This library allows only 8 colors
@@ -471,7 +471,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 		$chart_data = $chart_data_trunc;
 	}
 	
-	if($flash_chart) {
+	if ($flash_chart) {
 		return flot_pie_chart(array_values($chart_data), array_keys($chart_data), $width, $height, $water_mark_url, $font, $font_size);
 	}
 	else {
@@ -482,14 +482,14 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 		$graph['water_mark'] = $water_mark_file;
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
-
+		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		switch($graph_type) {
 			case "2d":
 					return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=pie2d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
-			case "3d":				
+			case "3d":
 					return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
 		}

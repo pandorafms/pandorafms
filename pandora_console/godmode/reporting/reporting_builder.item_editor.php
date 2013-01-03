@@ -78,6 +78,16 @@ $sla_sorted_by = 0;
 $id_agents = '';
 $inventory_modules = array();
 $date = null;
+
+//Added for events items
+$filter_event_validated = false;
+$filter_event_critical = false;
+$filter_event_warning = false;
+
+$event_graph_by_agent = false;
+$event_graph_by_user_validator = false;
+$event_graph_by_criticity = false;
+$event_graph_validated_vs_unvalidated = false;
 $netflow_filter = 0;
 $max_values = 0;
 $resolution = 0;
@@ -85,7 +95,6 @@ $resolution = 0;
 switch ($action) {
 	case 'new':
 		$actionParameter = 'save';
-		
 		$type = get_parameter('type', 'SLA');
 		$description = null;
 		$sql = null;
@@ -93,10 +102,10 @@ switch ($action) {
 		$show_in_landscape = 0;
 		$server_name = '';
 		break;
-	case 'save':		
+	case 'save':
 	default:
-		$actionParameter = 'update';	
-	
+		$actionParameter = 'update';
+		
 		// If we are creating a new report item then clean interface and display creation view
 		$type = get_parameter('type', 'SLA');
 		switch ($type) {
@@ -118,11 +127,11 @@ switch ($action) {
 				$server_name = '';
 				$get_data_editor = false;
 				break;
-		}	
-	
+		}
+		
 		// Get data to fill editor if type is not SLA, top_n, exception, general
 		if ($get_data_editor) {
-		
+			
 			$item = db_get_row_filter('treport_content', array('id_rc' => $idItem));
 			$server_name = $item ['server_name'];
 			
@@ -308,15 +317,40 @@ switch ($action) {
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente' => $item['id_agent']));
 					$period = $item['period'];
 					break;
+				case 'alert_report_group':
+					$description = $item['description'];
+					$period = $item['period'];
+					$group = $item['id_group'];
+					break;
 				case 'event_report_agent':
 					$description = $item['description'];
 					$idAgent = $item['id_agent'];
 					$period = $item['period'];
+					
+					//Added for events items
+					$filter_event_validated = $style['filter_event_validated'];
+					$filter_event_critical = $style['filter_event_critical'];
+					$filter_event_warning = $style['filter_event_warning'];
+					
+					$event_graph_by_agent = $style['event_graph_by_agent'];
+					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+					$event_graph_by_criticity = $style['event_graph_by_criticity'];
+					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 					break;
 				case 'event_report_group':
 					$description = $item['description'];
 					$period = $item['period'];
 					$group = $item['id_group'];
+					
+					//Added for events items
+					$filter_event_validated = $style['filter_event_validated'];
+					$filter_event_critical = $style['filter_event_critical'];
+					$filter_event_warning = $style['filter_event_warning'];
+					
+					$event_graph_by_agent = $style['event_graph_by_agent'];
+					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+					$event_graph_by_criticity = $style['event_graph_by_criticity'];
+					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 					break;
 				case 'event_report_module':
 					$description = $item['description'];
@@ -333,6 +367,7 @@ switch ($action) {
 					$show_graph = $item['show_graph'];
 					break;
 				case 'group_report':
+					$description = $item['description'];
 					$group = $item['id_group'];
 					break;
 				case 'top_n':
@@ -364,6 +399,9 @@ switch ($action) {
 					$date = $es['date'];
 					$inventory_modules = $es['inventory_modules'];
 					$id_agents = $es['id_agents'];
+					
+					$idAgent = $es['id_agents'];
+					$idAgentModule = $inventory_modules;
 					break;
 				case 'inventory_changes':
 					$period = $item['period'];
@@ -511,7 +549,7 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_input_text('max_interval', $max_interval, '', 5, 10);
 				echo "&nbsp;" . __('Min') . "&nbsp;";
 				html_print_input_text('min_interval', $min_interval, '', 5, 10);
-				?></td>	
+				?></td>
 		</tr>
 		<tr id="row_only_display_wrong" style="" class="datos">
 			<td><?php echo __('Only display wrong SLAs');?></td>
@@ -548,7 +586,8 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Group');?></td>
 			<td style="">
-				<?php html_print_select_groups($config['id_user'], "AR", true, 'combo_group', $group, '');?>
+				<?php html_print_select_groups($config['id_user'],
+					"AR", true, 'combo_group', $group, '');?>
 			</td>
 		</tr>
 		<tr id="row_module_group" style="" class="datos">
@@ -618,7 +657,7 @@ html_print_input_hidden('id_item', $idItem);
 							
 							if ($agent_name_temp === false)
 								$agent_name_temp = array();
-								
+							
 							$result_select = array();
 							foreach ($agent_name_temp as $module_element) {
 								$result_select[$module_element['id_agente_modulo']] = $module_element['nombre'];
@@ -652,7 +691,7 @@ html_print_input_hidden('id_item', $idItem);
 					if ((empty($agents)) || $agents == -1) $agents = array();
 					
 					$agents_select = array();
-					foreach($agents as $a) {
+					foreach ($agents as $a) {
 						$agents_select[$a['id_agente']] = $a['nombre'];
 					}
 					html_print_select($agents_select, 'id_agents[]', $id_agents, $script = '', __('All'), -1, false, true, true, '', false, "min-width: 180px");
@@ -664,7 +703,13 @@ html_print_input_hidden('id_item', $idItem);
 			<td>
 				<?php 
 					html_print_select(array(), 'inventory_modules[]', '', $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
-					html_print_input_hidden('inventory_modules_selected',implode(',',$inventory_modules));
+					if (empty($inventory_modules)) {
+						$array_inventory_modules = array(0 => 0);
+					}
+					else {
+						$array_inventory_modules = implode(',', $inventory_modules);
+					}
+					html_print_input_hidden('inventory_modules_selected', $array_inventory_modules);
 				?>
 			</td>
 		</tr>
@@ -672,8 +717,11 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Date'); ?></td>
 			<td style="max-width: 180px">
 				<?php
-				$dates = enterprise_hook('inventory_get_dates',array($idAgentModule, $idAgent, $group));
-				if($dates === ENTERPRISE_NOT_HOOK) {
+				$dates = enterprise_hook(
+					'inventory_get_dates',
+						array($idAgentModule, $idAgent, $group));
+				
+				if ($dates === ENTERPRISE_NOT_HOOK) {
 					$dates = array();
 				}
 				
@@ -852,6 +900,35 @@ html_print_input_hidden('id_item', $idItem);
 			<td><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
 			<td><?php html_print_checkbox('checkbox_show_resume', 1, $show_resume);?></td>
 		</tr>
+		<tr id="row_event_filter" style="" class="datos">
+			<td><?php echo __('Event filter'); ?></td>
+			<td>
+				<?php
+				echo __('Validated');
+				html_print_checkbox ('filter_event_validated', true, $filter_event_validated);
+				echo __('Critical');
+				html_print_checkbox ('filter_event_critical', true, $filter_event_critical);
+				echo __('Warning');
+				html_print_checkbox ('filter_event_warning', true, $filter_event_warning);
+				?>
+			</td>
+		</tr>
+		</tr>
+		<tr id="row_event_graphs" style="" class="datos">
+			<td><?php echo __('Event graphs'); ?></td>
+			<td>
+				<?php
+				echo __('By agent');
+				html_print_checkbox ('event_graph_by_agent', true, $event_graph_by_agent);
+				echo __('By user validator');
+				html_print_checkbox ('event_graph_by_user_validator', true, $event_graph_by_user_validator);
+				echo __('By criticity');
+				html_print_checkbox ('event_graph_by_criticity', true, $event_graph_by_criticity);
+				echo __('Validated vs unvalidated');
+				html_print_checkbox ('event_graph_validated_vs_unvalidated', true, $event_graph_validated_vs_unvalidated);
+				?>
+			</td>
+		</tr>
 		<tr id="row_show_in_two_columns" style="" class="datos">
 			<td><?php echo __('Show in two columns');?></td>
 			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns, false,
@@ -863,8 +940,13 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_show_in_landscape" style="" class="datos">
 			<td><?php echo __('Show in landscape');?></td>
-			<td><?php html_print_checkbox('show_in_landscape', 1, $show_in_landscape, false, false,
-				'if ($(\'input[name=show_in_landscape]\').is(\':checked\')) $(\'input[name=show_in_two_columns]\').attr(\'checked\', false);');?></td>
+			<td>
+				<?php
+				html_print_checkbox('show_in_landscape', 1,
+					$show_in_landscape, false, false,
+					'if ($(\'input[name=show_in_landscape]\').is(\':checked\')) $(\'input[name=show_in_two_columns]\').attr(\'checked\', false);');
+				?>
+			</td>
 		</tr>
 	</tbody>
 </table>
@@ -1527,7 +1609,7 @@ function addGeneralRow() {
 					$(".delete_button", row).attr('href', 'javascript: deleteGeneralRow(' + data['id'] + ');');
 					
 					$("#list_general").append($(row).html());
-				
+					
 					$("input[name=id_agent_general]").val('');
 					$("input[name=server_name_general]").val('');
 					$("input[name=agent_general]").val('');
@@ -1584,6 +1666,8 @@ function chooseType() {
 	$("#row_date").hide();
 	$("#row_agent_multi").hide();
 	$("#row_module_multi").hide();
+	$("#row_event_filter").hide();
+	$("#row_event_graphs").hide();
 	$("#row_netflow_filter").hide();
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
@@ -1595,6 +1679,8 @@ function chooseType() {
 			$("#row_servers").show();
 			$("#row_group").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_event_filter").show();
+			$("#row_event_graphs").show();
 			break;
 		case 'simple_graph':
 		case 'simple_baseline_graph':
@@ -1622,7 +1708,7 @@ function chooseType() {
 			$("#row_interval").show();
 			$("#row_show_in_two_columns").show();
 			break;
-		case 'custom_graph':		
+		case 'custom_graph':
 		case 'automatic_custom_graph':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -1772,6 +1858,12 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		case 'alert_report_group':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_group").show();
+			break;
 		case 'alert_report_agent':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -1783,6 +1875,8 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_event_filter").show();
+			$("#row_event_graphs").show();
 			break;
 		case 'event_report_module':
 			$("#row_description").show();
@@ -1803,6 +1897,7 @@ function chooseType() {
 		case 'group_report':
 			$("#row_group").show();
 			$("#row_servers").show();
+			$("#row_description").show();
 			break;
 		case 'top_n':
 			$("#row_description").show();
@@ -1874,7 +1969,8 @@ function chooseType() {
 				updateInventoryDates();
 			});
 			
-			updateInventoryDates();
+			if (!$("#hidden-date_selected").val())
+				updateInventoryDates();
 			break;
 		case 'inventory_changes':
 			break;

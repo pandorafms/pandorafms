@@ -270,15 +270,15 @@ function alerts_clone_alert_action ($id_alert_action) {
 	$id_alert_action = safe_int ($id_alert_action, 1);
 	if (empty ($id_alert_action))
 		return false;
-		
+	
 	$action = alerts_get_alert_action($id_alert_action);
 	
 	if (empty ($action))
 		return false;
-		
-	unset($action['id']);
-	return alerts_create_alert_action ($action['name']." ".__('copy'), $action['id_alert_command'], $action);
 	
+	unset($action['id']);
+	
+	return alerts_create_alert_action ($action['name']." ".__('copy'), $action['id_alert_command'], $action);
 }
 
 /**
@@ -323,7 +323,7 @@ function alerts_get_alert_actions ($only_names = true, $acl = false) {
  * false in case of empty result
  */
 function alerts_get_alert_actions_filter ($only_names = true, $filter = false) {
-
+	
 	if (!$filter)
 		$all_actions = db_get_all_rows_in_table ('talert_actions');
 	elseif (is_string($filter))
@@ -370,7 +370,8 @@ function alerts_get_alert_action ($id_alert_action) {
  * false in case of empty result
  */
 function alerts_get_alert_action_alert_command_id ($id_alert_action) {
-	return db_get_value ('id_alert_command', 'talert_actions', 'id', $id_alert_action);
+	return db_get_value ('id_alert_command', 'talert_actions',
+		'id', $id_alert_action);
 }
 
 /**
@@ -383,6 +384,7 @@ function alerts_get_alert_action_alert_command_id ($id_alert_action) {
  */
 function alerts_get_alert_action_alert_command ($id_alert_action) {
 	$id_command = alerts_get_alert_action_alert_command_id ($id_alert_action);
+	
 	return alerts_get_alert_command ($id_command);
 }
 
@@ -453,7 +455,7 @@ function alerts_get_alert_templates_types () {
 	$types['unknown'] = __('Unknown status');
 	$types['onchange'] = __('On Change');
 	$types['always'] = __('Always');
-
+	
 	return $types;
 }
 
@@ -466,8 +468,10 @@ function alerts_get_alert_templates_types () {
  */
 function alerts_get_alert_templates_type_name ($type) {
 	$types = alerts_get_alert_templates_types ();
+	
 	if (! isset ($type[$type]))
 		return __('Unknown');
+	
 	return $types[$type];
 }
 
@@ -508,6 +512,7 @@ function alerts_create_alert_template ($name, $type, $values = false) {
  */
 function alerts_update_alert_template ($id_alert_template, $values) {
 	$id_alert_template = safe_int ($id_alert_template, 1);
+	
 	if (empty ($id_alert_template))
 		return false;
 	if (! is_array ($values))
@@ -527,6 +532,7 @@ function alerts_update_alert_template ($id_alert_template, $values) {
  */
 function alerts_delete_alert_template ($id_alert_template) {
 	$id_alert_template = safe_int ($id_alert_template, 1);
+	
 	if (empty ($id_alert_template))
 		return false;
 	
@@ -558,19 +564,25 @@ function alerts_get_alert_template ($id_alert_template) {
 	$id_alert_template = safe_int ($id_alert_template, 1);
 	if (empty ($id_alert_template))
 		return false;
-		
-	switch ($config['dbtype']){
+	
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
 			return db_get_row ('talert_templates', 'id', $id_alert_template);
 			break;
 		case "oracle":
-			$fields_select = db_get_all_rows_sql('SELECT column_name FROM user_tab_columns WHERE table_name = \'TALERT_TEMPLATES\' AND column_name NOT IN (\'TIME_FROM\',\'TIME_TO\')');
+			$fields_select = db_get_all_rows_sql('SELECT column_name
+				FROM user_tab_columns
+				WHERE table_name = \'TALERT_TEMPLATES\'
+					AND column_name NOT IN (\'TIME_FROM\',\'TIME_TO\')');
 			foreach ($fields_select as $field_select){
-				$select_field[] = $field_select['column_name'];				
+				$select_field[] = $field_select['column_name'];
 			}
 			$select_stmt = implode(',', $select_field);
-			return db_get_row_sql("SELECT $select_stmt, to_char(time_from, 'hh24:mi:ss') as time_from, to_char(time_to, 'hh24:mi:ss') as time_to FROM talert_templates");	
+			return db_get_row_sql("SELECT $select_stmt,
+					to_char(time_from, 'hh24:mi:ss') AS time_from,
+					to_char(time_to, 'hh24:mi:ss') AS time_to
+				FROM talert_templates");	
 			break;
 	}
 }
@@ -650,6 +662,7 @@ function alerts_get_alert_template_type ($id_alert_template) {
  */
 function alerts_get_alert_template_type_name ($id_alert_template) {
 	$type = alerts_get_alert_template_type ($id_alert_template);
+	
 	return alerts_get_alert_templates_type_name ($type);
 }
 
@@ -728,13 +741,16 @@ function alerts_get_alert_template_time_to ($id_alert_template) {
  */
 function alerts_get_alert_template_weekdays ($id_alert_template) {
 	$alert = alerts_get_alert_template ($id_alert_template);
+	
 	if ($alert === false)
 		return false;
+	
 	$retval = array ();
-	$days = array ('monday', 'tuesday', 'wednesday', 'thursday', 'friday',
-		'saturday', 'sunday');
+	$days = array ('monday', 'tuesday', 'wednesday', 'thursday',
+		'friday', 'saturday', 'sunday');
 	foreach ($days as $day)
 		$retval[$day] = (bool) $alert[$day];
+	
 	return $retval;
 }
 
@@ -780,8 +796,10 @@ function alerts_get_alert_template_field3_recovery ($id_alert_template) {
  */
 function alerts_duplicate_alert_template ($id_alert_template) {
 	$template = alerts_get_alert_template ($id_alert_template);
+	
 	if ($template === false)
 		return false;
+	
 	$name = __('Copy of').' '.$template['name'];
 	$type = $template['type'];
 	
@@ -849,13 +867,15 @@ function alerts_update_alert_agent_module ($id_alert_agent_module, $values) {
 function alerts_delete_alert_agent_module ($id_alert_agent_module, $filter = false) {
 	if (empty ($id_alert_agent_module) && ! is_array ($filter))
 		return false;
+	
 	if (! is_array ($filter))
 		$filter = array ();
 	if ($id_alert_agent_module)
 		$filter['id'] = $id_alert_agent_module;
 	
 	if ($id_alert_agent_module !== false) {
-		$idAlertCompunds = db_get_all_rows_sql('SELECT id_alert_compound
+		$idAlertCompunds = db_get_all_rows_sql('
+			SELECT id_alert_compound
 			FROM talert_compound_elements
 			WHERE id_alert_template_module = ' . $id_alert_agent_module);
 		
@@ -864,6 +884,12 @@ function alerts_delete_alert_agent_module ($id_alert_agent_module, $filter = fal
 				alerts_delete_alert_compound($id);
 		}
 	}
+	
+	/*
+	The deletion of actions from talert_template_module_actions,
+	it is automatily because the data base this table have
+	a foreing key and delete on cascade.
+	*/
 	
 	return (@db_process_sql_delete ('talert_template_modules',
 		$filter)) !== false;
@@ -879,6 +905,7 @@ function alerts_delete_alert_agent_module ($id_alert_agent_module, $filter = fal
  */
 function alerts_get_alert_agent_module ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
+	
 	if (empty ($id_alert_agent_module))
 		return false;
 	
@@ -918,13 +945,13 @@ function alerts_get_alerts_agent_module ($id_agent_module, $disabled = false, $f
  */
 function alerts_get_alerts_module_name ($id_agent_module, $disabled = false) {
 	$id_alert_agent_module = safe_int ($id_agent_module, 0);
-		
-	$sql = sprintf ('SELECT a.id, b.name 
-					 FROM talert_template_modules as a, talert_templates as b
-					 WHERE a.id=b.id AND a.id_agent_module = %d AND a.disabled = %d', 
-					 $id_agent_module, (int)$disabled);
 	
-	return db_process_sql($sql);				 
+	$sql = sprintf ('SELECT a.id, b.name 
+		FROM talert_template_modules AS a, talert_templates AS b
+		WHERE a.id=b.id AND a.id_agent_module = %d AND a.disabled = %d', 
+		$id_agent_module, (int)$disabled);
+	
+	return db_process_sql($sql);
 }
 
 
@@ -937,6 +964,7 @@ function alerts_get_alerts_module_name ($id_agent_module, $disabled = false) {
  */
 function alerts_get_alert_agent_module_disabled ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
+	
 	return db_get_value ('disabled', 'talert_template_modules', 'id',
 		$id_alert_agent_module);
 }
@@ -950,6 +978,7 @@ function alerts_get_alert_agent_module_disabled ($id_alert_agent_module) {
  */
 function alerts_agent_module_force_execution ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
+	
 	return (@db_process_sql_update ('talert_template_modules',
 		array ('force_execution' => 1),
 		array ('id' => $id_alert_agent_module))) !== false;
@@ -965,6 +994,7 @@ function alerts_agent_module_force_execution ($id_alert_agent_module) {
  */
 function alerts_agent_module_disable ($id_alert_agent_module, $disabled) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
+	
 	return (@db_process_sql_update ('talert_template_modules',
 		array ('disabled' => (bool) $disabled),
 		array ('id' => $id_alert_agent_module))) !== false;
@@ -980,6 +1010,7 @@ function alerts_agent_module_disable ($id_alert_agent_module, $disabled) {
  */
 function alerts_agent_module_standby ($id_alert_agent_module, $standby) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
+	
 	return (@db_process_sql_update ('talert_template_modules',
 		array ('standby' => (bool) $standby),
 		array ('id' => $id_alert_agent_module))) !== false;
@@ -994,6 +1025,7 @@ function alerts_agent_module_standby ($id_alert_agent_module, $standby) {
  */
 function alerts_get_alerts_agent_module_last_fired ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 1);
+	
 	return db_get_value ('last_fired', 'talert_template_modules', 'id',
 		$id_alert_agent_module);
 }
@@ -1009,7 +1041,7 @@ function alerts_get_alerts_agent_module_last_fired ($id_alert_agent_module) {
  */
 function alerts_add_alert_agent_module_action ($id_alert_template_module, $id_alert_action, $options = false) {
 	global $config;
-
+	
 	if (empty ($id_alert_template_module))
 		return false;
 	if (empty ($id_alert_action))
@@ -1029,18 +1061,22 @@ function alerts_add_alert_agent_module_action ($id_alert_template_module, $id_al
 		if (isset ($options['fires_min']))
 			$min = (int) $options['fires_min'];
 		if (isset ($options['module_action_threshold']))
-			$values['module_action_threshold'] = (int) $options['module_action_threshold'];
+			$values['module_action_threshold'] =
+				(int) $options['module_action_threshold'];
 		
 		$values['fires_max'] = max ($max, $min);
 		$values['fires_min'] = min ($max, $min);
 	}
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
-		case "postgresql":	
-			return (@db_process_sql_insert ('talert_template_module_actions', $values)) !== false;
+		case "postgresql":
+			return (@db_process_sql_insert(
+				'talert_template_module_actions', $values)) !== false;
 			break;
 		case "oracle":
-			return (@db_process_sql_insert ('talert_template_module_actions', $values, false)) !== false;
+			return (@db_process_sql_insert(
+				'talert_template_module_actions', $values, false)) !== false;
 			break;
 	}
 }
@@ -1083,6 +1119,7 @@ function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields 
 			array ('id_alert_template_module' => $id_alert_agent_module),
 			$fields);
 	}
+	
 	if ($actions === false)
 		return array ();
 	if ($fields !== false)
@@ -1112,8 +1149,9 @@ function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields 
  */
 function alerts_validate_alert_agent_module ($id_alert_agent_module, $noACLs = false) {
 	global $config;
+	
 	include_once ("include/functions_events.php");
-
+	
 	$alerts = safe_int ($id_alert_agent_module, 1);
 	
 	if (empty ($alerts)) {
@@ -1164,7 +1202,7 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module, $noACLs = f
  */
 function alerts_copy_alert_module_to_module ($id_agent_alert, $id_destiny_module) {
 	global $config;
-
+	
 	$alert = alerts_get_alert_agent_module ($id_agent_alert);
 	if ($alert === false)
 		return false;
@@ -1183,15 +1221,19 @@ function alerts_copy_alert_module_to_module ($id_agent_alert, $id_destiny_module
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$id_new_alert = @db_process_sql_insert ('talert_template_modules', $new_alert);
+			$id_new_alert = @db_process_sql_insert (
+				'talert_template_modules', $new_alert);
 			break;
 		case "oracle":
-			$id_new_alert = @db_process_sql_insert ('talert_template_modules', $new_alert, false);
+			$id_new_alert = @db_process_sql_insert (
+				'talert_template_modules', $new_alert, false);
 			break;
 	}
+	
 	if ($id_new_alert === false) {
 		return false;
 	}
+	
 	$actions = alerts_get_alert_agent_module_actions ($id_agent_alert);
 	if (empty ($actions))
 		return $id_new_alert;
@@ -1227,7 +1269,7 @@ function alerts_compound_threshold_values () {
  */
 function alerts_compound_operations () {
 	$operations = array ();
-
+	
 	$operations['OR'] = 'OR';
 	$operations['AND'] = 'AND';
 	$operations['XOR'] = 'XOR';
@@ -1249,7 +1291,7 @@ function alerts_compound_operations () {
  */
 function alerts_create_alert_compound ($name, $id_agent, $values = false) {
 	global $config;
-
+	
 	if (empty ($name))
 		return false;
 	if (! is_array ($values))
@@ -1257,7 +1299,7 @@ function alerts_create_alert_compound ($name, $id_agent, $values = false) {
 	$values['name'] = $name;
 	$values['id_agent'] = (int) $id_agent;
 	
-	switch($config['dbtype']){
+	switch ($config['dbtype']) {
 		case "oracle":
 			$values['field3_recovery'] = ' ';
 			break;
@@ -1276,6 +1318,7 @@ function alerts_create_alert_compound ($name, $id_agent, $values = false) {
  */
 function alerts_update_alert_compound ($id_alert_compound, $values) {
 	$id_alert_compound = safe_int ($id_alert_compound);
+	
 	if (empty ($id_alert_compound))
 		return false;
 	if (! is_array ($values))
@@ -1348,7 +1391,7 @@ function alerts_get_alert_compounds ($filter = false, $fields = false) {
  */
 function alerts_get_alert_compound ($id_alert_compound) {
 	global $config;
-
+	
 	switch ($config['dbtype']){
 		case "mysql":
 		case "postgresql":
@@ -1405,7 +1448,8 @@ function alerts_get_alert_compound_actions ($id_alert_compound, $fields = false)
  * @return Name of the alert compound or false is something goes wrong.
  */
 function alerts_get_alert_compound_name ($id_alert_compound) {
-	return (string) db_get_value ('name', 'talert_compound', 'id', $id_alert_compound);
+	return (string) db_get_value ('name', 'talert_compound', 'id',
+		$id_alert_compound);
 }
 
 /**
@@ -1464,7 +1508,7 @@ function alerts_add_alert_compound_action ($id_alert_compound, $id_alert_action,
 function alerts_delete_alert_compound_action ($id_alert_compound_action) {
 	if (empty ($id_alert_compound_action))
 		return false;
-
+	
 	return (@db_process_sql_delete ('talert_compound_actions',
 		array ('id' => $id_alert_compound_action))) !== false;
 }
@@ -1523,7 +1567,8 @@ function alerts_validate_alert_compound ($id_alert_compound) {
 				$group_id, $agent_id, 1, $config["id_user"],
 				"alert_manual_validation", 1, $alert["id"],
 				$id);
-		} elseif ($result === false) {
+		}
+		elseif ($result === false) {
 			return false;
 		}
 	}
@@ -1539,8 +1584,10 @@ function alerts_validate_alert_compound ($id_alert_compound) {
  */
 function alerts_delete_alert_compound ($id_alert_compound) {
 	$id_alert_compound = safe_int ($id_alert_compound, 1);
+	
 	if (empty ($id_alert_compound))
 		return false;
+	
 	return (@db_process_sql_delete ('talert_compound',
 		array ('id' => $id_alert_compound))) !== false;
 }
@@ -1560,6 +1607,7 @@ function alerts_get_agents_with_alert_template ($id_alert_template, $id_group, $
 	
 	if (empty ($id_alert_template))
 		return false;
+	
 	if (! is_array ($filter))
 		$filter = array ();
 	$filter[] = 'tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module';
@@ -1623,15 +1671,16 @@ function get_agent_alert_fired ($id_agent, $id_alert, $period, $date = 0) {
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
-
+	
 	$datelimit = $date - $period;
-
+	
 	$sql = sprintf ('SELECT timestamp
 		FROM tevento
-		WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d
+		WHERE id_agente = %d AND utimestamp > %d
+			AND utimestamp <= %d
 			AND id_alert_am = %d 
 		ORDER BY timestamp DESC', $id_agent, $datelimit, $date, $id_alert);
-
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -1659,10 +1708,11 @@ function get_module_alert_fired ($id_agent_module, $id_alert, $period, $date = 0
 	
 	$sql = sprintf ('SELECT timestamp
 		FROM tevento
-		WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d
+		WHERE id_agentmodule = %d AND utimestamp > %d
+			AND utimestamp <= %d
 			AND id_alert_am = %d 
 		ORDER BY timestamp DESC', $id_agent_module, $datelimit, $date, $id_alert);
-
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -1680,7 +1730,7 @@ function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
 	
 	if (!$date)
 		$date = get_system_time ();
-		
+	
 	$datelimit = $date - $period;
 	
 	switch ($config["dbtype"]) {
@@ -1719,17 +1769,17 @@ function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
  */
 function get_group_alerts ($id_group) {
 	global $config;
-
+	
 	require_once ($config["homedir"].'/include/functions_agents.php');
-
+	
 	$alerts = array ();
 	$agents = agents_get_group_agents ($id_group, false, "none");
-
+	
 	foreach ($agents as $agent_id => $agent_name) {
 		$agent_alerts = agents_get_alerts ($agent_id);
 		$alerts = array_merge ($alerts, $agent_alerts);
 	}
-
+	
 	return $alerts;
 }
 
@@ -1745,12 +1795,13 @@ function get_group_alerts ($id_group) {
  */
 function get_alerts_fired ($alerts, $period = 0, $date = 0) {
 	if (! $date)
-	$date = get_system_time ();
+		$date = get_system_time ();
+	
 	$datelimit = $date - $period;
-
+	
 	$alerts_fired = array ();
 	$agents = array ();
-
+	
 	foreach ($alerts as $alert) {
 		if (isset($alert['id'])) {
 			$fires = get_alert_fires_in_period ($alert['id'], $period, $date);
@@ -1760,6 +1811,7 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
 			$alerts_fired[$alert['id']] = $fires;
 		}
 	}
+	
 	return $alerts_fired;
 }
 
@@ -1774,7 +1826,7 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
  */
 function get_alert_last_fire_timestamp_in_period ($id_alert_module, $period, $date = 0) {
 	global $config;	
-
+	
 	if ($date == 0) {
 		$date = get_system_time ();
 	}

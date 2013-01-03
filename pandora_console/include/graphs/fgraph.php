@@ -155,7 +155,8 @@ function histogram($chart_data, $width, $height, $font, $max, $title, $mode, $tt
 }
 
 function progressbar($progress, $width, $height, $title, $font, $mode = 1, 
-					$out_of_lim_str = false, $out_of_lim_image = false, $ttl = 1) {
+	$out_of_lim_str = false, $out_of_lim_image = false, $ttl = 1) {
+	
 	$graph = array();
 	
 	$graph['progress'] = $progress;
@@ -174,7 +175,8 @@ function progressbar($progress, $width, $height, $title, $font, $mode = 1,
 
 
 function slicesbar_graph($chart_data, $period, $width, $height, $colors, $font, 
-						$round_corner, $home_url = '', $ttl = 1) {
+	$round_corner, $home_url = '', $ttl = 1) {
+	
 	$graph = array();
 	$graph['data'] = $chart_data;
 	$graph['period'] = $period;
@@ -221,7 +223,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 }
 
 function threshold_graph($flash_chart, $chart_data, $width, $height, $ttl = 1) {
-	if($flash_chart) {
+	if ($flash_chart) {
 		echo fs_area_chart ($chart_data, $width, $height);
 	}
 	else {
@@ -235,10 +237,10 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	
 	// ATTENTION: The min size is 130x150 
 	// It's not the same minsize for all graphs, but we are choosed a prudent minsize for all
-	if($height <= 130) {
+	if ($height <= 130) {
 		$height = 130;
 	}
-	if($width < 150) {
+	if ($width < 150) {
 		$width = 150;
 	}
 	
@@ -478,7 +480,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 		$chart_data = $chart_data_trunc;
 	}
 	
-	if($flash_chart) {
+	if ($flash_chart) {
 		switch($graph_type) {
 			case "2d":
 					return fs_2d_pie_chart (array_values($chart_data), array_keys($chart_data), $width, $height, "FFFFFF", $font_size);

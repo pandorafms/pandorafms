@@ -364,9 +364,10 @@ input.sub[disabled] {
 	color: #aaa;
 }
 
-input.next, input.upd, input.ok, input.wand, input.delete, input.cog, input.target, input.search,
-input.copy, input.add, input.graph, input.percentile, input.binary,
-input.camera, input.config, input.cancel {
+input.next, input.upd, input.ok, input.wand, input.delete, input.cog,
+input.target, input.search, input.copy, input.add, input.graph,
+input.percentile, input.binary, input.camera, input.config,
+input.cancel {
 	padding-right: 21px;
 }
 input.delete_min, input.graph_min, input.percentile_min, input.percentile_item_min, input.binary_min,
@@ -528,12 +529,14 @@ tr.rowOdd {
 tr.rowPair:hover {
 	background-color: #E0E0E0;
 }
+
 tr.rowOdd:hover {
 	background-color: #E0E0E0
 }
 .bg { /* op menu */
 	background-color: #567953;
 }
+
 .bg2 { /* main page */
 	background-color: #0A160C;
 }
@@ -557,7 +560,8 @@ tr.rowOdd:hover {
 	font-size: 7pt;
 	text-align: center;
 }
-.f9, .f9i, .f9b, .datos_greyf9, .datos_bluef9, .datos_greenf9, .datos_redf9, .datos_yellowf9, td.f9, td.f9i, td.datosf9, td.datos2f9 {
+.f9, .f9i, .f9b, .datos_greyf9, .datos_bluef9, .datos_greenf9,
+.datos_redf9, .datos_yellowf9, td.f9, td.f9i, td.datosf9, td.datos2f9 {
 	font-size: 6.5pt;
 }
 .f9i, .redi {
@@ -854,7 +858,6 @@ span.rmess, span.nrmess {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
-	
 }
 .databox {
 	background-color: #f4f5f4;
@@ -905,7 +908,7 @@ span.rmess, span.nrmess {
 #head_m {
 	position: absolute;
 	padding-top: 6px;
-	padding-left: 12em;	
+	padding-left: 12em;
 }
 span#logo_text1 {
 	font: bolder 3em Arial, Sans-serif;
@@ -1648,7 +1651,7 @@ td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yel
 }
 
 #menu_tab li.separator {
-
+	/* Empty */
 }
 
 input#text-id_parent.ac_input, input, textarea, select {
@@ -1659,4 +1662,3 @@ input#text-id_parent.ac_input, input, textarea, select {
 span#plugin_description {
 	font-size: 9px;
 }
-

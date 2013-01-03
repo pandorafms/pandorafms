@@ -27,9 +27,9 @@ $menu_operation['class'] = 'operation';
 
 // Agent read, Server read
 if (check_acl ($config['id_user'], 0, "AR")) {
-
+	
 	enterprise_hook ('metaconsole_menu');
-
+	
 	if ($config['metaconsole'] == 0) {
 		//View agents
 		$menu_operation["estado"]["text"] = __('Monitoring');
@@ -114,11 +114,11 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$menu_operation["reporting"]["refr"] = 60;
 	
 	$sub = array ();
-
+	
 	$sub["godmode/reporting/reporting_builder"]["text"] = __('Custom reporting');
 	//Set godomode path
 	$sub["godmode/reporting/reporting_builder"]["subsecs"] = array("godmode/reporting/reporting_builder",
-																"operation/reporting/reporting_viewer");
+		"operation/reporting/reporting_viewer");
 	//Visual console
 	$sub["godmode/reporting/map_builder"]["text"] = __('Visual console');
 	//Set godomode path
@@ -126,13 +126,13 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		"godmode/reporting/map_builder",
 		"godmode/reporting/visual_console_builder");
 	
-	if (!empty($config['vc_refr'])){
+	if (!empty($config['vc_refr'])) {
 		$sub["godmode/reporting/map_builder"]["refr"] = $config['vc_refr'];
 	}
-	else if (!empty($config['refr'])){
+	else if (!empty($config['refr'])) {
 		$sub["godmode/reporting/map_builder"]["refr"] = $config['refr'];
-	}	
-	else{
+	}
+	else {
 		$sub["godmode/reporting/map_builder"]["refr"] = 60;
 	}
 	
@@ -164,15 +164,15 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		}
 		$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
 		$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
-		if (!empty($config['vc_refr'])){
+		if (!empty($config['vc_refr'])) {
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['vc_refr'];
-		}			
-		elseif (!empty($config['refr'])){
+		}
+		elseif (!empty($config['refr'])) {
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['refr'];
 		}
-		else{
+		else {
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
-		}	
+		}
 	}
 	
 	if ($config['metaconsole'] == 0) {
@@ -217,9 +217,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		
 		foreach ($gisMaps as $gisMap) {
 			$is_in_group = in_array($gisMap['group_id'], $own_groups);
-			if (!$is_in_group){
+			if (!$is_in_group) {
 				continue;
-			}			
+			}
 			if (! check_acl ($config["id_user"], $gisMap["group_id"], "IR")) {
 				continue;
 			}
@@ -322,7 +322,7 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 }
 
 if (check_acl ($config['id_user'], 0, "AR")) {
-
+	
 	// Messages
 	$sub["operation/messages/message_list"]["text"] = __('Messages');
 	$sub["operation/messages/message_list"]["refr"] = 0;	
@@ -345,13 +345,13 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$menu_operation["extensions"]["id"] = "oper-extensions";
 		
 		$sub = array ();
-
+		
 		foreach ($config["extensions"] as $extension) {
 			//If no operation_menu is a godmode extension
 			if ($extension["operation_menu"] == '') {
 				continue;
 			}
-	
+			
 			$extension_menu = $extension["operation_menu"];
 			
 			//Check if was displayed inside other menu

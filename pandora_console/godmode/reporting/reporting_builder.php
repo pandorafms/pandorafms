@@ -171,7 +171,7 @@ switch ($action) {
 			
 			//Admin options only for IW flag
 			if (check_acl ($config['id_user'], 0, "IW")) {
-			
+				
 				$table->head[$next] = __('Private');
 				$table->size[$next] = '40px';
 				$table->align[$next] = 'center';
@@ -199,7 +199,7 @@ switch ($action) {
 				
 				if (check_acl ($config["id_user"], $report["id_group"], "AW")) {
 					$data[0] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
-							$report['id_report'].'">'.$report['name'].'</a>';
+						$report['id_report'].'">'.$report['name'].'</a>';
 				}
 				else {
 					$data[0] = $report['name'];
@@ -213,7 +213,7 @@ switch ($action) {
 				$data[3] = '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
 				
 				
-				//Calculate dinamically the number of the column	
+				//Calculate dinamically the number of the column
 				$next = 4;
 				if (enterprise_hook ('load_custom_reporting_2') !== ENTERPRISE_NOT_HOOK) {
 					$next = 6;
@@ -249,7 +249,7 @@ switch ($action) {
 				
 			}
 			html_print_table ($table);
-		}		
+		}
 		
 		if (check_acl ($config['id_user'], 0, "IW")) {
 			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new">';
@@ -288,7 +288,7 @@ switch ($action) {
 				$description = get_parameter('description');
 				
 				if ($action == 'update') {
-					if ($reportName != "" && $idGroupReport != ""){
+					if ($reportName != "" && $idGroupReport != "") {
 						$resultOperationDB = (bool)db_process_sql_update('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description), array('id_report' => $idReport));
 					}
 					else {
@@ -296,7 +296,7 @@ switch ($action) {
 					}
 				}
 				else if ($action == 'save') {
-					if($reportName != "" && $idGroupReport != "") {
+					if ($reportName != "" && $idGroupReport != "") {
 						$idOrResult = db_process_sql_insert('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description));
 					}
 					else {
@@ -373,7 +373,7 @@ switch ($action) {
 								$values['external_source'] = json_encode($es);
 								$good_format = true;
 								break;
-							default: 
+							default:
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
 								$values['top_n_value'] = get_parameter('quantity');
@@ -521,9 +521,9 @@ switch ($action) {
 								$good_format = true;
 								break;
 							case 'prediction_date':
-								$values['period'] = get_parameter('period1');	
+								$values['period'] = get_parameter('period1');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg');
-								$values['top_n_value'] = get_parameter('quantity');												
+								$values['top_n_value'] = get_parameter('quantity');
 								$interval_max = get_parameter('max_interval');
 								$interval_min = get_parameter('min_interval');
 								// Checks intervals fields
@@ -683,7 +683,7 @@ switch ($action) {
 								'treport_content', $values);
 							
 							if ($result === false) {
-									$resultOperationDB = false;
+								$resultOperationDB = false;
 							}
 							else {
 								$idItem = $result;
@@ -738,7 +738,8 @@ switch ($action) {
 	case 'filter':
 	case 'edit':
 		$resultOperationDB = null;
-		$report = db_get_row_filter('treport', array('id_report' => $idReport));
+		$report = db_get_row_filter('treport',
+			array('id_report' => $idReport));
 		
 		$reportName = $report['name'];
 		$idGroupReport = $report['id_group'];
@@ -830,6 +831,7 @@ switch ($action) {
 					
 					$count = $count + 1;
 				}
+				
 				break;
 			default:
 				switch ($config["dbtype"]) {
@@ -857,15 +859,18 @@ switch ($action) {
 				switch ($config["dbtype"]) {
 					case "mysql":
 						$resultOperationDB = db_process_sql_update('treport_content',
-							array('`order`' => $oldOrder), array('`order`' => $newOrder, 'id_report' => $idReport));
+							array('`order`' => $oldOrder),
+							array('`order`' => $newOrder, 'id_report' => $idReport));
 						break;
 					case "postgresql":
 						$resultOperationDB = db_process_sql_update('treport_content',
-							array('"order"' => $oldOrder), array('"order"' => $newOrder, 'id_report' => $idReport));
+							array('"order"' => $oldOrder),
+							array('"order"' => $newOrder, 'id_report' => $idReport));
 						break;
 					case "oracle":
 						$resultOperationDB = db_process_sql_update('treport_content',
-							array('"order"' => $oldOrder), array('"order"' => $newOrder, 'id_report' => $idReport), 'AND', false);
+							array('"order"' => $oldOrder),
+							array('"order"' => $newOrder, 'id_report' => $idReport), 'AND', false);
 						break;
 				}
 				if ($resultOperationDB !== false) {
@@ -913,15 +918,15 @@ $buttons = array(
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $idReport . '">' . 
 			html_print_image("images/config.png", true, array ("title" => __('Item editor'))) .'</a>')
 	);
-	
+
 if ($enterpriseEnable) {
 	$buttons = reporting_enterprise_add_Tabs($buttons, $idReport);
 }
 
 $buttons['view'] = array('active' => false,
 	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $idReport . '">' . 
-			html_print_image("images/reporting.png", true, array ("title" => __('View report'))) .'</a>');
-	
+		html_print_image("images/reporting.png", true, array ("title" => __('View report'))) .'</a>');
+
 $buttons[$activeTab]['active'] = true;
 
 if ($idReport != 0) {
@@ -955,5 +960,4 @@ switch ($activeTab) {
 		reporting_enterprise_select_tab($activeTab);
 		break;
 }
-
 ?>

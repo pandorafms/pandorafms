@@ -81,7 +81,7 @@ function events_get_similar_ids ($id, $status = 0, $validated_limit_time = 0) {
 	$event = events_get_event ($id, array ('evento', 'id_agentmodule'));
 	if ($event === false)
 		return $ids;
-		
+	
 	$sql_filters = array();	
 	if ($validated_limit_time > 0) {
 		$unixtime = get_system_time () - ($validated_limit_time * 3600); //Put hours in seconds
@@ -221,9 +221,9 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 				db_pandora_audit("ACL Violation", "Attempted updating event #".$event);
 				
 				continue;
-			}		
+			}
 			
-			$events_similar[] = $event; 
+			$events_similar[] = $event;
 		
 		}
 		
@@ -249,7 +249,7 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 		$commentbox = '';
 	}
 	
-	$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox.'<br>';
+	$comment = '<b>-- ' . $new_status_string . ' ' . __('by') . ' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox.'<br>';
 	
 	// If we are validating then only select => not validated
 	// If we are setting in process only select => not validated and not setted in process
@@ -268,7 +268,6 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 				$sql_validation .= " AND estado NOT IN (1,2)";
 			   
 			$ret = db_process_sql($sql_validation);
-			
 			break;
 		case 'postgresql':
 		case 'oracle':
@@ -284,7 +283,6 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 				$sql_validation .= " AND estado NOT IN (1,2)";
 			
 			$ret = db_process_sql($sql_validation);
-			
 			break;
 	}
 	
@@ -400,7 +398,8 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	
 	if ($result === false) {
 		echo '<div class="nf">'.__('No events').'</div>';
-	} else {
+	}
+	else {
 		$table->cellpadding = 4;
 		$table->cellspacing = 4;
 		$table->width = $width;
@@ -657,42 +656,42 @@ function events_print_type_description ($type, $return = false) {
 	$output = '';
 	
 	switch ($type) {
-	case "alert_recovered": 
-		$output .= __('Alert recovered');
-		break;
-	case "alert_manual_validation": 
-		$output .= __('Alert manually validated');
-		break;
-	case "going_up_warning":
-		$output .= __('Going from critical to warning');
-		break;
-	case "going_down_critical":
-	case "going_up_critical": //This is to be backwards compatible
-		$output .= __('Going down to critical state');
-		break;
-	case "going_up_normal":
-	case "going_down_normal": //This is to be backwards compatible
-		$output .= __('Going up to normal state');
-		break;
-	case "going_down_warning":
-		$output .= __('Going down from normal to warning');
-		break;
-	case "alert_fired":
-		$output .= __('Alert fired');
-		break;
-	case "system";
-		$output .= __('SYSTEM');
-		break;
-	case "recon_host_detected";
-		$output .= __('Recon server detected a new host');
-		break;
-	case "new_agent";
-		$output .= __('New agent created');
-		break;
-	case "unknown": 
-	default:
-		$output .= __('Unknown type:').': '.$type;
-		break;
+		case "alert_recovered": 
+			$output .= __('Alert recovered');
+			break;
+		case "alert_manual_validation": 
+			$output .= __('Alert manually validated');
+			break;
+		case "going_up_warning":
+			$output .= __('Going from critical to warning');
+			break;
+		case "going_down_critical":
+		case "going_up_critical": //This is to be backwards compatible
+			$output .= __('Going down to critical state');
+			break;
+		case "going_up_normal":
+		case "going_down_normal": //This is to be backwards compatible
+			$output .= __('Going up to normal state');
+			break;
+		case "going_down_warning":
+			$output .= __('Going down from normal to warning');
+			break;
+		case "alert_fired":
+			$output .= __('Alert fired');
+			break;
+		case "system";
+			$output .= __('SYSTEM');
+			break;
+		case "recon_host_detected";
+			$output .= __('Recon server detected a new host');
+			break;
+		case "new_agent";
+			$output .= __('New agent created');
+			break;
+		case "unknown": 
+		default:
+			$output .= __('Unknown type:').': '.$type;
+			break;
 	}
 	
 	if ($return)
@@ -874,7 +873,7 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 		$datelimit, $date, $sql_filter);
 	
 	$rows = db_get_all_rows_sql ($sql);
-
+	
 	if ($rows == false)
 		$rows = array();
 	
@@ -1010,12 +1009,12 @@ function events_get_count_events_validated ($filter, $period, $date,
 			%s ' . $sql_where . '
 		GROUP BY estado',
 		$datelimit, $date, $sql_filter);
-
+	
 	$rows = db_get_all_rows_sql ($sql);
-
+	
 	if ($rows == false)
 		$rows = array();
-
+	
 	$return = array();
 	$return[__('Validated')] = 0;
 	$return[__('Not validated')] = 0;

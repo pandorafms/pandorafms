@@ -33,7 +33,7 @@ $show_sort_options[1] = __('Ascending');
 $show_sort_options[2] = __('Descending');
 
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
-require_once ($config['homedir'].'/include/functions_agents.php');
+require_once ($config['homedir'] . '/include/functions_agents.php');
 if (enterprise_include_once ('include/functions_metaconsole.php')) {
 	$servers = enterprise_hook("metaconsole_get_connection_names");
 }
@@ -591,6 +591,8 @@ html_print_input_hidden('id_item', $idItem);
 			<td>
 				<?php 
 					$agents = enterprise_hook('inventory_get_agents');
+					if ((empty($agents)) || $agents == -1) $agents = array();
+					
 					$agents_select = array();
 					foreach ($agents as $a) {
 						$agents_select[$a['id_agente']] = $a['nombre'];
@@ -700,7 +702,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Query SQL'); ?></td>
 			<td style=""><?php html_print_textarea('sql', 5, 25, $sql); ?></td>
 		</tr>
-		<tr id="row_servers" style="" class="datos">			
+		<tr id="row_servers" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Server'); ?></td>
 			<td style="">
 				<?php
@@ -741,14 +743,16 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_order_uptodown" style="" class="datos">
 			<td><?php echo __('Order');?></td>
-			<td><?php
+			<td>
+				<?php
 				echo __('Ascending');
 				html_print_radio_button ('radiobutton_order_uptodown', 2, '', $order_uptodown);
 				echo __('Descending');
 				html_print_radio_button ('radiobutton_order_uptodown', 1, '', $order_uptodown);
 				echo __('By agent name');
 				html_print_radio_button ('radiobutton_order_uptodown', 3, '', $order_uptodown);
-				?></td>
+				?>
+			</td>
 		</tr>
 		<tr id="row_quantity" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Quantity (n)'); ?></td>
@@ -756,14 +760,16 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_max_min_avg" style="" class="datos">
 			<td><?php echo __('Display');?></td>
-			<td><?php
+			<td>
+				<?php
 				echo __('Max');
 				html_print_radio_button ('radiobutton_max_min_avg', 1, '', $top_n);
 				echo __('Min');
 				html_print_radio_button ('radiobutton_max_min_avg', 2, '', $top_n);
 				echo __('Avg');
 				html_print_radio_button ('radiobutton_max_min_avg', 3, '', $top_n);
-				?></td>
+				?>
+			</td>
 		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Value'); ?></td>
@@ -1191,7 +1197,7 @@ function change_custom_graph() {
 	//Hidden the button create or edit custom graph
 	if ($("#id_custom_graph").val() != "0") {
 		$("#meta_servers").val(0);
-		$("#meta_target_servers").css('display', 'none');		
+		$("#meta_target_servers").css('display', 'none');
 		$("#button-create_graph").css("display", "none");
 		$("#button-edit_graph").css("display", "");
 	}
@@ -1346,7 +1352,7 @@ function addSLARow() {
 				success: function (data) {
 					if (data['correct']) {
 						row = $("#sla_template").clone();
-					
+						
 						$("#row", row).show();
 						$("#row", row).attr('id', 'sla_' + data['id']);
 						$(".agent_name", row).html(nameAgent);
@@ -1367,7 +1373,7 @@ function addSLARow() {
 							.html ($("#module_sla_text").html()));
 						$("input[name=sla_min]").val('');
 						$("input[name=sla_max]").val('');
-						$("input[name=sla_limit]").val('');					
+						$("input[name=sla_limit]").val('');
 					}
 				}
 			});
@@ -1625,7 +1631,7 @@ function chooseType() {
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			break;
-        case 'sql_graph_vbar':
+		case 'sql_graph_vbar':
 			$("#row_description").show();
 			$("#row_query").show();
 			$("#row_custom").show();

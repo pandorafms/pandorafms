@@ -83,6 +83,7 @@ function reports_get_reports ($filter = false, $fields = false, $returnAllGroup 
 	
 	$reports = array ();
 	$all_reports = @db_get_all_rows_filter ('treport', $filter, $fields);
+	
 	if (empty($all_reports))
 		$all_reports = array();
 	
@@ -477,49 +478,49 @@ function get_report_types () {
 	
 	
 	$types['TTRT'] = array('optgroup' => __('ITIL'),
-			'name' => __('TTRT'));
+		'name' => __('TTRT'));
 	$types['TTO'] = array('optgroup' => __('ITIL'),
-			'name' => __('TTO'));
+		'name' => __('TTO'));
 	$types['MTBF'] = array('optgroup' => __('ITIL'),
-			'name' => __('MTBF'));
+		'name' => __('MTBF'));
 	$types['MTTR'] = array('optgroup' => __('ITIL'),
-			'name' => __('MTTR'));
+		'name' => __('MTTR'));
 	
 	
 	
 	$types['SLA'] = array('optgroup' => __('SLA'),
-			'name' => __('S.L.A.'));
+		'name' => __('S.L.A.'));
 	
 	
 	
 	$types['prediction_date'] = array('optgroup' => __('Forecasting'),
-			'name' => __('Prediction date'));
+		'name' => __('Prediction date'));
 	$types['projection_graph'] = array('optgroup' => __('Forecasting'),
-			'name' => __('Projection graph'));
+		'name' => __('Projection graph'));
 	
 	
 	
 	$types['avg_value'] = array('optgroup' => __('Modules'),
-			'name' => __('Avg. Value'));
+		'name' => __('Avg. Value'));
 	$types['max_value'] = array('optgroup' => __('Modules'),
-			'name' => __('Max. Value'));
+		'name' => __('Max. Value'));
 	$types['min_value'] = array('optgroup' => __('Modules'),
-			'name' => __('Min. Value'));
+		'name' => __('Min. Value'));
 	$types['monitor_report'] = array('optgroup' => __('Modules'),
-			'name' => __('Monitor report'));
+		'name' => __('Monitor report'));
 	$types['database_serialized'] = array('optgroup' => __('Modules'),
-			'name' => __('Serialize data'));
+		'name' => __('Serialize data'));
 	$types['sumatory'] = array('optgroup' => __('Modules'),
-			'name' => __('Summatory'));
+		'name' => __('Summatory'));
 	
 	
 	
 	$types['general'] = array('optgroup' => __('Grouped'),
-			'name' => __('General'));
+		'name' => __('General'));
 	$types['group_report'] = array('optgroup' => __('Grouped'),
-			'name' => __('Group report'));
+		'name' => __('Group report'));
 	$types['exception'] = array('optgroup' => __('Grouped'),
-			'name' => __('Exception'));
+		'name' => __('Exception'));
 	if ($config['metaconsole'] != 1)
 		$types['agent_module'] = array('optgroup' => __('Grouped'),
 			'name' => __('Agents/Modules'));
@@ -529,36 +530,36 @@ function get_report_types () {
 			'name' => __('SQL query'));
 	}
 	$types['top_n'] = array('optgroup' => __('Grouped'),
-			'name' => __('Top n'));
+		'name' => __('Top n'));
 	
 	
 	
 	$types['text'] = array('optgroup' => __('Text/HTML '),
-			'name' => __ ('Text'));
+		'name' => __ ('Text'));
 	$types['url'] = array('optgroup' => __('Text/HTML '),
-			'name' => __('Import text from URL'));
+		'name' => __('Import text from URL'));
 	
 	
 	
 	$types['alert_report_module'] = array('optgroup' => __('Alerts'),
-			'name' => __('Alert report module')); 
+		'name' => __('Alert report module')); 
 	$types['alert_report_agent'] = array('optgroup' => __('Alerts'),
-			'name' => __('Alert report agent'));
+		'name' => __('Alert report agent'));
 	$types['alert_report_group'] = array('optgroup' => __('Alerts'),
 			'name' => __('Alert report group'));
 	
 	
 	
 	$types['event_report_agent'] = array('optgroup' => __('Events'),
-			'name' => __('Event report agent')); 
+		'name' => __('Event report agent')); 
 	$types['event_report_module'] = array('optgroup' => __('Events'),
-			'name' => __('Event report module')); 
+		'name' => __('Event report module')); 
 	$types['event_report_group'] = array('optgroup' => __('Events'),
-			'name' => __('Event report group'));
+		'name' => __('Event report group'));
 	
 	if($config['enterprise_installed']) {
 		$types['inventory'] = array('optgroup' => __('Inventory'),
-				'name' => __('Inventory')); 
+			'name' => __('Inventory')); 
 		$types['inventory_changes'] = array('optgroup' => __('Inventory'),
 				'name' => __('Inventory changes'));
 	}

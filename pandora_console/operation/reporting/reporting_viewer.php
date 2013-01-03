@@ -154,6 +154,7 @@ ui_require_jquery_file ('timeentry');
 <script language="javascript" type="text/javascript">
 
 $(document).ready (function () {
+	
 	$("#loading").slideUp ();
 	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
 	$("#text-date").datepicker ();

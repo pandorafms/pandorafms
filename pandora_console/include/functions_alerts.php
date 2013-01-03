@@ -1699,6 +1699,7 @@ function get_agent_alert_fired ($id_agent, $id_alert, $period, $date = 0) {
  * @return array An array with all the events happened.
  */
 function get_module_alert_fired ($id_agent_module, $id_alert, $period, $date = 0) {
+	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}

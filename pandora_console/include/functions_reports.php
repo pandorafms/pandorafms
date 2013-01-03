@@ -454,7 +454,7 @@ function get_report_type_data_source ($type) {
 			return 'module';
 			break;
 		case 2:
-		case 'custom_graph':		
+		case 'custom_graph':
 		case 'automatic_custom_graph':
 			return 'custom-graph';
 			break;
@@ -583,6 +583,8 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		'name' => __('Alert report module')); 
 	$types['alert_report_agent'] = array('optgroup' => __('Alerts'),
 		'name' => __('Alert report agent'));
+	$types['alert_report_group'] = array('optgroup' => __('Alerts'),
+			'name' => __('Alert report group'));
 	
 	
 	

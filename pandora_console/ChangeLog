@@ -1,3 +1,20 @@
+2013-01-03 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/resource_registration.php,
+	extensions/resource_exportation.php,
+	operation/events/event_statistics.php,
+	operation/events/events_list.php,
+	operation/reporting/reporting_viewer.php,
+	godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	include/functions_alerts.php, include/functions_reports.php,
+	include/functions_events.php, include/graphs/fgraph.php,
+	include/functions_graph.php, include/styles/pandora.css,
+	include/functions_reporting.php, include/functions_agents.php: a lot
+	of changes and fixes from the branch for the reports.
+	
+	MERGED FROM PANDORA_4.0
+
 2013-01-02 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql

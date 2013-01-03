@@ -221,7 +221,7 @@ $(document).ready (function () {
 <?php
 
 if ($datetime === false || $datetime == -1) {
-	echo '<h3 class="error">'.__('Invalid date selected').'</h3>';
+	echo '<h3 class="error">' . __('Invalid date selected') . '</h3>';
 	return;
 }
 
@@ -239,13 +239,16 @@ $report["group_name"] = groups_get_name ($report['id_group']);
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$contents = db_get_all_rows_field_filter ("treport_content", "id_report", $id_report, "`order`");
+		$contents = db_get_all_rows_field_filter ("treport_content",
+			"id_report", $id_report, "`order`");
 		break;
 	case "postgresql":
-		$contents = db_get_all_rows_field_filter ("treport_content", "id_report", $id_report, '"order"');
+		$contents = db_get_all_rows_field_filter ("treport_content",
+			"id_report", $id_report, '"order"');
 		break;
 	case "oracle":
-		$contents = db_get_all_rows_field_filter ("treport_content", "id_report", $id_report, '"order"');
+		$contents = db_get_all_rows_field_filter ("treport_content",
+			"id_report", $id_report, '"order"');
 		break;
 }
 if ($contents === false) {
@@ -272,7 +275,7 @@ foreach ($contents as $content) {
 	
 	if ($content['type'] == 'agent_module')
 		echo '<div style="width: 99%; overflow: auto;">';
-		
+	
 	html_print_table ($table);
 	
 	if ($content['type'] == 'agent_module')

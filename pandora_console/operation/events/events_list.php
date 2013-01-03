@@ -168,7 +168,8 @@ else {
 	}
 	else {
 		//Otherwise select all groups the user has rights to.
-		$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+		$sql_post = " AND id_grupo IN (" .
+			implode (",", array_keys ($groups)) . ")";
 	}
 }
 
@@ -181,7 +182,7 @@ switch ($status) {
 	case 0:
 	case 1:
 	case 2:
-		$sql_post .= " AND estado = ".$status;
+		$sql_post .= " AND estado = " . $status;
 		break;
 	case 3:
 		$sql_post .= " AND (estado = 0 OR estado = 2)";
@@ -189,7 +190,7 @@ switch ($status) {
 }
 
 if ($search != "") {
-	$sql_post .= " AND evento LIKE '%".io_safe_input($search)."%'";
+	$sql_post .= " AND evento LIKE '%" . io_safe_input($search) . "%'";
 }
 
 if ($event_type != "") {
@@ -568,13 +569,13 @@ else {
 if ($group_rep == 0) {
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = "SELECT *
+			$sql = "SELECT *, 1 event_rep
 				FROM $event_table
 				WHERE 1=1 ".$sql_post."
 				ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 			break;
 		case "postgresql":
-			$sql = "SELECT *
+			$sql = "SELECT *, 1 event_rep
 				FROM $event_table
 				WHERE 1=1 ".$sql_post."
 				ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
@@ -583,7 +584,7 @@ if ($group_rep == 0) {
 			$set = array();
 			$set['limit'] = $pagination;
 			$set['offset'] = $offset;
-			$sql = "SELECT *
+			$sql = "SELECT *, 1 event_rep
 				FROM $event_table
 				WHERE 1=1 ".$sql_post."
 				ORDER BY utimestamp DESC"; 

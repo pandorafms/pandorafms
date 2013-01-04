@@ -39,6 +39,7 @@ The following macros are available:
 <li>_plugin_parameters_ : Plug-in Parameters of the module.</li>
 <li>_groupcontact_ : Group contact information.	Configured when the group is created.</li>
 <li>_groupother_ : Other information about the group. Configured when the group is created.</li>
+<li>_email_tag_ : Emails associated to the module tags.</li>
 
 </ul>
 <p>

@@ -604,13 +604,11 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		}
 	}
 	
-	$types['agent_configuration'] = array('optgroup' => __('Configuration'),
-		'name' => __('Agent configuration')); 
-	$types['group_configuration'] = array('optgroup' => __('Configuration'),
-		'name' => __('Group configuration')); 
-
-
-	if (!$template) {
+	if (!$template) {	
+		$types['agent_configuration'] = array('optgroup' => __('Configuration'),
+			'name' => __('Agent configuration')); 
+		$types['group_configuration'] = array('optgroup' => __('Configuration'),
+			'name' => __('Group configuration')); 
 		$types['netflow_area'] = array('optgroup' => __('Netflow'),
 			'name' => __('Netflow area chart')); 
 		$types['netflow_pie'] = array('optgroup' => __('Netflow'),

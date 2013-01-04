@@ -1,3 +1,11 @@
+2013-01-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/help/en/help_alert_macros.php
+	 include/help/es/help_alert_macros.php: Added macro _email_tag_
+	 to these help screens.
+	* include/functions_reports.php: Added exception to templates when
+	report types are displayed.
+	 
 2013-01-03 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/resource_registration.php,

@@ -1,5 +1,9 @@
 2013-01-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/config_process.php: Removed php notice in this view.
+
+2013-01-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/help/en/help_alert_macros.php
 	 include/help/es/help_alert_macros.php: Added macro _email_tag_
 	 to these help screens.

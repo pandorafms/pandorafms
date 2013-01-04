@@ -157,6 +157,11 @@ if (isset ($config['id_user'])) {
 	}
 } 
 
+// Check if inventory_changes_blacklist is setted, if not create it
+if (!isset($config['inventory_changes_blacklist'])) {
+	$config['inventory_changes_blacklist'] = array();
+}
+
 set_user_language();
 
 require_once ($ownDir . 'functions_extensions.php');

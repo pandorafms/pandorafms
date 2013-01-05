@@ -1,3 +1,9 @@
+2013-01-05 Sancho Lerena <slerena@artica.es>
+
+        * include/styles/pandora.css: Fixed footer problem
+        in Chrome. 
+
+
 2013-01-04 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/config_process.php: Removed php notice in this view.

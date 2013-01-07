@@ -40,6 +40,7 @@
 <li>_plugin_parameters_ : モジュールのプラグインパラメータ</li>
 <li>_groupcontact_ : グループコンタクト情報。グループの作成時に設定されます。</li>
 <li>_groupother_ : グループに関するその他情報。グループの作成時に設定されます。</li>
+<li>_email_tag_ : モジュールタグに関連付けられた Email。</li>
 
 </ul>
 <p>

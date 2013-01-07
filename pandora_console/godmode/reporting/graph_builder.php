@@ -53,6 +53,9 @@ if (! check_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
+
+unset($name);
+
 $add_module = (bool) get_parameter ('add_module', false);
 $delete_module = (bool) get_parameter ('delete_module', false);
 $edit_graph = (bool) get_parameter('edit_graph', false);

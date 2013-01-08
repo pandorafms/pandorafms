@@ -324,9 +324,9 @@ function mainSystemInfo() {
 		@unlink($zipArchive);
 		
 		$url_zip = ui_get_full_url(false);
-		
-		$url = '<a href="' .$url_zip . 'attachment/last_info.zip">' . __('System info file zipped') . '</a>';
-		
+
+		$url = '<a href="' .$url_zip . 'attachment/last_info.zip">' . __('download here') . '</a>';
+
 		if($log_info || $system_info || $pandora_diag) {
 			echo '<b>' . __('File:') . '</b> ' . $url . '<br />';
 			echo '<b>' . __('Location:') . '</b> ' . $zipArchive;

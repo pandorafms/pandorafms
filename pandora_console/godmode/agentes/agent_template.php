@@ -51,6 +51,10 @@ if (isset ($_POST["template_id"])) {
 	if ($npc === false) {
 		$npc = array ();
 	}
+	
+	$success_count = $error_count = 0;	
+	$modules_already_added = array();
+	
 	foreach ($npc as $row) {
 		$nc = db_get_all_rows_field_filter ("tnetwork_component", "id_nc", $row["id_nc"]);
 		if ($nc === false) {
@@ -93,39 +97,57 @@ if (isset ($_POST["template_id"])) {
 				'warning_instructions' => $row2['warning_instructions'],
 				'unknown_instructions' => $row2['unknown_instructions']
 				);
-			$id_agente_modulo = db_process_sql_insert('tagente_modulo', $values);
 			
-			// Set the initial module status
-			if ($row2["type"] == 21 || $row2["type"] == 22 || $row2["type"] == 23) {
-				$status = 0;
-			} else {
-				$status = 4;
-			}
+			// Check if this module exists in the agent
+			$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $row2["name"]));
 			
-			// Create with different estado if proc type or data type
-			if ($id_agente_modulo !== false) {
-				$values = array(
-					'id_agente_modulo' => $id_agente_modulo,
-					'datos' => 0,
-					'timestamp' => '01-01-1970 00:00:00',
-					'estado' => $status,
-					'id_agente' => $id_agente,
-					'utimestamp' => 0);
-				db_process_sql_insert('tagente_estado', $values);
-				
-				// Update module status count
-				if ($status == 4) {
-					db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$id_agente);
-				} else {
-					db_process_sql ('UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=' . (int)$id_agente);
-				}
+			if ($module_name_check !== false) {
+				$modules_already_added[] = $row2["name"];
+				$error_count++;
 			}
 			else {
-				echo '<h3 class="error">'.__('Error adding module').'</h3>';
+	
+				$id_agente_modulo = db_process_sql_insert('tagente_modulo', $values);
+				
+				// Set the initial module status
+				if ($row2["type"] == 21 || $row2["type"] == 22 || $row2["type"] == 23) {
+					$status = 0;
+				} else {
+					$status = 4;
+				}
+				
+				// Create with different estado if proc type or data type
+				if ($id_agente_modulo !== false) {
+					$success_count++;
+					$values = array(
+						'id_agente_modulo' => $id_agente_modulo,
+						'datos' => 0,
+						'timestamp' => '01-01-1970 00:00:00',
+						'estado' => $status,
+						'id_agente' => $id_agente,
+						'utimestamp' => 0);
+					db_process_sql_insert('tagente_estado', $values);
+					
+					// Update module status count
+					if ($status == 4) {
+						db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$id_agente);
+					} else {
+						db_process_sql ('UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=' . (int)$id_agente);
+					}
+				}	
+				else
+					$error_count++;
 			}
 		}
 	}
-	echo '<h3 class="suc">'.__('Modules successfully added ').'</h3>';
+	if ($error_count > 0) {
+		if (empty($modules_already_added))
+			ui_print_error_message(__('Error adding modules') . sprintf(' (%s)', $error_count));
+		else
+			ui_print_error_message(__('Error adding modules. The following errors already exists: ') . implode(', ', $modules_already_added));
+	}
+	if ($success_count > 0)
+		ui_print_success_message(__('Modules successfully added'));
 }
 
 // Main header

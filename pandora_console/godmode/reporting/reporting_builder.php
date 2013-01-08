@@ -1,4 +1,4 @@
-<?php
+/fir<?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
@@ -289,7 +289,6 @@ switch ($action) {
 				
 				if ($action == 'update') {
 					if ($reportName != "" && $idGroupReport != "") {
-						$first_page = "(_REPORT_NAME_)\n\n(_DATETIME_)";
 						$resultOperationDB = (bool)db_process_sql_update('treport', array('name' => $reportName, 'id_group' => $idGroupReport, 'description' => $description), array('id_report' => $idReport));
 					}
 					else {

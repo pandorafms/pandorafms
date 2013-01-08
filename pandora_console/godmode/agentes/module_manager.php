@@ -70,7 +70,7 @@ echo '</td>';
 echo '<td class="datos">';
 echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
 echo '</td>';
-echo '<td class="datos"i style="text-align:center;">';
+echo '<td class="datos" style="text-align:center;">';
 echo "<strong>";
 echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__(" Go to Pandora FMS Module Libray")."</a>";
 echo "</strong>";

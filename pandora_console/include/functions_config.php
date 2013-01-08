@@ -181,6 +181,8 @@ function config_update_config () {
 			config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist));
 			
 			config_update_value ('referer_security', get_parameter('referer_security'));
+
+			config_update_value ('invent_event', get_parameter('invent_event'));
 			/////////////
 			break;
 		case 'godmode/setup/setup_auth':
@@ -412,6 +414,10 @@ function config_process_config () {
 	
 	if (!isset ($config["metaconsole"])) {
 		config_update_value ('metaconsole', 0);
+	}
+
+	if (!isset ($config["invent_event"])) {
+		config_update_value ('invent_event', 1);
 	}
 	
 	if (!isset ($config["gis_purge"])) {

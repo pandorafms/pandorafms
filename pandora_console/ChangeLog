@@ -1,5 +1,10 @@
 2013-01-08 Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* include/functions_config.php: Delete option to disable/enable events
+	on inventory changes because there is a blacklist implemented.
+
+2013-01-08 Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* include/functions_config.php: Added new option to disable/enable events
 	on inventory changes.
 

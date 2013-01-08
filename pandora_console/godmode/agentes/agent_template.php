@@ -40,16 +40,21 @@ if (isset ($_POST["template_id"])) {
 		$os_version = $row["os_version"];
 		$agent_version = $row["agent_version"];
 		$disabled= $row["disabled"];
-	} else {
+	}
+	else {
 		return;
 	}
-
-	$name_template = db_get_value ('name', 'tnetwork_profile', 'id_np', $id_np);
+	
 	$id_np = get_parameter_post ("template_id");
+	$name_template = db_get_value ('name', 'tnetwork_profile', 'id_np', $id_np);
 	$npc = db_get_all_rows_field_filter ("tnetwork_profile_component", "id_np", $id_np);
 	if ($npc === false) {
 		$npc = array ();
 	}
+	
+	$success_count = $error_count = 0;	
+	$modules_already_added = array();
+	
 	foreach ($npc as $row) {
 		$nc = db_get_all_rows_field_filter ("tnetwork_component", "id_nc", $row["id_nc"]);
 		if ($nc === false) {
@@ -86,25 +91,26 @@ if (isset ($_POST["template_id"])) {
 				'max_critical' => $row2['max_critical'],
 				'str_critical' => $row2['str_critical']
 				);
-			$id_agente_modulo = db_process_sql_insert('tagente_modulo', $values);
 			
-			// Create with different estado if proc type or data type
-			if ($id_agente_modulo !== false) {
-				$values = array(
-					'id_agente_modulo' => $id_agente_modulo,
-					'datos' => 0,
-					'timestamp' => '01-01-1970 00:00:00',
-					'estado' => 0,
-					'id_agente' => $id_agente,
-					'utimestamp' => 0);
-				db_process_sql_insert('tagente_estado', $values);
+			// Check if this module exists in the agent
+			$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $row2["name"], 'id_agente' => $id_agente));
+			
+			if ($module_name_check !== false) {
+				$modules_already_added[] = $row2["name"];
+				$error_count++;
 			}
 			else {
-				echo '<h3 class="error">'.__('Error adding module').'</h3>';
 			}
 		}
 	}
-	echo '<h3 class="suc">'.__('Modules successfully added ').'</h3>';
+	if ($error_count > 0) {
+		if (empty($modules_already_added))
+			ui_print_error_message(__('Error adding modules') . sprintf(' (%s)', $error_count));
+		else
+			ui_print_error_message(__('Error adding modules. The following errors already exists: ') . implode(', ', $modules_already_added));
+	}
+	if ($success_count > 0)
+		ui_print_success_message(__('Modules successfully added'));
 }
 
 // Main header
@@ -179,7 +185,8 @@ foreach ($result as $row) {
 	$data[0] = '<span style="font-size: 7.2pt">' . $row["nombre"];
 	if ($row["id_tipo_modulo"] > 0) {
 		$data[1] = html_print_image("images/" . modules_show_icon_type ($row["id_tipo_modulo"]), true, array("border" => "0"));
-	} else {
+	}
+	else {
 		$data[1] = '';
 	}
 	$data[2] = mb_substr ($row["descripcion"], 0, 60);
@@ -195,5 +202,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 	unset ($table);
 }
-
+else {
+	echo '<div class="nf">No modules</div>';
+}
 ?>

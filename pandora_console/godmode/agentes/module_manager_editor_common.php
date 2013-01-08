@@ -336,6 +336,12 @@ $(document).ready (function () {
 			$(this).attr('selected','selected');
 		});
 	});
+	
+	$("#submit-crtbutton").click(function () {
+		$('#id_tag_selected option').map(function(){
+			$(this).attr('selected','selected');
+		});
+	});
 });
 /* ]]> */
 </script>

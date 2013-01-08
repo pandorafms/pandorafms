@@ -1,3 +1,8 @@
+2013-01-08  Sancho Lerena <slerena@artica.es>
+
+	*  lib/PandoraFMS/NetworkServer.pm: patch to solve problems with SNMP ports.
+	_NOTE_ needs more testing!.
+
 2013-01-02  Sancho Lerena <slerena@artica.es>
 
 	Patch from Axel.

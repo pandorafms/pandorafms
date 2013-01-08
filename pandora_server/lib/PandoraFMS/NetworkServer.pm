@@ -256,9 +256,9 @@ next_pair:
 # Set commands for SNMP checks depending on OS type
 ###############################################################################
 
-sub pandora_snmp_get_command ($$$$$$$$$) {
+sub pandora_snmp_get_command ($$$$$$$$$$) {
 
-    my ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra) = @_;
+    my ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra, $snmp_port) = @_;
 
     my $output = "";
 
@@ -269,6 +269,10 @@ sub pandora_snmp_get_command ($$$$$$$$$) {
     # This fixes problem in linux snmpget, because v2 must be submitted like 2c
     if ($snmp_version eq "2"){
 	$snmp_version = "2c";
+    }
+
+    if (defined($snmp_port) && ($snmp_port != "161") && ($snmp_port != "") && ($snmp_port != " ")){
+	$snmp_target = $snmp_target.":".$snmp_port;
     }
 
     # On windows, we need the snmpget command from net-snmp, already present on win agent
@@ -318,6 +322,8 @@ sub pandora_query_snmp ($$$) {
 	my $snmp_community = $module->{"snmp_community"};
 	my $snmp_target = $module->{"ip_target"};
 	my $snmp_oid = $module->{"snmp_oid"};
+	my $snmp_port = $module->{"tcp_port"};
+
 	return (undef, 0) unless ($snmp_oid ne '');
 	if ($snmp_oid =~ m/[a-zA-Z]/) {
 		$snmp_oid = translate_obj ($dbh, $snmp_oid, $module->{"id_agente_modulo"});
@@ -342,7 +348,7 @@ sub pandora_query_snmp ($$$) {
 	# SNMP v1, v2 and v2c call
 	if ($snmp_version ne '3'){
 
-		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, "", "");
+		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, "", "", $snmp_port);
 		if (defined ($output) && $output ne ""){
 			$module_result = 0;
 			$module_data = $output;
@@ -364,7 +370,7 @@ sub pandora_query_snmp ($$$) {
 			$snmp3_extra = " -a $snmp3_auth_method -u $snmp3_auth_user -A $snmp3_auth_pass -x $snmp3_privacy_method -X $snmp3_privacy_pass ";
 		}
        
-		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra);
+		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra, $snmp_port);
 		if (defined ($output) && $output ne ""){
 			$module_result = 0;
 			$module_data = $output;

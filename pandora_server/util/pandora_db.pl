@@ -91,11 +91,11 @@ sub pandora_purgedb ($$) {
     # Numeric data deletion
 
 	print "[PURGE] Deleting old data... \n";
-
+	
 	# This could be very timing consuming, so make this operation in $BIG_OPERATION_STEP 
 	# steps (100 fixed by default)
 	# Starting from the oldest record on the table
-
+	
 	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos ORDER BY utimestamp ASC LIMIT 1');
 	if (defined ($first_mark)) {
 		$total_time = $ulimit_timestamp - $first_mark;
@@ -569,7 +569,7 @@ sub pandora_checkdb_consistency {
 	my @agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente');
 	foreach my $agent (@agents) {
 		my $id_agente = $agent->{'id_agente'};
-		db_do ($dbh, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=0 disabled=0),
+		db_do ($dbh, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=0 AND disabled=0),
 		critical_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=1 AND disabled=0),
 		warning_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=2 AND disabled=0),
 		unknown_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=3 AND disabled=0),

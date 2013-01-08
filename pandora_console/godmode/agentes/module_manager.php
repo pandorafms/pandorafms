@@ -33,14 +33,14 @@ $search_string = io_safe_output(urldecode(trim(get_parameter ("search_string", "
 //echo '<form id="create_module_type" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
 echo '<form id="create_module_type" method="post" action="'.$url.'">';
 echo '<table width="98%" cellpadding="2" cellspacing="2" class="databox" >';
-echo "<tr><td class='datos' style='width:25%'>";
+echo "<tr><td class='datos' style='width:20%'>";
 echo __('Search') . ' ' .
 	html_print_input_text ('search_string', $search_string, '', 15, 255, true);
 echo "</td>";
-echo "<td class='datos' style='width:25%'>";
+echo "<td class='datos' style='width:20%'>";
 html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"');
 echo "</td>";
-echo "<td class='datos' style='width:25%'>";
+echo "<td class='datos' style='width:20%'>";
 echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo

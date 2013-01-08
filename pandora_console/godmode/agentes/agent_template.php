@@ -99,7 +99,7 @@ if (isset ($_POST["template_id"])) {
 				);
 			
 			// Check if this module exists in the agent
-			$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $row2["name"]));
+			$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $row2["name"], 'id_agente' => $id_agente));
 			
 			if ($module_name_check !== false) {
 				$modules_already_added[] = $row2["name"];

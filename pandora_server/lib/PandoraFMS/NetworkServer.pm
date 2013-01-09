@@ -271,8 +271,6 @@ sub pandora_snmp_get_command ($$$$$$$$$$) {
 	$snmp_version = "2c";
     }
 
-	use Data::Dumper;
-	print Dumper($snmp_port);
     if (defined($snmp_port) && ($snmp_port ne "161") && ($snmp_port ne "") && ($snmp_port ne " ") && ($snmp_port ne "0")){
 	$snmp_target = $snmp_target.":".$snmp_port;
     }

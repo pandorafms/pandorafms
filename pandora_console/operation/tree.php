@@ -53,6 +53,7 @@ if (is_ajax ())
 	$statusSel = get_parameter('status');
 	$search_free = get_parameter('search_free', '');
 	$printTable = get_parameter('printTable', 0);
+	$printAlertsTable = get_parameter('printAlertsTable', 0);
 	$server_name = get_parameter('server_name', '');
 	if ($printTable) {
 		$id_agente = get_parameter('id_agente');
@@ -66,6 +67,24 @@ if (is_ajax ())
 		}
 		
 		treeview_printTable($id_agente, $console_url);
+		
+		if (defined ('METACONSOLE')) {
+			metaconsole_restore_db();
+		}
+	}
+	if ($printAlertsTable) {
+		$id_module = get_parameter('id_module');
+				
+		if (defined ('METACONSOLE')) {
+			$server = metaconsole_get_connection ($server_name);
+			metaconsole_connect($server);
+			$console_url = $server['server_url'] . '/';
+		}
+		else {
+			$console_url = '';
+		}
+		
+		treeview_printAlertsTable($id_module, $console_url);
 		
 		if (defined ('METACONSOLE')) {
 			metaconsole_restore_db();
@@ -257,9 +276,6 @@ if (is_ajax ())
 			$sql = treeview_getSecondBranchSQL ($fatherType, $id, $id_father);
 			$rows = db_get_all_rows_sql($sql);
 			$countRows = count ($rows);
-			if (defined ('METACONSOLE')) {
-				metaconsole_restore_db_force();
-			}
 			
 			if ($countRows === 0) {
 				echo "<ul style='margin: 0; padding: 0;'>\n";
@@ -416,6 +432,14 @@ if (is_ajax ())
 				
 				echo " ";
 				
+				$nmodule_alerts = db_get_value_sql(sprintf("SELECT count(*) FROM talert_template_modules WHERE id_agent_module = %s", $row["id_agente_modulo"]));
+				
+				if($nmodule_alerts > 0) {
+					echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadAlertsTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\")'>" . html_print_image ("images/bell.png", true, array ("style" => 'vertical-align: middle;', "border" => "0", "title" => __('Module alerts') )) . "</a>";
+					
+					echo " ";
+				}
+				
 				echo io_safe_output($row['nombre']);
 				if ($row['quiet']) {
 					echo "&nbsp;";
@@ -440,6 +464,9 @@ if (is_ajax ())
 				echo "</span></li>";
 			}
 			echo "</ul>\n";
+			if (defined ('METACONSOLE')) {
+				metaconsole_restore_db_force();
+			}
 			break;
 	}
 	
@@ -486,6 +513,9 @@ else {
 $module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by=module'>"
 	. html_print_image ("images/brick.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $activeTab == "module");
 
+$tags_tab = array('text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&sort_by=tag&pure=$pure'>"
+	. html_print_image ("images/tag_red.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
+	
 switch ($activeTab) {
 	case 'group':
 		$order =  __('groups');
@@ -508,7 +538,7 @@ switch ($activeTab) {
 }
 
 if (! defined ('METACONSOLE')) {
-	$onheader = array('os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'policies' => $policies_tab, 'module' => $module_tab);
+	$onheader = array('tag' => $tags_tab, 'os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'policies' => $policies_tab, 'module' => $module_tab);
 	ui_print_page_header (__('Tree view')." - ".__('Sort the agents by ') .$order, "images/extensions.png", false, "", false, $onheader);
 } else {
 
@@ -724,5 +754,16 @@ treeview_printTree($activeTab);
 		});
 		
 		loadSubTree(type, div_id, less_branchs, id_father, server_name);
+	}
+	
+	function loadAlertsTable(id_module, server_name) {
+		$.ajax({
+			type: "POST",
+			url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
+			data: "page=<?php echo $_GET['sec2']; ?>&printAlertsTable=1&id_module=" + id_module + "&server_name=" + server_name,
+			success: function(data){
+				$('#cont').html(data);
+			}
+		});		
 	}
 </script>

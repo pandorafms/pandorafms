@@ -51,6 +51,8 @@ define ('ERR_CONNECTION', -80000);
 define ('ERR_DISABLED', -90000);
 define ('ERR_WRONG', -100000);
 define ('ERR_WRONG_NAME', -100001);
+define ('ERR_WRONG_PARAMETERS', -100002);
+define ('ERR_ACL', -110000);
 
 /* Event status code */
 define ('EVENT_STATUS_NEW',0);

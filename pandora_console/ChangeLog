@@ -1,3 +1,32 @@
+2013-01-09  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql:
+	Add profile tags to the database structure
+
+	* include/ajax/events.php
+	include/functions.php
+	include/functions_events.php
+	include/functions_reporting.php
+	include/functions_treeview.php
+	include/functions_profile.php
+	include/constants.php
+	include/functions_tags.php
+	operation/tree.php
+	operation/users/user_edit.php
+	operation/events/events_list.php
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql
+	godmode/users/configure_user.php: Add new acl control with
+	tags in events and tree views. Fix a lot of little bugs like ACLs
+	in tree view (tags mode), add the tags mode on tree view of the normal 
+	console, pass the ACL flag to some forgotten functions, etc.
+
 2013-01-09  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_reporting_advanced_tab.php: Translated

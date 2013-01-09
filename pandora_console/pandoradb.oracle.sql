@@ -1015,7 +1015,8 @@ CREATE TABLE tusuario_perfil (
 	id_perfil NUMBER(10, 0) default 0 NOT NULL,
 	id_grupo NUMBER(10, 0) default 0 NOT NULL,
 	assigned_by VARCHAR2(100) default '',
-	id_policy NUMBER(10, 0) DEFAULT 0 NOT NULL
+	id_policy NUMBER(10, 0) DEFAULT 0 NOT NULL,
+	tags CLOB
 );
 CREATE SEQUENCE tusuario_perfil_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tusuario_perfil_inc BEFORE INSERT ON tusuario_perfil REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tusuario_perfil_s.nextval INTO :NEW.ID_UP FROM dual; END tusuario_perfil_inc;;

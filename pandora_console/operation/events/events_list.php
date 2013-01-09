@@ -128,7 +128,8 @@ if (is_ajax()) {
 	return;
 }
 
-$tags = tags_search_tag(false, false, true);
+// Get the tags where the user have permissions in Events reading tasks
+$tags = tags_get_user_tags($config['id_user'], 'ER');
 
 // Error div for ajax messages
 echo "<div id='show_filter_error'>";
@@ -272,6 +273,18 @@ if (isset($filter_only_alert)) {
 	else if ($filter_only_alert == 1)
 		$sql_post .= " AND event_type LIKE '%alert%'";
 }
+
+// Tags ACLS
+if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
+	$group_array = (array) $ev_group;
+}
+else {
+	$group_array = array_keys($groups);
+}
+
+$tags_acls_condition = tags_get_acl_tags($config['id_user'], $group_array, 'ER', 'event_condition', 'AND');
+
+$sql_post .= $tags_acls_condition;
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	rawurlencode(io_safe_input($search)) .
@@ -747,6 +760,9 @@ $idx = 0;
 foreach ($result as $event) {
 	$data = array ();
 	
+	// Clean url from events and store in array
+	$event['clean_tags'] = events_clean_tags($event['tags']);
+
 	//First pass along the class of this row
 	$myclass = get_priority_class ($event["criticity"]);
 	$table->rowclass[] = $myclass;
@@ -978,25 +994,7 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('tags',$show_fields)) {
-		if ($event["tags"] != '') {
-			$tag_array = explode(',', $event["tags"]);
-			$data[$i] = '';
-			foreach ($tag_array as $tag_element) {
-				$blank_char_pos = strpos($tag_element, ' ');
-				$tag_name = substr($tag_element, 0, $blank_char_pos);
-				$tag_url = substr($tag_element, $blank_char_pos + 1);
-				$data[$i] .= ' ' .$tag_name;
-				if (!empty($tag_url)) {
-					$data[$i] .= ' <a href="javascript: openURLTagWindow(\'' . $tag_url . '\');">' . html_print_image('images/lupa.png', true, array('title' => __('Click here to open a popup window with URL tag'))) . '</a> ';
-				}
-				$data[$i] .= ',';
-			}
-			$data[$i] = rtrim($data[$i], ',');
-		}
-		else {
-			$data[$i] = '';
-		}
-		
+		$data[$i] = tags_get_tags_formatted($event['tags']);
 		$i++;
 	}
 	
@@ -1024,7 +1022,7 @@ foreach ($result as $event) {
 		//Actions
 		$data[$i] = '';
 		// Validate event
-		if (($event["estado"] != 1) and (check_acl ($config["id_user"], $event["id_grupo"], "EW") == 1)) {
+		if (($event["estado"] != 1) && (tags_check_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags']) == 1)) {
 			$data[$i] .= '<a href="javascript:validate_event_advanced('.$event["id_evento"].', 1)" id="validate-'.$event["id_evento"].'">';
 			$data[$i] .= html_print_image ("images/ok.png", true,
 				array ("title" => __('Validate event')));
@@ -1032,7 +1030,7 @@ foreach ($result as $event) {
 		}
 
 		// Delete event
-		if (check_acl ($config["id_user"], $event["id_grupo"], "EM") == 1) {
+		if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
 			if($event['estado'] != 2) {
 				$data[$i] .= '<a class="delete_event" href="javascript:" id="delete-'.$event['id_evento'].'">';
 				$data[$i] .= html_print_image ("images/cross.png", true,
@@ -1052,12 +1050,12 @@ foreach ($result as $event) {
 		$data[$i] .= '</a>&nbsp;';
 		$i++;
 		
-		if (check_acl ($config["id_user"], $event["id_grupo"], "EM") == 1) {
+		if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
 			//Checkbox
 			// Class 'candeleted' must be the fist class to be parsed from javascript. Dont change
 			$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="candeleted chk_val"', true);
 		}
-		else if (check_acl ($config["id_user"], $event["id_grupo"], "EW") == 1) {
+		else if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags']) == 1) {
 			//Checkbox
 			$data[$i] = html_print_checkbox_extended ("validate_ids[]", $event['id_evento'], false, false, false, 'class="chk_val"', true);
 		}
@@ -1082,10 +1080,10 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 	
 	echo '<div style="width:'.$table->width.';" class="action-buttons">';
-	if (check_acl ($config["id_user"], 0, "EW") == 1) {
+	if (tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
 		html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected();', 'class="sub ok"');
 	}
-	if (check_acl ($config["id_user"], 0,"EM") == 1) {
+	if (tags_check_acl ($config["id_user"], 0,"EM", $event['clean_tags']) == 1) {
 		html_print_button(__('Delete selected'), 'delete_button', false, 'delete_selected();', 'class="sub delete"');
 		?>
 		<script type="text/javascript">

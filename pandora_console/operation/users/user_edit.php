@@ -312,6 +312,7 @@ $table->style[0] = 'font-weight: bold';
 $table->style[1] = 'font-weight: bold';
 $table->head[0] = __('Profile name');
 $table->head[1] = __('Group');
+$table->head[2] = __('Tags');
 $table->align = array();
 $table->align[1] = 'center';
 
@@ -325,6 +326,12 @@ if ($result === false) {
 foreach ($result as $profile) {
 	$data[0] = '<b>'.profile_get_name ($profile["id_perfil"]).'</b>';
 	$data[1] = ui_print_group_icon ($profile["id_grupo"], true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'"></a>';
+		
+	$tags_ids = explode(',',$profile["tags"]);
+	$tags = tags_get_tags($tags_ids);
+		
+	$data[2] = tags_get_tags_formatted($tags);
+	
 	array_push ($table->data, $data);
 }
 

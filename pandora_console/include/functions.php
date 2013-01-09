@@ -1513,57 +1513,11 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 		return 0;
 	
 	$result = 0;
+	$acl_column = get_acl_column($access);
 	foreach ($rowdup as $row) {
 		// For each profile for this pair of group and user do...
-		switch ($access) {
-			case "IR":
-				$result += $row["incident_view"];
-				break;
-			case "IW":
-				$result += $row["incident_edit"];
-				break;
-			case "IM":
-				$result += $row["incident_management"];
-				break;
-			case "AR":
-				$result += $row["agent_view"];
-				break;
-			case "AW":
-				$result += $row["agent_edit"];
-				break;
-			case "LW":
-				$result += $row["alert_edit"];
-				break;
-			case "LM":
-				$result += $row["alert_management"];
-				break;
-			case "PM":
-				$result += $row["pandora_management"];
-				break;
-			case "DM":
-				$result += $row["db_management"];
-				break;
-			case "UM":
-				$result += $row["user_management"];
-				break;
-			case "RR":
-				$result += $row["report_view"];
-				break;
-			case "RW":
-				$result += $row["report_edit"];
-				break;
-			case "RM":
-				$result += $row["report_management"];
-				break;
-			case "ER":
-				$result += $row["event_view"];
-				break;
-			case "EW":
-				$result += $row["event_edit"];
-				break;
-			case "EM":
-				$result += $row["event_management"];
-				break;
+		if(isset($row[$acl_column])) {
+			$result += $row[$acl_column];
 		}
 	}
 	
@@ -1572,6 +1526,69 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 	}
 	
 	return 0;
+}
+
+/**
+ * Get the name of the database column of one access flag
+ *
+ * @param string access flag
+ *
+ * @return string Column name
+ */
+function get_acl_column($access) {
+	switch ($access) {
+		case "IR":
+			return "incident_view";
+			break;
+		case "IW":
+			return "incident_edit";
+			break;
+		case "IM":
+			return "incident_management";
+			break;
+		case "AR":
+			return "agent_view";
+			break;
+		case "AW":
+			return "agent_edit";
+			break;
+		case "LW":
+			return "alert_edit";
+			break;
+		case "LM":
+			return "alert_management";
+			break;
+		case "PM":
+			return "pandora_management";
+			break;
+		case "DM":
+			return "db_management";
+			break;
+		case "UM":
+			return "user_management";
+			break;
+		case "RR":
+			return "report_view";
+			break;
+		case "RW":
+			return "report_edit";
+			break;
+		case "RM":
+			return "report_management";
+			break;
+		case "ER":
+			return "event_view";
+			break;
+		case "EW":
+			return "event_edit";
+			break;
+		case "EM":
+			return "event_management";
+			break;
+		default:
+			return "";
+			break;
+	}
 }
 
 /**

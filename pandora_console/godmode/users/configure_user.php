@@ -328,9 +328,19 @@ if ($add_profile) {
 	$id2 = (string) get_parameter ('id');
 	$group2 = (int) get_parameter ('assign_group');
 	$profile2 = (int) get_parameter ('assign_profile');
+	$tags = (array) get_parameter ('assign_tags');
+
+	foreach ($tags as $k => $tag) {
+		if(empty($tag)) {
+			unset($tags[$k]);
+		}
+	}
+	
+	$tags = implode(',', $tags);
+
 	db_pandora_audit("User management",
-		"Added profile for user ".io_safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2);
-	$return = profile_create_user_profile($id2, $profile2, $group2);
+		"Added profile for user ".io_safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2 . ' Tags: ' . $tags);
+	$return = profile_create_user_profile($id2, $profile2, $group2, false, $tags);
 	
 	ui_print_result_message ($return,
 		__('Profile added successfully'),
@@ -501,8 +511,9 @@ $table->style[0] = 'font-weight: bold';
 $table->style[1] = 'font-weight: bold';
 $table->head[0] = __('Profile name');
 $table->head[1] = __('Group');
-$table->head[2] = __('Action');
-$table->align[2] = 'center';
+$table->head[2] = __('Tags');
+$table->head[3] = __('Action');
+$table->align[3] = 'center';
 
 /*
 if ($enterprise_include) {
@@ -530,12 +541,23 @@ foreach ($result as $profile) {
 	$data[1] .= '&nbsp;' . ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), GENERIC_SIZE_TEXT);
 	if (!defined('METACONSOLE'))
 		$data[1] .= '</a>';
-	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-	$data[2] .= html_print_input_hidden ('delete_profile', 1, true);
-	$data[2] .= html_print_input_hidden ('id_user_profile', $profile['id_up'], true);
-	$data[2] .= html_print_input_hidden ('id_user', $id, true);
-	$data[2] .= html_print_input_image ('del', 'images/cross.png', 1, '', true);
-	$data[2] .= '</form>';
+		
+	if(empty($profile["tags"])) {
+		$data[2] = '';
+	}
+	else {
+		$tags_ids = explode(',',$profile["tags"]);
+		$tags = tags_get_tags($tags_ids);
+		
+		$data[2] = tags_get_tags_formatted($tags);
+	}
+
+	$data[3] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+	$data[3] .= html_print_input_hidden ('delete_profile', 1, true);
+	$data[3] .= html_print_input_hidden ('id_user_profile', $profile['id_up'], true);
+	$data[3] .= html_print_input_hidden ('id_user', $id, true);
+	$data[3] .= html_print_input_image ('del', 'images/cross.png', 1, '', true);
+	$data[3] .= '</form>';
 	
 	array_push ($table->data, $data);
 }
@@ -556,11 +578,15 @@ else {
 $data[1] = html_print_select_groups($config['id_user'], "UM",
 	$own_info['is_admin'], 'assign_group', -1, '', __('None'), -1, true,
 	false, false);
+	
+$tags = tags_get_all_tags();
 
-$data[2] = html_print_input_image ('add', 'images/add.png', 1, '', true);
-$data[2] .= html_print_input_hidden ('id', $id, true);
-$data[2] .= html_print_input_hidden ('add_profile', 1, true);
-$data[2] .= '</form>';
+$data[2] = html_print_select($tags, 'assign_tags[]', '', '', __('None'), '', true, true);
+
+$data[3] = html_print_input_image ('add', 'images/add.png', 1, '', true);
+$data[3] .= html_print_input_hidden ('id', $id, true);
+$data[3] .= html_print_input_hidden ('add_profile', 1, true);
+$data[3] .= '</form>';
 
 array_push ($table->data, $data);
 

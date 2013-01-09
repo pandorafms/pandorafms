@@ -869,7 +869,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
  * 
  * @return array Group statistics
  */
-function reporting_get_group_stats ($id_group = 0) {
+function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 	global $config;
 	
 	$data = array ();
@@ -903,12 +903,12 @@ function reporting_get_group_stats ($id_group = 0) {
 	$cur_time = get_system_time ();
 	
 	//Check for access credentials using check_acl. More overhead, much safer
-	if (!check_acl ($config["id_user"], $id_group, "RR")) {
+	if (!check_acl ($config["id_user"], $id_group, $access)) {
 		return $data;
 	}
 	
 	if ($id_group == 0) {
-		$id_group = array_keys (users_get_groups ($config['id_user'], "RR", false));
+		$id_group = array_keys (users_get_groups ($config['id_user'], $access, false));
 	}
 	
 	// -----------------------------------------------------------------
@@ -1001,65 +1001,70 @@ function reporting_get_group_stats ($id_group = 0) {
 		}
 		
 		if (!empty($group_array)) {
+			// FOR THE FUTURE: Split the groups into groups with tags restrictions and groups without it
+			// To calculate in the light way the non tag restricted and in the heavy way the others
+			/*		
+			$group_restricted_data = tags_get_acl_tags($config['id_user'], $group_array, $access, 'data');
+			$tags_restricted_groups = array_keys($group_restricted_data);
 			
-			// Get unknown agents by using the status code in modules.
+			$no_tags_restricted_groups = $group_array;
+			foreach($no_tags_restricted_groups as $k => $v) {
+				if(in_array($v, $tags_restricted_groups)) {
+					unset($no_tags_restricted_groups[$k]);
+				}
+			}
+			*/
+			
+			if(!empty($group_array)) {
+				// Get unknown agents by using the status code in modules
+				$data["agents_unknown"] += groups_agent_unknown ($group_array);
+
+				// Get monitor NOT INIT, except disabled AND async modules
+				$data["monitor_not_init"] += groups_monitor_not_init ($group_array);
 						
-			$data["agents_unknown"] += groups_agent_unknown ($group_array);
+				// Get monitor OK, except disabled and non-init
+				$data["monitor_ok"] += groups_monitor_ok ($group_array);
 
-			// Get monitor NOT INIT, except disabled AND async modules
-
-			$data["monitor_not_init"] += groups_monitor_not_init ($group_array);
-					
-			// Get monitor OK, except disabled and non-init
+				// Get monitor CRITICAL, except disabled and non-init
+				$data["monitor_critical"] += groups_monitor_critical ($group_array);
+				
+				// Get monitor WARNING, except disabled and non-init
+				$data["monitor_warning"] += groups_monitor_warning ($group_array);
 			
-			$data["monitor_ok"] += groups_monitor_ok ($group_array);
-
-			// Get monitor CRITICAL, except disabled and non-init
-
-			$data["monitor_critical"] += groups_monitor_critical ($group_array);
+				// Get monitor UNKNOWN, except disabled and non-init
+				$data["monitor_unknown"] += groups_monitor_unknown ($group_array);
+				
+				// Get alerts configured, except disabled 
+				$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
+				
+				// Get alert configured currently FIRED, except disabled 
+				$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
+				
+				// Calculate totals using partial counts from above
+				
+				// Get TOTAL agents in a group
+				$data["total_agents"] += groups_total_agents ($group_array);
 			
-			// Get monitor WARNING, except disabled and non-init
+				// Get TOTAL non-init modules, except disabled ones and async modules
+				$data["total_not_init"] += $data["monitor_not_init"];
 			
-			$data["monitor_warning"] += groups_monitor_warning ($group_array);
-		
-			// Get monitor UNKNOWN, except disabled and non-init
-			
-			$data["monitor_unknown"] += groups_monitor_unknown ($group_array);
-			
-			// Get alerts configured, except disabled 
-			
-			$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
-			
-			// Get alert configured currently FIRED, except disabled 
-			
-			$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
-			
-			// Calculate totals using partial counts from above
-			
-			// Get TOTAL agents in a group
-			$data["total_agents"] += groups_total_agents ($group_array);
-			
-			// Get TOTAL non-init modules, except disabled ones and async modules
-			
-			$data["total_not_init"] += $data["monitor_not_init"];
-			
-			// Get Agents OK
-			$data["agent_ok"] += groups_agent_ok($group_array);
-			
-			// Get Agents Warning 
-			$data["agent_warning"] += groups_agent_warning($group_array);
-			
-			// Get Agents Critical
-			$data["agent_critical"] += groups_agent_critical($group_array);
-			
-			// Get Agents Unknown
-			$data["agent_unknown"] += groups_agent_unknown($group_array);
-			
-			// Get Agents Not init
-			$data["agent_not_init"] += groups_agent_not_init($group_array);
+				// Get Agents OK
+				$data["agent_ok"] += groups_agent_ok($group_array);
+				
+				// Get Agents Warning 
+				$data["agent_warning"] += groups_agent_warning($group_array);
+				
+				// Get Agents Critical
+				$data["agent_critical"] += groups_agent_critical($group_array);
+				
+				// Get Agents Unknown
+				$data["agent_unknown"] += groups_agent_unknown($group_array);
+				
+				// Get Agents Not init
+				$data["agent_not_init"] += groups_agent_not_init($group_array);
+			}
 			
 			// Get total count of monitors for this group, except disabled.
-			
 			$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
 			
 		}

@@ -215,6 +215,9 @@ if($get_extended_event) {
 	else {
 		$event = events_get_event($event_id);
 	}
+	
+	// Clean url from events and store in array
+	$event['clean_tags'] = events_clean_tags($event['tags']);
 
 	// If the event is not found, we abort
 	if(empty($event)) {
@@ -272,7 +275,7 @@ if($get_extended_event) {
     $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true).__('Details')."</a></li>";
     $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/note.png',true).__('Agent fields')."</a></li>";
     $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true).__('Comments')."</a></li>";
-    if (check_acl ($config['id_user'], 0, "EW") || check_acl ($config['id_user'], 0, "EM")) {
+    if (tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags'])) {
 		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/cog.png',true).__('Responses')."</a></li>";
 	}
     $tabs .= "</ul>";
@@ -303,7 +306,7 @@ if($get_extended_event) {
 			break;
 	}
 	
-    if (check_acl ($config['id_user'], $event['id_grupo'], "EW") || check_acl ($config['id_user'], $event['id_grupo'], "EM")) {
+    if (tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags'])) {
 		$responses = events_page_responses($event);
 	}
 	else {

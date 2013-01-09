@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # **********************************************************************
 # Pandora FMS Generic Unix/Perl Agent
-# (c) 2009-2011 Artica Soluciones Tecnológicas
+# (c) 2009-2013 Artica Soluciones Tecnológicas
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
@@ -12,7 +12,7 @@ pandora_agent - Pandora FMS Agent
 
 =head1 VERSION
 
-Version 4.0
+Version 4.0.3
 
 =head1 USAGE
 
@@ -1019,7 +1019,7 @@ sub guess_os_version ($) {
 	} elsif ($os eq 'aix') {
 		$os_version = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
 	# Windows
-	} elsif ($os =~ /win/i) {
+	} elsif ($os =~ /win/i && ! $os =~ /Darwin/) {
 		$os_version = `ver`;
 		$DevNull = '/Nul';
 		$CmdSep = '\&';

@@ -1,15 +1,18 @@
 #!/bin/sh
+#trap 'echo error at line $LINENO 1>&2' ERR
+set -u
+set -e
 
 # **********************************************************************
 # Pandora FMS Agent Installer for Unix (generic installer)
-# (c) 2008-2010 Artica ST
-# (c) 2008-2010 Sancho Lerena <slerena@gmail.com>
+# (c) 2008-2013 Artica ST
+# (c) 2008-2013 Sancho Lerena <slerena@gmail.com>
 # 
 # This is a generic installer for all Unix-like systems.(AIX, HP-UX, SunOS, Linux, FreeBSD)
 # Please see http://www.pandorafms.org. This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION=4.0.2
+PI_VERSION=4.0.3
 PI_BUILD=120529
 OS_NAME=`uname -s`
 
@@ -26,9 +29,9 @@ TENTACLE=/usr/bin/tentacle_client
 TENTACLE_SERVER=/usr/bin/tentacle_server
 PANDORA_MAN=/usr/share/man
 
-MODE=$1
-PANDORA_BASE=`echo $2 | sed -e 's/\/$//'`
-if [ "$3" != "" ]
+MODE=${1:-}
+PANDORA_BASE=`echo ${2:-} | sed -e 's/\/$//'`
+if [ "${3:-}" != "" ]
 then
 	PANDORA_USER=$3
 else
@@ -40,17 +43,17 @@ PERL_VERSION=`perl -v | egrep 'v5.6|v5.7|v5.8|v5.9|v5.1[0-9]' | grep perl`
 
 if [ -z "$PERL_VERSION" ]
 then
-	echo "Perl 5.6.x or higher is not detected. This is required for Pandora FMS"
-	echo "Detected: $PERL_VERSION "
-	echo "Aborting install..."
+	echo "Perl 5.6.x or higher is not detected. This is required for Pandora FMS" 1>&2
+	echo "Detected: $PERL_VERSION " 1>&2
+	echo "Aborting install..." 1>&2
 	exit 2
 fi
 
 UNIX_KIND=`uname -s`
 if [ -z "`echo Linux HP-UX SunOS AIX Solaris Darwin BSD bsd FreeBSD | grep \"$UNIX_KIND\"`" ]
 then
-	echo "This system: '$UNIX_KIND' is not supported by this script"
-	echo "Please make the install yourself as it's described in documentation"
+	echo "This system: '$UNIX_KIND' is not supported by this script" 1>&2
+	echo "Please make the install yourself as it's described in documentation" 1>&2
 	exit 1
 fi
 
@@ -58,31 +61,33 @@ fi
 # check for root to do the install
 if [ -z "`id | grep \"uid=0(root)\"`" ]
 then
-	echo "You need to be root to do the install. Please made a manual install"
-	echo "if you want to install Pandora FMS agent without root"
-	echo " "
-	echo "Aborting install"
+	echo "You need to be root to do the install. Please made a manual install" 1>&2
+	echo "if you want to install Pandora FMS agent without root" 1>&2
+	echo " " 1>&2
+	echo "Aborting install" 1>&2
 	exit 2
 fi
 
 help () {
-	echo "Syntax":
-	echo " "
-	echo "    ./pandora_agent_installer < --mode > [ destination_path ] [ user_to_run_as ]"
-	echo " "
-	echo "Modes:"
-	echo " "
-	echo "  --force-install      To force installation if already installed on system"
-	echo "  --install            To install Pandora FMS Agent on this system"
-	echo "  --uninstall          To uninstall/remove Pandora FMS Agent on this System"
-	echo " "	
-	echo "Some exaples of how to use the installer:"
-	echo " "
-	echo "   ./pandora_agent_installer --install"
-	echo "   ./pandora_agent_installer --install /opt/pandora"
-	echo "   ./pandora_agent_installer --install \"\" pandora"
-	echo "   ./pandora_agent_installer --uninstall /opt/pandora"
-	echo " "
+	cat <<EOF
+Syntax:
+
+    ./pandora_agent_installer < --mode > [ destination_path ] [ user_to_run_as ]
+ 
+Modes:
+ 
+  --force-install      To force installation if already installed on system
+  --install            To install Pandora FMS Agent on this system
+  --uninstall          To uninstall/remove Pandora FMS Agent on this System
+ 
+Some exaples of how to use the installer:
+ 
+   ./pandora_agent_installer --install
+   ./pandora_agent_installer --install /opt/pandora
+   ./pandora_agent_installer --install "" pandora
+   ./pandora_agent_installer --uninstall /opt/pandora
+ 
+EOF
 }
 
 uninstall () {
@@ -176,19 +181,19 @@ install () {
 	echo "Detecting Unix distribution: $OS_NAME version $OS_VERSION"
 	if [ -f $PANDORA_BASE$PANDORA_HOME ] && [ "$FORCE" = "0" ]
 	then
-		echo "Seems that default dir already exists. Please use --force-install to"
-		echo "force installer to install on $PANDORA_BASE$PANDORA_HOME"
-		exit
+		echo "Seems that default dir already exists. Please use --force-install to" 1>&2
+		echo "force installer to install on $PANDORA_BASE$PANDORA_HOME" 1>&2
+		exit 1
 	else
 		echo "Checking default dir $PANDORA_BASE$PANDORA_HOME..."
 	fi
 
 	if [ -f $PANDORA_BASE$PANDORA_BIN ] && [ "$FORCE" = "0" ]
 	then
-		echo "Seems that $PANDORA_BASE$PANDORA_BIN already exists. Please use --force-install to"
-		echo "force installer to reinstall overwriting it"
-		echo " "
-		exit
+		echo "Seems that $PANDORA_BASE$PANDORA_BIN already exists. Please use --force-install to" 1>&2
+		echo "force installer to reinstall overwriting it" 1>&2
+		echo " " 1>&2
+		exit 1
 	else
 		echo "Checking Pandora FMS Agent on $PANDORA_BASE$PANDORA_BIN...."
 	fi
@@ -212,6 +217,12 @@ install () {
 		
 		AGENT_CFG=$OS_NAME/pandora_agent.conf
 		AGENT_CFG_TEMP=$OS_NAME/pandora_agent.conf.temp
+
+		# Check existence.
+		if [ ! -r "$AGENT_CFG" ]; then
+			echo "There is no default agent for the platform $OS_NAME. Please create one as $OS_NAME/pandora_agent.conf and send it to Pandora." 1>&2
+			exit 1
+		fi
 
 		# Backup the configuration file
 		cp -f "$AGENT_CFG" "$AGENT_CFG.bak"
@@ -318,12 +329,12 @@ install () {
 	echo "Copying Pandora FMS Agent plugins to $PANDORA_BASE$PANDORA_HOME/plugins..."
 	cp -r plugins $PANDORA_BASE$PANDORA_HOME
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/plugins
-	ln -s $PANDORA_BASE$PANDORA_HOME/plugins $PANDORA_BASE$PANDORA_CFG
+	ln -sf $PANDORA_BASE$PANDORA_HOME/plugins $PANDORA_BASE$PANDORA_CFG
 
 	echo "Copying Pandora FMS Agent collections to $PANDORA_BASE$PANDORA_HOME/collections..."
 	cp -r collections $PANDORA_BASE$PANDORA_HOME
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/collections
-	ln -s $PANDORA_BASE$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
+	ln -sf $PANDORA_BASE$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
 	
 	echo "Copying tentacle server to $PANDORA_BASE$TENTACLE_SERVER"
 	cp tentacle_server $PANDORA_BASE$TENTACLE_SERVER
@@ -354,6 +365,11 @@ install () {
 	fi
 
 	echo "Copying default agent configuration to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf"
+	# Check existence.
+	if [ ! -r "$OS_NAME/pandora_agent.conf" ]; then
+		echo "There is no default agent for the platform $OS_NAME. Please create one as $OS_NAME/pandora_agent.conf and send it to Pandora." 1>&2
+		exit 1
+	fi
 
 	cp $OS_NAME/pandora_agent.conf $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
 	chmod 600 $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
@@ -371,7 +387,7 @@ install () {
 	if [ "$OS_NAME" = "AIX" ]
 	then
 		cp pandora_agent_daemon /etc/rc.pandora_agent_daemon		
-		ln -s /etc/rc.pandora_agent_daemon /etc/rc.d/rc2.d/S90pandora_agent_daemon
+		ln -sf /etc/rc.pandora_agent_daemon /etc/rc.d/rc2.d/S90pandora_agent_daemon
 		chmod 755 $PANDORA_STARTUP
 		chown root:0 $PANDORA_STARTUP
 		echo "Pandora FMS agent has been included in /etc/rc.d/rc2.d/S90pandora_agent_daemon"
@@ -381,18 +397,26 @@ install () {
 	then
 		PANDORA_STARTUP=/sbin/init.d/pandora_agent_daemon
 		cp pandora_agent_daemon $PANDORA_STARTUP
-		ln -s /sbin/init.d/pandora_agent_daemon /sbin/rc3.d/S90pandora_agent_daemon 2> /dev/null
-		ln -s /sbin/init.d/pandora_agent_daemon /sbin/rc2.d/S90pandora_agent_daemon 2> /dev/null
+		ln -sf /sbin/init.d/pandora_agent_daemon /sbin/rc3.d/S90pandora_agent_daemon 2> /dev/null
+		ln -sf /sbin/init.d/pandora_agent_daemon /sbin/rc2.d/S90pandora_agent_daemon 2> /dev/null
 		chmod 755 $PANDORA_STARTUP
 		chown root:0 $PANDORA_STARTUP
 		echo "Pandora FMS agent has been included in /sbin/rcX.d/S90pandora_agent_daemon"
+	fi
+	
+	if [ $OS_NAME = "Darwin" ]
+	then
+		cp $OS_NAME/com.pandorafms.pandorafms.plist /Library/LaunchDaemons
+		echo "Pandora FMS agent has been included in /Library/LaunchDaemons"
+		PANDORA_STARTUP=/Library/LaunchDaemons
+		echo "To start now: launchctl load -w /Library/LaunchDaemons/com.pandorafms.pandorafms.plist"
 	fi
 	
 	if [ $OS_NAME = "SunOS" ]
 	then
 		PANDORA_STARTUP=/etc/init.d/pandora_agent_daemon
 		cp pandora_agent_daemon $PANDORA_STARTUP 
-		ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent_daemon 2> /dev/null
+		ln -sf /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent_daemon 2> /dev/null
 		chmod 755 $PANDORA_STARTUP
 		chown root:0 $PANDORA_STARTUP
 		echo "Pandora FMS agent has been included in /etc/rc2.d/S90pandora_agent_daemon"
@@ -404,11 +428,11 @@ install () {
 		cp pandora_agent_daemon $PANDORA_STARTUP
 		if [ -d /etc/rc.d/ ]
 		then
-			ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc2.d/S90pandora_agent 2> /dev/null
-			ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc3.d/S90pandora_agent 2> /dev/null
+			ln -sf /etc/init.d/pandora_agent_daemon /etc/rc.d/rc2.d/S90pandora_agent 2> /dev/null
+			ln -sf /etc/init.d/pandora_agent_daemon /etc/rc.d/rc3.d/S90pandora_agent 2> /dev/null
 		else
-			ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent 2> /dev/null
-			ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent 2> /dev/null
+			ln -sf /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent 2> /dev/null
+			ln -sf /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent 2> /dev/null
 		fi
 		chmod 755 $PANDORA_STARTUP
 		chown root:0 $PANDORA_STARTUP
@@ -443,20 +467,24 @@ install () {
 	fi
 
 	# Restore the daemon script
-	cp -f "$DAEMON_SCRIPT.bak" "$DAEMON_SCRIPT" >/dev/null 2>&1
-	rm -f "$DAEMON_SCRIPT.bak" >/dev/null 2>&1
+        if [ ! -z "${DAEMON_SCRIPT:-}" ]; then
+		cp -f "$DAEMON_SCRIPT.bak" "$DAEMON_SCRIPT" >/dev/null 2>&1
+		rm -f "$DAEMON_SCRIPT.bak" >/dev/null 2>&1
+	fi
 
 	# Restore the configuration file
-	cp -f "$AGENT_CFG.bak" "$AGENT_CFG" >/dev/null 2>&1
-	rm -f "$AGENT_CFG.bak" >/dev/null 2>&1
+        if [ ! -z "${AGENT_CFG:-}" ]; then
+		cp -f "$AGENT_CFG.bak" "$AGENT_CFG" >/dev/null 2>&1
+		rm -f "$AGENT_CFG.bak" >/dev/null 2>&1
+	fi
 
 }
 
 if [ ! -f "pandora_agent" ]
 then
-	echo " "
-	echo "Execute installer from the directory where you have your files. "
-	help
+	echo " " 1>&2
+	echo "Execute installer from the directory where you have your files. " 1>&2
+	help 1>&2
 	exit 1
 fi
 
@@ -472,17 +500,17 @@ case "$MODE" in
 '--force-install')
 	FORCE=1
 	install
-	exit
+	exit 0
 	;;
 
 '--install')
 	install
-	exit
+	exit 0
 	;;
 
 '--uninstall')
 	uninstall
-	exit
+	exit 0
 	;;
 
 *)

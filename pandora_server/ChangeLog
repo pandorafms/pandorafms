@@ -1,3 +1,9 @@
+2013-01-09  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Fixed bug #3555223 about
+	different UDP ports for SNMP polling. Merged fix from 4.0.x 
+	branch.
+
 2013-01-09  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/SNMPServer.pm: Made sure SNMP filter is valid

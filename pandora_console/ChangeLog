@@ -1,3 +1,8 @@
+2013-01-09 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/constants.php: added the default weight for unknown status
+	for agent, module or service in the services.
+
 2013-01-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_agents.php: Changed constraint in agent creation

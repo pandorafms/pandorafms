@@ -1,3 +1,8 @@
+2013-01-09  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_reporting_advanced_tab.php: Translated
+	description for _REPORT_NAME_ into Japanese.
+
 2013-01-09  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions.php: Fixed that the console sometimes shows

@@ -1,3 +1,9 @@
+2013-01-09  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions.php: Fixed that the console sometimes shows
+	negative timestamp (e.g. '-2 sec') when using 'comparison in
+	roll-over' format.
+
 2013-01-08 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* extensions/system_info.php: Added link to download System info file.

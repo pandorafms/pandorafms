@@ -315,6 +315,13 @@ function human_time_comparation ($timestamp, $units = 'large') {
 	
 	$seconds = get_system_time () - $timestamp;
 
+	// $seconds could be negative, because get_system_time() could return cached value
+	// (that might be the time a session begins at).
+	// So negative values are to be rounded off to 'NOW'.
+	if( $seconds < 0 ) {
+		$seconds = 0;
+	}
+
 	return human_time_description_raw($seconds, false, $units);
 }
 

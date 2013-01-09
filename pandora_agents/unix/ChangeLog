@@ -1,7 +1,8 @@
 2013-01-09  Sancho Lerena <slerena@artica.es>
 
-	* pandora_agent_installer,
-	Darwin,
+	* pandora_agent_installer: Updated version strings.
+	
+	* Darwin,
 	Darwin/pandora_agent.conf,
 	Darwin/com.pandorafms.pandorafms.plist,
 	pandora_agent: Updated agent for run on MacOS. Thanks to Guido Leenders.

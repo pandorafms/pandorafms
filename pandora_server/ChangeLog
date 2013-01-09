@@ -1,3 +1,9 @@
+2013-01-09  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/SNMPServer.pm: Made sure SNMP filter is valid
+	before performing string matching. It could make Pandora Server
+	down at worst.
+
 2013-01-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* lib/PandoraFMS/PredictionServer.pm: Fixed prediction modules.

@@ -231,6 +231,13 @@ sub matches_filter ($$$) {
 	my @filters = get_db_rows ($dbh, 'SELECT filter FROM tsnmp_filter');
 	foreach my $filter (@filters) {
 		my $regexp = safe_output($filter->{'filter'}) ;
+
+		# Check if $regexp begins with quantifier
+		if ($regexp =~ m/^[+*?]/ ) {
+			logger($pa_config, "Invalid SNMP filter. Quantifier follows nothing in regex '$regexp'.", 3);
+			next;
+		}
+
 		if ($string =~ m/$regexp/i) {
 			logger($pa_config, "Trap '$string' matches filter '$regexp'. Discarding...", 10);
 			return 1;

@@ -314,16 +314,14 @@ $(document).ready (function () {
 	
 	$("#zone").attr("disabled", true);
 	$("#timezone").attr("disabled", true);
+
+	$("input[name='acl_enterprise']").click(function(){
+                        flag = $(this).is(':checked');
+                        if (flag == true){
+                                <?php echo "if (! confirm ('" . __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?') . "')) return false" ?>
+                        }
+        });
 	
-	$("#radiobtn0011").click(function() {
-			flag = $("#radiobtn0011").is(':checked');
-			if (flag == true) {
-				message = "<?php
-					echo __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?');
-					?>";
-				if (!confirm(message)) return false;
-			}
-	});
 	
 	$("#change_timezone").click(function () {
 		$("#zone").attr("disabled", false);

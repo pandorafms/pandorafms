@@ -402,6 +402,13 @@ sub process_xml_data ($$$$$) {
 
 		my $module_name = get_tag_value ($module_data, 'name', '');
 
+		# Clean module_name because sometimes due to errors or problems 
+		# creating XMLs it could contain carriage returns and later they
+		# are a pain when you update module configuration because the name won't
+		# save the carriage return.
+		$module_name =~ s/\r//g;
+		$module_name =~ s/\n//g;
+		
 		# Unnamed module
 		next if ($module_name eq '');
 

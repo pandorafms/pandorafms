@@ -70,7 +70,9 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 		return false;
 	if (empty ($ip_address))
 		return false;
-	$interval = safe_int ($interval,1, SECONDS_5MINUTES);
+	// Check interval greater than zero
+	if ($interval < 0)
+		$interval = false;
 	if (empty ($interval))
 		return false;
 	if (! is_array ($values))

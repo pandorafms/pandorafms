@@ -1,3 +1,7 @@
+2012-01-09 SAncho Lerena <slerena@artica.es>
+
+	* godmode/setup/setup.php: Fixed warning on enabling EACL.
+
 2013-01-09 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/reporting_builder.php,

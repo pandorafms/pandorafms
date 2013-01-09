@@ -156,7 +156,7 @@ sub exec_prediction_module ($$$$) {
 	}
 
     # Get a full hash for target agent_module record reference ($target_module)
-    my $target_module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $agent_module->{'prediction_module'});
+    my $target_module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $agent_module->{'custom_integer_1'});
 	return unless defined $target_module;
 
     # Prediction mode explanation

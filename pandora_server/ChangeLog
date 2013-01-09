@@ -1,3 +1,9 @@
+2013-01-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* lib/PandoraFMS/PredictionServer.pm: Fixed prediction modules.
+	
+	Merged from trunk.
+
 2013-01-08  Sancho Lerena <slerena@artica.es>
 
 	*  lib/PandoraFMS/NetworkServer.pm: patch to solve problems with SNMP ports.

@@ -39,7 +39,9 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 		return false;
 	if (empty ($ip_address))
 		return false;
-	$interval = safe_int ($interval,1, 300);
+	// Check interval greater than zero
+	if ($interval < 0)
+		$interval = false;
 	if (empty ($interval))
 		return false;
 	if (! is_array ($values))
@@ -48,7 +50,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	$values['id_grupo'] = $id_group;
 	$values['intervalo'] = $interval;
 	$values['direccion'] = $ip_address;
-	
+
 	db_process_sql_begin ();
 	
 	$id_agent = db_process_sql_insert ('tagente', $values);

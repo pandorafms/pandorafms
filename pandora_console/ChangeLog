@@ -1,3 +1,10 @@
+2013-01-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/module_manager_editor_prediction.php: Fixed bug
+	in prediction modules editor.
+	
+	Bug id: #3599200
+
 2013-01-09  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_reporting_advanced_tab.php: Translated

@@ -35,7 +35,7 @@ if ($row !== false && is_array($row)) {
 	$custom_integer_2 = $row ['custom_integer_2'];
 	// Services are an Enterprise feature.
 	$custom_integer_1 = $row['custom_integer_1'];
-	
+
 	switch($prediction_module) {
 		case 2:
 			$is_service = true;
@@ -95,16 +95,27 @@ $data[1] = '<div id="module_data" style="top:1em; float:left; width:50%;">';
 $data[1] .= html_print_label(__("Agent"),'agent_name', true)."<br/>";
 $sql = "SELECT id_agente, nombre FROM tagente";
 // TODO: ACL Filter
+//
+if (!empty($prediction_module)) {
+	$id_agente_clean = modules_get_agentmodule_agent($prediction_module);
+	$prediction_module_agent = modules_get_agentmodule_agent_name($prediction_module);
+	$agent_name_clean = $prediction_module_agent;
+}
+else {
+	$id_agente_clean = $id_agente;
+	$agent_name_clean = $agent_name;
+}
+
 //Image src with skins
 $src_code = html_print_image('images/lightning.png', true, false, true); 
-$data[1] .= html_print_input_text_extended ('agent_name',$agent_name, 'text_agent_name', '', 30, 100, $is_service, '',
+$data[1] .= html_print_input_text_extended ('agent_name',$agent_name_clean, 'text_agent_name', '', 30, 100, $is_service, '',
                             array('style' => 'background: url(' . $src_code . ') no-repeat right;'), true, false);
 $data[1] .= '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>&nbsp; <br/>';
 $data[1] .= html_print_label(__("Module"),'prediction_module',true);
-if($id_agente) {
+if ($id_agente) {
 	$sql = "SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
-		WHERE delete_pending = 0 AND history_data = 1 AND id_agente =  ".$id_agente;
+		WHERE delete_pending = 0 AND history_data = 1 AND id_agente =  " . $id_agente_clean . " AND id_agente_modulo  <> " . $id_agente_modulo;
     $data[1] .= html_print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true);
 }
 else {

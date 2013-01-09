@@ -256,9 +256,9 @@ next_pair:
 # Set commands for SNMP checks depending on OS type
 ###############################################################################
 
-sub pandora_snmp_get_command ($$$$$$$$$$) {
+sub pandora_snmp_get_command ($$$$$$$$$$$) {
 
-    my ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra, $snmp_port) = @_;
+    my ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra, $snmp_port, $pa_config) = @_;
 
     my $output = "";
 
@@ -306,6 +306,7 @@ sub pandora_snmp_get_command ($$$$$$$$$$) {
         	return $output;
 	}
     } else {
+	logger ($pa_config,"[ERROR] Undefined value returned SNMP query. Is the server out of memory?" , 0);
 	return "";
     }
 }
@@ -355,7 +356,7 @@ sub pandora_query_snmp ($$$) {
 	# SNMP v1, v2 and v2c call
 	if ($snmp_version ne '3'){
 
-		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, "", "", $snmp_port);
+		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, "", "", $snmp_port, $pa_config);
 		if (defined ($output) && $output ne ""){
 			$module_result = 0;
 			$module_data = $output;
@@ -377,7 +378,7 @@ sub pandora_query_snmp ($$$) {
 			$snmp3_extra = " -a $snmp3_auth_method -u $snmp3_auth_user -A $snmp3_auth_pass -x $snmp3_privacy_method -X $snmp3_privacy_pass ";
 		}
        
-		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra, $snmp_port);
+		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra, $snmp_port, $pa_config);
 		if (defined ($output) && $output ne ""){
 			$module_result = 0;
 			$module_data = $output;

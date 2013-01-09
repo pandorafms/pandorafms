@@ -1,5 +1,10 @@
 2013-01-09  Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* lib/PandoraFMS/NetworkServer.pm: Added log traces to inform
+	about the problem of undefined return of snmpget command.
+
+2013-01-09  Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* lib/PandoraFMS/NetworkServer.pm: Deleted some debug traces.
 
 2013-01-09  Dario Rodriguez <dario.rodriguez@artica.es>

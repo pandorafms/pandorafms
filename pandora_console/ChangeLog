@@ -1,5 +1,13 @@
 2013-01-09 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	godmode/agentes/agent_manager.php, include/functions_events.php,
+	include/functions_reporting.php: added the option "no validaded" in
+	the items for events.
+
+2013-01-09 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/constants.php: added the default weight for unknown status
 	for agent, module or service in the services.
 

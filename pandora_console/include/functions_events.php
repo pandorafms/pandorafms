@@ -1055,7 +1055,7 @@ function events_print_type_description ($type, $return = false) {
  */
 function events_get_group_events ($id_group, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	global $config;
 	
 	$id_group = groups_safe_acl ($config["id_user"], $id_group, "ER");
@@ -1076,6 +1076,9 @@ function events_get_group_events ($id_group, $period, $date,
 	}
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
+	}
+	if ($filter_event_no_validated) {
+		$sql_where .= ' AND estado = 0 ';
 	}
 	
 	
@@ -1108,7 +1111,7 @@ function events_get_group_events ($id_group, $period, $date,
  */
 function events_get_agent ($id_agent, $period, $date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -1128,6 +1131,9 @@ function events_get_agent ($id_agent, $period, $date = 0,
 	}
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
+	}
+	if ($filter_event_no_validated) {
+		$sql_where .= ' AND estado = 0 ';
 	}
 	
 	$sql = sprintf ('SELECT id_usuario,
@@ -2103,7 +2109,7 @@ function events_clean_tags ($tags) {
  */
 function events_get_count_events_by_agent ($id_group, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	global $config;
 	
 	$id_group = groups_safe_acl ($config["id_user"], $id_group, "AR");
@@ -2124,6 +2130,9 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 	}
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
+	}
+	if ($filter_event_no_validated) {
+		$sql_where .= ' AND estado = 0 ';
 	}
 	
 	$sql = sprintf ('SELECT id_agente,
@@ -2167,7 +2176,7 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
  */
 function events_get_count_events_validated_by_user ($filter, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	global $config;
 	
 	$sql_filter = ' AND 1=1 ';
@@ -2198,6 +2207,9 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 	}
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
+	}
+	if ($filter_event_no_validated) {
+		$sql_where .= ' AND estado = 0 ';
 	}
 	
 	$sql = sprintf ('SELECT id_usuario,
@@ -2241,7 +2253,7 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
  */
 function events_get_count_events_by_criticity ($filter, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	global $config;
 	
 	$sql_filter = ' AND 1=1 ';
@@ -2272,6 +2284,9 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
 	}
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
+	}
+	if ($filter_event_no_validated) {
+		$sql_where .= ' AND estado = 0 ';
 	}
 	
 	$sql = sprintf ('SELECT criticity,
@@ -2308,7 +2323,7 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
  */
 function events_get_count_events_validated ($filter, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	global $config;
 	
 	$sql_filter = ' AND 1=1 ';
@@ -2339,6 +2354,9 @@ function events_get_count_events_validated ($filter, $period, $date,
 	}
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
+	}
+	if ($filter_event_no_validated) {
+		$sql_where .= ' AND estado = 0 ';
 	}
 	
 	$sql = sprintf ('SELECT estado,

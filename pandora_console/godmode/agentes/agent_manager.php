@@ -67,7 +67,7 @@ if (is_ajax ()) {
 		foreach ($idSNMP as $id) {
 			foreach ($snmp[$id] as $key => $value){
 				
-				// Check if it has "ifXXXX" syntax and skip it 
+				// Check if it has "ifXXXX" syntax and skip it
 				if (! preg_match  ( "/if/", $key)) {
 					continue;
 				}
@@ -120,7 +120,7 @@ if (!$new_agent) {
 	$agent_md5 = md5 ($nombre_agente, false);
 	$filename['md5'] = $config["remote_config"]."/md5/".$agent_md5.".md5";
 	$filename['conf'] = $config["remote_config"]."/conf/".$agent_md5.".conf";
-} 
+}
 
 $disk_conf = (bool) get_parameter ('disk_conf');
 
@@ -148,9 +148,9 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
-$table->data[0][0] = __('Agent name') . 
+$table->data[0][0] = __('Agent name') .
 	ui_print_help_tip (__("The agent's name must be the same as the one defined at the console"), true);
-$table->data[0][1] = html_print_input_text ('agente', $nombre_agente, '', 50, 100,true); 
+$table->data[0][1] = html_print_input_text ('agente', $nombre_agente, '', 50, 100,true);
 
 if ($id_agente) {
 	$table->data[0][1] .= "&nbsp;<b>".__("ID")."</b>&nbsp; $id_agente &nbsp;";
@@ -182,7 +182,7 @@ if ($id_agente) {
 	$ip_all = agents_get_addresses ($id_agente);
 	
 	$table->data[1][1] .= html_print_select ($ip_all, "address_list", $direccion_agente, '', '', 0, true);
-	$table->data[1][1] .= "&nbsp;". html_print_checkbox ("delete_ip", 1, false, true).__('Delete selected');	
+	$table->data[1][1] .= "&nbsp;". html_print_checkbox ("delete_ip", 1, false, true).__('Delete selected');
 }
 
 $groups = users_get_groups ($config["id_user"], "AR",false);
@@ -214,6 +214,10 @@ $table->data[5][1] .= '</span>';
 
 // Network server
 $table->data[6][0] = __('Server');
+if ($new_agent) {
+	//Set first server by default.
+	$server_name = reset(array_keys(servers_get_names()));
+}
 $table->data[6][1] = html_print_select (servers_get_names (),
 	'server_name', $server_name, '', __('None'), 0, true);
 

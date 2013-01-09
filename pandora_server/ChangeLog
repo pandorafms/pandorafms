@@ -1,3 +1,9 @@
+2013-01-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* lib/PandoraFMS/PredictionServer.pm: Fixed prediction modules.
+	
+	Bug id: #3599200
+
 2013-01-08 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* util/pandora_db.pl: fixed the SQL query for the checking modules

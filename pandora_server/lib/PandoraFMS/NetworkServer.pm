@@ -271,7 +271,7 @@ sub pandora_snmp_get_command ($$$$$$$$$$) {
 	$snmp_version = "2c";
     }
 
-    if (defined($snmp_port) && ($snmp_port != "161") && ($snmp_port != "") && ($snmp_port != " ")){
+    if (defined($snmp_port) && ($snmp_port != "161") && ($snmp_port != "") && ($snmp_port != " ") && ($snmp_port != "0")){
 	$snmp_target = $snmp_target.":".$snmp_port;
     }
 

@@ -80,6 +80,7 @@ $inventory_modules = array();
 $date = null;
 
 //Added for events items
+$filter_event_no_validated = false;
 $filter_event_validated = false;
 $filter_event_critical = false;
 $filter_event_warning = false;
@@ -299,6 +300,7 @@ switch ($action) {
 				$period = $item['period'];
 				
 				//Added for events items
+				$filter_event_no_validated = $style['filter_event_no_validated'];
 				$filter_event_validated = $style['filter_event_validated'];
 				$filter_event_critical = $style['filter_event_critical'];
 				$filter_event_warning = $style['filter_event_warning'];
@@ -314,6 +316,7 @@ switch ($action) {
 				$group = $item['id_group'];
 				
 				//Added for events items
+				$filter_event_no_validated = $style['filter_event_no_validated'];
 				$filter_event_validated = $style['filter_event_validated'];
 				$filter_event_critical = $style['filter_event_critical'];
 				$filter_event_warning = $style['filter_event_warning'];
@@ -803,6 +806,8 @@ html_print_input_hidden('id_item', $idItem);
 			<td><?php echo __('Event filter'); ?></td>
 			<td>
 				<?php
+				echo __('No Validated');
+				html_print_checkbox ('filter_event_no_validated', true, $filter_event_no_validated);
 				echo __('Validated');
 				html_print_checkbox ('filter_event_validated', true, $filter_event_validated);
 				echo __('Critical');

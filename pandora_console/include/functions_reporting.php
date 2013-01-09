@@ -1892,7 +1892,7 @@ function reporting_agents_get_group_agents_detailed ($id_group, $period = 0, $da
  */
 function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 	$date = 0, $return = false, $filter_event_validated = false,
-	$filter_event_critical = false, $filter_event_warning = false) {
+	$filter_event_critical = false, $filter_event_warning = false, $filter_event_no_validated = false) {
 	
 	$id_agents = (array)safe_int ($id_agents, 1);
 	
@@ -1932,7 +1932,7 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 			(int)$period,
 			(int)$date,
 			$filter_event_validated, $filter_event_critical,
-			$filter_event_warning);
+			$filter_event_warning, $filter_event_no_validated);
 		
 		if (!empty ($event)) {
 			array_push ($events, $event);
@@ -2002,7 +2002,7 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$date = 0, $return = false, $html = true,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -2034,7 +2034,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	
 	$events = events_get_group_events($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning);
+		$filter_event_warning, $filter_event_no_validated);
 	
 	if ($events) {
 		foreach ($events as $event) {
@@ -2111,7 +2111,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 function reporting_get_count_events_by_agent ($id_group, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -2127,7 +2127,7 @@ function reporting_get_count_events_by_agent ($id_group, $period = 0,
 	
 	return events_get_count_events_by_agent($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning);
+		$filter_event_warning, $filter_event_no_validated);
 }
 
 /**
@@ -2144,7 +2144,7 @@ function reporting_get_count_events_by_agent ($id_group, $period = 0,
 function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -2160,7 +2160,7 @@ function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 	
 	return events_get_count_events_validated_by_user($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning);
+		$filter_event_warning, $filter_event_no_validated);
 }
 
 /**
@@ -2177,7 +2177,7 @@ function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 function reporting_get_count_events_by_criticity ($filter, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -2193,7 +2193,7 @@ function reporting_get_count_events_by_criticity ($filter, $period = 0,
 	
 	return events_get_count_events_by_criticity($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning);
+		$filter_event_warning, $filter_event_no_validated);
 }
 /**
  * Gets a detailed reporting of groups's events.  
@@ -2209,7 +2209,7 @@ function reporting_get_count_events_by_criticity ($filter, $period = 0,
 function reporting_get_count_events_validated ($filter, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -2225,7 +2225,7 @@ function reporting_get_count_events_validated ($filter, $period = 0,
 	
 	return events_get_count_events_validated($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning);
+		$filter_event_warning, $filter_event_no_validated);
 }
 
 /** 
@@ -3295,6 +3295,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$style = json_decode(io_safe_output($content['style']), true);
 			
+			$filter_event_no_validated = $style['filter_event_no_validated'];
 			$filter_event_validated = $style['filter_event_validated'];
 			$filter_event_critical = $style['filter_event_critical'];
 			$filter_event_warning = $style['filter_event_warning'];
@@ -3309,7 +3310,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$report["datetime"], true, true,
 				$filter_event_validated,
 				$filter_event_critical,
-				$filter_event_warning);
+				$filter_event_warning,
+				$filter_event_no_validated);
 			array_push ($table->data, $data);
 			
 			if ($event_graph_by_agent) {
@@ -3318,7 +3320,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$report["datetime"],
 					$filter_event_validated,
 					$filter_event_critical,
-					$filter_event_warning);
+					$filter_event_warning,
+					$filter_event_no_validated);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Events by agent');
@@ -3340,7 +3343,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$report["datetime"],
 					$filter_event_validated,
 					$filter_event_critical,
-					$filter_event_warning);
+					$filter_event_warning,
+					$filter_event_no_validated);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Events validated by user');
@@ -3362,7 +3366,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$report["datetime"],
 					$filter_event_validated,
 					$filter_event_critical,
-					$filter_event_warning);
+					$filter_event_warning,
+					$filter_event_no_validated);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Events by criticity');
@@ -3384,7 +3389,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$report["datetime"],
 					$filter_event_validated,
 					$filter_event_critical,
-					$filter_event_warning);
+					$filter_event_warning,
+					$filter_event_no_validated);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Amount events validated');
@@ -3407,6 +3413,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$style = json_decode(io_safe_output($content['style']), true);
 			
+			$filter_event_no_validated = $style['filter_event_no_validated'];
 			$filter_event_validated = $style['filter_event_validated'];
 			$filter_event_critical = $style['filter_event_critical'];
 			$filter_event_warning = $style['filter_event_warning'];
@@ -3431,7 +3438,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$report["datetime"], true,
 				$filter_event_validated,
 				$filter_event_critical,
-				$filter_event_warning);
+				$filter_event_warning,
+				$filter_event_no_validated);
 				
 			array_push ($table->data, $data);
 			
@@ -3442,7 +3450,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$report["datetime"],
 					$filter_event_validated,
 					$filter_event_critical,
-					$filter_event_warning);
+					$filter_event_warning,
+					$filter_event_no_validated);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Events validated by user');
@@ -3464,7 +3473,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$report["datetime"],
 					$filter_event_validated,
 					$filter_event_critical,
-					$filter_event_warning);
+					$filter_event_warning,
+					$filter_event_no_validated);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Events by criticity');
@@ -3486,7 +3496,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$report["datetime"],
 					$filter_event_validated,
 					$filter_event_critical,
-					$filter_event_warning);
+					$filter_event_warning,
+					$filter_event_no_validated);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Amount events validated');

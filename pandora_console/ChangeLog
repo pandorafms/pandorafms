@@ -1,3 +1,10 @@
+2013-01-09 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	include/functions_events.php, include/functions_reporting.php: added
+	the option "no validaded" in the items for events.
+
 2013-01-09 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_agents.php: Changed constraint in agent creation

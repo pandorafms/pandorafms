@@ -423,6 +423,7 @@ switch ($action) {
 							$resultOperationDB = false;
 							break;
 						}
+						$filter_event_no_validated = get_parameter('filter_event_no_validated', 0);
 						$filter_event_validated = get_parameter('filter_event_validated', 0);
 						$filter_event_critical = get_parameter('filter_event_critical', 0);
 						$filter_event_warning = get_parameter('filter_event_warning', 0);
@@ -489,6 +490,7 @@ switch ($action) {
 							case 'event_report_agent':
 							case 'event_report_group':
 								//Added for events items
+								$style['filter_event_no_validated'] = $filter_event_no_validated;
 								$style['filter_event_validated'] = $filter_event_validated;
 								$style['filter_event_critical'] = $filter_event_critical;
 								$style['filter_event_warning'] = $filter_event_warning;
@@ -659,6 +661,7 @@ switch ($action) {
 						switch ($values['type']) {
 							case 'event_report_agent':
 							case 'event_report_group':
+								$filter_event_no_validated = get_parameter('filter_event_no_validated', 0);
 								$filter_event_validated = get_parameter('filter_event_validated', 0);
 								$filter_event_critical = get_parameter('filter_event_critical', 0);
 								$filter_event_warning = get_parameter('filter_event_warning', 0);
@@ -668,6 +671,7 @@ switch ($action) {
 								$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
 								$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
 								//Added for events items
+								$style['filter_event_no_validated'] = $filter_event_no_validated;
 								$style['filter_event_validated'] = $filter_event_validated;
 								$style['filter_event_critical'] = $filter_event_critical;
 								$style['filter_event_warning'] = $filter_event_warning;

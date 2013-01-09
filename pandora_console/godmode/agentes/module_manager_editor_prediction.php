@@ -116,14 +116,23 @@ $params['use_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-id_agente';
 $data[1] .= ui_print_agent_autocomplete_input($params);
 
-
+// Get module and agent of the target prediction module
+if (!empty($prediction_module)) {
+	$id_agente_clean = modules_get_agentmodule_agent($prediction_module);
+	$prediction_module_agent = modules_get_agentmodule_agent_name($prediction_module);
+	$agent_name_clean = $prediction_module_agent;
+}
+else {
+	$id_agente_clean = $id_agente;
+	$agent_name_clean = $agent_name;
+}
 
 $data[1] .= html_print_label(__("Module"),'prediction_module',true);
 if($id_agente) {
 	$sql = "SELECT id_agente_modulo, nombre
 		FROM tagente_modulo
 		WHERE delete_pending = 0
-			AND history_data = 1 AND id_agente =  ".$id_agente;
+			AND history_data = 1 AND id_agente =  " . $id_agente_clean . " AND id_agente_modulo  <> " . $id_agente_modulo;
 	$data[1] .= html_print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true);
 }
 else {

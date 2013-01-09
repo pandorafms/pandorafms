@@ -424,6 +424,11 @@ UPDATE tperfil SET `report_view`= 1, `report_edit`= 1, `report_management`= 1, `
 UPDATE tperfil SET `report_view`= 1, `report_edit`= 1, `report_management`= 1, `event_view`= 1, `event_edit`= 1, `event_management`= 1 WHERE id_perfil = 5 AND name = "Pandora&#x20;Administrator";
 
 -- ---------------------------------------------------------------------
+-- Table `tusuario_perfil`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tusuario_perfil` ADD COLUMN `tags` TEXT NOT NULL;
+
+-- ---------------------------------------------------------------------
 -- Table `ttag`
 -- ---------------------------------------------------------------------
 ALTER TABLE `ttag` ADD COLUMN `email` text NULL;

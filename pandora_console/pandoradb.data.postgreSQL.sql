@@ -278,7 +278,8 @@ INSERT INTO "tusuario" ("id_user", "fullname", "firstname", "lastname", "middlen
 --
 -- Dumping data for table "tusuario_perfil"
 --
-INSERT INTO "tusuario_perfil" VALUES (1,'admin',5,0,'admin',0);
+INSERT INTO "tusuario_perfil" ("id_up", "id_usuario", "id_perfil", "id_grupo", "assigned_by", "id_policy") VALUES 
+(1,'admin',5,0,'admin',0);
 SELECT setval('tusuario_perfil_id_up_seq', (SELECT (SELECT MAX(id_up) FROM tusuario_perfil)));
 
 --

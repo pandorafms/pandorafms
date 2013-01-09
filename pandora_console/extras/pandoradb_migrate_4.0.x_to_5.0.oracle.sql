@@ -454,6 +454,11 @@ UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_v
 UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_view= 1, event_edit= 1, event_management= 1 WHERE id_perfil = 5 AND name = 'Pandora&#x20;Administrator';
 
 -- ---------------------------------------------------------------------
+-- Table `tusuario_perfil`
+-- ---------------------------------------------------------------------
+ALTER TABLE tusuario_perfil ADD (tags CLOB NOT NULL default '');
+
+-- ---------------------------------------------------------------------
 -- Table `ttag`
 -- ---------------------------------------------------------------------
 ALTER TABLE ttag ADD (email CLOB NULL);

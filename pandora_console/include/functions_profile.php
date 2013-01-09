@@ -63,10 +63,11 @@ function profile_get_profiles ($filter = false) {
  * @param int Profile ID (default 1 => AR)
  * @param int Group ID (default 1 => All)
  * @param string Assign User who assign the profile to user.
+ * @param string tags where the view of the user in this group will be restricted
  *
  * @return mixed Number id if succesful, false if not
  */
-function profile_create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignUser = false) {
+function profile_create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignUser = false, $tags = '') {
 	global $config;
 
 	if (empty ($id_profile) || $id_group < 0)
@@ -78,7 +79,7 @@ function profile_create_user_profile ($id_user, $id_profile = 1, $id_group = 0, 
 	if (!$result_user){
 		return false;
 	}	
-	
+
 	if (isset ($config["id_user"])) {
 		//Usually this is set unless we call it while logging in (user known by auth scheme but not by pandora)
 		$assign = $config["id_user"];
@@ -93,6 +94,7 @@ function profile_create_user_profile ($id_user, $id_profile = 1, $id_group = 0, 
 		"id_usuario" => $id_user,
 		"id_perfil" => $id_profile,
 		"id_grupo" => $id_group,
+		"tags" => $tags,
 		"assigned_by" => $assign
 	);
 

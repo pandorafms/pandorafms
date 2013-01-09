@@ -304,7 +304,8 @@ END;;
 --
 BEGIN
 LOCK TABLE tusuario_perfil IN EXCLUSIVE MODE;
-INSERT INTO tusuario_perfil VALUES (1,'admin',5,0,'admin',0);
+INSERT INTO tusuario_perfil (id_up, id_usuario, id_perfil, id_grupo, assigned_by, id_policy) 
+VALUES (1,'admin',5,0,'admin',0);
 COMMIT;
 END;;
 

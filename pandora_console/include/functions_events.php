@@ -588,7 +588,9 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment', $m
 		$commentbox = '';
 	}
 	
-	$comment = '<b>-- ' . $action . ' ' . __('by') . ' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox.'<br>';
+	// Don't translate 'by' word because if various users with different languages 
+	// make comments in the same console will be a mess
+	$comment = '<b>-- ' . $action . ' by '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox.'<br>';
 	
 	// Update comment
 	switch ($config['dbtype']) {
@@ -1406,8 +1408,8 @@ function events_page_responses ($event) {
 	$table_responses->style[0] = 'width:35%; font-weight: bold; text-align: left;';
 	$table_responses->style[1] = 'text-align: left;';
 	$table_responses->class = "databox alternate";
-	
-	if (check_acl ($config["id_user"], $event["id_grupo"], "EM") == 1) {
+
+	if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'])) {
 		// Owner
 		$data = array();
 		$data[0] = __('Change owner');
@@ -1438,7 +1440,7 @@ function events_page_responses ($event) {
 	
 	$status_blocked = false;
 	
-	if (check_acl ($config["id_user"], $event["id_grupo"], "EM") == 1) {
+	if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'])) {
 		// If the user has manager acls, the status can be changed to all possibilities always
 		$status = array(0 => __('New'), 2 => __('In process'), 1 => __('Validated'));
 	}
@@ -1477,7 +1479,7 @@ function events_page_responses ($event) {
 	
 	$table_responses->data[] = $data;
 	
-	if (check_acl ($config["id_user"], $event["id_grupo"], "EM") == 1) {
+	if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'])) {
 		// Delete
 		$data = array();
 		$data[0] = __('Delete event');
@@ -2002,27 +2004,8 @@ function events_page_general ($event) {
 	$data[0] = __('Tags');
 	
 	if ($event["tags"] != '') {
-		$tags_array = explode(',',$event["tags"]);
-		
-		$tags = array();
-		foreach($tags_array as $t) {
-			$tag_url = explode(' ', $t);
-			$tag = $tag_url[0];
-			if(isset($tag_url[1]) && $tag_url[1] != '') {
-				$title = __($tag_url[1]); 
-				$link = '<a href="'.$tag_url[1].'" target="_blank">'.html_print_image('images/zoom.png',true, array('alt' => $title, 'title' => $title)).'</a>';
-			}
-			else {
-				$link = '';
-			}
-			
-			$tags[] = $tag.$link;
-		}
-		
-		$tags = implode(',',$tags);
-		
-		$tags = str_replace(',',' , ',$tags);
-		
+		$tags = tags_get_tags_formatted($event["tags"]);
+				
 		$data[1] = $tags;
 	}
 	else {
@@ -2085,7 +2068,7 @@ function events_page_comments ($event) {
 		$table_comments->data[] = $data;
 	}
 	
-	if (check_acl ($config['id_user'], $event['id_grupo'], "EW") || check_acl ($config['id_user'], $event['id_grupo'], "EM")) {
+    if (tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags'])) {
 		$comments_form = '<br><div id="comments_form" style="width:98%;">'.html_print_textarea("comment", 3, 10, '', 'style="min-height: 15px; width: 100%;"', true);
 		$comments_form .= '<br><div style="text-align:right;">'.html_print_button(__('Add comment'),'comment_button',false,'event_comment();','class="sub next"',true).'</div><br></div>';
 	}
@@ -2096,6 +2079,15 @@ function events_page_comments ($event) {
 	$comments = '<div id="extended_event_comments_page" class="extended_event_pages">'.$comments_form.html_print_table($table_comments, true).'</div>';
 	
 	return $comments;
+}
+
+function events_clean_tags ($tags) {
+	if(empty($tags)) {
+		return array();
+	}
+	
+	$event_tags = tags_get_tags_formatted ($tags, false);
+	return explode(',',str_replace(' ','',$event_tags));
 }
 
 /**

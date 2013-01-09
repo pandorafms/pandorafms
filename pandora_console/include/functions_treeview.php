@@ -14,6 +14,55 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+function treeview_printAlertsTable($id_module, $console_url = '') {
+	global $config;
+
+	$module_alerts = alerts_get_alerts_agent_module($id_module);
+	$module_name = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module);
+	$agent_id = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
+	
+	if ($module_alerts === false) {
+		echo '<h3 class="error">'.__('There was a problem loading alerts').'</h3>';
+		return;
+	}
+	
+	echo '<div id="id_div3" width="450px">';
+	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:70%">';
+	echo '<tr><td colspan=3 class="datos"><center><img src="images/bell.png"> '.$module_name.'</center></td></tr>';
+	
+	echo '<tr><th class="datos"><b>'.__('Template').'</b></th>';
+	echo '<th class="datos"><b>'.__('Actions').'</b></th>';
+
+	foreach($module_alerts as $module_alert) {
+		//Template name
+		echo '<tr>';
+		$template_name = db_get_value('name','talert_templates','id',$module_alert['id_alert_template']);
+		echo '<td class="datos">'.$template_name.'</td>';
+		$actions = alerts_get_alert_agent_module_actions($module_alert['id']);
+		echo '<td class="datos">'; 
+		if(empty($actions)) {
+			echo '<i>'.__('N/A').'</i>';
+		}
+		else {
+			echo '<ul>';
+			foreach($actions as $act) {
+				echo '<li>';
+					echo $act['name'];
+				echo '</li>';
+			}
+			echo '</ul>';
+		}
+		echo '</td></tr>';
+	}
+	echo '</table>';
+	
+	echo '<form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent_id.'&tab=alert" target="_blank">';
+		echo '<div class="action-buttons">';
+			html_print_submit_button (__('Go to alerts detail'), 'upd_button', false, 'class="sub search"');
+		echo '</div>';
+	echo '</form>';
+}
+
 function treeview_printTable($id_agente, $console_url = '') {
 	global $config;
 
@@ -181,7 +230,7 @@ function treeview_printTable($id_agente, $console_url = '') {
 	
 	echo '<form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
 		echo '<div class="action-buttons" style="width: '.$table->width.'">';
-			html_print_submit_button (__('Go to agent detail'), 'upd_button', false, 'class="sub upd"');
+			html_print_submit_button (__('Go to agent detail'), 'upd_button', false, 'class="sub search"');
 		echo '</div>';
 	echo '</form>';
 	
@@ -301,7 +350,7 @@ function treeview_getData ($type, $server=false) {
 	$select_status = get_parameter('status', -1);
 	
 	//Get all groups
-	$avariableGroups = users_get_groups (); //db_get_all_rows_in_table('tgrupo', 'nombre');	
+	$avariableGroups = users_get_groups ();
 	
 	//Get all groups with agents
 	$full_groups = db_get_all_rows_sql("SELECT DISTINCT id_grupo FROM tagente WHERE total_count > 0");
@@ -385,7 +434,6 @@ function treeview_getData ($type, $server=false) {
 	else {
 		$sql_search ='';
 	}
-	
 	
 	switch ($type) {
 		case 'os':		
@@ -621,6 +669,8 @@ function treeview_getData ($type, $server=false) {
 			if ($select_status != -1)
 				$sql_search .= " AND estado = " . $select_status . " ";
 			
+			$sql_search .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 't1');
+
 			switch ($config["dbtype"]) {
 				case "mysql":
 				case "postgresql":
@@ -645,7 +695,8 @@ function treeview_getData ($type, $server=false) {
 							t1.id_agente_modulo = t3.id_agente_modulo AND
 							t2.disabled = 0 AND
 							t1.disabled = 0 AND
-							t3.utimestamp !=0
+							t3.utimestamp !=0' .
+							$sql_search.'
 							GROUP BY dbms_lob.substr(t1.nombre,4000,1)
 							ORDER BY dbms_lob.substr(t1.nombre,4000,1) ASC');
 					break;
@@ -653,20 +704,31 @@ function treeview_getData ($type, $server=false) {
 			
 			break;
 		case 'tag':
-				$sql = 'SELECT DISTINCT ttag.name 
+				// Restrict the tags showed to the user tags
+				$user_tags = tags_get_user_tags();
+				if(empty($user_tags)) {
+					$user_tags_sql = ' AND 1 = 0';
+				}
+				else {
+					$user_tags_sql = sprintf(' AND ttag.id_tag IN (%s)', implode(',', array_keys($user_tags)));
+				}
+				
+				if ($search_free == '') {
+					$search_sql = '';
+				}
+				else {
+					$search_sql = sprintf(" AND tagente.nombre COLLATE utf8_general_ci LIKE '%%%s%%'", $search_free);
+				}
+				
+				$sql = "SELECT DISTINCT ttag.name 
 						FROM ttag, ttag_module, tagente, tagente_modulo 
 						WHERE ttag.id_tag = ttag_module.id_tag
 						AND tagente.id_agente = tagente_modulo.id_agente
 						AND tagente.disabled = 0
-						AND ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo';
-				if ($search_free != '') {
-					$sql = "SELECT DISTINCT ttag.name 
-							FROM ttag, ttag_module, tagente, tagente_modulo 
-							WHERE ttag.id_tag = ttag_module.id_tag
-							AND tagente.id_agente = tagente_modulo.id_agente
-							AND tagente.disabled = 0
-							AND ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente.nombre COLLATE utf8_general_ci LIKE '%$search_free%'";
-				}
+						AND ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo" .
+						$search_sql . 
+						$user_tags_sql;
+
 				$list = db_get_all_rows_sql($sql);
 			break;
 	}
@@ -769,7 +831,7 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 	else {
 		$search_sql = '';
 	}
-	
+
 	//Extract all rows of data for each type
 	switch ($type) {
 		case 'group':
@@ -865,10 +927,9 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 			//"Load_articapandora_32_pandoraartica_Average"
 			//result -> "Load Average"
 			$name = str_replace(array('_articapandora_'.ord(' ').'_pandoraartica_', '_articapandora_'.ord('#').'_pandoraartica_','_articapandora_'.ord('/').'_pandoraartica_'),array(' ','#','/'),$id);
-			
-			$name = io_safe_input($name);
-			
-			
+
+			$name = io_safe_input(io_safe_output($name));
+
 			$sql = agents_get_agents(array (
 				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'disabled' => 0,
@@ -885,18 +946,33 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 					WHERE nombre = \'%s\' AND disabled = 0
 				)
 				', $name);
+
 			break;
 		case 'tag':
-			$id = tags_get_id (pack ('H*', $id));
+			if (defined ('METACONSOLE')) {
+				$id = tags_get_id (pack ('H*', $id));
+				if ($id == '') {
+					return false;
+				}
+			}
+			
 			if ($id === false) {
 				return false;
 			}
+			
+			if(empty($groups_sql)) {
+				$groups_condition = ' AND 1 = 0';
+			}
+			else {
+				$groups_condition = sprintf(' AND tagente.id_grupo IN (%s)', $groups_sql);
+			}
+			
 			$sql = "SELECT tagente.* 
 						FROM tagente, tagente_modulo, ttag_module 
 						WHERE tagente.id_agente = tagente_modulo.id_agente
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-						AND ttag_module.id_tag = " . $id;
-
+						AND ttag_module.id_tag = " . $id . $groups_condition;
+			$sql .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 'tagente_modulo');
 			break;
 	}
 	
@@ -911,25 +987,27 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 // Get SQL for the second tree branch
 function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 	global $config;
-
 	switch ($fatherType) {
 		case 'group':
 			$sql = 'SELECT * 
 				FROM tagente_modulo AS t1 
 				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
 				WHERE t1.id_agente = ' . $id;
+			$sql .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 't1');
 			break;
 		case 'os':
 			$sql = 'SELECT * 
 				FROM tagente_modulo AS t1 
 				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
 				WHERE t1.id_agente = ' . $id;
+			$sql .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 't1');
 			break;
 		case 'module_group':
 			$sql = 'SELECT * 
 				FROM tagente_modulo AS t1 
 				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
 				WHERE t1.id_agente = ' . $id . ' AND id_module_group = ' . $id_father;
+			$sql .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 't1');
 			break;
 		case 'policies':
 			$whereQuery = '';
@@ -943,6 +1021,7 @@ function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 				FROM tagente_modulo AS t1 
 				INNER JOIN tagente_estado AS t2 ON t1.id_agente_modulo = t2.id_agente_modulo
 				WHERE t1.id_agente = ' . $id . $whereQuery;
+			$sql .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 't1');
 			break;
 		default:
 		case 'module':
@@ -964,7 +1043,13 @@ function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 			}
 			break;
 		case 'tag':
-			$id_father = tags_get_id ($id_father);
+			if (defined ('METACONSOLE')) {
+				$id_father = tags_get_id (pack ('H*', $id_father));
+				if ($id == '') {
+					return false;
+				}
+			}
+			
 			if ($id_father === false) {
 				return false;
 			}

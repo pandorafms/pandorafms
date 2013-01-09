@@ -879,7 +879,8 @@ CREATE TABLE "tusuario_perfil" (
 	"id_perfil" INTEGER NOT NULL default 0,
 	"id_grupo" INTEGER NOT NULL default 0,
 	"assigned_by" varchar(100) NOT NULL default '',
-	"id_policy" INTEGER DEFAULT 0 NOT NULL
+	"id_policy" INTEGER DEFAULT 0 NOT NULL,
+	"tags" text NOT NULL
 );
 
 -- -----------------------------------------------------

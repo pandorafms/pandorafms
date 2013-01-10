@@ -1,3 +1,11 @@
+2013-01-10  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* lib/PandoraFMS/PluginServer.pm: Added log traces for plugin error
+	to notice about low memory.
+	* util/plugin/mysql_plugin.sh: Added correct exit code for plugin.
+
+	MERGED FROM 4.0.3
+
 2013-01-10  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/SNMPServer.pm: Rewrite my commit at rev7388 in more

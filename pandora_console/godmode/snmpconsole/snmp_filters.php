@@ -111,6 +111,7 @@ if ($edit_filter > -2) {
 	$result = db_get_all_rows_in_table ("tsnmp_filter");
 	if ($result === false) {
 		$result = array ();
+		echo "<div class='nf'>".__('There are no SNMP filters')."</div>";
 	}
 	
 	$table->data = array ();

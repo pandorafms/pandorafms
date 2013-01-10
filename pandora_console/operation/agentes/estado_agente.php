@@ -549,19 +549,9 @@ if (!empty ($table->data)) {
 	ui_pagination ($total_agents, ui_get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
 	unset ($table);
 }
-
-/* Godmode controls SHOULD NOT BE HERE 
-
-if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0, "AW")
-		|| check_acl ($config['id_user'], 0, "PM") || check_acl ($config['id_user'], 0, "DM")
-		|| check_acl ($config['id_user'], 0, "UM")) {
-	
-	echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente">';
-		html_print_input_hidden ('new_agent', 1);
-		html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
-	echo '</form>';
+else {
+	echo '<div class="nf">'.__('There are no defined agents').'</div>';
 }
-*/
 ?>
 
 <script type="text/javascript">

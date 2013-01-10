@@ -313,6 +313,9 @@ function mainModuleGroups() {
 			"</ul>" .
 		"</p>";
 	}
+	else {
+		echo "<div class='nf'>".__('There are no defined groups or module groups')."</div>";
+	}
 	
 	ui_require_css_file('cluetip');
 	ui_require_jquery_file('cluetip');

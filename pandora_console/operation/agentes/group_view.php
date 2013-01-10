@@ -81,30 +81,31 @@ $counter = 1;
 $agents = agents_get_group_agents(array_keys($groups));
 
 if (count($agents) > 0) {
-
-echo '<table cellpadding="0" style="margin-top:10px" cellspacing="0" border="0" width="98%">';
-
-echo "<tr>";
-echo "<th width='25%'>".__("Group")."</th>";
-echo "<th>";
-echo "<th width='10%'>".__("Agents")."</th>";
-echo "<th width='10%'>".__("Agent unknown")."</th>";
-echo "<th width='10%'>".__("Unknown")."</th>";
-echo "<th width='10%'>".__("Not Init")."</th>";
-echo "<th width='10%'>".__("Normal")."</th>";
-echo "<th width='10%'>".__("Warning")."</th>";
-echo "<th width='10%'>".__("Critical")."</th>";
-echo "<th width='10%'>".__("Alert fired")."</th>";
-
-$printed_groups = array();
-
-// For each valid group for this user, take data from agent and modules
-foreach ($groups as $id_group => $group) {
-	groups_get_group_row($id_group, $groups, $group, $printed_groups);
+	echo '<table cellpadding="0" style="margin-top:10px" cellspacing="0" border="0" width="98%">';
+	echo "<tr>";
+	echo "<th width='25%'>".__("Group")."</th>";
+	echo "<th>";
+	echo "<th width='10%'>".__("Agents")."</th>";
+	echo "<th width='10%'>".__("Agent unknown")."</th>";
+	echo "<th width='10%'>".__("Unknown")."</th>";
+	echo "<th width='10%'>".__("Not Init")."</th>";
+	echo "<th width='10%'>".__("Normal")."</th>";
+	echo "<th width='10%'>".__("Warning")."</th>";
+	echo "<th width='10%'>".__("Critical")."</th>";
+	echo "<th width='10%'>".__("Alert fired")."</th>";
+	
+	$printed_groups = array();
+	
+	// For each valid group for this user, take data from agent and modules
+	foreach ($groups as $id_group => $group) {
+		groups_get_group_row($id_group, $groups, $group, $printed_groups);
+	}
+	
+	echo "</table>";
 }
-
-echo "</table>";
-
+else {
+	echo "<div class='nf'>" . __('There are no defined agents') .
+		"</div>";
 }
 
 ?>

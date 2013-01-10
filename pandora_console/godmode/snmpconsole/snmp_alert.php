@@ -270,6 +270,7 @@ if (isset ($_GET["update_alert"])) {
 	$result = db_get_all_rows_in_table ("talert_snmp");
 	if ($result === false) {
 		$result = array ();
+		echo "<div class='nf'>".__('There are no SNMP alerts')."</div>";
 	}
 	
 	$table->data = array ();

@@ -165,7 +165,10 @@ if (!empty($result)){
 	
 	html_print_table ($table);
 }
-
+else { 	 
+	// No tags available or selected 	 
+	echo "<div class='nf'>".__('No tags selected')."</div>"; 	 
+}
 
 ui_require_css_file ('cluetip');
 ui_require_jquery_file ('cluetip');

@@ -158,6 +158,7 @@ function mainAgentsModules() {
 	$nagents = count($agents);
 	
 	if($all_modules == false || $agents == false) {
+		echo "<div class='nf'>".__('There are no agents with modules')."</div>";
 		return;
 	}
 	

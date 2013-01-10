@@ -461,6 +461,7 @@ if ($agents !== false) {
 	echo "<table width='95%'><tr><td align='right'>";
 }
 else {
+	echo "<div class='nf'>".__('There are no defined agents')."</div>";
 	echo "&nbsp;</td></tr><tr><td>";
 }
 

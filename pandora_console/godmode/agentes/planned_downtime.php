@@ -332,7 +332,10 @@ if (($first_create != 0) OR ($first_update != 0)){
 				AND tplanned_downtime_agents.id_downtime = %d ",$id_downtime);
 
 		$downtimes = db_get_all_rows_sql ($sql);
-		if ($downtimes !== false) {
+		if ($downtimes === false) {
+			echo '<div class="nf">'. __('There are no scheduled downtimes').'</div>'; 	 
+	    } 	 
+	    else {
 			$table->class = 'databox';
 			$table->width = '98%';
 			$table->data = array ();
@@ -345,22 +348,22 @@ if (($first_create != 0) OR ($first_update != 0)){
 			$table->align[4] = "center";;
 
 			foreach ($downtimes as $downtime) {
-			$data = array ();
+				$data = array ();
 
-			$data[0] = $downtime['nombre'];
+				$data[0] = $downtime['nombre'];
 
-			$data[1] = db_get_sql ("SELECT nombre FROM tgrupo WHERE id_grupo = ". $downtime["id_grupo"]);
+				$data[1] = db_get_sql ("SELECT nombre FROM tgrupo WHERE id_grupo = ". $downtime["id_grupo"]);
 
-			$data[2] = ui_print_os_icon ($downtime["id_os"], true, true);
+				$data[2] = ui_print_os_icon ($downtime["id_os"], true, true);
 
-			$data[3] = $downtime["ultimo_contacto"];
+				$data[3] = $downtime["ultimo_contacto"];
 
-			$data[4] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
-				$id_agent.'&amp;delete_downtime_agent=1&amp;first_update=1&amp;id_downtime_agent='.$downtime["id"].'&amp;id_downtime='.$id_downtime.'">' .
-				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+				$data[4] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
+					$id_agent.'&amp;delete_downtime_agent=1&amp;first_update=1&amp;id_downtime_agent='.$downtime["id"].'&amp;id_downtime='.$id_downtime.'">' .
+					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
 
-			array_push ($table->data, $data);
-		}
+				array_push ($table->data, $data);
+			}
 			html_print_table ($table);
 		}
 	}
@@ -398,7 +401,10 @@ else {
 			$downtimes = array();
 		}
 
-		if ($downtimes) {
+		if (!$downtimes) { 	                
+			echo '<div class="nf">'.__('No planned downtime').'</div>'; 	 
+	    } 	 
+	    else {
 			foreach ($downtimes as $downtime) {
 				$data = array();
 				$total  = db_get_sql ("SELECT COUNT(id_agent) FROM tplanned_downtime_agents WHERE id_downtime = ".$downtime["id"]);

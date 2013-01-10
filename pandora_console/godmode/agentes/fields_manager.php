@@ -93,6 +93,9 @@ if ($fields) {
 	$table->align[2] = 'center';
 	$table->data = array ();
 }
+else {
+	echo '<div class="nf">'. __('No fields defined') .'</div>';
+}
 
 if ($fields === false) $fields = array();
 

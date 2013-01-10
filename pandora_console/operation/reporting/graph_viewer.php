@@ -230,5 +230,7 @@ if (! empty ($graphs)) {
 	}
 	html_print_table ($table);
 }
-
+else {
+	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
+}
 ?>

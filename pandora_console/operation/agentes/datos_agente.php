@@ -258,7 +258,10 @@ foreach ($result as $row) {
 	if (count($table->data) > 200) break;
 }
 
-if (!empty ($table->data)) {
+if (empty ($table->data)) {
+	echo '<h3 class="error">'.__('No available data to show').'</h3>';
+}
+else {
 	ui_pagination($count);
 	html_print_table ($table);
 	unset ($table);

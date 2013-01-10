@@ -41,7 +41,9 @@ $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
 if($fields === false) {
 	$fields = array();
-} else {
+	echo "<div class='nf'>". __("No fields defined"). "</div>";
+}
+else {
 	$table->width = '98%';
 	$table->head = array ();
 	$table->head[0] = __('Field');
@@ -58,7 +60,8 @@ if($fields === false) {
 
 		if($field['display_on_front']) {
 			$data[1] = html_print_image('images/tick.png', true);
-		}else {
+		}
+		else {
 			$data[1] = html_print_image('images/delete.png', true);
 		}
 		

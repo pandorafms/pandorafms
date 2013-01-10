@@ -774,6 +774,9 @@ foreach ($result as $row) {
 if (!empty ($table->data)) {
 	html_print_table ($table);
 }
+else {
+	echo "<div class='nf'>".__('This group doesn\'t have any monitor')."</div>";
+}
 
 ?>
 <script type="text/javascript">

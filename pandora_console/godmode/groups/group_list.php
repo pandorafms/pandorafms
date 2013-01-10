@@ -330,6 +330,9 @@ if(!empty($groups)) {
 	
 	html_print_table ($table);
 }
+else {
+	echo "<div class='nf'>".__('There are no defined groups')."</div>";
+}
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_group">';
 echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 5px;">';

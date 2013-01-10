@@ -1,4 +1,4 @@
-/fir<?php
+<?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
@@ -250,6 +250,10 @@ switch ($action) {
 			}
 			html_print_table ($table);
 		}
+		else { 	 
+			echo "<div class='nf'>" . 	 
+	             __('There are no defined reportings') . "</div>"; 	 
+	    }
 		
 		if (check_acl ($config['id_user'], 0, "IW")) {
 			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new">';

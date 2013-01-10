@@ -912,7 +912,7 @@ function printTree_($type) {
 
 		// If there are not groups display error and return
 		if (empty($avariableGroups)) {
-
+			echo "<div class='nf'>".__('There aren\'t agents in this agrupation')."</div>";
 			echo '</td></tr>';
 			echo '</table>';		
 			return;
@@ -1195,7 +1195,7 @@ function printTree_($type) {
 	}
 	
 	if ($list === false) {
-
+		echo "<div class='nf'>".__('There aren\'t agents in this agrupation')."</div>";
 		echo '</td></tr>';
 		echo '</table>';
 	}

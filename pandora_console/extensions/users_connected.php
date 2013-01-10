@@ -53,6 +53,7 @@ function users_extension_main_god ($god = true) {
 
 	if (empty ($rows)) {
 		$rows = array ();
+		echo "<div class='nf'>".__('No other users connected')."</div>";
 	}
 	else {
 		$table->cellpadding = 4;

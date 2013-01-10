@@ -35,6 +35,7 @@ $interval = agents_get_interval ($id_agent);
 $modules = agents_get_modules ($id_agent, '*',
 	array ('disabled' => 0, 'history_data' => 1, 'delete_pending' => 0));
 if (empty ($modules)) {
+	echo "<div class='nf'>".__("There are no modules to evaluate the S.L.A. from")."</div>";
 	return;
 }
 

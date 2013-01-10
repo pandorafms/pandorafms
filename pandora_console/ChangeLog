@@ -1,3 +1,34 @@
+2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extensions/agents_modules.php
+	extensions/users_connected.php
+	extensions/module_groups.php
+	operation/tree.php
+	operation/agentes/status_monitor.php
+	operation/agentes/datos_agente.php
+	operation/agentes/custom_fields.php
+	operation/agentes/estado_agente.php
+	operation/agentes/sla_view.php
+	operation/agentes/group_view.php
+	operation/servers/recon_view.php
+	operation/snmpconsole/snmp_view.php
+	operation/gis_maps/index.php
+	operation/events/events_list.php
+	operation/messages/message_list.php
+	operation/reporting/graph_viewer.php
+	godmode/groups/group_list.php
+	godmode/agentes/fields_manager.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/modificar_agente.php
+	godmode/agentes/planned_downtime.php
+	godmode/alerts/alert_list.list.php
+	godmode/snmpconsole/snmp_alert.php
+	godmode/snmpconsole/snmp_filters.php
+	godmode/reporting/reporting_builder.list_items.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/graphs.php
+	godmode/tag/tag.php: Restored messages when view are empty.
+
 2012-01-09 SAncho Lerena <slerena@artica.es>
 
 	* godmode/setup/setup.php: Fixed warning on enabling EACL.

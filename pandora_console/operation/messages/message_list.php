@@ -95,7 +95,10 @@ if ($show_sent) { //sent view
 	$messages = messages_get_overview ();
 }
 
-if (!empty ($messages)) {
+if (empty ($messages)) {
+	echo '<div class="nf">'.__('There are no messages').'</div>';
+}
+else {
 	$table->width = "98%";
 	$table->class = "databox";
 	$table->cellpadding = 4;

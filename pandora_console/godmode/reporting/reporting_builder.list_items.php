@@ -235,6 +235,9 @@ if ($items) {
 	$table->align[6] = 'center';
 	$table->align[7] = 'center';
 }
+else {
+	echo '<br><br><div class="nf">'. __('No items') . '</div>';
+}
 
 $lastPage = true;
 if (((($offset == 0) && ($config["block_size"] > $countItems)) ||

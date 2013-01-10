@@ -557,6 +557,9 @@ foreach ($simple_alerts as $alert) {
 if (isset($data)){
 	html_print_table ($table);
 }
+else {
+	echo "<div class='nf'>".__('No alerts defined')."</div>";
+}
 
 // Create alert button
 // $dont_display_alert_create_bttn is setted in configurar_agente.php in order to not display create button

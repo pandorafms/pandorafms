@@ -366,6 +366,7 @@ $total_modules = db_get_value_sql($sql_total_modules);
 $total_modules = isset ($total_modules) ? $total_modules : 0;	
 
 if ($modules === false) {
+	echo "<div class='nf'>".__('No available data to show')."</div>";
 	return;
 }
 

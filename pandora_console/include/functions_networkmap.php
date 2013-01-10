@@ -127,6 +127,9 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0, $font_
 		$node_count++;
 	}
 	
+	// Create void statistics array
+	$stats = array();	
+	
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
 		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {
@@ -249,6 +252,14 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 		// Parse agents
 		$nodes_agents = array();
 		foreach ($agents as $agent) {
+			
+			// If only agents with alerts => agents without alerts discarded
+			$alert_agent = agents_get_alerts($agent['id_agente']); 
+			
+			if ($modwithalerts and empty($alert_agent['simple']) and empty($alert_agent['compounds'])){
+				continue;
+			}
+			
 			$node_count ++;
 			// Save node parent information to define edges later
 			$parents[$node_count] = $agent['parent'] = $nodes_groups[$agent['id_grupo']]['id_node'];
@@ -301,6 +312,10 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 	if (empty ($nodes)) {
 		return false;
 	}
+	
+	// Create void statistics array
+	$stats = array();	
+
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
 		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {
@@ -443,7 +458,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	// Short name
 	$name = io_safe_output($agent["nombre"]);
 	if ((strlen ($name) > 16) && ($cut_names)) {
-		$name = substr ($name, 0, 16) . '...';
+		$name = ui_print_truncate_text($name, 16, false, true, false);
 	}
 	
 	if ($simple == 0){

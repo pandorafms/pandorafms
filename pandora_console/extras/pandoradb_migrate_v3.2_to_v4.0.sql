@@ -264,7 +264,7 @@ INSERT INTO `tconfig_os` (`name`, `description`, `icon_name`) VALUES ('VMware', 
 
 UPDATE tconfig SET value='4.0' WHERE token = 'db_scheme_version';
 UPDATE tconfig SET value='PD110923 (3.2 Migrate)' WHERE token = 'db_scheme_build';
-
+INSERT INTO tconfig (`token`, `value`) VALUES ('num_files_attachment', 100);
 
 -- -----------------------------------------------------
 -- Encode empty space entities (Added 17th May 2012)

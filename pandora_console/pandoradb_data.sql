@@ -80,7 +80,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('integria_api_password', ''),
 ('integria_inventory', '0'),
 ('integria_url', ''),
-('update_manager_installed', 1);
+('update_manager_installed', 1),
+('num_files_attachment', 100);
 
 UNLOCK TABLES;
 

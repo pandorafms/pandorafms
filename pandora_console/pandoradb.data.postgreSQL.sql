@@ -104,7 +104,8 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('meta_style', 'meta_pandora'),
 ('enable_refr', '0'),
 ('meta_num_elements', 100),
-('update_manager_installed', 1);
+('update_manager_installed', 1),
+('num_files_attachment', 100);
 
 COMMIT WORK;
 

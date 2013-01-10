@@ -1,3 +1,8 @@
+2013-01-10  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* lib/PandoraFMS/PluginServer.pm: Added log traces to inform about
+	problems on plugin execution with low memory.
+
 2013-01-10  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* lib/PandoraFMS/SNMPServer.pm: Rewrite my commit at rev7388 in more

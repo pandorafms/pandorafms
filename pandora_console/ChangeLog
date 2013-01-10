@@ -1,5 +1,12 @@
 2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* operation/incidents/incident.php
+	 operation/agentes/alerts_status.php
+	 operation/agentes/estado_ultimopaquete.php: Restored messages 
+	 when views are empty.
+	 
+2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* extensions/agents_modules.php
 	extensions/users_connected.php
 	extensions/module_groups.php

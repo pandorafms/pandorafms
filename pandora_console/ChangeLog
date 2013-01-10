@@ -1,5 +1,10 @@
 2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_config.php: Max recommended number of files in
+	attachment directory parametrized.
+
+2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* pandoradb_data.sql
 	pandoradb.data.postgreSQL.sql
 	pandoradb.data.oracle.sql

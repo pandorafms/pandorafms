@@ -240,6 +240,7 @@ function config_update_config () {
 			config_update_value ('stats_interval', get_parameter ('stats_interval'));
 			config_update_value ('agentaccess', (int) get_parameter ('agentaccess'));
 			config_update_value ('compact_header', (bool) get_parameter ('compact_header'));
+			config_update_value ('num_files_attachment', (int) get_parameter ('num_files_attachment'));
 			/////////////
 			break;
 		case 'godmode/setup/setup_visuals':
@@ -361,6 +362,10 @@ function config_process_config () {
 	
 	if (!isset ($config["compact_header"])) {
 		config_update_value ('compact_header', false);
+	}
+	
+	if (!isset ($config["num_files_attachment"])) {
+		config_update_value ('num_files_attachment', 100);
 	}
 	
 	if (!isset ($config['status_images_set'])) {
@@ -811,8 +816,8 @@ function config_check () {
 	// Check attachment directory (too much files?)
 	
 	$filecount = count(glob($config["homedir"]."/attachment/*"));
-	// 100 temporal files of trash should be enough for most people.
-	if ($filecount > 100) {
+	// N temporal files of trash should be enough for most people.
+	if ($filecount > $config['num_files_attachment']) {
 		$config["alert_cnt"]++;
 		$_SESSION["alert_msg"] .= ui_print_error_message(
 			array('title' => __('Too much files in your tempora/attachment directory'),

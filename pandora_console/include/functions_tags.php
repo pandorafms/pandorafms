@@ -641,7 +641,7 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
  * @return mixed/string Tag ids
  */
  
-function tags_get_acl_tags($id_user, $id_group, $access, $return_mode = 'module_condition', $query_prefix = '', $query_table = '') {
+function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = 'module_condition', $query_prefix = '', $query_table = '') {
 	global $config;
 	if($id_user == false) {
 		$id_user = $config['id_user'];
@@ -852,6 +852,35 @@ function tags_get_acl_tags_event_condition($acltags) {
 }
 
 /**
+ * Check if a user has assigned acl tags or not (if is admin, is like not acl tags)
+ * 
+ * @param string ID of the user (with false the user will be taked from config)
+ * 
+ * @return bool true if the user has tags and false if not
+ */
+function tags_has_user_acl_tags($id_user = false) {
+	global $config;
+	
+	if($id_user === false) {
+		$id_user = $config['id_user'];
+	}
+	
+	if(is_user_admin($id_user)) {
+		return false;
+	}
+	
+	$query = sprintf("SELECT count(*) 
+			FROM tusuario_perfil, tperfil
+			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
+			tusuario_perfil.id_usuario = '%s' AND tags != ''", 
+			$id_user);
+			
+	$user_tags = db_get_value_sql($query);
+	
+	return (bool)$user_tags;
+}
+
+/**
  * Get the tags of a user in an ACL flag
  * 
  * @param string ID of the user (with false the user will be taked from config)
@@ -868,7 +897,7 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 	
 	// Get all tags to have the name of all of them
 	$all_tags = tags_get_all_tags();
-	
+
 	// If at least one of the profiles of this access flag hasent
 	// tags restrictions, the user can see all tags
 	$acl_column = get_acl_column($access);
@@ -885,7 +914,7 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 			$id_user, $acl_column);
 			
 	$profiles_without_tags = db_get_value_sql($query);
-	
+
 	if($profiles_without_tags > 0) {
 		return $all_tags;
 	}

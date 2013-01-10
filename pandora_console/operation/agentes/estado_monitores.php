@@ -152,8 +152,7 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-// TODO: Clean extra_sql
-$extra_sql = '';
+$tags_sql = tags_get_acl_tags($config['id_user'], $agent['id_grupo'], 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
 
 $status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);
 $status_text_monitor = get_parameter('status_text_monitor', '');
@@ -183,9 +182,10 @@ switch ($config["dbtype"]) {
 			LEFT JOIN tmodule_group
 				ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND %s AND %s tagente_estado.utimestamp != 0  
+				AND %s %s 
+				AND tagente_estado.utimestamp != 0  
 			ORDER BY tagente_modulo.id_module_group , %s  %s",
-			$id_agente, $status_text_monitor_sql, $status_filter_sql, $extra_sql, $order['field'], $order['order']);	
+			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, $order['field'], $order['order']);	
 		break;
 	case "oracle":
 		$sql = sprintf ("
@@ -196,12 +196,12 @@ switch ($config["dbtype"]) {
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND tagente_modulo.id_agente = %d
 				AND tagente_modulo.nombre LIKE '%s'
-				AND %s 
+				AND %s %s
 				AND tagente_modulo.delete_pending = 0
 				AND tagente_modulo.disabled = 0
 				AND tagente_estado.utimestamp != 0 
 			ORDER BY tagente_modulo.id_module_group , %s %s
-			", $id_agente, $status_text_monitor_sql, $status_filter_sql, $order['field'], $order['order']);
+			", $id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, $order['field'], $order['order']);
 		break;
 }
 $count_modules = db_get_all_rows_sql ($sql);
@@ -223,9 +223,10 @@ switch ($config["dbtype"]) {
 			LEFT JOIN tmodule_group
 				ON tagente_modulo.id_module_group = tmodule_group.id_mg 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND %s AND %s tagente_estado.utimestamp != 0  
+				AND %s %s 
+				AND tagente_estado.utimestamp != 0  
 			ORDER BY tagente_modulo.id_module_group , %s  %s",
-			$id_agente, $status_text_monitor_sql, $status_filter_sql, $extra_sql, $order['field'], $order['order']);	
+			$id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, $order['field'], $order['order']);	
 		break;
 	// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
 	case "oracle":
@@ -241,12 +242,12 @@ switch ($config["dbtype"]) {
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND tagente_modulo.id_agente = %d
 				AND tagente_modulo.nombre LIKE '%s'
-				AND %s 
+				AND %s %s
 				AND tagente_modulo.delete_pending = 0
 				AND tagente_modulo.disabled = 0
 				AND tagente_estado.utimestamp != 0 
 			ORDER BY tagente_modulo.id_module_group , %s %s
-			", $id_agente, $status_text_monitor_sql, $status_filter_sql, $order['field'], $order['order']);
+			", $id_agente, $status_text_monitor_sql, $tags_sql, $status_filter_sql, $order['field'], $order['order']);
 		break;
 }
 

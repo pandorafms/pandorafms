@@ -30,7 +30,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 	require ("general/noaccess.php");
 	return;
 }
-
+ 
 $is_admin = check_acl ($config['id_user'], 0, "PM");
 
 $force_refresh = get_parameter ("force_refresh", "");
@@ -73,6 +73,10 @@ else {
 // Header
 ui_print_page_header (__("Tactical view"), "images/bricks.png", false, "", false, $updated_time );
 $data = reporting_get_group_stats();
+
+if(tags_has_user_acl_tags()) {
+	ui_print_tags_warning();
+}
 
 echo '<div style="width:20%; float:left; padding-right: 5%;" id="leftcolumn">';
 // ---------------------------------------------------------------------

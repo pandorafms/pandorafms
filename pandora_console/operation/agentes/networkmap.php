@@ -269,6 +269,10 @@ if (!empty($name)) {
 
 ui_print_page_header (__('Network map')." - ".$title, "images/bricks.png", false, "network_map", false, $buttons);
 
+if(tags_has_user_acl_tags()) {
+	ui_print_tags_warning();
+}
+
 if ($delete_networkmap || $add_networkmap || $save_networkmap) {
 	echo $message;
 }

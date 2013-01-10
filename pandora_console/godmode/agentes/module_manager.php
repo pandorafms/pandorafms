@@ -348,9 +348,6 @@ switch ($sortField) {
 		break;
 }
 
-// TODO: CLEAN extra_sql
-$extra_sql = '';
-
 // Build the order sql
 if (!empty($order)) {
 	$order_sql = ' ORDER BY ';
@@ -383,6 +380,8 @@ $search_string_entities = io_safe_input($search_string);
 
 $basic_where = sprintf("(nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
 
+$where_tags = tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+
 switch ($config["dbtype"]) {
 	case "postgresql":
 		$limit_sql = " LIMIT $limit OFFSET $offset ";
@@ -392,8 +391,8 @@ switch ($config["dbtype"]) {
 		}
 		$sql = sprintf("SELECT %s
 			FROM tagente_modulo
-			WHERE %s (%s %s) %s %s", 
-			$params, $basic_where, $extra_sql, $where, $order_sql, $limit_sql);
+			WHERE %s %s %s %s %s", 
+			$params, $basic_where, $where, $where_tags, $order_sql, $limit_sql);
 		
 		$modules = db_get_all_rows_sql($sql);
 		break;
@@ -403,15 +402,15 @@ switch ($config["dbtype"]) {
 		$set['offset'] = $offset;
 		$sql = sprintf("SELECT %s
 			FROM tagente_modulo
-			WHERE %s (%s %s) %s", 
-			$params, $basic_where, $extra_sql, $where, $order_sql);
+			WHERE %s %s %s %s", 
+			$params, $basic_where, $where, $where_tags, $order_sql);
 		$modules = oracle_recode_query ($sql, $set, 'AND', false);
 		break;
 }
 
 $sql_total_modules = sprintf("SELECT count(*)
 	FROM tagente_modulo
-	WHERE %s (%s %s)", $basic_where, $extra_sql, $where);
+	WHERE %s %s %s", $basic_where, $where, $where_tags);
 
 $total_modules = db_get_value_sql($sql_total_modules);
 

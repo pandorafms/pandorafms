@@ -74,6 +74,9 @@ else {
 // Header
 ui_print_page_header (__("Group view"), "images/bricks.png", false, "", false, $updated_time );
 
+if(tags_has_user_acl_tags()) {
+	ui_print_tags_warning();
+}
 
 // Init vars
 $groups_info = array ();

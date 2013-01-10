@@ -1,3 +1,25 @@
+2013-01-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php
+	include/functions_agents.php
+	include/functions_tags.php
+	operation/tree.php
+	operation/agentes/status_monitor.php
+	operation/agentes/alerts_status.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/estado_agente.php
+	operation/agentes/status_events.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/tactical.php
+	operation/agentes/group_view.php
+	operation/agentes/networkmap.php
+	operation/events/events_list.php
+	general/logon_ok.php
+	godmode/agentes/module_manager.php
+	godmode/alerts/alert_list.list.php: Add tags acl checks to modules
+	and alerts view. Add warn messages to zones with status counts when the
+	user has acl tags assigned
+
 2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandoradb_data.sql

@@ -34,7 +34,7 @@ $timestamp_ref = $agent["ultimo_contacto_remoto"];
 $timestamp_lof = $agent["ultimo_contacto"];
 $intervalo_agente = $agent["intervalo"];
 
-// Get last packet
+// Get last packet (DEPRECATED CODE???)
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
@@ -175,10 +175,6 @@ switch ($sortField) {
 		break;
 }
 
-// TODO: clean extra_sql
-$extra_sql = '';
-
-
 // Build the order sql
 if (!empty($order)) {
 	$order_sql = ' ORDER BY ';
@@ -220,13 +216,14 @@ $limit = (int) $config["block_size"];
 $offset = (int) get_parameter ('offset');
 
 $params = implode(',', array ('*'));
-$is_extra_sql = (int)$is_extra;
 
 $where = sprintf("(tagente_modulo.id_policy_module = 0 AND disabled = 0 AND tagente_estado.utimestamp !=0 AND tagente_modulo.id_agente = %s AND delete_pending = 0)", $id_agente);
 
 $search_string_entities = io_safe_input($search_string);
 
 $basic_where = sprintf(" tagente_estado.utimestamp !=0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND (nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
+
+$where_tags = tags_get_acl_tags($config['id_user'], $agent['id_grupo'], 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
 
 switch ($config["dbtype"]) {
 	case "postgresql":
@@ -238,8 +235,8 @@ switch ($config["dbtype"]) {
 		
 		$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
 		
-		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s (%s %s) %s %s", 
-			$params, $basic_where, $extra_sql, $where, $order_sql, $limit_sql);
+		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s %s %s %s %s", 
+			$params, $basic_where, $where, $where_tags, $order_sql, $limit_sql);
 		
 		$modules = db_get_all_rows_sql($sql);
 		break;
@@ -249,13 +246,13 @@ switch ($config["dbtype"]) {
 		$set = array();
 		$set['limit'] = $limit;
 		$set['offset'] = $offset;	
-		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s (%s %s) %s", 
-					$params, $basic_where, $extra_sql, $where, $order_sql);
+		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s %s %s %s", 
+					$params, $basic_where, $where, $where_tags, $order_sql);
 		$modules = oracle_recode_query ($sql, $set, 'AND', false);
 		break;
 }
 
-$sql_total_modules = sprintf("SELECT count(*) FROM tagente_modulo, tagente_estado WHERE %s (%s %s)", $basic_where, $extra_sql, $where);
+$sql_total_modules = sprintf("SELECT count(*) FROM tagente_modulo, tagente_estado WHERE %s %s %s", $basic_where, $where, $where_tags);
 
 $total_modules = db_get_value_sql($sql_total_modules);
 $total_modules = isset ($total_modules) ? $total_modules : 0;

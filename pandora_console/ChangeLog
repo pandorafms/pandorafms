@@ -1,5 +1,16 @@
 2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* pandoradb_data.sql
+	include/functions_config.php
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql
+	godmode/setup/performance.php: Max recommended number of files in
+	attachment directory parametrized.
+	
+	Merged from branches.
+
+2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_networkmap.php: Fixed entity problem in 
 	networkmap and hided agents without alerts if "only module with 
 	alerts" option enabled.

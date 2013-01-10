@@ -80,11 +80,11 @@ if ($update) {
 			
 			$agents_ = db_get_all_rows_sql('SELECT DISTINCT(t1.id_agente)
 				FROM tagente t1, tagente_modulo t2
-				WHERE t1.id_agente = t2.id_agente');
-			foreach ($agents_ as $id_agent) {
-				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type),'nombre');
-				
-				if ($module_name == false) {
+				WHERE t1.id_agente = t2.id_agente AND t2.delete_pending = 0 ' . $condition);
+			foreach($agents_ as $id_agent) {
+				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type, 'delete_pending' => 0),'nombre');
+
+				if($module_name == false) {
 					$module_name = array();
 				}
 				foreach ($module_name as $mod_name) {
@@ -321,7 +321,10 @@ $table->data['edit4'][1] .= html_print_input_text ('min', '', '', 5, 15, true);
 $table->data['edit4'][1] .= '<br /><em>'.__('Max.').'</em>';
 $table->data['edit4'][1] .= html_print_input_text ('max', '', '', 5, 15, true);
 $table->data['edit4'][2] = __('Module group');
-$module_groups = array_merge(array(0 => 'Not assigned'), modules_get_modulegroups());
+// Create module groups values for select
+$module_groups = modules_get_modulegroups();
+$module_groups[0] = __('Not assigned');
+
 $table->data['edit4'][3] = html_print_select ($module_groups,
 	'id_module_group', '', '', __('No change'), '', true, false, false);
 
@@ -583,10 +586,13 @@ $(document).ready (function () {
 <?php
 function process_manage_edit ($module_name, $agents_select = null) {
 	if (is_int ($module_name) && $module_name < 0) {
-		echo '<h3 class="error">'.__('No modules selected').'</h3>';
+		ui_print_error_message(__('No modules selected'));
 		
 		return false;
 	}
+
+	if (!is_array($agents_select))
+		$agents_select = array($agents_select);
 	
 	/* List of fields which can be updated */
 	$fields = array ('min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'module_interval',
@@ -620,6 +626,11 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	if (get_parameter('quiet_select', -1) != -1) {
 		$values['quiet'] = get_parameter('quiet_select');
 	}
+
+	$filter_modules = false;
+	
+	if (!is_numeric($module_name) or ($module_name != 0))
+		$filter_modules['nombre'] = $module_name;
 	
 	// Whether to update module tag info
 	$update_tags = get_parameter('id_tag', false);
@@ -627,7 +638,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	if (array_search(0, $agents_select) !== false) {
 		//Apply at All agents.
 		$modules = db_get_all_rows_filter ('tagente_modulo',
-			array ('nombre' => $module_name),
+			$filter_modules,
 			array ('id_agente_modulo'));
 	}
 	else {

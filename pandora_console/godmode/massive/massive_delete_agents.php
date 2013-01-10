@@ -30,7 +30,7 @@ require_once ('include/functions_users.php');
 
 function process_manage_delete ($id_agents) {
 	if (empty ($id_agents)) {
-		echo '<h3 class="error">'.__('No agents selected').'</h3>';
+		ui_print_error_message(__('No agents selected'));
 		return false;
 	}
 	
@@ -42,21 +42,28 @@ function process_manage_delete ($id_agents) {
 	db_process_sql_begin ();
 	
 	$error = false;
+	$count_deleted = 0;
+	$agent_id_restore = 0;
 	foreach ($id_agents as $id_agent) {
 		$success = agents_delete_agent ($id_agent);
-		if (! $success)
+		if (! $success) {
+			$agent_id_restore = $id_agent;
 			break;
+		}	
+		$count_deleted++;
 	}
 	
 	if (! $success) {
-		echo '<h3 class="error">'.__('There was an error deleting the agent, the operation has been cancelled').'</h3>';
-		echo '<h4>'.__('Could not delete agent').' '.agents_get_name ($id_agent).'</h4>';
+		ui_print_error_message(__('There was an error deleting the agent, the operation has been cancelled') . '.&nbsp;' . __('Could not delete agent').' '.agents_get_name ($agent_id_restore));
+		
+		//echo '<h3 class="error">'.__('There was an error deleting the agent, the operation has been cancelled').'</h3>';
+		//echo '<h4>'.__('Could not delete agent').' '.agents_get_name ($id_agent).'</h4>';
 		db_process_sql_rollback ();
 		
 		return false;
 	}
 	else {
-		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+		ui_print_success_message(__('Successfully deleted') . '&nbsp;(' . $count_deleted . ')');
 		db_process_sql_commit ();
 		
 		return true;

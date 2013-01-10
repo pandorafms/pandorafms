@@ -43,7 +43,7 @@ $offset = get_parameter ("offset", 0);
 
 // Get all module from agent
 
-ui_pagination (count ($modules), "index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=".$id_agent, $offset);
+ui_pagination (count ($modules), "index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=".$id_agent);
 
 $table->width = '95%';
 $table->cellpadding = 4;
@@ -115,7 +115,7 @@ $sql = "SELECT id_agent_module, sla_max, sla_min, sla_limit
 	WHERE id_agent_module IN (".implode (",",array_keys ($modules)).")";
 $result = db_get_all_rows_sql ($sql);
 if ($result !== false) {
-	echo "<h3>".__('User-defined SLA items')." - ".human_time_description_raw ($config["sla_period"])."</h3>";
+	echo "<h4>".__('User-defined SLA items')." - ".human_time_description_raw ($config["sla_period"])."</h4>";
 	$table->width = '95%';
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;

@@ -334,8 +334,16 @@ sub pandora_query_snmp ($$$) {
 
 	return (undef, 0) unless ($snmp_oid ne '');
 	if ($snmp_oid =~ m/[a-zA-Z]/) {
-		$snmp_oid = translate_obj ($dbh, $snmp_oid, $module->{"id_agente_modulo"});
-		return (undef, 1) unless ($snmp_oid ne '');
+		$snmp_oid = translate_obj ($dbh, $snmp_oid, );
+		
+		# Could not translate OID, disable the module
+		if (! defined ($snmp_oid) || $snmp_oid eq '') {
+			db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1 WHERE id_agente_modulo = ?', $module->{"id_agente_modulo"});
+			return (undef, 1);
+		}
+
+		# Update module configuration
+		db_do ($dbh, 'UPDATE tagente_modulo SET snmp_oid = ? WHERE id_agente_modulo = ?', $snmp_oid, $module->{"id_agente_modulo"});
 	}
 
 	my $snmp_timeout = $pa_config->{"snmp_timeout"};

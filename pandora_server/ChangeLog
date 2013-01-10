@@ -1,5 +1,10 @@
 2013-01-10  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/NetworkServer.pm: Merged from trunk. Save translated
+	  OIDs and disable modules than can't be translated.
+
+2013-01-10  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/SNMPServer.pm: Merged from trunk.
 
 2013-01-10  Dario Rodriguez <dario.rodriguez@artica.es>

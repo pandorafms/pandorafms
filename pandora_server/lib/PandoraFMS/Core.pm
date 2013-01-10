@@ -2931,6 +2931,7 @@ sub get_module_status ($$$) {
 	my ($critical_min, $critical_max, $warning_min, $warning_max) =
 		($module->{'min_critical'}, $module->{'max_critical'}, $module->{'min_warning'}, $module->{'max_warning'});
 	my ($critical_str, $warning_str) = ($module->{'str_critical'}, $module->{'str_warning'});
+	my $eval_result;
 	
 	# Was the module status set in the XML data file?
 	if (defined ($module->{'status'})) {
@@ -2991,20 +2992,26 @@ sub get_module_status ($$$) {
 	else {
 
 		# Critical
-		if ($module->{'critical_inverse'} == 0) {
-			return 1 if ($critical_str ne '' && $data =~ /$critical_str/);
-		} else {
-			return 1 if ($critical_str ne '' && $data !~ /$critical_str/);
-		}
+		$eval_result = eval {
+			if ($module->{'critical_inverse'} == 0) {
+				$critical_str ne '' && $data =~ /$critical_str/ ;
+			} else {
+				$critical_str ne '' && $data !~ /$critical_str/ ;
+			}
+		};
+		return 1 if ($eval_result);
 
 		# Warning
-		if ($module->{'warning_inverse'} == 0) {
-			return 2 if ($warning_str ne '' && $data =~ /$warning_str/);
-		} else {
-			return 2 if ($warning_str ne '' && $data !~ /$warning_str/);
-		}
+		$eval_result = eval {
+			if ($module->{'warning_inverse'} == 0) {
+				$warning_str ne '' && $data =~ /$warning_str/ ;
+			} else {
+				$warning_str ne '' && $data !~ /$warning_str/ ;
+			}
+		};
+		return 2 if ($eval_result);
 	}
-	
+
 	# Normal
 	return 0;
 }

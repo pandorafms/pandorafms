@@ -1,5 +1,13 @@
 2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/functions_networkmap.php: Fixed entity problem in 
+	networkmap and hided agents without alerts if "only module with 
+	alerts" option enabled.
+	
+	Merged from branches.
+
+2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_agents.php
 	 include/functions_treeview.php
 	 extensions/net_tools.php

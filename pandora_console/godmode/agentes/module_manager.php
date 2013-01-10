@@ -72,7 +72,7 @@ echo '<input align="right" name="updbutton" type="submit" class="sub next" value
 echo '</td>';
 echo '<td class="datos" style="text-align:center;">';
 echo "<strong>";
-echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__(" Go to Pandora FMS Module Library")."</a>";
+	echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
 echo "</strong>";
 echo '</td>';
 echo '</tr>';

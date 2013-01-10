@@ -277,7 +277,7 @@ function treeview_printTree($type) {
 	}
 
 	if ($list === false) {
-		ui_print_error_message("There aren't agents in this agrupation");
+		echo '<h3 class="error">'.__('There aren\'t agents in this agrupation').'</h3>';
 		echo '</td></tr>';
 		echo '</table>';
 	}
@@ -423,6 +423,7 @@ function treeview_getData ($type, $server=false) {
 		
 		// If there are not groups display error and return
 		if (empty($avariableGroups)) {
+			echo '<h3 class="error">'.__('There aren\'t agents in this agrupation').'</h3>';
 			return array ();
 		}
 	}

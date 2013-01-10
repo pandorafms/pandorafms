@@ -130,9 +130,9 @@ function mainModuleGroups() {
 	//The big query
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = "SELECT COUNT(id_agente) AS count, estado
+			$sql = "SELECT COUNT(id_agente) AS count, case utimestamp when 0 then 5 else estado end as estado 
 				FROM tagente_estado
-				WHERE utimestamp != 0 AND id_agente IN
+				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled IS FALSE)
 					AND id_agente_modulo IN
 					(SELECT id_agente_modulo 
@@ -141,9 +141,9 @@ function mainModuleGroups() {
 				GROUP BY estado";
 			break;
 		case "postgresql":
-			$sql = "SELECT COUNT(id_agente) AS count, estado
+			$sql = "SELECT COUNT(id_agente) AS count, case utimestamp when 0 then 5 else estado end as estado
 				FROM tagente_estado
-				WHERE utimestamp != 0 AND id_agente IN
+				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled = 0)
 					AND id_agente_modulo IN
 					(SELECT id_agente_modulo
@@ -152,9 +152,9 @@ function mainModuleGroups() {
 				GROUP BY estado";
 			break;
 		case "oracle":
-			$sql = "SELECT COUNT(id_agente) AS count, estado
+			$sql = "SELECT COUNT(id_agente) AS count, case when utimestamp = 0 then 5 else estado end estado
 				FROM tagente_estado
-				WHERE utimestamp != 0 AND id_agente IN
+				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND (disabled IS NOT NULL AND disabled <> 0))
 					AND id_agente_modulo IN
 					(SELECT id_agente_modulo 
@@ -258,6 +258,9 @@ function mainModuleGroups() {
 					elseif (array_key_exists(0, $states)) {
 						$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
 					}
+					elseif (array_key_exists(5, $states)) {
+						$color = '#729fcf'; // Blue when the cell for this module group and all modules have not init value.
+					}
 					
 					
 					$alinkStart = '<a class="info_cell" rel="ajax.php?page=extensions/module_groups&get_info_alert_module_group=1&module_group=' . $idModelGroup . '&id_agent_group=' . $idAgentGroup . '"
@@ -302,6 +305,10 @@ function mainModuleGroups() {
 				'<li style="clear: both;">
 					<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
 					__("Grey cell when the module group and agent have at least one in unknown status and the others in green status") .
+				'</li>' .
+				'<li style="clear: both;">
+					<div style="float: left; background: #729fcf; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+					__("Blue cell when the module group and agent have all modules in not init status.") .
 				'</li>' .
 			"</ul>" .
 		"</p>";

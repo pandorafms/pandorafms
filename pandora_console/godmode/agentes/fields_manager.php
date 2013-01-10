@@ -99,7 +99,7 @@ else {
 	echo '<div class="nf">'. __('No fields defined') .'</div>';
 }
 
-if($fields === false) $fields = array();
+if ($fields === false) $fields = array();
 
 foreach ($fields as $field) {
 	

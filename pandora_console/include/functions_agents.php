@@ -782,16 +782,8 @@ function agents_get_next_contact($idAgent, $maxModules = false) {
  */
 function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	$id_agent = safe_int ($id_agent, 1);
-	
+
 	$where = '';
-	if (! empty ($id_agent)) {
-		$where = sprintf (' WHERE t2.id_agent_module = t1.id_agente_modulo AND delete_pending = 0
-			AND id_agente IN (%s) AND (
-				SELECT count(nombre)
-				FROM tagente_modulo t3, talert_template_modules t4
-				WHERE t4.id_agent_module = t3.id_agente_modulo AND delete_pending = 0
-					AND t1.nombre = t3.nombre AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
-	}
 	
 	if (! empty ($filter)) {
 		$where .= ' AND ';
@@ -804,14 +796,59 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
 		} else {
 			$where .= $filter;
 		}
-	}
+	}	
 	
-	$sql = sprintf ('SELECT DISTINCT(t1.id_agente_modulo)
-		FROM tagente_modulo t1, talert_template_modules t2
-		%s
-		ORDER BY nombre',
-		$where);
-	$result = db_get_all_rows_sql ($sql);
+	if (! empty ($id_agent)) {
+		// Get module_name-template repetitions over agents selected
+		// Group by if there is more than one agent
+		$group_by = '';
+		if (count((array)$id_agent) > 1)
+			$group_by = 'having count(*) > 1'; 
+			
+		$sql = sprintf ('SELECT t1.nombre, t2.id_alert_template, count(*) 
+		FROM tagente_modulo t1, talert_template_modules t2 
+		WHERE t2.id_agent_module = t1.id_agente_modulo 
+			AND delete_pending = 0 
+			AND id_agente IN (%s) %s group by nombre, id_alert_template %s'
+			, implode (",", (array) $id_agent)
+			, $where
+			,$group_by);	
+		
+		$result_tmp = db_get_all_rows_sql ($sql);
+		
+		$result = array();
+		if ($result_tmp != false) {
+			
+			foreach ($result_tmp as $module_template) {
+
+					$sql_modules = sprintf ('SELECT t1.id_agente_modulo
+										FROM tagente_modulo t1, talert_template_modules t2 
+										WHERE t1.id_agente_modulo = t2.id_agent_module 
+										AND delete_pending = 0 
+										AND t1.nombre = \'%s\' AND t2.id_alert_template = %s'
+						, $module_template['nombre']
+						, $module_template['id_alert_template']);
+						
+					$id_modules_template = db_get_all_rows_sql ($sql_modules);
+
+					if ($id_modules_template !=  false) 
+						foreach ($id_modules_template as $id_module_template)
+							$result[] = $id_module_template;
+							
+			}
+			
+		}	
+	}
+	else {
+	
+		$sql = sprintf ('SELECT DISTINCT(t1.id_agente_modulo)
+			FROM tagente_modulo t1, talert_template_modules t2
+			%s
+			ORDER BY nombre',
+			$where);
+		$result = db_get_all_rows_sql ($sql);
+	
+	}
 
 	if (empty ($result)) {
 		return array ();

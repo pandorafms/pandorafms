@@ -1035,8 +1035,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 }
 else {
-	ui_print_error_message(
-		__('This group doesn\'t have any monitor') );
+	echo "<div class='nf'>".__('This group doesn\'t have any monitor')."</div>";
 }
 ?>
 <script type="text/javascript">

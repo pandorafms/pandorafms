@@ -61,24 +61,52 @@ if (is_ajax ()) {
 
 function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 	if (empty ($id_alert_template)) {
-		echo '<h3 class="error">'.__('No alert selected').'</h3>';
+		ui_print_error_message(__('No alert selected'));
 		return false;
 	}
 	
 	if (empty ($id_agents) || $id_agents[0] == 0) {
-		echo '<h3 class="error">'.__('No agents selected').'</h3>';
+		ui_print_error_message(__('No agents selected'));
 		return false;
 	}
 	
+	$module_selection_mode =  get_parameter('modules_selection_mode');
+		
 	foreach($module_names as $module){
 		foreach($id_agents as $id_agent) {
 			 $module_id = modules_get_agentmodule_id($module, $id_agent);
 			 $modules_id[] = $module_id['id_agente_modulo'];
 		}
 	}
-	
-	if(count($module_names) == 1 && $module_names[0] == '0'){
-		$modules_id = agents_common_modules_with_alerts ($id_agents, false, true);
+
+	// If is selected "ANY" option then we need the module selection mode: common or all modules
+	if (count($module_names) == 1 && $module_names[0] == '0') {
+
+		if ($module_selection_mode == 'common')
+				$modules_id = agents_common_modules_with_alerts ($id_agents, false, true);
+		else {
+			// For agents selected
+			$modules_id = array();
+
+			foreach ($id_agents as $id_agent) {
+				$current_modules_agent = agents_get_modules($id_agent, 'id_agente_modulo', array ('disabled' => 0));
+
+				if ($current_modules_agent != false) {
+					// And their modules
+					foreach ($current_modules_agent as $current_module) {
+						$module_alerts = alerts_get_alerts_agent_module($current_module);
+						if ($module_alerts !=  false) {
+							// And for all alert in modules
+							foreach ($module_alerts as $module_alert) {
+								// Find the template in module
+								if ($module_alert['id_alert_template'] == $id_alert_template)
+									$modules_id[] = $module_alert['id_agent_module'];
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	$conttotal = 0;

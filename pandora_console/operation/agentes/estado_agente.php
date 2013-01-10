@@ -168,6 +168,10 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 
 ui_print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status", false, $onheader);
 
+if(tags_has_user_acl_tags()) {
+	ui_print_tags_warning();
+}
+
 // User is deleting agent
 if (isset($result_delete)) {
 	if ($result_delete)

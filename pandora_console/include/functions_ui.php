@@ -462,6 +462,19 @@ function ui_print_username ($username, $return = false) {
 	echo $string;
 }
 
+function ui_print_tags_warning ($return = false) {
+	$msg = '<div id="notify_conf" class="notify">';
+	$msg .= __("Is possible that this view uses part of information which your user has not access");
+	$msg .= '</div>';
+	
+	if($return) {
+		return $msg;
+	}
+	else {
+		echo $msg;
+	}
+}
+
 /** 
  * Print group icon within a link
  * 

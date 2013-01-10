@@ -566,6 +566,10 @@ if (! defined ('METACONSOLE')) {
 	ui_meta_print_header(__("Tree view"), $subsection, $subsections);
 }
 
+if(tags_has_user_acl_tags()) {
+	ui_print_tags_warning();
+}
+
 echo "<br>";
 if (! defined ('METACONSOLE')) {
 	echo '<form id="tree_search" method="post" action="index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'&pure='.$pure.'">';

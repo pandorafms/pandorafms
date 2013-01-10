@@ -36,9 +36,6 @@ enterprise_include_once ('include/functions_metaconsole.php');
 
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
-// TODO: CLEAN extra_sql
-$extra_sql = '';
-
 if (! defined ('METACONSOLE')) {
 	//Header
 	ui_print_page_header ("Monitor detail", "images/brick.png", false);
@@ -54,7 +51,6 @@ $offset = (int) get_parameter ('offset', 0);
 $status = (int) get_parameter ('status', 4);
 $modulegroup = get_parameter ('modulegroup', -1);
 $tag_filter = get_parameter('tag_filter', 0);
-$sql_extra = '';
 $refr = get_parameter('refr', 0);
 // Sort functionality
 
@@ -65,9 +61,133 @@ echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agente
 
 echo '<table cellspacing="4" cellpadding="4" width="98%" class="databox">
 	<tr>';
-
+	
 // Get Groups and profiles from user
 $user_groups = implode (",", array_keys (users_get_groups ()));
+
+////////////////////////////////////
+// Begin Build SQL sentences
+$sql_from = " FROM tagente, tagente_modulo, tagente_estado ";
+
+$sql_conditions_base = " WHERE tagente.id_agente = tagente_modulo.id_agente 
+		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
+				
+$sql_conditions = " AND tagente_modulo.disabled = 0 AND tagente.disabled = 0";
+		
+// Agent group selector
+if (!defined('METACONSOLE')) {
+	if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
+		$sql_conditions_group = sprintf (" AND tagente.id_grupo = %d", $ag_group);
+	}
+	elseif($user_groups != '') {
+		// User has explicit permission on group 1 ?
+		$sql_conditions_group = " AND tagente.id_grupo IN (".$user_groups.")";
+	}
+}
+else {
+	if ($ag_group != "0" && check_acl ($config["id_user"], $ag_group, "AR")) {
+		$sql_conditions_group = sprintf (" AND tagente.id_grupo IN ( SELECT id_grupo FROM tgrupo where nombre = '%s') ", $ag_group);
+	}
+	elseif($user_groups != '') {
+		// User has explicit permission on group 1 ?
+		$sql_conditions_group = " AND tagente.id_grupo IN (".$user_groups.")";
+	}
+}
+
+// Module group
+if (defined('METACONSOLE')) {
+	if ($modulegroup != '-1')
+		$sql_conditions .= sprintf (" AND tagente_modulo.id_module_group IN (SELECT id_mg 
+			FROM tmodule_group WHERE name = '%s')", $modulegroup);	
+}
+else if ($modulegroup > -1) {
+	$sql_conditions .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
+
+}
+
+// Module name selector
+if ($ag_modulename != "") {
+	$sql_conditions .= sprintf (" AND tagente_modulo.nombre = '%s'", $ag_modulename);
+}
+
+// Freestring selector
+if ($ag_freestring != "") {
+	$sql_conditions .= sprintf (" AND (tagente.nombre LIKE '%%%s%%'
+		OR tagente_modulo.nombre LIKE '%%%s%%'
+		OR tagente_modulo.descripcion LIKE '%%%s%%')",
+		$ag_freestring, $ag_freestring, $ag_freestring);
+}
+
+// Status selector
+if ($status == 0) { //Normal
+	$sql_conditions .= " AND tagente_estado.estado = 0 
+	AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100))) ";
+}
+elseif ($status == 2) { //Critical
+	$sql_conditions .= " AND tagente_estado.estado = 1 AND utimestamp > 0";
+}
+elseif ($status == 1) { //Warning
+	$sql_conditions .= " AND tagente_estado.estado = 2 AND utimestamp > 0";	
+}
+elseif ($status == 4) { //Not normal
+	$sql_conditions .= " AND tagente_estado.estado <> 0";
+} 
+elseif ($status == 3) { //Unknown
+	$sql_conditions .= " AND tagente_estado.estado = 3 AND tagente_estado.utimestamp <> 0";
+}
+elseif ($status == 5) { //Not init
+	$sql_conditions .= " AND tagente_estado.utimestamp = 0
+		AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";
+}
+
+//Filter by tag
+if ($tag_filter !== 0) {
+	if (defined('METACONSOLE')) {
+		$sql_conditions .= " AND tagente_modulo.id_agente_modulo IN (
+			SELECT ttag_module.id_agente_modulo
+			FROM ttag_module
+			WHERE ttag_module.id_tag IN (SELECT id_tag FROM ttag where name LIKE '%" . $tag_filter . "%')
+			)";
+	}
+	else{
+		$sql_conditions .= " AND tagente_modulo.id_agente_modulo IN (
+			SELECT ttag_module.id_agente_modulo
+			FROM ttag_module
+			WHERE ttag_module.id_tag = " . $tag_filter . "
+			)";
+	
+	}
+}
+
+$sql_conditions_tags = tags_get_acl_tags($config['id_user'], $ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+
+// Two modes of filter. All the filters and only ACLs filter
+$sql_conditions_all = $sql_conditions_base . $sql_conditions . $sql_conditions_group . $sql_conditions_tags;
+$sql_conditions_acl = $sql_conditions_base . $sql_conditions_group . $sql_conditions_tags;
+
+// Get count to paginate
+if (!defined('METACONSOLE')) 
+	$count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) " . $sql_from . $sql_conditions_all);
+
+// Get limit_sql depend of the metaconsole or standard mode
+if (defined('METACONSOLE')) {
+	// Offset will be used to get the subset of modules
+	$inferior_limit = $offset;
+	$superior_limit = $config["block_size"] + $offset;
+	// Offset reset to get all elements
+	$offset = 0;
+	if (!isset($config["meta_num_elements"]))
+		$config["meta_num_elements"] = 100;
+	
+	$limit_sql = $config["meta_num_elements"];
+}
+else
+	$limit_sql = $config["block_size"];
+
+// End Build SQL sentences
+/////////////////////////////////////
+
+// Query to get name of the modules to module name filter combo
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
@@ -90,29 +210,7 @@ switch ($config["dbtype"]) {
 		//The check of is_admin
 		$flag_is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 		
-		$sql = ' SELECT distinct(nombre)
-		FROM tagente_modulo
-		WHERE nombre <> \'delete_pending\' AND id_agente IN
-		(
-			SELECT id_agente
-			FROM tagente
-			WHERE';
-		
-		$sql .= $extra_sql.'(';
-		
-		if ($flag_is_admin || $flag_all_group) {
-			$sql .= ' 1 = 1 ';
-		}
-		else {
-			if (empty($id_groups)) {
-				$sql .= ' 1 = 0 ';
-			}
-			else {
-				$sql .= ' id_grupo IN (' . implode(',', $id_groups) . ') ';
-			}
-		}
-		
-		$sql .= '))';
+		$sql = ' SELECT distinct(tagente_modulo.nombre) '. $sql_from . $sql_conditions_acl;
 		break;
 	case "oracle":
 		$profiles = db_get_all_rows_sql('SELECT id_grupo
@@ -135,33 +233,10 @@ switch ($config["dbtype"]) {
 		$flag_is_admin = (bool)db_get_value('is_admin', 'tusuario',
 			'id_user', $config['id_user']);
 		
-		$sql = ' SELECT DISTINCT dbms_lob.substr(nombre,4000,1) AS nombre
-			FROM tagente_modulo
-			WHERE dbms_lob.substr(nombre,4000,1) <> \'delete_pending\'
-				AND id_agente IN
-				(
-					SELECT id_agente
-					FROM tagente
-					WHERE';
-		
-		$sql .= $extra_sql . '(';
-		
-		if ($flag_is_admin || $flag_all_group) {
-			$sql .= ' 1 = 1 ';
-		}
-		else {
-			if (empty($id_groups)) {
-				$sql .= ' 1 = 0 ';
-			}
-			else {
-				$sql .= ' id_grupo IN (' . implode(',', $id_groups) . ') ';
-			}
-		}
-		
-		$sql .= '))';
+		$sql = ' SELECT DISTINCT dbms_lob.substr(nombre,4000,1) AS nombre'. $sql_from . $sql_conditions_acl;
 		break;
 }
-
+		
 $modules = array();
 $tags = array();
 $rows_select = array();
@@ -174,11 +249,11 @@ if (defined('METACONSOLE')) {
 	
 	// For each server defined and not disabled:
 	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup WHERE disabled = 0");
+
 	if ($servers === false)
 		$servers = array();
 		
 	$result = array();	
-	
 	foreach($servers as $server) {
 		// If connection was good then retrieve all data server
 		if (metaconsole_connect($server) == NOERR){
@@ -187,10 +262,10 @@ if (defined('METACONSOLE')) {
 		else{
 			$connection = false;	
 		}
-		
+
 		// Get all info for filters of all nodes
 		$modules_temp = db_get_all_rows_sql($sql);
-		
+
 		$tags_temp = db_get_all_rows_sql('SELECT name, name
 									FROM ttag
 									WHERE id_tag IN (SELECT ttag_module.id_tag
@@ -219,7 +294,7 @@ if (defined('METACONSOLE')) {
 		if (!empty($groups_temp_processed)) {
 			$groups_select = array_unique(array_merge($groups_select, $groups_temp_processed));
 		}
-		
+
 		if (!empty($modules_temp))
 			$modules = array_merge($modules, $modules_temp);
 		if (!empty($tags_temp))
@@ -228,7 +303,6 @@ if (defined('METACONSOLE')) {
 		metaconsole_restore_db();
 	}
 	unset($groups_select[__('All')]);
-	
 }
 
 if (!defined('METACONSOLE')) {
@@ -312,18 +386,17 @@ echo '<td valign="middle" align="right">' .
 	ui_print_help_tip(__('Only it is show tags in use.'), true) .
 	'</td>';
 echo '<td>';
-if (!defined('METACONSOLE'))
-	$tags = db_get_all_rows_sql('SELECT id_tag, name
-		FROM ttag
-		WHERE id_tag IN (SELECT ttag_module.id_tag
-			FROM ttag_module)');
+
+if (!defined('METACONSOLE')) {
+	$tags = tags_get_user_tags();
+}
 
 if (empty($tags)) {
-	echo __('None tag');
+	echo __('No tags');
 }
 else {
 	if (!defined('METACONSOLE'))
-		html_print_select (index_array($tags, 'id_tag', 'name'), "tag_filter",
+		html_print_select ($tags, "tag_filter",
 			$tag_filter, '', __('All'), '', false, false, true, '', false, 'width: 150px;');
 	else
 		html_print_select (index_array($tags, 'name', 'name'), "tag_filter",
@@ -475,118 +548,7 @@ switch ($sortField) {
 			'order' => 'ASC');
 		break;
 }
-
-// Begin Build SQL sentences
-$sql = " FROM tagente, tagente_modulo, tagente_estado
-	WHERE $sql_extra (tagente.id_agente = tagente_modulo.id_agente
-		AND tagente_modulo.disabled = 0
-		AND tagente.disabled = 0
-		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
-
-// Agent group selector
-if (!defined('METACONSOLE')) {
-	if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
-		$sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
-	}
-	elseif($user_groups != '') {
-		// User has explicit permission on group 1 ?
-		$sql .= " AND tagente.id_grupo IN (".$user_groups.")";
-	}
-}
-else {
-	if ($ag_group != "0" && check_acl ($config["id_user"], $ag_group, "AR")) {
-		$sql .= sprintf (" AND tagente.id_grupo IN ( SELECT id_grupo FROM tgrupo where nombre = '%s') ", $ag_group);
-	}
-	elseif($user_groups != '') {
-		// User has explicit permission on group 1 ?
-		$sql .= " AND tagente.id_grupo IN (".$user_groups.")";
-	}
-}
-
-// Module group
-if (defined('METACONSOLE')) {
-	if ($modulegroup != '-1')
-		$sql .= sprintf (" AND tagente_modulo.id_module_group IN (SELECT id_mg 
-			FROM tmodule_group WHERE name = '%s')", $modulegroup);	
-}
-else if ($modulegroup > -1) {
-	$sql .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
-
-}
-
-// Module name selector
-if ($ag_modulename != "") {
-	$sql .= sprintf (" AND tagente_modulo.nombre = '%s'", $ag_modulename);
-}
-
-// Freestring selector
-if ($ag_freestring != "") {
-	$sql .= sprintf (" AND (tagente.nombre LIKE '%%%s%%'
-		OR tagente_modulo.nombre LIKE '%%%s%%'
-		OR tagente_modulo.descripcion LIKE '%%%s%%')",
-		$ag_freestring, $ag_freestring, $ag_freestring);
-}
-
-// Status selector
-if ($status == 0) { //Normal
-	$sql .= " AND tagente_estado.estado = 0 
-	AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100))) ";
-}
-elseif ($status == 2) { //Critical
-	$sql .= " AND tagente_estado.estado = 1 AND utimestamp > 0";
-}
-elseif ($status == 1) { //Warning
-	$sql .= " AND tagente_estado.estado = 2 AND utimestamp > 0";	
-}
-elseif ($status == 4) { //Not normal
-	$sql .= " AND tagente_estado.estado <> 0";
-} 
-elseif ($status == 3) { //Unknown
-	$sql .= " AND tagente_estado.estado = 3 AND tagente_estado.utimestamp <> 0";
-}
-elseif ($status == 5) { //Not init
-	$sql .= " AND tagente_estado.utimestamp = 0
-		AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";
-}
-
-//Filter by tag
-if ($tag_filter !== 0) {
-	if (defined('METACONSOLE')) {
-		$sql .= " AND tagente_modulo.id_agente_modulo IN (
-			SELECT ttag_module.id_agente_modulo
-			FROM ttag_module
-			WHERE ttag_module.id_tag IN (SELECT id_tag FROM ttag where name LIKE '%" . $tag_filter . "%')
-			)";
-	}
-	else{
-		$sql .= " AND tagente_modulo.id_agente_modulo IN (
-			SELECT ttag_module.id_agente_modulo
-			FROM ttag_module
-			WHERE ttag_module.id_tag = " . $tag_filter . "
-			)";
-	
-	}
-}
-
-// Build final SQL sentences
-if (!defined('METACONSOLE')) 
-	$count = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) " .
-		$sql . ")");
-
-if (defined('METACONSOLE')) {
-	// Offset will be used to get the subset of modules
-	$inferior_limit = $offset;
-	$superior_limit = $config["block_size"] + $offset;
-	// Offset reset to get all elements
-	$offset = 0;
-	if (!isset($config["meta_num_elements"]))
-		$config["meta_num_elements"] = 100;
-	
-	$limit_sql = $config["meta_num_elements"];
-}
-else
-	$limit_sql = $config["block_size"];
-
+		
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = "SELECT
@@ -601,7 +563,6 @@ switch ($config["dbtype"]) {
 			tagente.intervalo AS agent_interval,
 			tagente.nombre AS agent_name, 
 			tagente_modulo.nombre AS module_name,
-			tagente_modulo.id_agente_modulo,
 			tagente_modulo.history_data,
 			tagente_modulo.flag AS flag,
 			tagente.id_grupo AS id_group, 
@@ -623,7 +584,7 @@ switch ($config["dbtype"]) {
 			tagente_modulo.critical_instructions,
 			tagente_modulo.warning_instructions,
 			tagente_modulo.unknown_instructions,
-			tagente_estado.utimestamp AS utimestamp".$sql.") ORDER BY " . $order['field'] . " " . $order['order'] 
+			tagente_estado.utimestamp AS utimestamp".$sql_from . $sql_conditions_all." ORDER BY " . $order['field'] . " " . $order['order'] 
 			. " LIMIT ".$offset.",".$limit_sql;
 		break;
 	case "postgresql":
@@ -639,7 +600,6 @@ switch ($config["dbtype"]) {
 			tagente.intervalo AS agent_interval,
 			tagente.nombre AS agent_name, 
 			tagente_modulo.nombre AS module_name,
-			tagente_modulo.id_agente_modulo,
 			tagente_modulo.history_data,
 			tagente_modulo.flag AS flag,
 			tagente.id_grupo AS id_group, 
@@ -661,7 +621,7 @@ switch ($config["dbtype"]) {
 			tagente_modulo.critical_instructions,
 			tagente_modulo.warning_instructions,
 			tagente_modulo.unknown_instructions,
-			tagente_estado.utimestamp AS utimestamp".$sql.") LIMIT " . $limit_sql . " OFFSET " . $offset;
+			tagente_estado.utimestamp AS utimestamp".$sql_form . $sql_conditions_all." LIMIT " . $limit_sql . " OFFSET " . $offset;
 		break;
 	case "oracle":
 		$set = array();
@@ -700,7 +660,7 @@ switch ($config["dbtype"]) {
 			tagente_modulo.critical_instructions,
 			tagente_modulo.warning_instructions,
 			tagente_modulo.unknown_instructions,
-			tagente_estado.utimestamp AS utimestamp" . $sql;
+			tagente_estado.utimestamp AS utimestamp" . $sql_form . $sql_conditions_all;
 		$sql = oracle_recode_query ($sql, $set);
 		break;
 }

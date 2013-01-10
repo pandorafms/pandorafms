@@ -184,7 +184,10 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	if (is_array ($options)) {
 		$filter .= db_format_array_where_clause_sql ($options);
 	}
+	
 	if (($id_agent !== false) && ($idGroup !== false)) {
+		$where_tags = tags_get_acl_tags($config['id_user'], $idGroup, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
@@ -194,10 +197,15 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo WHERE delete_pending = 0';
 		}
+		
+		$subQuery .= $where_tags;
 	}
 	else if ($id_agent === false) {
-		if ($allModules) $disabled = '';
-		else $disabled = 'WHERE disabled = 0';
+		if ($allModules) 
+			$disabled = '';
+		else 
+			$disabled = 'WHERE disabled = 0';
+			
 		$subQuery = 'SELECT id_agente_modulo
 			FROM tagente_modulo ' . $disabled;
 	}
@@ -226,9 +234,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
 	
-	// TODO: Clean extra_sql
-	$extra_sql = '';
-	
 	$sql = sprintf ("SELECT %s
 		FROM talert_template_modules
 			INNER JOIN tagente_modulo t2
@@ -237,8 +242,8 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 				ON t2.id_agente = t3.id_agente
 			INNER JOIN talert_templates t4
 				ON talert_template_modules.id_alert_template = t4.id
-		WHERE (%s id_agent_module in (%s)) %s %s %s",
-	$selectText, $extra_sql, $subQuery, $where, $filter, $orderbyText);
+		WHERE id_agent_module in (%s) %s %s %s",
+	$selectText, $subQuery, $where, $filter, $orderbyText);
 	
 	$alerts = db_get_all_rows_sql ($sql);
 	
@@ -1281,6 +1286,10 @@ function agents_get_modules ($id_agent = null, $details = false, $filter = false
 	}
 	
 	//$where .= " AND id_policy_module = 0 ";
+	
+	$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+
+	$where .= $where_tags;
 	
 	switch ($config["dbtype"]) {
 		case "mysql":

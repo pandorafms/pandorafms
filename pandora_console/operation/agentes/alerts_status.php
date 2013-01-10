@@ -274,7 +274,7 @@ if ($print_agent) {
 	ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, true),__('Alert control filter'), __('Toggle filter(s)'));
 }
 
-$table->width = '98%';
+$table->width = '100%';
 $table->class = "databox";
 
 $table->size = array ();

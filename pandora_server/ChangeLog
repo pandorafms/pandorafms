@@ -1,3 +1,14 @@
+2013-01-10  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* lib/PandoraFMS/SNMPServer.pm: Rewrite my commit at rev7388 in more
+	general way. logger() call was deleted here, because the corresponding
+	error message is recorded by pandora_crash().
+
+	* lib/PandoraFMS/Core.pm: Fixed that invalid regex in
+	critical_str or warning_str could make server down at worst.
+	Not used logger() here, because the corresponding error
+        message is recorded by pandora_crash().
+
 2013-01-09  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm: Added log traces to inform

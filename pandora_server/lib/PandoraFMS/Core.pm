@@ -1950,6 +1950,7 @@ sub get_module_status ($$$) {
 	my ($critical_min, $critical_max, $warning_min, $warning_max) =
 		($module->{'min_critical'}, $module->{'max_critical'}, $module->{'min_warning'}, $module->{'max_warning'});
 	my ($critical_str, $warning_str) = ($module->{'str_critical'}, $module->{'str_warning'});
+	my $eval_result;
 	
 	# Was the module status set in the XML data file?
 	if (defined ($module->{'status'})) {
@@ -1994,11 +1995,19 @@ sub get_module_status ($$$) {
 	}
 
 	# Critical
-	return 1 if ($critical_str ne '' && $data =~ /$critical_str/);
+
+	$eval_result = eval {
+		$critical_str ne '' && $data =~ /$critical_str/ ;
+	};
+	return 1 if ($eval_result);
 
 	# Warning
-	return 2 if ($warning_str ne '' && $data =~ /$warning_str/);		
-	
+
+	$eval_result = eval {
+		$warning_str ne '' && $data =~ /$warning_str/ ;
+	};
+	return 2 if ($eval_result);
+
 	# Normal
 	return 0;
 }

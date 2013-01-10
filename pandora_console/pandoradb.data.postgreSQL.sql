@@ -405,6 +405,7 @@ SELECT setval('talert_commands_id_seq', (SELECT (SELECT MAX(id) FROM talert_comm
 
 INSERT INTO "talert_actions" VALUES (1,'Mail&#x20;to&#x20;XXX',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','',0,0);
 INSERT INTO "talert_actions" VALUES (2,'Restart&#x20;agent',10,'REFRESH AGENT','','',0,0);
+INSERT INTO "talert_actions" VALUES (3,'Pandora&#x20;FMS&#x20;Event',3,'Pandora FMS Event created by module _module_','','',0,0);
 SELECT setval('talert_actions_id_seq', (SELECT (SELECT MAX(id) FROM talert_actions)));
 
 INSERT INTO "talert_templates" VALUES (1,'Critical&#x20;condition','This is a generic alert template to fire on condition CRITICAL',1,'','','Hello, this is an automated email coming from Pandora FMS\r\n\r\nThis alert has been fired because a CRITICAL condition in one of your monitored items:\r\n\r\nAgent : _agent_\r\nModule: _module_\r\nModule description: _moduledescription_\r\nTimestamp _timestamp_\r\nCurrent value: _data_\r\n\r\nThanks for your time.\r\n\r\nBest regards\r\nPandora FMS\r\n','critical','',1,0.00,0.00,86400,1,0,'12:00:00','12:00:00',1,1,1,1,1,1,1,1,'[PANDORA] Alert RECOVERED for CRITICAL status on _agent_ / _module_','Hello, this is an automated email coming from Pandora FMS\r\n\r\nThis alert has been RECOVERED from a CRITICAL condition in one of your monitored items:\r\n\r\nAgent : _agent_\r\nModule: _module_\r\nModule description: _moduledescription_\r\nTimestamp _timestamp_\r\nCurrent value: _data_\r\n\r\nThanks for your time.\r\n\r\nBest regards\r\nPandora FMS\r\n',4,0);

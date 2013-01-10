@@ -1,5 +1,13 @@
 2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* pandoradb_data.sql
+	 pandoradb.data.postgreSQL.sql
+	 pandoradb.data.oracle.sql: Added field1 to Pandora event action.
+
+	Bug id: #3599449
+
+2013-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/incidents/incident.php
 	 operation/agentes/alerts_status.php
 	 operation/agentes/estado_ultimopaquete.php: Restored messages 

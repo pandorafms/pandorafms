@@ -1,6 +1,6 @@
 #!/bin/bash
 # Mysql remote Plugin for Pandora FMS Plugin server
-# (c) ArticaST, Sancho Lerena 2008
+# (c) ArticaST, Sancho Lerena 2012
 
 
 # Default values
@@ -64,4 +64,4 @@ done
 
 echo "show global status" | mysql -u $USER -p$PASSWORD -h$SERVER | grep "$QUERY" | head -1 | awk '{ print $2 }'
 
-
+exit 0;

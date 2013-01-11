@@ -2,7 +2,7 @@
 
 # **********************************************************************
 # Pandora FMS Agent package builder for Solaris
-# (c) 2010-2011 Junichi Satoh <junichi@rworks.jp>
+# (c) 2010-2013 Junichi Satoh <junichi@rworks.jp>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the  GNU Lesser General Public License
@@ -15,7 +15,7 @@
 #
 # **********************************************************************
 
-AGENT_VERSION="3.2.0"
+AGENT_VERSION="4.0.3"
 
 PKGFILE="PandoraFMS-agent-$AGENT_VERSION.pkg"
 

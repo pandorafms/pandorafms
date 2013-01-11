@@ -50,8 +50,6 @@ Exported Functions:
 
 =item * C<pandora_evaluate_alert>
 
-=item * C<pandora_evaluate_compound_alert>
-
 =item * C<pandora_evaluate_snmp_alerts>
 
 =item * C<pandora_event>
@@ -63,8 +61,6 @@ Exported Functions:
 =item * C<pandora_exec_forced_alerts>
 
 =item * C<pandora_generate_alerts>
-
-=item * C<pandora_generate_compound_alerts>
 
 =item * C<pandora_module_keep_alive>
 
@@ -146,14 +142,12 @@ our @EXPORT = qw(
 	pandora_delete_all_template_module_actions
 	pandora_delete_module
 	pandora_evaluate_alert
-	pandora_evaluate_compound_alert
 	pandora_evaluate_snmp_alerts
 	pandora_event
 	pandora_execute_alert
 	pandora_execute_action
 	pandora_exec_forced_alerts
 	pandora_generate_alerts
-	pandora_generate_compound_alerts
 	pandora_get_config_value
 	pandora_get_module_tags
 	pandora_get_module_url_tags
@@ -270,11 +264,6 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 		
 		pandora_process_alert ($pa_config, $data, $agent, $module,
 			$alert, $rc, $dbh, $timestamp, $extra_macros);
-		
-		# Evaluate compound alerts even if the alert status did not change in
-		# case the compound alert does not recover
-		pandora_generate_compound_alerts ($pa_config, $data, $status,
-			$agent, $module, $alert, $utimestamp, $dbh, $timestamp);
 	}
 }
 
@@ -424,11 +413,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		return $status if ($last_status != 2 && $alert->{'type'} eq 'warning');
 		return $status if ($last_status != 3 && $alert->{'type'} eq 'unknown');
 	}
-	# Compound alert
-	elsif (defined ($alert->{'id_agent'})) {
-		return $status if (pandora_evaluate_compound_alert($pa_config, $alert->{'id'}, $alert->{'name'}, $dbh) == 0);
 	# Event alert
-	}
 	else {
 		my $rc = enterprise_hook ('evaluate_event_alert', [$pa_config, $dbh, $alert, $events, $event]);
 		return $status unless (defined ($rc) && $rc == 1);
@@ -457,14 +442,11 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
 	}
 
-	# Simple, event or compound alert?
+	# Simple or event alert?
 	my ($id, $table) = (undef, undef);
 	if (defined ($alert->{'id_template_module'})) {
 		$id = $alert->{'id_template_module'};
 		$table = 'talert_template_modules';
-	} elsif (defined ($alert->{'id_agent'})) {
-		$id = $alert->{'id'};
-		$table = 'talert_compound';
 	} else {
 		$id = $alert->{'id'};
 		$table = 'tevent_alert';
@@ -576,96 +558,6 @@ sub pandora_process_alert ($$$$$$$$;$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_evaluate_compound_alert (I<$pa_config>, I<$id>, I<$name>, I<$dbh>) >> 
-
-Evaluate the given compound alert. Returns 1 if the alert should be
-fired, 0 if not.
-
-=cut
-##########################################################################
-sub pandora_evaluate_compound_alert ($$$$) {
-	my ($pa_config, $id, $name, $dbh) = @_;
-
-	logger ($pa_config, "Evaluating compound alert '".safe_output($name)."'.", 10);
-
-	# Return value
-	my $status = 0;
-
-	# Get all the alerts associated with this compound alert
-	my @compound_alerts = get_db_rows ($dbh, 'SELECT id_alert_template_module, operation FROM talert_compound_elements
-						 WHERE id_alert_compound = ? ORDER BY ' . db_reserved_word ('order'), $id);
-
-	foreach my $compound_alert (@compound_alerts) {
-
-		# Get alert data if enabled
-		my $times_fired = get_db_value ($dbh, "SELECT times_fired FROM talert_template_modules WHERE id = ?
-						AND disabled = 0", $compound_alert->{'id_alert_template_module'});
-		next unless defined ($times_fired);
-
-		# Check whether the alert was fired
-		my $fired = ($times_fired > 0) ? 1 : 0;
-		my $operation = $compound_alert->{'operation'};
-
-		# Operate...
-		if ($operation eq "AND") {
-			$status &= $fired;
-		}
-		elsif ($operation eq "OR") {
-			$status |= $fired;
-		}
-		elsif ($operation eq "XOR") {
-			$status ^= $fired;
-		}
-		elsif ($operation eq "NAND") {
-			$status &= ! $fired;
-		}
-		elsif ($operation eq "NOR") {
-			$status |= ! $fired;
-		}
-		elsif ($operation eq "NXOR") {
-			$status ^= ! $fired;
-		}
-		elsif ($operation eq "NOP") {
-			$status = $fired;
-		} else {
-			logger ($pa_config, "Unknown operation: $operation.", 3);
-		}
-	}
-
-	return $status;
-}
-
-##########################################################################
-=head2 C<< pandora_generate_compound_alerts (I<$pa_config>, I<$data>, I<$status>, I<$agent>, I<$module>, I<$alert>, I<$utimestamp>, I<$dbh>, I<$timestamp>) >> 
-
-Generate compound alerts that depend on a given alert.
-
-=cut
-##########################################################################
-sub pandora_generate_compound_alerts ($$$$$$$$$) {
-	my ($pa_config, $data, $status, $agent, $module, $alert, $utimestamp, $dbh, $timestamp) = @_;
-
-	# Get all compound alerts that depend on this alert
-	my @elements = get_db_rows ($dbh, 'SELECT id_alert_compound FROM talert_compound_elements
-				WHERE id_alert_template_module = ?',
-						$alert->{'id_template_module'});
-
-	foreach my $element (@elements) {
-
-		# Get compound alert parameters
-		my $compound_alert = get_db_single_row ($dbh, 'SELECT * FROM talert_compound WHERE id = ?', $element->{'id_alert_compound'});
-		next unless defined ($compound_alert);
-
-		# Evaluate the alert
-		my $rc = pandora_evaluate_alert ($pa_config, $agent, $data, $status, $compound_alert,
-						$utimestamp, $dbh);
-
-		pandora_process_alert ($pa_config, $data, $agent, $module,
-					$compound_alert, $rc, $dbh, $timestamp);
-	}
-}
-
-##########################################################################
 =head2 C<< pandora_execute_alert (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$alert>, I<$alert_mode>, I<$dbh>, I<$timestamp>) >> 
 
 Execute the given alert.
@@ -713,16 +605,6 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 						AND talert_actions.id_alert_command = talert_commands.id',
 						$alert->{'id_alert_action'});
 		}
-	}
-	# Compound alert
-	elsif (defined ($alert->{'id_agent'})) {
-		@actions = get_db_rows ($dbh, 'SELECT * FROM talert_compound_actions, talert_actions, talert_commands
-					WHERE talert_compound_actions.id_alert_action = talert_actions.id
-					AND talert_actions.id_alert_command = talert_commands.id
-					AND talert_compound_actions.id_alert_compound = ?
-					AND ((fires_min = 0 AND fires_max = 0)
-					OR (? >= fires_min AND ? <= fires_max))',
-					$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'});
 	}
 	# Event alert
 	else {
@@ -3153,10 +3035,8 @@ sub pandora_inhibit_alerts {
 				AND talert_template_modules.times_fired > 0
 				AND talert_templates.priority = 4', $agent->{'id_parent'});
 	return 1 if ($count > 0);
-
-	# Are any of the parent's critical compound alerts fired?	
-	$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM talert_compound WHERE id_agent = ? AND times_fired > 0 AND priority = 4', $agent->{'id_parent'});
-	return 1 if ($count > 0);
+	
+	
 
 	# Check the parent's parent next
 	$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent->{'id_parent'});

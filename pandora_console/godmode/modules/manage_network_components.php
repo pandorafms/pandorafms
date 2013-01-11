@@ -307,7 +307,23 @@ $table->style[2] = 'font-weight: bold';
 $table->data = array ();
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select (network_components_get_groups (),
+
+$component_groups  = network_components_get_groups ();
+
+if ($component_groups === false)
+	$component_groups = array();
+
+foreach ($component_groups as $component_group_key => $component_group_val) {
+	$num_components = db_get_num_rows('SELECT id_nc
+										FROM tnetwork_component 
+										WHERE id_group = ' . $component_group_key);
+										
+	// Only show component groups with local components
+	if ($num_components  == 0)
+		unset($component_groups[$component_group_key]);
+}
+
+$table->data[0][1] = html_print_select ($component_groups,
 	'search_id_group', $search_id_group, '', __('All'), 0, true, false, false);
 $table->data[0][2] = __('Search');
 $table->data[0][3] = html_print_input_text ('search_string', $search_string, '', 25,

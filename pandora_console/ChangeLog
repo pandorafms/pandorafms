@@ -1,3 +1,13 @@
+2013-01-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_component_groups.php
+	godmode/modules/manage_network_components.php
+	godmode/modules/manage_nc_groups.php: Added tree format for
+	component groups and make more restrictive filters in local/network
+	components.
+	
+	Merged from branches.
+
 2013-01-11  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

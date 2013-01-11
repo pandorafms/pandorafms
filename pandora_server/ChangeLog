@@ -1,3 +1,9 @@
+2013-01-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed _id_alert_ macro in events.
+	
+	Bug id: #3600223
+
 2013-01-10  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* util/plugin/mysql_plugin.sh: Added the correct exit code to plugin.

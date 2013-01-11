@@ -748,7 +748,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_modulegroup_ => (defined ($module)) ? (get_module_group_name ($dbh, $module->{'id_module_group'}) || '') : '',
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
-				_id_alert_ => $alert->{'id'},
+				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 

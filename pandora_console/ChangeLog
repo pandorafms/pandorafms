@@ -1,5 +1,10 @@
 2013-01-11  Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* pandoradb.data.oracle.sql: New network components and groups
+	ported to Oracle database schema.
+
+2013-01-11  Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* pandoradb_data.sql: Added new network components and groups.
 
 2013-01-10  Dario Rodriguez <dario.rodriguez@artica.es>

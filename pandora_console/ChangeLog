@@ -1,3 +1,11 @@
+2013-01-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/setup/setup_netflow.php: Fixed a string.
+
+	* include/functions_config.php,
+	  operation/menu.php,
+	  godmode/menu.php: Added support for the log viewer.
+
 2013-01-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_component_groups.php

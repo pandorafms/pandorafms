@@ -208,6 +208,9 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
 	if ($config['activate_netflow'])
 		$sub["godmode/setup/setup_netflow"]["text"] = __('Netflow');
+	if ($config['log_collector'] == 1) {
+		enterprise_hook ('log_collector_submenu');
+	}
 	if ($config['activate_gis'])
 		$sub["godmode/setup/gis"]["text"] = __('Map conections GIS');
 	$sub["godmode/setup/links"]["text"] = __('Links');

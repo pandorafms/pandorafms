@@ -69,7 +69,7 @@ function config_update_value ($token, $value) {
  */
 function config_update_config () {
 	global $config;
-	
+
 	/* If user is not even log it, don't try this */
 	if (! isset ($config['id_user']))
 		return false;
@@ -135,7 +135,6 @@ function config_update_config () {
 			config_update_value ('replication_dbpass', (string)get_parameter('replication_dbpass'));
 			config_update_value ('replication_dbport', (string)get_parameter('replication_dbport'));
 			config_update_value ('replication_mode', (string)get_parameter('replication_mode'));
-			
 			config_update_value ('public_url', get_parameter('public_url'));
 			config_update_value ('referer_security', get_parameter('referer_security'));
 			
@@ -153,6 +152,8 @@ function config_update_config () {
 				config_update_value ('enable_pass_history', get_parameter('enable_pass_history'));
 				config_update_value ('compare_pass', get_parameter('compare_pass'));
 			}
+			
+			config_update_value ('log_collector', (bool)get_parameter('log_collector'));
 			/////////////
 			break;
 		case 'godmode/setup/setup_auth':
@@ -301,6 +302,9 @@ function config_update_config () {
 			config_update_value ('netflow_daemon', get_parameter ('netflow_daemon'));
 			config_update_value ('netflow_nfdump', get_parameter ('netflow_nfdump'));
 			config_update_value ('netflow_max_resolution', get_parameter ('netflow_max_resolution'));
+			break;
+		case 'enterprise/godmode/setup/setup_log_collector':
+			config_update_value ('log_dir', (string)get_parameter('log_dir'));
 			break;
 	}
 	
@@ -474,6 +478,14 @@ function config_process_config () {
 		config_update_value ('replication_mode', "only_validated");
 	}
 	
+	if (!isset ($config["log_collector"])) {
+		config_update_value ('log_collector', 0);
+	}
+
+	if (!isset ($config["log_dir"])) {
+		config_update_value ('log_dir', '/var/spool/pandora/data_in/log');
+	}
+
 	if (!isset ($config["font_size"])) {
 		config_update_value ('font_size', 6);
 	}

@@ -1,3 +1,9 @@
+2013-01-11  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Config.pm
+	lib/PandoraFMS/Core.pm: clean up the compound alerts from
+	server code
+
 2013-01-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed _id_alert_ macro in events.

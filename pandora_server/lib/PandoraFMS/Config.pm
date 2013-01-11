@@ -212,7 +212,6 @@ sub pandora_load_config {
 	$pa_config->{"wmi_threads"} = 2; # Introduced on 2.0
 	$pa_config->{"wmi_timeout"} = 5; # Introduced on 2.0
 	$pa_config->{"wmi_client"} = 'wmic'; # 3.0
-	$pa_config->{"compound_max_depth"} = 5; # Maximum nested compound alert depth. Not in config file.
 	$pa_config->{"dataserver_threads"} = 2; # Introduced on 2.0
 	$pa_config->{"inventory_threads"} = 2; # 2.1
 	$pa_config->{"export_threads"} = 1; # 3.0

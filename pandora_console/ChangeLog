@@ -1,3 +1,9 @@
+2013-01-11  Dario Rodrigue <dario.rodriguez@artica.es>
+
+	* pandoradb_data.sql: Added new network componentes and groups.
+
+	MERGED FROM 4.0.2
+
 2012-01-10  Sancho Lerena <slerena@artica.es>
 
 	* godmode/agentes/module_manager.php: Updated text to library link.

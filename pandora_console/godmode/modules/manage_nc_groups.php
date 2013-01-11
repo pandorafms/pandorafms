@@ -27,6 +27,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 
 enterprise_include_once ('meta/include/functions_components_meta.php');
 require_once ($config['homedir'] . '/include/functions_network_components.php');
+require_once ($config['homedir'] . '/include/functions_component_groups.php');
 
 // Header
 if (defined('METACONSOLE')) {
@@ -97,12 +98,13 @@ if ($update) {
 }
 
 if ($delete) {
+	$parent_id = db_get_value_filter('parent', 'tnetwork_component_group', array('id_sg' => $id));
+	
+	$result1 = db_process_sql_update('tnetwork_component_group', array('parent' => $parent_id), array('parent' => $id));
+
 	$result = db_process_sql_delete ('tnetwork_component_group',
 		array ('id_sg' => $id));
-	
-	$result1 = db_process_sql_update('tnetwork_component_group', array('parent' => 0), array('parent' => $id));
-	
-	
+		
 	if (($result !== false) and ($result1 !== false)) $result = true;
 	else $result = false;
 	
@@ -170,12 +172,21 @@ $url = ui_get_url_refresh (array ('offset' => false,
 
 $filter = array ();
 
-$filter['offset'] = (int) get_parameter ('offset');
-$filter['limit'] = (int) $config['block_size'];
+//$filter['offset'] = (int) get_parameter ('offset');
+//$filter['limit'] = (int) $config['block_size'];
+$filter['order'] = 'parent';
 
 $groups = db_get_all_rows_filter ('tnetwork_component_group', $filter);
 if ($groups === false)
 	$groups = array ();
+
+$groups_clean = array();
+foreach ($groups as $group_key => $group_val) {
+	$groups_clean[$group_val['id_sg']] = $group_val;
+}
+
+// Format component groups in tree form
+$groups = component_groups_get_groups_tree_recursive($groups_clean,0,0);
 
 $table->width = '98%';
 $table->head = array ();
@@ -196,12 +207,14 @@ $table->data = array ();
 $total_groups = db_get_all_rows_filter ('tnetwork_component_group', false, 'COUNT(*) AS total');
 $total_groups = $total_groups[0]['total'];
 
-ui_pagination ($total_groups, $url);
+//ui_pagination ($total_groups, $url);
 
 foreach ($groups as $group) {
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
+	$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);	
+	
+	$data[0] =  $tabulation . '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
 	
 	$data[1] = network_components_get_group_name ($group['parent']);
 	

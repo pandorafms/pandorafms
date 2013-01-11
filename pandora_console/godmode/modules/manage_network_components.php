@@ -406,6 +406,9 @@ if(isset($data)) {
 	echo "</div>";
 	echo "</form>";
 }
+else {
+	echo "<div class='nf'>".__('There are no defined network components')."</div>";
+}
 
 echo '<form method="post" action="'.$url.'">';
 echo '<div class="action-buttons" style="width: '.$table->width.';margin-top: 5px;">';

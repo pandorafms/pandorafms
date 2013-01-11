@@ -25,7 +25,7 @@ check_login ();
 
 if (! check_acl ($config["id_user"], 0, "IR")) {
 	db_pandora_audit("ACL Violation",
-		"Trying to access event viewer");
+		"Trying to access netflow setup");
 	require ("general/noaccess.php");
 	return;
 }

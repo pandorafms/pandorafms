@@ -64,6 +64,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/servers/recon_view"]["text"] = __('Recon view');
 	$sub["operation/servers/recon_view"]["refr"] = 0;
 	
+	if ($config['log_collector'] == 1) {
+		enterprise_hook ('log_collector_menu');
+	}
 	
 	//SNMP Console
 	$sub["operation/snmpconsole/snmp_view"]["text"] = __('SNMP console');

@@ -103,6 +103,7 @@ if($create_profile || $update_profile) {
 	$event_view = (bool) get_parameter ("event_view");
 	$event_edit = (bool) get_parameter ("event_edit");
 	$event_management = (bool) get_parameter ("event_management");
+	$agent_disable = (bool) get_parameter ("agent_disable");
 	
 	$values = array(
 		'name' => $name,
@@ -121,7 +122,8 @@ if($create_profile || $update_profile) {
 		'report_management' => $report_management,
 		'event_view' => $event_view,
 		'event_edit' => $event_edit,
-		'event_management' => $event_management);
+		'event_management' => $event_management,
+		'agent_disable' => $agent_disable);
 }
 
 // Update profile
@@ -137,6 +139,7 @@ if ($update_profile) {
 				' Report view: ' . $report_view . ' Report edit: ' . $report_edit .
 				' Report management: ' . $report_management . ' Event view: ' . $event_view .
 				' Event edit: ' . $event_edit . ' Event management: ' . $event_management .
+				' Agent disable: ' . $agent_disable .
 				' Pandora Management: ' . $pandora_management;
 			db_pandora_audit("User management",
 				"Update profile ". $name, false, false, $info);
@@ -169,6 +172,7 @@ if ($create_profile) {
 				' Report view: ' . $report_view . ' Report edit: ' . $report_edit .
 				' Report management: ' . $report_management . ' Event view: ' . $event_view .
 				' Event edit: ' . $event_edit . ' Event management: ' . $event_management .
+				' Agent disable: ' . $agent_disable .
 				' Pandora Management: ' . $pandora_management;
 			db_pandora_audit("User management",
 				"Created profile ". $name, false, false, $info);
@@ -200,18 +204,19 @@ $table->head[2] = "IW" . ui_print_help_tip (__('System incidents writing'), true
 $table->head[3] = "IM" . ui_print_help_tip (__('System incidents management'), true);
 $table->head[4] = "AR" . ui_print_help_tip (__('Agents reading'), true);
 $table->head[5] = "AW" . ui_print_help_tip (__('Agents management'), true);
-$table->head[6] = "LW" . ui_print_help_tip (__('Alerts editing'), true);
-$table->head[7] = "UM" . ui_print_help_tip (__('Users management'), true);
-$table->head[8] = "DM" . ui_print_help_tip (__('Database management'), true);
-$table->head[9] = "LM" . ui_print_help_tip (__('Alerts management'), true);
-$table->head[10] = "RR" . ui_print_help_tip (__('Reports reading'), true);
-$table->head[11] = "RW" . ui_print_help_tip (__('Reports writing'), true);
-$table->head[12] = "RM" . ui_print_help_tip (__('Reports management'), true);
-$table->head[13] = "ER" . ui_print_help_tip (__('Events reading'), true);
-$table->head[14] = "EW" . ui_print_help_tip (__('Events writing'), true);
-$table->head[15] = "EM" . ui_print_help_tip (__('Events management'), true);
-$table->head[16] = "PM" . ui_print_help_tip (__('Systems management'), true);
-$table->head[17] = '<span title="Operations">' . __('Op.') . '</span>';
+$table->head[6] = "AD" . ui_print_help_tip (__('Agents disable'), true);
+$table->head[7] = "LW" . ui_print_help_tip (__('Alerts editing'), true);
+$table->head[8] = "UM" . ui_print_help_tip (__('Users management'), true);
+$table->head[9] = "DM" . ui_print_help_tip (__('Database management'), true);
+$table->head[10] = "LM" . ui_print_help_tip (__('Alerts management'), true);
+$table->head[11] = "RR" . ui_print_help_tip (__('Reports reading'), true);
+$table->head[12] = "RW" . ui_print_help_tip (__('Reports writing'), true);
+$table->head[13] = "RM" . ui_print_help_tip (__('Reports management'), true);
+$table->head[14] = "ER" . ui_print_help_tip (__('Events reading'), true);
+$table->head[15] = "EW" . ui_print_help_tip (__('Events writing'), true);
+$table->head[16] = "EM" . ui_print_help_tip (__('Events management'), true);
+$table->head[17] = "PM" . ui_print_help_tip (__('Systems management'), true);
+$table->head[18] = '<span title="Operations">' . __('Op.') . '</span>';
 
 $table->align = array_fill (1, 11, "center");
 $table->size = array_fill (1, 10, 40);
@@ -230,19 +235,20 @@ foreach ($profiles as $profile) {
 	$data[3] = ($profile["incident_management"] ? $img : '');
 	$data[4] = ($profile["agent_view"] ? $img : '');
 	$data[5] = ($profile["agent_edit"] ? $img : '');
-	$data[6] = ($profile["alert_edit"] ? $img : '');
-	$data[7] = ($profile["user_management"] ? $img : '');
-	$data[8] = ($profile["db_management"] ? $img : '');
-	$data[9] = ($profile["alert_management"] ? $img : '');
-	$data[10] = ($profile["report_view"] ? $img : '');
-	$data[11] = ($profile["report_edit"] ? $img : '');
-	$data[12] = ($profile["report_management"] ? $img : '');
-	$data[13] = ($profile["event_view"] ? $img : '');
-	$data[14] = ($profile["event_edit"] ? $img : '');
-	$data[15] = ($profile["event_management"] ? $img : '');
-	$data[16] = ($profile["pandora_management"] ? $img : '');
-	$data[17] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
-	$data[17] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
+	$data[6] = ($profile["agent_disable"] ? $img : '');
+	$data[7] = ($profile["alert_edit"] ? $img : '');
+	$data[8] = ($profile["user_management"] ? $img : '');
+	$data[9] = ($profile["db_management"] ? $img : '');
+	$data[10] = ($profile["alert_management"] ? $img : '');
+	$data[11] = ($profile["report_view"] ? $img : '');
+	$data[12] = ($profile["report_edit"] ? $img : '');
+	$data[13] = ($profile["report_management"] ? $img : '');
+	$data[14] = ($profile["event_view"] ? $img : '');
+	$data[15] = ($profile["event_edit"] ? $img : '');
+	$data[16] = ($profile["event_management"] ? $img : '');
+	$data[17] = ($profile["pandora_management"] ? $img : '');
+	$data[18] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
+	$data[18] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
 	array_push ($table->data, $data);
 }
 

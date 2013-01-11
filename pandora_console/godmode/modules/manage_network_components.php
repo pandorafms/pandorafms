@@ -84,7 +84,6 @@ $post_process = (float) get_parameter('post_process');
 $unit = (string) get_parameter('unit');
 $id = (int) get_parameter ('id');
 $wizard_level = get_parameter ('wizard_level');
-$only_metaconsole = (int) get_parameter ('only_metaconsole');
 $critical_instructions = (string) get_parameter('critical_instructions');
 $warning_instructions = (string) get_parameter('warning_instructions');
 $unknown_instructions = (string) get_parameter('unknown_instructions');
@@ -188,7 +187,6 @@ if ($create_component) {
 				'post_process' => $post_process,
 				'unit' => $unit,
 				'wizard_level' => $wizard_level,
-				'only_metaconsole' => $only_metaconsole,
 				'macros' => $macros,
 				'critical_instructions' => $critical_instructions,
 				'warning_instructions' => $warning_instructions,
@@ -269,7 +267,6 @@ if ($update_component) {
 				'post_process' => $post_process,
 				'unit' => $unit,
 				'wizard_level' => $wizard_level,
-				'only_metaconsole' => $only_metaconsole,
 				'macros' => $macros,
 				'critical_instructions' => $critical_instructions,
 				'warning_instructions' => $warning_instructions,

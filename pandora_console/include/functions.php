@@ -1552,6 +1552,9 @@ function get_acl_column($access) {
 		case "AW":
 			return "agent_edit";
 			break;
+		case "AD":
+			return "agent_disable";
+			break;
 		case "LW":
 			return "alert_edit";
 			break;

@@ -748,7 +748,6 @@ CREATE TABLE tnetwork_component (
 	post_process BINARY_DOUBLE default 0.
 	unit CLOB default '',
 	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
-	only_metaconsole NUMBER(5, 0) default 0 NOT NULL,
 	macros CLOB default '',
 	critical_instructions VARCHAR2(255) default '',
 	warning_instructions VARCHAR2(255) default '',
@@ -757,7 +756,7 @@ CREATE TABLE tnetwork_component (
 	warning_inverse NUMBER(1, 0) default 0 NOT NULL,
 	id_category NUMBER(10, 0) default 0 NOT NULL,
 	tags CLOB,
-	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'))
+	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );
 
 CREATE SEQUENCE tnetwork_component_s INCREMENT BY 1 START WITH 1;
@@ -818,7 +817,8 @@ CREATE TABLE tperfil (
 	report_management NUMBER(5, 0) default 0 NOT NULL,
 	event_view NUMBER(5, 0) default 0 NOT NULL,
 	event_edit NUMBER(5, 0) default 0 NOT NULL,
-	event_management NUMBER(5, 0) default 0 NOT NULL
+	event_management NUMBER(5, 0) default 0 NOT NULL,
+	agent_disable NUMBER(5, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tperfil_s INCREMENT BY 1 START WITH 1;

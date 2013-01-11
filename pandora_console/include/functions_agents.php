@@ -259,81 +259,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 }
 
 /**
- * Get all the combined alerts of an agent.
- *
- * @param int $id_agent Agent id
- * @param string Special filter. Can be: "notfired", "fired" or "disabled".
- * @param array Extra filter options in an indexed array. See
- * db_format_array_where_clause_sql()
- *
- * @return array An array with all combined alerts defined for an agent.
- */
-function agents_get_alerts_compound ($id_agent = false, $filter = '', $options = false, $idGroup = false, $count = false, $where = '') {
-	switch ($filter) {
-		case "notfired":
-			$filter = ' AND times_fired = 0 AND disabled = 0';
-			break;
-		case "fired":
-			$filter = ' AND times_fired > 0 AND disabled = 0';
-			break;
-		case "disabled":
-			$filter = ' AND disabled = 1';
-			break;
-		case 'all_enabled':
-			$filter = ' AND disabled = 0';
-			break;
-		default:
-			$filter = '';
-			break;
-	}
-	
-	if (is_array ($options)) {
-		$filter .= db_format_array_where_clause_sql ($options);
-	}
-	
-	if (($id_agent !== false) && ($idGroup !== false)) {
-		if ($idGroup != 0) { //All group
-			$subQuery = 'SELECT id_agente
-				FROM tagente WHERE id_grupo = ' . $idGroup;
-		}
-		else {
-			$subQuery = 'SELECT id_agente FROM tagente';
-		}
-	}
-	else if ($id_agent == false) {
-		$subQuery = 'SELECT id_agente
-			FROM tagente WHERE disabled = 0';
-	}
-	else {
-		$id_agent = (array) $id_agent;
-		
-		$subQuery = implode (',', $id_agent);
-	}
-	
-	$selectText = '*';
-	if ($count !== false) {
-		$selectText = 'COUNT(id) AS count';
-	}
-	
-	$sql = sprintf ("SELECT %s
-		FROM talert_compound
-		WHERE id_agent IN (%s) %s %s",
-		$selectText, $subQuery, $where, $filter);
-	
-	$alerts = db_get_all_rows_sql ($sql);
-	
-	if ($alerts === false)
-		return array ();
-	
-	if ($count !== false) {
-		return $alerts[0]['count'];
-	}
-	else {
-		return $alerts;	
-	}
-}
-
-/**
  * Get a list of agents.
  *
  * By default, it will return all the agents where the user has reading access.
@@ -545,10 +470,9 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
  * @return array An array with all alerts defined for an agent.
  */
 function agents_get_alerts ($id_agent = false, $filter = false, $options = false) {
-	$combined_alerts = agents_get_alerts_compound ($id_agent, $filter, $options);
 	$simple_alerts = agents_get_alerts_simple ($id_agent, $filter, $options);
 	
-	return array ('simple' => $simple_alerts, 'compounds' => $combined_alerts);
+	return array ('simple' => $simple_alerts);
 }
 
 /**

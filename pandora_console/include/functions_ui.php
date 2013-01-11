@@ -828,12 +828,25 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	
 	$data[$index['status']] = ui_print_status_image($status, $title, true);
 	
-	if (check_acl ($config["id_user"], $id_group, "LW") == 1) {
+	if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
+		$data[$index['validate']] = '';
+		
+		//~ if (check_acl ($config["id_user"], $id_group, "AD")) {
+			//~ if ($alert['disabled']) {
+				//~ $data[$index['validate']] .= html_print_input_image ('enable', 'images/lightbulb_off.png', 1, '', true);
+				//~ $data[$index['validate']] .= html_print_input_hidden ('enable_alert', 1, true);
+			//~ }
+			//~ else {
+				//~ $data[$index['validate']] .= html_print_input_image ('disable', 'images/lightbulb.png', 1, '', true);
+				//~ $data[$index['validate']] .= html_print_input_hidden ('disable_alert', 1, true);
+			//~ }
+		//~ }
+		
 		if ($compound) {
-			$data[$index['validate']] = html_print_checkbox ("validate_compound[]", $alert["id"], false, true);
+			$data[$index['validate']] .= html_print_checkbox ("validate_compound[]", $alert["id"], false, true);
 		}
 		else {
-			$data[$index['validate']] = html_print_checkbox ("validate[]", $alert["id"], false, true);
+			$data[$index['validate']] .= html_print_checkbox ("validate[]", $alert["id"], false, true);
 		}
 	}
 	

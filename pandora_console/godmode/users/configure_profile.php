@@ -78,6 +78,7 @@ if ($id_profile || $new_profile) {
 		$event_view = 0;
 		$event_edit = 0;
 		$event_management = 0;
+		$agent_disable = 0;
 		
 		$page_title = __('Create profile');
 	}
@@ -114,6 +115,7 @@ if ($id_profile || $new_profile) {
 		$event_view = (bool) $profile["event_view"];
 		$event_edit = (bool) $profile["event_edit"];
 		$event_management = (bool) $profile["event_management"];
+		$agent_disable = (bool) $profile["agent_disable"];
 		
 		$id_audit = db_pandora_audit("User management",
 			"Edit profile ". $name);
@@ -126,6 +128,7 @@ if ($id_profile || $new_profile) {
 			' Report view: ' . $report_view . ' Report edit: ' . $report_edit .
 			' Report management: ' . $report_management . ' Event view: ' . $event_view .
 			' Event edit: ' . $event_edit . ' Event management: ' . $event_management .
+			' Agent disable: ' . $agent_disable .
 			' Pandora Management: ' . $pandora_management;
 		enterprise_hook('audit_pandora_enterprise', array($id_audit, $info));
 		
@@ -152,28 +155,30 @@ if ($id_profile || $new_profile) {
 	$table->data[4][1] = html_print_checkbox ('agent_view', 1, $agent_view, true);
 	$table->data[5][0] = __('Edit agents');
 	$table->data[5][1] = html_print_checkbox ('agent_edit', 1, $agent_edit, true);
-	$table->data[6][0] = __('Edit alerts');
-	$table->data[6][1] = html_print_checkbox ('alert_edit', 1, $alert_edit, true);
-	$table->data[7][0] = __('Manage users');
-	$table->data[7][1] = html_print_checkbox ('user_management', 1, $user_management, true);
-	$table->data[8][0] = __('Manage Database');
-	$table->data[8][1] = html_print_checkbox ('db_management', 1, $db_management, true);
-	$table->data[9][0] = __('Manage alerts');
-	$table->data[9][1] = html_print_checkbox ('alert_management', 1, $alert_management, true);
-	$table->data[10][0] = __('View reports');
-	$table->data[10][1] = html_print_checkbox ('report_view', 1, $report_view, true);
-	$table->data[11][0] = __('Edit reports');
-	$table->data[11][1] = html_print_checkbox ('report_edit', 1, $report_edit, true);
-	$table->data[12][0] = __('Manage reports');
-	$table->data[12][1] = html_print_checkbox ('report_management', 1, $report_management, true);
-	$table->data[13][0] = __('View events');
-	$table->data[13][1] = html_print_checkbox ('event_view', 1, $event_view, true);
-	$table->data[14][0] = __('Edit events');
-	$table->data[14][1] = html_print_checkbox ('event_edit', 1, $event_edit, true);
-	$table->data[15][0] = __('Manage events');
-	$table->data[15][1] = html_print_checkbox ('event_management', 1, $event_management, true);
-	$table->data[16][0] = __('Pandora management');
-	$table->data[16][1] = html_print_checkbox ('pandora_management', 1, $pandora_management, true);
+	$table->data[6][0] = __('Disable agents');
+	$table->data[6][1] = html_print_checkbox ('agent_disable', 1, $agent_disable, true);
+	$table->data[7][0] = __('Edit alerts');
+	$table->data[7][1] = html_print_checkbox ('alert_edit', 1, $alert_edit, true);
+	$table->data[8][0] = __('Manage users');
+	$table->data[8][1] = html_print_checkbox ('user_management', 1, $user_management, true);
+	$table->data[9][0] = __('Manage Database');
+	$table->data[9][1] = html_print_checkbox ('db_management', 1, $db_management, true);
+	$table->data[10][0] = __('Manage alerts');
+	$table->data[10][1] = html_print_checkbox ('alert_management', 1, $alert_management, true);
+	$table->data[11][0] = __('View reports');
+	$table->data[11][1] = html_print_checkbox ('report_view', 1, $report_view, true);
+	$table->data[12][0] = __('Edit reports');
+	$table->data[12][1] = html_print_checkbox ('report_edit', 1, $report_edit, true);
+	$table->data[13][0] = __('Manage reports');
+	$table->data[13][1] = html_print_checkbox ('report_management', 1, $report_management, true);
+	$table->data[14][0] = __('View events');
+	$table->data[14][1] = html_print_checkbox ('event_view', 1, $event_view, true);
+	$table->data[15][0] = __('Edit events');
+	$table->data[15][1] = html_print_checkbox ('event_edit', 1, $event_edit, true);
+	$table->data[16][0] = __('Manage events');
+	$table->data[16][1] = html_print_checkbox ('event_management', 1, $event_management, true);
+	$table->data[17][0] = __('Pandora management');
+	$table->data[17][1] = html_print_checkbox ('pandora_management', 1, $pandora_management, true);
 	
 	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&pure='.$pure.'">';
 	

@@ -110,7 +110,6 @@ if (isset ($id)) {
 		$post_process = $component["post_process"];
 		$unit = $component["unit"];
 		$wizard_level = $component["wizard_level"];
-		$only_metaconsole = $component["only_metaconsole"];
 		$critical_instructions = $component["critical_instructions"];
 		$warning_instructions = $component["warning_instructions"];
 		$unknown_instructions = $component["unknown_instructions"];
@@ -158,7 +157,6 @@ if (isset ($id)) {
 		$post_process = 0;
 		$unit = '';
 		$wizard_level = 'nowizard';
-		$only_metaconsole = 0;
 		$critical_instructions = '';
 		$warning_instructions = '';
 		$unknown_instructions = '';

@@ -40,8 +40,7 @@ if (is_ajax ()) {
 		
 		$components = network_components_get_network_components ($id_module_component,
 			array ('id_group' => $id_module_group,
-					'only_metaconsole' => 0,
-				'order' => 'name ASC'),
+					'order' => 'name ASC'),
 			array ('id_nc', 'name'));
 		
 		echo json_encode ($components);
@@ -53,8 +52,7 @@ if (is_ajax ()) {
 		
 		$id_module_group = (int) get_parameter ('id_module_component_group');
 		$localComponents = local_components_get_local_components(
-			array('id_network_component_group' => $id_module_group,
-				'only_metaconsole' => 0), 
+			array('id_network_component_group' => $id_module_group), 
 			array('id', 'name'));
 		
 		echo json_encode($localComponents);

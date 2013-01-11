@@ -583,7 +583,7 @@ CREATE TABLE "tmodule_group" (
 -- ---------------------------------------------------------------------
 -- Table `tnetwork_component`
 -- ---------------------------------------------------------------------
-CREATE TYPE type_tlocal_component_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
+CREATE TYPE type_tlocal_component_wizard_level AS ENUM ('basic','advanced','nowizard');
 CREATE TABLE "tnetwork_component" (
 	"id_nc" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(80) NOT NULL,
@@ -622,7 +622,6 @@ CREATE TABLE "tnetwork_component" (
 	"post_process" DOUBLE PRECISION default 0,
 	"unit" TEXT default '',
 	"wizard_level" type_tlocal_component_wizard_level default 'nowizard',
-	"only_metaconsole" INTEGER default '0',
 	"macros" TEXT default '',
 	"critical_instructions" TEXT default '',
 	"warning_instructions" TEXT default '',
@@ -700,7 +699,8 @@ CREATE TABLE "tperfil" (
 	"report_management" SMALLINT NOT NULL default 0,
 	"event_view" SMALLINT NOT NULL default 0,
 	"event_edit" SMALLINT NOT NULL default 0,
-	"event_management" SMALLINT NOT NULL default 0
+	"event_management" SMALLINT NOT NULL default 0,
+	"agent_disable" SMALLINT NOT NULL default 0
 );
 
 -- ---------------------------------------------------------------------

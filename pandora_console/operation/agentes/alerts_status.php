@@ -41,7 +41,6 @@ $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php')
 $filter = get_parameter ("filter", "all_enabled");
 $filter_standby = get_parameter ("filter_standby", "all");
 $offset_simple = (int) get_parameter_get ("offset_simple", 0);
-$offset_combined = (int) get_parameter_get("offset_combined", 0);
 $id_group = (int) get_parameter ("ag_group", 0); //0 is the All group (selects all groups)
 $free_search = get_parameter("free_search", '');
 
@@ -121,11 +120,7 @@ if ($free_search != '') {
 				'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE "%' . $free_search . '%") OR ' .
 				'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (SELECT id_agente FROM tagente WHERE nombre LIKE "%' . $free_search . '%"))' .
 				')';
-			
-			$whereAlertCombined = 'AND (' .
-				'name LIKE  "%' . $free_search . '%" OR ' .
-				'id IN (SELECT id_alert_compound FROM talert_compound_elements WHERE id_alert_template_module IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $free_search . '%"))) ' .
-				')';
+
 			break;
 		case "postgresql":
 		case "oracle":
@@ -137,16 +132,11 @@ if ($free_search != '') {
 				'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (SELECT id_agente FROM tagente WHERE nombre LIKE \'%' . $free_search . '%\'))' .
 				')';
 			
-			$whereAlertCombined = 'AND (' .
-				'name LIKE  "%' . $free_search . '%" OR ' .
-				'id IN (SELECT id_alert_compound FROM talert_compound_elements WHERE id_alert_template_module IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE \'%' . $free_search . '%\'))) ' .
-				')';
 			break;
 	}
 }
 else {
 	$whereAlertSimple = '';
-	$whereAlertCombined = ''; 
 }
 
 $sortField = get_parameter('sort_field');
@@ -241,7 +231,6 @@ else {
 
 $alerts = array();
 $options_simple = array('offset' => $offset_simple, 'limit' => $config['block_size'], 'order' => $order);
-$options_combined = array('limit' => $config["block_size"], 'offset' => $offset_combined);
 
 $filter_alert = array();
 if($filter_standby == 'standby_on') {
@@ -261,9 +250,6 @@ $alerts['alerts_simple'] = agents_get_alerts_simple ($agents,
 
 $countAlertsSimple = agents_get_alerts_simple ($agents, $filter_alert,
 	false, $whereAlertSimple, false, false, $idGroup, true);
-
-$alerts['alerts_combined'] = agents_get_alerts_compound($agents, $filter, $options_combined, $idGroup, false, $whereAlertCombined);
-$countAlertsCombined = agents_get_alerts_compound($agents, $filter, false, $idGroup, true, $whereAlertCombined);
 
 if ($tab != null) {
 	$url = $url.'&tab='.$tab;
@@ -298,8 +284,8 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[6] = __('Action');
 		$table->head[7] = __('Last fired');
 		$table->head[8] = __('Status');
-		if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
-			$table->head[9] = __('Validate');
+		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM") || check_acl ($config["id_user"], $id_group, "AD")) {
+			$table->head[9] = __('Actions');
 		}
 		$table->align[8] = 'center';
 		$table->align[9] = 'center';
@@ -318,8 +304,8 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
-		if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
-			$table->head[8] = __('Validate');
+		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM") || check_acl ($config["id_user"], $id_group, "AD")) {
+			$table->head[8] = __('Actions');
 		}
 		$table->align[7] = 'center';
 		$table->align[8] = 'center';
@@ -343,8 +329,8 @@ else
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
-		if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
-			$table->head[8] = __('Validate');
+		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM") || check_acl ($config["id_user"], $id_group, "AD")) {
+			$table->head[8] = __('Actions');
 		}
 		$table->align[7] = 'center';
 		$table->align[8] = 'center';
@@ -361,16 +347,13 @@ else
 		$table->head[4] = __('Action');
 		$table->head[5] = __('Last fired');
 		$table->head[6] = __('Status');
-		if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
-			$table->head[7] = __('Validate');
+		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM") || check_acl ($config["id_user"], $id_group, "AD")) {
+			$table->head[7] = __('Actions');
 		}
 		$table->align[6] = 'center';
 		$table->align[7] = 'center';
 	}
 }
-
-$table->title = __('Single alerts');
-$table->titlestyle = "background-color:#799E48;";
 
 $table->data = array ();
 
@@ -393,38 +376,10 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 }
 else {
-	echo '<div class="nf">'.__('No simple alerts found').'</div>';
+	echo '<div class="nf">'.__('No alerts found').'</div>';
 }
 
-$table->title = __('Compound alerts');
-$table->titlestyle = "background-color:#799E48;";
-
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-	$table->head[0] = '';
-	$table->head[1] = '';
-	$table->head[2] = '';
-	$table->head[3] = __('Agent');
-	$table->head[4] = __('Description');
-}
-else
-{
-	$table->head[0] = '';
-	$table->head[1] = '';
-	$table->head[2] = __('Agent');
-	$table->head[3] = __('Description');
-}
-$table->data = array ();
-
-foreach ($alerts['alerts_combined'] as $alert) {
-	array_push ($table->data, ui_format_alert_row ($alert, true, $print_agent));
-}
-
-if (!empty ($table->data)) {
-	ui_pagination ($countAlertsCombined, $url, $offset_combined, 0, false, 'offset_combined');
-	html_print_table ($table);
-}
-
-if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
+if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "AM")) {
 	if (count($alerts['alerts_simple']) > 0 || count($alerts['alerts_combined']) > 0) {
 		echo '<div class="action-buttons" style="width: '.$table->width.';">';
 		html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub upd"', false);

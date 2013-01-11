@@ -1,3 +1,27 @@
+2013-01-11  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	include/functions_ui.php
+	include/functions.php
+	include/functions_agents.php
+	pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	operation/agentes/alerts_status.php
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	godmode/agentes/module_manager_editor.php
+	godmode/users/profile_list.php
+	godmode/users/configure_profile.php
+	godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_network_components_form_common.php
+	godmode/modules/manage_network_components.php: Clean deprecated compound
+	alerts code, added new Agent disable flag into profiles, clean wizard mode
+	combo from components in normal console (not metaconsole)
+
 2013-01-11  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* pandoradb.data.postgreSQL.sql

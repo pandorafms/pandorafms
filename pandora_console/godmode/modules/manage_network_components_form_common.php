@@ -51,15 +51,17 @@ $table->data = array ();
 
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 55, 255, true);
-if(enterprise_installed()) {
-	$table->data[0][2] = __('Wizard level');
-	$wizard_levels = array('nowizard' => __('No wizard'),
-							'basic' => __('Basic'),
-							'advanced' => __('Advanced'),
-							//'custom' => __('Custom'),
-							);
-	$table->data[0][3] = html_print_select($wizard_levels,'wizard_level',$wizard_level,'','',-1,true, false, false);
-	$table->data[0][3] .= html_print_checkbox('only_metaconsole',1,(int)$only_metaconsole,true).__('Only for metaconsole');
+if(enterprise_installed()) {	
+	if(defined('METACONSOLE')) {
+		$table->data[0][2] = __('Wizard level');
+		$wizard_levels = array('basic' => __('Basic'),
+								'advanced' => __('Advanced'));
+		$table->data[0][3] = html_print_select($wizard_levels,'wizard_level',$wizard_level,'','',-1,true, false, false);
+	}
+	else {
+		$table->data[0][2] = '';
+		$table->data[0][3] = html_print_input_hidden('wizard_level', 'nowizard', true);
+	}
 }
 
 $table->data[1][0] = __('Type') . ' ' . ui_print_help_icon ('module_type', true, ui_get_full_url(false, false, false, false));

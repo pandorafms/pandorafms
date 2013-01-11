@@ -301,8 +301,7 @@ WHERE token='prominent_time';
 -- Table tnetwork_component
 -- -----------------------------------------------------
 ALTER TABLE tnetwork_component ADD (wizard_level VARCHAR2(100) default 'nowizard' NOT NULL);
-ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
-ALTER TABLE tnetwork_component ADD (only_metaconsole NUMBER(5, 0) default 0 NOT NULL);
+ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'));
 ALTER TABLE tnetwork_component ADD (macros CLOB default '');
 
 
@@ -310,7 +309,7 @@ ALTER TABLE tnetwork_component ADD (macros CLOB default '');
 -- Table tagente_modulo
 -- -----------------------------------------------------
 ALTER TABLE tagente_modulo ADD (wizard_level VARCHAR2(100) default 'nowizard' NOT NULL);
-ALTER TABLE tagente_modulo ADD CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'));
+ALTER TABLE tagente_modulo ADD CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'));
 ALTER TABLE tagente_modulo ADD (macros CLOB default '');
 ALTER TABLE tagente_modulo ADD (quiet NUMBER(5, 0) default 0 NOT NULL);
 ALTER TABLE tagente_modulo ADD (cron_interval VARCHAR2(100) DEFAULT '');
@@ -446,12 +445,13 @@ ALTER TABLE tperfil ADD (report_management NUMBER(5, 0) default 0 NOT NULL);
 ALTER TABLE tperfil ADD (event_view NUMBER(5, 0) default 0 NOT NULL);
 ALTER TABLE tperfil ADD (event_edit NUMBER(5, 0) default 0 NOT NULL);
 ALTER TABLE tperfil ADD (event_management NUMBER(5, 0) default 0 NOT NULL);
+ALTER TABLE tperfil ADD (agent_disable NUMBER(5, 0) default 0 NOT NULL);
 
 UPDATE tperfil SET report_view= 1, event_view= 1 WHERE id_perfil = 1 AND name = 'Operator&#x20;&#40;Read&#41;';
 UPDATE tperfil SET report_view= 1, report_edit= 1, event_view= 1, event_edit= 1 WHERE id_perfil = 2 AND name = 'Operator&#x20;&#40;Write&#41;';
-UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_view= 1, event_edit= 1 WHERE id_perfil = 3 AND name = 'Chief&#x20;Operator';
-UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_view= 1, event_edit= 1, event_management= 1 WHERE id_perfil = 4 AND name = 'Group&#x20;coordinator';
-UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_view= 1, event_edit= 1, event_management= 1 WHERE id_perfil = 5 AND name = 'Pandora&#x20;Administrator';
+UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_view= 1, event_edit= 1, agent_disable= 1 WHERE id_perfil = 3 AND name = 'Chief&#x20;Operator';
+UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_view= 1, event_edit= 1, event_management= 1, agent_disable= 1 WHERE id_perfil = 4 AND name = 'Group&#x20;coordinator';
+UPDATE tperfil SET report_view= 1, report_edit= 1, report_management= 1, event_view= 1, event_edit= 1, event_management= 1, agent_disable= 1 WHERE id_perfil = 5 AND name = 'Pandora&#x20;Administrator';
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario_perfil`

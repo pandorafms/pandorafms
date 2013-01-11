@@ -698,8 +698,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
 	`custom_integer_2` int(10) default 0,
 	`post_process` double(18,5) default 0,
 	`unit` text,
-	`wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
-	`only_metaconsole` tinyint(1) unsigned default '0',
+	`wizard_level` enum('basic','advanced','nowizard') default 'nowizard',
 	`macros` text,
 	`critical_instructions` text NOT NULL default '',
 	`warning_instructions` text NOT NULL default '',
@@ -782,6 +781,7 @@ CREATE TABLE IF NOT EXISTS `tperfil` (
 	`event_view` tinyint(3) NOT NULL default '0',
 	`event_edit` tinyint(3) NOT NULL default '0',
 	`event_management` tinyint(3) NOT NULL default '0',
+	`agent_disable` tinyint(3) NOT NULL default '0',
 	PRIMARY KEY  (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

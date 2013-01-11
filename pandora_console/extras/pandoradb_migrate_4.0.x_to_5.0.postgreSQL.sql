@@ -316,9 +316,8 @@ WHERE "token"='prominent_time';
 -- Table "tnetwork_component"
 -- -----------------------------------------------------
 
-CREATE TYPE type_tnetwork_component_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
+CREATE TYPE type_tnetwork_component_wizard_level AS ENUM ('basic','advanced','nowizard');
 ALTER TABLE "tnetwork_component" ADD COLUMN "wizard_level" type_tnetwork_component_wizard_level default 'nowizard';
-ALTER TABLE "tnetwork_component" ADD COLUMN "only_metaconsole" INTEGER default '0';
 ALTER TABLE "tnetwork_component" ADD COLUMN "macros" TEXT default '';
 
 -- -----------------------------------------------------
@@ -437,12 +436,13 @@ ALTER TABLE "tperfil" ADD COLUMN "report_management" SMALLINT NOT NULL default 0
 ALTER TABLE "tperfil" ADD COLUMN "event_view" SMALLINT NOT NULL default 0;
 ALTER TABLE "tperfil" ADD COLUMN "event_edit" SMALLINT NOT NULL default 0;
 ALTER TABLE "tperfil" ADD COLUMN "event_management" SMALLINT NOT NULL default 0;
+ALTER TABLE "tperfil" ADD COLUMN "agent_disable" SMALLINT NOT NULL default 0;
 
 UPDATE tperfil SET "report_view"= 1, "event_view"= 1 WHERE id_perfil = 1 AND name = 'Operator&#x20;&#40;Read&#41;';
 UPDATE tperfil SET "report_view"= 1, "report_edit"= 1, "event_view"= 1, "event_edit"= 1 WHERE id_perfil = 2 AND name = 'Operator&#x20;&#40;Write&#41;';
-UPDATE tperfil SET "report_view"= 1, "report_edit"= 1, "report_management"= 1, "event_view"= 1, "event_edit"= 1 WHERE id_perfil = 3 AND name = 'Chief&#x20;Operator';
-UPDATE tperfil SET "report_view"= 1, "report_edit"= 1, "report_management"= 1, "event_view"= 1, "event_edit"= 1, "event_management"= 1 WHERE id_perfil = 4 AND name = 'Group&#x20;coordinator';
-UPDATE tperfil SET "report_view"= 1, "report_edit"= 1, "report_management"= 1, "event_view"= 1, "event_edit"= 1, "event_management"= 1 WHERE id_perfil = 5 AND name = 'Pandora&#x20;Administrator';
+UPDATE tperfil SET "report_view"= 1, "report_edit"= 1, "report_management"= 1, "event_view"= 1, "event_edit"= 1, "agent_disable"= 1 WHERE id_perfil = 3 AND name = 'Chief&#x20;Operator';
+UPDATE tperfil SET "report_view"= 1, "report_edit"= 1, "report_management"= 1, "event_view"= 1, "event_edit"= 1, "event_management"= 1, "agent_disable"= 1 WHERE id_perfil = 4 AND name = 'Group&#x20;coordinator';
+UPDATE tperfil SET "report_view"= 1, "report_edit"= 1, "report_management"= 1, "event_view"= 1, "event_edit"= 1, "event_management"= 1, "agent_disable"= 1 WHERE id_perfil = 5 AND name = 'Pandora&#x20;Administrator';
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario_perfil`

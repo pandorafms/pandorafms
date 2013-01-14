@@ -1,3 +1,8 @@
+2013-01-14  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql: Added network
+	components and groups to migration script.
+
 2013-01-14 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/styles/dialog.css: fixed the typo for disabled the styles.

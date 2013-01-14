@@ -36,13 +36,19 @@ $tab = (string) get_parameter ("tab", "list");
 $buttons = array(
 	'list' => array(
 		'active' => false,
-		'text' => '<a href="index.php?sec=gmodules&sec2=godmode/category/category&tab=list">' . 
+		'text' => '<a href="index.php?sec=gmodules&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
 			html_print_image ("images/god6.png", true, array ("title" => __('List categories'))) .'</a>'));
 
-$buttons[$tab]['active'] = true;
+$buttons[$tab]['active'] = false;
 
 // Header
-ui_print_page_header (__('Categories configuration'), "images/setup.png", false, "", true, $buttons);
+if(defined('METACONSOLE')) {
+	ui_meta_print_header(__('Categories configuration'), __('Editor'), $buttons);
+}
+else {
+	ui_print_page_header (__('Categories configuration'), "images/setup.png", false, "", true, $buttons);
+}
+
 
 // Two actions can performed in this page: update and create categories
 // Update category: update an existing category
@@ -102,7 +108,7 @@ else {
 }
 
 // Create/Update category form 
-echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=' . $action . '&id_category=' . $id_category . '" enctype="multipart/form-data">';
+echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=' . $action . '&id_category=' . $id_category . '&pure='.(int)$config['pure'].'" enctype="multipart/form-data">';
 
 echo '<div align=left style="width: 98%" class="pandora_form">';
 

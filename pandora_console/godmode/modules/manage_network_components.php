@@ -29,6 +29,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 ui_print_page_header (__('Module management').' &raquo; '.__('Network component management'), "", false, "network_component", true);
 
 require_once ('include/functions_network_components.php');
+require_once ($config['homedir'].'/include/functions_component_groups.php');
 
 $type = (int) get_parameter ('type');
 $name = (string) get_parameter ('name');
@@ -317,9 +318,25 @@ foreach ($component_groups as $component_group_key => $component_group_val) {
 	$num_components = db_get_num_rows('SELECT id_nc
 										FROM tnetwork_component 
 										WHERE id_group = ' . $component_group_key);
+					
+	$childs = component_groups_get_childrens($component_group_key);
+	
+	$num_components_childs = 0;
+	
+	if ($childs !== false) {
+	
+		foreach ($childs as $child) {
+			
+			$num_components_childs += db_get_num_rows('SELECT id 
+									FROM tlocal_component 
+									WHERE id_network_component_group = ' . $child['id_sg']);
+		
+		}
+	
+	}					
 										
 	// Only show component groups with local components
-	if ($num_components  == 0)
+	if ($num_components  == 0 && $num_components_childs == 0)
 		unset($component_groups[$component_group_key]);
 }
 

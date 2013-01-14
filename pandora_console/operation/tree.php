@@ -265,7 +265,6 @@ if (is_ajax ())
 										tagente_estado GROUP BY id_agente HAVING SUM(utimestamp) = 0)";					
 
 						$sql = agents_get_agents(array (
-						'order' => 'nombre COLLATE utf8_general_ci ASC',
 						'id_grupo' => $id,
 						'disabled' => 0,
 						'status' => $statusSel,
@@ -273,7 +272,7 @@ if (is_ajax ())
 
 						array ('*'),
 						'AR',
-						false,
+						array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
 						true);	
 						
 						break;
@@ -286,7 +285,6 @@ if (is_ajax ())
 					
 					
 						$sql = agents_get_agents(array (
-						'order' => 'nombre COLLATE utf8_general_ci ASC',
 						'id_os' => $id,
 						'disabled' => 0,
 						'status' => $statusSel,
@@ -294,7 +292,7 @@ if (is_ajax ())
 
 						array ('*'),
 						'AR',
-						false,
+						array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
 						true);	
 											
 						break;
@@ -309,7 +307,6 @@ if (is_ajax ())
 																GROUP BY id_agente HAVING SUM(utimestamp) = 0)";	
 						
 						$sql = agents_get_agents(array (
-						'order' => 'nombre COLLATE utf8_general_ci ASC',
 						'disabled' => 0,
 						'status' => $statusSel,
 						'search' => $search_sql),
@@ -328,12 +325,13 @@ if (is_ajax ())
 									AND tagente_modulo.disabled = 0
 									group by tagente.id_agente
 									having COUNT(*) > 0)';
+
+						$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';
 			
 						break;
 					case 'policies':
 						
 						$sql = agents_get_agents(array (
-						'order' => 'nombre COLLATE utf8_general_ci ASC',
 						'disabled' => 0,
 						'search' => $search_sql),
 
@@ -372,6 +370,8 @@ if (is_ajax ())
 
 						}
 
+						$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';
+
 						break;
 					case 'module':
 						//Replace separator token "articapandora_32_pandoraartica_" for " "
@@ -384,7 +384,6 @@ if (is_ajax ())
 						
 					
 						$sql = agents_get_agents(array (
-						'order' => 'nombre COLLATE utf8_general_ci ASC',
 						'disabled' => 0,
 						'status' => $statusSel,
 						'search' => $search_sql),
@@ -400,11 +399,10 @@ if (is_ajax ())
 									WHERE nombre = \'%s\' AND disabled = 0
 								)
 								', $name);
-						
+						$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';						
+
 						break;
 				}
-				
-				$sql .= ' AND tagente.disabled = 0'. $search_sql;
 				
 				$countRows = db_get_num_rows($sql);
 				
@@ -425,7 +423,7 @@ if (is_ajax ())
 			$new = true;
 			$count = 0;
 			echo "<ul style='margin: 0; padding: 0;'>\n";
-			
+
 			while($row = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 				$new = false;
 				$count++;

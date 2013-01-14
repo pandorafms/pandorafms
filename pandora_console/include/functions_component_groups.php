@@ -49,4 +49,29 @@ function component_groups_get_groups_tree_recursive($groups, $parent = 0, $deep 
 	return $return;
 }
 
+/**
+ * Return a array of id_group of childrens (to branches down)
+ *
+ * @param integer $parent The id_group parent to search the childrens.
+ * @param array $groups The groups, its for optimize the querys to DB.
+ */
+function component_groups_get_childrens($parent, $groups = null) {
+	if (empty($groups)) {
+		$groups = db_get_all_rows_in_table('tnetwork_component_group');
+	}
+
+	$return = array();
+
+	foreach ($groups as $key => $group) {
+		if ($group['id_sg'] == 0) {
+			continue;
+		}
+		if ($group['parent'] == $parent) {
+			$return = $return + array($group['id_sg'] => $group) + component_groups_get_childrens($group['id_sg'], $groups);
+		}
+	}
+
+	return $return;
+}
+
 ?>

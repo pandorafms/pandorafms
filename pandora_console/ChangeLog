@@ -1,3 +1,9 @@
+2013-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/setup/performance.php: Changed include for include_once
+	function.
+	* godmode/gis_maps/index.php: Added message when view is empty. 
+
 2013-01-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/modules/manage_network_components.php: Added message

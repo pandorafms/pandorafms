@@ -116,6 +116,9 @@ if ($maps){
 if (!empty ($table->data)) {
 	html_print_table($table);
 }
+else {
+	echo '<div class="nf">'.('No maps defined').'</div>';	
+}
 
 echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 5px;">';
 echo '<form action="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map" method="post">';

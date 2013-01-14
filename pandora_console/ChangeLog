@@ -1,3 +1,10 @@
+2013-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_modules.php
+	godmode/extensions.php
+	godmode/agentes/configurar_agente.php
+	godmode/servers/manage_recontask.php: Merged fixes from branches.
+
 2013-01-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/setup/setup_netflow.php: Fixed a string.

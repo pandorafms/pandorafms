@@ -1,5 +1,23 @@
 2013-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/extensions.php
+	godmode/servers/recon_script.php
+	godmode/servers/plugin.php
+	godmode/servers/manage_recontask.php
+	godmode/alerts/alert_compounds.php
+	godmode/alerts/alert_templates.php
+	godmode/alerts/alert_actions.php
+	godmode/alerts/alert_commands.php
+	godmode/setup/os.list.php
+	godmode/setup/news.php
+	godmode/setup/links.php
+	godmode/users/profile_list.php
+	godmode/modules/manage_network_templates.php
+	godmode/modules/manage_nc_groups.php: Restored messages when views 
+	are empty.
+
+2013-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* godmode/setup/performance.php: Changed include for include_once
 	function.
 	* godmode/gis_maps/index.php: Added message when view is empty. 

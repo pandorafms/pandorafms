@@ -199,7 +199,7 @@ if(isset($data)) {
 	echo "</form>";
 }
 else {
-	echo "<div class='nf'>".__('There are no defined groups')."</div>";	
+	echo "<div class='nf'>".__('There are no defined component groups')."</div>";
 }
 
 echo '<form method="post">';

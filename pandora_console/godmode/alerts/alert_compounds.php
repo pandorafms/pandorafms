@@ -245,6 +245,9 @@ foreach ($id_alerts as $alert) {
 if (isset($data)){
 	html_print_table ($table);
 }
+else {
+	echo "<div class='nf'>".__('No alerts found')."</div>";
+}
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_compound">';

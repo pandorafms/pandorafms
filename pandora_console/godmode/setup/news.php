@@ -133,6 +133,7 @@ else {
 	$rows = db_get_all_rows_in_table("tnews", "timestamp");
 	if ($rows === false) {
 		$rows = array();
+		echo "<div class='nf'>".__('There are no defined news')."</div>";
 	} 
 	else {
 		// Main list view for Links editor

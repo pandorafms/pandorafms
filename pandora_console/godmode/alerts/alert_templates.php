@@ -282,6 +282,9 @@ ui_pagination ($total_templates, $url);
 if (isset($data)){
 	html_print_table ($table);
 }
+else {
+	echo "<div class='nf'>".__('No alert templates defined')."</div>";
+}
 
 echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 5px;">';
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template">';

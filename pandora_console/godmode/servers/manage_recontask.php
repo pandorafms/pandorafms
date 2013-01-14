@@ -300,6 +300,9 @@ if ($result !== false) {
 	html_print_table ($table);
 	unset ($table);
 }
+else {
+	echo '<div class="nf">'.__('There are no recon task configured').'</div>';
+}
 
 echo '<div class="action-buttons" style="width: 99%; margin-top: 5px;">';
 echo '<form method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create">';

@@ -29,6 +29,7 @@ ui_print_page_header (__('Extensions'). " &raquo; ". __('Defined extensions'), "
 if (sizeof ($config['extensions']) == 0) {
 	$extensions = extensions_get_extension_info();
 	if (empty($extensions)) {
+		echo '<h3>'.__('There are no extensions defined').'</h3>';
 		return;
 	}
 }
@@ -183,6 +184,7 @@ $table->align[] = 'center';
 $table->data = array();
 foreach ($extensions as $file => $extension) {
 	$data = array();
+	
 	$on = html_print_image("images/dot_green.png", true);
 	$off = html_print_image("images/dot_red.png", true); 
 	if (!$extension['enabled']) {

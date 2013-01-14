@@ -78,11 +78,11 @@ if (($create != "") OR ($view != "")){
 
 	echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox_color">';
 	
-	echo '<tr><td class="datos">'.__('Name');
+	echo '<tr><td class="datos">' . __('Name') . '</td>';
 	echo '<td class="datos">';
 	echo '<input type="text" name="form_name" size=30 value="'.$form_name.'"></td>';
 	
-	echo '<tr><td class="datos2">'.__('Script fullpath');
+	echo '<tr><td class="datos2">' . __('Script fullpath') . '</td>';
 	echo '<td class="datos2">';
 	echo '<input type="text" name="form_script" size=70 value="'.$form_script.'"></td>';
 
@@ -203,6 +203,8 @@ else {
 		echo "</table>";
 	}
 	else {
+		echo '<div class="nf">'.
+			__('There are no recon scripts in the system') . '</div>';
 		echo "<br>";
 	}
 	echo "<table width=98%>";

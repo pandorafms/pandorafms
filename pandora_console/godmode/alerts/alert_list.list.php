@@ -351,7 +351,7 @@ else {
 		$table->size[4] = '25%';
 	}  */
 	$table->size[4] = '3%';	
-	$table->size[5] = '10%';
+	$table->size[5] = '13%';
 }
 
 $table->head[1] = __('Module') . '<br>' .
@@ -591,7 +591,7 @@ foreach ($simple_alerts as $alert) {
 				$img = 'images/policies.png';
 					
 				$data[5] .= '&nbsp;&nbsp;<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id=' . $policyInfo['id'] . '">' . 
-					html_print_image($img,true, array('title' => $policyInfo['name'])) .
+					html_print_image($img, true, array('title' => $policyInfo['name'])) .
 					'</a>';
 			}
 		}

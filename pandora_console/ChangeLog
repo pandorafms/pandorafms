@@ -1,5 +1,9 @@
 2013-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* godmode/modules/manage_nc_groups.php: Parent row removed.
+
+2013-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* operation/events/export_csv.php
 	operation/events/events_list.php
 	operation/events/events.php: CSV exportation get all filters.

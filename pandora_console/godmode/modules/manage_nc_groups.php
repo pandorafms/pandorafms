@@ -154,17 +154,15 @@ $groups = component_groups_get_groups_tree_recursive($groups_clean,0,0);
 $table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Name');
-$table->head[1] = __('Parent');
-$table->head[2] = __('Action') .
+$table->head[1] = __('Action') .
 	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
-$table->align[2] = 'center';
+$table->align[1] = 'center';
 $table->size = array ();
-$table->size[0] = '50%';
-$table->size[1] = '40%';
-$table->size[2] = '80px';
+$table->size[0] = '80%';
+$table->size[1] = '50px';
 $table->data = array ();
 
 $total_groups = db_get_all_rows_filter ('tnetwork_component_group', false, 'COUNT(*) AS total');
@@ -178,10 +176,8 @@ foreach ($groups as $group) {
 	$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);	
 	
 	$data[0] =  $tabulation . '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
-	
-	$data[1] = network_components_get_group_name ($group['parent']);
-	
-	$data[2] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
+		
+	$data[1] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id=".$group['id_sg']."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $group['id_sg'], false, false, '', 'class="check_delete"', true);

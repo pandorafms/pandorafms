@@ -1,5 +1,14 @@
 2013-01-14  Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* extras/network_components.postgreSQL.sql,
+	extras/local_components.postgreSQL.sql,
+	extras/network_components.mysql.sql,
+	extras/network_components.oracle.sql,
+	extras/local_components.mysql.sql,
+	extras/local_components.oracle.sql: Renamed files.
+
+2013-01-14  Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* extras/local_components.postgreSQL.sql,
 	extras/local_components.mysql.sql,
 	extras/local_components.oracle.sql: Create new sql script to 

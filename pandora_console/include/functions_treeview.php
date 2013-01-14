@@ -843,34 +843,31 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				}
 			}
 			
-			$sql = agents_get_agents(array (
-				'order' => 'nombre COLLATE utf8_general_ci ASC',
+			$sql = agents_get_agents(array (	
 				'id_grupo' => $id,
 				'disabled' => 0,
 				'status' => $statusSel,
 				'search' => $search_sql),
 				array ('*'),
 				'AR',
-				false,
+				array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
 				true);
 			break;
 		case 'os':		
 			
 			$sql = agents_get_agents(array (
-				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'id_os' => $id,
 				'disabled' => 0,
 				'status' => $statusSel,
 				'search' => $search_sql),
 				array ('*'),
 				'AR',
-				false,
+				array('field' => 'nombre COLLATE utf8_general_ci', 'order' => ' ASC'),
 				true);
 			break;
 		case 'module_group':
 
 			$sql = agents_get_agents(array (
-				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'disabled' => 0,
 				'status' => $statusSel,
 				'search' => $search_sql),
@@ -884,11 +881,13 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 				(SELECT DISTINCT (id_agente)
 				FROM tagente_modulo 
 				WHERE id_module_group = ' . $id . ')';
+
+			$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';
+
 			break;
 		case 'policies':
 			
 			$sql = agents_get_agents(array (
-				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'disabled' => 0,
 				'search' => $search_sql),
 				
@@ -921,6 +920,9 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 					AND tagente.id_agente NOT IN (SELECT tagente_estado.id_agente 
 						FROM tagente_estado)";
 			}
+
+			$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';
+
 			break;
 		case 'module':
 			//Replace separator token "articapandora_32_pandoraartica_" for " "
@@ -932,7 +934,6 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 			$name = io_safe_input(io_safe_output($name));
 
 			$sql = agents_get_agents(array (
-				'order' => 'nombre COLLATE utf8_general_ci ASC',
 				'disabled' => 0,
 				'status' => $statusSel,
 				'search' => $search_sql),
@@ -947,6 +948,8 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 					WHERE nombre = \'%s\' AND disabled = 0
 				)
 				', $name);
+
+			$sql .= 'ORDER BY nombre COLLATE utf8_general_ci ASC';
 
 			break;
 		case 'tag':
@@ -974,6 +977,11 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
 						AND ttag_module.id_tag = " . $id . $groups_condition;
 			$sql .= tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 'tagente_modulo');
+
+			$sql .= ' AND tagente.disabled = 0'. $search_sql;
+
+			$sql .= ' ORDER BY tagente.nombre COLLATE utf8_general_ci ASC';
+			
 			break;
 	}
 	
@@ -981,7 +989,6 @@ function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel
 		return false;
 	}
 	
-	$sql .= ' AND tagente.disabled = 0'. $search_sql;
 	return $sql;
 }
 

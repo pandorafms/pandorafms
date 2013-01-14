@@ -613,3 +613,10 @@ INSERT INTO "tnetwork_component_group" VALUES (45,'Solaris',5);
 INSERT INTO "tnetwork_component_group" VALUES (46,'AIX',5);
 INSERT INTO "tnetwork_component_group" VALUES (47,'BSD',5);
 INSERT INTO "tnetwork_component_group" VALUES (48,'MacOS',0);
+
+-- ---------------------------------------------------------------------
+-- Drop tables of compound alerts
+-- ---------------------------------------------------------------------
+DROP TABLE IF EXISTS "talert_compound_actions";
+DROP TABLE IF EXISTS "talert_compound_elements";
+DROP TABLE IF EXISTS "talert_compound";

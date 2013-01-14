@@ -380,52 +380,6 @@ CREATE TABLE "talert_template_module_actions" (
 	"fires_max" INTEGER NOT NULL default 0
 );
 
-CREATE TABLE "talert_compound" (
-	"id" SERIAL NOT NULL PRIMARY KEY,
-	"name" varchar(255) default '',
-	"description" TEXT,
-	"id_agent" INTEGER NOT NULL REFERENCES tagente("id_agente") ON DELETE CASCADE ON UPDATE CASCADE,
-	"time_threshold" INTEGER NOT NULL default 0,
-	"max_alerts" INTEGER NOT NULL default 1,
-	"min_alerts" INTEGER NOT NULL default 0,
-	"time_from" TIME without time zone default '00:00:00',
-	"time_to" TIME without time zone default '00:00:00',
-	"monday" SMALLINT default 1,
-	"tuesday" SMALLINT default 1,
-	"wednesday" SMALLINT default 1,
-	"thursday" SMALLINT default 1,
-	"friday" SMALLINT default 1,
-	"saturday" SMALLINT default 1,
-	"sunday" SMALLINT default 1,
-	"recovery_notify" SMALLINT default 0,
-	"field2_recovery" varchar(255) NOT NULL default '',
-	"field3_recovery" TEXT NOT NULL,
-	"internal_counter" INTEGER default 0,
-	"last_fired" BIGINT NOT NULL default 0,
-	"last_reference" BIGINT NOT NULL default 0,
-	"times_fired" INTEGER NOT NULL default 0,
-	"disabled" SMALLINT default 0,
-	"priority" SMALLINT default 0,
-	"special_day" SMALLINT default 0
-);
-
-CREATE TYPE type_talert_compound_elements_operation AS ENUM ('NOP', 'AND','OR','XOR','NAND','NOR','NXOR');
-CREATE TABLE "talert_compound_elements" (
-	"id_alert_compound" INTEGER NOT NULL REFERENCES talert_compound("id") ON DELETE CASCADE ON UPDATE CASCADE,
-	"id_alert_template_module" INTEGER NOT NULL REFERENCES talert_template_modules("id") ON DELETE CASCADE ON UPDATE CASCADE,
-	"operation" type_talert_compound_elements_operation,
-	"order"  SMALLINT default 0
-);
-CREATE UNIQUE INDEX "talert_compound_elements_id_alert_compound_idx" ON "talert_compound_elements"("id_alert_compound");
-
-CREATE TABLE "talert_compound_actions" (
-	"id" SERIAL NOT NULL PRIMARY KEY,
-	"id_alert_compound" INTEGER NOT NULL REFERENCES talert_compound("id") ON DELETE CASCADE ON UPDATE CASCADE,
-	"id_alert_action" INTEGER NOT NULL REFERENCES talert_actions("id") ON DELETE CASCADE ON UPDATE CASCADE,
-	"fires_min"  INTEGER default 0,
-	"fires_max"  INTEGER default 0
-);
-
 CREATE TYPE type_talert_special_days_same_day AS ENUM ('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
 CREATE TABLE "talert_special_days" (
 	"id" SERIAL NOT NULL PRIMARY KEY,

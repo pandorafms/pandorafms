@@ -127,12 +127,15 @@ if (isset($_GET["update"])) {
 		
 	$where = array('id_rt' => $id);
 	
+	$reason = '';
 	if ($name != "") {
 		if (($id_recon_script == 'NULL') && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 			$result = db_process_sql_update('trecon_task', $values, $where);
 		elseif ($id_recon_script != 'NULL')
 			$result = db_process_sql_update('trecon_task', $values, $where);
 		else  {
+			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+				$reason = __('Incorrect format in Subnet field');			
 			$result = false; 
 		}
 	}
@@ -144,6 +147,7 @@ if (isset($_GET["update"])) {
 	}
 	else {
 		echo '<h3 class="error">'.__('Error updating recon task').'</h3>';
+        echo $reason;		
 	}
 }
 
@@ -185,6 +189,8 @@ if (isset($_GET["create"])) {
 			$result = db_process_sql_insert('trecon_task', $values);
 		}
 		else {
+			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+				$reason = __('Incorrect format in Subnet field');
 			$result = false;
 		}
 	}

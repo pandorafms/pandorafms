@@ -167,6 +167,14 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 			}
 		}
 		
+		// Copy module tags
+		$source_tags = tags_get_module_tags($id_agent_module);
+		
+		if ($source_tags ==  false)
+			$source_tags = array();
+			
+		tags_insert_module_tag($id_new_module, $source_tags);
+		
 		//Added the config data if necesary
 		enterprise_include_once('include/functions_config_agents.php');
 		

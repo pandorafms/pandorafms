@@ -1,3 +1,9 @@
+2013-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/modules/manage_nc_groups.php: Parent row removed.
+	
+	Merged from branches.
+
 2013-01-14  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* extras/network_components.postgreSQL.sql,

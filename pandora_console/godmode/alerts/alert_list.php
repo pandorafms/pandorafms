@@ -261,7 +261,7 @@ if ($id_agente) {
 	
 	require_once('godmode/alerts/alert_list.list.php');
 	
-	if(check_acl ($config['id_user'], 0, "LW")) {
+	if(check_acl ($config['id_user'], $agent['id_grupo'], "LW")) {
 		require_once('godmode/alerts/alert_list.builder.php');
 	}
 	

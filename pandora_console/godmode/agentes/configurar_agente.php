@@ -26,23 +26,34 @@ ui_require_javascript_file('encode_decode_base64');
 
 check_login ();
 
+//Get tab parameter to check ACL in each tabs
+$tab = get_parameter ('tab', 'main');
+
 //See if id_agente is set (either POST or GET, otherwise -1
 $id_agente = (int) get_parameter ("id_agente");
 $group = 0;
 if ($id_agente)
 	$group = agents_get_agent_group ($id_agente);
 
-$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
-
-if($is_extra === ENTERPRISE_NOT_HOOK) {
-	$is_extra = false;
-}
-
-if (! check_acl ($config["id_user"], $group, "AW", $id_agente) && !$is_extra) {
-	db_pandora_audit("ACL Violation",
-		"Trying to access agent manager");
-	require ("general/noaccess.php");
-	return;
+if (! check_acl ($config["id_user"], $group, "AW", $id_agente)) {
+	$access_granted = false;
+	switch($tab) {
+		case 'alert':
+		case 'module':
+			if (check_acl ($config["id_user"], $group, "AD", $id_agente)) {
+				$access_granted = true;
+			}
+			break;
+		default:
+			break;
+	}
+	
+	if(!$access_granted) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access agent manager");
+		require ("general/noaccess.php");
+		return;
+	}
 }
 
 require_once ('include/functions_modules.php');
@@ -50,7 +61,6 @@ require_once ('include/functions_alerts.php');
 require_once ('include/functions_reporting.php');
 
 // Get passed variables
-$tab = get_parameter ('tab', 'main');
 $alerttype = get_parameter ('alerttype');
 $id_agent_module = (int) get_parameter ('id_agent_module');
 
@@ -337,25 +347,33 @@ if ($id_agente) {
 			$incidenttab['active'] = false;
 	}
 	
-	$onheader = array('view' => $viewtab,
-		'separator' => "",
-		'main' => $maintab,
-		'module' => $moduletab,
-		'alert' => $alerttab,
-		'template' => $templatetab,
-		'inventory' => $inventorytab,
-		'pluginstab' => $pluginstab,
-		'collection'=> $collectiontab,
-		'group' => $grouptab,
-		'gis' => $gistab);
-	
-	// Only if the agent has incidents associated show incidents tab
-	if ($total_incidents) {
-		$onheader['incident'] = $incidenttab;
+	if(check_acl ($config["id_user"], $group, "AW", $id_agente)) {
+		$onheader = array('view' => $viewtab,
+			'separator' => "",
+			'main' => $maintab,
+			'module' => $moduletab,
+			'alert' => $alerttab,
+			'template' => $templatetab,
+			'inventory' => $inventorytab,
+			'pluginstab' => $pluginstab,
+			'collection'=> $collectiontab,
+			'group' => $grouptab,
+			'gis' => $gistab);
+			
+		// Only if the agent has incidents associated show incidents tab
+		if ($total_incidents) {
+			$onheader['incident'] = $incidenttab;
+		}
+	}
+	else {
+		$onheader = array('view' => $viewtab,
+			'separator' => "",
+			'module' => $moduletab,
+			'alert' => $alerttab);
 	}
 	
 	foreach ($config['extensions'] as $extension) {
-		if (isset($extension['extension_god_tab'])) {
+		if (isset($extension['extension_god_tab']) && check_acl ($config["id_user"], $group, "AW", $id_agente)) {
 			$image = $extension['extension_god_tab']['icon'];
 			$name = $extension['extension_god_tab']['name'];
 			$id = $extension['extension_god_tab']['id'];
@@ -608,12 +626,7 @@ if ($update_agent) { // if modified some agent paramenter
 if ($id_agente) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
 	$id_grupo = agents_get_agent_group ($id_agente);
-	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
-	
-	if ($is_extra === ENTERPRISE_NOT_HOOK) {
-		$is_extra = false;
-	}
-	if (!check_acl ($config["id_user"], $id_grupo, "AW") && !$is_extra) {
+	if (!check_acl ($config["id_user"], $id_grupo, "AW") && !check_acl ($config["id_user"], $id_grupo, "AD")) {
 		db_pandora_audit("ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
 		exit;
@@ -648,6 +661,8 @@ if ($id_agente) {
 $update_module = (bool) get_parameter ('update_module');
 $create_module = (bool) get_parameter ('create_module');
 $delete_module = (bool) get_parameter ('delete_module');
+$enable_module = (int) get_parameter ('enable_module');
+$disable_module = (int) get_parameter ('disable_module');
 //It is the id_agent_module to duplicate
 $duplicate_module = (int) get_parameter ('duplicate_module');
 $edit_module = (bool) get_parameter ('edit_module');
@@ -656,18 +671,13 @@ $edit_module = (bool) get_parameter ('edit_module');
 if ($update_module || $create_module) {
 	$id_grupo = agents_get_agent_group ($id_agente);
 	
-	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
-	
-	if ($is_extra === ENTERPRISE_NOT_HOOK) {
-		$is_extra = false;
-	}
-	
-	if (!check_acl ($config["id_user"], $id_grupo, "AW") && !$is_extra) {
+	if (!check_acl ($config["id_user"], $id_grupo, "AW")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to create a module without admin rights");
 		require ("general/noaccess.php");
 		exit;
 	}
+	
 	$id_module_type = (int) get_parameter ('id_module_type');
 	$name = (string) get_parameter ('name');
 	$description = (string) get_parameter ('description');
@@ -1193,6 +1203,36 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 		db_pandora_audit("Agent management",
 			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . $agent["nombre"]);
 	}
+}
+
+// MODULE ENABLE/DISABLE
+// =====================
+if($enable_module) {
+	$result = db_process_sql_update('tagente_modulo', array('disabled' => 0), array('id_agente_modulo' => $enable_module));
+	
+	if ($result) {
+		db_pandora_audit("Module management", 'Enable  ' . $enable_module);
+	}
+	else {
+		db_pandora_audit("Module management", 'Fail to enable ' . $enable_module);
+	}
+	
+	ui_print_result_message ($result,
+		__('Successfully enabled'), __('Could not be enabled'));
+}
+
+if($disable_module) {
+	$result = db_process_sql_update('tagente_modulo', array('disabled' => 1), array('id_agente_modulo' => $disable_module));
+	
+	if ($result) {
+		db_pandora_audit("Module management", 'Disable  ' . $disable_module);
+	}
+	else {
+		db_pandora_audit("Module management", 'Fail to disable ' . $disable_module);
+	}
+	
+	ui_print_result_message ($result,
+		__('Successfully disabled'), __('Could not be disabled'));
 }
 
 // UPDATE GIS

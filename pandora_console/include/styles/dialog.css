@@ -128,77 +128,79 @@
 }
 
 /* Dialog handle styles */
-#.ui-dialog .ui-resizable-n {
-#	cursor: n-resize;
-#	height: 6px;
-#	width: 100%;
-#	top: 0px;
-#	left: 0px;
-#	background: transparent url(images/dialog-n.gif) repeat scroll center top;
-#}
+/*Disabled*/
+/*
+.ui-dialog .ui-resizable-n {
+	cursor: n-resize;
+	height: 6px;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+	background: transparent url(images/dialog-n.gif) repeat scroll center top;
+}
 
-#.ui-dialog .ui-resizable-s {
-#	cursor: s-resize;
-#	height: 8px;
-#	width: 100%;
-#	bottom: 0px;
-#	left: 0px;
-#	background: transparent url(images/dialog-s.gif) repeat scroll center top;
-#}
+.ui-dialog .ui-resizable-s {
+	cursor: s-resize;
+	height: 8px;
+	width: 100%;
+	bottom: 0px;
+	left: 0px;
+	background: transparent url(images/dialog-s.gif) repeat scroll center top;
+}
 
-#.ui-dialog .ui-resizable-e {
-#	cursor: e-resize;
-#	width: 7px;
-#	right: 0px;
-#	top: 0px;
-#	height: 100%;
-#	background: transparent url(images/dialog-e.gif) repeat scroll right center;
-#}
+.ui-dialog .ui-resizable-e {
+	cursor: e-resize;
+	width: 7px;
+	right: 0px;
+	top: 0px;
+	height: 100%;
+	background: transparent url(images/dialog-e.gif) repeat scroll right center;
+}
 
-#.ui-dialog .ui-resizable-w {
-#	cursor: w-resize;
-#	width: 7px;
-#	left: 0px;
-#	top: 0px;
-#	height: 100%;
-#	background: transparent url(images/dialog-w.gif) repeat scroll right center;
-#}
+.ui-dialog .ui-resizable-w {
+	cursor: w-resize;
+	width: 7px;
+	left: 0px;
+	top: 0px;
+	height: 100%;
+	background: transparent url(images/dialog-w.gif) repeat scroll right center;
+}
 
-#.ui-dialog .ui-resizable-se {
-#	cursor: se-resize;
-#	width: 9px;
-#	height: 9px;
-#	right: 0px;
-#	bottom: 0px;
-#	background: transparent url(images/dialog-se.gif);
-#}
+.ui-dialog .ui-resizable-se {
+	cursor: se-resize;
+	width: 9px;
+	height: 9px;
+	right: 0px;
+	bottom: 0px;
+	background: transparent url(images/dialog-se.gif);
+}
 
-#.ui-dialog .ui-resizable-sw {
-#	cursor: sw-resize;
-#	width: 9px;
-#	height: 9px;
-#	left: 0px;
-#	bottom: 0px;
-#	background: transparent url(images/dialog-sw.gif);
-#}
+.ui-dialog .ui-resizable-sw {
+	cursor: sw-resize;
+	width: 9px;
+	height: 9px;
+	left: 0px;
+	bottom: 0px;
+	background: transparent url(images/dialog-sw.gif);
+}
 
-#.ui-dialog .ui-resizable-nw {
-#	cursor: nw-resize;
-#	width: 9px;
-#	height: 29px;
-#	left: 0px;
-#	top: 0px;
-#	background: transparent url(images/dialog-nw.gif);
-#}
+.ui-dialog .ui-resizable-nw {
+	cursor: nw-resize;
+	width: 9px;
+	height: 29px;
+	left: 0px;
+	top: 0px;
+	background: transparent url(images/dialog-nw.gif);
+}
 
-#.ui-dialog .ui-resizable-ne {
-#	cursor: ne-resize;
-#	width: 9px;
-#	height: 29px;
-#	right: 0px;
-#	top: 0px;
-#	background: transparent url(images/dialog-ne.gif);
-#}
+.ui-dialog .ui-resizable-ne {
+	cursor: ne-resize;
+	width: 9px;
+	height: 29px;
+	right: 0px;
+	top: 0px;
+	background: transparent url(images/dialog-ne.gif);
+}*/
 
 .ui-dialog .ui-button-dialog {
     cursor: pointer;

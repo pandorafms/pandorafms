@@ -1,3 +1,10 @@
+2013-01-14  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* extras/network_components.postgreSQL.sql,
+	extras/network_components.mysql.sql,
+	extras/network_components.oracle.sql: Added script to create new network
+	modules and groups if something fails.
+
 2013-01-14 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/styles/dialog.css: fixed the typo for disabled the styles.

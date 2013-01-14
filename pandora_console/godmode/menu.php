@@ -34,8 +34,8 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 		$sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
 		$sub["godmode/agentes/modificar_agente"]["subsecs"] = array(
 			"godmode/agentes/configurar_agente");
-			
-		$sub["godmode/agentes/manage_config_remote"]["text"] = __('Duplicate config');
+
+		enterprise_hook("duplicate_confi_submenu");
 		
 		if (check_acl ($config["id_user"], 0, "PM")) {
 			$sub["godmode/groups/group_list"]["text"] = __('Manage groups');

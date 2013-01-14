@@ -109,31 +109,6 @@ if (is_ajax ()) {
 }
 ob_end_clean();
 
-$agent_to_delete = get_parameter("borrar_agente");
-if (!empty($agent_to_delete)) {
-	$id_agente = $agent_to_delete;
-	$agent_name = agents_get_name ($id_agente);
-	$id_grupo = agents_get_agent_group($id_agente);
-	if (check_acl ($config["id_user"], $id_grupo, "AW")==1) {
-		$id_agentes[0] = $id_agente;
-		$result = agents_delete_agent($id_agentes);
-		
-		if ($result != false)
-			$result_delete = true;
-		else
-			$result_delete = false;
-		
-		db_pandora_audit("Agent management", "Delete Agent " . $agent_name);
-	}
-	else {
-		// NO permissions.
-		db_pandora_audit("ACL Violation",
-			"Trying to delete agent \'$agent_name\'");
-		require ("general/noaccess.php");
-		exit;
-	}
-}
-
 $first = true;
 while ($row = db_get_all_row_by_steps_sql($first, $result, "SELECT * FROM tgrupo")) {
 	$first = false;
@@ -415,8 +390,6 @@ $table->align = array ();
 if (check_acl ($config["id_user"], $group_id, "AW")) {
 	$table->head[9] = __('R');
 	$table->align[9] = "center";
-	$table->head[10] = __('Delete');
-	$table->align[10] = "center";
 }
 
 $table->align[2] = "center";
@@ -528,10 +501,6 @@ foreach ($agents as $agent) {
 			$data[9] = "<a href='index.php?sec=estado&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>".
 			html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')))."</a>";
 		}
-		
-		$data[10] = "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&
-			borrar_agente=".$agent["id_agente"]."&group_id=$group_id&recursion=$recursion&search=$search&offset=$offset&sort_field=$sortField&sort=$sort'".
-			' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, array("border" => '0')) ."</a></td>";
 	}
 
 	array_push ($table->data, $data);

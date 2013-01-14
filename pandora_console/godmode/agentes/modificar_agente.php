@@ -30,7 +30,7 @@ if ($ag_group == -1 )
 if (($ag_group == -1) && ($group_id != 0))
 	$ag_group = $group_id;
 
-if (! check_acl ($config["id_user"], 0, "AW")) {
+if (! check_acl ($config["id_user"], 0, "AW") && ! check_acl ($config["id_user"], 0, "AD")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
@@ -42,27 +42,6 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_users.php');
 
 $search = get_parameter ("search", "");
-
-$agent_to_delete = (int)get_parameter('borrar_agente');
-
-$result = null;
-
-if (!empty($agent_to_delete)) {
-	$id_agente = $agent_to_delete;
-	$agent_name = agents_get_name ($id_agente);
-	$id_grupo = agents_get_agent_group($id_agente);
-	if (check_acl ($config["id_user"], $id_grupo, "AW")==1) {
-		$id_agentes[0] = $id_agente;
-		$result = agents_delete_agent($id_agentes);
-	}
-	else {
-		// NO permissions.
-		db_pandora_audit("ACL Violation",
-			"Trying to delete agent \'$agent_name\'");
-		require ("general/noaccess.php");
-		exit;
-	}
-}
 
 // Prepare the tab system to the future
 $tab = 'view';
@@ -82,8 +61,32 @@ $onheader = array('view' => $viewtab);
 // Header
 ui_print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "", false, "", true, $onheader);
 
-if (isset($result)) {
+// Perform actions
+$agent_to_delete = (int)get_parameter('borrar_agente');
+$enable_agent = (int)get_parameter('enable_agent');
+$disable_agent = (int)get_parameter('disable_agent');
+
+$result = null;
+
+if ($agent_to_delete) {
+	$id_agente = $agent_to_delete;
+	$agent_name = agents_get_name ($id_agente);
+	$id_grupo = agents_get_agent_group($id_agente);
+	if (check_acl ($config["id_user"], $id_grupo, "AW")) {
+		$id_agentes[0] = $id_agente;
+		$result = agents_delete_agent($id_agentes);
+	}
+	else {
+		// NO permissions.
+		db_pandora_audit("ACL Violation",
+			"Trying to delete agent \'$agent_name\'");
+		require ("general/noaccess.php");
+		exit;
+	}
+	
 	ui_print_result_message($result, __('Success deleted agent.'), __('Could not be deleted.'));
+	
+	// Check if the remote config file still exist
 	if (isset ($config["remote_config"])) {
 			$agent_md5 = md5 (agents_get_name($id_agente, ""), FALSE);
 				
@@ -92,6 +95,34 @@ if (isset($result)) {
 				ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
 			}
 	}
+}
+
+if($enable_agent) {
+	$result = db_process_sql_update('tagente', array('disabled' => 0), array('id_agente' => $enable_agent));
+	
+	if ($result) {
+		db_pandora_audit("Agent management", 'Enable  ' . $enable_agent);
+	}
+	else {
+		db_pandora_audit("Agent management", 'Fail to enable ' . $enable_agent);
+	}
+	
+	ui_print_result_message ($result,
+		__('Successfully enabled'), __('Could not be enabled'));
+}
+
+if($disable_agent) {
+	$result = db_process_sql_update('tagente', array('disabled' => 1), array('id_agente' => $disable_agent));
+	
+	if ($result) {
+		db_pandora_audit("Agent management", 'Disable  ' . $disable_agent);
+	}
+	else {
+		db_pandora_audit("Agent management", 'Fail to disable ' . $disable_agent);
+	}
+	
+	ui_print_result_message ($result,
+		__('Successfully disabled'), __('Could not be disabled'));
 }
 
 // Show group selector
@@ -250,24 +281,21 @@ if ($ag_group > 0) {
 	}
 }
 else {
-	// CLEAN: sql_extra
-	$sql_extra = '';
-	
 	// Admin user get ANY group, even if they doesnt exist
 	if (check_acl ($config['id_user'], 0, "PM")) {		
-		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE (1=1 %s) %s', $search_sql, $sql_extra);
+		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
 		$total_agents = db_get_sql ($sql);
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE (1=1 %s) %s
-					ORDER BY %s, %s %s LIMIT %d, %d', $search_sql, $sql_extra, $order['field'], $order['field2'],
+					FROM tagente WHERE 1=1 %s
+					ORDER BY %s, %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['field2'],
 					$order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE (1=1 %s) %s
-					ORDER BY %s, %s %s LIMIT %d OFFSET %d', $search_sql, $sql_extra, $order['field'], $order['field2'],
+					FROM tagente WHERE 1=1 %s
+					ORDER BY %s, %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'], $order['field2'],
 					$order['order'], $config["block_size"], $offset);
 				break;
 			case "oracle":
@@ -275,40 +303,46 @@ else {
 				$set['limit'] = $config["block_size"];
 				$set['offset'] = $offset;
 				$sql = sprintf ('SELECT *
-					FROM tagente WHERE (1=1 %s) %s
-					ORDER BY %s, %s %s', $search_sql, $sql_extra, $order['field'], $order['field2'], $order['order']);
+					FROM tagente WHERE 1=1 %s
+					ORDER BY %s, %s %s', $search_sql, $order['field'], $order['field2'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
 	}
 	else {
+		// Concatenate AW and AD permisions to get all the possible groups where the user can manage
+		$user_groupsAW = users_get_groups ($config['id_user'], 'AW');
+		$user_groupsAD = users_get_groups ($config['id_user'], 'AD');
+		
+		$user_groups = $user_groupsAW + $user_groupsAD;
+		
 		$sql = sprintf ('SELECT COUNT(*)
 			FROM tagente
-			WHERE (id_grupo IN (%s)
-			%s) %s',
-			implode (',', array_keys (users_get_groups ())),
-			$search_sql, $sql_extra);
+			WHERE id_grupo IN (%s)
+			%s',
+			implode (',', array_keys ($user_groups)),
+			$search_sql);
 		
 		$total_agents = db_get_sql ($sql);
-		
+
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('SELECT *
 					FROM tagente
-					WHERE (id_grupo IN (%s)
-					%s) %s
+					WHERE id_grupo IN (%s)
+					%s
 					ORDER BY %s, %s %s LIMIT %d, %d',
-					implode (',', array_keys (users_get_groups ())),
-					$search_sql, $sql_extra, $order['field'], $order['field2'], $order['order'], $offset, $config["block_size"]);
+					implode (',', array_keys ($user_groups)),
+					$search_sql, $order['field'], $order['field2'], $order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":
 				$sql = sprintf ('SELECT *
 					FROM tagente
-					WHERE (id_grupo IN (%s)
-					%s) %s
+					WHERE id_grupo IN (%s)
+					%s
 					ORDER BY %s, %s %s LIMIT %d OFFSET %d',
-					implode (',', array_keys (users_get_groups ())),
-					$search_sql, $sql_extra, $order['field'], $order['field2'], $order['order'], $config["block_size"], $offset);
+					implode (',', array_keys ($user_groups)),
+					$search_sql, $order['field'], $order['field2'], $order['order'], $config["block_size"], $offset);
 				break;
 			case "oracle":
 				$set = array ();
@@ -316,10 +350,10 @@ else {
 				$set['offset'] = $offset;
 				$sql = sprintf ('SELECT *
 					FROM tagente
-					WHERE (id_grupo IN (%s)
-					%s) %s
+					WHERE id_grupo IN (%s)
+					%s
 					ORDER BY %s, %s %s',
-					implode (',', array_keys (users_get_groups ())),
+					implode (',', array_keys ($user_groups)),
 					$search_sql, $order['field'], $order['field2'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
@@ -357,19 +391,15 @@ if ($agents !== false) {
 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
 		echo "</th>";
 	echo "<th>".__('Description')."</th>";
-	echo "<th>".__('Delete')."</th>";
+	echo "<th>".__('Actions')."</th>";
 	$color=1;
 	
 	$rowPair = true;
 	$iterator = 0;
 	foreach ($agents as $agent) {
 		$id_grupo = $agent["id_grupo"];
-		$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($agent["id_agente"]));
-		
-		if($is_extra === ENTERPRISE_NOT_HOOK) {
-			$is_extra = false;
-		}
-		if (! check_acl ($config["id_user"], $id_grupo, "AW", $agent['id_agente']) && !$is_extra)
+
+		if (! check_acl ($config["id_user"], $id_grupo, "AW", $agent['id_agente']) && ! check_acl ($config["id_user"], $id_grupo, "AD", $agent['id_agente']))
 			continue;
 		
 		if ($color == 1) {
@@ -399,8 +429,16 @@ if ($agents !== false) {
 			html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
 			echo "&nbsp;";
 		}
+				
+		if(check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
+			$main_tab = 'main';
+		}
+		else {
+			$main_tab = 'module';
+		}
+		
 		echo "<a href='index.php?sec=gagente&
-			sec2=godmode/agentes/configurar_agente&tab=main&
+			sec2=godmode/agentes/configurar_agente&tab=$main_tab&
 			id_agente=" . $agent["id_agente"] . "'>" .
 			ui_print_truncate_text($agent["nombre"], 'agent_medium', true, true, true, '[&hellip;]', 'font-size: 7pt') .
 			"</a>";
@@ -410,10 +448,12 @@ if ($agents !== false) {
 			echo "</em>";
 		}
 		echo '</span><div class="left actions" style="visibility: hidden; clear: left">';
-		echo '<a href="index.php?sec=gagente&
-		sec2=godmode/agentes/configurar_agente&tab=main&
-		id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
-		echo ' | ';
+		if(check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
+			echo '<a href="index.php?sec=gagente&
+			sec2=godmode/agentes/configurar_agente&tab=main&
+			id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
+			echo ' | ';
+		}
 		echo '<a href="index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=module&
 			id_agente='.$agent["id_agente"].'">'.__('Modules').'</a>';
@@ -456,10 +496,27 @@ if ($agents !== false) {
 		else
 			$offsetArg = $offset;
 		
-		echo "<td class='$tdcolor' align='center' valign='middle'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-		borrar_agente=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'";
-		echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-		echo html_print_image('images/cross.png', true, array("border" => '0')) . "</a></td>";
+		echo "<td class='$tdcolor' align='center' valign='middle'>";
+		
+		if ($agent['disabled']) {
+			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
+			enable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort''>".
+				html_print_image('images/lightbulb_off.png', true, array('alt' => __('Enable agent'), 'title' => __('Enable agent'))) ."</a>";
+		}
+		else {
+			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
+			disable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'>".
+				html_print_image('images/lightbulb.png', true, array('alt' => __('Disable agent'), 'title' => __('Disable agent'))) ."</a>";
+		}
+		
+		if(check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
+			echo "&nbsp;&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
+			borrar_agente=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'";
+			echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+			echo html_print_image('images/cross.png', true, array("border" => '0')) . "</a>";
+		}
+		
+		echo "</td>";
 	}
 	echo "</table>";
 	ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
@@ -470,12 +527,16 @@ else {
 	echo "&nbsp;</td></tr><tr><td>";
 }
 
-// Create agent button
-echo '<a name="bottom">';
-echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
-html_print_input_hidden ('new_agent', 1);
-html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
-echo "</form></td></tr></table>";
+if(check_acl ($config["id_user"], 0, "AW")) {
+	// Create agent button
+	echo '<a name="bottom">';
+	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+	html_print_input_hidden ('new_agent', 1);
+	html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+	echo "</form>";
+}
+
+echo "</td></tr></table>";
 ?>
 
 <script type="text/javascript">

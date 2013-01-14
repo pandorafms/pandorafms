@@ -24,27 +24,29 @@ require_once ('include/functions_menu.php');
 $menu_godmode = array ();
 $menu_godmode['class'] = 'godmode';
 
-if (check_acl ($config['id_user'], 0, "AW")) {
+if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0, "AD")) {
 	$menu_godmode["gagente"]["text"] = __('Manage monitoring');
 	$menu_godmode["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
 	$menu_godmode["gagente"]["id"] = "god-agents";
 		
-	$sub = array ();
-	$sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
-	$sub["godmode/agentes/modificar_agente"]["subsecs"] = array(
-		"godmode/agentes/configurar_agente");
+	if(check_acl ($config['id_user'], 0, "AW")) {
+		$sub = array ();
+		$sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
+		$sub["godmode/agentes/modificar_agente"]["subsecs"] = array(
+			"godmode/agentes/configurar_agente");
+			
+		$sub["godmode/agentes/manage_config_remote"]["text"] = __('Duplicate config');
 		
-	$sub["godmode/agentes/manage_config_remote"]["text"] = __('Duplicate config');
-	
-	if (check_acl ($config["id_user"], 0, "PM")) {
-		$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
-		$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
-		$sub["godmode/agentes/planned_downtime.list"]["text"] = __('Scheduled downtime');
-		$sub["godmode/agentes/fields_manager"]["text"] = __('Manage custom fields');
+		if (check_acl ($config["id_user"], 0, "PM")) {
+			$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
+			$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
+			$sub["godmode/agentes/planned_downtime.list"]["text"] = __('Scheduled downtime');
+			$sub["godmode/agentes/fields_manager"]["text"] = __('Manage custom fields');
+		}
+		enterprise_hook('agents_submenu');
+		
+		$menu_godmode["gagente"]["sub"] = $sub;
 	}
-	enterprise_hook('agents_submenu');
-	
-	$menu_godmode["gagente"]["sub"] = $sub;
 }
 
 if (check_acl ($config['id_user'], 0, "AW")) {
@@ -95,23 +97,25 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["gmodules"]["sub"] = $sub;
 }
 
-if (check_acl ($config['id_user'], 0, "LM")) {
+if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0, "AD")) {
 	$menu_godmode["galertas"]["text"] = __('Manage alerts');
 	$menu_godmode["galertas"]["sec2"] = "godmode/alerts/alert_list";
 	$menu_godmode["galertas"]["id"] = "god-alerts";
 	
-	$sub = array ();
-	$sub["godmode/alerts/alert_templates"]["text"] = __('Templates');
-	$sub["godmode/alerts/alert_actions"]["text"] = __('Actions');
+	if(check_acl ($config['id_user'], 0, "LM")) {
+		$sub = array ();
+		$sub["godmode/alerts/alert_templates"]["text"] = __('Templates');
+		$sub["godmode/alerts/alert_actions"]["text"] = __('Actions');
 
-	if (check_acl ($config['id_user'], 0, "PM")) {
-		$sub["godmode/alerts/alert_commands"]["text"] = __('Commands');
+		if (check_acl ($config['id_user'], 0, "PM")) {
+			$sub["godmode/alerts/alert_commands"]["text"] = __('Commands');
+		}
+		$sub["godmode/alerts/alert_compounds"]["text"] = __('Correlation');
+		$sub["godmode/alerts/alert_special_days"]["text"] = __('Special days list');
+		enterprise_hook('eventalerts_submenu');
+
+		$menu_godmode["galertas"]["sub"] = $sub;
 	}
-	$sub["godmode/alerts/alert_compounds"]["text"] = __('Correlation');
-	$sub["godmode/alerts/alert_special_days"]["text"] = __('Special days list');
-	enterprise_hook('eventalerts_submenu');
-
-	$menu_godmode["galertas"]["sub"] = $sub;
 }
 
 if (check_acl ($config['id_user'], 0, "AW")) {

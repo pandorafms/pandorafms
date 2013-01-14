@@ -82,21 +82,24 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 	unset($modules['predictionserver']);
 }
 
-// Create module/type combo
-echo '<form id="create_module_type" method="post" action="'.$url.'">';
-html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
-html_print_input_hidden ('edit_module', 1);
-echo '</td>';
-echo '<td class="datos">';
-echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
-echo '</td>';
-echo '<td class="datos" style="text-align:center;">';
-echo "<strong>";
-echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
-echo "</strong>";
-echo '</td>';
-echo '</tr>';
-echo "</form>";
+if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+	// Create module/type combo
+	echo '<form id="create_module_type" method="post" action="'.$url.'">';
+	html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
+	html_print_input_hidden ('edit_module', 1);
+	echo '</td>';
+	echo '<td class="datos">';
+	echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
+	echo '</td>';
+	echo '<td class="datos" style="text-align:center;">';
+	echo "<strong>";
+	echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
+	echo "</strong>";
+	echo '</td>';
+	echo '</tr>';
+	echo "</form>";
+}
+
 echo "</table>";
 
 if (! isset ($id_agente))
@@ -429,8 +432,12 @@ $table->head = array ();
 $table->head[0] = __('Name') . ' ' .
 	'<a href="' . $url . '&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
 	'<a href="' . $url . '&sort_field=name&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
+
+// The access to the policy is granted only with AW permission
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 	$table->head[1] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+}
+
 $table->head[2] = "<span title='" . __('Server') . "'>" . __('S.') . "</span>" . ' ' .
 	'<a href="' . $url . '&sort_field=server&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectServerUp)) . '</a>' .
 	'<a href="' . $url . '&sort_field=server&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectServerDown)) . '</a>';
@@ -452,10 +459,9 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[2] = '55px';
-$table->size[8] = '120px';
 $table->align = array ();
 $table->align[2] = 'center';
-$table->align[8] = 'left';
+$table->align[8] = 'center';
 $table->data = array ();
 
 $agent_interval = agents_get_interval ($id_agente);
@@ -471,16 +477,10 @@ foreach($tempRows as $row) {
 }
 
 foreach ($modules as $module) {
-	$is_extra = enterprise_hook('policies_is_module_extra_policy', array($module["id_agente_modulo"]));
-	
-	if($is_extra === ENTERPRISE_NOT_HOOK) {
-		$is_extra = false;
-	}
-	
-	if (! check_acl ($config["id_user"], $group, "AW", $id_agente) && !$is_extra) {
+	if (! check_acl ($config["id_user"], $group, "AW", $id_agente) && ! check_acl ($config["id_user"], $group, "AD", $id_agente)) {
 		continue;
 	}
-	
+
 	$type = $module["id_tipo_modulo"];
 	$id_module = $module["id_modulo"];
 	$nombre_modulo = $module["nombre"];
@@ -509,15 +509,25 @@ foreach ($modules as $module) {
 		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""))
 			. "&nbsp;";
 	}
-	$data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=' . $id_agente . '&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
-	if ($module["disabled"])
+	
+	if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+		$data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=' . $id_agente . '&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+	}
+	
+	if ($module["disabled"]) {
 		$data[0] .= '<em class="disabled_module">' .
 			ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '[&hellip;]', 'font-size: 7.2pt').'</em>';
-	else
+	}
+	else {
 		$data[0] .= ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
-	$data[0] .= '</a>';
+	}
 	
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+	if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+		$data[0] .= '</a>';
+	}
+	
+	// The access to the policy is granted only with AW permission
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 		$policyInfo = policies_info_module_policy($module['id_agente_modulo']);
 		if ($policyInfo === false)
 			$data[1] = '';
@@ -591,47 +601,65 @@ foreach ($modules as $module) {
 	// MAX / MIN values
 	$data[7] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]); 
 	
-	// Delete module
-	$data[8] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
-	$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
-		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-	$data[8] .= html_print_image ('images/cross.png', true,
-		array ('title' => __('Delete')));
-	$data[8] .= '</a> ';
-	$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
-		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-	$data[8] .= html_print_image ('images/copy.png', true,
-		array ('title' => __('Duplicate')));
-	$data[8] .= '</a> ';
+	if ($module['disabled']) {
+		$data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&enable_module=".$module['id_agente_modulo']."'>".
+			html_print_image('images/lightbulb_off.png', true, array('alt' => __('Enable module'), 'title' => __('Enable module'))) ."</a>";
+	}
+	else {
+		$data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&disable_module=".$module['id_agente_modulo']."'>".
+			html_print_image('images/lightbulb.png', true, array('alt' => __('Disable module'), 'title' => __('Disable module'))) ."</a>";
+	}
 	
-	// Make a data normalization
-	
-	if (isset($numericModules[$type])) {
-		if ($numericModules[$type] === true) {
-			$data[8] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-			$data[8] .= html_print_image ('images/chart_curve.png', true,
-				array ('title' => __('Normalize')));
-			$data[8] .= '</a>';
+	if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+		// Delete module
+		$data[8] .= html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
+		$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+		$data[8] .= html_print_image ('images/cross.png', true,
+			array ('title' => __('Delete')));
+		$data[8] .= '</a> ';
+		$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
+			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+		$data[8] .= html_print_image ('images/copy.png', true,
+			array ('title' => __('Duplicate')));
+		$data[8] .= '</a> ';
+		
+		// Make a data normalization
+		
+		if (isset($numericModules[$type])) {
+			if ($numericModules[$type] === true) {
+				$data[8] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+				$data[8] .= html_print_image ('images/chart_curve.png', true,
+					array ('title' => __('Normalize')));
+				$data[8] .= '</a>';
+			}
+		}
+		//create network component action
+		if (is_user_admin($config['id_user'])) {
+			$data[8] .= '&nbsp;<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
+				onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+			$data[8] .= html_print_image ('images/network.png', true,
+				array ('title' => __('Create network component')));
+			$data[8] .= '</a> ';
 		}
 	}
-	//create network component action
-	if (is_user_admin($config['id_user'])) {
-		$data[8] .= '&nbsp;<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
-			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-		$data[8] .= html_print_image ('images/network.png', true,
-			array ('title' => __('Create network component')));
-		$data[8] .= '</a> ';
-	}
-	
+
 	array_push ($table->data, $data);
 }
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
-	onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
+if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+	echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
+		onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
+
+}
+	
 html_print_table ($table);
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_input_hidden ('multiple_delete', 1);
-html_print_submit_button (__('Delete'), 'multiple_delete', false, 'class="sub delete"');
-echo '</div>';
-echo '</form>'
+
+if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	html_print_input_hidden ('multiple_delete', 1);
+	html_print_submit_button (__('Delete'), 'multiple_delete', false, 'class="sub delete"');
+	echo '</div>';
+	echo '</form>';
+}
 ?>

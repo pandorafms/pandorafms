@@ -18,7 +18,7 @@ global $config;
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "LW")) {
+if (! check_acl ($config['id_user'], 0, "LW") && ! check_acl ($config['id_user'], 0, "AD")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
@@ -260,22 +260,32 @@ if ($id_agente) {
 	echo $messageAction;
 	
 	require_once('godmode/alerts/alert_list.list.php');
-	require_once('godmode/alerts/alert_list.builder.php');
+	
+	if(check_acl ($config['id_user'], 0, "LW")) {
+		require_once('godmode/alerts/alert_list.builder.php');
+	}
+	
 	return;
 }
 else {
 	if (!defined('METACONSOLE')) {
-		$buttons = array(
-			'list' => array(
-				'active' => false,
-				'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">' . 
-					html_print_image ("images/god6.png", true, array ("title" => __('List alerts'))) .'</a>'),
-			'builder' => array(
-				'active' => false,
-				'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">' . 
-					html_print_image ("images/config.png", true, array ("title" => __('Builder alert'))) .'</a>'));
-		
-		$buttons[$tab]['active'] = true;
+		// The tabs will be shown only with manage alerts permissions
+		if(check_acl ($config['id_user'], 0, "LW")) {
+			$buttons = array(
+				'list' => array(
+					'active' => false,
+					'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">' . 
+						html_print_image ("images/god6.png", true, array ("title" => __('List alerts'))) .'</a>'),
+				'builder' => array(
+					'active' => false,
+					'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">' . 
+						html_print_image ("images/config.png", true, array ("title" => __('Builder alert'))) .'</a>'));
+			
+			$buttons[$tab]['active'] = true;
+		}
+		else {
+			$buttons = "";
+		}
 		
 		if ($tab == 'list') {
 			ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
@@ -286,9 +296,7 @@ else {
 		
 	} 
 	else {
-		
 		alerts_meta_print_header();
-		
 	}
 	
 	echo $messageAction;

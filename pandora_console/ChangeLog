@@ -1,3 +1,18 @@
+2013-01-14  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php
+	include/functions.php
+	operation/agentes/alerts_status.php
+	operation/agentes/estado_agente.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/modificar_agente.php
+	godmode/agentes/configurar_agente.php
+	godmode/menu.php
+	godmode/alerts/alert_list.list.php
+	godmode/alerts/alert_list.php: Added checks to new flag AD
+	in godmode views for agents, modules and alerts. Clean 
+	some old extra_sql (policy acls) code
+
 2013-01-14  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* pandoradb_data.sql: Added a missing column name in

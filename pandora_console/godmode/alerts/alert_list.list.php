@@ -20,7 +20,7 @@ check_login ();
 
 /* Check if this page is included from a agent edition */
 
-if (! check_acl ($config['id_user'], 0, "LW")) {
+if (! check_acl ($config['id_user'], 0, "LW") && ! check_acl ($config['id_user'], 0, "AD")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
@@ -34,14 +34,10 @@ require_once ($config['homedir'].'/include/functions_users.php');
 $pure = get_parameter('pure', 0);
 
 if (defined('METACONSOLE')) {
-
 	$sec = 'advanced';
-
 }
 else {
-
 	$sec = 'galertas';
-
 }
 
 // Table for filter controls
@@ -401,27 +397,55 @@ foreach ($simple_alerts as $alert) {
 	$iterator++;
 
 	$data = array ();
-	
+
 	if (! $id_agente) {
 		$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
-		$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agent.'">';
+		
+		$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $id_agent);
+		
+		$data[0] = '';
+		
+		if(check_acl ($config['id_user'], $agent_group, "AW")) {
+			$main_tab = 'main';
+		}
+		else {
+			$main_tab = 'module';
+		}
+		
+		$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab='.$main_tab.'&id_agente='.$id_agent.'">';
+		
 		if ($alert['disabled'])
 			$data[0] .= '<span style="font-style: italic; color: #aaaaaa;">';
 		$data[0] .= '<span style="font-size: 7.2pt">' . agents_get_name ($id_agent) . '</span>';
 		if ($alert['disabled'])
 			$data[0] .= '</span>';
+			
 		$data[0] .= '</a>';
 	}
+	else {
+		$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $id_agente);
+	}
+	
 	$data[1] = ui_print_truncate_text(
 		modules_get_agentmodule_name ($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	
 	$data[2] = ' <a class="template_details"
 		href="'.ui_get_full_url(false,false,false,false).'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">' .
 		html_print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help")) . '</a> ';
-	$data[2] .= "<a href='index.php?sec=".$sec."&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
+	
+	$template_group = db_get_value('id_group', 'talert_templates', 'id', $alert['id_alert_template']);
+
+	// The access to the template manage page is necessary have LW permissions on template group
+	if(check_acl ($config['id_user'], $template_group, "LW")) {
+		$data[2] .= "<a href='index.php?sec=".$sec."&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
+	}
+	
 	$data[2] .= ui_print_truncate_text(
 		alerts_get_alert_template_name ($alert['id_alert_template']), GENERIC_SIZE_TEXT, false, true, true, '[&hellip;]', 'font-size: 7.1pt');
-	$data[2] .= "</a>";
+		
+	if(check_acl ($config['id_user'], $template_group, "LW")) {
+		$data[2] .= "</a>";
+	}
 	
 	$actions = alerts_get_alert_agent_module_actions ($alert['id']);
 	
@@ -461,50 +485,56 @@ foreach ($simple_alerts as $alert) {
 			
 			$data[3] .= ')</em>';
 			$data[3] .= '</font>';
-			$data[3] .= '<form method="post" class="delete_link" style="display: inline; vertical-align: -50%;">';
-			$data[3] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
-			$data[3] .= html_print_input_hidden ('delete_action', 1, true);
-			$data[3] .= html_print_input_hidden ('id_alert', $alert['id'], true);
-			$data[3] .= html_print_input_hidden ('id_action', $action_id, true);
-			$data[3] .= '</form>';
+			// Is possible manage actions if have LW permissions in the agent group of the alert module
+			if(check_acl ($config['id_user'], $agent_group, "LW")) {
+				$data[3] .= '<form method="post" class="delete_link" style="display: inline; vertical-align: -50%;">';
+				$data[3] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
+				$data[3] .= html_print_input_hidden ('delete_action', 1, true);
+				$data[3] .= html_print_input_hidden ('id_alert', $alert['id'], true);
+				$data[3] .= html_print_input_hidden ('id_action', $action_id, true);
+				$data[3] .= '</form>';
+			}
 			$data[3] .= '</li>';
 		}
 		$data[3] .= '</ul>';
 	}
 	
+	// Is possible manage actions if have LW permissions in the agent group of the alert module
+	if(check_acl ($config['id_user'], $agent_group, "LW")) {
+		$data[3] .= '<a class="add_action" id="add-action-'.$alert['id'].'" href="#">';
+		$data[3] .= html_print_image ('images/add.png', true);
+		if ($alert['disabled'])
+			$data[3] .= ' '. '<span style="font-style: italic; color: #aaaaaa;">' .__('Add action') . '</span>';
+		else
+			$data[3] .= ' ' . __('Add action');
+		$data[3] .= '</a>';
+
 	
-	$data[3] .= '<a class="add_action" id="add-action-'.$alert['id'].'" href="#">';
-	$data[3] .= html_print_image ('images/add.png', true);
-	if ($alert['disabled'])
-		$data[3] .= ' '. '<span style="font-style: italic; color: #aaaaaa;">' .__('Add action') . '</span>';
-	else
-		$data[3] .= ' ' . __('Add action');
-	$data[3] .= '</a>';
-	
-	$data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post" class="invisible">';
-	$data[3] .= html_print_input_hidden ('add_action', 1, true);
-	$data[3] .= html_print_input_hidden ('id_alert_module', $alert['id'], true);
-	$own_info = get_user_info($config['id_user']);
-	$own_groups = users_get_groups($config['id_user'], 'LW', true);
-	$filter_groups = '';
-	$filter_groups = implode(',', array_keys($own_groups));
-	$actions = alerts_get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');
-	$data[3] .= html_print_select ($actions, 'action', '', '', __('None'), 0, true);
-	$data[3] .= '<br />';
-	$data[3] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
-	$data[3] .= '<span class="advanced_actions invisible">';
-	$data[3] .= __('Number of alerts match from').' ';
-	$data[3] .= html_print_input_text ('fires_min', -1, '', 4, 10, true);
-	$data[3] .= ' '.__('to').' ';
-	$data[3] .= html_print_input_text ('fires_max', -1, '', 4, 10, true);
-	$data[3] .= ui_print_help_icon ("alert-matches", true, ui_get_full_url(false, false, false, false));
-	$data[3] .= '<br />' . __('Threshold');
-	$data[3] .= html_print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
-	$data[3] .= '</span>';
-	$data[3] .= '<div class="right">';
-	$data[3] .= html_print_submit_button (__('Add'), 'add_action', false, 'class="sub next"', true);
-	$data[3] .= '</div>';
-	$data[3] .= '</form>';
+		$data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post" class="invisible">';
+		$data[3] .= html_print_input_hidden ('add_action', 1, true);
+		$data[3] .= html_print_input_hidden ('id_alert_module', $alert['id'], true);
+		$own_info = get_user_info($config['id_user']);
+		$own_groups = users_get_groups($config['id_user'], 'LW', true);
+		$filter_groups = '';
+		$filter_groups = implode(',', array_keys($own_groups));
+		$actions = alerts_get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');
+		$data[3] .= html_print_select ($actions, 'action', '', '', __('None'), 0, true);
+		$data[3] .= '<br />';
+		$data[3] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
+		$data[3] .= '<span class="advanced_actions invisible">';
+		$data[3] .= __('Number of alerts match from').' ';
+		$data[3] .= html_print_input_text ('fires_min', -1, '', 4, 10, true);
+		$data[3] .= ' '.__('to').' ';
+		$data[3] .= html_print_input_text ('fires_max', -1, '', 4, 10, true);
+		$data[3] .= ui_print_help_icon ("alert-matches", true, ui_get_full_url(false, false, false, false));
+		$data[3] .= '<br />' . __('Threshold');
+		$data[3] .= html_print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
+		$data[3] .= '</span>';
+		$data[3] .= '<div class="right">';
+		$data[3] .= html_print_submit_button (__('Add'), 'add_action', false, 'class="sub next"', true);
+		$data[3] .= '</div>';
+		$data[3] .= '</form>';
+	}
 	
 	$status = STATUS_ALERT_NOT_FIRED;
 	$title = "";
@@ -536,36 +566,45 @@ foreach ($simple_alerts as $alert) {
 	$data[5] .= html_print_input_hidden ('id_alert', $alert['id'], true);
 	$data[5] .= '</form>';
 	
-	$data[5] .= '&nbsp;&nbsp;<form class="standby_alert_form" method="post" style="display: inline;">';
-	if (!$alert['standby']) {
-		$data[5] .= html_print_input_image ('standby_off', 'images/bell.png', 1, '', true);
-		$data[5] .= html_print_input_hidden ('standbyon_alert', 1, true);
-	}
-	else {
-		$data[5] .= html_print_input_image ('standby_on', 'images/bell_pause.png', 1, '', true);
-		$data[5] .= html_print_input_hidden ('standbyoff_alert', 1, true);
-	}
-	$data[5] .= html_print_input_hidden ('id_alert', $alert['id'], true);
-	$data[5] .= '</form>';
-
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
-		if ($policyInfo === false)
-			$data[5] .= '';
+	// To manage alert is necessary LW permissions in the agent group 
+	if(check_acl ($config['id_user'], $agent_group, "LW")) {
+		$data[5] .= '&nbsp;&nbsp;<form class="standby_alert_form" method="post" style="display: inline;">';
+		if (!$alert['standby']) {
+			$data[5] .= html_print_input_image ('standby_off', 'images/bell.png', 1, '', true);
+			$data[5] .= html_print_input_hidden ('standbyon_alert', 1, true);
+		}
 		else {
-			$img = 'images/policies.png';
-				
-			$data[5] .= '&nbsp;&nbsp;<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id=' . $policyInfo['id'] . '">' . 
-				html_print_image($img,true, array('title' => $policyInfo['name'])) .
-				'</a>';
+			$data[5] .= html_print_input_image ('standby_on', 'images/bell_pause.png', 1, '', true);
+			$data[5] .= html_print_input_hidden ('standbyoff_alert', 1, true);
+		}
+		$data[5] .= html_print_input_hidden ('id_alert', $alert['id'], true);
+		$data[5] .= '</form>';
+	}
+
+	// To access to policy page is necessary have AW permissions in the agent
+	if(check_acl ($config['id_user'], $agent_group, "AW")) {
+		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+			$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
+			if ($policyInfo === false)
+				$data[5] .= '';
+			else {
+				$img = 'images/policies.png';
+					
+				$data[5] .= '&nbsp;&nbsp;<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id=' . $policyInfo['id'] . '">' . 
+					html_print_image($img,true, array('title' => $policyInfo['name'])) .
+					'</a>';
+			}
 		}
 	}
-
-	$data[5] .= '&nbsp;&nbsp;<form class="delete_alert_form" method="post" style="display: inline;">';	
-	$data[5] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
-	$data[5] .= html_print_input_hidden ('delete_alert', 1, true);
-	$data[5] .= html_print_input_hidden ('id_alert', $alert['id'], true);
-	$data[5] .= '</form>';
+	
+	// To manage alert is necessary LW permissions in the agent group 
+	if(check_acl ($config['id_user'], $agent_group, "LW")) {
+		$data[5] .= '&nbsp;&nbsp;<form class="delete_alert_form" method="post" style="display: inline;">';	
+		$data[5] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
+		$data[5] .= html_print_input_hidden ('delete_alert', 1, true);
+		$data[5] .= html_print_input_hidden ('id_alert', $alert['id'], true);
+		$data[5] .= '</form>';
+	}
 	array_push ($table->data, $data);
 }
 
@@ -583,7 +622,7 @@ if (isset($dont_display_alert_create_bttn))
 	if ($dont_display_alert_create_bttn)
 		$display_create = false;
 
-if ($display_create){
+if ($display_create && check_acl ($config['id_user'], 0, "LW")){
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">';
 	html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');

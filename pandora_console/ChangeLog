@@ -1,5 +1,13 @@
 2013-01-14  Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* extras/local_components.postgreSQL.sql,
+	extras/local_components.mysql.sql,
+	extras/local_components.oracle.sql: Create new sql script to 
+	add new network components and groups by yourself if something
+	fails.
+
+2013-01-14  Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
 	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added network
 	components and groups to migration script.

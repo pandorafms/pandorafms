@@ -1,3 +1,8 @@
+2013-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* images/skin/skin_default/include/styles/pandora.css: Fixed small
+	bug in default skin css.
+
 2013-01-14  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/tree.php: Now agents appear ordered by name.

@@ -37,13 +37,6 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 
 $tags = tags_search_tag(false, false, true);
 
-$tag_with_json = io_safe_output(get_parameter("tag_with"));
-$tag_with = json_decode($tag_with_json, true);
-if (empty($tag_with)) $tag_with = array();
-$tag_without_json = io_safe_output(get_parameter("tag_without"));
-$tag_without = json_decode($tag_without_json, true);
-if (empty($tag_without)) $tag_without = array();
-
 if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
 	

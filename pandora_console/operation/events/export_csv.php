@@ -53,7 +53,19 @@ $event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"])
 $id_user_ack = get_parameter ("id_user_ack", 0);
 $search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
 $text_agent = (string)get_parameter('text_agent', __("All"));
-$tag = get_parameter("tag", "");
+
+$tag_with_json_clean = io_safe_output(get_parameter("tag_with", ''));
+$tag_with = json_decode($tag_with_json_clean, true);
+if (empty($tag_with)) $tag_with = array();
+$tag_with = array_diff($tag_with, array(0 => 0));
+
+$tag_without_json = get_parameter("tag_without", array());
+$tag_without_json_clean = io_safe_output(get_parameter("tag_without", ''));
+$tag_without = json_decode($tag_without_json_clean, true);
+if (empty($tag_without)) $tag_without = array();
+$tag_without = array_diff($tag_without, array(0 => 0));	
+
+$filter_only_alert = (int)get_parameter('filter_only_alert', -1);
 
 $filter = array ();
 if ($ev_group > 1)
@@ -62,6 +74,7 @@ if ($ev_group > 1)
 	$filter['estado'] = 1;
 if ($status == 0)
 	$filter['estado'] = 0; */
+
 $filter_state = '';
 switch($status) {
 	case 0:
@@ -75,10 +88,24 @@ switch($status) {
 }		
 if ($search != "")
 	$filter[] = 'evento LIKE "%'.io_safe_input($search).'%"';
-if (($event_type != "all") OR ($event_type != 0))
-	$filter['event_type'] = $event_type;	
+	
 if ($severity != -1)
 	$filter[] = 'criticity >= '.$severity;
+	
+if (($event_type != "all") OR ($event_type != 0)) {
+	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+	// for the user so for him is presented only "warning, critical and normal"
+	if ($event_type == "warning" || $event_type == "critical"
+		|| $event_type == "normal") {
+		$filter[] = " event_type LIKE '%$event_type%' ";
+	}
+	elseif ($event_type == "not_normal") {
+		$filter[] = " event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
+	}
+	else {
+		$filter[] = " event_type = '" . $event_type."'";
+	}
+}	
 	
 if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
@@ -128,9 +155,40 @@ if ($id_user_ack != "0")
 	$filter['id_usuario'] = $id_user_ack;
 	
 //Search by tag
-if ($tag != "") {
-	$filter['tags'] = "%".io_safe_input($tag)."%";
-}	
+//Search by tag
+
+if (!empty($tag_with) or !empty($tag_without)) {
+	$filter['tags'] = '';
+}
+	
+if (!empty($tag_with)) {
+	$filter['tags'] .= ' AND ( ';
+	$first = true;
+	foreach ($tag_with as $id_tag) {
+		if ($first) $first = false;
+		else $filter['tags'] .= " OR ";
+		$filter['tags'] .= "tags LIKE '%" . tags_get_name($id_tag) . "%'";
+	}
+	$filter['tags'] .= ' ) ';
+}
+if (!empty($tag_without)) {
+	$filter['tags'] .= ' AND ( ';
+	$first = true;
+	foreach ($tag_without as $id_tag) {
+		if ($first) $first = false;
+		else $filter['tags'] .= " OR ";
+		$filter['tags'] .= "tags NOT LIKE '%" . tags_get_name($id_tag) . "%'";
+	}
+	$filter['tags'] .= ' ) ';
+}
+
+// Filter/Only alerts
+if (isset($filter_only_alert)) {
+	if ($filter_only_alert == 0)
+		$filter[] = " AND event_type NOT LIKE '%alert%'";
+	else if ($filter_only_alert == 1)
+		$filter[] = " AND event_type LIKE '%alert%'";
+}
 
 //$filter['order'] = 'timestamp DESC';
 $now = date ("Y-m-d");

@@ -1,3 +1,11 @@
+2013-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* operation/events/export_csv.php
+	operation/events/events_list.php
+	operation/events/events.php: CSV exportation get all filters.
+	
+	Bug id: #3600096
+
 2013-01-14  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* extras/network_components.postgreSQL.sql,

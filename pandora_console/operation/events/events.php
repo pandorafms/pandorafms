@@ -190,6 +190,18 @@ $validate = (bool) get_parameter ("validate", 0);
 $section = (string) get_parameter ("section", "list");
 $text_agent = (string)get_parameter('text_agent', __("All"));
 $filter_only_alert = (int)get_parameter('filter_only_alert', -1);
+	
+$tag_with_json = get_parameter("tag_with", '');
+$tag_with_json_clean = io_safe_output(get_parameter("tag_with", ''));
+$tag_with = json_decode($tag_with_json_clean, true);
+if (empty($tag_with)) $tag_with = array();
+$tag_with = array_diff($tag_with, array(0 => 0));
+
+$tag_without_json = get_parameter("tag_without", array());
+$tag_without_json_clean = io_safe_output(get_parameter("tag_without", ''));
+$tag_without = json_decode($tag_without_json_clean, true);
+if (empty($tag_without)) $tag_without = array();
+$tag_without = array_diff($tag_without, array(0 => 0));	
 
 $search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
 
@@ -203,27 +215,28 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
-	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack;
+	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack."&amp;tag_with=".
+	$tag_with_json_clean. "&amp;tag_without=".$tag_without_json_clean . 
+	"&amp;filter_only_alert" . $filter_only_alert;
 
 // Header
 if ($config["pure"] == 0) {
 	$pss = get_user_info($config['id_user']);
 	$hashup = md5($config['id_user'] . $pss['password']);
-	
 	$buttons = array(
 		'fullscreen' => array('active' => false,
 			'text' => '<a href="'.$url.'&amp;pure=1">' . 
 				html_print_image("images/fullscreen.png", true, array ("title" => __('Full screen'))) .'</a>'),
 		'rss' => array('active' => false,
 			'text' => '<a href="operation/events/events_rss.php?user=' . $config['id_user'] . '&hashup=' . $hashup . 
-				'&text_agent=' . $text_agent . '&ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+				'&text_agent=' . $text_agent . '&ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'&amp;id_user_ack='.io_safe_input($id_user_ack).'">' . 
 				html_print_image("images/rss.png", true, array ("title" => __('RSS Events'))) .'</a>'),
 		'marquee' => array('active' => false,
 			'text' => '<a href="operation/events/events_marquee.php">' . 
 				html_print_image("images/heart.png", true, array ("title" => __('Marquee display'))) .'</a>'),
 		'csv' => array('active' => false,
-			'text' => '<a href="operation/events/export_csv.php?ev_group=' . $ev_group . 
-				'&text_agent=' . $text_agent . '&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+			'text' => "<a href='operation/events/export_csv.php?ev_group=" . $ev_group . 
+				"&text_agent=" . $text_agent . "&amp;event_type=".$event_type."&amp;search=".io_safe_input($search)."&amp;severity=".$severity."&amp;status=".$status."&amp;event_view_hr=".$event_view_hr."&amp;id_agent=".$id_agent."&amp;id_user_ack=".io_safe_input($id_user_ack)."&amp;tag_with=".$tag_with_json_clean. "&amp;tag_without=".$tag_without_json_clean. "&amp;filter_only_alert=" . $filter_only_alert . "'>" . 
 				html_print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>'),
 		'sound_event' => array('active' => false,
 			'text' => '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>')

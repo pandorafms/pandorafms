@@ -207,4 +207,16 @@ define ('STATUS_ALERT_DISABLED', 'alert_disabled.png');
 //For servers
 define ('STATUS_SERVER_OK', 'server_ok.png');
 define ('STATUS_SERVER_DOWN', 'server_down.png');
+
+/* Events criticity */
+define ('EVENT_CRIT_MAINTENANCE', 0);
+define ('EVENT_CRIT_INFORMATIONAL', 1);
+define ('EVENT_CRIT_NORMAL', 2);
+define ('EVENT_CRIT_MINOR', 5);
+define ('EVENT_CRIT_WARNING', 3);
+define ('EVENT_CRIT_MAJOR', 6);
+define ('EVENT_CRIT_CRITICAL', 4);
+define ('EVENT_CRIT_WARNING_OR_CRITICAL', 34);
+define ('EVENT_CRIT_NOT_NORMAL', 20);
+
 ?>

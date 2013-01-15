@@ -26,10 +26,7 @@ $menu_operation = array ();
 $menu_operation['class'] = 'operation';
 
 // Agent read, Server read
-if (check_acl ($config['id_user'], 0, "AR")) {
-	
-	enterprise_hook ('metaconsole_menu');
-	
+if (check_acl ($config['id_user'], 0, "AR")) {	
 	//View agents
 	$menu_operation["estado"]["text"] = __('Monitoring');
 	$menu_operation["estado"]["sec2"] = "operation/agentes/tactical";

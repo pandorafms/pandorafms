@@ -1,3 +1,14 @@
+2013-01-15  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions.php
+	include/constants.php
+	operation/events/events_list.php: Added two new
+	criticity modes in the event filter. Critical or warning 
+	and not normal
+
+	* operation/menu.php: Delete the metaconsole menu enterprise call
+	from operation menu
+
 2013-01-15  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_visual_map.php: Now modules with warning

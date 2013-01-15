@@ -1,3 +1,10 @@
+2013-01-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/db/postgresql.php
+	include/db/mysql.php
+	include/db/oracle.php: Fixed function get_system_time when 
+	timesource is system.
+
 2013-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* images/skin/skin_default/include/styles/pandora.css: Fixed small

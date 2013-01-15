@@ -1021,7 +1021,7 @@ function postgresql_get_system_time() {
 	if ($time != 0)
 		return $time;
 	
-	if ($config["timesource"] = "sql") {
+	if ($config["timesource"] == "sql") {
 		$time = db_get_sql ("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP));");
 		if (empty ($time)) {
 			return time ();

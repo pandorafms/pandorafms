@@ -984,7 +984,7 @@ function mysql_get_system_time() {
 	if ($time != 0)
 		return $time;
 	
-	if ($config["timesource"] = "sql") {
+	if ($config["timesource"] == "sql") {
 		$time = db_get_sql ("SELECT UNIX_TIMESTAMP();");
 		if (empty ($time)) {
 			return time ();

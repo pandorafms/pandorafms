@@ -123,7 +123,7 @@ install () {
 					fi
 					PANDORA_CONF=$PANDORA_HOME/include/config.php
 				else
-					PANDORA_HOME=/srv/www/htdocs/pandora
+					PANDORA_HOME=/srv/www/htdocs/pandora_console
 					PANDORA_CONF=$PANDORA_HOME/include/config.php
 				fi
 			fi
@@ -213,7 +213,7 @@ install () {
 	echo "Now you can setup your Pandora FMS console and install"
 	echo "database using a browser and point to: "
 	echo " " 
-	echo "	http://ip_address_of_this_server/pandora/install.php"
+	echo "	http://ip_address_of_this_server/pandora_console/install.php"
 	echo " "
 	echo " "
 }

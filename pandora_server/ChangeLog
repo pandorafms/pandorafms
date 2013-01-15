@@ -1,5 +1,8 @@
 2013-01-11  Sancho Lerena <alerena@artica.es>
 
+	* util/pandora_revent.pl: (Moved tool_api.pl), improved
+	help.
+
 	* util/pandora_csvbridge.pl: Fixed code for CSV bridge too
 
 2013-01-11  Sergio Martin <sergio.martin@artica.es>

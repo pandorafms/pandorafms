@@ -42,7 +42,7 @@ sub print_usage () {
 	print "\t-hV Help (this help)\n";
 	print "\nSample Usage:\n\n";
 	print "\tperl pandora_csv_bridge.pl -f datos4.csv -c @ -A 2 -Y 26 -M Consumo_Electrico -d /tmp/dump -G 3 -X 12\n\n";
-    exit;
+    	exit;
 }
 
 sub transform_date ($){
@@ -79,6 +79,10 @@ $opt_T = "generic_data";
 
 my $utimestamp;
 my $utimestamp_extra;
+
+if ( $ARGV[0] eq "" ) {
+	print_usage();	
+}
 
 GetOptions
         ("h"   => \$opt_h, 
@@ -142,13 +146,18 @@ for ($ax = 0; $ax < $opt_s; $ax++){
 
 # Dump header
 if ( defined($opt_R)){
-	my @header_data = split ("$opt_c", $header );
+
+	if (!defined($opt_c)){
+		print_usage();
+	}
+	
+	my %header_data = split ("$opt_c", $header );
 	my $key;
 
 	print "\nDumping CSV Structure (Field Label -> Field Order)\n\n";
 
-	foreach $key (keys @header_data){
-		print $header_data[$key] ." -> ". $key ." \n";
+	foreach $key (keys %header_data){
+		print $header_data{$key} ." -> ". $key ." \n";
 	}
 
 	exit;

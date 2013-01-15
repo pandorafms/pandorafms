@@ -863,7 +863,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				if ($layout_data['id_agente_modulo'] != 0) {
 					$status = modules_get_agentmodule_status ($layout_data['id_agente_modulo']);
 					$id_agent = db_get_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
-				
+					//We need to get the diference between warning and critical alerts!!!
+					$real_status = db_get_row ("tagente_estado", "id_agente_modulo", $layout_data["id_agente_modulo"]);	
+					if ($real_status['estado'] == 2) {
+						//This module has an alert fired and warning status
+						$status = 10;
+					}
 				// Status for a whole agent, if agente_modulo was == 0
 				}
 				elseif ($layout_data['id_agent'] != 0) {
@@ -953,6 +958,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 				}
 				
 				$img = "images/console/icons/".$layout_data["image"];
+
 				switch ($status) {
 					case 1:
 						//Critical (BAD)
@@ -961,6 +967,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 					case 4:
 						//Critical (ALERT)
 						$img = "4".$img."_bad.png";
+						break;
+					case 10:
+						//Warning (with ALERT)
+						$img = "4".$img."_warning.png";
 						break;
 					case 0:
 						//Normal (OK)
@@ -977,6 +987,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						// Default is Grey (Other)
 						break;
 				}
+
 				$borderStyle = '';
 				if(substr($img,0,1) == '4') {
 					$img_style['border'] ='2px solid #ffa300;';

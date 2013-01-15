@@ -1,3 +1,11 @@
+2013-01-15  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_visual_map.php: Now warning modules with
+	alert appear with warning image and orange border, before they
+	appear with critical picture and orange border.
+
+	FIXDE BUG: 3592771
+
 2013-01-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/db/postgresql.php

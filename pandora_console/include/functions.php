@@ -852,11 +852,13 @@ function get_priorities () {
 	global $config;
 	
 	$priorities = array ();
-	$priorities[0] = __('Maintenance');
-	$priorities[1] = __('Informational');
-	$priorities[2] = __('Normal');
-	$priorities[3] = __('Warning');
-	$priorities[4] = __('Critical');
+	$priorities[EVENT_CRIT_MAINTENANCE] = __('Maintenance');
+	$priorities[EVENT_CRIT_INFORMATIONAL] = __('Informational');
+	$priorities[EVENT_CRIT_NORMAL] = __('Normal');
+	$priorities[EVENT_CRIT_WARNING] = __('Warning');
+	$priorities[EVENT_CRIT_CRITICAL] = __('Critical');
+	$priorities[EVENT_CRIT_WARNING_OR_CRITICAL] = __('Warning').'/'.__('Critical');
+	$priorities[EVENT_CRIT_NOT_NORMAL] = __('Not normal');
 	
 	foreach ($priorities as $key => $priority) {
 		$priorities[$key] = ui_print_truncate_text($priority, GENERIC_SIZE_TEXT, false, true, false);

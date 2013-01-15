@@ -87,4 +87,13 @@ switch ($config["dbtype"]) {
 /* The styles */
 /* Size of text in characters for truncate */
 define('GENERIC_SIZE_TEXT', 25);
+
+/* Events criticity */
+define ('EVENT_CRIT_MAINTENANCE', 0);
+define ('EVENT_CRIT_INFORMATIONAL', 1);
+define ('EVENT_CRIT_NORMAL', 2);
+define ('EVENT_CRIT_WARNING', 3);
+define ('EVENT_CRIT_CRITICAL', 4);
+define ('EVENT_CRIT_WARNING_OR_CRITICAL', 34);
+define ('EVENT_CRIT_NOT_NORMAL', 20);
 ?>

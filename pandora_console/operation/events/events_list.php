@@ -122,8 +122,23 @@ if ($event_type != "") {
 	}
 
 }
-if ($severity != -1)
-	$sql_post .= " AND criticity = " . $severity;
+
+if ($severity != -1) {
+	switch($severity) {
+		case EVENT_CRIT_WARNING_OR_CRITICAL:
+			$sql_post .= " AND (criticity = " . EVENT_CRIT_WARNING . " OR 
+								criticity = " . EVENT_CRIT_CRITICAL . ")";
+			break;
+		case EVENT_CRIT_NOT_NORMAL:
+			$sql_post .= " AND criticity != " . EVENT_CRIT_NORMAL;
+			break;
+		default:
+			$sql_post .= " AND criticity = $severity";
+			break;
+	}
+}
+
+
 if ($id_agent != -1)
 	$sql_post .= " AND id_agente = " . $id_agent;
 if ($id_event != -1)
@@ -214,7 +229,7 @@ echo "</td></tr><tr>";
 
 // Severity
 echo "<td>".__('Severity')."</td><td>";
-html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1');
+html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', false, false, false);
 echo '</td>';
 
 // Status

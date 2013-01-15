@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
 ###############################################################################
-# Pandora FMS General Management Tool
+# Pandora FMS - Remote Event Tool (via WEB API) 
 ###############################################################################
-# Copyright (c) 2010 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2013 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -24,26 +24,57 @@ tool_api_main();
 ##############################################################################
 sub help_screen{
 
-	print "CREATE EVENT:\n\n";
-	print "Usage: perl $0 -p <path to pandora console API> -u <credentials> -create_event -name <event_name> -group <id_group> -type <event_type> [-agent <id_agent>] [-user <id_user>] [-status <status>] [-am <id_agent_module>] [-alert <id_alert_am>] [-criticity <criticity>] [-comment <user_comment>] [-tag <tags>] [-source <source>] [-extra <id_extra>] [-c_instructions <critical_instructions>] [-w_instructions <warning_instructions>] [-u_instructions <unknown_instructions>] [-owner <owner_user>] \n\n";
-    print "Call syntax create_event: \n\t";
-	print "<credentials>: Credentials of API and database separated by comma (required). In this order\n\t\t";
-	print "<api_pass>,<db_user>,<db_pass>\n\n";
+	print "Options to create event: 
 
-	print "EXAMPLE: \n\t";
-	print "perl tool_api.pl -p http://localhost/pandora_console/include/api.php -u 1234,admin,pandora -create_event -name \"Event name\" -group 2 -type \"system\" -agent 2 -user \"admin\" -status 0 -am 0 -alert 9 -criticity 3 -comment \"User comments\" -tag \"tags\" -source \"Pandora\" -extra 3 -c_instructions \"Critical instructions\" -w_instructions \"Warning instructions\" -u_instructions \"Unknown instructions\" -owner \"other\" ";
-    print "\n\n\n";
+\t$0 -p <path_to_consoleAPI> -create event <options> 
+
+Where options:\n
+	-u <credentials>	
+	-create_event 
+	-name <event_name>        : Free text
+	-group <id_group>         : Group ID (use 0 for 'all') 
+	-type <event_type>        : unknown, alert_fired, alert_recovered, alert_ceased
+	                            alert_manual_validation, system, error, new_agent
+	                            configuration_change, going_unknown, going_down_critical,
+	                            going_down_warning, going_up_normal
+	
+Optional parameters:
+	
+	[-agent <id_agent>]       : Agent ID
+	[-user <id_user>]         : User comment (use in combination with -comment option)
+	[-status <status>]        : 0 New, 1 Validated, 2 In process
+	[-am <id_agent_module>]   : ID Agent Module linked to event
+	[-alert <id_alert_am>]    : ID Alert Module linked to event 
+	[-criticity <criticity>]  : 0 Maintance, 1 Informative, 2 Normal, 
+								3 Warning, 4 Crit, 5 Minor, 6 Major 
+	
+	[-comment <user_comment>] : Free text for comment
+	[-tag <tags>]             : Tag (must exist in the system to be imported)
+	[-source <source>]        : (By default 'Pandora')
+	[-extra <id_extra>] 
+	[-c_instructions <critical_instructions>] 
+	[-w_instructions <warning_instructions>] 
+	[-u_instructions <unknown_instructions>] 
+	[-owner <owner_user>]     : Use the login name, not the descriptive \n\n";
+
+	print "Credential/API syntax: \n\n\t";
+	print "<credentials>: API credentials separated by comma: <api_pass>,<user>,<pass>\n\n";
+
+	print "Example of event generation:\n\n";
+
+	print "\t./pandora_revent.pl -p http://192.168.70.160/pandora_console/include/api.php -u pot12,admin,pandora \
+\t-create_event -name \"Sample event executed from commandline\" -group 2 -type \"system\" -agent 2 \
+\t-user \"admin\" -status 0 -am 0 -alert 9 -criticity 3 -comment \"User comments\" -tag \"tags\" \
+\t-source \"Commandline\" -extra 3 -c_instructions \"Critical instructions\" \
+\t-w_instructions \"Warning instructions\" -u_instructions \"Unknown instructions\" -owner \"other\" ";
     
-    print "VALIDATE EVENT\n\n";
-	print "Usage: perl $0 -p <path to pandora console API> -u <credentials> -validate_event -id <id_event>\n\n";
-    print "Call syntax validate_event: \n\t";
-	print "<credentials>: Credentials of API and database separated by comma (required). In this order\n\t\t";
-	print "<api_pass>,<db_user>,<db_pass>\n\n";
+    print "\n\nOptions to validate event: \n\n\t";
+    print "$0 -p <path_to_consoleAPI> -u <credentials> -validate_event <options> -id <id_event>\n\n";
+    print "Sample of event validation: \n\n\t";
 
-	print "EXAMPLE: \n\t";
-	print "perl tool_api.pl -p http://localhost/pandora_console/include/api.php -u 1234,admin,pandora -validate_event -id 234";
+    print "$0 -p http://localhost/pandora/include/api.php -u pot12,admin,pandora -validate_event -id 234";
     print "\n\n\n";
-	exit;
+    exit;
 }
 
 ##############################################################################
@@ -51,7 +82,7 @@ sub help_screen{
 ##############################################################################
 sub tool_api_init () {
     
-	print "\nPandora FMS API tool Copyright (c) 2010 Artica ST\n";
+	print "\nPandora FMS Remote Event Tool Copyright (c) 2013 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 

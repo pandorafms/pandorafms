@@ -1,3 +1,8 @@
+2013-01-15  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* pandora_console_install: Fixed directory install for
+	SUSE.
+
 2013-01-15  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions.php

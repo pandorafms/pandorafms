@@ -1,3 +1,13 @@
+2013-01-15  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_visual_map.php: Now modules with warning
+	status and alert fired are in yellow with orange border, before
+	they were red with orange border.
+	* include/constants.php: Mew constant for visual map to
+	identify modules with warning status and alerts fired.
+
+	MERGED FROM 4.0.2
+	
 2013-01-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/db/postgresql.php

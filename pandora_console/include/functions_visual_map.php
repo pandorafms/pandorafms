@@ -819,6 +819,15 @@ function visual_map_get_status_element($layoutData) {
 				//Status for a simple module
 				if ($layoutData['id_agente_modulo'] != 0) {
 					$status = modules_get_agentmodule_status ($layoutData['id_agente_modulo']);
+
+					//We need to get the diference between warning and critical alerts!!!
+					$real_status = db_get_row ("tagente_estado", "id_agente_modulo", $layoutData["id_agente_modulo"]);	
+
+					if ($real_status['estado'] == 2) {
+					
+						//This module has an alert fired and warning status
+						$status = VISUAL_MAP_STATUS_WARNING_ALERT;
+					}
 				
 				//Status for a whole agent, if agente_modulo was == 0
 				}
@@ -1086,6 +1095,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 						break;
 					case VISUAL_MAP_STATUS_CRITICAL_ALERT:
 						$img = "4".$img."_bad.png";
+						break;
+					case VISUAL_MAP_STATUS_WARNING_ALERT:
+						$img = "4".$img."_warning.png";
 						break;
 					case VISUAL_MAP_STATUS_NORMAL:
 						$img .= "_ok.png";

@@ -162,7 +162,12 @@ if (!isset($config['inventory_changes_blacklist'])) {
 	$config['inventory_changes_blacklist'] = array();
 }
 
-set_user_language();
+if (defined('METACONSOLE')) {
+	enterprise_include_once('meta/include/functions_users_meta.php');
+	enterprise_hook('set_meta_user_language');
+}
+else
+	set_user_language();
 
 require_once ($ownDir . 'functions_extensions.php');
 

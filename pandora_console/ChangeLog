@@ -1,3 +1,8 @@
+2013-01-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/config_process.php: Fixed language translation in 
+	metaconsole.
+
 2013-01-15  Dario Rodriguez <dario.rodriguez@artica.es>
 
         * pandora_console_install: Fixed directory install for

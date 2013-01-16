@@ -270,6 +270,11 @@ if ($config["pure"] == 0 || defined ('METACONSOLE')) {
 			'csv' => $csv,
 			'sound_event' => $sound_event) ;
 	}
+	
+	// If the history event is not ebabled, dont show the history tab
+	if(!isset($config['metaconsole_events_history']) || $config['metaconsole_events_history'] != 1) {
+		unset($onheader['history']);
+	}
 
 	switch ($section) {
 		case 'sound_event':

@@ -1,5 +1,10 @@
 2013-01-16  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/events/events.php: Hide the history events tab
+	when history events are disabled
+
+2013-01-16  Sergio Martin <sergio.martin@artica.es>
+
 	* include/ajax/events.php
 	include/functions_graph.php
 	include/functions_events.php

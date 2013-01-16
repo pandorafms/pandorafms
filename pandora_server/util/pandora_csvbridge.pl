@@ -80,6 +80,10 @@ $opt_T = "generic_data";
 my $utimestamp;
 my $utimestamp_extra;
 
+if ( $ARGV[0] eq "" ) {
+	print_usage();	
+}
+
 GetOptions
         ("h"   => \$opt_h, 
 		 "R"   => \$opt_R, 
@@ -142,13 +146,18 @@ for ($ax = 0; $ax < $opt_s; $ax++){
 
 # Dump header
 if ( defined($opt_R)){
-	my @header_data = split ("$opt_c", $header );
+
+	if (!defined($opt_c)){
+		print_usage();
+	}
+	
+	my %header_data = split ("$opt_c", $header );
 	my $key;
 
 	print "\nDumping CSV Structure (Field Label -> Field Order)\n\n";
 
-	foreach $key (keys @header_data){
-		print $header_data[$key] ." -> ". $key ." \n";
+	foreach $key (keys %header_data){
+		print $header_data{$key} ." -> ". $key ." \n";
 	}
 
 	exit;

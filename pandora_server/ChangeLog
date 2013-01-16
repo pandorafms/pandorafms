@@ -1,3 +1,7 @@
+2013-01-16  Vanessa Gil <vanessa.gil@artica.es>
+
+	* util/pandora_csvbridge.pl: Fixed code for CSV bridge.
+
 2013-01-11 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed _id_alert_ macro in events.

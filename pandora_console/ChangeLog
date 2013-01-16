@@ -1,5 +1,10 @@
 2013-01-16  Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* images/pandora_report_logo.png: uploaded image for
+	report cover
+
+2013-01-16  Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* godmode/agentes/module_manager.php: Fixed a style error
 	on module manager view.
 

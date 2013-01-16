@@ -5568,39 +5568,58 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		}
 		if ($other['data'][2] != '')
 			$values['id_agente'] = $other['data'][2];
-		if ($other['data'][3] != '')
-			$values['id_usuario'] = $other['data'][3];
-
+		else {
+			if ($other['data'][3] != '') {
+				$agent_name = $other['data'][3];
+				$id_agent = agents_get_agent_id ($agent_name);
+				if ($id_agent !== false) {
+					$values['id_agente'] = $id_agent;
+				}
+			}
+		}
 		if ($other['data'][4] != '')
-			$values['estado'] = $other['data'][4];
+			$values['id_usuario'] = $other['data'][4];
+
+		if ($other['data'][5] != '')
+			$values['estado'] = $other['data'][5];
 		$values['timestamp'] = date("Y-m-d H:i:s", get_system_time());
 	
 		$values['evento'] = $id;
 		$values['utimestamp'] = get_system_time ();
 
-		if ($other['data'][5] != '')
-			$values['id_agentmodule'] = $other['data'][5];
 		if ($other['data'][6] != '')
-			$values['id_alert_am'] = $other['data'][6];
-		if ($other['data'][7] != '')
-			$values['criticity'] = $other['data'][7];
-
+			$values['id_agentmodule'] = $other['data'][6];
+		else {
+			if ($other['data'][7] != '') {
+				$module_name = $other['data'][7];
+				$id_agent_module = modules_get_agentmodule_id ($module_name, $values['id_agente']);
+				if ($id_agent_module !== false) {
+					$values['id_agentmodule'] = $id_agent_module;
+				}
+			}
+		}
+		if ($other['data'][8] != '')
+			$values['id_alert_am'] = $other['data'][8];
+		
 		if ($other['data'][9] != '')
-			$values['tags'] = $other['data'][9];
-		if ($other['data'][10] != '')
-			$values['source'] = $other['data'][10];
+			$values['criticity'] = $other['data'][9];
+
+		if ($other['data'][11] != '')
+			$values['tags'] = $other['data'][11];
+		if ($other['data'][12] != '')
+			$values['source'] = $other['data'][12];
 		else 
 			$values['source'] = 'Pandora';
-		if ($other['data'][11] != '')
-			$values['id_extra'] = $other['data'][11];
-		if ($other['data'][12] != '') {
-			$values['critical_instructions'] = $other['data'][12];
-		}		
-		if ($other['data'][13] != '') {
-			$values['warning_instructions'] = $other['data'][13];
-		}
+		if ($other['data'][13] != '')
+			$values['id_extra'] = $other['data'][13];
 		if ($other['data'][14] != '') {
-			$values['unknown_instructions'] = $other['data'][14];
+			$values['critical_instructions'] = $other['data'][14];
+		}		
+		if ($other['data'][15] != '') {
+			$values['warning_instructions'] = $other['data'][15];
+		}
+		if ($other['data'][16] != '') {
+			$values['unknown_instructions'] = $other['data'][16];
 		}
 		$values ['ack_utimestamp'] = 0;
 		
@@ -5619,13 +5638,13 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		
 		$return = db_process_sql_insert('tevento', $values);
 		
-		if ($other['data'][8] != '') { //user comments
+		if ($other['data'][10] != '') { //user comments
 			if ($return !== false) { //event successfully created
-				$user_comment = $other['data'][8];
+				$user_comment = $other['data'][10];
 				$res = events_comment ($return, $user_comment);
-				if ($other['data'][15] != '') { //owner user
+				if ($other['data'][17] != '') { //owner user
 					if ($res !== false) { //comment added
-						$owner_user = $other['data'][15];
+						$owner_user = $other['data'][17];
 						events_change_owner ($return, $owner_user, true);
 					}
 				}

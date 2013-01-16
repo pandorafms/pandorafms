@@ -3758,6 +3758,78 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * Create a new netflow filter. And return the id_group of the new group. 
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <filter_name>;<group_id>;<filter>;<aggregate_by>;<output_format> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * 
+ * Possible values of 'aggregate_by' field: dstip,dstport,none,proto,srcip,srcport
+ * Possible values of 'output_format' field: kilobytes,kilobytespersecond,megabytes,megabytespersecond
+ * 
+ *  example:
+ * 
+ * 	api.php?op=set&op2=create_netflow_filter&id=Filter name&other=9|host 192.168.50.3 OR host 192.168.50.4 or HOST 192.168.50.6|dstport|kilobytes&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use
+ */
+function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {	
+	if ($other['data'][0] == "") {
+		returnError('error_create_netflow_filter', __('Error in netflow filter creation. Filter name cannot be left blank.'));
+		return;
+	}
+
+	if ($other['data'][1] == "") {
+		returnError('error_create_netflow_filter', __('Error in netflow filter creation. Group id cannot be left blank.'));
+		return;
+	}
+	else {
+		$group = groups_get_group_by_id($other['data'][1]);
+		
+		if ($group == false) {
+			returnError('error_create_group', __('Error in group creation. Id_parent_group doesn\'t exists.'));
+			return;
+		}
+	}
+
+	if ($other['data'][2] == "") {
+		returnError('error_create_netflow_filter', __('Error in netflow filter creation. Filter cannot be left blank.'));
+		return;
+	}
+
+	if ($other['data'][3] == "") {
+		returnError('error_create_netflow_filter', __('Error in netflow filter creation. Aggregate_by cannot be left blank.'));
+		return;
+	}
+	
+	if ($other['data'][4] == "") {
+		returnError('error_create_netflow_filter', __('Error in netflow filter creation. Output_format cannot be left blank.'));
+		return;
+	}
+
+	$values = array (
+			'id_name'=> $other['data'][0],
+			'id_group' => $other['data'][1],
+			'advanced_filter'=> $other['data'][2],
+			'aggregate'=> $other['data'][3],
+			'output'=> $other['data'][4]
+	);
+	
+	// Save filter args
+	$values['filter_args'] = netflow_get_filter_arguments ($values);
+	
+	$id = db_process_sql_insert('tnetflow_filter', $values);
+		
+	if ($id === false) {
+		returnError('error_create_netflow_filter', __('Error in netflow filter creation.'));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => $id));
+	}
+}
+
+/**
  * Get module data in CSV format.
  * 
  * @param integer $id The ID of module in DB. 

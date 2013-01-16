@@ -1865,8 +1865,9 @@ function graphic_incident_source($width = 320, $height = 200) {
  * @param integer height pie graph height
  * @param string url
  * @param bool if the graph required is or not for metaconsole
+ * @param bool if the graph required is or not for history table
  */
-function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false) {
+function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false, $history = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -1882,7 +1883,12 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	
 	// Choose the table where search if metaconsole or not
 	if($meta) {
-		$event_table = 'tmetaconsole_event';
+		if($history) {
+			$event_table = 'tmetaconsole_event_history';
+		}
+		else {
+			$event_table = 'tmetaconsole_event';
+		}
 		$field_extra = ', agent_name';
 		$groupby_extra = ', server_id';
 	}

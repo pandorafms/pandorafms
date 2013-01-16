@@ -198,6 +198,7 @@ function config_update_config () {
 		case 'godmode/setup/performance':
 			//////// PERFORMANCE SETUP
 			config_update_value ('event_purge', get_parameter ('event_purge'));
+			config_update_value ('metaconsole_events_history', get_parameter ('metaconsole_events_history'));
 			config_update_value ('trap_purge', get_parameter ('trap_purge'));
 			config_update_value ('string_purge', get_parameter ('string_purge'));
 			config_update_value ('audit_purge', get_parameter ('audit_purge'));
@@ -416,6 +417,10 @@ function config_process_config () {
 	
 	if (!isset ($config["event_purge"])) {
 		config_update_value ('event_purge', 15);
+	}
+	
+	if (!isset ($config["metaconsole_events_history"])) {
+		config_update_value ('metaconsole_events_history', 0);
 	}
 	
 	if (!isset ($config["trap_purge"])) {

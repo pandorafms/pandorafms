@@ -12,11 +12,13 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 	var user_comment = $('#hidden-user_comment_'+event_id).val();
 	var event_rep = $('#hidden-event_rep_'+event_id).val();
 	var server_id = $('#hidden-server_id_'+event_id).val();
-	var meta = $('#hidden-meta').val();
 
 	// Metaconsole mode flag
 	var meta = $('#hidden-meta').val();
 	
+	// History mode flag
+	var history = $('#hidden-history').val();
+
 	jQuery.post (ajax_file,
 		{"page": "include/ajax/events",
 		"get_extended_event": 1,
@@ -29,13 +31,14 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 		"user_comment": user_comment,
 		"event_id": event_id,
 		"server_id": server_id,
-		"meta": meta},
+		"meta": meta,
+		"history": history},
 		function (data, status) {
 			$("#event_details_window").hide ()
 				.empty ()
 				.append (data)
 				.dialog ({
-					title: get_event_name(event_id, meta),
+					title: get_event_name(event_id, meta, history),
 					resizable: true,
 					draggable: true,
 					modal: true,
@@ -221,7 +224,7 @@ function get_response_description(response_id) {
 }
 
 // Get an event response description from db
-function get_event_name(event_id, meta) {
+function get_event_name(event_id, meta, history) {
 	var ajax_file = $('#hidden-ajax_file').val();
 
 	var name = '';
@@ -231,6 +234,7 @@ function get_event_name(event_id, meta) {
 	params.push("get_event_name=1");
 	params.push("event_id="+event_id);
 	params.push("meta="+meta);
+	params.push("history="+history);
 	
 	jQuery.ajax ({
 		data: params.join ("&"),
@@ -331,13 +335,15 @@ function event_change_status(event_ids) {
 	var new_status = $('#estado').val();
 	var event_id = $('#hidden-id_event').val();
 	var meta = $('#hidden-meta').val();
-
+	var history = $('#hidden-history').val();
+	
 	var params = [];
 	params.push("page=include/ajax/events");
 	params.push("change_status=1");
 	params.push("event_ids="+event_ids);
 	params.push("new_status="+new_status);
 	params.push("meta="+meta);
+	params.push("history="+history);
 	
 	$('#button-status_button').attr('disabled','disabled');
 	$('#response_loading').show();
@@ -369,13 +375,15 @@ function event_change_owner() {
 	var event_id = $('#hidden-id_event').val();
 	var new_owner = $('#id_owner').val();
 	var meta = $('#hidden-meta').val();
-
+	var history = $('#hidden-history').val();
+	
 	var params = [];
 	params.push("page=include/ajax/events");
 	params.push("change_owner=1");
 	params.push("event_id="+event_id);
 	params.push("new_owner="+new_owner);
 	params.push("meta="+meta);
+	params.push("history="+history);
 	
 	$('#button-owner_button').attr('disabled','disabled');
 	$('#response_loading').show();
@@ -405,6 +413,7 @@ function event_comment() {
 	var event_id = $('#hidden-id_event').val();
 	var comment = $('#textarea_comment').val();
 	var meta = $('#hidden-meta').val();
+	var history = $('#hidden-history').val();
 
 	if(comment == '') {
 		show_event_dialog(event_id, $('#hidden-group_rep').val(), 'comments', 'comment_error');
@@ -417,6 +426,7 @@ function event_comment() {
 	params.push("event_id="+event_id);
 	params.push("comment="+comment);
 	params.push("meta="+meta);
+	params.push("history="+history);
 	
 	$('#button-comment_button').attr('disabled','disabled');
 	$('#response_loading').show();

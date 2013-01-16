@@ -35,12 +35,13 @@ $get_response_params = (bool) get_parameter ('get_response_params');
 $get_response_description = (bool) get_parameter ('get_response_description');
 $get_event_name = (bool) get_parameter ('get_event_name');
 $meta = get_parameter ('meta', 0);
+$history = get_parameter ('history', 0);
 
 if($get_event_name) {	
 	$event_id = get_parameter ('event_id');
 	
 	if($meta) {
-		$name = events_meta_get_event_name($event_id);
+		$name = events_meta_get_event_name($event_id, $history);
 	}
 	else {
 		$name = db_get_value('evento','tevento','id_evento',$event_id);
@@ -161,7 +162,7 @@ if($add_comment) {
 	$comment = get_parameter ('comment');
 	$event_id = get_parameter ('event_id');
 
-	$return = events_comment ($event_id, $comment, 'Added comment', $meta);
+	$return = events_comment ($event_id, $comment, 'Added comment', $meta, $history);
 
 	if ($return)
 		echo 'comment_ok';
@@ -175,7 +176,7 @@ if($change_status) {
 	$event_ids = get_parameter ('event_ids');
 	$new_status = get_parameter ('new_status');
 	
-	$return = events_change_status (explode(',',$event_ids), $new_status, $meta); 
+	$return = events_change_status (explode(',',$event_ids), $new_status, $meta, $history); 
 
 	if ($return)
 		echo 'status_ok';
@@ -194,7 +195,7 @@ if($change_owner) {
 		$new_owner = '';
 	}
 
-	$return = events_change_owner($event_id, $new_owner, true);
+	$return = events_change_owner($event_id, $new_owner, true, $meta, $history);
 
 	if ($return)
 		echo 'owner_ok';
@@ -210,7 +211,7 @@ if($get_extended_event) {
 	$event_id = get_parameter('event_id',false);
 
 	if($meta) {
-		$event = events_meta_get_event($event_id);
+		$event = events_meta_get_event($event_id, false, $history);
 	}
 	else {
 		$event = events_get_event($event_id);
@@ -319,7 +320,10 @@ if($get_extended_event) {
 		$server = metaconsole_get_connection_by_id ($server_id);
 		metaconsole_connect($server);
 	}
-	
+	else {
+		$server = "";
+	}
+
 	$details = events_page_details($event, $server);
 	
 	$custom_fields = events_page_custom_fields($event);

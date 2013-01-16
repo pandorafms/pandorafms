@@ -1,3 +1,17 @@
+2013-01-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/ajax/events.php
+	include/functions_graph.php
+	include/functions_events.php
+	include/javascript/pandora_events.js
+	include/functions_config.php
+	operation/events/events_list.php
+	operation/events/events.php: Create a new
+	event visor to metaconsole history events
+
+	* include/functions_api.php: Added a new API function
+	to create netflow filters
+
 2013-01-16 Vanessa Gil <vanessa.gil@artica.es>
 
 	* include/functions_api.php: Change 'add comments' and

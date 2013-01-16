@@ -66,18 +66,18 @@ function events_get_event ($id, $fields = false) {
 	return $event;
 }
 
-function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $meta = false) {
+function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $meta = false, $history = false) {
 	global $config; 
 	
+	$table = events_get_events_table($meta, $history);
+
 	if($meta) {
-		$table = 'tmetaconsole_event';
 		$groupby_extra = ', server_id';
 	}
 	else {
-		$table = 'tevento';
 		$groupby_extra = '';
 	}
-	
+		
 	switch ($config["dbtype"]) {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
@@ -107,7 +107,7 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 			$set['offset'] = $offset;
 			// TODO: Remove duplicate user comments
 			$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
-				FROM (SELECT * FROM tevento WHERE 1=1 ".$sql_post.") a, 
+				FROM (SELECT * FROM $table WHERE 1=1 ".$sql_post.") a, 
 				(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
 				id_agentmodule, COUNT(*) AS event_rep,
 				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
@@ -136,16 +136,25 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
  * the same.
  *
  * @param int Event id to get similar events.
+ * @param bool Metaconsole mode flag
+ * @param bool History mode flag
  *
  * @return array A list of events ids.
  */
-function events_get_similar_ids ($id) {
+function events_get_similar_ids ($id, $meta = false, $history = false) {
+	$events_table = events_get_events_table($meta, $history);
+	
 	$ids = array ();
-	$event = events_get_event ($id, array ('evento', 'id_agentmodule'));
+	if($meta) {
+		$event = events_meta_get_event($id, array ('evento', 'id_agentmodule'), $history);
+	}
+	else {
+		$event = events_get_event ($id, array ('evento', 'id_agentmodule'));
+	}
 	if ($event === false)
 		return $ids;
 	
-	$events = db_get_all_rows_filter ('tevento',
+	$events = db_get_all_rows_filter ($events_table,
 		array ('evento' => $event['evento'],
 			'id_agentmodule' => $event['id_agentmodule']),
 		array ('id_evento'));
@@ -164,18 +173,14 @@ function events_get_similar_ids ($id) {
  * @param mixed Event ID or array of events
  * @param bool Whether to delete similar events too.
  * @param bool Metaconsole mode flag
+ * @param bool History mode flag
  *
  * @return bool Whether or not it was successful
  */
-function events_delete_event ($id_event, $similar = true, $meta = false) {
+function events_delete_event ($id_event, $similar = true, $meta = false, $history = false) {
 	global $config;
 	
-	if ($meta) {
-		$table_event = 'tmetaconsole_event';
-	}
-	else {
-		$table_event = 'tevento';
-	}
+	$table_event = events_get_events_table($meta, $history);
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
@@ -183,7 +188,7 @@ function events_delete_event ($id_event, $similar = true, $meta = false) {
 	/* We must delete all events like the selected */
 	if ($similar) {
 		foreach ($id_event as $id) {
-			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
+			$id_event = array_merge ($id_event, events_get_similar_ids ($id, $meta, $history));
 		}
 		$id_event = array_unique($id_event);
 	}
@@ -192,7 +197,7 @@ function events_delete_event ($id_event, $similar = true, $meta = false) {
 	
 	foreach ($id_event as $event) {
 		if ($meta) {
-			$event_group = events_meta_get_group ($event);
+			$event_group = events_meta_get_group ($event, $history);
 		}
 		else {
 			$event_group = events_get_group ($event);
@@ -234,18 +239,14 @@ function events_delete_event ($id_event, $similar = true, $meta = false) {
  * @param bool Whether to validate similar events or not.
  * @param int New status for the event 0=new;1=validated;2=inprocess
  * @param bool Metaconsole mode flag
+ * @param bool History mode flag
  *
  * @return bool Whether or not it was successful
  */	
-function events_validate_event ($id_event, $similars = true, $new_status = 1, $meta = false) {
+function events_validate_event ($id_event, $similars = true, $new_status = 1, $meta = false, $history = false) {
 	global $config;
 	
-	if ($meta) {
-		$table_event = 'tmetaconsole_event';
-	}
-	else {
-		$table_event = 'tevento';
-	}
+	$table_event = events_get_events_table($meta, $history);
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
@@ -262,7 +263,7 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1, $m
 	/* We must validate all events like the selected */
 	if ($similars && $new_status == 1) {
 		foreach ($id_event as $id) {
-			$id_event = array_merge ($id_event, events_get_similar_ids ($id));
+			$id_event = array_merge ($id_event, events_get_similar_ids ($id, $meta, $history));
 		}
 		$id_event = array_unique($id_event);
 	}
@@ -282,7 +283,7 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1, $m
 			break;
 	}
 	
-	events_comment($id_event, '', "Change status to $status_string");
+	events_comment($id_event, '', "Change status to $status_string", $meta, $history);
 	
 	db_process_sql_begin ();
 	
@@ -290,8 +291,8 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1, $m
 	
 	foreach ($id_event as $event) {
 		if ($meta) {
-			$event_group = events_meta_get_group ($event);
-			$event = events_meta_get_event ($event);
+			$event_group = events_meta_get_group ($event, $history);
+			$event = events_meta_get_event ($event, false, $history);
 			$server_id = $event['server_id'];
 		}
 		else {
@@ -354,21 +355,16 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1, $m
  * Change the status of one or various events
  *
  * @param mixed Event ID or array of events
- * @param bool Whether to change owner on similar events or not.
- * @param string id_user of the new owner. If is false, the current owner will be setted
- * @param bool flag to force the change or not (not force is change only when it hasn't owner)
+ * @param int new status of the event
+ * @param bool metaconsole mode flag
+ * @param bool history mode flag
  *
  * @return bool Whether or not it was successful
  */	
-function events_change_status ($id_event, $new_status, $meta) { 
+function events_change_status ($id_event, $new_status, $meta = false, $history = false) { 
 	global $config;
 	
-	if ($meta) {
-		$event_table = 'tmetaconsole_event';
-	}
-	else {
-		$event_table = 'tevento';
-	}
+	$event_table = events_get_events_table($meta, $history);
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
@@ -402,8 +398,8 @@ function events_change_status ($id_event, $new_status, $meta) {
 	
 	foreach ($id_event as $k => $id) {
 		if($meta) {
-			$event_group = events_meta_get_group ($id);
-			$event = events_meta_get_event ($id);
+			$event_group = events_meta_get_group ($id, $history);
+			$event = events_meta_get_event ($id, false, $history);
 			$server_id = $event['server_id'];
 		}
 		else {
@@ -438,7 +434,7 @@ function events_change_status ($id_event, $new_status, $meta) {
 		return false;
 	}
 	
-	events_comment($id_event, '', "Change status to $status_string");
+	events_comment($id_event, '', "Change status to $status_string", $meta, $history);
 	
 	if ($meta && !empty($alerts)) {
 		$server = metaconsole_get_connection_by_id ($server_id);
@@ -472,25 +468,21 @@ function events_change_status ($id_event, $new_status, $meta) {
  * @param string id_user of the new owner. If is false, the current owner will be setted
  * @param bool flag to force the change or not (not force is change only when it hasn't owner)
  * @param bool metaconsole mode flag
+ * @param bool history mode flag
  * 
  * @return bool Whether or not it was successful
  */	
-function events_change_owner ($id_event, $new_owner = false, $force = false, $meta = false) {
+function events_change_owner ($id_event, $new_owner = false, $force = false, $meta = false, $history = false) {
 	global $config;
 	
-	if ($meta) {
-		$event_table = 'tmetaconsole_event';
-	}
-	else {
-		$event_table = 'tevento';
-	}
+	$event_table = events_get_events_table($meta, $history);
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
 	
 	foreach ($id_event as $k => $id) {
 		if($meta) {
-			$event_group = events_meta_get_group ($id);
+			$event_group = events_meta_get_group ($id, $history);
 		}
 		else {
 			$event_group = events_get_group ($id);
@@ -505,14 +497,14 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 		return false;
 	}
 	
-	// Only generate comment when is forced (sometimes is changed the owner when comment)
-	if($force) {
-		events_comment($id_event, '', 'Change owner');
-	}
-	
 	// If no new_owner is provided, the current user will be the owner
 	if($new_owner === false) {
 		$new_owner = $config['id_user'];
+	}
+	
+	// Only generate comment when is forced (sometimes is changed the owner when comment)
+	if($force) {
+		events_comment($id_event, '', "Change owner to $new_owner", $meta, $history);
 	}
 	
 	$values = array('owner_user' => $new_owner);
@@ -534,6 +526,22 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 	return true;
 }
 
+function events_get_events_table($meta, $history) {
+	if ($meta) {
+		if($history) {
+			$event_table = 'tmetaconsole_event_history';
+		}
+		else {
+			$event_table = 'tmetaconsole_event';
+		}
+	}
+	else {
+		$event_table = 'tevento';
+	}
+	
+	return $event_table;
+}
+
 /**
  * Comment events in a transresponse
  *
@@ -541,25 +549,21 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
  * @param string comment to be registered
  * @param string action performed with the comment. Bu default just Added comment
  * @param bool Flag of metaconsole mode
+ * @param bool Flag of history mode
  *
  * @return bool Whether or not it was successful
  */	
-function events_comment ($id_event, $comment = '', $action = 'Added comment', $meta = false) {
+function events_comment ($id_event, $comment = '', $action = 'Added comment', $meta = false, $history = false) {
 	global $config;
 	
-	if ($meta) {
-		$event_table = 'tmetaconsole_event';
-	}
-	else {
-		$event_table = 'tevento';
-	}
+	$event_table = events_get_events_table($meta, $history);
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
 	
 	foreach ($id_event as $k => $id) {
 		if ($meta) {
-			$event_group = events_meta_get_group ($id);
+			$event_group = events_meta_get_group ($id, $history);
 		}
 		else {
 			$event_group = events_get_group ($id);
@@ -1554,16 +1558,20 @@ function events_page_responses ($event) {
 
 // Replace macros in the target of a response and return it
 // If server_id > 0, is a metaconsole query
-function events_get_response_target($event_id, $response_id, $server_id) {
+function events_get_response_target($event_id, $response_id, $server_id, $history = false) {
 	global $config;
 	$event_response = db_get_row('tevent_response','id',$response_id);
 	
 	if($server_id > 0) {
-		$event = db_get_row('tmetaconsole_event','id_evento', $event_id);
+		$meta = true;
 	}
 	else {
-		$event = db_get_row('tevento','id_evento',$event_id);
+		$meta = false;
 	}
+	
+	$event_table = events_get_events_table($meta, $history);
+
+	$event = db_get_row($event_table,'id_evento', $event_id);
 		
 	$macros = array_keys(events_get_macros());
 	
@@ -1573,14 +1581,14 @@ function events_get_response_target($event_id, $response_id, $server_id) {
 		$subst = '';
 		switch($macro) {
 			case '_agent_address_':
-				if($server_id > 0) {
+				if($meta) {
 					$server = metaconsole_get_connection_by_id ($server_id);
 					metaconsole_connect($server);
 				}
 				
 				$subst = agents_get_address($event['id_agente']);
 				
-				if($server_id > 0) {
+				if($meta) {
 					metaconsole_restore_db_force();
 				}
 				break;
@@ -1647,7 +1655,7 @@ function events_page_custom_fields ($event) {
 function events_page_details ($event, $server = "") {
 	global $img_sev;
 	global $config;
-	
+
 	// If server is provided, get the hash parameters
 	if (!empty($server)) { 
 		$hashdata = metaconsole_get_server_hashdata($server);
@@ -1686,7 +1694,7 @@ function events_page_details ($event, $server = "") {
 	else {
 		$agent = array();
 	}
-	
+
 	$data = array();
 	$data[0] = __('Agent details');
 	$data[1] = empty($agent) ? '<i>' . __('N/A') . '</i>' : '';

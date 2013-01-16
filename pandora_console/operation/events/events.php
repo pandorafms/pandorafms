@@ -32,10 +32,14 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	return;
 }
 
+// Set metaconsole mode
 $meta = false;
 if(enterprise_installed() && defined("METACONSOLE")) {
 	$meta = true;
 }
+
+// Get the history mode
+$history = (bool) get_parameter('history', 0);
 
 if(isset($config['event_replication']) &&  $config['event_replication'] == 1) {
 	db_pandora_audit("ACL Violation",
@@ -51,6 +55,7 @@ if (is_ajax ()) {
 	$get_events_fired = (bool) get_parameter('get_events_fired');
 	$standby_alert = (bool) get_parameter('standby_alert');
 	$meta = get_parameter('meta', 0);
+	$history = get_parameter('history', 0);
 	
 	if ($get_event_tooltip) {
 		$id = (int) get_parameter ('id');
@@ -108,7 +113,7 @@ if (is_ajax ()) {
 		$id = (array) get_parameter ("id");
 		$similars = (bool) get_parameter ('similars');
 		
-		$return = events_delete_event ($id, $similars, $meta);
+		$return = events_delete_event ($id, $similars, $meta, $history);
 		if ($return)
 			echo 'ok';
 		else
@@ -171,7 +176,7 @@ $status = (int) get_parameter ("status", 3); // -1 all, 0 only new, 1 only valid
 $id_agent = (int) get_parameter ("id_agent", 0);
 $id_event = (int) get_parameter ("id_event", -1);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
-$event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
+$event_view_hr = (int) get_parameter ("event_view_hr", $history ? 0 : $config["event_view_hr"]);
 $id_user_ack = get_parameter ("id_user_ack", 0);
 $group_rep = (int) get_parameter ("group_rep", 1);
 $delete = (bool) get_parameter ("delete");
@@ -211,6 +216,13 @@ if ($config["pure"] == 0 || defined ('METACONSOLE')) {
 	$list['active'] = false;
 	$list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">' . 
 		html_print_image("images/god6.png", true, array("title" => __('Event list'))) . '</a>';
+	
+	// History event list
+	$history_list['active'] = false;
+	$history_list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&amp;section=history&amp;history=1">' . 
+		html_print_image("images/books.png", true, array("title" => __('History event list'))) . '</a>';
+	
+	// RSS
 	$rss['active'] = false;
 	$rss['text'] = '<a href="operation/events/events_rss.php?user=' . $config['id_user'] . '&hashup=' . $hashup . 
 		'&text_agent=' . $text_agent . '&ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
@@ -220,6 +232,8 @@ if ($config["pure"] == 0 || defined ('METACONSOLE')) {
 	$marquee['active'] = false;
 	$marquee['text'] = '<a href="operation/events/events_marquee.php">' . 
 		html_print_image("images/heart.png", true, array ("title" => __('Marquee display'))) .'</a>';
+	
+	// CSV
 	$csv['active'] = false;
 	$csv['text'] = '<a href="operation/events/export_csv.php?ev_group=' . $ev_group . 
 		'&text_agent=' . $text_agent . '&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
@@ -240,6 +254,7 @@ if ($config["pure"] == 0 || defined ('METACONSOLE')) {
 			'separator' => '',
 			'fullscreen' => $fullscreen,
 			'list' => $list,
+			'history' => $history_list,
 			'rss' => $rss,
 			'marquee' => $marquee,
 			'csv' => $csv,
@@ -249,22 +264,30 @@ if ($config["pure"] == 0 || defined ('METACONSOLE')) {
 	else {
 		$onheader = array('fullscreen' => $fullscreen,
 			'list' => $list,
+			'history' => $history_list,
 			'rss' => $rss,
 			'marquee' => $marquee,
 			'csv' => $csv,
 			'sound_event' => $sound_event) ;
 	}
-	
+
 	switch ($section) {
 		case 'sound_event':
 			$onheader['sound_event']['active'] = true;
+			$section_string = __('Sound events');
+			break;
+		case 'history':
+			$onheader['history']['active'] = true;
+			$section_string = __('History');
 			break;
 		default:
 			$onheader['list']['active'] = true;
+			$section_string = __('List');
 			break;
 	}
 
 	if (! defined ('METACONSOLE')) {
+		unset($onheader['history']);
 		ui_print_page_header (__("Events"), "images/lightning_go.png",
 			false, "eventview", false, $onheader);
 	}
@@ -274,7 +297,7 @@ if ($config["pure"] == 0 || defined ('METACONSOLE')) {
 		unset($onheader['csv']);
 		unset($onheader['sound_event']);
 		unset($onheader['fullscreen']);
-		ui_meta_print_header(__("Events"), $section, $onheader);
+		ui_meta_print_header(__("Events"), $section_string, $onheader);
 	}
 	
 	?>
@@ -365,6 +388,7 @@ if ($delete) {
 else {
 	switch ($section) {
 		case 'list':
+		case 'history':
 			require_once($config['homedir'].'/operation/events/events_list.php');
 			break;
 	}
@@ -613,6 +637,7 @@ $(document).ready( function() {
 			return;
 		}
 		meta = $('#hidden-meta').val();
+		history = $('#hidden-history').val();
 		
 		$tr = $(this).parents ("tr");
 		id = this.id.split ("-").pop ();
@@ -624,7 +649,8 @@ $(document).ready( function() {
 			"delete_event" : 1,
 			"id" : id,
 			"similars" : <?php echo ($group_rep ? 1 : 0) ?>,
-			"meta" : meta
+			"meta" : meta,
+			"history" : history
 			},
 			function (data, status) {
 				if (data == "ok") {
@@ -675,6 +701,7 @@ $(document).ready( function() {
 		var similar_ids;
 		similar_ids = $('#hidden-similar_ids_'+id).val();
 		meta = $('#hidden-meta').val();
+		history = $('#hidden-history').val();
 		
 		$("#status_img_"+id).attr ("src", "images/spinner.gif");
 		
@@ -683,7 +710,8 @@ $(document).ready( function() {
 			"change_status" : 1,
 			"event_ids" : similar_ids,
 			"new_status" : new_status,
-			"meta" : meta
+			"meta" : meta,
+			"history" : history
 			},
 			function (data, status) {
 				if (data == "status_ok") {

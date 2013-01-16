@@ -41,9 +41,11 @@ Where options:\n
 Optional parameters:
 	
 	[-agent <id_agent>]       : Agent ID
+	[-agent_name <agent>]     : Set agent by name (Exact match!)
 	[-user <id_user>]         : User comment (use in combination with -comment option)
 	[-status <status>]        : 0 New, 1 Validated, 2 In process
 	[-am <id_agent_module>]   : ID Agent Module linked to event
+	[-module_name <module>]   : Name of the module linked to the event (You need <id_agent> or <agent_name>)
 	[-alert <id_alert_am>]    : ID Alert Module linked to event 
 	[-criticity <criticity>]  : 0 Maintance, 1 Informative, 2 Normal, 
 								3 Warning, 4 Crit, 5 Minor, 6 Major 
@@ -115,9 +117,11 @@ sub tool_api_main () {
 	my $db_pass;
 	my @db_info;
 	my $id_agent;
+	my $agent_name;
 	my $id_user = '';
 	my $status = '';
 	my $id_agent_module = '';
+	my $module_name = '';
 	my $id_alert_am = '';
 	my $criticity = '';
 	my $user_comment = '';
@@ -194,6 +198,9 @@ sub tool_api_main () {
 			if ($line eq '-agent') {
 				$id_agent = $ARGV[$i+1];
 			}
+			if ($line eq '-agent_name') {
+				$agent_name = $ARGV[$i+1];
+			}
 			if ($line eq '-user') {
 				$id_user = $ARGV[$i+1];
 			}
@@ -202,6 +209,9 @@ sub tool_api_main () {
 			}
 			if ($line eq '-am') {
 				$id_agent_module = $ARGV[$i+1];
+			}
+			if ($line eq '-module_name') {
+				$module_name = $ARGV[$i+1];
 			}
 			if ($line eq '-alert') {
 				$id_alert_am = $ARGV[$i+1];
@@ -236,9 +246,9 @@ sub tool_api_main () {
 			$i++;
 		}
 
-		$data_event .= ",".$id_agent.",".$id_user.",".$status.",".$id_agent_module.",".$id_alert_am.",".$criticity.",".$user_comment.",".$tags.",".$source.",".$id_extra.",".$critical_instructions.",".$warning_instructions.",".$unknown_instructions.",".$owner_user;
+		$data_event .= ",".$id_agent.",".$agent_name.",".$id_user.",".$status.",".$id_agent_module.",".$module_name.",".$id_alert_am.",".$criticity.",".$user_comment.",".$tags.",".$source.",".$id_extra.",".$critical_instructions.",".$warning_instructions.",".$unknown_instructions.",".$owner_user;
 		$call_api = $api_path.'?op=set&op2=create_event&id='.$event_name.'&other='.$data_event.'&other_mode=url_encode_separator_,&apipass='.$api_pass.'&user='.$db_user.'&pass='.$db_pass;
-	
+
 	} elsif ($ARGV[4] eq '-validate_event') {
 		#~ id event(required)	
 		if ($ARGV[5] ne '-id') {

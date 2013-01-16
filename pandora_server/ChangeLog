@@ -1,3 +1,8 @@
+2013-01-16  Vanessa Gil <vanessa.gil@artica.es>
+
+	* util/pandora_revent.pl: Added 'agent_name' and
+	'module_name' in option 'create_event'.
+
 2013-01-11  Sancho Lerena <alerena@artica.es>
 
 	* util/pandora_revent.pl: (Moved tool_api.pl), improved

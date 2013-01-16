@@ -449,7 +449,7 @@ foreach ($modules as $module) {
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 				$table->colspan[$i - 1][0] = 9;
 		else
-			$table->colspan[$i - 1][0] = 7;
+			$table->colspan[$i - 1][0] = 8;
 		
 		$data = array ();
 	}

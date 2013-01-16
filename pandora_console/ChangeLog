@@ -1,3 +1,8 @@
+2013-01-16  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* godmode/agentes/module_manager.php: Fixed a style error
+	on module manager view.
+
 2013-01-15  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* pandora_console_install: Fixed directory install for

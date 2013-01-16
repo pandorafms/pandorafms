@@ -182,10 +182,47 @@ sub pandora_purgedb ($$) {
         $conf->{'_event_purge'}= 10;
     }
 
-	print "[PURGE] Deleting old event data (More than " . $conf->{'_event_purge'} . " days)... \n";
-
     my $event_limit = time() - 86400 * $conf->{'_event_purge'};
-	db_do($dbh, "DELETE FROM tevento WHERE utimestamp < $event_limit");
+    
+    my $events_table = 'tevento';
+    
+	# If is installed enterprise version and enabled metaconsole, 
+	# check the events history copy and set the name of the metaconsole events table
+    if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
+		defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
+	
+		# If events history is enabled, save the new events (not validated or in process) to history database
+		if(defined($conf->{'_metaconsole_events_history'}) && $conf->{'_metaconsole_events_history'} eq '1') {
+			print "[PURGE] Moving old not validated events to history table (More than " . $conf->{'_event_purge'} . " days)... \n";
+
+			my @events = get_db_rows ($dbh, 'SELECT * FROM tmetaconsole_event WHERE estado = 0 AND utimestamp < ?', $event_limit);
+
+			foreach my $event (@events) {
+				db_process_insert($dbh, 'id_evento', 'tmetaconsole_event_history', $event);
+			}
+		}
+		
+		$events_table = 'tmetaconsole_event';
+	}
+	
+	print "[PURGE] Deleting old event data at $events_table table (More than " . $conf->{'_event_purge'} . " days)... \n";
+
+	# Delete with buffer to avoid problems with performance
+	my $buffer = 1000;
+	
+	my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM $events_table WHERE utimestamp < ?", $event_limit);
+
+	while(1) {
+		db_do($dbh, "DELETE FROM $events_table WHERE utimestamp < ? LIMIT ?", $event_limit, $buffer);
+
+		if($events_to_delete <= $buffer) {
+			last;
+		}
+		else {
+			$events_to_delete = $events_to_delete - $buffer;
+		}
+	}
+		
 
     # Delete audit data
     if (!defined($conf->{'_audit_purge'})){
@@ -433,6 +470,10 @@ sub pandora_load_config ($) {
 	$conf->{'_history_db_step'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_step'");
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
+	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
+	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
+	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");
+    
 	db_disconnect ($dbh);
 
 	printf "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") ... \n\n";

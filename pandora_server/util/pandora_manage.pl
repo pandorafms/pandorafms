@@ -153,6 +153,8 @@ sub help_screen{
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
 	help_screen_line('--get_policies', '[<agent_name>]', 'Get all the policies (without parameters) or the policies of a given agent (agent name as parameter)');
+	print "NETFLOW:\n\n" unless $param ne '';
+	help_screen_line('--create_netflow_filter', '<filter_name> <group_name> <filter> <aggregate_by dstip|dstport|none|proto|srcip|srcport> <output_format kilobytes|kilobytespersecond|megabytes|megabytespersecond>', 'Create a new netflow filter');
 	print "TOOLS:\n\n" unless $param ne '';
 	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', 'Execute any CLI option with macros from CSV file');
 	
@@ -1032,6 +1034,26 @@ sub cli_create_network_module_from_component() {
 
 	logger($conf, 'Creating module ' . $component->{'name'} . " for agent $agent_name from network component '" . $component->{'name'} . "'.", 10);
 
+}
+
+##############################################################################
+# Create netflow filter
+# Related option: --create_netflow_filter
+##############################################################################
+
+sub cli_create_netflow_filter() {
+	my ($filter_name, $group_name, $filter, $aggregate_by, $output_format) = @ARGV[2..6];
+	
+	my $group_id = get_group_id($dbh, $group_name);
+	exist_check($group_id,'group',$group_name);
+	
+	logger($conf, 'Creating netflow filter "' . $filter_name . '"', 10);
+
+	# Create the module
+	my $module_id = db_insert ($dbh, 'id_sg', 'INSERT INTO tnetflow_filter (id_name, id_group, advanced_filter, filter_args, aggregate, output)
+												VALUES (?, ?, ?, ?, ?, ?)',
+												safe_input($filter_name), $group_id, safe_input($filter), 
+												'"(' . $filter . ')"', $aggregate_by, $output_format);
 }
 
 ##############################################################################
@@ -3497,6 +3519,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_network_module_from_component') {
 			param_check($ltotal, 2);
 			cli_create_network_module_from_component();
+		}
+		elsif ($param eq '--create_netflow_filter') {
+			param_check($ltotal, 5);
+			cli_create_netflow_filter();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";

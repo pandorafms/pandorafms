@@ -5473,6 +5473,7 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType) {
 
 //http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|system|3|admin|2|1|10|0|comments||Pandora||critical_inst|warning_inst|unknown_inst|other&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
 function api_set_create_event($id, $trash1, $other, $returnType) {
+	
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');
 		return;
@@ -5493,8 +5494,6 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			returnError('error_parameter', 'Event type required.');
 			return;
 		}
-			
-			
 		if ($other['data'][2] != '')
 			$values['id_agente'] = $other['data'][2];
 		if ($other['data'][3] != '')
@@ -5513,8 +5512,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			$values['id_alert_am'] = $other['data'][6];
 		if ($other['data'][7] != '')
 			$values['criticity'] = $other['data'][7];
-		if ($other['data'][8] != '')
-			$values['user_comment'] = $other['data'][8];
+
 		if ($other['data'][9] != '')
 			$values['tags'] = $other['data'][9];
 		if ($other['data'][10] != '')
@@ -5532,9 +5530,6 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		if ($other['data'][14] != '') {
 			$values['unknown_instructions'] = $other['data'][14];
 		}
-		if ($other['data'][15] != '') {
-			$values['owner_user'] = $other['data'][15];
-		}
 		$values ['ack_utimestamp'] = 0;
 		
 		if (preg_match("/\w*alert\w*/", $values['event_type'])) {
@@ -5551,6 +5546,19 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		}
 		
 		$return = db_process_sql_insert('tevento', $values);
+		
+		if ($other['data'][8] != '') { //user comments
+			if ($return !== false) { //event successfully created
+				$user_comment = $other['data'][8];
+				$res = events_comment ($return, $user_comment);
+				if ($other['data'][15] != '') { //owner user
+					if ($res !== false) { //comment added
+						$owner_user = $other['data'][15];
+						events_change_owner ($return, $owner_user, true);
+					}
+				}
+			}
+		}
 		
 		$data['type'] = 'string';
 		if ($return === false) {

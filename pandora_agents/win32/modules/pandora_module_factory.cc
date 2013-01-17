@@ -752,6 +752,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 			break;
 		case TYPE_GENERIC_DATA_STRING:
 		case TYPE_ASYNC_STRING:
+		case TYPE_LOG:
 			module->setType (module_type);
 			numeric = false;
 			

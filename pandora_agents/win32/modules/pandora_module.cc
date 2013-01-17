@@ -209,6 +209,8 @@ Pandora_Module::parseModuleTypeFromString (string type) {
 		return TYPE_ASYNC_PROC;
 	} else if (type == module_async_string_str) {
 		return TYPE_ASYNC_STRING;
+	} else if (type == module_log_str) {
+		return TYPE_LOG;
 	} else {
 		return TYPE_0;
 	}
@@ -351,7 +353,7 @@ Pandora_Module::getDataOutput (Pandora_Data *data) {
 	double value;
 	
 	if (this->module_type == TYPE_GENERIC_DATA_STRING || 
-        this->module_type == TYPE_ASYNC_STRING) {
+        this->module_type == TYPE_ASYNC_STRING || this->module_type == TYPE_LOG) {
 		return data->getValue ();
 	}
 	
@@ -506,6 +508,48 @@ Pandora_Module::getXml () {
 	/* No data */
 	if (!this->has_output || this->data_list == NULL) {
 		return "";
+	}
+	
+	/* Log module */
+	if (this->module_type == TYPE_LOG) {
+		module_xml = "<log_module>\n\t<source><![CDATA[";
+		module_xml += this->module_name;
+		module_xml += "]]></source>\n\t<data><![CDATA[";
+
+		if (this->data_list && this->data_list->size () > 1) {
+			list<Pandora_Data *>::iterator iter;
+			
+			iter = this->data_list->begin ();
+			for (iter = this->data_list->begin ();
+			     iter != this->data_list->end ();
+			     iter++) {
+				data = *iter;
+				
+				try {
+					data_clean = strreplace (this->getDataOutput (data),
+								 "%", "%%" );
+				} catch (Output_Error e) {
+					continue;
+				}
+				
+				module_xml += data_clean;
+			}
+		} else {
+			data = data_list->front ();
+			try {
+				data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+				module_xml += data_clean;
+
+			} catch (Output_Error e) {
+			}
+		}
+		module_xml += "]]></data></log_module>";
+		
+		/* Clean up */
+		this->cleanDataList ();
+
+		pandoraDebug ("%s getXML end", module_name.c_str ());
+		return module_xml;
 	}
 
 	/* Compose the module XML */

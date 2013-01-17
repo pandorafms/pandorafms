@@ -69,7 +69,14 @@ if (is_ajax ()){
 }
 
 // Header
-ui_print_page_header (__('User detail editor'), "images/group.png", false, "", false, "");
+if(enterprise_installed() && defined("METACONSOLE")) {
+	user_meta_print_header();
+	$url = 'index.php?sec=advanced&amp;sec2=advanced/users_setup&amp;tab=user_edit';
+}
+else {
+	ui_print_page_header (__('User detail editor'), "images/group.png", false, "", false, "");
+	$url = 'index.php?sec=workspace&amp;sec2=operation/users/user_edit';
+}
 
 // Update user info
 if (isset ($_GET["modified"]) && !$view_mode) {
@@ -162,7 +169,7 @@ if ($status != -1) {
 }
 
 
-echo '<form name="user_mod" method="post" action="index.php?sec=workspace&amp;sec2=operation/users/user_edit&amp;modified=1&amp;id='.$id.'">';
+echo '<form name="user_mod" method="post" action="'.$url.'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
 

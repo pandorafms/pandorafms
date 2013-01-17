@@ -503,6 +503,10 @@ sub process_xml_data ($$$$$) {
 	# Process inventory modules
 	enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
 							 $interval, $timestamp, $dbh]);
+
+	# Process log modules
+	enterprise_hook('process_log_data', [$pa_config, $data, $server_id, $agent_name,
+							 $interval, $timestamp, $dbh]);
 }
 
 ##########################################################################

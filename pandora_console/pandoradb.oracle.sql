@@ -676,7 +676,7 @@ CREATE TABLE tnetwork_component (
 	custom_integer_2 INTEGER default 0,
 	post_process BINARY_DOUBLE default 0.
 	unit CLOB default '',
-	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
+	wizard_level VARCHAR2(100) default 'basic' NOT NULL,
 	macros CLOB default '',
 	critical_instructions VARCHAR2(255) default '',
 	warning_instructions VARCHAR2(255) default '',
@@ -685,7 +685,7 @@ CREATE TABLE tnetwork_component (
 	warning_inverse NUMBER(1, 0) default 0 NOT NULL,
 	id_category NUMBER(10, 0) default 0 NOT NULL,
 	tags CLOB,
-	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
+	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced'))
 );
 
 CREATE SEQUENCE tnetwork_component_s INCREMENT BY 1 START WITH 1;

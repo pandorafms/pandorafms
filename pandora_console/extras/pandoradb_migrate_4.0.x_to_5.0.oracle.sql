@@ -300,8 +300,8 @@ WHERE token='prominent_time';
 -- -----------------------------------------------------
 -- Table tnetwork_component
 -- -----------------------------------------------------
-ALTER TABLE tnetwork_component ADD (wizard_level VARCHAR2(100) default 'nowizard' NOT NULL);
-ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'));
+ALTER TABLE tnetwork_component ADD (wizard_level VARCHAR2(100) default 'basic' NOT NULL);
+ALTER TABLE tnetwork_component ADD CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced'));
 ALTER TABLE tnetwork_component ADD (macros CLOB default '');
 
 

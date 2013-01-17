@@ -537,7 +537,7 @@ CREATE TABLE "tmodule_group" (
 -- ---------------------------------------------------------------------
 -- Table `tnetwork_component`
 -- ---------------------------------------------------------------------
-CREATE TYPE type_tlocal_component_wizard_level AS ENUM ('basic','advanced','nowizard');
+CREATE TYPE type_tlocal_component_wizard_level AS ENUM ('basic','advanced');
 CREATE TABLE "tnetwork_component" (
 	"id_nc" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(80) NOT NULL,
@@ -575,7 +575,7 @@ CREATE TABLE "tnetwork_component" (
 	"custom_integer_2" INTEGER default 0,
 	"post_process" DOUBLE PRECISION default 0,
 	"unit" TEXT default '',
-	"wizard_level" type_tlocal_component_wizard_level default 'nowizard',
+	"wizard_level" type_tlocal_component_wizard_level default 'basic',
 	"macros" TEXT default '',
 	"critical_instructions" TEXT default '',
 	"warning_instructions" TEXT default '',

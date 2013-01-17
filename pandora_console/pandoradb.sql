@@ -632,7 +632,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
 	`custom_integer_2` int(10) default 0,
 	`post_process` double(18,5) default 0,
 	`unit` text,
-	`wizard_level` enum('basic','advanced','nowizard') default 'nowizard',
+	`wizard_level` enum('basic','advanced') default 'basic',
 	`macros` text,
 	`critical_instructions` text NOT NULL default '',
 	`warning_instructions` text NOT NULL default '',

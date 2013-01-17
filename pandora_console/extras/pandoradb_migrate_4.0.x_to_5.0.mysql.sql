@@ -175,7 +175,7 @@ UPDATE `tagente_modulo` SET max_retries=plugin_pass WHERE id_modulo=7;
 -- ----------------------------------------------------------------------
 ALTER TABLE `tnetwork_component` CHANGE COLUMN `post_process` `post_process` double(18,5) default NULL;
 ALTER TABLE `tnetwork_component` ADD COLUMN `unit` TEXT  NOT NULL AFTER `post_process`;
-ALTER TABLE `tnetwork_component` ADD COLUMN `wizard_level` enum('basic','advanced','nowizard') default 'nowizard';
+ALTER TABLE `tnetwork_component` ADD COLUMN `wizard_level` enum('basic','advanced') default 'basic';
 ALTER TABLE `tnetwork_component` ADD COLUMN `macros` text;
 ALTER TABLE `tnetwork_component` ADD COLUMN `critical_instructions` TEXT NOT NULL default '';
 ALTER TABLE `tnetwork_component` ADD COLUMN `warning_instructions` TEXT NOT NULL default '';

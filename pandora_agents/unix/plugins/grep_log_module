@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 ###############################################################################
 #
-# Copyright (c) 2008  Ramon Novoa  <rnovoa@artica.es>
-# Copyright (c) 2008  Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2012  Ramon Novoa  <rnovoa@artica.es>
+# Copyright (c) 2012  Artica Soluciones Tecnologicas S.L.
 #
-# grep_log	Perl script to search log files for a matching pattern. The last
-#           searched position is saved in an index file so that consecutive
-#           runs do not return the same results. The log file inode number is 
-#           also saved to detect log rotation.
+# grep_log_module Perl script to search log files for a matching pattern. The
+#                 last searched position is saved in an index file so that
+#                 consecutive runs do not return the same results. The log file
+#                 inode number is also saved to detect log rotation.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ use strict;
 use File::Basename;
 
 # Output format (module or log_module).
-my $Output = 'module';
+my $Output = 'log_module';
 
 # Be verbose
 my $Verbose = 0;

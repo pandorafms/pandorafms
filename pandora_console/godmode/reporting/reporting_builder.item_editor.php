@@ -22,6 +22,13 @@ if (! check_acl ($config['id_user'], 0, "RW")) {
 	require ("general/noaccess.php");
 	exit;
 }
+
+if (($config['metaconsole'] == 1) && (defined('METACONSOLE'))) {
+	$meta = true;
+}
+else {
+	$meta = false;
+}
 $show_graph_options = Array();
 $show_graph_options[0] = __('Only table');
 $show_graph_options[1] = __('Table & Graph');
@@ -137,7 +144,7 @@ switch ($action) {
 			$server_name = $item ['server_name'];
 			
 			// Metaconsole db connection
-			if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+			if ($meta && $server_name != '') {
 				$connection = metaconsole_get_connection($server_name);
 				if (metaconsole_load_external_db($connection) != NOERR) {
 					//ui_print_error_message ("Error connecting to ".$server_name);
@@ -433,8 +440,7 @@ switch ($action) {
 			}
 			
 			//Restore db connection
-			if (($config ['metaconsole'] == 1) && ($server_name != '')
-				&& defined('METACONSOLE')) {
+			if ($meta && $server_name != '') {
 				metaconsole_restore_db();
 			}
 		}
@@ -604,7 +610,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Agent'); ?></td>
 			<td style="">
 				<?php
-				if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
+				if ($meta) {
 					$connection = metaconsole_get_connection($server_name);
 					$agent_name = '';
 					
@@ -623,10 +629,16 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_input_hidden('id_agent', $idAgent);
 				html_print_input_hidden ('server_name', $server_name);
 				
+
 				$params = array();
-				$params['show_helptip'] = true;
+				$params['show_helptip'] = false;
 				$params['input_name'] = 'agent';
+				// Input id is only used in metaconsole events
+				if($meta) {
+					$params['input_id'] = 'agent_autocomplete';
+				}
 				$params['value'] = $agent_name;
+				
 				$params['javascript_is_function_select'] = true;
 				$params['selectbox_id'] = 'id_agent_module';
 				$params['add_none_module'] = false;
@@ -634,14 +646,25 @@ html_print_input_hidden('id_item', $idItem);
 				$params['hidden_input_idagent_id'] = 'hidden-id_agent';
 				$params['use_input_server'] = true;
 				$params['input_server_id'] = 'hidden-server_name';
-				if (($config['metaconsole'] == 1) &&
-					(defined('METACONSOLE'))) {
+				if ($meta) {
 					//It is a page in the new metaconsole.
 					$params['metaconsole_enabled'] = true;
-					$params['javascript_ajax_page'] = '../../ajax.php';
 				}
+				
 				ui_print_agent_autocomplete_input($params);
 				
+				// Print a specific control to metaconsole events
+				if($meta) {
+					$params['input_id'] = 'agent_autocomplete_events';
+					$params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
+					$params['javascript_is_function_select'] = false;
+					//$params['use_hidden_input_idagent'] = false;
+					$params['use_input_server'] = false;
+					$params['input_name'] = 'agent_text';
+
+					ui_print_agent_autocomplete_input($params);
+				}
+
 				?>
 			</td>
 		</tr>
@@ -652,7 +675,7 @@ html_print_input_hidden('id_item', $idItem);
 				if($idAgent) {
 					$sql = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente =  " . $idAgent . " AND  delete_pending = 0";
 					
-					if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
+					if ($meta) {
 						$connection = metaconsole_get_connection($server_name);
 						
 						if (metaconsole_load_external_db($connection) == NOERR) {
@@ -737,7 +760,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Custom graph'); ?></td>
 			<td style="">
 				<?php
-				if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
+				if ($meta) {
 					$graphs = array();
 					$graphs = metaconsole_get_custom_graphs();
 					$value_selected = $idCustomGraph . '|' . $server_name;
@@ -762,7 +785,7 @@ html_print_input_hidden('id_item', $idItem);
 					$style_button_create_custom_graph = '';
 					$style_button_edit_custom_graph = 'style="display: none;"';
 					// Select the target server
-					if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
+					if ($meta) {
 						$metaconsole_connections = enterprise_hook('metaconsole_get_connection_names');
 						if ($metaconsole_connections === false) {
 							$metaconsole_connections = array();
@@ -806,7 +829,7 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Server'); ?></td>
 			<td style="">
 				<?php
-				if ($config ['metaconsole'] != 1 or !defined('METACONSOLE'))
+				if (!$meta)
 					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0, false, false, true, '', true);
 				else
 					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0);
@@ -974,7 +997,7 @@ if ($enterpriseEnable) {
 	reporting_enterprise_text_box();
 }
 //Restore db connection
-if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
+if ($meta) {
 	metaconsole_restore_db();
 }
 
@@ -1012,7 +1035,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 					foreach ($itemsSLA as $item) {
 						$server_name = $item ['server_name'];
 						// Metaconsole db connection
-						if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+						if ($meta && $server_name != '') {
 							$connection = metaconsole_get_connection($server_name);
 							if (metaconsole_load_external_db($connection) != NOERR) {
 								//ui_print_error_message ("Error connecting to ".$server_name);
@@ -1024,7 +1047,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						$server_name_element = '';
-						if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) 
+						if ($meta && $server_name != '') 
 							$server_name_element .= ' (' . $server_name . ')';
 						
 						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">
@@ -1037,7 +1060,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
-						if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
+						if ($meta) {
 							//Restore db connection
 							metaconsole_restore_db();
 						}
@@ -1071,7 +1094,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 								$params['add_none_module'] = false;
 								$params['use_input_server'] = true;
 								$params['input_server_id'] = 'hidden-server_name';
-								if (defined('METACONSOLE')) {
+								if ($meta) {
 									$params['disabled_javascript_on_blur_function'] = true;
 								}
 								ui_print_agent_autocomplete_input($params);
@@ -1127,7 +1150,7 @@ function print_General_list($width, $action, $idItem = null) {
 					foreach ($itemsGeneral as $item) {
 						$server_name = $item ['server_name'];
 						// Metaconsole db connection
-						if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+						if ($meta && $server_name != '') {
 							$connection = metaconsole_get_connection($server_name);
 							if (metaconsole_load_external_db($connection) != NOERR) {
 								//ui_print_error_message ("Error connecting to ".$server_name);
@@ -1139,7 +1162,7 @@ function print_General_list($width, $action, $idItem = null) {
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						$server_name_element = '';
-						if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) 
+						if ($meta && $server_name != '') 
 							$server_name_element .= ' (' . $server_name . ')';						
 						
 						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
@@ -1150,7 +1173,7 @@ function print_General_list($width, $action, $idItem = null) {
 									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
-						if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
+						if ($meta) {
 							//Restore db connection
 							metaconsole_restore_db();
 						}
@@ -1182,7 +1205,7 @@ function print_General_list($width, $action, $idItem = null) {
 								$params['add_none_module'] = false;
 								$params['use_input_server'] = true;
 								$params['input_server_id'] = 'hidden-server_name_general';
-								if (defined('METACONSOLE')) {
+								if ($meta) {
 									$params['disabled_javascript_on_blur_function'] = true;
 								}
 								ui_print_agent_autocomplete_input($params);
@@ -1230,7 +1253,7 @@ function create_custom_graph() {
 	global $config;
 	
 	// Metaconsole activated
-	if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
+	if ($meta) {
 	?>
 		var target_server = $("#meta_servers").val();
 		// If target server is not selected
@@ -1291,7 +1314,7 @@ function edit_custom_graph() {
 	global $config;
 	
 	// Metaconsole activated
-	if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
+	if ($meta) {
 	?>
 		var agent_server_temp;
 		var id_element_graph;
@@ -1677,6 +1700,9 @@ function chooseType() {
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
 	
+	$('#agent_autocomplete').show();
+	$('#agent_autocomplete_events').hide();
+	
 	switch (type) {
 		case 'event_report_group':
 			$("#row_description").show();
@@ -1882,6 +1908,9 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
+		
+			$('#agent_autocomplete').hide();
+			$('#agent_autocomplete_events').show();
 			break;
 		case 'event_report_module':
 			$("#row_description").show();
@@ -1889,6 +1918,9 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			
+			$('#agent_autocomplete').hide();
+			$('#agent_autocomplete_events').show();
 			break;
 		case 'general':
 			$("#row_description").show();

@@ -322,6 +322,10 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	"&amp;history=" . (int)$history .
 	"&amp;section=" . $section;
 
+if($meta) {
+	$url .= "&amp;text_agent=" . $text_agent;
+}
+
 echo "<br>";
 //Link to toggle filter
 if (!empty($id_name)) {

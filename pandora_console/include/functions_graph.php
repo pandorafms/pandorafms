@@ -2744,10 +2744,11 @@ function grafico_netflow_aggregate_pie ($data) {
  */
 function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
-	$date = 0, $only_image = false, $homeurl = '') {
+	$date = 0, $only_image = false, $homeurl = '', $ttl = 1) {
 	global $config;
 	global $graphic_type;
-	
+	global $max_value;
+
 	include_flash_chart_script($homeurl);
 
 	// Set variables
@@ -2851,7 +2852,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$count = 0;	
 		$total = 0;	
 		// Read data that falls in the current interval
-		while (isset ($data[$j]) !== null && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] <= ($timestamp + $interval)) {
+		while (isset($data[$j]) && isset ($data[$j]) !== null && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] <= ($timestamp + $interval)) {
 			$count++;
 			$j++;
 		}
@@ -2957,7 +2958,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	return vbar_graph($flash_chart, $chart, $width, $height, $color,
 		$legend, "", $unit, $homeurl,
 		$config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size'], true, true, 1, true);
+		$config['fontpath'], $config['font_size'], true, $ttl, true);
 }
 
 ///Functions for the LOG4X graphs

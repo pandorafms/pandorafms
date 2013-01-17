@@ -1,5 +1,11 @@
 2013-01-16  Dario Rodriguez <dario.rodriguez@artica.es>
 
+	* include/languages/*.po,
+	include/languages/*.mo: Updated strings for 4.0.3
+	release.
+
+2013-01-16  Dario Rodriguez <dario.rodriguez@artica.es>
+
 	* images/pandora_report_logo.png: uploaded image for
 	report cover
 

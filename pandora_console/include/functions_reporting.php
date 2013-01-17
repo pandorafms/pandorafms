@@ -2569,7 +2569,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					
 				$data[0] = grafico_modulo_string ($content['id_agent_module'], $content['period'],
 					false, $sizgraph_w, $sizgraph_h, '', '', false, 1, false,
-					$report["datetime"], false, $urlImage);
+					$report["datetime"], true, $urlImage);
 								
 			}	
 			else {

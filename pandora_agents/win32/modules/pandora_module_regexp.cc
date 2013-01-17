@@ -122,13 +122,15 @@ Pandora_Module_Regexp::run () {
         if (regexec (&this->regexp, line.c_str (), 0, NULL, 0) == 0) {
             if (type == TYPE_GENERIC_DATA_STRING || type == TYPE_ASYNC_STRING) {
                 this->setOutput (line);
-            }
+            } else if (type == TYPE_LOG) {
+				this->setOutput (line + '\n');
+			}
             count++;
         }
     }
     
     // Set output according to the module type
-    if (type == TYPE_GENERIC_DATA_STRING || type == TYPE_ASYNC_STRING) {
+    if (type == TYPE_GENERIC_DATA_STRING || type == TYPE_ASYNC_STRING || type == TYPE_LOG) {
         // Already set
     }
     else if (type == TYPE_GENERIC_PROC || type == TYPE_ASYNC_PROC) {

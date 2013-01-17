@@ -42,7 +42,6 @@ if (file_exists ($config['homedir'].'/include/languages/'.$user_language.'.mo'))
 
 $offset = (int) get_parameter ("offset");
 $ev_group = (int) get_parameter ("ev_group"); // group
-//$search = (int) get_parameter ("search"); // free search
 $event_type = (string) get_parameter ("event_type", "all"); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", -1); // -1 all, 0 only red, 1 only green
@@ -54,143 +53,149 @@ $id_user_ack = get_parameter ("id_user_ack", 0);
 $search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
 $text_agent = (string)get_parameter('text_agent', __("All"));
 
-$tag_with_json_clean = io_safe_output(get_parameter("tag_with", ''));
+$tag_with_json = base64_decode(get_parameter("tag_with", '')) ;
+$tag_with_json_clean = io_safe_output($tag_with_json);
+$tag_with_base64 = base64_encode($tag_with_json_clean);
 $tag_with = json_decode($tag_with_json_clean, true);
 if (empty($tag_with)) $tag_with = array();
 $tag_with = array_diff($tag_with, array(0 => 0));
 
-$tag_without_json = get_parameter("tag_without", array());
-$tag_without_json_clean = io_safe_output(get_parameter("tag_without", ''));
+$tag_without_json = base64_decode(get_parameter("tag_without", ''));
+$tag_without_json_clean = io_safe_output($tag_without_json);
+$tag_without_base64 = base64_encode($tag_without_json_clean);
 $tag_without = json_decode($tag_without_json_clean, true);
 if (empty($tag_without)) $tag_without = array();
 $tag_without = array_diff($tag_without, array(0 => 0));	
 
 $filter_only_alert = (int)get_parameter('filter_only_alert', -1);
 
-$filter = array ();
-if ($ev_group > 1)
-	$filter['id_grupo'] = $ev_group;
-/*if ($status == 1)
-	$filter['estado'] = 1;
-if ($status == 0)
-	$filter['estado'] = 0; */
+$groups = users_get_groups($config['id_user'], 'IR');
 
-$filter_state = '';
-switch($status) {
+//Group selection
+if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
+	//If a group is selected and it's in the groups allowed
+	$sql_post = " AND id_grupo = $ev_group";
+}
+else {
+	if (is_user_admin ($config["id_user"])) {
+		//Do nothing if you're admin, you get full access
+		$sql_post = "";
+	}
+	else {
+		//Otherwise select all groups the user has rights to.
+		$sql_post = " AND id_grupo IN (" .
+			implode (",", array_keys ($groups)) . ")";
+	}
+}
+
+// Skip system messages if user is not PM
+if (!check_acl ($config["id_user"], 0, "PM")) {
+	$sql_post .= " AND id_grupo != 0";
+}
+
+switch ($status) {
 	case 0:
 	case 1:
 	case 2:
-		$filter_state = " AND estado = " . $status;
+		$sql_post .= " AND estado = " . $status;
 		break;
 	case 3:
-		$filter_state = " AND (estado = 0 OR estado = 2)";
+		$sql_post .= " AND (estado = 0 OR estado = 2)";
 		break;
-}		
-if ($search != "")
-	$filter[] = 'evento LIKE "%'.io_safe_input($search).'%"';
-	
-if ($severity != -1)
-	$filter[] = 'criticity >= '.$severity;
-	
-if (($event_type != "all") OR ($event_type != 0)) {
+}
+
+if ($search != "") {
+	$sql_post .= " AND evento LIKE '%" . io_safe_input($search) . "%'";
+}
+
+if ($event_type != "") {
 	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
 	// for the user so for him is presented only "warning, critical and normal"
 	if ($event_type == "warning" || $event_type == "critical"
 		|| $event_type == "normal") {
-		$filter[] = " event_type LIKE '%$event_type%' ";
+		$sql_post .= " AND event_type LIKE '%$event_type%' ";
 	}
 	elseif ($event_type == "not_normal") {
-		$filter[] = " event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
+		$sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
 	}
-	else {
-		$filter[] = " event_type = '" . $event_type."'";
+	elseif ($event_type != "all") {
+		$sql_post .= " AND event_type = '" . $event_type."'";
 	}
-}	
-	
-if ($id_agent == -2) {
-	$text_agent = (string) get_parameter("text_agent", __("All"));
 
-	switch ($text_agent)
-	{
-		case __('All'):
-			$id_agent = -1;
+}
+
+if ($severity != -1) {
+	switch($severity) {
+		case EVENT_CRIT_WARNING_OR_CRITICAL:
+			$sql_post .= " AND (criticity = " . EVENT_CRIT_WARNING . " OR 
+								criticity = " . EVENT_CRIT_CRITICAL . ")";
 			break;
-		case __('System'):
-			$id_agent = 0;
+		case EVENT_CRIT_NOT_NORMAL:
+			$sql_post .= " AND criticity != " . EVENT_CRIT_NORMAL;
 			break;
 		default:
-			$id_agent = agents_get_agent_id($text_agent);
+			$sql_post .= " AND criticity = $severity";
 			break;
 	}
 }
-else {
-	switch ($id_agent)
-	{
-		case -1:
-			$text_agent = __('All');
-			break;
-		case 0:
-			$text_agent = __('System');
-			break;
-		default:
-			$text_agent = agents_get_name($id_agent);
-			break;
-	}
-}
-	
-	
-if ($id_agent != -1)
-	$filter['id_agente'] = $id_agent;
+
+
+if ($id_agent > 0)
+	$sql_post .= " AND id_agente = " . $id_agent;
 	
 if ($id_event != -1)
-	$filter['id_evento'] = $id_event;	
-	
-$timestamp_filter = '';	
-if ($event_view_hr > 0) {
-	$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
-	$timestamp_filter = " AND (utimestamp > 	$unixtime OR estado = 2)";
-}
+	$sql_post .= " AND id_evento = " . $id_event;
 
 if ($id_user_ack != "0")
-	$filter['id_usuario'] = $id_user_ack;
-	
-//Search by tag
-//Search by tag
+	$sql_post .= " AND id_usuario = '" . $id_user_ack . "'";
 
-if (!empty($tag_with) or !empty($tag_without)) {
-	$filter['tags'] = '';
+
+if ($event_view_hr > 0) {
+	$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
+	$sql_post .= " AND (utimestamp > " . $unixtime . " OR estado = 2)";
 }
 	
+//Search by tag
 if (!empty($tag_with)) {
-	$filter['tags'] .= ' AND ( ';
+	$sql_post .= ' AND ( ';
 	$first = true;
 	foreach ($tag_with as $id_tag) {
 		if ($first) $first = false;
-		else $filter['tags'] .= " OR ";
-		$filter['tags'] .= "tags LIKE '%" . tags_get_name($id_tag) . "%'";
+		else $sql_post .= " OR ";
+		$sql_post .= "tags LIKE '%" . tags_get_name($id_tag) . "%'";
 	}
-	$filter['tags'] .= ' ) ';
+	$sql_post .= ' ) ';
 }
 if (!empty($tag_without)) {
-	$filter['tags'] .= ' AND ( ';
+	$sql_post .= ' AND ( ';
 	$first = true;
 	foreach ($tag_without as $id_tag) {
 		if ($first) $first = false;
-		else $filter['tags'] .= " OR ";
-		$filter['tags'] .= "tags NOT LIKE '%" . tags_get_name($id_tag) . "%'";
+		else $sql_post .= " OR ";
+		$sql_post .= "tags NOT LIKE '%" . tags_get_name($id_tag) . "%'";
 	}
-	$filter['tags'] .= ' ) ';
+	$sql_post .= ' ) ';
 }
 
 // Filter/Only alerts
 if (isset($filter_only_alert)) {
 	if ($filter_only_alert == 0)
-		$filter[] = " AND event_type NOT LIKE '%alert%'";
+		$sql_post .= " AND event_type NOT LIKE '%alert%'";
 	else if ($filter_only_alert == 1)
-		$filter[] = " AND event_type LIKE '%alert%'";
+		$sql_post .= " AND event_type LIKE '%alert%'";
 }
 
-//$filter['order'] = 'timestamp DESC';
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+	case "oracle":
+		$sql = "SELECT *
+			FROM tevento
+			WHERE 1=1 ".$sql_post."
+			ORDER BY utimestamp DESC";
+		break;
+}
+
 $now = date ("Y-m-d");
 
 // Show contentype header	
@@ -199,17 +204,6 @@ header ('Content-Disposition: attachment; filename="pandora_export_event'.$now.'
 
 echo "timestamp, agent, group, event, status, user, event_type, severity";
 echo chr (13);
-
-$fields = array ('id_grupo', 'id_agente', 'evento', 'estado', 'id_usuario',
-	'event_type', 'criticity', 'timestamp');
-
-$sql = db_get_all_rows_filter ('tevento', $filter, $fields, 'AND', true, true);
-
-// If filter is empty and there are others filters not empty append "WHERE" clause
-if (empty($filter) and (!empty($filter_state) or !empty($timestamp_filter)))
-	$sql .= ' WHERE 1=1 ';
-
-$sql .= $filter_state . $timestamp_filter . ' ORDER BY timestamp DESC';  
 
 $new = true;
 while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {

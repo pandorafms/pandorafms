@@ -196,8 +196,8 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	"&amp;group_rep=" . $group_rep .
 	"&amp;event_view_hr=" . $event_view_hr .
 	"&amp;id_user_ack=" . $id_user_ack .
-	"&amp;tag_with=" . $tag_with .
-	"&amp;tag_without=" . $tag_without .
+	"&amp;tag_with=" . $tag_with_base64 .
+	"&amp;tag_without=" . $tag_without_base64 .
 	"&amp;filter_only_alert=" . $filter_only_alert .
 	"&amp;offset=" . $offset;
 
@@ -318,6 +318,7 @@ $tags_select_with = array();
 $tags_select_without = array();
 $tag_with_temp = array();
 $tag_without_temp = array();
+
 foreach ($tags as $id_tag => $tag) {
 	if (array_search($id_tag, $tag_with) === false) {
 		$tags_select_with[$id_tag] = $tag;
@@ -360,7 +361,7 @@ echo "<td valign='top'>";
 html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
 	0, false, true,
 	true, '', false, "width: 120px; height: 50px;");
-html_print_input_hidden('tag_with', json_encode($tag_with));
+html_print_input_hidden('tag_with', $tag_with_base64);
 echo "</td>";
 echo "<td valign='top'>";
 html_print_button(__('Remove'), 'remove_whith', $remove_with_tag_disabled,
@@ -370,7 +371,7 @@ echo "<td valign='top'>";
 html_print_select ($tag_without_temp, 'tag_without_temp', array(), '',
 	'', 0, false, true,
 	true, '', false, "width: 120px; height: 50px;");
-html_print_input_hidden('tag_without', json_encode($tag_without));
+html_print_input_hidden('tag_without', $tag_without_base64);
 echo "</td>";
 echo "<td valign='top'>";
 html_print_button(__('Remove'), 'remove_whithout', $remove_without_tag_disabled,
@@ -915,6 +916,7 @@ echo '</div>';
 unset ($table);
 
 ui_require_jquery_file('json');
+ui_require_javascript_file('encode_decode_base64');
 ?>
 <script language="javascript" type="text/javascript">
 /*<![CDATA[ */
@@ -1076,7 +1078,7 @@ function replace_hidden_tags(what_button) {
 		value_store.push(val);
 	});
 	
-	$(id_hidden).val(jQuery.toJSON(value_store));
+	$(id_hidden).val(Base64.encode(jQuery.toJSON(value_store)));
 }
 
 /* ]]> */

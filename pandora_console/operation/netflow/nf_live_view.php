@@ -156,7 +156,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	$table->data = array ();
 	
 	$table->data[0][0] = '<b>'.__('Date').'</b>';
-	$table->data[0][1] = html_print_input_text ('date', $date, false, 10, 10, true);
+	$table->data[0][1] = html_print_input_text ('date', $date, false, 12, 10, true);
 	$table->data[0][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-date'),this);"));
 	$table->data[0][1] .= html_print_input_text ('time', $time, false, 10, 5, true);
 	

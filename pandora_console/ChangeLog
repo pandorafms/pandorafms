@@ -1,3 +1,9 @@
+2013-01-17  Sancho Lerena <slerena@artica.es>
+
+        * include/functions_ui.php: Fixed cache control for
+        avoid send each time static contents. 0 is "always"
+        instead "never" :-S
+
 2013-01-16  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/languages/*.po,

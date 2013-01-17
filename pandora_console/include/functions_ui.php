@@ -1072,7 +1072,7 @@ function ui_process_page_head ($string, $bitfield) {
 	}
 	$output .= "\n\t";
 	$output .= '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
-	<meta http-equiv="expires" content="0" />
+	<meta http-equiv="expires" content="never" />
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<meta name="resource-type" content="document" />

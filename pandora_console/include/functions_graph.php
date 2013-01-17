@@ -2915,10 +2915,11 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
  */
 function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
-	$date = 0, $only_image = false, $homeurl = '', $adapt_key) {
+	$date = 0, $only_image = false, $homeurl = '', $adapt_key, $ttl = 1) {
 	global $config;
 	global $graphic_type;
-	
+	global $max_value;
+
 	// Set variables
 	if ($date == 0)
 		$date = get_system_time();
@@ -3020,7 +3021,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$count = 0;	
 		$total = 0;	
 		// Read data that falls in the current interval
-		while (isset ($data[$j]) !== null && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] <= ($timestamp + $interval)) {
+		while (isset($data[$j]) && isset ($data[$j]) !== null && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] <= ($timestamp + $interval)) {
 			$count++;
 			$j++;
 		}

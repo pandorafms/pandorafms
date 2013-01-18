@@ -36,11 +36,6 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	return;
 }
 
-$meta = false;
-if(enterprise_installed() && defined("METACONSOLE")) {
-	$meta = true;
-}
-
 if (is_ajax()) {
 	$get_filter_values = get_parameter('get_filter_values', 0);
 	$save_event_filter = get_parameter('save_event_filter', 0);
@@ -135,196 +130,21 @@ $tags = tags_get_user_tags($config['id_user'], 'ER');
 echo "<div id='show_filter_error'>";
 echo "</div>";
 
-$tag_with_json = io_safe_output(get_parameter("tag_with"));
-$tag_with = json_decode($tag_with_json, true);
-if (empty($tag_with)) $tag_with = array();
-$tag_without_json = io_safe_output(get_parameter("tag_without"));
-$tag_without = json_decode($tag_without_json, true);
-if (empty($tag_without)) $tag_without = array();
-
-$text_agent = (string) get_parameter("text_agent", __("All"));
-
 if ($id_agent == 0 && $text_agent != __('All')) {
 	$id_agent = -1;
 }
 
-$groups = users_get_groups($config['id_user'], 'ER');
+/////////////////////////////////////////////
+// Build the condition of the events query
 
-//Group selection
-if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
-	if($meta) {
-		// In metaconsole the group search is performed by name
-		$group_name = groups_get_name ($ev_group);
-		$sql_post = " AND group_name = '$group_name'";
-	}
-	else {
-		//If a group is selected and it's in the groups allowed
-		$sql_post = " AND id_grupo = $ev_group";
-	}
-}
-else {
-	if (is_user_admin ($config["id_user"])) {
-		//Do nothing if you're admin, you get full access
-		$sql_post = "";
-	}
-	else {
-		//Otherwise select all groups the user has rights to.
-		$sql_post = " AND id_grupo IN (" .
-			implode (",", array_keys ($groups)) . ")";
-	}
-}
+$sql_post = "";
 
-// Skip system messages if user is not PM
-if (!check_acl ($config["id_user"], 0, "PM")) {
-	$sql_post .= " AND id_grupo != 0";
-}
+$id_user = $config['id_user'];
 
-switch ($status) {
-	case 0:
-	case 1:
-	case 2:
-		$sql_post .= " AND estado = " . $status;
-		break;
-	case 3:
-		$sql_post .= " AND (estado = 0 OR estado = 2)";
-		break;
-}
+require('events.build_query.php');
 
-if ($search != "") {
-	$sql_post .= " AND evento LIKE '%" . io_safe_input($search) . "%'";
-}
-
-if ($event_type != "") {
-	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
-	// for the user so for him is presented only "warning, critical and normal"
-	if ($event_type == "warning" || $event_type == "critical"
-		|| $event_type == "normal") {
-		$sql_post .= " AND event_type LIKE '%$event_type%' ";
-	}
-	elseif ($event_type == "not_normal") {
-		$sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
-	}
-	else {
-		$sql_post .= " AND event_type = '" . $event_type."'";
-	}
-
-}
-if ($severity != -1) {
-	switch($severity) {
-		case EVENT_CRIT_WARNING_OR_CRITICAL:
-			$sql_post .= " AND (criticity = " . EVENT_CRIT_WARNING . " OR 
-								criticity = " . EVENT_CRIT_CRITICAL . ")";
-			break;
-		case EVENT_CRIT_NOT_NORMAL:
-			$sql_post .= " AND criticity != " . EVENT_CRIT_NORMAL;
-			break;
-		default:
-			$sql_post .= " AND criticity = $severity";
-			break;
-	}
-}
-
-// In metaconsole mode the agent search is performed by name
-if($meta) {
-	if($text_agent != __('All')) {
-		$sql_post .= " AND agent_name LIKE '%$text_agent%'";
-	}
-}
-else {
-	switch ($id_agent) {
-		case 0:
-			break;
-		case -1:
-			// Agent doesnt exist. No results will returned
-			$sql_post .= " AND 1 = 0";
-			break;
-		default:
-			$sql_post .= " AND id_agente = " . $id_agent;
-			break;
-	}
-}
-
-if ($id_event != -1)
-	$sql_post .= " AND id_evento = " . $id_event;
-
-if ($id_user_ack != "0")
-	$sql_post .= " AND id_usuario = '" . $id_user_ack . "'";
-
-
-if ($event_view_hr > 0) {
-	$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR);
-	$sql_post .= " AND (utimestamp > " . $unixtime . ")";
-}
-
-//Search by tag
-if (!empty($tag_with)) {
-	$sql_post .= ' AND ( ';
-	$first = true;
-	foreach ($tag_with as $id_tag) {
-		if ($first) $first = false;
-		else $sql_post .= " OR ";
-		$sql_post .= "tags LIKE '%" . tags_get_name($id_tag) . "%'";
-	}
-	$sql_post .= ' ) ';
-}
-if (!empty($tag_without)) {
-	$sql_post .= ' AND ( ';
-	$first = true;
-	foreach ($tag_without as $id_tag) {
-		if ($first) $first = false;
-		else $sql_post .= " OR ";
-		$sql_post .= "tags NOT LIKE '%" . tags_get_name($id_tag) . "%'";
-	}
-	$sql_post .= ' ) ';
-}
-
-// Filter/Only alerts
-if (isset($filter_only_alert)) {
-	if ($filter_only_alert == 0)
-		$sql_post .= " AND event_type NOT LIKE '%alert%'";
-	else if ($filter_only_alert == 1)
-		$sql_post .= " AND event_type LIKE '%alert%'";
-}
-
-// Tags ACLS
-if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
-	$group_array = (array) $ev_group;
-}
-else {
-	$group_array = array_keys($groups);
-}
-
-$tags_acls_condition = tags_get_acl_tags($config['id_user'], $group_array, 'ER', 'event_condition', 'AND');
-
-$sql_post .= $tags_acls_condition;
-
-$url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
-	rawurlencode(io_safe_input($search)) .
-	"&amp;event_type=" . $event_type .
-	"&amp;severity=" . $severity .
-	"&amp;status=" . $status .
-	"&amp;ev_group=" . $ev_group .
-	"&amp;refr=" . $config["refr"] .
-	"&amp;id_agent=" . $id_agent .
-	"&amp;id_event=" . $id_event .
-	"&amp;pagination=" . $pagination .
-	"&amp;group_rep=" . $group_rep .
-	"&amp;event_view_hr=" . $event_view_hr .
-	"&amp;id_user_ack=" . $id_user_ack .
-	"&amp;tag_with=" . $tag_with .
-	"&amp;tag_without=" . $tag_without .
-	"&amp;filter_only_alert=" . $filter_only_alert .
-	"&amp;offset=" . $offset .
-	"&amp;toogle_filter=no" .
-	"&amp;filter_id=" . $filter_id .
-	"&amp;id_name=" . $id_name .
-	"&amp;id_group=" . $id_group .
-	"&amp;history=" . (int)$history .
-	"&amp;section=" . $section;
-
-if($meta) {
-	$url .= "&amp;text_agent=" . $text_agent;
-}
+// Now $sql_post have all the where condition
+/////////////////////////////////////////////
 
 echo "<br>";
 //Link to toggle filter
@@ -450,10 +270,6 @@ html_print_select ($repeated_sel, "group_rep", $group_rep, '');
 echo "</td></tr>";
 
 
-
-
-
-
 echo "<tr>";
 echo "<td colspan='2'>" . __('Events with following tags') . "</td>";
 echo "<td colspan='2'>" . __('Events without following tags') . "</td>";
@@ -506,7 +322,7 @@ echo "<td valign='top'>";
 html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
 	0, false, true,
 	true, '', false, "width: 120px; height: 50px;");
-html_print_input_hidden('tag_with', json_encode($tag_with));
+html_print_input_hidden('tag_with', $tag_with_base64);
 echo "</td>";
 echo "<td valign='top'>";
 html_print_button(__('Remove'), 'remove_whith', $remove_with_tag_disabled,
@@ -516,18 +332,13 @@ echo "<td valign='top'>";
 html_print_select ($tag_without_temp, 'tag_without_temp', array(), '',
 	'', 0, false, true,
 	true, '', false, "width: 120px; height: 50px;");
-html_print_input_hidden('tag_without', json_encode($tag_without));
+html_print_input_hidden('tag_without', $tag_without_base64);
 echo "</td>";
 echo "<td valign='top'>";
 html_print_button(__('Remove'), 'remove_whithout', $remove_without_tag_disabled,
 	'', 'class="delete sub"');
 echo "</td>";
 echo "</tr>";
-
-
-
-
-
 
 echo "<tr>";
 
@@ -589,32 +400,7 @@ echo '</div>';
 echo '<div id="steps_clean">&nbsp;</div>';
 echo '</div>';
 
-// Choose the table where search if metaconsole or not
-if($meta) {
-	if($history) {
-		$event_table = 'tmetaconsole_event_history';
-	}
-	else {
-		$event_table = 'tmetaconsole_event';
-	}
-	
-	// Show only the events of enabled nodes
-	$enabled_nodes = db_get_all_rows_sql('SELECT id FROM tmetaconsole_setup WHERE disabled = 0');
-	
-	if(empty($enabled_nodes)) {
-		$sql_post .= ' AND 1 = 0';
-	}
-	else {
-		$enabled_nodes_id = array();
-		foreach($enabled_nodes as $en) {
-			$enabled_nodes_id[] = $en['id'];
-		}
-		$sql_post .= ' AND server_id IN ('.implode(',',$enabled_nodes_id).')';
-	}
-}
-else {
-	$event_table = 'tevento';
-}
+$event_table = events_get_events_table($meta, $history);
 
 if ($group_rep == 0) {
 	switch ($config["dbtype"]) {
@@ -1109,7 +895,7 @@ foreach ($result as $event) {
 echo '<div id="events_list">';
 if (!empty ($table->data)) {
 	echo '<div style="clear:both"></div>';
-	ui_pagination ($total_events, $url."&pure=".$config["pure"], $offset, $pagination);
+	ui_pagination ($total_events, $url, $offset, $pagination);
 	
 	echo '<form method="post" id="form_events" action="'.$url.'">';
 	echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
@@ -1584,7 +1370,7 @@ function replace_hidden_tags(what_button) {
 		value_store.push(val);
 	});
 	
-	$(id_hidden).val(jQuery.toJSON(value_store));
+	$(id_hidden).val(Base64.encode(jQuery.toJSON(value_store)));
 }
 
 function reorder_tags_inputs() {

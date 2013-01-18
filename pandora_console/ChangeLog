@@ -1,5 +1,18 @@
 2013-01-18  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_config.php
+	include/help/en/help_events_replication.php
+	include/help/en/help_module_interval.php
+	include/help/en/help_events_history.php
+	include/help/es/help_events_replication.php
+	include/help/es/help_events_history.php
+	operation/events/events.php: Fixed bug #3599448 of
+	setup javascript error. 
+	Added help documents to events history and events 
+	replication. Typo fix in other help document
+
+2013-01-18  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/events/events_rss.php
 	operation/events/export_csv.php
 	operation/events/events_list.php

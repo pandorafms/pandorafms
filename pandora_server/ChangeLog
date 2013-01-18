@@ -7,19 +7,8 @@ Oficial 4.0.3 RELEASE FROM HERE
 2013-01-18  Sancho Lerena <slrena@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Fixed problems with updates from
-	the agent (via XML). Doesn't have sense, all modifications after
-	module creation must be ordered from the console.
-
-	Removed function update_module_configuration() call and also
-	updated documentation to clarify this point. This code comes 
-	from a long time ago and was never clarified, now introducing
-	the mix/max thresholds in the XML we have saw the problem, but
-	the problem was happening before, with description. Happen when
-	a user change the description of the module in the console and
-	was "rewritten" each time an agent send the XML.
-
-	Policies doest need this because changes are on the database, 
-	not via XML parameters.
+	the agent (via XML): all modifications after module creation must 
+	be ordered from the console EXCEPT extended data and description.
 
 2013-01-16  Vanessa Gil <vanessa.gil@artica.es>
 

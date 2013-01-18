@@ -572,6 +572,11 @@ sub process_module_data ($$$$$$$$$) {
 		$module_conf->{'id_module_group'} = ($conf_group_id == -1) ? $module->{'id_module_group'} : $conf_group_id;
 	}
 
+	# Update module configuration if in learning mode and not a policy module
+	if ($agent->{'modo'} eq '1' && $module->{'id_policy_module'} == 0) {
+		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
+	}
+
 	$ModuleSem->up ();
 
 	# Module disabled!
@@ -639,6 +644,29 @@ sub get_macros_for_data($$){
 	}
 
 	return \%macros;
+}
+
+##########################################################################
+# Update module configuration in tagente_modulo if necessary.
+##########################################################################
+sub update_module_configuration ($$$$) {
+	my ($pa_config, $dbh, $module, $module_conf) = @_;
+
+	# Update if at least one of the configuration tokens has changed
+	foreach my $conf_token ('descripcion', 'extended_info') {
+		if ($module->{$conf_token} ne $module_conf->{$conf_token}) {
+			logger ($pa_config, "Updating configuration for module '" . safe_output($module->{'nombre'})	. "'.", 10);
+
+			db_do ($dbh, 'UPDATE tagente_modulo SET descripcion = ?, extended_info = ?
+				WHERE id_agente_modulo = ?', $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
+				$module_conf->{'extended_info'}, $module->{'id_agente_modulo'});
+			last;
+		}
+	}
+	
+	# Update module hash
+	$module->{'extended_info'} = $module_conf->{'extended_info'} if (defined($module_conf->{'extended_info'})) ;
+	$module->{'descripcion'} = ($module_conf->{'descripcion'} eq '') ? $module->{'descripcion'} : $module_conf->{'descripcion'};
 }
 
 1;

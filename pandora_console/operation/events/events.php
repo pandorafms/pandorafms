@@ -169,12 +169,11 @@ if (is_ajax ()) {
 
 
 $offset = (int) get_parameter ("offset", 0);
-$ev_group = (int) get_parameter ("ev_group", 0); //0 = all
+$ev_group = (int) get_parameter ("ev_group", 0); //0 all
 $event_type = get_parameter ("event_type", ''); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 3); // -1 all, 0 only new, 1 only validated, 2 only in process, 3 only not validated,
 $id_agent = (int) get_parameter ("id_agent", 0);
-$id_event = (int) get_parameter ("id_event", -1);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $event_view_hr = (int) get_parameter ("event_view_hr", $history ? 0 : $config["event_view_hr"]);
 $id_user_ack = get_parameter ("id_user_ack", 0);
@@ -188,22 +187,59 @@ $filter_id = (int) get_parameter('filter_id', 0);
 $id_name = (string) get_parameter('id_name', '');
 $id_group = (int) get_parameter('id_group', 0);
 
+$text_agent = (string) get_parameter("text_agent", __("All"));
+
+$tag_with_json = base64_decode(get_parameter("tag_with", '')) ;
+$tag_with_json_clean = io_safe_output($tag_with_json);
+$tag_with_base64 = base64_encode($tag_with_json_clean);
+$tag_with = json_decode($tag_with_json_clean, true);
+if (empty($tag_with)) $tag_with = array();
+$tag_with = array_diff($tag_with, array(0 => 0));
+
+$tag_without_json = base64_decode(get_parameter("tag_without", ''));
+$tag_without_json_clean = io_safe_output($tag_without_json);
+$tag_without_base64 = base64_encode($tag_without_json_clean);
+$tag_without = json_decode($tag_without_json_clean, true);
+if (empty($tag_without)) $tag_without = array();
+$tag_without = array_diff($tag_without, array(0 => 0));	
+
 $search = io_safe_output(preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&", rawurldecode (get_parameter ("search"))));
 
 users_get_groups ($config["id_user"], "ER");
 
 $ids = (array) get_parameter ("eventid", -1);
 
-$url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
-	io_safe_input($search) . "&amp;event_type=" . $event_type .
-	"&amp;severity=" . $severity . "&amp;status=" . $status . "&amp;ev_group=" .
-	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
-	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
-	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
-	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack;
+$params = "search=" . rawurlencode(io_safe_input($search)) . 
+	"&amp;event_type=" . $event_type .
+	"&amp;severity=" . $severity . 
+	"&amp;status=" . $status . 
+	"&amp;ev_group=" . $ev_group . 
+	"&amp;refr=" . $config["refr"] . 
+	"&amp;id_agent=" . $id_agent . 
+	"&amp;pagination=" . $pagination . 
+	"&amp;group_rep=" . $group_rep . 
+	"&amp;event_view_hr=" . $event_view_hr . 
+	"&amp;id_user_ack=" . $id_user_ack .
+	"&amp;tag_with=". $tag_with_base64 . 
+	"&amp;tag_without=" . $tag_without_base64 . 
+	"&amp;filter_only_alert" . $filter_only_alert .
+	"&amp;offset=" . $offset .
+	"&amp;toogle_filter=no" .
+	"&amp;filter_id=" . $filter_id .
+	"&amp;id_name=" . $id_name .
+	"&amp;id_group=" . $id_group .
+	"&amp;history=" . (int)$history .
+	"&amp;section=" . $section .
+	"&amp;pure=" . $config["pure"];
 
+if($meta) {
+	$params .= "&amp;text_agent=" . $text_agent;
+}
+
+$url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;" . $params;
+	
 // Header
-if ($config["pure"] == 0 || defined ('METACONSOLE')) {
+if ($config["pure"] == 0 || $meta) {
 	$pss = get_user_info($config['id_user']);
 	$hashup = md5($config['id_user'] . $pss['password']);
 	
@@ -224,8 +260,7 @@ if ($config["pure"] == 0 || defined ('METACONSOLE')) {
 	
 	// RSS
 	$rss['active'] = false;
-	$rss['text'] = '<a href="operation/events/events_rss.php?user=' . $config['id_user'] . '&hashup=' . $hashup . 
-		'&text_agent=' . $text_agent . '&ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+	$rss['text'] = '<a href="operation/events/events_rss.php?user=' . $config['id_user'] . '&hashup=' . $hashup . '&'.$params.'">' . 
 		html_print_image("images/rss.png", true, array ("title" => __('RSS Events'))) .'</a>';
 	
 	// Marquee
@@ -235,8 +270,7 @@ if ($config["pure"] == 0 || defined ('METACONSOLE')) {
 	
 	// CSV
 	$csv['active'] = false;
-	$csv['text'] = '<a href="operation/events/export_csv.php?ev_group=' . $ev_group . 
-		'&text_agent=' . $text_agent . '&amp;event_type='.$event_type.'&amp;search='.io_safe_input($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+	$csv['text'] = '<a href="operation/events/export_csv.php?' . $params . '">' . 
 		html_print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>';
 	
 	// Sound events

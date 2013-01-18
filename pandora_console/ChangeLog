@@ -1,3 +1,16 @@
+2013-01-18  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events_rss.php
+	operation/events/export_csv.php
+	operation/events/events_list.php
+	operation/events/events.php
+	operation/events/events.build_query.php: Fixed tag filters in
+	event view and other filter elements missed in the csv and rss 
+	tools. Merged from 4.0.3
+
+	Now the code of query conditions for events is common for 
+	all of the pages where is retrieved
+
 2013-01-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_graph.php

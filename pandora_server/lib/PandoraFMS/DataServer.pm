@@ -572,11 +572,6 @@ sub process_module_data ($$$$$$$$$) {
 		$module_conf->{'id_module_group'} = ($conf_group_id == -1) ? $module->{'id_module_group'} : $conf_group_id;
 	}
 
-	# Update module configuration if in learning mode and not a policy module
-	if ($agent->{'modo'} eq '1' && $module->{'id_policy_module'} == 0) {
-		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
-	}
-
 	$ModuleSem->up ();
 
 	# Module disabled!
@@ -644,31 +639,6 @@ sub get_macros_for_data($$){
 	}
 
 	return \%macros;
-}
-
-##########################################################################
-# Update module configuration in tagente_modulo if necessary.
-##########################################################################
-sub update_module_configuration ($$$$) {
-	my ($pa_config, $dbh, $module, $module_conf) = @_;
-
-	# Update if at least one of the configuration tokens has changed
-	foreach my $conf_token ('min', 'max', 'descripcion', 'post_process', 'module_interval', 'min_critical', 'max_critical', 'min_warning', 'max_warning', 'disabled', 'min_ff_event', 'extended_info', 'unit', 'id_module_group') {
-		if ($module->{$conf_token} ne $module_conf->{$conf_token}) {
-			logger ($pa_config, "Updating configuration for module '" . safe_output($module->{'nombre'})	. "'.", 10);
-			db_do ($dbh, 'UPDATE tagente_modulo SET unit = ?, min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?, min_critical = ?, max_critical = ?, min_warning = ?, max_warning = ?, disabled = ?, min_ff_event = ?, extended_info = ?, id_module_group = ?
-				WHERE id_agente_modulo = ?', $module_conf->{'unit'}, $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
-				$module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module_conf->{'min_critical'}, $module_conf->{'max_critical'}, $module_conf->{'min_warning'}, $module_conf->{'max_warning'}, $module_conf->{'disabled'}, $module_conf->{'min_ff_event'}, $module_conf->{'extended_info'}, $module_conf->{'id_module_group'}, $module->{'id_agente_modulo'});
-			last;
-		}
-	}
-	
-	# Update module hash
-	foreach my $conf_token ('min', 'max', 'post_process', 'module_interval', 'min_critical', 'max_critical', 'min_warning', 'max_warning', 'disabled', 'min_ff_event', 'extended_info', 'id_module_group') {
-		$module->{$conf_token} = $module_conf->{$conf_token};
-	}
-	$module->{'unit'} = ($module_conf->{'unit'} eq '') ? $module->{'unit'} : $module_conf->{'unit'};
-	$module->{'descripcion'} = ($module_conf->{'descripcion'} eq '') ? $module->{'descripcion'} : $module_conf->{'descripcion'};
 }
 
 1;

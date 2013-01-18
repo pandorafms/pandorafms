@@ -39,9 +39,6 @@ enterprise_include ('godmode/setup/setup_visuals.php');
 require_once ('include/functions_themes.php');
 require_once ('include/functions_gis.php');
 
-// Header
-ui_print_page_header (__('Visual configuration'), "", false, "", true);
-
 $table->width = '98%';
 $table->data = array ();
 
@@ -309,4 +306,37 @@ $(document).ready (function () {
 		$('#submit-update_button').trigger('click');
 	});
 });
+
+function changeIcons() {
+	icon = $("#gis_default_icon :selected").val();
+
+	$("#icon_without_status").attr("src", "images/spinner.png");
+	$("#icon_default").attr("src", "images/spinner.png");
+	$("#icon_ok").attr("src", "images/spinner.png");
+	$("#icon_bad").attr("src", "images/spinner.png");
+	$("#icon_warning").attr("src", "images/spinner.png");
+	
+	if (icon.length == 0) {
+		$("#icon_without_status").attr("style", "display:none;");
+		$("#icon_default").attr("style", "display:none;");
+		$("#icon_ok").attr("style", "display:none;");
+		$("#icon_bad").attr("style", "display:none;");
+		$("#icon_warning").attr("style", "display:none;");
+	}
+	else {
+		$("#icon_without_status").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
+		$("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
+		$("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + ".ok.png");
+		$("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + ".bad.png");
+		$("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + ".warning.png");
+		$("#icon_without_status").attr("style", "");
+		$("#icon_default").attr("style", "");
+		$("#icon_ok").attr("style", "");
+		$("#icon_bad").attr("style", "");
+		$("#icon_warning").attr("style", "");
+	}
+	
+	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
+}
+
 </script>

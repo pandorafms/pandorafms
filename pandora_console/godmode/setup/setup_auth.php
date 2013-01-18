@@ -29,8 +29,6 @@ include_once($config['homedir'] . "/include/functions_profile.php");
 // Load enterprise extensions
 enterprise_include ('godmode/setup/setup_auth.php');
 
-// Header
-ui_print_page_header (__('Authentication configuration'), "", false, "", true);
 
 $table->data = array ();
 $table->width = '98%';

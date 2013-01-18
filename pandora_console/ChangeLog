@@ -1,3 +1,15 @@
+2013-01-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_menu.php
+	include/functions_config.php
+	godmode/menu.php
+	godmode/setup/setup_general.php
+	godmode/setup/setup_netflow.php
+	godmode/setup/setup.php
+	godmode/setup/performance.php
+	godmode/setup/setup_auth.php
+	godmode/setup/setup_visuals.php: Changed style views to tabs.
+
 2013-01-18  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_config.php

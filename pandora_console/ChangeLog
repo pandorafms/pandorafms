@@ -1,3 +1,12 @@
+---------------------------------
+Official 4.0.3 RELEASE
+---------------------------------
+
+2013-01-18  Sancho Lerena <slerena@artica.es>
+
+	* extensions/update_manager/sql/update_manager.sql: Updated
+	to last package version.
+
 2013-01-18  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/update_manager/lib/functions.ajax.php

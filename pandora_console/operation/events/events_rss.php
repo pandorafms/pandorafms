@@ -243,9 +243,6 @@ if (empty ($result)) {
 }
 
 foreach ($result as $row) {
-	html_debug_print($user, true);
-	html_debug_print($row, true);
-
 	if (!check_acl($user, $row["id_grupo"], "AR")) {
 		continue;
 	}

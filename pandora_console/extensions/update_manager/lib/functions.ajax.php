@@ -214,7 +214,6 @@ function update_pandora_download_package() {
 					}
 					
 					$info = curl_getinfo ($c);
-					html_debug_print($info, true);
 					
 					$data = array();
 					$data['correct'] = 1;

@@ -353,6 +353,8 @@ function menu_get_full_sec() {
  * 
  */
 function menu_add_extras(&$menu) {
+	global $config;
+	
 	$menu_extra = array();
 	$menu_extra['gusuarios']['sub']['godmode/users/configure_user']['text'] = __('Configure user');
 	$menu_extra['gusuarios']['sub']['godmode/users/configure_profile']['text'] = __('Configure profile');
@@ -368,7 +370,8 @@ function menu_add_extras(&$menu) {
 	$menu_extra['reporting']['sub']['operation/visual_console/render_view']['text'] = __('View visual console');
 	$menu_extra['reporting']['sub']['godmode/reporting/graph_builder']['text'] = __('Manage custom graphs');
 	$menu_extra['reporting']['sub']['enterprise/dashboard/dashboard_replicate']['text'] = __('Copy dashboard');
-	$menu_extra['godgismaps']['sub']['godmode/gis_maps/configure_gis_map']['text'] = __('Manage GIS Maps');
+	if ($config['activate_gis'])
+		$menu_extra['godgismaps']['sub']['godmode/gis_maps/configure_gis_map']['text'] = __('Manage GIS Maps');
 	$menu_extra['workspace']['sub']['operation/incidents/incident_statistics']['text'] = __('Incidents statistics');
 	$menu_extra['workspace']['sub']['operation/messages/message_edit']['text'] = __('Manage messages');
 	$menu_extra['gagente']['sub']['godmode/groups/configure_group']['text'] = __('Manage groups');

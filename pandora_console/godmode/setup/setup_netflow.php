@@ -30,9 +30,6 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
-//Header
-ui_print_page_header (__('Netflow Manager'), "images/networkmap/so_cisco_new.png", false, "", true);
-
 $update = (bool) get_parameter ("update");
 
 $table->width = '70%';

@@ -121,25 +121,23 @@ function config_update_config () {
 					$update_manage_settings_result = db_process_sql_update('tupdate_settings', $values, $where);
 				}
 			}
+			if(isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
+				config_update_value ('trap2agent', (string) get_parameter ('trap2agent'));
+				config_update_value ('acl_enterprise', get_parameter ('acl_enterprise'));
+				config_update_value ('metaconsole', get_parameter ('metaconsole'));
+				config_update_value ('collection_max_size', get_parameter('collection_max_size'));
+				config_update_value ('activate_netflow', (bool) get_parameter ('activate_netflow'));
+				config_update_value ('event_replication', (int)get_parameter('event_replication'));
+				config_update_value ('replication_interval', (int)get_parameter('replication_interval'));
+				config_update_value ('replication_dbhost', (string)get_parameter('replication_dbhost'));
+				config_update_value ('replication_dbname', (string)get_parameter('replication_dbname'));
+				config_update_value ('replication_dbuser', (string)get_parameter('replication_dbuser'));
+				config_update_value ('replication_dbpass', (string)get_parameter('replication_dbpass'));
+				config_update_value ('replication_dbport', (string)get_parameter('replication_dbport'));
+				config_update_value ('replication_mode', (string)get_parameter('replication_mode'));
+				config_update_value ('public_url', get_parameter('public_url'));
+				config_update_value ('referer_security', get_parameter('referer_security'));
 			
-			config_update_value ('trap2agent', (string) get_parameter ('trap2agent'));
-			config_update_value ('acl_enterprise', get_parameter ('acl_enterprise'));
-			config_update_value ('metaconsole', get_parameter ('metaconsole'));
-			config_update_value ('collection_max_size', get_parameter('collection_max_size'));
-			config_update_value ('activate_netflow', (bool) get_parameter ('activate_netflow'));
-			config_update_value ('event_replication', (int)get_parameter('event_replication'));
-			config_update_value ('replication_interval', (int)get_parameter('replication_interval'));
-			config_update_value ('replication_dbhost', (string)get_parameter('replication_dbhost'));
-			config_update_value ('replication_dbname', (string)get_parameter('replication_dbname'));
-			config_update_value ('replication_dbuser', (string)get_parameter('replication_dbuser'));
-			config_update_value ('replication_dbpass', (string)get_parameter('replication_dbpass'));
-			config_update_value ('replication_dbport', (string)get_parameter('replication_dbport'));
-			config_update_value ('replication_mode', (string)get_parameter('replication_mode'));
-			config_update_value ('public_url', get_parameter('public_url'));
-			config_update_value ('referer_security', get_parameter('referer_security'));
-			
-			$enterprise = enterprise_include_once ('godmode/setup/setup.php');
-			if ($enterprise !== ENTERPRISE_NOT_HOOK) {
 				config_update_value ('enable_pass_policy', get_parameter('enable_pass_policy'));
 				config_update_value ('pass_size', get_parameter('pass_size'));
 				config_update_value ('pass_expire', get_parameter('pass_expire'));
@@ -151,7 +149,7 @@ function config_update_config () {
 				config_update_value ('enable_pass_policy_admin', get_parameter('enable_pass_policy_admin'));
 				config_update_value ('enable_pass_history', get_parameter('enable_pass_history'));
 				config_update_value ('compare_pass', get_parameter('compare_pass'));
-			}
+			}	
 			
 			config_update_value ('log_collector', (bool)get_parameter('log_collector'));
 			/////////////

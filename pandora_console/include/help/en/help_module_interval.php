@@ -1,5 +1,5 @@
 <?php
-/* Include package help/es
+/* Include package help/en
 */
 ?>
 

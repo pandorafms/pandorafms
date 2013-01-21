@@ -1,3 +1,8 @@
+2013-01-21  Koichiro KIKUCHI  <koichiro@rworks.jp>
+
+	* pandora_console.redhat.spec: Updated version strings.
+	 (for 4.0.3 release).
+
 ---------------------------------
 Official 4.0.3 RELEASE
 ---------------------------------

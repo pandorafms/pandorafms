@@ -109,10 +109,7 @@ if ($icon) {
 $table->data[1][1] .= '</span>';
 
 $table->data[2][0] = __('Parent');
-$sql = 'SELECT id_grupo, nombre FROM tgrupo ';
-if ($id_group)
-	$sql .= sprintf ('WHERE id_grupo != %d', $id_group);
-$groups = users_get_groups();
+
 if ($id_group) {
 	$table->data[2][1] = html_print_select_groups(false, "AR", true, 'id_parent', $id_parent,
 		'', '', '', true, false, true, '', false, false, false, $id_group);

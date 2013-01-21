@@ -80,7 +80,7 @@ function users_get_all_model_groups () {
  * @param string The privilege to evaluate, and it is false then no check ACL.
  * @param boolean $returnAllGroup Flag the return group, by default true.
  * @param boolean $returnAllColumns Flag to return all columns of groups.
- * @param array $id_groups The list of group to scan to bottom child. By default null.
+ * @param array $id_groups The id of node that must do not show the children and own.
  *
  * @return array A list of the groups the user has certain privileges.
  */
@@ -89,7 +89,7 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 		$id_groups = null;
 	}
 	
-	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, $returnAllColumns, $id_groups);
+	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, $returnAllColumns);
 	
 	if ($id_groups !== null) {
 		$childrens = groups_get_childrens($id_groups);

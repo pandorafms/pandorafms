@@ -1,3 +1,13 @@
+2013-01-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	pandoradb_data.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: switch to show 
+	or hide visual console.
+
 2013-01-18 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_menu.php

@@ -235,7 +235,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 	('enable_pass_history', 0),
 	('compare_pass', 3),
 	('meta_style', 'meta_pandora'),
-	('enable_refr', 0);
+	('enable_refr', 0),
+	('show_vc', 1);
 UPDATE tconfig SET `value`='comparation' WHERE `token`= 'prominent_time';
 
 -- ----------------------------------------------------------------------

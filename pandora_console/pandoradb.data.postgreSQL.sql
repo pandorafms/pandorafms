@@ -105,7 +105,8 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('enable_refr', '0'),
 ('meta_num_elements', 100),
 ('update_manager_installed', 1),
-('num_files_attachment', 100);
+('num_files_attachment', 100),
+('show_vc', 1);
 
 COMMIT WORK;
 

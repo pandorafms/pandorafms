@@ -110,6 +110,7 @@ INSERT INTO tconfig (token, value) VALUES ('enable_refr', 0);
 INSERT INTO tconfig (token, value) VALUES ('meta_num_elements', 100);
 INSERT INTO tconfig (token, value) VALUES ('update_manager_installed', 1);
 INSERT INTO tconfig (token, value) VALUES ('num_files_attachment', 100);
+INSERT INTO tconfig (token, value) VALUES ('show_vc', 1);
 COMMIT;
 END;;
 

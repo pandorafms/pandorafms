@@ -102,6 +102,7 @@ sub generate_xml_files ($$$$$$) {
 	my $longitude_base = get_conf_token ($conf, 'longitude_base', '-3.708187');
 	my $altitude_base = get_conf_token ($conf, 'altitude_base', '0');
 	my $position_radius = get_conf_token ($conf, 'position_radius', '10');
+	my $group = get_conf_token ($conf, 'group', 'Servers');
 	
 	# Get time_from
 	my $time_now = strftime ("%Y-%m-%d %H:%M:%S", localtime ());
@@ -140,7 +141,7 @@ sub generate_xml_files ($$$$$$) {
 			my $xml_data = "<?xml version='$xml_version' encoding='$encoding'?>\n";
 			my $sign = int rand(2);
 			$ag_timezone_offset += ($sign*(-1)+(1-$sign)) * int rand($ag_timezone_offset_range);
-			$xml_data .= "<agent_data os_name='$os_name' os_version='$os_version' interval='$interval' version='$os_version' timestamp='$timestamp' agent_name='$agent_name' timezone_offset='$ag_timezone_offset' longitude='$ag_longitude' latitude='$ag_latitude' altitude='$ag_altitude'>\n";
+			$xml_data .= "<agent_data os_name='$os_name' os_version='$os_version' interval='$interval' group='$group' version='$os_version' timestamp='$timestamp' agent_name='$agent_name' timezone_offset='$ag_timezone_offset' longitude='$ag_longitude' latitude='$ag_latitude' altitude='$ag_altitude'>\n";
 			
 			foreach my $module (@{$modules}) {
 				# Skip unnamed modules

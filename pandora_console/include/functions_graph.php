@@ -2835,13 +2835,33 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 	else { 
 		$chart_time_format = 'M d H\h';
 	}
+
+	// Calculate min, max and avg values
+	$avg = 0;
+	foreach ($data as $timestamp => $value) {
+		$max = $value['data'];
+		$min = $value['data'];
+		break;
+	}
 	
 	// Populate chart
+	$count = 0;
 	$chart = array ();
 	foreach ($data as $timestamp => $value) {
 		$chart[date ($chart_time_format, $timestamp)] = $value;
+		if ($value['data'] > $max) {
+			$max = $value['data'];
+		}
+		if ($value['data'] < $min) {
+			$min = $value['data'];
+		}
+		$avg += $value['data'];
+		$count++;
 	}
-	
+	if ($count > 0) {
+		$avg /= $count;
+	}
+
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
@@ -2856,8 +2876,9 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
-	
-	return area_graph($flash_chart, $chart, $width, $height, array (), false,
+
+	$legend = array (__('Max.') . ' ' . format_numeric($max) . ' ' . __('Min.') . ' ' . format_numeric($min) . ' ' . __('Avg.') . ' ' . format_numeric ($avg));
+	return area_graph($flash_chart, $chart, $width, $height, array (), $legend,
 		array (), ui_get_full_url("images/image_problem.opaque.png"), "", "", $homeurl,
 		$water_mark,
 		$config['fontpath'], $config['font_size'], $unit, $ttl);

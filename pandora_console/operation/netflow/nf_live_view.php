@@ -57,6 +57,9 @@ if (is_ajax()){
 		$id = get_parameter('id');
 		
 		$filter_values = db_get_row_filter ('tnetflow_filter', array('id_sg' => $id));
+
+		// Decode HTML entities
+		$filter_values['advanced_filter'] = io_safe_output ($filter_values['advanced_filter']);
 		
 		echo json_encode($filter_values);
 	}
@@ -185,6 +188,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	html_print_table ($table);
 	
 	// Filter options table
+	$i = 0;
 	$table->width = '100%';
 	$table->border = 0;
 	$table->class = "databox_color";
@@ -192,59 +196,74 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	$table->size[0] = '15%';
 	$table->data = array ();
 	
-	$table->data[0][0] = ui_print_error_message ('Define a name for the filter and click on Save as new filter again', '', true);
-	$table->colspan[0][0] = 4;
+	$table->data[$i][0] = ui_print_error_message ('Define a name for the filter and click on Save as new filter again', '', true);
+	$table->colspan[$i][0] = 4;
+	$table->rowstyle[$i] = 'display: none';
+	$i++;
 	
-	$table->data[1][0] = '<span id="filter_name_color"><b>'.__('Name').'</b></span>';
-	$table->data[1][1] = html_print_input_text ('name', $filter['id_name'], false, 20, 80, true);
+	$table->data[$i][0] = '<span id="filter_name_color"><b>'.__('Name').'</b></span>';
+	$table->data[$i][1] = html_print_input_text ('name', $filter['id_name'], false, 20, 80, true);
 	$own_info = get_user_info ($config['id_user']);
-	$table->data[1][2] = '<span id="filter_group_color"><b>'.__('Group').'</b></span>';
-	$table->data[1][3] = html_print_select_groups($config['id_user'], "IW",	$own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false);
+	$table->data[$i][2] = '<span id="filter_group_color"><b>'.__('Group').'</b></span>';
+	$table->data[$i][3] = html_print_select_groups($config['id_user'], "IW",	$own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false);
+	$table->rowstyle[$i] = 'display: none';
+	$i++;
 	
-	$table->rowstyle[0] = 'display: none';
-	$table->rowstyle[1] = 'display: none';
+	
+	if ($config['netflow_disable_custom_lvfilters'] == 0) {
+		// Read filter type
+		if ($filter['advanced_filter'] != '') {
+			$filter_type = 1;
+		}
+		else {
+			$filter_type = 0;
+		}
+		
+		$table->data[$i][0] = '<b>'.__('Filter').'</b>';
+		$table->data[$i][1] = __('Normal') . ' ' . html_print_radio_button_extended ('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true);
+		$table->data[$i][1] .= __('Advanced') . ' ' . html_print_radio_button_extended ('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true);
+		$table->data[$i][2] = '<b>'.__('Load filter').'</b>';
+		$user_groups = users_get_groups ($config['id_user'], "AR", $own_info['is_admin'], true);
+		$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
+		$table->data[$i][3] = html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('none'), 0, true);
+		$i++;
+		
+		$table->data[$i][0] = __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true);
+		$table->data[$i][1] = html_print_input_text ('ip_dst', $filter['ip_dst'], false, 40, 80, true);
+		$table->data[$i][2] = __('Src Ip'). ui_print_help_tip (__("Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true);
+		$table->data[$i][3] = html_print_input_text ('ip_src', $filter['ip_src'], false, 40, 80, true);
+		$i++;
+		
+		$table->data[$i][0] = __('Dst Port'). ui_print_help_tip (__("Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true);
+		$table->data[$i][1] = html_print_input_text ('dst_port', $filter['dst_port'], false, 40, 80, true);
+		$table->data[$i][2] = __('Src Port'). ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true);
+		$table->data[$i][3] = html_print_input_text ('src_port', $filter['src_port'], false, 40, 80, true);
+		$i++;
+		
+		$table->data[$i][0] = ui_print_help_icon ('pcap_filter', true);
+		$table->data[$i][1] = html_print_textarea ('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px;'", true);
+		$table->colspan[$i][1] = 3;
+		$i++;		
+	} else {
+		$table->data[$i][0] = '<b>'.__('Load filter').'</b>';
+		$user_groups = users_get_groups ($config['id_user'], "AR", $own_info['is_admin'], true);
+		$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
+		$table->data[$i][1] = html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('none'), 0, true);
+		$table->data[$i][2] = '';
+		$table->data[$i][3] = '';
+		$i++;
+	}
 
-	// Read filter type
-	if ($filter['advanced_filter'] != '') {
-		$filter_type = 1;
-	}
-	else {
-		$filter_type = 0;
-	}
-	
-	$table->data[2][0] = '<b>'.__('Filter').'</b>';
-	$table->data[2][1] = __('Normal') . ' ' . html_print_radio_button_extended ('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true);
-	$table->data[2][1] .= __('Advanced') . ' ' . html_print_radio_button_extended ('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true);
-	$table->data[2][2] = '<b>'.__('Load filter').'</b>';
-	$user_groups = users_get_groups ($config['id_user'], "AR", $own_info['is_admin'], true);
-	$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
-	$table->data[2][3] = html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('none'), 0, true);
-	
-	
-	$table->data[3][0] = __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true);
-	$table->data[3][1] = html_print_input_text ('ip_dst', $filter['ip_dst'], false, 40, 80, true);
-	$table->data[3][2] = __('Src Ip'). ui_print_help_tip (__("Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true);
-	$table->data[3][3] = html_print_input_text ('ip_src', $filter['ip_src'], false, 40, 80, true);
-	
-	$table->data[4][0] = __('Dst Port'). ui_print_help_tip (__("Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true);
-	$table->data[4][1] = html_print_input_text ('dst_port', $filter['dst_port'], false, 40, 80, true);
-	$table->data[4][2] = __('Src Port'). ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true);
-	$table->data[4][3] = html_print_input_text ('src_port', $filter['src_port'], false, 40, 80, true);
-	
-	$table->data[5][0] = ui_print_help_icon ('pcap_filter', true);
-	$table->data[5][1] = html_print_textarea ('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px;'", true);
-	$table->colspan[5][1] = 3;
-	
-	$table->data[6][0] = '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true);
-	
+	$table->data[$i][0] = '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true);
 	$aggregate_list = array();
 	$aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
-	$table->data[6][1] = html_print_select ($aggregate_list, "aggregate", $filter['aggregate'], '', '', 0, true, false, true, '', false);
+	$table->data[$i][1] = html_print_select ($aggregate_list, "aggregate", $filter['aggregate'], '', '', 0, true, false, true, '', false);
 	
-	$table->data[6][2] = '<b>'.__('Output format').'</b>';
+	$table->data[$i][2] = '<b>'.__('Output format').'</b>';
 	$show_output = array ('bytes' => __('Bytes'), 'bytespersecond' => __('Bytes per second'), 'kilobytes' => __('Kilobytes'), 'megabytes' => __('Megabytes'), 'kilobytespersecond' => __('Kilobytes per second'), 'megabytespersecond' => __('Megabytes per second'));
-	$table->data[6][3] = html_print_select ($show_output, 'output', $filter['output'], '', '', 0, true, false, true, '', false);
-	
+	$table->data[$i][3] = html_print_select ($show_output, 'output', $filter['output'], '', '', 0, true, false, true, '', false);
+	$i++;
+
 	html_print_table ($table);
 	
 	html_print_submit_button (__('Draw'), 'draw_button', false, 'class="sub upd"');

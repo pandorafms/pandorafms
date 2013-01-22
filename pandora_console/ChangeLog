@@ -1,3 +1,13 @@
+2013-01-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/setup/setup_netflow.php,
+	  operation/netflow/nf_live_view.php,
+	  include/functions_config.php: Added support for disabling custom
+	  filters in the netflow live viewer.
+
+	* include/functions_graph.php: Added min, max and avg values to
+	  unaggregated netflow charts.
+
 2013-01-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_tags.php: Fix a empty value return

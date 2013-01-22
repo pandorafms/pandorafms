@@ -300,6 +300,7 @@ function config_update_config () {
 				config_update_value ('netflow_daemon', get_parameter ('netflow_daemon'));
 				config_update_value ('netflow_nfdump', get_parameter ('netflow_nfdump'));
 				config_update_value ('netflow_max_resolution', get_parameter ('netflow_max_resolution'));
+				config_update_value ('netflow_disable_custom_lvfilters', get_parameter ('netflow_disable_custom_lvfilters'));
 				break;				
 			case 'log':
 				config_update_value ('log_dir', (string)get_parameter('log_dir'));

@@ -62,6 +62,11 @@ if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.ph
 session_start ();
 require_once ("include/config.php");
 
+// If metaconsole activated, redirect to it
+if($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
+	header ("Location: " . $config['homeurl'] . "enterprise/meta");
+}
+
 /* Enterprise support */
 if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 	include_once (ENTERPRISE_DIR . "/load_enterprise.php");

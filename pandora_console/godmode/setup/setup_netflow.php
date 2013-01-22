@@ -51,6 +51,9 @@ $table->data[3][0] = '<b>'.__('Nfdump binary path').'</b>';
 $table->data[3][1] = html_print_input_text ('netflow_nfdump', $config['netflow_nfdump'], false, 50, 200, true);
 $table->data[4][0] = '<b>'.__('Maximum chart resolution').'</b>' . ui_print_help_tip (__("Maximum number of points that a netflow area chart will display. The higher the resolution the performance. Values between 50 and 100 are recommended."), true);
 $table->data[4][1] = html_print_input_text ('netflow_max_resolution', $config['netflow_max_resolution'], false, 50, 200, true);
+$table->data[5][0] = '<b>'.__('Disable custom live view filters').'</b>' . ui_print_help_tip (__("Disable the definition of custom filters in the live view. Only existing filters can be used."), true);
+$table->data[5][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('netflow_disable_custom_lvfilters', 1, '', $config["netflow_disable_custom_lvfilters"], true).'&nbsp;&nbsp;';
+$table->data[5][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('netflow_disable_custom_lvfilters', 0, '', $config["netflow_disable_custom_lvfilters"], true).'&nbsp;&nbsp;';
 
 echo '<form id="netflow_setup" method="post">';
 			

@@ -1,3 +1,10 @@
+2013-01-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_tags.php: Fix a empty value return
+	to array() to avoid foreach problems
+
+	* index.php: Redirect to metaconsole when activate it 
+
 2013-01-21  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_users.php

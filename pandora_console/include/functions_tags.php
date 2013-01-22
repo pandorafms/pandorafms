@@ -516,7 +516,7 @@ function tags_get_module_tags ($id_agent_module){
 	$tags = db_get_all_rows_filter('ttag_module', array('id_agente_modulo' => $id_agent_module), false);
 	
 	if ($tags === false)
-		return false;
+		return array();
 	
 	$return = array();
 	foreach ($tags as $tag){

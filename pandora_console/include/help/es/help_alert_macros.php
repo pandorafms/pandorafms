@@ -31,6 +31,7 @@ Las siguientes macros están disponibles:
 <li>_alert_priority_: Prioridad numérica de la alerta.</li>
 <li>_alert_text_severity_: Prioridad en texto de la alerta. (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
 <li>_eventt_text_severity_: (Solo alertas de evento) Prioridad en texto de el evento que dispara la alerta. (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
+<li>_event_id_ : (Solo alertas de evento) Id del evento que disparó la alerta.</li>
 <li>_id_agent_: ID del agente, util para construir URL de acceso a la consola de Pandora.</li>
 <li>_id_alert_: ID de la alerta, util para correlar la alerta en herramientas de terceros.</li>
 <li>_policy_: Nombre de la política a la que pertenece el módulo (si aplica).</li>

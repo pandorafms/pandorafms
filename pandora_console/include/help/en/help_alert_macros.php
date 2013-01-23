@@ -30,6 +30,7 @@ The following macros are available:
 <li>_alert_priority_ : Numerical alert priority.</li>
 <li>_alert_text_severity_ : Text alert severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
 <li>_event_text_severity_ : (Only event alerts) Text event (who fire the alert) severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
+<li>_event_id_ : (Only event alerts) Id of the event that fired the alert.</li>
 <li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a Pandora FMS console webpage.</li>
 <li>_id_alert_ : Numerical ID of the alert (unique), used to correlate on third party software</li>
 <li>_policy_ : Name of the policy the module belongs to (if applies).</li>

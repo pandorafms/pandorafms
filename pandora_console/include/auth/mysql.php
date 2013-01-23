@@ -436,7 +436,7 @@ function delete_user ($id_user) {
  */
 function update_user_password ($user, $password_new) {
 	return db_process_sql_update ('tusuario',
-		array ('password' => md5 ($password_new)),
+		array ('password' => md5 ($password_new), 'last_pass_change' => date ("Y/m/d H:i:s", get_system_time())),
 		array ('id_user' => $user));
 }
 

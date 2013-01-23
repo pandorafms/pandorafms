@@ -60,7 +60,7 @@ if(enterprise_installed()) {
 	}
 	else {
 		$table->data[0][2] = '';
-		$table->data[0][3] = html_print_input_hidden('wizard_level', 'nowizard', true);
+		$table->data[0][3] = html_print_input_hidden('wizard_level', $wizard_level, true);
 	}
 }
 

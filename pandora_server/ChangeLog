@@ -1,3 +1,8 @@
+2013-01-23  Sergio Martin <sergio.martin@artica.es>
+
+	* util/plugin/EU_10yrspread.pl: Updated the european countries
+	10 years spread plugin to new bloomberg website
+
 2013-01-22 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* util/pandora_xml_stress.conf

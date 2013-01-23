@@ -6,6 +6,7 @@ use warnings;
 use LWP::Simple;
 use POSIX qw(strftime);
 
+
 sub main
 {
 	my $agent_name = "EU_10yrspread";
@@ -14,22 +15,27 @@ sub main
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 	
+	my $germany_spread = get_10yspread('GDBR10:IND')*100;
+	
 	my %codes;
 
-	$codes{'Spain'} = '.SPAINGER10:IND';
-	$codes{'Greece'} = '.GRGER10:IND';
-	$codes{'Italy'} = '.ITAGER10:IND';
-	$codes{'Portugal'} = '.PORGER10:IND';
-	$codes{'Ireland'} = '.IRGERSP:IND';
-	$codes{'France'} = '.FRAGER10:IND';
-	$codes{'Belgium'} = '.BELGER10:IND';
+	$codes{'United Kingdom'} = 'GUKG10:IND';
+	$codes{'Spain'} = 'GSPG10YR:IND';
+	$codes{'Greece'} = 'GGGB10YR:IND';
+	$codes{'Italy'} = 'GBTPGR10:IND';
+	$codes{'Portugal'} = 'GSPT10YR:IND';
+	#$codes{'Ireland'} = '.IRGERSP:IND';
+	$codes{'France'} = 'GFRN10:IND';
+	$codes{'Netherlands'} = 'GNTH10YR:IND';
+	$codes{'Switzerland'} = 'GSWISS10:IND';
+	#$codes{'Belgium'} = '.BELGER10:IND';
 	
 	my $xml_output = "<?xml version='1.0' encoding='ISO-8859-1' ?>";
 	$xml_output .= "<agent_data os_name='Linux' agent_name='".$agent_name."' interval='300' timestamp='".$timestamp."' >";
 
 	foreach my $k (keys(%codes)) {
 		my $code = $codes{$k};
-		my $spread = get_10yspread($code)*100;
+		my $spread = get_10yspread($code)*100-$germany_spread;
 
 		$xml_output .=" <module>";
 		$xml_output .=" <name><![CDATA[$k]]></name>";

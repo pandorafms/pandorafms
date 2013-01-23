@@ -1,3 +1,15 @@
+2013-01-23  Sergio Martin <sergio.martin@artica.es>
+
+	* include/auth/mysql.php: Fixed update of the last password 
+	change when edit a user in the classic way
+
+	* godmode/users/configure_user.php
+	godmode/modules/manage_network_components_form_common.php
+	godmode/modules/manage_network_components.php: Fix wizard 
+	level and metaconsole access default values when charge to 
+	keep data of items created with metaconsole from the standard
+	console
+
 2013-01-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/help/en/help_alert_macros.php,

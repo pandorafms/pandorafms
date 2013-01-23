@@ -151,7 +151,9 @@ if ($create_user) {
 	if (enterprise_installed()) {
 		$values['force_change_pass'] = 1;
 		$values['last_pass_change'] = date ("Y/m/d H:i:s", get_system_time());
-		$values['metaconsole_access'] = get_parameter ('metaconsole_access');
+		if(defined('METACONSOLE')) {
+			$values['metaconsole_access'] = get_parameter ('metaconsole_access', 'basic');
+		}
 	}
 	$values["not_login"] = (bool)get_parameter ('not_login', false);
 	
@@ -244,7 +246,7 @@ if ($update_user) {
 	$values['block_size'] = get_parameter ('block_size', $config["block_size"]);
 	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
 	
-	if(enterprise_installed()) {
+	if(enterprise_installed() && defined('METACONSOLE')) {
 		$values['metaconsole_access'] = get_parameter ('metaconsole_access');
 	}
 	$values["not_login"] = (bool)get_parameter ('not_login', false);
@@ -297,7 +299,7 @@ if ($update_user) {
 				$info .= ' Skin: ' . $values['id_skin'];
 			}
 			
-			if(enterprise_installed()) {
+			if(enterprise_installed() && defined('METACONSOLE')) {
 				$info .= ' Wizard access: ' . $values['metaconsole_access'];
 			}
 			

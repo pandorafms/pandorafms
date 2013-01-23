@@ -221,6 +221,15 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["gsetup"]["sub"] = $sub;
 }
 
+if (check_acl ($config['id_user'], 0, "AW")) {
+        if ($config['activate_netflow']) {
+                //Netflow
+                $menu_godmode["netf"]["text"] = __('Netflow filters');
+                $menu_godmode["netf"]["sec2"] = "godmode/netflow/nf_edit";
+                $menu_godmode["netf"]["id"] = "god-netflow";
+        }
+}
+
 if (check_acl ($config['id_user'], 0, "DM")) {
 	$menu_godmode["gdbman"]["text"] = __('DB maintenance');
 	$menu_godmode["gdbman"]["sec2"] = "godmode/db/db_main";

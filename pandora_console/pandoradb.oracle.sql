@@ -246,7 +246,7 @@ CREATE TABLE tagente_modulo (
 	critical_inverse NUMBER(1, 0) default 0 NOT NULL,
 	warning_inverse NUMBER(1, 0) default 0 NOT NULL,
 	id_category NUMBER(10, 0) default 0 NOT NULL,
-	CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'))
+	CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );
 CREATE INDEX tagente_modulo_id_agente_idx ON tagente_modulo(id_agente);
 CREATE INDEX tagente_modulo_id_t_mod_idx ON tagente_modulo(id_tipo_modulo);
@@ -385,7 +385,7 @@ CREATE TABLE talert_templates (
 	special_day NUMBER(5, 0) default 0,
 	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
 	CONSTRAINT t_alert_templates_type_cons CHECK (type IN ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always')),
-	CONSTRAINT t_alert_templates_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','custom','nowizard'))
+	CONSTRAINT t_alert_templates_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );
 CREATE INDEX talert_templates_id_al_act_idx ON talert_templates(id_alert_action);
 
@@ -676,7 +676,7 @@ CREATE TABLE tnetwork_component (
 	custom_integer_2 INTEGER default 0,
 	post_process BINARY_DOUBLE default 0.
 	unit CLOB default '',
-	wizard_level VARCHAR2(100) default 'basic' NOT NULL,
+	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
 	macros CLOB default '',
 	critical_instructions VARCHAR2(255) default '',
 	warning_instructions VARCHAR2(255) default '',
@@ -685,7 +685,7 @@ CREATE TABLE tnetwork_component (
 	warning_inverse NUMBER(1, 0) default 0 NOT NULL,
 	id_category NUMBER(10, 0) default 0 NOT NULL,
 	tags CLOB,
-	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced'))
+	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );
 
 CREATE SEQUENCE tnetwork_component_s INCREMENT BY 1 START WITH 1;
@@ -930,9 +930,9 @@ CREATE TABLE tusuario (
 	last_failed_login TIMESTAMP default 0,
 	failed_attempt NUMBER(5,0) default 0 NOT NULL,
 	login_blocked NUMBER(5,0) default 0 NOT NULL,
-	metaconsole_access VARCHAR2(100) default 'only_console' NOT NULL,
+	metaconsole_access VARCHAR2(100) default 'basic' NOT NULL,
 	not_login NUMBER(5,0) default 0 NOT NULL,
-	CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced','custom','all','only_console'))
+	CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced'))
 );
 
 -- -----------------------------------------------------

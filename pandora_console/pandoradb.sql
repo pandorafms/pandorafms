@@ -226,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`custom_string_3` text,
 	`custom_integer_1` int(10) default 0,
 	`custom_integer_2` int(10) default 0,
-	`wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
+	`wizard_level` enum('basic','advanced','nowizard') default 'nowizard',
 	`macros` text,
 	`critical_instructions` text NOT NULL default '',
 	`warning_instructions` text NOT NULL default '',
@@ -374,7 +374,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`priority` tinyint(4) default '0',
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`special_day` tinyint(1) default 0,
-	`wizard_level` enum('basic','advanced','custom','nowizard') default 'nowizard',
+	`wizard_level` enum('basic','advanced','nowizard') default 'nowizard',
 	PRIMARY KEY  (`id`),
 	KEY `idx_template_action` (`id_alert_action`),
 	FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
@@ -632,7 +632,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
 	`custom_integer_2` int(10) default 0,
 	`post_process` double(18,5) default 0,
 	`unit` text,
-	`wizard_level` enum('basic','advanced') default 'basic',
+	`wizard_level` enum('basic','advanced','nowizard') default 'nowizard',
 	`macros` text,
 	`critical_instructions` text NOT NULL default '',
 	`warning_instructions` text NOT NULL default '',
@@ -893,7 +893,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`last_failed_login` DATETIME  NOT NULL DEFAULT 0,
 	`failed_attempt` int(4) NOT NULL DEFAULT 0,
 	`login_blocked` tinyint(1) unsigned NOT NULL default 0,
-	`metaconsole_access` enum('basic','advanced','custom','all','only_console') default 'only_console',
+	`metaconsole_access` enum('basic','advanced') default 'basic',
 	`not_login` tinyint(1) unsigned NOT NULL DEFAULT 0,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

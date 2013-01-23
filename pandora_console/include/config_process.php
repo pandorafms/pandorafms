@@ -155,6 +155,10 @@ if (isset ($config['id_user'])) {
 			date_default_timezone_set($userinfo["timezone"]);
 		}
 	}
+	
+	if (defined('METACONSOLE')) {
+		$config['metaconsole_access'] = $userinfo["metaconsole_access"];
+	}
 } 
 
 // Check if inventory_changes_blacklist is setted, if not create it

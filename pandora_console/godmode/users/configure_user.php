@@ -455,17 +455,14 @@ if ($id == $config['id_user']) {
 	$table->data[12][1] .= html_print_input_hidden('quick_language_change', 1, true);
 }
 
-if (enterprise_installed()) {
+if (enterprise_installed() && defined('METACONSOLE')) {
 	$user_info_metaconsole_access = 'only_console';
 	if (isset($user_info["metaconsole_access"])) {
 		$user_info_metaconsole_access = $user_info["metaconsole_access"];
 	}
 	$table->data[12][0] = __('Metaconsole access');
-	$metaconsole_accesses = array('only_console' => __('No access'),
-		'basic' => __('Basic (Only Metaconsole)'),
-		'advanced' => __('Advanced (Only Metaconsole)'),
-		//'custom' => __('Custom access (Only Metaconsole)'),
-		'all' => __('Full (Metaconsole and normal console)'));
+	$metaconsole_accesses = array('basic' => __('Basic'),
+		'advanced' => __('Advanced'));
 	$table->data[12][1] = html_print_select($metaconsole_accesses,
 		'metaconsole_access', $user_info_metaconsole_access,
 		'','',-1,true, false, false);

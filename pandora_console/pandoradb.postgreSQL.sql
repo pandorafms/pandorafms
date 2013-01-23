@@ -175,7 +175,7 @@ CREATE INDEX "tagente_estado_last_execution_try_idx" ON "tagente_estado"("last_e
 -- 6 - WMI server
 -- 7 - WEB Server (enteprise)
 
-CREATE TYPE type_tagente_modulo_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
+CREATE TYPE type_tagente_modulo_wizard_level AS ENUM ('basic','advanced','nowizard');
 CREATE TABLE "tagente_modulo" (
 	"id_agente_modulo" SERIAL NOT NULL PRIMARY KEY,
 	"id_agente" INTEGER NOT NULL default 0,
@@ -306,7 +306,7 @@ CREATE TABLE "talert_actions" (
 );
 
 CREATE TYPE type_talert_templates_alert_template AS ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always');
-CREATE TYPE type_talert_templates_wizard_level AS ENUM ('basic','advanced','custom','nowizard');
+CREATE TYPE type_talert_templates_wizard_level AS ENUM ('basic','advanced','nowizard');
 CREATE TABLE "talert_templates" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"name" text default '',
@@ -537,7 +537,7 @@ CREATE TABLE "tmodule_group" (
 -- ---------------------------------------------------------------------
 -- Table `tnetwork_component`
 -- ---------------------------------------------------------------------
-CREATE TYPE type_tlocal_component_wizard_level AS ENUM ('basic','advanced');
+CREATE TYPE type_tlocal_component_wizard_level AS ENUM ('basic','advanced','nowizard');
 CREATE TABLE "tnetwork_component" (
 	"id_nc" SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(80) NOT NULL,
@@ -575,7 +575,7 @@ CREATE TABLE "tnetwork_component" (
 	"custom_integer_2" INTEGER default 0,
 	"post_process" DOUBLE PRECISION default 0,
 	"unit" TEXT default '',
-	"wizard_level" type_tlocal_component_wizard_level default 'basic',
+	"wizard_level" type_tlocal_component_wizard_level default 'nowizard',
 	"macros" TEXT default '',
 	"critical_instructions" TEXT default '',
 	"warning_instructions" TEXT default '',
@@ -791,7 +791,7 @@ CREATE TABLE "ttrap" (
 -- -----------------------------------------------------
 -- Table `tusuario`
 -- -----------------------------------------------------
-CREATE TYPE type_tusuario_metaconsole_access AS ENUM ('basic','advanced','custom','all','only_console');
+CREATE TYPE type_tusuario_metaconsole_access AS ENUM ('basic','advanced');
 CREATE TABLE "tusuario" (
 	"id_user" varchar(60) NOT NULL PRIMARY KEY,
 	"fullname" varchar(255) NOT NULL,
@@ -821,7 +821,7 @@ CREATE TABLE "tusuario" (
 	"failed_attempt" INTEGER NOT NULL DEFAULT 0,
 	"login_blocked" SMALLINT NOT NULL default 0,
 	"not_login" SMALLINT NOT NULL default 0,
-	"metaconsole_access" type_tusuario_metaconsole_access default 'only_console'
+	"metaconsole_access" type_tusuario_metaconsole_access default 'basic'
 );
 
 -- -----------------------------------------------------

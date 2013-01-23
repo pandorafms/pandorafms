@@ -383,7 +383,7 @@ if (is_ajax ())
 				//Icon and link to the Module graph.
 				if (defined('METACONSOLE')) {
 					$url_module_graph = ui_meta_get_url_console_child(
-						$server['id'], null, null, null, null,
+						$server, null, null, null, null,
 						"operation/agentes/stat_win.php?" .
 						"type=$graph_type&" .
 						"period=86400&" .
@@ -411,7 +411,7 @@ if (is_ajax ())
 				if (defined('METACONSOLE')) {
 					
 					$url_module_data =  ui_meta_get_url_console_child(
-						$server['id'],
+						$server,
 						"estado", "operation/agentes/ver_agente",
 						"id_agente=" . $row['id_agente'] . "&" .
 						"tab=data_view&" .

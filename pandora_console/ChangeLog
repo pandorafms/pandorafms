@@ -1,5 +1,11 @@
 2013-01-24 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_netflow.php,
+	operation/reporting/reporting_xml.php: fixed to show netflow data
+	in the XML report.
+
+2013-01-24 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* pandoradb.postgreSQL.sql, pandoradb.oracle.sql, pandoradb.sql,
 	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
 	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
@@ -8,22 +14,18 @@
 	
 	* godmode/extensions.php, include/functions_tags.php,
 	include/functions_ui.php, include/functions_agents.php,
-	include/functions_config.php,
+	include/functions_config.php: cleaned source code style.
 	
 	* godmode/reporting/visual_console_builder.editor.js,
 	godmode/reporting/visual_console_builder.editor.php,
 	include/styles/pandora.css, include/styles/pandora_legacy.css,
 	include/functions_visual_map.php,
 	include/ajax/visual_console_builder.ajax.php,
-	include/functions_visual_map_editor.php
+	include/functions_visual_map_editor.php: added the formatted label
+	into the item label with the help of tiny_mce.
 	
-	* include/javascript/tiny_mce/*:
-
-
-
-
-
-
+	* include/javascript/tiny_mce/*: update the last version of
+	tiny_mce.
 
 2013-01-23  Sergio Martin <sergio.martin@artica.es>
 

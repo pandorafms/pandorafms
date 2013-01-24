@@ -194,7 +194,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<tr id="period_row" class="module_graph simple_value datos">
 			<td><?php echo __('Period');?></td>
 			<td><?php 
-				html_print_extended_select_for_time ('period', '', '', '', '')
+				html_print_extended_select_for_time ('period', SECONDS_5MINUTES, '', '', '');
 				?>
 			</td>
 		</tr>

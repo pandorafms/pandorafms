@@ -1,3 +1,8 @@
+2013-01-24 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/visual_console_builder.editor.php: fixed the
+	default value for the period in the data item.
+
 2013-01-21  Koichiro KIKUCHI  <koichiro@rworks.jp>
 
 	* pandora_console.redhat.spec: Updated version strings.

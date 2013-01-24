@@ -1722,3 +1722,20 @@ input#text-id_parent.ac_input, input, textarea, select {
 span#plugin_description {
 	font-size: 9px;
 }
+
+/*FOR TINYMCE*/
+#tinymce {
+	text-align: left;
+}
+.visual_font_size_8pt, .visual_font_size_8pt > em, .visual_font_size_8pt > strong {
+	font-size: 8pt;
+}
+.visual_font_size_14pt, .visual_font_size_14pt > em , .visual_font_size_14pt > strong {
+	font-size: 14pt;
+}
+.visual_font_size_24pt, .visual_font_size_24pt > em, .visual_font_size_24pt > strong {
+	font-size: 24pt;
+}
+.visual_font_size_36pt, .visual_font_size_36pt > em, .visual_font_size_36pt > strong {
+	font-size: 36pt;
+}

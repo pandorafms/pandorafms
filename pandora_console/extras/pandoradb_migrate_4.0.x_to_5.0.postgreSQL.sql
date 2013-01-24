@@ -342,6 +342,7 @@ ALTER TABLE "trecon_task" ALTER COLUMN "field1" TYPE TEXT;
 ------------------------------------------------------------------------
 ALTER TABLE "tlayout_data" ADD COLUMN "enable_link" SMALLINT NOT NULL default 1;
 ALTER TABLE "tlayout_data" ADD COLUMN "id_metaconsole" INTEGER NOT NULL default 0;
+ALTER TABLE "tlayout_data" ALTER COLUMN "label" TEXT default '';
 
 ------------------------------------------------------------------------
 -- Table "tnetwork_component"

@@ -106,7 +106,8 @@ ui_require_jquery_file('colorpicker');
 ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
 ui_require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
-ui_require_javascript_file_enterprise('functions_visualmap', true);
+ui_require_javascript_file_enterprise('functions_visualmap', false);
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
 // Javascript file for base 64 encoding of label parameter 
 ui_require_javascript_file ('encode_decode_base64');
@@ -120,4 +121,28 @@ ui_require_javascript_file ('encode_decode_base64');
 <script type="text/javascript">
 	id_visual_console = <?php echo $visualConsole['id']; ?>;
 	$(document).ready (visual_map_main);
+	
+	tinyMCE.init({
+		mode : "exact",
+		elements: "text-label2",
+		theme : "advanced",
+		<?php
+		if ($config['style'] == 'pandora_legacy') {
+			echo 'content_css: "include/styles/pandora_legacy.css",' . "\n";
+		}
+		else {
+			echo 'content_css: "include/styles/pandora.css",' . "\n";
+		}
+		?>
+		theme_advanced_font_sizes : "8pt=.visual_font_size_8pt, 14pt=.visual_font_size_14pt, 24pt=.visual_font_size_24pt, 36pt=.visual_font_size_36pt",
+		theme_advanced_toolbar_location : "top",
+		theme_advanced_toolbar_align : "left",
+		theme_advanced_buttons1 : "bold,italic, |, image, link, |, forecolor, fontsizeselect",
+		theme_advanced_buttons2 : "",
+		theme_advanced_buttons3 : "",
+		theme_advanced_statusbar_location : "none",
+		width: "400",
+		height: "200",
+		nowrap: true
+	});
 </script>

@@ -1051,9 +1051,9 @@ CREATE TABLE IF NOT EXISTS `treport_content_item` (
 		ON UPDATE CASCADE ON DELETE CASCADE 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `treport_custom_sql`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport_custom_sql` (
 	`id` INTEGER UNSIGNED NOT NULL auto_increment,
 	`name` varchar(150) NOT NULL default '',
@@ -1061,9 +1061,9 @@ CREATE TABLE IF NOT EXISTS `treport_custom_sql` (
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tlayout`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` varchar(50)  NOT NULL,
@@ -1075,9 +1075,9 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tlayout_data`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_layout` INTEGER UNSIGNED NOT NULL default 0,
@@ -1085,7 +1085,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`pos_y` INTEGER UNSIGNED NOT NULL default 0,
 	`height` INTEGER UNSIGNED NOT NULL default 0,
 	`width` INTEGER UNSIGNED NOT NULL default 0,
-	`label` varchar(200) DEFAULT "",
+	`label` TEXT DEFAULT "",
 	`image` varchar(200) DEFAULT "",
 	`type` tinyint(1) UNSIGNED NOT NULL default 0,
 	`period` INTEGER UNSIGNED NOT NULL default 3600,
@@ -1100,9 +1100,9 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tplugin`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- The fields "net_dst_opt", "net_port_opt", "user_opt" and
 -- "pass_opt" are deprecated for the 5.1.
 CREATE TABLE IF NOT EXISTS `tplugin` (
@@ -1122,18 +1122,18 @@ CREATE TABLE IF NOT EXISTS `tplugin` (
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8; 
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tmodule`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule` (
 	`id_module` int(11) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
 	PRIMARY KEY (`id_module`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tserver_export`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tserver_export` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(100) NOT NULL default '',
@@ -1152,9 +1152,9 @@ CREATE TABLE IF NOT EXISTS `tserver_export` (
 	INDEX id_export_server (`id_export_server`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tserver_export_data`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- id_export_server is real pandora fms export server process that manages this server
 -- id is the "destination" server to export
 CREATE TABLE IF NOT EXISTS `tserver_export_data` (
@@ -1168,9 +1168,9 @@ CREATE TABLE IF NOT EXISTS `tserver_export_data` (
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tplanned_downtime`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
 	`id` MEDIUMINT( 8 ) NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR( 100 ) NOT NULL,
@@ -1197,9 +1197,9 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
 	PRIMARY KEY (  `id` ) 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
 	`id` int(20) unsigned NOT NULL auto_increment,
 	`id_agent` mediumint(8) unsigned NOT NULL default '0',
@@ -1210,9 +1210,9 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
 		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_modules`
--- ----------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tplanned_downtime_modules` (
 	`id` int(20) unsigned NOT NULL auto_increment,
 	`id_agent` mediumint(8) unsigned NOT NULL default '0',

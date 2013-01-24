@@ -69,7 +69,7 @@ function config_update_value ($token, $value) {
  */
 function config_update_config () {
 	global $config;
-
+	
 	/* If user is not even log it, don't try this */
 	if (! isset ($config['id_user']))
 		return false;
@@ -339,7 +339,7 @@ function config_process_config () {
 	if (!isset ($config['language'])) {
 		config_update_value ('language', 'en');
 	}
-
+	
 	if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
 		$config['homeurl'] = '/'.$config['homeurl'];
 	}

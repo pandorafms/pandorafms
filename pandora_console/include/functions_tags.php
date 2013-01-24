@@ -897,7 +897,7 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 	
 	// Get all tags to have the name of all of them
 	$all_tags = tags_get_all_tags();
-
+	
 	// If at least one of the profiles of this access flag hasent
 	// tags restrictions, the user can see all tags
 	$acl_column = get_acl_column($access);
@@ -914,7 +914,7 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 			$id_user, $acl_column);
 			
 	$profiles_without_tags = db_get_value_sql($query);
-
+	
 	if($profiles_without_tags > 0) {
 		return $all_tags;
 	}

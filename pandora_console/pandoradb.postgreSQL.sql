@@ -995,7 +995,7 @@ CREATE TABLE "tlayout_data" (
 	"pos_y" INTEGER NOT NULL default 0,
 	"height" INTEGER NOT NULL default 0,
 	"width" INTEGER NOT NULL default 0,
-	"label" varchar(200) DEFAULT '',
+	"label" TEXT default '',
 	"image" varchar(200) DEFAULT '',
 	"type" SMALLINT NOT NULL default 0,
 	"period" INTEGER NOT NULL default 3600,
@@ -1100,9 +1100,9 @@ CREATE TABLE "tplanned_downtime" (
 	"type_periodicity" VARCHAR( 100 ) NOT NULL default 'weekly'
 );
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tplanned_downtime_agents"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tplanned_downtime_agents" (
 	"id" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_agent" BIGINT NOT NULL default 0,
@@ -1110,9 +1110,9 @@ CREATE TABLE "tplanned_downtime_agents" (
 	"all_modules" SMALLINT default 1
 );
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tplanned_downtime_modules"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 CREATE TABLE "tplanned_downtime_modules" (
 	"id" BIGSERIAL NOT NULL PRIMARY KEY,
 	"id_agent" BIGINT NOT NULL default 0,
@@ -1122,9 +1122,9 @@ CREATE TABLE "tplanned_downtime_modules" (
 
 
 -- GIS extension Tables
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tgis_data_history"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 --Table to store historical GIS information of the agents
 CREATE TABLE "tgis_data_history" (
 	--key of the table
@@ -1148,9 +1148,9 @@ CREATE TABLE "tgis_data_history" (
 CREATE INDEX "tgis_data_history_start_timestamp_idx" ON "tgis_data_history"("start_timestamp");
 CREATE INDEX "tgis_data_history_end_timestamp_idx" ON "tgis_data_history"("end_timestamp");
 
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Table "tgis_data_status"
--- -----------------------------------------------------
+-- ---------------------------------------------------------------------
 --Table to store last GIS information of the agents
 CREATE TABLE "tgis_data_status" (
 	--Reference to the agent

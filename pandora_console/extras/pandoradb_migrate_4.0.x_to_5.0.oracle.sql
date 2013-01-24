@@ -339,6 +339,7 @@ ALTER TABLE trecon_task MODIFY field1 TEXT NOT NULL;
 -- -----------------------------------------------------
 ALTER TABLE tlayout_data ADD (enable_link NUMBER(5, 0) NOT NULL default 1);
 ALTER TABLE tlayout_data ADD (id_metaconsole NUMBER(10, 0) default 0 NOT NULL);
+ALTER TABLE tlayout_data MODIFY label CLOB default '';
 
 -- -----------------------------------------------------
 -- Table tagente_modulo

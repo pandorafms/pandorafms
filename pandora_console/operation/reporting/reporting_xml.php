@@ -36,7 +36,7 @@ function xml_array ($array, $buffer_file = array()) {
 		else {
 			echo "<".$name.">";
 		}
-			
+		
 		if (is_array ($value)) {
 			//si es la ruta al fichero que contiene el xml
 			if(is_string($file_to_print)) {
@@ -56,7 +56,6 @@ function xml_array ($array, $buffer_file = array()) {
 		echo "</".$name.">";
 	}
 }
-
 
 // Login check
 if (isset ($_GET["direct"])) {
@@ -233,7 +232,8 @@ foreach ($contents as $content) {
 		}
 	}
 	
-	$session_id = session_id();	
+	$session_id = session_id();
+	
 	switch ($content["type"]) {
 		
 		case 1:
@@ -379,7 +379,7 @@ foreach ($contents as $content) {
 			///
 			break;
 		case 2:
-		case 'custom_graph':		
+		case 'custom_graph':
 		case 'automatic_custom_graph':
 		
 			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
@@ -1400,7 +1400,6 @@ foreach ($contents as $content) {
 		case 'netflow_data':
 		case 'netflow_statistics':
 		case 'netflow_summary':
-				
 				// Read the report item
 				$report_id = $report['id_report'];
 				$content_id = $content['id_rc'];
@@ -1416,13 +1415,15 @@ foreach ($contents as $content) {
 				$start_date = $end_date - $period;
 				
 				// Get item filters
-				$filter = db_get_row_sql("SELECT * FROM tnetflow_filter WHERE id_sg = '" . (int)$content['text'] . "'", false, true);
+				$filter = db_get_row_sql("SELECT *
+					FROM tnetflow_filter
+					WHERE id_sg = '" . (int)$content['text'] . "'", false, true);
 				if ($description == '') {
 					$description = io_safe_output ($filter['id_name']);
 				}
 				
 				// Build a unique id for the cache
-				$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
+				//$unique_id = $report_id . '_' . $content_id . '_' . ($end_date - $start_date);
 				
 				$table->colspan[0][0] = 4;
 				if ($filter['aggregate'] != 'none') {
@@ -1432,8 +1433,10 @@ foreach ($contents as $content) {
 					$data["title"] = $description . ' (' . __($filter['output']) . ')';
 				}
 				
-				$data["objdata"]["netflow"] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $unique_id, $server_name, 'XML');
+				//$data["objdata"]["netflow"] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $unique_id, $server_name, 'XML');
+				$data["objdata"]["netflow"] = netflow_draw_item ($start_date, $end_date, $resolution, $type, $filter, $max_aggregates, $server_name, 'XML');
 				$buffer_file["objdata"] = $config['attachment_store'] . '/netflow_' . $time.'_'.$content['id_rc'] . '.tmp';
+				$objdata_file = true;
 			break;
 	}
 	

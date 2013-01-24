@@ -895,7 +895,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 	$aggregate = $filter['aggregate'];
 	$unit = $filter['output'];
 	$interval = $end_date - $start_date;
-
+	
 	// Process item
 	switch ($type) {
 		case '0':
@@ -978,6 +978,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 		case '2':
 		case 'netflow_data':
 			$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
+			
 			if (empty ($data)) {
 				break;
 			}
@@ -1106,29 +1107,41 @@ function netflow_xml_report ($id, $start_date, $end_date, $interval_length = 0) 
  *
  */
 function netflow_aggregate_area_xml ($data) {
-
-	// Print source information
-	echo "<aggregates>\n";
-	foreach ($data['sources'] as $source => $discard) {
-		echo "<aggregate>$source</aggregate>\n";
-	}
-	echo "</aggregates>\n";
 	
-	// Print flow information
-	echo "<flows>\n";
-	foreach ($data['data'] as $timestamp => $flow) {
-		
-		echo "<flow>\n";
-		echo "  <timestamp>" . $timestamp . "</timestamp>\n";
-		echo "  <aggregates>\n";
-		foreach ($flow as $source => $data) {
-			echo "    <aggregate>$source</aggregate>\n";
-			echo "    <data>" . $data . "</data>\n";
+	// Print source information
+	if (isset($data['sources'])) {
+		echo "<aggregates>\n";
+		foreach ($data['sources'] as $source => $discard) {
+			echo "<aggregate>$source</aggregate>\n";
 		}
-		echo "  </aggregates>\n";
-		echo "</flow>\n";
+		echo "</aggregates>\n";
+		
+		// Print flow information
+		echo "<flows>\n";
+		foreach ($data['data'] as $timestamp => $flow) {
+			
+			echo "<flow>\n";
+			echo "  <timestamp>" . $timestamp . "</timestamp>\n";
+			echo "  <aggregates>\n";
+			foreach ($flow as $source => $data) {
+				echo "    <aggregate>$source</aggregate>\n";
+				echo "    <data>" . $data . "</data>\n";
+			}
+			echo "  </aggregates>\n";
+			echo "</flow>\n";
+		}
+		echo "</flows>\n";
 	}
-	echo "</flows>\n";
+	else {
+		echo "<flows>\n";
+		foreach ($data as $timestamp => $flow) {
+			echo "<flow>\n";
+			echo "  <timestamp>" . $timestamp . "</timestamp>\n";
+			echo "  <data>" . $flow['data'] . "</data>\n";
+			echo "</flow>\n";
+		}
+		echo "</flows>\n";
+	}
 }
 
 /**

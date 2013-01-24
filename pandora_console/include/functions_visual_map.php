@@ -232,8 +232,8 @@ function visual_map_print_item($layoutData) {
 			echo '</div>';
 			break;
 		case LABEL:
-			echo '<div id="' . $id . '" class="item label" style="z-index: 1; left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
-			echo $text;
+			echo '<div id="' . $id . '" class="item label" style="z-index: 1; left: 0px; top: 0px; color: ' . $color . '; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top . 'px; left: ' . $left . 'px;">';
+			echo io_safe_output($text);
 			echo "</div>";
 			break;
 		case ICON:
@@ -1154,9 +1154,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true, $draw_line
 			case LABEL:
 				$z_index = 4;
 				if ($resizedMap)
-					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; text-align: left; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				else
-					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; text-align: left; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				
 				$endTagA = false;
 				if ($show_links) {
@@ -1867,7 +1867,7 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 		$text = $label;
 	}
 	
-	return $text;
+	return io_safe_output($text);
 }
 
 function visual_map_get_items_parents($idVisual) {

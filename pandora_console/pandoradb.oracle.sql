@@ -1099,15 +1099,15 @@ CREATE SEQUENCE treport_content_item_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER treport_content_item_inc BEFORE INSERT ON treport_content_item REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_content_item_s.nextval INTO :NEW.ID FROM dual; END treport_content_item_inc;; 
 
-
+-- ---------------------------------------------------------------------
+-- Table "treport_custom_sql"
+-- ---------------------------------------------------------------------
 CREATE TABLE treport_custom_sql (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(150) default '',
 	sql CLOB default NULL
 );
-
 CREATE SEQUENCE treport_custom_sql_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER treport_custom_sql_inc BEFORE INSERT ON treport_custom_sql REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_custom_sql_s.nextval INTO :NEW.ID FROM dual; END treport_custom_sql_inc;;
 
 -- ---------------------------------------------------------------------
@@ -1135,7 +1135,7 @@ CREATE TABLE tlayout_data (
 	pos_y NUMBER(10, 0) default 0 NOT NULL,
 	height NUMBER(10, 0) default 0 NOT NULL,
 	width NUMBER(10, 0) default 0 NOT NULL,
-	label VARCHAR2(200) DEFAULT '',
+	label CLOB default '',
 	image VARCHAR2(200) DEFAULT '',
 	type NUMBER(5, 0) default 0 NOT NULL,
 	period NUMBER(10, 0) default 3600 NOT NULL,
@@ -1169,20 +1169,22 @@ CREATE TABLE tplugin (
 	macros CLOB default '',
 	parameters CLOB default ''
 ); 
-
 CREATE SEQUENCE tplugin_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tplugin_inc BEFORE INSERT ON tplugin REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplugin_s.nextval INTO :NEW.ID FROM dual; END tplugin_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "tmodule"
+-- ---------------------------------------------------------------------
 CREATE TABLE tmodule (
 	id_module NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(100) default '' 
 );
-
 CREATE SEQUENCE tmodule_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tmodule_inc BEFORE INSERT ON tmodule REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_s.nextval INTO :NEW.ID_MODULE FROM dual; END tmodule_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table "tserver_export"
+-- ---------------------------------------------------------------------
 CREATE TABLE tserver_export (
 	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name VARCHAR2(100) default '',
@@ -1200,9 +1202,7 @@ CREATE TABLE tserver_export (
 	timezone_offset NUMBER(5, 0) default 0 NOT NULL,
 	CONSTRAINT tserver_export_conn_mode_cons CHECK (connect_mode IN ('tentacle', 'ssh', 'local'))
 );
-
 CREATE SEQUENCE tserver_export_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tserver_export_inc BEFORE INSERT ON tserver_export REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_export_s.nextval INTO :NEW.ID FROM dual; END tserver_export_inc;;
 
 -- id_export_server is real pandora fms export server process that manages this server

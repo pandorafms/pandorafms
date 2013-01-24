@@ -216,11 +216,14 @@ foreach ($extensions as $file => $extension) {
 		//Get version of this extension
                 if ($config['extensions'][$file]['operation_menu']) {
                         $data[] = $config['extensions'][$file]['operation_menu']['version'];
-                } else if ($config['extensions'][$file]['godmode_menu']) {
+                }
+				else if ($config['extensions'][$file]['godmode_menu']) {
                         $data[] = $config['extensions'][$file]['godmode_menu']['version'];
-                } else if (isset($config['extensions'][$file]['extension_ope_tab'])) {
-		        $data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
-                } else if ($config['extensions'][$file]['extension_god_tab']) {
+                }
+				else if (isset($config['extensions'][$file]['extension_ope_tab'])) {
+		        	$data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
+                }
+				else if ($config['extensions'][$file]['extension_god_tab']) {
                         $data[] = $config['extensions'][$file]['extension_god_tab']['version'];
                 }
 

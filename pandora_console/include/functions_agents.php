@@ -711,7 +711,7 @@ function agents_get_next_contact($idAgent, $maxModules = false) {
  */
 function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	$id_agent = safe_int ($id_agent, 1);
-
+	
 	$where = '';
 	
 	if (! empty ($filter)) {

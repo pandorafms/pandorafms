@@ -138,7 +138,7 @@ function update_button_palette_callback() {
 		case 'label':
 			$("#" + idItem).css('color', values['label_color']);
 			
-			$("#text_" + idItem).html(values['label']);
+			$("#text_" + idItem).html(values['label2']);
 			break;
 		case 'icon':
 			var params = [];
@@ -155,7 +155,7 @@ function update_button_palette_callback() {
 				success: function (data) {
 					$("#image_" + idItem).attr('src', data);
 				}
-			});	
+			});
 			
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
@@ -189,6 +189,11 @@ function readFields() {
 	var values = {};
 	
 	values['label'] = $("input[name=label]").val(); 
+	
+	
+	var text = tinymce.get('text-label2').getContent();
+	values['label2'] = text;
+	
 	values['image'] = $("select[name=image]").val();
 	values['left'] = $("input[name=left]").val(); 
 	values['top'] = $("input[name=top]").val(); 
@@ -241,7 +246,7 @@ function create_button_palette_callback() {
 			}
 			break;
 		case 'label':
-			if ((values['label'] == '')) {
+			if ((values['label2'] == '')) {
 				alert($("#message_alert_no_label").html());
 				validate = false;
 			}
@@ -397,6 +402,9 @@ function loadFieldsFromDB(item) {
 	parameter.push ({name: "type", value: item});
 	parameter.push ({name: "id_element", value: idItem});
 	
+	is_label = false;
+	set_label = false;
+	
 	jQuery.ajax({
 		async: false,
 		url: url_ajax,
@@ -411,7 +419,29 @@ function loadFieldsFromDB(item) {
 					if (key == 'background') $("#background_image").val(val);
 					if (key == 'width') $("input[name=width]").val(val);
 					if (key == 'height') $("input[name=height]").val(val);
-					if (key == 'label') $("input[name=label]").val(val);
+					
+					if (key == 'type')
+						if (val == 4) { //Label
+							is_label = true;
+							
+							//Sometimes is set previous to know the
+							//type
+							if (set_label) {
+								tinymce.get('text-label2')
+									.setContent(set_label);
+								
+								$("input[name=label]").val("");
+							}
+					}
+					
+					if (key == 'label') {
+						if (is_label)
+							tinymce.get('text-label2').setContent(val);
+						else
+							$("input[name=label]").val(val);
+						set_label = val;
+					}
+					
 					if (key == 'enable_link') $("input[name=enable_link]").val(val);
 					
 					if (key == 'image') {
@@ -565,6 +595,9 @@ function hiddenFields(item) {
 	$(".title_panel_span").css('display', 'none');
 	$("#title_panel_span_"  + item).css('display', 'inline'); 
 	
+	$("#label2_row").css('display', 'none');
+	$("#label2_row."  + item).css('display', '');
+	
 	$("#label_row").css('display', 'none');
 	$("#label_row."  + item).css('display', '');
 	
@@ -638,6 +671,7 @@ function hiddenFields(item) {
 
 function cleanFields() {
 	$("input[name=label]").val('');
+	tinymce.get('text-label2').setContent("");
 	$("select[name=image]").val('');
 	$("input[name=left]").val(0);
 	$("input[name=top]").val(0);
@@ -1080,8 +1114,8 @@ function createItem(type, values, id_data) {
 			);
 			break;
 		case 'label':
-			item = $('<div id="' + id_data + '" class="item label" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
+			item = $('<div id="' + id_data + '" class="item label" style="color: ' + values['label_color'] + '; text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+					'<span id="text_' + id_data + '" class="text">' + values['label2'] + '</span>' + 
 					'</div>'
 				);
 			break;
@@ -1484,6 +1518,9 @@ function eventsItems(drag) {
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			divParent = $(event.target).parent();
+			while (!$(divParent).hasClass("item")) {
+				divParent = $(divParent).parent();
+			}
 			unselectAll();
 			$(divParent).css('border', '2px blue dotted');
 			

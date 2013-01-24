@@ -44,6 +44,7 @@ $id_element = get_parameter('id_element', null);
 $image = get_parameter('image', null);
 $background = get_parameter('background', null);
 $label = get_parameter('label', '');
+$label2 = get_parameter('label2', '');
 $left = get_parameter('left', null);
 $top = get_parameter('top', null);
 $agent = get_parameter('agent', null);
@@ -195,7 +196,7 @@ switch ($action) {
 					metaconsole_restore_db();
 				}
 				break;
-			
+				
 		}
 		
 		// Linked to other layout ?? - Only if not module defined
@@ -587,6 +588,8 @@ switch ($action) {
 				break;
 			case 'label':
 				$values['type'] = LABEL;
+				$values['label'] = $label2;
+				$label = $label2;
 				break;
 			case 'icon':
 				$values['type'] = ICON;

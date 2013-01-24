@@ -218,7 +218,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['period_row'] = array();
 			$form_items['period_row']['items'] = array('module_graph', 'simple_value', 'datos');
 			$form_items['period_row']['html'] = '<td align="left">' . __('Period') . '</td>
-				<td align="left">' .  html_print_extended_select_for_time ('period', '', '', '', '', false, true) . '</td>';
+				<td align="left">' .  html_print_extended_select_for_time ('period', SECONDS_5MINUTES, '', '', '', false, true) . '</td>';
 			
 			
 			$form_items['module_graph_size_row'] = array();

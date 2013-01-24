@@ -1,5 +1,10 @@
 2013-01-24 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_visual_map_editor.php: fixed the default value
+	for the period in the data item.
+
+2013-01-24 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_netflow.php,
 	operation/reporting/reporting_xml.php: fixed to show netflow data
 	in the XML report.

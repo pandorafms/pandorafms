@@ -1,3 +1,8 @@
+2013-01-25  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_alert_macros.php: Changed description for
+	_event_id_ macro to make easier to read.
+
 2013-01-24 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_visual_map_editor.php: fixed the default value

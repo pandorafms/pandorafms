@@ -1,5 +1,15 @@
 2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_reporting.php: fixed the calculate the min,
+	max and avg of exception item and show the operation column.
+	
+	Fixes: #3602229
+	
+	* godmode/reporting/reporting_builder.item_editor.php: fixed lost
+	vars from the metaconsole that makes PHP notices.
+
+2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* ggodmode/massive/massive_operations.php,
 	godmode/massive/massive_edit_modules.php: fixed the form editor for
 	modules, now set the strings instruction for the unknown, warning

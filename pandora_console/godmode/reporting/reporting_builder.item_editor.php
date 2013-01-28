@@ -23,11 +23,9 @@ if (! check_acl ($config['id_user'], 0, "RW")) {
 	exit;
 }
 
+$meta = false;
 if (($config['metaconsole'] == 1) && (defined('METACONSOLE'))) {
 	$meta = true;
-}
-else {
-	$meta = false;
 }
 $show_graph_options = Array();
 $show_graph_options[0] = __('Only table');
@@ -1119,6 +1117,11 @@ function print_SLA_list($width, $action, $idItem = null) {
 
 function print_General_list($width, $action, $idItem = null) {
 	global $config;
+	global $meta;
+	if (!isset($meta))
+		$meta = false;
+
+
 	include_once($config['homedir'] . '/include/functions_html.php');
 	?>
 	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="98%">

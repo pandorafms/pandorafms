@@ -32,7 +32,10 @@ require_once ('include/functions_networkmap.php');
 $filter = networkmap_get_filter ($layout);
 
 // Generate dot file
-$graph = networkmap_generate_dot_groups (__('Pandora FMS'), $group, $simple, $font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen, $pure, $modwithalerts, $module_group, $hidepolicymodules, $depth, $id_networkmap, $dont_show_subgroups);
+$graph = networkmap_generate_dot_groups (__('Pandora FMS'), $group,
+	$simple, $font_size, $layout, $nooverlap, $zoom, $ranksep, $center,
+	$regen, $pure, $modwithalerts, $module_group, $hidepolicymodules,
+	$depth, $id_networkmap, $dont_show_subgroups, $text_filter);
 
 if ($graph === false) {
 	ui_print_error_message (__('Map could not be generated'));
@@ -41,10 +44,13 @@ if ($graph === false) {
 }
 
 // Generate image and map
-// If image was generated just a few minutes ago, then don't regenerate (it takes long) unless regen checkbox is set
-$filename_map = safe_url_extraclean ($config["attachment_store"])."/networkmap_".$filter;
-$filename_img = "attachment/networkmap_".$filter."_".$font_size;
-$filename_dot = safe_url_extraclean ($config["attachment_store"])."/networkmap_".$filter;
+// If image was generated just a few minutes ago, then don't regenerate
+// (it takes long) unless regen checkbox is set
+$filename_map = safe_url_extraclean($config["attachment_store"]) .
+	"/networkmap_" . $filter;
+$filename_img = "attachment/networkmap_" . $filter . "_" . $font_size;
+$filename_dot = safe_url_extraclean($config["attachment_store"]) .
+	"/networkmap_" . $filter;
 if ($simple) {
 	$filename_map .= "_simple";
 	$filename_img .= "_simple";
@@ -55,9 +61,9 @@ if ($nooverlap) {
 	$filename_img .= "_nooverlap";
 	$filename_dot .= "_nooverlap";
 }
-$filename_map .= "_".$id_networkmap.".map";
-$filename_img .= "_".$id_networkmap.".png";
-$filename_dot .= "_".$id_networkmap.".dot";
+$filename_map .= "_" . $id_networkmap . ".map";
+$filename_img .= "_" . $id_networkmap . ".png";
+$filename_dot .= "_" . $id_networkmap . ".dot";
 
 if ($regen != 1 && file_exists ($filename_img) &&
 	filemtime ($filename_img) > get_system_time () - SECONDS_5MINUTES) {
@@ -70,7 +76,8 @@ else {
 	}
 	else {
 		fwrite ($fh, $graph);
-		$cmd = "$filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img." ".$filename_dot;
+		$cmd = "$filter -Tcmapx -o" . $filename_map . " -Tpng " .
+			"-o" . $filename_img . " " . $filename_dot;
 		$result = system ($cmd);
 		fclose ($fh);
 		unlink ($filename_dot);
@@ -87,7 +94,8 @@ if ($result !== false) {
 		
 		return;
 	}
-	html_print_image ($filename_img, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
+	html_print_image ($filename_img, false,
+		array ("alt" => __('Network map'), "usemap" => "#networkmap"));
 	require ($filename_map);
 }
 else {

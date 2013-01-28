@@ -1,5 +1,14 @@
 2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_networkmap.php,
+	operation/agentes/networkmap.topology.php,
+	operation/agentes/networkmap.groups.php: fixed the lost parameter
+	in the generation of networkmap with a text filter.
+	
+	Fixes: #3602233
+
+2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/module_manager.php: fixed the PHP notices in the
 	policy module editor.
 	

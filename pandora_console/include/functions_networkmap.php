@@ -202,7 +202,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0, $simple = 0,
 }
 
 // Generate a dot graph definition for graphviz with groups
-function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0, $depth = 'all', $id_networkmap = 0, $dont_show_subgroups = 0) {
+function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0, $depth = 'all', $id_networkmap = 0, $dont_show_subgroups = 0, $text_filter = '') {
 	global $config;
 	
 	$parents = array();
@@ -210,6 +210,20 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 	
 	$filter = array ();
 	$filter['disabled'] = 0;
+	
+	if (!empty($text_filter)) {
+		switch ($config['dbtype']) {
+			case "mysql":
+			case "postgresql":
+				$filter[] =
+					'(nombre COLLATE utf8_general_ci LIKE "%' . $text_filter . '%")';
+				break;
+			case "oracle":
+				$filter[] =
+					'(upper(nombre) LIKE upper("%' . $text_filter . '%"))';
+				break;
+		}
+	}
 	
 	// Get groups data
 	if ($group > 0) {

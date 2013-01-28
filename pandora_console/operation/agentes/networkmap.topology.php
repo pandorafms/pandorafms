@@ -32,7 +32,10 @@ require_once ('include/functions_networkmap.php');
 $filter = networkmap_get_filter ($layout);
 
 // Generate dot file
-$graph = networkmap_generate_dot (__('Pandora FMS'), $group, $simple, $font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen, $pure, $id_networkmap, $show_snmp_modules, true, true, $text_filter);
+$graph = networkmap_generate_dot(__('Pandora FMS'), $group, $simple,
+	$font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen,
+	$pure, $id_networkmap, $show_snmp_modules, true, true,
+	$text_filter);
 
 if ($graph === false) {
 	ui_print_error_message (__('Map could not be generated'));
@@ -43,9 +46,11 @@ if ($graph === false) {
 
 // Generate image and map
 // If image was generated just a few minutes ago, then don't regenerate (it takes long) unless regen checkbox is set
-$filename_map = safe_url_extraclean ($config["attachment_store"])."/networkmap_".$filter;
-$filename_img = "attachment/networkmap_".$filter."_".$font_size;
-$filename_dot = safe_url_extraclean ($config["attachment_store"])."/networkmap_".$filter;
+$filename_map = safe_url_extraclean($config["attachment_store"]) .
+	"/networkmap_" . $filter;
+$filename_img = "attachment/networkmap_" . $filter . "_" . $font_size;
+$filename_dot = safe_url_extraclean($config["attachment_store"]) .
+	"/networkmap_" . $filter;
 if ($simple) {
 	$filename_map .= "_simple";
 	$filename_img .= "_simple";

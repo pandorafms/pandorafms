@@ -82,22 +82,24 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 	unset($modules['predictionserver']);
 }
 
-if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
-	// Create module/type combo
-	echo '<form id="create_module_type" method="post" action="'.$url.'">';
-	html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
-	html_print_input_hidden ('edit_module', 1);
-	echo '</td>';
-	echo '<td class="datos">';
-	echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
-	echo '</td>';
-	echo '<td class="datos" style="text-align:center;">';
-	echo "<strong>";
-	echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
-	echo "</strong>";
-	echo '</td>';
-	echo '</tr>';
-	echo "</form>";
+if (isset($agent)) {
+	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+		// Create module/type combo
+		echo '<form id="create_module_type" method="post" action="'.$url.'">';
+		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
+		html_print_input_hidden ('edit_module', 1);
+		echo '</td>';
+		echo '<td class="datos">';
+		echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
+		echo '</td>';
+		echo '<td class="datos" style="text-align:center;">';
+		echo "<strong>";
+		echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
+		echo "</strong>";
+		echo '</td>';
+		echo '</tr>';
+		echo "</form>";
+	}
 }
 
 echo "</table>";

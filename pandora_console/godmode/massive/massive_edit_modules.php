@@ -113,13 +113,13 @@ if ($update) {
 		$agents_ = array();
 	}
 	
-	foreach($agents_ as $agent_) {
+	foreach ($agents_ as $agent_) {
 		
-		if($modules_ == false) {
+		if ($modules_ == false) {
 			$modules_ = array();
 		}
 		
-		foreach($modules_ as $module_) {
+		foreach ($modules_ as $module_) {
 			$result = process_manage_edit ($module_, $agents_);
 			$count ++;
 			$success += (int)$result;
@@ -127,7 +127,8 @@ if ($update) {
 	}
 	
 	ui_print_result_message ($success > 0,
-		__('Successfully updated')."(".$success."/".$count.")",
+		__('Successfully updated') .
+			"(" . $success . "/" . $count . ")",
 		__('Could not be updated'));
 	
 	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);	
@@ -395,7 +396,7 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
 ui_require_jquery_file ('pandora.controls');
 
-if($selection_mode == 'modules'){
+if ($selection_mode == 'modules') {
 	$modules_row = '';
 	$agents_row = 'none';
 }
@@ -491,34 +492,40 @@ $(document).ready (function () {
 	
 	$('input[type=checkbox]').change (
 		function () {
-			if(this.id == "checkbox-force_type"){
-				if(this.checked) {
+			if (this.id == "checkbox-force_type") {
+				if (this.checked) {
 					$(".select_modules_row_2").css('display', 'none');
 					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").show ();
 				}
 				else {
 					$(".select_modules_row_2").css('display', '');
-					if($('#module_name option:selected').val() == undefined) {
+					if ($('#module_name option:selected').val() == undefined) {
 						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8, tr#delete_table-edit10, tr#delete_table-edit11, tr#delete_table-edit12").hide ();
 					}
 				}
 			}
-			else if(this.id == "checkbox-recursion"){
+			else if (this.id == "checkbox-recursion") {
 				$("#checkbox-force_group").attr("checked", false);
 				$("#groups_select").trigger("change");
+			}
+			else if (this.id == "checkbox-warning_inverse") {
+				return; //Do none
+			}
+			else if (this.id == "checkbox-critical_inverse") {
+				return; //Do none
 			}
 			else {
 				if (this.id == "checkbox-force_group") {
 					$("#checkbox-recursion").attr("checked", false);
 				}
 				
-				if(this.checked) {
+				if (this.checked) {
 					$(".select_agents_row_2").css('display', 'none');
 					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8, tr#delete_table-edit10, tr#delete_table-edit11, tr#delete_table-edit12").show ();
 				}
 				else {
 					$(".select_agents_row_2").css('display', '');
-					if($('#id_agents option:selected').val() == undefined) {
+					if ($('#id_agents option:selected').val() == undefined) {
 						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8, tr#delete_table-edit10, tr#delete_table-edit11, tr#delete_table-edit12").hide ();
 					}
 				}
@@ -597,24 +604,30 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		
 		return false;
 	}
-
+	
 	if (!is_array($agents_select))
 		$agents_select = array($agents_select);
 	
 	/* List of fields which can be updated */
-	$fields = array ('min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical', 'min_ff_event', 'module_interval',
-		'disabled', 'post_process', 'unit', 'snmp_community', 'tcp_send', 'custom_string_1', 'plugin_parameter', 
-		'custom_string_2', 'custom_string_3', 'min', 'max', 'id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data', 'critical_inverse', 'warning_inverse');
+	$fields = array ('min_warning', 'max_warning', 'str_warning',
+		'min_critical', 'max_critical', 'str_critical', 'min_ff_event',
+		'module_interval', 'disabled', 'post_process', 'unit',
+		'snmp_community', 'tcp_send', 'custom_string_1',
+		'plugin_parameter', 'custom_string_2', 'custom_string_3', 'min',
+		'max', 'id_module_group', 'plugin_user', 'plugin_pass',
+		'id_export', 'history_data', 'critical_inverse',
+		'warning_inverse', 'critical_instructions',
+		'warning_instructions', 'unknown_instructions');
 	$values = array ();
 	
 	// Specific snmp reused fields
-	if(get_parameter ('tcp_send', '') == 3) {
+	if (get_parameter ('tcp_send', '') == 3) {
 		$plugin_user_snmp = get_parameter ('plugin_user_snmp', '');
-		if($plugin_user_snmp != '') {
+		if ($plugin_user_snmp != '') {
 			$values['plugin_user'] = $plugin_user_snmp;
 		}
 		$plugin_pass_snmp = get_parameter ('plugin_pass_snmp', '');
-		if($plugin_pass_snmp != '') {
+		if ($plugin_pass_snmp != '') {
 			$values['plugin_pass'] = $plugin_pass_snmp;
 		}
 	}
@@ -633,7 +646,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	if (get_parameter('quiet_select', -1) != -1) {
 		$values['quiet'] = get_parameter('quiet_select');
 	}
-
+	
 	$filter_modules = false;
 	
 	if (!is_numeric($module_name) or ($module_name != 0))
@@ -649,7 +662,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 			array ('id_agente_modulo'));
 	}
 	else {
-		if ($module_name == 0) {
+		if ($module_name == "0") {
 			//Any module
 			$modules = db_get_all_rows_filter ('tagente_modulo',
 				array ('id_agente' => $agents_select),
@@ -669,7 +682,8 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		return false;
 	
 	foreach ($modules as $module) {
-		$result = modules_update_agent_module ($module['id_agente_modulo'], $values, true, $update_tags);
+		$result = modules_update_agent_module(
+			$module['id_agente_modulo'], $values, true, $update_tags);
 		
 		if (is_error($result)) {
 			db_process_sql_rollback ();

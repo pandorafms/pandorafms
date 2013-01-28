@@ -378,7 +378,7 @@ $field2_recovery = '';
 $field3_recovery = '';
 $matches = true;
 $id_group = 0;
-$wizard_level = -1;
+$wizard_level = 'nowizard';
 
 if ($create_template) {
 	$name = (string) get_parameter ('name');
@@ -648,22 +648,24 @@ else {
 	$table->data[2][1] = html_print_select (get_priorities (), 'priority',
 		$priority, '', 0, 0, true, false, false);
 		
-	$table->data[2][0] = __('Wizard level');
-	$wizard_levels = array('nowizard' => __('No wizard'),
-							'basic' => __('Basic'),
-							'advanced' => __('Advanced'),
-							//'custom' => __('Custom'),
-							);
-	$table->data[2][1] = html_print_select($wizard_levels,'wizard_level',$wizard_level,'','',-1,true, false, false);
+	if(defined('METACONSOLE')) {
+		$table->data[3][0] = __('Wizard level');
+		$wizard_levels = array('basic' => __('Basic'),
+								'advanced' => __('Advanced')								);
+		$table->data[3][1] = html_print_select($wizard_levels,'wizard_level',$wizard_level,'','',-1,true, false, false);
+	}
+	else {
+		$table->data[2][1] .= html_print_input_hidden('wizard_level',$wizard_level,true);
+	}
 	
-	$table->data[3][0] = __('Condition type');
-	$table->data[3][1] = html_print_select (alerts_get_alert_templates_types (), 'type',
+	$table->data[4][0] = __('Condition type');
+	$table->data[4][1] = html_print_select (alerts_get_alert_templates_types (), 'type',
 		$type, '', __('Select'), 0, true, false, false);
-	$table->data[3][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
-	$table->data[3][1] .= '&nbsp;'.html_print_checkbox ('matches_value', 1, $matches, true);
-	$table->data[3][1] .= html_print_label (__('Trigger when matches the value'),
+	$table->data[4][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
+	$table->data[4][1] .= '&nbsp;'.html_print_checkbox ('matches_value', 1, $matches, true);
+	$table->data[4][1] .= html_print_label (__('Trigger when matches the value'),
 		'checkbox-matches_value', true);
-	$table->data[3][1] .= '</span>';
+	$table->data[4][1] .= '</span>';
 	
 	$table->data['value'][0] = __('Value');
 	$table->data['value'][1] = html_print_input_text ('value', $value, '',

@@ -109,7 +109,12 @@ $(document).ready (function () {
 	
 	
 	$("a#dialog_license_info").click (function () {
-		jQuery.get ("ajax.php",
+		var ajax_doc = "ajax.php";
+		if($('#hidden-metaconsole_activated').val() == 1) {
+			ajax_doc = "../../" + ajax_doc;
+		}
+		
+		jQuery.get (ajax_doc,
 			{"page": "extensions/update_manager",
 			 "get_license_info": "1"},
 			function (data, status) {

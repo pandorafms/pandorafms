@@ -1,3 +1,23 @@
+2013-01-28  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql: Modified the alerts default data  to
+	have basic wizard access by default
+
+	* godmode/alerts/configure_alert_template.php: Modify the 
+	alert templates form to define wizard access only in metaconsole
+	and nowizard or respect the current value from the normal console
+
+	* include/javascript/jquery.pandora.js: Add a hack to
+	the license modal window to use it from metaconsole too
+
+	* operation/events/events.build_table.php
+	operation/events/events_list.php
+	operation/events/events.php: Encapsulate the table build
+	of the events list to reuse it from other views like tactical
+	view in metaconsole
+
 2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/massive/massive_edit_modules.php: fixed the warning

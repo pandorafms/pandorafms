@@ -4624,7 +4624,7 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 				array_push ($table->data, $data_desc);
 			}
 			//Get all the related data
-			$sql = sprintf("SELECT id_agent_module, server_name
+			$sql = sprintf("SELECT id_agent_module, server_name, operation
 				FROM treport_content_item
 				WHERE id_report_content = %d", $content['id_rc']);
 			
@@ -4643,10 +4643,12 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 				$table1->head = array ();
 				$table1->head[0] = __('Agent');
 				$table1->head[1] = __('Module');
-				$table1->head[2] = __('Value');
+				$table1->head[2] = __('Operation');
+				$table1->head[3] = __('Value');
 				$table1->style[0] = 'text-align: left';
 				$table1->style[1] = 'text-align: left';
 				$table1->style[2] = 'text-align: right';
+				$table1->style[3] = 'text-align: right';
 			}
 			
 			//Get the very first not null value 
@@ -4662,7 +4664,17 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 					}
 				}
 				
-				$min = reporting_get_agentmodule_data_average ($exceptions[$i]['id_agent_module'], $content['period']);
+				switch ($exceptions[$i]['operation']) {
+					case 'avg':
+						$min = reporting_get_agentmodule_data_average ($exceptions[$i]['id_agent_module'], $content['period']);
+						break;
+					case 'max':
+						$min = reporting_get_agentmodule_data_max ($exceptions[$i]['id_agent_module'], $content['period']);
+						break;
+					case 'min':
+						$min = reporting_get_agentmodule_data_min ($exceptions[$i]['id_agent_module'], $content['period']);
+						break;
+				}
 				$i++;
 				
 				//Restore dbconnection
@@ -4690,7 +4702,18 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 				$mod_name = modules_get_agentmodule_name ($exc ['id_agent_module']);
 				$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $exc ['id_agent_module']);
 				
-				$value = reporting_get_agentmodule_data_average ($exc['id_agent_module'], $content['period']);
+				switch ($exc['operation']) {
+					case 'avg':
+						$value = reporting_get_agentmodule_data_average ($exc['id_agent_module'], $content['period']);
+						break;
+					case 'max':
+						$value = reporting_get_agentmodule_data_max ($exc['id_agent_module'], $content['period']);
+						break;
+					case 'min':
+						$value = reporting_get_agentmodule_data_min ($exc['id_agent_module'], $content['period']);
+						break;
+				}
+				
 				if ($value !== false) {
 					if ($value > $max) $max = $value;
 					if ($value < $min) $min = $value;
@@ -4734,6 +4757,7 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 					$agent_name[] = $ag_name;
 					$module_name[] = $mod_name;
 					$units[] = $unit;
+					$operation[] = $exc['operation'];
 				}
 				//Restore dbconnection
 				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
@@ -4796,7 +4820,8 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 							$data = array();
 							$data[0] = $agent_name[$j];
 							$data[1] = $module_name[$j];
-							$data[2] = format_for_graph($dex, 2) . " " . $units[$j];
+							$data[2] = __($operation[$j]);
+							$data[3] = format_for_graph($dex, 2) . " " . $units[$j];
 							array_push ($table1->data, $data);
 						}
 						$j++;
@@ -4813,7 +4838,8 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 							$data = array();
 							$data[0] = $an;
 							$data[1] = $module_name[$j];
-							$data[2] = format_for_graph($data_exceptions[$j], 2) . " " . $units[$j];
+							$data[2] = __($operation[$j]);
+							$data[3] = format_for_graph($data_exceptions[$j], 2) . " " . $units[$j];
 							array_push ($table1->data, $data);
 						}
 						$j++;

@@ -789,7 +789,7 @@ remote_config 1" . $temp;
 					unlink ("$directory_temp/$md5_agent_name.md5");
 				}
 				else {
-					log_message ($conf, "\ERROR:\tThe $agent.conf is not create.'\n");
+					log_message ($conf, "\tERROR:\tThe $agent.conf is not create.'\n");
 				}
 			}
 			
@@ -845,7 +845,7 @@ sub parse_local_conf($$) {
 		close (CONF_FILE);
 	}
 	else {
-		log_message ($conf, "\ERROR:\tOpen to parse the $agent_name.conf.'\n");
+		log_message ($conf, "\tERROR:\tOpen to parse the $agent_name.conf.'\n");
 	}
 	
 	return \@return;

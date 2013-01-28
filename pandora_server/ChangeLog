@@ -1,3 +1,8 @@
+2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* util/pandora_xml_stress.pl: fixed the typo messages error that
+	put \ERROR instead \tERROR and the perl show warnings.
+
 2013-01-23  Sergio Martin <sergio.martin@artica.es>
 
 	* util/plugin/EU_10yrspread.pl: Updated the european countries

@@ -1,5 +1,10 @@
 2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/massive/massive_edit_modules.php: fixed the warning
+	message of PHP.
+
+2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_networkmap.php,
 	operation/agentes/networkmap.topology.php,
 	operation/agentes/networkmap.groups.php: fixed the lost parameter

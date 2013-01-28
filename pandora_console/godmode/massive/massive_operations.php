@@ -32,21 +32,27 @@ enterprise_include ('godmode/massive/massive_operations.php');
 $tab = (string) get_parameter ('tab', 'massive_agents');
 $option = (string) get_parameter ('option', '');
 
-$options_alerts = array('add_alerts' => __('Massive alerts addition'), 'delete_alerts' => __('Massive alerts deletion'), 
-	'add_action_alerts' => __('Massive alert actions addition'), 'delete_action_alerts' => __('Massive alert actions deletion'),
-	'enable_disable_alerts' => __('Massive alert enable/disable'), 'standby_alerts' => __('Massive alert setting standby'));
+$options_alerts = array('add_alerts' => __('Massive alerts addition'),
+	'delete_alerts' => __('Massive alerts deletion'), 
+	'add_action_alerts' => __('Massive alert actions addition'),
+	'delete_action_alerts' => __('Massive alert actions deletion'),
+	'enable_disable_alerts' => __('Massive alert enable/disable'),
+	'standby_alerts' => __('Massive alert setting standby'));
 
-$options_agents = array('edit_agents' => __('Massive agents edition'), 'delete_agents' => __('Massive agents deletion'));
+$options_agents = array('edit_agents' => __('Massive agents edition'),
+	'delete_agents' => __('Massive agents deletion'));
 
 if (check_acl ($config['id_user'], 0, "PM")) {
-	$options_users = array('add_profiles' => __('Massive profiles addition'),
+	$options_users = array(
+		'add_profiles' => __('Massive profiles addition'),
 		'delete_profiles' => __('Massive profiles deletion'));
 }
 else {
 	$options_users = array();
 }
 
-$options_modules = array('delete_modules' => __('Massive modules deletion'),
+$options_modules = array(
+	'delete_modules' => __('Massive modules deletion'),
 	'edit_modules' => __('Massive modules edition'), 
 	'copy_modules' => __('Massive modules copy'));
 
@@ -55,7 +61,8 @@ $options_policies = array();
 $policies_options = enterprise_hook('massive_policies_options');
 
 if($policies_options != -1) {
-	$options_policies = array_merge($options_policies, $policies_options);
+	$options_policies =
+		array_merge($options_policies, $policies_options);
 }
 
 if (in_array($option, array_keys($options_alerts))) {
@@ -159,7 +166,8 @@ echo '</div>';
 <script language="javascript" type="text/javascript">
 	$(document).ready (function () {
 		$('#manage_config_form').submit( function() {
-			confirm_status = confirm(" <?php echo __('Are you sure?'); ?> ");
+			confirm_status =
+				confirm("<?php echo __('Are you sure?'); ?>");
 			if (confirm_status)
 				$("#loading").css("display", "");
 			else
@@ -167,15 +175,17 @@ echo '</div>';
 		});
 		
 		$('#form_edit').submit( function() {
-			confirm_status = confirm(" <?php echo __('Are you sure?'); ?> ");
+			confirm_status =
+				confirm("<?php echo __('Are you sure?'); ?>");
 			if (confirm_status)
 				$("#loading").css("display", "");
 			else
-				return false;	
+				return false;
 		});
 		
 		$('[id^=form]').submit( function() {
-			confirm_status = confirm(" <?php echo __('Are you sure?'); ?> ");
+			confirm_status =
+				confirm("<?php echo __('Are you sure?'); ?>");
 			if (confirm_status)
 				$("#loading").css("display", "");
 			else
@@ -188,14 +198,19 @@ echo '</div>';
 
 <?php
 
+echo "<br />";
 echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';			
 echo '<table border="0"><tr><td>';
+echo __("Action");
 echo '</td><td>';
-html_print_select($options, 'option', $option, 'this.form.submit()', '', 0, false, false, false);
+html_print_select($options, 'option', $option, 'this.form.submit()', '',
+	0, false, false, false);
 if($option == 'edit_agents' || $option == 'edit_modules') 
-	echo '<a href="#" class="tip">&nbsp;<span>' . __("The blank fields will not be updated") . '</span></a>';
+	echo '<a href="#" class="tip">&nbsp;<span>' .
+		__("The blank fields will not be updated") . '</span></a>';
 echo '</td></tr></table>';
 echo '</form>';
+echo "<br />";
 
 switch ($option) {
 	case 'delete_alerts':

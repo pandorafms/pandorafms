@@ -1,3 +1,13 @@
+2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* ggodmode/massive/massive_operations.php,
+	godmode/massive/massive_edit_modules.php: fixed the form editor for
+	modules, now set the strings instruction for the unknown, warning
+	and critical, set only for the selected modules (instead the all
+	modules the bug).
+	
+	Fixes: #3602361
+
 2013-01-28  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql

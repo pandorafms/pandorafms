@@ -83,7 +83,7 @@ if ($update) {
 				WHERE t1.id_agente = t2.id_agente AND t2.delete_pending = 0 ' . $condition);
 			foreach($agents_ as $id_agent) {
 				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type, 'delete_pending' => 0),'nombre');
-
+				
 				if($module_name == false) {
 					$module_name = array();
 				}
@@ -249,7 +249,10 @@ $table->data[3][1] = html_print_select ($modules, 'module_name[]',
 
 $table->data[3][2] = __('When select modules');
 $table->data[3][2] .= '<br>';
-$table->data[3][2] .= html_print_select (array('common' => __('Show common agents'), 'all' => __('Show all agents')), 'agents_selection_mode',
+$table->data[3][2] .= html_print_select (
+	array('common' => __('Show common agents'),
+		'all' => __('Show all agents')),
+	'agents_selection_mode',
 	'common', false, '', '', true);
 $table->data[3][3] = html_print_select (array(), 'agents[]',
 	$agents_select, false, __('None'), 0, true, true, false);
@@ -262,21 +265,25 @@ $table->data[4][1] = html_print_select ($agents, 'id_agents[]',
 
 $table->data[4][2] = __('When select agents');
 $table->data[4][2] .= '<br>';
-$table->data[4][2] .= html_print_select (array('common' => __('Show common modules'), 'all' => __('Show all modules')), 'modules_selection_mode',
+$table->data[4][2] .= html_print_select (
+	array('common' => __('Show common modules'),
+		'all' => __('Show all modules')),
+	'modules_selection_mode',
 	'common', false, '', '', true);
 $table->data[4][3] = html_print_select (array(), 'module[]',
 	$modules_select, false, '', '', true, true, false);
 
 
 $table->data['edit1'][0] = __('Warning status');
-$table->data['edit1'][1] = '<em>'.__('Min.').'</em>';
-$table->data['edit1'][1] .= html_print_input_text ('min_warning', '', '', 5, 15, true);
-$table->data['edit1'][1] .= '<br /><em>'.__('Max.').'</em>';
+$table->data['edit1'][1] = '<em>' . __('Min.') . '</em>';
+$table->data['edit1'][1] .= html_print_input_text('min_warning', '', '',
+	5, 15, true);
+$table->data['edit1'][1] .= '<br /><em>' . __('Max.') . '</em>';
 $table->data['edit1'][1] .= html_print_input_text ('max_warning', '', '', 5, 15, true);
 $table->data['edit1'][1] .= '<br /><em>'.__('Str.').'</em>';
 $table->data['edit1'][1] .= html_print_input_text ('str_warning', '', '', 5, 15, true);
 $table->data['edit1'][1] .= '<br /><em>'.__('Inverse interval').'</em>';
-$table->data['edit1'][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
+$table->data['edit1'][1] .= html_print_checkbox ("warning_inverse", 1, '', true);
 
 $table->data['edit1'][2] = __('Critical status');
 $table->data['edit1'][3] = '<em>'.__('Min.').'</em>';
@@ -286,7 +293,7 @@ $table->data['edit1'][3] .= html_print_input_text ('max_critical', '', '', 5, 15
 $table->data['edit1'][3] .= '<br /><em>'.__('Str.').'</em>';
 $table->data['edit1'][3] .= html_print_input_text ('str_critical', '', '', 5, 15, true);
 $table->data['edit1'][3] .= '<br /><em>'.__('Inverse interval').'</em>';
-$table->data['edit1'][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
+$table->data['edit1'][3] .= html_print_checkbox ("critical_inverse", 1, '', true);
 
 $table->data['edit2'][0] = __('Interval');
 $table->data['edit2'][1] = html_print_extended_select_for_time ('module_interval', 0, '', __('No change'), '0', 10, true, 'width: 150px');

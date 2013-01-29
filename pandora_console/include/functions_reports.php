@@ -604,7 +604,7 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		}
 	}
 	
-	if (!$template) {	
+	if (!$template) {
 		$types['agent_configuration'] = array('optgroup' => __('Configuration'),
 			'name' => __('Agent configuration')); 
 		$types['group_configuration'] = array('optgroup' => __('Configuration'),

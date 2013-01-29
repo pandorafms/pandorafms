@@ -108,6 +108,7 @@ function network_components_get_group_name ($id_network_component_group) {
 function network_components_get_group ($id_network_component_group, $filter = false, $fields = false) {
 	if (empty ($id_network_component_group))
 		return false;
+	
 	if (! is_array ($filter))
 		$filter = array ();
 	$filter['id_sg'] = (int) $id_network_component_group;
@@ -218,6 +219,7 @@ function network_components_get_groups ($id_module_components = 0, $localCompone
 function network_components_get_network_component ($id_network_component, $filter = false, $fields = false) {
 	if (empty ($id_network_component))
 		return false;
+	
 	if (! is_array ($filter))
 		$filter = array ();
 	$filter['id_nc'] = (int) $id_network_component;
@@ -227,7 +229,7 @@ function network_components_get_network_component ($id_network_component, $filte
 	if(!empty($network_component) && $network_component['id_category'] != 0) {
 		$network_component['category_name'] = (string) db_get_value('name','tcategory','id',$network_component['id_category']);
 	}
-
+	
 	return $network_component;
 }
 
@@ -254,10 +256,13 @@ function network_components_create_network_component ($name, $type, $id_group, $
 	
 	if (empty ($name))
 		return false;
+	
 	if (empty ($type))
 		return false;
+	
 	if (! is_array ($values))
 		$values = array ();
+	
 	$values['name'] = $name;
 	$values['type'] = (int) $type;
 	$values['id_group'] = (int) $id_group;
@@ -277,9 +282,11 @@ function network_components_create_network_component ($name, $type, $id_group, $
 function network_components_update_network_component ($id_network_component, $values = false) {
 	if (empty ($id_network_component))
 		return false;
+	
 	$component = network_components_get_network_component ($id_network_component);
 	if (empty ($component))
 		return false;
+	
 	if (! is_array ($values))
 		return false;
 	
@@ -299,6 +306,7 @@ function network_components_update_network_component ($id_network_component, $va
 function network_components_delete_network_component ($id_network_component) {
 	if (empty ($id_network_component))
 		return false;
+	
 	$filter = array ();
 	$filter['id_nc'] = $id_network_component;
 	
@@ -319,6 +327,7 @@ function network_components_delete_network_component ($id_network_component) {
 function network_components_create_module_from_network_component ($id_network_component, $id_agent) {
 	if (! users_access_to_agent ($id_agent, 'AW'))
 		return false;
+	
 	$component = network_components_get_network_component ($id_network_component,
 		false,
 		array ('name',
@@ -375,6 +384,7 @@ function network_components_create_module_from_network_component ($id_network_co
 function network_components_get_name ($id_network_component) {
 	if (empty ($id_network_component))
 		return false;
+	
 	return @db_get_value ('name', 'tnetwork_component', 'id', $id_network_component);
 }
 
@@ -382,7 +392,7 @@ function network_components_get_name ($id_network_component) {
  * Duplicate local compoment.
  * @param integer id_local_component Id of localc component for duplicate.
  */
-function network_components_duplicate_network_component ($id_local_component) {	
+function network_components_duplicate_network_component ($id_local_component) {
 	$network = network_components_get_network_component ($id_local_component);
 	
 	if ($network === false)

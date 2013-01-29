@@ -193,21 +193,22 @@ if ($update_action) {
 				exit;
 			}
 			else {
-				// Header	
+				// Header
 				if (defined('METACONSOLE')) {
 					alerts_meta_print_header ();
 				}
-				else {	
+				else {
 					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
-				}			
+				}
 			}
 		}
-	} else {
-		// Header	
+	}
+	else {
+		// Header
 		if (defined('METACONSOLE')) {
 			alerts_meta_print_header ();
 		}
-		else {	
+		else {
 			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
 		}
 	}
@@ -220,7 +221,7 @@ if ($update_action) {
 	
 	$info_fields = '';
 	$values = array();
-
+	
 	for($i=1;$i<=10;$i++) {
 		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
 		$info_fields .= ' Field1: ' . $values['field'.$i];
@@ -230,7 +231,7 @@ if ($update_action) {
 	$values['id_alert_command'] = $id_alert_command;
 	$values['id_group'] = $group;
 	$values['action_threshold'] = $action_threshold;
-
+	
 	if (!$name) {
 		$result = '';
 	}
@@ -270,11 +271,11 @@ if ($delete_action) {
 				exit;
 			}
 			else {
-				// Header	
+				// Header
 				if (defined('METACONSOLE')) {
 					alerts_meta_print_header ();
 				}
-				else {	
+				else {
 					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
 				}
 			}

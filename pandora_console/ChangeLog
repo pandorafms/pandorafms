@@ -1,5 +1,10 @@
 2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/help/en/help_alert_compound.php: delete old files for
+	deprecated alert compounds.
+
+2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/alerts/alert_compounds.php,
 	godmode/alerts/configure_alert_compound.php: delete old files for
 	deprecated alert compounds.

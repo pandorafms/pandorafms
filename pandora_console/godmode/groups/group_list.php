@@ -76,48 +76,19 @@ if (is_ajax ()) {
 			echo json_encode (false);
 			return;
 		}
-
+		
 		if($filter_agents_json != '') {
 			$filter['id_agente'] = json_decode(io_safe_output($filter_agents_json), true);
 		}
-
+		
 		$filter['disabled'] = $disabled;
 		
 		if($search != '') {
 			$filter['string'] = $search;
 		}
 		
-		/*if ($config['metaconsole'] == 1) {
-			enterprise_include_once('include/functions_metaconsole.php');
-			
-			$connection_names = enterprise_hook('metaconsole_get_connection_names');
-			if ($connection_names === false)
-				$connection_names = array();
 		
-			$agents_tmp = array();
-			$agents = array();
-			foreach ($connection_names as $connection) {
-				$connection_data = enterprise_hook('metaconsole_get_connection', array($connection));
-				
-				$connection_result = enterprise_hook('metaconsole_load_external_db', array($connection_data)); 
-				
-				if ($connection_result == NOERR) {
-					$agents_tmp = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
-					
-					if ($agents_tmp === false)
-						$agents_tmp = array();
-						
-					foreach ($agents_tmp as $agent_key => $agent_name) {
-						$agents[$connection_data['server_name'] . '|' . $agent_key] = $agent_name;
-					}
-				}
-				
-				enterprise_hook('metaconsole_restore_db');
-			}
-		} 
-		else {	*/
-			$agents = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
-		//}
+		$agents = agents_get_group_agents ($id_group, $filter, "none", false, $recursion);
 		
 		echo json_encode ($agents);
 		return;
@@ -163,8 +134,8 @@ if ($create_group) {
 	$description = (string) get_parameter ('description');
 	$contact = (string) get_parameter ('contact');
 	$other = (string) get_parameter ('other');
-$check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
-
+	$check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
+	
 	
 	/*Check if name field is empty*/
 	if ($name != "") {
@@ -213,9 +184,9 @@ if ($update_group) {
 	$description = (string) get_parameter ('description');
 	$contact = (string) get_parameter ('contact');
 	$other = (string) get_parameter ('other');
-		
+	
 	/*Check if name field is empty*/
-	if( $name != "") {	
+	if( $name != "") {
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
@@ -291,7 +262,7 @@ if (!empty($groups)) {
 	$table->data = array ();
 	
 	$iterator = 0;
-
+	
 	foreach ($groups as $id_group => $group) {
 		if ($group['deep'] == 0) {
 			$table->rowstyle[$iterator] = '';

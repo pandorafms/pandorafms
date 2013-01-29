@@ -1,5 +1,22 @@
 2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/reporting_builder.php,
+	godmode/agentes/configurar_agente.php, godmode/menu.php,
+	include/functions_ui.php, include/functions_agents.php,
+	include/functions_alerts.php, include/functions_menu.php,
+	include/functions_networkmap.php,
+	include/help/en/help_alert_type.php,
+	include/help/es/help_alert_type.php,
+	include/functions_reporting.php,
+	operation/agentes/alerts_status.functions.php,
+	operation/agentes/alerts_status.php: erased the ocurrences about
+	the deprecated alert compounds.
+	
+	Fixes: #3602487
+
+2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/help/en/help_alert_compound.php: delete old files for
 	deprecated alert compounds.
 

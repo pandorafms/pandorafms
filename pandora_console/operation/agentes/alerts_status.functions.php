@@ -23,13 +23,10 @@ function forceExecution($id_group) {
 
 function validateAlert() {
 	$ids = (array) get_parameter_post ("validate", array ());
-	$compound_ids = (array) get_parameter_post ("validate_compound", array ());
 	
-	if (! empty ($ids) || ! empty ($compound_ids)) {
+	if (!empty($ids)) {
 		require_once ("include/functions_alerts.php");
-		$result1 = alerts_validate_alert_agent_module ($ids);
-		$result2 = alerts_validate_alert_compound ($compound_ids);
-		$result = $result1 || $result2;
+		$result = alerts_validate_alert_agent_module ($ids);
 		
 		ui_print_result_message ($result,
 			__('Alert(s) validated'),

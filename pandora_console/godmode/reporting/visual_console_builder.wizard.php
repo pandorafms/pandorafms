@@ -36,7 +36,8 @@ else {
 	$metaconsole_hack = '../../';
 	$table->width = '600';
 	
-	require_once($config['homedir'] . "/enterprise/meta/include/functions_html_meta.php");
+	require_once($config['homedir'] .
+		"/enterprise/meta/include/functions_html_meta.php");
 }
 
 $table->style = array ();

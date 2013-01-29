@@ -1794,7 +1794,7 @@ function reporting_get_agent_alerts_table ($id_agent, $period = 0, $date = 0) {
 	require_once ($config["homedir"].'/include/functions_alerts.php');
 	
 	$alerts = agents_get_alerts ($id_agent);
-	/* FIXME: Add compound alerts to the report. Some extra code is needed here */
+	
 	foreach ($alerts['simple'] as $alert) {
 		$fires = get_alert_fires_in_period ($alert['id'], $period, $date);
 		if (! $fires) {

@@ -3962,7 +3962,9 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 								break;
 						}
 						
-						$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $row ['id_agent_module']);
+						$unit = db_get_value('unit', 'tagente_modulo',
+							'id_agente_modulo',
+							$row['id_agent_module']);
 						
 						$id_agent_module[$key] = $row['id_agent_module'];
 						$agent_name[$key] = $ag_name;
@@ -3976,17 +3978,28 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 						}
 					}
 					//Order by data descending, ascending or without order
-					if ($order_uptodown == 0 || $order_uptodown == 1 || $order_uptodown == 2) {
+					if (($order_uptodown == 0) || ($order_uptodown == 1)
+						|| ($order_uptodown == 2)) {
+						
+						
 						switch ($order_uptodown) {
 							//Descending
 							case 1:
-								array_multisort($data_res, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $operations, SORT_ASC);
+								array_multisort($data_res, SORT_DESC,
+									$agent_name, SORT_ASC, $module_name,
+									SORT_ASC, $id_agent_module,
+									SORT_ASC, $operations, SORT_ASC);
 								break;
 							//Ascending
 							case 2:
-								array_multisort($data_res, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $operations, SORT_ASC);
+								array_multisort($data_res, SORT_ASC,
+									$agent_name, SORT_ASC, $module_name,
+									SORT_ASC, $id_agent_module,
+									SORT_ASC, $operations, SORT_ASC);
 								break;
 						}
+						
+						
 						$i=0;
 						foreach ($data_res as $d) {
 							$data = array();
@@ -4014,7 +4027,8 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 								$data[3] = '--';
 							}
 							else {
-							$data[3] = format_for_graph($d, 2) . " " . $units[$i];
+							$data[3] = format_for_graph($d, 2) . " " .
+								$units[$i];
 							}
 							array_push ($table1->data, $data);
 							$i++;
@@ -4022,7 +4036,10 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 					}
 					//Order by agent name
 					elseif ($order_uptodown == 3) {
-						array_multisort($agent_name, SORT_ASC, $data_res, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $operations, SORT_ASC);
+						array_multisort($agent_name, SORT_ASC,
+							$data_res, SORT_ASC, $module_name, SORT_ASC,
+							$id_agent_module, SORT_ASC, $operations,
+							SORT_ASC);
 						$i=0;
 						foreach ($agent_name as $a) {
 							$data = array();
@@ -4051,7 +4068,9 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 								$data[3] = '--';
 							}
 							else {
-								$data[3] = format_for_graph($data_res[$i], 2) . " " . $units[$i];
+								$data[3] =
+									format_for_graph($data_res[$i], 2)
+									. " " . $units[$i];
 							}
 							array_push ($table1->data, $data);
 							$i++;
@@ -4066,10 +4085,13 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 				//1 means group by agent
 				case 1:
 					//Get the data
-					$sql_data = sprintf("SELECT id_agent_module, server_name, operation
+					$sql_data = sprintf("SELECT id_agent_module,
+							server_name, operation
 						FROM treport_content_item
-						where id_report_content = %d", $content['id_rc']);
+						where id_report_content = %d",
+						$content['id_rc']);
 					$generals = db_process_sql ($sql_data);
+					//html_debug_print($generals);
 					
 					if ($generals === false) {
 						$data = array ();
@@ -4093,17 +4115,21 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 							}
 						}
 						
-						$ag_name = modules_get_agentmodule_agent_name ($general ['id_agent_module']);
+						$ag_name = modules_get_agentmodule_agent_name(
+							$general ['id_agent_module']);
 						if (!in_array ($ag_name, $agent_list)) {
 							array_push ($agent_list, $ag_name);
 						}
-						$mod_name = modules_get_agentmodule_name ($general ['id_agent_module']);
+						
+						$mod_name = modules_get_agentmodule_name(
+							$general ['id_agent_module'])
+							. ' (' . $general['operation'] . ')';
 						if (!in_array ($mod_name, $modules_list)) {
 							array_push ($modules_list, $mod_name);
 						}
-						//if (!in_array ($general['operation'], $operation_list)) {
-							array_push ($operation_list, $general['operation']);
-						//}
+						
+						array_push($operation_list, $general['operation']);
+						
 						//Restore dbconnection
 						if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 							metaconsole_restore_db();
@@ -4116,12 +4142,11 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 					$table2->head[0] = __('Agent');
 					$table2->style[0] = 'text-align: left';
 					$i = 1;
-					$x = 0;
 					foreach ($modules_list as $m) {
-						$table2->head[$i] = ui_print_truncate_text($m, 20, false).' ('.$operation_list[$x].')';
+						$table2->head[$i] =
+							ui_print_truncate_text($m, 20, false);
 						$table2->style[$i] = 'text-align: center';
 						$i++;
-						$x++;
 					}
 					
 					foreach ($agent_list as $a) {
@@ -4144,7 +4169,8 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 								$module_name = modules_get_agentmodule_name ($g['id_agent_module']);
 								$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $g['id_agent_module']);
 								$found = false;
-								if (strcmp($a, $agent_name) == 0 && strcmp($m, $module_name) == 0) {
+								if (strcmp($a, $agent_name) == 0
+									&& strcmp($m, $module_name . ' (' . $g['operation'] . ')') == 0) {
 									switch ($g['operation']) {
 										case 'sum':
 											$value_res = reporting_get_agentmodule_data_sum ($g['id_agent_module'], $content['period'], $report["datetime"]);
@@ -4178,10 +4204,9 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 									//Restore dbconnection
 									if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 										metaconsole_restore_db();
-									}									
+									}
 									
 									break;
-									
 								}
 								
 								//Restore dbconnection
@@ -4200,10 +4225,15 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 					array_push ($table->data, $data);
 					break;
 			}
+			
 			if ($content['show_resume'] && count($generals) > 0) {
 				
 				//Get the first valid value and assign it to $min & $max
 				$min = false;
+				$min_name_agent_module = '';
+				$max_name_agent_module = '';
+				$min_unit = '';
+				$max_unit = '';
 				$i=0;
 				do {
 					//Metaconsole connection
@@ -4217,14 +4247,14 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 					}
 					switch ($generals[$i]['operation']) {
 						case 'sum':
-								$min = reporting_get_agentmodule_data_sum ($generals[$i]['id_agent_module'], $content['period'], $report["datetime"]);
-								break;
+							$min = reporting_get_agentmodule_data_sum ($generals[$i]['id_agent_module'], $content['period'], $report["datetime"]);
+							break;
 						case 'max':
-								$min = reporting_get_agentmodule_data_max ($generals[$i]['id_agent_module'], $content['period']);
-								break;
+							$min = reporting_get_agentmodule_data_max ($generals[$i]['id_agent_module'], $content['period']);
+							break;
 						case 'min':
-								$min = reporting_get_agentmodule_data_min ($generals[$i]['id_agent_module'], $content['period']);
-								break;
+							$min = reporting_get_agentmodule_data_min ($generals[$i]['id_agent_module'], $content['period']);
+							break;
 						case 'avg':
 						default:
 							$min = reporting_get_agentmodule_data_average ($generals[$i]['id_agent_module'], $content['period']);
@@ -4232,13 +4262,24 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 					}
 					$i++;
 					
+					$min_name_agent_module =
+						modules_get_agentmodule_name($generals[$i]['id_agent_module']) .
+						" - " .
+						modules_get_agentmodule_agent_name($generals[$i]['id_agent_module']) .
+						" (" . $generals[$i]['operation'] . ")";
+					
+					$min_unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $generals[$i]['id_agent_module']);
+					
 					//Restore dbconnection
 					if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 						metaconsole_restore_db();
 					}
 				}
 				while ($min === false && $i < count($generals));
+				
 				$max = $min;
+				$max_name_agent_module = $min_name_agent_module;
+				$max_unit = $min_unit;
 				$avg = 0;
 				$length = 0;
 				
@@ -4275,16 +4316,30 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 					if ($value !== false) {
 						if ($value > $max) {
 							$max = $value;
+							$max_name_agent_module =
+								modules_get_agentmodule_name($g['id_agent_module']) .
+								" - " .
+								modules_get_agentmodule_agent_name($g['id_agent_module']) .
+								" (" . $g['operation'] . ")";
+							$max_unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $g['id_agent_module']);
 						}
 						if ($value < $min ) {
 							$min = $value;
+							$min_name_agent_module =
+								modules_get_agentmodule_name($g['id_agent_module']) .
+								" - " .
+								modules_get_agentmodule_agent_name($g['id_agent_module']) .
+								" (" . $g['operation'] . ")";
+							$min_unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $g['id_agent_module']);
 						}
 						$avg += $value;
 						$length++;
 					}
 					
 					//Restore dbconnection
-					if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+					if (($config ['metaconsole'] == 1)
+						&& $server_name != ''
+						&& defined('METACONSOLE')) {
 						metaconsole_restore_db();
 					}
 				}
@@ -4295,27 +4350,42 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 					$avg = $avg / $length;
 				}
 				
-				
 				unset($table_summary);
-				
 				$table_summary->width = '99%';
 				
 				$table_summary->data = array ();
 				$table_summary->head = array ();
+				$table_summary->head_colspan = array ();
+				$table_summary->align = array();
+				
+				$table_summary->align[0] = 'left';
+				$table_summary->align[1] = 'right';
+				$table_summary->align[2] = 'right';
+				$table_summary->align[3] = 'left';
+				$table_summary->align[4] = 'right';
+				
+				$table_summary->head_colspan[0] = 2;
 				$table_summary->head[0] = __('Min Value');
 				$table_summary->head[1] = __('Average Value');
+				$table_summary->head_colspan[2] = 2;
 				$table_summary->head[2] = __('Max Value');
 				
-				$table_summary->data[0][0] = format_for_graph($min,2);
-				$table_summary->data[0][1] = format_for_graph($avg,2);
-				$table_summary->data[0][2] = format_for_graph($max,2);
+				$table_summary->data[0][0] = $min_name_agent_module;
+				$table_summary->data[0][1] = format_for_graph($min,2) . ' ' . $min_unit;
+				$table_summary->data[0][2] = format_for_graph($avg,2);
+				$table_summary->data[0][3] = $max_name_agent_module;
+				$table_summary->data[0][4] = format_for_graph($max,2) . ' ' . $max_unit;
 				
 				$table->colspan[3][0] = 3;
-				array_push ($table->data, array('<b>'.__('Summary').'</b>'));
+				array_push ($table->data,
+					array('<b>' . __('Summary') . '</b>'));
 				$table->colspan[4][0] = 3;
-				array_push ($table->data, array(html_print_table($table_summary, true)));
+				array_push ($table->data,
+					array(html_print_table($table_summary, true)));
 			}
 			break;
+		
+		
 		case 'top_n':
 			$top_n = $content['top_n'];
 			

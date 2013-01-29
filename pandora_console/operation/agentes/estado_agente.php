@@ -46,7 +46,7 @@ if (is_ajax ()) {
 		$usr_groups = users_get_groups($config['id_user'], 'LW', true);
 		
 		$filter_groups = '';
-		$filter_groups = implode(',', array_keys($usr_groups));		
+		$filter_groups = implode(',', array_keys($usr_groups));
 		
 		switch ($config["dbtype"]) {
 			case "mysql":
@@ -442,7 +442,7 @@ foreach ($agents as $agent) {
 	$data[0] .= '<div class="left actions" style="visibility: hidden; clear: left">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
 	$data[0] .= ' | ';
-	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'&tab=data">'.__('Data').'</a>';	
+	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'&tab=data">'.__('Data').'</a>';
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= ' | ';
 		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';

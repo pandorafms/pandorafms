@@ -52,7 +52,7 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 
 // Blank space below title, DONT remove this, this
 // Breaks the layout when Flash charts are enabled :-o
-echo '<div style="height: 10px">&nbsp;</div>';	
+echo '<div style="height: 10px">&nbsp;</div>';
 	
 	//Floating div
 	echo '<div id="agent_access" style="float:right; width:320px; padding-top:10px;">';

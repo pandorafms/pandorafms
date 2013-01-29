@@ -43,14 +43,14 @@ if (is_ajax ()) {
 }
 
 if (isset ($_GET["update"]) or (isset($_GET["crt"]))) { // Edit mode
-
+	
 	$update_recon = true;
 	if (isset ($_GET["crt"])){
 		if ($_GET["crt"] != "update"){
 			$update_recon = false;
 		}
 		else{
-			$id_rt = get_parameter("upd");			
+			$id_rt = get_parameter("upd");
 		}
 	}
 

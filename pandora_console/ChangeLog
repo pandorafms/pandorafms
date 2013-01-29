@@ -1,3 +1,16 @@
+2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/modules/manage_network_components_form.php,
+	godmode/servers/manage_recontask.php,
+	godmode/servers/manage_recontask_form.php, operation/menu.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/exportdata.excel.php,
+	operation/agentes/datos_agente.php,
+	operation/agentes/estado_generalagente.php,
+	operation/agentes/estado_agente.php, general/login_help_dialog.php,
+	general/shortcut_bar.php: uploaded a lost changes for to clean the
+	source code structure.
+
 2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_reporting.php: fixed the calculate the min,

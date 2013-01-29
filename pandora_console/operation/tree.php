@@ -54,19 +54,17 @@ if (is_ajax ())
 	$search_free = get_parameter('search_free', '');
 	$printTable = get_parameter('printTable', 0);
 	$printAlertsTable = get_parameter('printAlertsTable', 0);
+	$printModuleTable = get_parameter('printModuleTable', 0);
 	$server_name = get_parameter('server_name', '');
+	$server = array();
 	if ($printTable) {
 		$id_agente = get_parameter('id_agente');
 		if (defined ('METACONSOLE')) {
 			$server = metaconsole_get_connection ($server_name);
 			metaconsole_connect($server);
-			$console_url = $server['server_url'] . '/';
-		}
-		else {
-			$console_url = '';
 		}
 		
-		treeview_printTable($id_agente, $console_url);
+		treeview_printTable($id_agente, $server);
 		
 		if (defined ('METACONSOLE')) {
 			metaconsole_restore_db();
@@ -78,14 +76,25 @@ if (is_ajax ())
 		if (defined ('METACONSOLE')) {
 			$server = metaconsole_get_connection ($server_name);
 			metaconsole_connect($server);
-			$console_url = $server['server_url'] . '/';
-		}
-		else {
-			$console_url = '';
 		}
 		
-		treeview_printAlertsTable($id_module, $console_url);
+		treeview_printAlertsTable($id_module, $server);
 		
+		if (defined ('METACONSOLE')) {
+			metaconsole_restore_db();
+		}
+	}
+	if ($printModuleTable) {
+		$id_module = get_parameter('id_module');
+				
+		if (defined ('METACONSOLE')) {
+			$server = metaconsole_get_connection ($server_name);
+			metaconsole_connect($server);
+		}
+		
+		treeview_printModuleTable($id_module, $server);
+		
+
 		if (defined ('METACONSOLE')) {
 			metaconsole_restore_db();
 		}
@@ -435,12 +444,16 @@ if (is_ajax ())
 				$nmodule_alerts = db_get_value_sql(sprintf("SELECT count(*) FROM talert_template_modules WHERE id_agent_module = %s", $row["id_agente_modulo"]));
 				
 				if($nmodule_alerts > 0) {
-					echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadAlertsTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\")'>" . html_print_image ("images/bell.png", true, array ("style" => 'vertical-align: middle;', "border" => "0", "title" => __('Module alerts') )) . "</a>";
+					echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadAlertsTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\")'>";
+					echo html_print_image ("images/bell.png", true, array ("style" => 'vertical-align: middle;', "border" => "0", "title" => __('Module alerts') ));
+					echo "</a>";
 					
 					echo " ";
 				}
 				
+				echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadModuleTable(" . $row["id_agente_modulo"] . ", \"" . $server_name . "\")'>";
 				echo io_safe_output($row['nombre']);
+				echo "</a>";
 				if ($row['quiet']) {
 					echo "&nbsp;";
 					html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
@@ -765,6 +778,17 @@ treeview_printTree($activeTab);
 			type: "POST",
 			url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
 			data: "page=<?php echo $_GET['sec2']; ?>&printAlertsTable=1&id_module=" + id_module + "&server_name=" + server_name,
+			success: function(data){
+				$('#cont').html(data);
+			}
+		});		
+	}
+	
+	function loadModuleTable(id_module, server_name) {
+		$.ajax({
+			type: "POST",
+			url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
+			data: "page=<?php echo $_GET['sec2']; ?>&printModuleTable=1&id_module=" + id_module + "&server_name=" + server_name,
 			success: function(data){
 				$('#cont').html(data);
 			}

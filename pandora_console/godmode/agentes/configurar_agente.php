@@ -35,9 +35,9 @@ $group = 0;
 if ($id_agente)
 	$group = agents_get_agent_group ($id_agente);
 
-if (! check_acl ($config["id_user"], $group, "AW", $id_agente)) {
+if (!check_acl ($config["id_user"], $group, "AW", $id_agente)) {
 	$access_granted = false;
-	switch($tab) {
+	switch ($tab) {
 		case 'alert':
 		case 'module':
 			if (check_acl ($config["id_user"], $group, "AD", $id_agente)) {
@@ -48,7 +48,7 @@ if (! check_acl ($config["id_user"], $group, "AW", $id_agente)) {
 			break;
 	}
 	
-	if(!$access_granted) {
+	if (!$access_granted) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access agent manager");
 		require ("general/noaccess.php");
@@ -61,8 +61,8 @@ require_once ('include/functions_alerts.php');
 require_once ('include/functions_reporting.php');
 
 // Get passed variables
-$alerttype = get_parameter ('alerttype');
-$id_agent_module = (int) get_parameter ('id_agent_module');
+$alerttype = get_parameter('alerttype');
+$id_agent_module = (int)get_parameter('id_agent_module');
 
 // Init vars
 $descripcion = "";
@@ -73,7 +73,7 @@ $campo_3 = "";
 $maximo = 0;
 $minimo = 0;
 $nombre_agente = "";
-$direccion_agente = get_parameter ('direccion', '');
+$direccion_agente = get_parameter('direccion', '');
 $intervalo = SECONDS_5MINUTES;
 $ff_interval = 0;
 $quiet_module = 0;
@@ -139,12 +139,12 @@ $url_description = '';
 $quiet = 0;
 $macros = '';
 
-$create_agent = (bool) get_parameter ('create_agent');
+$create_agent = (bool)get_parameter('create_agent');
 
 // Create agent
 if ($create_agent) {
-	$nombre_agente = (string) get_parameter_post ("agente",'');
-	$direccion_agente = (string) get_parameter_post ("direccion",'');
+	$nombre_agente = (string) get_parameter_post("agente",'');
+	$direccion_agente = (string) get_parameter_post("direccion",'');
 	$grupo = (int) get_parameter_post ("grupo");
 	$intervalo = (string) get_parameter_post ("intervalo", SECONDS_5MINUTES);
 	$comentarios = (string) get_parameter_post ("comentarios", '');
@@ -347,7 +347,7 @@ if ($id_agente) {
 			$incidenttab['active'] = false;
 	}
 	
-	if(check_acl ($config["id_user"], $group, "AW", $id_agente)) {
+	if (check_acl ($config["id_user"], $group, "AW", $id_agente)) {
 		$onheader = array('view' => $viewtab,
 			'separator' => "",
 			'main' => $maintab,
@@ -1055,20 +1055,25 @@ if ($create_module) {
 // =================
 if ($delete_module) { // DELETE agent module !
 	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
-	$module_data = db_get_row_sql ('SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente_modulo=' . $id_borrar_modulo);
+	$module_data = db_get_row_sql ('SELECT *
+		FROM tagente_modulo, tagente_estado
+		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+			AND tagente_modulo.id_agente_modulo=' . $id_borrar_modulo);
 	$id_grupo = (int) agents_get_agent_group($id_agente);
 	
 	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
 		db_pandora_audit("ACL Violation",
-		"Trying to delete a module without admin rights");
+			"Trying to delete a module without admin rights");
 		require ("general/noaccess.php");
+		
 		exit;
 	}
 	
 	if ($id_borrar_modulo < 1) {
 		db_pandora_audit("HACK Attempt",
-		"Expected variable from form is not correct");
+			"Expected variable from form is not correct");
 		require ("general/noaccess.php");
+		
 		exit;
 	}
 	
@@ -1087,38 +1092,59 @@ if ($delete_module) { // DELETE agent module !
 		'nombre' => 'pendingdelete',
 		'disabled' => 1,
 		'delete_pending' => 1);
-	$result = db_process_sql_update('tagente_modulo', $values, array('id_agente_modulo' => $id_borrar_modulo));
+	$result = db_process_sql_update('tagente_modulo',
+		$values, array('id_agente_modulo' => $id_borrar_modulo));
 	if ($result === false) {
 		$error++;
-	} else {
+	}
+	else {
 		// Update module status count
 		if ($module_data['estado'] == 0) {
-			db_process_sql ('UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module_data['id_agente']);
-		} else if ($module_data['estado'] == 1) {
-			db_process_sql ('UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module_data['id_agente']);
-		} else if ($module_data['estado'] == 2) {
-			db_process_sql ('UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module_data['id_agente']);
-		} else if ($module_data['estado'] == 3) {
-			db_process_sql ('UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module_data['id_agente']);
-		} else if ($module_data['estado'] == 4) {
-			db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module_data['id_agente']);
+			db_process_sql ('UPDATE tagente
+				SET normal_count=normal_count-1
+				WHERE id_agente=' . $module_data['id_agente']);
+		}
+		else if ($module_data['estado'] == 1) {
+			db_process_sql ('UPDATE tagente
+				SET critical_count=critical_count-1
+				WHERE id_agente=' . $module_data['id_agente']);
+		}
+		else if ($module_data['estado'] == 2) {
+			db_process_sql ('UPDATE tagente
+				SET warning_count=warning_count-1
+				WHERE id_agente=' . $module_data['id_agente']);
+		}
+		else if ($module_data['estado'] == 3) {
+			db_process_sql ('UPDATE tagente
+				SET unknown_count=unknown_count-1
+				WHERE id_agente=' . $module_data['id_agente']);
+		}
+		else if ($module_data['estado'] == 4) {
+			db_process_sql ('UPDATE tagente
+				SET notinit_count=notinit_count-1
+				WHERE id_agente=' . $module_data['id_agente']);
 		}
 		
-		db_process_sql ('UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module_data['id_agente']);
+		db_process_sql ('UPDATE tagente
+			SET total_count=total_count-1
+			WHERE id_agente=' . $module_data['id_agente']);
 	}
 	
-	$result = db_process_sql_delete('tagente_estado', array('id_agente_modulo' => $id_borrar_modulo));
+	$result = db_process_sql_delete('tagente_estado',
+		array('id_agente_modulo' => $id_borrar_modulo));
 	if ($result === false)
 		$error++;
 	
-	$result = db_process_sql_delete('tagente_datos_inc', array('id_agente_modulo' => $id_borrar_modulo));	
+	$result = db_process_sql_delete('tagente_datos_inc',
+		array('id_agente_modulo' => $id_borrar_modulo));
 	if ($result === false)
 		$error++;
 	
 	if (alerts_delete_alert_agent_module($id_borrar_modulo) === false)
 		$error++;
 	
-	$result = db_process_delete_temp('ttag_module', 'id_agente_modulo', $id_borrar_modulo);	
+	$result = db_process_delete_temp('ttag_module', 'id_agente_modulo',
+		$id_borrar_modulo);
 	if ($result === false)
 		$error++;
 	

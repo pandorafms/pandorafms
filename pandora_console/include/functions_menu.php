@@ -358,45 +358,59 @@ function menu_add_extras(&$menu) {
 	$menu_extra = array();
 	$menu_extra['gusuarios']['sub']['godmode/users/configure_user']['text'] = __('Configure user');
 	$menu_extra['gusuarios']['sub']['godmode/users/configure_profile']['text'] = __('Configure profile');
+	
 	$menu_extra['gservers']['sub']['godmode/servers/manage_recontask_form']['text'] = __('Manage recontask');
+	
 	$menu_extra['gmodules']['sub']['godmode/modules/manage_network_templates_form']['text'] = __('Module templates management');
 	$menu_extra['gmodules']['sub']['enterprise/godmode/modules/manage_inventory_modules_form']['text'] = __('Inventory modules management');
 	$menu_extra['gmodules']['sub']['godmode/tag/edit_tag']['text'] = __('Tags management');
+	
 	$menu_extra['gagente']['sub']['godmode/agentes/configurar_agente']['text'] = __('Agents management');
+	
 	$menu_extra['estado']['sub']['operation/agentes/ver_agente']['text'] = __('View agent');
+	
 	$menu_extra['galertas']['sub']['godmode/alerts/configure_alert_template']['text'] = __('Configure alert template');
+	
 	$menu_extra['network']['sub']['operation/agentes/networkmap']['text'] = __('Manage network map');
+	
 	$menu_extra['reporting']['sub']['operation/reporting/reporting_viewer']['text'] = __('View reporting');
 	$menu_extra['reporting']['sub']['operation/visual_console/render_view']['text'] = __('View visual console');
 	$menu_extra['reporting']['sub']['godmode/reporting/graph_builder']['text'] = __('Manage custom graphs');
 	$menu_extra['reporting']['sub']['enterprise/dashboard/dashboard_replicate']['text'] = __('Copy dashboard');
+	
 	if ($config['activate_gis'])
 		$menu_extra['godgismaps']['sub']['godmode/gis_maps/configure_gis_map']['text'] = __('Manage GIS Maps');
+	
 	$menu_extra['workspace']['sub']['operation/incidents/incident_statistics']['text'] = __('Incidents statistics');
 	$menu_extra['workspace']['sub']['operation/messages/message_edit']['text'] = __('Manage messages');
+	
 	$menu_extra['gagente']['sub']['godmode/groups/configure_group']['text'] = __('Manage groups');
 	$menu_extra['gagente']['sub']['godmode/groups/configure_modu_group']['text'] = __('Manage module groups');
 	$menu_extra['gagente']['sub']['godmode/agentes/configure_field']['text'] = __('Manage custom field');
+	
 	$menu_extra['galertas']['sub']['godmode/alerts/configure_alert_action']['text'] = __('Manage alert actions');
 	$menu_extra['galertas']['sub']['godmode/alerts/configure_alert_command']['text'] = __('Manage commands');
-	$menu_extra['galertas']['sub']['godmode/alerts/configure_alert_compound']['text'] = __('Manage compound alerts');
 	$menu_extra['galertas']['sub']['enterprise/godmode/alerts/alert_events']['text'] = __('Manage event alerts');
+	
 	$menu_extra['gservers']['sub']['enterprise/godmode/servers/manage_export_form']['text'] = __('Manage export targets');
+	
 	$menu_extra['estado']['sub']['enterprise/godmode/services/manage_services']['text'] = __('Manage services');
 	$menu_extra['estado']['sub']['godmode/snmpconsole/snmp_alert']['text'] = __('SNMP alerts');
 	$menu_extra['estado']['sub']['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');
 	$menu_extra['estado']['sub']['enterprise/godmode/snmpconsole/snmp_trap_editor']['text'] = __('SNMP trap editor');
 	$menu_extra['estado']['sub']['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
+	
 	$menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');
+	
 	$menu_extra['reporting']['sub']['godmode/reporting/visual_console_builder']['text'] = __('Manage visual console');
 	
 	// Duplicate extensions as sec=extension to check it from url
 	foreach ($menu as $k => $m) {
-		if(!isset($m['sub'])) {
+		if (!isset($m['sub'])) {
 			continue;
 		}
-		foreach($m['sub'] as $kk => $mm) {
-			if(isset($mm['sec'])) {
+		foreach ($m['sub'] as $kk => $mm) {
+			if (isset($mm['sec'])) {
 				$menu_extra[$mm['sec']]['sub'][$kk]['text'] = $mm['text'];
 			}
 		}
@@ -418,7 +432,7 @@ function menu_get_sec($with_categories = false) {
 	unset($menu['class']);
 	
 	$in_godmode = false;
-	foreach($menu as $k => $v) {
+	foreach ($menu as $k => $v) {
 		if ($with_categories) {
 			if (!$in_godmode && $k[0] == 'g') {
 				// Hack to dont confuse with gis activated because godmode 

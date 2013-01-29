@@ -1748,7 +1748,6 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		// daily maintance process, all data for that modules are deleted
 		
 		//Alert
-		db_process_delete_temp ("talert_compound", "id_agent", $id_agent);
 		db_process_delete_temp ("talert_template_modules", "id_agent_module", $where_modules);
 		
 		//Events (up/down monitors)

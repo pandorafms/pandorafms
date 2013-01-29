@@ -366,7 +366,7 @@ foreach ($alerts['alerts_simple'] as $alert) {
 		$table->rowclass[$iterator] = 'rowOdd';
 	$rowPair = !$rowPair;
 	
-	array_push ($table->data, ui_format_alert_row ($alert, false, $print_agent, $url, 'font-size: 7pt;'));
+	array_push ($table->data, ui_format_alert_row ($alert, $print_agent, $url, 'font-size: 7pt;'));
 }
 
 echo '<form method="post" action="'.$url.'">';

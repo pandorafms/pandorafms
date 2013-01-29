@@ -648,7 +648,7 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_mediu
  * 
  * @return array A formatted array with proper html for use in $table->data (6 columns)
  */
-function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '', $agent_style = false) {
+function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = false) {
 	
 	global $config;
 	
@@ -702,18 +702,13 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	}
 	
 	// Get agent id
-	if ($compound) {
-		$id_agent = $alert['id_agent'];
-		$description = $alert['description'];
-	} 
-	else {
-		$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
-		$template = alerts_get_alert_template ($alert['id_alert_template']);
-		$description = io_safe_output($template['name']);
-	}
+	$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
+	$template = alerts_get_alert_template ($alert['id_alert_template']);
+	$description = io_safe_output($template['name']);
+	
 	$data = array ();
 	
-	if (($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) && (!$compound)) {
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
 		if ($policyInfo === false)
 			$data[$index['policy']] = '';
@@ -725,8 +720,6 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 				'</a>';
 		}
 	}
-	else if (($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) && ($compound))
-		$data[$index['policy']] = '';
 	
 	// Standby
 	$data[$index['standby']] = '';
@@ -736,27 +729,17 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	
 	// Force alert execution
 	$data[$index['force_execution']] = '';
-	if (! $compound) {
-		if ($alert["force_execution"] == 0) {
-			$data[$index['force_execution']] =
-				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "alt" => __('Force'))) . '</a>';
-		} 
-		else {
-			$data[$index['force_execution']] =
-				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . html_print_image("images/refresh.png", true) . '</a>';
-		}
+	if ($alert["force_execution"] == 0) {
+		$data[$index['force_execution']] =
+			'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "alt" => __('Force'))) . '</a>';
+	} 
+	else {
+		$data[$index['force_execution']] =
+			'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . html_print_image("images/refresh.png", true) . '</a>';
 	}
 	
 	$data[$index['agent_name']] = $disabledHtmlStart;
-	if ($compound) {
-		if ($agent_style !== false) {
-			$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 20, $styleDisabled . " $agent_style");			
-		}
-		else { 
-			$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 20, $styleDisabled);
-		}
-	} 
-	elseif ($agent == 0) {
+	if ($agent == 0) {
 		$data[$index['module_name']] .=
 			ui_print_truncate_text(modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	} 
@@ -773,21 +756,18 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	$data[$index['agent_name']] .= $disabledHtmlEnd;
 	
 	$data[$index['description']] = '';
-	if (! $compound) {
-		$data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
-		$data[$index['template']] .= html_print_image ('images/zoom.png', true);
-		$data[$index['template']] .= '</a> ';
-		$actionDefault = db_get_value_sql("SELECT id_alert_action
-			FROM talert_templates WHERE id = " . $alert['id_alert_template']);
-	}
-	else {
-		$actionDefault = db_get_value_sql("SELECT id_alert_action FROM talert_compound_actions WHERE id_alert_compound = " . $alert['id']);
-	}
+	
+	$data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
+	$data[$index['template']] .= html_print_image ('images/zoom.png', true);
+	$data[$index['template']] .= '</a> ';
+	$actionDefault = db_get_value_sql("SELECT id_alert_action
+		FROM talert_templates WHERE id = " . $alert['id_alert_template']);
+	
 	$data[$index['description']] .= $disabledHtmlStart .
 		ui_print_truncate_text (io_safe_output($description), 'description', false, true, true, '[&hellip;]', 'font-size: 7.1pt') .
 		$disabledHtmlEnd;
 	
-	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false, $compound);
+	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false);
 	
 	if (!empty($actions)) {
 		$actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
@@ -831,12 +811,8 @@ function ui_format_alert_row ($alert, $compound = false, $agent = true, $url = '
 	if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 		$data[$index['validate']] = '';
 		
-		if ($compound) {
-			$data[$index['validate']] .= html_print_checkbox ("validate_compound[]", $alert["id"], false, true);
-		}
-		else {
-			$data[$index['validate']] .= html_print_checkbox ("validate[]", $alert["id"], false, true);
-		}
+		
+		$data[$index['validate']] .= html_print_checkbox ("validate[]", $alert["id"], false, true);
 	}
 	
 	return $data;

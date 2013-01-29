@@ -307,11 +307,11 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 					continue;
 				}
 			}
-
+			
 			// If only agents with alerts => agents without alerts discarded
 			$alert_agent = agents_get_alerts($agent['id_agente']); 
 			
-			if ($modwithalerts and empty($alert_agent['simple']) and empty($alert_agent['compounds'])){
+			if ($modwithalerts and empty($alert_agent['simple'])) {
 				continue;
 			}
 			
@@ -371,8 +371,8 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0, $simple = 0,
 	}
 	
 	// Create void statistics array
-	$stats = array();	
-
+	$stats = array();
+	
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
 		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {

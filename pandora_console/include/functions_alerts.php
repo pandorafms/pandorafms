@@ -873,18 +873,6 @@ function alerts_delete_alert_agent_module ($id_alert_agent_module, $filter = fal
 	if ($id_alert_agent_module)
 		$filter['id'] = $id_alert_agent_module;
 	
-	if ($id_alert_agent_module !== false) {
-		$idAlertCompunds = db_get_all_rows_sql('
-			SELECT id_alert_compound
-			FROM talert_compound_elements
-			WHERE id_alert_template_module = ' . $id_alert_agent_module);
-		
-		if ($idAlertCompunds !== false) {
-			foreach($idAlertCompunds as $id)
-				alerts_delete_alert_compound($id);
-		}
-	}
-	
 	/*
 	The deletion of actions from talert_template_module_actions,
 	it is automatily because the data base this table have
@@ -1101,24 +1089,16 @@ function alerts_delete_alert_agent_module_action ($id_alert_agent_module_action)
  * 
  * @param int Id of an alert associated to a module.
  * @param mixed Array with fields to retrieve or false.
- * @param bool Whether to retrieve compound alert or not.
  *
  * @return mixed Actions associated or false if something goes wrong.
  */
-function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields = false, $compound = false) {
+function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields = false) {
 	if (empty ($id_alert_agent_module))
 		return false;
 	
-	if ($compound) {
-		$actions = db_get_all_rows_filter ('talert_compound_actions',
-		array ('id_alert_compound' => $id_alert_agent_module),
+	$actions = db_get_all_rows_filter ('talert_template_module_actions',
+		array ('id_alert_template_module' => $id_alert_agent_module),
 		$fields);
-	}
-	else {
-		$actions = db_get_all_rows_filter ('talert_template_module_actions',
-			array ('id_alert_template_module' => $id_alert_agent_module),
-			$fields);
-	}
 	
 	if ($actions === false)
 		return array ();
@@ -1130,10 +1110,10 @@ function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields 
 		$action = alerts_get_alert_action ($element['id_alert_action']);
 		$action['fires_min'] = $element['fires_min'];
 		$action['fires_max'] = $element['fires_max'];
-		if (!$compound)
-			$action['module_action_threshold'] = $element['module_action_threshold'];
+		$action['module_action_threshold'] = $element['module_action_threshold'];
+		
 		if (isset($element['id']))
-		$retval[$element['id']] = $action;
+			$retval[$element['id']] = $action;
 	}
 	
 	return $retval;
@@ -1250,349 +1230,6 @@ function alerts_copy_alert_module_to_module ($id_agent_alert, $id_destiny_module
 	}
 	
 	return $id_new_alert;
-}
-
-/* Compound alerts */
-
-/**
- * Get Threshold values of an alert.
- * 
- * @return Result threshold values.
- */
-function alerts_compound_threshold_values () {
-	/* At this moment we don't need different threshold values */
-	// TODO: Delete when compound alerts will be deleted
-	return get_periods ();
-}
-
-/**
- * Get an array of compound operations.
- * 
- * @return Result array with operations.
- */
-function alerts_compound_operations () {
-	$operations = array ();
-	
-	$operations['OR'] = 'OR';
-	$operations['AND'] = 'AND';
-	$operations['XOR'] = 'XOR';
-	$operations['NOR'] = 'NOR';
-	$operations['NAND'] = 'NAND';
-	$operations['NXOR'] = 'NXOR';
-	
-	return $operations;
-}
-
-/**
- * Creates an alert compound.
- * 
- * @param string Name of the alert compound.
- * @param int Id of the associated agent.
- * @param mixed Array of values of the alert compound.
- *
- * @return Id of the alert compound of false is something goes wrong.
- */
-function alerts_create_alert_compound ($name, $id_agent, $values = false) {
-	global $config;
-	
-	if (empty ($name))
-		return false;
-	if (! is_array ($values))
-		$values = array ();
-	$values['name'] = $name;
-	$values['id_agent'] = (int) $id_agent;
-	
-	switch ($config['dbtype']) {
-		case "oracle":
-			$values['field3_recovery'] = ' ';
-			break;
-	}
-	
-	return @db_process_sql_insert ('talert_compound', $values);
-}
-
-/**
- * Updates an alert compound.
- * 
- * @param int Id of the associated agent.
- * @param mixed Array of values of the alert compound.
- *
- * @return Affected values or false is something goes wrong.
- */
-function alerts_update_alert_compound ($id_alert_compound, $values) {
-	$id_alert_compound = safe_int ($id_alert_compound);
-	
-	if (empty ($id_alert_compound))
-		return false;
-	if (! is_array ($values))
-		return false;
-	
-	return (@db_process_sql_update ('talert_compound', $values,
-		array ('id' => $id_alert_compound))) !== false;
-}
-
-/**
- * Deletes an alert compound.
- * 
- * @param int Id of the associated agent.
- *
- * @return Affected values or false is something goes wrong.
- */
-function alerts_delete_alert_compound_elements ($id_alert_compound) {
-	$id_alert_compound = safe_int ($id_alert_compound);
-	if (empty ($id_alert_compound))
-		return false;
-	
-	return (@db_process_sql_delete ('talert_compound_elements',
-		array ('id_alert_compound' => $id_alert_compound))) !== false;
-}
-
-/**
- * Add an alert compound element.
- * 
- * @param int Id alert compound.
- * @param int Id alert associated to a module.
- * @param string Operation content.
- *
- * @return Affected values or false is something goes wrong.
- */
-function alerts_add_alert_compound_element ($id_alert_compound, $id_alert_template_module, $operation) {
-	$id_alert_compound = safe_int ($id_alert_compound);
-	if (empty ($id_alert_compound))
-		return false;
-	if (empty ($id_alert_template_module))
-		return false;
-	if (empty ($operation))
-		return false;
-	
-	$values = array ();
-	$values['id_alert_compound'] = (int) $id_alert_compound;
-	$values['id_alert_template_module'] = (int) $id_alert_template_module;
-	$values['operation'] = $operation;
-	
-	return @db_process_sql_insert ('talert_compound_elements', $values);
-}
-
-/**
- * Get all alert compounds.
- * 
- * @param mixed Filter conditions or false.
- * @param mixed Array with a fields to retrieve.
- *
- * @return Result set of alert compounds or false is something goes wrong.
- */
-function alerts_get_alert_compounds ($filter = false, $fields = false) {
-	return @db_get_all_rows_filter ('talert_compound', $filter, $fields);
-}
-
-/**
- * Get one alert compound.
- * 
- * @param int Id of the alert compound.
- *
- * @return Result set of the selected alert compound or false is something goes wrong.
- */
-function alerts_get_alert_compound ($id_alert_compound) {
-	global $config;
-	
-	switch ($config['dbtype']){
-		case "mysql":
-		case "postgresql":
-			return db_get_row ('talert_compound', 'id', $id_alert_compound);
-			break;
-		case "oracle":
-			$fields_select = db_get_all_rows_sql('SELECT column_name FROM user_tab_columns WHERE table_name = \'TALERT_COMPOUND\' AND column_name NOT IN (\'TIME_FROM\',\'TIME_TO\')');
-			foreach ($fields_select as $field_select){
-				$select_field[] = $field_select['column_name'];				
-			}
-			$select_stmt = implode(',', $select_field);
-			return db_get_row_sql("SELECT $select_stmt, to_char(time_from, 'hh24:mi:ss') as time_from, to_char(time_to, 'hh24:mi:ss') as time_to FROM talert_compound");	
-			break;
-	}
-}
-
-/**
- * Get actions of an alert compound.
- * 
- * @param int Id of the alert compound.
- * @param mixed Array of fields to retrieve or false.
- *
- * @return Result set of actions or false is something goes wrong.
- */
-function alerts_get_alert_compound_actions ($id_alert_compound, $fields = false) {
-	$id_alert_compound = safe_int ($id_alert_compound);
-	if (empty ($id_alert_compound))
-		return false;
-	
-	$actions = db_get_all_rows_filter ('talert_compound_actions',
-		array ('id_alert_compound' => $id_alert_compound),
-		$fields);
-	if ($actions === false)
-		return array ();
-	if ($fields !== false)
-		return $actions;
-	
-	$retval = array ();
-	foreach ($actions as $element) {
-		$action = alerts_get_alert_action ($element['id_alert_action']);
-		$action['fires_min'] = $element['fires_min'];
-		$action['fires_max'] = $element['fires_max'];
-		$retval[$element['id']] = $action;
-	}
-	
-	return $retval;
-}
-
-/**
- * Get name field of talert_compound.
- * 
- * @param int Id of the alert compound.
- *
- * @return Name of the alert compound or false is something goes wrong.
- */
-function alerts_get_alert_compound_name ($id_alert_compound) {
-	return (string) db_get_value ('name', 'talert_compound', 'id',
-		$id_alert_compound);
-}
-
-/**
- * Get elements of an alert compound.
- * 
- * @param int Id of the alert compound.
- *
- * @return Result set of the elements selected or false is something goes wrong.
- */
-function alerts_get_alert_compound_elements ($id_alert_compound) {
-	return db_get_all_rows_field_filter ('talert_compound_elements',
-		'id_alert_compound', $id_alert_compound);
-}
-
-/**
- * Gets action of an alert compound.
- * 
- * @param int Id of the alert compound.
- * @param int Id of the alert compound action.
- *
- * @return Result set of the action selected or false is something goes wrong.
- */
-function alerts_add_alert_compound_action ($id_alert_compound, $id_alert_action, $options = false) {
-	if (empty ($id_alert_compound))
-		return false;
-	if (empty ($id_alert_action))
-		return false;
-	
-	$values = array ();
-	$values['id_alert_compound'] = (int) $id_alert_compound;
-	$values['id_alert_action'] = (int) $id_alert_action;
-	$values['fires_max'] = 0;
-	$values['fires_min'] = 0;
-	if ($options) {
-		$max = 0;
-		$min = 0;
-		if (isset ($options['fires_max']))
-			$max = (int) $options['fires_max'];
-		if (isset ($options['fires_min']))
-			$min = (int) $options['fires_min'];
-		
-		$values['fires_max'] = max ($max, $min);
-		$values['fires_min'] = min ($max, $min);
-	}
-	
-	return (@db_process_sql_insert ('talert_compound_actions', $values)) !== false;
-}
-
-/**
- * Delete action of an alert compound.
- * 
- * @param int Id of the alert compound action.
- *
- * @return Affected rows or false is something goes wrong.
- */
-function alerts_delete_alert_compound_action ($id_alert_compound_action) {
-	if (empty ($id_alert_compound_action))
-		return false;
-	
-	return (@db_process_sql_delete ('talert_compound_actions',
-		array ('id' => $id_alert_compound_action))) !== false;
-}
-
-/**
- * Disable/Enable an alert compound.
- * 
- * @param int Id of the alert compound.
- * @param bool Whether to enable or disable an alert compound.
- *
- * @return Affected rows or false is something goes wrong.
- */
-function alerts_set_alerts_compound_disable ($id_alert_compound, $disabled) {
-	$id_alert_agent_module = safe_int ($id_alert_compound, 0);
-	return (@db_process_sql_update ('talert_compound',
-		array ('disabled' => (bool) $disabled),
-		array ('id' => $id_alert_compound))) !== false;
-}
-
-/**
- *  Validates a compound alert id or an array of alert id's.
- *
- * @param mixed Array of compound alert ids or single id.
- *
- * @return bool True if it was successful, false otherwise.
- */
-function alerts_validate_alert_compound ($id_alert_compound) {
-	global $config;
-	require_once ("include/functions_events.php");
-	
-	$alerts = safe_int ($id_alert_compound, 1);
-	
-	if (empty ($alerts)) {
-		return false;
-	}
-	
-	$alerts = (array) $alerts;
-	
-	foreach ($alerts as $id) {
-		$alert = alerts_get_alert_compound ($id);
-		
-		$agent_id = $alert["id_agent"];
-		$group_id = agents_get_agent_group ($agent_id);
-		
-		if (! check_acl ($config['id_user'], $group_id, "AW")) {
-			continue;
-		}
-		$result = db_process_sql_update ('talert_compound',
-			array ('times_fired' => 0,
-				'internal_counter' => 0),
-			array ('id' => $id));
-		
-		if ($result > 0) {
-			events_create_event ("Manual validation of compound alert for ".
-				$alert["name"],
-				$group_id, $agent_id, 1, $config["id_user"],
-				"alert_manual_validation", 1, $alert["id"],
-				$id);
-		}
-		elseif ($result === false) {
-			return false;
-		}
-	}
-	return true;
-}
-
-/**
- * Deletes an alert compound.
- *
- * @param int Id of the alert compound.
- *
- * @return mixed Affected rows or false is something goes wrong.
- */
-function alerts_delete_alert_compound ($id_alert_compound) {
-	$id_alert_compound = safe_int ($id_alert_compound, 1);
-	
-	if (empty ($id_alert_compound))
-		return false;
-	
-	return (@db_process_sql_delete ('talert_compound',
-		array ('id' => $id_alert_compound))) !== false;
 }
 
 /**

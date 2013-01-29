@@ -178,7 +178,7 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 
 function treeview_printTable($id_agente, $server_data = array()) {
 	global $config;
-
+	
 	if(empty($server_data)) {
 		$server_name = '';
 		$server_id = '';
@@ -404,7 +404,7 @@ function treeview_printTree($type) {
 		
 		metaconsole_restore_db();
 	}
-
+	
 	if ($list === false) {
 		echo '<h3 class="error">'.__('There aren\'t agents in this agrupation').'</h3>';
 		echo '</td></tr>';
@@ -414,7 +414,7 @@ function treeview_printTree($type) {
 		echo "<ul style='margin: 0; margin-top: 20px; padding: 0;'>\n";
 		
 		$first = true;
-		foreach ($list as $item) {		
+		foreach ($list as $item) {
 			$lessBranchs = 0;
 			if ($first) {
 				if ($item != end($list)) {
@@ -437,12 +437,13 @@ function treeview_printTree($type) {
 			}
 			
 			echo "<li style='margin: 0px 0px 0px 0px;'>";
-
+			
 			// Convert the id to hexadecimal, since it will be used as a div id
 			if (defined ('METACONSOLE')) {
 				$id = unpack ('H*', $item['_id_']);
 				$id = $id[1];
-			} else {
+			}
+			else {
 				$id = $item['_id_'];
 			}
 			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\", \"\")'>";

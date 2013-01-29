@@ -82,7 +82,7 @@ if (is_ajax()){
 	}
 	
 	// Select only opened incidents
-	if ($get_opened_incidents) {		
+	if ($get_opened_incidents) {
 		$own_info = get_user_info ($config['id_user']);
 		
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
@@ -95,20 +95,20 @@ if (is_ajax()){
 			ORDER BY actualizacion";
 			
 			
-		if (!empty($own_groups)) {					
+		if (!empty($own_groups)) {
 			$result_incidents_update = db_get_all_rows_sql ($sql);
 		}
 		else {
 			$result_incidents_update = false;
 		}
-
+		
 		if ($result_incidents_update ===  false)
 			$shortcut_incidents = 0;
 		else 
 			$shortcut_incidents = $result_incidents_update[0]['total_incidents'];
 		
 		echo $shortcut_incidents;
-	}	
+	}
 	
 	return;
 }

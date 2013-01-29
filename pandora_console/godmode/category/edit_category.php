@@ -42,7 +42,7 @@ $buttons = array(
 $buttons[$tab]['active'] = false;
 
 // Header
-if(defined('METACONSOLE')) {
+if (defined('METACONSOLE')) {
 	ui_meta_print_header(__('Categories configuration'), __('Editor'), $buttons);
 }
 else {
@@ -52,7 +52,7 @@ else {
 
 // Two actions can performed in this page: update and create categories
 // Update category: update an existing category
-if ($update_category && $id_category != 0) {	
+if ($update_category && $id_category != 0) {
 	$values = array();
 	$values['name'] = $name_category;
 	
@@ -113,7 +113,7 @@ echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/e
 echo '<div align=left style="width: 98%" class="pandora_form">';
 
 echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
-	echo "<tr>";	
+	echo "<tr>";
 		echo "<td align=center>";
 		html_print_label (__("Name"),'name');
 		echo "</td>";

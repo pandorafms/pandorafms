@@ -179,6 +179,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	$('#module').empty ();
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
 	
+	
 	// Check if homedir was received like a JSON
 	homedir = '';
 	id_server = 0;
@@ -251,6 +252,10 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 			
 			
 			$('#module').removeAttr('disabled');
+			
+			if (typeof(function_hook_loaded_module_list) == 'function') {
+				function_hook_loaded_module_list();
+			}
 		},
 		"json"
 		);

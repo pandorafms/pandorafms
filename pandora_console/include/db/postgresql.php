@@ -285,7 +285,7 @@ function postgresql_db_get_all_rows_in_table($table, $order_field = "", $order =
 	if ($order_field != "") {
 		return db_get_all_rows_sql ('SELECT * FROM "'.$table.'" ORDER BY '.$order_field . ' ' . $order);
 	}
-	else {	
+	else {
 		return db_get_all_rows_sql ('SELECT * FROM "'.$table.'"');
 	}
 }
@@ -609,13 +609,13 @@ function postgresql_db_format_array_where_clause_sql ($values, $join = 'AND', $p
  * @return the first value of the first row of a table result from query.
  *
  */
-function postgresql_db_get_value_sql($sql, $dbconnection = false) {	
+function postgresql_db_get_value_sql($sql, $dbconnection = false) {
 	$sql .= " LIMIT 1";
 	$result = postgresql_db_get_all_rows_sql ($sql, false, true, $dbconnection);
-
+	
 	if($result === false)
 		return false;
-
+	
 	foreach ($result[0] as $f)
 		return $f;
 }
@@ -630,10 +630,10 @@ function postgresql_db_get_value_sql($sql, $dbconnection = false) {
 function postgresql_db_get_row_sql ($sql, $search_history_db = false) {
 	$sql .= " LIMIT 1";
 	$result = postgresql_db_get_all_rows_sql($sql, $search_history_db);
-
+	
 	if($result === false)
 		return false;
-
+	
 	return $result[0];
 }
 

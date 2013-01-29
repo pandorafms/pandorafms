@@ -1,5 +1,11 @@
 2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/menu.php, include/db/oracle.php, include/db/mysql.php,
+	include/functions_categories.php, include/functions_db.php,
+	include/functions_menu.php: improved the code style.
+
+2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/reporting/visual_console_builder.wizard.php,
 	godmode/reporting/reporting_builder.php,
 	godmode/agentes/configurar_agente.php, godmode/menu.php,

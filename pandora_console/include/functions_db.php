@@ -148,7 +148,7 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, 
 	$accion = io_safe_input($accion);
 	$descripcion = io_safe_input($descripcion);
 	
-	switch ($config['dbtype']){	
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
 			$values = array('id_usuario' => $id,

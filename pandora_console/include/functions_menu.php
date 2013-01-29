@@ -507,7 +507,7 @@ function menu_get_sec_pages($sec,$menu_hash = false) {
  * 
  * @return true if the page is in section, false otherwise
  */
-function menu_sec2_in_sec($sec,$sec2) {	
+function menu_sec2_in_sec($sec,$sec2) {
 	$sec2_array = menu_get_sec_pages($sec);
 	
 	// If this value has various parameters, we only get the first

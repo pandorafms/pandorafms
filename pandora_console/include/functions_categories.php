@@ -27,7 +27,7 @@
  *
  * @return bool True or false if something goes wrong.
  */
-function categories_delete_category ($id_category){	
+function categories_delete_category ($id_category) {
 	// Change the elements of this category to "without category"
 	db_process_sql_update('tagente_modulo', array('id_category' => 0), array('id_category' => $id_category));
 	db_process_sql_update('tnetwork_component', array('id_category' => 0), array('id_category' => $id_category));
@@ -44,7 +44,7 @@ function categories_delete_category ($id_category){
  *
  * @return mixed Int with the tag's count.
  */
-function categories_get_category_count(){
+function categories_get_category_count() {
 	return (int)db_get_value('count(*)', 'tcategory');
 }
 

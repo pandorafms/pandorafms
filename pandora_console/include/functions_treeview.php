@@ -14,9 +14,120 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function treeview_printAlertsTable($id_module, $console_url = '') {
+function treeview_printModuleTable($id_module, $server_data = false) {
+	global $config;
+	
+	if(empty($server_data)) {
+		$server_name = '';
+		$server_id = '';
+		$url_hash = '';
+		$console_url = '';
+	}
+	else {
+		$server_name = $server_data['server_name'];
+		$server_id = $server_data['id'];
+		$console_url = $server_data['server_url'] . '/';
+		$url_hash = metaconsole_get_servers_url_hash($server_data);
+	}
+
+	require_once ($config["homedir"] . "/include/functions_agents.php");
+	require_once ($config["homedir"] . "/include/functions_graph.php");
+	include_graphs_dependencies($config['homedir'].'/');
+	require_once ($config['homedir'] . "/include/functions_groups.php");
+	require_once ($config['homedir'] . "/include/functions_servers.php");
+	enterprise_include_once ('meta/include/functions_modules_meta.php');
+	enterprise_include_once ('meta/include/functions_ui_meta.php');
+	enterprise_include_once ('meta/include/functions_metaconsole.php');
+
+	$filter["id_agente_modulo"] = $id_module;
+
+	$module = db_get_row_filter ("tagente_modulo", $filter);
+
+	if ($module === false) {
+		echo ui_print_error_message(__('There was a problem loading module'));
+		return;
+	}
+	
+	if (! check_acl ($config["id_user"], $module["id_grupo"], "AR")) {
+		db_pandora_audit("ACL Violation", 
+				  "Trying to access Module Information");
+		require_once ("general/noaccess.php");
+		return;
+	}
+
+	echo '<div id="id_div3" width="100%">';
+	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%">';
+	//Agent name
+	echo '<tr><td class="datos"><b>'.__('Module name').'</b></td>';
+	
+	if ($module["disabled"])
+		$cellName = "<em>" . ui_print_truncate_text ($module["nombre"], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]',"text-transform: uppercase;") .  ui_print_help_tip(__('Disabled'), true) . "<em>";
+	else
+		$cellName = ui_print_truncate_text ($module["nombre"], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]',"text-transform: uppercase;");
+
+	echo '<td class="datos"><b>'.$cellName.'</b></td>';
+
+	// Server
+	echo '<tr><td class="datos2"><b>'.__('Server').'</b></td>';
+	echo '<td class="datos2" colspan="2">';
+	echo $server_data['server_name'];
+	echo '</td></tr>';
+
+	// Parent
+	echo '<tr><td class="datos2"><b>'.__('Module group').'</b></td>';
+	echo '<td class="datos2" colspan="2">';
+	$module_group = modules_get_modulegroup_name($module['id_module_group']);
+
+	if ($module_group === false)
+		echo __('Not assigned');
+	else
+		echo __("$module_group");
+	echo '</td></tr>';
+	
+	echo '<tr><td class="datos2"><b>'.__('Module type').'</b></td>';
+	echo '<td class="datos2" colspan="2">';
+	echo servers_show_type ($module['id_modulo']);
+	echo '</td></tr>';	
+
+	// Group icon
+	echo '<tr><td class="datos"><b>'.__('Description').'</b></td>';
+	echo '<td class="datos" colspan="2">'. ui_print_truncate_text ($module['descripcion'], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]') .'</td></tr>';
+
+	//End of table
+	echo '</table></div>';
+	echo "<br>";
+	
+	$id_group = agents_get_agent_group($module['id_agente']);
+	$group_name = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);	
+	$agent_name = db_get_value('nombre', 'tagente', 'id_agente', $module['id_agente']);	
+	
+	// Actions table
+	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
+	echo '<tr>';	
+	echo '<td><form id="module_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '&tab=data' . $url_hash . '">';
+			html_print_submit_button (__('Go to modules detail'), 'upd_button', false, 'class="sub search"');
+	echo '</form></td></tr>';
+	echo '</table>';
+		
+	return;
+}
+
+function treeview_printAlertsTable($id_module, $server_data = array()) {
 	global $config;
 
+	if(empty($server_data)) {
+		$server_name = '';
+		$server_id = '';
+		$url_hash = '';
+		$console_url = '';
+	}
+	else {
+		$server_name = $server_data['server_name'];
+		$server_id = $server_data['id'];
+		$console_url = $server_data['server_url'] . '/';
+		$url_hash = metaconsole_get_servers_url_hash($server_data);
+	}
+	
 	$module_alerts = alerts_get_alerts_agent_module($id_module);
 	$module_name = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module);
 	$agent_id = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
@@ -56,15 +167,30 @@ function treeview_printAlertsTable($id_module, $console_url = '') {
 	}
 	echo '</table>';
 	
-	echo '<form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent_id.'&tab=alert" target="_blank">';
-		echo '<div class="action-buttons">';
+	// Actions table
+	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
+	echo '<tr>';	
+	echo '<td><form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $agent_id . $url_hash . '&tab=alert" target="_blank">';
 			html_print_submit_button (__('Go to alerts detail'), 'upd_button', false, 'class="sub search"');
-		echo '</div>';
-	echo '</form>';
+	echo '</form></td></tr>';
+	echo '</table>';
 }
 
-function treeview_printTable($id_agente, $console_url = '') {
+function treeview_printTable($id_agente, $server_data = array()) {
 	global $config;
+
+	if(empty($server_data)) {
+		$server_name = '';
+		$server_id = '';
+		$url_hash = '';
+		$console_url = '';
+	}
+	else {
+		$server_name = $server_data['server_name'];
+		$server_id = $server_data['id'];
+		$console_url = $server_data['server_url'] . '/';
+		$url_hash = metaconsole_get_servers_url_hash($server_data);
+	}
 
 	require_once ("include/functions_agents.php");
 	require_once ($config["homedir"] . '/include/functions_graph.php');
@@ -227,12 +353,15 @@ function treeview_printTable($id_agente, $console_url = '') {
 	
 	echo '</div>';
 	
+	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
 	
-	echo '<form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
-		echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	// If user has access to normal console
+	echo '<tr>';	
+	echo '<td><form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.$url_hash.'">';
 			html_print_submit_button (__('Go to agent detail'), 'upd_button', false, 'class="sub search"');
-		echo '</div>';
-	echo '</form>';
+	echo '</form></td></tr>';
+	
+	echo '</table>';
 	
 	return;
 }

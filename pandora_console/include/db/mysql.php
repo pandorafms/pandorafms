@@ -161,7 +161,7 @@ function mysql_db_get_row ($table, $field_search, $condition, $fields = false) {
 			$fields, $table, $field_search, $condition);
 	}
 	$result = db_get_all_rows_sql ($sql);
-		
+	
 	if ($result === false) 
 		return false;
 	
@@ -179,9 +179,11 @@ function mysql_db_get_row ($table, $field_search, $condition, $fields = false) {
  */
 function mysql_db_get_all_rows_in_table($table, $order_field = "", $order = 'ASC') {
 	if ($order_field != "") {
-		return db_get_all_rows_sql ("SELECT * FROM `".$table."` ORDER BY ".$order_field . " " . $order);
+		return db_get_all_rows_sql ("SELECT *
+			FROM `".$table."`
+			ORDER BY ".$order_field . " " . $order);
 	}
-	else {	
+	else {
 		return db_get_all_rows_sql ("SELECT * FROM `".$table."`");
 	}
 }
@@ -205,7 +207,7 @@ function mysql_db_process_sql_insert($table, $values) {
 		return false;
 	
 	$values = (array) $values;
-		
+	
 	$query = sprintf ("INSERT INTO `%s` ", $table);
 	$fields = array ();
 	$values_str = '';
@@ -570,7 +572,7 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
  * @return the first value of the first row of a table result from query.
  *
  */
-function mysql_db_get_value_sql($sql, $dbconnection = false) {	
+function mysql_db_get_value_sql($sql, $dbconnection = false) {
 	$sql .= " LIMIT 1";
 	$result = mysql_db_get_all_rows_sql ($sql, false, true, $dbconnection);
 	

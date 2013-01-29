@@ -266,7 +266,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 			}
 			
 			//Check if was displayed inside other menu
-			if ($extension['godmode_menu']["fatherId"] == '') {	
+			if ($extension['godmode_menu']["fatherId"] == '') {
 				$sub[$extmenu["sec2"]]["text"] = $extmenu["name"];
 				$sub[$extmenu["sec2"]]["refr"] = 0;
 			}

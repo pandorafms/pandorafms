@@ -79,7 +79,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub2["godmode/snmpconsole/snmp_alert"]["text"] = __("SNMP alerts");
 	$sub2['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');	
-	enterprise_hook ('snmpconsole_submenu');	
+	enterprise_hook ('snmpconsole_submenu');
 	$sub2['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
 	
 	$sub["operation/snmpconsole/snmp_view"]["sub2"] = $sub2;
@@ -104,7 +104,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$menu_operation["network"]["sub"] = $sub;
 	//End networkview
 	
-}	
+}
 
 // Reports read
 if (check_acl ($config['id_user'], 0, "RR")) {
@@ -178,7 +178,7 @@ if (check_acl ($config['id_user'], 0, "RR")) {
 	
 	$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
 	
-	$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');	
+	$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');
 	//Set godomode path
 	$sub["godmode/reporting/graphs"]["subsecs"] = array(
 		"operation/reporting/graph_viewer",
@@ -195,9 +195,9 @@ if (check_acl ($config['id_user'], 0, "RR")) {
 	//End reporting
 }
 
-	
+
 // Agent read, Server read
-if (check_acl ($config['id_user'], 0, "AR")) {	
+if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	//INI GIS Maps
 	if ($config['activate_gis']) {
@@ -329,7 +329,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	// Messages
 	$sub["operation/messages/message_list"]["text"] = __('Messages');
-	$sub["operation/messages/message_list"]["refr"] = 0;	
+	$sub["operation/messages/message_list"]["refr"] = 0;
 	
 	$sub2 = array ();
 	$sub2["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');

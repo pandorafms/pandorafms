@@ -124,7 +124,7 @@ if (!empty ($module)) {
 				$arr["module_name"] = modules_get_agentmodule_name ($selected);
 				$arr["agent_name"] = modules_get_agentmodule_agent_name ($selected);
 				$arr["agent_id"] = modules_get_agentmodule_agent ($selected);
-				$arr["utimestamp"] = $end;				
+				$arr["utimestamp"] = $end;
 				array_push ($data, $arr);
 			}
 			else {

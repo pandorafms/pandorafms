@@ -135,7 +135,7 @@ if (isset($_GET["update"])) {
 			$result = db_process_sql_update('trecon_task', $values, $where);
 		else  {
 			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
-				$reason = __('Incorrect format in Subnet field');			
+				$reason = __('Incorrect format in Subnet field');
 			$result = false; 
 		}
 	}
@@ -147,7 +147,7 @@ if (isset($_GET["update"])) {
 	}
 	else {
 		echo '<h3 class="error">'.__('Error updating recon task').'</h3>';
-        echo $reason;		
+		echo $reason;
 	}
 }
 

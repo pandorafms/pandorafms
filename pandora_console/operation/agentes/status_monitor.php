@@ -298,7 +298,7 @@ if (defined('METACONSOLE')) {
 		if (!empty($modules_temp))
 			$modules = array_merge($modules, $modules_temp);
 		if (!empty($tags_temp))
-			$tags = array_merge($tags, $tags_temp);		
+			$tags = array_merge($tags, $tags_temp);
 		
 		metaconsole_restore_db();
 	}
@@ -872,7 +872,7 @@ foreach ($result as $row) {
 	if (defined('METACONSOLE')) {
 		$data[1] = '<strong><a href="'. $row["server_url"] .'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='. $row["id_agent"] . '&amp;loginhash=auto&amp;loginhash_data=' . $row["hashdata"] . '&amp;loginhash_user=' . $row["user"] . '">'; 
 		$data[1] .= ui_print_truncate_text($row["agent_name"], 'agent_small', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
-		$data[1] .= '</a></strong>';		
+		$data[1] .= '</a></strong>';
 	}
 	else {
 		$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row["id_agent"].'">';

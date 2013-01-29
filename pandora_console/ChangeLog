@@ -1,5 +1,13 @@
 2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_reporting.php: fixed the lost columns in the
+	item general and added what "agent-module(op)" is the max and min
+	and added in the resume the units.
+	
+	Fixes: #3602208
+
+2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/menu.php, include/db/oracle.php, include/db/mysql.php,
 	include/functions_categories.php, include/functions_db.php,
 	include/functions_menu.php: improved the code style.

@@ -1,3 +1,8 @@
+2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/groups/group_list.php, include/ajax/events.php,
+	include/functions_api.php: improved the style code.
+
 2013-01-29  Dario Rodriguez <dario@artica.es>
 
         * images/pandora_report_logo.png: Added new images missed for

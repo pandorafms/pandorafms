@@ -37,7 +37,7 @@ $get_event_name = (bool) get_parameter ('get_event_name');
 $meta = get_parameter ('meta', 0);
 $history = get_parameter ('history', 0);
 
-if($get_event_name) {	
+if ($get_event_name) {
 	$event_id = get_parameter ('event_id');
 	
 	if($meta) {
@@ -56,24 +56,24 @@ if($get_event_name) {
 	return;
 }
 
-if($get_response_description) {	
+if ($get_response_description) {
 	$response_id = get_parameter ('response_id');
 	
 	$description = db_get_value('description','tevent_response','id',$response_id);
 	
-	if($description === false) {
+	if ($description === false) {
 		return;
 	}
 	
 	$description = io_safe_output($description);
 	$description = str_replace("\r\n", '<br>', $description);
-
+	
 	echo $description;
 	
 	return;
 }
 
-if($get_response_params) {	
+if ($get_response_params) {
 	$response_id = get_parameter ('response_id');
 	
 	$params = db_get_value('params','tevent_response','id',$response_id);
@@ -87,7 +87,7 @@ if($get_response_params) {
 	return;
 }
 
-if($get_response_target) {	
+if($get_response_target) {
 	$response_id = get_parameter ('response_id');
 	$event_id = get_parameter ('event_id');
 	$server_id = get_parameter ('server_id', 0);
@@ -103,7 +103,7 @@ if($get_response_target) {
 	return;
 }
 
-if($get_response) {	
+if($get_response) {
 	$response_id = get_parameter ('response_id');
 	
 	$event_response = db_get_row('tevent_response','id',$response_id);
@@ -138,7 +138,7 @@ if($dialogue_event_response) {
 	$event = db_get_row('tevento','id_evento',$event_id);
 	
 	$prompt = "<br>> ";
-		
+	
 	switch($event_response['type']) {
 		case 'command':
 			echo "<div style='text-align:left'>";

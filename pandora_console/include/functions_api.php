@@ -802,7 +802,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $thrash3) {
 			$where .= " AND tconfig_os.id_os = " . $other['data'][0];
 		}
 	}
-	if (isset($other['data'][1])){	
+	if (isset($other['data'][1])) {
 		// Filter by group
 		if ($other['data'][1] != "") {
 			$where .= " AND id_grupo = " . $other['data'][1];
@@ -2316,11 +2316,11 @@ function api_get_alert_template($id_template, $thrash1, $other, $thrash3) {
 
 	$template = alerts_get_alert_templates($filter_templates, array('id', 'name', 'description', 'id_alert_action', 'type', 'id_group'));	
 	
-	if ($template !== false) {	
+	if ($template !== false) {
 		$data['type'] = 'array';
-		$data['data'] = $template;			
-	}	
-		
+		$data['data'] = $template;
+	}
+	
 	if (!$template) {
 		returnError('error_get_alert_template', __('Error getting alert template.'));
 	}
@@ -2605,14 +2605,14 @@ function api_set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
 	
 	$total_alerts = count($alerts);
 	$count_results = 0;
-	foreach ($alerts as $alert) {		
+	foreach ($alerts as $alert) {
 		$result = alerts_validate_alert_agent_module($alert['id'], true);
 		
-		if ($result){
+		if ($result) {
 			$count_results++;
 		}
 	}
-
+	
 	if ($total_alerts > $count_results){
 		$errors = $total_alerts - $count_results;	
 		returnError('error_validate_all_alerts', __('Error validate all alerts. Failed ' . $errors . '.'));
@@ -2684,7 +2684,7 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
 			}
 			
 			// Validate alerts of these modules
-			foreach ($result_alerts as $result_alert){	
+			foreach ($result_alerts as $result_alert) {
 				$result = alerts_validate_alert_agent_module($result_alert, true);
 				
 				if ($result) {
@@ -2719,7 +2719,7 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_stop_downtime', __('Error stopping downtime. Id_downtime cannot be left blank.'));
 		return;	
 	}
@@ -2727,7 +2727,7 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
 	$date_stop = date ("Y-m-j",get_system_time ());
 	$time_stop = date ("h:iA",get_system_time ());
 	$date_time_stop = strtotime ($date_stop.' '.$time_stop);
-
+	
 	$values = array();
 	$values['date_to'] = $date_time_stop;
 	
@@ -3270,11 +3270,11 @@ function api_set_add_module_in_conf($id_agent, $module_name, $configuration_data
  * 
  * @return string Module data when success, empty when error
  */
-function api_get_module_from_conf($id_agent, $module_name, $thrash2, $thrash3) {	
+function api_get_module_from_conf($id_agent, $module_name, $thrash2, $thrash3) {
 	$result = enterprise_hook('config_agents_get_module_from_conf', array($id_agent, io_safe_output($module_name)));
-		
-	if($result !== ENTERPRISE_NOT_HOOK) {
-		returnData('string', array('type' => 'string', 'data' => $result));		
+	
+	if ($result !== ENTERPRISE_NOT_HOOK) {
+		returnData('string', array('type' => 'string', 'data' => $result));
 	}
 	else {
 		returnError('error_adding_module_conf', '');
@@ -3299,7 +3299,7 @@ function api_set_delete_module_in_conf($id_agent, $module_name, $thrash2, $thras
 	$result = config_agents_delete_module_in_conf($id_agent, $module_name);
 	
 	$result = enterprise_hook('config_agents_delete_module_in_conf', array($id_agent, $module_name));
-		
+	
 	if($result && $result !== ENTERPRISE_NOT_HOOK) {
 		returnData('string', array('type' => 'string', 'data' => '0'));		
 	}
@@ -3526,33 +3526,36 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	
 	
 	# SNMP version 3
-	if ($other['data'][12] == "3"){
+	if ($other['data'][12] == "3") {
 		
 		if ($other['data'][21] != "AES" and $other['data'][21] != "DES"){
 			returnError('error_update_snmp_module_policy', __('Error updating SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
-			return;	
+			
+			return;
 		}
 		
 		if ($other['data'][23] != "authNoPriv" and $other['data'][23] != "authPriv" and $other['data'][23] != "noAuthNoPriv"){
 			returnError('error_update_snmp_module_policy', __('Error updating SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
-			return;	
-		}		
+			
+			return;
+		}
 		
 		if ($other['data'][24] != "MD5" and $other['data'][24] != "SHA"){
 			returnError('error_update_snmp_module_policy', __('Error updating SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
-			return;	
-		}		
-
+			
+			return;
+		}
+		
 		$fields_snmp_module = array('id','disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 'min_critical', 
-						 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'tcp_port', 'tcp_send', 'snmp_community',
-						 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'description', 'custom_string_1',
-						 'custom_string_2', 'custom_string_3', 'plugin_parameter', 'plugin_user', 'plugin_pass');
+			'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'tcp_port', 'tcp_send', 'snmp_community',
+			'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'description', 'custom_string_1',
+			'custom_string_2', 'custom_string_3', 'plugin_parameter', 'plugin_user', 'plugin_pass');
 	}
-	else {		
+	else {
 		$fields_snmp_module = array('id','disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 'min_critical', 
-						 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'tcp_port', 'tcp_send', 'snmp_community',
-						 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'description');				
-	}       	
+			'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'tcp_port', 'tcp_send', 'snmp_community',
+			'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'description');
+	}
 	
 	$cont = 0;
 	foreach ($fields_snmp_module as $field){
@@ -3562,7 +3565,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 		
 		$cont++;
 	}
-	 	
+	 
 	$result_update = enterprise_hook('policies_update_module', array($other['data'][0], $values, false)); 
 	
 	
@@ -3774,12 +3777,12 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
  * 
  * @param $thrash3 Don't use
  */
-function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {	
+function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {
 	if ($other['data'][0] == "") {
 		returnError('error_create_netflow_filter', __('Error in netflow filter creation. Filter name cannot be left blank.'));
 		return;
 	}
-
+	
 	if ($other['data'][1] == "") {
 		returnError('error_create_netflow_filter', __('Error in netflow filter creation. Group id cannot be left blank.'));
 		return;
@@ -3792,12 +3795,12 @@ function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {
 			return;
 		}
 	}
-
+	
 	if ($other['data'][2] == "") {
 		returnError('error_create_netflow_filter', __('Error in netflow filter creation. Filter cannot be left blank.'));
 		return;
 	}
-
+	
 	if ($other['data'][3] == "") {
 		returnError('error_create_netflow_filter', __('Error in netflow filter creation. Aggregate_by cannot be left blank.'));
 		return;
@@ -3807,20 +3810,20 @@ function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {
 		returnError('error_create_netflow_filter', __('Error in netflow filter creation. Output_format cannot be left blank.'));
 		return;
 	}
-
+	
 	$values = array (
-			'id_name'=> $other['data'][0],
-			'id_group' => $other['data'][1],
-			'advanced_filter'=> $other['data'][2],
-			'aggregate'=> $other['data'][3],
-			'output'=> $other['data'][4]
+		'id_name'=> $other['data'][0],
+		'id_group' => $other['data'][1],
+		'advanced_filter'=> $other['data'][2],
+		'aggregate'=> $other['data'][3],
+		'output'=> $other['data'][4]
 	);
 	
 	// Save filter args
 	$values['filter_args'] = netflow_get_filter_arguments ($values);
 	
 	$id = db_process_sql_insert('tnetflow_filter', $values);
-		
+	
 	if ($id === false) {
 		returnError('error_create_netflow_filter', __('Error in netflow filter creation.'));
 	}

@@ -561,8 +561,8 @@ if (! defined ('METACONSOLE')) {
 	$img_style = array ("class" => "top", "width" => 16);
 	$activeTab = get_parameter('tab','group');
 	$group_tab = array('text' => "<a href='index.php?sec=monitoring&sec2=operation/tree&refr=0&tab=group&pure=$pure'>"
-								 . html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>", 
-					   'active' => $activeTab == "group");
+		. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>",
+		'active' => $activeTab == "group");
 	$tags_tab = array('text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&tab=tag&pure=$pure'>"
 				. html_print_image ("images/tag_red.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
 	$subsections = array('group' => $group_tab, 'tag' => $tags_tab);
@@ -586,7 +586,8 @@ if(tags_has_user_acl_tags()) {
 echo "<br>";
 if (! defined ('METACONSOLE')) {
 	echo '<form id="tree_search" method="post" action="index.php?extension_in_menu=estado&sec=estado&sec2=operation/tree&refr=0&sort_by='.$activeTab.'&pure='.$pure.'">';
-} else {
+}
+else {
 	echo '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$activeTab.'&pure='.$pure.'">';
 }
 echo "<b>" . __('Agent status') . "</b>";
@@ -635,7 +636,7 @@ treeview_printTree($activeTab);
 	 * less_branchs int use in ajax php as binary structure 0b00, 0b01, 0b10 and 0b11
 	 * id_father int use in js and ajax php, its useful when you have a two subtrees with same agent for diferent each one
 	 */
-	 function loadSubTree(type, div_id, less_branchs, id_father, server_name) {
+	function loadSubTree(type, div_id, less_branchs, id_father, server_name) {
 		hiddenDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddenDiv');
 		loadDiv = $('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv');
 		pos = parseInt($('#tree_image'+id_father+'_'+type+'_'+div_id).attr('pos_tree'));
@@ -690,9 +691,11 @@ treeview_printTree($activeTab);
 			});
 		}
 		else {
-			<?php if (! defined ('METACONSOLE')) {
+			<?php
+			if (! defined ('METACONSOLE')) {
 				echo 'var icon_path = \'operation/tree\';';
-			} else {
+			}
+			else {
 				echo 'var icon_path = \'../../operation/tree\';';
 			}
 			?>
@@ -781,7 +784,7 @@ treeview_printTree($activeTab);
 			success: function(data){
 				$('#cont').html(data);
 			}
-		});		
+		});
 	}
 	
 	function loadModuleTable(id_module, server_name) {
@@ -792,6 +795,6 @@ treeview_printTree($activeTab);
 			success: function(data){
 				$('#cont').html(data);
 			}
-		});		
+		});
 	}
 </script>

@@ -289,7 +289,7 @@ foreach ($result as $event) {
 				$data[$i] = '<b><a href="'.$event["server_url"].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $event["id_agente"] . $event["server_url_hash"] . '">';
 				$data[$i] .= $event["agent_name"];
 				$data[$i] .= "</a></b>";
-   			}
+			}
 			else {
 				$data[$i] .= ui_print_agent_name ($event["id_agente"], true);
 			}

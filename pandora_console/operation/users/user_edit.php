@@ -226,7 +226,7 @@ echo html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 echo '</td></tr><tr><td class="datos2">'.__('Comments').'</td><td class="datos">';
 html_print_textarea ("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''));
 html_print_input_hidden('quick_language_change', 1);
-   
+
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 	$display_all_group = true;
@@ -237,8 +237,7 @@ $usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 $id_usr = $config['id_user'];
 
 // User only can change skins if has more than one group 
-if (count($usr_groups) > 1){
-
+if (count($usr_groups) > 1) {
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		echo '</td></tr><tr><td class="datos">' . __('Skin') . '</td><td class="datos2">';
@@ -250,7 +249,7 @@ echo '</td></tr><tr><td class="datos">'.__('Interactive charts') . ui_print_help
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
 echo html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
 echo '</td></tr><tr><td class="datos">'.__('Block size for pagination'). ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true) . '</td><td class="datos2">';
-if($user_info["block_size"] == 0) {
+if ($user_info["block_size"] == 0) {
 	$block_size = $config["global_block_size"];
 }
 else {
@@ -371,42 +370,42 @@ $(document).ready (function () {
 function show_data_section () {
 	section=$("#section").val();
 	switch (section) {
-		case <?php echo "'".__('Dashboard')."'"; ?>:
+		case <?php echo "'" . __('Dashboard') . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'".__('Visual console')."'"; ?>:
+		case <?php echo "'" . __('Visual console') . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "");
 			break;
-		case <?php echo "'".__('Event list')."'"; ?>:
+		case <?php echo "'" . __('Event list') . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'".__('Group view')."'"; ?>:
+		case <?php echo "'" . __('Group view') . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'".__('Tactical view')."'"; ?>:
+		case <?php echo "'" . __('Tactical view') . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'".__('Alert detail')."'"; ?>:
+		case <?php echo "'" . __('Alert detail') . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'".__('Other')."'"; ?>:
+		case <?php echo "'" . __('Other') . "'"; ?>:
 			$("#text-data_section").css("display", "");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'".__('Default')."'"; ?>:
+		case <?php echo "'" . __('Default') . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");

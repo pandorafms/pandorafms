@@ -1,7 +1,7 @@
 <?php
 /**
- * @category   Images
- * @package    Image_Graph
+ * @category Images
+ * @package Image_Graph
  */
 
 /**

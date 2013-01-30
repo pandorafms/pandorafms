@@ -82,8 +82,8 @@ if ($read_message) {
 	
 	$table->data[2][0] = __('Subject');
 	$table->data[2][1] = html_print_input_text_extended ("subject", $message["subject"], 'text-subject', '', 50, 70, true, false, '', 'readonly');
-
-	$order   = array("\r\n", "\n", "\r");
+	
+	$order = array("\r\n", "\n", "\r");
 	$replace = '<br />';
 	$parsed_message = str_replace($order, $replace, $message["mensaje"]);
 	
@@ -124,7 +124,7 @@ if ($read_message) {
 // Create message (destination user)
 if (($new_msg) && (!empty ($dst_user)) && (!$reply)) {
 	$return = messages_create_message ($config["id_user"], $dst_user, $subject, $message);
-
+	
 	$user_name = get_user_fullname ($dst_user);
 	if (!$user_name) {
 		$user_name = $dst_user;

@@ -440,26 +440,22 @@ foreach ($modules as $module) {
 		}
 		else {
 			$module_value = io_safe_output($module["datos"]);
-
+			
 			// There are carriage returns here ?
 			// If carriage returns present... then is a "Snapshot" data (full command output)
 			if (preg_match ("/[\n]+/i", io_safe_output($module["datos"]))){
-
-		                $handle = "snapshot"."_".$module["id_agente_modulo"];
-                		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
-		                $win_handle=dechex(crc32($handle));
-
+				
+				$handle = "snapshot"."_".$module["id_agente_modulo"];
+				$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
+				$win_handle=dechex(crc32($handle));
+				
 				$link ="winopeng_var('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."&refr=".$module["current_interval"]."&label=".$module["nombre"]."','".$win_handle."', 700,480)"; 
-
-                        	$salida = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-
-
-                	//	$link ="winopeng('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."',$win_handle)";
-		//		$salida = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
-			
-			} else {	
+				
+				$salida = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+			}
+			else {
 				$sub_string = substr(io_safe_output($module["datos"]),0, 12);
-			
+				
 				if ($module_value == $sub_string) {
 					$salida = $module_value;
 				}

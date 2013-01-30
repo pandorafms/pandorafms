@@ -462,7 +462,7 @@ if ($agents !== false) {
 			sec2=godmode/agentes/configurar_agente&tab=alert&
 			id_agente='.$agent["id_agente"].'">'.__('Alerts').'</a>';
 		echo ' | ';
-		echo '<a href="index.php?sec=gagente
+		echo '<a href="index.php?sec=estado
 			&sec2=operation/agentes/ver_agente
 			&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
 		

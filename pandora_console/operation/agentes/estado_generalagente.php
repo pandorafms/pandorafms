@@ -39,7 +39,7 @@ if ($agent === false) {
 
 $is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
 
-if($is_extra === ENTERPRISE_NOT_HOOK) {
+if ($is_extra === ENTERPRISE_NOT_HOOK) {
 	$is_extra = false;
 }
 
@@ -57,7 +57,7 @@ echo '<div style="height: 10px">&nbsp;</div>';
 	//Floating div
 	echo '<div id="agent_access" style="float:right; width:320px; padding-top:10px;">';
 
-if ($config["agentaccess"]){
+if ($config["agentaccess"]) {
 	echo '<b>'.__('Agent access rate (24h)').'</b><br />';
 	
 	graphic_agentaccess($id_agente, 280, 110, 86400);
@@ -132,7 +132,7 @@ echo '<td class="datos2" colspan="2"><a href="index.php?sec=estado&amp;sec2=oper
 // Agent Interval
 echo '<tr><td class="datos"><b>'.__('Interval').'</b></td>';
 echo '<td class="datos" colspan="2">'.human_time_description_raw ($agent["intervalo"]).'</td></tr>';
-	
+
 // Comments
 echo '<tr><td class="datos2"><b>'.__('Description').'</b></td>';
 echo '<td class="datos2" colspan="2">'.$agent["comentarios"].'</td></tr>';
@@ -172,7 +172,7 @@ if ($config['activate_gis']) {
 }
 
 // If the url description is setted
-if ($agent['url_address'] != ''){
+if ($agent['url_address'] != '') {
 	echo '<tr><td class="datos"><b>'.__('Url address').'</b></td>';	
 	echo '<td class="datos2" colspan="2"><a href='.$agent["url_address"].'>' . $agent["url_address"] . '</a></td></tr>';
 }
@@ -208,10 +208,10 @@ if ($fields === false) {
 	$fields = array ();
 }
 if ($fields)
-foreach($fields as $field) {
+foreach ($fields as $field) {
 	echo '<tr><td class="datos"><b>'.$field['name'] . ui_print_help_tip (__('Custom field'), true).'</b></td>';
 	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
-	if($custom_value === false || $custom_value == '') {
+	if ($custom_value === false || $custom_value == '') {
 		$custom_value = '<i>-'.__('empty').'-</i>';
 	}
 	echo '<td class="datos f9" colspan="2">'.$custom_value.'</td></tr>';

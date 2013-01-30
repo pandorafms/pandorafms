@@ -314,7 +314,9 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 ///////////////////////////////
 
 // Prints a FLOT pie chart
-function flot_pie_chart ($values, $labels, $width, $height, $water_mark, $font = '', $font_size = 8) {
+function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
+	$font = '', $font_size = 8, $legend_position = '') {
+	
 	include_javascript_dependencies_flot_graph();
 	
 	$series = sizeof($values);
@@ -323,6 +325,16 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark, $font =
 	}
 	
 	$graph_id = uniqid('graph_');
+	
+	switch ($legend_position) {
+		case 'bottom':
+			$height = $height + (count($values) * 24);
+			break;
+		case 'right':
+		default:
+			//TODO FOR TOP OR LEFT OR RIGHT
+			break;
+	}
 	
 	$return = "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
 	
@@ -341,7 +353,9 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark, $font =
 	
 	$return .= "<script type='text/javascript'>";
 	
-	$return .= "pandoraFlotPie('$graph_id', '$values', '$labels', '$series', '$width', $font_size, $water_mark, '$separator')";
+	$return .= "pandoraFlotPie('$graph_id', '$values', '$labels',
+		'$series', '$width', $font_size, $water_mark,
+		'$separator', '$legend_position', '$height')";
 	
 	$return .= "</script>";
 	

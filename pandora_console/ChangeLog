@@ -1,3 +1,13 @@
+2013-01-30 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/agentes/estado_generalagente.php,
+	include/functions_graph.php, include/graphs/functions_flot.php,
+	include/graphs/fgraph.php, include/graphs/flot/pandora.flot.js:
+	fixed the graph of events, now the pie graphs in "flot mode" has
+	a parammeter to force the position of legend.
+	
+	Fixes: #3602206
+
 2013-01-30 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql

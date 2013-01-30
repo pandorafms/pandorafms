@@ -3,10 +3,10 @@
 
 */
 
-function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, water_mark, separator) {
+function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, water_mark, separator, legend_position, height) {
 	var labels = labels.split(separator);
 	var data = values.split(separator);
-
+	
 	for( var i = 0; i<nseries; i++)
 	{
 		data[i] = { label: labels[i], data: parseInt(data[i]) }
@@ -14,7 +14,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	
 	var label_conf;
 	
-	if(width < 400) {
+	if (width < 400) {
 		label_conf = {
 			show: false
 		};
@@ -33,12 +33,12 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 		};
 	}
 	
-	var plot = $.plot($('#'+graph_id), data,
-	{
+	var conf_pie = {
 			series: {
 				pie: {
 					show: true,
 					radius: 3/4,
+					//offset: {top: -100},
 					label: label_conf
 					//$label_str
 				}
@@ -50,7 +50,26 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 				hoverable: true,
 				clickable: true
 			}
-	});
+		};
+	
+	switch (legend_position) {
+		case 'bottom':
+			if (width > height)
+				offset = - (height / 5);
+			else
+				offset = - (width / 5);
+			conf_pie.series.pie.radius = 1 / 2.5;
+			conf_pie.series.pie.offset = 
+			conf_pie.series.pie.offset = {top: offset};
+			conf_pie.legend.position = "s";
+			break;
+		case 'right':
+		default:
+			//TODO FOR TOP OR LEFT OR RIGHT
+			break;
+	}
+	
+	var plot = $.plot($('#'+graph_id), data, conf_pie);
 	
 	var legends = $('#'+graph_id+' .legendLabel');
 	legends.each(function () {
@@ -58,22 +77,22 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 		$(this).css('width', $(this).width()+5);
 		$(this).css('font-size', font_size+'pt');
 	});
-
+	
 	// Events
 	$('#'+graph_id).bind('plothover', pieHover);
 	$('#'+graph_id).bind('plotclick', pieClick);
 	$('#'+graph_id).bind('mouseout',resetInteractivity);
-
+	
 	function pieHover(event, pos, obj) 
 	{
 		if (!obj)
 			return;
-			
+		
 		index = obj.seriesIndex;
 		legends.css('font-weight', '');
 		legends.eq(index).css('font-weight', 'bold');
 	}
-    
+	
 	// Reset styles
 	function resetInteractivity() {
 		legends.each(function () {
@@ -443,10 +462,10 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 }
 
 function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, type, serie_types, water_mark, width, max_x, homeurl, unit, font_size, menu, events, event_ids, legend_events, alerts, alert_ids, legend_alerts, yellow_threshold, red_threshold, force_integer, separator, separator2, series_suffix_str) {
-
+	
 	var threshold = true;
 	var thresholded = false;
-
+	
 	values = values.split(separator2);
 	serie_types = serie_types.split(separator);
 	labels_long = labels_long.split(separator);

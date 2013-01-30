@@ -1,5 +1,12 @@
 2013-01-30 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/agentes/modificar_agente.php: fixed the menu to showing
+	in the link to view agent.
+	
+	* operation/agentes/estado_monitores.php: cleaned source code style.
+
+2013-01-30 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/agentes/planned_downtime.list.php, include/db/oracle.php,
 	include/Image/image_functions.php,
 	operation/events/events.build_table.php,

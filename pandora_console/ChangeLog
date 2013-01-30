@@ -1,5 +1,10 @@
 2013-01-30  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/events/event_responses.editor.php: Little fix
+	in a tooltip
+
+2013-01-30  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_ui.php: Fixed help popups to 
 	be used from metaconsole too
 

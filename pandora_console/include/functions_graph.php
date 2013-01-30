@@ -26,66 +26,7 @@ define("GRAPH_LINE", 2);
 define("GRAPH_STACKED_LINE", 3);
 
 function get_graph_statistics ($chart_array) {
-
-        /// IMPORTANT!
-        ///
-        /// The calculus for AVG, MIN and MAX values are in this function
-        /// because it must be done based on graph array data not using reporting 
-        /// function to get coherent data between stats and graph visualization
-
-        $stats = array ();
-
-        $count = 0;
-
-        $size = sizeof($chart_array);
-
-        //Initialize stats array
-        $stats = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-
-        foreach ($chart_array as $item) {
-                
-		//Sum all values later divide by the number of elements
-                $stats['avg'] = $stats['avg'] + $item;
-
-                //Get minimum
-                if ($stats['min'] == null) {
-			$stats['min'] = $item;
-                } else if ($item < $stats['min']) {
-                        $stats['min'] = $item;
-                }
-
-                //Get maximum
-                if ($stats['max'] == null) {
-                        $stats['max'] = $item;
-                } else if ($item > $stats['max']) {
-                        $stats['max'] = $item;
-                }
-		
-		$count++;
-
-                //Get last data
-                if ($count == $size) {
-                	$stats['last'] = $item;
-                }
-	}	
-
-        //End the calculus for average
-        if ($count > 0) {
-
-                $stats['avg'] = $stats['avg'] / $count;
-        }
-
-        //Format stat data to display properly
-        $stats['last'] = round($stats['last'], 2);
-        $stats['avg'] = round($stats['avg'], 2);
-        $stats['min'] = round($stats['min'], 2);
-        $stats['max'] = round($stats['max'], 2);
-
-	return $stats;
-}
-
-function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
-
+	
 	/// IMPORTANT!
 	///
 	/// The calculus for AVG, MIN and MAX values are in this function
@@ -93,9 +34,70 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 	/// function to get coherent data between stats and graph visualization
 	
 	$stats = array ();
-
+	
 	$count = 0;
+	
+	$size = sizeof($chart_array);
+	
+	//Initialize stats array
+	$stats = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
+	
+	foreach ($chart_array as $item) {
+		
+		//Sum all values later divide by the number of elements
+		$stats['avg'] = $stats['avg'] + $item;
+		
+		//Get minimum
+		if ($stats['min'] == null) {
+			$stats['min'] = $item;
+		}
+		else if ($item < $stats['min']) {
+			$stats['min'] = $item;
+		}
+		
+		//Get maximum
+		if ($stats['max'] == null) {
+			$stats['max'] = $item;
+		}
+		else if ($item > $stats['max']) {
+			$stats['max'] = $item;
+		}
+		
+		$count++;
+		
+		//Get last data
+		if ($count == $size) {
+			$stats['last'] = $item;
+		}
+	}
+	
+	//End the calculus for average
+	if ($count > 0) {
+		
+		$stats['avg'] = $stats['avg'] / $count;
+	}
+	
+	//Format stat data to display properly
+	$stats['last'] = round($stats['last'], 2);
+	$stats['avg'] = round($stats['avg'], 2);
+	$stats['min'] = round($stats['min'], 2);
+	$stats['max'] = round($stats['max'], 2);
+	
+	return $stats;
+}
 
+function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
+	
+	/// IMPORTANT!
+	///
+	/// The calculus for AVG, MIN and MAX values are in this function
+	/// because it must be done based on graph array data not using reporting 
+	/// function to get coherent data between stats and graph visualization
+	
+	$stats = array ();
+	
+	$count = 0;
+	
 	$size = sizeof($chart_array);
 
 	//Initialize stats array
@@ -1334,14 +1336,16 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$sql = sprintf ('SELECT COUNT(id_evento) as count_number, nombre
+			$sql = sprintf ('SELECT COUNT(id_evento) AS count_number,
+					nombre
 				FROM tevento, tagente_modulo
 				WHERE id_agentmodule = id_agente_modulo
 					AND disabled = 0 AND tevento.id_agente = %d
 				GROUP BY id_agentmodule, nombre LIMIT %d', $id_agent, $max_items);
 			break;
 		case "oracle":
-			$sql = sprintf ('SELECT COUNT(id_evento) as count_number, dbms_lob.substr(nombre,4000,1) as nombre
+			$sql = sprintf ('SELECT COUNT(id_evento) AS count_number,
+					dbms_lob.substr(nombre,4000,1) AS nombre
 				FROM tevento, tagente_modulo
 				WHERE (id_agentmodule = id_agente_modulo
 					AND disabled = 0 AND tevento.id_agente = %d) AND rownum <= %d
@@ -1358,13 +1362,16 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 		return;
 	}
 	
-	
 	foreach ($events as $event) {
-		$data[$event['nombre'].' ('.$event['count_number'].')'] = $event["count_number"];
+		$key = io_safe_output($event['nombre']) .
+			' ('.$event['count_number'].')';
+		$data[$key] = $event["count_number"];
 	}
 	
 	/* System events */
-	$sql = "SELECT COUNT(*) FROM tevento WHERE id_agentmodule = 0 AND id_agente = $id_agent";
+	$sql = "SELECT COUNT(*)
+		FROM tevento
+		WHERE id_agentmodule = 0 AND id_agente = $id_agent";
 	$value = db_get_sql ($sql);
 	if ($value > 0) {
 		$data[__('System').' ('.$value.')'] = $value;
@@ -1376,7 +1383,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"),
 		'', $water_mark,
-		$config['fontpath'], $config['font_size']);
+		$config['fontpath'], $config['font_size'], 1, "bottom");
 }
 
 function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value_text = false, $color = false, $options = false) {

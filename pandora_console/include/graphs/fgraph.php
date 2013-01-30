@@ -434,26 +434,29 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 }
 
 function pie3d_graph($flash_chart, $chart_data, $width, $height,
-	$others_str = "other", $homedir="", $water_mark = "", $font = '', $font_size = '', $ttl = 1) {
+	$others_str = "other", $homedir="", $water_mark = "", $font = '',
+	$font_size = '', $ttl = 1, $legend_position = false) {
 	return pie_graph('3d', $flash_chart, $chart_data, $width, $height,
-		$others_str, $homedir, $water_mark, $font, $font_size, $ttl);
+		$others_str, $homedir, $water_mark, $font, $font_size, $ttl, $legend_position);
 }
 
 function pie2d_graph($flash_chart, $chart_data, $width, $height,
-	$others_str = "other", $homedir="", $water_mark = "", $font = '', $font_size = '', $ttl = 1) {
+	$others_str = "other", $homedir="", $water_mark = "", $font = '',
+	$font_size = '', $ttl = 1, $legend_position = false) {
 	return pie_graph('2d', $flash_chart, $chart_data, $width, $height,
-		$others_str, $homedir, $water_mark, $font, $font_size, $ttl);
+		$others_str, $homedir, $water_mark, $font, $font_size, $ttl, $legend_position);
 }
 
 function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
-	$others_str = "other", $homedir="", $water_mark = "", $font = '', $font_size = '', $ttl = 1) {
+	$others_str = "other", $homedir="", $water_mark = "", $font = '',
+	$font_size = '', $ttl = 1, $legend_position = false) {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	// This library allows only 8 colors
 	$max_values = 8;
 	
-	if(count($chart_data) > $max_values) {
+	if (count($chart_data) > $max_values) {
 		$chart_data_trunc = array();
 		$n = 1;
 		foreach($chart_data as $key => $value) {
@@ -472,9 +475,13 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	}
 	
 	if ($flash_chart) {
-		return flot_pie_chart(array_values($chart_data), array_keys($chart_data), $width, $height, $water_mark_url, $font, $font_size);
+		return flot_pie_chart(array_values($chart_data),
+			array_keys($chart_data), $width, $height, $water_mark_url,
+			$font, $font_size, $legend_position);
 	}
 	else {
+		//TODO SET THE LEGEND POSITION
+		
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;

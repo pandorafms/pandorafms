@@ -69,7 +69,7 @@ $data[1] = html_print_textarea('description',5,40,$event_response['description']
 $table->data[1] = $data;
 
 $data = array();
-$data[0] = __('Location');
+$data[0] = __('Location') . ui_print_help_tip(__('In Command mode is enforced to Modal window'), true);
 $locations = array(__('Modal window'), __('New window'));
 $data[1] = html_print_select($locations,'new_window',$event_response['new_window'],'','','',true);
 

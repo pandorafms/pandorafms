@@ -1,3 +1,12 @@
+2013-01-30  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php: Fixed help popups to 
+	be used from metaconsole too
+
+	* godmode/events/event_responses.editor.php: Added
+	a little help tip in the windows type of event
+	responses editor
+
 2013-01-29 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/groups/group_list.php, include/ajax/events.php,

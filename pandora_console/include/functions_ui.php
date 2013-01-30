@@ -944,6 +944,11 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
 function ui_print_help_icon ($help_id, $return = false, $home_url = '') {
 	if (empty($home_url))
 		$home_url = "";
+	
+	if(defined('METACONSOLE')) {
+		$home_url = "../../" . $home_url;
+	}
+	
 	$output = '&nbsp;'.html_print_image ("images/help.png", true, 
 		array ("class" => "img_help",
 			"title" => __('Help'),

@@ -281,6 +281,7 @@ INSERT INTO tconfig (token, value) VALUES ('compare_pass', 3);
 INSERT INTO tconfig (token, value) VALUES ('meta_style', 'meta_pandora');
 INSERT INTO tconfig (token, value) VALUES ('enable_refr', 0);
 INSERT INTO tconfig (token, value) VALUES ('show_vc', 1);
+INSERT INTO tconfig (token, value) VALUES ('meta_num_elements', 1);
 
 -- -----------------------------------------------------
 -- Table tpassword_history

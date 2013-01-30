@@ -208,6 +208,8 @@ define ('STATUS_ALERT_DISABLED', 'alert_disabled.png');
 define ('STATUS_SERVER_OK', 'server_ok.png');
 define ('STATUS_SERVER_DOWN', 'server_down.png');
 
+
+
 /* Events criticity */
 define ('EVENT_CRIT_MAINTENANCE', 0);
 define ('EVENT_CRIT_INFORMATIONAL', 1);
@@ -219,4 +221,9 @@ define ('EVENT_CRIT_CRITICAL', 4);
 define ('EVENT_CRIT_WARNING_OR_CRITICAL', 34);
 define ('EVENT_CRIT_NOT_NORMAL', 20);
 
+/* Id Module (more use in component)*/
+define ('MODULE_WMI', 6);
+define ('MODULE_NETWORK', 2);
+define ('MODULE_PLUGIN', 4);
+define ('MODULE_WEB', 7);
 ?>

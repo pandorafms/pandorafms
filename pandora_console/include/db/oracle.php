@@ -590,14 +590,14 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 			}
 			if ($i == $max) {
 				$query .= ' ) ';
-			}                       
+			}
 			$i++; 
 			continue;
 		}
 		else if (is_numeric ($field)) {
 			/* User provide the exact operation to do */
 			$query .= $value;
-				
+			
 			if ($i < $max) {
 				$query .= ' '.$join.' ';
 			}
@@ -621,12 +621,12 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 			$query .= sprintf ("%s IN ('%s')", $field, implode ("', '", $value));
 		}
 		else {
-			if ($value[0] == ">"){
+			if ($value[0] == ">") {
 				$value = substr($value,1,strlen($value)-1);
 				$query .= sprintf ("%s > '%s'", $field, $value);
 			}
-			else if ($value[0] == "<"){
-				if ($value[1] == ">"){
+			else if ($value[0] == "<") {
+				if ($value[1] == ">") {
 					$value = substr($value,2,strlen($value)-2);
 					$query .= sprintf ("%s <> '%s'", $field, $value);
 				}
@@ -707,11 +707,11 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
  **/
 function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 	$fields = array ();
-
+	
 	if (! is_array ($values) || empty($sql)) {
 		return '';
 	}
-
+	
 	$query = '';
 	$limit = '';
 	$offset = '';
@@ -736,7 +736,7 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 	else if (isset ($values['offset'])) {
 		unset ($values['offset']);
 	}
-
+	
 	if (isset ($values['order'])) {
 		if (is_array($values['order'])) {
 			if (!isset($values['order']['order'])) {
@@ -755,19 +755,19 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 		}
 		unset ($values['order']);
 	}
-
+	
 	if (isset ($values['group'])) {
 		$group = sprintf (' GROUP BY %s', $values['group']);
 		unset ($values['group']);
 	}
-
+	
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
 		if ($i == 1) {
 			$query .= ' ( ';
 		}
-
+		
 		if (is_numeric ($field)) {
 			/* User provide the exact operation to do */
 			$query .= $value;
@@ -778,7 +778,7 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 			$i++;
 			continue;
 		}
-
+		
 		if (is_null ($value)) {
 			$query .= sprintf ("%s IS NULL", $field);
 		}
@@ -867,10 +867,10 @@ function oracle_db_get_value_sql($sql, $dbconnection = false) {
 function oracle_db_get_row_sql ($sql, $search_history_db = false) {
 	$sql = "SELECT * FROM (" . $sql . ") WHERE rownum < 2";
 	$result = oracle_db_get_all_rows_sql($sql, $search_history_db);
-
+	
 	if($result === false)
 		return false;
-
+	
 	return $result[0];
 }
 
@@ -904,11 +904,11 @@ function oracle_db_get_row_filter ($table, $filter, $fields = false, $where_join
 	}
 	else {
 		if (is_array ($fields))
-		$fields = implode (',', $fields);
+			$fields = implode (',', $fields);
 		else if (! is_string ($fields))
-		return false;
+			return false;
 	}
-
+	
 	if (is_array ($filter))
 		$filter = db_format_array_where_clause_sql ($filter, $where_join, ' WHERE ');
 	else if (is_string ($filter))
@@ -917,7 +917,7 @@ function oracle_db_get_row_filter ($table, $filter, $fields = false, $where_join
 		$filter = '';
 	
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
-
+	
 	return db_get_row_sql ($sql);
 }
 
@@ -956,7 +956,7 @@ function oracle_db_get_all_rows_filter ($table, $filter = array(), $fields = fal
 	elseif (!is_string($fields)) {
 		return false;
 	}
-
+	
 	//TODO: Validate and clean filter options
 	if (is_array ($filter)) {
 		$filter = db_format_array_where_clause_sql ($filter, $where_join, ' WHERE ');
@@ -967,9 +967,9 @@ function oracle_db_get_all_rows_filter ($table, $filter = array(), $fields = fal
 	else {
 		$filter = '';
 	}
-
+	
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
-
+	
 	if ($returnSQL)
 		return $sql;
 	else
@@ -984,7 +984,7 @@ function oracle_db_get_all_rows_filter ($table, $filter = array(), $fields = fal
  */
 function oracle_db_get_num_rows ($sql) {
 	global $config;
-
+	
 	$type = explode(' ',strtoupper(trim($sql)));
 	if ($type[0] == 'SELECT'){
 		$sql = "SELECT count(*) as NUM FROM (" . $sql . ")";
@@ -1000,7 +1000,7 @@ function oracle_db_get_num_rows ($sql) {
 	}
 	
 	oci_free_statement($query);
-
+	
 	return $rows; 
 }
 
@@ -1024,10 +1024,10 @@ function oracle_db_get_all_rows_field_filter ($table, $field, $condition, $order
 	else {
 		$sql = sprintf ("SELECT * FROM %s WHERE %s = '%s'", $table, $field, $condition);
 	}
-
+	
 	if ($order_field != "")
 		$sql .= sprintf (" ORDER BY %s", $order_field);
-
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -1045,10 +1045,10 @@ function oracle_db_get_all_fields_in_table ($table, $field = '', $condition = ''
 	if ($condition != '') {
 		$sql .= sprintf (" WHERE %s = '%s'", $field, $condition);
 	}
-
+	
 	if ($order_field != "")
 		$sql .= sprintf (" ORDER BY %s", $order_field);
-
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -1077,7 +1077,7 @@ function oracle_db_get_all_fields_in_table ($table, $field = '', $condition = ''
  */
 function oracle_db_format_array_to_update_sql ($values) {
 	$fields = array ();
-
+	
 	foreach ($values as $field => $value) {
 		if (is_numeric($field)) {
 			array_push ($fields, $value);
@@ -1086,7 +1086,7 @@ function oracle_db_format_array_to_update_sql ($values) {
 		else if ($field[0] == "`") {
 			$field = str_replace('`', '', $field);
 		}
-
+		
 		if ($value === NULL) {
 			$sql = sprintf ("%s = NULL", $field);
 		}
@@ -1110,7 +1110,7 @@ function oracle_db_format_array_to_update_sql ($values) {
 		}
 		array_push ($fields, $sql);
 	}
-
+	
 	return implode (", ", $fields);
 }
 
@@ -1142,7 +1142,7 @@ function oracle_db_process_sql_update($table, $values, $where = false, $where_jo
 	$query = sprintf ("UPDATE %s SET %s",
 	$table,
 	db_format_array_to_update_sql ($values));
-
+	
 	if ($where) {
 		if (is_string ($where)) {
 			// No clean, the caller should make sure all input is clean, this is a raw function
@@ -1188,9 +1188,9 @@ function oracle_db_process_sql_delete($table, $where, $where_join = 'AND') {
 	if (empty ($where))
 		/* Should avoid any mistake that lead to deleting all data */
 		return false;
-
+	
 	$query = sprintf ("DELETE FROM %s WHERE ", $table);
-
+	
 	if ($where) {
 		if (is_string ($where)) {
 			/* FIXME: Should we clean the string for sanity?
@@ -1201,7 +1201,7 @@ function oracle_db_process_sql_delete($table, $where, $where_join = 'AND') {
 			$query .= db_format_array_where_clause_sql ($where, $where_join);
 		}
 	}
-
+	
 	return db_process_sql ($query);
 }
 
@@ -1209,9 +1209,9 @@ function oracle_db_process_sql_delete_temp ($table, $where, $where_join = 'AND')
 	if (empty ($where))
 		/* Should avoid any mistake that lead to deleting all data */
 		return false;
-
+	
 	$query = sprintf ("DELETE FROM %s WHERE ", $table);
-
+	
 	if ($where) {
 		if (is_string ($where)) {
 			/* FIXME: Should we clean the string for sanity?
@@ -1222,8 +1222,9 @@ function oracle_db_process_sql_delete_temp ($table, $where, $where_join = 'AND')
 			$query .= db_format_array_where_clause_sql ($where, $where_join);
 		}
 	}
-
+	
 	$result = '';
+	
 	return db_process_sql ($query, "affected_rows", '', true, $result, false);
 }
 

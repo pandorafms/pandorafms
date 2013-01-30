@@ -1,3 +1,13 @@
+2013-01-30 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/agentes/planned_downtime.list.php, include/db/oracle.php,
+	include/Image/image_functions.php,
+	operation/events/events.build_table.php,
+	operation/messages/message_edit.php, operation/users/user_edit.php,
+	operation/tree.php: improved the source style.
+	
+	* include/constants.php: added constants for the subtype of modules.
+
 2013-01-30  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/events/event_responses.editor.php: Little fix

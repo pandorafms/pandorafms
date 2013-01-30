@@ -236,7 +236,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 	('compare_pass', 3),
 	('meta_style', 'meta_pandora'),
 	('enable_refr', 0),
-	('show_vc', 1);
+	('show_vc', 1),
+	('meta_num_elements', 100);
 UPDATE tconfig SET `value`='comparation' WHERE `token`= 'prominent_time';
 
 -- ----------------------------------------------------------------------

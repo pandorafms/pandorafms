@@ -225,6 +225,13 @@ $table->data[29][1] = __('Yes') . '&nbsp;&nbsp;&nbsp;' .
 $table->data[29][1] .= __('No') . '&nbsp;&nbsp;&nbsp;' .
 	html_print_radio_button ('referer_security', 0, '', $config["referer_security"], true);
 
+$table->data[30][0] = __('Event storm protection');
+$table->data[30][0] .= ui_print_help_tip(__('If set to yes no events or alerts will be generated, but agents will continue receiving data.'), true);
+$table->data[30][1] = __('Yes') . '&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button ('event_storm_protection', 1, '', $config["event_storm_protection"], true) .
+	'&nbsp;&nbsp;';
+$table->data[30][1] .= __('No') . '&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button ('event_storm_protection', 0, '', $config["event_storm_protection"], true);
 
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 

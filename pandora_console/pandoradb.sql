@@ -157,10 +157,7 @@ CREATE TABLE `tagente_estado` (
 	PRIMARY KEY  (`id_agente_estado`),
 	KEY `status_index_1` (`id_agente_modulo`),
 	KEY `idx_agente` (`id_agente`),
-	KEY `idx_status` (`estado`),
-	KEY `current_interval` (`current_interval`),
-	KEY `running_by` (`running_by`),
-	KEY `last_execution_try` (`last_execution_try`)
+	KEY `running_by` (`running_by`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 -- Probably last_execution_try index is not useful and loads more than benefits
 
@@ -496,10 +493,9 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`owner_user` VARCHAR(100) NOT NULL DEFAULT '',
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	PRIMARY KEY  (`id_evento`),
-	KEY `indice_1` (`id_agente`,`id_evento`),
+	KEY `idx_agente` (`id_agente`),
 	KEY `idx_agentmodule` (`id_agentmodule`),
-	INDEX criticity (`criticity`),
-	INDEX estado (`estado`)
+	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- Criticity: 0 - Maintance (grey)
 -- Criticity: 1 - Informational (blue)
@@ -793,9 +789,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`my_modules` int(11) NOT NULL default 0,
 	`stat_utimestamp` bigint(20) NOT NULL default '0',
 	PRIMARY KEY  (`id_server`),
-	KEY `name` (`name`),
-	KEY `keepalive` (`keepalive`),
-	KEY `status` (`status`)
+	KEY `name` (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- server types:
 -- 0 data

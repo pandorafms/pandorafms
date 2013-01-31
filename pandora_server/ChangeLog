@@ -1,3 +1,15 @@
+2013-01-31  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_server,
+	  conf/pandora_server.conf,
+	  lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/Core.pm,
+	  util/pandora_manage.pl: Added support for event storm protection and
+	  disabling auto event validation.
+
+	* lib/PandoraFMS/Server.pm: Improved the server status update function
+	  to use run less queries.
+
 2013-01-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* util/pandora_xml_stress.pl: fixed the typo messages error that

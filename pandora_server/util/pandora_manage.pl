@@ -157,6 +157,8 @@ sub help_screen{
 	help_screen_line('--create_netflow_filter', '<filter_name> <group_name> <filter> <aggregate_by dstip|dstport|none|proto|srcip|srcport> <output_format kilobytes|kilobytespersecond|megabytes|megabytespersecond>', 'Create a new netflow filter');
 	print "TOOLS:\n\n" unless $param ne '';
 	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', 'Execute any CLI option with macros from CSV file');
+	print "SETUP:\n\n" unless $param ne '';
+	help_screen_line('--set_event_storm_protection', '<value>', 'Enable (1) or disable (0) event storm protection');
 	
     print "\n";
 	exit;
@@ -3211,6 +3213,23 @@ sub cli_module_get_data () {
 }
 
 ##############################################################################
+# Enable or disable event flow protection
+# Related option: --create_netflow_filter
+##############################################################################
+sub cli_set_event_storm_protection () {
+	my $value = @ARGV[2];
+	
+	# Check for a valid value
+	if ($value != 0 && $value != 1) {
+		print_log "[ERROR] Invalid value: $value. Value must be either 0 or 1\n\n";
+		return;
+	}
+
+	# Set the value of event
+	db_do ($dbh, 'UPDATE tconfig SET value=? WHERE token=?', $value, 'event_storm_protection');
+}
+
+##############################################################################
 # Return event name given a event id
 ##############################################################################
 
@@ -3523,6 +3542,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_netflow_filter') {
 			param_check($ltotal, 5);
 			cli_create_netflow_filter();
+		}
+		elsif ($param eq '--set_event_storm_protection') {
+			param_check($ltotal, 1);
+			cli_set_event_storm_protection();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";

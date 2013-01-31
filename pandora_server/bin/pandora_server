@@ -198,8 +198,8 @@ sub pandora_start_netflow_daemon () {
 	
 	# Check if netflow is enabled
 	if ($Config{'activate_netflow'} != 1) {
-		logger (\%Config, "[*] Netflow daemon disabled.", 1);
-		print_message (\%Config, "[*] Netflow daemon disabled.", 1);
+		logger (\%Config, " [*] Netflow daemon disabled.", 1);
+		print_message (\%Config, " [*] Netflow daemon disabled.", 1);
 		return;
 	}
 	
@@ -331,7 +331,9 @@ while (1) {
 			
 			# Set the status of unknown modules
 			pandora_module_unknown (\%Config, $DBH);
-		
+			
+			# Set event storm protection
+			pandora_set_event_storm_protection (pandora_get_tconfig_token ($DBH, 'event_storm_protection', 0));
 		}
 		
 		# TASKS DONE EACH 60 SECONDS (Low latency tasks)

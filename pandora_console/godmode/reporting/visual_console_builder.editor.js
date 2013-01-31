@@ -1521,7 +1521,7 @@ function eventsItems(drag) {
 	$('.item').bind('click', function(event, ui) {
 		event.stopPropagation();
 		if (!is_opened_palette) {
-			divParent = $(event.target).parent();
+			var divParent = $(event.target);
 			while (!$(divParent).hasClass("item")) {
 				divParent = $(divParent).parent();
 			}
@@ -1976,7 +1976,7 @@ function showGrid() {
 		
 		eventsItems([SIZE_GRID, SIZE_GRID]);
 	}
-	else{
+	else {
 		$("#background_grid").css('display', 'none');	
 		$("#background_img").css('opacity', '1');
 		$("#background_img").css('filter', 'alpha(opacity=100)');

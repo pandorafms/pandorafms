@@ -106,6 +106,8 @@ use XML::Simple;
 use HTML::Entities;
 use Time::Local;
 use POSIX qw(strftime);
+use threads;
+use threads::shared;
 
 # Force XML::Simple to use XML::Parser instead SAX to manage XML
 # due a bug processing some XML with blank spaces.
@@ -172,6 +174,7 @@ our @EXPORT = qw(
 	pandora_process_module
 	pandora_reset_server
 	pandora_server_keep_alive
+	pandora_set_event_storm_protection
 	pandora_update_agent
 	pandora_update_agent_address
 	pandora_update_config_token
@@ -187,6 +190,7 @@ our @EXPORT = qw(
 	get_agent_from_addr
 	get_agent_from_name
 	@ServerTypes
+	$EventStormProtection
 	);
 
 # Some global variables
@@ -194,6 +198,8 @@ our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
 our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
+# Event storm protection (no alerts or events)
+our $EventStormProtection :shared = 0;
 
 ##########################################################################
 # Return the agent given the IP address.
@@ -231,6 +237,11 @@ Generate alerts for a given I<$module>.
 ##########################################################################
 sub pandora_generate_alerts ($$$$$$$$;$$$) {
 	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value, $alert_type) = @_;
+
+	# No alerts when event storm protection is enabled
+	if ($EventStormProtection == 1) {
+		return;
+	}
 	
 	if ($agent->{'quiet'} == 1) {
 		logger($pa_config, "Generate Alert. The agent '" . $agent->{'nombre'} . "' is in quiet mode.", 10);
@@ -1735,7 +1746,7 @@ sub pandora_reset_server ($$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_update_server (I<$pa_config>, I<$dbh>, I<$server_name>, I<$status>, I<$server_type>, I<$num_threads>, I<$queue_size>) >> 
+=head2 C<< pandora_update_server (I<$pa_config>, I<$dbh>, I<$server_name>, I<$server_id>, I<$status>, I<$server_type>, I<$num_threads>, I<$queue_size>) >> 
 
 Update server status: 
  0 dataserver
@@ -1748,40 +1759,41 @@ Update server status:
 
 =cut
 ##########################################################################
-sub pandora_update_server ($$$$$;$$) {
-	my ($pa_config, $dbh, $server_name, $status,
+sub pandora_update_server ($$$$$$;$$) {
+	my ($pa_config, $dbh, $server_name, $server_id, $status,
 		$server_type, $num_threads, $queue_size) = @_;
 
 	$num_threads = 0 unless defined ($num_threads);
 	$queue_size = 0 unless defined ($queue_size);
 
-	my $server = get_db_single_row ($dbh, 'SELECT * FROM tserver WHERE name = ? AND server_type = ?', $server_name, $server_type);
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
-
-	# Create an entry in tserver
-	if (! defined ($server)){ 
-		my $server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules)
+	
+	# First run
+	if ($server_id == 0) { 
+		
+		# Create an entry in tserver if needed
+		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE name = ? AND server_type = ?', $server_name, $server_type);
+		if (! defined ($server)) {
+			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules)
 						VALUES (?, ?, ?, ?, ?, ?)', $server_name, $server_type,
 						'Autocreated at startup', $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'}, $num_threads, $queue_size);
-		$server = get_db_single_row ($dbh, 'SELECT * FROM tserver WHERE id_server = ?', $server_id);
-		if (! defined ($server)) {
-			logger($pa_config, "Server '" . $pa_config->{'servername'} . "' not found.", 3);
-			return;
+		
+			$server = get_db_single_row ($dbh, 'SELECT status FROM tserver WHERE id_server = ?', $server_id);
+			if (! defined ($server)) {
+				logger($pa_config, "Server '" . $pa_config->{'servername'} . "' not found.", 3);
+				return;
+			}
 		}
-	}
-
-	# Server going up
-	if ($server->{'status'} == 0) {
+		
 		my $version = $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'};
-
 		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?
 				WHERE id_server = ?',
-				$status, $timestamp, $pa_config->{'pandora_master'}, $timestamp, $version, $num_threads, $queue_size, $server->{'id_server'});
+				1, $timestamp, $pa_config->{'pandora_master'}, $timestamp, $version, $num_threads, $queue_size, $server_id);
 		return;
 	}
 
 	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, threads = ?, queued_modules = ?
-			WHERE id_server = ?', $status, $timestamp, $pa_config->{'pandora_master'}, $num_threads, $queue_size, $server->{'id_server'});
+			WHERE id_server = ?', $status, $timestamp, $pa_config->{'pandora_master'}, $num_threads, $queue_size, $server_id);
 }
 
 ##########################################################################
@@ -2904,7 +2916,7 @@ sub get_module_status ($$$) {
 ##########################################################################
 sub pandora_validate_event ($$$) {
 	my ($pa_config, $id_agentmodule, $dbh) = @_;
-	if (!defined($id_agentmodule)){
+	if (!defined($id_agentmodule) || $pa_config->{"event_auto_validation"} == 0) {
 		return;
 	}
 
@@ -2921,11 +2933,22 @@ sub generate_status_event ($$$$$$$$) {
 	my ($event_type, $severity);
 	my $description = "Module " . safe_output($module->{'nombre'}) . " (".safe_output($data).") is ";
 
+	# No events when event storm protection is enabled
+	if ($EventStormProtection == 1) {
+		return;
+	}
+
 	# Mark as "validated" any previous event for this module
 	pandora_validate_event ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 
 	# Normal
 	if ($status == 0) {
+		
+		# Do not generate an event when a module goes from notinit no normal
+		if ($last_known_status == 4) {
+			return;
+		}
+		
 		($event_type, $severity) = ('going_down_normal', 2);
 		$description .= "going to NORMAL";
 	# Critical
@@ -2936,7 +2959,7 @@ sub generate_status_event ($$$$$$$$) {
 	} elsif ($status == 2) {
 		
 		# From normal
-		if ($last_known_status == 0) {
+		if ($last_known_status == 0 || $last_known_status == 4) {
 			($event_type, $severity) = ('going_up_warning', 3);
 			$description .= "going to WARNING";
 			
@@ -3725,6 +3748,13 @@ sub update_module_status_count ($$$$) {
 
 	# Update the status count
 	db_do ($dbh, "UPDATE tagente SET $query_sub, $query_add WHERE id_agente=?", $agent->{'id_agente'});
+}
+
+##########################################################################
+# Set or unset silent mode.
+##########################################################################
+sub pandora_set_event_storm_protection ($) {
+	$EventStormProtection = shift;
 }
 
 # End of function declaration

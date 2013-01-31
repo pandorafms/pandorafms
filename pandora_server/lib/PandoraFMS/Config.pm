@@ -290,6 +290,9 @@ sub pandora_load_config {
 	# Event replication process
 	$pa_config->{"event_replication"} = 0; # 5.0
 
+	# Event auto-validation
+	$pa_config->{"event_auto_validation"} = 1; # 5.0
+	
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
 	# This values should be stored in database, not in .conf files!
@@ -298,6 +301,7 @@ sub pandora_load_config {
 	$pa_config->{"realtimestats"} = 0;
 	$pa_config->{"stats_interval"} = 300;
 	$pa_config->{"agentaccess"} = 1; 
+	$pa_config->{"event_storm_protection"} = 0; 
 	# -------------------------------------------------------------------------
 
 	# Check for UID0
@@ -635,6 +639,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^event_replication\s+([0-1])/i) {
 			$pa_config->{'event_replication'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_auto_validation\s+([0-1])/i) {
+			$pa_config->{'event_auto_validation'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

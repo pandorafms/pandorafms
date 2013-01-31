@@ -191,6 +191,15 @@ sub getErrStr ($) {
 }
 
 ########################################################################################
+# Set event storm protection.
+########################################################################################
+sub setEventStormProtection ($) {
+	my ($self, $event_storm_protection) = @_;
+	
+	$PandoraFMS::Core::EventStormProtection = $event_storm_protection;
+}
+
+########################################################################################
 # Add a thread to the server thread list.
 ########################################################################################
 sub addThread ($$) {
@@ -258,7 +267,7 @@ sub update ($) {
 	my $self = shift;
 
 	eval {
-		pandora_update_server ($self->{'_pa_config'}, $self->{'_dbh'}, $self->{'_pa_config'}->{'servername'},
+		pandora_update_server ($self->{'_pa_config'}, $self->{'_dbh'}, $self->{'_pa_config'}->{'servername'}, $self->{'_server_id'},
 		                       1, $self->{'_server_type'}, $self->{'_num_threads'}, $self->{'_queue_size'});
 	};
 }
@@ -271,7 +280,7 @@ sub stop ($) {
 
 	eval {
 		# Update server status
-		pandora_update_server ($self->{'_pa_config'}, $self->{'_dbh'}, $self->{'_pa_config'}->{'servername'},
+		pandora_update_server ($self->{'_pa_config'}, $self->{'_dbh'}, $self->{'_pa_config'}->{'servername'}, $self->{'_server_id'},
 		                       0, $self->{'_server_type'}, 0, 0);
 	};
 

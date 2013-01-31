@@ -1062,3 +1062,20 @@ INSERT INTO `tnetwork_component_group` VALUES (48,'MacOS',0);
 DROP TABLE IF EXISTS `talert_compound_actions`;
 DROP TABLE IF EXISTS `talert_compound_elements`;
 DROP TABLE IF EXISTS `talert_compound`;
+
+-- ---------------------------------------------------------------------
+-- Modify indexes
+-- ---------------------------------------------------------------------
+
+ALTER TABLE tagente_estado DROP INDEX idx_status;
+ALTER TABLE tagente_estado DROP INDEX current_interval;
+ALTER TABLE tagente_estado DROP INDEX last_execution_try;
+
+ALTER TABLE tevento DROP INDEX indice_1;
+ALTER TABLE tevento DROP INDEX criticity;
+ALTER TABLE tevento DROP INDEX estado;
+ALTER TABLE tevento ADD INDEX `idx_utimestamp` USING BTREE (`utimestamp`);
+
+ALTER TABLE tserver DROP INDEX keepalive;
+ALTER TABLE tserver DROP INDEX status;
+

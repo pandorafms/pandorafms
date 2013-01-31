@@ -1,3 +1,13 @@
+2013-01-31  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  pandoradb.sql: Removed some indexes that caused deadlocks on high
+	  load scenarios.
+
+	* godmode/setup/setup_general.php,
+	  include/functions_config.php: Added support for event storm
+	  protection.
+
 2013-01-31 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/visual_console_builder.editor.js: fixed a

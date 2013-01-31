@@ -1552,7 +1552,7 @@ function events_page_responses ($event) {
 			</script>";
 	
 	$responses = '<div id="extended_event_responses_page" class="extended_event_pages">'.html_print_table($table_responses, true).$responses_js.'</div>';
-
+	
 	return $responses;
 }
 

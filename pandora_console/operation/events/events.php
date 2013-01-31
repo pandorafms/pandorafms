@@ -237,7 +237,7 @@ if($meta) {
 }
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;" . $params;
-	
+
 // Header
 if ($config["pure"] == 0 || $meta) {
 	$pss = get_user_info($config['id_user']);
@@ -309,7 +309,7 @@ if ($config["pure"] == 0 || $meta) {
 	if(!isset($config['metaconsole_events_history']) || $config['metaconsole_events_history'] != 1) {
 		unset($onheader['history']);
 	}
-
+	
 	switch ($section) {
 		case 'sound_event':
 			$onheader['sound_event']['active'] = true;
@@ -324,7 +324,7 @@ if ($config["pure"] == 0 || $meta) {
 			$section_string = __('List');
 			break;
 	}
-
+	
 	if (! defined ('METACONSOLE')) {
 		unset($onheader['history']);
 		ui_print_page_header (__("Events"), "images/lightning_go.png",
@@ -398,7 +398,7 @@ if ($validate) {
 	
 	if (isset($ids[0]) && $ids[0] != -1) {
 		$return = events_change_status ($ids, $new_status, $meta);
-
+		
 		if ($new_status == 1) {
 			ui_print_result_message ($return,
 				__('Successfully validated'),

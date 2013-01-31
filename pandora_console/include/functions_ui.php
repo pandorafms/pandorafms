@@ -1296,7 +1296,7 @@ function ui_process_page_head ($string, $bitfield) {
 	}
 	else {
 		$config['jquery'] = array_merge(
-			array ("jquery" => "include/javascript/jquery-1.8.2.js",
+			array ("jquery" => "include/javascript/jquery-1.9.0.js",
 				"pandora" => "include/javascript/jquery.pandora.js"),
 			$config['jquery']);
 	}
@@ -2506,7 +2506,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 			
 			if (' . ((int) !$metaconsole_enabled) . ') {
 				inputs.push ("force_local_modules=1");
-			}			
+			}
 			
 			if (' . ((int)$metaconsole_enabled) . ') {
 				inputs.push ("server_name=" + $("#' . $input_server_id . '").val());
@@ -2741,7 +2741,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 					return false;
 				}
 				})
-			.data( "autocomplete")._renderItem = function( ul, item ) {
+			.data("ui-autocomplete")._renderItem = function( ul, item ) {
 				if (item.ip == "") {
 					text = "<a>" + item.name + "</a>";
 				}

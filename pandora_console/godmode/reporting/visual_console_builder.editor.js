@@ -1510,7 +1510,11 @@ function eventsItems(drag) {
 	$('.item').unbind('click');
 	$('.item').unbind('dragstop');
 	$('.item').unbind('dragstart');
-	$(".item").draggable('destroy');
+	
+	//Check if exist or create the previous draggable
+	check_draggable = $(".item").data();
+	if (typeof(check_draggable.uiDraggable) != "undefined")
+		$(".item").draggable('destroy');
 	
 	//$(".item").resizable(); //Disable but run in ff and in the waste (aka micro$oft IE) show ungly borders
 	

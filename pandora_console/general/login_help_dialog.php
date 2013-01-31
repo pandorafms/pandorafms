@@ -109,8 +109,7 @@ $(document).ready (function () {
 		overlay: {
 				opacity: 0.5,
 				background: "black"
-			},
-		bgiframe: jQuery.browser.msie
+			}
 	});
 	
 	

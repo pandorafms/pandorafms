@@ -4088,10 +4088,9 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 					$sql_data = sprintf("SELECT id_agent_module,
 							server_name, operation
 						FROM treport_content_item
-						where id_report_content = %d",
+						WHERE id_report_content = %d",
 						$content['id_rc']);
 					$generals = db_process_sql ($sql_data);
-					//html_debug_print($generals);
 					
 					if ($generals === false) {
 						$data = array ();

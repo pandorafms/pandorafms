@@ -203,8 +203,7 @@ function main_view_enterprise($settings, $user_key) {
 					overlay: {
 							opacity: 0.5,
 							background: "black"
-						},
-					bgiframe: jQuery.browser.msie
+						}
 				});
 			$("#dialog").show();
 		}

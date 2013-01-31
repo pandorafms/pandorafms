@@ -338,8 +338,7 @@ ui_require_jquery_file('pandora');
 			overlay: {
 				opacity: 0.5,
 				background: "black"
-			},
-			bgiframe: jQuery.browser.msie
+			}
 		});
 	}
 </script>

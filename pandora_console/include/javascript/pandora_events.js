@@ -1,7 +1,7 @@
 // Show the modal window of an event
 function show_event_dialog(event_id, group_rep, dialog_page, result) {
 	var ajax_file = $('#hidden-ajax_file').val();
-
+	
 	if(dialog_page == undefined) {
 		dialog_page = 'general';
 	}
@@ -12,13 +12,13 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 	var user_comment = $('#hidden-user_comment_'+event_id).val();
 	var event_rep = $('#hidden-event_rep_'+event_id).val();
 	var server_id = $('#hidden-server_id_'+event_id).val();
-
+	
 	// Metaconsole mode flag
 	var meta = $('#hidden-meta').val();
 	
 	// History mode flag
 	var history = $('#hidden-history').val();
-
+	
 	jQuery.post (ajax_file,
 		{"page": "include/ajax/events",
 		"get_extended_event": 1,
@@ -46,13 +46,12 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 						opacity: 0.5,
 						background: "black"
 					},
-					bgiframe: jQuery.browser.msie,
 					width: 620,
 					height: 500
 				})
 				.show ();
 				
-			switch(result) {
+			switch (result) {
 				case 'comment_ok':
 					$('#notification_comment_success').show();
 					break;
@@ -74,7 +73,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 			}
 		},
 		"html"
-	);	
+	);
 	return false;
 }
 
@@ -88,7 +87,7 @@ function execute_response(event_id, server_id) {
 	if(response == null) {
 		return;
 	}
-		
+	
 	response['target'] = get_response_target(event_id, response_id, server_id);
 	
 	switch(response['type']) {
@@ -109,7 +108,7 @@ function execute_response(event_id, server_id) {
 //Show the modal window of an event response
 function show_response_dialog(event_id, response_id, response) {
 	var ajax_file = $('#hidden-ajax_file').val();
-
+	
 	var params = [];
 	params.push("page=include/ajax/events");
 	params.push("dialogue_event_response=1");
@@ -136,7 +135,6 @@ function show_response_dialog(event_id, response_id, response) {
 					open: function(event, ui) {
 						perform_response(response['target']);
 					},
-					bgiframe: jQuery.browser.msie,
 					width: response['modal_width'], 
 					height: response['modal_height']
 				})
@@ -200,7 +198,7 @@ function get_response_params(response_id) {
 // Get an event response description from db
 function get_response_description(response_id) {
 	var ajax_file = $('#hidden-ajax_file').val();
-
+	
 	var response_description = '';
 	
 	var params = [];
@@ -226,7 +224,7 @@ function get_response_description(response_id) {
 // Get an event response description from db
 function get_event_name(event_id, meta, history) {
 	var ajax_file = $('#hidden-ajax_file').val();
-
+	
 	var name = '';
 	
 	var params = [];

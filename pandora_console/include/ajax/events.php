@@ -87,7 +87,7 @@ if ($get_response_params) {
 	return;
 }
 
-if($get_response_target) {
+if ($get_response_target) {
 	$response_id = get_parameter ('response_id');
 	$event_id = get_parameter ('event_id');
 	$server_id = get_parameter ('server_id', 0);
@@ -103,7 +103,7 @@ if($get_response_target) {
 	return;
 }
 
-if($get_response) {
+if ($get_response) {
 	$response_id = get_parameter ('response_id');
 	
 	$event_response = db_get_row('tevent_response','id',$response_id);
@@ -126,7 +126,7 @@ if($perform_event_response) {
 	return;
 }
 
-if($dialogue_event_response) {
+if ($dialogue_event_response) {
 	global $config;
 	
 	$event_id = get_parameter ('event_id');
@@ -147,7 +147,7 @@ if($dialogue_event_response) {
 			
 			echo "<div id='response_loading_command' style='display:none'>".html_print_image('images/spinner.gif', true)."</div>";
 			echo "<br><div id='response_out' style='text-align:left'></div>";
-				
+			
 			echo "<br><div id='re_exec_command' style='display:none;'>";
 			html_print_button(__('Execute again'),'btn_str',false,'perform_response(\''.$command.'\');', "class='sub next'");
 			echo "</div>";
@@ -366,19 +366,19 @@ if($get_extended_event) {
 	// Load the required tab
 	switch($dialog_page) {
 		case "general":
-			$js .= '$tabs.tabs("select", 0);';
+			$js .= '$tabs.tabs( "option", "active", 0);';
 			break;
 		case "details":
-			$js .= '$tabs.tabs("select", 1);';
+			$js .= '$tabs.tabs( "option", "active", 1);';
 			break;
 		case "custom_fields":
-			$js .= '$tabs.tabs("select", 2);';
+			$js .= '$tabs.tabs( "option", "active", 2);';
 			break;
 		case "comments":
-			$js .= '$tabs.tabs("select", 3);';
+			$js .= '$tabs.tabs( "option", "active", 3);';
 			break;
 		case "responses":
-			$js .= '$tabs.tabs("select", 4);';
+			$js .= '$tabs.tabs( "option", "active", 4);';
 			break;
 	}
 	

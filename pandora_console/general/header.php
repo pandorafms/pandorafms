@@ -221,8 +221,8 @@ config_check();
 	</tr>
 </table>
 <?php
-ui_require_css_file ('jquery-ui-1.8.23.custom');
-ui_require_jquery_file('jquery-ui-1.8.23.custom.min');
+ui_require_css_file ('jquery-ui-1.10.0.custom');
+ui_require_jquery_file('jquery-ui-1.10.0.custom');
 ui_require_jquery_file('countdown');
 ui_require_javascript_file('encode_decode_base64');
 ?>

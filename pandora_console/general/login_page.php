@@ -103,8 +103,8 @@ if (isset ($login_failed)) {
 	echo '</div>';	
 }
 
-ui_require_css_file ('jquery-ui-1.8.23.custom');
-ui_require_jquery_file('jquery-ui-1.8.23.custom.min');
+ui_require_css_file ('jquery-ui-1.10.0.custom');
+ui_require_jquery_file('jquery-ui-1.10.0.custom');
 ?>
 
 <?php
@@ -218,8 +218,7 @@ ui_require_jquery_file('jquery-ui-1.8.23.custom.min');
 				width: 700,
 				overlay: {
 					opacity: 0.5,
-					background: "black"},
-				bgiframe: jQuery.browser.msie
+					background: "black"}
 			});
 		});
 		
@@ -236,8 +235,7 @@ ui_require_jquery_file('jquery-ui-1.8.23.custom.min');
 				width: 350,
 				overlay: {
 					opacity: 0.5,
-					background: "black"},
-				bgiframe: jQuery.browser.msie
+					background: "black"}
 			});
 		});
 		

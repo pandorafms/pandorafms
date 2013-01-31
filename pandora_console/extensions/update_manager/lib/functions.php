@@ -246,8 +246,7 @@ function update_pandora_print_javascript_admin() {
 					overlay: {
 							opacity: 0.5,
 							background: "black"
-						},
-					bgiframe: jQuery.browser.msie
+						}
 				});
 			$(".ui-dialog-titlebar-close").hide();
 			$("#dialog_download").show();
@@ -271,8 +270,7 @@ function update_pandora_print_javascript_admin() {
 					overlay: {
 							opacity: 0.5,
 							background: "black"
-						},
-					bgiframe: jQuery.browser.msie
+						}
 				});
 			$(".ui-dialog-titlebar-close").hide();
 			$("#dialog_download").show();

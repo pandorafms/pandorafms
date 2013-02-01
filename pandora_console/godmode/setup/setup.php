@@ -72,7 +72,9 @@ $buttons['general'] = array('active' => false,
 			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general">' .
 			html_print_image("images/god6.png", true, array ("title" => __('General'))) . '</a>');
 
-$buttons = setup_enterprise_add_Tabs($buttons);
+if (enterprise_installed()) {
+	$buttons = setup_enterprise_add_Tabs($buttons);
+}
 
 $buttons['auth'] = array('active' => false, 
 			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=auth">' .
@@ -94,7 +96,9 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	}
 }
 
-$subpage = setup_enterprise_add_subsection_main($section, $buttons);
+if (enterprise_installed()) {
+	$subpage = setup_enterprise_add_subsection_main($section, $buttons);
+}
 
 switch ($section) {
 	case 'general':

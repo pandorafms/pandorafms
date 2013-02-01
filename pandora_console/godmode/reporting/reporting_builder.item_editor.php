@@ -627,12 +627,12 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_input_hidden('id_agent', $idAgent);
 				html_print_input_hidden ('server_name', $server_name);
 				
-
+				
 				$params = array();
 				$params['show_helptip'] = false;
 				$params['input_name'] = 'agent';
 				// Input id is only used in metaconsole events
-				if($meta) {
+				if ($meta) {
 					$params['input_id'] = 'agent_autocomplete';
 				}
 				$params['value'] = $agent_name;
@@ -642,9 +642,9 @@ html_print_input_hidden('id_item', $idItem);
 				$params['add_none_module'] = false;
 				$params['use_hidden_input_idagent'] = true;
 				$params['hidden_input_idagent_id'] = 'hidden-id_agent';
-				$params['use_input_server'] = true;
-				$params['input_server_id'] = 'hidden-server_name';
 				if ($meta) {
+					$params['use_input_server'] = true;
+					$params['input_server_id'] = 'hidden-server_name';
 					//It is a page in the new metaconsole.
 					$params['metaconsole_enabled'] = true;
 				}
@@ -652,17 +652,17 @@ html_print_input_hidden('id_item', $idItem);
 				ui_print_agent_autocomplete_input($params);
 				
 				// Print a specific control to metaconsole events
-				if($meta) {
+				if ($meta) {
 					$params['input_id'] = 'agent_autocomplete_events';
 					$params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
 					$params['javascript_is_function_select'] = false;
 					//$params['use_hidden_input_idagent'] = false;
 					$params['use_input_server'] = false;
 					$params['input_name'] = 'agent_text';
-
+					
 					ui_print_agent_autocomplete_input($params);
 				}
-
+				
 				?>
 			</td>
 		</tr>

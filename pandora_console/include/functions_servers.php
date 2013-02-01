@@ -235,7 +235,7 @@ function servers_get_info ($id_server = -1) {
 			// ---------------------------------------------------------------
 
 			$server["lag"] = db_get_sql ("SELECT lag_time FROM tserver WHERE id_server = ".$server["id_server"]);
-			$server["modulelag"] = db_get_sql ("SELECT lag_modules FROM tserver WHERE id_server = ".$server["id_server"]);
+			$server["module_lag"] = db_get_sql ("SELECT lag_modules FROM tserver WHERE id_server = ".$server["id_server"]);
 			$server["modules"] = db_get_sql ("SELECT my_modules FROM tserver WHERE id_server = ".$server["id_server"]);
 			$server["modules_total"] = db_get_sql ("SELECT total_modules_running FROM tserver WHERE id_server = ".$server["id_server"]);
 

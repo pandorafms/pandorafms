@@ -27,6 +27,7 @@ include_once($config['homedir'] . "/include/functions_graph.php");
 include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . "/include/functions_network_components.php");
+include_once($config['homedir'] . "/include/functions_servers.php");
 enterprise_include_once ('include/functions_local_components.php');
 
 /**
@@ -5165,6 +5166,69 @@ function api_set_enable_module_alerts ($agent_name, $module_name, $thrash3, $thr
 
     db_process_sql("UPDATE talert_template_modules SET disabled = 0 WHERE id_agent_module = $id_agent_module");
 	returnData('string', array('type' => 'string', 'data' => "Correct alerts enable"));
+}
+
+/**
+ * 
+ * @param $trash1
+ * @param $trash2
+ * @param array $other it's array, but only <csv_separator> is available.
+ * @param $returnType
+ *
+ */
+//  http://localhost/pandora_console/include/api.php?op=get&op2=pandora_servers&return_type=csv&apipass=1234&user=admin&pass=pandora
+function api_get_pandora_servers($trash1, $trash2, $other, $returnType) {
+
+	if (!isset($other['data'][0]))
+		$separator = ';'; // by default
+	else
+		$separator = $other['data'][0];
+
+	$servers = servers_get_info ();
+
+	foreach ($servers as $server) {
+		$dd = array (
+			'name' => $server["name"],
+			'status' => $server["status"],
+			'type' => $server["type"],
+			'master' => $server["master"],
+			'modules' => $server["modules"],
+			'modules_total' => $server["modules_total"],
+			'lag' => $server["lag"],
+			'module_lag' => $server["module_lag"],
+			'threads' => $server["threads"],
+			'queued_modules' => $server["queued_modules"],
+			'keepalive' => $server['keepalive']
+		);
+
+		// servers_get_info() returns "<a http:....>servername</a>" for recon server's name.
+		// i don't know why and the following line is a temprary workaround... 
+		$dd["name"] = preg_replace( '/<[^>]*>/', "", $dd["name"]);
+
+		switch ($dd['type']) {
+			case "snmp":
+			case "event":
+				$dd['modules'] = '';
+				$dd['modules_total'] = '';
+				$dd['lag'] = '';
+				$dd['module_lag'] = '';
+				break;
+			case "export":
+				$dd['lag'] = '';
+				$dd['module_lag'] = '';
+				break;
+			default:
+				break;
+		}
+
+		$returnVar[] = $dd;
+	}
+
+	$data = array('type' => 'array', 'data' => $returnVar);
+
+	returnData($returnType, $data, $separator);
+	return;
+
 }
 
 ?>

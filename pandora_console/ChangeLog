@@ -1,3 +1,10 @@
+2013-02-01  Hirofumi Kosaka  <kosaka@rworks.jp>
+
+	* include/functions_api.php: Added function 'api_get_pandora_servers'.
+        * include/functions_servers.php: Fixed a typo.
+
+	Merged from trunk (rev7304).
+
 2013-01-24 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/visual_console_builder.editor.php: fixed the

@@ -1,3 +1,10 @@
+2013-02-01 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/graphs/functions_utils.php: fixed check color and legends
+	for stacked graphs when haven't set colors all graphs.
+	
+	Fixes: #3602725
+
 2013-02-01  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_ui.php

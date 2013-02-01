@@ -16,13 +16,13 @@ function serialize_in_temp($array = array(), $serial_id = null, $ttl = 1) {
 	if ($serial_id === null) {
 		$serial_id = uniqid();
 	}
-
+	
 	$file_path = sys_get_temp_dir()."/pandora_serialize_".$serial_id."__1__".$ttl;
-
+	
 	if (file_put_contents($file_path, $json) === false) {
 		return false;
 	}
-
+	
 	return $serial_id;
 }
 
@@ -33,17 +33,17 @@ function unserialize_in_temp($serial_id = null, $delete = true, $ttl = 1) {
 	
 	$volume = -1;
 	
-	for($i = 1 ; $i <= $ttl ; $i++) {
+	for ($i = 1 ; $i <= $ttl ; $i++) {
 		$file_path = sys_get_temp_dir()."/pandora_serialize_".$serial_id."__".$i."__".$ttl;
 		
-		if(file_exists($file_path)) {
+		if (file_exists($file_path)) {
 			$volume = $i;
 			break;
 		}
 	}
-
+	
 	$content = file_get_contents($file_path);
-
+	
 	if ($content === false) {
 		return false;
 	}
@@ -59,7 +59,7 @@ function unserialize_in_temp($serial_id = null, $delete = true, $ttl = 1) {
 			rename($file_path, sys_get_temp_dir()."/pandora_serialize_".$serial_id."__".$next_volume."__".$ttl);
 		}
 	}
-
+	
 	return $array;
 }
 
@@ -69,15 +69,15 @@ function delete_unserialize_in_temp($serial_id = null) {
 	}
 	
 	$file_path = sys_get_temp_dir()."/pandora_serialize_".$serial_id;
-		
+	
 	return unlink($file_path);
 }
 
 function reverse_data($array) {
 	$array2 = array();
-	foreach($array as $index => $values) {
-		foreach($values as $index2 => $value) {
-				$array2[$index2][$index] = $value;
+	foreach ($array as $index => $values) {
+		foreach ($values as $index2 => $value) {
+			$array2[$index2][$index] = $value;
 		}
 	}
 	
@@ -92,10 +92,10 @@ function stack_data(&$chart_data, &$legend = null, &$color = null) {
 			$chart_data[$val_x][$graph] += $prev_val;
 			$prev_val = $chart_data[$val_x][$graph];
 			$temp_data[$val_x][$key] = $chart_data[$val_x][$graph];
-			if (isset($color)) {
+			if (isset($color[$graph])) {
 				$temp_color[$key] = $color[$graph];
 			}
-			if (isset($legend)) {
+			if (isset($legend[$graph])) {
 				$temp_legend[$key] = $legend[$graph];
 			}
 			$key--;
@@ -118,10 +118,10 @@ function graph_get_max_index($legend_values) {
 	$max_chars = 0;
 	foreach ($legend_values as $string_legend) {
 		if (empty($string_legend)) continue;
-
+		
 		$string_legend = explode("\n",$string_legend);
-
-		foreach($string_legend as $st_lg) {
+		
+		foreach ($string_legend as $st_lg) {
 			$len = strlen($st_lg);
 			if ($len > $max_chars) {
 				$max_chars = $len; 
@@ -133,23 +133,22 @@ function graph_get_max_index($legend_values) {
 }
 
 function setup_watermark($water_mark, &$water_mark_file, &$water_mark_url) {
-	if(!is_array($water_mark)) {
+	if (!is_array($water_mark)) {
 		$water_mark['file'] = $water_mark;
 	}
 	
-	if(isset($water_mark['file'])) {
+	if (isset($water_mark['file'])) {
 		$water_mark_file = $water_mark['file'];
 	}
 	else {
 		$water_mark_file = '';
 	}
 	
-	if(isset($water_mark['url'])) {
+	if (isset($water_mark['url'])) {
 		$water_mark_url = $water_mark['url'];
 	}
 	else {
 		$water_mark_url = '';
 	}
 }
-
 ?>

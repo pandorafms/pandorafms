@@ -608,6 +608,10 @@ function config_process_config () {
 	if (!isset ($config['netflow_max_resolution'])) {
 		config_update_value ( 'netflow_max_resolution', '50');
 	}
+	
+	if (!isset ($config['netflow_disable_custom_lvfilters'])) {
+		config_update_value('netflow_disable_custom_lvfilters', 100);
+	}
 
 	if (!isset ($config['auth'])) {
 		config_update_value ( 'auth', 'mysql');
@@ -751,6 +755,16 @@ function config_process_config () {
 	
 	if (!isset ($config['api_password'])) {
 		config_update_value( 'api_password', '');
+	}
+	
+	if(defined('METACONSOLE')) {
+		if (!isset ($config['show_vc'])) {
+			config_update_value('show_vc', 1);
+		}
+		
+		if (!isset ($config['meta_num_elements'])) {
+			config_update_value('meta_num_elements', 100);
+		}
 	}
 	
 	if (!isset ($config['relative_path']) && (isset ($_POST['nick'])

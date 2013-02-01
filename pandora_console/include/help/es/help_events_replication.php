@@ -12,5 +12,10 @@ Es necesario configurar las credenciales de la base de datos de la metaconsola, 
 El visor de eventos se deshabilita cuando se activa esta opción.
 <br><br>
 Para que los cambios en la configuración de replicación de eventos se hagan efectivos será necesario reiniciar el servidor.
+<br><br>
+El fichero de configuración del servidor deberá tener el token:
+
+<i>event_replication 1</i>
+
 </p>
 

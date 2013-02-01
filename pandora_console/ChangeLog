@@ -1,3 +1,16 @@
+2013-02-01  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php
+	include/functions_treeview.php: Delete server from
+	detail of modules in treeview and other little fixes
+
+	* include/functions_config.php: Added autocreation
+	of some conf tokens when dont exist
+
+	* include/help/en/help_events_replication.php
+	include/help/es/help_events_replication.php: Added
+	more info in the events replication help text
+
 2013-02-01 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/reporting/reporting_builder.php,

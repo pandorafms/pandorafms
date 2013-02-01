@@ -243,7 +243,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 	$id = 'info_box_' . uniqid();
 	
 	$output = '<table cellspacing="0" cellpadding="0" id="' . $id . '" ' . $attributes . '
-		class="info_box ' . $class . '" style="' . $force_style . '">
+		class="info_box ' . $id . ' ' . $class . '" style="' . $force_style . '">
 		<tr>
 			<td class="icon">' . html_print_image($icon_image, true) . '</td>
 			<td class="title"><b>' . $text_title . '</b></td>
@@ -268,7 +268,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 		$output .= '
 			<script type="text/javascript">
 				function close_info_box(id) {
-					$("#" + id).hide();
+					$("." + id).hide();
 				}
 			</script>
 		';

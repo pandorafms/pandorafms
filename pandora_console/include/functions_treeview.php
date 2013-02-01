@@ -67,12 +67,6 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 
 	echo '<td class="datos"><b>'.$cellName.'</b></td>';
 
-	// Server
-	echo '<tr><td class="datos2"><b>'.__('Server').'</b></td>';
-	echo '<td class="datos2" colspan="2">';
-	echo $server_data['server_name'];
-	echo '</td></tr>';
-
 	// Parent
 	echo '<tr><td class="datos2"><b>'.__('Module group').'</b></td>';
 	echo '<td class="datos2" colspan="2">';

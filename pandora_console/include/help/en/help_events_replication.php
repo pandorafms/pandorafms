@@ -12,5 +12,10 @@ Is necessary configurate the credentials of the metaconsole database, the replic
 The event viewer will be disabled when this option is activated.
 <br><br>
 To be effective the changes on the events replication configuration will be necessary restart the server.
+<br><br>
+The server configuration file must has token:
+
+<i>event_replication 1</i>
+
 </p>
 

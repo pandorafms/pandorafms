@@ -555,7 +555,8 @@ switch ($action) {
 					if ($reportName != "" && $idGroupReport != "") {
 						
 						// This flag allow to differentiate between normal console and metaconsole reports 
-						if (defined('METACONSOLE') and $config['metaconsole'] == 1)
+						if (defined('METACONSOLE') and
+							$config['metaconsole'] == 1)
 							$metaconsole_report = 1;
 						else
 							$metaconsole_report = 0;

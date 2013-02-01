@@ -1,3 +1,11 @@
+2013-02-01 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	godmode/reporting/reporting_builder.list_items.php: fixed the
+	autocomplete agent when edit or create a item for report that put
+	the server name but now don't put anything.
+
 2013-02-01  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/setup/setup.php: Fixed error without enterprise.

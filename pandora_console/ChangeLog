@@ -1,5 +1,14 @@
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/search_modules.php: fixed the image to edit.
+	
+	* include/functions_html.php: fixed check string values in function
+	"html_print_input_hidden".
+	
+	Fixes: #3603084
+
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/search_modules.php: added edit button when the user can
 	edit.
 

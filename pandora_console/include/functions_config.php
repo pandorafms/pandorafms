@@ -613,6 +613,10 @@ function config_process_config () {
 		config_update_value('netflow_disable_custom_lvfilters', 100);
 	}
 
+	if (!isset ($config['netflow_disable_custom_lvfilters'])) {
+		config_update_value ( 'netflow_disable_custom_lvfilters', 0);
+	}
+
 	if (!isset ($config['auth'])) {
 		config_update_value ( 'auth', 'mysql');
 	}

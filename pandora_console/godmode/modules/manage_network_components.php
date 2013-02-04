@@ -59,13 +59,13 @@ $plugin_parameter = (string) get_parameter ('plugin_parameter');
 
 $macros = (string) get_parameter ('macros');
 
-if(!empty($macros)) {
+if (!empty($macros)) {
 	$macros = json_decode(base64_decode($macros), true);
-
+	
 	foreach($macros as $k => $m) {
 		$macros[$k]['value'] = get_parameter($m['macro'], '');
 	}
-
+	
 	$macros = json_encode($macros);
 }
 
@@ -94,7 +94,7 @@ $id_category = (int) get_parameter('id_category');
 $id_tag_selected = (array) get_parameter('id_tag_selected');
 $pure = get_parameter('pure', 0);
 
-if(count($id_tag_selected) == 1 && empty($id_tag_selected[0])) {
+if (count($id_tag_selected) == 1 && empty($id_tag_selected[0])) {
 	$tags = '';
 }
 else {
@@ -123,7 +123,8 @@ if ($duplicate_network_component) {
 	
 	$id = network_components_duplicate_network_component ($source_id);
 	ui_print_result_message ($id,
-		__('Successfully created from %s', network_components_get_name ($source_id)),
+		__('Successfully created from %s',
+			network_components_get_name ($source_id)),
 		__('Could not be created'));
 	
 	//List unset for jump the bug in the pagination (TODO) that the make another
@@ -135,11 +136,12 @@ if ($duplicate_network_component) {
 }
 
 if ($create_component) {
-
+	
 	$custom_string_1 = '';
 	$custom_string_2 = '';
 	$custom_string_3 = '';
-	$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
+	$name_check = db_get_value ('name', 'tnetwork_component', 'name',
+		$name);
 	if ($type >= 15 && $type <= 18) {
 		// New support for snmp v3
 		$tcp_send = $snmp_version;
@@ -149,10 +151,11 @@ if ($create_component) {
 		$custom_string_1 = $snmp3_privacy_method;
 		$custom_string_2 = $snmp3_privacy_pass;
 		$custom_string_3 = $snmp3_security_level;
-			$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
+			$name_check = db_get_value ('name', 'tnetwork_component',
+				'name', $name);
 	}
-
-
+	
+	
 	if ($name && !$name_check) {
 	
 		$id = network_components_create_network_component ($name, $type, $id_group, 
@@ -286,7 +289,7 @@ if ($update_component) {
 		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
 	}
-
+	
 	db_pandora_audit("Module management", "Update network component #$id");
 	ui_print_success_message (__('Updated successfully'));
 	
@@ -413,26 +416,28 @@ if ($component_groups === false)
 	$component_groups = array();
 
 foreach ($component_groups as $component_group_key => $component_group_val) {
-	$num_components = db_get_num_rows('SELECT id_nc
-										FROM tnetwork_component 
-										WHERE id_group = ' . $component_group_key);
-					
+	$num_components = db_get_num_rows(
+		'SELECT id_nc
+		FROM tnetwork_component 
+		WHERE id_group = ' . $component_group_key);
+	
 	$childs = component_groups_get_childrens($component_group_key);
 	
 	$num_components_childs = 0;
 	
 	if ($childs !== false) {
-	
+		
 		foreach ($childs as $child) {
 			
-			$num_components_childs += db_get_num_rows('SELECT id 
-									FROM tlocal_component 
-									WHERE id_network_component_group = ' . $child['id_sg']);
+			$num_components_childs += db_get_num_rows(
+				'SELECT id 
+				FROM tlocal_component 
+				WHERE id_network_component_group = ' . $child['id_sg']);
 		
 		}
 	
-	}					
-										
+	}
+	
 	// Only show component groups with local components
 	if ($num_components  == 0 && $num_components_childs == 0)
 		unset($component_groups[$component_group_key]);
@@ -513,7 +518,8 @@ foreach ($components as $component) {
 }
 
 if (isset($data)) {
-	echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure=".$pure."'>";
+	echo "<form method='post' action='index.php?sec=" . $sec .
+		"&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure=".$pure."'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
 	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";

@@ -1,5 +1,14 @@
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/javascript/pandora_alerts.js: cleaned source code style.
+	
+	* include/functions_graph.php: added lost function
+	"graph_events_validated".
+	
+	Fixes: #3603110
+
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/alerts/configure_alert_action.php: fixed sustitution the
 	values in the macros when load a action.
 	

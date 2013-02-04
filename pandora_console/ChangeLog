@@ -1,3 +1,8 @@
+2013-02-04  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_events_replication.php: Added more info as
+	the same as english one.
+
 2013-02-01 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/graphs/functions_utils.php: fixed check color and legends

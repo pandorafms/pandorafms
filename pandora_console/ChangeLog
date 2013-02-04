@@ -1,5 +1,12 @@
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/reporting/reporting_builder.item_editor.php: fixed lost
+	global var $meta in the SLA table.
+	
+	Fixes: #3602721
+
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/search_modules.php: fixed the image to edit.
 	
 	* include/functions_html.php: fixed check string values in function

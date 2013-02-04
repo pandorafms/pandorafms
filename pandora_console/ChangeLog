@@ -1,3 +1,8 @@
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_ui.php: fixed the javascript of function
+	"ui_toggle".
+
 2013-02-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_config.php: Added the config variable

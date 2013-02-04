@@ -484,8 +484,8 @@ html_print_input_hidden('id_item', $idItem);
 					$groups_id[] = $groups['id_grupo'];
 				}
 				
-				$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',',$groups_id).")";
-				html_print_select_from_sql($sql, 'netflow_filter', $netflow_filter);
+				$sql_netflow = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',',$groups_id).")";
+				html_print_select_from_sql($sql_netflow, 'netflow_filter', $netflow_filter);
 				?>
 			</td>
 		</tr>

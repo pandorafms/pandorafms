@@ -99,7 +99,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	
 	// Create news
 	
-	echo '<table class="databox" cellpadding="4" cellspacing="4" width="98%">';   
+	echo '<table class="databox" cellpadding="4" cellspacing="4" width="98%">';
 	echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/news">';
 	if ($creation_mode == 1)
 		echo "<input type='hidden' name='create' value='1'>";
@@ -119,7 +119,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	<textarea rows=4 cols=50 name="text" >';
 	echo $text;
 	echo '</textarea></td>';
-	echo '</tr>';	
+	echo '</tr>';
 	echo "</table>";
 	echo "<table width='98%'>";
 	echo "<tr><td align='right'>";
@@ -145,7 +145,7 @@ else {
 		echo "<th>".__('Timestamp')."</th>";
 		echo "<th>".__('Delete')."</th>";
 		
-
+		
 		
 		$color = 1;
 		foreach ($rows as $row) {

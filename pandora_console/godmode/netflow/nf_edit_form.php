@@ -38,14 +38,14 @@ $create = (string)get_parameter('create', 0);
 
 $pure = get_parameter('pure', 0);
 
-if ($id){
+if ($id) {
 	$permission = netflow_check_filter_group ($id);
 	if (!$permission) { //no tiene permisos para acceder a un filtro
 		require ($config['homedir'] . "/general/noaccess.php");
 		return;
 	}
 }
-	
+
 //Header
 if (! defined ('METACONSOLE')) {
 	$buttons['edit'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'
@@ -55,13 +55,14 @@ if (! defined ('METACONSOLE')) {
 	$buttons['add'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'
 		. html_print_image ("images/add.png", true, array ("title" => __('Add filter')))
 		. '</a>';
-
+	
 	ui_print_page_header (__('Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
-} else {
+}
+else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
-        array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit', 'text' => __('Netflow filters')),
-        array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form', 'text' => __('Add filter')));
-
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit', 'text' => __('Netflow filters')),
+		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_edit_form', 'text' => __('Add filter')));
+	
 	ui_meta_print_page_header($nav_bar);
 	
 	ui_meta_print_header(__("Netflow filters"));	
@@ -141,16 +142,15 @@ if ($create) {
 	$advanced_filter = (string) get_parameter('advanced_filter', '');
 	
 	$values = array (
-			'id_name'=>$name,
-			'id_group' => $assign_group,
-			'ip_dst'=>$ip_dst,
-			'ip_src'=>$ip_src,
-			'dst_port'=>$dst_port,
-			'src_port'=>$src_port,
-			'aggregate'=>$aggregate,
-			'advanced_filter'=>$advanced_filter,
-			'output'=>$output
-	);
+		'id_name'=>$name,
+		'id_group' => $assign_group,
+		'ip_dst'=>$ip_dst,
+		'ip_src'=>$ip_src,
+		'dst_port'=>$dst_port,
+		'src_port'=>$src_port,
+		'aggregate'=>$aggregate,
+		'advanced_filter'=>$advanced_filter,
+		'output'=>$output);
 	
 	// Save filter args
 	$values['filter_args'] = netflow_get_filter_arguments ($values);

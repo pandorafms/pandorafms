@@ -141,21 +141,21 @@ if ($add_module) {
 	$id_modules = get_parameter('module');
 	$id_agents = get_parameter('id_agents');
 	$weight = get_parameter('weight');
-
+	
 	//Id modules has double entities conversion
 	//Safe output remove all entities
-        io_safe_output_array($id_modules, "");
-
+	io_safe_output_array($id_modules, "");
+	
 	//We need to put the entities again
 	//to browse in db
 	io_safe_input_array($id_modules);
-
+	
 	$id_agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (".
 		implode(',', $id_agents).
 		") AND nombre IN ('".
 		implode("','", $id_modules).
 		"')");
-
+	
 	if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
 		foreach($id_agent_modules as $id_agent_module)
 			$result = db_process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
@@ -189,9 +189,9 @@ if ($edit_graph) {
 			'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=' . $id_graph . '">' . 
 				html_print_image("images/chart_curve.png", true, array ("title" => __('View graph'))) .'</a>')
 		);
-		
+	
 	$buttons[$active_tab]['active'] = true;
-
+	
 	$graphInTgraph = db_get_row_sql("SELECT name FROM tgraph WHERE id_graph = " . $id_graph);
 	$name = $graphInTgraph['name'];
 }

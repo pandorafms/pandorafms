@@ -79,7 +79,7 @@ echo '</i></td></tr>';
 echo '<tr class="rowOdd"><td>';
 echo __('Max. time before compact data');
 echo '<td><b>';
-echo   $config['days_compact'].' '.__('days');
+echo $config['days_compact'] . ' ' . __('days');
 echo '</b></td></tr>';
 
 echo '<tr class="rowPair"><td>';

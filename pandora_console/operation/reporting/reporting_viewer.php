@@ -191,7 +191,7 @@ $(document).ready (function () {
 			minuteText: '<?php echo __('Minute');?>',
 			secondText: '<?php echo __('Second');?>',
 			currentText: '<?php echo __('Now');?>',
-			closeText: '<?php echo __('Close');?>'});	
+			closeText: '<?php echo __('Close');?>'});
 	
 	$('[id^=text-date_init]').datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
 	
@@ -225,7 +225,10 @@ if ($datetime === false || $datetime == -1) {
 	return;
 }
 
-// TODO: Evaluate if it's better to render blocks when are calculated (enabling realtime flush) or if it's better to wait report to be finished before showing anything (this could break the execution by overflowing the running PHP memory on HUGE reports).
+// TODO: Evaluate if it's better to render blocks when are calculated
+// (enabling realtime flush) or if it's better to wait report to be
+// finished before showing anything (this could break the execution
+// by overflowing the running PHP memory on HUGE reports).
 
 
 $table->size = array ();
@@ -267,7 +270,7 @@ foreach ($contents as $content) {
 		if ($datetime_init >= $datetime) {
 			$datetime_init = $date_init_less;
 		}
-		$new_interval = $report['datetime'] - $datetime_init; 		
+		$new_interval = $report['datetime'] - $datetime_init;
 		$content['period'] = $new_interval;
 	}
 	

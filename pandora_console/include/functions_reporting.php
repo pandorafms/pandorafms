@@ -2507,24 +2507,26 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			
-$moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($content['id_agent_module']));
-
+			$moduletype_name = modules_get_moduletype_name(
+				modules_get_agentmodule_type(
+					$content['id_agent_module']));
+			
 			if (preg_match ("/string/", $moduletype_name)) {
-
+				
 				$urlImage = ui_get_full_url(false, false, false, false);
-					
+				
 				$data[0] = grafico_modulo_string ($content['id_agent_module'], $content['period'],
 					false, $sizgraph_w, $sizgraph_h, '', '', false, 1, false,
 					$report["datetime"], true, $urlImage);
-								
-			}	
+				
+			}
 			else {
-
+				
 				$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 					false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
 					$report["datetime"], '', 0, 0, true, true, ui_get_full_url(false) . '/');
 			}
-
+			
 			array_push ($table->data, $data);
 			break;
 		case 'projection_graph':
@@ -2631,7 +2633,7 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
 				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
 				$report["datetime"], '', true, 0, true, true, ui_get_full_url(false) . '/');
-				
+			
 			/*$data[0] = 	graphic_combined_module(
 				$modules,
 				$weights,
@@ -2644,7 +2646,7 @@ $moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($c
 				0,
 				$graph["stacked"],
 				$report["datetime"]);	*/
-				
+			
 			array_push ($table->data, $data);
 			
 			break;

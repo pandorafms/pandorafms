@@ -164,7 +164,9 @@ $time = (string) get_parameter ('time', date ('h:iA'));
 $datetime = strtotime ($date.' '.$time);
 
 if ($datetime === false || $datetime == -1) {
-	echo "<error>Invalid date selected</error>"; //Not translatable because this is an error message and might have to be used on the other end
+	//Not translatable because this is an error message and might have
+	//to be used on the other end
+	echo "<error>Invalid date selected</error>";
 	exit;
 }
 
@@ -291,7 +293,7 @@ foreach ($contents as $content) {
 				$position = 0;
 				while ($offset < $data_count) {
 					
-					$sql = 	"SELECT *
+					$sql = "SELECT *
 						FROM tagente_datos
 						WHERE id_agente_modulo=".$content['id_agent_module']." 
 							AND (utimestamp>=$date_init AND utimestamp<=$date_end) LIMIT $offset,$limit";
@@ -381,7 +383,7 @@ foreach ($contents as $content) {
 		case 2:
 		case 'custom_graph':
 		case 'automatic_custom_graph':
-		
+			
 			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
 			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
 			
@@ -406,38 +408,44 @@ foreach ($contents as $content) {
 			$date_init = $date_end - $content['period'];
 			///
 			$temp_file = $config['attachment_store'] . '/custom_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
-
+			
 			$file = fopen ($temp_file, 'a+');
-
+			
 			$buffer_file["objdata"] = $config['attachment_store'] . '/custom_graph_' . $time.'_'.$content['id_rc'] . '.tmp';
-
+			
 			$limit = 1000;
 			$offset = 0;
-
-			$sql_count = "SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo=".$content2['id_agent_module']." 
+			
+			$sql_count = "SELECT COUNT(id_agente_modulo)
+				FROM tagente_datos
+				WHERE id_agente_modulo=".$content2['id_agent_module']." 
 					AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
 			$data_count = db_get_value_sql($sql_count);
-
+			
 			if ($data_count == false) {
 				$content_report = "    <custom_graph/>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
-			} else if ($data_count <= $limit) {
+			}
+			else if ($data_count <= $limit) {
 				$content_report = "    <custom_graph>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
 				
-				$sql = 	"SELECT * FROM tagente_datos WHERE id_agente_modulo=".$content2['id_agent_module']." 
-								AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
-
+				$sql = 	"SELECT *
+					FROM tagente_datos
+					WHERE id_agente_modulo=".$content2['id_agent_module']." 
+						AND (utimestamp>=$date_init AND utimestamp<=$date_end)";
+				
 				$data_module = db_get_all_rows_sql($sql);
 				xml_file_graph ($data_module, $temp_file);
 				
 				$file = fopen ($temp_file, 'a+');
 				$content_report = "    </custom_graph>\n";
 				$result = fwrite($file, $content_report);
-
-			} else {
+				
+			}
+			else {
 				$content_report = "    <custom_graph>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
@@ -486,7 +494,7 @@ foreach ($contents as $content) {
 				}
 				
 				$sla_data = array ();
-				$sla_data["agent"] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
+				$sla_data["agent"] = io_safe_output(modules_get_agentmodule_agent_name ($sla['id_agent_module']));
 				$sla_data["module"] = modules_get_agentmodule_name ($sla['id_agent_module']);
 				$sla_data["max"] = $sla['sla_max'];
 				$sla_data["min"] = $sla['sla_min'];
@@ -958,14 +966,27 @@ foreach ($contents as $content) {
 			if ($content['header_definition'] != '') {
 				$tags = explode('|', $content['header_definition']);
 			}
+			else {
+				$tags[] = 'Data';
+			}
 			array_unshift($tags, 'Date');
 			
 			$datelimit = $report["datetime"] - $content['period'];
 			
 			$result = db_get_all_rows_sql('SELECT *
-				FROM tagente_datos_string
+				FROM tagente_datos
 				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
-					AND utimestamp > ' . $datelimit . ' AND utimestamp <= ' . $report["datetime"]);
+					AND utimestamp > ' . $datelimit . '
+					AND utimestamp <= ' . $report["datetime"]);
+			
+			// Adds string data if there is no numeric data	
+			if ((count($result) < 0) or (!$result)){ 
+				$result = db_get_all_rows_sql('SELECT *
+					FROM tagente_datos_string
+					WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
+						AND utimestamp > ' . $datelimit . '
+						AND utimestamp <= ' . $report["datetime"]);
+			} 
 			if ($result === false) {
 				$result = array();
 			}
@@ -974,9 +995,20 @@ foreach ($contents as $content) {
 			foreach ($result as $row) {
 				$date = date ($config["date_format"], $row['utimestamp']);
 				$serialized = $row['datos'];
-				$rowsUnserialize = explode($content['line_separator'], $serialized);
+				
+				$rowsUnserialize = (array)$serialized;
+				if (!empty($content['line_separator'])) {
+					$rowsUnserialize = explode($line_separator,
+						$serialized);
+				}
+				
 				foreach ($rowsUnserialize as $rowUnser) {
-					$columnsUnserialize = explode($content['column_separator'], $rowUnser);
+					
+					$columnsUnserialize = (array)$rowUnser;
+					if (!empty($content['column_separator'])) {
+						$columnsUnserialize = explode($content['column_separator'], $rowUnser);
+					}
+					
 					array_unshift($columnsUnserialize, $date);
 					
 					$objdata = array ();

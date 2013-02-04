@@ -22,17 +22,17 @@
 /**
  * Include the usual functions
  */
-require_once ($config["homedir"]."/include/functions.php");
-require_once ($config["homedir"]."/include/functions_db.php");
-require_once ($config["homedir"]."/include/functions_agents.php");
+require_once($config["homedir"] . "/include/functions.php");
+require_once($config["homedir"] . "/include/functions_db.php");
+require_once($config["homedir"] . "/include/functions_agents.php");
 include_once($config["homedir"] . "/include/functions_groups.php");
-require_once ('functions_graph.php');
+require_once($config["homedir"] . '/include/functions_graph.php');
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_alerts.php");
 include_once($config['homedir'] . '/include/functions_users.php');
-enterprise_include_once ('include/functions_metaconsole.php');
-enterprise_include_once ('include/functions_inventory.php');
+enterprise_include_once('include/functions_metaconsole.php');
+enterprise_include_once('include/functions_inventory.php');
 include_once($config['homedir'] . "/include/functions_forecast.php");
 include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
@@ -3633,6 +3633,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			if ($content['header_definition'] != '') {
 				$table2->head = explode('|', $content['header_definition']);
 			}
+			else {
+				$table2->head[] = __('Data');
+			}
 			array_unshift($table2->head, __('Date'));
 			
 			$datelimit = $report["datetime"] - $content['period'];
@@ -3658,10 +3661,20 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table2->data = array();
 			foreach ($result as $row) {
 				$date = date ($config["date_format"], $row['utimestamp']);
-				$serialized = $row['datos']; 
-				$rowsUnserialize = explode($content['line_separator'], $serialized);
+				$serialized = $row['datos'];
+				
+				$rowsUnserialize = (array)$serialized;
+				if (!empty($content['line_separator'])) {
+					$rowsUnserialize = explode($line_separator,
+						$serialized);
+				}
+				
 				foreach ($rowsUnserialize as $rowUnser) {
-					$columnsUnserialize = explode($content['column_separator'], $rowUnser);
+					$columnsUnserialize = (array)$rowUnser;
+					if (!empty($content['column_separator'])) {
+						$columnsUnserialize = explode($content['column_separator'], $rowUnser);
+					}
+					
 					array_unshift($columnsUnserialize, $date);
 					array_push($table2->data, $columnsUnserialize);
 				} 

@@ -21,7 +21,7 @@ include_once ('include/functions_netflow.php');
 //xml con los datos de un agente
 function xml_file_agent_data ($agent_data = array(), $file_temp) {
 	$file = fopen($file_temp, 'a+');
-		
+	
 	$content_report = "		<name>". $agent_data['nombre']."</name>\n";
 	$content_report .= "		<description>". $agent_data['comentarios']."</description>\n";
 	$content_report .= "		<main_ipaddress>".$agent_data['direccion']."</main_ipaddress>\n";
@@ -49,7 +49,7 @@ function xml_file_agent_data ($agent_data = array(), $file_temp) {
 	
 	$result = fwrite($file, $content_report);
 	$position++;
-
+	
 	fclose($file);
 	return $position;
 }
@@ -62,7 +62,7 @@ function xml_file_agent_conf ($modules = array(), $file_temp, $position = 0, $id
 	foreach ($modules as $module) {
 		
 		$content_report = "	<object id=\"$position\">\n";
-	
+		
 		$content_report .= "		<name>".$module['nombre']."</name>\n";
 		$content_report .= "		<id>".$module['id_agente_modulo']."</id>\n";
 		$content_report .= "		<type>".$module['id_tipo_modulo']."</type>\n";
@@ -101,6 +101,7 @@ function xml_file_agent_conf ($modules = array(), $file_temp, $position = 0, $id
 		$position++;
 	}
 	fclose($file);
+	
 	return $position;
 }
 
@@ -142,6 +143,7 @@ function xml_file_event ($events = array(), $file_temp, $position = 0, $id_agent
 		
 	}
 	fclose($file);
+	
 	return $position;
 }
 
@@ -163,6 +165,7 @@ function xml_file_graph ($data_module = array(), $file_temp, $position = 0) {
 	}
 
 	fclose($file);
+	
 	return $position;
 }
 ?>

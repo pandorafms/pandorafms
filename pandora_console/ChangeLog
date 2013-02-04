@@ -1,5 +1,12 @@
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_graph.php: re-enabled the baseline for the
+	reports.
+	
+	Fixes: #3599961
+
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/reporting/reporting_builder.item_editor.php: fixed the
 	ovewrite the var $sql from netflow filter.
 	

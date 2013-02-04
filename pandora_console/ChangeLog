@@ -1,5 +1,12 @@
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/reporting/reporting_builder.item_editor.php: fixed the
+	ovewrite the var $sql from netflow filter.
+	
+	Fixes: #3602194
+
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_xml.php, include/functions_reporting.php,
 	operation/reporting/reporting_xml.php: fixed the SLA agent name
 	with entities differents to hexadecimal entities. And fixed the

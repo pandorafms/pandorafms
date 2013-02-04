@@ -4,10 +4,10 @@ function parse_alert_command (command) {
 	var nfield = 1;
 	$('.fields').each(function() {
 		// Only render values different from ''
-		if($(this).val() == '') {
+		if ($(this).val() == '') {
 			return;
 		}
-		var field = '_field'+nfield+'_';
+		var field = '_field' + nfield+'_';
 		nfield++;
 		var regex = new RegExp(field,"gi");
 		command = command.replace (regex, $(this).val());

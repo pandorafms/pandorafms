@@ -1865,6 +1865,19 @@ function graphic_incident_source($width = 320, $height = 200) {
 		$config['fontpath'], $config['font_size']);
 }
 
+function graph_events_validated($width = 300, $height = 200, $url = "", $meta = false, $history = false) {
+	global $config;
+	global $graphic_type;
+	
+	$data_graph = reporting_get_count_events_validated(
+		array('id_group' => array_keys(users_get_groups())));
+	
+	echo pie3d_graph(
+		true, $data_graph, $width, $height, __("other"), "",
+		$config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size']);
+}
+
 /**
  * Print a pie graph with events data of group
  * 

@@ -179,6 +179,7 @@ else {
 	$table->head[5] = __('Graph');
 	$table->head[6] = __('Data');
 	$table->head[7] = __('Timestamp');
+	$table->head[8] = "";
 	
 	
 	
@@ -191,6 +192,7 @@ else {
 	$table->align[5] = "center";
 	$table->align[6] = "right";
 	$table->align[7] = "right";
+	$table->align[8] = "center";
 	
 	$table->data = array ();
 	
@@ -252,7 +254,7 @@ else {
 		if (is_numeric($module["datos"]))
 			$dataCell = format_numeric($module["datos"]);
 		else
-			$dataCell = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(io_safe_output($module["datos"]),0,12)."</span>";
+			$dataCell = "<span title='" . $module['datos'] . "' style='white-space: nowrap;'>".substr(io_safe_output($module["datos"]),0,12)."</span>";
 		
 		if ($module['estado'] == 3) {
 			$option = array ("html_attr" => 'class="redb"');
@@ -263,6 +265,23 @@ else {
 		$timestampCell = ui_print_timestamp ($module["utimestamp"], true, $option);
 		
 		
+		$group_agent = agents_get_agent_group($module['id_agente']);
+		
+		if (check_acl ($config['id_user'], $group_agent, "AW")) {
+			$edit_module = 'aaa';
+			
+			$url_edit = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente="
+				. $module['id_agente'] . "&tab=module&id_agent_module=" . 
+				$module["id_agente_modulo"] . "&edit_module=1";
+			
+			$edit_module = '<a href="' . $url_edit . '">' .
+				html_print_image("images/config.png") . '</a>';
+		}
+		else {
+			$edit_module = '';
+		}
+		
+		
 		array_push($table->data, array(
 			$module['module_name'],
 			$agentCell,
@@ -271,7 +290,8 @@ else {
 			$statusCell,
 			$graphCell,
 			$dataCell,
-			$timestampCell));
+			$timestampCell,
+			$edit_module));
 	}
 	
 	echo "<br />";

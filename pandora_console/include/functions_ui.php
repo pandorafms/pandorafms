@@ -1780,17 +1780,23 @@ function ui_toggle($code, $name, $title = '', $hidde_default = true, $return = f
 	$output .= "</div>";
 	
 	// JQuery Toggle
-	$output .= '<script type="text/javascript">';
-	$output .= '/* <![CDATA[ */';
-	$output .= "$(document).ready (function () {";
-	$output .= "$('#tgl_ctrl_".$uniqid."').toggle(function() {";
-	$output .= $toggle_a;
-	$output .= "$('#image_".$uniqid."').attr({src: '".$image_a."'});";
-	$output .= "}, function() {";
-	$output .= $toggle_b;
-	$output .= "$('#image_".$uniqid."').attr({src: '".$image_b."'});";
-	$output .= "});";
-	$output .= "});";
+	$output .= '<script type="text/javascript">' . "\n";
+	$output .= "	var hide_tgl_ctrl_" . $uniqid . " = " . (int)$hidde_default . ";\n";
+	$output .= '	/* <![CDATA[ */' . "\n";
+	$output .= "	$(document).ready (function () {\n";
+	$output .= "		$('#tgl_ctrl_".$uniqid."').click(function() {\n";
+	$output .= "			if (hide_tgl_ctrl_" . $uniqid . ") {\n";
+	$output .= "				hide_tgl_ctrl_" . $uniqid . " = 0;\n";
+	$output .= "				" . $toggle_a . ";\n";
+	$output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
+	$output .= "			}\n";
+	$output .= "			else {\n";
+	$output .= "				hide_tgl_ctrl_" . $uniqid . " = 1;\n";
+	$output .= "				" . $toggle_b . ";\n";
+	$output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
+	$output .= "			}\n";
+	$output .= "		});\n";
+	$output .= "	});\n";
 	$output .= '/* ]]> */';
 	$output .= '</script>';
 	

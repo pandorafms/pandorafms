@@ -1,3 +1,8 @@
+2013-02-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_config.php: Added the config variable
+	  netflow_disable_custom_lvfilters.
+
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/events/events.php: fixed exotic bug with the var name

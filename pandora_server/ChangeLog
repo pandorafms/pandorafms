@@ -1,5 +1,10 @@
 2013-02-04  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Fix a broken query of my last 
+	commit
+
+2013-02-04  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/Core.pm:  Set the last_known_status when
 	process module to fix an error of "to normal" status
 	events generation

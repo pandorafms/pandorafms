@@ -1,5 +1,14 @@
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* install.php: cleaned source code style.
+	
+	* godmode/netflow/nf_edit.php, include/functions_netflow.php: fixed
+	the empty data.
+	
+	Fixes: #3603092
+
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/javascript/pandora_alerts.js: cleaned source code style.
 	
 	* include/functions_graph.php: added lost function

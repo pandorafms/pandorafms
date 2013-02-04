@@ -345,7 +345,7 @@ function oracle_drop_all_objects ($connection) {
 	$stmt = oci_parse($connection,
 		"BEGIN " .
 			"FOR cur_rec IN (SELECT object_name, object_type " . 
-				"FROM   user_objects " .
+				"FROM user_objects " .
 					"WHERE  object_type IN ('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE', 'SNAPSHOT', 'MATERIALIZED VIEW')) LOOP " .
 				"BEGIN " . 
 					"IF cur_rec.object_type = 'TABLE' THEN " .

@@ -740,7 +740,7 @@ $(document).ready( function() {
 		var similar_ids;
 		similar_ids = $('#hidden-similar_ids_'+id).val();
 		meta = $('#hidden-meta').val();
-		history = $('#hidden-history').val();
+		var history = $('#hidden-history').val();
 		
 		$("#status_img_"+id).attr ("src", "images/spinner.gif");
 		

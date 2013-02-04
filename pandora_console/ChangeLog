@@ -1,5 +1,10 @@
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/events/events.php: fixed exotic bug with the var name
+	history in the javascript.
+
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_graph.php: re-enabled the baseline for the
 	reports.
 	

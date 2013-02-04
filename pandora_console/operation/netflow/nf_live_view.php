@@ -150,6 +150,11 @@ else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 // The filter name will not be needed anymore
 $filter['id_name'] = '';
 
+$netflow_disable_custom_lvfilters = false;
+if (isset($config['netflow_disable_custom_lvfilters'])) {
+	$netflow_disable_custom_lvfilters = $config['netflow_disable_custom_lvfilters'];
+}
+
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
 	
 	if (defined ('METACONSOLE')) {
@@ -252,11 +257,17 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	echo "</tr>";
 	echo "<tr>";
 	
-	echo "<td>" . '<b>'.__('Filter').'</b>' . "</td>";
-	echo "<td>" .
-		__('Normal') . ' ' . html_print_radio_button_extended ('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true) .
-		__('Advanced') . ' ' . html_print_radio_button_extended ('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true) .
-		"</td>";
+	if ($netflow_disable_custom_lvfilters) {
+		echo "<td></td>";
+		echo "<td></td>";
+	}
+	else {
+		echo "<td>" . '<b>'.__('Filter').'</b>' . "</td>";
+		echo "<td>" .
+			__('Normal') . ' ' . html_print_radio_button_extended ('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true) .
+			__('Advanced') . ' ' . html_print_radio_button_extended ('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true) .
+			"</td>";
+	}
 	
 	echo "<td>" . '<b>'.__('Load filter').'</b>' . "</td>";
 	$user_groups = users_get_groups ($config['id_user'], "AR", $own_info['is_admin'], true);
@@ -267,20 +278,44 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	
 	echo "<tr class='filter_normal'>";
 	
-	echo "<td>" . __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true) . "</td>";
-	echo "<td colspan='2'>" . html_print_input_text ('ip_dst', $filter['ip_dst'], false, 30, 80, true) . "</td>";
+	if ($netflow_disable_custom_lvfilters) {
+		echo "<td></td>";
+		echo "<td></td>";
+	}
+	else {
+		echo "<td>" . __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true) . "</td>";
+		echo "<td colspan='2'>" . html_print_input_text ('ip_dst', $filter['ip_dst'], false, 30, 80, true) . "</td>";
+	}
 	
-	echo "<td>" . __('Src Ip'). ui_print_help_tip (__("Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true) . "</td>";
-	echo "<td colspan='2'>" . html_print_input_text ('ip_src', $filter['ip_src'], false, 30, 80, true) . "</td>";
+	if ($netflow_disable_custom_lvfilters) {
+		echo "<td></td>";
+		echo "<td></td>";
+	}
+	else {
+		echo "<td>" . __('Src Ip'). ui_print_help_tip (__("Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true) . "</td>";
+		echo "<td colspan='2'>" . html_print_input_text ('ip_src', $filter['ip_src'], false, 30, 80, true) . "</td>";
+	}
 	
 	echo "</tr>";
 	echo "<tr class='filter_normal'>";
 	
-	echo "<td>" . __('Dst Port'). ui_print_help_tip (__("Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
-	echo "<td colspan='2'>" . html_print_input_text ('dst_port', $filter['dst_port'], false, 30, 80, true) . "</td>";
-	 
-	echo "<td>" . __('Src Port'). ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
-	echo "<td colspan='2'>" . html_print_input_text ('src_port', $filter['src_port'], false, 30, 80, true) . "</td>";
+	if ($netflow_disable_custom_lvfilters) {
+		echo "<td></td>";
+		echo "<td></td>";
+	}
+	else {
+		echo "<td>" . __('Dst Port'). ui_print_help_tip (__("Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
+		echo "<td colspan='2'>" . html_print_input_text ('dst_port', $filter['dst_port'], false, 30, 80, true) . "</td>";
+	}
+	
+	if ($netflow_disable_custom_lvfilters) {
+		echo "<td></td>";
+		echo "<td></td>";
+	}
+	else {
+		echo "<td>" . __('Src Port'). ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
+		echo "<td colspan='2'>" . html_print_input_text ('src_port', $filter['src_port'], false, 30, 80, true) . "</td>";
+	}
 	
 	echo "</tr>";
 	echo "<tr class='filter_advance' style='display: none;'>";
@@ -310,11 +345,15 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		echo "<table class='databox' width='800' style='border: 0px;'><tr><td>";
 	}
 	
+	
 	html_print_submit_button (__('Draw'), 'draw_button', false, 'class="sub upd"');
-	if (check_acl ($config["id_user"], 0, "AW")) {
-		html_print_submit_button (__('Save as new filter'), 'save_button', false, 'class="sub upd" onClick="return defineFilterName();"');
-		
-		html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
+	
+	if (!$netflow_disable_custom_lvfilters) {
+		if (check_acl ($config["id_user"], 0, "AW")) {
+			html_print_submit_button (__('Save as new filter'), 'save_button', false, 'class="sub upd" onClick="return defineFilterName();"');
+			
+			html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
+		}
 	}
 	
 	if (defined ('METACONSOLE')) {

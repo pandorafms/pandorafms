@@ -1,5 +1,13 @@
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/modules/manage_network_components.php: cleaned source code
+	style.
+	
+	* operation/netflow/nf_live_view.php: fixed the lost to simplified
+	the filter.
+
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_ui.php: fixed the javascript of function
 	"ui_toggle".
 

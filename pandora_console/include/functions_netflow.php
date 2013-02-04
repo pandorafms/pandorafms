@@ -297,7 +297,8 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit) {
 			$source_count++;
 			$j++;
 		}
-	} else {
+	}
+	else {
 		$table->style[1] = 'padding: 4px;';
 	}
 	
@@ -306,6 +307,8 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit) {
 		$table->head[1] = __('Data');
 		$table->align[1] = "right";
 		$i = 0;
+		
+		
 		foreach ($data as $timestamp => $value) {
 			$table->data[$i][0] = date ($time_format, $timestamp);
 			$table->data[$i][1] = format_numeric ($value['data']) . '&nbsp;' . netflow_format_unit ($unit);
@@ -398,29 +401,30 @@ function netflow_is_net ($address) {
 function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max, $unit, $connection_name = '') {
 	global $nfdump_date_format;
 	global $config;
-
+	
 	// Requesting remote data
 	if (defined ('METACONSOLE') && $connection_name != '') {
 		$data = metaconsole_call_remote_api ($connection_name, 'netflow_get_data', "$start_date|$end_date|$interval_length|" . base64_encode(json_encode($filter)) . "|$aggregate|$max|$unit");
 		return json_decode ($data, true);
 	}
-
+	
 	// Calculate the number of intervals
 	if ($interval_length <= 0) {
 		$num_intervals = $config['graph_res'] * 50;
 		$period = $end_date - $start_date;
 		$interval_length = (int) ($period / $num_intervals);
-	} else {
+	}
+	else {
 		$period = $end_date - $start_date;
 		$num_intervals = (int) ($period / $interval_length);
 	}
-
+	
 	// Set a max number of intervals
 	if ($num_intervals > $config['netflow_max_resolution']) {
 		$num_intervals = $config['netflow_max_resolution'];
 		$interval_length = (int) ($period / $num_intervals);
 	}
-
+	
 	// If there is aggregation calculate the top n
 	if ($aggregate != 'none') {
 		$values['data'] = array ();
@@ -435,10 +439,10 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 		// Call nfdump
 		$agg_command = $command . " -s $aggregate/bytes -n $max -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 		exec($agg_command, $string);
-
+		
 		// Reamove the first line
 		$string[0] = '';
-
+		
 		// Parse aggregates
 		foreach($string as $line){
 			if ($line=='') {
@@ -447,7 +451,8 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 			$val = explode(',',$line);
 			if ($aggregate == 'proto') {
 				$values['sources'][$val[3]] = 1;
-			} else {
+			}
+			else {
 				$values['sources'][$val[4]] = 1;
 			}
 		}
@@ -479,7 +484,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 	else {
 		$values = array ();
 	}
-
+	
 	$interval_start = $start_date;
 	for ($i = 0; $i < $num_intervals; $i++, $interval_start+=$interval_length+1) {
 		$interval_end = $interval_start + $interval_length;
@@ -511,7 +516,8 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 					$values[$interval_start]['data'] = $data['totalbytes'];
 					break;
 			}
-		} else {
+		}
+		else {
 			
 			// Set default values
 			foreach ($values['sources'] as $source => $discard) {
@@ -522,12 +528,16 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 				if (! isset ($values['sources'][$line['agg']])) {
 					continue;
 				}
-
+				
 				$values['data'][$interval_start][$line['agg']] = $line['data'];
 			}
 		}
 	}
-
+	
+	if (($aggregate != 'none') && (empty($values['data']))) {
+		return array();
+	}
+	
 	return $values;
 }
 
@@ -963,12 +973,14 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> " . netflow_format_aggregate ($aggregate);
 				$html .= graph_netflow_aggregate_pie ($data, netflow_format_aggregate ($aggregate));
 				return $html;
-			} else if ($output == 'PDF') {
+			}
+			else if ($output == 'PDF') {
 				$html = "<b>" . __('Unit') . ":</b> " . netflow_format_unit ($unit);
 				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> $aggregate";
 				$html .= graph_netflow_aggregate_pie ($data, netflow_format_aggregate ($aggregate), 2, true);
 				return $html;
-			} else if ($output == 'XML') {
+			}
+			else if ($output == 'XML') {
 				$xml = "<unit>$unit</unit>\n";
 				$xml .= "<aggregate>$aggregate</aggregate>\n";
 				$xml .= netflow_aggregate_pie_xml ($data);
@@ -989,8 +1001,10 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 					$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
 				}
 				$html .= netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit);
+				
 				return $html;
-			} else if ($output == 'XML') {
+			}
+			else if ($output == 'XML') {
 				$xml = "<unit>$unit</unit>\n";
 				$xml .= "<aggregate>$aggregate</aggregate>\n";
 				$xml .= "<resolution>$interval_length</resolution>\n";

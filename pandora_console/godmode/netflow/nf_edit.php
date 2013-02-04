@@ -31,14 +31,15 @@ if (! check_acl ($config["id_user"], 0, "AW")) {
 }
 
 $pure = get_parameter('pure', 0);
-		
+
 //Header
 if (! defined ('METACONSOLE')) {
 	ui_print_page_header (__('Manage Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true);
-} else {
+}
+else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
-        array('link' => 'index.php?sec=netf&sec2=godmode/netflow/nf_edit', 'text' => __('Netflow filters')));
-
+		array('link' => 'index.php?sec=netf&sec2=godmode/netflow/nf_edit', 'text' => __('Netflow filters')));
+	
 	ui_meta_print_page_header($nav_bar);
 	
 	ui_meta_print_header(__("Netflow filters"));	
@@ -53,7 +54,7 @@ if ($delete) {
 	$id_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id);
 	$result = db_process_sql_delete ('tnetflow_filter',
 		array ('id_sg' => $id));
-		
+	
 	$result2 = db_process_sql_delete ('tnetflow_report_content',
 		array ('id_filter' => $id_filter));
 	
@@ -81,7 +82,7 @@ if ($multiple_delete) {
 		
 		$result2 = db_process_sql_delete ('tnetflow_report_content',
 			array ('id_filter' => $id_filter));
-	
+		
 		if ($result === false) {
 			db_process_sql_rollback();
 			break;
@@ -94,7 +95,7 @@ if ($multiple_delete) {
 	
 	if ($result !== false) $result = true;
 	else $result = false;
-		
+	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));
@@ -113,7 +114,8 @@ $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Action') .
-		html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
+	html_print_checkbox('all_delete', 0, false, true, false,
+		'check_all_checkboxes();');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();

@@ -450,11 +450,11 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 
 
 function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
-				$width, $height , $title = '', $unit_name = null,
-				$show_alerts = false, $avg_only = 0, $date = 0, $unit = '', 
-				$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
-				$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
-				$show_unknown = false) {
+	$width, $height , $title = '', $unit_name = null,
+	$show_alerts = false, $avg_only = 0, $date = 0, $unit = '', 
+	$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
+	$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
+	$show_unknown = false) {
 	
 	global $config;
 	global $chart;
@@ -589,9 +589,8 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}
 	
 	// Get baseline data
-	//Baseline was replaced by compare graph feature
 	$baseline_data = array();
-	/*if ($baseline) {
+	if ($baseline) {
 		$baseline_data = array ();
 		if ($baseline == 1) {
 			$baseline_data = enterprise_hook ('reporting_enterprise_get_baseline', array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
@@ -599,9 +598,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 				$baseline_data = array ();
 			}
 		}
-	}*/
+	}
 	
-	if (empty($unit)){
+	if (empty($unit)) {
 		$unit = modules_get_unit($agent_module_id);
 	}
 	
@@ -708,18 +707,18 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	global $critical_min;
 	
 	$series_suffix_str = '';
-	if($compare !== false) {
+	if ($compare !== false) {
 		$series_suffix = '2';
 		$series_suffix_str = ' ('.__('Previous').')';
 		// Build the data of the previous period
-
+		
 		grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			$width, $height, $title, $unit_name,
 			$show_alerts, $avg_only,
 			$date-$period, $unit, $baseline, $return_data, $show_title,
 			$projection, $adapt_key, $compare,
 			$series_suffix, $series_suffix_str, $show_unknown);
-
+		
 		switch($compare) {
 			case 'separated':
 				// Store the chart calculated
@@ -744,7 +743,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown);
-
+	
 	if ($return_data) {
 		return $data_returned;
 	}

@@ -97,7 +97,7 @@ if ($id) {
 	$action = alerts_get_alert_action ($id);
 	$name = $action['name'];
 	$id_command = $action['id_alert_command'];
-
+	
 	$group = $action ['id_group'];
 	$action_threshold = $action ['action_threshold'];
 }
@@ -137,9 +137,10 @@ $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
 $table->data[3][1] .= ' '.__('seconds') . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
 $table->data[4][0] = __('Command preview');
-$table->data[4][1] = html_print_textarea ('command_preview', 10, 30, '', 'disabled="disabled"', true);
+$table->data[4][1] = html_print_textarea ('command_preview', 10, 30, '',
+	'disabled="disabled"', true);
 $row = 5;
-for($i=1;$i<=10;$i++) {
+for ($i=1; $i<=10; $i++) {
 	$table->data['field'.$i][0] = html_print_image('images/spinner.gif',true);
 	$table->data['field'.$i][1] = html_print_image('images/spinner.gif',true);
 	// Store the value in a hidden to keep it on first execution
@@ -168,8 +169,7 @@ ui_require_javascript_file ('pandora_alerts');
 <script type="text/javascript">
 $(document).ready (function () {
 	<?php
-	if ($id_command)
-	{
+	if ($id_command) {
 	?>
 		original_command = "<?php
 			$command = alerts_get_alert_command_command ($id_command);
@@ -183,6 +183,7 @@ $(document).ready (function () {
 	<?php
 	}
 	?>
+	
 	$("#id_command").change (function () {
 		values = Array ();
 		values.push ({name: "page",
@@ -198,10 +199,10 @@ $(document).ready (function () {
 				render_command_preview (original_command);
 				command_description = js_html_entity_decode (data["description"]);
 				render_command_description(command_description);
-				for(i=1;i<=10;i++) {
+				for (i=1; i<=10; i++) {
 					var old_value = '';
 					// Only keep the value if is provided from hidden (first time)
-					if($("[name=field"+i+"_value]").attr('id') == "hidden-field"+i+"_value") {
+					if ($("[name=field"+i+"_value]").attr('id') == "hidden-field" + i + "_value") {
 						old_value = $("[name=field"+i+"_value]").val();
 					}
 					
@@ -209,8 +210,10 @@ $(document).ready (function () {
 					$("[name=field"+i+"_value]").val(old_value);
 				}
 				
+				render_command_preview(original_command);
+				
 				$(".fields").keyup (function() {
-					render_command_preview(original_command) 
+					render_command_preview(original_command);
 				});
 			},
 			"json"

@@ -1,5 +1,12 @@
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/alerts/configure_alert_action.php: fixed sustitution the
+	values in the macros when load a action.
+	
+	Fixes: #3603125
+
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/alerts/alert_list.list.php,
 	godmode/reporting/graph_builder.php, godmode/setup/news.php,
 	godmode/setup/setup_general.php, godmode/netflow/nf_edit_form.php,

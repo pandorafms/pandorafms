@@ -1,3 +1,17 @@
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/alerts/alert_list.list.php,
+	godmode/reporting/graph_builder.php, godmode/setup/news.php,
+	godmode/setup/setup_general.php, godmode/netflow/nf_edit_form.php,
+	godmode/db/db_purge.php, godmode/db/db_main.php,
+	godmode/extensions.php, include/functions_reporting.php,
+	operation/reporting/reporting_viewer.php: improved the source code
+	style.
+	
+	* operation/reporting/reporting_xml.php, include/functions_xml.php:
+	fixed the output of xml when have some html entities that is not
+	as hexadecimal entities.
+
 2013-02-04  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_events_replication.php: Added more info as

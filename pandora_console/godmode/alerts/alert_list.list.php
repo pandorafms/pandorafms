@@ -53,9 +53,9 @@ $arrayAgents = array();
 
 # Avoid empty arrays, warning messages are UGLY !
 if ($temp){
-    foreach ($temp as $agentElement) {
-    	$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
-    }
+	foreach ($temp as $agentElement) {
+		$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
+	}
 }
 
 $form_filter .= "<td>".__('Agents')."</td><td>";

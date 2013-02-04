@@ -108,17 +108,17 @@ function xml_file_agent_conf ($modules = array(), $file_temp, $position = 0, $id
 function xml_file_event ($events = array(), $file_temp, $position = 0, $id_agent) {
 	
 	$file = fopen($file_temp, 'a+');
-
+	
 	foreach ($events as $event) {
 		
 		$content_report = "	<object id=\"$position\">\n";
-		$content_report .= "	<event>".$event['evento']."</event>\n";
-		$content_report .= "	<event_type>".$event['event_type']."</event_type>\n";
-		$content_report .= "	<criticity>".get_priority_name($event['criticity'])."</criticity>\n";
-		$content_report .= "	<count>".$event['count_rep']."</count>\n";
-		$content_report .= "	<timestamp>".$event['time2']."</timestamp>\n";
-		$content_report .= "	<module_name>".modules_get_agentmodule_name ($event['id_agentmodule'])."</module_name>\n";
-		$content_report .= "	<agent_name>".agents_get_name ($id_agent)."</agent_name>\n";
+		$content_report .= "		<event>" . io_safe_output($event['evento']) . "</event>\n";
+		$content_report .= "		<event_type>" . $event['event_type'] . "</event_type>\n";
+		$content_report .= "		<criticity>" . get_priority_name($event['criticity']) . "</criticity>\n";
+		$content_report .= "		<count>" . $event['count_rep'] . "</count>\n";
+		$content_report .= "		<timestamp>" . $event['time2'] . "</timestamp>\n";
+		$content_report .= "		<module_name>" . io_safe_output(modules_get_agentmodule_name ($event['id_agentmodule'])) . "</module_name>\n";
+		$content_report .= "		<agent_name>" . io_safe_output(agents_get_name ($id_agent)) . "</agent_name>\n";
 		
 		if ($event['estado'] == 0)
 			$status = __('New');
@@ -128,13 +128,13 @@ function xml_file_event ($events = array(), $file_temp, $position = 0, $id_agent
 			$status = __('In process');
 		else 
 			$status = "";
-			
-		$content_report .= "	<event_status>".$status."</event_status>\n";
-		$content_report .= "	<user_comment>".$event['user_comment']."</user_comment>\n";
-		$content_report .= "	<tags>".$event['tags']."</tags>\n";
-		$content_report .= "	<event_source>".$event['source']."</event_source>\n";
-		$content_report .= "	<extra_id>".$event['id_extra']."</extra_id>\n";
-		$content_report .= "	<user_validation>".$event['owner_user']."</user_validation>\n";
+		
+		$content_report .= "		<event_status>".$status."</event_status>\n";
+		$content_report .= "		<user_comment>".$event['user_comment']."</user_comment>\n";
+		$content_report .= "		<tags>".$event['tags']."</tags>\n";
+		$content_report .= "		<event_source>".$event['source']."</event_source>\n";
+		$content_report .= "		<extra_id>".$event['id_extra']."</extra_id>\n";
+		$content_report .= "		<user_validation>".$event['owner_user']."</user_validation>\n";
 		$content_report .= "	</object>\n";
 		
 		$result = fwrite($file, $content_report);
@@ -149,7 +149,7 @@ function xml_file_event ($events = array(), $file_temp, $position = 0, $id_agent
 function xml_file_graph ($data_module = array(), $file_temp, $position = 0) {
 	
 	$file = fopen($file_temp, 'a+');
-
+	
 	foreach ($data_module as $data_m) {
 		
 		$content_report = "	<object id=\"$position\">\n";

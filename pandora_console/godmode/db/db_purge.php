@@ -178,37 +178,93 @@ else {
 	$query = "";
 }
 
-$data["1day"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query));
-$data["3day"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3day"], $query));
-$data["1week"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query));
-$data["2week"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["2week"], $query));
-$data["1month"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query));
-$data["3month"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query));
-$data["total"] = db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE 1=1 %s", $query));
+$data["1day"] = db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos
+	WHERE utimestamp > %d %s", $time["1day"], $query));
+$data["3day"] = db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos
+	WHERE utimestamp > %d %s", $time["3day"], $query));
+$data["1week"] = db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos
+	WHERE utimestamp > %d %s", $time["1week"], $query));
+$data["2week"] = db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos
+	WHERE utimestamp > %d %s", $time["2week"], $query));
+$data["1month"] = db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos
+	WHERE utimestamp > %d %s", $time["1month"], $query));
+$data["3month"] = db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos
+	WHERE utimestamp > %d %s", $time["3month"], $query));
+$data["total"] = db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos
+	WHERE 1=1 %s", $query));
 
-$data["1day"]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["1day"], $query));
-$data["3day"]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["3day"], $query));
-$data["1week"]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["1week"], $query));
-$data["2week"]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["2week"], $query));
-$data["1month"] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["1month"], $query));
-$data["3month"] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["3month"], $query));
-$data["total"]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_inc WHERE 1=1 %s", $query));
+$data["1day"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_inc
+	WHERE utimestamp > %d %s", $time["1day"], $query));
+$data["3day"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_inc
+	WHERE utimestamp > %d %s", $time["3day"], $query));
+$data["1week"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_inc
+	WHERE utimestamp > %d %s", $time["1week"], $query));
+$data["2week"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_inc
+	WHERE utimestamp > %d %s", $time["2week"], $query));
+$data["1month"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_inc
+	WHERE utimestamp > %d %s", $time["1month"], $query));
+$data["3month"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_inc
+	WHERE utimestamp > %d %s", $time["3month"], $query));
+$data["total"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_inc
+	WHERE 1=1 %s", $query));
 
-$data["1day"]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query));
-$data["3day"]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3day"], $query));
-$data["1week"]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query));
-$data["2week"]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["2week"], $query));
-$data["1month"] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query));
-$data["3month"] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query));
-$data["total"]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE 1=1 %s", $query));
+$data["1day"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_string
+	WHERE utimestamp > %d %s", $time["1day"], $query));
+$data["3day"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_string
+	WHERE utimestamp > %d %s", $time["3day"], $query));
+$data["1week"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_string
+	WHERE utimestamp > %d %s", $time["1week"], $query));
+$data["2week"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_string
+	WHERE utimestamp > %d %s", $time["2week"], $query));
+$data["1month"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_string
+	WHERE utimestamp > %d %s", $time["1month"], $query));
+$data["3month"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_string
+	WHERE utimestamp > %d %s", $time["3month"], $query));
+$data["total"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_string
+	WHERE 1=1 %s", $query));
 
-$data["1day"]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1day"], $query));
-$data["3day"]   += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["3day"], $query));
-$data["1week"]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1week"], $query));
-$data["2week"]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["2week"], $query));
-$data["1month"] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["1month"], $query));
-$data["3month"] += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE utimestamp > %d %s", $time["3month"], $query));
-$data["total"]  += db_get_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE 1=1 %s", $query));
+$data["1day"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_log4x
+	WHERE utimestamp > %d %s", $time["1day"], $query));
+$data["3day"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_log4x
+	WHERE utimestamp > %d %s", $time["3day"], $query));
+$data["1week"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_log4x
+	WHERE utimestamp > %d %s", $time["1week"], $query));
+$data["2week"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_log4x
+	WHERE utimestamp > %d %s", $time["2week"], $query));
+$data["1month"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_log4x
+	WHERE utimestamp > %d %s", $time["1month"], $query));
+$data["3month"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_log4x
+	WHERE utimestamp > %d %s", $time["3month"], $query));
+$data["total"] += db_get_sql (sprintf ("SELECT COUNT(*)
+	FROM tagente_datos_log4x
+	WHERE 1=1 %s", $query));
 
 $table->width = '98%';
 $table->border = 0;

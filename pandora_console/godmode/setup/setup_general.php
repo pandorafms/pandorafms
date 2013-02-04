@@ -108,8 +108,8 @@ if ($config["integria_enabled"]) {
 		$bad_input = true;
 	}
 	
-	$inventories = array();   
-	// Right connection but  theres is no inventories 
+	$inventories = array();
+	// Right connection but theres is no inventories 
 	if ($invent == 'false') {
 		unset($invent);
 		$invent = array();
@@ -178,7 +178,7 @@ if ($zone_selected == "") {
 $timezones = timezone_identifiers_list();
 foreach ($timezones as $timezone) {
 	if (strpos($timezone, $zone_selected) !== false) { 
-        	$timezone_n[$timezone] = $timezone;
+		$timezone_n[$timezone] = $timezone;
 	}
 }
 
@@ -292,12 +292,14 @@ $(document).ready (function () {
 	$("#zone").attr("disabled", true);
 	$("#timezone").attr("disabled", true);
 
-	$("input[name='acl_enterprise']").click(function(){
-                        flag = $(this).is(':checked');
-                        if (flag == true){
-                                <?php echo "if (! confirm ('" . __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?') . "')) return false" ?>
-                        }
-        });
+	$("input[name='acl_enterprise']").click(function() {
+		flag = $(this).is(':checked');
+		if (flag == true) {
+			<?php
+			echo "if (! confirm ('" . __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?') . "')) return false;";
+			?>
+		}
+	});
 	
 	
 	$("#change_timezone").click(function () {

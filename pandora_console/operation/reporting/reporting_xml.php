@@ -612,12 +612,17 @@ foreach ($contents as $content) {
 				$result = fwrite($file, $content_report);
 				fclose($file);
 				
-				$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep,
-				max(timestamp) AS time2, id_agentmodule, estado, user_comment, tags, source, id_extra, owner_user
-				FROM tevento
-				WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d 
-				GROUP BY id_agentmodule, evento
-				ORDER BY time2 DESC', $content['id_agent'], $datelimit, $date);
+				$sql = sprintf ('
+					SELECT evento, event_type, criticity,
+						count(*) AS count_rep, max(timestamp) AS time2,
+						id_agentmodule, estado, user_comment, tags,
+						source, id_extra, owner_user
+					FROM tevento
+					WHERE id_agente = %d AND utimestamp > %d
+						AND utimestamp <= %d 
+					GROUP BY id_agentmodule, evento
+					ORDER BY time2 DESC', $content['id_agent'],
+					$datelimit, $date);
 				
 				$events = db_get_all_rows_sql ($sql);
 				xml_file_event ($events, $temp_file,0, $content['id_agent']);

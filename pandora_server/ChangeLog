@@ -1,3 +1,9 @@
+2013-02-04  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm:  Set the last_known_status when
+	process module to fix an error of "to normal" status
+	events generation
+
 2013-01-31  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_server,

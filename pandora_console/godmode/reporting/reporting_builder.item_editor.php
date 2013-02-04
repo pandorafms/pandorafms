@@ -1001,6 +1001,8 @@ if ($meta) {
 
 function print_SLA_list($width, $action, $idItem = null) {
 	global $config;
+	global $meta;
+	
 	?>
 	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="98%">
 		<thead>

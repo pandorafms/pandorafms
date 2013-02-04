@@ -1,5 +1,10 @@
 2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/search_modules.php: added edit button when the user can
+	edit.
+
+2013-02-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* install.php: cleaned source code style.
 	
 	* godmode/netflow/nf_edit.php, include/functions_netflow.php: fixed

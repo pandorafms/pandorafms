@@ -792,8 +792,11 @@ function html_print_input_hidden ($name, $value, $return = false, $class = false
 	}
 	
 	$separator = '"';
-	if (strstr($value, '"')) {
-		$separator = "'";
+	
+	if (is_string($value)) {
+		if (strstr($value, '"')) {
+			$separator = "'";
+		}
 	}
 	
 	$output = '<input id="hidden-' . $name . '" ' .

@@ -275,7 +275,7 @@ else {
 				$module["id_agente_modulo"] . "&edit_module=1";
 			
 			$edit_module = '<a href="' . $url_edit . '">' .
-				html_print_image("images/config.png") . '</a>';
+				html_print_image("images/config.png", true) . '</a>';
 		}
 		else {
 			$edit_module = '';

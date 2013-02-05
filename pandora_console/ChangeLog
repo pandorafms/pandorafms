@@ -1,3 +1,9 @@
+2013-02-05  Sancho Lerena <slerena@artica.es>
+
+	* operation/menu.php: Fixed duplicity in SNMP trap menu. SNMP
+	options are inside the "Monitoring" sub section. Removed
+	"standalone" option, which have missing suboptions.
+
 2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_gis.php,

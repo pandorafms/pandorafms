@@ -1,3 +1,10 @@
+2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/gis_maps/render_view.php: fixed the height of maps when
+	the menu is short.
+	
+	Fixes: #3602800
+
 2013-02-01  Hirofumi Kosaka  <kosaka@rworks.jp>
 
 	* include/functions_api.php: Added function 'api_get_pandora_servers'.

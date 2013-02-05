@@ -205,18 +205,4 @@ if ($config["pure"] != 0) {
 	</script>
 <?php
 }
-else {
-	// Resize GIS map on normalview
-?>
-	<script type="text/javascript">
-		$().ready(function(){
-			
-			var new_height = $("#menu").height();
-			$("#map").css("height", new_height - 20);
-			
-		});
-		
-	</script>
-<?php
-}
 ?>

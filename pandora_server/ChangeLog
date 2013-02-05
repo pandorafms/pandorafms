@@ -1,3 +1,8 @@
+2013-02-05  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Set ack utimestamp when create
+	a event in validated status (normal status)
+
 2013-02-04  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fix a broken query of my last 

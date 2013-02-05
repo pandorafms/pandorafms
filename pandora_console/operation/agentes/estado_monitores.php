@@ -28,12 +28,12 @@ if (is_ajax ()) {
 		
 		if ($tags === false)
 			$tags = array();
-			
-		echo '<h3> Tag\'s information </h3>';		
+		
+		echo '<h3> Tag\'s information </h3>';
 		foreach ($tags as $tag) {
-				echo tags_get_name($tag).'<br>';
+			echo tags_get_name($tag).'<br>';
 		}
-	
+		
 		return;
 	}
 	return;
@@ -42,7 +42,7 @@ if (is_ajax ()) {
 if (!isset ($id_agente)) {
 	//This page is included, $id_agente should be passed to it.
 	db_pandora_audit("HACK Attempt",
-			  "Trying to get to monitor list without id_agent passed");
+		"Trying to get to monitor list without id_agent passed");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -354,10 +354,10 @@ foreach ($modules as $module) {
 		}
 		else {
 			$module_value = io_safe_output($module["datos"]);
-
+			
 			// There are carriage returns here ?
 			// If carriage returns present... then is a "Snapshot" data (full command output)
-			if (preg_match ("/[\n]+/i", io_safe_output($module["datos"]))){
+			if (($config['command_snapshot']) && (preg_match ("/[\n]+/i", io_safe_output($module["datos"])))) {
 
 		                $handle = "snapshot"."_".$module["id_agente_modulo"];
                 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];

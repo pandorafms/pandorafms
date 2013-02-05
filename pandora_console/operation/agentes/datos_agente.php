@@ -234,7 +234,7 @@ foreach ($result as $row) {
 			$data[] = $attr[1] ($row[$attr[0]]);
 
 		// Its a single-data, multiline data (data snapshot) ?
-		elseif (preg_match ("/[\n]+/i", $row[$attr[0]])){
+		elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
 
 			// Detect string data with \n and convert to <br>'s
 			$datos = preg_replace ('/\n/i','<br>',$row[$attr[0]]);

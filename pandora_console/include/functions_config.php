@@ -181,7 +181,8 @@ function config_update_config () {
 			config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist));
 			
 			config_update_value ('referer_security', get_parameter('referer_security'));
-
+			
+			config_update_value ('command_snapshot', get_parameter('command_snapshot'));
 			/////////////
 			break;
 		case 'godmode/setup/setup_auth':
@@ -754,6 +755,10 @@ function config_process_config () {
 	
 	if (!isset($config['referer_security'])) {
 		config_update_value ('referer_security', 0);
+	}
+	
+	if (!isset($config['command_snapshot'])) {
+		config_update_value ('command_snapshot', 1);
 	}
 	
 	/* Finally, check if any value was overwritten in a form */

@@ -229,7 +229,10 @@ $table->data[29][1] = __('Yes') . '&nbsp;&nbsp;&nbsp;' .
 $table->data[29][1] .= __('No') . '&nbsp;&nbsp;&nbsp;' .
 	html_print_radio_button ('referer_security', 0, '', $config["referer_security"], true);
 
-
+$table->data[30][0] = __('Command Snapshot') .
+	ui_print_help_tip(__('The string modules with several lines show as command output'), true);
+$table->data[30][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('command_snapshot', 1, '', $config["command_snapshot"], true).'&nbsp;&nbsp;';
+$table->data[30][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('command_snapshot', 0, '', $config["command_snapshot"], true);
 ?>
 <script type="text/javascript">
 function toggleButton(type) {
@@ -253,7 +256,7 @@ function replaySound(type) {
 
 $(document).ready (function () {
 	$("input[name='acl_enterprise']").click(function(){
-			flag = $(this).is(':checked');
+			flag = $("input[name='acl_enterprise']").is(':checked');
 			if (flag == true){
 				<?php echo "if (! confirm ('" . __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?') . "')) return false" ?>
 			}

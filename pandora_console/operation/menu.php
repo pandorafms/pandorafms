@@ -351,12 +351,6 @@ if (check_acl ($config['id_user'], 0, "IR")) {
 // Rest of options, all with AR privilege (or should events be with incidents?)
 if (check_acl ($config['id_user'], 0, "AR")) {
 	
-	//SNMP Console
-	$menu_operation["snmpconsole"]["text"] = __('SNMP console');
-	$menu_operation["snmpconsole"]["refr"] = 0;
-	$menu_operation["snmpconsole"]["sec2"] = "operation/snmpconsole/snmp_view";
-	$menu_operation["snmpconsole"]["id"] = "oper-snmpc";
-	
 	// Extensions menu additions
 	if (is_array ($config['extensions'])) {
 		$menu_operation["extensions"]["text"] = __('Extensions');

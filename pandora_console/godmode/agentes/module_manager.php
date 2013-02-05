@@ -82,8 +82,22 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 	unset($modules['predictionserver']);
 }
 
-if (isset($agent)) {
-	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+global $policy_page;
+
+if (!isset($policy_page))
+	$policy_page = false;
+
+if (($policy_page) || (isset($agent))) {
+	$show_creation = false;
+	if ($policy_page) {
+		$show_creation = true;
+	}
+	else {
+		if (check_acl ($config['id_user'], $agent['id_grupo'], "AW"))
+			$show_creation = true;
+	}
+	
+	if ($show_creation) {
 		// Create module/type combo
 		echo '<form id="create_module_type" method="post" action="'.$url.'">';
 		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
@@ -152,16 +166,20 @@ if ($multiple_delete) {
 			if ($module !== false) {
 				if ($module['estado'] == 0) {
 					db_process_sql ('UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module['id_agente']);
-				} else if ($module['estado'] == 1) {
+				}
+				else if ($module['estado'] == 1) {
 					db_process_sql ('UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module['id_agente']);
-				} else if ($module['estado'] == 2) {
+				}
+				else if ($module['estado'] == 2) {
 					db_process_sql ('UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module['id_agente']);
-				} else if ($module['estado'] == 3) {
+				}
+				else if ($module['estado'] == 3) {
 					db_process_sql ('UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module['id_agente']);
-				} else if ($module['estado'] == 4) {
+				}
+				else if ($module['estado'] == 4) {
 					db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module['id_agente']);
 				}
-
+				
 				db_process_sql ('UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module['id_agente']);
 			}
 		}
@@ -482,7 +500,7 @@ foreach ($modules as $module) {
 	if (! check_acl ($config["id_user"], $group, "AW", $id_agente) && ! check_acl ($config["id_user"], $group, "AD", $id_agente)) {
 		continue;
 	}
-
+	
 	$type = $module["id_tipo_modulo"];
 	$id_module = $module["id_modulo"];
 	$nombre_modulo = $module["nombre"];
@@ -508,8 +526,9 @@ foreach ($modules as $module) {
 	}
 	$data[0] = "";
 	if ($module['quiet']) {
-		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""))
-			. "&nbsp;";
+		$data[0] .= html_print_image("images/dot_green.disabled.png",
+			true, array("border" => '0', "title" => __('Quiet'),
+				"alt" => "")) . "&nbsp;";
 	}
 	
 	if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
@@ -561,7 +580,7 @@ foreach ($modules as $module) {
 					$title = __('(Unlinked) ') . $policyInfo['name_policy'];
 				}
 			}
-				
+			
 			$data[1] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
 				html_print_image($img,true, array('title' => $title)) .
 				'</a>';
@@ -573,7 +592,7 @@ foreach ($modules as $module) {
 	if ($module['id_modulo'] > 0) {
 		$data[2] = servers_show_type ($module['id_modulo']);
 	}
-
+	
 	$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
 	
 	modules_get_status($module['id_agente_modulo'], $module_status['estado'], $module_status['datos'], $status, $title);
@@ -645,19 +664,19 @@ foreach ($modules as $module) {
 			$data[8] .= '</a> ';
 		}
 	}
-
+	
 	array_push ($table->data, $data);
 }
 
-if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 	echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
 		onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
 
 }
-	
+
 html_print_table ($table);
 
-if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	html_print_input_hidden ('multiple_delete', 1);
 	html_print_submit_button (__('Delete'), 'multiple_delete', false, 'class="sub delete"');

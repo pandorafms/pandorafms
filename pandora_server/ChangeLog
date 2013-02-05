@@ -1,5 +1,10 @@
 2013-02-05  Sancho Lerena <slerena@artica.es>
 
+	* util/pandora_manage.pl: Added feature for adding
+	custom traps. Improved help format syntax.
+
+2013-02-05  Sancho Lerena <slerena@artica.es>
+
 	* util/pandora_db.pl: Added deletion for extended session
 	data (was missing and table grows to infinite!).
 

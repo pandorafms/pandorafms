@@ -95,8 +95,7 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 			num_zoom_levels: null,
 			name: null,
 			type: null,
-			url: null
-		};";
+			url: null};";
 		
 		echo "baselayer['type'] = '" . $baselayer['typeBaseLayer'] . "';";
 		echo "baselayer['name'] = '" . $baselayer['name'] . "';";
@@ -125,6 +124,7 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 	
 	echo "js_printMap(idDiv, initialZoom, centerLatitude, centerLongitude,
 		baselayerList, controlsList)";
+	
 	echo "</script>";
 }
 

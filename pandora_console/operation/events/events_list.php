@@ -49,8 +49,8 @@ if (is_ajax()) {
 		$event_filter = events_get_event_filter($id_filter);
 		
 		$event_filter['id_name'] = io_safe_output($event_filter['id_name']);
-		$event_filter['tag_with'] = io_safe_output($event_filter['tag_with']);
-		$event_filter['tag_without'] = io_safe_output($event_filter['tag_without']);
+		$event_filter['tag_with'] = base64_encode(io_safe_output($event_filter['tag_with']));
+		$event_filter['tag_without'] = base64_encode(io_safe_output($event_filter['tag_without']));
 		
 		echo json_encode($event_filter);
 	}
@@ -516,6 +516,8 @@ $(document).ready( function() {
 			$("#row_name").css('visibility', 'hidden');
 			$("#submit-update_filter").css('visibility', 'hidden');
 			$("#id_group").val(0);
+				
+			clear_tags_inputs();	
 		}
 		// If filter selected then load filter
 		else {
@@ -604,8 +606,8 @@ $(document).ready( function() {
 				"event_view_hr" : $("#text-event_view_hr").val(),
 				"id_user_ack" : $("#id_user_ack").val(),
 				"group_rep" : $("#group_rep").val(),
-				"tag_with": $("#hidden-tag_with").val(),
-				"tag_without": $("#hidden-tag_without").val(),
+				"tag_with": Base64.decode($("#hidden-tag_with").val()),
+				"tag_without": Base64.decode($("#hidden-tag_without").val()),
 				"filter_only_alert" : $("#filter_only_alert").val(),
 				"id_group_filter": $("#id_group").val()
 				},
@@ -676,8 +678,8 @@ $(document).ready( function() {
 			"event_view_hr" : $("#text-event_view_hr").val(),
 			"id_user_ack" : $("#id_user_ack").val(),
 			"group_rep" : $("#group_rep").val(),
-			"tag_with" : $("#hidden-tag_with").val(),
-			"tag_without" : $("#hidden-tag_without").val(),
+			"tag_with" : Base64.decode($("#hidden-tag_with").val()),
+			"tag_without" : Base64.decode($("#hidden-tag_without").val()),
 			"filter_only_alert" : $("#filter_only_alert").val(),
 			"id_group_filter": $("#id_group").val()
 			},
@@ -905,6 +907,12 @@ function replace_hidden_tags(what_button) {
 	$(id_hidden).val(Base64.encode(jQuery.toJSON(value_store)));
 }
 
+function clear_tags_inputs() {
+	$("#hidden-tag_with").val(Base64.encode(jQuery.toJSON([])));
+	$("#hidden-tag_without").val(Base64.encode(jQuery.toJSON([])));
+	reorder_tags_inputs();
+}
+
 function reorder_tags_inputs() {
 	$('#select_with option[value="' + val_none + '"]').remove();
 	jQuery.each($("#tag_with_temp option"), function(key, element) {
@@ -936,8 +944,8 @@ function reorder_tags_inputs() {
 	
 	
 	
-	tags_json = $("#hidden-tag_with").val();
-	tags = jQuery.evalJSON(tags_json);
+	tags_base64 = $("#hidden-tag_with").val();
+	tags = jQuery.evalJSON(Base64.decode(tags_base64));
 	jQuery.each(tags, function(key, element) {
 		if ($("#select_with option[value='" + element + "']").length == 1) {
 			text = $("#select_with option[value='" + element + "']").text();
@@ -968,8 +976,8 @@ function reorder_tags_inputs() {
 	
 	
 	
-	tags_json = $("#hidden-tag_without").val();
-	tags = jQuery.evalJSON(tags_json);
+	tags_base64 = $("#hidden-tag_without").val();
+	tags = jQuery.evalJSON(Base64.decode(tags_base64));
 	jQuery.each(tags, function(key, element) {
 		if ($("#select_without option[value='" + element + "']").length == 1) {
 			text = $("#select_without option[value='" + element + "']").text();

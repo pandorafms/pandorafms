@@ -30,7 +30,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "5.0dev PS121217";
+my $version = "5.0dev PS130205";
 
 # Pandora server configuration
 my %conf;
@@ -110,6 +110,12 @@ sub pandora_purgedb ($$) {
 		print "[PURGE] No data in tagente_datos\n";
 	}
 
+    # Delete extended session data
+    if (enterprise_load (\%conf) != 0) {
+        db_do ($dbh, "DELETE FROM tsesion_extended WHERE id_sesion NOT IN ( SELECT id_sesion FROM tsesion );");
+        print "[PURGE] Deleting old extended session data. \n";
+
+    }
 
     # Delete inventory data, only if enterprise is enabled
     # We use the same value than regular data purge interval

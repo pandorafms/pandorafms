@@ -1,3 +1,8 @@
+2013-02-05  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_db.pl: Added deletion for extended session
+	data (was missing and table grows to infinite!).
+
 2013-02-05  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Set ack utimestamp when create

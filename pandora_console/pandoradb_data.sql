@@ -1,25 +1,13 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2011 Artica Soluciones Tecnologicas, http://www.artica.es
+-- Copyright (c) 2013 Artica Soluciones Tecnologicas, http://www.artica.es
 -- Please see http://www.pandorafms.org for full contribution list
 
--- This program is free software; you can redistribute it and/or
--- modify it under the terms of the GNU General Public License
--- as published by the Free Software Foundation for version 2.
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
--- You should have received a copy of the GNU General Public License
--- along with this program; if not, write to the Free Software
--- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
--- Database Data for Pandora FMS 4.0dev
+-- Database Data for Pandora FMS 5.0
 
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them
 -- and fails creating database !!!
-
 
 -- Dumping data for table `talert_commands`
 --
@@ -43,13 +31,13 @@ LOCK TABLES `tconfig` WRITE;
 INSERT INTO `tconfig` (`token`, `value`) VALUES 
 ('language','en_GB'),
 ('block_size','20'),
-('days_purge','60'),
+('days_purge','45'),
 ('days_delete_unknown','0'),
 ('days_compact','0'),
 ('graph_res','5'),
 ('step_compact','1'),
 ('db_scheme_version','5.0dev'),
-('db_scheme_build','PD120621'),
+('db_scheme_build','PD130205'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),
@@ -73,8 +61,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('string_purge', 7),
 ('audit_purge', 15),
 ('trap_purge', 7),
-('event_purge', 15),
-('gis_purge', 15),
+('event_purge', 7),
+('gis_purge', 7),
 ('sound_alert', 'include/sounds/air_shock_alarm.wav'),
 ('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav'),
 ('sound_warning', 'include/sounds/negativebeep.wav'),
@@ -104,7 +92,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('enable_refr', 0),
 ('meta_num_elements', 100),
 ('update_manager_installed', 1),
-('num_files_attachment', 100),
+('num_files_attachment', 250),
 ('show_vc', 1);
 
 UNLOCK TABLES;

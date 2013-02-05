@@ -1,3 +1,14 @@
+2013-02-05  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events_list.php
+	godmode/events/event_edit_filter.php
+	godmode/events/event_filter.php: Fix a lot of fails in the
+	event filters editor and the reset of the tags list when
+	select "none" filter
+
+	* operation/events/events.build_query.php: Fix 
+	bad behavior in tags filter in events view
+
 2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_modules.php: added function

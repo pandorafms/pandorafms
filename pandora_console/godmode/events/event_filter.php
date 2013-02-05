@@ -125,7 +125,7 @@ $total_filters = $total_filters[0]['total'];
 foreach ($filters as $filter) {
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&id='.$filter['id_filter'].'">'.$filter['id_name'].'</a>';
+	$data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&id=' . $filter['id_filter'] . '&pure=' . $config['pure'] . '">'.$filter['id_name'].'</a>';
 	$data[1] = ui_print_group_icon ($filter['id_group_filter'], true);
 	$data[2] = events_get_event_types($filter['event_type']);
 	$data[3] = events_get_status($filter['status']);

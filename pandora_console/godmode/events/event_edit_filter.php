@@ -53,8 +53,15 @@ if ($id) {
 	$event_view_hr = $filter['event_view_hr'];
 	$id_user_ack = $filter['id_user_ack'];
 	$group_rep = $filter['group_rep'];
-	$tag_with = io_safe_output($filter['tag_with']);
-	$tag_without = io_safe_output($filter['tag_without']);
+
+	$tag_with_json = $filter['tag_with'];	
+	$tag_with_json_clean = io_safe_output($tag_with_json);
+	$tag_with_base64 = base64_encode($tag_with_json_clean) ;
+	
+	$tag_without_json = $filter['tag_without'];
+	$tag_without_json_clean = io_safe_output($tag_without_json);
+	$tag_without_base64 = base64_encode($tag_without_json_clean) ;
+
 	$filter_only_alert = $filter['filter_only_alert'];
 }
 else {
@@ -70,12 +77,14 @@ else {
 	$event_view_hr = '';
 	$id_user_ack = '';
 	$group_rep = '';
-	$tag_with = json_encode(array());
-	$tag_without = json_encode(array());
+	$tag_with_json = json_encode(array());
+	$tag_with_base64 = base64_encode($tag_with_json);
+	$tag_without_json = json_encode(array());
+	$tag_without_base64 = base64_encode($tag_without_json);
 	$filter_only_alert = '';
 }
 
-if ($update) {
+if($update || $create) {
 	$id_group = (string) get_parameter ('id_group');
 	$id_group_filter = get_parameter('id_group_filter');
 	$id_name = (string) get_parameter ('id_name');
@@ -88,59 +97,14 @@ if ($update) {
 	$event_view_hr = get_parameter('event_view_hr', '');
 	$id_user_ack = get_parameter('id_user_ack', '');
 	$group_rep = get_parameter('group_rep', '');
-	$tag_with = get_parameter('tag_with', json_encode(array()));
-	$tag_without = get_parameter('tag_without', json_encode(array()));
-	$filter_only_alert = get_parameter('filter_only_alert','');
 	
-	if ($id_name == '') {
-		ui_print_error_message (__('Not updated. Blank name'));
-	}
-	else {
-		$values = array ('id_filter' => $id,
-			'id_name' => $id_name,	
-			'id_group_filter' => $id_group_filter,
-			'id_group' => $id_group,
-			'event_type' => $event_type,
-			'severity' => $severity,
-			'status' => $status,
-			'search' => $search,
-			'text_agent' => $text_agent,
-			'pagination' => $pagination,
-			'event_view_hr' => $event_view_hr,
-			'id_user_ack' => $id_user_ack,
-			'group_rep' => $group_rep,
-			'tag_with' => $tag_with,
-			'tag_without' => $tag_without,
-			'filter_only_alert' => $filter_only_alert
-		);
-		
-		$result = db_process_sql_update ('tevent_filter', $values, array ('id_filter' => $id));
-		
-		ui_print_result_message ($result,
-			__('Successfully updated'),
-			__('Not updated. Error updating data'));
-	}
-	
-	$tag_with = io_safe_output($tag_with);
-	$tag_without = io_safe_output($tag_without);
-}
+	$tag_with_base64 = get_parameter('tag_with', json_encode(array()));
+	$tag_with_json = io_safe_input(base64_decode($tag_with_base64));
 
-if ($create) {
-	$id_group = (string) get_parameter ('id_group');
-	$id_name = (string) get_parameter ('id_name');
-	$id_group_filter = get_parameter('id_group_filter');
-	$event_type = get_parameter('event_type', '');
-	$severity = get_parameter('severity', '');
-	$status = get_parameter('status', '');
-	$search = get_parameter('search', '');
-	$text_agent = get_parameter('text_agent', '');
-	$pagination = get_parameter('pagination', '');
-	$event_view_hr = get_parameter('event_view_hr', '');
-	$id_user_ack = get_parameter('id_user_ack', '');
-	$group_rep = get_parameter('group_rep',' ');
-	$tag_with = get_parameter('tag_with', json_encode(array()));
-	$tag_without = get_parameter('tag_without', json_encode(array()));
-	$filter_only_alert = get_parameter('filter_only_alert', '');	
+	$tag_without_base64 = get_parameter('tag_without', json_encode(array()));
+	$tag_without_json = io_safe_input(base64_decode($tag_without_base64));
+
+	$filter_only_alert = get_parameter('filter_only_alert','');
 	
 	$values = array (
 		'id_name' => $id_name,	
@@ -155,10 +119,25 @@ if ($create) {
 		'event_view_hr' => $event_view_hr,
 		'id_user_ack' => $id_user_ack,
 		'group_rep' => $group_rep,
-		'tag_with' => $tag_with,
-		'tag_without' => $tag_without,
+		'tag_with' => $tag_with_json,
+		'tag_without' => $tag_without_json,
 		'filter_only_alert' => $filter_only_alert);
-	
+}
+
+if ($update) {
+	if ($id_name == '') {
+		ui_print_error_message (__('Not updated. Blank name'));
+	}
+	else {
+		$result = db_process_sql_update ('tevent_filter', $values, array ('id_filter' => $id));
+		
+		ui_print_result_message ($result,
+			__('Successfully updated'),
+			__('Not updated. Error updating data'));
+	}
+}
+
+if ($create) {	
 	$id = db_process_sql_insert('tevent_filter', $values);
 	
 	if ($id === false) {
@@ -167,9 +146,6 @@ if ($create) {
 	else {
 		ui_print_success_message ('Filter created successfully');
 	}
-	
-	$tag_with = io_safe_output($tag_with);
-	$tag_without = io_safe_output($tag_without);
 }
 
 $own_info = get_user_info ($config['id_user']);
@@ -252,12 +228,11 @@ $table->data[11][0] = '<b>' . __('Repeated') . '</b>';
 $table->data[11][1] = html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', '', true);
 
 
-
-$tag_with = json_decode($tag_with, true);
+$tag_with = json_decode($tag_with_json_clean, true);
 if(empty($tag_with)) {
 	$tag_with = array();
 }
-$tag_without = json_decode($tag_without, true);
+$tag_without = json_decode($tag_without_json_clean, true);
 if(empty($tag_without)) {
 	$tag_without = array();
 }
@@ -299,7 +274,7 @@ $table->data[15][0] = html_print_select ($tag_with_temp,
 	'tag_with_temp', array(), '', '', 0, true, true,
 	true, '', false, "width: 120px; height: 50px;");
 $table->data[15][0] .= html_print_input_hidden('tag_with',
-	json_encode($tag_with), true);
+	$tag_with_base64, true);
 $table->data[15][1] = html_print_button(__('Remove'),
 	'remove_whith', $remove_with_tag_disabled, '', 'class="delete sub"', true);
 
@@ -316,7 +291,7 @@ $table->data[18][0] = html_print_select ($tag_without_temp,
 	'tag_without_temp', array(), '', '', 0, true, true,
 	true, '', false, "width: 120px; height: 50px;");
 $table->data[18][0] .= html_print_input_hidden('tag_without',
-	json_encode($tag_without), true);
+	$tag_without_base64, true);
 $table->data[18][1] = html_print_button(__('Remove'), 'remove_whithout', $remove_without_tag_disabled,
 	'', 'class="delete sub"', true);
 
@@ -510,7 +485,7 @@ function replace_hidden_tags(what_button) {
 		value_store.push(val);
 	});
 	
-	$(id_hidden).val(jQuery.toJSON(value_store));
+	$(id_hidden).val(Base64.encode(jQuery.toJSON(value_store)));
 }
 /* ]]> */
 </script>

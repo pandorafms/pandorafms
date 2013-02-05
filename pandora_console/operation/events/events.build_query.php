@@ -136,7 +136,7 @@ if (!empty($tag_without)) {
 	$first = true;
 	foreach ($tag_without as $id_tag) {
 		if ($first) $first = false;
-		else $sql_post .= " OR ";
+		else $sql_post .= " AND ";
 		$sql_post .= "tags NOT LIKE '%" . tags_get_name($id_tag) . "%'";
 	}
 	$sql_post .= ' ) ';

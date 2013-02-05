@@ -1,3 +1,9 @@
+2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager.php,
+	godmode/agentes/configurar_agente.php: fixed the load the module
+	editor form into the policies.
+
 2013-02-05  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Improved default config values.

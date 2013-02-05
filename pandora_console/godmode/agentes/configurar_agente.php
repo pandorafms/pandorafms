@@ -919,10 +919,10 @@ if ($update_module) {
 		if ($prediction_module == 3) {
 			enterprise_hook('modules_create_synthetic_operations', array($id_agent_module, $serialize_ops));
 		}
-
+		
 		// Update the module interval
 		cron_update_module_interval ($id_agent_module, $cron_interval);
-
+		
 		ui_print_success_message(__('Module successfully updated'));
 		$id_agent_module = false;
 		$edit_module = false;

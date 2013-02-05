@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS General Management Tool
 ###############################################################################
-# Copyright (c) 2010 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2013 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -27,7 +27,7 @@ use PandoraFMS::Core;
 use PandoraFMS::Config;
 
 # version: define current version
-my $version = "5.0dev PS120621";
+my $version = "5.0dev PS130205";
 
 # save program name for logging
 my $progname = basename($0);
@@ -86,8 +86,8 @@ sub help_screen{
 	print "Available options by category:\n\n" unless $param ne '';
 	print "Available options for $param:\n\n" unless $param eq '';
 	print "AGENTS:\n\n" unless $param ne '';
-   	help_screen_line('--create_agent', '<agent_name> <operating_system> <group> <server_name> [<address> <description> <interval>]', 'Create agent');
-    help_screen_line('--update_agent', '<agent_name> <field_to_change> <new_value>', 'Update an agent field. The fields can be the following: agent_name, address, description, group_name, interval, os_name, disabled (0-1), parent_name, cascade_protection (0-1), icon_path, update_gis_data (0-1), custom_id');
+   	help_screen_line('--create_agent', "<agent_name> <operating_system> <group> <server_name> \n\t  [<address> <description> <interval>]", 'Create agent');
+    help_screen_line('--update_agent', '<agent_name> <field_to_change> <new_value>', "Update an agent field. The fields can be \n\t  the following: agent_name, address, description, group_name, interval, os_name, disabled (0-1), \n\t  parent_name, cascade_protection (0-1), icon_path, update_gis_data (0-1), custom_id");
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
 	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
    	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
@@ -95,37 +95,37 @@ sub help_screen{
 	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
 	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
-	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', 'Get list of agents with optative filter parameters');
+	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
-	help_screen_line('--clean_conf_file', '<agent_name>', 'Clean a local conf of a given agent deleting all modules, policies, file collections and comments');
+	help_screen_line('--clean_conf_file', '<agent_name>', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
 	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
-	print "MODULES:\n\n" unless $param ne '';
-	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file> <warning_str> <critical_str>]', 'Add data server module to agent');
-	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to agent');
-	help_screen_line('--create_snmp_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]', 'Add snmp network module to agent');
-	help_screen_line('--create_plugin_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to agent');
+	print "\nMODULES:\n\n" unless $param ne '';
+	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>]", 'Add data server module to agent');
+	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str>]", 'Add not snmp network module to agent');
+	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> \n\t  <critical_str>]", 'Add snmp network module to agent');
+	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]", 'Add plug-in module to agent');
     help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
-    help_screen_line('--data_module', '<server_name> <agent_name> <module_name> <module_type> [<datetime>]', 'Insert data to module');
-    help_screen_line('--get_module_data', '<agent_name> <module_name> <interval> [<csv_separator>]', 'Show the data of a module in the last X seconds (interval) in CSV format');
-    help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
+    help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> [<datetime>]", 'Insert data to module');
+    help_screen_line('--get_module_data', "<agent_name> <module_name> <interval> [<csv_separator>]", "\n\t  Show the data of a module in the last X seconds (interval) in CSV format");
+    help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', "Delete historic \n\t  data of a module, the modules of an agent or the modules of the agents of a group");
 	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value>', 'Update a module field');
-    help_screen_line('--get_agents_module_current_data', '<module_name>', 'Get the agent and current data of all the modules with a given name');
-	help_screen_line('--create_network_module_from_component', '<agent_name> <component_name>', 'Create a new network module from a network component');
-	print "ALERTS:\n\n" unless $param ne '';
+    help_screen_line('--get_agents_module_current_data', '<module_name>', "Get the agent and current data \n\t  of all the modules with a given name");
+	help_screen_line('--create_network_module_from_component', '<agent_name> <component_name>', "Create a new network \n\t  module from a network component");
+	print "\nALERTS:\n\n" unless $param ne '';
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
-    help_screen_line('--create_template_action', '<action_name> <template_name> <module_name> <agent_name> [<fires_min> <fires_max>]', 'Add alert action to module-template');
-    help_screen_line('--delete_template_action', '<action_name> <template_name> <module_name> <agent_name>', 'Delete alert action from module-template');
+    help_screen_line('--create_template_action', "<action_name> <template_name> <module_name> \n\t  <agent_name> [<fires_min> <fires_max>]', 'Add alert action to module-template");
+    help_screen_line('--delete_template_action', "<action_name> <template_name> <module_name> \n\t  <agent_name>", 'Delete alert action from module-template');
 	help_screen_line('--disable_alerts', '', 'Disable alerts in all groups (system wide)');
 	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups (system wide)');
-	help_screen_line('--create_alert_template', '<template_name> <condition_type_serialized> <time_from> <time_to> [<description> <group_name> <field1> <field2> <field3> <priority> <default_action> <days> <time_threshold> <min_alerts> <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> <condition_type_separator>]', 'Create alert template');
+	help_screen_line('--create_alert_template', "<template_name> <condition_type_serialized>\n\t   <time_from> <time_to> [<description> <group_name> <field1> <field2> \n\t  <field3> <priority>  <default_action> <days> <time_threshold> <min_alerts> \n\t  <max_alerts> <alert_recovery> <field2_recovery> <field3_recovery> \n\t  <condition_type_separator>]", 'Create alert template');
 	help_screen_line('--delete_alert_template', '<template_name>', 'Delete alert template');
-	help_screen_line('--update_alert_template', '<template_name> <field_to_change> <new_value>', 'Update a field of an alert template');
+	help_screen_line('--update_alert_template', "<template_name> <field_to_change> \n\t  <new_value>", 'Update a field of an alert template');
 	help_screen_line('--validate_all_alerts', '', 'Validate all the alerts');
-	print "USERS:\n\n" unless $param ne '';
+	print "\nUSERS:\n\n" unless $param ne '';
     help_screen_line('--create_user', '<user_name> <user_password> <is_admin> [<comments>]', 'Create user');
     help_screen_line('--delete_user', '<user_name>', 'Delete user');
-    help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', 'Update a user field. The fields can be the following: email, phone, is_admin (0-1), language, id_skin, flash_chart (0-1), comments, fullname, password');
+    help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', "Update a user field. The fields\n\t   can be the following: email, phone, is_admin (0-1), language, id_skin, flash_chart (0-1)\n\t  , comments, fullname, password");
     help_screen_line('--enable_user', '<user_id>', 'Enable a given user');
     help_screen_line('--disable_user', '<user_id>', 'Disable a given user');
     help_screen_line('--create_profile', '<user_name> <profile_name> <group_name>', 'Add perfil to user');
@@ -133,32 +133,34 @@ sub help_screen{
     help_screen_line('--add_profile_to_user', '<user_id> <profile_name> [<group_name>]', 'Add a profile in group to a user');
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
-	print "EVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', '<event> <event_type> <group_name> [<agent_name> <module_name> <event_status> <severity> <template_name> <user_name> <comment> <source> <id_extra> <tags>]', 'Add event');
-    help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events'); 
+	print "\nEVENTS:\n\n" unless $param ne '';
+	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags>]", 'Add event');
+    help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events'); 
     help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id'); 
     help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id'); 
-	print "INCIDENTS:\n\n" unless $param ne '';
-    help_screen_line('--create_incident', '<title> <description> <origin> <status> <priority 0 for Informative, 1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance> <group> [<owner>]', 'Create incidents');
-	print "POLICIES:\n\n" unless $param ne '';
+	print "\nINCIDENTS:\n\n" unless $param ne '';
+    help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
+	print "\nPOLICIES:\n\n" unless $param ne '';
     help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
     help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
     help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
     help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
     help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
-	help_screen_line('--create_policy_data_module', '<policy_name> <module_name> <module_type> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <data_configuration> <warning_str> <critical_str>]', 'Add data server module to policy');
-	help_screen_line('--create_policy_network_module', '<policy_name> <module_name> <module_type> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add not snmp network module to policy');
-	help_screen_line('--create_policy_snmp_module', '<policy_name> <module_name> <module_type> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]', 'Add snmp network module to policy');
-	help_screen_line('--create_policy_plugin_module', '<policy_name> <module_name> <module_type> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>]', 'Add plug-in module to policy');
+	help_screen_line('--create_policy_data_module', "<policy_name> <module_name> <module_type> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> \n\t  <critical_min> <critical_max> <history_data> <data_configuration> <warning_str> \n\t  <critical_str>]", 'Add data server module to policy');
+	help_screen_line('--create_policy_network_module', "<policy_name> <module_name> <module_type> [<module_port> \n\t  <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> \n\t  <warning_str> <critical_str>]", "Add not snmp network module to policy");
+	help_screen_line('--create_policy_snmp_module', "<policy_name> <module_name> <module_type> <module_port> \n\t  <version> [<community> <oid> <description> <module_group> <min> <max> \n\t  <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data>\n\t   <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> \n\t  <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>]", 'Add snmp network module to policy');
+	help_screen_line('--create_policy_plugin_module', "<policy_name> <module_name> <module_type> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> \n\t  <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max>\n\t  <history_data> <ff_threshold> <warning_str> <critical_str>]", 'Add plug-in module to policy');
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
-	help_screen_line('--get_policies', '[<agent_name>]', 'Get all the policies (without parameters) or the policies of a given agent (agent name as parameter)');
-	print "NETFLOW:\n\n" unless $param ne '';
-	help_screen_line('--create_netflow_filter', '<filter_name> <group_name> <filter> <aggregate_by dstip|dstport|none|proto|srcip|srcport> <output_format kilobytes|kilobytespersecond|megabytes|megabytespersecond>', 'Create a new netflow filter');
-	print "TOOLS:\n\n" unless $param ne '';
-	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', 'Execute any CLI option with macros from CSV file');
-	print "SETUP:\n\n" unless $param ne '';
-	help_screen_line('--set_event_storm_protection', '<value>', 'Enable (1) or disable (0) event storm protection');
+	help_screen_line('--get_policies', '[<agent_name>]', "Get all the policies (without parameters) or \n\tthe policies of a given agent (agent name as parameter)");
+  
+	print "\nNETFLOW:\n\n" unless $param ne '';
+	help_screen_line('--create_netflow_filter', "<filter_name> <group_name> <filter> \n\t  <aggregate_by dstip|dstport|none|proto|srcip|srcport> <output_format kilobytes|kilobytespersecond|\n\t  megabytes|megabytespersecond>", "Create a new netflow filter");
+	print "\nTOOLS:\n\n" unless $param ne '';
+	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', "Execute any CLI option \n\t  with macros from CSV file");
+    help_screen_line('--create_snmp_trap', '<name> <oid> <description> <severity>', "Create a new trap definition. \n\tSeverity 0 (Maintenance), 1(Info) , 2 (Normal), 3 (Warning), 4 (Critical), 5 (Minor) and 6 (Major)");	
+    print "\nSETUP:\n\n" unless $param ne '';
+	help_screen_line('--set_event_storm_protection', '<value>', "Enable (1) or disable (0) event \n\t  storm protection");
 	
     print "\n";
 	exit;
@@ -206,7 +208,7 @@ sub pandora_manage_init ($) {
 	$conf->{"quiet"}=0;	# Daemon 0 by default
    
 
-	print "\nPandora FMS Manage tool $version Copyright (c) 2010 Artica ST\n";
+	print "\nPandora FMS CLI $version Copyright (c) 2013 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 
@@ -265,11 +267,30 @@ sub pandora_add_profile_to_user ($$$;$) {
 				  VALUES (?, ?, ?)', safe_input($user_id), $profile_id, $group_id);
 }
 
+
+##########################################################################
+## Create a SNMP trap, given OID name description
+##########################################################################
+
+sub cli_create_snmp_trap ($$) {
+	my ($conf, $dbh) = @_;
+
+	my ($name, $oid, $description, $severity);
+
+	($name, $oid, $description, $severity) = @ARGV[2..5];
+
+    db_do ($dbh, 'INSERT INTO ttrap_custom_values (`oid`, `text`, `description`, `severity`)
+				  VALUES (?, ?, ?, ?)', $oid, $name, $description, $severity);
+
+	print "Creando $name $oid $description $severity \n";
+	exit;
+}
+
 ##########################################################################
 ## Create a user.
 ##########################################################################
 sub pandora_create_user ($$$$$) {
-my ($dbh, $name, $password, $is_admin, $comments) = @_;
+	my ($dbh, $name, $password, $is_admin, $comments) = @_;
 
 
 return db_insert ($dbh, 'id_user', 'INSERT INTO tusuario (id_user, fullname, password, comments, is_admin)
@@ -655,7 +676,7 @@ sub param_check ($$;$) {
 ##############################################################################
 sub help_screen_line($$$){
 	my ($option, $parameters, $help) = @_;
-	print "\t$option $parameters\t$help.\n" unless ($param ne '' && $param ne $option);
+	print "\n\t$option $parameters : $help.\n" unless ($param ne '' && $param ne $option);
 }
 
 ###############################################################################
@@ -3542,6 +3563,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_netflow_filter') {
 			param_check($ltotal, 5);
 			cli_create_netflow_filter();
+		}
+		elsif ($param eq '--create_snmp_trap') {
+			param_check($ltotal, 4);
+			cli_create_snmp_trap ($conf, $dbh);
 		}
 		elsif ($param eq '--set_event_storm_protection') {
 			param_check($ltotal, 1);

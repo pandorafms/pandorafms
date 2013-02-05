@@ -1060,6 +1060,7 @@ function events_print_type_description ($type, $return = false) {
 function events_get_group_events ($id_group, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false) {
+	
 	global $config;
 	
 	$id_group = groups_safe_acl ($config["id_user"], $id_group, "ER");
@@ -1100,6 +1101,65 @@ function events_get_group_events ($id_group, $period, $date,
 		$datelimit, $date, implode (",", $id_group));
 	
 	return db_get_all_rows_sql ($sql);
+}
+
+/**
+ * Get all the events happened in a group during a period of time.
+ *
+ * The returned events will be in the time interval ($date - $period, $date]
+ *
+ * @param mixed $id_group Group id to get events for.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ *
+ * @return array An array with all the events happened.
+ */
+function events_get_group_events_steps ($begin, &$result, $id_group, $period, $date,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false, $filter_event_no_validated = false) {
+	
+	global $config;
+	
+	$id_group = groups_safe_acl ($config["id_user"], $id_group, "ER");
+	
+	if (empty ($id_group)) {
+		//An empty array means the user doesn't have access
+		return false;
+	}
+	
+	$datelimit = $date - $period;
+	
+	$sql_where = ' AND 1 = 1 ';
+	if ($filter_event_critical) {
+		$sql_where .= ' AND criticity = 4 ';
+	}
+	if ($filter_event_warning) {
+		$sql_where .= ' AND criticity = 3 ';
+	}
+	if ($filter_event_validated) {
+		$sql_where .= ' AND estado = 1 ';
+	}
+	if ($filter_event_no_validated) {
+		$sql_where .= ' AND estado = 0 ';
+	}
+	
+	
+	$sql = sprintf ('SELECT *,
+		(SELECT t2.nombre
+			FROM tagente AS t2
+			WHERE t2.id_agente = t3.id_agente) AS agent_name,
+		(SELECT t2.fullname
+			FROM tusuario AS t2
+			WHERE t2.id_user = t3.id_usuario) AS user_name
+		FROM tevento AS t3
+		WHERE utimestamp > %d AND utimestamp <= %d
+			AND id_grupo IN (%s) ' . $sql_where . '
+		ORDER BY utimestamp ASC',
+		$datelimit, $date, implode (",", $id_group));
+	
+	//html_debug_print($sql);
+	
+	return db_get_all_row_by_steps_sql($begin, $result, $sql);
 }
 
 /**

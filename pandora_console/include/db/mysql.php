@@ -339,7 +339,7 @@ function mysql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = 
  */
 function mysql_escape_string_sql($string) {
 	$str = mysql_real_escape_string($string);
-
+	
 	return $str;
 }
 
@@ -506,7 +506,7 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 		if (is_numeric ($field)) {
 			/* User provide the exact operation to do */
 			$query .= $value;
-				
+			
 			if ($i < $max) {
 				$query .= ' '.$join.' ';
 			}
@@ -908,7 +908,7 @@ function mysql_db_process_sql_delete($table, $where, $where_join = 'AND') {
 			$query .= db_format_array_where_clause_sql ($where, $where_join);
 		}
 	}
-
+	
 	return db_process_sql ($query);
 }
 

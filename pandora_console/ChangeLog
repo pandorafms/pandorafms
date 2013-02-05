@@ -1,3 +1,15 @@
+2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* ajax.php: added the autologin hash for some ajax call of user
+	without login (but with hash autologin).
+	
+	* godmode/reporting/reporting_builder.list_items.php,
+	include/db/mysql.php: cleaned source code style.
+	
+	* include/functions_reporting.php, include/functions_events.php,
+	operation/reporting/reporting_xml.php: optimized the get by steps
+	the group events.
+
 2013-02-05  Sancho Lerena <slerena@artica.es>
 
 	* operation/menu.php: Fixed duplicity in SNMP trap menu. SNMP

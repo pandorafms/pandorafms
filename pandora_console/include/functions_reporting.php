@@ -183,7 +183,7 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($interval_data, $previous_data);
 		}
-	
+		
 		// Get next data
 		$next_data = modules_get_next_data ($id_agent_module, $date);
 		if ($next_data !== false) {
@@ -347,7 +347,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($interval_data, $previous_data);
 		}
-	
+		
 		// Get next data
 		$next_data = modules_get_next_data ($id_agent_module, $date);
 		if ($next_data !== false) {
@@ -429,7 +429,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 		WHERE id_agente_modulo = %d
 			AND utimestamp > %d AND utimestamp <= %d',
 		$id_agent_module, $datelimit, $date);
-			
+	
 	//Add the working times (mon - tue - wed ...) and from time to time
 	$days = array();
 	//Translate to mysql week days
@@ -537,17 +537,18 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	$previous_utimestamp = $first_data['utimestamp'];
 	if ((($max_value > $min_value AND ($first_data['datos'] > $max_value OR $first_data['datos'] < $min_value))) OR
 		($max_value <= $min_value AND $first_data['datos'] < $min_value)) {
-			$previous_status = 1;
-			foreach ($downtime_dates as $date_dt) {
-				if (($date_dt['date_from'] <= $previous_utimestamp) AND ($date_dt['date_to'] >= $previous_utimestamp)) {
-					$previous_status = 0;
-				}
-			}	
+		
+		$previous_status = 1;
+		foreach ($downtime_dates as $date_dt) {
+			if (($date_dt['date_from'] <= $previous_utimestamp) AND ($date_dt['date_to'] >= $previous_utimestamp)) {
+				$previous_status = 0;
+			}
+		}
 	}
 	else {
 		$previous_status = 0;
 	}
-
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {
@@ -671,7 +672,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	foreach($interval_data as $idata) {
 		$interval_data_indexed[$idata['utimestamp']]['data'] = $idata['datos'];
 	}
-		
+	
 	//-----------Calculate unknown status events------------------------
 	$events_unknown = db_get_all_rows_filter ('tevento',
 		array ('id_agentmodule' => $id_agent_module,
@@ -680,7 +681,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 			"event_type" => 'going_unknown',
 			'order' => 'utimestamp ASC'),
 		array ('id_evento', 'evento', 'timestamp', 'utimestamp', 'event_type'));
-
+	
 	if ($events_unknown === false) {
 		$events_unknown = array ();
 	}
@@ -690,7 +691,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$interval_data_indexed[$eu['utimestamp']]['data'] = 0;
 		$interval_data_indexed[$eu['utimestamp']]['status'] = 4;
 	}
-
+	
 	// Get the last event before inverval to know if graph start on unknown
 	$prev_event = db_get_row_filter ('tevento',
 		array ('id_agentmodule' => $id_agent_module,
@@ -703,7 +704,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$start_unknown = false;
 	}
 	//------------------------------------------------------------------
-
+	
 	//-----------------Set limits of the interval-----------------------
 	// If the starting of the graph is unknown we set it
 	if($start_unknown) {
@@ -713,7 +714,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	else {
 		// Get previous data (This adds the first data if the begin of module data is after the begin time interval)
 		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
-
+		
 		if ($previous_data !== false ) {
 			$interval_data_indexed[$datelimit]['data'] = $previous_data['datos'];
 		}
@@ -722,7 +723,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 			$interval_data_indexed[$datelimit]['status'] = 4;
 		}
 	}
-
+	
 	// Get next data (This adds data before the interval of the report)
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -734,7 +735,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$last_data = array_pop($interval_data_indexed);
 		$interval_data_indexed[$date] = $last_data;
 	}
-
+	
 	//------------------------------------------------------------------
 	
 	//--------Calculate planned downtime dates--------------------------
@@ -746,7 +747,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	}
 	$i = 0;
 	$downtime_dates = array();
-
+	
 	foreach ($downtimes as $downtime) {
 		$id_downtime = $downtime['id_downtime'];
 		$sql_date = "SELECT date_from, date_to FROM tplanned_downtime WHERE id=$id_downtime";
@@ -781,7 +782,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	
 	// Sort the array
 	ksort($interval_data_indexed);
-
+	
 	// We need more or equal two points
 	if (count ($interval_data_indexed) < 2) {
 		return false;
@@ -1003,7 +1004,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 		if (!empty($group_array)) {
 			// FOR THE FUTURE: Split the groups into groups with tags restrictions and groups without it
 			// To calculate in the light way the non tag restricted and in the heavy way the others
-			/*		
+			/*
 			$group_restricted_data = tags_get_acl_tags($config['id_user'], $group_array, $access, 'data');
 			$tags_restricted_groups = array_keys($group_restricted_data);
 			
@@ -1018,13 +1019,13 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			if(!empty($group_array)) {
 				// Get unknown agents by using the status code in modules
 				$data["agents_unknown"] += groups_agent_unknown ($group_array);
-
+				
 				// Get monitor NOT INIT, except disabled AND async modules
 				$data["monitor_not_init"] += groups_monitor_not_init ($group_array);
-						
+				
 				// Get monitor OK, except disabled and non-init
 				$data["monitor_ok"] += groups_monitor_ok ($group_array);
-
+				
 				// Get monitor CRITICAL, except disabled and non-init
 				$data["monitor_critical"] += groups_monitor_critical ($group_array);
 				
@@ -1068,9 +1069,9 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
 			
 		}
-
+		
 		// Get total count of monitors for this group, except disabled.
-
+		
 		$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
 		
 		/*
@@ -1173,6 +1174,7 @@ function reporting_event_reporting ($id_group, $period, $date = 0, $return = fal
 	
 	if (empty ($return))
 		html_print_table ($table);
+	
 	return $table;
 }
 
@@ -2096,68 +2098,64 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$table->head[5] = __('Val. by');
 	$table->head[6] = __('Timestamp');
 	
-	$events = events_get_group_events($id_group, $period, $date,
+	$begin = true;
+	$result = null;
+	$count = 0;
+	while ($event = events_get_group_events_steps($begin, $result, $id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
-	
-	if ($events) {
-		foreach ($events as $event) {
-			//First pass along the class of this row
-			$table->rowclass[] =
-				get_priority_class ($event["criticity"]);
-			
-			$data = array ();
-			
-			// Colored box
-			switch ($event['estado']) {
-				case 0:
-					$img_st = "images/star.png";
-					$title_st = __('New event');
-					break;
-				case 1:
-					$img_st = "images/tick.png";
-					$title_st = __('Event validated');
-					break;
-				case 2:
-					$img_st = "images/hourglass.png";
-					$title_st = __('Event in process');
-					break;
-			}
-			$data[] = html_print_image ($img_st, true, 
-				array ("class" => "image_status",
-					"width" => 16,
-					"height" => 16,
-					"title" => $title_st,
-					"id" => 'status_img_' . $event["id_evento"]));
-			
-			$data[] = ui_print_truncate_text(
-				io_safe_output($event['evento']),
-				140, false, true);
-			
-			//$data[1] = $event['event_type'];
-			$data[] = events_print_type_img ($event["event_type"], true);
-			
-			if (!empty($event['agent_name']))
-				$data[] = $event['agent_name'];
-			else
-				$data[] = __('Pandora System');
-			$data[] = get_priority_name ($event['criticity']);
-			$data[] = io_safe_output($event['user_name']);
-			$data[] = '<font style="font-size: 6pt;">' .
-				$event['timestamp'] .
-				'</font>';
-			array_push ($table->data, $data);
-		}
+		$filter_event_warning, $filter_event_no_validated)) {
 		
-		if ($html) {
-			return html_print_table ($table, $return);
+		//html_debug_print(++$count, true);
+		
+		$data = array ();
+		$begin = false;
+		
+		// Colored box
+		switch ($event['estado']) {
+			case 0:
+				$img_st = "images/star.png";
+				$title_st = __('New event');
+				break;
+			case 1:
+				$img_st = "images/tick.png";
+				$title_st = __('Event validated');
+				break;
+			case 2:
+				$img_st = "images/hourglass.png";
+				$title_st = __('Event in process');
+				break;
 		}
-		else {
-			return $table;
-		}
+		$data[] = html_print_image ($img_st, true, 
+			array ("class" => "image_status",
+				"width" => 16,
+				"height" => 16,
+				"title" => $title_st,
+				"id" => 'status_img_' . $event["id_evento"]));
+		
+		$data[] = ui_print_truncate_text(
+			io_safe_output($event['evento']),
+			140, false, true);
+		
+		//$data[1] = $event['event_type'];
+		$data[] = events_print_type_img ($event["event_type"], true);
+		
+		if (!empty($event['agent_name']))
+			$data[] = $event['agent_name'];
+		else
+			$data[] = __('Pandora System');
+		$data[] = get_priority_name ($event['criticity']);
+		$data[] = io_safe_output($event['user_name']);
+		$data[] = '<font style="font-size: 6pt;">' .
+			$event['timestamp'] .
+			'</font>';
+		array_push ($table->data, $data);
+	}
+	
+	if ($html) {
+		return html_print_table ($table, $return);
 	}
 	else {
-		return false;
+		return $table;
 	}
 }
 
@@ -2303,7 +2301,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 		}
 		
 	}
-		
+	
 	if ($return["modules"] > 0) {
 		if ($return["monitor_critical"] > 0) {
 			$return["status"] = STATUS_AGENT_CRITICAL;
@@ -2336,7 +2334,7 @@ function reporting_get_agent_module_info ($id_agent, $filter = false) {
 	}
 	
 	return $return;
-}	
+}
 
 /**
  *  This is the callback sorting function for SLA values descending

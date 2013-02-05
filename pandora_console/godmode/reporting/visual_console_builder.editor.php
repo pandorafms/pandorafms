@@ -65,7 +65,7 @@ echo '<div id="background" class="" style="
 	margin: 0px auto;border: 2px black solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';
 echo "<div id='background_grid'
 	style='position: absolute; display: none; overflow: hidden;
-	background: url(images/console/background/white_boxed.jpg);
+	background: url(" . ui_get_full_url('images/console/background/white_boxed.jpg', false, false, false) . ");
 	background-repeat: repeat; width: " . $widthBackground . "px; height: " . $heightBackground . "px;'></div>";
 
 
@@ -106,7 +106,7 @@ ui_require_jquery_file('colorpicker');
 ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
 ui_require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
-ui_require_javascript_file_enterprise('functions_visualmap', false);
+ui_require_javascript_file_enterprise('functions_visualmap', defined('METACONSOLE'));
 ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
 // Javascript file for base 64 encoding of label parameter 
@@ -128,10 +128,10 @@ ui_require_javascript_file ('encode_decode_base64');
 		theme : "advanced",
 		<?php
 		if ($config['style'] == 'pandora_legacy') {
-			echo 'content_css: "include/styles/pandora_legacy.css",' . "\n";
+			echo 'content_css: "' . ui_get_full_url('include/styles/pandora_legacy.css', false, false, false) . '",' . "\n";
 		}
 		else {
-			echo 'content_css: "include/styles/pandora.css",' . "\n";
+			echo 'content_css: "' . ui_get_full_url('include/styles/pandora.css', false, false, false) . '",' . "\n";
 		}
 		?>
 		theme_advanced_font_sizes : "8pt=.visual_font_size_8pt, 14pt=.visual_font_size_14pt, 24pt=.visual_font_size_24pt, 36pt=.visual_font_size_36pt",

@@ -1,3 +1,9 @@
+2013-02-05  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.php: Fixed missed
+	javascript and resource files inclusion in metaconsole for 
+	bug #3602775
+
 2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager.php,

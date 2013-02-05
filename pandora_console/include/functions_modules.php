@@ -557,6 +557,7 @@ function modules_format_delete_log4x($id)
 	if (check_acl ($config['id_user'], $group, "AW") ==1) {
 		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	}
+	
 	return $txt;
 }
 
@@ -597,6 +598,28 @@ function modules_get_agentmodule ($id_agentmodule) {
 	}
 }
 
+/**
+ * Check the module exists in the DB.
+ * 
+ * @param int $id_agentmodule The agent id.
+ * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
+ * 
+ * @return boolean The result to check if the agent is in the DB.
+ */
+function modules_check_agentmodule_exists($id_agentmodule, $show_disabled = true) {
+	$module = db_get_row_filter('tagente_modulo',
+		array('id_agente_modulo' => $id_agentmodule, 'disabled' => !$show_disabled));
+	
+	if (!empty($module)) {
+		if ($module['delete_pending'])
+			return false;
+		else
+			return true;
+	}
+	else {
+		return false;
+	}
+}
 
 /**
  * Get a id of module from his name and the agent id
@@ -607,7 +630,9 @@ function modules_get_agentmodule ($id_agentmodule) {
  * @return int the agentmodule id
  */
 function modules_get_agentmodule_id ($agentmodule_name, $agent_id) {
-	return db_get_row_filter ('tagente_modulo', array('nombre' => $agentmodule_name, 'id_agente' => $agent_id, 'delete_pending' => 0));
+	return db_get_row_filter ('tagente_modulo',
+		array('nombre' => $agentmodule_name,
+			'id_agente' => $agent_id, 'delete_pending' => 0));
 }
 
 /**

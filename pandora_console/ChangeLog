@@ -1,5 +1,14 @@
 2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_modules.php: added function
+	"modules_check_agentmodule_exists".
+	
+	Fixes: #3602773
+	
+	* include/functions_agents.php: cleaned source code style.
+
+2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* ajax.php: added the autologin hash for some ajax call of user
 	without login (but with hash autologin).
 	

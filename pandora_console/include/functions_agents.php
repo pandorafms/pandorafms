@@ -50,7 +50,8 @@ function agents_check_agent_exists($id_agent, $show_disabled = true) {
  * @return int Id from the agent of the given id module.
  */
 function agents_get_agent_id_by_module_id ($id_agente_modulo) {
-	return (int) db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
+	return (int) db_get_value ('id_agente', 'tagente_modulo',
+		'id_agente_modulo', $id_agente_modulo);
 }
 
 /**

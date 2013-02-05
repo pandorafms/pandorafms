@@ -130,6 +130,7 @@ function config_update_config () {
 					config_update_value ('public_url', get_parameter('public_url'));
 					config_update_value ('referer_security', get_parameter('referer_security'));
 					config_update_value ('event_storm_protection', get_parameter('event_storm_protection'));
+					config_update_value ('command_snapshot', get_parameter('command_snapshot'));
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
@@ -868,6 +869,9 @@ function config_process_config () {
 	if (!isset($config['event_storm_protection'])) {
 		config_update_value ('event_storm_protection', 0);
 	}
+	
+	if (!isset($config['command_snapshot'])) {
+		config_update_value ('command_snapshot', 1);
 		
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();

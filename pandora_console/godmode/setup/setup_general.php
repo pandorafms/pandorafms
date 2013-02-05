@@ -233,6 +233,12 @@ $table->data[30][1] = __('Yes') . '&nbsp;&nbsp;&nbsp;' .
 $table->data[30][1] .= __('No') . '&nbsp;&nbsp;&nbsp;' .
 	html_print_radio_button ('event_storm_protection', 0, '', $config["event_storm_protection"], true);
 
+
+$table->data[31][0] = __('Command Snapshot') .
+	ui_print_help_tip(__('The string modules with several lines show as command output'), true);
+$table->data[31][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('command_snapshot', 1, '', $config["command_snapshot"], true).'&nbsp;&nbsp;';
+$table->data[31][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('command_snapshot', 0, '', $config["command_snapshot"], true);
+
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo "<fieldset>";

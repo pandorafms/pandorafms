@@ -228,6 +228,7 @@ $table = null;
 
 $table->style[0] = 'text-align: right;';
 
+
 if ($items) {
 	$table->width = '100%';
 	

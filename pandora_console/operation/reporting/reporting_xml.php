@@ -121,7 +121,7 @@ if (isset ($_GET["direct"])) {
 else {
 	require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
-	require_once ("include/auth/mysql.php");	
+	require_once ("include/auth/mysql.php");
 }
 
 global $config;
@@ -733,18 +733,18 @@ foreach ($contents as $content) {
 			$id_group = groups_safe_acl ($config["id_user"], $content['id_group'], "AR");
 			///
 			if (!empty ($id_group)) {
-
+				
 				//An empty array means the user doesn't have access
 				$datelimit = $report["datetime"] - $content['period'];
-
+				
 				$sql_count = sprintf ('SELECT count(*) FROM tevento
 					WHERE utimestamp > %d AND utimestamp <= %d
 					AND id_grupo IN (%s)
 					ORDER BY utimestamp ASC',
 					$datelimit, $report["datetime"], implode (",", $id_group));
-					
+				
 				$data_count = db_get_value_sql($sql_count);
-			
+				
 				$temp_file = $config['attachment_store'] . '/event_report_group_' . $time.'_'.$content['id_rc'] . '.tmp';
 				$file = fopen ($temp_file, 'a+');
 				$buffer_file["objdata"] = $config['attachment_store'] . '/event_report_group_' . $time.'_'.$content['id_rc'] . '.tmp';
@@ -756,7 +756,8 @@ foreach ($contents as $content) {
 					$content_report = "    <event_report_group/>\n";
 					$result = fwrite($file, $content_report);
 					fclose($file);
-				} else if ($data_count <= $limit) {
+				}
+				else if ($data_count <= $limit) {
 					$content_report = "    <event_report_group>\n";
 					$result = fwrite($file, $content_report);
 					fclose($file);
@@ -772,8 +773,9 @@ foreach ($contents as $content) {
 					$file = fopen ($temp_file, 'a+');
 					$content_report = "    </event_report_group>\n";
 					$result = fwrite($file, $content_report);
-
-				} else {
+					
+				}
+				else {
 					$content_report = "    <event_report_group>\n";
 					$result = fwrite($file, $content_report);
 					fclose($file);
@@ -786,7 +788,7 @@ foreach ($contents as $content) {
 						AND id_grupo IN (%s)
 						ORDER BY utimestamp ASC LIMIT %d,%d',
 						$datelimit, $report["datetime"], implode (",", $id_group), $offset,$limit);
-
+						
 						$events = db_get_all_rows_sql($sql);
 						
 						$position = xml_file_event ($events, $temp_file, $position, $content['id_agent']);	

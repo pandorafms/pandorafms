@@ -26,8 +26,29 @@ require_once ('include/auth/mysql.php');
 // Real start
 session_start ();
 
+// Hash login process
+if (isset ($_GET["loginhash"])) {
+	
+	$loginhash_data = get_parameter("loginhash_data", "");
+	$loginhash_user = get_parameter("loginhash_user", "");
+	
+	if ($config["loginhash_pwd"] != ""
+		&& $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
+		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
+		$_SESSION['id_usuario'] = $loginhash_user;
+		$config["id_user"] = $loginhash_user;
+	}
+	else {
+		require_once ('general/login_page.php');
+		db_pandora_audit("Logon Failed (loginhash", "", "system");
+		while (@ob_end_flush ());
+		exit ("</html>");
+	}
+}
+
 // Check user
 check_login ();
+
 
 define ('AJAX', true);
 

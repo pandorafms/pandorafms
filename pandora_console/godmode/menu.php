@@ -297,6 +297,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	}
 }
 
+
 if(!$config['pure']) {
 	menu_print_menu ($menu_godmode);
 }

@@ -1,3 +1,14 @@
+2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_gis.php,
+	include/javascript/openlayers.pandora.js, operation/menu.php,
+	operation/gis_maps/render_view.php, godmode/menu.php: fixed the
+	height of maps when the menu is short.
+	
+	Fixes: #3602800
+	
+	MERGED FROM PANDORA_4
+
 2013-02-05  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.php: Fixed missed

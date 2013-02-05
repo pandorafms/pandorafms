@@ -110,8 +110,7 @@ $times = array(
 	SECONDS_5MINUTES => __('5 minutes'),
 	SECONDS_10MINUTES => __('10 minutes'),
 	SECONDS_1HOUR => __('1 hour'),
-	SECONDS_2HOUR => __('2 hours')
-	);
+	SECONDS_2HOUR => __('2 hours'));
 
 $buttons[] = '&nbsp;' . __('Refresh: ') . html_print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false) . "&nbsp;";
 
@@ -134,7 +133,7 @@ if ($config["pure"] == 0) {
 	echo "<div id='map' style='width: 99%; height: 500px; border: 1px solid black;' ></div>";
 }
 else {
-	echo "<div id='map' style='position:absolute;top:40px; z-index:100; width: 100%; height:94%; min-height:500px; border: 1px solid black;' ></div>";
+	echo "<div id='map' style='position:absolute; top:40px; z-index:100; width: 100%; height: 500px; min-height:500px; border: 1px solid black;' ></div>";
 }
 
 gis_print_map('map', $map['zoom_level'], $map['initial_latitude'],
@@ -144,7 +143,7 @@ if ($layers != false) {
 	foreach ($layers as $layer) {
 		gis_make_layer($layer['layer_name'], $layer['view_layer'], null, $layer['id_tmap_layer']);
 		
-		// calling agents_get_group_agents with none to obtain the names in the same case as they are in the DB.	
+		// calling agents_get_group_agents with none to obtain the names in the same case as they are in the DB.
 		$agentNamesByGroup = agents_get_group_agents($layer['tgrupo_id_grupo'],false,'none', true, true, false);
 		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer'], array('nombre'));
 		
@@ -200,19 +199,6 @@ if ($config["pure"] != 0) {
 				
 				var new_height = $(document).height();
 				$("#map").css("height", new_height - 60);
-				
-			});
-		</script>
-	<?php
-}
-else {
-	// Resize GIS map on normalview
-	?>
-		<script type="text/javascript">
-			$().ready(function(){
-				
-				var new_height = $("#menu").height();
-				$("#map").css("height", new_height - 20);
 				
 			});
 		</script>

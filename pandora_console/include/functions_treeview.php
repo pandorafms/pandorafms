@@ -380,7 +380,9 @@ function treeview_printTree($type) {
 			if (metaconsole_connect($server) != NOERR) {
 				continue;
 			}
-			$server_list = treeview_getData ($type, $server);
+			
+			$server_list = treeview_getData ($type);
+			
 			foreach ($server_list as $server_item) {
 				if (! isset ($list[$server_item['_name_']])) {
 					$list[$server_item['_name_']] = $server_item;
@@ -393,7 +395,6 @@ function treeview_printTree($type) {
 					$list[$server_item['_name_']]['_num_unknown_'] += $server_item['_num_unknown_'];
 				}
 			}
-			echo "<br/>";
 		}
 		
 		metaconsole_restore_db();
@@ -405,7 +406,7 @@ function treeview_printTree($type) {
 		echo '</table>';
 	}
 	else {
-		echo "<ul style='margin: 0; margin-top: 20px; padding: 0;'>\n";
+		echo "<ul style='margin: 0; margin-top: 10px; padding: 0;'>\n";
 		
 		$first = true;
 		foreach ($list as $item) {
@@ -461,14 +462,8 @@ function treeview_printTree($type) {
 }
 
 // Get data for the tree view
-function treeview_getData ($type, $server=false) {
+function treeview_getData ($type) {
 	global $config;
-	
-	if ($server !== false) {
-		if (metaconsole_connect ($server) != NOERR) {
-			return array ();
-		}
-	}
 	
 	$search_free = get_parameter('search_free', '');
 	$select_status = get_parameter('status', -1);
@@ -547,7 +542,6 @@ function treeview_getData ($type, $server=false) {
 		
 		// If there are not groups display error and return
 		if (empty($avariableGroups)) {
-			echo '<h3 class="error">'.__('There aren\'t agents in this agrupation').'</h3>';
 			return array ();
 		}
 	}

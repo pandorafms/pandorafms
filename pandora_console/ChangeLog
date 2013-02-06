@@ -1,3 +1,9 @@
+2013-02-06  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_treeview.php: Fixed repeated messages on
+	treeview in metaconsole mode and fix some performance and
+	aesthetic issues
+
 2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/agentes/estado_monitores.php,

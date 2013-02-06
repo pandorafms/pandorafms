@@ -1,3 +1,14 @@
+2013-02-06  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_users.php
+	include/functions_html.php: Added a new parameter
+	on groups select functions to use any field as key
+	of the select. Until now, the field used was only ID
+
+	* include/functions_graph.php: Added a full url
+	to the agent access graphs to show the menu of the
+	interactive graphs in the metaconsole too: BUG 3592080
+
 2013-02-06 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/graphs/flot/pandora.flot.js: cleaned source code style.

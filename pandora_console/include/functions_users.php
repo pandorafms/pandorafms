@@ -81,16 +81,17 @@ function users_get_all_model_groups () {
  * @param boolean $returnAllGroup Flag the return group, by default true.
  * @param boolean $returnAllColumns Flag to return all columns of groups.
  * @param array $id_groups The id of node that must do not show the children and own.
+ * @param string $keys_field The field of the group used in the array keys. By default ID
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGroup = true,  $returnAllColumns = false, $id_groups = null) {
+function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGroup = true,  $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
 	if($id_groups === false) {
 		$id_groups = null;
 	}
 	
-	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, $returnAllColumns);
-	
+	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, $returnAllColumns, null);
+
 	if ($id_groups !== null) {
 		$childrens = groups_get_childrens($id_groups);
 		foreach ($childrens as $child) {
@@ -104,8 +105,8 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 	}
 	else {
 		// First group it's needed to retrieve its parent group
-		$first_group = array_slice($user_groups, 0, 1);
-		$parent_group = $first_group[0]['parent'];
+		$first_group = reset(array_slice($user_groups, 0, 1));
+		$parent_group = $first_group['parent'];
 		
 		$user_groups_tree = groups_get_groups_tree_recursive($user_groups, $parent_group);
 	}
@@ -113,8 +114,8 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 	
 	foreach ($user_groups_tree as $group) {
 		$groupName = ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false);
-		
-		$fields[$group['id_grupo']] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
+
+		$fields[$group[$keys_field]] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
 	}
 	
 	return $fields;
@@ -128,10 +129,11 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
  * @param boolean $returnAllGroup Flag the return group, by default true.
  * @param boolean $returnAllColumns Flag to return all columns of groups.
  * @param array $id_groups The list of group to scan to bottom child. By default null.
+ * @param string $keys_field The field of the group used in the array keys. By default ID
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null) {
+function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
 	if (empty ($id_user)) {
 		global $config;
 		
@@ -178,18 +180,18 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 	foreach ($groups as $group) {
 		if ($privilege === false) {
 			if ($returnAllColumns) {
-				$user_groups[$group['id_grupo']] = $group;
+				$user_groups[$group[$keys_field]] = $group;
 			}
 			else {
-				$user_groups[$group['id_grupo']] = $group['nombre'];
+				$user_groups[$group[$keys_field]] = $group['nombre'];
 			}
 		}
 		else if (check_acl($id_user, $group["id_grupo"], $privilege)) {
 			if ($returnAllColumns) {
-				$user_groups[$group['id_grupo']] = $group;
+				$user_groups[$group[$keys_field]] = $group;
 			}
 			else {
-				$user_groups[$group['id_grupo']] = $group['nombre'];
+				$user_groups[$group[$keys_field]] = $group['nombre'];
 			}
 		}
 	}

@@ -203,16 +203,18 @@ function html_print_select_style ($fields, $name, $selected = '', $style='', $sc
  * @param bool Whether to sort the options or not (optional, unsorted by default).
  * @param string $style The string of style.
  * @param integer $id_group The id of node that must do not show the children and own.
+ * @param string $keys_field The field of the group used in the array keys. By default ID
  *
  * @return string HTML code if return parameter is true.
  */
 function html_print_select_groups($id_user = false, $privilege = "AR", $returnAllGroup = true,
 	$name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
-	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $id_group = false) {
+	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, 
+	$id_group = false, $keys_field = 'id_grupo') {
 	global $config;
 	
 	$fields = users_get_groups_for_select($id_user, $privilege,
-		$returnAllGroup, true, $id_group);
+		$returnAllGroup, true, $id_group, $keys_field);
 	
 	$output = html_print_select ($fields, $name, $selected, $script,
 		$nothing, $nothing_value, $return, $multiple, false, $class,

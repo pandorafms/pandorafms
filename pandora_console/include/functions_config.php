@@ -872,7 +872,7 @@ function config_process_config () {
 	
 	if (!isset($config['command_snapshot'])) {
 		config_update_value ('command_snapshot', 1);
-		
+	}
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }

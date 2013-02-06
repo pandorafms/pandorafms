@@ -1,3 +1,7 @@
+2013-02-06 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php: uploaded the lost character key.
+
 2013-02-06  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_treeview.php: Fixed repeated messages on

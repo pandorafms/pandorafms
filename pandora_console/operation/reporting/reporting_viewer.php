@@ -158,8 +158,10 @@ echo html_print_image("images/wait.gif", true, array("border" => '0'));
 echo '<strong>'.__('Loading').'...</strong>';
 echo '</div>';
 
-/* We must add javascript here. Otherwise, the date picker won't 
-   work if the date is not correct because php is returning. */
+/*
+ * We must add javascript here. Otherwise, the date picker won't 
+ * work if the date is not correct because php is returning.
+ */
 
 ui_require_jquery_file ("ui-timepicker-addon");
 ?>
@@ -197,7 +199,7 @@ $(document).ready (function () {
 	
 	
 	$("*", "#table1-0").css("display", ""); //Re-show the first row of form.
-
+	
 	/* Show/hide begin date reports controls */
 	$("#checkbox-enable_init_date").click(function() {
 		flag = $("#checkbox-enable_init_date").is(':checked');
@@ -213,7 +215,7 @@ $(document).ready (function () {
 			$("#string_to").hide();
 			$("#string_items").show();
 		}
-	});	
+	});
 	
 });
 </script>

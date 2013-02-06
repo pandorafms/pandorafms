@@ -1318,9 +1318,11 @@ function html_print_checkbox_extended ($name, $value, $checked, $disabled, $scri
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_checkbox ($name, $value, $checked = false, $return = false, $disabled = false, $script = '') {
+function html_print_checkbox ($name, $value, $checked = false, $return = false, $disabled = false, $script = '', $disabled_hidden = false) {
 	$output = html_print_checkbox_extended ($name, $value, (bool) $checked, $disabled, $script, '', true);
-	$output .= html_print_input_hidden($name.'_sent',1,true);
+	if (!$disabled_hidden) {
+		$output .= html_print_input_hidden($name . '_sent', 1, true);
+	}
 	
 	if ($return === false)
 		echo $output;

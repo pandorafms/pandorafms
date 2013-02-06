@@ -125,14 +125,14 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 	}
 	
 	labels = labels.split(separator).reverse();
-
+	
 	var stack = 0, bars = true, lines = false, steps = false;
-
+	
 	var options = { 
 			series: { 
 				shadowSize: 0.1 
 			},
-
+			
 			grid: { 
 				hoverable: true, 
 				borderWidth:1,
@@ -159,13 +159,13 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 			legend: { 
 				show: false
 				}
-	   };
-	   
+		};
+	
 	var plot = $.plot($('#'+graph_id),datas, options );
-	   	
+	
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
-		
+	
 	i = 0;
 	$('#'+graph_id+' .yAxis .tickLabel').each(function() {
 		tickTop = $(this).css('top').split('px')[0];
@@ -175,7 +175,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 		valuesNewTop = parseInt(parseInt(tickTop) - (yAxisHeight));
 		
 		$('#value_'+i+'_'+graph_id).css('top',parseInt(plot.offset().top) + parseInt(valuesNewTop));
-
+		
 		pixelPerValue = parseInt(plot.width()) / maxvalue;
 		
 		inCanvasValuePos = parseInt(pixelPerValue * ($('#value_'+i+'_'+graph_id).html()));
@@ -195,35 +195,35 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 			$('#value_'+i+'_'+graph_id).css('left',plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);
 			i++;
 		});
-    });
+	});
 	
 	// Format functions
-    function xFormatter(v, axis) {
-		if(labels[v] != undefined) {
+	function xFormatter(v, axis) {
+		if (labels[v] != undefined) {
 			return labels[v];
-		}	
+		}
 		else {
 			return '';
-		}	
-    }
-    
-    function yFormatter(v, axis) {
-        return v;
-    }
-    
-    function lFormatter(v, axis) {
-        return '<div style=color:#000>'+v+'</div>';
-    }
-    
-    // Events
-    $('#'+graph_id).bind('plothover',  function (event, pos, item) {
+		}
+	}
+	
+	function yFormatter(v, axis) {
+		return v;
+	}
+	
+	function lFormatter(v, axis) {
+		return '<div style=color:#000>'+v+'</div>';
+	}
+	
+	// Events
+	$('#'+graph_id).bind('plothover',  function (event, pos, item) {
 		$('.values_'+graph_id).css('font-weight', '');
 		if(item != null) {
 			index = item.dataIndex;
 			$('#value_'+index+'_'+graph_id).css('font-weight', 'bold');
 		}
-    });
-    
+	});
+	
 	if(water_mark) {
 		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
@@ -235,7 +235,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	legend = legend.split(separator);
 	labels_long = labels_long.split(separator);
 	colors = colors.split(separator);
-
+	
 	var datas = new Array();
 	
 	for(i=0;i<values.length;i++) {
@@ -262,9 +262,9 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	}
 	
 	labels = labels.split(separator);
-
+	
 	var stack = 0, bars = true, lines = false, steps = false;
-
+	
 	var options = { 
 			series: { 
 				shadowSize: 0.1 
@@ -286,23 +286,23 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 					color: '#000'
 					},
 					{
-					  // align if we are to the right
-					  alignTicksWithAxis: 1,
-					  position: 'right',
-					  
-					  //tickFormatter: dFormatter
+						// align if we are to the right
+						alignTicksWithAxis: 1,
+						position: 'right',
+						
+						//tickFormatter: dFormatter
 					} ]
 					,
 			legend: { 
 				show: false
 				}
-	   };
-	   
+		};
+	
 	var plot = $.plot($('#'+graph_id),datas, options );
-	   	
+	
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
-		
+	
 	i = 0;
 	//~ $('#'+graph_id+' .yAxis .tickLabel').each(function() {
 		//~ tickTop = $(this).css('top').split('px')[0];
@@ -332,28 +332,28 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			//~ $('#value_'+i+'_'+graph_id).css('left',plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);
 			//~ i++;
 		//~ });
-    //~ });
+	//~ });
 	
 	// Format functions
-    function xFormatter(v, axis) {
+	function xFormatter(v, axis) {
 		if(labels[v] != undefined) {
 			return labels[v];
-		}	
+		}
 		else {
 			return '';
-		}	
-    }
-    
-    function yFormatter(v, axis) {
-        return v;
-    }
-    
-    function lFormatter(v, axis) {
-        return '<div style=color:#000>'+v+'</div>';
-    }
-    
-    // Events
-    //~ $('#'+graph_id).bind('plothover',  function (event, pos, item) {
+		}
+	}
+	
+	function yFormatter(v, axis) {
+		return v;
+	}
+	
+	function lFormatter(v, axis) {
+		return '<div style=color:#000>'+v+'</div>';
+	}
+	
+	// Events
+	//~ $('#'+graph_id).bind('plothover',  function (event, pos, item) {
 		//~ $('.values_'+graph_id).css('font-weight', '');
 		//~ if(item != null) {
 			//~ index = item.dataIndex;
@@ -393,7 +393,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	}
 	
 	var stack = 0, bars = true, lines = false, steps = false;
-
+	
 	var options = { 
 			series: { 
 				stack: stack,
@@ -419,12 +419,12 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 			legend: { 
 				show: false
 				}
-	   };
-
+		};
+	
 	var plot = $.plot($('#'+graph_id), datas, options );
 	
-    // Events
-    $('#'+graph_id).bind('plothover',  function (event, pos, item) {
+	// Events
+	$('#'+graph_id).bind('plothover',  function (event, pos, item) {
 		if(item) {
 			var from = legend[item.seriesIndex];
 			var to = legend[item.seriesIndex+1];
@@ -438,27 +438,27 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 			var extra_width = parseInt($('#extra_'+graph_id).css('width').split('px')[0]);
 			$('#extra_'+graph_id).css('left',pos.pageX-(extra_width/2)+'px');
 			$('#extra_'+graph_id).css('top',plot.offset().top-extra_height-5+'px');
-
+			
 			$('#extra_'+graph_id).show();
 		}
-    });
-    
+	});
+	
 	$('#'+graph_id).bind('mouseout',resetInteractivity);
-
+	
 	// Reset interactivity styles
 	function resetInteractivity() {
 		$('#extra_'+graph_id).hide();
 	}
-    
+	
 	// Format functions
-    function xFormatter(v, axis) {
+	function xFormatter(v, axis) {
 		for(i = 0; i < acumulate_data.length; i++) {
 			if(acumulate_data[i] == v) {
 				return '<span style=\'font-size: 6pt\'>' + legend[i] + '</span>';
 			}
 		}
 		return '';
-    }
+	}
 }
 
 function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, type, serie_types, water_mark, width, max_x, homeurl, unit, font_size, menu, events, event_ids, legend_events, alerts, alert_ids, legend_alerts, yellow_threshold, red_threshold, force_integer, separator, separator2, series_suffix_str) {
@@ -479,7 +479,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		alerts = [];
 	alert_ids = alert_ids.split(separator);
 	colors = colors.split(separator);
-
+	
 	var eventsz = new Array();
 	$.each(events,function(i,v) {
 		eventsz[event_ids[i]] = v;
@@ -512,7 +512,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	var datas = new Array();
 	var data_base = new Array();
 	
-    // Prepared to turn series with a checkbox
+	// Prepared to turn series with a checkbox
 	// var showed = new Array();
 	
 	for(i=0;i<values.length;i++) {
@@ -539,7 +539,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 					points_show = true;
 				break;
 		}
-
+		
 		var serie_color;
 		if(colors[i] != '') {
 			serie_color = colors[i];
@@ -547,7 +547,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		else {
 			serie_color = null;
 		}
-
+		
 		var normalw = '#efe';
 		var warningw = '#ffe';
 		var criticalw = '#fee';
@@ -578,7 +578,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			lines: { show: line_show, fill: filled, fillColor: { colors: [ { opacity: 0.9 }, { opacity: 0.9 } ]}, lineWidth:1, steps:false },
 			points: { show: points_show }
 		});
-
+		
 		// Prepared to turn series with a checkbox
 		// showed[i] = true;
 	}
@@ -605,12 +605,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	
 	// The first execution, the graph data is the base data
 	datas = data_base;
-				
+	
 	// minTickSize
 	var count_data = datas[0].data.length;
 	var min_tick_pixels = 80;
 	var steps = parseInt( count_data / (width/min_tick_pixels));
-		
+	
 	var options = { 
 			series: { 
 				stack: stacked,
@@ -649,110 +649,110 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				container: $('#legend_'+graph_id),
 				labelFormatter: lFormatter
 				}
-	   };
-
+		};
+	
 	var stack = 0, bars = true, lines = false, steps = false;
 	
 	var plot = $.plot($('#'+graph_id), datas, options);
-
+	
 	// Adjust the overview plot to the width and position of the main plot
 	adjust_left_width_canvas(graph_id, 'overview_'+graph_id);
 	
 	// Adjust linked graph to the width and position of the main plot
 	
 	// Miniplot
-    var overview = $.plot($('#overview_'+graph_id),datas, {
-        series: {
+	var overview = $.plot($('#overview_'+graph_id),datas, {
+		series: {
 			stack: stacked,
-            lines: { show: true, lineWidth: 1 },
-            shadowSize: 0
-        },
-        grid: { borderWidth: 1, hoverable: true, autoHighlight: false},
-        xaxis: { },
+			lines: { show: true, lineWidth: 1 },
+			shadowSize: 0
+		},
+		grid: { borderWidth: 1, hoverable: true, autoHighlight: false},
+		xaxis: { },
 			xaxes: [ { 
-					tickFormatter: xFormatter,
-					minTickSize: steps,
-					color: '#000'
-					} ],
-        yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
-        selection: { mode: 'x', color: '#777' },
-        legend: {show: false},
-        crosshair: { mode: 'x' }
-    });
-    
-    // Connection between plot and miniplot
-    
-    $('#'+graph_id).bind('plotselected', function (event, ranges) {
-        // do the zooming
-        dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
-        dataInPlot = plot.getData()[0].data.length;
-        
-        factor = dataInSelection / dataInPlot;
-        
-        new_steps = parseInt(factor*steps);
-                
-        plot = $.plot($('#'+graph_id), datas,
-                      $.extend(true, {}, options, {
-                        xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to},
-						xaxes: [ { 
-								tickFormatter: xFormatter,
-								minTickSize: new_steps,
-								color: '#000'
-								} ],                          
-						legend: { show: false },
-                      }));
+				tickFormatter: xFormatter,
+				minTickSize: steps,
+				color: '#000'
+				} ],
+		yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
+		selection: { mode: 'x', color: '#777' },
+		legend: {show: false},
+		crosshair: { mode: 'x' }
+	});
+	
+	// Connection between plot and miniplot
+	
+	$('#'+graph_id).bind('plotselected', function (event, ranges) {
+		// do the zooming
+		dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
+		dataInPlot = plot.getData()[0].data.length;
+		
+		factor = dataInSelection / dataInPlot;
+		
+		new_steps = parseInt(factor*steps);
+		
+		plot = $.plot($('#'+graph_id), datas,
+			$.extend(true, {}, options, {
+				xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to},
+				xaxes: [ { 
+						tickFormatter: xFormatter,
+						minTickSize: new_steps,
+						color: '#000'
+						} ],
+				legend: { show: false },
+			}));
 		
 		$('#menu_cancelzoom_'+graph_id).attr('src',homeurl+'/images/zoom_cross.png');
 		
 		currentRanges = ranges;
-        // don't fire event on the overview to prevent eternal loop
-        overview.setSelection(ranges, true);
-    });
-    
-    $('#overview_'+graph_id).bind('plotselected', function (event, ranges) {
-        plot.setSelection(ranges);
-    });
-    
-    var legends = $('#legend_'+graph_id+' .legendLabel');
-    
+		// don't fire event on the overview to prevent eternal loop
+		overview.setSelection(ranges, true);
+	});
+	
+	$('#overview_'+graph_id).bind('plotselected', function (event, ranges) {
+		plot.setSelection(ranges);
+	});
+	
+	var legends = $('#legend_'+graph_id+' .legendLabel');
+	
 	var updateLegendTimeout = null;
-    var latestPosition = null;
-    var currentPlot = null;
-    var currentRanges = null;
-    
-    // Update legend with the data of the plot in the mouse position
-    function updateLegend() {
-        updateLegendTimeout = null;
-        
-        var pos = latestPosition;
-        
-        var axes = currentPlot.getAxes();
-        if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
-            pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) {
-            return;
+	var latestPosition = null;
+	var currentPlot = null;
+	var currentRanges = null;
+	
+	// Update legend with the data of the plot in the mouse position
+	function updateLegend() {
+		updateLegendTimeout = null;
+		
+		var pos = latestPosition;
+		
+		var axes = currentPlot.getAxes();
+		if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
+			pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) {
+			return;
 		}
-
-        var j, dataset = currentPlot.getData();
-
+		
+		var j, dataset = currentPlot.getData();
+		
 		var i = 0;
-        for (k = 0; k < dataset.length; k++) {
+		for (k = 0; k < dataset.length; k++) {
 			
 			// k is the real series counter
 			// i is the series counter without thresholds
-            var series = dataset[k];
-
+			var series = dataset[k];
+			
 			if(series.label == null) {
 				continue;
 			}
 			
-            // find the nearest points, x-wise
-            for (j = 0; j < series.data.length; ++j)
-                if (series.data[j][0] > pos.x) {
-                    break;
+			// find the nearest points, x-wise
+			for (j = 0; j < series.data.length; ++j)
+				if (series.data[j][0] > pos.x) {
+					break;
 				}
-            
-            var y = series.data[j][1];
-														
+			
+			var y = series.data[j][1];
+			
 			if(currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
 				$('#timestamp_'+graph_id).show();
 				// If no legend, the timestamp labels are short and with value
@@ -772,9 +772,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 				}
 				
 				var timenewpos = dataset[0].xaxis.p2c(pos.x)+plot.offset().left;
-			
+				
 				var canvaslimit = plot.offset().left + plot.width();
-							
+				
 				if(timesize+timenewpos > canvaslimit) {
 					$('#timestamp_'+graph_id).css('left', timenewpos - timesize);
 				}
@@ -785,31 +785,31 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			else {
 				$('#timestamp_'+graph_id).hide();
 			}
-
+			
 			var label_aux = series.label + ' = ';
 			
-			if(serie_types[i] != 'points') {
+			if (serie_types[i] != 'points') {
 				legends.eq(i).text(label_aux.replace(/=.*/, '= ' + parseFloat(y).toFixed(2) +' '+unit));
-			}				
+			}
 			
 			legends.eq(i).css('font-size',font_size+'pt');
 			legends.eq(i).css('color','#000');
 			
 			i++;
-        }
-    }
-    
-    // Events
-    $('#'+graph_id).bind('plothover',  function (event, pos, item) {
-        overview.setCrosshair({ x: pos.x, y: 0 });
-        currentPlot = plot;
-        latestPosition = pos;
-        if (!updateLegendTimeout) {
-            updateLegendTimeout = setTimeout(updateLegend, 50);
+		}
+	}
+	
+	// Events
+	$('#'+graph_id).bind('plothover',  function (event, pos, item) {
+		overview.setCrosshair({ x: pos.x, y: 0 });
+		currentPlot = plot;
+		latestPosition = pos;
+		if (!updateLegendTimeout) {
+			updateLegendTimeout = setTimeout(updateLegend, 50);
 		}
 		
-    });
-    
+	});
+	
 	$('#'+graph_id).bind("plotclick", function (event, pos, item) {
 		plot.unhighlight();
 		if (item && item.series.label != '' && (item.series.label == legend_events || item.series.label == legend_events+series_suffix_str || item.series.label == legend_alerts || item.series.label == legend_alerts+series_suffix_str)) {

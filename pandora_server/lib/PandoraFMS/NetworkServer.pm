@@ -456,7 +456,10 @@ sub exec_network_module ($$$$) {
 		}
 		elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
 			$module_data = pandora_ping_latency ($pa_config, $ip_target, $timeout, $retries);
-			$module_result = 0; # Successful
+			
+			if (defined($module_data)) {
+				$module_result = 0; # Successful
+			}
 		}
 
 		# -------------------------------------------------------

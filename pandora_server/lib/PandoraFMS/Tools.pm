@@ -889,7 +889,7 @@ sub pandora_ping ($$$$) {
 ########################################################################
 =head2 C<< pandora_ping_latency (I<$pa_config>, I<$host>) >> 
 
-Ping the given host. Returns the average round-trip time.
+Ping the given host. Returns the average round-trip time. Returns undef if fails.
 
 =cut
 ########################################################################
@@ -925,7 +925,7 @@ sub pandora_ping_latency ($$$$) {
 		if ($output =~ m/\=\s([0-9]*)[a-z][a-z]\r/){
 			return $1;
 		} else {
-			return 0;
+			return undef;
 		}
 		
 	}
@@ -944,11 +944,11 @@ sub pandora_ping_latency ($$$$) {
 		my @output = `$ping_command -s -n $host 56 $retries 2>/dev/null`;
 		
 		# Something went wrong
-		return 0 if ($? != 0);
+		return undef if ($? != 0);
 		
 		# Parse the output
 		my $stats = pop (@output);
-		return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+		return undef unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
 		return $2;
 	}
 	
@@ -968,11 +968,11 @@ sub pandora_ping_latency ($$$$) {
 		my @output = `$ping_command -q -n -c $retries $host 2>/dev/null`;
 		
 		# Something went wrong
-		return 0 if ($? != 0);
+		return undef if ($? != 0);
 		
 		# Parse the output
 		my $stats = pop (@output);
-		return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+		return undef unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
 		return $2;
 	}
 	
@@ -989,11 +989,11 @@ sub pandora_ping_latency ($$$$) {
 		my @output = `$ping_command -q -W $timeout -n -c $retries $host 2>/dev/null`;
 		
 		# Something went wrong
-		return 0 if ($? != 0);
+		return undef if ($? != 0);
 		
 		# Parse the output
 		my $stats = pop (@output);
-		return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+		return undef unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
 		return $2;
 	}
 	

@@ -25,7 +25,8 @@ require_once($config['homedir'] . "/include/functions_modules.php");
 // ==========================
 // TEMPLATE ASSIGMENT LOGIC
 // ==========================
-if (isset ($_POST["template_id"])) {
+$id_np = get_parameter_post ("template_id", false);
+if ($id_np) {
 	// Take agent data
 	$row = db_get_row ("tagente", "id_agente", $id_agente);
 	if ($row !== false) {
@@ -45,14 +46,16 @@ if (isset ($_POST["template_id"])) {
 		return;
 	}
 	
-	$id_np = get_parameter_post ("template_id");
-	$name_template = db_get_value ('name', 'tnetwork_profile', 'id_np', $id_np);
-	$npc = db_get_all_rows_field_filter ("tnetwork_profile_component", "id_np", $id_np);
+	
+	$name_template = db_get_value ('name',
+		'tnetwork_profile', 'id_np', $id_np);
+	$npc = db_get_all_rows_field_filter ("tnetwork_profile_component",
+		"id_np", $id_np);
 	if ($npc === false) {
 		$npc = array ();
 	}
 	
-	$success_count = $error_count = 0;	
+	$success_count = $error_count = 0;
 	$modules_already_added = array();
 	
 	foreach ($npc as $row) {
@@ -93,19 +96,39 @@ if (isset ($_POST["template_id"])) {
 				);
 			
 			// Check if this module exists in the agent
-			$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $row2["name"], 'id_agente' => $id_agente));
+			$module_name_check = db_get_value_filter('id_agente_modulo',
+				'tagente_modulo', array('delete_pending' => 0,
+					'nombre' => $row2["name"],
+					'id_agente' => $id_agente));
 			
 			if ($module_name_check !== false) {
 				$modules_already_added[] = $row2["name"];
 				$error_count++;
 			}
 			else {
+				$id_agente_modulo = db_process_sql_insert('tagente_modulo',
+					$values);
+				
+				if ($id_agente_modulo !== false) {
+					$values = array(
+						'id_agente_modulo' => $id_agente_modulo,
+						'datos' => 0,
+						'timestamp' => '01-01-1970 00:00:00',
+						'estado' => 0,
+						'id_agente' => $id_agente,
+						'utimestamp' => 0);
+					db_process_sql_insert('tagente_estado', $values);
+				}
+				else {
+					$error_count++;
+				}
 			}
 		}
 	}
 	if ($error_count > 0) {
 		if (empty($modules_already_added))
-			ui_print_error_message(__('Error adding modules') . sprintf(' (%s)', $error_count));
+			ui_print_error_message(__('Error adding modules') .
+				sprintf(' (%s)', $error_count));
 		else
 			ui_print_error_message(__('Error adding modules. The following errors already exists: ') . implode(', ', $modules_already_added));
 	}

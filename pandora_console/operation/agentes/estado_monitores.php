@@ -177,7 +177,7 @@ switch ($config["dbtype"]) {
 		$fields_tagente_estado = oracle_list_all_field_table('tagente_estado', 'string');
 		$fields_tagente_modulo = oracle_list_all_field_table('tagente_modulo', 'string');
 		$fields_tmodule_group = oracle_list_all_field_table('tmodule_group', 'string');
-
+		
 		$sql = sprintf ("
 			SELECT " . $fields_tagente_estado . ', ' . $fields_tagente_modulo . ', ' . $fields_tmodule_group .
 			" FROM tagente_estado, tagente_modulo
@@ -266,12 +266,12 @@ foreach ($modules as $module) {
 		if ($module["id_policy_module"] != 0) {
 			$linked = policies_is_module_linked($module['id_agente_modulo']);
 			$id_policy = db_get_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
-
-            if ($id_policy != "")
-                $name_policy = db_get_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
-            else
-                $name_policy = __("Unknown");
-
+			
+			if ($id_policy != "")
+				$name_policy = db_get_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
+			else
+				$name_policy = __("Unknown");
+			
 			$policyInfo = policies_info_module_policy($module["id_policy_module"]);
 			
 			$adopt = false;
@@ -299,18 +299,18 @@ foreach ($modules as $module) {
 					$title = __('(Unlinked) ') . $name_policy;
 				}
 			}
-
+			
 			$data[1] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $id_policy . '">' . 
 				html_print_image($img,true, array('title' => $title)) .
 				'</a>';
 		}
 		else {
 			$data[1] = "";
-		}	
+		}
 	}
-
+	
 	$data[2] = servers_show_type ($module['id_modulo']) . '&nbsp;';
-
+	
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
 	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
 	  
@@ -320,7 +320,7 @@ foreach ($modules as $module) {
 			$data[3] .= ui_print_help_tip ($module["extended_info"], true, '/images/comments.png');
 		}
 	}
-
+	
 	//Adds tag context information
 	if (tags_get_modules_tag_count($module['id_agente_modulo']) > 0) {
 		$data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">' .
@@ -329,10 +329,12 @@ foreach ($modules as $module) {
 	$data[4] = ui_print_string_substr ($module["descripcion"], 60, true, 8);
 	
 	modules_get_status($module['id_agente_modulo'], $module['estado'], $module['datos'], $status, $title);
-
+	
 	$data[5] = ui_print_status_image($status, $title, true);
-
-	if ($module["id_tipo_modulo"] == 24) { // log4x
+	
+	
+	if ($module["id_tipo_modulo"] == 24) {
+		// log4x
 		switch($module["datos"]) {
 			case 10: $salida = "TRACE"; $style="font-weight:bold; color:darkgreen;"; break;
 			case 20: $salida = "DEBUG"; $style="font-weight:bold; color:darkgreen;"; break;
@@ -346,7 +348,7 @@ foreach ($modules as $module) {
 	else {
 		if (is_numeric($module["datos"])){
 			$salida = format_numeric($module["datos"]);
-
+			
 			// Show units ONLY in numeric data types
 			if (isset($module["unit"])){
 				$salida .= "&nbsp;" . '<i>'. io_safe_output($module["unit"]) . '</i>';
@@ -373,7 +375,7 @@ foreach ($modules as $module) {
 			
 			} else {	
 				$sub_string = substr(io_safe_output($module["datos"]),0, 12);
-			
+				
 				if ($module_value == $sub_string) {
 					$salida = $module_value;
 				}

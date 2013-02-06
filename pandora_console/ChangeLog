@@ -1,3 +1,13 @@
+2013-02-06 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/agent_template.php: fixed lost code from the
+	some change in this file.
+	
+	Fixes: #3603548
+	
+	* operation/agentes/datos_agente.php,
+	operation/agentes/estado_monitores.php: fixed source code style.
+
 2013-02-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/agentes/estado_monitores.php,

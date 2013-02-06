@@ -85,13 +85,14 @@ $datetime_to = strtotime ($date_to.' '.$time_to);
 if ($moduletype_name == "log4x") {
 	$table->width = "100%";
 	$sql_freestring = '%' . $freestring . '%';
-
+	
 	if ($selection_mode == "fromnow") {
 		$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND message like '%s' AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, get_system_time () - $period);
-	} else {
+	}
+	else {
 		$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND message like '%s' AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, $datetime_from, $datetime_to);
 	}
-
+	
 	$columns = array(
 		
 		"Timestamp" => array("utimestamp",				"modules_format_timestamp", 	"align" => "center" ),
@@ -107,19 +108,21 @@ if ($moduletype_name == "log4x") {
 	} else {
 		$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND datos like '%s' AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $sql_freestring, $datetime_from, $datetime_to);
 	}
-
+	
 	$columns = array(
 		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 		"align" => "left"),
 		"Data" 		=> array("datos", 				"modules_format_data", 				"align" => "left"),
 		"Time" 		=> array("utimestamp", 			"modules_format_time", 				"align" => "center")
 	);
-} else {
+}
+else {
 	if ($selection_mode == "fromnow") {
 		$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
-	} else {
+	}
+	else {
 		$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp >= %d AND utimestamp <= %d ORDER BY utimestamp DESC", $module_id, $datetime_from, $datetime_to);
 	}
-
+	
 	$columns = array(
 		"Timestamp"	=> array("utimestamp", 			"modules_format_timestamp", 	"align" => "left"),
 		"Data" 		=> array("datos", 				"modules_format_data", 			"align" => "left"),
@@ -147,7 +150,7 @@ switch ($config["dbtype"]) {
 		$set['limit'] = $block_size;
 		$set['offset'] = $offset;
 		$sql = oracle_recode_query ($sql, $set);
-		break;		 
+		break;
 }
 
 $result = db_get_all_rows_sql ($sql, false, true, $connection_handler);
@@ -222,20 +225,20 @@ foreach($columns as $col => $attr) {
 	
 	if (isset($attr["width"]))
 		$table->size[$index] = $attr["width"];
-
+	
 	$index++;
 }
 
 foreach ($result as $row) {
 	$data = array ();
-
+	
 	foreach($columns as $col => $attr) {
 		if ($attr[1] != "modules_format_data")
 			$data[] = $attr[1] ($row[$attr[0]]);
 
 		// Its a single-data, multiline data (data snapshot) ?
 		elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
-
+			
 			// Detect string data with \n and convert to <br>'s
 			$datos = preg_replace ('/\n/i','<br>',$row[$attr[0]]);
 			$datos = preg_replace ('/\s/i','&nbsp;',$datos);

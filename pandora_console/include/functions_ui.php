@@ -2577,8 +2577,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 		
 	if (!$metaconsole_enabled) {
 		$javascript_change_ajax_params_original['force_local'] = 1;
-	}	
-		
+	}
+	
 	if (isset($parameters['javascript_change_ajax_params'])) {
 		$javascript_change_ajax_params = array();
 		

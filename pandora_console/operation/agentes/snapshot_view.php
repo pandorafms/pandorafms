@@ -20,8 +20,8 @@ require_once ('../../include/config.php');
 require_once ('../../include/auth/mysql.php');
 
 if (! isset($_SESSION['id_usuario'])) {
-        session_start();
-        session_write_close();
+	session_start();
+	session_write_close();
 }
 
 require_once ($config['homedir'] . '/include/functions.php');
@@ -32,8 +32,8 @@ check_login ();
 
 $user_language = get_user_language ($config['id_user']);
 if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
-        $l10n = new gettext_reader (new CachedFileReader ('../../include/languages/'.$user_language.'.mo'));
-        $l10n->load_tables();
+	$l10n = new gettext_reader (new CachedFileReader ('../../include/languages/'.$user_language.'.mo'));
+	$l10n->load_tables();
 }
 
 $id = get_parameter('id');
@@ -44,8 +44,8 @@ $label = get_parameter ("label");
 // Parsing the refresh before sending any header
 $refresh = (int) get_parameter ("refr", -1);
 if ($refresh > 0) {
-        $query = ui_get_url_refresh (false);
-        echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
+	$query = ui_get_url_refresh (false);
+	echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
 }
 ?>
 

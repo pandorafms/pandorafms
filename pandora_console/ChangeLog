@@ -1,5 +1,16 @@
 2013-02-06 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_graph.php, include/functions_ui.php,
+	operation/reporting/reporting_viewer.php,
+	operation/agentes/snapshot_view.php: improved the code style.
+	
+	* include/functions_html.php: added other parameter in print
+	checkbox for to avoid to put a hidden input.
+	
+	Fixes: #3602766
+
+2013-02-06 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_config.php: uploaded the lost character key.
 
 2013-02-06  Sergio Martin <sergio.martin@artica.es>

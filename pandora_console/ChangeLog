@@ -1,5 +1,13 @@
 2013-02-06 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/graphs/flot/pandora.flot.js: cleaned source code style.
+	
+	* include/graphs/functions_utils.php: fixed the unasigned var.
+	
+	Fixes: #3603439
+
+2013-02-06 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_graph.php, include/functions_ui.php,
 	operation/reporting/reporting_viewer.php,
 	operation/agentes/snapshot_view.php: improved the code style.

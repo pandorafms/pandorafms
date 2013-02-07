@@ -19,9 +19,9 @@ if (is_ajax ()) {
 	$id_plugin = get_parameter('id_plugin');
 	
 	$description = db_get_value_filter('description', 'tplugin', array('id' => $id_plugin));
-	$preload = io_safe_output($description);	
+	$preload = io_safe_output($description);
 	$preload = str_replace ("\n", "<br>", $preload);
-
+	
 	echo $preload;
 	return;
 }
@@ -90,7 +90,7 @@ if (($create != "") OR ($view != "")) {
 	$table->style[0] = 'font-weight: bold';
 	$table->style[2] = 'font-weight: bold';
 	$table->data = array ();
-
+	
 	$data = array();
 	$data[0] = __('Name');
 	$data[1] = '<input type="text" name="form_name" size=100 value="'.$form_name.'">';
@@ -123,14 +123,14 @@ if (($create != "") OR ($view != "")) {
 	echo '</fieldset>';
 	
 	$table->data = array();
-
+	
 	$plugin_id = get_parameter ("view", 0);
 	
 	$locked = true;
 	
 	// If we have plugin id (update mode) and this plugin used by any module or component
 	// The command configuration will be locked
-	if($plugin_id > 0) {
+	if ($plugin_id > 0) {
 		$modules_using_plugin = db_get_value_filter('count(*)','tagente_modulo', array('delete_pending' => 0, 'id_plugin' => $plugin_id));	
 		$components_using_plugin = db_get_value_filter('count(*)','tnetwork_component', array('id_plugin' => $plugin_id));	
 		if(($components_using_plugin + $modules_using_plugin) == 0) {
@@ -140,16 +140,16 @@ if (($create != "") OR ($view != "")) {
 	else {
 		$locked = false;
 	}
-		
+	
 	$disabled = '';
-	if($locked) {
+	if ($locked) {
 		$disabled = 'readonly="readonly"';
 	}
 	
 	$data = array();
 	$data[0] = __('Plugin command');
 	$data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf" size=100 value="'.$form_execute.'" '.$disabled.'>';
-	if($locked) {
+	if ($locked) {
 		$data[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
 	}
 	$table->data['plugin_command'] = $data;
@@ -157,7 +157,7 @@ if (($create != "") OR ($view != "")) {
 	$data = array();
 	$data[0] = __('Plug-in parameters').ui_print_help_icon ('plugin_parameters', true);
 	$data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf" size=100 value="'.$parameters.'" '.$disabled.'>';
-	if($locked) {
+	if ($locked) {
 		$data[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
 	}
 	$table->data['plugin_parameters'] = $data;
@@ -180,7 +180,7 @@ if (($create != "") OR ($view != "")) {
 	// The next row number is plugin_9
 	$next_name_number = 9;
 	$i = 1;
-	while(1) {
+	while (1) {
 		// Always print at least one macro
 		if((!isset($macros[$i]) || $macros[$i]['desc'] == '') && $i > 1) {
 			break;
@@ -239,7 +239,7 @@ if (($create != "") OR ($view != "")) {
 		$i++;
 	}
 	
-	if(!$locked) {
+	if (!$locked) {
 		$datam = array ();
 		$datam[0] = '<span style="font-weight: bold">'.__('Add macro').'</span> <a href="javascript:new_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/add.png',true).'</a>';
 		$datam[0] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
@@ -286,7 +286,7 @@ else {
 		$plugin_execute = get_parameter ("form_execute", "");
 		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
 		$parameters = get_parameter ("form_parameters", "");
-
+		
 		// Get macros
 		$i = 1;
 		$macros = array();
@@ -299,16 +299,16 @@ else {
 			$desc = (string)get_parameter ('field'.$i.'_desc');
 			$help = (string)get_parameter ('field'.$i.'_help');
 			$value = (string)get_parameter ('field'.$i.'_value');
-
+			
 			$macros[$i]['macro'] = $macro;
 			$macros[$i]['desc'] = $desc;
 			$macros[$i]['help'] = $help;
 			$macros[$i]['value'] = $value;
 			$i++;
 		}
-
+		
 		$macros = json_encode($macros);
-
+		
 		$values = array(
 			'name' => $plugin_name,  
 			'description' => $plugin_description, 
@@ -330,7 +330,7 @@ else {
 			echo "<h3 class='suc'>".__('Plugin updated successfully')."</h3>";
 		}
 	}
-
+	
 	// Create plugin
 	if (isset($_GET["create_plugin"])){	 
 		$plugin_name = get_parameter ("form_name", "");
@@ -344,7 +344,7 @@ else {
 		// Get macros
 		$i = 1;
 		$macros = array();
-		while(1) {
+		while (1) {
 			$macro = (string)get_parameter ('field'.$i.'_macro');
 			if($macro == '') {
 				break;
@@ -353,14 +353,14 @@ else {
 			$desc = (string)get_parameter ('field'.$i.'_desc');
 			$help = (string)get_parameter ('field'.$i.'_help');
 			$value = (string)get_parameter ('field'.$i.'_value');
-
+			
 			$macros[$i]['macro'] = $macro;
 			$macros[$i]['desc'] = $desc;
 			$macros[$i]['help'] = $help;
 			$macros[$i]['value'] = $value;
 			$i++;
 		}
-
+		
 		$macros = json_encode($macros);
 		
 		$values = array(
@@ -378,29 +378,31 @@ else {
 			$result = db_process_sql_insert('tplugin', $values);
 		
 		if (! $result) {
-			echo "<h3 class='error'>".__('Problem creating plugin')."</h3>";
+			echo "<h3 class='error'>" .
+				__('Problem creating plugin') . "</h3>";
 		}
 		else {
-			echo "<h3 class='suc'>".__('Plugin created successfully')."</h3>";
+			echo "<h3 class='suc'>" .
+				__('Plugin created successfully') . "</h3>";
 		}
 	}
-
-	if (isset($_GET["kill_plugin"])){ // if delete alert
+	
+	if (isset($_GET["kill_plugin"])) { // if delete alert
 		$plugin_id = get_parameter ("kill_plugin", 0);
 		
 		$result = db_process_sql_delete('tplugin', array('id' => $plugin_id));
 			
-		if (! $result){
+		if (! $result) {
 			echo "<h3 class='error'>".__('Problem deleting plugin')."</h3>";
 		}
 		else {
 			echo "<h3 class='suc'>".__('Plugin deleted successfully')."</h3>";
 		}
-		if ($plugin_id != 0){			
+		if ($plugin_id != 0) {
 			$result = db_process_sql_delete('tagente_modulo', array('id_plugin' => $plugin_id));
 		}
 	}
-
+	
 	// If not edition or insert, then list available plugins
 	$rows = db_get_all_rows_sql('SELECT * FROM tplugin ORDER BY name');
 	

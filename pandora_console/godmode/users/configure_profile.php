@@ -49,8 +49,8 @@ if (!defined('METACONSOLE')) {
 }
 else {
 	
-	user_meta_print_header();	
-	$sec2 = 'advanced';	
+	user_meta_print_header();
+	$sec2 = 'advanced';
 	
 }
 

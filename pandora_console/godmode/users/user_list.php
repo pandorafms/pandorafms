@@ -113,9 +113,9 @@ else {
 			'active' => false,
 			'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">' . 
 				html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
-
-	ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true, $buttons);	
-
+	
+	ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true, $buttons);
+	
 	$sec = 'gusuarios';
 	
 }

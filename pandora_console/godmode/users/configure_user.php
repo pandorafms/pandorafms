@@ -77,8 +77,8 @@ else {
 			'active' => false,
 			'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">' . 
 				html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
-
-	$buttons[$tab]['active'] = true;	
+	
+	$buttons[$tab]['active'] = true;
 	
 	ui_print_page_header (__('User detail editor'), "images/god3.png", false, "", true, $buttons);
 	$sec = 'gusuarios';
@@ -202,7 +202,7 @@ if ($create_user) {
 				$result = db_process_sql('/INSERT INTO tusuario (fullname, firstname, lastname, email, phone, comments, is_admin, language, id_skin, block_size, flash_chart, id_user, password, last_connect, registered) VALUES (\'' . $values['fullname'] . '\',\'\',\'\',\'\',\'\',\'\',' . $values['is_admin'] . ',\'' . $values['language'] .'\',' . $values['id_skin'] . ',' . $values['block_size'] . ',' . $values['flash_chart'] . ',\'' . $id . '\',\'' . $password_new . '\',0,\'' . get_system_time () . '\')');
 				
 				if ($result) {
-					$res = db_process_sql('/INSERT INTO tpassword_history (id_user, password, date_begin) VALUES (\'' . $id . '\',\'' . md5($password_new) . '\',\'' . date ("Y/m/d H:i:s", get_system_time()) . '\')');		
+					$res = db_process_sql('/INSERT INTO tpassword_history (id_user, password, date_begin) VALUES (\'' . $id . '\',\'' . md5($password_new) . '\',\'' . date ("Y/m/d H:i:s", get_system_time()) . '\')');
 				}
 				break;
 		}
@@ -323,7 +323,7 @@ if ($update_user) {
 if ($status != -1) {
 	ui_print_result_message ($status,
 		__('User info successfully updated'),
-		__('Error updating user info (no change?)'));	
+		__('Error updating user info (no change?)'));
 }
 
 if ($add_profile) {

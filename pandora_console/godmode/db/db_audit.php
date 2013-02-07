@@ -84,7 +84,7 @@ echo "<tr>";
 echo "<td class='datos2'><b>".__('First date')."</b></td>";
 echo "<td class='datos2'>".$result["first_date"]."</td></tr>";
 
-echo "<tr><td class='datos'>";	
+echo "<tr><td class='datos'>";
 echo "<b>".__('Latest date')."</b></td>";
 echo "<td class='datos'>".$result["latest_date"]."</td>";
 echo "</tr></table>";

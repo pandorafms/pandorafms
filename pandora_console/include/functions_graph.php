@@ -2713,7 +2713,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	}
 	grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	$unit_name, $show_alerts, $avg_only, $date, '', '', $show_unknown);
-
+	
 	if ($compare === 'overlapped') {
 		$i = 0;
 		foreach($chart as $k=>$v) {
@@ -2730,26 +2730,26 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
-
+	
 	if ($compare === 'separated') {
 		return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,
-			 $long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
-			 $water_mark,
-			 $config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
-			 $chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str).
-			 '<br>'.
-			 area_graph($flash_chart, $chart_prev, $width, $height/2, $color_prev, $legend_prev,
-			 $long_index_prev, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
-			 $water_mark,
-			 $config['fontpath'], $config['font_size'], $unit, 1, $series_type_prev, 
-			 $chart_extra_data_prev, 0, 0, $adapt_key, false, $series_suffix_str);
+			$long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
+			$water_mark,
+			$config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
+			$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str).
+			'<br>'.
+			area_graph($flash_chart, $chart_prev, $width, $height/2, $color_prev, $legend_prev,
+			$long_index_prev, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
+			$water_mark,
+			$config['fontpath'], $config['font_size'], $unit, 1, $series_type_prev, 
+			$chart_extra_data_prev, 0, 0, $adapt_key, false, $series_suffix_str);
 	}
 	else {
 		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-			 $long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
-			 $water_mark,
-			 $config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
-			 $chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str);
+			$long_index, ui_get_full_url("images/image_problem.opaque.png"), "", $unit, $homeurl,
+			$water_mark,
+			$config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
+			$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str);
 	}
 }
 
@@ -2956,11 +2956,11 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
  */
 function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
-	$date = 0, $only_image = false, $homeurl = '', $adapt_key, $ttl = 1) {
+	$date = 0, $only_image = false, $homeurl = '', $adapt_key = '', $ttl = 1) {
 	global $config;
 	global $graphic_type;
 	global $max_value;
-
+	
 	// Set variables
 	if ($date == 0)
 		$date = get_system_time();
@@ -3110,9 +3110,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		
 		// Data in the interval
 		//The order in chart array is very important!!!!
-                $chart[$timestamp]['event'] = $event_value;
-                $chart[$timestamp]['alert'] = $alert_value;
-                $chart[$timestamp]['max'] = 0;
+		$chart[$timestamp]['event'] = $event_value;
+		$chart[$timestamp]['alert'] = $alert_value;
+		$chart[$timestamp]['max'] = 0;
 		
 		if ($count > 0) {
 			$chart[$timestamp]['sum'] = $count;
@@ -3125,9 +3125,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		
 		$chart[$timestamp]['min'] = 0;
 	}
-
+	
 	$graph_stats = get_statwin_graph_statistics($chart);
-
+	
 	// Fix event and alert scale
 	$event_max = 2 + (float)$max_value * 1.05;
 	foreach ($chart as $timestamp => $chart_data) {
@@ -3176,9 +3176,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$legend['alert'] = __('Alerts');
 	}
 	
-		$legend['max'] = __('Max').': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
+	$legend['max'] = __('Max').': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
 	$legend['sum'] = __('Data').': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
-		$legend['min'] = __('Min').': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
+	$legend['min'] = __('Min').': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
 	
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -3335,8 +3335,8 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 
 ///Functions for the LOG4X graphs
 function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
-	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
-	 $date = 0) {
+	$width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
+	$date = 0) {
 	
 	grafico_modulo_log4x_trace("<pre style='text-align:left;'>");
 	

@@ -114,6 +114,9 @@ function snmpBrowse () {
 	// Empty the SNMP tree
 	$("#snmp_browser").html('');
 
+	// Hide the data div
+	hideOIDData();
+	
 	// Show the spinner
 	$("#spinner").css('display', '');
 
@@ -137,7 +140,7 @@ function snmpBrowse () {
 		type: 'POST',
 		url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 		async: true,
-		timeout: 60000,
+		timeout: 120000,
 		success: function (data) {
 			
 			// Hide the spinner

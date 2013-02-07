@@ -1,5 +1,11 @@
 2013-02-07  Ramon Novoa  <rnovoa@artica.es>
 
+	* operation/menu.php: Fixed the SNMP menu.
+
+	* operation/snmpconsole/snmp_browser.php: Small improvements.
+
+2013-02-07  Ramon Novoa  <rnovoa@artica.es>
+
 	* attachment/mibs,
 	  operation/snmpconsole/snmp_browser.php,
 	  operation/snmpconsole/snmp_mib_uploader.php,

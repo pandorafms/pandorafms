@@ -64,11 +64,12 @@ if ($refresh > 0) {
 <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
 <script type='text/javascript' src='../../include/javascript/jquery.js'></script>
 <script type='text/javascript'><!--
+
 var defOffset = 2;
 var defSlideTime = 220;
 var tnActive = 0;
 var visibleMargin = 45;
-var menuW = 400;
+var menuW = 450;
 var menuH = 310;
 var showed = 0;
 window.onload = function() {
@@ -91,7 +92,7 @@ window.onload = function() {
 	
 	period_select_init(periodSelectId);
 	
-	$("#graph_menu_arrow").click(function(){
+	$("#graph_menu_arrow").click(function() {
 		if ($("#graph_menu_arrow").attr("src").indexOf("hide") == -1){
 			$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow_hide.png");	
 		}
@@ -190,13 +191,13 @@ $time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 
 $time_compare = false;
 
-if($time_compare_separated) {
+if ($time_compare_separated) {
 	$time_compare = 'separated';
 }
 else if($time_compare_overlapped) {
 	$time_compare = 'overlapped';
 }
-		
+
 if ($zoom > 1) {
 	$height = $height * ($zoom / 2.1);
 	$width = $width * ($zoom / 1.4);
@@ -220,8 +221,8 @@ echo '<div style="margin-left: 30px">';
 switch ($graph_type) {
 	case 'boolean':
 		echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-				$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage,
-				$time_compare);
+			$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage,
+			$time_compare);
 		break;
 	case 'sparse':
 		echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
@@ -258,7 +259,7 @@ echo '<tr><td>'.__('Refresh time').'</td><td colspan="2">';
 
 html_print_input_text ("refresh", $refresh, '', 5);
 
-echo '&nbsp;&nbsp;&nbsp;'.__('Avg. Only');
+echo '<tr><td>'.__('Avg. Only').'</td><td colspan="2">';
 
 html_print_checkbox ("avg_only", 1, (bool) $avg_only, false, false, 'show_others()');
 html_print_input_hidden('show_other', 0);

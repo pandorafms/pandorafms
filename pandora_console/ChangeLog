@@ -1,3 +1,9 @@
+2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/styles/pandora_minimal.css,
+	operation/agentes/stat_win.php: fixed the lost arrow to show the
+	menu when Pandora is in other languages as spanish.
+
 2013-02-06 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/agent_template.php: fixed lost code from the

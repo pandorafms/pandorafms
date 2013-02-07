@@ -64,26 +64,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	if ($config['log_collector'] == 1) {
 		enterprise_hook ('log_collector_menu');
 	}
-	
-	//SNMP Console
-	$sub["operation/snmpconsole/snmp_view"]["text"] = __('SNMP console');
-	$sub["operation/snmpconsole/snmp_view"]["refr"] = 0;
-	$sub["operation/snmpconsole/snmp_view"]["subsecs"] = array(
-		"enterprise/godmode/snmpconsole",
-		"godmode/snmpconsole/snmp_trap_editor",
-		"godmode/snmpconsole/snmp_alert",
-		"godmode/snmpconsole/snmp_filters",
-		"godmode/snmpconsole/snmp_trap_generator");
-	
-	$sub2 = array();
-	
-	$sub2["godmode/snmpconsole/snmp_alert"]["text"] = __("SNMP alerts");
-	$sub2['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');	
-	enterprise_hook ('snmpconsole_submenu');
-	$sub2['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
-	
-	$sub["operation/snmpconsole/snmp_view"]["sub2"] = $sub2;
-	
+		
 	$menu_operation["estado"]["sub"] = $sub;
 	//End of view agents
 	
@@ -350,7 +331,23 @@ if (check_acl ($config['id_user'], 0, "IR")) {
 }
 // Rest of options, all with AR privilege (or should events be with incidents?)
 if (check_acl ($config['id_user'], 0, "AR")) {
-	
+
+	//SNMP Console
+	$menu_operation["snmpconsole"]["text"] = __('SNMP console');
+	$menu_operation["snmpconsole"]["refr"] = 0;
+	$menu_operation["snmpconsole"]["sec2"] = "operation/snmpconsole/snmp_view";
+	$menu_operation["snmpconsole"]["id"] = "oper-snmpc";
+
+	$sub = array();
+	$sub["operation/snmpconsole/snmp_view"]["text"] = __("SNMP console");
+	$sub["operation/snmpconsole/snmp_browser"]["text"] = __("SNMP browser");
+	$sub["operation/snmpconsole/snmp_mib_uploader"]["text"] = __("MIB uploader");
+	$sub["godmode/snmpconsole/snmp_alert"]["text"] = __("SNMP alerts");
+	$sub["godmode/snmpconsole/snmp_filters"]["text"] = __("SNMP filters");
+	$sub["godmode/snmpconsole/snmp_trap_generator"]["text"] = __("SNMP trap generator");
+	enterprise_hook ('snmpconsole_submenu');
+	$menu_operation["snmpconsole"]["sub"] = $sub;
+
 	// Extensions menu additions
 	if (is_array ($config['extensions'])) {
 		$menu_operation["extensions"]["text"] = __('Extensions');

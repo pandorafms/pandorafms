@@ -1,5 +1,15 @@
 2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/db/db_refine.php, godmode/servers/plugin.php: improved
+	the code style.
+	
+	* include/functions_reporting.php: fixed the SLA when it is the
+	equal to limit.
+	
+	Fixes: #3602722
+
+2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/modules/manage_network_components_form_common.php: fixed
 	the show types of module.
 	

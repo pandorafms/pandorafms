@@ -2790,15 +2790,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
 						$content['time_to']);
 				
-				if($data_sla == false) {
+				if ($data_sla == false) {
 					$data_sla = array();
 				}
 				
 				//Get the sla_value in % and store it on $sla_value
 				$data_total = 0;
 				$data_pass = 0;
-				foreach($data_sla as $d) {
-					switch($d['data']) {
+				foreach ($data_sla as $d) {
+					switch ($d['data']) {
 						case 1:
 							$data_pass += $d['utimestamp'];
 							$data_total += $d['utimestamp'];
@@ -2824,11 +2824,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				
 				//Do not show right modules if 'only_display_wrong' is active
-				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
+				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit'])
+					continue;
 				
 				// Calculate general pie graph data
-				foreach($data_sla as $d) {
-					switch($d['data']) {
+				foreach ($data_sla as $d) {
+					switch ($d['data']) {
 						case 1:
 							$data_graph[__('Inside limits')] += $d['utimestamp'];
 							break;
@@ -2914,7 +2915,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$data[5] = '';
 						$data[6] = '';
 						
-						if ($sla_value > $sla['sla_limit']) {
+						if ($sla_value >= $sla['sla_limit']) {
 							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
 							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
 						}
@@ -2925,10 +2926,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						}
 						
 						// Print icon with status including edge
-						if ($sla_value > $sla['sla_limit']+$edge_interval) {
+						if ($sla_value > ($sla['sla_limit'] + $edge_interval)) {
 							$data[6] = html_print_image('images/status_sets/default/severity_normal.png',true,array('title'=>__('Inside limits')));
 						}
-						elseif ($sla_value <= $sla['sla_limit']+$edge_interval && $sla_value >= $sla['sla_limit']-$edge_interval) {
+						elseif (($sla_value <= $sla['sla_limit'] + $edge_interval)
+							&& ($sla_value >= $sla['sla_limit'] - $edge_interval)) {
 							$data[6] = html_print_image('images/status_sets/default/severity_warning.png',true,array('title'=>__('On the edge')));
 						}
 						else {

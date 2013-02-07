@@ -18,7 +18,7 @@
 // Load global vars
 global $config;
 
-check_login ();	
+check_login ();
 
 if (! check_acl ($config['id_user'], 0, "DM")) {
 	db_pandora_audit("ACL Violation","Trying to access Database Debug Admin section");

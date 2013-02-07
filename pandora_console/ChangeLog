@@ -1,3 +1,12 @@
+2013-02-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* attachment/mibs,
+	  operation/snmpconsole/snmp_browser.php,
+	  operation/snmpconsole/snmp_mib_uploader.php,
+	  operation/tree/first_leaf.png: Added to repository. SNMP browser.
+
+	* operation/menu.php: Moved SNMP related features to a new SNMP menu.
+
 2013-02-07  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/plugin_registration.php: Fixed the PSPZ registration

@@ -224,7 +224,7 @@ sub process_xml_data ($$$$$) {
 		if ($parent_id < 1)	{ # Unknown parent
 			$parent_id = 0;
 		}
-	logger($pa_config,"Parent_agent_name: $parent_agent_name parent_id: $parent_id",10);
+		logger($pa_config,"Parent_agent_name: $parent_agent_name parent_id: $parent_id",10);
 	}
 
 	my $valid_position_data = 1; 	
@@ -401,13 +401,15 @@ sub process_xml_data ($$$$$) {
 		}
 	}
 
-	# Check if agent is disabled and return if it's disabled. Disabled agents doesnt process data
-	# in order to avoid not only events, also possible invalid data coming from agents.
+	# Get the data of the agent, if fail return
 	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent_id);
 	if (!defined ($agent)) {
 		logger($pa_config, "Error retrieving information for agent ID $agent_id",10);
 		return;
 	}
+	
+	# Check if agent is disabled and return if it's disabled. Disabled agents doesnt process data
+	# in order to avoid not only events, also possible invalid data coming from agents.
 	return if ($agent->{'disabled'} == 1);
 	
 	# Do not overwrite agent parameters if the agent is in normal mode
@@ -416,7 +418,9 @@ sub process_xml_data ($$$$$) {
 		$os_version = $agent->{'os_version'};
 		$agent_version = $agent->{'agent_version'};
 		$timezone_offset = $agent->{'timezone_offset'};
-	} else {
+		$parent_id = $agent->{'id_parent'};
+	} 
+	else { # Learning mode
 		# Update agent address if necessary
 		if ($address ne '' && $address ne $agent->{'direccion'}) {
 			# Update the main address
@@ -424,37 +428,32 @@ sub process_xml_data ($$$$$) {
 			# Update the addres list if necessary
 			pandora_add_agent_address($pa_config, $agent_id, $address, $dbh);
 		}
-	}
-
-	if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0) {
-		if (!defined($parent_agent_name)){
-			$parent_agent_name = "";
-		}
-		logger($pa_config,"Parent_agent_name $parent_agent_name",10);
-		if ($pa_config->{'update_parent'} == 1 && $parent_id != 0) {
-		logger($pa_config,"Parent_agent_name $parent_agent_name",10);
-			logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude parent_id: $parent_id", 5);
-			# Update agent information including position information and the paret
-			pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, 
-								$longitude, $latitude, $altitude, $position_description, $parent_id);
-		}
-		else {
-			logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
-			# Update agent information including position information
-		}		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
-	}
-	else {
+		
+		# Update parent if is allowed and is valid
 		if ($pa_config->{'update_parent'} == 1 && $parent_id != 0) {
 			logger($pa_config, "Updating agent $agent_name parent_id: $parent_id", 5);
-			# Update agent information including the parent without position information
-			pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $parent_id);
 		}
 		else {
-			logger($pa_config, "Updating agent $agent_name", 5);
-			# Update agent information without position information ignoring the parent
-			pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset);
+			$parent_id = $agent->{'id_parent'};
 		}
-	}	
+	}
+
+	# Update GIS data only if is allowed and is valid position
+	if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0) {
+		logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude parent_id: $parent_id", 5);
+	}
+	else {
+		$longitude = undef;
+		$latitude = undef;
+		$altitude = undef;
+		$position_description = undef;
+	}
+	
+	# Update agent information
+	pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, 
+						$longitude, $latitude, $altitude, $position_description, $parent_id);
+	
+	
 	pandora_module_keep_alive ($pa_config, $agent_id, $agent_name, $server_id, $dbh);
 	
 	# Process modules

@@ -1885,7 +1885,7 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 		}
 	}
 	else {
-		logger($pa_config, "Agent id $agent_id positional data ignored (update_gis_data = $update_gis_data)",10);
+		logger($pa_config, "Agent id $agent_id positional data ignored (update_gis_data (agent) = $update_gis_data ; activate_gis (server) = " . $pa_config->{'activate_gis'} . ")",10);
 	}
 
 }

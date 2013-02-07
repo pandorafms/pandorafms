@@ -1,3 +1,10 @@
+2013-02-07  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm
+	lib/PandoraFMS/DataServer.pm: Clean code on Dataserver,
+	improve error message when ignore GIS data, and change the
+	way of update parent info (only in learning mode now)
+
 2013-02-07  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server_installer: Fixed missing JSON dependecy

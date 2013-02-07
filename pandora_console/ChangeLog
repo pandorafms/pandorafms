@@ -1,5 +1,12 @@
 2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/modules/manage_network_components_form_common.php: fixed
+	the show types of module.
+	
+	MERGED FROM THE PANDORA_4
+
+2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/users/user_list.php, godmode/users/profile_list.php,
 	godmode/users/configure_user.php,
 	godmode/users/configure_profile.php, godmode/db/db_audit.php,

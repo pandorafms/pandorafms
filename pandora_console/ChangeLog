@@ -1,5 +1,11 @@
 2013-02-07  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/plugin_registration.php: Fixed the PSPZ registration
+	when max retries are not defined on the ini file
+	FIX: 3603725
+
+2013-02-07  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/agent_conf_gis.php
 	godmode/agentes/agent_manager.php
 	godmode/massive/massive_edit_agents.php: Change a strings of 

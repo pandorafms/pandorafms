@@ -2756,10 +2756,28 @@ function ui_print_agent_autocomplete_input($parameters) {
 						+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
 				}
 				
-				return $("<li></li>")
-					.data("item.autocomplete", item)
-					.append(text)
-					.appendTo(ul);
+				switch (item.filter) {
+					case \'agent\':
+						return $("<li style=\'background: #DFFFC4;\'></li>")
+							.data("item.autocomplete", item)
+							.append(text)
+							.appendTo(ul);
+						break;
+					case \'address\':
+						return $("<li style=\'background: #F7CFFF;\'></li>")
+							.data("item.autocomplete", item)
+							.append(text)
+							.appendTo(ul);
+						break;
+					case \'description\':
+						return $("<li style=\'background: #FEFCC6;\'></li>")
+							.data("item.autocomplete", item)
+							.append(text)
+							.appendTo(ul);
+						break;
+				}
+				
+				
 			};
 			
 			//Force the size of autocomplete

@@ -1,5 +1,20 @@
 2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_ui.php, include/ajax/agent.php: improved the
+	widget of autocomplete agent, now show first the agents with same
+	name to the search, second block with the agents with the address
+	same to the search and the last block is the agents with the
+	description with the same to the search.
+	
+	Fixes: #3603692
+	
+	* godmode/modules/manage_nc_groups.php,
+	godmode/modules/manage_network_templates.php,
+	godmode/modules/manage_network_templates_form.php: improved the code
+	style.
+
+2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/db/db_refine.php, godmode/servers/plugin.php: improved
 	the code style.
 	

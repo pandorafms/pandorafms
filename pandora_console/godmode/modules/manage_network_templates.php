@@ -227,7 +227,7 @@ if (!empty ($table->data)) {
 	echo "</form>";
 }
 else {
-	echo '<div class="nf" style="width:'.$table->width.'">'.__('There are no defined network profiles').'</div>';	
+	echo '<div class="nf" style="width:'.$table->width.'">'.__('There are no defined network profiles').'</div>';
 }
 
 echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form">';

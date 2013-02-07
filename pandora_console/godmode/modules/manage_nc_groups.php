@@ -129,7 +129,7 @@ if ($multiple_delete) {
 		$result = db_process_sql_delete ('tnetwork_component_group',
 			array ('id_sg' => $id));
 		
-		$result1 = db_process_sql_update('tnetwork_component_group', array('parent' => 0), array('parent' => $id));	
+		$result1 = db_process_sql_update('tnetwork_component_group', array('parent' => 0), array('parent' => $id));
 		
 		if (($result === false) or ($result1 === false)) {
 			db_process_sql_rollback();
@@ -210,10 +210,10 @@ $total_groups = $total_groups[0]['total'];
 foreach ($groups as $group) {
 	$data = array ();
 	
-	$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);	
+	$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
 	
 	$data[0] =  $tabulation . '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
-
+	
 	$data[1] = "<a onclick='if(confirm(\"" . __('Are you sure?') . "\")) return true; else return false;' 
 		href='index.php?sec=".$sec."&sec2=godmode/modules/manage_nc_groups&delete=1&id=".$group['id_sg']."&offset=0'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
@@ -222,7 +222,7 @@ foreach ($groups as $group) {
 	array_push ($table->data, $data);
 }
 
-if(isset($data)) {
+if (isset($data)) {
 	echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_nc_groups'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);

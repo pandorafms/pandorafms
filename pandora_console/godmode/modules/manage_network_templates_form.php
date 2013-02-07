@@ -251,9 +251,9 @@ if ($id_np > 0) {
 	$groups = array ();
 	$groups_compound = array ();
 	foreach ($result as $row) {
-		$groups[$row["id_sg"]] = $row["name"];	
+		$groups[$row["id_sg"]] = $row["name"];
 	}
-
+	
 	foreach ($result as $row) {
 		$groups_compound[$row["id_sg"]] = '';
 		if ($row["parent"] > 1) {
@@ -263,7 +263,7 @@ if ($id_np > 0) {
 	}
 	
 	$group_filter .= html_print_select ($groups_compound, "ncgroup", $ncgroup, 'javascript:this.form.submit();', __('Group')." - ".__('All'), -1, true, false, true, '" style="width:350px');
-
+	
 	$group_filter .= '</div></form>';
 	
 	if ($ncgroup > 0) {
@@ -272,16 +272,16 @@ if ($id_np > 0) {
 	else {
 		$sql = "SELECT id_nc, name, id_group FROM tnetwork_component WHERE name LIKE '%".$ncfilter."%' ORDER BY name"; 
 	}
-
+	
 	$result = db_get_all_rows_sql ($sql);
 	$components = array ();
 	if ($result === false)
 		$result = array ();
-
+	
 	foreach ($result as $row) {
 		$components[$row["id_nc"]] = $row["name"];
 	}
-
+	
 	$components_select = '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
 	$components_select .= html_print_select ($components, "components[]", $id_nc, '', '', -1, true, true, false, '" style="width:350px');
 	
@@ -304,7 +304,7 @@ if ($id_np > 0) {
 /* <![CDATA[ */
 function CheckAll() {
 	for (var i = 0; i < document.component_delete.elements.length; i++) {
-	
+		
 		var e = document.component_delete.elements[i];
 		if (e.type == 'checkbox' && e.name != 'allbox')
 			e.checked = !e.checked;

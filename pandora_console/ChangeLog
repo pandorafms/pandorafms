@@ -1,5 +1,11 @@
 2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_graph.php: fixed the string graph.
+	
+	Fixes: #3601287
+
+2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/styles/pandora_minimal.css,
 	operation/agentes/stat_win.php: fixed the lost arrow to show the
 	menu when Pandora is in other languages as spanish.

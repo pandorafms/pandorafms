@@ -595,14 +595,14 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$series_suffix = '2';
 		$series_suffix_str = ' ('.__('Previous').')';
 		// Build the data of the previous period
-
+		
 		grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			$width, $height, $title, $unit_name,
 			$show_alerts, $avg_only, $pure,
 			$date-$period, $unit, $baseline, $return_data, $show_title,
 			$only_image, $homeurl, $ttl, $projection, $compare,
 			$series_suffix, $series_suffix_str);
-
+		
 		switch($compare) {
 			case 'separated':
 				// Store the chart calculated
@@ -2748,7 +2748,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	global $config;
 	global $graphic_type;
 	global $max_value;
-
+	
 	include_flash_chart_script($homeurl);
 
 	// Set variables
@@ -2954,11 +2954,21 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
         $legend['max'] = __('Max').': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
         $legend['min'] = __('Min').': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
 
+
+	global $long_index;
 	
-	return vbar_graph($flash_chart, $chart, $width, $height, $color,
+	//Old
+	/*
+		return vbar_graph($flash_chart, $chart, $width, $height, $color,
 		$legend, "", $unit, $homeurl,
 		$config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size'], true, $ttl, true);
+	*/
+	
+	return area_graph($flash_chart, $chart, $width, $height, $color,
+		$legend, $long_index,  "images/image_problem.opaque.png", "", "",   
+		$homeurl, $config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['fontpath'], $config['font_size'], $unit, $ttl);
 }
 
 ///Functions for the LOG4X graphs

@@ -1,10 +1,10 @@
 #!/bin/sh
 
-# Pandora FMS Server Installer (c) 2008-2011 Artica ST
+# Pandora FMS Server Installer (c) 2008-2013 Artica ST
 # Linux/FreeBSD Version (generic), for SuSe, Debian/Ubuntu and FreeBSD only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
-# v5.0 Build 121210
+# v5.0 Build 130207
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
@@ -104,15 +104,15 @@ install () {
 		echo "The complete installation guide is at: http://openideas.info/wiki/index.php?title=Pandora"
 		echo " "
 		echo "Debian-based distribution do:"
-		echo "	# apt-get install snmp snmpd libio-socket-inet6-perl libsocket6-perl libxml-simple-perl libxml-twig-perl libnetaddr-ip-perl libdbi-perl libsnmp-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 snmp-mibs-downloader"
+		echo "	# apt-get install snmp snmpd libjson-perllibio-socket-inet6-perl libsocket6-perl libxml-simple-perl libxml-twig-perl libnetaddr-ip-perl libdbi-perl libsnmp-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 snmp-mibs-downloader"
 		echo " "
 		echo "For CentOS / RHEL do: "
 		echo " "
-		echo "	# yum install perl-XML-Simple* perl-XML-Twig perl-IO-Socket* perl-Socket6 perl-Time-modules* perl-NetAddr-IP* perl-DateTime* perl-ExtUtils perl-DBI perl-SNMP nmap "
+		echo "	# yum install perl-XML-Simple* perl-XML-Twig  perl-JSON perl-IO-Socket* perl-Socket6 perl-Time-modules* perl-NetAddr-IP* perl-DateTime* perl-ExtUtils perl-DBI perl-SNMP nmap "
 		echo " "
 		echo "For OpenSUSE / SLES do : "
 		echo " "
-		echo "	# zypper install nmap perl-DBD-mysql perl-DBI perl-HTML-Parser 
+		echo "	# zypper install nmap perl-DBD-mysql perl-DBI perl-HTML-Parser perl-JSON
 perl-HTML-Encoding perl-HTML-Tree perl-NetAddr-IP perl-IO-Socket-INET6 perl-Socket6
 perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-SNMP"
 		echo " "
@@ -134,7 +134,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 		echo " "
 		echo "To get it from source through CPAN do"
 		echo " "
-		echo "	$ cpan Time::Local DBI SNMP Socket6 XML::Simple XML::Twig IO::Socket Time::HiRes NetAddr::IP HTML::Entities IO::Socket::INET6"
+		echo "	$ cpan Time::Local DBI SNMP Socket6 XML::Simple XML::Twig IO::Socket Time::HiRes NetAddr::IP HTML::Entities IO::Socket::INET6 JSON"
 		echo " "
 		rm output
 	else
@@ -507,8 +507,8 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 5.0dev Server Installer (c) 2008-2012 Artica ST"
-echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
+echo "Pandora FMS 5.0 Server Installer (c) 2008-2013 Artica ST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
 echo " "
 
 case "$MODE" in

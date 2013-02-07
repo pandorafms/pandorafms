@@ -52,7 +52,7 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period, $dat
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
-	$datelimit = $date - $period;	
+	$datelimit = $date - $period;
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);

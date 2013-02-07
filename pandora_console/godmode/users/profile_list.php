@@ -48,7 +48,7 @@ if (!defined('METACONSOLE')) {
 			
 	$buttons[$tab]['active'] = true;
 
-	ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "profile", true, $buttons);	
+	ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "profile", true, $buttons);
 	$sec = 'gusuarios';
 }
 else {
@@ -92,7 +92,7 @@ if($create_profile || $update_profile) {
 	$incident_management = (bool) get_parameter ("incident_management");
 	$agent_view = (bool) get_parameter ("agent_view");
 	$agent_edit = (bool) get_parameter ("agent_edit");
-	$alert_edit = (bool) get_parameter ("alert_edit");	
+	$alert_edit = (bool) get_parameter ("alert_edit");
 	$user_management = (bool) get_parameter ("user_management");
 	$db_management = (bool) get_parameter ("db_management");
 	$alert_management = (bool) get_parameter ("alert_management");
@@ -248,7 +248,7 @@ foreach ($profiles as $profile) {
 	$data[16] = ($profile["event_management"] ? $img : '');
 	$data[17] = ($profile["pandora_management"] ? $img : '');
 	$data[18] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
-	$data[18] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';	
+	$data[18] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';
 	array_push ($table->data, $data);
 }
 

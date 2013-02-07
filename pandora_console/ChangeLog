@@ -1,3 +1,10 @@
+2013-02-07  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/agent_conf_gis.php
+	godmode/agentes/agent_manager.php
+	godmode/massive/massive_edit_agents.php: Change a strings of 
+	ignore gis option in agent configuration to be more usable
+
 2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_ui.php, include/ajax/agent.php: improved the

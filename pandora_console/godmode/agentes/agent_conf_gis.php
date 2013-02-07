@@ -61,8 +61,8 @@ $table->data[3][1] = html_print_input_text_extended ('altitude', $agentData['sto
 	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
 $table->data[4][0] = __('Ignore new GIS data:');
-$table->data[4][1] = __('Disabled').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
-$table->data[4][1] .= __('Enabled').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
+$table->data[4][1] = __('Yes').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
+$table->data[4][1] .= __('No').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
 
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente;
 echo "<form method='post' action='" . $url . "' onsubmit ='return validateFormFields();'>";
@@ -76,8 +76,8 @@ echo "</form>";
 ?>
 <script type="text/javascript">
 function setIgnoreGISDataEnabled() {
-	$("#radiobtn0001").removeAttr("checked");
-	$("#radiobtn0002").attr("checked","checked");
+	$("#radiobtn0002").removeAttr("checked");
+	$("#radiobtn0001").attr("checked","checked");
 }
 
 function validateFormFields() {

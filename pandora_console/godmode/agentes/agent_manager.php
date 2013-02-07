@@ -303,11 +303,11 @@ $table->data[4][1] = html_print_select($arraySelectIcon, "icon_path",
 
 if ($config['activate_gis']) {
 	$table->data[5][0] = __('Ignore new GIS data:');
-	$table->data[5][1] = __('Disabled') . ' ' .
-		html_print_radio_button_extended ("update_gis_data", 1, '',
-			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-	$table->data[5][1] .= __('Enabled') . ' ' .
+	$table->data[5][1] = __('Yes') . ' ' .
 		html_print_radio_button_extended ("update_gis_data", 0, '',
+			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] .= __('No') . ' ' .
+		html_print_radio_button_extended ("update_gis_data", 1, '',
 			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 

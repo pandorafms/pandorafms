@@ -55,11 +55,13 @@ $sql = sprintf ('SELECT id_tipo, descripcion
 	implode (',', $categories));
 $table->data[1][1] = html_print_select_from_sql ($sql, 'type',
 	$type, ($id_component_type == 2 ? 'type_change()' : ''), '', '', true,
-	false, false);
+	false, false, false, true, false, false, false, 0);
 
 $table->data[1][2] = __('Module group');
-$table->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name FROM tmodule_group ORDER BY name',
-	'id_module_group', $id_module_group, '', '', '', true, false, false);
+$table->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name
+	FROM tmodule_group ORDER BY name',
+	'id_module_group', $id_module_group, '', '', '', true, false, false,
+	false, true, false, false, false, 0);
 
 $table->data[2][0] = __('Group');
 $table->data[2][1] = html_print_select (network_components_get_groups (),

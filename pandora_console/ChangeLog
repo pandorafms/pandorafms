@@ -1,5 +1,13 @@
 2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/modules/manage_network_components.php: cleaned source code
+	style.
+	
+	* godmode/modules/manage_network_components_form_common.php: fixed
+	the show types of module.
+
+2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_graph.php: fixed the string graph.
 	
 	Fixes: #3601287

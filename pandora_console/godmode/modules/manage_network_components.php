@@ -315,10 +315,11 @@ if ($component_groups === false)
 	$component_groups = array();
 
 foreach ($component_groups as $component_group_key => $component_group_val) {
-	$num_components = db_get_num_rows('SELECT id_nc
-										FROM tnetwork_component 
-										WHERE id_group = ' . $component_group_key);
-					
+	$num_components = db_get_num_rows('
+		SELECT id_nc
+		FROM tnetwork_component 
+		WHERE id_group = ' . $component_group_key);
+	
 	$childs = component_groups_get_childrens($component_group_key);
 	
 	$num_components_childs = 0;
@@ -327,14 +328,15 @@ foreach ($component_groups as $component_group_key => $component_group_val) {
 	
 		foreach ($childs as $child) {
 			
-			$num_components_childs += db_get_num_rows('SELECT id 
-									FROM tlocal_component 
-									WHERE id_network_component_group = ' . $child['id_sg']);
+			$num_components_childs += db_get_num_rows('
+				SELECT id 
+				FROM tlocal_component 
+				WHERE id_network_component_group = ' . $child['id_sg']);
 		
 		}
 	
-	}					
-										
+	}
+	
 	// Only show component groups with local components
 	if ($num_components  == 0 && $num_components_childs == 0)
 		unset($component_groups[$component_group_key]);

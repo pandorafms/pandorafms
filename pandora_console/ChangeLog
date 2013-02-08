@@ -1,3 +1,8 @@
+2013-02-08  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/servers/plugin.php: Prepare plugin manager to be used 
+	from metaconsole
+
 2013-02-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/menu.php: Fixed the SNMP menu.

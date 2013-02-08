@@ -38,6 +38,8 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 	return;
 }
 
+enterprise_include_once ('meta/include/functions_components_meta.php');
+
 $view = get_parameter ("view", "");
 $create = get_parameter ("create", "");
 
@@ -68,20 +70,29 @@ if ($create != "") {
 // SHOW THE FORM
 // =================================================================
 
+$sec = 'gservers';
+
 if (($create != "") OR ($view != "")) {
 	
-	if ($create != "")
-		ui_print_page_header (__('Plugin creation') . ui_print_help_icon("plugin_definition", true), "", false, "", true);
+	if(defined('METACONSOLE')) {
+		components_meta_print_header();
+		$sec = 'advanced';
+	}
 	else {
-		ui_print_page_header (__('Plugin update') . ui_print_help_icon("plugin_definition", true), "", false, "", true);
-		$plugin_id = get_parameter ("view","");
+		if ($create != "")
+			ui_print_page_header (__('Plugin creation') . ui_print_help_icon("plugin_definition", true), "", false, "", true);
+		else {
+			ui_print_page_header (__('Plugin update') . ui_print_help_icon("plugin_definition", true), "", false, "", true);
+		}
 	}
 	
-	
-	if ($create == "") 
-		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&update_plugin=$plugin_id'>";
-	else
-		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create_plugin=1'>";
+	if ($create == "") {
+		$plugin_id = get_parameter ("view","");
+		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&update_plugin=$plugin_id&pure=" . $config['pure'] . "'>";
+	}
+	else {
+		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create_plugin=1&pure=" . $config['pure'] . "'>";
+	}
 	
 	$table->width = '98%';
 	$table->id = 'table-form';
@@ -274,7 +285,13 @@ if (($create != "") OR ($view != "")) {
 	echo '</form></table>';
 }
 else {
-	ui_print_page_header (__('Plugins registered in Pandora FMS'), "", false, "", true);
+	if(defined('METACONSOLE')) {
+		components_meta_print_header();
+		$sec = 'advanced';
+	}
+	else {
+		ui_print_page_header (__('Plugins registered in Pandora FMS'), "", false, "", true);
+	}
 	
 	// Update plugin
 	if (isset($_GET["update_plugin"])){ // if modified any parameter
@@ -425,7 +442,7 @@ else {
 			}
 			echo "<tr>";
 			echo "<td class=$tdcolor>";
-			echo "<b><a href='index.php?sec=gservers&sec2=godmode/servers/plugin&view=".$row["id"]."'>";
+			echo "<b><a href='index.php?sec=$sec&sec2=godmode/servers/plugin&view=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "'>";
 			echo $row["name"];
 			echo "</a></b></td>";
 			echo "<td class=$tdcolor>";
@@ -436,8 +453,8 @@ else {
 			echo "</td><td class=$tdcolor>";
 			echo $row["execute"];
 			echo "</td><td class=$tdcolor>";
-			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&view=".$row["id"]."'>" . html_print_image('images/config.png', true, array("title" => __("Edit"))) . "</a>&nbsp;&nbsp;";
-			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."'>" . html_print_image("images/cross.png", true, array("border" => '0')) . "</a>";
+			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&view=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "'>" . html_print_image('images/config.png', true, array("title" => __("Edit"))) . "</a>&nbsp;&nbsp;";
+			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "'>" . html_print_image("images/cross.png", true, array("border" => '0')) . "</a>";
 			echo "</td></tr>";
 		}
 		echo "</table>";
@@ -448,7 +465,7 @@ else {
 	}
 	echo "<table width='98%'>";
 	echo "<tr><td align=right>";
-	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create=1'>";
+	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create=1&pure=" . $config['pure'] . "'>";
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
 	echo "</td></tr></table>";
 }

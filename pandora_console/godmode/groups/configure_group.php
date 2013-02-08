@@ -47,7 +47,12 @@ if ($id_group) {
 	$group = db_get_row ('tgrupo', 'id_grupo', $id_group);
 	if ($group) {
 		$name = $group["nombre"];
-		$icon = $group["icon"].'.png';
+		if(empty($group["icon"])) {
+			$icon = false;
+		}
+		else {
+			$icon = $group["icon"].'.png';
+		}
 		$alerts_disabled = $group["disabled"];
 		$id_parent = $group["parent"];
 		$custom_id = $group["custom_id"];
@@ -106,6 +111,7 @@ $table->data[1][1] .= ' <span id="icon_preview">';
 if ($icon) {
 	$table->data[1][1] .= html_print_image("images/groups_small/".$icon, true); 
 }
+
 $table->data[1][1] .= '</span>';
 
 $table->data[2][0] = __('Parent');
@@ -203,6 +209,9 @@ function parent_changed () {
 			$('#parent_preview').fadeOut ('normal', function () {
 				$('#parent_preview').empty ();
 				if (data_ != null) {
+					if(data['icon'] == '') {
+						data['icon'] = 'without_group';
+					}
 					var params = [];
 					params.push("get_image_path=1");
 					params.push("img_src=images/groups_small/" + data['icon'] + ".png");

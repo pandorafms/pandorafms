@@ -1,5 +1,10 @@
 2013-02-08  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/groups/configure_group.php: Fixed some bugs on
+	the group icons in the groups form
+
+2013-02-08  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/servers/plugin.php: Prepare plugin manager to be used 
 	from metaconsole
 

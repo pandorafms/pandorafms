@@ -137,7 +137,7 @@ if (isset ($id)) {
 		$oid = "";
 		$max = "0";
 		$min = "0";
-		$module_interval = "0";
+		$module_interval = "300";
 		$tcp_port = "";
 		$tcp_rcv = "";
 		$tcp_send = "";

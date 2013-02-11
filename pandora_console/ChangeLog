@@ -1,5 +1,12 @@
 2013-02-11  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_network_components.php
+	godmode/modules/manage_network_components_form.php: Fix the default
+	interval when create network component. Fix the clone network components
+	fields to update all of them for bug 3595231
+
+2013-02-11  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_ui.php
 	general/header.php: Move some javascript and css inclusions
 	from header file to ui_process_page_head function to still 

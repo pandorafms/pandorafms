@@ -1,5 +1,12 @@
 2013-02-11  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_ui.php
+	general/header.php: Move some javascript and css inclusions
+	from header file to ui_process_page_head function to still 
+	having this files when in full screen mode 
+
+2013-02-11  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/users/user_list.php: Fix pagination on users list
 
 2013-02-11 Miguel de Dios <miguel.dedios@artica.es>

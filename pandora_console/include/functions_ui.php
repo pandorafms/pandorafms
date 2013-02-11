@@ -1227,6 +1227,9 @@ function ui_process_page_head ($string, $bitfield) {
 			$config['style'] => "include/styles/".$config['style'].".css"), $config['css']);
 	}
 	
+	// Add the jquery UI styles CSS
+	$config['css']['jquery-UI'] = "include/styles/jquery-ui-1.10.0.custom.css";
+	
 	//We can't load empty and we loaded (conditionally) ie
 	$loaded = array ('', 'ie');
 	
@@ -1259,6 +1262,12 @@ function ui_process_page_head ($string, $bitfield) {
 	//Pandora specific JavaScript should go first
 	$config['js'] = array_merge (array ("pandora" => "include/javascript/pandora.js"), $config['js']);
 	
+	//Load base64 javascript library
+	$config['js']['base64'] = "include/javascript/encode_decode_base64.js";
+	
+	//Load webchat javascript library
+	$config['js']['webchat'] = "include/javascript/webchat.js";
+
 	//Load other javascript
 	//We can't load empty
 	$loaded = array ('');
@@ -1306,6 +1315,12 @@ function ui_process_page_head ($string, $bitfield) {
 		$config['jquery']['datepicker_language'] = 'include/languages/datepicker/jquery.ui.datepicker-'.$config['language'].'.js';
 	}
 	
+	// Include jquery UI
+	$config['jquery']['jquery-ui'] = 'include/javascript/jquery.jquery-ui-1.10.0.custom.js';
+
+	// Include countdown library
+	$config['jquery']['countdown'] = 'include/javascript/jquery.countdown.js';
+
 	//Then add each script as necessary
 	$loaded = array ('');
 	foreach ($config['jquery'] as $name => $filename) {

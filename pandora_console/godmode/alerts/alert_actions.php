@@ -81,13 +81,13 @@ if ($copy_action) {
 				exit;
 			}
 			else {
-				// Header	
+				// Header
 				if (defined('METACONSOLE')) {
 					alerts_meta_print_header ();
 				}
-				else {	
+				else {
 					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
-				}			
+				}
 			}
 		} // If user tries to copy an action of others groups
 		else {
@@ -99,13 +99,13 @@ if ($copy_action) {
 			$is_in_group = in_array($al_action['id_group'], $own_groups);
 			// Then action group have to be in his own groups
 			if ($is_in_group) {
-				// Header	
+				// Header
 				if (defined('METACONSOLE')) {
 					alerts_meta_print_header ();
 				}
-				else {	
+				else {
 					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
-				}			
+				}
 			}
 			else {
 				db_pandora_audit("ACL Violation",
@@ -113,13 +113,14 @@ if ($copy_action) {
 				require ("general/noaccess.php");
 				exit;
 			}
-		}		
-	} else {
-		// Header	
+		}
+	}
+	else {
+		// Header
 		if (defined('METACONSOLE')) {
 			alerts_meta_print_header ();
 		}
-		else {	
+		else {
 			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
 		}
 	}

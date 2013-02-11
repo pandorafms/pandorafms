@@ -274,7 +274,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 				if (array_key_exists('fatherId',$extmenu)) {
 					if (strlen($extmenu['fatherId']) > 0) {
 						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
-						if ($extmenu["name"] != 'DB interface'){
+						if ($extmenu["name"] != 'DB interface') {
 							if (!empty($config['refr'])) {
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = $config['refr'];
 							}

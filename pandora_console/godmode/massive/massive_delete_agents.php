@@ -49,7 +49,7 @@ function process_manage_delete ($id_agents) {
 		if (! $success) {
 			$agent_id_restore = $id_agent;
 			break;
-		}	
+		}
 		$count_deleted++;
 	}
 	

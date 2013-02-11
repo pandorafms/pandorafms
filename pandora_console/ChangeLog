@@ -1,3 +1,16 @@
+2013-02-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/menu.php, godmode/alerts/configure_alert_template.php,
+	godmode/alerts/alert_actions.php,
+	godmode/agentes/agent_template.php,
+	godmode/massive/massive_delete_agents.php: cleaned source code.
+	
+	* include/functions_html.php: added the weeks in the input for
+	times.
+	
+	* operation/agentes/stat_win.php: fixed the malformated table when
+	show extended options in the time widget.
+
 2013-02-11  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/gis_maps/index.php

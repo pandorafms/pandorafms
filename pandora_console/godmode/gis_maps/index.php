@@ -88,11 +88,10 @@ $defaultMapId = null;
 if ($maps){
 	$own_info = get_user_info($config['id_user']);
 	foreach ($maps as $map) {
-		if (!check_acl ($config["id_user"], $map["group_id"], "IR")) {
+		if (!check_acl ($config["id_user"], $map["group_id"], "IW")) {
 			continue;
 		}
-		if ($map['group_id'] == 0 && (!$own_info['is_admin'] || !check_acl ($config['id_user'], 0, "PM")))
-			continue;
+
 		$checked = false;
 		if ($map['default_map']) {
 			$checked = true;

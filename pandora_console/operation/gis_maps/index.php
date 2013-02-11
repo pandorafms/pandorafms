@@ -38,14 +38,12 @@ $table->align[1] = 'center';
 $rowPair = true;
 $iterator = 0;
 
-$own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-	$own_groups = array_keys(users_get_groups($config['id_user'], "IR"));
-else
-	$own_groups = array_keys(users_get_groups($config['id_user'], "IR", false));
-			
 if ($maps !== false) {
 	foreach ($maps as $map) {
+		if (!check_acl ($config["id_user"], $map["group_id"], "IR", 0, true)) {
+			continue;
+		}
+		
 		if ($rowPair)
 			$table->rowclass[$iterator] = 'rowPair';
 		else
@@ -53,13 +51,6 @@ if ($maps !== false) {
 		$rowPair = !$rowPair;
 		$iterator++;
 		
-		$is_in_group = in_array($map['group_id'], $own_groups);
-		if (!$is_in_group){
-			continue;
-		}
-		if (!check_acl ($config["id_user"], $map["group_id"], "IR", 0, true)) {
-			continue;
-		}
 		$data = array ();
 		
 		$data[0] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.

@@ -580,7 +580,7 @@ $data[1] = html_print_select_groups($config['id_user'], "UM",
 	
 $tags = tags_get_all_tags();
 
-$data[2] = html_print_select($tags, 'assign_tags[]', '', '', __('None'), '', true, true);
+$data[2] = html_print_select($tags, 'assign_tags[]', '', '', __('Any'), '', true, true);
 
 $data[3] = html_print_input_image ('add', 'images/add.png', 1, '', true);
 $data[3] .= html_print_input_hidden ('id', $id, true);

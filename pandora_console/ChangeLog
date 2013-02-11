@@ -1,3 +1,12 @@
+2013-02-11  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/gis_maps/index.php
+	godmode/gis_maps/index.php: Fixed ACL access of 
+	not admin users to the maps of group All on GIS
+
+	* godmode/users/configure_user.php: Change a string to
+	crearify the tags ACLs assignation
+
 2013-02-08  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/groups/configure_group.php: Fixed some bugs on

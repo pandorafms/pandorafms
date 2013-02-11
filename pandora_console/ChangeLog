@@ -1,3 +1,7 @@
+2013-02-11  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/users/user_list.php: Fix pagination on users list
+
 2013-02-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_servers.php, extensions/plugin_registration.php:

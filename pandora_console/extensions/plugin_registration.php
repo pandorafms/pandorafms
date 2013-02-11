@@ -135,12 +135,12 @@ function pluginreg_extension_main () {
 	else {
 		$macros = json_encode($macros);
 	}
-
+	
 	$values = array(
 		'name' => io_safe_input ($ini_array["plugin_definition"]["name"]),
 		'description' => io_safe_input ($ini_array["plugin_definition"]["description"]),
 		'max_timeout' => $ini_array["plugin_definition"]["timeout"],
-		'max_retries' => isset($ini_array["plugin_definition"]["retries"]) ? $ini_array["plugin_definition"]["retries"] : 0,
+		'max_retries' => $ini_array["plugin_definition"]["retries"],
 		'execute' => io_safe_input ($exec_path),
 		'parameters' => io_safe_input ($ini_array["plugin_definition"]["execution_postcommand"]),
 		'macros' => $macros,

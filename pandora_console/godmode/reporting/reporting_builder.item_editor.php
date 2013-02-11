@@ -819,9 +819,18 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Text'); ?></td>
 			<td style=""><?php html_print_textarea('text', 5, 25, $text); ?></td>
 		</tr>
+		<tr id="row_custom" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Custom SQL template'); ?></td>
+			<td style=""><?php html_print_select_from_sql('SELECT id, name FROM treport_custom_sql', 'id_custom', $idCustom, 'chooseSQLquery()', '--', '0'); ?></td>
+		</tr>
 		<tr id="row_query" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Query SQL'); ?></td>
-			<td style=""><?php html_print_textarea('sql', 5, 25, $sql); ?></td>
+			<td style="vertical-align: top;"><?php echo __('SQL query'); ?></td>
+			<td style="" id="sql_entry">
+				<?php
+				html_print_textarea('sql', 5, 25, $sql);
+				?>
+			</td>
+			<td style="" id="sql_example"></td> 
 		</tr>
 		<tr id="row_servers" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Server'); ?></td>
@@ -837,14 +846,6 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_header" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Serialized header') . ui_print_help_tip(__("The separator character is |"), true);?></td>
 			<td style=""><?php html_print_input_text('header', $header, '', 40, 90); ?></td>
-		</tr>
-		<tr id="row_custom" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Custom SQL template'); ?></td>
-			<td style=""><?php html_print_select_from_sql('SELECT id, name FROM treport_custom_sql', 'id_custom', $idCustom, 'chooseSQLquery()', '--', '0'); ?></td>
-		</tr>
-		<tr id="row_custom_example">
-			<td style="vertical-align: top;"><?php echo __('SQL preview'); ?></td>
-			<td style="" id="sql_example"></td> 
 		</tr>
 		<tr id="row_url" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('URL'); ?></td>
@@ -1394,9 +1395,14 @@ function chooseSQLquery() {
 	var idCustom = $("#id_custom").val();
 	
 	if (idCustom == 0) {
+		$("#sql_example").css('display', 'none');
+		$("#sql_entry").css('display', '');
 		$("#sql_example").html('');
 	}
 	else {
+		$("#sql_example").css('display', '');
+		$("#sql_entry").css('display', 'none');
+		
 		var params1 = [];
 		params1.push("get_image_path=1");
 		params1.push("img_src=" + "images/spinner.gif");

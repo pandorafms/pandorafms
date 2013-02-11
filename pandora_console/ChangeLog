@@ -1,5 +1,15 @@
 2013-02-11 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_servers.php, extensions/plugin_registration.php:
+	cleaned source code.
+	
+	* godmode/reporting/reporting_builder.item_editor.php: fixed the
+	usability for the SQL items in the reports.
+	
+	Fixes: #3573455
+
+2013-02-11 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/menu.php, godmode/alerts/configure_alert_template.php,
 	godmode/alerts/alert_actions.php,
 	godmode/agentes/agent_template.php,

@@ -517,13 +517,22 @@ function servers_check_status () {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
+			$sql = "SELECT COUNT(id_server)
+				FROM tserver
+				WHERE status = 1
+					AND keepalive > NOW() - INTERVAL 15 MINUTE";
 			break;
 		case "postgresql":
-			$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL '15 MINUTE'";
+			$sql = "SELECT COUNT(id_server)
+				FROM tserver
+				WHERE status = 1
+					AND keepalive > NOW() - INTERVAL '15 MINUTE'";
 			break;
 		case "oracle":
-			$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > systimestamp - INTERVAL '15' MINUTE";
+			$sql = "SELECT COUNT(id_server)
+				FROM tserver
+				WHERE status = 1
+					AND keepalive > systimestamp - INTERVAL '15' MINUTE";
 			break;
 	}
 	$status = (int) db_get_sql ($sql); //Cast as int will assure a number value

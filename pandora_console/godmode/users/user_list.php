@@ -203,17 +203,17 @@ $table->size[5] = '65px';
 
 $info1 = array ();
 
-$info1 = get_users ($order, array ('offset' => (int) get_parameter ('offset'),
-	'limit' => (int) $config['block_size']));
+$info1 = get_users ($order);
 
 $info = array();
 $own_info = get_user_info ($config['id_user']);
 $own_groups = users_get_groups ($config['id_user'], 'AR', $own_info['is_admin']);
 
-if ($own_info['is_admin'])
+if ($own_info['is_admin']) {
 	$info = $info1;
+}
 // If user is not admin then don't display admin users and user of others groups.
-else
+else {
 	foreach ($info1 as $key => $usr) {
 		$u = get_user_info ($key);
 		$g = users_get_groups ($key, 'AR', $u['is_admin']);
@@ -223,13 +223,31 @@ else
 		unset($u);
 		unset($g);
 	}
-
+}
+	
 // Prepare pagination
-ui_pagination (count(get_users ()));
+ui_pagination (count($info));
+
+$offset = (int) get_parameter ('offset');
+$limit = (int) $config['block_size'];
 
 $rowPair = true;
 $iterator = 0;
+$cont = 0;
 foreach ($info as $user_id => $user_info) {
+	$cont++;
+	
+	////////////////////
+	// Manual pagination due the complicated process of the ACL data
+	if ($cont <= $offset) {
+		continue;
+	}
+	
+	if ($cont > ($limit + $offset)) {
+		break;
+	}
+	////////////////////
+	
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else

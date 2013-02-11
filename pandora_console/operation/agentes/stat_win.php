@@ -37,7 +37,7 @@ if (! isset ($config['id_user']) && get_parameter("loginhash", 0)) {
 		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;
-	
+		
 		$hash_connection_data = true;
 	}
 	
@@ -283,18 +283,18 @@ $label = base64_decode(get_parameter('label', ''));
 			<?php
 			echo __('Please, make your changes and apply with the <i>Reload</i> button');
 			?>
-			<div style="float: left; width: 80%;">
+			<div style="float: left; width: 85%;">
 				
-			<form method="get" action="stat_win.php">
-			<?php
+				<form method="get" action="stat_win.php">
+					<?php
 					html_print_input_hidden ("id", $id);
 					html_print_input_hidden ("label", $label);
-
+					
 					if (isset($hash_connection_data)) {
-
-							html_print_input_hidden("loginhash", "auto");
-							html_print_input_hidden("loginhash_data", $loginhash_data);
-							html_print_input_hidden("loginhash_user", $loginhash_user);
+						
+						html_print_input_hidden("loginhash", "auto");
+						html_print_input_hidden("loginhash_data", $loginhash_data);
+						html_print_input_hidden("loginhash_user", $loginhash_user);
 					}
 					
 					html_print_input_hidden ("id", $id);
@@ -305,10 +305,10 @@ $label = base64_decode(get_parameter('label', ''));
 						html_print_input_hidden ("type", $type);
 					}
 					?>
-					<table class="databox_frame" cellspacing="5" width="100%">
+					<table class="databox_frame" cellspacing="2" width="100%">
 						<tr>
 							<td><?php echo __('Refresh time');?></td>
-							<td>
+							<td width="50%">
 								<?php
 								html_print_extended_select_for_time(
 									"refresh", $refresh, '', '', 0, 7);
@@ -390,33 +390,43 @@ $label = base64_decode(get_parameter('label', ''));
 							case 'boolean':
 							case 'sparse':
 						?>
-						<tr>
-							<td><?php echo __('Time compare').' ('.__('Overlapped').')';?></td>
-							<td>
-								<?php
-								html_print_checkbox ("time_compare_overlapped",
-									1, (bool) $time_compare_overlapped);
-								?>
-							</td>
-						</tr>
-						<tr>
-							<td><?php echo __('Time compare').' ('.__('Separated').')';?></td>
-							<td>
-								<?php
-								html_print_checkbox ("time_compare_separated",
-									1, (bool) $time_compare_separated);
-								?>
-							</td>
-						</tr>
-						<tr>
-							<td><?php echo __('Show unknown graph');?></td>
-							<td>
-								<?php
-								html_print_checkbox ("unknown_graph",
-									1, (bool) $unknown_graph);
-								?>
-							</td>
-						</tr>
+							<tr>
+								<td>
+									<?php
+									echo __('Time compare') . ' (' .
+										__('Overlapped') . ')';
+									?>
+								</td>
+								<td>
+									<?php
+									html_print_checkbox ("time_compare_overlapped",
+										1, (bool) $time_compare_overlapped);
+									?>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<?php
+									echo __('Time compare') . ' ('.
+										__('Separated').')';
+									?>
+								</td>
+								<td>
+									<?php
+									html_print_checkbox ("time_compare_separated",
+										1, (bool) $time_compare_separated);
+									?>
+								</td>
+							</tr>
+							<tr>
+								<td><?php echo __('Show unknown graph');?></td>
+								<td>
+									<?php
+									html_print_checkbox ("unknown_graph",
+										1, (bool) $unknown_graph);
+									?>
+								</td>
+							</tr>
 						<?php
 							break;
 						}

@@ -448,6 +448,7 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 		SECONDS_1MINUTE => __('minutes'),
 		SECONDS_1HOUR => __('hours'),
 		SECONDS_1DAY => __('days'),
+		SECONDS_1WEEK => __('weeks'),
 		SECONDS_1MONTH => __('months'),
 		SECONDS_1YEAR => __('years'));
 	

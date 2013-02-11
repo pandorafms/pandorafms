@@ -412,7 +412,7 @@ if ($create_template) {
 	}
 	else {
 		$result = '';
-	}	
+	}
 	if ($result) {
 		//db_pandora_audit("Command management", "Create alert command " . $result, false, false, json_encode($values));
 		db_pandora_audit("Template alert management", "Create alert template #" . $result, false, false, json_encode($values));

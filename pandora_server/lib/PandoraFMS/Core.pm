@@ -408,7 +408,9 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 				$data =~ m/$alert->{'value'}/i;
 			};
 			if ($@) {
-				logger ($pa_config, "Error evaluating alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output($agent->{'nombre'}) . "': '" . $alert->{'value'} . "' is not a valid regular expression.", 10);
+				logger ($pa_config, "Error evaluating alert '" .
+					safe_output($alert->{'name'}) . "' for agent '" .
+					safe_output($agent->{'nombre'}) . "': '" . $alert->{'value'} . "' is not a valid regular expression.", 10);
 				return $status;
 			}
 			
@@ -449,10 +451,11 @@ sub pandora_process_alert ($$$$$$$$;$) {
 	
 	if (defined ($agent)) {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output($agent->{'nombre'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
-	} else {
+	}
+	else {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
 	}
-
+	
 	# Simple or event alert?
 	my ($id, $table) = (undef, undef);
 	if (defined ($alert->{'id_template_module'})) {
@@ -465,19 +468,19 @@ sub pandora_process_alert ($$$$$$$$;$) {
 	
 	# Do not execute
 	return if ($rc == 1);
-
+	
 	# Cease
 	if ($rc == 3) {
-
+		
 		# Update alert status
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
-				 internal_counter = 0 WHERE id = ?', $id);
-
+			internal_counter = 0 WHERE id = ?', $id);
+		
 		# Update fired alert count
 		if (defined ($agent)) {
 			db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente=?', $agent->{'id_agente'});
 		}
-
+		
 		# Critical_instructions, warning_instructions, unknown_instructions
 		my $critical_instructions = get_db_value ($dbh, 'SELECT critical_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
 		my $warning_instructions = get_db_value ($dbh, 'SELECT warning_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
@@ -525,35 +528,35 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET internal_counter = 0 WHERE id = ?', $id);
 		return;
 	}
-
+	
 	# Get current date
 	my $utimestamp = time ();
-
+	
 	# Do we have to start a new interval?
 	my $new_interval = ($alert->{'internal_counter'} == 0) ?
-			', last_reference = ' . $utimestamp : '';
-
+		', last_reference = ' . $utimestamp : '';
+	
 	# Increment internal counter
 	if ($rc == 2) {
-
+		
 		# Update alert status
 		$alert->{'internal_counter'} += 1;
-
+		
 		# Do not increment times_fired, but set it in case the alert was reset
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = ?,
 			internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $alert->{'internal_counter'}, $id);
-
+		
 		return;
 	}
-
+	
 	# Execute
 	if ($rc == 0) {
-
+		
 		# Update alert status
 		$alert->{'times_fired'} += 1;
 		$alert->{'internal_counter'} += 1;
-
+		
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = ?,
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
@@ -562,7 +565,7 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		if (defined ($agent)) {
 			db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count+1 WHERE id_agente=?', $agent->{'id_agente'});
 		}
-
+		
 		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh, $timestamp, $extra_macros);
 		return;
 	}
@@ -578,7 +581,7 @@ Execute the given alert.
 sub pandora_execute_alert ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module,
 		$alert, $alert_mode, $dbh, $timestamp, $extra_macros) = @_;
-
+	
 	# Alerts in stand-by are not executed
 	if ($alert->{'standby'} == 1) {
 		if (defined ($module)) {
@@ -588,16 +591,17 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 		}
 		return;
 	}
-
+	
 	if (defined ($module)) {
 		logger ($pa_config, "Executing alert '" . safe_output($alert->{'name'}) . "' for module '" . safe_output($module->{'nombre'}) . "'.", 10);
-	} else {
+	}
+	else {
 		logger ($pa_config, "Executing alert '" . safe_output($alert->{'name'}) . "'.", 10);
 	}
-
+	
 	# Get active actions/commands
 	my @actions;
-
+	
 	# Simple alert
 	if (defined ($alert->{'id_template_module'})) {
 		@actions = get_db_rows ($dbh, 'SELECT *, talert_template_module_actions.id AS id_alert_template_module_actions
@@ -696,15 +700,15 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	my $field1 = $action->{'field1'} ne "" ? $action->{'field1'} : $alert->{'field1'};
 	my $field2 = $action->{'field2'} ne "" ? $action->{'field2'} : $alert->{'field2'};
-	my $field3 = $action->{'field3'} ne "" ? $action->{'field3'} : $alert->{'field3'};		
-	my $field4 = $action->{'field4'} ne "" ? $action->{'field4'} : $alert->{'field4'};		
-	my $field5 = $action->{'field5'} ne "" ? $action->{'field5'} : $alert->{'field5'};		
-	my $field6 = $action->{'field6'} ne "" ? $action->{'field6'} : $alert->{'field6'};		
-	my $field7 = $action->{'field7'} ne "" ? $action->{'field7'} : $alert->{'field7'};		
-	my $field8 = $action->{'field8'} ne "" ? $action->{'field8'} : $alert->{'field8'};		
-	my $field9 = $action->{'field9'} ne "" ? $action->{'field9'} : $alert->{'field9'};		
-	my $field10 = $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};		
-
+	my $field3 = $action->{'field3'} ne "" ? $action->{'field3'} : $alert->{'field3'};
+	my $field4 = $action->{'field4'} ne "" ? $action->{'field4'} : $alert->{'field4'};
+	my $field5 = $action->{'field5'} ne "" ? $action->{'field5'} : $alert->{'field5'};
+	my $field6 = $action->{'field6'} ne "" ? $action->{'field6'} : $alert->{'field6'};
+	my $field7 = $action->{'field7'} ne "" ? $action->{'field7'} : $alert->{'field7'};
+	my $field8 = $action->{'field8'} ne "" ? $action->{'field8'} : $alert->{'field8'};
+	my $field9 = $action->{'field9'} ne "" ? $action->{'field9'} : $alert->{'field9'};
+	my $field10 = $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
+	
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == 0){
 		$field2 = $alert->{'field2_recovery'} ne "" ? $alert->{'field2_recovery'} : "[RECOVER]" . $field2;
@@ -1072,11 +1076,12 @@ sub pandora_planned_downtime_disabled_once_stop($$) {
 	my ($pa_config, $dbh) = @_;
 	my $utimestamp = time();
 	
-	# Stop executed downtimes (enable agents)
+	# Stop executed downtimes (enable agents and disable_agents_alerts)
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_downtime != "quiet" AND type_execution="once"
 			AND executed = 1 AND date_to <= ?', $utimestamp);
+	
 	foreach my $downtime (@downtimes) {
 		
 		logger($pa_config, "Ending planned downtime '" . $downtime->{'name'} . "'.", 10);
@@ -1103,10 +1108,10 @@ sub pandora_planned_downtime_disabled_once_start($$) {
 	my ($pa_config, $dbh) = @_;
 	my $utimestamp = time();
 	
-	# Start pending downtimes (disable agents)
+	# Start pending downtimes (disable agents and disable_agents_alerts)
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_downtime = "quiet" AND type_execution="once"
+		WHERE type_downtime != "quiet" AND type_execution="once"
 			AND executed = 0 AND date_from <= ?
 			AND date_to >= ?', $utimestamp, $utimestamp);
 	
@@ -1119,7 +1124,11 @@ sub pandora_planned_downtime_disabled_once_start($$) {
 			$downtime->{'name'} = "N/A";
 		}
 		
-		logger($pa_config, "Starting planned downtime '" . $downtime->{'name'} . "'.", 1);
+		logger($pa_config, "[PLANNED_DOWNTIME] " .
+			"Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
+		
+		logger($pa_config, "[PLANNED_DOWNTIME] " .
+			"Starting planned downtime ID " . $downtime->{'id'} . ".", 10);
 		
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 1
@@ -1133,7 +1142,7 @@ sub pandora_planned_downtime_disabled_once_start($$) {
 }
 
 ########################################################################
-=head2 C<< pandora_planned_downtime_set_quiet_elements (I<$pa_config>, I<$dbh>, <$id_downtime>) >> 
+=head2 C<< pandora_planned_downtime_set_disabled_elements (I<$pa_config>, I<$dbh>, <$id_downtime>) >> 
 
 Start the planned downtime, the once type. 
 
@@ -1150,13 +1159,13 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 		my $only_alerts = 0;
 		
 		if ($downtime->{'only_alerts'} == 0) {
-			if ($downtime->{'type_downtime'} == 'disable_agents_alerts') {
+			if ($downtime->{'type_downtime'} eq 'disable_agents_alerts') {
 				$only_alerts = 1;
 			}
 		}
-		else {
-			$only_alerts = 1;
-		}
+		
+		logger($pa_config, "[PLANNED_DOWNTIME] " .
+			"Only Alerts " . $only_alerts . ".", 10);
 		
 		if ($only_alerts == 0) {
 			db_do ($dbh, 'UPDATE tagente
@@ -1164,6 +1173,9 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 				WHERE id_agente = ?', $downtime_agent->{'id_agent'});
 		}
 		else {
+			logger($pa_config, "[PLANNED_DOWNTIME] " .
+				"Disabled Agent " . $downtime_agent->{'id_agent'} . ".", 10);
+			
 			db_do ($dbh, 'UPDATE talert_template_modules
 				SET disabled = 1
 				WHERE id_agent_module IN (
@@ -1193,12 +1205,9 @@ sub pandora_planned_downtime_unset_disabled_elements($$$) {
 		my $only_alerts = 0;
 		
 		if ($downtime->{'only_alerts'} == 0) {
-			if ($downtime->{'type_downtime'} == 'disable_agents_alerts') {
+			if ($downtime->{'type_downtime'} eq 'disable_agents_alerts') {
 				$only_alerts = 1;
 			}
-		}
-		else {
-			$only_alerts = 1;
 		}
 		
 		if ($only_alerts == 0) {
@@ -1247,7 +1256,8 @@ sub pandora_planned_downtime_set_quiet_elements($$$) {
 			foreach my $downtime_module (@downtime_modules) {
 				db_do ($dbh, 'UPDATE tagente_modulo
 					SET quiet = 1
-					WHERE id_agente_modulo = ?', $downtime_agent->{'id_agent_module'});
+					WHERE id_agente_modulo = ?',
+					$downtime_module->{'id_agent_module'});
 			}
 		}
 	}
@@ -1282,7 +1292,8 @@ sub pandora_planned_downtime_unset_quiet_elements($$$) {
 			foreach my $downtime_module (@downtime_modules) {
 				db_do ($dbh, 'UPDATE tagente_modulo
 					SET quiet = 0
-					WHERE id_agente_modulo = ?', $downtime_agent->{'id_agent_module'});
+					WHERE id_agente_modulo = ?',
+					$downtime_module->{'id_agent_module'});
 			}
 		}
 	}
@@ -1299,12 +1310,11 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 	my ($pa_config, $dbh) = @_;
 	my $utimestamp = time();
 	
-	# Start pending downtimes
+	# Stop pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_downtime = "quiet" AND type_execution="once"
-			AND executed = 1 AND date_from <= ?
-			AND date_to >= ?', $utimestamp, $utimestamp);
+			AND executed = 1 AND date_to <= ?', $utimestamp);
 	
 	foreach my $downtime (@downtimes) {
 		if (!defined($downtime->{'description'})) {
@@ -1315,7 +1325,8 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 			$downtime->{'name'} = "N/A";
 		}
 		
-		logger($pa_config, "Starting planned downtime '" . $downtime->{'name'} . "'.", 1);
+		logger($pa_config, "[PLANNED_DOWNTIME] " .
+			"Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
 		
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 0
@@ -1339,6 +1350,9 @@ sub pandora_planned_downtime_quiet_once_start($$) {
 	my ($pa_config, $dbh) = @_;
 	my $utimestamp = time();
 	
+	logger($pa_config, "[PLANNED_DOWNTIME] " .
+		"Enter pandora_planned_downtime_quiet_once_start().", 10);
+	
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
@@ -1355,7 +1369,8 @@ sub pandora_planned_downtime_quiet_once_start($$) {
 			$downtime->{'name'} = "N/A";
 		}
 		
-		logger($pa_config, "Starting planned downtime '" . $downtime->{'name'} . "'.", 1);
+		logger($pa_config, "[PLANNED_DOWNTIME] " .
+			"Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
 		
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 1
@@ -1377,6 +1392,10 @@ Start the planned downtime, the monthly type.
 ########################################################################
 sub pandora_planned_downtime_monthly_start($$) {
 	my ($pa_config, $dbh) = @_;
+	
+	logger($pa_config, "[PLANNED_DOWNTIME] " .
+		"Enter pandora_planned_downtime_monthly_start().", 10);
+	
 	#my $local_time = localtime();
 	my @var_localtime = localtime(time);
 	my $year = $var_localtime[5]  + 1900;
@@ -1411,8 +1430,15 @@ sub pandora_planned_downtime_monthly_start($$) {
 		#	"%H:%M:%S");
 		#
 		#if ($date_now_time >= $date_downtime) {
-		if (($time gt $downtime->{'periodically_time_from'})
-			|| ($time eq $downtime->{'periodically_time_from'})) {
+		
+		
+		if (
+			(($time gt $downtime->{'periodically_time_from'})
+				|| ($time eq $downtime->{'periodically_time_from'}))
+			&&
+			(($time lt $downtime->{'periodically_time_to'})
+				|| ($time eq $downtime->{'periodically_time_to'}))
+			) {
 			
 			if (!defined($downtime->{'description'})) {
 				$downtime->{'description'} = "N/A";
@@ -1422,7 +1448,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 				$downtime->{'name'} = "N/A";
 			}
 			
-			logger($pa_config, "Starting planned monthly downtime '" . $downtime->{'name'} . "'.", 1);
+			logger($pa_config, "Starting planned monthly downtime '" . $downtime->{'name'} . "'.", 10);
 			
 			db_do($dbh, 'UPDATE tplanned_downtime
 				SET executed = 1
@@ -1430,15 +1456,22 @@ sub pandora_planned_downtime_monthly_start($$) {
 			pandora_event ($pa_config,
 				"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 			
-			if ($downtime->{'type_downtime'} == "quiet") {
+			
+			logger($pa_config, $downtime->{'type_downtime'}, 10);
+			if ($downtime->{'type_downtime'} eq "quiet") {
 				pandora_planned_downtime_set_quiet_elements($pa_config,
 					$dbh, $downtime->{'id'});
 			}
-			elsif (($downtime->{'type_downtime'} == "disable_agents")
-				|| ($downtime->{'type_downtime'} == "disabled_agents_alerts")) {
+			elsif (($downtime->{'type_downtime'} eq "disable_agents")
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+					
+					logger($pa_config, "ON DISABLE AGENTS/ALERTS", 10);
+					
 					pandora_planned_downtime_set_disabled_elements($pa_config,
 						$dbh, $downtime);
 			}
+			
+			
 		}
 	}
 }
@@ -1453,6 +1486,10 @@ Start the planned downtime, the montly type.
 ########################################################################
 sub pandora_planned_downtime_monthly_stop($$) {
 	my ($pa_config, $dbh) = @_;
+	
+	logger($pa_config, "[PLANNED_DOWNTIME] " .
+		"Enter pandora_planned_downtime_monthly_stop().", 10);
+	
 	#my $local_time = localtime();
 	my @var_localtime = localtime(time);
 	my $year = $var_localtime[5]  + 1900;
@@ -1480,16 +1517,21 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		($number_day_month >= 30)) {
 		$number_day_month = 31;
 	}
-	
+	logger($pa_config, $number_day_month, 10);
 	
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity="monthly"
+		WHERE type_periodicity = "monthly"
 			AND executed = 1
-			AND periodically_day_to <= ?', $number_day_month);
+			AND type_execution <> "once"');
 	
 	foreach my $downtime (@downtimes) {
+		
+		logger($pa_config, "Stop Time: " . $time, 10);
+		logger($pa_config, "Stop periodically_time_from: " .
+			$downtime->{'periodically_time_from'}, 10);
+		
 		#Convert to identical type.
 		#my $date_downtime = Time::Piece->strptime(
 		#	$downtime->{'periodically_time_to'},
@@ -1499,8 +1541,14 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		#	"%H:%M:%S");
 		#
 		#if ($date_now_time <= $date_downtime) {
-		if (($time gt $downtime->{'periodically_time_to'})
-			|| ($time eq $downtime->{'periodically_time_to'})) {
+		if (($time gt $downtime->{'periodically_time_to'}) 
+			||
+			($time lt $downtime->{'periodically_time_from'})
+			||
+			($downtime->{'periodically_day_from'} > $number_day_month)
+			||
+			($downtime->{'periodically_day_to'} < $number_day_month)
+			) {
 			
 			if (!defined($downtime->{'description'})) {
 				$downtime->{'description'} = "N/A";
@@ -1510,7 +1558,7 @@ sub pandora_planned_downtime_monthly_stop($$) {
 				$downtime->{'name'} = "N/A";
 			}
 			
-			logger($pa_config, "Stopping planned monthly downtime '" . $downtime->{'name'} . "'.", 1);
+			logger($pa_config, "Stopping planned monthly downtime '" . $downtime->{'name'} . "'.", 10);
 			
 			db_do($dbh, 'UPDATE tplanned_downtime
 				SET executed = 0
@@ -1518,13 +1566,16 @@ sub pandora_planned_downtime_monthly_stop($$) {
 			pandora_event ($pa_config,
 				"Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 			
-			if ($downtime->{'type_downtime'} == "quiet") {
+			if ($downtime->{'type_downtime'} eq "quiet") {
 				pandora_planned_downtime_unset_quiet_elements($pa_config,
 					$dbh, $downtime->{'id'});
 			}
-			elsif (($downtime->{'type_downtime'} == "disable_agents")
-				|| ($downtime->{'type_downtime'} == "disabled_agents_alerts")) {
-					pandora_planned_downtime_set_disabled_elements($pa_config,
+			elsif (($downtime->{'type_downtime'} eq "disable_agents")
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+					
+					logger($pa_config, "OFF DISABLE AGENTS/ALERTS", 10);
+					
+					pandora_planned_downtime_unset_disabled_elements($pa_config,
 						$dbh, $downtime);
 			}
 		}
@@ -1588,9 +1639,9 @@ sub pandora_planned_downtime_weekly_start($$) {
 				$found = 1;
 		}
 		
-		logger($pa_config, "Debug time = " . $time, 5);
+		logger($pa_config, "Debug time = " . $time, 10);
 		logger($pa_config, "Debug periodically_time_to = " .
-			$downtime->{'periodically_time_to'}, 5);
+			$downtime->{'periodically_time_to'}, 10);
 		
 		if ($found) {
 			#Convert to identical type.
@@ -1605,7 +1656,7 @@ sub pandora_planned_downtime_weekly_start($$) {
 			if ((($time gt $downtime->{'periodically_time_from'})
 				|| ($time eq $downtime->{'periodically_time_from'}))
 				&& (($time lt $downtime->{'periodically_time_to'})
-                                || ($time eq $downtime->{'periodically_time_to'}))) {
+				|| ($time eq $downtime->{'periodically_time_to'}))) {
 				if (!defined($downtime->{'description'})) {
 					$downtime->{'description'} = "N/A";
 				}
@@ -1614,7 +1665,7 @@ sub pandora_planned_downtime_weekly_start($$) {
 					$downtime->{'name'} = "N/A";
 				}
 				
-				logger($pa_config, "Starting planned weekly downtime '" . $downtime->{'name'} . "'.", 1);
+				logger($pa_config, "Starting planned weekly downtime '" . $downtime->{'name'} . "'.", 10);
 				
 				db_do($dbh, 'UPDATE tplanned_downtime
 					SET executed = 1
@@ -1622,12 +1673,12 @@ sub pandora_planned_downtime_weekly_start($$) {
 				pandora_event ($pa_config,
 					"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 				
-				if ($downtime->{'type_downtime'} == "quiet") {
+				if ($downtime->{'type_downtime'} eq "quiet") {
 					pandora_planned_downtime_set_quiet_elements($pa_config,
 						$dbh, $downtime->{'id'});
 				}
-				elsif (($downtime->{'type_downtime'} == "disable_agents")
-					|| ($downtime->{'type_downtime'} == "disabled_agents_alerts")) {
+				elsif (($downtime->{'type_downtime'} eq "disable_agents")
+					|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
 						pandora_planned_downtime_set_disabled_elements($pa_config,
 							$dbh, $downtime);
 				}
@@ -1659,7 +1710,8 @@ sub pandora_planned_downtime_weekly_stop($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity="weekly"
+		WHERE type_periodicity = "weekly"
+			AND type_execution <> "once"
 			AND executed = 1');
 	
 	foreach my $downtime (@downtimes) {
@@ -1673,12 +1725,43 @@ sub pandora_planned_downtime_weekly_stop($$) {
 		#	
 		#if ($date_now_time <= $date_downtime) {
 		
-		logger($pa_config, "Debug time = " . $time, 5);
+		logger($pa_config, "Debug time = " . $time, 10);
 		logger($pa_config, "Debug periodically_time_to = " .
-			$downtime->{'periodically_time_to'}, 5);
+			$downtime->{'periodically_time_to'}, 10);
 		
-		if (($time gt $downtime->{'periodically_time_to'})
-			|| ($time eq $downtime->{'periodically_time_to'})) {
+		if (($number_day_week == 1) &&
+			($downtime->{'monday'})) {
+				$found = 1;
+		}
+		if (($number_day_week == 2) &&
+			($downtime->{'tuesday'})) {
+				$found = 1;
+		}
+		if (($number_day_week == 3) &&
+			($downtime->{'wednesday'})) {
+				$found = 1;
+		}
+		if (($number_day_week == 4) &&
+			($downtime->{'thursday'})) {
+				$found = 1;
+		}
+		if (($number_day_week == 5) &&
+			($downtime->{'friday'})) {
+				$found = 1;
+		}
+		if (($number_day_week == 6) &&
+			($downtime->{'saturday'})) {
+				$found = 1;
+		}
+		if (($number_day_week == 0) &&
+			($downtime->{'sunday'})) {
+				$found = 1;
+		}
+		
+		if (($time gt $downtime->{'periodically_time_to'}) 
+			||
+			($time lt $downtime->{'periodically_time_from'})
+			|| ($found == 0)) {
 			
 			if (!defined($downtime->{'description'})) {
 				$downtime->{'description'} = "N/A";
@@ -1688,7 +1771,7 @@ sub pandora_planned_downtime_weekly_stop($$) {
 				$downtime->{'name'} = "N/A";
 			}
 			
-			logger($pa_config, "Stopping planned weekly downtime '" . $downtime->{'name'} . "'.", 1);
+			logger($pa_config, "Stopping planned weekly downtime '" . $downtime->{'name'} . "'.", 10);
 			
 			db_do($dbh, 'UPDATE tplanned_downtime
 				SET executed = 0
@@ -1696,12 +1779,12 @@ sub pandora_planned_downtime_weekly_stop($$) {
 			pandora_event ($pa_config,
 				"Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 			
-			if ($downtime->{'type_downtime'} == "quiet") {
+			if ($downtime->{'type_downtime'} eq "quiet") {
 				pandora_planned_downtime_unset_quiet_elements($pa_config,
 					$dbh, $downtime->{'id'});
 			}
-			elsif (($downtime->{'type_downtime'} == "disable_agents")
-				|| ($downtime->{'type_downtime'} == "disabled_agents_alerts")) {
+			elsif (($downtime->{'type_downtime'} eq "disable_agents")
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
 					pandora_planned_downtime_unset_disabled_elements($pa_config,
 						$dbh, $downtime);
 			}
@@ -1709,15 +1792,18 @@ sub pandora_planned_downtime_weekly_stop($$) {
 	}
 }
 
-##########################################################################
+########################################################################
 =head2 C<< pandora_planned_downtime (I<$pa_config>, I<$dbh>) >> 
 
 Update planned downtimes.
 
 =cut
-##########################################################################
+########################################################################
 sub pandora_planned_downtime ($$) {
 	my ($pa_config, $dbh) = @_;
+	
+	logger($pa_config, "[PLANNED_DOWNTIME] " .
+		"Enter pandora_planned_downtime()\n", 10);
 	
 	pandora_planned_downtime_disabled_once_start($pa_config, $dbh);
 	pandora_planned_downtime_disabled_once_stop($pa_config, $dbh);
@@ -1732,17 +1818,19 @@ sub pandora_planned_downtime ($$) {
 	pandora_planned_downtime_weekly_stop($pa_config, $dbh);
 }
 
-##########################################################################
+########################################################################
 =head2 C<< pandora_reset_server (I<$pa_config>, I<$dbh>) >> 
 
 Reset the status of all server types for the current server.
 
 =cut
-##########################################################################
+########################################################################
 sub pandora_reset_server ($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	db_do ($dbh, 'UPDATE tserver SET status = 0, threads = 0, queued_modules = 0 WHERE name = ?', $pa_config->{'servername'});
+	db_do ($dbh, 'UPDATE tserver
+		SET status = 0, threads = 0, queued_modules = 0
+		WHERE name = ?', $pa_config->{'servername'});
 }
 
 ##########################################################################
@@ -1762,7 +1850,7 @@ Update server status:
 sub pandora_update_server ($$$$$$;$$) {
 	my ($pa_config, $dbh, $server_name, $server_id, $status,
 		$server_type, $num_threads, $queue_size) = @_;
-
+	
 	$num_threads = 0 unless defined ($num_threads);
 	$queue_size = 0 unless defined ($queue_size);
 
@@ -1791,7 +1879,7 @@ sub pandora_update_server ($$$$$$;$$) {
 				1, $timestamp, $pa_config->{'pandora_master'}, $timestamp, $version, $num_threads, $queue_size, $server_id);
 		return;
 	}
-
+	
 	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, threads = ?, queued_modules = ?
 			WHERE id_server = ?', $status, $timestamp, $pa_config->{'pandora_master'}, $num_threads, $queue_size, $server_id);
 }
@@ -1809,10 +1897,10 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 	my ($pa_config, $agent_timestamp, $agent_id, $os_version,
 		$agent_version, $agent_interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description, $parent_agent_id) = @_;
-
+	
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
-
-
+	
+	
 	# No access update for data without interval.
 	# Single modules from network server, for example. This could be very
 	# Heavy for Pandora FMS
@@ -1824,7 +1912,8 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 	if ($agent_interval == -1){
 		db_do($dbh, 'UPDATE tagente SET agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
 		$agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
-	return;
+		
+		return;
 	}
 	
 	if ( defined ($timezone_offset)) {
@@ -1852,17 +1941,17 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 				$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
 		}
 	}
-
+	
 	my $update_gis_data= get_db_value ($dbh, 'SELECT update_gis_data FROM tagente WHERE id_agente = ?', $agent_id);
 	#Test if we have received the optional position parameters
 	if (defined ($longitude) && defined ($latitude) && $pa_config->{'activate_gis'} == 1 && $update_gis_data == 1 ){
 		# Get the last position to see if it has moved.
 		my $last_agent_position= get_db_single_row ($dbh, 'SELECT * FROM tgis_data_status WHERE tagente_id_agente = ?', $agent_id);
 		if(defined($last_agent_position)) {
-
+			
 			logger($pa_config, "Old Agent data: current_longitude=". $last_agent_position->{'current_longitude'}. " current_latitude="
 				.$last_agent_position->{'current_latitude'}. " current_altitude=". $last_agent_position->{'current_altitude'}. " ID: $agent_id ", 10);
-
+			
 			# If the agent has moved outside the range stablised as location error
 			if (distance_moved($pa_config, $last_agent_position->{'stored_longitude'}, $last_agent_position->{'stored_latitude'}, 
 				$last_agent_position->{'stored_altitude'}, $longitude, $latitude, $altitude) > $pa_config->{'location_error'}) {
@@ -1885,7 +1974,7 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 		}
 	}
 	else {
-		logger($pa_config, "Agent id $agent_id positional data ignored (update_gis_data (agent) = $update_gis_data ; activate_gis (server) = " . $pa_config->{'activate_gis'} . ")",10);
+		logger($pa_config, "Agent id $agent_id positional data ignored (update_gis_data = $update_gis_data)",10);
 	}
 
 }
@@ -1935,8 +2024,8 @@ Create a template action.
 ##########################################################################
 sub pandora_create_template_module_action ($$$) {
 	my ($pa_config, $parameters, $dbh) = @_;
-			
- 	logger($pa_config, "Creating module alert action to alert '$parameters->{'id_alert_template_module'}'.", 10);
+	
+	logger($pa_config, "Creating module alert action to alert '$parameters->{'id_alert_template_module'}'.", 10);
 	
 	my $action_id = db_process_insert($dbh, 'id', 'talert_template_module_actions', $parameters);
 	
@@ -1952,7 +2041,7 @@ Delete all actions of policy template module.
 ##########################################################################
 sub pandora_delete_all_template_module_actions ($$) {
 	my ($dbh, $template_module_id) = @_;
-
+	
 	return db_do ($dbh, 'DELETE FROM talert_template_module_actions WHERE id_alert_template_module = ?', $template_module_id);
 }
 
@@ -1965,7 +2054,7 @@ Update the address of an agent.
 ##########################################################################
 sub pandora_update_agent_address ($$$$$) {
 	my ($pa_config, $agent_id, $agent_name, $address, $dbh) = @_;
-
+	
 	logger($pa_config, 'Updating address for agent ' . $agent_name . ' (' . $address . ')', 10);
 	db_do ($dbh, 'UPDATE tagente SET direccion = ? WHERE id_agente = ?', $address, $agent_id);
 }
@@ -2021,12 +2110,12 @@ Create an internal audit entry.
 sub pandora_audit ($$$$$) {
 	my ($pa_config, $description, $name, $action, $dbh) = @_;
 	my $disconnect = 0;
-
+	
 	logger($pa_config, "Creating audit entry '$description' name '$name' action '$action'.", 10);
-
+	
 	my $utimestamp = time();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
-
+	
 	db_do($dbh, 'INSERT INTO tsesion (id_usuario, ip_origen, accion, fecha, descripcion, utimestamp) 
 			VALUES (?, ?, ?, ?, ?, ?)', 'SYSTEM', $name, $action , $timestamp , $description , $utimestamp);
 
@@ -2043,14 +2132,14 @@ Create a new entry in tagente_modulo and the corresponding entry in B<tagente_es
 sub pandora_create_module ($$$$$$$$$$) {
 	my ($pa_config, $agent_id, $module_type_id, $module_name, $max,
 		$min, $post_process, $description, $interval, $dbh) = @_;
- 
- 	logger($pa_config, "Creating module '$module_name' for agent ID $agent_id.", 10);
- 
-	# Provide some default values	
+	
+	logger($pa_config, "Creating module '$module_name' for agent ID $agent_id.", 10);
+	
+	# Provide some default values
 	$max = 0 if ($max eq '');
 	$min = 0 if ($min eq '');
 	$post_process = 0 if ($post_process eq '');
-
+	
 	# Set the initial status of the module
 	my $status = 4;
 	if ($module_type_id == 21 || $module_type_id == 22 || $module_type_id == 23) {
@@ -2058,13 +2147,14 @@ sub pandora_create_module ($$$$$$$$$$) {
 	}
 	
 	my $module_id = db_insert($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
 	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')', $module_id, $agent_id, $status, $status, $status);
 	
 	# Update the module status count
 	if ($status == 4) {
 		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $agent_id);
-	} else {
+	}
+	else {
 		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=?', $agent_id);
 	}
 	
@@ -2076,7 +2166,7 @@ sub pandora_create_module ($$$$$$$$$$) {
 ##########################################################################
 sub pandora_delete_module ($$;$) {
 	my ($dbh, $module_id, $conf) = @_;
-
+	
 	# Get module data
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente_modulo=?', $module_id);
 	return unless defined ($module);
@@ -2085,38 +2175,42 @@ sub pandora_delete_module ($$;$) {
 	db_do ($dbh, 'DELETE FROM tgraph_source WHERE id_agent_module = ?', $module_id);
 	db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo = ?', $module_id);
 	db_do ($dbh, 'DELETE FROM treport_content WHERE id_agent_module = ?', $module_id);
-
+	
 	# Delete the module state
 	db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo = ?', $module_id);
-
+	
 	# Delete templates asociated to the module
 	db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $module_id);
-
+	
 	# Delete events asociated to the module
 	db_do ($dbh, 'DELETE FROM tevento WHERE id_agentmodule = ?', $module_id);
-
+	
 	# Delete tags asociated to the module
 	db_do ($dbh, 'DELETE FROM ttag_module WHERE id_agente_modulo = ?', $module_id);
-
+	
 	# Set pending delete the module
 	db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1, delete_pending = 1, nombre = "delete_pending" WHERE id_agente_modulo = ?', $module_id);
-
+	
 	my $agent_name = get_agent_name($dbh, $module->{'id_agente'});
 	
 	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')) {
 		enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module->{'nombre'}]);
 	}
-
+	
 	# Update module status count
 	if ($module->{'utimestamp'} == 0) {
 		db_do ($dbh, 'UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module->{'id_agente'});
-	} elsif ($module->{'estado'} == 0) {
+	}
+	elsif ($module->{'estado'} == 0) {
 		db_do ($dbh, 'UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module->{'id_agente'});
-	} elsif ($module->{'estado'} == 1) {
+	}
+	elsif ($module->{'estado'} == 1) {
 		db_do ($dbh, 'UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module->{'id_agente'});
-	} elsif ($module->{'estado'} == 2) {
+	}
+	elsif ($module->{'estado'} == 2) {
 		db_do ($dbh, 'UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module->{'id_agente'});
-	} elsif ($module->{'estado'} == 3) {
+	}
+	elsif ($module->{'estado'} == 3) {
 		db_do ($dbh, 'UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module->{'id_agente'});
 	}
 	db_do ($dbh, 'UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module->{'id_agente'});
@@ -2127,25 +2221,26 @@ sub pandora_delete_module ($$;$) {
 ##########################################################################
 sub pandora_create_module_from_hash ($$$) {
 	my ($pa_config, $parameters, $dbh) = @_;
-
- 	logger($pa_config, "Creating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
-
+	
+	logger($pa_config, "Creating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
+	
 	my $module_id = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $parameters);
-
+	
 	my $status = 4;
 	if (defined ($parameters->{'id_tipo_modulo'}) && ($parameters->{'id_tipo_modulo'} == 21 || $parameters->{'id_tipo_modulo'} == 22 || $parameters->{'id_tipo_modulo'} == 23)) {
 		$status = 0;
 	}
 	
 	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')', $module_id, $parameters->{'id_agente'}, $status, $status, $status);
-
+	
 	# Update the module status count
 	if ($status == 4) {
 		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
-	} else {
+	}
+	else {
 		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
 	}
-
+	
 	return $module_id;
 }
 
@@ -2176,8 +2271,8 @@ sub pandora_create_group ($$$$$$$$$) {
 	my ($name, $icon, $parent, $propagate, $disabled, $custom_id, $id_skin, $description, $dbh) = @_;
 	
 	my $group_id = db_insert ($dbh, 'id_grupo', 'INSERT INTO tgrupo (nombre, icon, parent, propagate, disabled, custom_id, id_skin, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', safe_input($name), $icon, 
-			$parent, $propagate, $disabled, $custom_id, $id_skin, $description);
-				 
+		$parent, $propagate, $disabled, $custom_id, $id_skin, $description);
+	 
 	return $group_id;
 }
 
@@ -2195,8 +2290,8 @@ sub pandora_update_config_token ($$$) {
 	}
 	else {
 		$result = db_insert ($dbh, 'id_config', 'INSERT INTO tconfig (token, value) VALUES (?, ?)', $token, $value);
-	}	
-	 
+	}
+	
 	return $result;
 }
 
@@ -2224,7 +2319,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 		$description, $interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description,
 		$custom_id, $url_address) = @_;
-
+	
 	if (!defined($custom_id)) {
 		$custom_id = '';
 	}
@@ -2233,12 +2328,12 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 		$url_address = '';
 	}
 	
-
+	
 	if (!defined($group_id)) {
 		$group_id = $pa_config->{'autocreate_group'};
 	}
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
-
+	
 	$description = "Created by $server_name" unless ($description ne '');
 	my $agent_id;
 	# Test if the optional positional parameters are defined or GIS is disabled
@@ -2247,9 +2342,9 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)', safe_input($agent_name), $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id, $custom_id, $url_address);
 	}
 	else {
-		 $agent_id = db_insert ($dbh, 'id_agente', 'INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, server_name, intervalo, id_parent, 
-				timezone_offset, modo, custom_id, url_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)', safe_input($agent_name), $address, 
-				 $description, $group_id, $os_id, $server_name, $interval, $parent_id, $timezone_offset, $custom_id, $url_address);	
+		$agent_id = db_insert ($dbh, 'id_agente', 'INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, server_name, intervalo, id_parent, 
+			timezone_offset, modo, custom_id, url_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)', safe_input($agent_name), $address, 
+			 $description, $group_id, $os_id, $server_name, $interval, $parent_id, $timezone_offset, $custom_id, $url_address);	
 	}
 	if (defined ($longitude) && defined ($latitude ) && $pa_config->{'activate_gis'} == 1 ) {
 		if (!defined($altitude)) {
@@ -2257,11 +2352,11 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 		}
 		# Save the first position
 		my $utimestamp = time ();
-	 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
+		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 		
 		save_agent_position($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh, $timestamp, $position_description) ;
 	}
-
+	
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
 	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
 	return $agent_id;
@@ -2274,10 +2369,10 @@ sub pandora_add_agent_address ($$$$) {
 	my ($pa_config, $agent_id, $addr, $dbh) = @_;
 	
 	my $agent_name = get_agent_name($dbh, $agent_id);
-
+	
 	# Add the new address if it does not exist
 	my $addr_id = get_addr_id ($dbh, $addr);
-
+	
 	if($addr_id <= 0) {
 		logger($pa_config, 'Adding address ' . $addr . ' to the address list', 10);
 		$addr_id = add_address ($dbh, $addr);
@@ -2300,22 +2395,22 @@ sub pandora_add_agent_address ($$$$) {
 sub pandora_delete_agent ($$;$) {
 	my ($dbh, $agent_id, $conf) = @_;
 	my $agent_name = get_agent_name($dbh, $agent_id);
-
+	
 	# Delete from all their policies
 	enterprise_hook('pandora_delete_agent_from_policies', [$agent_id, $dbh]);
-
+	
 	# Delete the agent
 	db_do ($dbh, 'DELETE FROM tagente WHERE id_agente = ?', $agent_id);
-
+	
 	# Delete agent access data
 	db_do ($dbh, 'DELETE FROM tagent_access WHERE id_agent = ?', $agent_id);
-
+	
 	# Delete addresses
 	db_do ($dbh, 'DELETE FROM taddress_agent WHERE id_ag = ?', $agent_id);
-
+	
 	my @modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ?', $agent_id);
-		
-	if(defined $conf) {
+	
+	if (defined $conf) {
 		# Delete the conf files
 		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
 			unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');

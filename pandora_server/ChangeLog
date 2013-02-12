@@ -1,3 +1,9 @@
+2013-02-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/Core.pm: fixed the planned downtime.
+	
+	Fixes: #3602365
+
 2013-02-12  Sancho Lerena <slerena@artica.es>
 
 	* conf/pandora_server.conf: review of all file and removed

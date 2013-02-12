@@ -430,7 +430,7 @@ foreach ($modules as $module) {
 		$salida = "<span style='$style'>$salida</span>";
 	}
 	else {
-		if (is_numeric($module["datos"])){
+		if (is_numeric($module["datos"]) && !modules_is_string_type($module['id_tipo_modulo'])){
 			$salida = format_numeric($module["datos"]);
 			
 			// Show units ONLY in numeric data types

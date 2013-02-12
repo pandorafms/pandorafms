@@ -81,12 +81,6 @@ $table->data[2][1] = html_print_input_text ('keys[update_server_path]', $setting
 $table->data[3][0] = '<strong>'.__('Update server port').'</strong>';
 $table->data[3][1] = html_print_input_text ('keys[update_server_port]', $settings->update_server_port, '', 5, 5, true);
 
-$table->data[4][0] = '<strong>'.__('Binary input path').'</strong>';
-$table->data[4][1] = html_print_input_text ('keys[updating_binary_path]', $settings->updating_binary_path, '', 40, 255, true);
-
-$table->data[5][0] = '<strong>'.__('Keygen path').'</strong>';
-$table->data[5][1] = html_print_input_text ('keys[keygen_path]', $settings->keygen_path, '', 40, 255, true);
-
 $table->data[6][0] = '<strong>'.__('Proxy server').'</strong>';
 $table->data[6][1] = html_print_input_text ('keys[proxy]', $settings->proxy, '', 40, 255, true);
 

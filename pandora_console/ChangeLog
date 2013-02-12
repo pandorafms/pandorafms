@@ -1,3 +1,8 @@
+2013-02-12  Sergio Martin <sergio.martin@artica.es>
+
+	* extensions/plugin_registration.php: Recommit the last fix of
+	plugin registration
+
 2012-02-12  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb.sql: tserver table type is now InnoDB after modifying

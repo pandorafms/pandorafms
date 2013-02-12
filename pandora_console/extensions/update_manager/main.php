@@ -198,8 +198,8 @@ function main_view_enterprise($settings, $user_key) {
 					resizable: false,
 					draggable: false,
 					modal: true,
-					height: 400,
-					width: 600,
+					height: 430,
+					width: 630,
 					overlay: {
 							opacity: 0.5,
 							background: "black"

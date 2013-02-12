@@ -1,3 +1,12 @@
+2013-02-12  Sancho Lerena <slerena@artica.es>
+
+	* extensions/update_manager/load_updatemanager.php
+	extensions/update_manager/settings.php
+	extensions/update_manager/main.php: removed binary system in 
+	update manager. Removed two fields in setup and reformatted
+	popup window on update info. This goes in 4.0.3 SP1.
+
+
 2013-02-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/modules/manage_network_components.php: cleaned source code

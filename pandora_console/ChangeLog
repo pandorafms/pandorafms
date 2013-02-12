@@ -1,5 +1,14 @@
 2013-02-12  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_modules.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/estado_monitores.php: Protect the data
+	of the string modules from the numeric format
+	in the visualization for bug 3600790
+	Added snapshot feature to the data view of the modules
+
+2013-02-12  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/configurar_agente.php: Changed the call of 
 	an Enterprise function to use HOOK to avoid errors in
 	Open version

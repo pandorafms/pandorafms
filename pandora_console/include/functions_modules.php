@@ -700,6 +700,19 @@ function modules_get_type_name ($id_type) {
 }
 
 /**
+ * Know if a module type is a string or not
+ *
+ * @param int $id_type Type id
+ *
+ * @return bool true if string. false if not
+ */
+function modules_is_string_type ($id_type) {
+	$type_name = modules_get_type_name($id_type);
+	
+	return (bool)preg_match('/_string$/', $type_name);
+}
+
+/**
  * Get the icon of a module type
  *
  * @param int $id_type Type id

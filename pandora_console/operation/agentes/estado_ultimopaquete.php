@@ -459,9 +459,9 @@ foreach ($modules as $module) {
 	else {
 		$graph_type = return_graphtype ($module["id_tipo_modulo"]);
 		
-		if ((is_numeric($module["datos"])) && ($module["id_tipo_modulo"] != 23)) {
+		if ((is_numeric($module["datos"])) && !modules_is_string_type($module['id_tipo_modulo'])) {
 			echo "<td class=".$tdcolor.">";
-			echo format_for_graph($module["datos"] );
+			echo format_for_graph($module["datos"]);
 		}
 		else {
 			
@@ -469,7 +469,36 @@ foreach ($modules as $module) {
 			else $colspan= 1;
 			
 			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".io_safe_output($module["datos"])."'>";
-			io_safe_output(io_safe_output($module["datos"]), 45, false);
+			
+			$module_value = io_safe_output($module["datos"]);
+			
+			// There are carriage returns here ?
+			// If carriage returns present... then is a "Snapshot" data (full command output)
+			if (($config['command_snapshot']) && (preg_match ("/[\n]+/i", io_safe_output($module["datos"])))) {
+				
+				$handle = "snapshot"."_".$module["id_agente_modulo"];
+				$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
+				$win_handle=dechex(crc32($handle));
+				
+				$link ="winopeng_var('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."&refr=".$module["current_interval"]."&label=".$module["nombre"]."','".$win_handle."', 700,480)"; 
+				
+				$out = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+			}
+			else {
+				$sub_string = substr(io_safe_output($module["datos"]),0, 12);
+				
+				if ($module_value == $sub_string) {
+					$out = $module_value;
+				}
+				else {
+					$out = "<span id='value_module_" . $module["id_agente_modulo"] . "'
+					title='".$module_value."' style='white-space: nowrap;'>" . 
+					'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' . $sub_string . '</span> ' .
+					"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</span>";
+				}
+			}
+			
+			echo $out;
 		}
 		echo "</td>";
 		
@@ -522,4 +551,15 @@ foreach ($modules as $module) {
 	echo "</td></tr>";
 }
 echo '</table>';
+?>
+
+<script type="text/javascript">
+function toggle_full_value(id) {
+	value_title = $("#value_module_" + id).attr('title');
+	
+	$("#value_module_" + id).attr('title', $("#value_module_text_" + id).html());
+	
+	$("#value_module_text_" + id).html(value_title);
+}
+</script>
 ?>

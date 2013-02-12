@@ -923,7 +923,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		"Processing module '" . safe_output($module->{'nombre'}) .
 		"' for agent " .
 		(defined ($agent) && $agent ne '' ? "'" . safe_output($agent->{'nombre'}) . "'" : 'ID ' . $module->{'id_agente'}) . ".",
-		1);
+		10);
 	
 	# Get agent information
 	if (! defined ($agent) || $agent eq '') {

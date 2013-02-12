@@ -1,3 +1,8 @@
+2013-02-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed the verbosity of the "Processing
+	  module" message.
+
 2013-02-12  Sancho Lerena <slerena@artica.es>
 
 	* conf/pandora_server.conf: Review of default configuration

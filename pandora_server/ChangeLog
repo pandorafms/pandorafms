@@ -1,3 +1,8 @@
+2013-02-12  Sancho Lerena <slerena@artica.es>
+
+	* conf/pandora_server.conf: Review of default configuration
+	values and some new description / comments.
+
 2013-02-07  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm

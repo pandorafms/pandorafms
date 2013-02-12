@@ -700,7 +700,7 @@ sub swap_servers () {
 	($Conf{'server_ip'}, $Conf{'secondary_server_ip'}) = ($Conf{'secondary_server_ip'}, $Conf{'server_ip'});
 	($Conf{'server_path'}, $Conf{'secondary_server_path'}) = ($Conf{'secondary_server_path'}, $Conf{'server_path'});
 	($Conf{'server_port'}, $Conf{'secondary_server_port'}) = ($Conf{'secondary_server_port'}, $Conf{'server_port'});
-	($Conf{'server_transfer_mode'}, $Conf{'secondary_server_transfer_mode'}) = ($Conf{'secondary_server_transfer_mode'}, $Conf{'server_transfer_mode'});
+	($Conf{'transfer_mode'}, $Conf{'secondary_transfer_mode'}) = ($Conf{'secondary_transfer_mode'}, $Conf{'transfer_mode'});
 	($Conf{'server_pwd'}, $Conf{'secondary_server_pwd'}) = ($Conf{'secondary_server_pwd'}, $Conf{'server_pwd'});
 	($Conf{'server_ssl'}, $Conf{'secondary_server_ssl'}) = ($Conf{'secondary_server_ssl'}, $Conf{'server_ssl'});
 	($Conf{'server_opts'}, $Conf{'secondary_server_opts'}) = ($Conf{'secondary_server_opts'}, $Conf{'server_opts'});

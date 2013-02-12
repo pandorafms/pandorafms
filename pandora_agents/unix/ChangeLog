@@ -1,3 +1,10 @@
+2013-02-12  Hirofumi Kosaka <kosaka@rworks.jp>
+
+        * pandora_agent: Fixed bug that data transfer would fail
+	when secondary_transfer_mode is different from transfer_mode.
+
+	Merged from trunk.
+
 2013-01-21  Koichiro KIKUCHI  <koichiro@rworks.jp>
 
 	* pandora_agent.redhat.spec: Updated version strings.

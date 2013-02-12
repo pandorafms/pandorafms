@@ -39,6 +39,126 @@ ui_print_page_header(
 $delete_downtime = (int) get_parameter ('delete_downtime');
 $id_downtime = (int) get_parameter ('id_downtime', 0);
 
+$stop_downtime = (bool) get_parameter ('stop_downtime');
+// STOP DOWNTIME
+if ($stop_downtime) {
+	$downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
+	
+	switch ($downtime['type_execution']) {
+		case 'once':
+			$date_stop = date ("Y-m-j", get_system_time ());
+			$time_stop = date ("h:iA", get_system_time ());
+			
+			$values = array(
+				'executed' => 0,
+				'date_to' => strtotime($date_stop . ' ' . $time_stop)
+				);
+			
+			$result = db_process_sql_update('tplanned_downtime',
+				$values, array ('id' => $id_downtime));
+			break;
+		case 'periodically':
+			break;
+	}
+	
+	ui_print_result_message($result,
+		__('Succesful stopped the Downtime'),
+		__('Unsuccesful stopped the Downtime'));
+	
+	if ($result) {
+		//Reenabled the Agents or Modules or alerts...depends of type
+		$downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
+		
+		switch ($downtime['type_downtime']) {
+			case 'quiet':
+				$agents = db_get_all_rows_filter(
+					'tplanned_downtime_agents',
+					array('id_downtime' => $id_downtime));
+				if (empty($agents))
+					$agents = array();
+				
+				$count = 0;
+				foreach ($agents as $agent) {
+					if ($agent['all_modules']) {
+						$result = db_process_sql_update('tagente',
+							array('quiet' => 0),
+							array('id_agente' => $agent['id_agent']));
+						
+						if ($result)
+							$count++;
+					}
+					else {
+						$modules = db_get_all_rows_filter(
+							'tplanned_downtime_modules',
+							array('id_agent' => $agent['id_agent'],
+								'id_downtime' => $id_downtime));
+						if (empty($modules))
+							$modules = array();
+						
+						foreach ($modules as $module) {
+							$result = db_process_sql_update(
+								'tagente_modulo',
+								array('quiet' => 0),
+								array('id_agente_modulo' =>
+									$module['id_agent_module']));
+							
+							if ($result)
+								$count++;
+						}
+					}
+				}
+				break;
+			case 'disable_agents':
+				$agents = db_get_all_rows_filter(
+					'tplanned_downtime_agents',
+					array('id_downtime' => $id_downtime));
+				if (empty($agents))
+					$agents = array();
+				
+				$count = 0;
+				foreach ($agents as $agent) {
+					$result = db_process_sql_update('tagente',
+						array('disabled' => 0),
+						array('id_agente' => $agent['id_agent']));
+					
+					if ($result)
+						$count++;
+				}
+				break;
+			case 'disable_agents_alerts':
+				$agents = db_get_all_rows_filter(
+					'tplanned_downtime_agents',
+					array('id_downtime' => $id_downtime));
+				if (empty($agents))
+					$agents = array();
+				
+				$count = 0;
+				foreach ($agents as $agent) {
+					$modules = db_get_all_rows_filter(
+						'tagente_modulo',
+						array('id_agente' => $agent['id_agent']));
+					if (empty($modules))
+						$modules = array();
+					
+					foreach ($modules as $module) {
+						$result = db_process_sql_update(
+							'talert_template_modules',
+							array('disabled' => 0),
+							array('id_agent_module' =>
+								$module['id_agente_modulo']));
+						
+						if ($result)
+							$count++;
+					}
+				}
+				break;
+		}
+		
+		ui_print_info_message(
+			sprintf(__('Enabled %s elements from the downtime'), $count));
+	}
+}
+
 // DELETE WHOLE DOWNTIME!
 if ($delete_downtime) {
 	$result = db_process_sql_delete('tplanned_downtime', array('id' => $id_downtime));
@@ -46,10 +166,10 @@ if ($delete_downtime) {
 	$result2 = db_process_sql_delete('tplanned_downtime_agents', array('id' => $id_downtime));
 	
 	if (($result === false) OR ($result2 === false)) {
-		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
+		ui_print_error_message(__('Not deleted. Error deleting data'));
 	}
 	else {
-		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+		ui_print_success_message(__('Successfully deleted'));
 	}
 }
 
@@ -180,13 +300,22 @@ else {
 			$data[7]= "N/A";
 		
 		}
-		if ($downtime["executed"] == 0)
-			$data[8] = html_print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
-		else
-			$data[8] = html_print_image ("images/pixel_red.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
+		if ($downtime["executed"] == 0) {
+			$data[8] = html_print_image ("images/pixel_red.png", true,
+				array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
+		}
+		else {
+			$data[8] = html_print_image ("images/pixel_green.png", true,
+				array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
+		}
 		
-		if ($downtime["executed"] != 0) {
-			$data[9] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;stop_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+		
+		if (($downtime['type_execution'] == 'once')
+			&& ($downtime["executed"] == 1)) {
+			
+			$data[9] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;' .
+				'stop_downtime=1&amp;' .
+				'id_downtime=' . $downtime['id'] . '">' .
 			html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
 		}
 		

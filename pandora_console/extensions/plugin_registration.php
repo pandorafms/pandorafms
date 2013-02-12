@@ -196,6 +196,7 @@ function pluginreg_convert_plugin_1_to_2($plugin) {
 	$port_desc = 'Port';
 	$user_desc = 'Username';
 	$pass_desc = 'Password';
+	$param_desc = 'Parameters';
 	
 	$parameters = '';
 	$n_field = 1;
@@ -229,7 +230,13 @@ function pluginreg_convert_plugin_1_to_2($plugin) {
 		$parameters.= $plugin["pass_opt"]." $macro ";
 		unset($plugin["pass_opt"]);
 		$plugin['macro_desc'.$macro] = $pass_desc;
+		$n_field ++;
+		$macro = "_field".$n_field."_";
 	}
+	
+	// Always add a parameter to 
+	$parameters.= " $macro ";
+	$plugin['macro_desc'.$macro] = $param_desc;
 	
 	$plugin["execution_postcommand"] .= " $parameters";
 	

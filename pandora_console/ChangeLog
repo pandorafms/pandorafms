@@ -1,5 +1,10 @@
 2013-02-12  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/plugin_registration.php: Added a extra Parameter in the 
+	conversion of plugins version 1 to 2
+
+2013-02-12  Sergio Martin <sergio.martin@artica.es>
+
 	* extensions/plugin_registration.php: Recommit the last fix of
 	plugin registration
 

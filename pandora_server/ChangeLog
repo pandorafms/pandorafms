@@ -1,3 +1,8 @@
+2013-02-12  Sancho Lerena <slerena@artica.es>
+
+	* conf/pandora_server.conf: review of all file and removed
+	some bad parameters (netflow daemon and other values).
+
 2013-02-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed the verbosity of the "Processing

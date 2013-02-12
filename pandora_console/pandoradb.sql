@@ -790,7 +790,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`stat_utimestamp` bigint(20) NOT NULL default '0',
 	PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- server types:
 -- 0 data
 -- 1 network

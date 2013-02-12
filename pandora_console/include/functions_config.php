@@ -149,6 +149,10 @@ function config_update_config () {
 							config_update_value ('replication_mode', (string)get_parameter('replication_mode'));
 						}
 						config_update_value ('log_collector', (bool)get_parameter('log_collector'));
+						
+						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
+						config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist));
+
 					}	
 					break;	
 				case 'pass':	

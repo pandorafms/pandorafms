@@ -1,5 +1,10 @@
 2013-02-12  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_config.php: Fixed the update of the
+	inventory changes black list on setup for bug 3604298
+
+2013-02-12  Sergio Martin <sergio.martin@artica.es>
+
 	* include/help/en/help_warning_status.php
 	include/help/en/help_critical_status.php
 	include/help/es/help_warning_status.php

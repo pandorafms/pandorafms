@@ -729,8 +729,6 @@ if ($update_module || $create_module) {
 		
 		$macros = json_encode($macros);
 		
-		$macros_for_data = config_agents_get_macros_data_conf($_POST);
-		
 		$conf_array = explode("\n",$configuration_data);
 		foreach($conf_array as $line) {
 			if(preg_match("/^module_name\s*(.*)/", $line, $match)) {
@@ -741,8 +739,10 @@ if ($update_module || $create_module) {
 				$new_configuration_data .= "$line\n";
 			}
 		}
+		
+		$macros_for_data = enterprise_hook('config_agents_get_macros_data_conf', array($_POST));
 
-		if($macros_for_data != '') {
+		if($macros_for_data !== ENTERPRISE_NOT_HOOK && $macros_for_data != '') {
 			// Add macros to configuration file
 			$new_configuration_data = str_replace('module_end', $macros_for_data."module_end", $new_configuration_data);
 		}

@@ -1,3 +1,9 @@
+2013-02-12  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Changed the call of 
+	an Enterprise function to use HOOK to avoid errors in
+	Open version
+
 2013-02-12  Sancho Lerena <slerena@artica.es>
 
         * extensions/update_manager/load_updatemanager.php

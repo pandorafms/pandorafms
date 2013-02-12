@@ -178,7 +178,6 @@ if (!$edit) {
 	}
 
 	$table_simple->data[1][1] = '<em>'.modules_get_moduletype_description ($id_module_type).' ('.$type_names_hash[$id_module_type].')</em>';
-
 	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(json_encode($type_names_hash)),true);
 }
 else {
@@ -221,25 +220,42 @@ $table_simple->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name FROM
 	true, false, true, $disabledBecauseInPolicy);
 
 $table_simple->data[2][0] = __('Warning status').' ' . ui_print_help_icon ('warning_status', true);
-$table_simple->data[2][1] = '<em>'.__('Min. ').'</em></span>';
-$table_simple->data[2][1] .= html_print_input_text ('min_warning', $min_warning,
-	'', 10, 255, true, $disabledBecauseInPolicy);
-$table_simple->data[2][1] .= '<br /><em>'.__('Max.').'</em>';
-$table_simple->data[2][1] .= html_print_input_text ('max_warning', $max_warning,
-	'', 10, 255, true, $disabledBecauseInPolicy);
-$table_simple->data[2][1] .= '<br /><em>'.__('Str.').'</em>';
-$table_simple->data[2][1] .= html_print_input_text ('str_warning', $str_warning, '', 10, 255, true, $disabledBecauseInPolicy);
+
+$table_simple->data[2][1] = '';
+
+if (!modules_is_string_type($id_module_type) || $edit) {
+	$table_simple->data[2][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
+	$table_simple->data[2][1] .= html_print_input_text ('min_warning', $min_warning,
+		'', 10, 255, true, $disabledBecauseInPolicy);
+	$table_simple->data[2][1] .= '<br /><em>'.__('Max.').'</em>';
+	$table_simple->data[2][1] .= html_print_input_text ('max_warning', $max_warning,
+		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
+}
+if (modules_is_string_type($id_module_type) || $edit) {
+	$table_simple->data[2][1] .= '<span id="string_warning"><em>'.__('Str.').'</em>';
+	$table_simple->data[2][1] .= html_print_input_text ('str_warning', $str_warning, 
+		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
+}
+
 $table_simple->data[2][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table_simple->data[2][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
 $table_simple->data[2][2] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
-$table_simple->data[2][3] = '<em>'.__('Min. ').'</em>';
-$table_simple->data[2][3] .= html_print_input_text ('min_critical', $min_critical,
-	'', 10, 255, true, $disabledBecauseInPolicy);
-$table_simple->data[2][3] .= '<br /><em>'.__('Max.').'</em>';
-$table_simple->data[2][3] .= html_print_input_text ('max_critical', $max_critical,
-	'', 10, 255, true, $disabledBecauseInPolicy);
-$table_simple->data[2][3] .= '<br /><em>'.__('Str.').'</em>';
-$table_simple->data[2][3] .= html_print_input_text ('str_critical', $str_critical, '', 10, 255, true, $disabledBecauseInPolicy);
+$table_simple->data[2][3] = '';
+
+if (!modules_is_string_type($id_module_type) || $edit) {
+	$table_simple->data[2][3] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
+	$table_simple->data[2][3] .= html_print_input_text ('min_critical', $min_critical,
+		'', 10, 255, true, $disabledBecauseInPolicy);
+	$table_simple->data[2][3] .= '<br /><em>'.__('Max.').'</em>';
+	$table_simple->data[2][3] .= html_print_input_text ('max_critical', $max_critical,
+		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
+}
+if (modules_is_string_type($id_module_type) || $edit) {
+	$table_simple->data[2][3] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
+	$table_simple->data[2][3] .= html_print_input_text ('str_critical', $str_critical, 
+		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
+}
+
 $table_simple->data[2][3] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table_simple->data[2][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
 
@@ -389,6 +405,9 @@ else {
 	// Store in a hidden field if is not visible to avoid delete the value
 	$table_advanced->data[12][4] .= html_print_input_hidden ('id_category', $id_category, true);
 }
+
+ui_require_jquery_file('json');
+
 ?>
 
 <script type="text/javascript">
@@ -433,6 +452,30 @@ $(document).ready (function () {
 			$(this).attr('selected','selected');
 		});
 	});
+	
+	$("#id_module_type").change(function () {
+		var type_selected = $(this).val();
+		var type_names = jQuery.evalJSON(Base64.decode($('#hidden-type_names').val()));
+		
+		var type_name_selected = type_names[type_selected];
+		
+		if(type_name_selected.match(/_string$/) == null) {
+			// Numeric types
+			$('#string_critical').hide();
+			$('#string_warning').hide();
+			$('#minmax_critical').show();
+			$('#minmax_warning').show();
+		}
+		else {
+			// String types
+			$('#string_critical').show();
+			$('#string_warning').show();
+			$('#minmax_critical').hide();
+			$('#minmax_warning').hide();
+		}
+	});
+	
+	$("#id_module_type").trigger('change');
 });
 /* ]]> */
 </script>

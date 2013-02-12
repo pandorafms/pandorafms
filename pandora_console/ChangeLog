@@ -1,5 +1,19 @@
 2013-02-12  Sergio Martin <sergio.martin@artica.es>
 
+	* include/help/en/help_warning_status.php
+	include/help/en/help_critical_status.php
+	include/help/es/help_warning_status.php
+	include/help/es/help_critical_status.php: Improved the
+	really poor help of warning and critical status for
+	bug 3600787
+
+	* godmode/agentes/module_manager_editor_common.php: Added
+	checks to hide de useless status threshold. Now
+	the min and max thresholds are shown only in numeric modules
+	and the string field only in string ones
+
+2013-02-12  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_modules.php
 	operation/agentes/estado_ultimopaquete.php
 	operation/agentes/estado_monitores.php: Protect the data

@@ -29,7 +29,7 @@ use XML::Twig;
 use Storable qw(dclone);
 use vars qw($VERSION %D);
 
-$VERSION = 1.21;
+$VERSION = 1.30;
 
 
 sub new {
@@ -280,8 +280,8 @@ sub _prescript_tag_hdlr {
     my ( $twig, $tag ) = @_;
     my $scripts_hashref;
     for my $script ( $tag->children('script') ) {
-        chomp($scripts_hashref->{ $script->{att}->{id} } =
-          $script->{att}->{output});
+        $scripts_hashref->{ $script->{att}->{id} } =
+            __script_tag_hdlr( $script );
     }
     $D{$$}{SESSION}{prescript} = $scripts_hashref;
     $twig->purge;
@@ -291,8 +291,8 @@ sub _postscript_tag_hdlr {
     my ( $twig, $tag ) = @_;
     my $scripts_hashref;
     for my $script ( $tag->children('script') ) {
-        chomp($scripts_hashref->{ $script->{att}->{id} } =
-          $script->{att}->{output});
+        $scripts_hashref->{ $script->{att}->{id} } =
+          __script_tag_hdlr( $script );
     }
     $D{$$}{SESSION}{postscript} = $scripts_hashref;
     $twig->purge;
@@ -341,11 +341,12 @@ sub _host_tag_hdlr {
         $D{$$}{HOSTS}{$id}{tcpsequence}   = __host_tcpsequence_tag_hdlr($tag);
         $D{$$}{HOSTS}{$id}{ipidsequence}  = __host_ipidsequence_tag_hdlr($tag);
         $D{$$}{HOSTS}{$id}{tcptssequence} = __host_tcptssequence_tag_hdlr($tag);
-        $D{$$}{HOSTS}{$id}{hostscript}    = __host_hostscript_tag_hdlr($tag);
-        $D{$$}{HOSTS}{$id}{distance}      = __host_distance_tag_hdlr($tag);    #returns simple value
+        $D{$$}{HOSTS}{$id}{hostscript} = __host_hostscript_tag_hdlr($tag);
+        $D{$$}{HOSTS}{$id}{distance} =
+          __host_distance_tag_hdlr($tag);    #returns simple value
         $D{$$}{HOSTS}{$id}{trace}         = __host_trace_tag_hdlr($tag);
         $D{$$}{HOSTS}{$id}{trace_error}   = __host_trace_error_tag_hdlr($tag);
-	$D{$$}{HOSTS}{$id}{times}         = __host_times_tag_hdlr($tag);
+	    $D{$$}{HOSTS}{$id}{times}         = __host_times_tag_hdlr($tag);
     }
 
     #CREATE HOST OBJECT FOR USER
@@ -489,8 +490,8 @@ sub __host_script_tag_hdlr {
     my $script_hashref;
 
     for ( $tag->children('script') ) {
-        chomp($script_hashref->{ $_->{att}->{id} } =
-            $_->{att}->{output});
+        $script_hashref->{ $_->{att}->{id} } =
+         __script_tag_hdlr($_);
     }
 
     return $script_hashref;
@@ -503,6 +504,7 @@ sub __host_os_tag_hdlr {
     my $portused_tag;
     my $os_fingerprint;
 
+    #if( $D{$$}{SESSION}{xml_version} eq "1.04")
     if ( defined $os_tag ) {
 
         #get the open port used to match os
@@ -523,17 +525,30 @@ sub __host_os_tag_hdlr {
 
         #This will go in PandoraFMS::NmapParser::Host::OS
         my $osmatch_index = 0;
+        my $osclass_index = 0;
         for my $osmatch ( $os_tag->children('osmatch') ) {
             $os_hashref->{osmatch_name}[$osmatch_index] =
               $osmatch->{att}->{name};
             $os_hashref->{osmatch_name_accuracy}[$osmatch_index] =
               $osmatch->{att}->{accuracy};
             $osmatch_index++;
+            for my $osclass ( $osmatch->children('osclass') ) {
+                $os_hashref->{osclass_osfamily}[$osclass_index] =
+                  $osclass->{att}->{osfamily};
+                $os_hashref->{osclass_osgen}[$osclass_index] =
+                  $osclass->{att}->{osgen};
+                $os_hashref->{osclass_vendor}[$osclass_index] =
+                  $osclass->{att}->{vendor};
+                $os_hashref->{osclass_type}[$osclass_index] =
+                  $osclass->{att}->{type};
+                $os_hashref->{osclass_class_accuracy}[$osclass_index] =
+                  $osclass->{att}->{accuracy};
+                $osclass_index++;
+            }
         }
         $os_hashref->{'osmatch_count'} = $osmatch_index;
 
         #parse osclass tags
-        my $osclass_index = 0;
         for my $osclass ( $os_tag->children('osclass') ) {
             $os_hashref->{osclass_osfamily}[$osclass_index] =
               $osclass->{att}->{osfamily};
@@ -626,8 +641,8 @@ sub __host_hostscript_tag_hdlr {
     my $scripts_hashref;
     return undef unless ($scripts);
     for my $script ( $scripts->children('script') ) {
-        chomp($scripts_hashref->{ $script->{att}->{id} } =
-          $script->{att}->{output});
+        $scripts_hashref->{ $script->{att}->{id} } =
+            __script_tag_hdlr( $script );
     }
     return $scripts_hashref;
 }
@@ -685,6 +700,52 @@ sub __host_trace_error_tag_hdlr {
     }
 
     return;
+}
+
+sub __script_tag_hdlr {
+    my $tag = shift;
+    my $script_hashref = {
+        output => $tag->{att}->{output}
+    };
+    chomp %$script_hashref;
+    if ( not $tag->is_empty()) {
+        $script_hashref->{contents} = __script_table($tag);
+    }
+    return $script_hashref;
+}
+
+sub __script_table {
+    my $tag = shift;
+    my ($ref, $subref);
+    my $fc = $tag->first_child();
+    if ($fc) {
+        if ($fc->is_text) {
+            $ref = $fc->text;
+        }
+        else {
+            if ($fc->{att}->{key}) {
+                $ref = {};
+                $subref = sub {
+                    $ref->{$_->{att}->{key}} = shift;
+                };
+            }
+            else {
+                $ref = [];
+                $subref = sub {
+                    push @$ref, shift;
+                };
+            }
+            for ($tag->children()) {
+                if ($_->tag() eq "table") {
+                    $subref->(__script_table( $_ ));
+                }
+                else {
+                    $subref->($_->text);
+                }
+            }
+        }
+    }
+    return $ref
 }
 
 #/*****************************************************************************/
@@ -799,7 +860,7 @@ sub hostname {
     return $self->{hostnames}[$index] if ( scalar @{ $self->{hostnames} } );
 }
 
-sub all_hostnames    { return @{ $_[0]->{hostnames} }; }
+sub all_hostnames    { return @{ $_[0]->{hostnames} || [] }; }
 sub extraports_state { return $_[0]->{ports}{extraports}{state}; }
 sub extraports_count { return $_[0]->{ports}{extraports}{count}; }
 sub distance         { return $_[0]->{distance}; }
@@ -845,13 +906,16 @@ sub _del_port {
 sub _get_ports {
     my $self          = shift;
     my $proto         = pop;          #param might be empty, so this goes first
-    my $state         = lc(shift);    #open, filtered, closed or any combination
+    my $state         = shift;    #open, filtered, closed or any combination
     my @matched_ports = ();
 
-    #if $state eq '', then tcp_ports or udp_ports was called for all ports
+    #if $state is undef, then tcp_ports or udp_ports was called for all ports
     #therefore, only return the keys of all ports found
-    if ( $state eq '' ) {
+    if ( not defined $state ) {
         return sort { $a <=> $b } ( keys %{ $self->{ports}{$proto} } );
+    }
+    else {
+        $state = lc($state)
     }
 
 #the port parameter can be set to either any of these also 'open|filtered'
@@ -1151,7 +1215,7 @@ It is implemented by parsing the xml scan data that is generated by nmap. This
 will enable anyone who utilizes nmap to quickly create fast and robust security scripts
 that utilize the powerful port scanning abilities of nmap.
 
-The latest version of this module can be found on here L<https://github.com/apersaud/Nmap-Parser/>
+The latest version of this module can be found on here L<http://apersaud.github.com/Nmap-Parser/>
 
 =head1 OVERVIEW
 
@@ -1341,6 +1405,28 @@ Returns the human readable format of the finish time.
 
 Returns the version of nmap xml file.
 
+=item B<prescripts()>
+
+=item B<prescripts($name)>
+
+A basic call to prescripts() returns a list of the names of the NSE scripts
+run in the pre-scanning phase. If C<$name> is given, it returns the text output of the
+a reference to a hash with "output" and "content" keys for the
+script with that name, or undef if that script was not run.
+The value of the "output" key is the text output of the script. The value of the
+"content" key is a data structure based on the XML output of the NSE script.
+
+=item B<postscripts()>
+
+=item B<postscripts($name)>
+
+A basic call to postscripts() returns a list of the names of the NSE scripts
+run in the post-scaning phase. If C<$name> is given, it returns the text output of the
+a reference to a hash with "output" and "content" keys for the
+script with that name, or undef if that script was not run.
+The value of the "output" key is the text output of the script. The value of the
+"content" key is a data structure based on the XML output of the NSE script.
+
 =back
 
 =head2 PandoraFMS::NmapParser::Host
@@ -1479,8 +1565,11 @@ when the scan was performed.
 =item B<hostscripts($name)>
 
 A basic call to hostscripts() returns a list of the names of the host scripts
-run. If C<$name> is given, it returns the text output of the script with that
-name, or undef if that script was not run.
+run. If C<$name> is given, it returns the text output of the
+a reference to a hash with "output" and "content" keys for the
+script with that name, or undef if that script was not run.
+The value of the "output" key is the text output of the script. The value of the
+"content" key is a data structure based on the XML output of the NSE script.
 
 =item B<tcp_ports()>
 
@@ -1611,9 +1700,12 @@ Returns the version of the given product of the running service.
 
 =item B<scripts($name)>
 
-A basic call to scripts() returns a list of the names of the scripts
-run for this port. If C<$name> is given, it returns the text output of the
+A basic call to scripts() returns a list of the names of the NSE scripts
+run for this port. If C<$name> is given, it returns
+a reference to a hash with "output" and "content" keys for the
 script with that name, or undef if that script was not run.
+The value of the "output" key is the text output of the script. The value of the
+"content" key is a data structure based on the XML output of the NSE script.
 
 =back
 
@@ -1750,7 +1842,7 @@ The host name of this hop, if known.
 I think some of us best learn from examples. These are a couple of examples to help
 create custom security audit tools using some of the nice features
 of the PandoraFMS::NmapParser module. Hopefully this can double as a tutorial. 
-More tutorials (articles) can be found at L<http://anthonypersaud.com/category/nmap-parser/>
+More tutorials (articles) can be found at L<http://apersaud.github.com/Nmap-Parser/>
 
 =head2 Real-Time Scanning
 
@@ -1873,7 +1965,7 @@ Please remove any important IP addresses for security reasons. It saves time in 
 
  nmap, XML::Twig
 
-The PandoraFMS::NmapParser page can be found at: L<https://github.com/apersaud/Nmap-Parser>.
+The PandoraFMS::NmapParser page can be found at: L<http://apersaud.github.com/Nmap-Parser/>.
 It contains the latest developments on the module. The nmap security scanner
 homepage can be found at: L<http://www.insecure.org/nmap/>.
 

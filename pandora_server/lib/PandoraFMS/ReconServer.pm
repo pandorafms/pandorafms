@@ -458,7 +458,7 @@ sub create_network_profile_modules {
 		
 		# Create the module
 		my $module_id = db_insert ($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag, disabled, plugin_user, plugin_pass, plugin_parameter, max_timeout, id_modulo, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, id_plugin, post_process, critical_instructions, warning_instructions, unknown_instructions)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 			$agent_id, $component->{'type'}, $component->{'description'}, $component->{'name'}, $component->{'max'}, $component->{'min'}, $component->{'module_interval'}, $component->{'tcp_port'}, $component->{'tcp_send'}, $component->{'tcp_rcv'}, $component->{'snmp_community'},
 			$component->{'snmp_oid'}, $addr, $component->{'id_module_group'}, $component->{'plugin_user'}, $component->{'plugin_pass'}, $component->{'plugin_parameter'}, $component->{'max_timeout'}, $component->{'id_modulo'}, $component->{'min_warning'}, $component->{'max_warning'}, $component->{'str_warning'}, $component->{'min_critical'}, $component->{'max_critical'}, $component->{'str_critical'}, $component->{'min_ff_event'}, $component->{'id_plugin'}, $component->{'post_process'}, $component->{'critical_instructions'}, $component->{'warning_instructions'}, $component->{'unknown_instructions'});
 		

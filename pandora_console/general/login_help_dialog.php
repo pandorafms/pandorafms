@@ -104,7 +104,7 @@ $(document).ready (function () {
 		resizable: true,
 		draggable: true,
 		modal: true,
-		height: 400,
+		height: 420,
 		width: 600,
 		overlay: {
 				opacity: 0.5,

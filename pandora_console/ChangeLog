@@ -1,3 +1,11 @@
+2013-02-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/dialog.css
+	general/login_help_dialog.php: Fix an ugly bar of the
+	modal windows and enlarge 20px the height of the
+	Welcome modal window to avoid scroll bar in most 
+	browsers
+
 2013-02-12 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/planned_downtime.list.php,

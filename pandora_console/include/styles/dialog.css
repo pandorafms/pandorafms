@@ -118,6 +118,7 @@
 	right: 12px;
 	width: 100%;
 	text-align: right;
+	display: none;
 }
 
 .ui-dialog .ui-dialog-buttonpane button {

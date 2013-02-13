@@ -788,7 +788,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			
 			var label_aux = series.label + ' = ';
 			
-			if (serie_types[i] != 'points') {
+			// The graphs of points type and unknown graphs will dont be updated
+			if (serie_types[i] != 'points' && series.label != $('#hidden-unknown_text').val()) {
 				legends.eq(i).text(label_aux.replace(/=.*/, '= ' + parseFloat(y).toFixed(2) +' '+unit));
 			}
 			

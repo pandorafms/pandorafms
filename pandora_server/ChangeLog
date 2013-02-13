@@ -1,5 +1,10 @@
 2013-02-13  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/ReconServer.pm: Fix a crash of the Recon Server
+	for bug 3603710
+
+2013-02-13  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/Core.pm
 	lib/PandoraFMS/DataServer.pm: Fixed a problem with the status
 	field of the modules (forced status) in the dataserver creation

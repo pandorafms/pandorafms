@@ -530,7 +530,7 @@ sub process_module_data ($$$$$$$$$) {
 	my $tags = {'name' => 0, 'data' => 0, 'type' => 0, 'description' => 0, 'max' => 0,
 	            'min' => 0, 'descripcion' => 0, 'post_process' => 0, 'module_interval' => 0, 'min_critical' => 0,
 	            'max_critical' => 0, 'min_warning' => 0, 'max_warning' => 0, 'disabled' => 0, 'min_ff_event' => 0,
-	            'datalist' => 0, 'status' => 0, 'unit' => 0, 'timestamp' => 0, 'module_group' => 0, 'custom_id' => '', 
+	            'datalist' => 0, 'unit' => 0, 'timestamp' => 0, 'module_group' => 0, 'custom_id' => '', 
 	            'str_warning' => '', 'str_critical' => '', 'critical_instructions' => '', 'warning_instructions' => '',
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
 	            'module_ff_interval' => 0};
@@ -546,11 +546,6 @@ sub process_module_data ($$$$$$$$$) {
 			$module_conf->{'extended_info'} .= "$tag: " . get_tag_value ($data, $tag, '') . '<br/>';
 		}
 	}	
-	
-	# Delete tags that will not be stored in tagente_modulo
-	delete $module_conf->{'data'};
-	delete $module_conf->{'type'};
-	delete $module_conf->{'datalist'};
 		
 	# Description XML tag and column name don't match
 	$module_conf->{'descripcion'} = $module_conf->{'description'};

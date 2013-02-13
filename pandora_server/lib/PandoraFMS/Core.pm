@@ -2224,6 +2224,11 @@ sub pandora_create_module_from_hash ($$$) {
 	
 	logger($pa_config, "Creating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
 	
+	# Delete tags that will not be stored in tagente_modulo
+	delete $parameters->{'data'};
+	delete $parameters->{'type'};
+	delete $parameters->{'datalist'};
+	
 	my $module_id = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $parameters);
 	
 	my $status = 4;

@@ -1,3 +1,11 @@
+2013-02-13  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm
+	lib/PandoraFMS/DataServer.pm: Fixed a problem with the status
+	field of the modules (forced status) in the dataserver creation
+	of the module because using create_module_from_hash. 
+	Order some code of the same part of the Dataserver
+
 2013-02-12 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* lib/PandoraFMS/Core.pm: fixed the planned downtime.

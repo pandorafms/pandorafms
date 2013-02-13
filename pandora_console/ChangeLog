@@ -1,3 +1,13 @@
+2013-02-13 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: fixed a important
+	bug when try to upgrade a Pandora4 (SVN version or updated version)
+	to Pandora5 or have user defined groups in the table
+	"tnetwork_component_group" that throw error when try to upgrade and
+	stop the upgrading.
+
 2013-02-13  Sergio Martin <sergio.martin@artica.es>
 
 	* include/graphs/functions_flot.php

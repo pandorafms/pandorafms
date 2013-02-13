@@ -1020,40 +1020,40 @@ INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `ma
 -- Adding news network_component_groups
 -- ---------------------------------------------------------------------
 
-INSERT INTO `tnetwork_component_group` VALUES (15,'Databases',0);
-INSERT INTO `tnetwork_component_group` VALUES (16,'Windows System',14);
-INSERT INTO `tnetwork_component_group` VALUES (17,'Windows Hardware Layer',14);
-INSERT INTO `tnetwork_component_group` VALUES (18,'Windows AD ',14);
-INSERT INTO `tnetwork_component_group` VALUES (19,'Windows IIS ',14);
-INSERT INTO `tnetwork_component_group` VALUES (20,'Windows Exchange',14);
-INSERT INTO `tnetwork_component_group` VALUES (21,'Windows LDAP ',14);
-INSERT INTO `tnetwork_component_group` VALUES (22,'Windows MSDTC  ',14);
-INSERT INTO `tnetwork_component_group` VALUES (23,'Catalyst 2900  ',2);
-INSERT INTO `tnetwork_component_group` VALUES (24,'Windows Printers',14);
-INSERT INTO `tnetwork_component_group` VALUES (25,'Citrix',0);
-INSERT INTO `tnetwork_component_group` VALUES (26,'Exchange&#x20;Services',20);
-INSERT INTO `tnetwork_component_group` VALUES (27,'MS&#x20;SQL&#x20;Server',15);
-INSERT INTO `tnetwork_component_group` VALUES (28,'Oracle',15);
-INSERT INTO `tnetwork_component_group` VALUES (29,'Antivirus',0);
-INSERT INTO `tnetwork_component_group` VALUES (30,'Norton',29);
-INSERT INTO `tnetwork_component_group` VALUES (31,'Panda',29);
-INSERT INTO `tnetwork_component_group` VALUES (32,'McAfee',29);
-INSERT INTO `tnetwork_component_group` VALUES (33,'Bitdefender',29);
-INSERT INTO `tnetwork_component_group` VALUES (34,'Windows&#x20;DNS',14);
-INSERT INTO `tnetwork_component_group` VALUES (35,'DNS&#x20;Counters',34);
-INSERT INTO `tnetwork_component_group` VALUES (36,'AD&#x20;Counters',18);
-INSERT INTO `tnetwork_component_group` VALUES (37,'BullGuard',29);
-INSERT INTO `tnetwork_component_group` VALUES (38,'IIS&#x20;services',19);
-INSERT INTO `tnetwork_component_group` VALUES (39,'Exchange&#x20;TCP&#x20;Ports',20);
-INSERT INTO `tnetwork_component_group` VALUES (40,'AVG',29);
-INSERT INTO `tnetwork_component_group` VALUES (41,'Kaspersky',29);
-INSERT INTO `tnetwork_component_group` VALUES (42,'MySQL',15);
-INSERT INTO `tnetwork_component_group` VALUES (43,'Linux',5);
-INSERT INTO `tnetwork_component_group` VALUES (44,'HP-UX',5);
-INSERT INTO `tnetwork_component_group` VALUES (45,'Solaris',5);
-INSERT INTO `tnetwork_component_group` VALUES (46,'AIX',5);
-INSERT INTO `tnetwork_component_group` VALUES (47,'BSD',5);
-INSERT INTO `tnetwork_component_group` VALUES (48,'MacOS',0);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 15,'Databases',0 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 15);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 16,'Windows System',14 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 16);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 17,'Windows Hardware Layer',14 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 17);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 18,'Windows AD ',14 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 18);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 19,'Windows IIS ',14 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 19);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 20,'Windows Exchange',14 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 20);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 21,'Windows LDAP ',14 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 21);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 22,'Windows MSDTC  ',14 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 22);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 23,'Catalyst 2900  ',2 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 23);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 24,'Windows Printers',14 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 24);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 25,'Citrix',0 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 25);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 26,'Exchange&#x20;Services',20 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 26);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 27,'MS&#x20;SQL&#x20;Server',15 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 27);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 28,'Oracle',15 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 28);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 29,'Antivirus',0 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 29);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 30,'Norton',29 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 30);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 31,'Panda',29 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 31);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 32,'McAfee',29 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 32);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 33,'Bitdefender',29 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 33);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 34,'Windows&#x20;DNS',14 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 34);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 35,'DNS&#x20;Counters',34 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 35);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 36,'AD&#x20;Counters',18 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 36);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 37,'BullGuard',29 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 37);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 38,'IIS&#x20;services',19 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 38);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 39,'Exchange&#x20;TCP&#x20;Ports',20 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 39);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 40,'AVG',29 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 40);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 41,'Kaspersky',29 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 41);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 42,'MySQL',15 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 42);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 43,'Linux',5 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 43);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 44,'HP-UX',5 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 44);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 45,'Solaris',5 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 45);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 46,'AIX',5 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 46);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 47,'BSD',5 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 47);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) SELECT * FROM (SELECT 48,'MacOS',0 FROM dual) AS tmp WHERE NOT EXISTS (SELECT `id_sg` FROM `tnetwork_component_group` WHERE `id_sg` = 48);
 
 -- ---------------------------------------------------------------------
 -- Drop tables of compound alerts

@@ -228,6 +228,8 @@ $label = base64_decode(get_parameter('label', ''));
 		
 		$urlImage = ui_get_full_url(false);
 		
+		$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $id);
+		
 		// log4x doesnt support flash yet
 		//
 		if ($config['flash_charts'] == 1)
@@ -237,7 +239,7 @@ $label = base64_decode(get_parameter('label', ''));
 		switch ($graph_type) {
 			case 'boolean':
 				echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-					$label, null, $draw_alerts, $avg_only, false, $date, false, $urlImage, 'adapter_'.$graph_type, $time_compare, $unknown_graph);
+					$label, $unit, $draw_alerts, $avg_only, false, $date, false, $urlImage, 'adapter_'.$graph_type, $time_compare, $unknown_graph);
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
@@ -245,7 +247,7 @@ $label = base64_decode(get_parameter('label', ''));
 				break;
 			case 'sparse':
 				echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
-					$label, null, $draw_alerts, $avg_only, false, $date, '', $baseline,
+					$label, null, $draw_alerts, $avg_only, false, $date, $unit, $baseline,
 					0, true, false, $urlImage, 1, false, 'adapter_'.$graph_type, $time_compare, $unknown_graph);
 				echo '<br>';
 				if ($show_events_graph)

@@ -295,6 +295,9 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	else {
 		$force_integer = 'false';
 	}
+
+	// Trick to get translated string from javascript
+	$return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";

@@ -1,5 +1,12 @@
 2013-02-13  Sergio Martin <sergio.martin@artica.es>
 
+	* include/graphs/functions_flot.php
+	include/graphs/flot/pandora.flot.js
+	operation/agentes/stat_win.php: Improve the legend of the
+	interactive graphs for bug 3573814
+
+2013-02-13  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/dialog.css
 	general/login_help_dialog.php: Fix an ugly bar of the
 	modal windows and enlarge 20px the height of the

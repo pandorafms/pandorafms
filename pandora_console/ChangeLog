@@ -1,5 +1,19 @@
 2013-02-13 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* extensions/module_groups.php,
+	godmode/massive/massive_add_alerts.php,
+	godmode/massive/massive_edit_modules.php, godmode/tag/tag.php:
+	cleaned source code style.
+	
+	* images/network.disabled.png: added image.
+	* images/chart_curve.disabled.png: fixed mistake image.
+	
+	* godmode/agentes/module_manager.php: improved the style of table.
+	
+	Fixes: #3604465
+
+2013-02-13 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/config_process.php: fixed the lost initial value for
 	the "homeurl_static" in $config when the pandora is for upgrade from
 	version 4.

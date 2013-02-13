@@ -55,13 +55,13 @@ function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 		return false;
 	}
 	
-	foreach($module_names as $module){
+	foreach($module_names as $module) {
 		foreach($id_agents as $id_agent) {
 			 $module_id = modules_get_agentmodule_id($module, $id_agent);
 			 $modules_id[] = $module_id['id_agente_modulo'];
 		}
 	}
-		
+	
 	if(count($module_names) == 1 && $module_names[0] == '0'){
 		$modules_id = agents_common_modules ($id_agents, false, true);
 	}
@@ -69,9 +69,9 @@ function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 	
 	$conttotal = 0;
 	$contsuccess = 0;
-	foreach($modules_id as $module){
+	foreach($modules_id as $module) {
 		$success = alerts_create_alert_agent_module ($module, $id_alert_template);
-
+		
 		if($success)
 			$contsuccess ++;
 		$conttotal ++;
@@ -85,9 +85,9 @@ function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 	}
 	
 	ui_print_result_message ($contsuccess > 0,
-	__('Successfully added')."(".$contsuccess."/".$conttotal.")",
-	__('Could not be added'));
-
+		__('Successfully added')."(".$contsuccess."/".$conttotal.")",
+		__('Could not be added'));
+	
 }
 
 $id_group = (int) get_parameter ('id_group', -1);
@@ -167,12 +167,12 @@ ui_require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-	$("#checkbox-recursion").click(function (){
+	$("#checkbox-recursion").click(function () {
 		$("#id_group").trigger("change");
 	});
-
+	
 	$("#id_agents").change(agent_changed_by_multiple_agents);
-
+	
 	$("#id_group").change (function () {
 		var $select = $("#id_agents").enable ();
 		$("#agent_loading").show ();
@@ -203,32 +203,32 @@ $(document).ready (function () {
 	function () {
 		$(this).css ("width", "auto"); 
 	});
-			
+	
 	$("#id_group").blur (function () {
 		$(this).css ("width", "180px"); 
-	});	
-
+	});
+	
 	$("#id_agents").click (
 	function () {
-		$(this).css ("width", "auto"); 
+		$(this).css ("width", "auto");
 	});
-			
+	
 	$("#id_agents").blur (function () {
 		$(this).css ("width", "180px"); 
-	});	
+	});
 	
 	$("#module").click (
 	function () {
 		$(this).css ("width", "auto"); 
 	});
-			
+	
 	$("#module").blur (function () {
 		$(this).css ("width", "180px"); 
-	});		
+	});
 	
 	$("#modules_selection_mode").change (function() {
 		$("#id_agents").trigger('change');
-	});	
+	});
 	
 });
 /* ]]> */

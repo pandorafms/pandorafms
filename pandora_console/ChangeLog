@@ -1,5 +1,13 @@
 2013-02-13 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/config_process.php: fixed the lost initial value for
+	the "homeurl_static" in $config when the pandora is for upgrade from
+	version 4.
+	
+	Fixes: #3604288
+
+2013-02-13 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
 	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
 	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: fixed a important

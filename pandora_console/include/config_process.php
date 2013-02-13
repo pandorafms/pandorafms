@@ -112,8 +112,12 @@ date_default_timezone_set("Europe/Madrid");
 
 config_process_config();
 
+if (!isset($config["homeurl_static"])) {
+	$config["homeurl_static"] = $config["homeurl"];
+}
+
 // Set a the system timezone default 
-if ((!isset($config["timezone"])) OR ($config["timezone"] == "")){
+if ((!isset($config["timezone"])) OR ($config["timezone"] == "")) {
 	$config["timezone"] = "Europe/Berlin";
 }
 

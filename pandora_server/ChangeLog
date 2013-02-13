@@ -1,3 +1,10 @@
+2013-02-13  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm
+	lib/PandoraFMS/DataServer.pm: Fixed the creation of a module
+	on Dataserver. When we fix the updates of the XML the creation was
+	broken to min/max warning/critical and disabled field
+
 2013-01-21  Koichiro KIKUCHI <koichiro@rworks.jp>
 
 	* pandora_server.redhat.spec: Updated version strings

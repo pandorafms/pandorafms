@@ -467,7 +467,7 @@ sub process_module_data ($$$$$$$$$) {
 	my $tags = {'name' => 0, 'data' => 0, 'type' => 0, 'description' => 0, 'max' => 0,
 	            'min' => 0, 'descripcion' => 0, 'post_process' => 0, 'module_interval' => 0, 'min_critical' => 0,
 	            'max_critical' => 0, 'min_warning' => 0, 'max_warning' => 0, 'disabled' => 0, 'min_ff_event' => 0,
-	            'datalist' => 0, 'status' => 0, 'unit' => 0, 'timestamp' => 0, 'id_module_group' => 0};
+	            'datalist' => 0, 'unit' => 0, 'timestamp' => 0, 'id_module_group' => 0};
 
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -535,7 +535,10 @@ sub process_module_data ($$$$$$$$$) {
 		# Create the module
 		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
 			$module_conf->{'max'}, $module_conf->{'min'}, $module_conf->{'post_process'},
-			$module_conf->{'descripcion'}, $module_conf->{'module_interval'}, $dbh,$module_conf->{'id_module_group'});
+			$module_conf->{'descripcion'}, $module_conf->{'module_interval'}, $dbh, 
+			$module_conf->{'id_module_group'}, $module_conf->{'min_warning'}, $module_conf->{'max_warning'},
+			$module_conf->{'min_critical'}, $module_conf->{'max_critical'}, $module_conf->{'disabled'});
+			
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);

@@ -1315,9 +1315,11 @@ Create a new entry in tagente_modulo and the corresponding entry in B<tagente_es
 
 =cut
 ##########################################################################
-sub pandora_create_module ($$$$$$$$$$;$) {
+sub pandora_create_module ($$$$$$$$$$;$$$$$$) {
         my ($pa_config, $agent_id, $module_type_id, $module_name, $max,
-                $min, $post_process, $description, $interval, $dbh, $module_group_id) = @_;
+                $min, $post_process, $description, $interval, $dbh, 
+                $module_group_id, $min_warning, $max_warning, $min_critical, 
+                $max_critical, $disabled) = @_;
 
         logger($pa_config, "Creating module '$module_name' for agent ID $agent_id.", 10);
 
@@ -1325,9 +1327,18 @@ sub pandora_create_module ($$$$$$$$$$;$) {
         $max = 0 if ($max eq '');
         $min = 0 if ($min eq '');
         $post_process = 0 if ($post_process eq '');
-	$module_group_id = 0 unless defined $module_group_id;
-        my $module_id = db_insert($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo, id_module_group)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)', $agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval, $module_group_id);
+		$module_group_id = 0 unless defined $module_group_id;
+		$min_warning = 0 unless defined $min_warning;
+		$max_warning = 0 unless defined $max_warning;
+		$min_critical = 0 unless defined $min_critical;
+		$max_critical = 0 unless defined $max_critical;
+		$disabled = 0 unless defined $disabled;
+        
+        my $module_id = db_insert($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo, id_module_group, 
+				min_warning, max_warning, min_critical, max_critical, disabled)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?)', $agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval, $module_group_id, 
+						$min_warning, $max_warning, $min_critical, $max_critical, $disabled);
+        
         db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, last_try) VALUES (?, ?, \'1970-01-01 00:00:00\')', $module_id, $agent_id);
         return $module_id;
 }

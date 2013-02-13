@@ -22,6 +22,7 @@ use strict;
 use Time::Local;		# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
 use POSIX qw(strftime);
+use File::Path qw (rmtree);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -319,6 +320,84 @@ sub pandora_purgedb ($$) {
 	print "[PURGE] Delete empty contents in report (like SLA or Exception)...\n";
 	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'exception' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item);");
 	db_do ($dbh, "DELETE FROM treport_content WHERE type LIKE 'sla' AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
+	
+	# Delete old netflow data
+	print "[PURGE] Deleting old netflow data...\n";
+	if (! -d $conf->{'_netflow_path'}) {
+		print "[!] Netflow data directory does not exist, skipping...\n";
+	} elsif (! -x $conf->{'_netflow_nfexpire'}) {
+		print "[!] Cannot execute " . $conf->{'_netflow_nfexpire'} . ", skipping...\n";
+	} else {
+		`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -e "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d`;
+	}
+
+	# Delete old log data
+	print "[PURGE] Deleting old log data...\n";
+	if (! -d $conf->{'_log_dir'}) {
+		print "[!] Log data directory does not exist, skipping...\n";
+	} elsif ($conf->{'_log_max_lifetime'} != 0) {
+
+		# Calculate the limit date
+		my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time() - $conf->{'_log_max_lifetime'} * 86400); 
+		
+		# Fix the year
+		$year += 1900;
+		
+		# Fix the month
+		$mon += 1;
+		$mon = sprintf("%02d", $mon);
+		
+		# Fix the day
+		$mday = sprintf("%02d", $mday);
+		
+		# Fix the hour
+		$hour = sprintf("%02d", $hour);
+		
+		# Set the per-depth limits
+		my $limits = [$year, $mon, $mday, $hour];
+
+		# Purge the log dir
+		pandora_purge_log_dir ($conf->{'_log_dir'}, $limits);
+	}
+}
+
+###############################################################################
+# Recursively delete old log files by sub directory.
+###############################################################################
+sub pandora_purge_log_dir ($$;$) {
+	my ($dir, $limits, $depth) = @_;
+	
+	# Initial call
+	if (! defined ($depth)) {
+		$depth = 0;
+	}
+
+	# No limit for this depth
+	if (! defined ($limits->[$depth])) {
+		return;
+	}
+
+	# Open the dir
+	my $dir_dh;
+	if (! opendir($dir_dh, $dir)) {
+		return;
+	}
+
+	# Purge sub dirs
+	while (my $sub_dir = readdir ($dir_dh)) {
+
+		next if ($sub_dir eq '.' || $sub_dir eq '..' || ! -d $dir . '/' . $sub_dir);
+				
+		# Sub dirs have names that represent a year, month, day or hour
+		if ($sub_dir < $limits->[$depth]) {
+			rmtree ($dir . '/' . $sub_dir);
+		} elsif ($sub_dir == $limits->[$depth]) {
+			pandora_purge_log_dir ($dir . '/' . $sub_dir, $limits, $depth + 1)
+		}
+	}
+	
+	# Close the dir
+	closedir ($dir_dh);
 }
 
 ###############################################################################
@@ -479,7 +558,12 @@ sub pandora_load_config ($) {
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
 	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");
-    
+	$conf->{'_netflow_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_max_lifetime'");
+	$conf->{'_netflow_nfexpire'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_nfexpire'");
+   	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
+   	$conf->{'_log_dir'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_dir'");
+   	$conf->{'_log_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_max_lifetime'");
+   	
 	db_disconnect ($dbh);
 
 	printf "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") ... \n\n";

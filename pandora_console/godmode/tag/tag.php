@@ -72,7 +72,7 @@ $buttons[$tab]['active'] = true;
 if (defined('METACONSOLE')) {
 	
 	// Print header
-	ui_meta_print_header(__('Tags'), "", $buttons);	
+	ui_meta_print_header(__('Tags'), "", $buttons);
 	
 }
 else {
@@ -153,8 +153,8 @@ if (!empty($result)) {
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold; text-align:center';
 	$table->style[1] = 'text-align:center';
-	$table->style[2] = 'text-align:center';	
-	$table->style[3] = 'text-align:center'; 
+	$table->style[2] = 'text-align:center';
+	$table->style[3] = 'text-align:center';
 	$table->style[5] = 'text-align:center';
 	$table->head[0] = __('Tag name');
 	$table->head[1] = __('Description');

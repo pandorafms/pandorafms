@@ -62,7 +62,7 @@ if (is_ajax ()) {
 								ON t3.id = t1.id_alert_template_module
 								AND t1.id_alert_action = t2.id
 							WHERE (t3.id_alert_template = ' . $template['id'] . ' AND
-								  t3.id_agent_module = ' . $module['id_agente_modulo'] . ');';
+								t3.id_agent_module = ' . $module['id_agente_modulo'] . ');';
 						
 						$actions = db_get_all_rows_sql($sql);
 						
@@ -74,9 +74,9 @@ if (is_ajax ()) {
 							
 							$default_action = true;
 							
-							$actions = db_get_all_rows_sql($sql);							
+							$actions = db_get_all_rows_sql($sql);
 						}
-
+						
 						if ($actions === false) {
 							$actions = array();
 						}

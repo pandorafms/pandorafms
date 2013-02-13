@@ -45,10 +45,18 @@ echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
 
-$network_available = db_get_sql ("SELECT count(*) from tserver where server_type = 1"); //POSTGRESQL AND ORACLE COMPATIBLE
-$wmi_available = db_get_sql ("SELECT count(*) from tserver where server_type = 6"); //POSTGRESQL AND ORACLE COMPATIBLE
-$plugin_available = db_get_sql ("SELECT count(*) from tserver where server_type = 4"); //POSTGRESQL AND ORACLE COMPATIBLE
-$prediction_available = db_get_sql ("SELECT count(*) from tserver where server_type = 5"); //POSTGRESQL AND ORACLE COMPATIBLE
+$network_available = db_get_sql ("SELECT count(*)
+	FROM tserver
+	WHERE server_type = 1"); //POSTGRESQL AND ORACLE COMPATIBLE
+$wmi_available = db_get_sql ("SELECT count(*)
+	FROM tserver
+	WHERE server_type = 6"); //POSTGRESQL AND ORACLE COMPATIBLE
+$plugin_available = db_get_sql ("SELECT count(*)
+	FROM tserver
+	WHERE server_type = 4"); //POSTGRESQL AND ORACLE COMPATIBLE
+$prediction_available = db_get_sql ("SELECT count(*)
+	FROM tserver
+	WHERE server_type = 5"); //POSTGRESQL AND ORACLE COMPATIBLE
 
 // Development mode to use all servers
 if ($develop_bypass) {
@@ -307,7 +315,7 @@ switch ($sortField) {
 					case "postgresql":
 						$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
 						break;
-					case "oracle":	
+					case "oracle":
 						$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'DESC');
 						break;
 				}
@@ -419,7 +427,7 @@ switch ($config["dbtype"]) {
 		
 		$modules = db_get_all_rows_sql($sql);
 		break;
-	case "oracle":	
+	case "oracle":
 		$set = array();
 		$set['limit'] = $limit;
 		$set['offset'] = $offset;
@@ -473,6 +481,7 @@ $table->head[7] = __('Warn');
 
 
 $table->head[8] = __('Action');
+$table->head[9] = '<span title="' . __('Delete') . '">' . __('D.') . '</span>';
 
 $table->rowstyle = array();
 $table->style = array ();
@@ -480,8 +489,9 @@ $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[2] = '55px';
 $table->align = array ();
-$table->align[2] = 'center';
-$table->align[8] = 'center';
+$table->align[2] = 'left';
+$table->align[8] = 'left';
+$table->align[9] = 'left';
 $table->data = array ();
 
 $agent_interval = agents_get_interval ($id_agente);
@@ -518,9 +528,9 @@ foreach ($modules as $module) {
 		$table->rowstyle[$i - 1] = 'text-align: center';
 		$table->rowclass[$i - 1] = 'datos3';
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
-				$table->colspan[$i - 1][0] = 9;
+				$table->colspan[$i - 1][0] = 10;
 		else
-			$table->colspan[$i - 1][0] = 7;
+			$table->colspan[$i - 1][0] = 8;
 		
 		$data = array ();
 	}
@@ -631,14 +641,7 @@ foreach ($modules as $module) {
 			html_print_image('images/lightbulb.png', true, array('alt' => __('Disable module'), 'title' => __('Disable module'))) ."</a>";
 	}
 	
-	if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
-		// Delete module
-		$data[8] .= html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
-		$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
-			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-		$data[8] .= html_print_image ('images/cross.png', true,
-			array ('title' => __('Delete')));
-		$data[8] .= '</a> ';
+	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 		$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 		$data[8] .= html_print_image ('images/copy.png', true,
@@ -646,7 +649,6 @@ foreach ($modules as $module) {
 		$data[8] .= '</a> ';
 		
 		// Make a data normalization
-		
 		if (isset($numericModules[$type])) {
 			if ($numericModules[$type] === true) {
 				$data[8] .= '&nbsp;<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
@@ -655,14 +657,34 @@ foreach ($modules as $module) {
 				$data[8] .= '</a>';
 			}
 		}
+		else {
+			$data[8] .= "&nbsp;" . html_print_image ('images/chart_curve.disabled.png', true,
+				array ('title' => __('Normalize (Disabled)')));
+		}
+		
 		//create network component action
-		if (is_user_admin($config['id_user'])) {
+		if ((is_user_admin($config['id_user'])) && 
+			($module['id_modulo'] == MODULE_NETWORK)) {
 			$data[8] .= '&nbsp;<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
 				onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			$data[8] .= html_print_image ('images/network.png', true,
 				array ('title' => __('Create network component')));
 			$data[8] .= '</a> ';
 		}
+		else {
+			$data[8] .= '&nbsp;' . html_print_image ('images/network.disabled.png', true,
+				array ('title' => __('Create network component (Disabled)')));
+		}
+	}
+	
+	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+		// Delete module
+		$data[9] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
+		$data[9] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+			onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+		$data[9] .= html_print_image ('images/cross.png', true,
+			array ('title' => __('Delete')));
+		$data[9] .= '</a> ';
 	}
 	
 	array_push ($table->data, $data);

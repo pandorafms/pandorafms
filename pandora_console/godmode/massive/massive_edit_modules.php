@@ -131,7 +131,7 @@ if ($update) {
 			"(" . $success . "/" . $count . ")",
 		__('Could not be updated'));
 	
-	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);	
+	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);
 	if ($success > 0) {
 		db_pandora_audit("Masive management", "Edit module", false, false, $info);
 	}

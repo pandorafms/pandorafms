@@ -94,34 +94,16 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	// Create address for this agent in taddress
 	agents_add_address ($id_agent, $ip_address);
 	
-	// Create special module agent_keepalive
-	$id_agent_module = db_process_sql_insert ('tagente_modulo', 
-		array ('nombre' => 'agent_keepalive',
-			'id_agente' => $id_agent,
-			'id_tipo_modulo' => 100,
+	// Create special module agent_keepalive	
+	$values_modules = array ('id_tipo_modulo' => 100,
 			'descripcion' => __('Agent keepalive monitor'),
 			'id_modulo' => 1,
 			'min_warning' => 0,
-			'max_warning' => 1));
+			'max_warning' => 1);
+			
+	$id_agent_module = modules_create_agent_module($id_agent, 'agent_keepalive', $values_modules);
 	
 	if ($id_agent_module === false) {
-		db_process_sql_rollback ();
-		return false;
-	}
-	
-	$result = db_process_sql_insert ('tagente_estado', 
-		array ('id_agente_modulo' => $id_agent_module,
-			'datos' => '',
-			'timestamp' => 0,
-			'estado' => 0,
-			'id_agente' => $id_agent,
-			'last_try' => 0,
-			'utimestamp' => 0,
-			'current_interval' => 0,
-			'running_by' => 0,
-			'last_execution_try' => 0));
-	
-	if ($result === false) {
 		db_process_sql_rollback ();
 		return false;
 	}

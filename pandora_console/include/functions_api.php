@@ -4301,7 +4301,7 @@ function api_set_delete_module($id, $id2, $other, $trash1) {
 		}
 		
 		if (!$simulate) {
-			$return = db_process_sql_delete('tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+			$return = modules_delete_agent_module($idAgentModule);
 		}
 		else {
 			$return = true;
@@ -4451,8 +4451,8 @@ function api_set_new_module($id, $id2, $other, $trash1) {
 		}
 		
 		$values['id_modulo'] = 2; 
-		
-		$return = db_process_sql_insert('tagente_modulo', $values);
+				
+		$return = modules_create_agent_module($values['id_agente'], $values['nombre'], $values);
 		
 		$data['type'] = 'string';
 		if ($return === false) {
@@ -5291,8 +5291,15 @@ function api_set_new_note_incident($id, $id2, $other, $thrash2) {
 function api_set_disable_module ($agent_name, $module_name, $thrast3, $thrash4) {
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
-    db_process_sql("UPDATE tagente_modulo SET disabled = 1 WHERE id_agente_modulo = $id_agent_module");
-	returnData('string', array('type' => 'string', 'data' => __('Correct module disable')));
+    
+    $result = modules_change_disabled($id_agent_module, 1);
+    
+    if($result === NOERR) {
+		returnData('string', array('type' => 'string', 'data' => __('Correct module disable')));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => __('Error disabling module')));
+	}
 }
 
 
@@ -5308,8 +5315,15 @@ function api_set_disable_module ($agent_name, $module_name, $thrast3, $thrash4) 
 function api_set_enable_module ($agent_name, $module_name, $thrast3, $thrash4) {
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
-    db_process_sql("UPDATE tagente_modulo SET disabled = 0 WHERE id_agente_modulo = $id_agent_module");
-	returnData('string', array('type' => 'string', 'data' => __('Correct module enable')));
+    
+    $result = modules_change_disabled($id_agent_module, 1);
+    
+    if($result === NOERR) {
+		returnData('string', array('type' => 'string', 'data' => __('Correct module enable')));
+	}
+	else {
+		returnData('string', array('type' => 'string', 'data' => __('Error enabling module')));
+	}
 }
 
 

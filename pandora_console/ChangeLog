@@ -1,3 +1,24 @@
+2013-02-14  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql: Fixed the macros of the
+	default plugin MySQL
+
+	* include/functions_groups.php
+	include/functions_api.php
+	include/functions_ui.php
+	include/functions_agents.php
+	include/functions_modules.php
+	include/constants.php
+	operation/agentes/estado_ultimopaquete.php
+	godmode/db/db_sanity.php
+	godmode/agentes/agent_template.php
+	godmode/agentes/configurar_agente.php
+	godmode/servers/plugin.php: Create a function to disable
+	modules fixing the status counts and replace the old way of
+	do it in all the console. Fixin a lot of old way of create 
+	and delete modules too to use the centralized function and 
+	dont break counts. BUG 3604463
+
 2013-02-14 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/constants.php: added constant for module type of

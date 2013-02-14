@@ -1234,9 +1234,9 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 // MODULE ENABLE/DISABLE
 // =====================
 if($enable_module) {
-	$result = db_process_sql_update('tagente_modulo', array('disabled' => 0), array('id_agente_modulo' => $enable_module));
+	$result = modules_change_disabled($enable_module, 0);
 	
-	if ($result) {
+	if ($result === NOERR) {
 		db_pandora_audit("Module management", 'Enable  ' . $enable_module);
 	}
 	else {
@@ -1248,9 +1248,9 @@ if($enable_module) {
 }
 
 if($disable_module) {
-	$result = db_process_sql_update('tagente_modulo', array('disabled' => 1), array('id_agente_modulo' => $disable_module));
+	$result = modules_change_disabled($disable_module, 1);
 	
-	if ($result) {
+	if ($result === NOERR) {
 		db_pandora_audit("Module management", 'Disable  ' . $disable_module);
 	}
 	else {

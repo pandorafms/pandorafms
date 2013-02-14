@@ -562,4 +562,3 @@ function toggle_full_value(id) {
 	$("#value_module_text_" + id).html(value_title);
 }
 </script>
-?>

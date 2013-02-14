@@ -93,9 +93,14 @@ elseif ($sanity == 2) {
 		
 		modules_delete_agent_module($row['id_agente_modulo']);
 	}
+	
 	echo "Deleting bad module (id 0)<br>";
 	
-	db_process_sql_delete('tagente_modulo', array('id_modulo' => 0));
+	$bad_modules = db_get_all_rows_filter('tagente_modulo', array('id_modulo' => 0));
+	
+	foreach($bad_modules as $bm) {
+		modules_delete_agent_module ($bm['id_agente_modulo']);
+	}
 } 
 
 echo "<br>";

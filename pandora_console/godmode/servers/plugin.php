@@ -416,7 +416,12 @@ else {
 			echo "<h3 class='suc'>".__('Plugin deleted successfully')."</h3>";
 		}
 		if ($plugin_id != 0) {
-			$result = db_process_sql_delete('tagente_modulo', array('id_plugin' => $plugin_id));
+			// Delete all the modules with this plugin
+			$plugin_modules = db_get_all_rows_filter('tagente_modulo', array('id_plugin' => $plugin_id));
+			
+			foreach($plugin_modules as $pm) {
+				modules_delete_agent_module ($pm['id_agente_modulo']);
+			}
 		}
 	}
 	
@@ -454,7 +459,7 @@ else {
 			echo $row["execute"];
 			echo "</td><td class=$tdcolor>";
 			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&view=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "'>" . html_print_image('images/config.png', true, array("title" => __("Edit"))) . "</a>&nbsp;&nbsp;";
-			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "'>" . html_print_image("images/cross.png", true, array("border" => '0')) . "</a>";
+			echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."&tab=plugins&pure=" . $config['pure'] . "' onclick='javascript: if (!confirm(\"" . __('All the modules that are using this plugin will be deleted') . '. ' . __('Are you sure?') . "\")) return false;'>" . html_print_image("images/cross.png", true, array("border" => '0')) . "</a>";
 			echo "</td></tr>";
 		}
 		echo "</table>";

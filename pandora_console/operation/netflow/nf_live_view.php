@@ -82,7 +82,7 @@ $filter['advanced_filter'] = get_parameter('advanced_filter','');
 $filter['advanced_filter'] = get_parameter('advanced_filter','');
 
 // Read chart configuration
-$chart_type = (int) get_parameter('chart_type', 0);
+$chart_type = get_parameter('chart_type', 'netflow_area');
 $max_aggregates = (int) get_parameter('max_aggregates', 0);
 $period = (int) get_parameter('period', '86400');
 $update_date = (int) get_parameter('update_date', 0);
@@ -105,7 +105,9 @@ if (! defined ('METACONSOLE')) {
 	//Header
 	ui_print_page_header (__('Netflow live view'), "images/networkmap/so_cisco_new.png", false, "", false, array ());
 	if (! is_executable ($config['netflow_nfdump'])) {
-		ui_print_error_message(__('nfdump binary not found!'));
+		ui_print_error_message(
+			sprintf(__('nfdump binary (%s) not found!'),
+				$config['netflow_nfdump']));
 	}
 }
 else {
@@ -142,8 +144,10 @@ else if ($update != '' && check_acl ($config["id_user"], 0, "AW")) {
 	// Save filter args
 	$filter_copy['filter_args'] = netflow_get_filter_arguments ($filter_copy);
 	
-	$result = db_process_sql_update ('tnetflow_filter', $filter_copy, array ('id_sg' => $filter_id));
-	ui_print_result_message ($result, __('Filter updated successfully'), __('Error updating filter'));
+	$result = db_process_sql_update ('tnetflow_filter', $filter_copy,
+		array('id_sg' => $filter_id));
+	ui_print_result_message ($result, __('Filter updated successfully'),
+		__('Error updating filter'));
 } 
 
 
@@ -166,7 +170,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	echo "<tr>";
 	
 	echo "<td>" .
-		'<b>'.__('Date').'</b>' .
+		'<b>' . __('Date') . '</b>' .
 		"</td>";
 	echo "<td>" .
 		html_print_input_text ('date', $date, false, 10, 10, true) .
@@ -185,10 +189,10 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	echo "</tr>";
 	echo "<tr>";
 	
-	echo "<td>" . '<b>'.__('Type').'</b>' . "</td>";
+	echo "<td>" . '<b>' . __('Type') . '</b>' . "</td>";
 	echo "<td>" . html_print_select (netflow_get_chart_types (), 'chart_type', $chart_type,'','',0,true) . "</td>";
 	
-	echo "<td>" . '<b>'.__('Max. values').'</b>' . "</td>";
+	echo "<td>" . '<b>' . __('Max. values') . '</b>' . "</td>";
 	$max_values = array ('2' => '2',
 		'5' => '5',
 		'10' => '10',
@@ -367,7 +371,9 @@ if ($draw != '') {
 	
 	// Draw
 	echo "<br/>";
-	echo netflow_draw_item ($start_date, $end_date, $interval_length, $chart_type, $filter, $max_aggregates, $connection_name);
+	echo netflow_draw_item ($start_date, $end_date,
+		$interval_length, $chart_type, $filter,
+		$max_aggregates, $connection_name);
 }
 ?>
 

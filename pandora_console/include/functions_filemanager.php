@@ -367,22 +367,17 @@ if ($delete_file) {
  * 
  * @param string $dir The dir to deletete
  */
-function filemanager_delete_directory($dir)
-{
-	if ($handle = opendir($dir))
-	{
+function filemanager_delete_directory($dir) {
+	if ($handle = opendir($dir)) {
 		while (false !== ($file = readdir($handle))) {
 			if (($file != ".") && ($file != "..")) {
-	
-				if (is_dir($dir . $file))
-				{
-					if (!rmdir($dir . $file))
-					{
+				
+				if (is_dir($dir . $file)) {
+					if (!rmdir($dir . $file)) {
 						filemanager_delete_directory($dir . $file . '/');
 					}
 				}
-				else
-				{
+				else {
 					unlink($dir . $file);
 				}
 			}
@@ -509,6 +504,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 		if ($i < (count ($prev_dir) - 2))
 			$prev_dir_str .= "/";
 	}
+	
 	
 	if (($prev_dir_str != '') && ($father != $relative_directory)) {
 		$table->data[0][0] = html_print_image ('images/go_previous.png', true);

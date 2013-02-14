@@ -1,5 +1,14 @@
 2013-02-14 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/constants.php: added constant dir for the mibs of snmp.
+	
+	* include/functions_filemanager.php: cleaned source code style.
+	
+	* operation/snmpconsole/snmp_mib_uploader.php: fixed to avoid go
+	upper directory to the mibs.
+
+2013-02-14 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_netflow.php, operation/netflow/nf_live_view.php:
 	fixed the show pie graph with table.
 	

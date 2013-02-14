@@ -34,7 +34,7 @@ if (isset($config['filemanager']['message'])) {
 	$config['filemanager']['message'] = null;
 }
 
-$directory = (string) get_parameter ('directory', "attachment/mibs");
+$directory = (string) get_parameter ('directory', SNMP_DIR_MIBS);
 
 /* Add custom directories here */
 $fallback_directory = "attachment/mibs";
@@ -64,5 +64,8 @@ $real_directory = realpath ($config['homedir'] . '/' . $directory);
 
 echo '<h4>' . __('Index of %s', $directory) . '</h4>';
 
-filemanager_file_explorer($real_directory, $directory, 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_mib_uploader');
+filemanager_file_explorer($real_directory,
+	$directory,
+	'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_mib_uploader',
+	SNMP_DIR_MIBS);
 ?>

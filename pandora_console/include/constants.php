@@ -229,4 +229,7 @@ define ('MODULE_SNMP', 2);
 define ('MODULE_PLUGIN', 4);
 define ('MODULE_WMI', 6);
 define ('MODULE_WEB', 7);
+
+/* SNMP CONSTANTS */
+define ('SNMP_DIR_MIBS', "attachment/mibs");
 ?>

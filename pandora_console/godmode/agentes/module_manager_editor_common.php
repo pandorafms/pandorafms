@@ -446,7 +446,7 @@ $(document).ready (function () {
 			$(this).attr('selected','selected');
 		});
 	});
-
+	
 	$("#submit-crtbutton").click(function () {
 		$('#id_tag_selected option').map(function(){
 			$(this).attr('selected','selected');
@@ -455,7 +455,7 @@ $(document).ready (function () {
 	
 	$("#id_module_type").change(function () {
 		var type_selected = $(this).val();
-		var type_names = jQuery.evalJSON(Base64.decode($('#hidden-type_names').val()));
+		var type_names = jQuery.parseJSON(Base64.decode($('#hidden-type_names').val()));
 		
 		var type_name_selected = type_names[type_selected];
 		

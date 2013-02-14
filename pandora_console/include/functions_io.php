@@ -274,9 +274,9 @@ function io_safe_output_html($value, $utf8 = true)
 	//Revert html entities to chars
 	for ($i=0;$i<33;$i++) {
 		$value = str_ireplace("&#x".dechex($i).";",io_html_to_ascii(dechex($i)), $value);			
-	}	
+	}
 	
-	return $value;	
+	return $value;
 }
 
 /** 

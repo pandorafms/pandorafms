@@ -199,7 +199,7 @@ echo '</div>';
 <?php
 
 echo "<br />";
-echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';			
+echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';
 echo '<table border="0"><tr><td>';
 echo __("Action");
 echo '</td><td>';

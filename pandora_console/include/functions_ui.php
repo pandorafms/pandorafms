@@ -2873,11 +2873,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 			
 			var term = input_value; //Word to search
 			
-			' . $javascript_change_ajax_params_text . '		
-				
+			' . $javascript_change_ajax_params_text . '
+			
 			if (' . ((int) !$metaconsole_enabled) . ') {
 				data_params[\'force_local\'] = 1;
-			}					
+			}
 			
 			jQuery.ajax ({
 				data: data_params,

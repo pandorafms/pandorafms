@@ -998,8 +998,8 @@ function modules_get_monitors_in_agent ($id_agent) {
 					AND ttipo_modulo.nombre LIKE '%%_proc'
 					AND tagente.id_agente = %d", $id_agent);
 			break;
-	}	
-		
+	}
+	
 	return db_get_all_rows_sql ($sql);
 }
 
@@ -1016,14 +1016,16 @@ function modules_get_monitors_in_agent ($id_agent) {
  */
 function modules_get_monitors_down ($monitors, $period = 0, $date = 0) {
 	$monitors_down = array ();
+	
 	if (empty ($monitors))
-	return $monitors_down;
-
+		return $monitors_down;
+	
 	foreach ($monitors as $monitor) {
 		$down = modules_get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);
 		if ($down > 0)
 		array_push ($monitors_down, $monitor);
 	}
+	
 	return $monitors_down;
 }
 
@@ -1069,13 +1071,13 @@ function modules_get_moduletypes ($type = "all", $rows = "nombre") {
 	elseif ($type == "agent") {
 		return array_merge (range (1,4), range (19,24));
 	}
-
+	
 	$sql = sprintf ("SELECT id_tipo, %s FROM ttipo_modulo", implode (",", $rows));
 	$result = db_get_all_rows_sql ($sql);
 	if ($result === false) {
 		return $return;
 	}
-
+	
 	foreach ($result as $type) {
 		if ($row_cnt > 1) {
 			$return[$type["id_tipo"]] = $type;
@@ -1084,6 +1086,7 @@ function modules_get_moduletypes ($type = "all", $rows = "nombre") {
 			$return[$type["id_tipo"]] = $type[reset ($rows)];
 		}
 	}
+	
 	return $return;
 }
 
@@ -1117,32 +1120,6 @@ function modules_get_interval ($id_agent_module) {
  */
 function modules_show_icon_type ($id_type) {
 	return (string) db_get_value ('icon', 'ttipo_modulo', 'id_tipo', $id_type);
-}
-
-/**
- * Get a module category name
- *
- * @param int Id category
- *
- * @return Name of the given category
- */
-function modules_give_modulecategory_name ($id_category) {
-	switch ($id_category) {
-		case 0:
-			return __('Software agent data');
-			break;
-		case 1:
-			return __('Software agent monitor');
-			break;
-		case 2:
-			return __('Network agent data');
-			break;
-		case 3:
-			return __('Network agent monitor');
-			break;
-	}
-
-	return __('Unknown');
 }
 
 /**

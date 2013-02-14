@@ -440,13 +440,13 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			}
 		}*/
 		
-		if(!empty($event_ids)) {
+		if (!empty($event_ids)) {
 			$chart_extra_data[count($chart)-1]['events'] = implode(',',$event_ids);
 		}
-		if(!empty($alert_ids)) {
+		if (!empty($alert_ids)) {
 			$chart_extra_data[count($chart)-1]['alerts'] = implode(',',$alert_ids);
 		}
-	}	
+	}
 }
 
 
@@ -503,13 +503,13 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
 			array ('id_evento', 'evento', 'utimestamp', 'event_type'));
-
+		
 		// Get the last event after inverval to know if graph start on unknown
 		$prev_event = db_get_row_filter ('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp <= $datelimit",
 				'order' => 'utimestamp DESC'));
-		if(isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
+		if (isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
 			$start_unknown = true;
 		}
 		
@@ -529,7 +529,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	// Get module warning_min and critical_min
 	$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$agent_module_id);
 	$critical_min = db_get_value('min_critical','tagente_modulo','id_agente_modulo',$agent_module_id);
-		
+	
 	if ($data === false) {
 		$data = array ();
 	}
@@ -611,14 +611,14 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$projection, $avg_only, $uncompressed_module, 
 		$show_events, $show_alerts, $show_unknown, $baseline, 
 		$baseline_data, $events, $series_suffix, $start_unknown);
-
+	
 	// Return chart data and don't draw
 	if ($return_data == 1) {
 		return $chart;
 	}
 	
 	$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
-
+	
 	// Fix event and alert scale
 	$event_max = 2 + (float)$max_value * 1.05;
 	foreach ($chart as $timestamp => $chart_data) {
@@ -749,10 +749,10 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		return $data_returned;
 	}
 	
-	if($compare === 'overlapped') {
+	if ($compare === 'overlapped') {
 		$i = 0;
-		foreach($chart as $k=>$v) {
-			if(!isset($chart_prev[$i])) {
+		foreach ($chart as $k=>$v) {
+			if (!isset($chart_prev[$i])) {
 				continue;
 			}
 			$chart[$k] = array_merge($v,$chart_prev[$i]);
@@ -1214,38 +1214,42 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	$fixed_font_size = $config['font_size'] - 1;
 	
 	//Set graph color
-
+	
 	$color = array();
-
+	
 	$color[0] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
-        $color[1] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
-        $color[2] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
-
+	$color[1] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
+	$color[2] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
+	
 	switch ($stacked) {
 		case GRAPH_AREA:
-			return area_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, ui_get_full_url("images/image_problem.opaque.png"),
-				"", "", $homeurl, $water_mark,
-				$config['fontpath'], $fixed_font_size, "", $ttl); 
+			return area_graph($flash_charts, $graph_values, $width,
+				$height, $color, $module_name_list, $long_index,
+				ui_get_full_url("images/image_problem.opaque.png"), "",
+				"", $homeurl, $water_mark, $config['fontpath'],
+				$fixed_font_size, "", $ttl); 
 			break;
 		default:
 		case GRAPH_STACKED_AREA: 
-			return stacked_area_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, ui_get_full_url("images/image_problem.opaque.png"),
-				"", "", $water_mark,
-				$config['fontpath'], $fixed_font_size, "", $ttl, $homeurl);
+			return stacked_area_graph($flash_charts, $graph_values,
+				$width, $height, $color, $module_name_list, $long_index,
+				ui_get_full_url("images/image_problem.opaque.png"), "",
+				"", $water_mark, $config['fontpath'], $fixed_font_size,
+				"", $ttl, $homeurl);
 			break;
 		case GRAPH_LINE:  
-			return line_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, ui_get_full_url("images/image_problem.opaque.png"),
-				"", "", $water_mark,
-				$config['fontpath'], $fixed_font_size, "", $ttl, $homeurl); 
+			return line_graph($flash_charts, $graph_values, $width,
+				$height, $color, $module_name_list, $long_index,
+				ui_get_full_url("images/image_problem.opaque.png"), "",
+				"", $water_mark, $config['fontpath'], $fixed_font_size,
+				"", $ttl, $homeurl); 
 			break;
 		case GRAPH_STACKED_LINE:
-			return stacked_line_graph($flash_charts, $graph_values, $width, $height,
-				$color, $module_name_list, $long_index, ui_get_full_url("images/image_problem.opaque.png"),
-				"", "", $water_mark,
-				$config['fontpath'], $fixed_font_size, "", $ttl, $homeurl);
+			return stacked_line_graph($flash_charts, $graph_values,
+				$width, $height, $color, $module_name_list, $long_index,
+				ui_get_full_url("images/image_problem.opaque.png"), "",
+				"", $water_mark, $config['fontpath'], $fixed_font_size,
+				"", $ttl, $homeurl);
 			break;
 	}
 }
@@ -2133,11 +2137,11 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar',
 		if (enterprise_hook('metaconsole_load_external_db', array($metaconsole_connection)) != NOERR) {
 			//ui_print_error_message ("Error connecting to ".$server_name);
 			return false;
-		}		
+		}
 	}
-
+	
 	$data_result = db_get_all_rows_sql ($sql);
-
+	
 	if (($config['metaconsole'] == 1) && defined('METACONSOLE'))
 		enterprise_hook('metaconsole_restore_db');
 	

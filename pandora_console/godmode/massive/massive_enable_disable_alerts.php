@@ -67,7 +67,7 @@ $recursion = get_parameter ('recursion');
 
 $result = false;
 
-switch($action) {
+switch ($action) {
 	case 'enable_alerts':
 		$id_alert_templates = (int) get_parameter ('id_alert_template_disabled', 0);
 		$id_disabled_alerts = get_parameter_post ('id_disabled_alerts', array());
@@ -77,7 +77,7 @@ switch($action) {
 		
 		ui_print_result_message ($result, __('Successfully enabled'), __('Could not be enabled'));
 		
-		$info = 'Alert: ' . json_encode($id_disabled_alerts);	
+		$info = 'Alert: ' . json_encode($id_disabled_alerts);
 		if ($result) {
 			db_pandora_audit("Masive management", "Enable alert", false, false, $info);
 		}

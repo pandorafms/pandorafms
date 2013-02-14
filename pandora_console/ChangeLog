@@ -1,3 +1,15 @@
+2013-02-14 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/massive/massive_operations.php,
+	godmode/massive/massive_enable_disable_alerts.php,
+	godmode/massive/massive_standby_alerts.php,
+	godmode/tag/edit_tag.php, include/functions_graph.php,
+	include/functions_io.php, include/functions_ui.php: cleaned source
+	code style.
+	
+	* include/functions_modules.php: erased deprecated function
+	"modules_give_modulecategory_name".
+
 2013-02-13 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/module_groups.php,

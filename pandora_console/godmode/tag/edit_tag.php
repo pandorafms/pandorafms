@@ -52,10 +52,10 @@ $buttons[$tab]['active'] = true;
 
 if (defined('METACONSOLE')) {
 	// Print header
-	ui_meta_print_header(__('Tags'), "", $buttons);	
+	ui_meta_print_header(__('Tags'), "", $buttons);
 }
 else {
-
+	
 	// Header
 	ui_print_page_header (__('Tags configuration'), "images/setup.png", false, "", true, $buttons);
 
@@ -63,11 +63,11 @@ else {
 
 // Two actions can performed in this page: update and create tags
 // Update tag: update an existing tag
-if ($update_tag && $id_tag != 0) {	
-
+if ($update_tag && $id_tag != 0) {
+	
 	// Erase comma characters on tag name
 	$name_tag = str_replace(',', '', $name_tag); 
-
+	
 	$values = array();
 	$values['name'] = $name_tag;
 	$values['description'] = $description_tag;
@@ -143,7 +143,7 @@ echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_t
 echo '<div align=left style="width: 98%" class="pandora_form">';
 
 echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
-	echo "<tr>";	
+	echo "<tr>";
 		echo "<td align=center>";
 		html_print_label (__("Name"),'name');
 		echo "</td>";
@@ -156,7 +156,7 @@ echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 		html_print_label (__("Description"),'name');
 		echo "</td>";
 		echo "<td align=center>";
-		html_print_input_text ('description_tag', $description_tag);			
+		html_print_input_text ('description_tag', $description_tag);
 		echo "</td>";
 	echo "</tr>";
 	echo "<tr>";

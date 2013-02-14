@@ -1,5 +1,10 @@
 2013-02-14 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/constants.php: added constant for module type of
+	"MODULE_SNMP" and sorted the list of types of modules.
+
+2013-02-14 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/module_manager_editor_common.php,
 	include/functions_profile.php, operation/events/events_list.php:
 	changed in jQuery the deprecated function evalJSON for parseJSON.

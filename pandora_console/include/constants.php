@@ -222,8 +222,10 @@ define ('EVENT_CRIT_WARNING_OR_CRITICAL', 34);
 define ('EVENT_CRIT_NOT_NORMAL', 20);
 
 /* Id Module (more use in component)*/
-define ('MODULE_WMI', 6);
+define ('MODULE_DATA', 1);
 define ('MODULE_NETWORK', 2);
+define ('MODULE_SNMP', 2);
 define ('MODULE_PLUGIN', 4);
+define ('MODULE_WMI', 6);
 define ('MODULE_WEB', 7);
 ?>

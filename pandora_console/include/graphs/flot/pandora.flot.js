@@ -939,7 +939,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 					datas.push(this);
 				//}
 			});
-
+			
 			plot = $.plot($('#'+graph_id), datas, options);
 			
 			plot.setSelection(currentRanges);

@@ -66,7 +66,6 @@ if (isset ($_POST["template_id"])) {
 				'id_agente' => $id_agente,
 				'id_tipo_modulo' => $row2["type"],
 				'descripcion' => __('Created by template ').$name_template. ' . '.$row2["description"],
-				'nombre' => $row2["name"],
 				'max' => $row2["max"],
 				'min' => $row2["min"],
 				'module_interval' => $row2["module_interval"],
@@ -98,47 +97,21 @@ if (isset ($_POST["template_id"])) {
 				'unknown_instructions' => $row2['unknown_instructions']
 				);
 			
+			$name = $row2["name"];
+			
 			// Check if this module exists in the agent
-			$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $row2["name"], 'id_agente' => $id_agente));
+			$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $name, 'id_agente' => $id_agente));
 			
 			if ($module_name_check !== false) {
 				$modules_already_added[] = $row2["name"];
 				$error_count++;
 			}
 			else {
+				$id_agente_modulo = modules_create_agent_module($id_agente, $name, $values);
 				
-				$id_agente_modulo = db_process_sql_insert('tagente_modulo', $values);
-				
-				// Set the initial module status
-				if ($row2["type"] == 21 || $row2["type"] == 22 || $row2["type"] == 23) {
-					$status = 0;
-				}
-				else {
-					$status = 4;
-				}
-				
-				// Create with different estado if proc type or data type
-				if ($id_agente_modulo !== false) {
-					$success_count++;
-					$values = array(
-						'id_agente_modulo' => $id_agente_modulo,
-						'datos' => 0,
-						'timestamp' => '01-01-1970 00:00:00',
-						'estado' => $status,
-						'id_agente' => $id_agente,
-						'utimestamp' => 0);
-					db_process_sql_insert('tagente_estado', $values);
-					
-					// Update module status count
-					if ($status == 4) {
-						db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$id_agente);
-					}
-					else {
-						db_process_sql ('UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=' . (int)$id_agente);
-					}
-				}
-				else
+				if ($id_agente_modulo === false) {
 					$error_count++;
+				}
 			}
 		}
 	}

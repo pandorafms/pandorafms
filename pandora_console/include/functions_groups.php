@@ -960,7 +960,7 @@ function groups_monitor_not_init ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES	
-	return db_get_sql ("SELECT SUM(notinit_count) FROM tagente WHERE id_grupo IN $group_clause");	
+	return db_get_sql ("SELECT SUM(notinit_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");	
 }
 
 // Get monitor OK, except disabled and non-init
@@ -980,7 +980,7 @@ function groups_monitor_ok ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT SUM(normal_count) FROM tagente WHERE id_grupo IN $group_clause");
+	return db_get_sql ("SELECT SUM(normal_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
 }
 
 // Get monitor CRITICAL, except disabled and non-init
@@ -1000,7 +1000,7 @@ function groups_monitor_critical ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT SUM(critical_count) FROM tagente WHERE id_grupo IN $group_clause");
+	return db_get_sql ("SELECT SUM(critical_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
 }
 
 // Get monitor WARNING, except disabled and non-init
@@ -1020,7 +1020,7 @@ function groups_monitor_warning ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES	
-	return db_get_sql ("SELECT SUM(warning_count) FROM tagente WHERE id_grupo IN $group_clause");						
+	return db_get_sql ("SELECT SUM(warning_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");						
 }
 
 // Get monitor UNKNOWN, except disabled and non-init
@@ -1040,7 +1040,7 @@ function groups_monitor_unknown ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT SUM(unknown_count) FROM tagente WHERE id_grupo IN $group_clause");
+	return db_get_sql ("SELECT SUM(unknown_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
 }
 
 // Get alerts defined for a given group, except disabled 

@@ -48,48 +48,20 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	$modules = agents_get_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => false));
 	
-	// These are the modules that exists in the target 
+	// The module already exist in the target
 	if (! empty ($modules))
 		return array_pop (array_keys ($modules));
 	
 	$modulesDisabled = agents_get_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => true));
 	
+	// If the module exist but disabled, we enable it
 	if (!empty($modulesDisabled)) {
 		//the foreach have only one loop but extract the array index, and it's id_agente_modulo
 		foreach ($modulesDisabled as $id => $garbage) {
 			$id_module = $id;
-			switch ($config['dbtype']) {
-				case "mysql":
-				case "postgresql":
-					db_process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
-					array('id_agente_modulo' => $id_module, 'disabled' => true));
-					break;
-				case "oracle":
-					db_process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
-					array('id_agente_modulo' => $id_module, 'disabled' => true), 'AND', false);
-					break;
-			}
+			modules_change_disabled($id_module, 0);
 		}
-		
-		$values = array ();
-		$values['id_agente_modulo'] = $id_module;
-		
-		/* PHP copy arrays on assignment */
-		$new_module = $module;
-		
-		/* Rewrite different values */
-		$new_module['id_agente'] = $id_destiny_agent;
-		$new_module['ip_target'] = agents_get_address ($id_destiny_agent);
-		$new_module['policy_linked'] = 0;
-		$new_module['id_policy_module'] = 0;
-		
-		/* Unset numeric indexes or SQL would fail */
-		$len = count ($new_module) / 2;
-		for ($i = 0; $i < $len; $i++)
-			unset ($new_module[$i]);
-		/* Unset original agent module id */
-		unset ($new_module['id_agente_modulo']);
 		
 		$id_new_module = $id_module;
 	}
@@ -98,7 +70,6 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		$new_module = $module;
 		
 		/* Rewrite different values */
-		$new_module['id_agente'] = $id_destiny_agent;
 		$new_module['ip_target'] = agents_get_address ($id_destiny_agent);
 		$new_module['policy_linked'] = 0;
 		$new_module['id_policy_module'] = 0;
@@ -107,86 +78,62 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		$len = count ($new_module) / 2;
 		for ($i = 0; $i < $len; $i++)
 			unset ($new_module[$i]);
+			
 		/* Unset original agent module id */
 		unset ($new_module['id_agente_modulo']);
+		unset ($new_module['id_agente']);
 		
-		switch ($config['dbtype']) {
-			case "mysql":
-			case "postgresql":
-				$id_new_module = db_process_sql_insert ('tagente_modulo',
-					$new_module);
-				break;
-			case "oracle":
-				$id_new_module = db_process_sql_insert ('tagente_modulo',
-					$new_module, false);
-				break;
-		}
+		$id_new_module = modules_create_agent_module($id_destiny_agent, $new_module['nombre'], $new_module);
+		
 		if ($id_new_module === false) {
 			return false;
 		}
-		
-		$values = array ();
-		$values['id_agente_modulo'] = $id_new_module;
 	}
 	
-	$values['id_agente'] = $id_destiny_agent;
-	
-	switch ($config['dbtype']) {
-		case "mysql":
-		case "postgresql":
-			$result = db_process_sql_insert ('tagente_estado', $values);
-			break;
-		case "oracle":
-			$result = db_process_sql_insert ('tagente_estado', $values, false);
-			break;
+	// If the module is synthetic we duplicate the operations too
+	if($module['id_modulo'] == 5) {
+		$synth_ops = db_get_all_rows_field_filter('tmodule_synth','id_agent_module_target',$module['id_agente_modulo']);
+		
+		if($synth_ops === false) {
+			$synth_ops = array();
+		}
+		
+		foreach($synth_ops as $synth_op) {
+			unset($synth_op['id']);
+			$synth_op['id_agent_module_target'] = $id_new_module;
+			switch ($config['dbtype']) {
+				case "mysql":
+				case "postgresql":
+					db_process_sql_insert ('tmodule_synth',
+						$synth_op);
+					break;
+				case "oracle":
+					db_process_sql_insert ('tmodule_synth',
+						$synth_op, false);
+					break;
+			}
+		}
 	}
 	
-	if ($result !== false) { 
-		// If the module is synthetic we duplicate the operations too
-		if($module['id_modulo'] == 5) {
-			$synth_ops = db_get_all_rows_field_filter('tmodule_synth','id_agent_module_target',$module['id_agente_modulo']);
-			
-			if($synth_ops === false) {
-				$synth_ops = array();
-			}
-			
-			foreach($synth_ops as $synth_op) {
-				unset($synth_op['id']);
-				$synth_op['id_agent_module_target'] = $id_new_module;
-				switch ($config['dbtype']) {
-					case "mysql":
-					case "postgresql":
-						db_process_sql_insert ('tmodule_synth',
-							$synth_op);
-						break;
-					case "oracle":
-						db_process_sql_insert ('tmodule_synth',
-							$synth_op, false);
-						break;
-				}
-			}
-		}
+	// Copy module tags
+	$source_tags = tags_get_module_tags($id_agent_module);
+	
+	if ($source_tags ==  false)
+		$source_tags = array();
 		
-		// Copy module tags
-		$source_tags = tags_get_module_tags($id_agent_module);
-		
-		if ($source_tags ==  false)
-			$source_tags = array();
-			
-		tags_insert_module_tag($id_new_module, $source_tags);
-		
-		//Added the config data if necesary
-		enterprise_include_once('include/functions_config_agents.php');
-		
-		$id_agente = modules_get_agentmodule_agent($id_agent_module);
-		
-		$agent_md5 = md5 (agents_get_name($id_agente), false);
-		$remote_conf = file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5");
-		
-		if ($remote_conf) {
-			$result = enterprise_hook('config_agents_copy_agent_module_to_agent',
-				array($id_agent_module, $id_new_module));
-		}
+	tags_insert_module_tag($id_new_module, $source_tags);
+	
+	//Added the config data if necesary
+	enterprise_include_once('include/functions_config_agents.php');
+	
+	$id_agente = modules_get_agentmodule_agent($id_agent_module);
+	
+	$agent_md5 = md5 (agents_get_name($id_agente), false);
+	$remote_conf = file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5");
+	
+	if ($remote_conf) {
+		$result = enterprise_hook('config_agents_copy_agent_module_to_agent',
+			array($id_agent_module, $id_new_module));
 	}
 	
 	if ($result === false)
@@ -195,6 +142,75 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	return $id_new_module;
 }
 
+/**
+ * Enable/Disable a module
+ *
+ * @param mixed Agent module id to be disabled. Accepts an array with ids.
+ * @param integer new value for the field disabled. 0 to enable, 1 to disable
+ *
+ * @return True if the module was disabled. False if not.
+ */
+function modules_change_disabled($id_agent_module, $new_value = 1) {
+	$id_agent_module = (array) $id_agent_module;
+		
+	// Define the operation dependes if is disable or enable
+	if($new_value == 1) {
+		$operation = '- 1';
+	}
+	else {
+		$operation = '+ 1';
+	}
+	
+	foreach($id_agent_module as $id_module) {
+		// If the module is already disabled/enabled abort
+		$current_disabled = db_get_value('disabled', 'tagente_modulo', 'id_agente_modulo', $id_module);
+		if($current_disabled == $new_value) {
+			continue;
+		}
+		
+		$status = modules_get_agentmodule_status($id_module);
+	
+		$agent_id = modules_get_agentmodule_agent($id_module);
+
+		// Define the field to update depends the status
+		switch($status) {
+			case AGENT_MODULE_STATUS_NO_DATA:
+				$modification = 'notinit_count = notinit_count ' . $operation . ',';
+				break;
+			case AGENT_MODULE_STATUS_CRITICAL_BAD:
+				$modification = 'critical_count = critical_count ' . $operation . ',';
+				break;
+			case AGENT_MODULE_STATUS_WARNING:
+				$modification = 'warning_count = warning_count ' . $operation . ',';
+				break;
+			case AGENT_MODULE_STATUS_NORMAL:
+				$modification = 'normal_count = normal_count ' . $operation . ',';
+				break;
+			case AGENT_MODULE_STATUS_UNKNOW:
+				$modification = 'unknown_count = unknown_count ' . $operation . ',';
+				break;
+			default:
+				$modification = '';
+				break;
+		}
+	
+		// Increase total count of the agent
+		$result = db_process_sql('UPDATE tagente SET ' . $modification . ' total_count = total_count ' . $operation . ' WHERE id_agente = ' . $agent_id);
+		if(!$result)  {
+			return ERR_GENERIC;
+		}
+	}
+
+	$result = db_process_sql_update('tagente_modulo', array('disabled' => $new_value), array('id_agente_modulo' => $id_agent_module));
+
+	if($result) {
+		return NOERR;
+	}
+	else {
+		return ERR_GENERIC;
+	}
+}
+ 
 /**
  * Deletes a module from an agent.
  *
@@ -225,20 +241,22 @@ function modules_delete_agent_module ($id_agent_module) {
 		$where);
 	db_process_sql_delete('ttag_module', $where);
 	
-	// Update module status count
-	if ($module['estado'] == 0) {
-		db_process_sql ('UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module['id_agente']);
-	} else if ($module['estado'] == 1) {
-		db_process_sql ('UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module['id_agente']);
-	} else if ($module['estado'] == 2) {
-		db_process_sql ('UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module['id_agente']);
-	} else if ($module['estado'] == 3) {
-		db_process_sql ('UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module['id_agente']);
-	} else if ($module['estado'] == 4) {
-		db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module['id_agente']);
+	// Update module status count only if the module is not disabled
+	if($module['disabled'] == 0) {
+		if ($module['estado'] == 0) {
+			db_process_sql ('UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module['id_agente']);
+		} else if ($module['estado'] == 1) {
+			db_process_sql ('UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module['id_agente']);
+		} else if ($module['estado'] == 2) {
+			db_process_sql ('UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module['id_agente']);
+		} else if ($module['estado'] == 3) {
+			db_process_sql ('UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module['id_agente']);
+		} else if ($module['estado'] == 4) {
+			db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module['id_agente']);
+		}
+		
+		db_process_sql ('UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module['id_agente']);
 	}
-	db_process_sql ('UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module['id_agente']);
-
 	return true;
 }
 
@@ -285,9 +303,18 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 		$where['delete_pending'] = 0;
 	}
 	
+	// Disable action requires a special function
+	if(isset($values['disabled'])) {
+		$result_disable = modules_change_disabled($id, $values['disabled']);
+		unset($values['disabled']);
+	}
+	else {
+		$result_disable = true;
+	}
+	
 	$result = @db_process_sql_update ('tagente_modulo', $values, $where);
 	
-	if($result === false) {
+	if($result === false || $result_disable === ERR_GENERIC) {
 		return ERR_DB;
 	}
 	else {
@@ -402,13 +429,14 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 		return ERR_DB;
 	}
 
-	// Update module status count
-	if ($status == 0) {
-		db_process_sql ('UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=' . (int)$id_agent);
-	} else {
-		db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$id_agent);		
+	// Update module status count if the module is not created disabled
+	if(!isset ($values['disabled']) || $values['disabled'] == 0) {
+		if ($status == 0) {
+			db_process_sql ('UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=' . (int)$id_agent);
+		} else {
+			db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$id_agent);		
+		}
 	}
-
 
 	return $id_agent_module;
 }

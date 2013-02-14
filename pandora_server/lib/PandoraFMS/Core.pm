@@ -2238,12 +2238,14 @@ sub pandora_create_module_from_hash ($$$) {
 	
 	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')', $module_id, $parameters->{'id_agente'}, $status, $status, $status);
 	
-	# Update the module status count
-	if ($status == 4) {
-		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
-	}
-	else {
-		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
+	# Update the module status count. When the module is created disabled dont do it
+	if(!defined($parameters->{'disabled'}) || $parameters->{'disabled'} == 0) {
+		if ($status == 4) {
+			db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
+		}
+		else {
+			db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
+		}
 	}
 	
 	return $module_id;

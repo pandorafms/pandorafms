@@ -637,8 +637,6 @@ sub pandora_checkdb_consistency {
 
 		# Delete the module
 		db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agente_modulo);
-		# Update the module status count
-		db_do ($dbh, 'UPDATE tagente SET total_count=total_count-1, notinit_count=notinit_count-1 WHERE id_agente=?', $module->{'id_agente'});
 
 		# Delete any alerts associated to the module
 		db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $id_agente_modulo);
@@ -655,11 +653,8 @@ sub pandora_checkdb_consistency {
 			next if (defined($is_policy_module) && $is_policy_module);
 	
 			# Delete the module
-			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);;
-	
-			# Update the module status count
-			db_do ($dbh, 'UPDATE tagente SET total_count=total_count-1, unknown_count=unknown_count-1 WHERE id_agente=?', $module->{'id_agente'});
-
+			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);
+			
 			# Delete any alerts associated to the module
 			db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ? AND NOT EXISTS (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente_modulo = ?)', $id_agente_modulo, $id_agente_modulo);
 		}
@@ -700,12 +695,12 @@ sub pandora_checkdb_consistency {
 	my @agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente');
 	foreach my $agent (@agents) {
 		my $id_agente = $agent->{'id_agente'};
-		db_do ($dbh, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=0 AND disabled=0),
-		critical_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=1 AND disabled=0),
-		warning_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=2 AND disabled=0),
-		unknown_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=3 AND disabled=0),
-		notinit_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=4 AND disabled=0),
-		total_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND disabled=0)
+		db_do ($dbh, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=0 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
+		critical_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=1 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
+		warning_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=2 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
+		unknown_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=3 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
+		notinit_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=4 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
+		total_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0))
 		WHERE id_agente = ' . $id_agente);
 	}
 }

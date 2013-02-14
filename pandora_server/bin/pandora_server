@@ -87,12 +87,12 @@ sub pandora_startup () {
 	my @agents = get_db_rows ($DBH, 'SELECT id_agente FROM tagente');
 	foreach my $agent (@agents) {
 		my $agent_id = $agent->{'id_agente'};
-		db_do ($DBH, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=0 AND disabled=0),
-		critical_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=1 AND disabled=0),
-		warning_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=2 AND disabled=0),
-		unknown_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=3 AND disabled=0),
-		notinit_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=4 AND disabled=0),
-		total_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND disabled=0)
+		db_do ($DBH, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=0 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
+		critical_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=1 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
+		warning_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=2 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
+		unknown_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=3 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
+		notinit_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=4 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
+		total_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0))
 		WHERE id_agente = ' . $agent_id);
 	}
 	

@@ -366,7 +366,9 @@ function netflow_summary_table ($data) {
 	$table->data[5][0] = '<b>'.__('Average bytes per packet').'</b>';
 	$table->data[5][1] = format_numeric ($data['avgbpp']);
 	
-	return html_print_table ($table, true);
+	$html = html_print_table ($table, true);
+	
+	return $html;
 }
 
 /**
@@ -821,13 +823,11 @@ function netflow_get_filter_arguments ($filter) {
  *
  */
 function netflow_get_chart_types () {
-	
 	return array(
-		__('Area graph'),
-		__('Pie graph'),
-		__('Data table'),
-		__('Statistics table'),
-		__('Summary table'));
+		'netflow_area' => __('Area graph'),
+		'netflow_pie_summatory' => __('Pie graph and Summary table'),
+		'netflow_statistics' => __('Statistics table'),
+		'netflow_data' => __('Data table'));
 }
 
 /**
@@ -923,7 +923,8 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 					}
 					$html .= graph_netflow_aggregate_area ($data, $interval, 850, 320, netflow_format_unit ($unit));
 					return $html;
-				} else if ($output == 'PDF') {
+				}
+				else if ($output == 'PDF') {
 					$html = "<b>" . __('Unit') . ":</b> " . netflow_format_unit ($unit);
 					$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> " . netflow_format_aggregate ($aggregate);
 					if ($interval_length != 0) {
@@ -931,7 +932,8 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 					}
 					$html .= graph_netflow_aggregate_area ($data, $interval, 850, 320, netflow_format_unit ($unit), 2, true);
 					return $html;
-				} else if ($output == 'XML') {
+				}
+				else if ($output == 'XML') {
 					$xml = "<unit>$unit</unit>\n";
 					$xml .= "<aggregate>$aggregate</aggregate>\n";
 					$xml .= "<resolution>$interval_length</resolution>\n";
@@ -947,44 +949,21 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 					}
 					$html .= graph_netflow_total_area ($data, $interval, 660, 320, netflow_format_unit ($unit));
 					return $html;
-				} else if ($output == 'PDF') {
+				}
+				else if ($output == 'PDF') {
 					$html = "<b>" . __('Unit') . ":</b> " . netflow_format_unit ($unit);
 					if ($interval_length != 0) {
 						$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
 					}
 					$html .= graph_netflow_total_area ($data, $interval, 660, 320, netflow_format_unit ($unit), 2, true);
 					return $html;
-				} else if ($output == 'XML') {
+				}
+				else if ($output == 'XML') {
 					$xml = "<unit>$unit</unit>\n";
 					$xml .= "<resolution>$interval_length</resolution>\n";
 					$xml .= netflow_total_area_xml ($data);
 					return $xml;
 				}
-			}
-			break;
-		case '1':
-		case 'netflow_pie':
-			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
-			if (empty ($data)) {
-				break;
-			}
-			if ($output == 'HTML') {
-				$html = "<b>" . __('Unit') . ":</b> " . netflow_format_unit ($unit);
-				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> " . netflow_format_aggregate ($aggregate);
-				$html .= graph_netflow_aggregate_pie ($data, netflow_format_aggregate ($aggregate));
-				return $html;
-			}
-			else if ($output == 'PDF') {
-				$html = "<b>" . __('Unit') . ":</b> " . netflow_format_unit ($unit);
-				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> $aggregate";
-				$html .= graph_netflow_aggregate_pie ($data, netflow_format_aggregate ($aggregate), 2, true);
-				return $html;
-			}
-			else if ($output == 'XML') {
-				$xml = "<unit>$unit</unit>\n";
-				$xml .= "<aggregate>$aggregate</aggregate>\n";
-				$xml .= netflow_aggregate_pie_xml ($data);
-				return $xml;
 			}
 			break;
 		case '2':
@@ -1015,7 +994,8 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			break;
 		case '3':
 		case 'netflow_statistics':
-			$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max_aggregates, $unit, $connection_name);
+			$data = netflow_get_stats ($start_date, $end_date, $filter,
+				$aggregate, $max_aggregates, $unit, $connection_name);
 			if (empty ($data)) {
 				break;
 			}
@@ -1028,21 +1008,87 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			break;
 		case '4':
 		case 'netflow_summary':
-		
-			$data = netflow_get_summary ($start_date, $end_date, $filter, $connection_name);
+			$data_summary = netflow_get_summary ($start_date, $end_date,
+				$filter, $connection_name);
 			if (empty ($data)) {
 				break;
 			}
 			if ($output == 'HTML' || $output == 'PDF') {
-				return netflow_summary_table ($data);
-			} else if ($output == 'XML') {
-				return netflow_summary_xml ($data);
+				return netflow_summary_table ($data_summary);
+			}
+			else if ($output == 'XML') {
+				return netflow_summary_xml ($data_summary);
+			}
+			break;
+		case '1':
+		case 'netflow_pie':
+			$data_pie = netflow_get_stats ($start_date, $end_date,
+				$filter, $aggregate, $max_aggregates, $unit,
+				$connection_name);
+			if (empty ($data_pie)) {
+				break;
+			}
+			if ($output == 'HTML') {
+				$html = "<b>" . __('Unit') . ":</b> " . netflow_format_unit ($unit);
+				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> " . netflow_format_aggregate ($aggregate);
+				$html .= graph_netflow_aggregate_pie ($data_pie, netflow_format_aggregate ($aggregate));
+				return $html;
+			}
+			else if ($output == 'PDF') {
+				$html = "<b>" . __('Unit') . ":</b> " . netflow_format_unit ($unit);
+				$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> $aggregate";
+				$html .= graph_netflow_aggregate_pie ($data_pie, netflow_format_aggregate ($aggregate), 2, true);
+				return $html;
+			}
+			else if ($output == 'XML') {
+				$xml = "<unit>$unit</unit>\n";
+				$xml .= "<aggregate>$aggregate</aggregate>\n";
+				$xml .= netflow_aggregate_pie_xml ($data_pie);
+				return $xml;
+			}
+			break;
+		case 'netflow_pie_summatory':
+			$data_summary = netflow_get_summary ($start_date, $end_date,
+				$filter, $connection_name);
+			if (empty ($data_summary)) {
+				break;
+			}
+			
+			$data_pie = netflow_get_stats ($start_date, $end_date,
+				$filter, $aggregate, $max_aggregates, $unit,
+				$connection_name);
+			if (empty ($data_pie)) {
+				break;
+			}
+			
+			switch ($output) {
+				case 'HTML':
+					$html = '<table>';
+					$html .= '<tr>';
+					$html .= '<td>';
+					$html .= netflow_summary_table ($data_summary);
+					$html .= "<b>" . __('Unit') . ":</b> " .
+						netflow_format_unit ($unit);
+					$html .= "&nbsp;<b>" . __('Aggregate') . ":</b> " . netflow_format_aggregate ($aggregate);
+					$html .= '</td>';
+					$html .= '<td>';
+					$html .= graph_netflow_aggregate_pie ($data_pie, netflow_format_aggregate ($aggregate));
+					$html .= '</td>';
+					$html .= '</tr>';
+					$html .= '</table>';
+					return $html;
+					break;
+				case 'PDF':
+					break;
+				case 'XML':
+					return netflow_summary_xml ($data_summary);
+					break;
 			}
 			break;
 		default:
 			break;
 	}
-
+	
 	if ($output == 'HTML' || $output == 'PDF') {
 		return fs_error_image();
 	}
@@ -1078,20 +1124,26 @@ function netflow_xml_report ($id, $start_date, $end_date, $interval_length = 0) 
 	echo "  <description>" . io_safe_output ($report['description']) . "</description>\n";
 	echo "  <start_date>" . date ("r", $start_date) . "</start_date>\n";
 	echo "  <end_date>" . date ("r", $end_date) . "</end_date>\n";
-
+	
 	// Get netflow item types
 	$item_types = netflow_get_chart_types ();
 	
 	// Print report items
-	$report_contents = db_get_all_rows_sql ("SELECT * FROM tnetflow_report_content WHERE id_report='" . $report['id_report'] . "' ORDER BY `order`");
+	$report_contents = db_get_all_rows_sql ("SELECT *
+		FROM tnetflow_report_content
+		WHERE id_report='" . $report['id_report'] . "'
+		ORDER BY `order`");
 	foreach ($report_contents as $content) {
-
-        // Get item filters
-        $filter = db_get_row_sql("SELECT * FROM tnetflow_filter WHERE id_sg = '" . io_safe_input ($content['id_filter']) . "'", false, true);
-        if ($filter === FALSE) {
+		
+		// Get item filters
+		$filter = db_get_row_sql("SELECT *
+			FROM tnetflow_filter
+			WHERE id_sg = '" . io_safe_input ($content['id_filter']) . "'",
+				false, true);
+		if ($filter === FALSE) {
 			continue;
 		}
-
+		
 		echo "  <report_item>\n";
 		echo "    <description>" . io_safe_output ($content['description']) . "</description>\n";
 		echo "    <type>" . io_safe_output ($item_types[$content['show_graph']]) . "</type>\n";
@@ -1106,9 +1158,9 @@ function netflow_xml_report ($id, $start_date, $end_date, $interval_length = 0) 
 		echo "      <aggregate>" . io_safe_output ($filter['aggregate']) . "</aggregate>\n";
 		echo "      <unit>" . io_safe_output ($filter['output']) . "</unit>\n";
 		echo "    </filter>\n";
-
+		
 		echo netflow_draw_item ($start_date, $end_date, $interval_length, $content['show_graph'], $filter, $content['max'], $report['server_name'], 'XML');
-
+		
 		echo "  </report_item>\n";
 	}
 	echo "</report>\n"; 

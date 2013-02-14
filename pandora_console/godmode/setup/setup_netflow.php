@@ -37,7 +37,6 @@ $table->border = 0;
 $table->cellspacing = 3;
 $table->cellpadding = 5;
 $table->class = "databox_color";
-$table->style[0] = 'vertical-align: top;';
 
 $table->data = array ();
 	
@@ -49,12 +48,16 @@ $table->data[2][0] = '<b>'.__('Daemon binary path').'</b>';
 $table->data[2][1] = html_print_input_text ('netflow_daemon', $config['netflow_daemon'], false, 50, 200, true);
 $table->data[3][0] = '<b>'.__('Nfdump binary path').'</b>';
 $table->data[3][1] = html_print_input_text ('netflow_nfdump', $config['netflow_nfdump'], false, 50, 200, true);
-$table->data[4][0] = '<b>'.__('Maximum chart resolution').'</b>' . ui_print_help_tip (__("Maximum number of points that a netflow area chart will display. The higher the resolution the performance. Values between 50 and 100 are recommended."), true);
-$table->data[4][1] = html_print_input_text ('netflow_max_resolution', $config['netflow_max_resolution'], false, 50, 200, true);
-$table->data[5][0] = '<b>'.__('Disable custom live view filters').'</b>' . ui_print_help_tip (__("Disable the definition of custom filters in the live view. Only existing filters can be used."), true);
-$table->data[5][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('netflow_disable_custom_lvfilters', 1, '', $config["netflow_disable_custom_lvfilters"], true).'&nbsp;&nbsp;';
-$table->data[5][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('netflow_disable_custom_lvfilters', 0, '', $config["netflow_disable_custom_lvfilters"], true).'&nbsp;&nbsp;';
-
+$table->data[4][0] = '<b>'.__('Nfexpire binary path').'</b>';
+$table->data[4][1] = html_print_input_text ('netflow_nfexpire', $config['netflow_nfexpire'], false, 50, 200, true);
+$table->data[5][0] = '<b>'.__('Maximum chart resolution').'</b>' . ui_print_help_tip (__("Maximum number of points that a netflow area chart will display. The higher the resolution the performance. Values between 50 and 100 are recommended."), true);
+$table->data[5][1] = html_print_input_text ('netflow_max_resolution', $config['netflow_max_resolution'], false, 50, 200, true);
+$table->data[6][0] = '<b>'.__('Disable custom live view filters').'</b>' . ui_print_help_tip (__("Disable the definition of custom filters in the live view. Only existing filters can be used."), true);
+$table->data[6][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('netflow_disable_custom_lvfilters', 1, '', $config["netflow_disable_custom_lvfilters"], true).'&nbsp;&nbsp;';
+$table->data[6][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('netflow_disable_custom_lvfilters', 0, '', $config["netflow_disable_custom_lvfilters"], true).'&nbsp;&nbsp;';
+$table->data[7][0] = '<b>'.__('Netflow max lifetime').'</b>'.ui_print_help_tip (__("Sets the maximum lifetime for netflow data in days."), true);
+$table->data[7][1] = html_print_input_text ('netflow_max_lifetime', $config['netflow_max_lifetime'], false, 50, 200, true);
+          
 echo '<form id="netflow_setup" method="post">';
 			
 html_print_table ($table);

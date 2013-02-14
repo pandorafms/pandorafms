@@ -333,7 +333,7 @@ if (check_acl ($config['id_user'], 0, "IR")) {
 if (check_acl ($config['id_user'], 0, "AR")) {
 
 	//SNMP Console
-	$menu_operation["snmpconsole"]["text"] = __('SNMP console');
+	$menu_operation["snmpconsole"]["text"] = __('SNMP');
 	$menu_operation["snmpconsole"]["refr"] = 0;
 	$menu_operation["snmpconsole"]["sec2"] = "operation/snmpconsole/snmp_view";
 	$menu_operation["snmpconsole"]["id"] = "oper-snmpc";

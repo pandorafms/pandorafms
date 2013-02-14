@@ -73,7 +73,7 @@ if ($config["pure"]) {
 ui_print_page_header (__("SNMP Browser"), "images/computer_error.png", false, "", false, $link);
 
 // Target selection
-$table->width = '90%';
+$table->width = '100%';
 $table->size = array ();
 $table->data = array ();
 
@@ -82,31 +82,38 @@ $table->data[0][0] = '<strong>'.__('Target IP').'</strong>';
 $table->data[0][1] = html_print_input_text ('target_ip', '', '', 50, 0, true);
 $table->data[0][2] = '<strong>'.__('Community').'</strong>';
 $table->data[0][3] = html_print_input_text ('community', '', '', 50, 0, true);
+$table->data[0][4] = html_print_image ("images/fullscreen.png", true, array ('title' => __('Expand the tree') . ' (' . __('can be slow') . ')', 'style' => 'vertical-align: middle;', 'onclick' => 'expandAll();'));
+$table->data[0][4] .= '&nbsp;' . html_print_image ("images/normalscreen.png", true, array ('title' => __('Collapse the tree'), 'style' => 'vertical-align: middle;', 'onclick' => 'collapseAll();'));
 $table->data[1][0] = '<strong>'.__('Starting OID').'</strong>';
 $table->data[1][1] = html_print_input_text ('starting_oid', '', '', 50, 0, true);
+$table->data[1][2] = '<strong>'.__('Search text').'</strong>';
+$table->data[1][3] = html_print_input_text ('search_text', '', '', 50, 0, true);
+$table->data[1][4] = html_print_image ("images/lupa.png", true, array ('title' => __('Search'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchText();'));
+$table->data[1][4] .= '&nbsp;' . html_print_image ("images/go_first.png", true, array ('title' => __('First match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchFirstMatch();'));
+$table->data[1][4] .= '&nbsp;' . html_print_image ("images/go_previous.png", true, array ('title' => __('Previous match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchPrevMatch();'));
+$table->data[1][4] .= '&nbsp;' . html_print_image ("images/go_next.png", true, array ('title' => __('Next match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchNextMatch();'));
+$table->data[1][4] .= '&nbsp;' . html_print_image ("images/go_last.png", true, array ('title' => __('Last match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchLastMatch();'));
 
-echo '<div>';
+echo '<div style="width: 95%">';
 echo html_print_table($table, true);
-echo '</div>';
+html_print_input_hidden ('search_count', 0, false);
+html_print_input_hidden ('search_index', -1, false);
 echo '<div>';
 echo html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub upd"', true);
 echo '</div>';
+echo '</div>';
 
 // SNMP tree
-$table->width = '100%';
-$table->size = array ();
-$table->data = array ();
-$table->data[0][0] = '<div style="height: 500px; position: relative">';
-$table->data[0][0] .= '<div id="spinner" style="display:none;">' . html_print_image ("images/spinner.gif", true, array ("style" => 'vertical-align: middle;'), false) . '</div>';
-$table->data[0][0] .= '<div id="snmp_browser" style="height: 500px; overflow: auto;"></div>';
-$table->data[0][0] .=   '<div id="snmp_data" style="width: 40%; position: absolute; top:0; right:20px"></div>';
-$table->data[0][0] .= '</div>';
-html_print_table($table, false);
+echo '<div style="width: 95%; margin-top: 5px; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; position: relative">';
+echo   '<div id="search_results" style="display:none; padding: 5px; background-color: #EAEAEA;"></div>';
+echo   '<div id="spinner" style="position: absolute; top:0; left:0px; display:none;">' . html_print_image ("images/spinner.gif", true) . '</div>';
+echo   '<div id="snmp_browser" style="height: 600px; overflow: auto;"></div>';
+echo   '<div id="snmp_data" style="width: 40%; position: absolute; top:0; right:20px"></div>';
+echo '</div>';
 
 ?>
 
 <script language="JavaScript" type="text/javascript">
-<!--
 
 // Load the SNMP tree via AJAX
 function snmpBrowse () {
@@ -152,10 +159,10 @@ function snmpBrowse () {
 	});
 }
 
-// Expand an SNMP tree node
-function expandTreeNode(node) {
+// Expand or collapse an SNMP tree node
+function toggleTreeNode(node) {
 
-	var display = $("#" + node).css('display');
+	var display = $("#ul_" + node).css('display');
 	var src = $("#anchor_" + node).children("img").attr('src');
 	
 	// Show the expanded or collapsed square
@@ -167,7 +174,57 @@ function expandTreeNode(node) {
 	$("#anchor_" + node).children("img").attr('src', src);
 	
 	// Hide or show leaves
-	$("#" + node).toggle();
+	$("#ul_" + node).toggle();
+}
+
+// Expand an SNMP tree node
+function expandTreeNode(node) {
+
+	if (node == 0) {
+		return;
+	}
+	
+	// Show the expanded square
+	var src = $("#anchor_" + node).children("img").attr('src');
+	src = src.replace("closed", "expanded");
+	$("#anchor_" + node).children("img").attr('src', src);
+	
+	// Show leaves
+	$("#ul_" + node).css('display', '');
+}
+
+// Expand an SNMP tree node
+function collapseTreeNode(node) {
+
+	if (node == 0) {
+		return;
+	}
+	
+	// Show the collapsed square
+	var src = $("#anchor_" + node).children("img").attr('src');
+	src = src.replace("expanded", "closed");
+	$("#anchor_" + node).children("img").attr('src', src);
+	
+	// Hide leaves
+	$("#ul_" + node).css('display', 'none');
+}
+
+// Expand all tree nodes
+function expandAll(node) {
+
+	$('#snmp_browser').find('ul').each ( function () {
+		var id = $(this).attr('id').substr(3);
+		expandTreeNode (id);
+	});
+}
+
+// Collapse all tree nodes
+function collapseAll(node) {
+
+	$('#snmp_browser').find('ul').each ( function () {
+		var id = $(this).attr('id').substr(3);
+		collapseTreeNode (id);
+	});
 }
 
 // Perform an SNMP get request via AJAX
@@ -215,5 +272,170 @@ function hideOIDData() {
 	$("#snmp_data").css('display', 'none');
 }
 
-//-->
+// Search the SNMP tree for a matching string
+function searchText() {
+
+	var text = $('#text-search_text').val();
+	var regexp = new RegExp(text);
+
+	// Hide previous search result count
+	$("#search_results").css('display', '');
+
+	// Show the spinner
+	$("#spinner").css('display', '');
+
+	// Collapse previously searched nodes
+	$('.expanded').each( function () {
+		$(this).removeClass('expanded');
+		
+		// Remove the leading ul_
+		var node_id = $(this).attr('id').substr(3);
+		
+		collapseTreeNode(node_id);
+	});
+	
+	// Un-highlight previously searched nodes
+	$('match').removeClass('match');
+	$('span').removeClass('group_view_warn');
+
+	// Hide values
+	$('span.value').css('display', 'none');
+
+	// Disable empty searches				
+	var count = 0;
+	if (text != '') {
+		count = searchTreeNode($('#snmp_browser'), regexp);
+	}
+	
+	// Hide the spinner
+	$("#spinner").css('display', 'none');
+
+	// Show and save the search result count
+	$("#hidden-search_count").val(count);
+	$("#search_results").text("<?php echo __("Search matches"); ?>" + ': ' + count);
+	$("#search_results").css('display', '');
+
+	// Reset the search index
+	$("#hidden-search_index").val(-1);
+
+	// Focus the first match
+	searchNextMatch ();
+}
+
+// Recursively search an SNMP tree node trying to match the given regexp
+function searchTreeNode(obj, regexp) {
+	
+	// For each node tree
+	var count = 0;
+	$(obj).children("ul").each( function () {
+		var ul_node = this;
+		
+		// Expand if regexp matches one of its children
+		$(ul_node).addClass('expand')
+		
+		// Search children for matches
+		$(ul_node).children("li").each( function () {
+			var li_node = this;
+			var text = $(li_node).text();
+
+			// Match!
+			if (regexp.test(text) == true) {
+		
+				count++;
+				
+				// Highlight in yellow
+				$(li_node).children('span').addClass('group_view_warn');
+				$(li_node).addClass('match');
+				
+				// Show the value
+				$(li_node).children('span.value').css('display', '');
+				
+				// Expand all nodes that lead to this one
+				$('.expand').each( function () {
+					$(this).addClass('expanded');
+					
+					// Remove the leading ul_
+					var node_id = $(this).attr('id').substr(3);
+					
+					expandTreeNode(node_id);
+				});
+			}
+		});
+		
+		// Search sub nodes
+		count += searchTreeNode(ul_node, regexp);
+		
+		// Do not expand this node if it has not been expanded already
+		$(ul_node).removeClass('expand');
+	});
+	
+	return count;
+}
+
+// Focus the next search match
+function searchNextMatch () {
+	var search_index = $("#hidden-search_index").val();
+	var search_count = $("#hidden-search_count").val();
+
+	// Update the search index
+	search_index++;
+	if (search_index >= search_count) {
+		search_index = 0;
+	}
+
+	// Get the id of the next element
+	var id = $('.match:eq(' + search_index + ')').attr('id');
+	
+	// Scroll
+	$('#snmp_browser').animate({
+		scrollTop: $('#snmp_browser').scrollTop() + $('#' + id).offset().top - $('#snmp_browser').offset().top
+	}, 1000);
+
+	// Save the search index
+	$("#hidden-search_index").val(search_index);
+}
+
+// Focus the previous search match
+function searchPrevMatch () {
+	var search_index = $("#hidden-search_index").val();
+	var search_count = $("#hidden-search_count").val();
+
+	// Update the search index
+	search_index--;
+	if (search_index < 0) {
+		search_index = search_count - 1;
+	}
+
+	// Get the id of the next element
+	var id = $('.match:eq(' + search_index + ')').attr('id');
+	
+	// Scroll
+	$('#snmp_browser').animate({
+		scrollTop: $('#snmp_browser').scrollTop() + $('#' + id).offset().top - $('#snmp_browser').offset().top
+	}, 1000);
+
+	// Save the search index
+	$("#hidden-search_index").val(search_index);
+}
+
+// Focus the first search match
+function searchFirstMatch () {
+
+	// Reset the search index
+	$("#hidden-search_index").val(-1);
+
+	// Focus the first match
+	searchNextMatch();
+}
+
+// Focus the last search match
+function searchLastMatch () {
+
+	// Reset the search index
+	$("#hidden-search_index").val(-1);
+
+	// Focus the last match
+	searchPrevMatch();
+}
+
 </script>

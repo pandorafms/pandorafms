@@ -302,14 +302,17 @@ function config_update_config () {
 				break;
 			case 'net':
 				config_update_value ('netflow_path', get_parameter ('netflow_path'));
-				config_update_value ('netflow_interval', get_parameter ('netflow_interval'));
+				config_update_value ('netflow_interval', (int)get_parameter ('netflow_interval'));
 				config_update_value ('netflow_daemon', get_parameter ('netflow_daemon'));
 				config_update_value ('netflow_nfdump', get_parameter ('netflow_nfdump'));
-				config_update_value ('netflow_max_resolution', get_parameter ('netflow_max_resolution'));
+				config_update_value ('netflow_nfexpire', get_parameter ('netflow_nfexpire'));
+				config_update_value ('netflow_max_resolution', (int)get_parameter ('netflow_max_resolution'));
 				config_update_value ('netflow_disable_custom_lvfilters', get_parameter ('netflow_disable_custom_lvfilters'));
+				config_update_value ('netflow_max_lifetime', (int) get_parameter ('netflow_max_lifetime'));
 				break;				
 			case 'log':
-				config_update_value ('log_dir', (string)get_parameter('log_dir'));
+				config_update_value ('log_dir', get_parameter('log_dir'));
+				config_update_value ('log_max_lifetime', (int)get_parameter('log_max_lifetime'));
 				break;				
 			
 		}	
@@ -499,6 +502,10 @@ function config_process_config () {
 		config_update_value ('log_dir', '/var/spool/pandora/data_in/log');
 	}
 
+	if (!isset ($config["log_max_lifetime"])) {
+		config_update_value ('log_max_lifetime', 15);
+	}
+	
 	if (!isset ($config["font_size"])) {
 		config_update_value ('font_size', 6);
 	}
@@ -609,7 +616,11 @@ function config_process_config () {
 	if (!isset ($config['netflow_nfdump'])) {
 		config_update_value ( 'netflow_nfdump', '/usr/bin/nfdump');
 	}
-	
+
+	if (!isset ($config['netflow_nfexpire'])) {
+		config_update_value ( 'netflow_nfexpire', '/usr/bin/nfexpire');
+	}
+		
 	if (!isset ($config['netflow_max_resolution'])) {
 		config_update_value ( 'netflow_max_resolution', '50');
 	}
@@ -622,6 +633,10 @@ function config_process_config () {
 		config_update_value ( 'netflow_disable_custom_lvfilters', 0);
 	}
 
+	if (!isset ($config['netflow_max_lifetime'])) {
+		config_update_value ( 'netflow_max_lifetime', '5');
+	}
+	
 	if (!isset ($config['auth'])) {
 		config_update_value ( 'auth', 'mysql');
 	}

@@ -945,7 +945,7 @@ function reorder_tags_inputs() {
 	
 	
 	tags_base64 = $("#hidden-tag_with").val();
-	tags = jQuery.evalJSON(Base64.decode(tags_base64));
+	tags = jQuery.parseJSON(Base64.decode(tags_base64));
 	jQuery.each(tags, function(key, element) {
 		if ($("#select_with option[value='" + element + "']").length == 1) {
 			text = $("#select_with option[value='" + element + "']").text();
@@ -977,7 +977,7 @@ function reorder_tags_inputs() {
 	
 	
 	tags_base64 = $("#hidden-tag_without").val();
-	tags = jQuery.evalJSON(Base64.decode(tags_base64));
+	tags = jQuery.parseJSON(Base64.decode(tags_base64));
 	jQuery.each(tags, function(key, element) {
 		if ($("#select_without option[value='" + element + "']").length == 1) {
 			text = $("#select_without option[value='" + element + "']").text();

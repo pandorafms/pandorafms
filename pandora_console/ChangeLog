@@ -1,5 +1,10 @@
 2013-02-14  Ramon Novoa  <rnovoa@artica.es>
 
+	* operation/snmpconsole/snmp_browser.php: Changed the size of some
+	  text inputs to make them look good in Firefox.
+
+2013-02-14  Ramon Novoa  <rnovoa@artica.es>
+
 	* godmode/setup/setup_netflow.php,
 	  include/functions_config.php: Added the deletion of old netflow and
 	  log data.

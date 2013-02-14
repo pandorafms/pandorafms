@@ -31,7 +31,7 @@ svg * {
 body {
 	text-align: center;
 	background-color: #555555;
-    background-image:  url(../../images/greyback.gif);
+	background-image:  url(../../images/greyback.gif);
 	margin: 0 auto;
 }
 
@@ -39,11 +39,11 @@ body {
 	/* Set rules to fill background */
 	min-height: 100%;
 	min-width: 1024px;
-
+	
 	/* Set up proportionate scaling */
 	width: 100%;
 	height: auto;
-
+	
 	/* Set up positioning */
 	position: fixed;
 	top: 0;
@@ -147,7 +147,7 @@ p.center {
 h1#log {
 	font-size: 18px;
 	margin-bottom: 0px;
-	color: #000;	
+	color: #000;
 }
 h1#log_f {
 	color: #c00;

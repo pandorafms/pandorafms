@@ -79,15 +79,15 @@ $table->data = array ();
 
 // String search_string
 $table->data[0][0] = '<strong>'.__('Target IP').'</strong>';
-$table->data[0][1] = html_print_input_text ('target_ip', '', '', 50, 0, true);
+$table->data[0][1] = html_print_input_text ('target_ip', '', '', 25, 0, true);
 $table->data[0][2] = '<strong>'.__('Community').'</strong>';
-$table->data[0][3] = html_print_input_text ('community', '', '', 50, 0, true);
+$table->data[0][3] = html_print_input_text ('community', '', '', 25, 0, true);
 $table->data[0][4] = html_print_image ("images/fullscreen.png", true, array ('title' => __('Expand the tree') . ' (' . __('can be slow') . ')', 'style' => 'vertical-align: middle;', 'onclick' => 'expandAll();'));
 $table->data[0][4] .= '&nbsp;' . html_print_image ("images/normalscreen.png", true, array ('title' => __('Collapse the tree'), 'style' => 'vertical-align: middle;', 'onclick' => 'collapseAll();'));
 $table->data[1][0] = '<strong>'.__('Starting OID').'</strong>';
-$table->data[1][1] = html_print_input_text ('starting_oid', '', '', 50, 0, true);
+$table->data[1][1] = html_print_input_text ('starting_oid', '', '', 25, 0, true);
 $table->data[1][2] = '<strong>'.__('Search text').'</strong>';
-$table->data[1][3] = html_print_input_text ('search_text', '', '', 50, 0, true);
+$table->data[1][3] = html_print_input_text ('search_text', '', '', 25, 0, true);
 $table->data[1][4] = html_print_image ("images/lupa.png", true, array ('title' => __('Search'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchText();'));
 $table->data[1][4] .= '&nbsp;' . html_print_image ("images/go_first.png", true, array ('title' => __('First match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchFirstMatch();'));
 $table->data[1][4] .= '&nbsp;' . html_print_image ("images/go_previous.png", true, array ('title' => __('Previous match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchPrevMatch();'));

@@ -234,7 +234,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 			$return .= "<a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
 		}
 		$return .= "<a href='javascript:'><img id='menu_overview_$graph_id' src='".$homeurl."images/chart_curve_overview.png' alt='".__('Overview graph')."' title='".__('Overview graph')."'></a>
-				</div>";
+			</div>";
 	}
 	$extra_height = $height - 50;
 	$extra_width = (int)($width / 3);

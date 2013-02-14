@@ -1,3 +1,14 @@
+2013-02-14 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/graphs/flot/pandora.flot.js,
+	include/graphs/functions_flot.php, include/graphs/fgraph.php:
+	cleaned source code style.
+	
+	* operation/agentes/stat_win.php: added javascript code to resize
+	the window when show the overview graph.
+	
+	Fixes: #3574134
+
 2013-02-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/snmpconsole/snmp_browser.php: Changed the size of some

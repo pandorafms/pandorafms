@@ -235,7 +235,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $series_type = array(),
 	$chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key = '', $force_integer = false,
 	$series_suffix_str = '') {
-
+	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	// ATTENTION: The min size is 130x150 

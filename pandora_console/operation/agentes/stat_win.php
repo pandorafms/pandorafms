@@ -459,4 +459,36 @@ $label = base64_decode(get_parameter('label', ''));
 	$('#checkbox-time_compare_overlapped').click(function() {
 		$('#checkbox-time_compare_separated').removeAttr('checked');
 	});
+	
+	
+	<?php
+	//Resize window when show the overview graph.
+	if ($config['flash_charts']) {
+	?>
+		var show_overview = false;
+		var height_window;
+		var width_window;
+		$(document).ready(function() {
+			height_window = $(window).height();
+			width_window = $(window).width();
+		});
+		
+		$("*").filter(function() {
+			if (typeof(this.id) == "string")
+				return this.id.match(/menu_overview_graph.*/);
+			else
+				return false;
+			}).click(function() {
+				if (show_overview) {
+					window.resizeTo(width_window, height_window + 15);
+				}
+				else {
+					window.resizeTo(width_window, height_window + 100);
+				}
+				show_overview = !show_overview;
+				
+			});
+	<?php
+	}
+	?>
 </script>

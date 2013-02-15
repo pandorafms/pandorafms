@@ -138,6 +138,8 @@ our @EXPORT = qw(
 	pandora_create_incident
 	pandora_create_module
 	pandora_create_module_from_hash
+	pandora_create_module_from_network_component
+	pandora_create_module_tags
 	pandora_create_template_module
 	pandora_create_template_module_action
 	pandora_delete_agent
@@ -2217,6 +2219,44 @@ sub pandora_delete_module ($$;$) {
 }
 
 ##########################################################################
+## Create an agent module from network component
+##########################################################################
+sub pandora_create_module_from_network_component ($$$$) {
+	my ($pa_config, $component, $id_agent, $dbh) = @_;
+	
+	my $addr = get_agent_address($dbh, $id_agent);
+	
+	logger($pa_config, "Processing network component '" . safe_output ($component->{'name'}) . "' for agent $addr.", 10);
+	
+	# The modules are created enabled and with the flag activated to force first execution
+	$component->{'flag'} = 1;
+	$component->{'disabled'} = 0;
+	
+	# Set the agent id
+	$component->{'id_agente'} = $id_agent;
+	
+	# Delete the fields that will not be inserted in the modules table
+	delete $component->{'id_nc'};
+	$component->{'nombre'} = $component->{'name'};
+	delete $component->{'name'};
+	$component->{'descripcion'} = $component->{'description'};
+	delete $component->{'description'};
+	delete $component->{'id_group'};
+	my $component_tags = $component->{'tags'};
+	delete $component->{'tags'};
+	$component->{'id_tipo_modulo'} = $component->{'type'};
+	delete $component->{'type'};
+	$component->{'ip_target'} = $addr;
+	
+	my $module_id = pandora_create_module_from_hash($pa_config, $component, $dbh); 
+	
+	# Propagate the tags to the module
+	pandora_create_module_tags ($pa_config, $dbh, $module_id, $component_tags);
+	
+	logger($pa_config, 'Creating module ' . safe_output ($component->{'nombre'}) . " (ID $module_id) for agent $addr from network component.", 10);
+}
+
+##########################################################################
 ## Create an agent module from hash
 ##########################################################################
 sub pandora_create_module_from_hash ($$$) {
@@ -2311,6 +2351,27 @@ sub pandora_get_config_value ($$) {
 	my $config_value = get_db_value($dbh, 'SELECT value FROM tconfig WHERE token = ?',$token);
 	
 	return (defined ($config_value) ? $config_value : "");
+}
+
+##########################################################################
+=head2 C<< pandora_create_module_tags (I<$pa_config>, I<$dbh>, I<$id_agent_module>, I<$serialized_tags>) >>
+
+Associate tags in a module. The tags are passed separated by commas
+
+=cut
+##########################################################################
+
+sub pandora_create_module_tags ($$$$) {
+	my ($pa_config, $dbh, $id_agent_module, $serialized_tags) = @_;
+	
+	if($serialized_tags eq '') {
+		return 0;
+	}
+	
+	foreach my $tag_name (split (',', $serialized_tags)) {
+		my $tag_id = get_db_value ($dbh, "SELECT id_tag FROM ttag WHERE name = ?", $tag_name);
+		db_insert ($dbh, 'id_tag', "INSERT INTO ttag_module (`id_tag`, `id_agente_modulo`) VALUES (?, ?)", $tag_id, $id_agent_module);
+	}
 }
 
 ##########################################################################

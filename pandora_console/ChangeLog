@@ -1,3 +1,15 @@
+2013-02-15 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/modules/manage_network_components.php,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/massive/massive_delete_alerts.php: improved the source
+	style.
+	
+	* include/functions_ui.php: fixed the sort of included of jquery
+	base files.
+	
+	Fixes: #3604768
+
 2013-02-15  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager_editor.php: Delete default

@@ -1267,7 +1267,7 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	//Load webchat javascript library
 	$config['js']['webchat'] = "include/javascript/webchat.js";
-
+	
 	//Load other javascript
 	//We can't load empty
 	$loaded = array ('');
@@ -1306,21 +1306,21 @@ function ui_process_page_head ($string, $bitfield) {
 	else {
 		$config['jquery'] = array_merge(
 			array ("jquery" => "include/javascript/jquery-1.9.0.js",
-				"pandora" => "include/javascript/jquery.pandora.js"),
+				"pandora" => "include/javascript/jquery.pandora.js",
+				'jquery-ui' => 'include/javascript/jquery.jquery-ui-1.10.0.custom.js'),
 			$config['jquery']);
 	}
 	
 	// Include the datapicker language if exists
-	if(file_exists('include/languages/datepicker/jquery.ui.datepicker-'.$config['language'].'.js')) {
+	if (file_exists('include/languages/datepicker/jquery.ui.datepicker-'.$config['language'].'.js')) {
 		$config['jquery']['datepicker_language'] = 'include/languages/datepicker/jquery.ui.datepicker-'.$config['language'].'.js';
 	}
 	
-	// Include jquery UI
-	$config['jquery']['jquery-ui'] = 'include/javascript/jquery.jquery-ui-1.10.0.custom.js';
-
+	
 	// Include countdown library
 	$config['jquery']['countdown'] = 'include/javascript/jquery.countdown.js';
-
+	
+	
 	//Then add each script as necessary
 	$loaded = array ('');
 	foreach ($config['jquery'] as $name => $filename) {

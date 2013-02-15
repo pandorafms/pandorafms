@@ -36,8 +36,10 @@ if (defined('METACONSOLE')) {
 	$sec = 'advanced';
 }
 else {
-ui_print_page_header (__('Module management').' &raquo; '.__('Network component management'), "", false, "network_component", true);
-	$sec = 'gmodules';	
+	ui_print_page_header (__('Module management') . ' &raquo; ' .
+		__('Network component management'), "", false,
+		"network_component", true);
+	$sec = 'gmodules';
 }
 
 $type = (int) get_parameter ('type');
@@ -142,6 +144,7 @@ if ($create_component) {
 	$custom_string_3 = '';
 	$name_check = db_get_value ('name', 'tnetwork_component', 'name',
 		$name);
+	
 	if ($type >= 15 && $type <= 18) {
 		// New support for snmp v3
 		$tcp_send = $snmp_version;
@@ -157,7 +160,7 @@ if ($create_component) {
 	
 	
 	if ($name && !$name_check) {
-	
+		
 		$id = network_components_create_network_component ($name, $type, $id_group, 
 			array ('description' => $description,
 				'module_interval' => $module_interval,

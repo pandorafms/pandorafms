@@ -43,7 +43,7 @@ if (is_ajax ()) {
 		else {
 			$groups = array($id_group);
 		}
-
+		
 		$agents_alerts = array();
 		foreach( $groups as $group ) {
 			$agents_alerts_one_group = alerts_get_agents_with_alert_template ($id_alert_template, $group,
@@ -71,26 +71,26 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 	}
 	
 	$module_selection_mode =  get_parameter('modules_selection_mode');
-		
+	
 	foreach($module_names as $module){
 		foreach($id_agents as $id_agent) {
-			 $module_id = modules_get_agentmodule_id($module, $id_agent);
-			 $modules_id[] = $module_id['id_agente_modulo'];
+			$module_id = modules_get_agentmodule_id($module, $id_agent);
+			$modules_id[] = $module_id['id_agente_modulo'];
 		}
 	}
-
+	
 	// If is selected "ANY" option then we need the module selection mode: common or all modules
 	if (count($module_names) == 1 && $module_names[0] == '0') {
-
+		
 		if ($module_selection_mode == 'common')
 				$modules_id = agents_common_modules_with_alerts ($id_agents, false, true);
 		else {
 			// For agents selected
 			$modules_id = array();
-
+			
 			foreach ($id_agents as $id_agent) {
 				$current_modules_agent = agents_get_modules($id_agent, 'id_agente_modulo', array ('disabled' => 0));
-
+				
 				if ($current_modules_agent != false) {
 					// And their modules
 					foreach ($current_modules_agent as $current_module) {
@@ -108,23 +108,23 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 			}
 		}
 	}
-
+	
 	$conttotal = 0;
 	$contsuccess = 0;
 	foreach($modules_id as $module){
 		$success = alerts_delete_alert_agent_module (false,
 		array ('id_agent_module' => $module,
-			'id_alert_template' => $id_alert_template));		
-
+			'id_alert_template' => $id_alert_template));
+		
 		if($success)
 			$contsuccess ++;
 		$conttotal ++;
 	}
 	
 	ui_print_result_message ($contsuccess > 0,
-	__('Successfully deleted')."(".$contsuccess."/".$conttotal.")",
-	__('Could not be deleted'));
-
+		__('Successfully deleted')."(".$contsuccess."/".$conttotal.")",
+		__('Could not be deleted'));
+	
 	
 	return (bool)($contsuccess > 0);
 }
@@ -208,14 +208,13 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 
 ui_require_jquery_file ('form');
 ui_require_jquery_file ('pandora.controls');
-	
 ?>
 
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
 	$("#id_agents").change(agent_changed_by_multiple_agents_with_alerts);
-
+	
 	$("#id_alert_template").change (function () {
 		if (this.value != 0) {
 			$("#id_agents").enable ();
@@ -250,7 +249,7 @@ $(document).ready (function () {
 			"json"
 		);
 	});
-
+	
 	$("#checkbox-recursion").click(function (){
 		$("#id_group").trigger("change");
 	});

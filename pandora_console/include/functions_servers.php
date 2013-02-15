@@ -301,17 +301,19 @@ function servers_get_info ($id_server = -1) {
 			// Recon server
 			else if ($server["server_type"] == 3) {
 				
-				$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/recon_view&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
+				$server["name"] = '<a href="index.php?sec=estado&amp;sec2=operation/servers/recon_view&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
 				
 				//Total jobs running on this recon server
-				$server["modules"] = db_get_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
+				$server["modules"] = db_get_sql ("SELECT COUNT(id_rt)
+					FROM trecon_task
+					WHERE id_recon_server = ".$server["id_server"]);
 				
 				//Total recon jobs (all servers)
 				$server["modules_total"] = db_get_sql ("SELECT COUNT(status) FROM trecon_task");
 				
 				//Lag (take average active time of all active tasks)
 				$server["module_lag"] = 0;
-			
+				
 				switch ($config["dbtype"]) {
 					case "mysql":
 						$server["lag"] = db_get_sql ("SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);

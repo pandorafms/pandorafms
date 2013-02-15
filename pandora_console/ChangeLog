@@ -1,3 +1,11 @@
+2013-02-15 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/servers/modificar_server.php: fixed the column of server
+	now it is not link and show the version.
+	
+	* include/functions_servers.php: fixed the sec parameter for the
+	link to edit recon server.
+
 2013-02-15  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

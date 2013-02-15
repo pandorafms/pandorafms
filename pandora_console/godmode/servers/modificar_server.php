@@ -119,12 +119,11 @@ else {
 	
 	$table->data = array ();
 	
-	
 	foreach ($servers as $server) {
 		$data = array ();
 		
-		$data[0] = '<span title="'.$server['version'].'">'.$server['name'].'</span>';
-		$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">'.$server["name"].'</a>';
+		$data[0] = '<span title="' . $server['version'] . '">' .
+			$server['name'] . '</span>';
 		
 		if ($server['status'] == 0) {
 			$data[1] = ui_print_status_image (STATUS_SERVER_DOWN, '', true);
@@ -163,11 +162,14 @@ else {
 		//Only Pandora Administrator can delete servers
 		if (check_acl ($config["id_user"], 0, "PM")) {
 			$data[8] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">';
-			$data[8] .= html_print_image ('images/config.png', true, array ('title' => __('Edit')));
+			$data[8] .= html_print_image ('images/config.png', true,
+				array('title' => __('Edit')));
 			$data[8] .= '</a>';
-		
+			
 			$data[8] .= '&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
-			$data[8] .= html_print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
+			$data[8] .= html_print_image ('images/cross.png', true,
+				array('title' => __('Delete'),
+					'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
 			$data[8] .= '</a>';
 		}
 		

@@ -1,5 +1,14 @@
 2013-02-15 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_treeview.php: fixed the cleaned source code.
+	
+	* operation/agentes/networkmap.php: fixed double messages when
+	delete a networkmap.
+	
+	Fixes: #3553703
+
+2013-02-15 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/modules/manage_network_components.php,
 	godmode/reporting/visual_console_builder.editor.js,
 	godmode/massive/massive_delete_alerts.php: improved the source

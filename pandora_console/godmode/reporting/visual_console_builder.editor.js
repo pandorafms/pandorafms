@@ -1932,7 +1932,7 @@ function showPreviewIcon(icon) {
 			success: function (data) {
 				$("#preview").append(data);
 			}
-		});	
+		});
 	}
 }
 
@@ -1977,7 +1977,7 @@ function showGrid() {
 		eventsItems([SIZE_GRID, SIZE_GRID]);
 	}
 	else {
-		$("#background_grid").css('display', 'none');	
+		$("#background_grid").css('display', 'none');
 		$("#background_img").css('opacity', '1');
 		$("#background_img").css('filter', 'alpha(opacity=100)');
 		

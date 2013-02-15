@@ -175,9 +175,6 @@ if ($id_agent_module) {
 	$snmp3_security_level = $module["custom_string_3"];
 	
 	$ip_target = $module['ip_target'];
-	if (empty ($ip_target)) {
-		$ip_target = agents_get_address ($id_agente);
-	}
 	$disabled = $module['disabled'];
 	$id_export = $module['id_export'];
 	$plugin_user = $module['plugin_user'];

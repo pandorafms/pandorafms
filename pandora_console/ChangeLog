@@ -1,3 +1,8 @@
+2013-02-15  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor.php: Delete default
+	value of the ip address on the module edition form
+
 2013-02-14 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/graphs/flot/pandora.flot.js,

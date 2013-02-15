@@ -700,6 +700,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	
 	global $chart;
 	global $color;
+	global $color_prev;
 	global $legend;
 	global $long_index;
 	global $series_type;
@@ -734,6 +735,10 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$chart_prev = array_values($chart);
 				$legend_prev = $legend;
 				$series_type_prev = $series_type;
+				$color_prev = $color;
+				foreach($color_prev as $k => $col) {
+					$color_prev[$k]['color'] = '#'.get_complementary_rgb($color_prev[$k]['color']);
+				}
 				break;
 		}
 	}
@@ -760,6 +765,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		}
 		
 		$legend = array_merge($legend, $legend_prev);
+		$color = array_merge($color, $color_prev);
 	}
 	
 	if ($only_image) {
@@ -2683,6 +2689,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	
 	global $chart;
 	global $color;
+	global $color_prev;
 	global $legend;
 	global $long_index;
 	global $series_type;
@@ -2712,6 +2719,10 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 				$chart_prev = array_values($chart);
 				$legend_prev = $legend;
 				$series_type_prev = $series_type;
+				$color_prev = $color;
+				foreach($color_prev as $k => $col) {
+					$color_prev[$k]['color'] = '#'.get_complementary_rgb($color_prev[$k]['color']);
+				}
 				break;
 		}
 	}
@@ -2726,6 +2737,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		}
 		
 		$legend = array_merge($legend, $legend_prev);
+		$color = array_merge($color, $color_prev);
 	}
 	
 	if ($only_image) {

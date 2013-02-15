@@ -1,3 +1,10 @@
+2013-02-15  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/graphs/functions_utils.php: Added a function to calculate
+	the complementary color of a RGB hex code to assign automatically 
+	the overlapped graphs colors for bug 3604462
+
 2013-02-15 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_treeview.php: fixed the cleaned source code.

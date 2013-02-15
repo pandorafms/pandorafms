@@ -1,3 +1,11 @@
+2013-02-15  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm
+	lib/PandoraFMS/ReconServer.pm
+	util/pandora_manage.pl: Encapsulate the code of create
+	a module from a network component. Unify calls of CLI
+	and Recon Server to dont break module counts
+
 2013-02-14  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm

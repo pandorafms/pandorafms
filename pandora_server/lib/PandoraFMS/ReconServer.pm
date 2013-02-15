@@ -443,29 +443,18 @@ sub create_network_profile_modules {
 	my @np_components = get_db_rows ($dbh, 'SELECT * FROM tnetwork_profile_component WHERE id_np = ?', $np_id);
 	
 	foreach my $np_component (@np_components) {
-		
 		# Get network component data
-		my $component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component wHERE id_nc = ?', $np_component->{'id_nc'});
+		my $component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component WHERE id_nc = ?', $np_component->{'id_nc'});
+		
 		if (! defined ($component)) {
 			logger($pa_config, "Network component ID " . $np_component->{'id_nc'} . " for agent $addr not found.", 3);
 			next;
 		}
 		
-		logger($pa_config, "Processing network component '" . safe_output ($component->{'name'}) . "' for agent $addr.", 10);
-		
 		# Use snmp_community from network task instead the component snmp_community
 		$component->{'snmp_community'} = safe_output ($snmp_community);
-		
-		# Create the module
-		my $module_id = db_insert ($dbh, 'id_agente_modulo', 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag, disabled, plugin_user, plugin_pass, plugin_parameter, max_timeout, id_modulo, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, id_plugin, post_process, critical_instructions, warning_instructions, unknown_instructions)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-			$agent_id, $component->{'type'}, $component->{'description'}, $component->{'name'}, $component->{'max'}, $component->{'min'}, $component->{'module_interval'}, $component->{'tcp_port'}, $component->{'tcp_send'}, $component->{'tcp_rcv'}, $component->{'snmp_community'},
-			$component->{'snmp_oid'}, $addr, $component->{'id_module_group'}, $component->{'plugin_user'}, $component->{'plugin_pass'}, $component->{'plugin_parameter'}, $component->{'max_timeout'}, $component->{'id_modulo'}, $component->{'min_warning'}, $component->{'max_warning'}, $component->{'str_warning'}, $component->{'min_critical'}, $component->{'max_critical'}, $component->{'str_critical'}, $component->{'min_ff_event'}, $component->{'id_plugin'}, $component->{'post_process'}, $component->{'critical_instructions'}, $component->{'warning_instructions'}, $component->{'unknown_instructions'});
-		
-		# An entry in tagente_estado is necessary for the module to work
-			db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`, current_interval) VALUES (?, ?, \'1970-01-01 00:00:00\', ?)', $module_id, $agent_id, $component->{'module_interval'});
-		
-		logger($pa_config, 'Creating module ' . safe_output ($component->{'name'}) . " for agent $addr from network component.", 10);
+	
+		pandora_create_module_from_network_component($pa_config, $component, $agent_id, $dbh);
 	}
 }
 

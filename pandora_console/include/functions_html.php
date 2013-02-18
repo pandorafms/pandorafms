@@ -89,6 +89,203 @@ function html_f2str($function, $params) {
 	return ob_get_clean();
 }
 
+/**
+ * Print side layer
+ * 
+ * @params mixed Hash with all the params:
+ * 
+ * 	position: left or right
+ *  width: width of the layer
+ * 	height: height of the layer
+ * 	icon_closed: icon showed when layer is hidden
+ * 	icon_open: icon showed when layer is showed
+ * 	top_text: text over the content
+ * 	body_text: content of layer
+ * 	bottom_text: text under the contet
+ *
+ * @return string HTML code if return parameter is true.
+ */
+ 
+function html_print_side_layer ($params) {
+	global $config;
+	
+	// Check mandatory values, if any of them is missed, return ''
+	$mandatory = array('icon_closed', 'body_text');
+	
+	foreach($mandatory as $man) {
+		if(!isset($params[$man])) {
+			return '';
+		}
+	}
+	
+	// Set default values if not setted
+	$defaults = array(
+		'position' => 'left',
+		'width' => '400',
+		'height' => '97%',
+		'top_text' => '',
+		'bottom_text' => '',
+		'icon_open' => $params['icon_closed']
+		);
+	
+	foreach($defaults as $token => $value) {
+		if(!isset($params[$token])) {
+			$params[$token] = $value;
+		}
+	}
+	
+	//z-index is 1 because 2 made the calendar show under the side_layer
+	
+	switch($params['position']) {
+		case 'left':
+			$round_class = 'menu_radius_right';
+			$body_float = 'left';
+			$button_float = 'right';
+			break;
+		case 'right':
+			$round_class = 'menu_radius_left';
+			$body_float = 'right';
+			$button_float = 'left';
+			break;
+	}
+		
+	$out_html = '<div id="side_layer" class="menu ' . $round_class . '" style="z-index:1; overflow: hidden; height: ' . $params['height'] . ';">';
+
+	$table->id = 'side_layer_layout';
+	$table->width = $params['width'] . 'px';
+	$table->cellspacing = 2;
+	$table->cellpadding = 2;
+	$table->class = 'none';
+
+	$top = '<div id="side_top_text" style="width: 100%";">' . $params['top_text'] . '</div>';
+	
+	$button = '<div id="show_menu" style="vertical-align: middle; position: relative; border:1px solid #FFF; height: 50px; width: 50px;">';
+	$button .= html_print_image($params['position'] == 'left' ? $params['icon_open'] : $params['icon_closed'], true, array('id' => 'graph_menu_arrow'));
+	$button .= '</div>';
+	
+	$body = '<div id="side_body_text" style="width: 100%;">' . $params['body_text'] . '</div>';
+	
+	$bottom = '<div id="side_bottom_text" style="text-align: ' . $params['position'] . ';">' . $params['bottom_text'] . '</div>';
+
+	switch($params['position']) {
+		case 'left':
+			$table->size[1] = '15%';
+
+			$table->data[0][0] = $top;
+			$table->data[0][1] = '';
+			$table->rowclass[0] = '';
+			
+			$table->data[1][0] = $body;
+			
+			$table->data[1][1] = $button;
+			$table->rowclass[1] = '';
+
+			$table->data[2][0] = $bottom;
+			$table->data[2][1] = '';
+			$table->rowclass[2] = '';
+			break;
+		case 'right':
+			$table->size[0] = '15%';
+			
+			$table->data[0][0] = '';
+			$table->data[0][1] = $top;
+			$table->rowclass[0] = '';
+			
+			$table->data[1][0] = $button;
+			
+			$table->data[1][1] = $body;
+			$table->rowclass[1] = '';
+
+			$table->data[2][0] = '';
+			$table->data[2][1] = $bottom;
+			$table->rowclass[2] = '';
+			break;
+	}
+
+	$out_html .= html_print_table($table, true);
+	
+	$out_html .= '</div>';
+		
+	$out_js = "<script type='text/javascript'>
+			<!--
+			var defSlideTime = 220;
+			var visibleMargin = 55;
+			var menuW = " . $params['width'] . ";
+			var hiddenMargin = menuW - visibleMargin;
+			var windowWidth = $(window).width();
+			var position = '" . $params['position'] . "';
+			var sideClosed = 1;
+
+			window.onload = function() {
+				// SET INITIAL POSITION AND SHOW LAYER
+				$('#side_layer').css('top', 0);
+				switch (position) {
+					case 'left':
+						$('#side_layer').css('left', -hiddenMargin);
+						break;
+					case 'right':
+						$('#side_layer').css('left', windowWidth - visibleMargin - 12);
+						$('#side_layer').css('width', visibleMargin + 'px');
+
+						break;
+				}
+				$('#side_layer').show();
+				
+				$(\"#graph_menu_arrow\").click(function(){
+					switch(position) {			
+						case 'right':
+							if (sideClosed == 0){
+								$('#side_layer').animate({\"width\": \"-=\" + (hiddenMargin) + \"px\", \"left\": \"+=\" + (hiddenMargin) + \"px\"}, defSlideTime);
+								$(\"#graph_menu_arrow\").attr(\"src\", \"" . $config['homeurl'] . $params['icon_closed'] . "\");
+							}
+							else {
+								$('#side_layer').animate({\"width\": \"+=\" + (hiddenMargin) + \"px\", \"left\": \"-=\" + (hiddenMargin) + \"px\"}, defSlideTime);
+								$(\"#graph_menu_arrow\").attr(\"src\", \"" . $config['homeurl'] . $params['icon_open'] . "\");
+							}
+							break;
+						case 'left':
+							if (sideClosed == 1){
+								$('#side_layer').animate({\"left\": \"+=\" + (hiddenMargin) + \"px\"}, defSlideTime);
+								
+								$(\"#graph_menu_arrow\").attr(\"src\", \"" . $config['homeurl'] . $params['icon_closed'] . "\");
+							}
+							else {
+								$('#side_layer').animate({\"left\": \"-=\" + (hiddenMargin) + \"px\"}, defSlideTime);
+								$(\"#graph_menu_arrow\").attr(\"src\", \"" . $config['homeurl'] . $params['icon_open'] . "\");
+							}
+							break;
+					}
+					
+					if(sideClosed == 0) {
+						//$('#side_top_text').hide();
+						//$('#side_body_text').hide();
+						//$('#side_bottom_text').hide();
+						sideClosed = 1;
+					}
+					else {
+						$('#side_top_text').show();
+						$('#side_body_text').show();
+						$('#side_bottom_text').show();
+						sideClosed = 0;
+					}
+				});
+			};
+			
+			if(position == 'right') {
+				// Move the right menu if window is resized
+				$(window).resize(function() {
+					var newWindowWidth = $(window).width();
+					var widthVariation = newWindowWidth - windowWidth;
+					$('#side_layer').animate({\"left\": \"+=\" + (widthVariation) + \"px\"}, 0);
+					
+					windowWidth = newWindowWidth;
+				});
+			}
+			//-->
+		</script>";
+	
+	echo $out_html . $out_js;
+}
 
 /**
  * Prints an array of fields in a popup menu of a form.

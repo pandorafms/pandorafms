@@ -213,17 +213,18 @@ sub generate_xml_files ($$$$$$) {
 						$rnd_data = generate_curve_data ($utimestamp, $module_min, $module_max,
 							$module_time_wave_length, $module_time_offset);
 					}
-				}elsif ($generation_type eq 'SOURCE') {
-						$rnd_data = generate_data_from_source($module_name, $module_src, \%modules_src_pointers);
-						
+				}
+				elsif ($generation_type eq 'SOURCE') {
+					$rnd_data = generate_data_from_source($module_name, $module_src, \%modules_src_pointers);
+					
 				}
 				
 				# Save previous data
 				$module->{'module_data'} = $rnd_data;
-				$xml_data .= "\t\t<data>$rnd_data</data>\n";
+				$xml_data .= "\t\t<data><![CDATA[$rnd_data]]></data>\n";
 				$xml_data .= "\t</module>\n";
 			}
-						
+			
 			$xml_data .= "</agent_data>\n";
 			
 			# Fix the temporal path
@@ -306,7 +307,7 @@ sub generate_curve_data ($$$$$$) {
 	my $return = ($module_max - $module_min)/2 *
 		sin( ($utimestamp * pi) / $module_time_wave_length + 
 		(pi * ($module_time_offset / $module_time_wave_length))) + ($module_min + $module_max) / 2;
-		
+	
 	return $return;
 }
 
@@ -318,8 +319,8 @@ sub generate_scatter_data ($$$$$$) {
 	
 	# And check the probability now
 	my $other_rnd = int rand(100);
-		
-	if ( $prob >= $other_rnd) {
+	
+	if ($prob >= $other_rnd) {
 		return int (rand ($max - $min + 1) + $min);
 	}
 	else {
@@ -332,11 +333,11 @@ sub generate_scatter_data ($$$$$$) {
 ################################################################################
 sub generate_data_from_source ($$$) {
 	my ($module_name, $module_src, $pointers) = @_;
-		
+	
 	my $data = 0;
 	
 	my $pointer;
-
+	
 	if (-e $module_src) {
 		
 		#Get data and split to an array
@@ -347,12 +348,13 @@ sub generate_data_from_source ($$$) {
 		$module_name =~ s/\ /\_/;
 		
 		$pointer = $pointers->{$module_name};
-	
+		
 		$pointer = $pointer % ($#data_array+1);
-				
+		
 		$data = $data_array[$pointer];
 		
-	} else {
+	}
+	else {
 		#There was an error, set last to 0 and return data
 		return $data;
 	}
@@ -376,9 +378,9 @@ sub init_src_pointers ($) {
 		my $type = get_generation_parameter($mod, 'type', 'RANDOM');
 		
 		if ($type eq 'SOURCE') {
-		
+			
 			$module_name =~ s/\ /\_/;
-		
+			
 			$pointers{$module_name} = 0; 
 		}
 	}
@@ -392,7 +394,7 @@ sub init_src_pointers ($) {
 sub update_src_pointers ($) {
 	
 	my ($pointers) = shift;
-
+	
 	foreach my $p (keys %{$pointers}) {
 		
 		#Add 1 to the pointer
@@ -408,7 +410,7 @@ sub copy_xml_file ($$) {
 	
 	my $server_ip = get_conf_token ($conf, 'server_ip', '');
 	return if ($server_ip eq '');
-
+	
 	my $server_port = get_conf_token ($conf, 'server_port', '41121');
 	my $tentacle_opts = get_conf_token ($conf, 'tentacle_opts', '');
 	
@@ -451,7 +453,7 @@ sub get_generation_parameter($$$) {
 sub log_message ($$) {
 	my ($conf, $message) = @_;
 	my $utimestamp = time ();
-
+	
 	my $log_file = get_conf_token ($conf, 'log_file', '');
 	
 	# Log to stdout

@@ -72,90 +72,16 @@ $label = base64_decode(get_parameter('label', ''));
 		<title>Pandora FMS Graph (<?php echo modules_get_agentmodule_agent_name ($id) . ' - ' . $label; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 		<script type='text/javaScript' src='../../include/javascript/calendar.js'></script>
-		<script type='text/javascript' src='../../include/javascript/x_core.js'></script>
-		<script type='text/javascript' src='../../include/javascript/x_event.js'></script>
-		<script type='text/javascript' src='../../include/javascript/x_slide.js'></script>
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery-1.7.1.js'></script>
 		<script type='text/javascript'>
 			<!--
-			var defOffset = 2;
-			var defSlideTime = 220;
-			var tnActive = 0;
-			var visibleMargin = 45;
-			var menuW = 400;
-			var menuH = 310;
-			var showed = 0;
 			window.onload = function() {
-				var d;
-				d = xGetElementById('divmenu');
-				d.termNumber = 1;
-				xMoveTo(d, visibleMargin - menuW, 0);
-				xShow(d);
-				
-				// If navigator is IE then call attachEvent, else call addEventListener
-				if ('\v'=='v')
-					document.getElementById('show_menu').attachEvent('onclick', docOnMousemoveIn);
-				else
-					document.getElementById('show_menu').addEventListener('click', docOnMousemoveIn, false);
-				
-				
-				
 				// Hack to repeat the init process to period select
 				var periodSelectId = $('[name="period"]').attr('class');
 				
 				period_select_init(periodSelectId);
-				
-				$("#graph_menu_arrow").click(function(){
-					if ($("#graph_menu_arrow").attr("src").indexOf("hide") == -1){
-						$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow_hide.png");
-					}
-					else {
-						$("#graph_menu_arrow").attr("src", <?php echo '"' . $config['homeurl'] . '"'; ?> + "/images/graphmenu_arrow.png");
-					}
-				});
 			};
-			
-			function docOnMousemoveIn(evt) {
-				var e = new xEvent(evt);
-				var d = getTermEle(e.target);
-				
-				// mouse is over a term, activate its def
-				if (showed == 0) {
-					xSlideTo('divmenu', 0, xPageY(d), defSlideTime);
-					showed = 1;
-				}
-				else {
-					xSlideTo('divmenu', visibleMargin - menuW, xPageY(d), defSlideTime);
-					showed = 0;
-				}
-			}
-			
-			function docOnMousemove(evt) {
-				var e = new xEvent(evt);
-				var d = getTermEle(e.target);
-				if (!tnActive) { // no def is active
-					if (d) { // mouse is over a term, activate its def
-						xSlideTo('divmenu', 0, xPageY(d), defSlideTime);
-						tnActive = 1;
-					}
-				}
-				else { // a def is active
-					if (!d) { // mouse is not over a term, deactivate active def
-						xSlideTo('divmenu', visibleMargin - menuW, xPageY(d), defSlideTime);
-						tnActive = 0;
-					}
-				}
-			}
-			
-			function getTermEle(ele) {
-				//window.status = ele;
-				while(ele && !ele.termNumber) {
-					if (ele == document) return null;
-					ele = xParent(ele);
-				}
-				return ele;
-			}
 			
 			function show_others() {
 				if (!$("#checkbox-avg_only").attr('checked')) {
@@ -276,9 +202,145 @@ $label = base64_decode(get_parameter('label', ''));
 		}
 		echo '</div>';
 		
-		//z-index is 1 because 2 made the calendar show under the divmenu.
+		///////////////////////////
+		// SIDE MENU
+		///////////////////////////
+		$params = array();
+		// TOP TEXT
+		$params['top_text'] = "<b>" . __('Pandora FMS Graph configuration menu') . "</b>";
+		$params['top_text'] .= "<br /><br />";
+		$params['top_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
+		
+		// MENU
+		$params['body_text'] = '<form method="get" action="stat_win.php">';
+		$params['body_text'] .= html_print_input_hidden ("id", $id, true);
+		$params['body_text'] .= html_print_input_hidden ("label", $label);
+		
+		if (isset($hash_connection_data)) {
+			$params['body_text'] .= html_print_input_hidden("loginhash", "auto", true);
+			$params['body_text'] .= html_print_input_hidden("loginhash_data", $loginhash_data, true);
+			$params['body_text'] .= html_print_input_hidden("loginhash_user", $loginhash_user, true);
+		}
+		
+		$params['body_text'] .= html_print_input_hidden ("id", $id, true);
+		$params['body_text'] .= html_print_input_hidden ("label", $label, true);
+		
+		if (isset($_GET["type"])) {
+			$type = get_parameter_get ("type");
+			$params['body_text'] .= html_print_input_hidden ("type", $type, true);
+		}
+		
+		$table->id = 'stat_win_form';
+		$table->width = '100%';
+		$table->size[0] = '50%';
+		$table->cellspacing = 2;
+		$table->cellpadding = 2;
+		$table->class = 'databox_frame';
+		
+		$data = array();
+		$data[0] = __('Refresh time');
+		$data[1] = html_print_extended_select_for_time("refresh", $refresh, '', '', 0, 7, true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+		
+		if ($graph_type != "boolean") {
+			$data = array();
+			$data[0] = __('Avg. Only');
+			$data[1] = html_print_checkbox ("avg_only", 1, (bool) $avg_only, true, false, 'show_others()');
+			$data[1] .= html_print_input_hidden('show_other', 0, true);
+			$table->data[] = $data;
+			$table->rowclass[] = '';
+		}
+		
+		$data = array();
+		$data[0] = __('Begin date');
+		$data[1] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 15, 255, true);
+		$data[1] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+
+		$data = array();
+		$data[0] = __('Zoom factor');
+		$options = array ();
+		$options[$zoom] = 'x'.$zoom;
+		$options[1] = 'x1';
+		$options[2] = 'x2';
+		$options[3] = 'x3';
+		$options[4] = 'x4';
+		$data[1] = html_print_select ($options, "zoom", $zoom, '', '', 0, true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+
+		$data = array();
+		$data[0] = __('Time range');
+		$data[1] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+
+		$data = array();
+		$data[0] = __('Show events');
+		$data[1] = html_print_checkbox ("draw_events", 1, (bool) $draw_events, true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+
+		$data = array();
+		$data[0] = __('Show alerts');
+		$data[1] = html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts, true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+
+		$data = array();
+		$data[0] = __('Show event graph');
+		$data[1] = html_print_checkbox ("show_events_graph", 1, (bool) $show_events_graph, true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+
+		switch ($graph_type) {
+			case 'boolean':
+			case 'sparse':
+				$data = array();
+				$data[0] = __('Time compare') . ' (' . __('Overlapped') . ')';
+				$data[1] = html_print_checkbox ("time_compare_overlapped", 1, (bool) $time_compare_overlapped, true);
+				$table->data[] = $data;
+				$table->rowclass[] = '';
+
+				$data = array();
+				$data[0] = __('Time compare') . ' (' . __('Separated') . ')';
+				$data[1] = html_print_checkbox ("time_compare_separated", 1, (bool) $time_compare_separated, true);
+				$table->data[] = $data;
+				$table->rowclass[] = '';
+				
+				$data = array();
+				$data[0] = __('Show unknown graph');
+				$data[1] = html_print_checkbox ("unknown_graph", 1, (bool) $unknown_graph, true);
+				$table->data[] = $data;
+				$table->rowclass[] = '';
+				break;
+		}
+		
+		$data = array();
+		$data[0] = '';
+		$data[1] = '<div style="width:100%; text-align:right;">' . html_print_submit_button (__('Reload'), "submit", false, 'class="sub next"', true) . "</div>";
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+		
+		$params['body_text'] .= html_print_table($table, true);
+		$params['body_text'] .= '</form>';
+		
+		// ICONS
+		$params['icon_closed'] = '/images/graphmenu_arrow_hide.png';
+		$params['icon_open'] = '/images/graphmenu_arrow.png';
+		
+		// SIZE
+		$params['width'] = 400;
+		
+		// POSITION
+		$params['position'] = 'left';
+		
+		html_print_side_layer($params);
 		?>
-		<div id="divmenu" class="menu" style="z-index:1; height: 98%;">
+		<!-- z-index is 1 because 2 made the calendar show under the divmenu. -->
+		<div id="divmenu2" class="menu menu_radius_left" style="display:none; z-index:1; height: 97%;">
 			<b> <?php echo __('Pandora FMS Graph configuration menu');?></b>
 			<br />
 			<br />
@@ -288,151 +350,7 @@ $label = base64_decode(get_parameter('label', ''));
 			<div style="float: left; width: 85%;">
 				
 				<form method="get" action="stat_win.php">
-					<?php
-					html_print_input_hidden ("id", $id);
-					html_print_input_hidden ("label", $label);
-					
-					if (isset($hash_connection_data)) {
-						
-						html_print_input_hidden("loginhash", "auto");
-						html_print_input_hidden("loginhash_data", $loginhash_data);
-						html_print_input_hidden("loginhash_user", $loginhash_user);
-					}
-					
-					html_print_input_hidden ("id", $id);
-					html_print_input_hidden ("label", $label);
-					
-					if (isset($_GET["type"])) {
-						$type = get_parameter_get ("type");
-						html_print_input_hidden ("type", $type);
-					}
-					?>
 					<table class="databox_frame" cellspacing="2" width="100%">
-						<tr>
-							<td><?php echo __('Refresh time');?></td>
-							<td width="50%">
-								<?php
-								html_print_extended_select_for_time(
-									"refresh", $refresh, '', '', 0, 7);
-								?>
-							</td>
-						</tr>
-						<?php 
-						if ($graph_type != "boolean") {
-							echo '<tr>
-								<td>'.
-								__('Avg. Only').
-								'</td>
-							<td>';
-							html_print_checkbox ("avg_only", 1, (bool) $avg_only, false, false, 'show_others()');
-							html_print_input_hidden('show_other', 0);
-							echo	'</td>
-							</tr>';
-						}
-						?>
-						<tr>
-							<td><?php echo __('Begin date'); ?></td>
-							<td>
-								<?php
-								html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 10);
-								html_print_image ("images/calendar_view_day.png", false, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
-								?>
-							</td>
-						</tr>
-						<tr>
-							<td><?php echo __('Zoom factor');?></td>
-							<td>
-								<?php
-								$options = array ();
-								$options[$zoom] = 'x'.$zoom;
-								$options[1] = 'x1';
-								$options[2] = 'x2';
-								$options[3] = 'x3';
-								$options[4] = 'x4';
-								html_print_select ($options, "zoom", $zoom);
-								?>
-							</td>
-						</tr>
-						<tr>
-							<td><?php echo __('Time range'); ?></td>
-							<td>
-								<?php
-								html_print_extended_select_for_time('period',
-									$period, '', '', 0, 7);
-								?>
-							</td>
-						</tr>
-						<tr>
-							<td><?php echo __('Show events');?></td>
-							<td>
-								<?php
-								html_print_checkbox ("draw_events", 1, (bool) $draw_events);
-								?>
-							</td>
-						</tr>
-						<tr>
-							<td><?php echo __('Show alerts');?></td>
-							<td>
-								<?php
-								html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts);
-								?>
-							</td>
-						</tr>
-						<tr>
-							<td><?php echo __('Show event graph');?></td>
-							<td>
-								<?php
-								html_print_checkbox ("show_events_graph",
-									1, (bool) $show_events_graph);
-								?>
-							</td>
-						</tr>
-						<?php
-						switch ($graph_type) {
-							case 'boolean':
-							case 'sparse':
-						?>
-							<tr>
-								<td>
-									<?php
-									echo __('Time compare') . ' (' .
-										__('Overlapped') . ')';
-									?>
-								</td>
-								<td>
-									<?php
-									html_print_checkbox ("time_compare_overlapped",
-										1, (bool) $time_compare_overlapped);
-									?>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<?php
-									echo __('Time compare') . ' ('.
-										__('Separated').')';
-									?>
-								</td>
-								<td>
-									<?php
-									html_print_checkbox ("time_compare_separated",
-										1, (bool) $time_compare_separated);
-									?>
-								</td>
-							</tr>
-							<tr>
-								<td><?php echo __('Show unknown graph');?></td>
-								<td>
-									<?php
-									html_print_checkbox ("unknown_graph",
-										1, (bool) $unknown_graph);
-									?>
-								</td>
-							</tr>
-						<?php
-							break;
-						}
-						?>
 						<tr>
 							<td></td>
 							<td style="text-align: right">
@@ -444,7 +362,7 @@ $label = base64_decode(get_parameter('label', ''));
 					</table>
 				</form>
 			</div>
-			<div id="show_menu" style="position: relative; border:1px solid #FFF; float: right; height: 50px; width: 50px;">
+			<div id="show_menu2" style="position: relative; border:1px solid #FFF; float: right; height: 50px; width: 50px;">
 				<?php
 				html_print_image("images/graphmenu_arrow.png", false, array('id' => 'graph_menu_arrow'));
 				?>

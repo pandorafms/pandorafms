@@ -1,3 +1,15 @@
+2013-02-18  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/styles/pandora_minimal.css
+	include/javascript/x_event.js
+	include/javascript/x_slide.js
+	include/javascript/x_core.js
+	operation/agentes/stat_win.php: Encapsulated the hidded side menu
+	(stat_win menu) to used from other parts of Pandora. Change the
+	technology of this menu to jquery, eliminating dependences: x_event
+	x_slide and x_core
+
 2013-02-18 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_modules.php,

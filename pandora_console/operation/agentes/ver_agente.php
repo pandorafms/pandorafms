@@ -283,7 +283,7 @@ if (is_ajax ()) {
 					AND delete_pending = 0
 					AND id_agente IN (' . implode(',', $idAgents) . ')';
 			
-			if($selection_mode == 'common') {
+			if ($selection_mode == 'common') {
 				$sql .= ' AND (
 							SELECT count(nombre)
 							FROM tagente_modulo t2

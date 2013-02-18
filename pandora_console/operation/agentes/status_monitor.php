@@ -39,7 +39,8 @@ $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php')
 if (! defined ('METACONSOLE')) {
 	//Header
 	ui_print_page_header ("Monitor detail", "images/brick.png", false);
-} else {
+}
+else {
 	
 	ui_meta_print_header(__("Monitor view"));
 }
@@ -61,7 +62,7 @@ echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agente
 
 echo '<table cellspacing="4" cellpadding="4" width="98%" class="databox">
 	<tr>';
-	
+
 // Get Groups and profiles from user
 $user_groups = implode (",", array_keys (users_get_groups ()));
 
@@ -71,9 +72,9 @@ $sql_from = " FROM tagente, tagente_modulo, tagente_estado ";
 
 $sql_conditions_base = " WHERE tagente.id_agente = tagente_modulo.id_agente 
 		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
-				
+
 $sql_conditions = " AND tagente_modulo.disabled = 0 AND tagente.disabled = 0";
-		
+
 // Agent group selector
 if (!defined('METACONSOLE')) {
 	if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
@@ -210,7 +211,8 @@ switch ($config["dbtype"]) {
 		//The check of is_admin
 		$flag_is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 		
-		$sql = ' SELECT distinct(tagente_modulo.nombre) '. $sql_from . $sql_conditions_acl;
+		$sql = ' SELECT distinct(tagente_modulo.nombre)
+			'. $sql_from . $sql_conditions_acl;
 		break;
 	case "oracle":
 		$profiles = db_get_all_rows_sql('SELECT id_grupo
@@ -233,46 +235,49 @@ switch ($config["dbtype"]) {
 		$flag_is_admin = (bool)db_get_value('is_admin', 'tusuario',
 			'id_user', $config['id_user']);
 		
-		$sql = ' SELECT DISTINCT dbms_lob.substr(nombre,4000,1) AS nombre'. $sql_from . $sql_conditions_acl;
+		$sql = ' SELECT DISTINCT dbms_lob.substr(nombre,4000,1) AS nombre' .
+			$sql_from . $sql_conditions_acl;
 		break;
 }
-		
+
 $modules = array();
 $tags = array();
 $rows_select = array();
 $rows_temp_processed = array();
 $groups_select = array();
 if ($flag_is_admin)
-	$groups_select[0] = __('All');	
+	$groups_select[0] = __('All');
 
 if (defined('METACONSOLE')) {
 	
 	// For each server defined and not disabled:
 	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup WHERE disabled = 0");
-
+	
 	if ($servers === false)
 		$servers = array();
 		
-	$result = array();	
+	$result = array();
 	foreach($servers as $server) {
 		// If connection was good then retrieve all data server
 		if (metaconsole_connect($server) == NOERR){
 			$connection = true;
 		}
-		else{
-			$connection = false;	
+		else {
+			$connection = false;
 		}
-
+		
 		// Get all info for filters of all nodes
 		$modules_temp = db_get_all_rows_sql($sql);
-
-		$tags_temp = db_get_all_rows_sql('SELECT name, name
-									FROM ttag
-									WHERE id_tag IN (SELECT ttag_module.id_tag
-										FROM ttag_module)');
-										
+		
+		$tags_temp = db_get_all_rows_sql('
+			SELECT name, name
+			FROM ttag
+				WHERE id_tag IN (SELECT ttag_module.id_tag
+					FROM ttag_module)');
+		
 		$rows_temp = db_get_all_rows_sql("SELECT distinct name
-			FROM tmodule_group ORDER BY name");
+			FROM tmodule_group
+			ORDER BY name");
 		$rows_temp = io_safe_output($rows_temp);
 		
 		if (!empty($rows_temp)) {
@@ -294,7 +299,7 @@ if (defined('METACONSOLE')) {
 		if (!empty($groups_temp_processed)) {
 			$groups_select = array_unique(array_merge($groups_select, $groups_temp_processed));
 		}
-
+		
 		if (!empty($modules_temp))
 			$modules = array_merge($modules, $modules_temp);
 		if (!empty($tags_temp))
@@ -820,7 +825,21 @@ $table->align[10] = "right";
 $rowPair = true;
 $iterator = 0;
 
+$id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
+	'nombre', 'web_content_string');
+
 foreach ($result as $row) {
+	$is_web_content_string = (bool)db_get_value_filter('id_agente_modulo',
+		'tagente_modulo',
+		array('id_agente_modulo' => $row['id_agente_modulo'],
+			'id_tipo_modulo' => $id_type_web_content_string));
+	
+	//Fixed the goliat sends the strings from web
+	//without HTML entities
+	if ($is_web_content_string) {
+		$row['datos'] = io_safe_input($row['datos']);
+	}
+	
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else
@@ -893,28 +912,39 @@ foreach ($result as $row) {
 	
 	if ($row['utimestamp'] == 0 && (($row['module_type'] < 21 ||
 		$row['module_type'] > 23) && $row['module_type'] != 100)) {
-		$data[6] = ui_print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
+		$data[6] = ui_print_status_image(STATUS_MODULE_NO_DATA,
+			__('NOT INIT'), true);
 	}
 	elseif ($row["estado"] == 0) {
-		$data[6] = ui_print_status_image(STATUS_MODULE_OK, __('NORMAL').": ".$row["datos"], true);
+		$data[6] = ui_print_status_image(STATUS_MODULE_OK,
+			__('NORMAL') . ": " . $row["datos"], true);
 	}
 	elseif ($row["estado"] == 1) {
-		$data[6] = ui_print_status_image(STATUS_MODULE_CRITICAL, __('CRITICAL').": ".$row["datos"], true);
+		$data[6] = ui_print_status_image(STATUS_MODULE_CRITICAL,
+			__('CRITICAL') . ": " . $row["datos"], true);
 	}
 	elseif ($row["estado"] == 2) {
-		$data[6] = ui_print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$row["datos"], true);
+		$data[6] = ui_print_status_image(STATUS_MODULE_WARNING,
+			__('WARNING') . ": " . $row["datos"], true);
 	}
 	else {
-		$last_status =  modules_get_agentmodule_last_status($row['id_agente_modulo']);
+		$last_status =  modules_get_agentmodule_last_status(
+			$row['id_agente_modulo']);
 		switch($last_status) {
 			case 0:
-				$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$row["datos"], true);
+				$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+					__('UNKNOWN') . " - " . __('Last status') . " " .
+					__('NORMAL') . ": " . $row["datos"], true);
 				break;
 			case 1:
-				$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$row["datos"], true);
+				$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+					__('UNKNOWN') . " - " . __('Last status') ." " .
+					__('CRITICAL') . ": " . $row["datos"], true);
 				break;
 			case 2:
-				$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$row["datos"], true);
+				$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+					__('UNKNOWN') . " - " . __('Last status') . " " .
+					__('WARNING') . ": " . $row["datos"], true);
 				break;
 		}
 	}
@@ -938,7 +968,7 @@ foreach ($result as $row) {
 		$data[7] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
 		if (defined('METACONSOLE'))
 			$data[7] .= "&nbsp;<a href='" . $row['server_url'] . "index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . $row["user"] . "&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
-		else	
+		else
 			$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
 		
 	}
@@ -955,22 +985,47 @@ foreach ($result as $row) {
 		}
 	}
 	else {
-		$module_value = io_safe_output($row["datos"]);
+		//Fixed the goliat sends the strings from web
+		//without HTML entities
+		if ($is_web_content_string) {
+			$module_value = $row["datos"];
+		}
+		else {
+			$module_value = io_safe_output($row["datos"]);
+		}
+		
 		$sub_string = substr(io_safe_output($row["datos"]), 0, 12);
 		if ($module_value == $sub_string) {
 			$salida = $module_value;
 		}
 		else {
-			if (strlen($module_value) > 35)
-				$mod_val = substr($module_value, 0, 35) . '...';
-			else
-				$mod_val = $module_value;
+			//Fixed the goliat sends the strings from web
+			//without HTML entities
+			if ($is_web_content_string) {
+				$sub_string = substr($row["datos"], 0, 12);
+			}
+			else {
+				$sub_string = substr(io_safe_output($row["datos"]),0, 12);
+			}
 			
-			$salida = html_print_input_hidden("value_replace_module_" . $row["id_agente_modulo"], $mod_val, true) 
-			. "<span id='value_module_" . $row["id_agente_modulo"] . "'
-				title='". $module_value ."' style='white-space: nowrap;'>" . 
-				'<span id="value_module_text_' . $row["id_agente_modulo"] . '">' . $sub_string . '</span> ' .
-				"<a href='javascript: toggle_full_value(" . $row["id_agente_modulo"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</span>";
+			if ($module_value == $sub_string) {
+				$salida = $module_value;
+			}
+			else {
+				$salida = "<span " .
+					"id='hidden_value_module_" . $row["id_agente_modulo"] . "'
+					style='display: none;'>" .
+					$module_value .
+					"</span>" . 
+					"<span " .
+					"id='value_module_" . $row["id_agente_modulo"] . "'
+					title='" . $module_value . "' " .
+					"style='white-space: nowrap;'>" . 
+					'<span id="value_module_text_' . $row["id_agente_modulo"] . '">' .
+						$sub_string . '</span> ' .
+					"<a href='javascript: toggle_full_value(" . $row["id_agente_modulo"] . ")'>" .
+						html_print_image("images/rosette.png", true) . "</a>" . "</span>";
+			}
 		}
 	}
 	
@@ -1000,10 +1055,11 @@ else {
 ?>
 <script type="text/javascript">
 	function toggle_full_value(id) {
-		value_title = $("#hidden-value_replace_module_" + id).val();
+		text = $("#hidden_value_module_" + id).html();
+		old_text = $("#value_module_text_" + id).html();
 		
-		$("#hidden-value_replace_module_" + id).val($("#value_module_text_" + id).html());
+		$("#hidden_value_module_" + id).html(old_text);
 		
-		$("#value_module_text_" + id).html(value_title);
+		$("#value_module_text_" + id).html(text);
 	}
 </script>

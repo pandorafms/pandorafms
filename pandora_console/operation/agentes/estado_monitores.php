@@ -295,6 +295,11 @@ $table->align = array("left","left","center","left","left","center");
 
 $last_modulegroup = 0;
 $rowIndex = 0;
+
+
+$id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
+	'nombre', 'web_content_string');
+
 foreach ($modules as $module) {
 	//The code add the row of 1 cell with title of group for to be more organice the list.
 	
@@ -309,6 +314,12 @@ foreach ($modules as $module) {
 		$last_modulegroup = $module["id_module_group"];
 	}
 	//End of title of group
+	
+	//Fixed the goliat sends the strings from web
+	//without HTML entities
+	if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
+		$module['datos'] = io_safe_input($module['datos']);
+	}
 	
 	$data = array ();
 	if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
@@ -439,7 +450,14 @@ foreach ($modules as $module) {
 			}
 		}
 		else {
-			$module_value = io_safe_output($module["datos"]);
+			//Fixed the goliat sends the strings from web
+			//without HTML entities
+			if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
+				$module_value = $module["datos"];
+			}
+			else {
+				$module_value = io_safe_output($module["datos"]);
+			}
 			
 			// There are carriage returns here ?
 			// If carriage returns present... then is a "Snapshot" data (full command output)
@@ -454,16 +472,33 @@ foreach ($modules as $module) {
 				$salida = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
 			}
 			else {
-				$sub_string = substr(io_safe_output($module["datos"]),0, 12);
+				//Fixed the goliat sends the strings from web
+				//without HTML entities
+				if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
+					$sub_string = substr($module["datos"], 0, 12);
+				}
+				else {
+					$sub_string = substr(io_safe_output($module["datos"]),0, 12);
+				}
+				
 				
 				if ($module_value == $sub_string) {
 					$salida = $module_value;
 				}
 				else {
-					$salida = "<span id='value_module_" . $module["id_agente_modulo"] . "'
-					title='".$module_value."' style='white-space: nowrap;'>" . 
-					'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' . $sub_string . '</span> ' .
-					"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</span>";
+					$salida = "<span " .
+						"id='hidden_value_module_" . $module["id_agente_modulo"] . "'
+						style='display: none;'>" .
+						$module_value .
+						"</span>" . 
+						"<span " .
+						"id='value_module_" . $module["id_agente_modulo"] . "'
+						title='" . $module_value . "' " .
+						"style='white-space: nowrap;'>" . 
+						'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' .
+							$sub_string . '</span> ' .
+						"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" .
+							html_print_image("images/rosette.png", true) . "</a>" . "</span>";
 				}
 			}
 		}
@@ -475,7 +510,7 @@ foreach ($modules as $module) {
 	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
 	
 	$data[8] = " ";
-	if ($module['history_data'] == 1){
+	if ($module['history_data'] == 1) {
 		$nombre_tipo_modulo = modules_get_moduletype_name ($module["id_tipo_modulo"]);
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
@@ -502,13 +537,14 @@ foreach ($modules as $module) {
 
 ?>
 <script type="text/javascript">
-function toggle_full_value(id) {
-	value_title = $("#value_module_" + id).attr('title');
-	
-	$("#value_module_" + id).attr('title', $("#value_module_text_" + id).html());
-	
-	$("#value_module_text_" + id).html(value_title);
-}
+	function toggle_full_value(id) {
+		text = $("#hidden_value_module_" + id).html();
+		old_text = $("#value_module_text_" + id).html();
+		
+		$("#hidden_value_module_" + id).html(old_text);
+		
+		$("#value_module_text_" + id).html(text);
+	}
 </script>
 <?php
 

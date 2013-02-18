@@ -1469,18 +1469,28 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 		"&colorRGB=". $colorRGB . "' />";
 }
 
-function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url, $ttl = 1, $data = false) {
+function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek = null, $time_from = null, $time_to = null, $width, $height, $home_url, $ttl = 1, $data = false, $round_corner = null) {
 	global $config;
 	
-	// If the data is not provided, we got it
-	if($data === false) {
-		$data = reporting_get_agentmodule_sla_array ($id, $period, $sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
+	if ($round_corner === null) {
+		$round_corner = $config['round_corner'];
 	}
 	
-	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN, 5 => COL_NOTINIT);
+	// If the data is not provided, we got it
+	if ($data === false) {
+		$data = reporting_get_agentmodule_sla_array ($id, $period,
+			$sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
+	}
 	
-	return slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'],
-		$config['round_corner'], $home_url, $ttl);
+	$colors = array(1 => COL_NORMAL,
+		2 => COL_WARNING,
+		3 => COL_CRITICAL,
+		4 => COL_UNKNOWN,
+		5 => COL_NOTINIT);
+	
+	return slicesbar_graph($data, $period, $width, $height, $colors,
+		$config['fontpath'],
+		$round_corner, $home_url, $ttl);
 }
 
 /**

@@ -517,7 +517,14 @@ foreach ($modules as $module) {
 					$sub_string = substr($module["datos"], 0, 12);
 				}
 				else {
-					$sub_string = substr(io_safe_output($module["datos"]),0, 12);
+					//Fixed the data from Selenium Plugin
+					if ($module_value != strip_tags($module_value)) {
+						$module_value = io_safe_input($module_value);
+						$sub_string = substr($module_value,0, 12);
+					}
+					else {
+						$sub_string = substr(io_safe_output($module_value),0, 12);
+					}
 				}
 				
 				if ($module_value == $sub_string) {

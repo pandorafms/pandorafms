@@ -840,6 +840,11 @@ foreach ($result as $row) {
 		$row['datos'] = io_safe_input($row['datos']);
 	}
 	
+	//Fixed the data from Selenium Plugin
+	if ($row['datos'] != strip_tags($row['datos'])) {
+		$row['datos'] = io_safe_input($row['datos']);
+	}
+	
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else
@@ -1005,8 +1010,17 @@ foreach ($result as $row) {
 				$sub_string = substr($row["datos"], 0, 12);
 			}
 			else {
-				$sub_string = substr(io_safe_output($row["datos"]),0, 12);
+				//Fixed the data from Selenium Plugin
+				if ($module_value != strip_tags($module_value)) {
+					$module_value = io_safe_input($module_value);
+					$sub_string = substr($row["datos"], 0, 12);
+				}
+				else {
+					$sub_string = substr(io_safe_output($row["datos"]),0, 12);
+				}
 			}
+			
+			
 			
 			if ($module_value == $sub_string) {
 				$salida = $module_value;

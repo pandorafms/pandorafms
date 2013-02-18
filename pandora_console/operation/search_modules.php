@@ -206,6 +206,11 @@ else {
 			$module['datos'] = io_safe_input($module['datos']);
 		}
 		
+		//Fixed the data from Selenium Plugin
+		if ($module['datos'] != strip_tags($module['datos'])) {
+			$module['datos'] = io_safe_input($module['datos']);
+		}
+		
 		$agentCell = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '">' .
 			$module['agent_name'] . '</a>';
 		
@@ -305,10 +310,17 @@ else {
 				//Fixed the goliat sends the strings from web
 				//without HTML entities
 				if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
-					$sub_string = substr($module["datos"], 0, 12);
+					$sub_string = substr($module_value, 0, 12);
 				}
 				else {
-					$sub_string = substr(io_safe_output($module["datos"]),0, 12);
+					//Fixed the data from Selenium Plugin
+					if ($module_value != strip_tags($module_value)) {
+						$module_value = io_safe_input($module_value);
+						$sub_string = substr($module_value, 0, 12);
+					}
+					else {
+						$sub_string = substr(io_safe_output($module_value),0, 12);
+					}
 				}
 				
 				if ($module_value == $sub_string) {

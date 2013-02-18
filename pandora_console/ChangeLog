@@ -1,5 +1,15 @@
 2013-02-18 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_modules.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/estado_monitores.php,
+	operation/agentes/datos_agente.php, operation/search_modules.php:
+	fixed to show strings from for example Selenium Plugin that have
+	html tags.
+
+2013-02-18 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/search_modules.php, operation/agentes/ver_agente.php,
 	operation/agentes/status_monitor.php,
 	operation/agentes/estado_ultimopaquete.php,

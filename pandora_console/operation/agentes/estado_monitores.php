@@ -321,6 +321,7 @@ foreach ($modules as $module) {
 		$module['datos'] = io_safe_input($module['datos']);
 	}
 	
+	
 	$data = array ();
 	if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
 		if ($module["flag"] == 0) {
@@ -405,7 +406,16 @@ foreach ($modules as $module) {
 	}
 	$data[4] = ui_print_string_substr ($module["descripcion"], 60, true, 8);
 	
-	modules_get_status($module['id_agente_modulo'], $module['estado'], $module['datos'], $status, $title);
+	
+	if ($module["datos"] != strip_tags($module["datos"])) {
+		$module_value = io_safe_input($module["datos"]);
+	}
+	else {
+		$module_value = io_safe_output($module["datos"]);
+	}
+	
+	modules_get_status($module['id_agente_modulo'], $module['estado'],
+		$module_value, $status, $title);
 	
 	$data[5] = ui_print_status_image($status, $title, true);
 	
@@ -465,7 +475,7 @@ foreach ($modules as $module) {
 				
 				$handle = "snapshot"."_".$module["id_agente_modulo"];
 				$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
-				$win_handle=dechex(crc32($handle));
+				$win_handle = dechex(crc32($handle));
 				
 				$link ="winopeng_var('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."&refr=".$module["current_interval"]."&label=".$module["nombre"]."','".$win_handle."', 700,480)"; 
 				
@@ -475,10 +485,17 @@ foreach ($modules as $module) {
 				//Fixed the goliat sends the strings from web
 				//without HTML entities
 				if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
-					$sub_string = substr($module["datos"], 0, 12);
+					$sub_string = substr($module_value, 0, 12);
 				}
 				else {
-					$sub_string = substr(io_safe_output($module["datos"]),0, 12);
+					//Fixed the data from Selenium Plugin
+					if ($module_value != strip_tags($module_value)) {
+						$module_value = io_safe_input($module_value);
+						$sub_string = substr($module_value, 0, 12);
+					}
+					else {
+						$sub_string = substr(io_safe_output($module_value),0, 12);
+					}
 				}
 				
 				

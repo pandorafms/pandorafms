@@ -1399,7 +1399,7 @@ function modules_get_modulegroup_name ($modulegroup_id) {
 function modules_get_status($id_agent_module, $db_status, $data, &$status, &$title) {
 	$status = STATUS_MODULE_WARNING;
 	$title = "";
-
+	
 	// This module is initialized ? (has real data)
 	//$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
 	if ($db_status == 4) {
@@ -1423,13 +1423,16 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 		$last_status =  modules_get_agentmodule_last_status($id_agent_module);
 		switch($last_status) {
 			case 0:
-				$title = __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL');
+				$title = __('UNKNOWN') . " - " . __('Last status') .
+					" " . __('NORMAL');
 				break;
 			case 1:
-				$title = __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL');
+				$title = __('UNKNOWN') . " - " . __('Last status') .
+					" " . __('CRITICAL');
 				break;
 			case 2:
-				$title = __('UNKNOWN')." - ".__('Last status')." ".__('WARNING');
+				$title = __('UNKNOWN') . " - " . __('Last status') .
+					" " . __('WARNING');
 				break;
 		}
 	}
@@ -1438,7 +1441,14 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 		$title .= ": " . format_for_graph($data);
 	}
 	else {
-		$title .= ": " . substr(io_safe_output($data),0,42);
+		$text = io_safe_output($data);
+		
+		//Fixed the data from Selenium Plugin
+		if ($text != strip_tags($text)) {
+			$text = io_safe_input($text);
+		}
+		
+		$title .= ": " . substr($text ,0,42);
 	}
 }
 

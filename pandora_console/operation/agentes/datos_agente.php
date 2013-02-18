@@ -273,7 +273,11 @@ foreach ($result as $row) {
 		else {
 			// Just a string of alphanumerical data... just do print
 			
-			$data[$attr[1]] = $row[$attr[0]];
+			//Fixed the data from Selenium Plugin
+			if ($row[$attr[0]] != strip_tags($row[$attr[0]]))
+				$data[$attr[1]] = io_safe_input($row[$attr[0]]);
+			else
+				$data[$attr[1]] = $row[$attr[0]];
 		}
 	}
 	

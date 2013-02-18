@@ -1,5 +1,12 @@
 2013-02-18  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/Core.pm
+	lib/PandoraFMS/DataServer.pm: Fixed the exception of "status"
+	field of the XML deleted from the supported tags in a previous
+	fix for bug 3604850
+
+2013-02-18  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/PluginServer.pm: Clean the blank spaces
 	from the start and end of the return of the plugin to make
 	easier the configuration of numeric modules and not confuse

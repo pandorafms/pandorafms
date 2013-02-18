@@ -2953,7 +2953,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					
 					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
 						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
-						$content['time_to'], 650, 25, ui_get_full_url(false) . '/', 1, $sla_data_arrays[$k]);
+						$content['time_to'], 650, 25, ui_get_full_url(false) . '/', 1, $sla_data_arrays[$k], false);
 					
 					array_push ($tableslice->data, $dataslice);
 				}

@@ -2268,6 +2268,7 @@ sub pandora_create_module_from_hash ($$$) {
 	delete $parameters->{'data'};
 	delete $parameters->{'type'};
 	delete $parameters->{'datalist'};
+	delete $parameters->{'status'};
 	
 	my $module_id = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $parameters);
 	

@@ -189,6 +189,11 @@ sub data_consumer ($$) {
 	eval {
 		$module_data = `$command`;
 	};
+	
+	# Clean blank spaces and carriage return from start and end of the data
+	$module_data =~ s/^[\s|\n|\r]*//;
+	$module_data =~ s/[\s|\n|\r]*$//;
+	
 	my $ReturnCode = ($? >> 8) & 0xff;
 
 	if ($plugin->{'plugin_type'} == 1) {

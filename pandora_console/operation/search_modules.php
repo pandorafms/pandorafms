@@ -196,7 +196,16 @@ else {
 	
 	$table->data = array ();
 	
+	$id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
+		'nombre', 'web_content_string');
+	
 	foreach ($modules as $module) {
+		//Fixed the goliat sends the strings from web
+		//without HTML entities
+		if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
+			$module['datos'] = io_safe_input($module['datos']);
+		}
+		
 		$agentCell = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '">' .
 			$module['agent_name'] . '</a>';
 		
@@ -209,28 +218,44 @@ else {
 				($module['id_tipo_modulo'] < 21 || $module['id_tipo_modulo'] > 23) &&
 				$module['id_tipo_modulo'] != 100)
 			) {
-			$statusCell = ui_print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
+			$statusCell = ui_print_status_image(STATUS_MODULE_NO_DATA,
+				__('NOT INIT'), true);
 		}
 		elseif ($module["estado"] == 0) {
-			$statusCell = ui_print_status_image(STATUS_MODULE_OK, __('NORMAL').": ".$module["datos"], true);
+			$statusCell = ui_print_status_image(STATUS_MODULE_OK,
+				__('NORMAL') . ": " . $module["datos"], true);
 		}
 		elseif ($module["estado"] == 1) {
-			$statusCell = ui_print_status_image(STATUS_MODULE_CRITICAL, __('CRITICAL').": ".$module["datos"], true);
+			$statusCell = ui_print_status_image(STATUS_MODULE_CRITICAL,
+				__('CRITICAL') . ": " . $module["datos"], true);
 		}
 		elseif ($module["estado"] == 2) {
-			$statusCell = ui_print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$module["datos"], true);
+			$statusCell = ui_print_status_image(STATUS_MODULE_WARNING,
+				__('WARNING') . ": " . $module["datos"], true);
 		}
 		else {
 			$last_status = modules_get_agentmodule_last_status($module['id_agente_modulo']);
 			switch($last_status) {
 				case 0:
-					$statusCell = ui_print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$module["datos"], true);
+					$statusCell = ui_print_status_image(
+						STATUS_MODULE_OK,
+						__('UNKNOWN') . " - " . __('Last status') .
+						" " . __('NORMAL') .": " . $module["datos"],
+						true);
 					break;
 				case 1:
-					$statusCell = ui_print_status_image(STATUS_MODULE_CRITICAL, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$module["datos"], true);
+					$statusCell = ui_print_status_image(
+						STATUS_MODULE_CRITICAL,
+						__('UNKNOWN') . " - " . __('Last status') .
+						" " . __('CRITICAL') . ": " . $module["datos"],
+						true);
 					break;
 				case 2:
-					$statusCell = ui_print_status_image(STATUS_MODULE_WARNING, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$module["datos"], true);
+					$statusCell = ui_print_status_image(
+						STATUS_MODULE_WARNING,
+						__('UNKNOWN') . " - " . __('Last status') .
+						" " . __('WARNING') . ": " . $module["datos"],
+						true);
 					break;
 			}
 		}
@@ -251,10 +276,61 @@ else {
 			$graphCell .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$module["id_agente"]."&amp;tab=data_view&period=86400&amp;id=".$module["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("border" => "0", "alt" => "")) . "</a>";
 		}
 		
-		if (is_numeric($module["datos"]))
+		if (is_numeric($module["datos"])) {
 			$dataCell = format_numeric($module["datos"]);
-		else
-			$dataCell = "<span title='" . $module['datos'] . "' style='white-space: nowrap;'>".substr(io_safe_output($module["datos"]),0,12)."</span>";
+		}
+		else {
+			//Fixed the goliat sends the strings from web
+			//without HTML entities
+			if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
+				$module_value = $module["datos"];
+			}
+			else {
+				$module_value = io_safe_output($module["datos"]);
+			}
+			
+			// There are carriage returns here ?
+			// If carriage returns present... then is a "Snapshot" data (full command output)
+			if (($config['command_snapshot']) && (preg_match ("/[\n]+/i", io_safe_output($module["datos"])))) {
+				
+				$handle = "snapshot"."_".$module["id_agente_modulo"];
+				$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
+				$win_handle=dechex(crc32($handle));
+				
+				$link ="winopeng_var('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."&refr=".$module["current_interval"]."&label=".$module["nombre"]."','".$win_handle."', 700,480)"; 
+				
+				$dataCell = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+			}
+			else {
+				//Fixed the goliat sends the strings from web
+				//without HTML entities
+				if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
+					$sub_string = substr($module["datos"], 0, 12);
+				}
+				else {
+					$sub_string = substr(io_safe_output($module["datos"]),0, 12);
+				}
+				
+				if ($module_value == $sub_string) {
+					$dataCell = $module_value;
+				}
+				else {
+					$dataCell = "<span " .
+						"id='hidden_value_module_" . $module["id_agente_modulo"] . "'
+						style='display: none;'>" .
+						$module_value .
+						"</span>" . 
+						"<span " .
+						"id='value_module_" . $module["id_agente_modulo"] . "'
+						title='" . $module_value . "' " .
+						"style='white-space: nowrap;'>" . 
+						'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' .
+							$sub_string . '</span> ' .
+						"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" .
+							html_print_image("images/rosette.png", true) . "</a>" . "</span>";
+				}
+			}
+		}
 		
 		if ($module['estado'] == 3) {
 			$option = array ("html_attr" => 'class="redb"');
@@ -301,3 +377,14 @@ else {
 	ui_pagination ($totalModules);
 }
 ?>
+
+<script type="text/javascript">
+	function toggle_full_value(id) {
+		text = $("#hidden_value_module_" + id).html();
+		old_text = $("#value_module_text_" + id).html();
+		
+		$("#hidden_value_module_" + id).html(old_text);
+		
+		$("#value_module_text_" + id).html(text);
+	}
+</script>

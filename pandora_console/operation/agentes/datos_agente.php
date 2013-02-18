@@ -35,7 +35,8 @@ if ($connection == 'history' && $config['history_db_enabled'] == 1) {
 		$config['history_db_connection'] = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], $config['history_db_pass'], $config['history_db_port'], false);
 	}
 	$connection_handler = $config['history_db_connection'];
-} else {
+}
+else {
 	$connection_handler = $config['dbconnection'];
 }
 
@@ -229,15 +230,26 @@ foreach($columns as $col => $attr) {
 	$index++;
 }
 
+$id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
+	'nombre', 'web_content_string');
+
 foreach ($result as $row) {
 	$data = array ();
 	
+	$is_web_content_string = (bool)db_get_value_filter('id_agente_modulo',
+		'tagente_modulo',
+		array('id_agente_modulo' => $row['id_agente_modulo'],
+			'id_tipo_modulo' => $id_type_web_content_string));
+	
 	foreach($columns as $col => $attr) {
-		if ($attr[1] != "modules_format_data")
+		if ($attr[1] != "modules_format_data") {
 			$data[] = $attr[1] ($row[$attr[0]]);
 		
-		// Its a single-data, multiline data (data snapshot) ?
+		
+		}
 		elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
+			// Its a single-data, multiline data (data snapshot) ?
+			
 			
 			// Detect string data with \n and convert to <br>'s
 			$datos = preg_replace ('/\n/i','<br>',$row[$attr[0]]);
@@ -249,13 +261,19 @@ foreach ($result as $row) {
 			$datos = "<span style='font-family: mono,monospace;'>".$datos."</span>";
 			
 			// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
-			$data[$attr[1]]=$datos;
+			$data[$attr[1]] = $datos;
 		
+		}
+		elseif ($is_web_content_string) {
+			//Fixed the goliat sends the strings from web
+			//without HTML entities
+			
+			$data[$attr[1]] = io_safe_input($row[$attr[0]]);
 		}
 		else {
 			// Just a string of alphanumerical data... just do print
 			
-			$data[$attr[1]]=$row[$attr[0]];
+			$data[$attr[1]] = $row[$attr[0]];
 		}
 	}
 	

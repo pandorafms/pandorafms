@@ -1,5 +1,16 @@
 2013-02-18 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/search_modules.php, operation/agentes/ver_agente.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/estado_monitores.php,
+	operation/agentes/datos_agente.php, include/functions_io.php: fixed
+	to show string web data from Goliat modules.
+	
+	Fixes: #3600804
+
+2013-02-18 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_graph.php: added a parameter for to set the
 	round corner in the function "graph_sla_slicebar".
 	

@@ -235,30 +235,38 @@ switch ($config["dbtype"]) {
 		
 		$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
 		
-		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s %s %s %s %s", 
+		$sql = sprintf("SELECT %s
+			FROM tagente_modulo, tagente_estado
+			WHERE %s %s %s %s %s", 
 			$params, $basic_where, $where, $where_tags, $order_sql, $limit_sql);
 		
 		$modules = db_get_all_rows_sql($sql);
 		break;
-	case "oracle":	
+	case "oracle":
 		$order[] = array('field' => 'dbms_lob.substr(tagente_modulo.nombre,4000,1)', 'order' => 'ASC');
 		
 		$set = array();
 		$set['limit'] = $limit;
-		$set['offset'] = $offset;	
-		$sql = sprintf("SELECT %s FROM tagente_modulo, tagente_estado WHERE %s %s %s %s", 
-					$params, $basic_where, $where, $where_tags, $order_sql);
+		$set['offset'] = $offset;
+		$sql = sprintf("SELECT %s
+			FROM tagente_modulo, tagente_estado
+			WHERE %s %s %s %s", 
+			$params, $basic_where, $where, $where_tags, $order_sql);
+		
 		$modules = oracle_recode_query ($sql, $set, 'AND', false);
 		break;
 }
 
-$sql_total_modules = sprintf("SELECT count(*) FROM tagente_modulo, tagente_estado WHERE %s %s %s", $basic_where, $where, $where_tags);
+$sql_total_modules = sprintf("SELECT count(*)
+	FROM tagente_modulo, tagente_estado
+	WHERE %s %s %s", $basic_where, $where, $where_tags);
 
 $total_modules = db_get_value_sql($sql_total_modules);
 $total_modules = isset ($total_modules) ? $total_modules : 0;
 
 if ($modules === false) {
-	echo "<div class='nf'>".__('This agent doesn\'t have any module')."</div>";
+	echo "<div class='nf'>" .
+		__('This agent doesn\'t have any module') . "</div>";
 	return;
 }
 
@@ -298,7 +306,18 @@ echo "</th>";
 $texto=''; $last_modulegroup = 0;
 $color = 1;
 $write = check_acl ($config['id_user'], $agent['id_grupo'], "AW");
+
+$id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
+	'nombre', 'web_content_string');
+
 foreach ($modules as $module) {
+	
+	//Fixed the goliat sends the strings from web
+	//without HTML entities
+	if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
+		$module['datos'] = io_safe_input($module['datos']);
+	}
+	
 	// Calculate table line color
 	if ($color == 1) {
 		$tdcolor = "datos";
@@ -308,7 +327,7 @@ foreach ($modules as $module) {
 		$tdcolor = "datos2";
 		$color = 1;
 	}
-
+	
 	if ($module["id_module_group"] != $last_modulegroup ) {
 		// Render module group names (fixed code)
 		$nombre_grupomodulo = modules_get_modulegroup_name ($module["id_module_group"]);
@@ -470,7 +489,14 @@ foreach ($modules as $module) {
 			
 			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".io_safe_output($module["datos"])."'>";
 			
-			$module_value = io_safe_output($module["datos"]);
+			//Fixed the goliat sends the strings from web
+			//without HTML entities
+			if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
+				$module_value = $module["datos"];
+			}
+			else {
+				$module_value = io_safe_output($module["datos"]);
+			}
 			
 			// There are carriage returns here ?
 			// If carriage returns present... then is a "Snapshot" data (full command output)
@@ -485,16 +511,32 @@ foreach ($modules as $module) {
 				$out = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
 			}
 			else {
-				$sub_string = substr(io_safe_output($module["datos"]),0, 12);
+				//Fixed the goliat sends the strings from web
+				//without HTML entities
+				if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
+					$sub_string = substr($module["datos"], 0, 12);
+				}
+				else {
+					$sub_string = substr(io_safe_output($module["datos"]),0, 12);
+				}
 				
 				if ($module_value == $sub_string) {
 					$out = $module_value;
 				}
 				else {
-					$out = "<span id='value_module_" . $module["id_agente_modulo"] . "'
-					title='".$module_value."' style='white-space: nowrap;'>" . 
-					'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' . $sub_string . '</span> ' .
-					"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</span>";
+					$out = "<span " .
+						"id='hidden_value_module_" . $module["id_agente_modulo"] . "'
+						style='display: none;'>" .
+						$module_value .
+						"</span>" . 
+						"<span " .
+						"id='value_module_" . $module["id_agente_modulo"] . "'
+						title='" . $module_value . "' " .
+						"style='white-space: nowrap;'>" . 
+						'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' .
+							$sub_string . '</span> ' .
+						"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" .
+							html_print_image("images/rosette.png", true) . "</a>" . "</span>";
 				}
 			}
 			
@@ -554,11 +596,12 @@ echo '</table>';
 ?>
 
 <script type="text/javascript">
-function toggle_full_value(id) {
-	value_title = $("#value_module_" + id).attr('title');
-	
-	$("#value_module_" + id).attr('title', $("#value_module_text_" + id).html());
-	
-	$("#value_module_text_" + id).html(value_title);
-}
+	function toggle_full_value(id) {
+		text = $("#hidden_value_module_" + id).html();
+		old_text = $("#value_module_text_" + id).html();
+		
+		$("#hidden_value_module_" + id).html(old_text);
+		
+		$("#value_module_text_" + id).html(text);
+	}
 </script>

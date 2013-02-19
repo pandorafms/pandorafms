@@ -75,7 +75,6 @@ $(document).ready (function () {
 							opacity: 0.5,
 							background: "black"
 						},
-						bgiframe: jQuery.browser.msie,
 						width: 700,
 						height: 300
 					})

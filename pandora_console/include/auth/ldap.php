@@ -20,36 +20,37 @@
 	
 if (!isset ($config)) {
 	die ('
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<head>
-<title>Pandora FMS - The Flexible Monitoring System - Console error</title>
-<meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=utf8">
-<meta name="resource-type" content="document">
-<meta name="distribution" content="global">
-<meta name="author" content="Sancho Lerena">
-<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
-<meta name="keywords" content="pandora, monitoring, system, GPL, software">
-<meta name="robots" content="index, follow">
-<link rel="icon" href="../../images/pandora.ico" type="image/ico">
-<link rel="stylesheet" href="../styles/pandora.css" type="text/css">
-</head>
-<body>
-<div id="main" style="float:left; margin-left: 100px">
-<div align="center">
-<div id="login_f">
-	<h1 id="log_f" class="error">You cannot access this file</h1>
-	<div>
-		<img src="../../images/pandora_logo.png" border="0"></a>
-	</div>
-	<div class="msg">
-		<span class="error"><b>ERROR:</b>
-		You can\'t access this file directly!</span>
-	</div>
-</div>
-</div>
-</body>
+	<head>
+		<title>Pandora FMS - The Flexible Monitoring System - Console error</title>
+		<meta http-equiv="expires" content="0">
+		<meta http-equiv="content-type" content="text/html; charset=utf8">
+		<meta name="resource-type" content="document">
+		<meta name="distribution" content="global">
+		<meta name="author" content="Sancho Lerena">
+		<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
+		<meta name="keywords" content="pandora, monitoring, system, GPL, software">
+		<meta name="robots" content="index, follow">
+		<link rel="icon" href="../../images/pandora.ico" type="image/ico">
+		<link rel="stylesheet" href="../styles/pandora.css" type="text/css">
+	</head>
+	<body>
+		<div id="main" style="float:left; margin-left: 100px">
+			<div align="center">
+				<div id="login_f">
+					<h1 id="log_f" class="error">You cannot access this file</h1>
+					<div>
+						<img src="../../images/pandora_logo.png" border="0"></a>
+					</div>
+					<div class="msg">
+						<span class="error"><b>ERROR:</b>
+						You can\'t access this file directly!</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
 ');
 }
@@ -93,7 +94,7 @@ foreach ($opt_keys as $key) {
 				$config["auth"][$key] = 0;
 				continue;
 			case "ldap_admin_dn":
-			case "ldap_admin_pwd":	
+			case "ldap_admin_pwd":
 				$config["auth"][$key] = "";
 				continue;
 			default:
@@ -127,7 +128,8 @@ function process_user_login ($login, $pass) {
 	if ($profile === false && empty ($config["auth"]["create_user_undefined"])) {
 		$config["auth_error"] = "No profile"; //Error message, don't translate
 		return false; //User doesn't have a profile so doesn't have access
-	} elseif ($profile === false && !empty ($config["auth"]["create_user_undefined"])) {
+	}
+	elseif ($profile === false && !empty ($config["auth"]["create_user_undefined"])) {
 		$ret = profile_create_user_profile ($login); //User doesn't have a profile but we are asked to create one
 		if ($ret === false) {
 			$config["auth_error"] = "Profile creation failed"; //Error message, don't translate
@@ -164,8 +166,10 @@ function is_user_admin ($user_id) {
  */
 function is_user ($id_user) {
 	$user = get_user_info ($id_user);
+	
 	if (empty ($user))
 		return false;
+	
 	return true;
 }
 
@@ -182,6 +186,7 @@ function get_user_fullname ($id_user) {
 		//User doesn't exist
 		return '';
 	}
+	
 	return (string) $info["fullname"];
 }
 
@@ -194,6 +199,7 @@ function get_user_fullname ($id_user) {
  */
 function get_user_email ($id_user) {
 	$info = get_user_info ($id_user);
+	
 	return (string) $info["email"];
 }
 
@@ -209,6 +215,7 @@ function get_user_id ($user) {
 	if (is_array ($user))
 		/* FIXME: Is this right? */
 		return $user['id_user'];
+	
 	return (int) $user;
 }
 
@@ -234,7 +241,7 @@ function get_user_info ($id_user) {
 	
 	return $ldap_cache[$id_user];
 }
-	
+
 /**
  * Get all users that are defined in the admin group in LDAP
  *
@@ -245,7 +252,8 @@ function get_user_admins () {
 	
 	if (! empty ($ldap_cache["cached_admins"])) {
 		return $ldap_cache["cached_admins"];
-	} else {
+	}
+	else {
 		$ldap_cache["cached_admins"] = array ();
 	}
 	
@@ -254,12 +262,14 @@ function get_user_admins () {
 		$sr = ldap_search ( $ldap_cache["ds"], $config["auth"]["ldap_admin_group_name"], $search_filter, array ($config["auth"]["ldap_admin_group_attr"]));
 		if (!$sr) {
 			$ldap_cache["error"] .= 'Error searching LDAP server (get_user_admins): ' . ldap_error ($ldap_cache["ds"]);
-		} else {
+		}
+		else {
 			$admins = ldap_get_entries( $ldap_cache["ds"], $sr);
 			for( $x = 0; $x < $admins[0][$config["auth"]["ldap_admin_group_attr"]]['count']; $x++) {
 				if ($config["auth"]["ldap_admin_group_type"] != 'posixgroup') {
 					$ldap_cache["cached_admins"][] = stripdn ($admins[0][$config["auth"]["ldap_admin_group_attr"]][$x]);
-				} else {
+				}
+				else {
 					$ldap_cache["cached_admins"][] = $admins[0][$config["auth"]["ldap_admin_group_attr"]][$x];
 				}
 			}
@@ -305,17 +315,20 @@ function ldap_search_user ($login) {
 		
 		if (!$sr) {
 			$ldap_cache["error"] .= 'Error searching LDAP server: ' . ldap_error ($ldap_cache["ds"]);
-		} else {
+		}
+		else {
 			$info = @ldap_get_entries ($ldap_cache["ds"], $sr );
 			if ( $info['count'] != 1 ) {
 				$ldap_cache["error"] .= 'Invalid user';
-			} else {
+			}
+			else {
 				$nick = $info[0]['dn'];
 			}
 			@ldap_free_result ($sr);
 		}
 		@ldap_close ($ldap_cache["ds"]);
 	}
+	
 	return $nick;
 }
 
@@ -329,7 +342,7 @@ function ldap_search_user ($login) {
  */
 function ldap_valid_login ($login, $password) {
 	global $ldap_cache, $config;
-
+	
 	if (! function_exists ("ldap_connect")) {
 		die ("Your installation of PHP does not support LDAP");
 	}
@@ -337,7 +350,8 @@ function ldap_valid_login ($login, $password) {
 	$ret = false;
 	if (!empty ($config["auth"]["ldap_port"])) {
 		$ds = @ldap_connect ($config["auth"]["ldap_server"], $config["auth"]["ldap_port"]); //Since this is a separate bind, we don't store it global
-	} else {
+	}
+	else {
 		$ds = @ldap_connect ($config["auth"]["ldap_server"]); //Since this is a separate bind we don't store it global
 	}
 	if ($ds) {
@@ -350,20 +364,16 @@ function ldap_valid_login ($login, $password) {
 			return $ret;
 		}
 		
-		if (ldap_search_user ($login)) {
-			$r = @ldap_bind ($ds, $config["auth"]["ldap_login_attr"]."=".$login.",".$config["auth"]["ldap_base_dn"], $password);
-			if (!$r) {
-				$ldap_cache["error"] .= 'Invalid login';
-				//$ldap_cache["error"] .= ': incorrect password'; // uncomment for debugging
-			} else {
-				$ret = true;
-			}
-		} else {
+		$r = @ldap_bind ($ds, $config["auth"]["ldap_login_attr"]."=".$login.",".$config["auth"]["ldap_base_dn"], $password);
+		if (!$r) {
 			$ldap_cache["error"] .= 'Invalid login';
-			//$ldap_cache["error"] .= ': no such user';
+		}
+		else {
+			$ret = true;
 		}
 		@ldap_close ($ds);
-	} else {
+	}
+	else {
 		$ldap_cache["error"] .= 'Error connecting to LDAP server';
 	}
 	return $ret;
@@ -387,12 +397,14 @@ function ldap_load_user ($login) {
 		
 		if (!$sr) {
 			$ldap_cache["error"] .= 'Error searching LDAP server (load_user): ' . ldap_error( $ldap_cache["ds"] );
-		} else {
+		}
+		else {
 			$info = @ldap_get_entries ($ldap_cache["ds"], $sr);
 			if ($info['count'] != 1) {
 				$ldap_cache["error"] .= 'Invalid login';
 				//$ldap_cache["error"] .= ', could not load user'; //Uncomment for debugging
-			} else {
+			}
+			else {
 				$ret = array ();
 				foreach ($config["auth"]["ldap_user_attr"] as $internal_key => $ldap_key) {
 					$ret["last_connect"] = $time;
@@ -400,7 +412,8 @@ function ldap_load_user ($login) {
 					$ret["is_admin"] = is_user_admin ($info[0][$config["auth"]["ldap_user_attr"]["id_user"]][0]);
 					if (isset ($info[0][$ldap_key])) {
 						$ret[$internal_key] = $info[0][$ldap_key][0];
-					} else {
+					}
+					else {
 						$ret[$internal_key] = '';
 					}
 				}
@@ -408,10 +421,11 @@ function ldap_load_user ($login) {
 			@ldap_free_result ($sr);
 		}
 		@ldap_close ( $ldap_cache["ds"] );
-	} else {
+	}
+	else {
 		$ldap_cache["error"] .= 'Could not connect to LDAP server';
 	}
-
+	
 	return $ret;
 }
 
@@ -486,7 +500,8 @@ function get_users ($order = false) {
 		$sr = @ldap_search ($ldap_cache["ds"], $config["auth"]["ldap_base_dn"], $config["auth"]["ldap_user_filter"], array_values ($config["auth"]["ldap_user_attr"]));
 		if (!$sr) {
 			$ldap_cache["error"] .= 'Error searching LDAP server (get_users): ' . ldap_error( $ldap_cache["ds"] );
-		} else {
+		}
+		else {
 			ldap_sort ($ldap_cache["ds"], $sr, $config["auth"]["ldap_user_attr"]["fullname"]);
 			$info = @ldap_get_entries( $ldap_cache["ds"], $sr );
 			for ( $i = 0; $i < $info['count']; $i++ ) {
@@ -494,7 +509,8 @@ function get_users ($order = false) {
 					$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]]["last_connect"] = $time;
 					if (isset ($info[$i][$ldap_key])) {
 						$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]][$internal_key] = $info[$i][$ldap_key][0];
-					} else {
+					}
+					else {
 						$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]][$internal_key] = '';
 					}
 					$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]]["is_admin"] = is_user_admin ($info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]);
@@ -521,6 +537,7 @@ function get_users ($order = false) {
 function stripdn ($dn) {
 	list ($uid, $trash) = explode (',', $dn, 2);
 	list ($trash, $user) = explode ('=', $uid);
+	
 	return ($user);
 }
 
@@ -540,9 +557,11 @@ function ldap_connect_bind () {
 	
 	if (!empty ($config["auth"]["ldap_port"]) && !is_resource ($ldap_cache["ds"])) {
 		$ldap_cache["ds"] = @ldap_connect ($config["auth"]["ldap_server"], $config["auth"]["ldap_port"]);
-	} elseif (!is_resource ($ldap_cache["ds"])) {
+	}
+	elseif (!is_resource ($ldap_cache["ds"])) {
 		$ldap_cache["ds"] = @ldap_connect ($config["auth"]["ldap_server"]);
-	} else {
+	}
+	else {
 		return true;
 	}
 	
@@ -557,10 +576,11 @@ function ldap_connect_bind () {
 				return $ret;
 			}
 		}
-
+		
 		if (!empty ($config["auth"]["ldap_admin_dn"])) {
 			$r = @ldap_bind ($ldap_cache["ds"], $config["auth"]["ldap_admin_dn"], $config["auth"]["ldap_admin_pwd"]);
-		} else {
+		}
+		else {
 			$r = @ldap_bind ($ldap_cache["ds"]);
 		}
 		
@@ -569,10 +589,10 @@ function ldap_connect_bind () {
 			return $ret;
 		}
 		return true;
-	} else {
+	}
+	else {
 		$ldap_cache["error"] .= 'Error connecting to LDAP server';
 		return $ret;
 	}
 }
-
 ?>

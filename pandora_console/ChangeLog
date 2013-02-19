@@ -1,3 +1,8 @@
+2013-02-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/auth/ldap.php: Merged from trunk. Do not bind anonymously to
+	  check whether the user exists.
+
 2013-02-19  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_modules.js: Fixed str_warning and

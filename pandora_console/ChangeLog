@@ -1,3 +1,8 @@
+2013-02-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/auth/ldap.php: Do not bind anonymously to check whether the
+	  user exists.
+
 2013-02-19 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/alerts/configure_alert_command.php,

@@ -7,8 +7,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	var labels = labels.split(separator);
 	var data = values.split(separator);
 	
-	for( var i = 0; i<nseries; i++)
-	{
+	for (var i = 0; i < nseries; i++) {
 		data[i] = { label: labels[i], data: parseInt(data[i]) }
 	}
 	
@@ -23,8 +22,10 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 		label_conf = {
 			show: true,
 			radius: 3/4,
-			formatter: function(label, series){
-				return '<div style="font-size:'+font_size+'pt;text-align:center;padding:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+			formatter: function(label, series) {
+				return '<div style="font-size:' + font_size + 'pt;' +
+					'text-align:center;padding:2px;color:white;">' +
+						label + '<br/>' + Math.round(series.percent) + '%</div>';
 			},
 			background: {
 				opacity: 0.5,
@@ -79,9 +80,9 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	});
 	
 	// Events
-	$('#'+graph_id).bind('plothover', pieHover);
-	$('#'+graph_id).bind('plotclick', pieClick);
-	$('#'+graph_id).bind('mouseout',resetInteractivity);
+	$('#' + graph_id).bind('plothover', pieHover);
+	$('#' + graph_id).bind('plotclick', pieClick);
+	$('#' + graph_id).bind('mouseout',resetInteractivity);
 	
 	function pieHover(event, pos, obj) 
 	{
@@ -101,8 +102,9 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 		});
 	}
 	
-	if(water_mark) {
-		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
+	if (water_mark) {
+		set_watermark(graph_id, plot,
+			$('#watermark_image_' + graph_id).attr('src'));
 	}
 }
 
@@ -359,9 +361,9 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			//~ index = item.dataIndex;
 			//~ $('#value_'+index+'_'+graph_id).css('font-weight', 'bold');
 		//~ }
-    //~ });
-    
-	if(water_mark) {
+	//~ });
+	
+	if (water_mark) {
 		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
 }
@@ -379,7 +381,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	
 	var datas = new Array();
 	
-	for(i=0;i<values.length;i++) {
+	for (i=0;i<values.length;i++) {
 		var serie = values[i].split(separator);
 		var aux = new Array();
 		$.each(serie,function(i,v) {
@@ -853,59 +855,59 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			if(extra_show) {
 				$('#extra_'+graph_id).html(extra_info);
 				$('#extra_'+graph_id).css('display','');
-			}				
-            plot.highlight(item.series, item.datapoint);
-        }
-        else {
+			}
+			plot.highlight(item.series, item.datapoint);
+		}
+		else {
 			$('#extra_'+graph_id).html('');
 			$('#extra_'+graph_id).css('display','none');
 		}
-    });
-    
-    $('#overview_'+graph_id).bind('plothover',  function (event, pos, item) {
+	});
+	
+	$('#overview_'+graph_id).bind('plothover',  function (event, pos, item) {
 		plot.setCrosshair({ x: pos.x, y: 0 });
 		currentPlot = overview;
-        latestPosition = pos;
-        if (!updateLegendTimeout) {
-            updateLegendTimeout = setTimeout(updateLegend, 50);
+		latestPosition = pos;
+		if (!updateLegendTimeout) {
+			updateLegendTimeout = setTimeout(updateLegend, 50);
 		}
-    });
+	});
 	
 	$('#'+graph_id).bind('mouseout',resetInteractivity);
 	$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
-
+	
 	// Reset interactivity styles
 	function resetInteractivity() {
 		$('#timestamp_'+graph_id).hide();
 		dataset = plot.getData();
-        for (i = 0; i < dataset.length; ++i) {
-            legends.eq(i).text(legends.eq(i).text().replace(/=.*/, ''));
-        }
-        plot.clearCrosshair();
-        overview.clearCrosshair();
+		for (i = 0; i < dataset.length; ++i) {
+			legends.eq(i).text(legends.eq(i).text().replace(/=.*/, ''));
+		}
+		plot.clearCrosshair();
+		overview.clearCrosshair();
 	}
 	
 	// Format functions
-    function xFormatter(v, axis) {
+	function xFormatter(v, axis) {
 		if(labels[v] == undefined) {
 			return '';
 		}
-        return '<div style=font-size:'+font_size+'pt>'+labels[v]+'</div>';
-    }
-    
-    function yFormatter(v, axis) {
+		return '<div style=font-size:'+font_size+'pt>'+labels[v]+'</div>';
+	}
+	
+	function yFormatter(v, axis) {
 		var formatted = number_format(v,force_integer,unit);
-				
-        return '<div style=font-size:'+font_size+'pt>'+formatted+'</div>';
-    }
-    
-    function lFormatter(v, item) {
-        return '<div style=color:#000;font-size:'+font_size+'pt>'+v+'</div>';
-        // Prepared to turn series with a checkbox
-        //return '<div style=color:#000;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
-    }
-
-    // Prepared to turn series with a checkbox
+		
+		return '<div style=font-size:'+font_size+'pt>'+formatted+'</div>';
+	}
+	
+	function lFormatter(v, item) {
+		return '<div style=color:#000;font-size:'+font_size+'pt>'+v+'</div>';
+		// Prepared to turn series with a checkbox
+		//return '<div style=color:#000;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
+	}
+	
+	// Prepared to turn series with a checkbox
 	//~ $('.check_serie_'+graph_id).click(function() {
 		//~ // Format of the id is graph_3905jf93f03_serie_id
 		//~ id_clicked = this.id.split('_')[3];
@@ -948,10 +950,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		$('#menu_cancelzoom_'+graph_id).click(function() {
 			// cancel the zooming
 			plot = $.plot($('#'+graph_id), data_base,
-			  $.extend(true, {}, options, {
-				  xaxis: { min: 0, max: max_x },
-				  legend: { show: false }
-			  }));
+				$.extend(true, {}, options, {
+					xaxis: { min: 0, max: max_x },
+					legend: { show: false }
+				}));
 			
 			$('#menu_cancelzoom_'+graph_id).attr('src',homeurl+'/images/zoom_cross.disabled.png');
 			overview.clearSelection();
@@ -961,7 +963,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 		// Adjust the menu image on top of the plot
 		$('#menu_overview_'+graph_id)[0].onload = function() {
 			// If there is no legend we increase top-padding to make space to the menu
-			if(legends.length == 0) {
+			if (legends.length == 0) {
 				$('#menu_'+graph_id).parent().css('padding-top',$('#menu_'+graph_id).css('height'));	
 			}
 			// Add bottom margin in the legend
@@ -970,16 +972,16 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			$('#legend_'+graph_id).css('margin-bottom', menu_height+legend_margin_bottom+'px');
 			parent_height = parseInt($('#menu_'+graph_id).parent().css('height').split('px')[0]);
 			adjust_menu(graph_id, plot, parent_height);
-		}		
+		}
 	}
 	
-	if(water_mark) {
+	if (water_mark) {
 		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
 }
 
 function adjust_menu(graph_id, plot, parent_height) {
-	if($('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width') != undefined) {
+	if ($('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width') != undefined) {
 		left_ticks_width = $('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width').split('px')[0];
 	}
 	else {
@@ -987,39 +989,40 @@ function adjust_menu(graph_id, plot, parent_height) {
 	}
 	
 	var parent_height_new = 0;
-
+	
 	var legend_height = parseInt($('#legend_'+graph_id).css('height').split('px')[0]) + parseInt($('#legend_'+graph_id).css('margin-top').split('px')[0]);
-	if($('#overview_'+graph_id).css('display') == 'none') {
+	if ($('#overview_'+graph_id).css('display') == 'none') {
 		overview_height = 0;
 	}
 	else {
 		overview_height = parseInt($('#overview_'+graph_id).css('height').split('px')[0]) + parseInt($('#overview_'+graph_id).css('margin-top').split('px')[0]);
 	}
-		
-	$('#menu_'+graph_id).css('top',(-parent_height+legend_height-overview_height-7)+'px');
+	
+	$('#menu_'+graph_id).css('top',
+		(-parent_height+legend_height-overview_height-7)+'px');
 	$('#menu_'+graph_id).css('left',plot.width()-(left_ticks_width/2));
 	$('#menu_'+graph_id).show();
 }
 
 function set_watermark(graph_id, plot, watermark_src) {
-		var img = new Image();
-		img.src = watermark_src;
-		var context = plot.getCanvas().getContext('2d');
-
-		// Once it's loaded draw the image on the canvas.
-		img.addEventListener('load', function () {
-			//~ // Now resize the image: x, y, w, h.
-			
-			var down_ticks_height = 0;
-			if($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
-				down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
-			}
-			var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
-			var top_pos = parseInt(context.canvas.height - down_ticks_height - 20) - $('#watermark_image_'+graph_id)[0].height;
-			
-			context.drawImage(this, left_pos, top_pos);
-
-		}, false);
+	var img = new Image();
+	img.src = watermark_src;
+	var context = plot.getCanvas().getContext('2d');
+	
+	// Once it's loaded draw the image on the canvas.
+	img.addEventListener('load', function () {
+		//~ // Now resize the image: x, y, w, h.
+		
+		var down_ticks_height = 0;
+		if($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
+			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
+		}
+		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
+		var top_pos = parseInt(context.canvas.height - down_ticks_height - 20) - $('#watermark_image_'+graph_id)[0].height;
+		
+		context.drawImage(this, left_pos, top_pos);
+		
+	}, false);
 }
 
 function get_event_details (event_ids) {
@@ -1048,12 +1051,12 @@ function get_event_details (event_ids) {
 	
 function adjust_left_width_canvas(adapter_id, adapted_id) {
 	adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').css('width');
-
+	
 	adapted_pix = $('#'+adapted_id).css('width').split('px');
 	new_adapted_width = parseInt(adapted_pix[0])-parseInt(adapter_left_margin);
-
+	
 	$('#'+adapted_id).css('width',new_adapted_width);
-
+	
 	$('#'+adapted_id).css('margin-left',adapter_left_margin);
 }
 
@@ -1070,7 +1073,7 @@ function check_adaptions(graph_id) {
 }
 
 function number_format(number, force_integer, unit) {	
-	if(force_integer) {
+	if (force_integer) {
 		if(Math.round(number) != number) {
 			return '';
 		}
@@ -1083,7 +1086,7 @@ function number_format(number, force_integer, unit) {
 	
 	var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
 	var pos = 0;
-	while(1){
+	while (1) {
 		if (number >= 1000) { //as long as the number can be divided by 1000
 			pos++; //Position in array starting with 0
 			number = number / 1000;

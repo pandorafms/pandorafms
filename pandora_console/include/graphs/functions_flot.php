@@ -36,7 +36,7 @@ function include_javascript_dependencies_flot_graph($return = false) {
 			<script language="javascript" type="text/javascript" src="'.
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.min.js') .'"></script>
 			<script language="javascript" type="text/javascript" src="'.
-				ui_get_full_url($metaconsole_hack  . '/include/graphs/flot/jquery.flot.pie.min.js') .'"></script>
+				ui_get_full_url($metaconsole_hack  . '/include/graphs/flot/jquery.flot.pie.js') .'"></script>
 			<script language="javascript" type="text/javascript" src="'.
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.crosshair.min.js') .'"></script>
 			<script language="javascript" type="text/javascript" src="'.
@@ -351,8 +351,8 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 	
 	$separator = ';;::;;';
 	
-	$labels = implode($separator,$labels);
-	$values = implode($separator,$values);
+	$labels = implode($separator, $labels);
+	$values = implode($separator, $values);
 	
 	$return .= "<script type='text/javascript'>";
 	

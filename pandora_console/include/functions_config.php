@@ -152,10 +152,10 @@ function config_update_config () {
 						
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
 						config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist));
-
-					}	
-					break;	
-				case 'pass':	
+						
+					}
+					break;
+				case 'pass':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
 						config_update_value ('enable_pass_policy', get_parameter('enable_pass_policy'));
 						config_update_value ('pass_size', get_parameter('pass_size'));
@@ -268,12 +268,12 @@ function config_update_config () {
 					
 					// Add new interval value if is provided
 					$interval_value = (float) get_parameter ('interval_value', 0);
-
-					if($interval_value > 0) {
+					
+					if ($interval_value > 0) {
 						$interval_unit = (int) get_parameter ('interval_unit');
 						$new_interval = $interval_value * $interval_unit;
-				
-						if($interval_values === '') {
+						
+						if ($interval_values === '') {
 							$interval_values = $new_interval;
 						}
 						else {
@@ -284,21 +284,21 @@ function config_update_config () {
 							}
 						}
 					}
-			
+					
 					// Delete interval value if is required
 					$interval_to_delete = (float) get_parameter('interval_to_delete');
-					if($interval_to_delete > 0) {
+					if ($interval_to_delete > 0) {
 						$interval_values_array = explode(',',$interval_values);
-						foreach($interval_values_array as $k => $iva) {
-							if($interval_to_delete == $iva) {
+						foreach ($interval_values_array as $k => $iva) {
+							if ($interval_to_delete == $iva) {
 								unset($interval_values_array[$k]);
 							}
 						}
 						$interval_values = implode(',',$interval_values_array);
 					}
-
+					
 				config_update_value ('interval_values', $interval_values);
-			
+				
 				break;
 			case 'net':
 				config_update_value ('netflow_path', get_parameter ('netflow_path'));
@@ -309,15 +309,15 @@ function config_update_config () {
 				config_update_value ('netflow_max_resolution', (int)get_parameter ('netflow_max_resolution'));
 				config_update_value ('netflow_disable_custom_lvfilters', get_parameter ('netflow_disable_custom_lvfilters'));
 				config_update_value ('netflow_max_lifetime', (int) get_parameter ('netflow_max_lifetime'));
-				break;				
+				break;
 			case 'log':
 				config_update_value ('log_dir', get_parameter('log_dir'));
 				config_update_value ('log_max_lifetime', (int)get_parameter('log_max_lifetime'));
-				break;				
+				break;
 			
-		}	
-
-
+		}
+	
+	
 	}
 	
 	enterprise_include_once('include/functions_policies.php');
@@ -334,7 +334,7 @@ function config_process_config () {
 	global $config;
 	
 	$configs = db_get_all_rows_in_table ('tconfig');
-
+	
 	if (empty ($configs)) {
 		include ($config["homedir"]."/general/error_emptyconfig.php");
 		exit;
@@ -497,11 +497,11 @@ function config_process_config () {
 	if (!isset ($config["log_collector"])) {
 		config_update_value ('log_collector', 0);
 	}
-
+	
 	if (!isset ($config["log_dir"])) {
 		config_update_value ('log_dir', '/var/spool/pandora/data_in/log');
 	}
-
+	
 	if (!isset ($config["log_max_lifetime"])) {
 		config_update_value ('log_max_lifetime', 15);
 	}
@@ -612,11 +612,11 @@ function config_process_config () {
 	if (!isset ($config['netflow_daemon'])) {
 		config_update_value ( 'netflow_daemon', '/usr/bin/nfcapd');
 	}
-
+	
 	if (!isset ($config['netflow_nfdump'])) {
 		config_update_value ( 'netflow_nfdump', '/usr/bin/nfdump');
 	}
-
+	
 	if (!isset ($config['netflow_nfexpire'])) {
 		config_update_value ( 'netflow_nfexpire', '/usr/bin/nfexpire');
 	}
@@ -884,7 +884,7 @@ function config_process_config () {
 	if (!isset($config['referer_security'])) {
 		config_update_value ('referer_security', 0);
 	}
-
+	
 	if (!isset($config['event_storm_protection'])) {
 		config_update_value ('event_storm_protection', 0);
 	}

@@ -1892,9 +1892,12 @@ function graph_events_validated($width = 300, $height = 200, $url = "", $meta = 
 	$data_graph = reporting_get_count_events_validated(
 		array('id_group' => array_keys(users_get_groups())));
 	
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false, false));
+	
 	echo pie3d_graph(
 		true, $data_graph, $width, $height, __("other"), "",
-		$config['homedir'] .  "/images/logo_vertical_water.png",
+		$water_mark,
 		$config['fontpath'], $config['font_size']);
 }
 
@@ -1922,7 +1925,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	$url = str_ireplace ($badstrings, "", $url);
 	
 	// Choose the table where search if metaconsole or not
-	if($meta) {
+	if ($meta) {
 		if($history) {
 			$event_table = 'tmetaconsole_event_history';
 		}
@@ -1937,7 +1940,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$field_extra = '';
 		$groupby_extra = '';
 	}
-
+	
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
 	//is required if both DISTINCT() and COUNT() are in the statement 
@@ -2008,7 +2011,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false, false));
-
+	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size']);
@@ -2065,7 +2068,8 @@ function grafico_eventos_total($filter = "") {
 	
 	asort ($data);
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+	$water_mark = array(
+		'file' => $config['homedir'] . "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
@@ -2094,10 +2098,12 @@ function grafico_eventos_usuario ($width, $height) {
 				ORDER BY 1 DESC LIMIT %d', $max_items);
 			break;
 		case "oracle":
-			$sql = sprintf ('SELECT * FROM (SELECT COUNT(id_evento) events, id_usuario
-				FROM tevento
-				GROUP BY id_usuario
-				ORDER BY 1 DESC) WHERE rownum <= %d', $max_items);
+			$sql = sprintf ('SELECT *
+				FROM (SELECT COUNT(id_evento) events, id_usuario
+					FROM tevento
+					GROUP BY id_usuario
+					ORDER BY 1 DESC)
+				WHERE rownum <= %d', $max_items);
 			break;
 	}
 	$events = db_get_all_rows_sql ($sql);
@@ -2107,7 +2113,10 @@ function grafico_eventos_usuario ($width, $height) {
 	}
 	
 	foreach($events as $event) {
-		if($event['id_usuario'] == '0') {
+		if ($event['id_usuario'] == '0') {
+			$data[__('System')] = $event['events'];
+		}
+		elseif ($event['id_usuario'] == '') {
 			$data[__('System')] = $event['events'];
 		}
 		else {
@@ -2115,7 +2124,8 @@ function grafico_eventos_usuario ($width, $height) {
 		}
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+	$water_mark = array(
+		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,

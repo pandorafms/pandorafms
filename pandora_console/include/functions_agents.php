@@ -708,7 +708,7 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
 		} else {
 			$where .= $filter;
 		}
-	}	
+	}
 	
 	if (! empty ($id_agent)) {
 		// Get module_name-template repetitions over agents selected
@@ -724,7 +724,7 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
 			AND id_agente IN (%s) %s group by nombre, id_alert_template %s'
 			, implode (",", (array) $id_agent)
 			, $where
-			,$group_by);	
+			,$group_by);
 		
 		$result_tmp = db_get_all_rows_sql ($sql);
 		
@@ -732,27 +732,27 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
 		if ($result_tmp != false) {
 			
 			foreach ($result_tmp as $module_template) {
-
-					$sql_modules = sprintf ('SELECT t1.id_agente_modulo
-										FROM tagente_modulo t1, talert_template_modules t2 
-										WHERE t1.id_agente_modulo = t2.id_agent_module 
-										AND delete_pending = 0 
-										AND t1.nombre = \'%s\' AND t2.id_alert_template = %s'
-						, $module_template['nombre']
-						, $module_template['id_alert_template']);
-						
-					$id_modules_template = db_get_all_rows_sql ($sql_modules);
-
-					if ($id_modules_template !=  false) 
-						foreach ($id_modules_template as $id_module_template)
-							$result[] = $id_module_template;
-							
+				
+				$sql_modules = sprintf ('SELECT t1.id_agente_modulo
+									FROM tagente_modulo t1, talert_template_modules t2 
+									WHERE t1.id_agente_modulo = t2.id_agent_module 
+									AND delete_pending = 0 
+									AND t1.nombre = \'%s\' AND t2.id_alert_template = %s'
+					, $module_template['nombre']
+					, $module_template['id_alert_template']);
+					
+				$id_modules_template = db_get_all_rows_sql ($sql_modules);
+				
+				if ($id_modules_template !=  false) 
+					foreach ($id_modules_template as $id_module_template)
+						$result[] = $id_module_template;
+				
 			}
 			
-		}	
+		}
 	}
 	else {
-	
+		
 		$sql = sprintf ('SELECT DISTINCT(t1.id_agente_modulo)
 			FROM tagente_modulo t1, talert_template_modules t2
 			%s
@@ -761,7 +761,7 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
 		$result = db_get_all_rows_sql ($sql);
 	
 	}
-
+	
 	if (empty ($result)) {
 		return array ();
 	}
@@ -947,10 +947,10 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 					$search_sql .= ' AND UPPER(nombre) LIKE UPPER(\'' . $name . '\') ';
 					break;
 			}
-				
+			
 			unset ($search["name"]);
 		}
-
+		
 		if (! empty ($search)) {
 			$search_sql .= ' AND '.db_format_array_where_clause_sql ($search);
 		}
@@ -978,7 +978,7 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 	
 	if ($result === false)
 		return array (); //Return an empty array
-
+	
 	$agents = array ();
 	foreach ($result as $row) {
 		switch ($case) {
@@ -1550,7 +1550,7 @@ function agents_get_addresses ($id_agent) {
  */
 function agents_get_status_from_counts($agent) {
 	// Check if in the data there are all the necessary values
-	if(!isset($agent['normal_count']) && 
+	if (!isset($agent['normal_count']) && 
 		!isset($agent['warning_count']) &&
 		!isset($agent['critical_count']) &&
 		!isset($agent['unknown_count']) &&
@@ -1558,7 +1558,7 @@ function agents_get_status_from_counts($agent) {
 		!isset($agent['total_count'])) {
 		return -1;
 	}
-
+	
 	if($agent['critical_count'] > 0) {
 		return AGENT_MODULE_STATUS_CRITICAL_BAD;
 	}
@@ -1593,7 +1593,7 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 	if (!$noACLs) {
 		$modules = agents_get_modules ($id_agent, 'id_agente_modulo', array('disabled' => 0), true, false);
 	}
-	else{
+	else {
 		$filter_modules['id_agente'] = $id_agent;
 		$filter_modules['disabled'] = 0;
 		$filter_modules['delete_pending'] = 0;
@@ -1612,7 +1612,7 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 	
 	$modules_status = array();
 	$modules_async = 0;
-	foreach($modules as $module) {
+	foreach ($modules as $module) {
 		$modules_status[] = modules_get_agentmodule_status($module);
 		
 		$module_type = modules_get_agentmodule_type($module);
@@ -1847,7 +1847,8 @@ function agents_get_count_incidents ($id_agent) {
 		return false;
 	}
 	
-	return db_get_value('count(*)', 'tincidencia', 'id_agent', $id_agent);
+	return db_get_value('count(*)', 'tincidencia', 'id_agent',
+		$id_agent);
 }
 
 /**
@@ -1864,7 +1865,9 @@ function agents_monitor_critical ($id_agent, $filter="") {
 		$filter = " AND ".$filter;
 	}
 	
-	return db_get_sql ("SELECT critical_count FROM tagente WHERE id_agente = $id_agent" . $filter);
+	return db_get_sql ("SELECT critical_count
+		FROM tagente
+		WHERE id_agente = $id_agent" . $filter);
 }
 
 // Get warning monitors by using the status code in modules.
@@ -1875,7 +1878,9 @@ function agents_monitor_warning ($id_agent, $filter="") {
 		$filter = " AND ".$filter;
 	}
 	
-	return db_get_sql ("SELECT warning_count FROM tagente WHERE id_agente = $id_agent" . $filter);
+	return db_get_sql ("SELECT warning_count
+		FROM tagente
+		WHERE id_agente = $id_agent" . $filter);
 }
 
 // Get unknown monitors by using the status code in modules.
@@ -1886,7 +1891,9 @@ function agents_monitor_unknown ($id_agent, $filter="") {
 		$filter = " AND ".$filter;
 	}
 	
-	return db_get_sql ("SELECT unknown_count FROM tagente WHERE id_agente = $id_agent" . $filter);
+	return db_get_sql ("SELECT unknown_count
+		FROM tagente
+		WHERE id_agente = $id_agent" . $filter);
 }
 
 // Get ok monitors by using the status code in modules.
@@ -1896,7 +1903,9 @@ function agents_monitor_ok ($id_agent, $filter="") {
 		$filter = " AND ".$filter;
 	}
 	
-	return db_get_sql ("SELECT normal_count FROM tagente WHERE id_agente = $id_agent" . $filter);
+	return db_get_sql ("SELECT normal_count
+		FROM tagente
+		WHERE id_agente = $id_agent" . $filter);
 }
 
 /**
@@ -1912,8 +1921,13 @@ function agents_monitor_disabled ($id_agent, $filter="") {
 	if ($filter) {
 		$filter = " AND ".$filter;
 	}
-
-	return db_get_sql ("SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo WHERE tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 1 AND tagente.id_agente = $id_agent".$filter);
+	
+	return db_get_sql("
+		SELECT COUNT( DISTINCT tagente_modulo.id_agente_modulo)
+		FROM tagente, tagente_modulo
+		WHERE tagente_modulo.id_agente = tagente.id_agente
+			AND tagente_modulo.disabled = 1
+			AND tagente.id_agente = $id_agent".$filter);
 }
 
 /**
@@ -1929,8 +1943,10 @@ function agents_monitor_notinit ($id_agent, $filter="") {
 	if (!empty($filter)) {
 		$filter = " AND ".$filter;
 	}
-						
-	return db_get_sql ("SELECT notinit_count FROM tagente WHERE id_agente = $id_agent" . $filter);
+	
+	return db_get_sql ("SELECT notinit_count
+		FROM tagente
+		WHERE id_agente = $id_agent" . $filter);
 }
 
 /**

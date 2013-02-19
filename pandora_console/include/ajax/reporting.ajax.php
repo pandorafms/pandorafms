@@ -148,14 +148,14 @@ if ($get_metaconsole_hash_data) {
 	$server = enterprise_hook('metaconsole_get_connection', array($server_name));
 	
 	// Bad data
-	if (empty($server)){
+	if (empty($server)) {
 		echo '';
 		return;
 	}
 	
 	// Deserialization of auth_token
 	$auth_serialized = json_decode($server['auth_token'] ,true);
-
+	
 	$auth_token = '';
 	
 	if (is_array($auth_serialized)) {
@@ -163,7 +163,7 @@ if ($get_metaconsole_hash_data) {
 		$api_password = $auth_serialized["api_password"];
 		$console_user = $auth_serialized["console_user"];
 		$console_password = $auth_serialized["console_password"];
-	}	
+	}
 	
 	$pwd = $auth_token; // Create HASH login info
 	$user = $config["id_user"];

@@ -94,13 +94,13 @@ if (isset ($login_failed)) {
 			echo html_print_image('images/error_login.png', true, array("alt" => __('Login failed'), "border" => 0));
 			echo '</div>';
 			
-			echo '<div style="position:absolute; margin: 0 auto; top: 70px; left: 35%; ">';	  
+			echo '<div style="position:absolute; margin: 0 auto; top: 70px; left: 35%; ">';
 				html_print_submit_button("Ok", 'hide-login-error', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only" style="width:100px;"');  
 			echo '</div>';
 			
 		echo '</div>';
 		
-	echo '</div>';	
+	echo '</div>';
 }
 
 ui_require_css_file ('jquery-ui-1.10.0.custom');

@@ -476,7 +476,7 @@ else {
 		html_print_table ($table);
 	}
 	
-	unset ($table);	
+	unset ($table);
 	
 	echo '<div style="text-align:right; width:98%">';
 	echo '<form name="agente" method="post" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';

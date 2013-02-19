@@ -28,7 +28,7 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 }
 
 $id = (int) get_parameter ('id');
-$pure = get_parameter('pure', 0);	
+$pure = get_parameter('pure', 0);
 
 $name = '';
 $command = '';
@@ -81,16 +81,16 @@ $table->colspan[2][1] = 3;
 $table->data[2][0] = __('Description');
 $table->data[2][1] = html_print_textarea ('description', 10, 30, $description, '', true);
 
-for($i=1;$i<=10;$i++) {
+for ($i=1; $i<=10; $i++) {
 	
 	$table->data['field'.$i][0] = sprintf(__('Field %s description'), $i);
 	
 	// Only show help on first row
-	if($i == 1) {
+	if ($i == 1) {
 		$table->data['field'.$i][0] .= ui_print_help_icon ('alert_fields_description', true, ui_get_full_url(false, false, false, false));
 	}
 	
-	if(!empty($fields_descriptions)) {
+	if (!empty($fields_descriptions)) {
 		$field_description = $fields_descriptions[$i-1];
 	}
 	else {
@@ -101,11 +101,11 @@ for($i=1;$i<=10;$i++) {
 	$table->data['field'.$i][2] = sprintf(__('Field %s values'), $i);
 	
 	// Only show help on first row
-	if($i == 1) {
+	if ($i == 1) {
 		$table->data['field'.$i][2] .= ui_print_help_icon ('alert_fields_values', true, ui_get_full_url(false, false, false, false));
 	}
-
-	if(!empty($fields_values)) {
+	
+	if (!empty($fields_values)) {
 		$field_values = $fields_values[$i-1];
 	}
 	else {

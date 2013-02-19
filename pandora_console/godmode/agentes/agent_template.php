@@ -52,7 +52,7 @@ if (isset ($_POST["template_id"])) {
 		$npc = array ();
 	}
 	
-	$success_count = $error_count = 0;	
+	$success_count = $error_count = 0;
 	$modules_already_added = array();
 	
 	foreach ($npc as $row) {

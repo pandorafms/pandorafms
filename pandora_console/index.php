@@ -396,7 +396,8 @@ if ($old_global_counter_chat != $now_global_counter_chat) {
 if (get_parameter ('login', 0) == 1) {
 	
 	// If it's configured to not skip this
-	if (!isset($config['skip_login_help_dialog']) or $config['skip_login_help_dialog'] == 0) {
+	if (!isset($config['skip_login_help_dialog']) ||
+		$config['skip_login_help_dialog'] == 0) {
 		
 		include_once("general/login_help_dialog.php");
 		

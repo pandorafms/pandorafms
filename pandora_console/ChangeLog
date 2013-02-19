@@ -1,3 +1,20 @@
+2013-02-19 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/alerts/configure_alert_command.php,
+	godmode/reporting/reporting_builder.item_editor.php,
+	godmode/reporting/reporting_builder.list_items.php,
+	godmode/agentes/agent_template.php,
+	godmode/snmpconsole/snmp_alert.php, index.php,
+	operation/search_users.php,
+	operation/integria_incidents/incident.php,
+	operation/reporting/reporting_xml.php,
+	operation/agentes/exportdata.csv.php: cleaned source code style.
+	
+	* general/login_help_dialog.php, general/login_page.php: fixed the
+	set to hidden window of info.
+	
+	Fixes: #3604645
+
 2013-02-19  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_modules.js: Fixed str_warning and 

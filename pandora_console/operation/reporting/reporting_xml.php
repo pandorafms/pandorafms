@@ -312,7 +312,7 @@ foreach ($contents as $content) {
 		case 'simple_baseline_graph':
 			
 			$data["module"] = io_safe_output_xml (db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
-			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));	
+			$data["agent"] = io_safe_output_xml (modules_get_agentmodule_agent_name ($content['id_agent_module']));
 			$data["title"] = __('Simple baseline graph');
 			$data["objdata"] = array();
 			

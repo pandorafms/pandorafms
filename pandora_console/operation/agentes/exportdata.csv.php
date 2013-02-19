@@ -51,28 +51,28 @@ $export_type = get_parameter_post ('export_type', 'data');
 $export_btn = get_parameter ('export_btn', 0);
 
 if (!empty ($module)) {
-
+	
 	// Disable SQL cache
 	global $sql_cache;
 	$sql_cache = array ('saved' => 0);
-
-
+	
+	
 	//Convert start time and end time to unix timestamps
 	$start = strtotime ($start_date." ".$start_time);
 	$end = strtotime ($end_date." ".$end_time);
 	$period = $end - $start;
-	$data = array ();	
+	$data = array ();
 	
 	//If time is negative or zero, don't process - it's invalid
 	if ($start < 1 || $end < 1) {
 		ui_print_error_message (__('Invalid time specified'));
 		return;
 	}
-
+	
 	// ***************************************************
 	// Starts, ends and dividers
 	// ***************************************************
-
+	
 	//Pure CSV is comma delimited
 	$datastart = __('Agent').','.__('Module').','.__('Data').','.__('Timestamp')."\n";
 	$rowstart = '"';
@@ -80,8 +80,8 @@ if (!empty ($module)) {
 	$rowend = '"'."\n";
 	$dataend = "\n";
 	$extension = "csv";
-
-
+	
+	
 	// ***************************************************
 	// Header output
 	// ***************************************************
@@ -92,13 +92,13 @@ if (!empty ($module)) {
 	header("Content-Disposition: attachment; filename=export_".date("Ymd", $start)."_".date("Ymd", $end).".".$extension);
 	header("Pragma: no-cache");
 	header("Expires: 0");
-
+	
 	// ***************************************************
 	// Data processing
 	// ***************************************************
-
+	
 	$data = array ();
-
+	
 	// Show header
 	echo $datastart;
 	
@@ -125,7 +125,7 @@ if (!empty ($module)) {
 				$arr["module_name"] = modules_get_agentmodule_name ($selected);
 				$arr["agent_name"] = modules_get_agentmodule_agent_name ($selected);
 				$arr["agent_id"] = modules_get_agentmodule_agent ($selected);
-				$arr["utimestamp"] = $end;				
+				$arr["utimestamp"] = $end;
 				array_push ($data, $arr);
 			}
 			else {

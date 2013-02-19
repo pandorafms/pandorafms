@@ -256,7 +256,7 @@ switch ($tab) {
 		
 		$search_group = get_parameter('search_group', 1);
 		$params[2] = $search_group;
-			
+		
 		$params = implode($token,$params);
 		
 		$url = $integria_api."&op=get_incidents&token=".$token."&params=".$params;
@@ -271,7 +271,7 @@ switch ($tab) {
 			$url = $integria_api."&op=get_incident_details&params=".$id_incident;
 		}
 		else {
-			$url = $integria_api."&op=get_incident_details";	
+			$url = $integria_api."&op=get_incident_details";
 		}
 		$url_resolutions =  $integria_api."&op=get_incidents_resolutions";
 		$url_status =  $integria_api."&op=get_incidents_status";

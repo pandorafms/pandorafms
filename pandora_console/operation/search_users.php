@@ -160,15 +160,15 @@ if ($searchUsers) {
 				firstname LIKE '%" . $stringSearchSQL . "%' OR
 				lastname LIKE '%" . $stringSearchSQL . "%' OR
 				middlename LIKE '%" . $stringSearchSQL . "%' OR
-				email LIKE '%" . $stringSearchSQL . "%')".$user_condition;	
+				email LIKE '%" . $stringSearchSQL . "%')".$user_condition;
 		$totalUsers = db_get_row_sql($sql);
-
+		
 		$totalUsers = $totalUsers['count'];
 	}
 }
 
 if (!$users) {
-		echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
+	echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
 }
 else {
 	$table->cellpadding = 4;
@@ -196,12 +196,12 @@ else {
 		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectProfileUp)) . '</a>' .
 		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectProfileDown)) . '</a>';
 	$table->head[5] = __('Description');
-
+	
 	$table->data = array ();
 	
 	foreach ($users as $user) {
 		$userIDCell = "<a href='?sec=gusuarios&sec2=godmode/users/configure_user&id=" .
-				$user['id_user'] . "'>" . $user['id_user'] . "</a>";
+			$user['id_user'] . "'>" . $user['id_user'] . "</a>";
 		
 		if ($user["is_admin"]) {
 			$profileCell = html_print_image ("images/user_suit.png", true,
@@ -236,7 +236,7 @@ else {
 			$profileCell,
 			$user['comments']));
 	}
-
+	
 	echo "<br />";ui_pagination ($totalUsers);
 	html_print_table ($table); unset($table);
 	ui_pagination ($totalUsers);

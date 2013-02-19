@@ -802,7 +802,7 @@ html_print_input_hidden('id_item', $idItem);
 						}
 						else {
 							// If there are not metaconsole servers don't allow to create new custom graphs 
-							$style_button_create_custom_graph = 'style="display: none;"';	
+							$style_button_create_custom_graph = 'style="display: none;"';
 						}
 					}
 				}

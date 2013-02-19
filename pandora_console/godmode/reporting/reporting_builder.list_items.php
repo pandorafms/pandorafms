@@ -110,7 +110,7 @@ else {
 		$where_types = ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
 	}
 	else
-		$where_types = ' AND ((server_name IS NULL OR length(server_name) = 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';	
+		$where_types = ' AND ((server_name IS NULL OR length(server_name) = 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
 	
 	$rows = db_get_all_rows_sql('
 		SELECT DISTINCT(type)

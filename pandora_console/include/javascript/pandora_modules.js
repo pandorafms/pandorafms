@@ -156,10 +156,10 @@ function configure_modules_form () {
 					$("#checkbox-history_data").uncheck ();
 				$("#text-min_warning").attr ("value", (data["min_warning"] == 0) ? 0 : data["min_warning"]);
 				$("#text-max_warning").attr ("value", (data["max_warning"] == 0) ? 0 : data["max_warning"]);
-				$("#text-str_warning").attr ("value", (data["str_warning"] == 0) ? 0 : data["str_warning"]);
+				$("#text-str_warning").attr ("value", data["str_warning"]);
 				$("#text-min_critical").attr ("value", (data["min_critical"] == 0) ? 0 : data["min_critical"]);
 				$("#text-max_critical").attr ("value", (data["max_critical"] == 0) ? 0 : data["max_critical"]);
-				$("#text-str_critical").attr ("value", (data["str_critical"] == 0) ? 0 : data["str_critical"]);
+				$("#text-str_critical").attr ("value", data["str_critical"]);
 				$("#text-ff_event").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
 				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"])
 				$("#component_loading").hide ();

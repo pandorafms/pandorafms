@@ -1,3 +1,8 @@
+2013-02-19  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_modules.js: Fixed str_warning and
+	str_critical assignation when apply a network_component
+
 2013-02-12  Sancho Lerena <slerena@artica.es>
 
 	* extensions/update_manager/load_updatemanager.php

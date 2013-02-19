@@ -355,6 +355,7 @@ install () {
 	echo "Setting secure permissions and ownership for all Pandora FMS Agent files..."
 	chown -R $PANDORA_USER $PANDORA_BASE$PANDORA_HOME
 	chmod -R 700 $PANDORA_BASE$PANDORA_TEMP/data_out
+	chmod 711 $PANDORA_BASE$PANDORA_LOG_DIR
 	chmod 640 $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
 	chown $PANDORA_USER:0 $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
 	if [ "$OS_NAME" = "FreeBSD" ]
@@ -374,8 +375,6 @@ install () {
 	cp $OS_NAME/pandora_agent.conf $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
 	chmod 600 $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
 	chown $PANDORA_USER $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
-	chmod 711 $PANDORA_BASE$PANDORA_LOG_DIR
-	chown $PANDORA_USER $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
 
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then

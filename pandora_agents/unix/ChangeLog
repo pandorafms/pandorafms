@@ -1,3 +1,9 @@
+2013-02-19  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_agent_installer: Removed duplicated chown line.
+
+	Merged from trunk.
+
 2013-02-12  Hirofumi Kosaka <kosaka@rworks.jp>
 
         * pandora_agent: Fixed bug that data transfer would fail

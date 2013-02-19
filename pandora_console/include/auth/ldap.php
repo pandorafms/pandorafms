@@ -364,19 +364,12 @@ function ldap_valid_login ($login, $password) {
 			return $ret;
 		}
 		
-		if (ldap_search_user ($login)) {
-			$r = @ldap_bind ($ds, $config["auth"]["ldap_login_attr"]."=".$login.",".$config["auth"]["ldap_base_dn"], $password);
-			if (!$r) {
-				$ldap_cache["error"] .= 'Invalid login';
-				//$ldap_cache["error"] .= ': incorrect password'; // uncomment for debugging
-			}
-			else {
-				$ret = true;
-			}
+		$r = @ldap_bind ($ds, $config["auth"]["ldap_login_attr"]."=".$login.",".$config["auth"]["ldap_base_dn"], $password);
+		if (!$r) {
+			$ldap_cache["error"] .= 'Invalid login';
 		}
 		else {
-			$ldap_cache["error"] .= 'Invalid login';
-			//$ldap_cache["error"] .= ': no such user';
+			$ret = true;
 		}
 		@ldap_close ($ds);
 	}

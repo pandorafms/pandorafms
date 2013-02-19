@@ -436,13 +436,16 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 function pie3d_graph($flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '',
 	$font_size = '', $ttl = 1, $legend_position = false) {
+	
 	return pie_graph('3d', $flash_chart, $chart_data, $width, $height,
-		$others_str, $homedir, $water_mark, $font, $font_size, $ttl, $legend_position);
+		$others_str, $homedir, $water_mark, $font, $font_size, $ttl,
+		$legend_position);
 }
 
 function pie2d_graph($flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '',
 	$font_size = '', $ttl = 1, $legend_position = false) {
+	
 	return pie_graph('2d', $flash_chart, $chart_data, $width, $height,
 		$others_str, $homedir, $water_mark, $font, $font_size, $ttl, $legend_position);
 }
@@ -459,8 +462,8 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	if (count($chart_data) > $max_values) {
 		$chart_data_trunc = array();
 		$n = 1;
-		foreach($chart_data as $key => $value) {
-			if($n < $max_values) {
+		foreach ($chart_data as $key => $value) {
+			if ($n < $max_values) {
 				$chart_data_trunc[$key] = $value;
 			}
 			else {

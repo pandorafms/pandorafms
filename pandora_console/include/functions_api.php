@@ -1986,36 +1986,36 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 
  */
 function api_set_new_local_component($id, $thrash1, $other, $thrash2) {
-
-	if ($id == ""){
+	
+	if ($id == "") {
 		returnError('error_set_new_local_component', __('Error creating local component. Local component name cannot be left blank.'));
-		return;				
+		return;
 	}
 	
-	if ($other['data'][1] == ""){
+	if ($other['data'][1] == "") {
 		returnError('error_set_new_local_component', __('Error creating local component. Local component group cannot be left blank.'));
-		return;			
-	}	
+		return;
+	}
 	
 	$values = array ( 
 		'description' => $other['data'][0],
 		'id_network_component_group' => $other['data'][1]
-	);	
-
+	);
+	
 	$name_check = enterprise_hook('local_components_get_local_components', array(array('name' => $id), 'name'));
-
+	
 	if ($name_check === ENTERPRISE_NOT_HOOK) {
 		returnError('error_set_new_local_component', __('Error creating local component.'));
 		return;	
 	}
 	
-	if ($name_check !== false){
+	if ($name_check !== false) {
 		returnError('error_set_new_local_component', __('Error creating local component. This local component already exists.'));
-		return;			
+		return;
 	}
 	
 	$id = enterprise_hook('local_components_create_local_component', array($id, $other['data'][3], $other['data'][1], $values));
-
+	
 	if (!$id)
 		returnError('error_set_new_local_component', 'Error creating local component.');
 	else
@@ -2036,24 +2036,24 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2) {
 
  */
 function api_get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
-
-	if ($id == ""){
+	
+	if ($id == "") {
 		returnError('error_get_module_value_all_agents', __('Error getting module value from all agents. Module name cannot be left blank.'));
-		return;				
+		return;
 	}
-
+	
 	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $id);
-
-	if ($id_module === false){
+	
+	if ($id_module === false) {
 		returnError('error_get_module_value_all_agents', __('Error getting module value from all agents. Module name doesn\'t exists.'));
-		return;			
+		return;
 	}
-
+	
 	$sql = sprintf("SELECT agent.id_agente, agent.nombre, module_state.datos FROM tagente agent, tagente_modulo module, tagente_estado module_state WHERE agent.id_agente = module.id_agente AND module.id_agente_modulo=module_state.id_agente_modulo AND module.nombre = '%s'", $id);
-
+	
 	$module_values = db_get_all_rows_sql($sql);
-
-	if (!$module_values){
+	
+	if (!$module_values) {
 		returnError('error_get_module_value_all_agents', 'Error getting module values from all agents.');
 	}
 	else{
@@ -2093,7 +2093,7 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3) {
 	
 	$type = $other['data'][0];
 	
-	if ($other['data'][2] != ""){
+	if ($other['data'][2] != "") {
 		$values = array(
 			'description' => $other['data'][1],
 			'id_alert_action' => $other['data'][2],
@@ -2119,10 +2119,11 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3) {
 			'recovery_notify' => $other['data'][22],
 			'field2_recovery' => $other['data'][23],
 			'field3_recovery' => $other['data'][24],
-			'priority' => $other['data'][25],		
-			'id_group' => $other['data'][26]											
+			'priority' => $other['data'][25],
+			'id_group' => $other['data'][26]
 		);
-	} else {
+	}
+	else {
 		$values = array(
 			'description' => $other['data'][1],
 			'field1' => $other['data'][3],
@@ -2147,9 +2148,9 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3) {
 			'recovery_notify' => $other['data'][22],
 			'field2_recovery' => $other['data'][23],
 			'field3_recovery' => $other['data'][24],
-			'priority' => $other['data'][25],		
-			'id_group' => $other['data'][26]											
-		);			
+			'priority' => $other['data'][25],
+			'id_group' => $other['data'][26]
+		);
 	}
 	
 	$id_template = alerts_create_alert_template($template_name, $type, $values);
@@ -2181,41 +2182,49 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3) {
-
+	
 	if ($id_template == "") {
-		returnError('error_update_alert_template', __('Error updating alert template. Id_template cannot be left blank.'));
+		returnError('error_update_alert_template',
+			__('Error updating alert template. Id_template cannot be left blank.'));
 		return;
 	}
-
+	
 	$result_template = alerts_get_alert_template_name($id_template);
 	
-	if (!$result_template){
-		returnError('error_update_alert_template', __('Error updating alert template. Id_template doesn\'t exists.'));
+	if (!$result_template) {
+		returnError('error_update_alert_template',
+			__('Error updating alert template. Id_template doesn\'t exists.'));
 		return;
 	}
 	
-	$fields_template = array('name', 'type', 'description', 'id_alert_action', 'field1', 'field2', 'field3', 'value', 'matches_value', 
-							 'max_value', 'min_value', 'time_threshold', 'max_alerts', 'min_alerts', 'time_from', 'time_to', 
-							 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'recovery_notify', 
-							 'field2_recovery', 'field3_recovery', 'priority', 'id_group');
-
+	$fields_template = array('name', 'type', 'description',
+		'id_alert_action', 'field1', 'field2', 'field3', 'value',
+		'matches_value', 'max_value', 'min_value', 'time_threshold',
+		'max_alerts', 'min_alerts', 'time_from', 'time_to', 'monday',
+		'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
+		'sunday', 'recovery_notify', 'field2_recovery',
+		'field3_recovery', 'priority', 'id_group');
+	
 	$cont = 0;
-	foreach ($fields_template as $field){
-		if ($other['data'][$cont] != ""){
+	foreach ($fields_template as $field) {
+		if ($other['data'][$cont] != "") {
 			$values[$field] = $other['data'][$cont];
 		}
 		
 		$cont++;
 	}
-			
+	
 	$id_template = alerts_update_alert_template($id_template, $values);
 	
 	if (is_error($id_template)) {
 		// TODO: Improve the error returning more info
-		returnError('error_create_alert_template', __('Error updating alert template.'));
+		returnError('error_create_alert_template',
+			__('Error updating alert template.'));
 	}
 	else {
-		returnData('string', array('type' => 'string', 'data' => __('Correct updating of alert template')));
+		returnData('string',
+			array('type' => 'string',
+				'data' => __('Correct updating of alert template')));
 	}
 }
 
@@ -2233,20 +2242,23 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
  * @param $thrash3 Don't use
  */
 function api_set_delete_alert_template($id_template, $thrash1, $other, $thrash3) {
-
+	
 	if ($id_template == "") {
-		returnError('error_delete_alert_template', __('Error deleting alert template. Id_template cannot be left blank.'));
+		returnError('error_delete_alert_template',
+			__('Error deleting alert template. Id_template cannot be left blank.'));
 		return;
 	}
-
+	
 	$result = alerts_delete_alert_template($id_template);
 	
 	if ($result == 0) {
 		// TODO: Improve the error returning more info
-		returnError('error_create_alert_template', __('Error deleting alert template.'));
+		returnError('error_create_alert_template',
+			__('Error deleting alert template.'));
 	}
 	else {
-		returnData('string', array('type' => 'string', 'data' => __('Correct deleting of alert template.')));
+		returnData('string', array('type' => 'string',
+			'data' => __('Correct deleting of alert template.')));
 	}
 }
 
@@ -2263,23 +2275,24 @@ function api_set_delete_alert_template($id_template, $thrash1, $other, $thrash3)
  * @param $thrash3 Don't use.
  */
 function api_get_all_alert_templates($thrash1, $thrash2, $other, $thrash3) {
-
+	
 	if (!isset($other['data'][0]))
 		$separator = ';'; // by default
 	else
 		$separator = $other['data'][0];
-
+	
 	$filter_templates = false;
-
+	
 	$template = alerts_get_alert_templates();
 	
 	if ($template !== false) {
 		$data['type'] = 'array';
 		$data['data'] = $template;
 	}
-		
+	
 	if (!$template) {
-		returnError('error_get_all_alert_templates', __('Error getting all alert templates.'));
+		returnError('error_get_all_alert_templates',
+			__('Error getting all alert templates.'));
 	}
 	else {
 		returnData('csv', $data, $separator);
@@ -2302,19 +2315,21 @@ function api_get_all_alert_templates($thrash1, $thrash2, $other, $thrash3) {
 function api_get_alert_template($id_template, $thrash1, $other, $thrash3) {
 	
 	$filter_templates = false;
-
+	
 	if ($id_template != "") {
 		$result_template = alerts_get_alert_template_name($id_template);
-	
+		
 		if (!$result_template){
-			returnError('error_get_alert_template', __('Error getting alert template. Id_template doesn\'t exists.'));
+			returnError('error_get_alert_template',
+				__('Error getting alert template. Id_template doesn\'t exists.'));
 			return;
 		}
 		
 		$filter_templates = array('id' => $id_template);
-	}	
-
-	$template = alerts_get_alert_templates($filter_templates, array('id', 'name', 'description', 'id_alert_action', 'type', 'id_group'));	
+	}
+	
+	$template = alerts_get_alert_templates($filter_templates,
+		array('id', 'name', 'description', 'id_alert_action', 'type', 'id_group'));	
 	
 	if ($template !== false) {
 		$data['type'] = 'array';
@@ -2322,7 +2337,8 @@ function api_get_alert_template($id_template, $thrash1, $other, $thrash3) {
 	}
 	
 	if (!$template) {
-		returnError('error_get_alert_template', __('Error getting alert template.'));
+		returnError('error_get_alert_template',
+			__('Error getting alert template.'));
 	}
 	else {
 		returnData('csv', $data, ';');

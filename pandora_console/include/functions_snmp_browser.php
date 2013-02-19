@@ -44,14 +44,15 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 	
 	if ($depth > 0) {
 		echo "<ul id='ul_$id' style='margin: 0; padding: 0; display: none'>\n";
-	} else {
+	}
+	else {
 		echo "<ul id='ul_$id' style='margin: 0; padding: 0;'>\n";
 	}
 	foreach ($tree['__LEAVES__'] as $level => $sub_level) {
 		
 		// Id used to expand leafs
 		$sub_id = time() . rand(0, getrandmax());
-
+		
 		// Display the branch
 		echo "<li id='li_$sub_id' style='margin: 0; padding: 0;'>";
 		
@@ -70,12 +71,15 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 			if ($depth == 0 && $count == 0) {
 				if ($count == $total) {
 					html_print_image ("operation/tree/one_closed.png", false, array ("style" => 'vertical-align: middle;'));
-				} else {
+				}
+				else {
 					html_print_image ("operation/tree/first_closed.png", false, array ("style" => 'vertical-align: middle;'));
 				}
-			} else if ($count == $total) {
+			}
+			else if ($count == $total) {
 				html_print_image ("operation/tree/last_closed.png", false, array ("style" => 'vertical-align: middle;'));
-			} else {
+			}
+			else {
 				html_print_image ("operation/tree/closed.png", false, array ("style" => 'vertical-align: middle;'));
 			}
 			echo "</a>";
@@ -85,12 +89,15 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 			if ($depth == 0 && $count == 0) {
 				if ($count == $total) {
 					html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
-				} else {
+				}
+				else {
 					html_print_image ("operation/tree/first_leaf.png", false, array ("style" => 'vertical-align: middle;'));
-				}			
-			} else if ($count == $total) {
+				}
+			}
+			else if ($count == $total) {
 				html_print_image ("operation/tree/last_leaf.png", false, array ("style" => 'vertical-align: middle;'));
-			} else {
+			}
+			else {
 				html_print_image ("operation/tree/leaf.png", false, array ("style" => 'vertical-align: middle;'));
 			}
 		}
@@ -100,11 +107,9 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 			echo "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"" . addslashes($sub_level['__OID__']) . "\");'>";
 			html_print_image ("images/computer_error.png", false, array ("style" => 'vertical-align: middle;'));
 			echo "</a>";
-		} else {
-			
 		}
-
-		echo '<span>' . $level . '</span>';		
+		
+		echo '<span>' . $level . '</span>';
 		if (isset ($sub_level['__VALUE__'])) {
 			echo '<span class="value" style="display: none;"> = ' . $sub_level['__VALUE__'] . '</span>';
 		}
@@ -136,7 +141,7 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.') {
 	// Call snmpwalk
 	$oid_tree = array('__LEAVES__' => array());
 	exec ('snmpwalk -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v 1 ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid), $output, $rc);
-
+	
 	//if ($rc != 0) {
 	//	return __('No data');
 	//}
@@ -149,14 +154,14 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.') {
 		}
 		$oid = trim($full_oid[0]);
 		$value = trim ($full_oid[1]);
-
+		
 		// Parse the OID
 		$group = 0;
 		$sub_oid = "";
 		$ptr = &$oid_tree['__LEAVES__'];
 		
 		for ($i = 0; $i < strlen ($oid); $i++) {
-
+			
 			// "X.Y.Z"
 			if ($oid[$i] == '"') {
 				$group = $group ^ 1;
@@ -169,14 +174,15 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.') {
 				if ($sub_oid == '') {
 					continue;
 				}
-
+				
 				if (! isset ($ptr[$sub_oid]) || ! isset ($ptr[$sub_oid]['__LEAVES__'])) {
 					$ptr[$sub_oid]['__LEAVES__'] = array();
 				}
 				
 				$ptr = &$ptr[$sub_oid]['__LEAVES__'];
 				$sub_oid = '';
-			} else {
+			}
+			else {
 				if ($oid[$i] != '"') {
 					$sub_oid .= $oid[$i];
 				}
@@ -188,7 +194,7 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.') {
 		$ptr = &$ptr[$sub_oid];
 		$sub_oid = "";
 	}
-
+	
 	return$oid_tree;
 }
 
@@ -208,7 +214,7 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid) {
 	if ($target_oid == '') {
 		return;
 	}
-
+	
 	$oid_data['oid'] = $target_oid;
 	exec ('snmpget -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -On -v1 -c ' .  escapeshellarg($community) . " " . escapeshellarg($target_ip) . ' ' . escapeshellarg($target_oid), $output, $rc);
 	if ($rc != 0) {
@@ -248,11 +254,12 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid) {
 		if (preg_match ('/DESCRIPTION\s+\"(.*)\"/', $translate_output, $matches) == 1) {
 			$oid_data['description'] = $matches[1];
 		}
-				
+		
 		$full_value = explode (':', trim ($full_oid[1]));
 		if (! isset ($full_value[1])) {
 			$oid_data['value'] = trim ($full_oid[1]);
-		} else {
+		}
+		else {
 			$oid_data['type'] = trim($full_value[0]);
 			$oid_data['value'] = trim($full_value[1]);
 		}
@@ -269,59 +276,58 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid) {
  */
 function snmp_browser_print_oid ($oid = array()) {
 	
-		// OID information table
-		$table->width = '100%';
-		$table->size = array ();
-		$table->data = array ();
-
-		foreach (array('oid', 'numeric_oid', 'value') as $key) {
-			if (! isset ($oid[$key])) {
-				$oid[$key] = '';
-			}
+	// OID information table
+	$table->width = '100%';
+	$table->size = array ();
+	$table->data = array ();
+	
+	foreach (array('oid', 'numeric_oid', 'value') as $key) {
+		if (! isset ($oid[$key])) {
+			$oid[$key] = '';
 		}
-		
-		$table->data[0][0] = '<strong>'.__('OID').'</strong>';
-		$table->data[0][1] = $oid['oid'];
-		$table->data[1][0] = '<strong>'.__('Numeric OID').'</strong>';
-		$table->data[1][1] = $oid['numeric_oid'];
-		$table->data[2][0] = '<strong>'.__('Value').'</strong>';
-		$table->data[2][1] = $oid['value'];
-		$i = 3;
-		if (isset ($oid['type'])) {
-			$table->data[$i][0] = '<strong>'.__('Type').'</strong>';
-			$table->data[$i][1] = $oid['type'];
-			$i++;
-		}
-		if (isset ($oid['description'])) {
-			$table->data[$i][0] = '<strong>'.__('Description').'</strong>';
-			$table->data[$i][1] = $oid['description'];
-			$i++;
-		}
-		if (isset ($oid['syntax'])) {
-			$table->data[$i][0] = '<strong>'.__('Syntax').'</strong>';
-			$table->data[$i][1] = $oid['syntax'];
-			$i++;
-		}
-		if (isset ($oid['display_hint'])) {
-			$table->data[$i][0] = '<strong>'.__('Display hint').'</strong>';
-			$table->data[$i][1] = $oid['display_hint'];
-			$i++;
-		}
-		if (isset ($oid['max_access'])) {
-			$table->data[$i][0] = '<strong>'.__('Max access').'</strong>';
-			$table->data[$i][1] = $oid['max_access'];
-			$i++;
-		}
-		if (isset ($oid['status'])) {
-			$table->data[$i][0] = '<strong>'.__('Status').'</strong>';
-			$table->data[$i][1] = $oid['status'];
-			$i++;
-		}
-
-		echo '<a href="#" onClick="hideOIDData();">';
-		html_print_image ("images/cancel.png", false, array ("style" => 'vertical-align: middle;'), false);
-		echo '</a>';
-		html_print_table($table, false);
+	}
+	
+	$table->data[0][0] = '<strong>'.__('OID').'</strong>';
+	$table->data[0][1] = $oid['oid'];
+	$table->data[1][0] = '<strong>'.__('Numeric OID').'</strong>';
+	$table->data[1][1] = $oid['numeric_oid'];
+	$table->data[2][0] = '<strong>'.__('Value').'</strong>';
+	$table->data[2][1] = $oid['value'];
+	$i = 3;
+	if (isset ($oid['type'])) {
+		$table->data[$i][0] = '<strong>'.__('Type').'</strong>';
+		$table->data[$i][1] = $oid['type'];
+		$i++;
+	}
+	if (isset ($oid['description'])) {
+		$table->data[$i][0] = '<strong>'.__('Description').'</strong>';
+		$table->data[$i][1] = $oid['description'];
+		$i++;
+	}
+	if (isset ($oid['syntax'])) {
+		$table->data[$i][0] = '<strong>'.__('Syntax').'</strong>';
+		$table->data[$i][1] = $oid['syntax'];
+		$i++;
+	}
+	if (isset ($oid['display_hint'])) {
+		$table->data[$i][0] = '<strong>'.__('Display hint').'</strong>';
+		$table->data[$i][1] = $oid['display_hint'];
+		$i++;
+	}
+	if (isset ($oid['max_access'])) {
+		$table->data[$i][0] = '<strong>'.__('Max access').'</strong>';
+		$table->data[$i][1] = $oid['max_access'];
+		$i++;
+	}
+	if (isset ($oid['status'])) {
+		$table->data[$i][0] = '<strong>'.__('Status').'</strong>';
+		$table->data[$i][1] = $oid['status'];
+		$i++;
+	}
+	
+	echo '<a href="#" onClick="hideOIDData();">';
+	html_print_image ("images/cancel.png", false, array ("style" => 'vertical-align: middle;'), false);
+	echo '</a>';
+	html_print_table($table, false);
 }
-
 ?>

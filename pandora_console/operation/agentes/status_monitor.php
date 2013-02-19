@@ -108,7 +108,8 @@ else if ($modulegroup > -1) {
 
 // Module name selector
 if ($ag_modulename != "") {
-	$sql_conditions .= sprintf (" AND tagente_modulo.nombre = '%s'", $ag_modulename);
+	$sql_conditions .= sprintf (" AND tagente_modulo.nombre = '%s'",
+		$ag_modulename);
 }
 
 // Freestring selector
@@ -691,10 +692,10 @@ else {
 	$count_modules = 0;
 	foreach($servers as $server) {
 		// If connection was good then retrieve all data server
-		if (metaconsole_connect($server) == NOERR){
+		if (metaconsole_connect($server) == NOERR) {
 			$connection = true;
 		}
-		else{
+		else {
 			$connection = false;
 		}
 		 

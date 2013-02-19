@@ -1,3 +1,20 @@
+2013-02-19 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php, include/functions_agents.php,
+	include/functions_config.php, include/ajax/reporting.ajax.php,
+	include/functions_snmp_browser.php,
+	operation/agentes/status_monitor.php: improved code style.
+	
+	* include/functions_graph.php, include/graphs/fgraph.php,
+	include/graphs/flot/jquery.flot.pie.js,
+	include/graphs/flot/jquery.flot.pie.min.js,
+	include/graphs/flot/pandora.flot.js,
+	include/graphs/functions_flot.php: fixed the pie graphs, added the
+	expanded version of flot pie js file with some changes for the
+	last version of jQuery.
+	
+	Fixes: #3604555
+
 2013-02-18  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php

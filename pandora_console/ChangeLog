@@ -1,5 +1,12 @@
 2013-02-19 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/javascript/jquery.pandora.js: fixed the popup window for
+	the messages of Pandora.
+	
+	Fixes: #3605185
+
+2013-02-19 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_api.php, include/functions_agents.php,
 	include/functions_config.php, include/ajax/reporting.ajax.php,
 	include/functions_snmp_browser.php,

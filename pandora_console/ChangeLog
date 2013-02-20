@@ -1,5 +1,10 @@
 2013-02-20  Sergio Martin <sergio.martin@artica.es>
 
+	* general/main_menu.php: Update missed change from
+	last commit
+
+2013-02-20  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php
 	include/styles/pandora_minimal.css
 	include/styles/menu.css

@@ -339,35 +339,7 @@ $label = base64_decode(get_parameter('label', ''));
 		
 		html_print_side_layer($params);
 		?>
-		<!-- z-index is 1 because 2 made the calendar show under the divmenu. -->
-		<div id="divmenu2" class="menu menu_radius_left" style="display:none; z-index:1; height: 97%;">
-			<b> <?php echo __('Pandora FMS Graph configuration menu');?></b>
-			<br />
-			<br />
-			<?php
-			echo __('Please, make your changes and apply with the <i>Reload</i> button');
-			?>
-			<div style="float: left; width: 85%;">
-				
-				<form method="get" action="stat_win.php">
-					<table class="databox_frame" cellspacing="2" width="100%">
-						<tr>
-							<td></td>
-							<td style="text-align: right">
-								<?php
-								html_print_submit_button (__('Reload'), "submit", false, 'class="sub next"');
-								?>
-							</td>
-						</tr>
-					</table>
-				</form>
-			</div>
-			<div id="show_menu2" style="position: relative; border:1px solid #FFF; float: right; height: 50px; width: 50px;">
-				<?php
-				html_print_image("images/graphmenu_arrow.png", false, array('id' => 'graph_menu_arrow'));
-				?>
-			<div>
-		</div>
+
 	</body>
 </html>
 <script>

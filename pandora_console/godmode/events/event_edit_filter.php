@@ -77,9 +77,9 @@ else {
 	$event_view_hr = '';
 	$id_user_ack = '';
 	$group_rep = '';
-	$tag_with_json = json_encode(array());
+	$tag_with_json = $tag_with_json_clean = json_encode(array());
 	$tag_with_base64 = base64_encode($tag_with_json);
-	$tag_without_json = json_encode(array());
+	$tag_without_json = $tag_without_json_clean = json_encode(array());
 	$tag_without_base64 = base64_encode($tag_without_json);
 	$filter_only_alert = '';
 }

@@ -1394,7 +1394,10 @@ div#main {
 	padding-left: 0px;
 	padding-top: 0px;
 	padding-bottom: 20px;
+	/*CLASSIC STYLE*/
 	margin-left: 175px;
+	/*AUTOHIDDEN MENU*/
+	/*margin-left: 40px;*/
 	margin-right: 20px;
 }
 div#head {
@@ -1738,4 +1741,49 @@ span#plugin_description {
 }
 .visual_font_size_36pt, .visual_font_size_36pt > em, .visual_font_size_36pt > strong {
 	font-size: 36pt;
+}
+
+/*SIDEBAR*/
+.menu_sidebar {
+	color:#000;
+	background:#cccacb url('../../images/login_background.png') right center no-repeat;
+
+	margin-left: 10px;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 10px;
+	text-align: left;
+	font-family:arial,sans-serif,verdana; 
+	font-size:10px;
+	border:1px solid #000;
+	position:absolute;
+	margin:0;
+	width:400px;
+	height:260px;
+	
+	-moz-box-shadow: 0px 4px 4px #010E1B !important;
+	-webkit-box-shadow: 0px 4px 4px #010E1B !important;
+	box-shadow: 0px 4px 4px #010E1B !important;	
+	
+	filter:alpha(opacity=97);
+	-moz-opacity: 0.97;
+	opacity: 0.97;
+}
+
+.menu_sidebar_radius_left {
+	-moz-border-top-left-radius: 10px;
+	-webkit-border-top-left-radius: 10px;
+	border-top-left-radius: 10px;
+	
+	-moz-border-bottom-left-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	border-bottom-left-radius: 10px;
+	
+	border-right:0px solid #000;
+}
+
+.menu_sidebar_radius_right {
+	-moz-border-top-right-radius: 10px;
+	-webkit-border-top-right-radius: 10px;
+	border-top-right-radius: 10px;		
 }

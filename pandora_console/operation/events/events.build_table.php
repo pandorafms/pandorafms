@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 
-$table->width = '100%';
+$table->width = '98%';
 $table->id = "eventtable";
 $table->cellpadding = 4;
 $table->cellspacing = 4;

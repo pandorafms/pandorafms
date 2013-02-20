@@ -125,6 +125,10 @@ function html_print_side_layer ($params) {
 		'height' => '97%',
 		'top_text' => '',
 		'bottom_text' => '',
+		'top' => '0',
+		'autotop' => '',
+		'icon_width' => 50,
+		'icon_height' => 50,
 		'icon_open' => $params['icon_closed']
 		);
 	
@@ -138,18 +142,18 @@ function html_print_side_layer ($params) {
 	
 	switch($params['position']) {
 		case 'left':
-			$round_class = 'menu_radius_right';
+			$round_class = 'menu_sidebar_radius_right';
 			$body_float = 'left';
 			$button_float = 'right';
 			break;
 		case 'right':
-			$round_class = 'menu_radius_left';
+			$round_class = 'menu_sidebar_radius_left';
 			$body_float = 'right';
 			$button_float = 'left';
 			break;
 	}
 		
-	$out_html = '<div id="side_layer" class="menu ' . $round_class . '" style="z-index:1; overflow: hidden; height: ' . $params['height'] . ';">';
+	$out_html = '<div id="side_layer" class="menu_sidebar ' . $round_class . '" style="display:none; z-index:1; overflow: hidden; height: ' . $params['height'] . ';">';
 
 	$table->id = 'side_layer_layout';
 	$table->width = $params['width'] . 'px';
@@ -159,7 +163,7 @@ function html_print_side_layer ($params) {
 
 	$top = '<div id="side_top_text" style="width: 100%";">' . $params['top_text'] . '</div>';
 	
-	$button = '<div id="show_menu" style="vertical-align: middle; position: relative; border:1px solid #FFF; height: 50px; width: 50px;">';
+	$button = '<div id="show_menu" style="vertical-align: middle; position: relative; border:1px solid #FFF; width: ' . $params['icon_width'] . 'px;  height: ' . $params['icon_height'] . 'px;">';
 	$button .= html_print_image($params['position'] == 'left' ? $params['icon_open'] : $params['icon_closed'], true, array('id' => 'graph_menu_arrow'));
 	$button .= '</div>';
 	
@@ -209,22 +213,31 @@ function html_print_side_layer ($params) {
 	$out_js = "<script type='text/javascript'>
 			<!--
 			var defSlideTime = 220;
-			var visibleMargin = 55;
+			var visibleMargin = " . $params['icon_width'] . " + 10;
 			var menuW = " . $params['width'] . ";
 			var hiddenMargin = menuW - visibleMargin;
 			var windowWidth = $(window).width();
 			var position = '" . $params['position'] . "';
 			var sideClosed = 1;
+			var top_dist = '" . $params['top'] ."';
+			var autotop = '" . $params['autotop'] ."';
 
-			window.onload = function() {
+			if(top_dist == 'auto_over') {
+				top_dist = $('#' + autotop).offset().top;
+			}
+			else if(top_dist == 'auto_below') {
+				top_dist = $('#' + autotop).offset().top + $('#' + autotop).height();
+			}
+			
+			$(document).ready( function() {
 				// SET INITIAL POSITION AND SHOW LAYER
-				$('#side_layer').css('top', 0);
+				$('#side_layer').css('top', top_dist);
 				switch (position) {
 					case 'left':
 						$('#side_layer').css('left', -hiddenMargin);
 						break;
 					case 'right':
-						$('#side_layer').css('left', windowWidth - visibleMargin - 12);
+						$('#side_layer').css('left', windowWidth - visibleMargin - 1);
 						$('#side_layer').css('width', visibleMargin + 'px');
 
 						break;
@@ -269,7 +282,7 @@ function html_print_side_layer ($params) {
 						sideClosed = 0;
 					}
 				});
-			};
+			});
 			
 			if(position == 'right') {
 				// Move the right menu if window is resized
@@ -1154,6 +1167,7 @@ function html_print_textarea ($name, $rows, $columns, $value = '', $attributes =
  *	$table->size - An array of column sizes
  *	$table->wrap - An array of "nowrap"s or nothing
  *	$table->style - An array of personalized style for each column.
+ *	$table->rowid - An array of personalized ids of each row.
  *	$table->rowstyle - An array of personalized style of each row.
  *	$table->rowclass - An array of personalized classes of each row (odd-evens classes will be ignored).
  *	$table->colspan - An array of colspans of each column.
@@ -1224,6 +1238,11 @@ function html_print_table (&$table, $return = false) {
 	$styleTable = '';
 	if (isset ($table->styleTable)) {
 		$styleTable = $table->styleTable;
+	}
+	if (isset ($table->rowid)) {
+		foreach ($table->rowid as $key => $id) {
+			$rowid[$key] = $id;
+		}
 	}
 	if (isset ($table->rowstyle)) {
 		foreach ($table->rowstyle as $key => $st) {
@@ -1336,16 +1355,18 @@ function html_print_table (&$table, $return = false) {
 	if (!empty ($table->data)) {
 		$oddeven = 1;
 		foreach ($table->data as $keyrow => $row) {
-			
 			if (!isset ($rowstyle[$keyrow])) {
 				$rowstyle[$keyrow] = '';
+			}
+			if (!isset ($rowid[$keyrow])) {
+				$rowid[$keyrow] = $tableid."-".$keyrow;
 			}
 			$oddeven = $oddeven ? 0 : 1;
 			$class = 'datos'.($oddeven ? "" : "2");
 			if (isset ($rowclass[$keyrow])) {
 				$class = $rowclass[$keyrow];
 			}
-			$output .= '<tr id="'.$tableid."-".$keyrow.'" style="'.$rowstyle[$keyrow].'" class="'.$class.'">'."\n";
+			$output .= '<tr id="'.$rowid[$keyrow].'" style="'.$rowstyle[$keyrow].'" class="'.$class.'">'."\n";
 			/* Special separator rows */
 			if ($row == 'hr' and $countcols) {
 				$output .= '<td colspan="'. $countcols .'"><div class="tabledivider"></div></td>';

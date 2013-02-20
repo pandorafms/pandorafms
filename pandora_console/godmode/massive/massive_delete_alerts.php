@@ -256,7 +256,7 @@ $(document).ready (function () {
 	
 	$("#modules_selection_mode").change (function() {
 		$("#id_agents").trigger('change');
-	});	
+	});
 });
 /* ]]> */
 </script>

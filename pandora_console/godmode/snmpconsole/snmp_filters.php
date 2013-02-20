@@ -94,7 +94,7 @@ if ($edit_filter > -2) {
 	$table->data[0][1] = html_print_input_text ('description', $description, '', 60, 100, true);
 	$table->data[1][0] = __('Filter');
 	$table->data[1][1] = html_print_input_text ('filter', $filter, '', 60, 100, true);
-
+	
 	echo '<form action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters" method="post">';
 	html_print_input_hidden ('update_filter', $edit_filter);
 	html_print_table ($table);
@@ -125,7 +125,7 @@ else {
 	$table->class= "databox";
 	$table->align = array ();
 	
-	$table->head[0] = __('Description');	
+	$table->head[0] = __('Description');
 	$table->head[1] = __('Filter');
 	$table->head[2] = __('Action');
 	$table->size[2] = "50px";
@@ -146,7 +146,7 @@ else {
 		html_print_table ($table);
 	}
 	
-	unset ($table);	
+	unset ($table);
 	
 	echo '<div style="text-align:right; width:98%">';
 	echo '<form name="agente" method="post" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters&edit_filter=-1">';

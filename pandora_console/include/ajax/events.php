@@ -158,35 +158,35 @@ if ($dialogue_event_response) {
 	}
 }
 
-if($add_comment) { 
+if ($add_comment) { 
 	$comment = get_parameter ('comment');
 	$event_id = get_parameter ('event_id');
-
+	
 	$return = events_comment ($event_id, $comment, 'Added comment', $meta, $history);
-
+	
 	if ($return)
 		echo 'comment_ok';
 	else
 		echo 'comment_error';
-		
+	
 	return;
 }
 
-if($change_status) { 
+if ($change_status) { 
 	$event_ids = get_parameter ('event_ids');
 	$new_status = get_parameter ('new_status');
 	
 	$return = events_change_status (explode(',',$event_ids), $new_status, $meta, $history); 
-
+	
 	if ($return)
 		echo 'status_ok';
 	else
 		echo 'status_error';
-		
+	
 	return;
 }
 
-if($change_owner) { 
+if ($change_owner) { 
 	$new_owner = get_parameter ('new_owner');
 	$event_id = get_parameter ('event_id');
 	$similars = true;
@@ -194,23 +194,23 @@ if($change_owner) {
 	if($new_owner == -1) {
 		$new_owner = '';
 	}
-
+	
 	$return = events_change_owner($event_id, $new_owner, true, $meta, $history);
-
+	
 	if ($return)
 		echo 'owner_ok';
 	else
 		echo 'owner_error';
-		
+	
 	return;
 }
 
-if($get_extended_event) {
+if ($get_extended_event) {
 	global $config;
 	
 	$event_id = get_parameter('event_id',false);
-
-	if($meta) {
+	
+	if ($meta) {
 		$event = events_meta_get_event($event_id, false, $history);
 	}
 	else {
@@ -219,13 +219,13 @@ if($get_extended_event) {
 	
 	// Clean url from events and store in array
 	$event['clean_tags'] = events_clean_tags($event['tags']);
-
+	
 	// If the event is not found, we abort
-	if(empty($event)) {
+	if (empty($event)) {
 		ui_print_error_message('Event not found');
 		return false;
 	}
-
+	
 	$dialog_page = get_parameter('dialog_page','general');
 	$similar_ids = get_parameter('similar_ids', $event_id);
 	$group_rep = get_parameter('group_rep',false);
@@ -233,27 +233,27 @@ if($get_extended_event) {
 	$timestamp_first = get_parameter('timestamp_first', $event['utimestamp']);
 	$timestamp_last = get_parameter('timestamp_last', $event['utimestamp']);
 	$server_id = get_parameter('server_id', 0);
-
+	
 	$event['similar_ids'] = $similar_ids;
 	$event['timestamp_first'] = $timestamp_first;
 	$event['timestamp_last'] = $timestamp_last;
 	$event['event_rep'] = $event_rep;
-
+	
 	// Check ACLs
 	if (is_user_admin ($config["id_user"])) {
 		//Do nothing if you're admin, you get full access
 	}
-	else if($config["id_user"] == $event['owner_user']) { 
+	else if ($config["id_user"] == $event['owner_user']) { 
 		//Do nothing if you're the owner user, you get access
 	}
-	else if($event['id_grupo'] == 0){
+	else if ($event['id_grupo'] == 0) {
 		//If the event has access to all groups, you get access
 	}
 	else {
 		// Get your groups
 		$groups = users_get_groups($config['id_user'], 'ER');
 		
-		if(in_array ($event['id_grupo'], array_keys ($groups))) {
+		if (in_array ($event['id_grupo'], array_keys ($groups))) {
 			//If the event group is among the groups of the user, you get access
 		}
 		else {
@@ -265,21 +265,21 @@ if($get_extended_event) {
 	
 	// Print group_rep in a hidden field to recover it from javascript
 	html_print_input_hidden('group_rep',(int)$group_rep);
-
-	if($event === false) {
+	
+	if ($event === false) {
 		return;
 	}
 	
 	// Tabs
 	$tabs = "<ul style='background:#eeeeee;border:0px'>";
-    $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png',true).__('General')."</a></li>";
-    $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true).__('Details')."</a></li>";
-    $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/note.png',true).__('Agent fields')."</a></li>";
-    $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true).__('Comments')."</a></li>";
-    if (tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags'])) {
+	$tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png',true).__('General')."</a></li>";
+	$tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true).__('Details')."</a></li>";
+	$tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/note.png',true).__('Agent fields')."</a></li>";
+	$tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true).__('Comments')."</a></li>";
+	if (tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags'])) {
 		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/cog.png',true).__('Responses')."</a></li>";
 	}
-    $tabs .= "</ul>";
+	$tabs .= "</ul>";
 	
 	// Get criticity image
 	switch ($event["criticity"]) {
@@ -307,7 +307,7 @@ if($get_extended_event) {
 			break;
 	}
 	
-    if (tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags'])) {
+	if (tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags'])) {
 		$responses = events_page_responses($event);
 	}
 	else {
@@ -316,19 +316,19 @@ if($get_extended_event) {
 	
 	$console_url = '';
 	// If metaconsole switch to node to get details and custom fields
-	if($meta) {
+	if ($meta) {
 		$server = metaconsole_get_connection_by_id ($server_id);
 		metaconsole_connect($server);
 	}
 	else {
 		$server = "";
 	}
-
+	
 	$details = events_page_details($event, $server);
 	
 	$custom_fields = events_page_custom_fields($event);
-
-	if($meta) {
+	
+	if ($meta) {
 		metaconsole_restore_db_force();
 	}
 	
@@ -342,7 +342,7 @@ if($get_extended_event) {
 	$notifications .= '<div id="notification_status_success" style="display:none">'.ui_print_success_message(__('Event status changed successfully'),'',true).'</div>';
 	$notifications .= '<div id="notification_owner_error" style="display:none">'.ui_print_error_message(__('Error changing event owner'),'',true).'</div>';
 	$notifications .= '<div id="notification_owner_success" style="display:none">'.ui_print_success_message(__('Event owner changed successfully'),'',true).'</div>';
-
+	
 	$loading = '<div id="response_loading" style="display:none">'.html_print_image('images/spinner.gif',true).'</div>';
 	
 	$out = '<div id="tabs" style="height:95%; overflow: auto">'.
@@ -364,7 +364,7 @@ if($get_extended_event) {
 		';
 	
 	// Load the required tab
-	switch($dialog_page) {
+	switch ($dialog_page) {
 		case "general":
 			$js .= '$tabs.tabs( "option", "active", 0);';
 			break;
@@ -389,13 +389,13 @@ if($get_extended_event) {
 	echo $out.$js;
 }
 
-if($get_events_details) {
+if ($get_events_details) {
 	$event_ids = explode(',',get_parameter ('event_ids'));
 	$events = db_get_all_rows_filter ('tevento',
 		array ('id_evento' => $event_ids,
 			'order' => 'utimestamp ASC'),
 			array ('evento', 'utimestamp', 'estado', 'criticity'));
-
+	
 	$out = '<table class="eventtable" style="width:100%;height:100%;padding:0px 0px 0px 0px; border-spacing: 0px; margin: 0px 0px 0px 0px;">';
 	$out .= '<tr style="font-size:0px; heigth: 0px; background: #ccc;"><td></td><td></td></tr>';
 	foreach($events as $event) {
@@ -413,7 +413,7 @@ if($get_events_details) {
 				$title = __('Event in process');
 				break;
 		}
-			
+		
 		$out .= '<tr class="'.get_priority_class ($event['criticity']).'"><td class="'.get_priority_class ($event['criticity']).'">';
 		$out .= '<img src="'.$img.'" alt="'.$title.'" title="'.$title.'">';
 		$out .= '</td><td class="'.get_priority_class ($event['criticity']).'" style="font-size:7pt">';

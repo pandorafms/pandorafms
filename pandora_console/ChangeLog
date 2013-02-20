@@ -1,3 +1,21 @@
+2013-02-20 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/servers/recon_script.php, godmode/servers/plugin.php,
+	godmode/snmpconsole/snmp_filters.php,
+	godmode/massive/massive_delete_alerts.php,
+	godmode/massive/massive_enable_disable_alerts.php,
+	godmode/massive/massive_edit_agents.php,
+	godmode/massive/massive_delete_modules.php,
+	godmode/massive/massive_add_action_alerts.php,
+	godmode/massive/massive_delete_action_alerts.php: improved the code
+	style.
+	
+	* include/ajax/events.php, include/functions_events.php,
+	operation/agentes/custom_fields.php: fixed the show admin custom
+	fields for user without permisitions.
+	
+	Fixes: #3605278
+
 2013-02-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/auth/ldap.php: Do not bind anonymously to check whether the

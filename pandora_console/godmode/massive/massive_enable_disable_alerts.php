@@ -95,7 +95,7 @@ switch ($action) {
 		
 		ui_print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'));
 		
-		$info = 'Alert: ' . json_encode($id_enabled_alerts);	
+		$info = 'Alert: ' . json_encode($id_enabled_alerts);
 		if ($result) {
 			db_pandora_audit("Masive management", "Disable alert", false, false, $info);
 		}

@@ -31,15 +31,23 @@ if ($id_agente === -1) {
 
 if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 	db_pandora_audit("ACL Violation", 
-			  "Trying to access Agent General Information");
+		"Trying to access Agent General Information");
 	require_once ("general/noaccess.php");
 	return;
 }
 
+$all_customs_fields = (bool)check_acl($config["id_user"],
+	$agent["id_grupo"], "AW");
 
-$fields = db_get_all_fields_in_table('tagent_custom_fields');
+if ($all_customs_fields) {
+	$fields = db_get_all_rows_filter('tagent_custom_fields');
+}
+else {
+	$fields = db_get_all_rows_filter('tagent_custom_fields',
+		array('display_on_front' => 1));
+}
 
-if($fields === false) {
+if ($fields === false) {
 	$fields = array();
 	echo "<div class='nf'>". __("No fields defined"). "</div>";
 }
@@ -47,35 +55,39 @@ else {
 	$table->width = '98%';
 	$table->head = array ();
 	$table->head[0] = __('Field');
-	$table->head[1] = __('Display on front') . ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
+	$table->head[1] = __('Display on front') .
+		ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
 	$table->head[2] = __('Description');
 	$table->align = array ();
 	$table->align[1] = 'center';
 	$table->align[2] = 'center';
 	$table->data = array ();
-
-	foreach ($fields as $field) {
 	
+	foreach ($fields as $field) {
+		
 		$data[0] = '<b>'.$field['name'].'</b>';
-
-		if($field['display_on_front']) {
+		
+		if ($field['display_on_front']) {
 			$data[1] = html_print_image('images/tick.png', true);
 		}
 		else {
 			$data[1] = html_print_image('images/delete.png', true);
 		}
 		
-		$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
-	
-		if($custom_value === false || $custom_value == '') {
+		$custom_value = db_get_value_filter('description',
+			'tagent_custom_data', array(
+				'id_field' => $field['id_field'],
+				'id_agent' => $id_agente));
+		
+		if ($custom_value === false || $custom_value == '') {
 			$custom_value = '<i>-'.__('empty').'-</i>';
 		}
-	
+		
 		$data[2] = $custom_value;
-	
+		
 		array_push ($table->data, $data);
 	}
-
+	
 	html_print_table ($table);
 }
 ?>

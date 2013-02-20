@@ -19,6 +19,9 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include <string>
+#include <sstream>
+#include <iostream>
 #include <time.h>
 
 #include "pandora_module_logevent.h"
@@ -166,14 +169,19 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 	char description[BUFFER_SIZE], timestamp[TIMESTAMP_LEN + 1];
 	struct tm *time_info = NULL;
 	time_t epoch;
-	string event;
 	BYTE *buffer = NULL, *new_buffer = NULL;
 	DWORD to_read, read, needed;
 	EVENTLOGRECORD *pevlr = NULL;
 	LPCTSTR source_name;
 	bool rc = false;
 	DWORD last_error;
-
+	UINT offset;
+	TCHAR lp_name[_MAX_PATH + 1];
+	DWORD cch_name = _MAX_PATH + 1;
+	TCHAR lp_referenced_domain_name[_MAX_PATH + 1];
+	DWORD cch_referenced_domain_name = _MAX_PATH + 1;
+	SID_NAME_USE pe_use;
+	
 	if (this->log_event == NULL) {
 	    return -1;
 	}
@@ -246,15 +254,57 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 			// Filter the event
 			if (filterEvent (pevlr, description) == 0) {
 			
-			     // Generate a timestamp for the event
-			     epoch = pevlr->TimeGenerated;
-			     time_info = localtime (&epoch);
-			     strftime (timestamp, TIMESTAMP_LEN + 1, "%Y-%m-%d %H:%M:%S", time_info);
+			    // Generate a timestamp for the event
+			    epoch = pevlr->TimeGenerated;
+			    time_info = localtime (&epoch);
+			    strftime (timestamp, TIMESTAMP_LEN + 1, "%Y-%m-%d %H:%M:%S", time_info);
+
+
+				// Print the event timestamp
+			    std::stringstream event;
+				event << timestamp;
+				
+				// Print additional information for log modules
+			    if (this->getModuleType() == TYPE_LOG) {
+					
+					// Retrieve the event id
+				    event << "[ID: ";
+				    event << (pevlr->EventID & 0x3FFFFFFF);
+					event << "]";
+					
+					// Retrieve the source name
+					offset = sizeof(EVENTLOGRECORD);
+					event << " [Source: ";
+					event << (LPTSTR)((LPBYTE)pevlr + offset);
+					event << "]";
+					
+					// Retrieve the computer name
+					offset += strlen((LPTSTR)((LPBYTE)pevlr + offset)) + sizeof(TCHAR);
+					event << " [Computer: ";
+					event << (LPTSTR)((LPBYTE)pevlr + offset);
+					event << "]";
+					
+					// Retrieve the user name
+					event << " [User: ";
+					if(pevlr->UserSidLength > 0) {
+						if (LookupAccountSid(0, (PSID)((LPBYTE)pevlr + pevlr->UserSidOffset),
+	                        lp_name, &cch_name, lp_referenced_domain_name, &cch_referenced_domain_name, &pe_use) != 0) {
+							event << lp_name;	
+						} else {
+							event << "N/A";
+						}
+					} else {
+						event << "N/A";
+					}
+					event << "]";						
+				}
+				
+				// Print the event description
+				event << " ";
+				event << description;
 			     
-			     // Add the event to the list
-			     event = timestamp;
-			     event.append (description);
-			     event_list.push_back (event);
+			    // Add the event to the list
+			    event_list.push_back (event.str());
 			}
 
 			// Move to the next event
@@ -343,8 +393,8 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
                }
            }
         }
-	strcpy(strings[i], (TCHAR *)pevlr + offset);
-	offset += len + 1;
+		strcpy(strings[i], (TCHAR *)pevlr + offset);
+		offset += len + 1;
     }
 
     // Move to the first DLL
@@ -372,11 +422,11 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
 
     	// Move to the next DLL
 	dll_start = dll_end + sizeof (TCHAR);
-    	dll_end = strchr (dll_start, ';');
-    	if (dll_end != NULL) {
-		*dll_end = '\0';
+		dll_end = strchr (dll_start, ';');
+		if (dll_end != NULL) {
+			*dll_end = '\0';
+		}
 	}
-    }
 
     // Clean up 
     for (i = 0; i < pevlr->NumStrings; i++) {

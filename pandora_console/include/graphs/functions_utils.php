@@ -178,7 +178,7 @@ function hue_2_rgb($v1,$v2,$vh) {
 		return ($v1);
 };
 
-function get_complementary_rgb ($hexcode) {
+function hex_2_rgb($hexcode) {
 	$hexcode = str_replace('#', '', $hexcode);
 	
 	// $hexcode is the six digit hex colour code we want to convert
@@ -189,9 +189,19 @@ function get_complementary_rgb ($hexcode) {
 
     // $var_r, $var_g and $var_b are the three decimal fractions to be input to our RGB-to-HSL conversion routine
 
-    $var_r = (hexdec($redhex)) / 255;
-    $var_g = (hexdec($greenhex)) / 255;
-    $var_b = (hexdec($bluehex)) / 255;
+    $var_r = hexdec($redhex);
+    $var_g = hexdec($greenhex);
+    $var_b = hexdec($bluehex);
+    
+    return array('R' => $var_r, 'G' => $var_g, 'B' => $var_b);
+}
+
+function get_complementary_rgb ($hexcode) {
+	$rgb = hex_2_rgb($hexcode);
+	
+    $var_r = $rgb['R'] / 255;
+    $var_g = $rgb['G'] / 255;
+    $var_b = $rgb['B'] / 255;
 
 	//Now plug these values into the rgb2hsl routine. Below is my PHP version of EasyRGB.com's generic code for that conversion:
 

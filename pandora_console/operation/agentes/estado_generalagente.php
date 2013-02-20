@@ -50,29 +50,34 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 	return;
 }
 
-// Blank space below title, DONT remove this, this
-// Breaks the layout when Flash charts are enabled :-o
-echo '<div style="height: 10px">&nbsp;</div>';
-	
-	//Floating div
-	echo '<div id="agent_access" style="float:right; width:320px; padding-top:10px;">';
+$params = array();
+$params['position'] = 'right';
+$params['icon_closed'] = 'images/setup.png';
+$params['body_text'] = '';
 
 if ($config["agentaccess"]) {
-	echo '<b>'.__('Agent access rate (24h)').'</b><br />';
+	$params['body_text'] .= '<b>'.__('Agent access rate (24h)').'</b><br />';
 	
-	graphic_agentaccess($id_agente, 280, 110, 86400);
+	$params['body_text'] .= graphic_agentaccess($id_agente, 350, 110, 86400, true);
 }
 
-echo '<div style="height:25px">&nbsp;</div>';
-echo '<b>'.__('Events generated -by module-').'</b><br />';
-echo graph_event_module (290, 120, $id_agente);
-echo '<br>';
-graph_graphic_agentevents ($id_agente, 290, 15, 86400, '');
+$params['body_text'] .=  '<div style="height:25px">&nbsp;</div>';
+$params['body_text'] .=  '<b>'.__('Events generated -by module-').'</b><br />';
+$params['body_text'] .=  graph_event_module (350, 120, $id_agente);
 
-echo '</div>';
+$params['icon_closed'] = '/images/chart_curve';
+$params['icon_open'] = '/images/chart_curve';
+$params['height'] = '460px';
+$params['top'] = 'auto_below';
+$params['autotop'] = 'menu_tab_frame_view';
+$params['icon_width'] = 16;
+$params['icon_height'] = 16;
+
+html_print_side_layer($params);
+
 
 echo '<div width="450px">';
-echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:53%">';
+echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:98%">';
 //Agent name
 echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
 if ($agent['disabled']) {
@@ -89,6 +94,13 @@ else {
 echo '<td class="datos"><b>'.$cellName.'</b></td>';
 echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
 echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'), "alt" => "")) . '</a></td></tr>';
+
+// Status
+$status_img = agents_tree_view_status_img ($agent["critical_count"],
+		$agent["warning_count"], $agent["unknown_count"]);
+		
+echo '<tr><td class="datos"><b>' . __('Status') . '</b></td>';
+echo '<td class="datos f9" colspan="2">' . $status_img . '</td></tr>';
 
 //Addresses
 echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td>';
@@ -201,6 +213,12 @@ $progress = agents_get_next_contact($id_agente);
 
 echo '<tr><td class="datos"><b>' . __('Next agent contact') . '</b></td>';
 echo '<td class="datos f9" colspan="2">' . progress_bar($progress, 200, 20) . '</td></tr>';
+
+echo '<tr><td class="datos"><b>' . __('Events') . '</b></td>';
+echo '<td class="datos f9" colspan="2">' . graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true) . '</td></tr>';
+
+echo '<tr><td class="datos"><b>' . __('Modules status') . '</b></td>';
+echo '<td class="datos f9" colspan="2">' . graph_agent_status ($id_agente, 100, 100, true) . '</td></tr>';
 
 // Custom fields
 $fields = db_get_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));

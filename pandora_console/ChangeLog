@@ -1,5 +1,21 @@
 2013-02-20  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_graph.php
+	include/graphs/functions_pchart.php
+	include/graphs/functions_flot.php
+	include/graphs/flot/pandora.flot.js
+	include/graphs/fgraph.php
+	include/graphs/functions_utils.php
+	operation/agentes/estado_generalagente.php: Add
+	a new agent status pie graph and partial remodelation
+	of the agent detail view hidding the graphs in a lateral
+	tab and adding graphs
+
+	* operation/agentes/estado_agente.php: Optimize
+	useless queries to get the agents status
+
+2013-02-20  Sergio Martin <sergio.martin@artica.es>
+
 	* general/main_menu.php: Update missed change from
 	last commit
 

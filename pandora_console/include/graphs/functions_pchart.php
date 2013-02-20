@@ -44,6 +44,7 @@ $legend = null;
 $colors = null;
 $font_size = 8;
 $force_steps = true; 
+$legend_position = null;
 
 $graph_type = get_parameter('graph_type', '');
 
@@ -65,6 +66,9 @@ $data = $graph['data'];
 $width = $graph['width'];
 $height = $graph['height'];
 
+if (isset($graph['legend_position'])) {
+	$legend_position = $graph['legend_position'];
+}
 if (isset($graph['color'])) {
 	$colors = $graph['color'];
 }
@@ -273,7 +277,7 @@ switch($graph_type) {
 	case 'pie3d':
 	case 'pie2d':
 		pch_pie_graph($graph_type, array_values($data), array_keys($data),
-			$width, $height, $font, $water_mark, $font_size);
+			$width, $height, $font, $water_mark, $font_size, $legend_position, $colors);
 		break;
 	case 'slicebar':
 		pch_slicebar_graph($graph_type, $data, $period, $width, $height, $colors, $font, $round_corner, $font_size);
@@ -368,7 +372,7 @@ function pch_slicebar_graph ($graph_type, $data, $period, $width, $height, $colo
 }
 
 function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
-	$height, $font, $water_mark, $font_size) {
+	$height, $font, $water_mark, $font_size, $legend_position, $colors) {
 	/* CAT:Pie charts */
 	
 	/* Create and populate the pData object */
@@ -384,9 +388,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	$myPicture = new pImage($width,$height,$MyData,TRUE);
 	
 	/* Set the default font properties */ 
-	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
-	
-	
+	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));	
 	
 	$water_mark_height = 0;
 	$water_mark_width = 0;
@@ -403,6 +405,13 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	/* Create the pPie object */ 
 	$PieChart = new pPie($myPicture,$MyData);
 	
+	foreach($data_values as $key => $value) {
+		if(isset($colors[$key])) {
+			html_debug_print(hex_2_rgb($colors[$key]), true);
+			$PieChart->setSliceColor($key, hex_2_rgb($colors[$key]));
+		}
+	}
+		
 	/* Draw an AA pie chart */
 	switch($graph_type) {
 		case "pie2d":
@@ -418,7 +427,9 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	$max_chars = graph_get_max_index($legend_values);
 	$legend_with_aprox = 32 + (7 * $max_chars);
 	
-	$PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
+	if($legend_position != 'hidden') {
+		$PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
+	}
 	
 	/* Enable shadow computing */ 
 	$myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));

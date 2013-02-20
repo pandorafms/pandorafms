@@ -1267,8 +1267,9 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
  * @param integer width pie graph width
  * @param integer height pie graph height
  * @param integer period time period
+ * @param bool return or echo the result flag
  */
-function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
+function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -1321,14 +1322,60 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
 	if ($empty_data)
-		echo fs_error_image();
+		$out = fs_error_image();
 	else {
-		echo area_graph($config['flash_charts'], $data, $width, $height,
+		$out = area_graph($config['flash_charts'], $data, $width, $height,
 			null, null, null, ui_get_full_url("images/image_problem.opaque.png"), "", "", ui_get_full_url(false, false, false, false),
 			$water_mark,
 			$config['fontpath'], $config['font_size'], "");
 	}
+	
+	if($return) {
+		return $out;
+	}
+	else {
+		echo $out;
+	}
 }
+
+/**
+ * Print a pie graph with events data of agent
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param bool return or echo flag
+ */
+function graph_agent_status ($id_agent, $width = 300, $height = 200, $return = false) {
+	global $config;
+	
+	$filter = array('id_agente' => $id_agent, 'disabled' => 0);
+	$fields = array('sum(critical_count) Critical', 
+				'sum(warning_count) Warning', 
+				'sum(normal_count) Normal', 
+				'sum(unknown_count) Unknown', 
+				'sum(notinit_count) "Not init"');
+	
+	$agent_status = db_get_all_rows_filter('tagente', $filter, $fields);
+	
+	$data = reset($agent_status);
+			
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
+	
+	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN, COL_NOTINIT);
+	
+	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
+		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
+		
+	if ($return) {
+		return $out;
+	}
+	else {
+		echo $out;
+	}
+}
+
 
 /**
  * Print a pie graph with events data of agent
@@ -1386,11 +1433,10 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	if ($value > 0) {
 		$data[__('System').' ('.$value.')'] = $value;
 	}
-	asort ($data);
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
-	
+
 	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"),
 		'', $water_mark,
 		$config['fontpath'], $config['font_size'], 1, "bottom");
@@ -2228,8 +2274,10 @@ function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar',
  * @param integer width pie graph width
  * @param integer height pie graph height
  * @param integer period time period
+ * @param string homeurl
+ * @param bool return or echo the result
  */
-function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl) {
+function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -2293,18 +2341,25 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	
 	// Draw slicebar graph
 	if ($config['flash_charts']) {
-		echo flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
 	}
 	else {
-		echo slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
 		
 		// Draw legend
-		echo "<br>";
-		echo "&nbsp;";
+		$out .=  "<br>";
+		$out .=  "&nbsp;";
 		foreach ($legend as $hour) {
-			echo "<span style='font-size: 6pt'>" . $hour . "</span>";
-			echo "&nbsp;";
+			$out .=  "<span style='font-size: 6pt'>" . $hour . "</span>";
+			$out .=  "&nbsp;";
 		}
+	}
+	
+	if($return) {
+		return $out;
+	}
+	else {
+		echo $out;
 	}
 }
 

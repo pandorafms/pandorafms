@@ -346,7 +346,15 @@ $agents = agents_get_agents(array (
 		'id_os',
 		'ultimo_contacto',
 		'intervalo',
-		'comentarios description', 'quiet'),
+		'comentarios description', 
+		'quiet',
+		'normal_count',
+		'warning_count',
+		'critical_count',
+		'unknown_count',
+		'notinit_count',
+		'total_count',
+		'fired_count'),
 	'AR',
 	$order);
 
@@ -415,21 +423,11 @@ foreach ($agents as $agent) {
 	$rowPair = !$rowPair;
 	$iterator++;
 	
-	$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($agent["id_agente"]);
+	$alert_img = agents_tree_view_alert_img ($agent["fired_count"]);
 	
-	$agent_info["monitor_critical"] = agents_monitor_critical ($agent["id_agente"]);
-	$agent_info["monitor_warning"] = agents_monitor_warning ($agent["id_agente"]);
-	$agent_info["monitor_unknown"] = agents_monitor_unknown ($agent["id_agente"]);
-	$agent_info["monitor_normal"] = agents_monitor_ok ($agent["id_agente"]);
-	
-	$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
-	
-	$agent_info["status_img"] = agents_tree_view_status_img ($agent_info["monitor_critical"],
-		$agent_info["monitor_warning"], $agent_info["monitor_unknown"]);
-	
-	//Count all modules
-	$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
-	
+	$status_img = agents_tree_view_status_img ($agent["critical_count"],
+		$agent["warning_count"], $agent["unknown_count"]);
+		
 	$data = array ();
 	
 	$data[0] = '';
@@ -458,23 +456,23 @@ foreach ($agents as $agent) {
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	
 	$data[5] = '<b>';
-	$data[5] .= $agent_info["modules"];
+	$data[5] .= $agent["total_count"];
 	
-	if ($agent_info["monitor_alertsfired"] > 0)
-		$data[5] .= ' : <span class="orange">' . $agent_info["monitor_alertsfired"] . '</span>';
-	if ($agent_info["monitor_critical"] > 0)
-		$data[5] .= ' : <span class="red">' . $agent_info["monitor_critical"] . '</span>';
-	if ($agent_info["monitor_warning"] > 0)
-		$data[5] .= ' : <span class="yellow">' . $agent_info["monitor_warning"] . '</span>';
-	if ($agent_info["monitor_unknown"] > 0)
-		$data[5] .= ' : <span class="grey">' . $agent_info["monitor_unknown"] . '</span>';
-	if ($agent_info["monitor_normal"] > 0)
-		$data[5] .= ' : <span class="green">' . $agent_info["monitor_normal"] . '</span>';
+	if ($agent["fired_count"] > 0)
+		$data[5] .= ' : <span class="orange">' . $agent["fired_count"] . '</span>';
+	if ($agent["critical_count"] > 0)
+		$data[5] .= ' : <span class="red">' . $agent["critical_count"] . '</span>';
+	if ($agent["warning_count"] > 0)
+		$data[5] .= ' : <span class="yellow">' . $agent["warning_count"] . '</span>';
+	if ($agent["unknown_count"] > 0)
+		$data[5] .= ' : <span class="grey">' . $agent["unknown_count"] . '</span>';
+	if ($agent["normal_count"] > 0)
+		$data[5] .= ' : <span class="green">' . $agent["normal_count"] . '</span>';
 	$data[5] .= '</b>';
 	
-	$data[6] = $agent_info["status_img"];
+	$data[6] = $status_img;
 	
-	$data[7] = $agent_info["alert_img"];
+	$data[7] = $alert_img;
 	
 	
 	$last_time = strtotime ($agent["ultimo_contacto"]);

@@ -435,24 +435,25 @@ function hbar_graph($flash_chart, $chart_data, $width, $height, $color = array()
 
 function pie3d_graph($flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '',
-	$font_size = '', $ttl = 1, $legend_position = false) {
+	$font_size = '', $ttl = 1, $legend_position = false, $colors = '') {
 	
 	return pie_graph('3d', $flash_chart, $chart_data, $width, $height,
 		$others_str, $homedir, $water_mark, $font, $font_size, $ttl,
-		$legend_position);
+		$legend_position, $colors);
 }
 
 function pie2d_graph($flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '',
-	$font_size = '', $ttl = 1, $legend_position = false) {
+	$font_size = '', $ttl = 1, $legend_position = false, $colors = '') {
 	
 	return pie_graph('2d', $flash_chart, $chart_data, $width, $height,
-		$others_str, $homedir, $water_mark, $font, $font_size, $ttl, $legend_position);
+		$others_str, $homedir, $water_mark, $font, $font_size, $ttl, 
+		$legend_position, $colors);
 }
 
 function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '',
-	$font_size = '', $ttl = 1, $legend_position = false) {
+	$font_size = '', $ttl = 1, $legend_position = false, $colors = '') {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -480,7 +481,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 	if ($flash_chart) {
 		return flot_pie_chart(array_values($chart_data),
 			array_keys($chart_data), $width, $height, $water_mark_url,
-			$font, $font_size, $legend_position);
+			$font, $font_size, $legend_position, $colors);
 	}
 	else {
 		//TODO SET THE LEGEND POSITION
@@ -492,7 +493,9 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 		$graph['water_mark'] = $water_mark_file;
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
-		
+		$graph['legend_position'] = $legend_position;
+		$graph['color'] = $colors;
+
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		switch($graph_type) {

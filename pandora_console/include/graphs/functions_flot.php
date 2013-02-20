@@ -318,7 +318,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 
 // Prints a FLOT pie chart
 function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
-	$font = '', $font_size = 8, $legend_position = '') {
+	$font = '', $font_size = 8, $legend_position = '', $colors = '') {
 	
 	include_javascript_dependencies_flot_graph();
 	
@@ -353,12 +353,15 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 	
 	$labels = implode($separator, $labels);
 	$values = implode($separator, $values);
+	if(!empty($colors)) {
+		$colors = implode($separator, $colors);
+	}
 	
 	$return .= "<script type='text/javascript'>";
 	
 	$return .= "pandoraFlotPie('$graph_id', '$values', '$labels',
 		'$series', '$width', $font_size, $water_mark,
-		'$separator', '$legend_position', '$height')";
+		'$separator', '$legend_position', '$height', '$colors')";
 	
 	$return .= "</script>";
 	

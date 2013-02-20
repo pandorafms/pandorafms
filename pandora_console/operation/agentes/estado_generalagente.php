@@ -76,10 +76,14 @@ $params['icon_height'] = 16;
 html_print_side_layer($params);
 
 
-echo '<div width="450px">';
-echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:98%">';
-//Agent name
-echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
+$table->id = 'agent_datails';
+$table->width = '98%';
+$table->cellspacing = 4;
+$table->cellpadding = 4;
+$table->class = 'databox';
+
+$data = array();
+$data[0] = '<b>' . __('Agent name') . '</b>';
 if ($agent['disabled']) {
 	$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase;", true) . ui_print_help_tip(__('Disabled'), true) . "</em>";
 }
@@ -90,21 +94,8 @@ else if ($agent['quiet']) {
 else {
 	$cellName = ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase;", true);
 }
-
-echo '<td class="datos"><b>'.$cellName.'</b></td>';
-echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
-echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'), "alt" => "")) . '</a></td></tr>';
-
-// Status
-$status_img = agents_tree_view_status_img ($agent["critical_count"],
-		$agent["warning_count"], $agent["unknown_count"]);
-		
-echo '<tr><td class="datos"><b>' . __('Status') . '</b></td>';
-echo '<td class="datos f9" colspan="2">' . $status_img . '</td></tr>';
-
-//Addresses
-echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td>';
-echo '<td class="datos2" colspan="2">';
+$data[1] = $cellName;
+$data[2] = '<b>' . __('IP Address') . '</b>';
 $ips = array();
 $addresses = agents_get_addresses ($id_agente);
 $address = agents_get_address($id_agente);
@@ -115,17 +106,25 @@ foreach($addresses as $k => $add) {
 	}
 }
 
-echo $address;
-
+$data[3] = $address;
 if (!empty($addresses)) {
-	ui_print_help_tip(__('Other IP addresses').': <br>'.implode('<br>',$addresses));
+	$data[3] = ui_print_help_tip(__('Other IP addresses').': <br>'.implode('<br>',$addresses), true);
 }
 
-echo '</td></tr>';
+$data[4] = '<div style="width:100%; text-align:right">';
+$data[4] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
+$data[4] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'), "alt" => "")) . '</a>';
+$data[4] .= '</div>';
 
-//OS
-echo '<tr><td class="datos"><b>'.__('OS').'</b></td>';
-echo '<td class="datos" colspan="2">' . ui_print_os_icon ($agent["id_os"], true, true);
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+
+$data = array();
+$data[0] = '<b>' . __('Interval') . '</b>';
+$data[1] = human_time_description_raw ($agent["intervalo"]);
+$data[2] = '<b>' . __('OS') . '</b>';
+$data[3] = ui_print_os_icon ($agent["id_os"], true, true);
 
 // Want to print last 15 characters of OS version, or start from 0 if smaller
 $osversion_offset = strlen($agent["os_version"]);
@@ -135,106 +134,127 @@ else
 	$osversion_offset = 0;
 
 
-echo '&nbsp;<i><span title="'.$agent["os_version"].'">'.substr($agent["os_version"],$osversion_offset,15).' </span></i></td></tr>';
+$data[3] .= '&nbsp;<i><span title="'.$agent["os_version"].'">'.substr($agent["os_version"],$osversion_offset,15).' </span></i>';
+$table->data[] = $data;
+$table->rowclass[] = '';
 
-// Parent
-echo '<tr><td class="datos2"><b>'.__('Parent').'</b></td>';
-echo '<td class="datos2" colspan="2"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.agents_get_name ($agent["id_parent"]).'</a></td></tr>';
+$data = array();
+$data[0] = '<b>' . __('Parent') . '</b>';
+$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.agents_get_name ($agent["id_parent"]).'</a>';
+$data[2] = '<b>' . __('Agent Version') . '</b>';
+$data[3] = $agent["agent_version"];
+$table->data[] = $data;
+$table->rowclass[] = '';
 
-// Agent Interval
-echo '<tr><td class="datos"><b>'.__('Interval').'</b></td>';
-echo '<td class="datos" colspan="2">'.human_time_description_raw ($agent["intervalo"]).'</td></tr>';
+$data = array();
+$data[0] = '<b>' .__('Description'). '</b>';
+$data[1] = $agent["comentarios"];
+$data[2] = '<b>' . __('Group') . '</b>';
+$data[3] = ui_print_group_icon ($agent["id_grupo"], true);
+$data[3] .= '&nbsp;(<b>';
+$data[3] .= ui_print_truncate_text(groups_get_name ($agent["id_grupo"]));
+$data[3] .= '</b>)';
+$table->data[] = $data;
+$table->rowclass[] = '';
 
-// Comments
-echo '<tr><td class="datos2"><b>'.__('Description').'</b></td>';
-echo '<td class="datos2" colspan="2">'.$agent["comentarios"].'</td></tr>';
-
-// Group
-echo '<tr><td class="datos"><b>'.__('Group').'</b></td>';
-echo '<td class="datos" colspan="2">';
-echo ui_print_group_icon ($agent["id_grupo"], true);
-echo '&nbsp;(<b>';
-echo ui_print_truncate_text(groups_get_name ($agent["id_grupo"]));
-echo '</b>)</td></tr>';
-
-// Agent version
-echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b></td>';
-echo '<td class="datos2" colspan="2">'.$agent["agent_version"].'</td></tr>';
-
-// Position Information
-if ($config['activate_gis']) {
-	$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
-	
-	echo '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
-	echo '<td class="datos2" colspan="2">';
-	
-	if ($dataPositionAgent === false) {
-		echo __('There is no GIS data.');
-	}
-	else {
-		echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
-		if ($dataPositionAgent['description'] != "")
-			echo $dataPositionAgent['description'];
-		else
-			echo $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
-		echo "</a>";
-	}
-	
-	echo '</td></tr>';
-}
-
-// If the url description is setted
-if ($agent['url_address'] != '') {
-	echo '<tr><td class="datos"><b>'.__('Url address').'</b></td>';	
-	echo '<td class="datos2" colspan="2"><a href='.$agent["url_address"].'>' . $agent["url_address"] . '</a></td></tr>';
-}
-
-// Last contact
-echo '<tr><td class="datos2"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
-ui_print_timestamp ($agent["ultimo_contacto"]);
-
-echo " / ";
+$data = array();
+$data[0] = '<b>' . __('Last contact') . ' / ' . __('Remote') . '</b>';
+$data[1] = ui_print_timestamp ($agent["ultimo_contacto"], true);
+$data[1] .=  " / ";
 
 if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") { 
-	echo __('Never');
+	$data[1] .= __('Never');
 }
 else {
-	echo $agent["ultimo_contacto_remoto"];
+	$data[1] .= $agent["ultimo_contacto_remoto"];
 }
-echo '</td></tr>';
+$data[2] = '<b>' . __('Next agent contact') . '</b>';
+$progress = agents_get_next_contact($id_agente);
+$data[3] = progress_bar($progress, 200, 20);
+
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+if ($config['activate_gis'] || $agent['url_address'] != '') {
+	$data = array();
+	$col = 0;
+	// Position Information
+	if ($config['activate_gis']) {
+		$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
+
+		$data[$col] = '<b>' . __('Position (Long, Lat)') . '</b>';
+		$col++;
+		
+		if ($dataPositionAgent === false) {
+			$data[$col] = __('There is no GIS data.');
+		}
+		else {
+			$data[$col] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
+			if ($dataPositionAgent['description'] != "")
+				$data[$col] .= $dataPositionAgent['description'];
+			else
+				$data[$col] .= $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
+			$data[$col] .= "</a>";
+		}
+		$col++;
+	}
+	
+	// If the url description is setted
+	if ($agent['url_address'] != '') {
+		$data[$col] = '<b>' . __('Url address') . '</b>';
+		$col++;
+		$data[$col] = '<a href='.$agent["url_address"].'>' . $agent["url_address"] . '</a>';
+	}
+	
+	$table->data[] = $data;
+	$table->rowclass[] = '';
+}
 
 // Timezone Offset
 if ($agent['timezone_offset'] != 0) {
-	echo '<tr><td class="datos2"><b>' . __('Timezone Offset') . '</b></td>';
-	echo '<td class="datos2" colspan="2">' . $agent["timezone_offset"] . '</td></tr>';
+	$data = array();
+	$data[0] = '<b>' . __('Timezone Offset') . '</b>';
+	$data[1] = $agent["timezone_offset"];
+	$table->data[] = $data;
+	$table->rowclass[] = '';
 }
-// Next contact (agent)
-$progress = agents_get_next_contact($id_agente);
 
-echo '<tr><td class="datos"><b>' . __('Next agent contact') . '</b></td>';
-echo '<td class="datos f9" colspan="2">' . progress_bar($progress, 200, 20) . '</td></tr>';
+$data = array();
+$data[0] = '<b>' . __('Modules status') . '</b>';
+$data[1] = graph_agent_status ($id_agente, 120, 120, true);
+$table->rowspan[count($table->data)][0] = 2;
+$table->rowspan[count($table->data)][1] = 2;
+$data[2] = '<b>' . __('Agent status') . '</b>';
+$status_img = agents_tree_view_status_img ($agent["critical_count"],
+		$agent["warning_count"], $agent["unknown_count"]);
+$data[3] = $status_img;
+$table->data[] = $data;
+$table->rowclass[] = '';
 
-echo '<tr><td class="datos"><b>' . __('Events') . '</b></td>';
-echo '<td class="datos f9" colspan="2">' . graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true) . '</td></tr>';
-
-echo '<tr><td class="datos"><b>' . __('Modules status') . '</b></td>';
-echo '<td class="datos f9" colspan="2">' . graph_agent_status ($id_agente, 100, 100, true) . '</td></tr>';
+$data = array();
+$data[0] = '<b>' . __('Events') . '</b>';
+$data[1] = graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true);
+$table->data[] = $data;
+$table->rowclass[] = '';
 
 // Custom fields
 $fields = db_get_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));
 if ($fields === false) {
 	$fields = array ();
 }
-if ($fields)
+
 foreach ($fields as $field) {
-	echo '<tr><td class="datos"><b>'.$field['name'] . ui_print_help_tip (__('Custom field'), true).'</b></td>';
+	$data = array();
+	$data[0] = '<b>' . $field['name'] . ui_print_help_tip (__('Custom field'), true) . '</b>';
 	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	if ($custom_value === false || $custom_value == '') {
 		$custom_value = '<i>-'.__('empty').'-</i>';
 	}
-	echo '<td class="datos f9" colspan="2">'.$custom_value.'</td></tr>';
+	$data[1] = $custom_value;
+	$table->data[] = $data;
+	$table->rowclass[] = '';
 }
 
-//End of table
-echo '</table></div>';
+html_print_table($table);
+unset($table);
 ?>

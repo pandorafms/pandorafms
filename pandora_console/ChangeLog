@@ -1,5 +1,11 @@
 2013-02-20  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/estado_generalagente.php: Remodelate 
+	the agent detail view (code and interface) to adopt
+	new styles in a close future
+
+2013-02-20  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_graph.php
 	include/graphs/functions_pchart.php
 	include/graphs/functions_flot.php

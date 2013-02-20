@@ -164,7 +164,7 @@ if ($status_filter_monitor != -1) {
 }
 $status_text_monitor_sql = '%';
 if (!empty($status_text_monitor)) {
-	$status_text_monitor_sql = $status_text_monitor . '%';
+	$status_text_monitor_sql .= $status_text_monitor . '%';
 }
 
 

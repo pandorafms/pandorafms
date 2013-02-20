@@ -1,3 +1,8 @@
+2013-02-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_logevent.cc: Retrieve extra event information
+	  for log modules.
+
 2013-01-17  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module.cc,

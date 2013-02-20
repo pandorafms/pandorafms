@@ -699,17 +699,33 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	logger($pa_config, "Executing action '" . safe_output($action->{'name'}) . "' for alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 10);
 
 	my $clean_name = safe_output($action->{'name'});
-	
-	my $field1 = $action->{'field1'} ne "" ? $action->{'field1'} : $alert->{'field1'};
-	my $field2 = $action->{'field2'} ne "" ? $action->{'field2'} : $alert->{'field2'};
-	my $field3 = $action->{'field3'} ne "" ? $action->{'field3'} : $alert->{'field3'};
-	my $field4 = $action->{'field4'} ne "" ? $action->{'field4'} : $alert->{'field4'};
-	my $field5 = $action->{'field5'} ne "" ? $action->{'field5'} : $alert->{'field5'};
-	my $field6 = $action->{'field6'} ne "" ? $action->{'field6'} : $alert->{'field6'};
-	my $field7 = $action->{'field7'} ne "" ? $action->{'field7'} : $alert->{'field7'};
-	my $field8 = $action->{'field8'} ne "" ? $action->{'field8'} : $alert->{'field8'};
-	my $field9 = $action->{'field9'} ne "" ? $action->{'field9'} : $alert->{'field9'};
-	my $field10 = $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
+
+	my ($field1, $field2, $field3, $field4, $field5, $field6, $field7, $field8, $field9, $field10);
+
+	if (!defined($alert->{'snmp_alert'})){
+		# Regular alerts
+		$field1 = $action->{'field1'} ne "" ? $action->{'field1'} : $alert->{'field1'};
+		$field2 = $action->{'field2'} ne "" ? $action->{'field2'} : $alert->{'field2'};
+		$field3 = $action->{'field3'} ne "" ? $action->{'field3'} : $alert->{'field3'};
+		$field4 = $action->{'field4'} ne "" ? $action->{'field4'} : $alert->{'field4'};
+		$field5 = $action->{'field5'} ne "" ? $action->{'field5'} : $alert->{'field5'};
+		$field6 = $action->{'field6'} ne "" ? $action->{'field6'} : $alert->{'field6'};
+		$field7 = $action->{'field7'} ne "" ? $action->{'field7'} : $alert->{'field7'};
+		$field8 = $action->{'field8'} ne "" ? $action->{'field8'} : $alert->{'field8'};
+		$field9 = $action->{'field9'} ne "" ? $action->{'field9'} : $alert->{'field9'};
+		$field10 = $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
+	} else {
+		$field1 = $alert->{'field1'} ne "" ? $alert->{'field1'} : $action->{'field1'};
+                $field2 = $alert->{'field2'} ne "" ? $alert->{'field2'} : $action->{'field2'};
+                $field3 = $alert->{'field3'} ne "" ? $alert->{'field3'} : $action->{'field3'};
+                $field4 = $action->{'field4'} ne "" ? $action->{'field4'} : $alert->{'field4'};
+                $field5 = $action->{'field5'} ne "" ? $action->{'field5'} : $alert->{'field5'};
+                $field6 = $action->{'field6'} ne "" ? $action->{'field6'} : $alert->{'field6'};
+                $field7 = $action->{'field7'} ne "" ? $action->{'field7'} : $alert->{'field7'};
+                $field8 = $action->{'field8'} ne "" ? $action->{'field8'} : $alert->{'field8'};
+                $field9 = $action->{'field9'} ne "" ? $action->{'field9'} : $alert->{'field9'};
+                $field10 = $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
+	}
 	
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == 0){
@@ -2672,8 +2688,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 	# Find those that apply to the given SNMP trap
 	foreach my $alert (@snmp_alerts) {
 
-		logger($pa_config, "Evaluating SNMP alert ID " . $alert->{'id_as'} . ".", 10);
-
 		my $alert_data = '';
 		my ($times_fired, $internal_counter, $alert_type) =
 			($alert->{'times_fired'}, $alert->{'internal_counter'}, $alert->{'alert_type'});
@@ -2724,11 +2738,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			# No match
 			next if ($trap_custom_oid !~ m/^$custom_oid$/i);
 
-			# Match!
-			$macros{'_snmp_f1_'} = $1 if (defined($1));
-			$macros{'_snmp_f2_'} = $2 if (defined($2));
-			$macros{'_snmp_f3_'} = $3 if (defined($3));
-
 			$alert_data .= " Custom: $trap_custom_oid";
 
 		}
@@ -2755,7 +2764,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		$alert->{'al_field1'} = subst_alert_macros ($alert->{'al_field1'}, \%macros);
 		$alert->{'al_field2'} = subst_alert_macros ($alert->{'al_field2'}, \%macros);
 		$alert->{'al_field3'} = subst_alert_macros ($alert->{'al_field3'}, \%macros);
-		
+
 		# Check time threshold
 		$alert->{'last_fired'} = '1970-01-01 00:00:00' unless defined ($alert->{'last_fired'});
 		return unless ($alert->{'last_fired'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
@@ -2773,6 +2782,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			($times_fired++, $internal_counter++);
 
 			my %alert = (
+				'snmp_alert' => 1,
 				'name' => '',
 				'agent' => 'N/A',
 				'alert_data' => 'N/A',

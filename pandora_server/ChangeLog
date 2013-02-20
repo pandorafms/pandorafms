@@ -1,3 +1,10 @@
+2013-02-20  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed problem with SNMP alerts: they
+	defined custom fields on it's own version of the alert template,
+	and actions was overwriting it's information, so in the case
+	of snmp alerts, template information has more priority than action.
+
 2013-02-18 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* util/pandora_xml_stress.pl: fixed the output the string module

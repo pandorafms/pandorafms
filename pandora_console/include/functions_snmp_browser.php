@@ -105,8 +105,8 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 		// Branch or leave with branches!
 		if (isset ($sub_level['__OID__'])) {
 			echo "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"" . addslashes($sub_level['__OID__']) . "\");'>";
-			html_print_image ("images/computer_error.png", false, array ("style" => 'vertical-align: middle;'));
-			echo "</a>";
+			html_print_image ("images/eye.png", false, array ("style" => 'vertical-align: middle;'));
+			echo "</a> ";
 		}
 		
 		echo '<span>' . $level . '</span>';
@@ -168,8 +168,11 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.') {
 			}
 			
 			// Move to the next element of the OID
-			if ($group == 0 && $oid[$i] == '.') {
-				
+			if ($group == 0 && (($oid[$i] == ':' && $oid[$i + 1] == ':') || $oid[$i] == '.' )) {
+			
+				if ($oid[$i] == ':') {
+$i++;
+}	
 				// Starting dot
 				if ($sub_oid == '') {
 					continue;

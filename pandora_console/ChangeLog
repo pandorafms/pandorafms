@@ -1,3 +1,9 @@
+2013-02-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_snmp_browser.php: Treat :: as a separator inside
+	  translated OIDs. Removed calls to html_print_image (very slow!) in
+	  snmp_browser_print_tree.
+
 2013-02-20  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_snmp_browser.php: Change icon and way to

@@ -32,6 +32,12 @@ $nfdump_date_format = 'Y/m/d.H:i:s';
  * 
  */
 function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_array = array()) {
+	static $url = false;
+	
+	// Get the base URL for images
+	if ($url === false) {
+		$url = ui_get_full_url('operation/tree');
+	}
 	
 	// Leaf
 	if (empty ($tree['__LEAVES__'])) {
@@ -59,9 +65,9 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 		// Indent sub branches
 		for ($i = 1; $i <= $depth; $i++) {
 			if ($last_array[$i] == 1) {
-				html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+				echo '<img src="' . $url . '/no_branch.png" style="vertical-align: middle;">';
 			} else {
-				html_print_image ("operation/tree/branch.png", false, array ("style" => 'vertical-align: middle;'));
+				echo '<img src="' . $url . '/branch.png" style="vertical-align: middle;">';
 			}
 		}
 	
@@ -70,17 +76,17 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 			echo "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";	
 			if ($depth == 0 && $count == 0) {
 				if ($count == $total) {
-					html_print_image ("operation/tree/one_closed.png", false, array ("style" => 'vertical-align: middle;'));
+					echo '<img src="' . $url . 'one_closed.png" style="vertical-align: middle;">';
 				}
 				else {
-					html_print_image ("operation/tree/first_closed.png", false, array ("style" => 'vertical-align: middle;'));
+					echo '<img src="' . $url . '/first_closed.png" style="vertical-align: middle;">';
 				}
 			}
 			else if ($count == $total) {
-				html_print_image ("operation/tree/last_closed.png", false, array ("style" => 'vertical-align: middle;'));
+				echo '<img src="' . $url . '/last_closed.png" style="vertical-align: middle;">';
 			}
 			else {
-				html_print_image ("operation/tree/closed.png", false, array ("style" => 'vertical-align: middle;'));
+				echo '<img src="' . $url . '/closed.png" style="vertical-align: middle;">';
 			}
 			echo "</a>";
 		}
@@ -88,25 +94,25 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 		else {
 			if ($depth == 0 && $count == 0) {
 				if ($count == $total) {
-					html_print_image ("operation/tree/no_branch.png", false, array ("style" => 'vertical-align: middle;'));
+					echo '<img src="' . $url . '/no_branch.png" style="vertical-align: middle;">';
 				}
 				else {
-					html_print_image ("operation/tree/first_leaf.png", false, array ("style" => 'vertical-align: middle;'));
+					echo '<img src="' . $url . '/first_leaf.png" style="vertical-align: middle;">';
 				}
 			}
 			else if ($count == $total) {
-				html_print_image ("operation/tree/last_leaf.png", false, array ("style" => 'vertical-align: middle;'));
+				echo '<img src="' . $url . '/last_leaf.png" style="vertical-align: middle;">';
 			}
 			else {
-				html_print_image ("operation/tree/leaf.png", false, array ("style" => 'vertical-align: middle;'));
+				echo '<img src="' . $url . '/leaf.png" style="vertical-align: middle;">';
 			}
 		}
 		
 		// Branch or leave with branches!
 		if (isset ($sub_level['__OID__'])) {
 			echo "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"" . addslashes($sub_level['__OID__']) . "\");'>";
-			html_print_image ("images/eye.png", false, array ("style" => 'vertical-align: middle;'));
-			echo "</a> ";
+			echo '<img src="' . $url . '/../../images/eye.png" style="vertical-align: middle;">';
+			echo "</a>";
 		}
 		
 		echo '<span>' . $level . '</span>';
@@ -168,11 +174,13 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.') {
 			}
 			
 			// Move to the next element of the OID
-			if ($group == 0 && (($oid[$i] == ':' && $oid[$i + 1] == ':') || $oid[$i] == '.' )) {
-			
+			if ($group == 0 && ($oid[$i] == '.' || ($oid[$i] == ':' && $oid[$i + 1] == ':'))) {
+				
+				// Skip the next :
 				if ($oid[$i] == ':') {
-$i++;
-}	
+					$i++;
+				}
+				
 				// Starting dot
 				if ($sub_oid == '') {
 					continue;

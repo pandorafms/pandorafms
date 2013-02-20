@@ -110,6 +110,11 @@ background-color: #fff;
 	background-image: url(../../images/link.png);
 	background-position: 4px 8px;
 }
+
+.menu {
+	width: 164px;
+
+}
 /* Icons specified here */
 #icon_oper-networkconsole {
  	background-image: url(../../images/plotchart.png);
@@ -220,4 +225,12 @@ background-color: #fff;
 }
 #icon_god-events {
 	background-image: url(../../images/lightning_go.png);
+}
+
+#menu_container {
+	z-index: 3;
+	position: absolute;
+	left: -130px;
+	background-color: #AAA;
+	height: 100%;
 }

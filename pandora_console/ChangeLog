@@ -1,3 +1,17 @@
+2013-02-20  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/styles/pandora_minimal.css
+	include/styles/menu.css
+	include/styles/pandora.css
+	operation/agentes/stat_win.php
+	operation/events/events.build_table.php
+	operation/events/events_list.php
+	general/main_menu.php
+	godmode/events/event_edit_filter.php: Remodelate the 
+	events form view. Pushing the graph in a hidden lateral
+	tab and reordering all the form
+
 2013-02-20 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/servers/recon_script.php, godmode/servers/plugin.php,

@@ -20,6 +20,9 @@ if (! isset ($config["id_user"])) {
 	exit ();
 }
 
+// Menu container prepared to autohide menu
+echo '<div id="menu_container">';
+
 echo '<div class="tit bg">:: '.__('Operation').' ::</div>';
 require ("operation/menu.php");
 
@@ -40,6 +43,8 @@ require ("godmode/menu.php");
 
 require ("links_menu.php");
 
+echo '</div>'; //menu_container
+
 ui_require_jquery_file ('cookie');
 ?>
 <script type="text/javascript" language="javascript">
@@ -50,6 +55,36 @@ $(document).ready( function() {
 		//In case the links gets activated, we don't want to follow link
 		return false;
 	});
+	
+	$('#menu_container').hover (handlerIn, handlerOut);
+	var openTime = 0;
+	var handsIn = 0;
+	
+	function handlerIn() {
+		handsIn = 1;
+		if(openTime == 0) {
+			$('#menu_container').animate({"left": "+=130px"}, 200);
+			openTime = new Date().getTime();
+			
+			// Close in 1 second if is not closed manually
+			setTimeout(function(){
+				if(openTime > 0 && handsIn == 0) {
+					$('#menu_container').animate({"left": "-=130px"}, 100);
+					openTime = 0;
+				}
+			}, 1000);
+		}
+	}
+	
+	function handlerOut() {
+		handsIn = 0;
+		var openedTime = new Date().getTime() - openTime;
+		
+		if(openedTime > 1000) {
+			$('#menu_container').animate({"left": "-=130px"}, 100);
+			openTime = 0;
+		}
+	}
 });
 /* ]]> */
 </script>

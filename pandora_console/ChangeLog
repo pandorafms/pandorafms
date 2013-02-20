@@ -1,5 +1,10 @@
 2013-02-20  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/estado_monitores.php: Fixed search filter
+	on monitor list
+
+2013-02-20  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/estado_generalagente.php: Remodelate 
 	the agent detail view (code and interface) to adopt
 	new styles in a close future

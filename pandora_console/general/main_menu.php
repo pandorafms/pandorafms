@@ -21,7 +21,7 @@ if (! isset ($config["id_user"])) {
 }
 
 // Menu container prepared to autohide menu
-echo '<div id="menu_container">';
+echo '<div id="menu_container_old">';
 
 echo '<div class="tit bg">:: '.__('Operation').' ::</div>';
 require ("operation/menu.php");

@@ -29,14 +29,14 @@ require_once ('include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_alerts = (bool) get_parameter ('get_alerts');
-
+	
 	if ($get_alerts) {
 		$id_agents = get_parameter ('id_agents');
 		if (empty($id_agents)) {
 			echo json_encode ('');
 			return;
 		}
-
+		
 		if(is_array($id_agents) && count($id_agents) == 1 && $id_agents[0] == '') {
 			$id_agents = false;
 		}
@@ -105,7 +105,7 @@ if ($add) {
 			ui_print_result_message (false, '', __('Could not be added').". ".__('No action selected'));
 		}
 	}
-
+	
 }
 
 $groups = users_get_groups ();
@@ -148,7 +148,7 @@ $table->data[2][1] = html_print_select (array(), 'id_alert_templates[]', '', '',
 
 $actions = alerts_get_alert_actions ();
 $table->data[3][0] = __('Action');
-$table->data[3][1] = html_print_select ($actions, 'action[]', '', '', '', '', true, true);	
+$table->data[3][1] = html_print_select ($actions, 'action[]', '', '', '', '', true, true);
 $table->data[3][1] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
 $table->data[3][1] .= '<span id="advanced_actions" class="advanced_actions invisible">';
 $table->data[3][1] .= __('Number of alerts match from').' ';
@@ -186,7 +186,7 @@ ui_require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 $(document).ready (function () {
 	update_alerts();
-
+	
 	var recursion;
 	$("#checkbox-recursion").click(function (){
 		recursion = this.checked ? 1 : 0;

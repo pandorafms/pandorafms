@@ -60,15 +60,15 @@ function process_manage_delete ($module_name, $id_agents) {
 	}
 	
 	db_process_sql_begin ();
-
+	
 	$module_name = (array)$module_name;
 	
 	// We are selecting "any" agent for the selected modules
 	if (($id_agents[0] == 0) and (is_array($id_agents)) and (count($id_agents) == 1))
 		$id_agents = NULL;
 	
-	$selection_delete_mode = get_parameter('selection_mode', 'modules');	
-
+	$selection_delete_mode = get_parameter('selection_mode', 'modules');
+	
 	// Selection mode by Agents
 	if ($selection_delete_mode == 'agents') {
 		// We are selecting "any" module for the selecteds agents
@@ -76,16 +76,16 @@ function process_manage_delete ($module_name, $id_agents) {
 			$filter_for_module_deletion = false;
 		else
 			$filter_for_module_deletion = sprintf('nombre IN ("%s")', implode('","',$module_name));
-			
+		
 		$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
 		$filter_for_module_deletion, true);
-			
+		
 	}
 	else {
 		$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
 			sprintf('nombre IN ("%s")', implode('","',$module_name)), true);
 	}
-
+	
 	$count_deleted_modules = count($modules);
 	
 	$success = modules_delete_agent_module ($modules);
@@ -291,7 +291,7 @@ $table->data[4][0] = __('Agents');
 
 $table->data[4][1] = html_print_select ($agents, 'id_agents[]',
 	$agents_id, false, '', '', true, true, false, '', false, 'width:100%');
-	
+
 $table->data[4][2] = __('When select agents');
 $table->data[4][2] .= '<br>';
 $table->data[4][2] .= html_print_select (array('common' => __('Show common modules'), 'all' => __('Show all modules')), 'modules_selection_mode',

@@ -1679,9 +1679,18 @@ function events_page_custom_fields ($event) {
 	$table->style[1] = 'text-align: left;';
 	$table->class = "databox alternate";
 	
-	$fields = db_get_all_rows_filter('tagent_custom_fields');
+	$all_customs_fields = (bool)check_acl($config["id_user"],
+	$agent["id_grupo"], "AW");
 	
-	if($event['id_agente'] == 0) {
+	if ($all_customs_fields) {
+		$fields = db_get_all_rows_filter('tagent_custom_fields');
+	}
+	else {
+		$fields = db_get_all_rows_filter('tagent_custom_fields',
+			array('display_on_front' => 1));
+	}
+	
+	if ($event['id_agente'] == 0) {
 		$fields_data = array();
 	}
 	else {
@@ -1695,7 +1704,7 @@ function events_page_custom_fields ($event) {
 		}
 	}
 	
-	foreach($fields as $field) {
+	foreach ($fields as $field) {
 		// Owner
 		$data = array();
 		$data[0] = $field['name'];

@@ -54,7 +54,8 @@ if ($view != "") {
 	$form_plugin_type = $plugin ["plugin_type"];
 	$macros = $plugin ["macros"];
 	$parameters = $plugin ["parameters"];
-} 
+}
+
 if ($create != "") {
 	$form_name = "";
 	$form_description = "";
@@ -74,7 +75,7 @@ $sec = 'gservers';
 
 if (($create != "") OR ($view != "")) {
 	
-	if(defined('METACONSOLE')) {
+	if (defined('METACONSOLE')) {
 		components_meta_print_header();
 		$sec = 'advanced';
 	}
@@ -142,8 +143,8 @@ if (($create != "") OR ($view != "")) {
 	// If we have plugin id (update mode) and this plugin used by any module or component
 	// The command configuration will be locked
 	if ($plugin_id > 0) {
-		$modules_using_plugin = db_get_value_filter('count(*)','tagente_modulo', array('delete_pending' => 0, 'id_plugin' => $plugin_id));	
-		$components_using_plugin = db_get_value_filter('count(*)','tnetwork_component', array('id_plugin' => $plugin_id));	
+		$modules_using_plugin = db_get_value_filter('count(*)','tagente_modulo', array('delete_pending' => 0, 'id_plugin' => $plugin_id));
+		$components_using_plugin = db_get_value_filter('count(*)','tnetwork_component', array('id_plugin' => $plugin_id));
 		if(($components_using_plugin + $modules_using_plugin) == 0) {
 			$locked = false;
 		}
@@ -480,7 +481,7 @@ ui_require_javascript_file('pandora_modules');
 ?>
 
 <script type="text/javascript">
-	
+
 $(document).ready(function() {
 	function update_preview() {
 		var command = $('#form_execute').val();
@@ -502,7 +503,7 @@ $(document).ready(function() {
 		
 		$('#command_preview').html(command+' '+parameters);
 	}
-
+	
 	update_preview();
 	
 	$('.command_component').live( 'keyup', function() {
@@ -512,12 +513,12 @@ $(document).ready(function() {
 });
 
 <?php 
-	if($locked) {
-?>
-		$('.command_advanced_conf').click(function() {
-			alert('<?php echo __("The plugin command cannot be updated because some modules or components are using the plugin."); ?>');
-		});
-<?php
+if($locked) {
+	?>
+	$('.command_advanced_conf').click(function() {
+		alert('<?php echo __("The plugin command cannot be updated because some modules or components are using the plugin."); ?>');
+	});
+	<?php
 	}
 ?>
 

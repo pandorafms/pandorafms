@@ -315,7 +315,7 @@ $table->data[3][1] = '<div id="delete_configurations" style="display: none">'. _
 $table->data[3][1] .= '<span id="n_configurations"></span>';
 $table->data[3][1] .= ') '.html_print_checkbox_extended ("delete_conf", 1, 0, false, '', 'style="margin-right: 40px;"', true).'</div>';
 
-$table->data[3][1] .= '<div id="not_available_configurations" style="display: none"><em>'.__('Not available').'</em></div>';		
+$table->data[3][1] .= '<div id="not_available_configurations" style="display: none"><em>'.__('Not available').'</em></div>';
 
 $listIcons = gis_get_array_list_icons();
 
@@ -474,7 +474,7 @@ $(document).ready (function () {
 
 function changeIcons() {
 	icon = $("#icon_path :selected").val();
-
+	
 	$("#icon_without_status").attr("src", "images/spinner.png");
 	$("#icon_default").attr("src", "images/spinner.png");
 	$("#icon_ok").attr("src", "images/spinner.png");
@@ -489,11 +489,16 @@ function changeIcons() {
 		$("#icon_warning").attr("style", "display:none;");
 	}
 	else {
-		$("#icon_without_status").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
-		$("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
-		$("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + ".ok.png");
-		$("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + ".bad.png");
-		$("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + ".warning.png");
+		$("#icon_without_status").attr("src",
+			"<?php echo $path; ?>" + icon + ".default.png");
+		$("#icon_default").attr("src",
+			"<?php echo $path; ?>" + icon + ".default.png");
+		$("#icon_ok").attr("src",
+			"<?php echo $path; ?>" + icon + ".ok.png");
+		$("#icon_bad").attr("src",
+			"<?php echo $path; ?>" + icon + ".bad.png");
+		$("#icon_warning").attr("src",
+			"<?php echo $path; ?>" + icon + ".warning.png");
 		$("#icon_without_status").attr("style", "");
 		$("#icon_default").attr("style", "");
 		$("#icon_ok").attr("style", "");

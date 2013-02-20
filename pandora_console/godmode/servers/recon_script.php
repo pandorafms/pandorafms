@@ -111,14 +111,14 @@ if (($create != "") OR ($view != "")){
 }
 else {
 	ui_print_page_header (__('Recon scripts registered in Pandora FMS'), "", false, "", true);
-
+	
 	// Update reconscript
 	if (isset($_GET["update_reconscript"])) { // if modified any parameter
 		$id_recon_script = get_parameter ("update_reconscript", 0);
 		$reconscript_name = get_parameter ("form_name", "");
 		$reconscript_description = get_parameter ("form_description", "");
 		$reconscript_script = get_parameter ("form_script", "");
-	
+		
 		$sql_update ="UPDATE trecon_script SET 
 		name = '$reconscript_name',  
 		description = '$reconscript_description', 
@@ -126,7 +126,7 @@ else {
 		WHERE id_recon_script = $id_recon_script";
 		$result = false;
 		if ($reconscript_name != '' && $reconscript_script != '')
-			$result = db_process_sql ($sql_update);	
+			$result = db_process_sql ($sql_update);
 		if (! $result) {
 			echo "<h3 class='error'>" . __('Problem updating') . "</h3>";
 		}

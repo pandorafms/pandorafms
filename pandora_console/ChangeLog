@@ -1,5 +1,20 @@
 2013-02-21  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb_data.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Change a
+	useless macro of internal event commands
+
+	* include/functions_graph.php
+	include/functions_events.php
+	operation/agentes/estado_generalagente.php: Improve the layout
+	of the agent detail view
+
+2013-02-21  Sergio Martin <sergio.martin@artica.es>
+
 	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
 	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
 	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql

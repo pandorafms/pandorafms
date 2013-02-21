@@ -206,8 +206,15 @@ $(document).ready (function () {
 						old_value = $("[name=field"+i+"_value]").val();
 					}
 					
-					$('#table1-field'+i).replaceWith(data["fields_rows"][i]);
-					$("[name=field"+i+"_value]").val(old_value);
+					// If the row is empty, hide de row
+					if(data["fields_rows"][i] == '') {
+						$('#table1-field'+i).hide();
+					}
+					else {
+						$('#table1-field'+i).replaceWith(data["fields_rows"][i]);
+						$("[name=field"+i+"_value]").val(old_value);
+						$('#table1-field').show();
+					}
 				}
 				
 				render_command_preview(original_command);

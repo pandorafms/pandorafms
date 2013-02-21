@@ -1,5 +1,15 @@
 2013-02-21  Sergio Martin <sergio.martin@artica.es>
 
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	godmode/alerts/configure_alert_action.php
+	godmode/alerts/alert_commands.php: Update the commands data
+	to new alerts macro in migration. Hide the not used fields
+	on actions. bug #3605461
+
+2013-02-21  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_graph.php
 	operation/agentes/estado_generalagente.php: Fixed
 	events slicebar legend and added modules statistics under

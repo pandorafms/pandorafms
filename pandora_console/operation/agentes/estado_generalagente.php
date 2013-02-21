@@ -50,34 +50,8 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 	return;
 }
 
-$params = array();
-$params['position'] = 'right';
-$params['icon_closed'] = 'images/setup.png';
-$params['body_text'] = '';
-
-if ($config["agentaccess"]) {
-	$params['body_text'] .= '<b>'.__('Agent access rate (24h)').'</b><br />';
-	
-	$params['body_text'] .= graphic_agentaccess($id_agente, 350, 110, 86400, true);
-}
-
-$params['body_text'] .=  '<div style="height:25px">&nbsp;</div>';
-$params['body_text'] .=  '<b>'.__('Events generated -by module-').'</b><br />';
-$params['body_text'] .=  graph_event_module (350, 120, $id_agente);
-
-$params['icon_closed'] = '/images/chart_curve';
-$params['icon_open'] = '/images/chart_curve';
-$params['height'] = '460px';
-$params['top'] = 'auto_below';
-$params['autotop'] = 'menu_tab_frame_view';
-$params['icon_width'] = 16;
-$params['icon_height'] = 16;
-
-html_print_side_layer($params);
-
-
 $table->id = 'agent_datails';
-$table->width = '98%';
+$table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
@@ -219,23 +193,54 @@ if ($agent['timezone_offset'] != 0) {
 	$table->rowclass[] = '';
 }
 
-$data = array();
-$data[0] = '<b>' . __('Modules status') . '</b>';
-$data[1] = graph_agent_status ($id_agente, 120, 120, true);
-$table->rowspan[count($table->data)][0] = 2;
-$table->rowspan[count($table->data)][1] = 2;
-$data[2] = '<b>' . __('Agent status') . '</b>';
-$status_img = agents_tree_view_status_img ($agent["critical_count"],
-		$agent["warning_count"], $agent["unknown_count"]);
-$data[3] = $status_img;
-$table->data[] = $data;
-$table->rowclass[] = '';
+if($config["agentaccess"]) {
+	$data = array();
+	$data[0] = '<b>' . __('Agent access rate (24h)') . '</b>';
+	$data[1] = graphic_agentaccess($id_agente, 350, 110, 8640000, true);
+	$table->rowspan[count($table->data)][0] = 4;
+	$table->rowspan[count($table->data)][1] = 4;
 
-$data = array();
-$data[0] = '<b>' . __('Events (24h)') . '</b>';
-$data[1] = graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true);
-$table->data[] = $data;
-$table->rowclass[] = '';
+	$data[2] = '<b>' . __('Agent status') . '</b>';
+	$status_img = agents_tree_view_status_img ($agent["critical_count"],
+			$agent["warning_count"], $agent["unknown_count"]);
+	$data[3] = $status_img;
+	$table->data[] = $data;
+	$table->rowclass[] = '';
+
+	$data = array();
+	$data[0] = '<b>' . __('Modules status') . '</b>';
+	$data[1] = graph_agent_status ($id_agente, 120, 120, true);
+	$table->rowspan[count($table->data)][2] = 2;
+	$table->rowspan[count($table->data)][3] = 2;
+	$table->data[] = $data;
+	$table->rowclass[] = '';
+
+	$data = array();
+	$data[0] = '<b>' . __('Events (24h)') . '</b>';
+	$data[1] = graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true);
+	$table->data[] = $data;
+	$table->rowclass[] = '';
+}
+else {
+	$data = array();
+	$data[0] = '<b>' . __('Modules status') . '</b>';
+	$data[1] = graph_agent_status ($id_agente, 120, 120, true);
+	$table->rowspan[count($table->data)][0] = 3;
+	$table->rowspan[count($table->data)][1] = 3;
+
+	$data[2] = '<b>' . __('Agent status') . '</b>';
+	$status_img = agents_tree_view_status_img ($agent["critical_count"],
+			$agent["warning_count"], $agent["unknown_count"]);
+	$data[3] = $status_img;
+	$table->data[] = $data;
+	$table->rowclass[] = '';
+
+	$data = array();
+	$data[0] = '<b>' . __('Events (24h)') . '</b>';
+	$data[3] = graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true);
+	$table->data[] = $data;
+	$table->rowclass[] = '';
+}
 
 // Custom fields
 $fields = db_get_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));

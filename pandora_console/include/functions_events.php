@@ -726,6 +726,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		echo '<div class="nf">'.__('No events').'</div>';
 	}
 	else {
+		$table->id = 'latest_events_table';
 		$table->cellpadding = 4;
 		$table->cellspacing = 4;
 		$table->width = $width;
@@ -820,7 +821,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 				
 				$data[4] = "<a class='$myclass' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'>".agents_get_name ($event["id_agente"]). "</A>";
 				
-//				ui_print_agent_name ($event["id_agente"], true, 25, '', true);
+			// ui_print_agent_name ($event["id_agente"], true, 25, '', true);
 			// for System or SNMP generated alerts
 			}
 			elseif ($event["event_type"] == "system") {
@@ -837,9 +838,23 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			array_push ($table->data, $data);
 		}
 		
-		$return = html_print_table ($table, $return);
+		$events_table = html_print_table ($table, true);
+		$out = '<table><tr><td style="width: 90%; padding-right: 10px;">';
+		$out .= $events_table;
+		$out .= '</td><td style="width: 250px">';
+		$out .= '<b>' . __('Events generated -by module-') . '</b><br>';
+		$out .= graph_event_module (300, 120, $event['id_agente']);
+		$out .= '</td></tr></table>';
+
+		
 		unset ($table);
-		return $return;
+		
+		if($return) {
+			return $out;
+		}
+		else {
+			echo $out;
+		}
 	}
 }
 

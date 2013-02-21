@@ -61,7 +61,13 @@ if (is_ajax ()) {
 				$fdesc = $fields_descriptions[$i-1].' <br><span style="font-size:xx-small; font-weight:normal;">'.sprintf(__('Field %s'), $i).'</span>';
 			}
 			else {
-				$fdesc = sprintf(__('Field %s'), $i);
+				// If the macro hasn't description and doesnt appear in command, set with empty description to dont show it
+				if(substr_count($command['command'], "_field$i_") > 0) {
+					$fdesc = sprintf(__('Field %s'), $i);
+				}
+				else {
+					$fdesc = '';
+				}
 			}
 
 			if(!empty($fields_values[$i-1])) {
@@ -84,14 +90,20 @@ if (is_ajax ()) {
 				$ffield = html_print_textarea ('field'.$i.'_value', 1, 1, '', 'style="min-height:40px" class="fields"', true);
 			}
 			
-			$fields_rows[$i] = '<tr id="table1-field'.$i.'" class="datos">
-									<td style="font-weight:bold;width:20%" class="datos">
-									'.$fdesc.'
-									</td>
-									<td class="datos">
-									'.$ffield.'
-									</td>
-								</tr>';
+			// The empty descriptions will be ignored
+			if($fdesc == '') {
+				$fields_rows[$i] = '';
+			}
+			else {
+				$fields_rows[$i] = '<tr id="table1-field'.$i.'" class="datos">
+										<td style="font-weight:bold;width:20%" class="datos">
+										'.$fdesc.'
+										</td>
+										<td class="datos">
+										'.$ffield.'
+										</td>
+									</tr>';
+			}
 		}
 		
 		$command['fields_rows'] = $fields_rows;

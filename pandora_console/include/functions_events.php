@@ -754,7 +754,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		
 		$table->head[5] = __('Timestamp');
 		$table->headclass[5] = "datos3 f9";
-		$table->align[5] = "right";
+		$table->align[5] = "left";
 		
 		foreach ($result as $event) {
 			if (! check_acl ($config["id_user"], $event["id_grupo"], "ER")) {

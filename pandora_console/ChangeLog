@@ -1,5 +1,15 @@
 2013-02-21  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_events.php
+	operation/events/events_list.php: Little fixes
+	of new layout of events
+
+	* include/graphs/pChart/pPie.class.php: Fixed a 
+	bug of the pChart library of ugly borders in the
+	3d pie graphs
+
+2013-02-21  Sergio Martin <sergio.martin@artica.es>
+
 	* pandoradb_data.sql
 	pandoradb.data.postgreSQL.sql
 	pandoradb.data.oracle.sql

@@ -1,3 +1,7 @@
+2013-02-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_logevent.cc: Add the timestamp to the log.
+
 2013-02-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_logevent.cc: Retrieve extra event information

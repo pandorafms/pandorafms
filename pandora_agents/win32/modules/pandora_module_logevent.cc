@@ -266,6 +266,11 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 				
 				// Print additional information for log modules
 			    if (this->getModuleType() == TYPE_LOG) {
+				
+					// Add the timestamp to the log (the previous timestamp will be stripped)
+					event << "[Timestamp: ";
+					event << timestamp;
+					event << "]";
 					
 					// Retrieve the event id
 				    event << "[ID: ";

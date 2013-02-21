@@ -1350,11 +1350,11 @@ function graph_agent_status ($id_agent, $width = 300, $height = 200, $return = f
 	global $config;
 	
 	$filter = array('id_agente' => $id_agent, 'disabled' => 0);
-	$fields = array('sum(critical_count) Critical', 
-				'sum(warning_count) Warning', 
-				'sum(normal_count) Normal', 
-				'sum(unknown_count) Unknown', 
-				'sum(notinit_count) "Not init"');
+	$fields = array('critical_count Critical', 
+				'warning_count Warning', 
+				'normal_count Normal', 
+				'unknown_count Unknown'/*, 
+				'sum(notinit_count) "Not init"'*/);
 	
 	$agent_status = db_get_all_rows_filter('tagente', $filter, $fields);
 	
@@ -1363,11 +1363,25 @@ function graph_agent_status ($id_agent, $width = 300, $height = 200, $return = f
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
-	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN, COL_NOTINIT);
+	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN/*, COL_NOTINIT*/);
 	
 	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
 		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
 		
+	$out .= '<div style="text-align: center; width: ' . $width . 'px;"><b>';
+	
+	$out .= array_sum($data);
+	if ($data['Critical'] > 0)
+		$out .= ' : <span class="red">' . $data["Critical"] . '</span>';
+	if ($data["Warning"] > 0)
+		$out .= ' : <span class="yellow">' . $data["Warning"] . '</span>';
+	if ($data["Unknown"] > 0)
+		$out .= ' : <span class="grey">' . $data["Unknown"] . '</span>';
+	if ($data["Normal"] > 0)
+		$out .= ' : <span class="green">' . $data["Normal"] . '</span>';
+	
+	$out .= '</b></div>';
+	
 	if ($return) {
 		return $out;
 	}
@@ -2298,7 +2312,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
-			$name = date('H\h', $bottom);
+			$name = date('H:i', $bottom);
 		}
 		else {
 			$name = $bottom;
@@ -2306,9 +2320,9 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		
 		// Show less values in legend
 		if ($cont == 0 or $cont % 2)
-			$legend[$name] = $name;
+			$legend[$cont] = $name;
 		
-		$full_legend[$name] = $name;;
+		$full_legend[$cont] = $name;
 		
 		$top = $datelimit + ($periodtime * ($i + 1));
 		$event = db_get_row_filter ('tevento',
@@ -2337,8 +2351,8 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		$cont++;
 	}
 	
-	$colors = 	array(1 => '#38B800', 2 => '#FFFF00', 3 => '#FF0000', 4 => '#C3C3C3');
-	
+	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
+
 	// Draw slicebar graph
 	if ($config['flash_charts']) {
 		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl);

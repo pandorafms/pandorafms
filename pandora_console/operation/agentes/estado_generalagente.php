@@ -232,7 +232,7 @@ $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = array();
-$data[0] = '<b>' . __('Events') . '</b>';
+$data[0] = '<b>' . __('Events (24h)') . '</b>';
 $data[1] = graph_graphic_agentevents ($id_agente, 290, 15, 86400, '', true);
 $table->data[] = $data;
 $table->rowclass[] = '';

@@ -1,5 +1,10 @@
 2013-02-21  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_html.php: Supress a safe_input
+	in html_print_image function due performance problem
+
+2013-02-21  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_events.php
 	operation/events/events_list.php: Little fixes
 	of new layout of events

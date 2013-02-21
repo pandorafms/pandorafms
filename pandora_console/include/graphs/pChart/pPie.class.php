@@ -518,7 +518,7 @@
      if ( $SecondPass )
       {
        $Step = 360 / (2 * PI * $Radius);
-       $Offset = 360; $ID = count($Values)-1;
+       $Offset = 360; $ID = 0;
        foreach($Values as $Key => $Value)
         {
          $FirstPoint = TRUE;
@@ -556,7 +556,7 @@
           }
          $this->pChartObject->drawLine($Xc,$Yc,$X0,$Y0,$Settings);
 
-         $Offset = $i - $DataGapAngle; $ID--;
+         $Offset = $i - $DataGapAngle; $ID++;
         }
       }
 

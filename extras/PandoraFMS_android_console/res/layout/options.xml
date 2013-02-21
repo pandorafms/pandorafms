@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content">
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:padding="10dip" >
+		
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/pandroid_options_txt"
+		/>
+		
+		<TableLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" >
+			
+			<TableRow
+				android:id="@+id/tableRow1"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" >
+				
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/url_option"
+					android:singleLine="true"
+					android:layout_weight="1" />
+				
+				<EditText
+					android:id="@+id/url_option"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:inputType="text"
+					android:layout_weight="5" />
+				
+			</TableRow>
+			
+			<TableRow
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" >
+				
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/user_option"
+					android:singleLine="true"
+					android:layout_weight="1" />
+				
+				<EditText
+					android:id="@+id/user_option"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:inputType="text"
+					android:layout_weight="5" />
+				
+			</TableRow>
+			
+			<TableRow
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" >
+				
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/password_option"
+					android:singleLine="true"
+					android:layout_weight="1" />
+				
+				<EditText
+					android:id="@+id/password_option"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:inputType="textPassword"
+					android:layout_weight="5" />
+				
+			</TableRow>
+			
+			<TableRow
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" >
+				
+				<Button
+					android:id="@+id/cancel_options"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:layout_marginLeft="5dp"
+					android:layout_marginRight="5dp"
+					android:text="@string/cancel_button_str"
+					android:layout_weight="1" />
+				
+				<Button
+					android:id="@+id/save_options"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:layout_marginLeft="5dp"
+					android:layout_marginRight="5dp"
+					android:text="@string/save_button_str"
+					android:layout_weight="1" />
+				
+			</TableRow>
+			
+		</TableLayout>
+	
+</LinearLayout>
+</ScrollView>

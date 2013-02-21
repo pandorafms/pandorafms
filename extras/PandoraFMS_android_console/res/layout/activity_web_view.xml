@@ -1,0 +1,16 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingBottom="0px"
+	android:paddingLeft="0px"
+	android:paddingRight="0px"
+	android:paddingTop="0px"
+	tools:context=".WebView" >
+	
+	<WebView
+		android:id="@+id/webview"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent" />
+	
+</RelativeLayout>

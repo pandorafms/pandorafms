@@ -1,3 +1,9 @@
+2013-02-22 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* PandoraFMS_android_console/*: added first version of PandoraFMS
+	android console (it is a custom browser standaralone for the
+	Pandora Web Console Mobile).
+
 2012-09-11 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* chrome_extension/manifest.json,

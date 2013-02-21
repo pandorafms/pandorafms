@@ -1606,7 +1606,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		return io_safe_input($src);
 	}
 	
-	$output = '<img src="'.io_safe_input ($src).'" '; //safe input necessary to strip out html entities correctly
+	$output = '<img src="'.$src.'" '; // Dont use safe_input here or the performance will dead
 	$style = '';
 	
 	if (!empty ($options)) {

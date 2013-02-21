@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<item
+		android:id="@+id/options_button_menu_options"
+		android:icon="@drawable/config"
+		android:title="@string/options_label_str" />
+	
+	<item
+		android:id="@+id/refresh_button_menu_options"
+		android:icon="@drawable/refresh"
+		android:title="@string/refresh_label_str" />
+	
+	
+	<item
+		android:id="@+id/help_button_menu_options"
+		android:icon="@drawable/help"
+		android:title="@string/help_label_str" />
+	
+	<item
+		android:id="@+id/exit_button_menu_options"
+		android:icon="@drawable/exit"
+		android:title="@string/exit_label_str" />
+
+</menu>

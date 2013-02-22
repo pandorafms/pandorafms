@@ -1,3 +1,10 @@
+2013-02-22  Sancho Lerena <slerena@artica.es>
+
+	* Darwin/pandora_agent.conf: Added disk monitor.
+
+	* Darwin/com.pandorafms.pandorafms.plist: Better values for
+	launchdaemon on Mac.
+
 2013-02-19  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* pandora_agent_installer: Removed duplicated chown line.

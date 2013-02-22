@@ -2,12 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-        <key>Disabled</key>
-        <false/>
         <key>Label</key>
         <string>com.pandorafms.pandorafms</string>
-        <key>OnDemand</key>
-        <false/>
         <key>ProgramArguments</key>
         <array>
                 <string>/usr/bin/pandora_agent</string>
@@ -16,15 +12,8 @@
         <key>RunAtLoad</key>
         <true/>
         <key>ServiceDescription</key>
-        <string>PandoraFMS</string>
+        <string>PandoraFMS agent</string>
         <key>UserName</key>
         <string>root</string>
-</dict>
-</plist>
-<dict>
-	<key>ProgramArguments</key>
-	<array>
-		<string>/Library/Application Support/Adobe/SwitchBoard/SwitchBoard.app/Contents/MacOS/launch.switchboard</string>
-	</array>
 </dict>
 </plist>

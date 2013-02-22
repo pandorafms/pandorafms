@@ -1,3 +1,7 @@
+2013-02-22  Sancho Lerena <slerena@artica.es>
+
+	* include/api.php: Added a single protection on DoS attacks. 
+
 2013-02-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor_network.php,

@@ -1,3 +1,11 @@
+2013-02-22 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/alerts/alert_list.php,
+	godmode/alerts/alert_list.list.php: rewrote the code for to show
+	the form to add actions in the list of agents for make more pretty.
+	
+	Fixes: #3605462
+
 2013-02-22  Dario Rodriguez <dario@artica.es>
 
         * godmode/servers/manage_recontask_form.php: Changed interval combo 

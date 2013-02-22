@@ -142,7 +142,7 @@ if ($delete_alert) {
 }
 
 if ($add_action) {
-	$id_action = (int) get_parameter ('action');
+	$id_action = (int) get_parameter ('action_select');
 	$id_alert_module = (int) get_parameter ('id_alert_module');
 	$fires_min = (int) get_parameter ('fires_min');
 	$fires_max = (int) get_parameter ('fires_max');

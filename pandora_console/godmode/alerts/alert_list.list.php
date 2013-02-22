@@ -160,7 +160,7 @@ if ($searchFlag) {
 	//if ($agentID != -1)
 		//$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = " . $agentID . ")";
 	if (strlen(trim($agentName)) > 0) {
-
+		
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":
@@ -186,7 +186,7 @@ if ($searchFlag) {
 $total = agents_get_alerts_simple (array_keys ($agents), false,
 	false, $where, false, false, false, true);
 
-if(empty($total)) $total = 0;
+if (empty($total)) $total = 0;
 
 $order = null;
 
@@ -449,92 +449,126 @@ foreach ($simple_alerts as $alert) {
 	
 	$actions = alerts_get_alert_agent_module_actions ($alert['id']);
 	
-	$data[3] = '';
+	$data[3] = "<table width='100%'>";
 	if (empty($actions)) {
 		// Get and show default actions for this alert
-		$default_action = db_get_sql ("SELECT id_alert_action FROM talert_templates WHERE id = ".$alert["id_alert_template"]);
-		if ($default_action != ""){
-			$data[3] = __("Default"). " : ".db_get_sql ("SELECT name FROM talert_actions WHERE id = $default_action");
+		$default_action = db_get_sql ("SELECT id_alert_action
+			FROM talert_templates
+			WHERE id = ".$alert["id_alert_template"]);
+		if ($default_action != "") {
+			$data[3] .= "<tr><td>";
+			$data[3] .= __("Default"). " : ".db_get_sql ("SELECT name FROM talert_actions WHERE id = $default_action");
+			$data[3] .= "</td>";
+			$data[3] .= "<td></td>";
+			$data[3] .= "</tr>";
 		}
 	}
-	else {
-		$data[3] = '<ul class="action_list">';
-		foreach ($actions as $action_id => $action) {
-			$data[3] .= '<li>';
-			if ($alert['disabled'])
-				$data[3] .= '<font class="action_name" style="font-style: italic; color: #aaaaaa;">';
-			else
-				$data[3] .= '<font class="action_name">';
-			$data[3] .= ui_print_truncate_text($action['name'], GENERIC_SIZE_TEXT, false);
-			$data[3] .= ' <em>(';
-			if ($action['fires_min'] == $action['fires_max']) {
-				if ($action['fires_min'] == 0)
-					$data[3] .= __('Always');
+	foreach ($actions as $action_id => $action) {
+		$data[3] .= "<tr>";
+			$data[3] .= "<td>";
+				$data[3] .= '<ul class="action_list">';
+				$data[3] .= '<li>';
+				if ($alert['disabled'])
+					$data[3] .= '<font class="action_name" style="font-style: italic; color: #aaaaaa;">';
 				else
-					$data[3] .= __('On').' '.$action['fires_min'];
-			}
-			else {
-				if ($action['fires_min'] == 0)
-					$data[3] .= __('Until').' '.$action['fires_max'];
-				else
-					$data[3] .= __('From').' '.$action['fires_min'].
-						' '.__('to').' '.$action['fires_max'];
-			}
-			if ($action['module_action_threshold'] != 0)
-				$data[3] .= ' '.__('Threshold').' '.$action['module_action_threshold'];
-			
-			$data[3] .= ')</em>';
-			$data[3] .= '</font>';
+					$data[3] .= '<font class="action_name">';
+				$data[3] .= ui_print_truncate_text($action['name'], GENERIC_SIZE_TEXT, false);
+				$data[3] .= ' <em>(';
+				if ($action['fires_min'] == $action['fires_max']) {
+					if ($action['fires_min'] == 0)
+						$data[3] .= __('Always');
+					else
+						$data[3] .= __('On').' '.$action['fires_min'];
+				}
+				else {
+					if ($action['fires_min'] == 0)
+						$data[3] .= __('Until').' '.$action['fires_max'];
+					else
+						$data[3] .= __('From').' '.$action['fires_min'].
+							' '.__('to').' '.$action['fires_max'];
+				}
+				if ($action['module_action_threshold'] != 0)
+					$data[3] .= ' '.__('Threshold').' '.$action['module_action_threshold'];
+				
+				$data[3] .= ')</em>';
+				$data[3] .= '</font>';
+				$data[3] .= '</li>';
+				$data[3] .= '</ul>';
+			$data[3] .= "</td>";
 			// Is possible manage actions if have LW permissions in the agent group of the alert module
-			if(check_acl ($config['id_user'], $agent_group, "LW")) {
-				$data[3] .= '<form method="post" class="delete_link" style="display: inline; vertical-align: -50%;">';
-				$data[3] .= html_print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
-				$data[3] .= html_print_input_hidden ('delete_action', 1, true);
-				$data[3] .= html_print_input_hidden ('id_alert', $alert['id'], true);
-				$data[3] .= html_print_input_hidden ('id_action', $action_id, true);
-				$data[3] .= '</form>';
+			if (check_acl ($config['id_user'], $agent_group, "LW")) {
+				$data[3] .= "<td align='center'>";
+					$data[3] .= '<form method="post" class="delete_link" style="display: inline; vertical-align: -50%;">';
+					$data[3] .= html_print_input_image ('delete',
+						'images/cross.png', 1, '', true,
+						array('title' => __('Delete')));
+					$data[3] .= html_print_input_hidden ('delete_action', 1, true);
+					$data[3] .= html_print_input_hidden ('id_alert', $alert['id'], true);
+					$data[3] .= html_print_input_hidden ('id_action', $action_id, true);
+					$data[3] .= '</form>';
+				$data[3] .= "</td>";
 			}
-			$data[3] .= '</li>';
-		}
-		$data[3] .= '</ul>';
+		$data[3] .= "</tr>";
 	}
+	
 	
 	// Is possible manage actions if have LW permissions in the agent group of the alert module
-	if(check_acl ($config['id_user'], $agent_group, "LW")) {
-		$data[3] .= '<a class="add_action" id="add-action-'.$alert['id'].'" href="#">';
-		$data[3] .= html_print_image ('images/add.png', true);
-		if ($alert['disabled'])
-			$data[3] .= ' '. '<span style="font-style: italic; color: #aaaaaa;">' .__('Add action') . '</span>';
-		else
-			$data[3] .= ' ' . __('Add action');
-		$data[3] .= '</a>';
-
-	
-		$data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post" class="invisible">';
-		$data[3] .= html_print_input_hidden ('add_action', 1, true);
-		$data[3] .= html_print_input_hidden ('id_alert_module', $alert['id'], true);
+	if (check_acl ($config['id_user'], $agent_group, "LW")) {
 		$own_info = get_user_info($config['id_user']);
 		$own_groups = users_get_groups($config['id_user'], 'LW', true);
 		$filter_groups = '';
 		$filter_groups = implode(',', array_keys($own_groups));
 		$actions = alerts_get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');
-		$data[3] .= html_print_select ($actions, 'action', '', '', __('None'), 0, true);
-		$data[3] .= '<br />';
-		$data[3] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
-		$data[3] .= '<span class="advanced_actions invisible">';
-		$data[3] .= __('Number of alerts match from').' ';
-		$data[3] .= html_print_input_text ('fires_min', -1, '', 4, 10, true);
-		$data[3] .= ' '.__('to').' ';
-		$data[3] .= html_print_input_text ('fires_max', -1, '', 4, 10, true);
-		$data[3] .= ui_print_help_icon ("alert-matches", true, ui_get_full_url(false, false, false, false));
-		$data[3] .= '<br />' . __('Threshold');
-		$data[3] .= html_print_input_text ('module_action_threshold', '', '', 4, 10, true) . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
-		$data[3] .= '</span>';
-		$data[3] .= '<div class="right">';
-		$data[3] .= html_print_submit_button (__('Add'), 'add_action', false, 'class="sub next"', true);
-		$data[3] .= '</div>';
+		
+		
+		$data[3] .= '<form id="add_action_form-'.$alert['id'] . '" method="post" class="invisible">';
+		
+		$data[3] .= html_print_input_hidden ('add_action', 1, true);
+		$data[3] .= html_print_input_hidden ('id_alert_module', $alert['id'], true);
+		
+		$data[3] .= '<tr>';
+			$data[3] .= "<td>";
+			$data[3] .= html_print_select ($actions, 'action_select', '', '', __('None'), 0, true);
+			$data[3] .= '</td>';
+			$data[3] .= '<td align="center">';
+			$data[3] .= '<a href="javascript: add_action_submit(\'' . $alert['id'] . '\')">';
+			if ($alert['disabled']) {
+				$data[3] .= html_print_image('images/add.disabled.png',
+					true, array('title' => __("Add action")));
+			}
+			else {
+				$data[3] .= html_print_image('images/add.png',
+					true, array('title' => __("Add action")));
+			}
+			$data[3] .= '</a>';
+			$data[3] .= '</td>';
+		$data[3] .= '</tr>';
+		
+		$data[3] .= '<tr class="advance_options_' . $alert['id'] . '" style="display: none;">';
+			$data[3] .= '<td>';
+			$data[3] .= ui_print_help_icon ("alert-matches", true, ui_get_full_url(false, false, false, false));
+			$data[3] .= "&nbsp;" . __('Number of alerts match from') . '<br />';
+			$data[3] .= html_print_input_text ('fires_min', -1, '', 4, 10, true);
+			$data[3] .= ' '.__('to').' ';
+			$data[3] .= html_print_input_text ('fires_max', -1, '', 4, 10, true);
+			$data[3] .= '<br />';
+			$data[3] .= ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
+			$data[3] .= "&nbsp;" . __('Threshold') . "&nbsp;";
+			$data[3] .= html_print_input_text ('module_action_threshold', '', '', 4, 10, true);
+			$data[3] .= '</td>';
+			$data[3] .= '<td>';
+			$data[3] .= '</td>';
+		$data[3] .= '</tr>';
+		
 		$data[3] .= '</form>';
+		
+		$data[3] .= '<tr class="link_show_advance_options_' . $alert['id'] . '">
+				<td colspan="2"><a href="javascript: show_advance_options_action(\'' . $alert['id'] . '\');" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></td>
+			</tr>';
 	}
+	
+	
+	$data[3] .= '</table>';
 	
 	$status = STATUS_ALERT_NOT_FIRED;
 	$title = "";
@@ -655,12 +689,12 @@ if (! $id_agente) {
 }
 ?>
 	$("a.template_details").cluetip ({
-		arrows: true,
-		attribute: 'href',
-		cluetipClass: 'default'
-	}).click (function () {
-		return false;
-	});
+			arrows: true,
+			attribute: 'href',
+			cluetipClass: 'default'
+		}).click (function () {
+			return false;
+		});
 	
 	$("#tgl_alert_control").click (function () {
 		$("#alert_control").toggle ();
@@ -675,6 +709,7 @@ if (! $id_agente) {
 				$(this).attr ("src", <?php echo '"' . html_print_image("images/lightbulb.png", true, false, true) . '"'; ?> );
 			}
 		);
+	
 	$("input[name=enable]").attr ("title", "<?php echo __('Enable')?>")
 		.hover (function () {
 				$(this).attr ("src", <?php echo '"' . html_print_image("images/lightbulb.png", true, false, true) . '"'; ?> );
@@ -683,7 +718,7 @@ if (! $id_agente) {
 				$(this).attr ("src", <?php echo '"' . html_print_image("images/lightbulb_off.png", true, false, true) . '"'; ?> );
 			}
 		);
-		
+	
 	$("input[name=standby_on]").attr ("title", "<?php echo __('Set off standby')?>")
 		.hover (function () {
 				$(this).attr ("src", <?php echo '"' . html_print_image("images/bell.png", true, false, true) . '"'; ?> );
@@ -692,7 +727,7 @@ if (! $id_agente) {
 				$(this).attr ("src", <?php echo '"' . html_print_image("images/bell_pause.png", true, false, true) . '"'; ?> );
 			}
 		);
-		
+	
 	$("input[name=standby_off]").attr ("title", "<?php echo __('Set standby')?>")
 		.hover (function () {
 				$(this).attr ("src", <?php echo '"' . html_print_image("images/bell_pause.png", true, false, true) . '"'; ?> );
@@ -701,18 +736,9 @@ if (! $id_agente) {
 				$(this).attr ("src", <?php echo '"' . html_print_image("images/bell.png", true, false, true) . '"'; ?> );
 			}
 		);
+	
 	$("form.disable_alert_form").submit (function () {
 		return true;
-	});
-	
-	
-	$("a.add_action").click (function () {
-		id = this.id.split ("-").pop ();
-		
-		$('#add_action_form-' + id).attr("class", '');
-		$(this).attr("class", 'invisible');
-
-		return false;
 	});
 	
 	$("form.delete_link, form.delete_alert_form").submit (function () {
@@ -720,20 +746,15 @@ if (! $id_agente) {
 			return false;
 		return true;
 	});
-	
-	$("a.show_advanced_actions").click (function () {
-		/* It can be done in two different sites, so it must use two different selectors */
-		actions = $(this).parents ("form").children ("span.advanced_actions");
-		if (actions.length == 0)
-			actions = $(this).parents ("div").children ("span.advanced_actions")
-		$("#text-fires_min", actions).attr ("value", 0);
-		$("#text-fires_max", actions).attr ("value", 0);
-		$(actions).show ();
-		$(this).remove ();
-		return false;
-	});
-	
-
 });
+
+function show_advance_options_action(id_alert) {
+	$(".link_show_advance_options_" + id_alert).hide();
+	$(".advance_options_" + id_alert).show();
+}
+
+function add_action_submit(id_alert) {
+	$("#add_action_form-" + id_alert).submit();
+}
 /* ]]> */
 </script>

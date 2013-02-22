@@ -1,3 +1,10 @@
+2013-02-22  Dario Rodriguez <dario@artica.es>
+
+        * godmode/servers/manage_recontask_form.php: Changed interval combo 
+	input for new customizable combo.
+
+	MERGED FROM 4.0.3
+
 2013-02-21  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php: Supress a safe_input

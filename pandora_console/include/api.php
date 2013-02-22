@@ -105,6 +105,9 @@ if ($correctLogin) {
 }
 else {
 	db_pandora_audit("API access Failed", $no_login_msg, $user, $ipOrigin);
+
+	// DoS protection
+	sleep(15);
 	echo 'auth error';
 }
 ?>

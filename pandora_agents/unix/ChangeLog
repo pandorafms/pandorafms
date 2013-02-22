@@ -1,3 +1,8 @@
+2013-02-22  Sancho Lerena <slerena@artica.es>
+
+	* Darwrin: Added Darwin (MacOS) agent on directory, i don't
+	know why was removed from trunk ¿?
+
 2013-02-19  Koichiro Kikuchi <koichiro@rworks.jp>
 
 	* pandora_agent_installer: Removed duplicated chown line.

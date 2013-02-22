@@ -282,11 +282,14 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid) {
 /**
  * Print the given OID data.
  *
- * @param $oid array OID data.
+ * @param oid array OID data.
+ * @param custom_action string A custom action added to next to the close button.
+ * @param bool return The result is printed if set to true or returned if set to false.
  * 
+ * @return string The OID data.
  */
-function snmp_browser_print_oid ($oid = array()) {
-	
+function snmp_browser_print_oid ($oid = array(), $custom_action = '', $return = false) {
+
 	// OID information table
 	$table->width = '100%';
 	$table->size = array ();
@@ -301,7 +304,7 @@ function snmp_browser_print_oid ($oid = array()) {
 	$table->data[0][0] = '<strong>'.__('OID').'</strong>';
 	$table->data[0][1] = $oid['oid'];
 	$table->data[1][0] = '<strong>'.__('Numeric OID').'</strong>';
-	$table->data[1][1] = $oid['numeric_oid'];
+	$table->data[1][1] = '<span id="snmp_selected_oid">' . $oid['numeric_oid'] . '</span>';
 	$table->data[2][0] = '<strong>'.__('Value').'</strong>';
 	$table->data[2][1] = $oid['value'];
 	$i = 3;
@@ -336,9 +339,91 @@ function snmp_browser_print_oid ($oid = array()) {
 		$i++;
 	}
 	
-	echo '<a href="#" onClick="hideOIDData();">';
-	html_print_image ("images/cancel.png", false, array ("style" => 'vertical-align: middle;'), false);
-	echo '</a>';
-	html_print_table($table, false);
+	$output = '<a href="javascript:" onClick="hideOIDData();">';
+	$output .= html_print_image ("images/cancel.png", true, array ("title" => __('Close'), "style" => 'vertical-align: middle;'), false);
+	$output .= '</a>';
+	
+	// Add a span for custom actions
+	if ($custom_action != '') {
+		$output .= '<span id="snmp_custom_action">' . $custom_action . '</span>';
+	}
+	
+	$output .= html_print_table($table, true);
+
+	if ($return) {
+		return $output;
+	}
+	
+	echo $output;
 }
+
+/**
+ * Print the div that contains the SNMP browser.
+ *
+ * @param bool return The result is printed if set to true or returned if set to false.
+ * @param string width Width of the SNMP browser. Units must be specified.
+ * @param string height Height of the SNMP browser. Units must be specified.
+ * @param string display CSS display value for the container div. Set to none to hide the div.
+ * 
+ * @return string The container div.
+ * 
+ */
+function snmp_browser_print_container ($return = false, $width = '95%', $height = '500px', $display = '') {
+
+	// Target selection
+	$table->width = '100%';
+	$table->size = array ();
+	$table->data = array ();
+
+	// String search_string
+	$table->data[0][0] = '<strong>'.__('Target IP').'</strong>';
+	$table->data[0][1] = html_print_input_text ('target_ip', '', '', 25, 0, true);
+	$table->data[0][2] = '<strong>'.__('Community').'</strong>';
+	$table->data[0][3] = html_print_input_text ('community', '', '', 25, 0, true);
+	$table->data[0][4] = '<a href="javascript:">' . html_print_image ("images/fullscreen.png", true, array ('title' => __('Expand the tree') . ' (' . __('can be slow') . ')', 'style' => 'vertical-align: middle;', 'onclick' => 'expandAll();')) . '</a>';
+	$table->data[0][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/normalscreen.png", true, array ('title' => __('Collapse the tree'), 'style' => 'vertical-align: middle;', 'onclick' => 'collapseAll();')) . '</a>';
+	$table->data[1][0] = '<strong>'.__('Starting OID').'</strong>';
+	$table->data[1][1] = html_print_input_text ('starting_oid', '', '', 25, 0, true);
+	$table->data[1][2] = '<strong>'.__('Search text').'</strong>';
+	$table->data[1][3] = html_print_input_text ('search_text', '', '', 25, 0, true);
+	$table->data[1][4] = '<a href="javascript:">' . html_print_image ("images/lupa.png", true, array ('title' => __('Search'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchText();')) . '</a>';
+	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_first.png", true, array ('title' => __('First match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchFirstMatch();')) . '</a>';
+	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_previous.png", true, array ('title' => __('Previous match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchPrevMatch();')) . '</a>';
+	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_next.png", true, array ('title' => __('Next match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchNextMatch();')) . '</a>';
+	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_last.png", true, array ('title' => __('Last match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchLastMatch();')) . '</a>';
+
+	// This extra div that can be handled by jquery's dialog
+	$output =  '<div id="snmp_browser_container" style="display:' . $display . '">';
+	$output .= '<div style="text-align: left; width: ' . $width . '; height: ' . $height . ';">';
+	$output .=   '<div style="width: 100%">';
+	$output .=   html_print_table($table, true);
+	$output .=   '</div>';
+	$output .=   '<div>';
+	$output .=   html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub upd"', true);
+	$output .=   '</div>';
+
+	// SNMP tree container
+	$output .=   '<div style="width: 100%; height: 100%; margin-top: 5px; position: relative;">';
+    $output .=   html_print_input_hidden ('search_count', 0, true);
+    $output .=   html_print_input_hidden ('search_index', -1, true);
+
+	// Save some variables for javascript functions
+	$output .=   html_print_input_hidden ('ajax_url', ui_get_full_url("ajax.php"), true);
+	$output .=   html_print_input_hidden ('search_matches_translation', __("Search matches"), true);
+
+	$output .=     '<div id="search_results" style="display: none; padding: 5px; background-color: #EAEAEA; border: 1px solid #E2E2E2; border-radius: 4px;"></div>';
+	$output .=     '<div id="spinner" style="position: absolute; top:0; left:0px; display:none;">' . html_print_image ("images/spinner.gif", true) . '</div>';
+	$output .=     '<div id="snmp_browser" style="height: 100%; overflow: auto; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; "></div>';
+	$output .=     '<div id="snmp_data" style="display: none; width: 40%; position: absolute; top:0; right:20px"></div>';
+	$output .=   '</div>';
+	$output .= '</div>';
+	$output .= '</div>';
+	
+	if ($return) {
+		return $output;
+	}
+	
+	echo $output;
+}
+
 ?>

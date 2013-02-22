@@ -1,3 +1,14 @@
+2013-02-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/styles/pandora.css
+	include/functions_graph.php
+	include/functions_events.php
+	include/javascript/pandora.js
+	operation/agentes/estado_generalagente.php: Improve agent view
+	interface, work in hidden menus to improve more the graphs 
+	layout.
+
 2013-02-22  Sancho Lerena <slerena@artica.es>
 
 	* include/api.php: Added a single protection on DoS attacks. 

@@ -1785,5 +1785,9 @@ span#plugin_description {
 .menu_sidebar_radius_right {
 	-moz-border-top-right-radius: 10px;
 	-webkit-border-top-right-radius: 10px;
-	border-top-right-radius: 10px;		
+	border-top-right-radius: 10px;
+			
+	-moz-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	border-bottom-right-radius: 10px;		
 }

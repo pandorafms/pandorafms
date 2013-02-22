@@ -1,3 +1,8 @@
+2013-02-22  Sancho Lerena <slerena@artica.es>
+
+	*  lib/PandoraFMS/Tools.pm: My MacOS boxes was being ignored
+	due lack of "darwin" detection here :(
+
 2013-02-20  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed problem with SNMP alerts: they

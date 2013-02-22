@@ -257,6 +257,9 @@ sub pandora_get_os ($) {
 		}
 		elsif ($command =~ m/Apple/i) {
 			return 8;
+		} 
+                elsif ($command =~ m/Darwin/i){
+			return 8;
 		}
 		elsif ($command =~ m/Linux/i) {
 			return 1;

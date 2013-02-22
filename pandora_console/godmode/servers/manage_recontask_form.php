@@ -170,20 +170,12 @@ $table->data[3][0] = "<b>".__('Network');
 $table->data[3][1] = html_print_input_text ('network', $network, '', 25, 0, true);
 
 // Interval
-$values = array ();
-$values[0] = __('Manual');
-$values[SECONDS_1HOUR] = __('%d hour', 1);
-$values[SECONDS_2HOUR] = __('%d hours', 2);
-$values[SECONDS_6HOURS] = __('%d hours', 6);
-$values[SECONDS_12HOURS] = __('%d hours', 12);
-$values[SECONDS_1DAY] = __('%d day', 1);
-$values[SECONDS_5DAY] = __('%d days', 5);
-$values[SECONDS_1WEEK] = __('%d week', 1);
-$values[SECONDS_2WEEK] = __('%d weeks', 2);
-$values[SECONDS_1MONTH] = __('%d month', 1);
+
 
 $table->data[4][0] = "<b>".__('Interval');
-$table->data[4][1] = html_print_select ($values, "interval", $interval, '', '', '', true);
+$table->data[4][1] = html_print_extended_select_for_time ('interval' , $interval, '', '', '0', false, true, false, false);
+$table->data[4][1] .= ui_print_help_tip (__('The minimum recomended interval for Recon Task is 5 minutes'), true);
+
 
 // Module template
 $table->data[5][0] = "<b>".__('Module template');

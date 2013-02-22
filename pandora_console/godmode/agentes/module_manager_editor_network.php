@@ -13,6 +13,17 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
+require_once($config['homedir'] . "/include/functions_snmp_browser.php");
+ui_require_javascript_file ('pandora_snmp_browser');
+
+// Save some variables for javascript functions
+html_print_input_hidden ('ajax_url', ui_get_full_url("ajax.php"), false);
+html_print_input_hidden ('search_matches_translation', __("Search matches"), false);
+
+// Define a custom action to save the OID selected in the SNMP browser to the form
+html_print_input_hidden ('custom_action', urlencode (base64_encode('<a href="javascript:setOID()"><img src="' . ui_get_full_url("images") . '/hand_point.png" title="' . __("Use this OID") . '" style="vertical-align: middle;"></img></a>')), false);
+
 $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 
 $disabledBecauseInPolicy = false;
@@ -87,10 +98,7 @@ $data[1] .= '<span class="invisible" id="oid">';
 $data[1] .= html_print_select (array (), 'select_snmp_oid', $snmp_oid, '', '', 0, true, false, false, '', $disabledBecauseInPolicy);
 $data[1] .= html_print_image("images/edit.png", true, array("class" => "invisible clickable", "id" => "edit_oid"));
 $data[1] .= '</span>';
-$data[1] .= '<span id="no_snmp" class="error invisible">'.__('Unable to do SNMP walk').'</span>';
-$data[1] .= '</span> <span class="right" style="width: 50%; text-align: right"><span id="oid_loading" class="invisible">';
-$data[1] .= html_print_image('images/spinner.gif', true);
-$data[1] .= '</span>';
+$data[1] .= '</span><span class="right" style="width: 50%; text-align: right">';
 if ($disabledBecauseInPolicy)
 	$disableButton = true;
 else
@@ -99,7 +107,7 @@ else
 	else
 		$disableButton = false;
 
-$data[1] .= html_print_button (__('SNMP walk'), 'snmp_walk', $disableButton, '',
+$data[1] .= html_print_button (__('SNMP walk'), 'snmp_walk', $disableButton, 'snmpBrowserWindow()',
 	'class="sub next"', true);
 $data[1] .= ui_print_help_icon ('snmpwalk', true);
 $data[1] .= '</span>';
@@ -184,6 +192,8 @@ $data[3] = html_print_select(array('noAuthNoPriv' => __('Not auth and not privac
 if ($snmp_version != 3) $table_simple->rowstyle['field_snmpv3_row3'] = 'display: none;';
 push_table_simple($data, 'field_snmpv3_row3');
 
+snmp_browser_print_container (false, '100%', '60%', 'none');
+
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
@@ -223,6 +233,46 @@ $(document).ready (function () {
 	$("#id_module_type").blur (function () {
 		$(this).css ("width", "180px"); 
 	});
-	
+
+	// Keep elements in the form and the SNMP browser synced
+	$('#text-ip_target').keyup(function() {
+		$('#text-target_ip').val($(this).val());
+	});
+	$('#text-target_ip').keyup(function() {
+		$('#text-ip_target').val($(this).val());
+	});
+	$('#text-community').keyup(function() {
+		$('#text-snmp_community').val($(this).val());
+	});
+	$('#text-snmp_community').keyup(function() {
+		$('#text-community').val($(this).val());
+	});
 });
+
+// Show the SNMP browser window
+function snmpBrowserWindow () {
+
+	// Keep elements in the form and the SNMP browser synced
+	$('#text-target_ip').val($('#text-ip_target').val());
+	$('#text-community').val($('#text-snmp_community').val());
+		
+	$("#snmp_browser_container").show().dialog ({
+		title: '',
+		resizable: true,
+		draggable: true,
+		modal: true,
+		overlay: {
+			opacity: 0.5,
+			background: "black"
+		},
+		width: 700,
+		height: 400
+	});
+}
+
+// Set the form OID to the value selected in the SNMP browser
+function setOID () {
+	$('#text-snmp_oid').val($('#snmp_selected_oid').text());
+}
+
 </script>

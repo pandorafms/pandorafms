@@ -1367,20 +1367,6 @@ function graph_agent_status ($id_agent, $width = 300, $height = 200, $return = f
 	
 	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
 		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
-		
-	$out .= '<div style="text-align: center; width: ' . $width . 'px;"><b>';
-	
-	$out .= array_sum($data);
-	if ($data['Critical'] > 0)
-		$out .= ' : <span class="red">' . $data["Critical"] . '</span>';
-	if ($data["Warning"] > 0)
-		$out .= ' : <span class="yellow">' . $data["Warning"] . '</span>';
-	if ($data["Unknown"] > 0)
-		$out .= ' : <span class="grey">' . $data["Unknown"] . '</span>';
-	if ($data["Normal"] > 0)
-		$out .= ' : <span class="green">' . $data["Normal"] . '</span>';
-	
-	$out .= '</b></div>';
 	
 	if ($return) {
 		return $out;

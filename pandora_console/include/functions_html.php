@@ -127,6 +127,9 @@ function html_print_side_layer ($params) {
 		'bottom_text' => '',
 		'top' => '0',
 		'autotop' => '',
+		'right' => '0',
+		'autoright' => '',
+		'vertical_mode' => 'out',
 		'icon_width' => 50,
 		'icon_height' => 50,
 		'icon_open' => $params['icon_closed']
@@ -151,6 +154,11 @@ function html_print_side_layer ($params) {
 			$body_float = 'right';
 			$button_float = 'left';
 			break;
+		case 'bottom':
+			$round_class = 'menu_sidebar_radius_left menu_sidebar_radius_right';
+			$body_float = 'right';
+			$button_float = 'left';
+			break;
 	}
 		
 	$out_html = '<div id="side_layer" class="menu_sidebar ' . $round_class . '" style="display:none; z-index:1; overflow: hidden; height: ' . $params['height'] . ';">';
@@ -163,7 +171,7 @@ function html_print_side_layer ($params) {
 
 	$top = '<div id="side_top_text" style="width: 100%";">' . $params['top_text'] . '</div>';
 	
-	$button = '<div id="show_menu" style="vertical-align: middle; position: relative; border:1px solid #FFF; width: ' . $params['icon_width'] . 'px;  height: ' . $params['icon_height'] . 'px;">';
+	$button = '<div id="show_menu" style="vertical-align: middle; position: relative; border:1px solid #FFF; width: ' . $params['icon_width'] . 'px;  margin: auto; height: ' . $params['icon_height'] . 'px;">';
 	$button .= html_print_image($params['position'] == 'left' ? $params['icon_open'] : $params['icon_closed'], true, array('id' => 'graph_menu_arrow'));
 	$button .= '</div>';
 	
@@ -204,6 +212,21 @@ function html_print_side_layer ($params) {
 			$table->data[2][1] = $bottom;
 			$table->rowclass[2] = '';
 			break;
+		case 'bottom':
+			$table->data[0][0] = $button;
+			$table->cellstyle[0][0] = 'text-align: center;';
+			$table->rowclass[0] = '';
+
+			$table->data[1][0] = $top;
+			$table->rowclass[1] = '';
+			
+			
+			$table->data[2][0] = $body;
+			$table->rowclass[2] = '';
+
+			$table->data[3][0] = $bottom;
+			$table->rowclass[3] = '';
+			break;
 	}
 
 	$out_html .= html_print_table($table, true);
@@ -212,88 +235,10 @@ function html_print_side_layer ($params) {
 		
 	$out_js = "<script type='text/javascript'>
 			<!--
-			var defSlideTime = 220;
-			var visibleMargin = " . $params['icon_width'] . " + 10;
-			var menuW = " . $params['width'] . ";
-			var hiddenMargin = menuW - visibleMargin;
-			var windowWidth = $(window).width();
-			var position = '" . $params['position'] . "';
-			var sideClosed = 1;
-			var top_dist = '" . $params['top'] ."';
-			var autotop = '" . $params['autotop'] ."';
-
-			if(top_dist == 'auto_over') {
-				top_dist = $('#' + autotop).offset().top;
-			}
-			else if(top_dist == 'auto_below') {
-				top_dist = $('#' + autotop).offset().top + $('#' + autotop).height();
-			}
-			
-			$(document).ready( function() {
-				// SET INITIAL POSITION AND SHOW LAYER
-				$('#side_layer').css('top', top_dist);
-				switch (position) {
-					case 'left':
-						$('#side_layer').css('left', -hiddenMargin);
-						break;
-					case 'right':
-						$('#side_layer').css('left', windowWidth - visibleMargin - 1);
-						$('#side_layer').css('width', visibleMargin + 'px');
-
-						break;
-				}
-				$('#side_layer').show();
-				
-				$(\"#graph_menu_arrow\").click(function(){
-					switch(position) {			
-						case 'right':
-							if (sideClosed == 0){
-								$('#side_layer').animate({\"width\": \"-=\" + (hiddenMargin) + \"px\", \"left\": \"+=\" + (hiddenMargin) + \"px\"}, defSlideTime);
-								$(\"#graph_menu_arrow\").attr(\"src\", \"" . $config['homeurl'] . $params['icon_closed'] . "\");
-							}
-							else {
-								$('#side_layer').animate({\"width\": \"+=\" + (hiddenMargin) + \"px\", \"left\": \"-=\" + (hiddenMargin) + \"px\"}, defSlideTime);
-								$(\"#graph_menu_arrow\").attr(\"src\", \"" . $config['homeurl'] . $params['icon_open'] . "\");
-							}
-							break;
-						case 'left':
-							if (sideClosed == 1){
-								$('#side_layer').animate({\"left\": \"+=\" + (hiddenMargin) + \"px\"}, defSlideTime);
-								
-								$(\"#graph_menu_arrow\").attr(\"src\", \"" . $config['homeurl'] . $params['icon_closed'] . "\");
-							}
-							else {
-								$('#side_layer').animate({\"left\": \"-=\" + (hiddenMargin) + \"px\"}, defSlideTime);
-								$(\"#graph_menu_arrow\").attr(\"src\", \"" . $config['homeurl'] . $params['icon_open'] . "\");
-							}
-							break;
-					}
-					
-					if(sideClosed == 0) {
-						//$('#side_top_text').hide();
-						//$('#side_body_text').hide();
-						//$('#side_bottom_text').hide();
-						sideClosed = 1;
-					}
-					else {
-						$('#side_top_text').show();
-						$('#side_body_text').show();
-						$('#side_bottom_text').show();
-						sideClosed = 0;
-					}
-				});
-			});
-			
-			if(position == 'right') {
-				// Move the right menu if window is resized
-				$(window).resize(function() {
-					var newWindowWidth = $(window).width();
-					var widthVariation = newWindowWidth - windowWidth;
-					$('#side_layer').animate({\"left\": \"+=\" + (widthVariation) + \"px\"}, 0);
-					
-					windowWidth = newWindowWidth;
-				});
-			}
+			hidded_sidebar('" . $params['position'] . "', " . $params['width'] . ", '" . $params['height'] . "', " . $params['icon_width'] . ", 
+				'" . $params['top'] . "', '" . $params['autotop'] . "', '" . $params['right'] . "', 
+				'" . $params['autoright'] . "', '" . $params['icon_closed'] . "', '" . $params['icon_open'] . "', '" . $config['homeurl'] . "'
+				, '" . $params['vertical_mode'] . "');
 			//-->
 		</script>";
 	
@@ -1178,6 +1123,7 @@ function html_print_textarea ($name, $rows, $columns, $value = '', $attributes =
  *	$table->tablealign - Align the whole table (float left or right)
  *	$table->cellpadding - Padding on each cell
  *	$table->cellspacing - Spacing between cells
+ *	$table->cellstyle - Style of a cell
  *	$table->class - CSS table class
  *	$table->id - Table ID (useful in JavaScript)
  *	$table->headclass[] - An array of classes for each heading
@@ -1258,6 +1204,13 @@ function html_print_table (&$table, $return = false) {
 		foreach ($table->colspan as $keyrow => $cspan) {
 			foreach ($cspan as $key => $span) {
 				$colspan[$keyrow][$key] = ' colspan="'.$span.'"';
+			}
+		}
+	}
+	if (isset ($table->cellstyle)) {
+		foreach ($table->cellstyle as $keyrow => $cstyle) {
+			foreach ($cstyle as $key => $style) {
+				$cellstyle[$keyrow][$key] = $style;
 			}
 		}
 	}
@@ -1381,6 +1334,9 @@ function html_print_table (&$table, $return = false) {
 				if (!isset ($size[$key])) {
 					$size[$key] = '';
 				}
+				if (!isset ($cellstyle[$keyrow][$key])) {
+					$cellstyle[$keyrow][$key] = '';
+				}
 				if (!isset ($colspan[$keyrow][$key])) {
 					$colspan[$keyrow][$key] = '';
 				}
@@ -1400,7 +1356,7 @@ function html_print_table (&$table, $return = false) {
 					$style[$key] = '';
 				}
 				
-				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.'">'. $item .'</td>'."\n";
+				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.'">'. $item .'</td>'."\n";
 			}
 			$output .= '</tr>'."\n";
 		}

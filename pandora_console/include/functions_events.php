@@ -693,6 +693,39 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0, $id_use
 	return (int) db_process_sql ($sql, "insert_id");
 }
 
+/**
+ * Print tiny statistics of an agent
+ * 
+ * @param integer number of total modules
+ * @param integer number of normal modules
+ * @param integer number of critical modules
+ * @param integer number of warning modules
+ * @param integer number of unknown modules
+ * @param bool return or echo flag
+ * 
+ */
+function events_tiny_stats ($total_modules, $normal_modules, $critical_modules, $warning_modules, $unknown_modules, $return = false) {
+	$out = '<b>' . $total_modules;
+	if ($critical_modules > 0)
+		$out .= ' : <span class="red">' . $critical_modules . '</span>';
+	if ($warning_modules > 0)
+		$out .= ' : <span class="yellow">' . $warning_modules . '</span>';
+	if ($unknown_modules > 0)
+		$out .= ' : <span class="grey">' . $unknown_modules . '</span>';
+	if ($normal_modules > 0)
+		$out .= ' : <span class="green">' . $normal_modules . '</span>';
+		
+	$out .= '</b>';
+	
+	if ($return) {
+		return $out;
+	}
+	else {
+		echo $out;
+	}
+}
+
+
 /** 
  * Prints a small event table
  * 

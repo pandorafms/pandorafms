@@ -1,3 +1,8 @@
+2013-02-22  Dario Rodriguez <dario@artica.es>
+
+	* godmode/servers/manage_recontask_form.php: Changed interval combo
+	input for new customizable combo.
+
 2013-02-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/auth/ldap.php: Merged from trunk. Do not bind anonymously to

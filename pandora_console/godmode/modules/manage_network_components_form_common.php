@@ -51,11 +51,11 @@ $table->data = array ();
 
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 55, 255, true);
-if(enterprise_installed()) {	
+if (enterprise_installed()) {
 	if(defined('METACONSOLE')) {
 		$table->data[0][2] = __('Wizard level');
 		$wizard_levels = array('basic' => __('Basic'),
-								'advanced' => __('Advanced'));
+			'advanced' => __('Advanced'));
 		$table->data[0][3] = html_print_select($wizard_levels,'wizard_level',$wizard_level,'','',-1,true, false, false);
 	}
 	else {
@@ -71,8 +71,24 @@ $sql = sprintf ('SELECT id_tipo, descripcion
 	ORDER BY descripcion',
 	implode (',', $categories));
 $table->data[1][1] = html_print_select_from_sql ($sql, 'type',
-	$type, ($id_component_type == 2 ? 'type_change()' : ''), '', '', true,
+	$type, '', '', '', true,
 	false, false, false, true, false, false, false, 0);
+
+// Store the relation between id and name of the types on a hidden field
+$sql = sprintf ('SELECT id_tipo, nombre
+		FROM ttipo_modulo
+		WHERE categoria IN (%s)
+		ORDER BY descripcion',
+		implode (',', $categories));
+$type_names = db_get_all_rows_sql($sql);
+
+$type_names_hash = array();
+foreach($type_names as $tn) {
+	$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
+}
+
+$table->data[1][1] .= html_print_input_hidden('type_names',
+	base64_encode(json_encode($type_names_hash)),true);
 
 $table->data[1][2] = __('Module group');
 $table->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name
@@ -88,28 +104,28 @@ $table->data[2][3] = html_print_extended_select_for_time ('module_interval' , $m
 
 
 $table->data[3][0] = __('Warning status');
-$table->data[3][1] = '<em>'.__('Min.').'</em>';
+$table->data[3][1] = '<span id="minmax_warning"><em>'.__('Min.').'&nbsp;</em>&nbsp;';
 $table->data[3][1] .= html_print_input_text ('min_warning', $min_warning,
 	'', 5, 15, true);
-$table->data[3][1] .= '<br /><em>'.__('Max.').'</em>';
+$table->data[3][1] .= '<br /><em>'.__('Max.').'</em>&nbsp;';
 $table->data[3][1] .= html_print_input_text ('max_warning', $max_warning,
-	'', 5, 15, true);
-$table->data[3][1] .= '<br /><em>'.__('Str.').'</em>';
+	'', 5, 15, true) . '</span>';
+$table->data[3][1] .= '<span id="string_warning"><em>'.__('Str.').' </em>&nbsp;';
 $table->data[3][1] .= html_print_input_text ('str_warning', $str_warning,
-	'', 5, 15, true);
+	'', 5, 15, true) . '</span>';
 $table->data[3][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table->data[3][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
 
 $table->data[3][2] = __('Critical status');
-$table->data[3][3] = '<em>'.__('Min.').'</em>';
+$table->data[3][3] = '<span id="minmax_critical"><em>'.__('Min.').'&nbsp;</em>&nbsp;';
 $table->data[3][3] .= html_print_input_text ('min_critical', $min_critical,
 	'', 5, 15, true);
-$table->data[3][3] .= '<br /><em>'.__('Max.').'</em>';
+$table->data[3][3] .= '<br /><em>'.__('Max.').'</em>&nbsp;';
 $table->data[3][3] .= html_print_input_text ('max_critical', $max_critical,
-	'', 5, 15, true);
-$table->data[3][3] .= '<br /><em>'.__('Str.').'</em>';
+	'', 5, 15, true) . '</span>';
+$table->data[3][3] .= '<span id="string_critical"><em>'.__('Str.').' </em>&nbsp;';
 $table->data[3][3] .= html_print_input_text ('str_critical', $str_critical,
-	'', 5, 15, true);
+	'', 5, 15, true) . '</span>';
 $table->data[3][3] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table->data[3][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
 
@@ -185,3 +201,30 @@ $table->data[$next_row][3] .=  html_print_select_from_sql (
 	
 $next_row++;
 ?>
+<script type="text/javascript">
+	$(document).ready (function () {
+		$("#type").change(function () {
+			var type_selected = $(this).val();
+			var type_names = jQuery.parseJSON(Base64.decode($('#hidden-type_names').val()));
+			
+			var type_name_selected = type_names[type_selected];
+			
+			if (type_name_selected.match(/_string$/) == null) {
+				// Numeric types
+				$('#string_critical').hide();
+				$('#string_warning').hide();
+				$('#minmax_critical').show();
+				$('#minmax_warning').show();
+			}
+			else {
+				// String types
+				$('#string_critical').show();
+				$('#string_warning').show();
+				$('#minmax_critical').hide();
+				$('#minmax_warning').hide();
+			}
+		});
+		
+		$("#type").trigger('change');
+	});
+</script>

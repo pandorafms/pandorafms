@@ -118,7 +118,7 @@ function reports_get_reports ($filter = false, $fields = false, $returnAllGroup 
 			if (!in_array($report['id_group'], array_keys($groups)))
 				continue;
 			if ($config['id_user'] != $report['id_user']
-				&& ! check_acl ($config['id_user'], $report['id_group'], 'RR'))
+				&& ! check_acl ($config['id_user'], $report['id_group'], $privileges))
 				continue;
 		}
 		array_push ($reports, $report);

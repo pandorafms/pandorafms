@@ -1410,14 +1410,18 @@ function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
 function get_group_alerts ($id_group) {
 	global $config;
 	
-	require_once ($config["homedir"].'/include/functions_agents.php');
+	require_once ($config["homedir"] . '/include/functions_agents.php');
 	
-	$alerts = array ();
+	$alerts = array ('simple' => array());
 	$agents = agents_get_group_agents ($id_group, false, "none");
 	
 	foreach ($agents as $agent_id => $agent_name) {
 		$agent_alerts = agents_get_alerts ($agent_id);
-		$alerts = array_merge ($alerts, $agent_alerts);
+		
+		
+		if (!empty($agent_alerts['simple']))
+			$alerts['simple'] = array_merge ($alerts['simple'],
+				$agent_alerts['simple']);
 	}
 	
 	return $alerts;
@@ -1444,7 +1448,8 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
 	
 	foreach ($alerts as $alert) {
 		if (isset($alert['id'])) {
-			$fires = get_alert_fires_in_period ($alert['id'], $period, $date);
+			$fires = get_alert_fires_in_period($alert['id'],
+				$period, $date);
 			if (! $fires) {
 				continue;
 			}
@@ -1465,7 +1470,7 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
  * @return int The last time an alert fired. It's an UNIX timestamp.
  */
 function get_alert_last_fire_timestamp_in_period ($id_alert_module, $period, $date = 0) {
-	global $config;	
+	global $config;
 	
 	if ($date == 0) {
 		$date = get_system_time ();

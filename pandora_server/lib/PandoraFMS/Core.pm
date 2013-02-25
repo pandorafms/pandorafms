@@ -1182,18 +1182,12 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 			}
 		}
 		
-		logger($pa_config, "[PLANNED_DOWNTIME] " .
-			"Only Alerts " . $only_alerts . ".", 10);
-		
 		if ($only_alerts == 0) {
 			db_do ($dbh, 'UPDATE tagente
 				SET disabled = 1
 				WHERE id_agente = ?', $downtime_agent->{'id_agent'});
 		}
 		else {
-			logger($pa_config, "[PLANNED_DOWNTIME] " .
-				"Disabled Agent " . $downtime_agent->{'id_agent'} . ".", 10);
-			
 			db_do ($dbh, 'UPDATE talert_template_modules
 				SET disabled = 1
 				WHERE id_agent_module IN (
@@ -1368,9 +1362,6 @@ sub pandora_planned_downtime_quiet_once_start($$) {
 	my ($pa_config, $dbh) = @_;
 	my $utimestamp = time();
 	
-	logger($pa_config, "[PLANNED_DOWNTIME] " .
-		"Enter pandora_planned_downtime_quiet_once_start().", 10);
-	
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
@@ -1475,15 +1466,12 @@ sub pandora_planned_downtime_monthly_start($$) {
 				"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 			
 			
-			logger($pa_config, $downtime->{'type_downtime'}, 10);
 			if ($downtime->{'type_downtime'} eq "quiet") {
 				pandora_planned_downtime_set_quiet_elements($pa_config,
 					$dbh, $downtime->{'id'});
 			}
 			elsif (($downtime->{'type_downtime'} eq "disable_agents")
 				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
-					
-					logger($pa_config, "ON DISABLE AGENTS/ALERTS", 10);
 					
 					pandora_planned_downtime_set_disabled_elements($pa_config,
 						$dbh, $downtime);
@@ -1545,11 +1533,6 @@ sub pandora_planned_downtime_monthly_stop($$) {
 			AND type_execution <> "once"');
 	
 	foreach my $downtime (@downtimes) {
-		
-		logger($pa_config, "Stop Time: " . $time, 10);
-		logger($pa_config, "Stop periodically_time_from: " .
-			$downtime->{'periodically_time_from'}, 10);
-		
 		#Convert to identical type.
 		#my $date_downtime = Time::Piece->strptime(
 		#	$downtime->{'periodically_time_to'},
@@ -1590,8 +1573,6 @@ sub pandora_planned_downtime_monthly_stop($$) {
 			}
 			elsif (($downtime->{'type_downtime'} eq "disable_agents")
 				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
-					
-					logger($pa_config, "OFF DISABLE AGENTS/ALERTS", 10);
 					
 					pandora_planned_downtime_unset_disabled_elements($pa_config,
 						$dbh, $downtime);
@@ -1656,10 +1637,6 @@ sub pandora_planned_downtime_weekly_start($$) {
 			($downtime->{'sunday'})) {
 				$found = 1;
 		}
-		
-		logger($pa_config, "Debug time = " . $time, 10);
-		logger($pa_config, "Debug periodically_time_to = " .
-			$downtime->{'periodically_time_to'}, 10);
 		
 		if ($found) {
 			#Convert to identical type.
@@ -1742,11 +1719,6 @@ sub pandora_planned_downtime_weekly_stop($$) {
 		#	"%H:%M:%S");
 		#	
 		#if ($date_now_time <= $date_downtime) {
-		
-		logger($pa_config, "Debug time = " . $time, 10);
-		logger($pa_config, "Debug periodically_time_to = " .
-			$downtime->{'periodically_time_to'}, 10);
-		
 		if (($number_day_week == 1) &&
 			($downtime->{'monday'})) {
 				$found = 1;
@@ -1819,9 +1791,6 @@ Update planned downtimes.
 ########################################################################
 sub pandora_planned_downtime ($$) {
 	my ($pa_config, $dbh) = @_;
-	
-	logger($pa_config, "[PLANNED_DOWNTIME] " .
-		"Enter pandora_planned_downtime()\n", 10);
 	
 	pandora_planned_downtime_disabled_once_start($pa_config, $dbh);
 	pandora_planned_downtime_disabled_once_stop($pa_config, $dbh);

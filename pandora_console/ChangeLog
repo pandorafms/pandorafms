@@ -1,5 +1,12 @@
 2013-02-25 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions.php, operation/events/events.build_table.php,
+	general/shortcut_bar.php: improved the code style.
+	
+	* images/add.disabled.png: added lost icon file for alerts.
+
+2013-02-25 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_api.php, operation/agentes/alerts_status.php:
 	improved the style code.
 	

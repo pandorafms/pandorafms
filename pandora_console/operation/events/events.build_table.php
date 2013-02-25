@@ -143,7 +143,7 @@ $idx = 0;
 foreach ($result as $event) {
 	$data = array ();
 	
-	if($meta) {
+	if ($meta) {
 		$event['server_url_hash'] = $servers_url_hash[$event['server_id']];
 		$event['server_url'] = $servers[$event['server_id']]['server_url'];
 		$event['server_name'] = $servers[$event['server_id']]['server_name'];
@@ -151,7 +151,7 @@ foreach ($result as $event) {
 	
 	// Clean url from events and store in array
 	$event['clean_tags'] = events_clean_tags($event['tags']);
-
+	
 	//First pass along the class of this row
 	$myclass = get_priority_class ($event["criticity"]);
 	$table->rowclass[] = $myclass;
@@ -195,20 +195,20 @@ foreach ($result as $event) {
 	$data[$i] .= html_print_input_hidden('similar_ids_' . $event["id_evento"], $similar_ids, true);
 	$data[$i] .= html_print_input_hidden('timestamp_first_' . $event["id_evento"], $timestamp_first, true);
 	$data[$i] .= html_print_input_hidden('timestamp_last_' . $event["id_evento"], $timestamp_last, true);
-
+	
 	// Store server id if is metaconsole. 0 otherwise
-	if($meta) {
+	if ($meta) {
 		$server_id = $event['server_id'];
 		
 		// If meta activated, propagate the id of the event on node (source id)
 		$data[$i] .= html_print_input_hidden('source_id_' . $event["id_evento"], $event['id_source_event'], true);
-	}		
+	}
 	else {
 		$server_id = 0;
 	}
 	
 	$data[$i] .= html_print_input_hidden('server_id_' . $event["id_evento"], $server_id, true);
-
+	
 	if (empty($event['event_rep'])) {
 		$event['event_rep'] = 0;
 	}
@@ -426,7 +426,7 @@ foreach ($result as $event) {
 				array ("title" => __('Validate event')));
 			$data[$i] .= '</a>&nbsp;';
 		}
-
+		
 		// Delete event
 		if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
 			if($event['estado'] != 2) {
@@ -470,18 +470,18 @@ foreach ($result as $event) {
 echo '<div id="events_list">';
 if (!empty ($table->data)) {
 	echo '<div style="clear:both"></div>';
-	if($allow_pagination) {
+	if ($allow_pagination) {
 		ui_pagination ($total_events, $url, $offset, $pagination);
 	}
 	
-	if($allow_action) {
+	if ($allow_action) {
 		echo '<form method="post" id="form_events" action="'.$url.'">';	
 		echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
 	}
-
+	
 	html_print_table ($table);
 	
-	if($allow_action) {
+	if ($allow_action) {
 		echo '<div style="width:'.$table->width.';" class="action-buttons">';
 		if (tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
 			html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected();', 'class="sub ok"');

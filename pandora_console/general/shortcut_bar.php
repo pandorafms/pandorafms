@@ -19,11 +19,11 @@ global $config;
 // Login check
 check_login ();
 
-if (is_ajax()){
+if (is_ajax()) {
 	require_once("include/functions_reporting.php");
 	
 	$save_item_shorcut  = get_parameter("save_item_shorcut", 0);
-
+	
 	if ($save_item_shorcut) {
 		$data = get_parameter("data", '');
 		$id_user = get_parameter('id_user', 0);
@@ -51,14 +51,14 @@ if (is_ajax()){
 	$get_opened_incidents = get_parameter('get_opened_incidents', 0);
 	
 	// Update if shortcut is visible or hidden
-	if ($update_shortcut_state){
+	if ($update_shortcut_state) {
 		$value = get_parameter('value', 0);
 		db_process_sql_update('tusuario', array('shortcut' => $value), array('id_user' => $config['id_user']));
 	}
 	
 	// Get critical events (realtime update)
 	if ($get_critical_events){
-
+		
 		$own_info = get_user_info ($config['id_user']);
 		
 		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
@@ -121,7 +121,7 @@ if ($shortcut_state == 0)
 if ($shortcut_state == 2) {
 	echo "<div id='shortcut_button' style='position: fixed; overflow: hidden; bottom: 0px; left: 0px; width: 185px; height: 40px; background-color: #FFFFFF; border: 1px solid #808080;  border-top-left-radius: 10px; border-top-right-radius: 10px;'>";
 }
-else{
+else {
 	echo "<div id='shortcut_button' style='position: fixed; overflow: hidden; bottom: 0px; left: 0px; width: 185px; height: 0px; background-color: #FFFFFF; border: 1px solid #808080;  border-top-left-radius: 10px; border-top-right-radius: 10px;'>";
 }
 	html_print_image("images/pandora_textlogo.png", false, array("title" => __("Press here to activate shortcut bar")));
@@ -137,7 +137,7 @@ echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 $own_info = get_user_info ($config['id_user']);
 
 // If user is admin can see all groups
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM")){		
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM")) {		
 	echo "<a href='index.php?sec=estado&sec2=operation/agentes/alerts_status&refr=120&filter=fired&free_search=&filter_button=Filter'>";
 }
 else {
@@ -154,7 +154,7 @@ echo "&nbsp;";
 $data_reporting = reporting_get_group_stats();
 
 echo "<span id='shortcut_alerts_fired' style='font-size: 9pt; color:#696969; font-weight: bold;' title='" . __('Alerts fired') . "'>" . $data_reporting['monitor_alerts_fired'] . "</span>";
-if (!empty($own_groups)){
+if (!empty($own_groups)) {
 	echo "</a>";
 }
 echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -162,7 +162,7 @@ echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 $own_info = get_user_info ($config['id_user']);
 
 // If user is admin can see all groups
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM")){	
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM")) {	
 	echo "<a href='index.php?sec=eventos&sec2=operation/events/events&status=3&severity=4&event_view_hr=8&ev_group=0&group_rep=1&filter_only_alert=-1'>";
 }
 else {
@@ -189,7 +189,7 @@ if ($shortcut_events == false)
 	$shortcut_events = array();
 
 $critical_events = 0;
-foreach($shortcut_events as $event){
+foreach ($shortcut_events as $event) {
 	if ($event['criticity'] == 4 and $event['estado'] == 0) {
 		$critical_events++;
 	}
@@ -199,7 +199,7 @@ echo "<span id='shortcut_critical_events' style='font-size: 9pt; color:#696969; 
 echo "</a>";
 echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 // Calculate opened incidents (id integria incidents are not enabled)
-if ($config['integria_enabled'] == 0){
+if ($config['integria_enabled'] == 0) {
 	echo "<a href='index.php?sec=incidencias&sec2=operation/incidents/incident&estado=0'>";
 	html_print_image("images/book_edit.png", false, array("title" => __("Incidents opened"),  "style" => "margin-bottom: -5px;"));
 	echo "&nbsp;";
@@ -242,7 +242,7 @@ echo "</a>";
 
 // Login in Console and shortcut bar is disabled
 // This will show and hide the shortcut value in Javascript code
-if (isset($_POST['nick']) and $shortcut_state != 2){
+if (isset($_POST['nick']) and $shortcut_state != 2) {
 	html_print_input_hidden("login_console", 1);
 }
 else {
@@ -334,7 +334,7 @@ echo "</div>";
 			}
 		);
 	}
-
+	
 	function shortcut_check_events() {
 		jQuery.post ("ajax.php",
 			{"page" : "general/shortcut_bar",
@@ -344,7 +344,7 @@ echo "</div>";
 				$('#shortcut_critical_events').text(data);
 			}
 		);
-	}	
+	}
 	
 	function shortcut_check_incidents() {
 		jQuery.post ("ajax.php",
@@ -355,8 +355,8 @@ echo "</div>";
 				$('#shortcut_incidents_opened').text(data);
 			}
 		);
-	}		
-		
+	}
+	
 	$(document).ready (function () {
 		//TODO: Fix the change the content for the menu as html.
 		setInterval("shortcut_check_alerts()", (10 * 1000)); //10 seconds between ajax request
@@ -379,17 +379,17 @@ echo "</div>";
 				$("<li style='display: inline; padding-right: 10px;'></li>").html(item).appendTo($("#shortcut_icons_box > ul"));
 				
 				jQuery.post ('ajax.php', 
-						 {"page": "general/shortcut_bar",
-						 "save_item_shorcut": 1,
-						 "id_user": "<?php echo $config['id_user'];?>",
-						 "data": content_item
-						 },
-						 function (data) {
-						 }
+					{"page": "general/shortcut_bar",
+					"save_item_shorcut": 1,
+					"id_user": "<?php echo $config['id_user'];?>",
+					"data": content_item
+					},
+					function (data) {
+					}
 				);
 			}
 		});
-
+		
 		$(".item_drag_shortcut").draggable({
 			appendTo: 'body',
 			helper: "clone",

@@ -365,7 +365,7 @@ switch ($action) {
 				$next = 6;
 			}
 			
-			//Admin options only for IW flag
+			//Admin options only for RM flag
 			if (check_acl ($config['id_user'], 0, "RM")) {
 				
 				$table->head[$next] = __('Private');
@@ -416,16 +416,20 @@ switch ($action) {
 				}
 				
 				
-				if ($report["private"] == 1)
-					$data[$next] = __('Yes');
-				else
-					$data[$next] = __('No');
-				
-				$next++;
-				
-				
-				$data[$next] = ui_print_group_icon($report['id_group'], true, "groups_small", '', !defined('METACONSOLE')); 
-				$next++;
+				//Admin options only for RM flag
+				if (check_acl ($config['id_user'], 0, "RM")) {
+					
+					if ($report["private"] == 1)
+						$data[$next] = __('Yes');
+					else
+						$data[$next] = __('No');
+					
+					$next++;
+					
+					
+					$data[$next] = ui_print_group_icon($report['id_group'], true, "groups_small", '', !defined('METACONSOLE')); 
+					$next++;
+				}
 				
 				$type_access_selected = reports_get_type_access($report);
 				$edit = false;

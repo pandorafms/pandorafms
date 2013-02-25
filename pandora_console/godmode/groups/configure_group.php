@@ -139,7 +139,7 @@ $table->data[5][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255
 $table->data[6][0] = __('Description');
 $table->data[6][1] = html_print_input_text ('description', $description, '', 60, 255, true);
 
-$table->data[7][0] = __('Contact') . ui_print_help_tip (__("Contact information accessible through the _group_contact_ macro"), true);
+$table->data[7][0] = __('Contact') . ui_print_help_tip (__("Contact information accessible through the _groupcontact_ macro"), true);
 $table->data[7][1] = html_print_textarea ('contact', 4, 40, $contact, "style='min-height: 0px;'", true);
 
 $table->data[8][0] = __('Other') . ui_print_help_tip (__("Information accessible through the _group_other_ macro"), true);

@@ -1,3 +1,8 @@
+2013-02-25  Sancho Lerena <slerena@artica.es>
+
+	* PandoraFMS/Config.pm: Fixed parsing of mta_from, avoiding problems
+        on blank spaces.
+
 2013-02-18  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Fixed the exception of "status" 

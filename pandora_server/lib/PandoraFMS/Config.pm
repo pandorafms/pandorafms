@@ -390,7 +390,7 @@ sub pandora_load_config {
 			$pa_config->{'mta_auth'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^mta_from\s(.*)/i) { 
-			$pa_config->{'mta_from'}= $1; 
+			$pa_config->{'mta_from'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
 			$pa_config->{'snmp_logfile'}= clean_blank($1); 

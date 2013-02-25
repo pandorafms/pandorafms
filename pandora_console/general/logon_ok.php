@@ -99,67 +99,161 @@ $table->data[5][0] =
 html_print_table ($table);
 unset ($table);
 
-echo '<table class="databox" cellpadding="4" cellspacing="4" width="100%">';
-echo '<thead><tr><th colspan="2">'.__('Pandora FMS Overview').'</th></tr></thead><tbody>';
+///////////////
+// Overview
+///////////////
 
-$cells = array ();
-$cells[0][0] = __('Total agents');
-$cells[0][1] = $data["total_agents"];
-$cells[0]["color"] = "#000";
-$cells[0]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
-
-$cells[1][0] = __('Monitor checks');
-$cells[1][1] = $data["monitor_checks"];
-$cells[1]["color"] = "#000";
-$cells[1]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
-
-$cells[2][0] = __('Monitors critical');
-$cells[2][1] = $data["monitor_critical"];
-$cells[2]["color"] = "#c00";
-$cells[2]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=2";
-
-$cells[3][0] = __('Monitors warning');
-$cells[3][1] = $data["monitor_warning"];
-$cells[3]["color"] = "#ffb900";
-$cells[3]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=1";
-
-$cells[4][0] = __('Monitors normal');
-$cells[4][1] = $data["monitor_ok"];
-$cells[4]["color"] = "#8ae234";
-$cells[4]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=0";
-
-$cells[5][0] = __('Monitors unknown');
-$cells[5][1] = $data["monitor_unknown"];
-$cells[5]["color"] = "#aaa";
-$cells[5]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=3";
-
-$cells[6][0] = __('Alerts defined');
-$cells[6][1] = $data["monitor_alerts"];
-$cells[6]["color"] = "#000";
-$cells[6]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
-
-$cells[7][0] = __('Users defined');
-$cells[7][1] = count (get_users ());
-$cells[7]["color"] = "#000";
+// Link URLS
+$urls = array();
+$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
+$urls['monitor_checks'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
+$urls['monitor_critical'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=2";
+$urls['monitor_warning'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=1";
+$urls['monitor_ok'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=0";
+$urls['monitor_unknown'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=3";
+$urls['monitor_alerts'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
+$urls['monitor_alerts_fired'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
 if (check_acl ($config['id_user'], 0, "UM")) {
-	$user_link = 'index.php?sec=gusuarios&amp;sec2=godmode/users/user_list';
+	$urls['defined_users'] = "index.php?sec=gusuarios&amp;sec2=godmode/users/user_list";
 }
 else{
-	$user_link = '#';
-}
-$cells[7]["href"] = $user_link;
-
-foreach ($cells as $key => $row) {
-	//Switch class around
-	$class = (($key % 2) ? "datos2" : "datos");
-	echo '<tr><td class="'.$class.'"><b>'.$row[0].'</b></td>';
-	if ($row[1] === 0) {
-		$row[1] = "-";
-	}
-	echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" href="'.$row["href"].'" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
+	$urls['defined_users'] = 'javascript:';
 }
 
-echo '</tbody></table>';
+// Transparent table as template to build subtables
+$table_transparent->class = "none";
+$table_transparent->cellpadding = 0;
+$table_transparent->cellspacing = 0;
+$table_transparent->head = array ();
+$table_transparent->data = array ();
+$table_transparent->style[0] = $table_transparent->style[1] = $table_transparent->style[2] = $table_transparent->style[3] = 'text-align:center; width: 25%;';
+$table_transparent->width = "100%";
+
+// Agents and modules table
+$table_am = clone $table_transparent;
+
+$tdata = array();
+$tdata[0] = html_print_image('images/bricks.png', true, array('title' => __('Total agents'), 'width' => '20px'));
+$tdata[1] = $data["total_agents"] == 0 ? '-' : $data["total_agents"];
+$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
+
+$tdata[2] = html_print_image('images/brick.png', true, array('title' => __('Monitor checks'), 'width' => '20px'));
+$tdata[3] = $data["monitor_checks"] == 0 ? '-' : $data["monitor_checks"];
+$tdata[3] = '<a style="color: black;" class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[3] . '</a>';
+$table_am->rowclass[] = '';
+$table_am->data[] = $tdata;
+
+// Modules by status table
+$table_mbs = clone $table_transparent;
+
+$tdata = array();
+$tdata[0] = html_print_image('images/status_sets/default/agent_critical_ball.png', true, array('title' => __('Monitor critical'), 'width' => '20px'));
+$tdata[1] = $data["monitor_critical"] == 0 ? '-' : $data["monitor_critical"];
+$tdata[1] = '<a style="color: ' . COL_CRITICAL . ';" class="big_data" href="' . $urls['monitor_critical'] . '">' . $tdata[1] . '</a>';
+
+$tdata[2] = html_print_image('images/status_sets/default/agent_warning_ball.png', true, array('title' => __('Monitor warning'), 'width' => '20px'));
+$tdata[3] = $data["monitor_warning"] == 0 ? '-' : $data["monitor_warning"];
+$tdata[3] = '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
+$table_mbs->rowclass[] = '';
+$table_mbs->data[] = $tdata;
+
+$tdata = array();
+$tdata[0] = html_print_image('images/status_sets/default/agent_ok_ball.png', true, array('title' => __('Monitor normal'), 'width' => '20px'));
+$tdata[1] = $data["monitor_ok"] == 0 ? '-' : $data["monitor_ok"];
+$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
+
+$tdata[2] = html_print_image('images/status_sets/default/agent_no_monitors_ball.png', true, array('title' => __('Monitor unknown'), 'width' => '20px'));
+$tdata[3] = $data["monitor_unknown"] == 0 ? '-' : $data["monitor_unknown"];
+$tdata[3] = '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
+$table_mbs->rowclass[] = '';
+$table_mbs->data[] = $tdata;
+
+$tdata = array();
+$table_mbs->colspan[count($table_mbs->data)][0] = 4;
+$tdata[0] = '<div style="margin: auto; width: 250px;">' . graph_agent_status (false, 250, 150, true) . '</div>';
+$table_mbs->rowclass[] = '';
+$table_mbs->data[] = $tdata;
+
+// Alerts table
+$table_al = clone $table_transparent;
+
+$tdata = array();
+$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts'), 'width' => '20px'));
+$tdata[1] = $data["monitor_alerts"] == 0 ? '-' : $data["monitor_alerts"];
+$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
+
+$tdata[2] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts'), 'width' => '20px'));
+$tdata[3] = $data["monitor_alerts_fired"] == 0 ? '-' : $data["monitor_alerts_fired"];
+$tdata[3] = '<a style="color: ' . COL_ALERTFIRED . ';" class="big_data" href="' . $urls["monitor_alerts_fired"] . '">' . $tdata[3] . '</a>';
+$table_al->rowclass[] = '';
+$table_al->data[] = $tdata;
+
+// Users table
+$table_us = clone $table_transparent;
+
+$tdata = array();
+$tdata[0] = html_print_image('images/group.png', true, array('title' => __('Defined users'), 'width' => '20px'));
+$tdata[1] = count (get_users ());
+$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls["defined_users"] . '">' . $tdata[1] . '</a>';
+
+$tdata[2] = $tdata[3] = '&nbsp;';
+$table_us->rowclass[] = '';
+$table_us->data[] = $tdata;
+
+// Overview table build
+$table->class = "databox";
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->head = array ();
+$table->data = array ();
+$table->style[0] = 'text-align:center;';
+$table->width = "100%";
+$table->head[0] = __('Pandora FMS Overview');
+$table->head_colspan[0] = 4; 
+
+// Total agents and modules
+$tdata = array();
+$tdata[0] = '<fieldset class="databox" style="width:97%;">
+				<legend style="text-align:left; color: #666;">' . 
+					__('Total agents and monitors') . 
+				'</legend>' . 
+				html_print_table($table_am, true) . '</fieldset>';
+$table->rowclass[] = '';
+$table->data[] = $tdata;
+
+// Modules by status
+$tdata = array();
+$tdata[0] = '<fieldset class="databox" style="width:97%;">
+				<legend style="text-align:left; color: #666;">' . 
+					__('Monitors by status') . 
+				'</legend>' . 
+				html_print_table($table_mbs, true) . '</fieldset>';
+$table->rowclass[] = '';
+$table->data[] = $tdata;
+
+// Alerts
+$tdata = array();
+$tdata[0] = '<fieldset class="databox" style="width:97%;">
+				<legend style="text-align:left; color: #666;">' . 
+					__('Defined and fired alerts') . 
+				'</legend>' . 
+				html_print_table($table_al, true) . '</fieldset>';
+$table->rowclass[] = '';
+$table->data[] = $tdata;
+
+// Users
+$tdata = array();
+$tdata[0] = '<fieldset class="databox" style="width:97%;">
+				<legend style="text-align:left; color: #666;">' . 
+					__('Users') . 
+				'</legend>' . 
+				html_print_table($table_us, true) . '</fieldset>';
+$table->rowclass[] = '';
+$table->data[] = $tdata;
+
+html_print_table($table);
+unset($table);
+
 echo "</div>";
 echo '<div id="activity" style="width:87%;">';
 echo "<br /><br />";

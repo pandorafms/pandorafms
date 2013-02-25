@@ -1339,22 +1339,30 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 }
 
 /**
- * Print a pie graph with events data of agent
+ * Print a pie graph with events data of agent or all agents (if id_agent = false)
  * 
  * @param integer id_agent Agent ID
  * @param integer width pie graph width
  * @param integer height pie graph height
  * @param bool return or echo flag
  */
-function graph_agent_status ($id_agent, $width = 300, $height = 200, $return = false) {
+function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $return = false) {
 	global $config;
 	
-	$filter = array('id_agente' => $id_agent, 'disabled' => 0);
-	$fields = array('critical_count Critical', 
-				'warning_count Warning', 
-				'normal_count Normal', 
-				'unknown_count Unknown'/*, 
-				'sum(notinit_count) "Not init"'*/);
+	
+	$filter = array('disabled' => 0, 'id_grupo' => array_keys(users_get_groups(false, 'AR', false)));
+	
+
+	if(!empty($id_agent)) {
+		$filter['id_agente'] = $id_agent; 
+	}
+	
+	$fields = array('SUM(critical_count) Critical', 
+				'SUM(warning_count) Warning', 
+				'SUM(normal_count) Normal', 
+				'SUM(unknown_count) Unknown', 
+				'SUM(fired_count) "Fired Alerts"'/*, 
+				'SUM(notinit_count) "Not init"'*/);
 	
 	$agent_status = db_get_all_rows_filter('tagente', $filter, $fields);
 	
@@ -1363,7 +1371,7 @@ function graph_agent_status ($id_agent, $width = 300, $height = 200, $return = f
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
-	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN/*, COL_NOTINIT*/);
+	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN, COL_ALERTFIRED/*, COL_NOTINIT*/);
 	
 	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
 		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "hidden", $colors);

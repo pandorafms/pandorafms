@@ -266,12 +266,6 @@ if (enterprise_load (\%Config) == 0) {
 	print_message (\%Config, " [*] Pandora FMS Enterprise module loaded.", 1);
 }
 
-# Daemonize and put in background
-if ($Config{'daemon'} == 1) {
-	print_message (\%Config, " [*] Backgrounding Pandora FMS Server process.\n", 1);
-	pandora_daemonize (\%Config);
-}
-
 if (enterprise_load (\%Config) != 0) {
 	if($Config{'policy_manager'} == 1) {
 		# Start thread to patrol policy queue
@@ -290,6 +284,12 @@ pandora_startup ();
 # Generate 'going up' events
 foreach my $server (@Servers) {
 	$server->upEvent ();
+}
+
+# Daemonize and put in background
+if ($Config{'daemon'} == 1) {
+	print_message (\%Config, " [*] Backgrounding Pandora FMS Server process.\n", 1);
+	pandora_daemonize (\%Config);
 }
 
 # Main loop

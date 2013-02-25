@@ -1649,12 +1649,12 @@ function get_periods ($custom = true, $show_default = true) {
 	
 	$periods = array ();
 	
-	if($custom) {
+	if ($custom) {
 		$periods[-1] = __('custom');
-	}	
+	}
 	
-	if(empty($config['interval_values'])) {
-		if($show_default) {
+	if (empty($config['interval_values'])) {
+		if ($show_default) {
 			$periods[SECONDS_5MINUTES] = sprintf(__('%s minutes'), '5');
 			$periods[SECONDS_30MINUTES] = sprintf(__('%s minutes'), '30 ');
 			$periods[SECONDS_1HOUR] = __('1 hour');
@@ -1680,7 +1680,7 @@ function get_periods ($custom = true, $show_default = true) {
 			$periods[$v] = human_time_description_raw ($v, true);
 		}
 	}
-
+	
 	return $periods;
 }
 

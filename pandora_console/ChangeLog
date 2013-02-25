@@ -1,3 +1,11 @@
+2013-02-25  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/constants.php
+	images/bell_error.png
+	general/logon_ok.php: Restructurated the tactical view
+	overview table. TODO: Change icons
+
 2013-02-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions.php, operation/events/events.build_table.php,

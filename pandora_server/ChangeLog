@@ -1,3 +1,9 @@
+2013-02-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/Core.pm: erased the spam traces (useful for the
+	developers but not for to users) in the code for the Planned
+	Downtimes.
+
 2013-02-22  Sancho Lerena <slerena@artica.es>
 
 	*  lib/PandoraFMS/Tools.pm: My MacOS boxes was being ignored

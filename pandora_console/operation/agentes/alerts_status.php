@@ -64,11 +64,12 @@ $idAgent = get_parameter_get('id_agente', 0);
 
 // Show alerts for specific agent
 if ($idAgent != 0) {
-	$url = $url.'&id_agente='.$idAgent;
+	$url = $url . '&id_agente=' . $idAgent;
 	
 	$id_group = agents_get_agent_group ($idAgent);
 	
-	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
+	$is_extra = enterprise_hook('policies_is_agent_extra_policy',
+		array($id_agente));
 	
 	if($is_extra === ENTERPRISE_NOT_HOOK) {
 		$is_extra = false;
@@ -120,7 +121,7 @@ if ($free_search != '') {
 				'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE "%' . $free_search . '%") OR ' .
 				'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (SELECT id_agente FROM tagente WHERE nombre LIKE "%' . $free_search . '%"))' .
 				')';
-
+			
 			break;
 		case "postgresql":
 		case "oracle":
@@ -165,11 +166,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectModuleUp = $selected;
-				$order = array('field' => 'agent_module_name', 'order' => 'ASC');
+				$order = array('field' => 'agent_module_name',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectModuleDown = $selected;
-				$order = array('field' => 'agent_module_name', 'order' => 'DESC');
+				$order = array('field' => 'agent_module_name',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -177,11 +180,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectTemplateUp = $selected;
-				$order = array('field' => 'template_name', 'order' => 'ASC');
+				$order = array('field' => 'template_name',
+					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectTemplateDown = $selected;
-				$order = array('field' => 'template_name', 'order' => 'DESC');
+				$order = array('field' => 'template_name',
+					'order' => 'DESC');
 				break;
 		}
 		break;
@@ -195,7 +200,8 @@ switch ($sortField) {
 			$selectModuleDown = '';
 			$selectTemplateUp = '';
 			$selectTemplateDown = '';
-			$order = array('field' => 'agent_module_name', 'order' => 'ASC');
+			$order = array('field' => 'agent_module_name',
+				'order' => 'ASC');
 		}
 		else {
 			$selectDisabledUp = '';
@@ -206,7 +212,8 @@ switch ($sortField) {
 			$selectModuleDown = '';
 			$selectTemplateUp = '';
 			$selectTemplateDown = '';
-			$order = array('field' => 'agent_module_name', 'order' => 'ASC');
+			$order = array('field' => 'agent_module_name',
+				'order' => 'ASC');
 		}
 		break;
 }

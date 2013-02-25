@@ -2484,34 +2484,34 @@ function api_set_create_module_template($id, $thrash1, $other, $thrash3) {
 		returnError('error_module_to_template', __('Error assigning module to template. Id_module cannot be left blank.'));
 		return;
 	}
-
-	if ($other['data'][1] == ""){
+	
+	if ($other['data'][1] == "") {
 		returnError('error_module_to_template', __('Error assigning module to template. Id_agent cannot be left blank.'));
 		return;
 	}
 	
 	$result_template = alerts_get_alert_template($id);
-		
+	
 	if (!$result_template){
 		returnError('error_module_to_template', __('Error assigning module to template. Id_template doensn\'t exists.'));
 		return;
-	}	
-		
+	}
+	
 	$id_module = $other['data'][0];
 	$id_agent = $other['data'][1];
 	
 	$result_agent = agents_get_name($id_agent);
 	
-	if (!$result_agent){
+	if (!$result_agent) {
 		returnError('error_module_to_template', __('Error assigning module to template. Id_agent doesn\'t exists.'));
-		return;		
+		return;
 	}
-
+	
 	$result_module = db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_module);
-
-	if (!$result_module){
+	
+	if (!$result_module) {
 		returnError('error_module_to_template', __('Error assigning module to template. Id_module doesn\'t exists.'));
-		return;			
+		return;
 	}
 	
 	$id_template_module = alerts_create_alert_agent_module($id_module, $id);
@@ -2539,21 +2539,21 @@ function api_set_create_module_template($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_delete_module_template($id, $thrash1, $other, $thrash3) {
-
+	
 	if ($id == "") {
 		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template cannot be left blank.'));
 		return;
 	}
-
+	
 	$result_module_template = alerts_get_alert_agent_module($id);
-
-	if (!$result_module_template){
+	
+	if (!$result_module_template) {
 		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template doesn\'t exists.'));
-		return;		
+		return;
 	}
 	
 	$result = alerts_delete_alert_agent_module($id);
-
+	
 	if ($result == 0) {
 		// TODO: Improve the error returning more info
 		returnError('error_delete_module_template', __('Error deleting module template.'));
@@ -2577,7 +2577,7 @@ function api_set_delete_module_template($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
-
+	
 	// Return all groups
 	$allGroups = db_get_all_rows_filter('tgrupo', array(), 'id_grupo');
 	
@@ -2590,32 +2590,32 @@ function api_set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
 	$groups[] = 0;
 	
 	$id_groups = implode(',', $groups);
-
+	
 	$sql = sprintf ("SELECT id_agente  
 		FROM tagente 
 		WHERE id_grupo IN (%s) AND disabled = 0", 
 		$id_groups);
-		
+	
 	$id_agents = array();
 	$result_agents = array();
-
+	
 	$id_agents = db_get_all_rows_sql($sql);
 	
 	foreach ($id_agents as $id_agent){
 		$result_agents[] = $id_agent['id_agente'];
 	}
-
+	
 	$agents_string = implode(',', $result_agents);
 	
 	$sql = sprintf ("SELECT talert_template_modules.id
-	FROM talert_template_modules
-		INNER JOIN tagente_modulo t2
-			ON talert_template_modules.id_agent_module = t2.id_agente_modulo
-		INNER JOIN tagente t3
-			ON t2.id_agente = t3.id_agente
-		INNER JOIN talert_templates t4
-			ON talert_template_modules.id_alert_template = t4.id
-	WHERE id_agent_module in (%s)", $agents_string);	
+		FROM talert_template_modules
+			INNER JOIN tagente_modulo t2
+				ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+			INNER JOIN tagente t3
+				ON t2.id_agente = t3.id_agente
+			INNER JOIN talert_templates t4
+				ON talert_template_modules.id_alert_template = t4.id
+		WHERE id_agent_module in (%s)", $agents_string);	
 	
 	$alerts = db_get_all_rows_sql($sql);
 	
@@ -2633,7 +2633,7 @@ function api_set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
 		$errors = $total_alerts - $count_results;	
 		returnError('error_validate_all_alerts', __('Error validate all alerts. Failed ' . $errors . '.'));
 	}
-	else{
+	else {
 		returnData('string', array('type' => 'string', 'data' => __('Correct validating of all alerts.')));	
 	}
 }
@@ -2652,24 +2652,24 @@ function api_set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
-
+	
 	# Get all policies
 	$policies = enterprise_hook('policies_get_policies', array(false, false, false, true));
-
+	
 	if ($duplicated === ENTERPRISE_NOT_HOOK) {
 		returnError('error_validate_all_policy_alerts', __('Error validating all alert policies.'));
-		return;	
-	}	
-
+		return;
+	}
+	
 	// Count of valid results
 	$total_alerts = 0;
 	$count_results = 0;
 	// Check all policies
-	foreach ($policies as $policy){
+	foreach ($policies as $policy) {
 		$policy_alerts = array();
 		$policy_alerts = enterprise_hook('policies_get_alerts',  array($policy['id'], false, false));
-	
-
+		
+		
 		
 		// Number of alerts in this policy
 		if ($policy_alerts != false){
@@ -2686,8 +2686,8 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
 		$id_pol_alerts = implode(',', $result_pol_alerts);
 		
 		// If the policy has alerts
-		if (count($result_pol_alerts) != 0){
-			$sql = sprintf ("SELECT id  
+		if (count($result_pol_alerts) != 0) {
+			$sql = sprintf ("SELECT id
 				FROM talert_template_modules 
 				WHERE id_policy_alerts IN (%s)", 
 				$id_pol_alerts);
@@ -2695,7 +2695,7 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
 			$id_alerts = db_get_all_rows_sql($sql);
 			
 			$result_alerts = array();
-			foreach ($id_alerts as $id_alert){
+			foreach ($id_alerts as $id_alert) {
 				$result_alerts[] = $id_alert['id'];
 			}
 			
@@ -2712,8 +2712,8 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
 	}
 	
 	// Check results
-	if ($total_alerts > $count_results){
-		$errors = $total_alerts - $count_results;	
+	if ($total_alerts > $count_results) {
+		$errors = $total_alerts - $count_results;
 		returnError('error_validate_all_alerts', __('Error validate all policy alerts. Failed ' . $errors . '.'));
 	}
 	else {
@@ -2829,24 +2829,24 @@ function api_set_add_agent_policy($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_add_data_module_policy', __('Error adding data module to policy. Id_policy cannot be left blank.'));
-		return;			
+		return;
 	}
-
-	if ($other['data'][0] == ""){
+	
+	if ($other['data'][0] == "") {
 		returnError('error_add_data_module_policy', __('Error adding data module to policy. Module_name cannot be left blank.'));
-		return;			
+		return;
 	}
 	
 	// Check if the module is already in the policy
 	$name_module_policy = enterprise_hook('policies_get_modules', array($id, array('name'=>$other['data'][0]), 'name'));
-
+	
 	if ($name_module_policy === ENTERPRISE_NOT_HOOK) {
 		returnError('error_add_data_module_policy', __('Error adding data module to policy.'));
-		return;	
-	}	
-
+		return;
+	}
+	
 	$values = array();
 	$values['id_tipo_modulo'] = $other['data'][1];
 	$values['description'] = $other['data'][2];
@@ -2864,13 +2864,13 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
  	$values['history_data'] = $other['data'][14];
  	$values['configuration_data'] = $other['data'][15];	
  	
- 	if ($name_module_policy !== false){
-		if ($name_module_policy[0]['name'] == $other['data'][0]){
+ 	if ($name_module_policy !== false) {
+		if ($name_module_policy[0]['name'] == $other['data'][0]) {
 			returnError('error_add_data_module_policy', __('Error adding data module to policy. The module is already in the policy.'));
-			return;				
+			return;
 		}
 	}
- 
+	
 	$success = enterprise_hook('policies_create_module', array($other['data'][0], $id, 1, $values, false)); 
 	
 	if ($success)
@@ -2878,7 +2878,7 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 		returnData('string', array('type' => 'string', 'data' => $success));
 	else
 		returnError('error_add_data_module_policy', 'Error adding data module to policy.');	
-
+	
 }
 
 /**
@@ -2899,29 +2899,29 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_update_data_module_policy', __('Error updating data module in policy. Id_policy cannot be left blank.'));
-		return;			
+		return;
 	}
 	
-	if ($other['data'][0] == ""){
+	if ($other['data'][0] == "") {
 		returnError('error_update_data_module_policy', __('Error updating data module in policy. Id_policy_module cannot be left blank.'));
-		return;			
-	}	
+		return;
+	}
 	
 	// Check if the module exists
 	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
-
+	
 	if ($module_policy === false) {
 		returnError('error_update_data_module_policy', __('Error updating data module in policy. Module doesn\'t exists.'));
-		return;					
+		return;
 	}
 	
-	if ($module_policy[0]['id_module'] != 1){
+	if ($module_policy[0]['id_module'] != 1) {
 		returnError('error_update_network_module_policy', __('Error updating network module in policy. Module type is not network type.'));
-		return;	
-	}	
-
+		return;
+	}
+	
 	$fields_data_module = array('id','description', 'id_module_group', 'min', 'max', 'post_process', 'module_interval', 
 						 'min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical',
 						 'history_data', 'configuration_data');

@@ -1,3 +1,11 @@
+2013-02-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_api.php, operation/agentes/alerts_status.php:
+	improved the style code.
+	
+	* include/functions_alerts.php: in function "get_group_alerts" fixed
+	the get all alerts, sometimes set empty the return array.
+
 2013-02-25  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reports.php

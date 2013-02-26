@@ -211,8 +211,8 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		$check_status = check_pass_status($nick, $pass);
 		
 		switch ($check_status) {
-			case 1: //first change
-			case 2: //pass expired
+			case PASSSWORD_POLICIES_FIRST_CHANGE: //first change
+			case PASSSWORD_POLICIES_EXPIRED: //pass expired
 				$expired_pass = true;
 				login_change_password($nick);
 				break;

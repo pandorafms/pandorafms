@@ -47,7 +47,6 @@ $(document).ready (function () {
 							opacity: 0.5,
 							background: "black"
 						},
-						bgiframe: jQuery.browser.msie,
 						width: 700,
 						height: 300
 					})
@@ -96,8 +95,7 @@ $(document).ready (function () {
 					overlay: {
 								opacity: 0.5,
 								background: "black"
-							},
-					bgiframe: jQuery.browser.msie
+							}
 		});
 		
 		$("#submit-hide-license-error-msg").click (function () {
@@ -123,13 +121,12 @@ $(document).ready (function () {
 					.dialog ({
 						title: $("a#dialog_license_info").attr ("title"),
 						resizable: false,
-                        draggable: true,
+						draggable: true,
 						modal: true,
 						overlay: {
 							opacity: 0.5,
 							background: "black"
 						},
-						bgiframe: jQuery.browser.msie,
 						width: 500,
 						height: 190
 					})
@@ -151,14 +148,13 @@ $(document).ready (function () {
 					overlay: {
 								opacity: 0.5,
 								background: "black"
-							},
-					bgiframe: jQuery.browser.msie
+							}
 		});
 	
 	}
 	
 	if ($('#login_blocked').length) {
-	
+		
 		$( "#login_blocked" ).dialog({
 					resizable: true,
 					draggable: true,
@@ -168,10 +164,9 @@ $(document).ready (function () {
 					overlay: {
 								opacity: 0.5,
 								background: "black"
-							},
-					bgiframe: jQuery.browser.msie
+							}
 		});
-
+		
 	}
 
 	// Forced title code

@@ -1,5 +1,10 @@
 2013-02-26  Ramon Novoa  <rnovoa@artica.es>
 
+	* godmode/agentes/module_manager_editor_network.php: Close the SNMP
+	  browser after selecting an OID.
+
+2013-02-26  Ramon Novoa  <rnovoa@artica.es>
+
 	* images/hand_point.png: Added to repository. Hand icon.
 
 	* include/functions_snmp_browser.php: Style fixes.

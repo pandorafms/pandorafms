@@ -293,7 +293,7 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 		$return_tag = tags_update_module_tag ($id, $tags);
 	}
 	
-	if ($return_tag === false){
+	if ($return_tag === false) {
 		return ERR_DB;
 	}
 	
@@ -304,8 +304,12 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 	}
 	
 	// Disable action requires a special function
-	if(isset($values['disabled'])) {
-		$result_disable = modules_change_disabled($id, $values['disabled']);
+	if (isset($values['disabled'])) {
+		$result_disable = NOERR;
+		if ($values['disabled'])
+			$result_disable = modules_change_disabled($id,
+				$values['disabled']);
+		
 		unset($values['disabled']);
 	}
 	else {
@@ -314,7 +318,7 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 	
 	$result = @db_process_sql_update ('tagente_modulo', $values, $where);
 	
-	if($result === false || $result_disable === ERR_GENERIC) {
+	if (($result === false) || ($result_disable === ERR_GENERIC)) {
 		return ERR_DB;
 	}
 	else {

@@ -42,7 +42,7 @@ if (defined ('PANDORA_ENTERPRISE')) {
 	html_print_image ("images/pandora_login_enterprise.png", false, array ("alt" => "logo", "border" => 0));
 }
 else {
-	html_print_image ("images/pandora_login.png", false, array ("alt" => "logo", "border" => 0));	
+	html_print_image ("images/pandora_login.png", false, array ("alt" => "logo", "border" => 0));
 }
 echo '</a>';
 

@@ -265,6 +265,9 @@ function snmpBrowserWindow () {
 // Set the form OID to the value selected in the SNMP browser
 function setOID () {
 	$('#text-snmp_oid').val($('#snmp_selected_oid').text());
+	
+	// Close the SNMP browser
+	$('.ui-dialog-titlebar-close').trigger('click');
 }
 
 </script>

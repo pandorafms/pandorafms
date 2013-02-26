@@ -22,7 +22,7 @@ html_print_input_hidden ('ajax_url', ui_get_full_url("ajax.php"), false);
 html_print_input_hidden ('search_matches_translation', __("Search matches"), false);
 
 // Define a custom action to save the OID selected in the SNMP browser to the form
-html_print_input_hidden ('custom_action', urlencode (base64_encode('<a href="javascript:setOID()"><img src="' . ui_get_full_url("images") . '/hand_point.png" title="' . __("Use this OID") . '" style="vertical-align: middle;"></img></a>')), false);
+html_print_input_hidden ('custom_action', urlencode (base64_encode('&nbsp;<a href="javascript:setOID()"><img src="' . ui_get_full_url("images") . '/hand_point.png" title="' . __("Use this OID") . '" style="vertical-align: middle;"></img></a>')), false);
 
 $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 

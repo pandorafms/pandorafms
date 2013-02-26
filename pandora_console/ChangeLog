@@ -1,3 +1,8 @@
+2013-02-26  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_filemanager.php: Fixed tooltips to use new format. 
+	Added space between action icons.
+
 2013-02-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor_network.php: Aesthetic fixes.

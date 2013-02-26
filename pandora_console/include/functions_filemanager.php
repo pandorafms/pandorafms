@@ -485,9 +485,9 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	$table->size = array ();
 	
 	$table->align[1] = 'left';
-	$table->align[2] = 'center';
+	$table->align[2] = 'left';
 	$table->align[3] = 'left';
-	$table->align[4] = 'center';
+	$table->align[4] = 'left';
 	
 	$table->size[0] = '24px';
 	
@@ -639,15 +639,15 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	if (!$readOnly) {
 		if (is_writable ($real_directory)) {
 			echo "<div style='text-align: right; width: " . $table->width . ";'>";
-			echo "<a href='javascript:show_form_create_folder();' style='margin-right: 3px;' title='" . __('Create directory') . "'>";
-			echo html_print_image('images/mimetypes/directory.png', true); 
-			echo "</a>";
-			echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px;' title='" . __('Create text') . "'>";
-			echo html_print_image('images/mimetypes/text.png', true);
-			echo "</a>";
-			echo "<a href='javascript: show_upload_file();' title='" . __('Upload file/s') . "'>";
-			echo html_print_image('images/mimetypes/unknown.png', true); 
-			echo "</a>";
+			echo "<a href='javascript:show_form_create_folder();' style='margin-right: 3px; margin-bottom: 5px;'>";
+			echo html_print_image('images/mimetypes/directory.png', true, array("title" => __('Create directory'))); 
+			echo "</a> ";
+			echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px; margin-bottom: 5px;'>";
+			echo html_print_image('images/mimetypes/text.png', true, array("title" => __('Create text')));
+			echo "</a> ";
+			echo "<a href='javascript: show_upload_file();'>";
+			echo html_print_image('images/mimetypes/unknown.png', true, array("title" => __('Upload file/s'))); 
+			echo "</a> ";
 			echo "</div>";
 		}
 		else {

@@ -76,7 +76,7 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 			echo "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";	
 			if ($depth == 0 && $count == 0) {
 				if ($count == $total) {
-					echo '<img src="' . $url . 'one_closed.png" style="vertical-align: middle;">';
+					echo '<img src="' . $url . '/one_closed.png" style="vertical-align: middle;">';
 				}
 				else {
 					echo '<img src="' . $url . '/first_closed.png" style="vertical-align: middle;">';
@@ -115,9 +115,9 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 			echo "</a>";
 		}
 		
-		echo '<span>' . $level . '</span>';
+		echo '&nbsp;<span>' . $level . '</span>';
 		if (isset ($sub_level['__VALUE__'])) {
-			echo '<span class="value" style="display: none;"> = ' . $sub_level['__VALUE__'] . '</span>';
+			echo '<span class="value" style="display: none;">&nbsp;=&nbsp;' . $sub_level['__VALUE__'] . '</span>';
 		}
 		echo "</li>";
 		
@@ -383,7 +383,7 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$table->data[0][4] = '<a href="javascript:">' . html_print_image ("images/fullscreen.png", true, array ('title' => __('Expand the tree') . ' (' . __('can be slow') . ')', 'style' => 'vertical-align: middle;', 'onclick' => 'expandAll();')) . '</a>';
 	$table->data[0][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/normalscreen.png", true, array ('title' => __('Collapse the tree'), 'style' => 'vertical-align: middle;', 'onclick' => 'collapseAll();')) . '</a>';
 	$table->data[1][0] = '<strong>'.__('Starting OID').'</strong>';
-	$table->data[1][1] = html_print_input_text ('starting_oid', '', '', 25, 0, true);
+	$table->data[1][1] = html_print_input_text ('starting_oid', '.1.3.6.1.2', '', 25, 0, true);
 	$table->data[1][2] = '<strong>'.__('Search text').'</strong>';
 	$table->data[1][3] = html_print_input_text ('search_text', '', '', 25, 0, true);
 	$table->data[1][4] = '<a href="javascript:">' . html_print_image ("images/lupa.png", true, array ('title' => __('Search'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchText();')) . '</a>';

@@ -1,3 +1,11 @@
+2013-02-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* general/login_page.php, include/javascript/jquery.pandora.js,
+	include/constants.php, index.php: fixed the dialog for the password
+	policies. And added constants.
+	
+	Fixes: #3605970
+
 2013-02-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor_network.php: Always enable de
@@ -20,7 +28,7 @@
 	include/functions_reporting.php: Improve the
 	main page graphs and layout
 
-2013-02-25 Miguel de Dios <miguel.dedios@artica.es>
+2013-02-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_modules.php: fixed in function
 	"modules_update_agent_module" the check disabled value.

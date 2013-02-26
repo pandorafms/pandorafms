@@ -244,6 +244,6 @@ ui_require_jquery_file('jquery-ui-1.10.0.custom');
 		});
 	});
 	
-	document.getElementById('nick').focus();
+	$('#nick').focus();
 	/* ]]> */
 </script>

@@ -233,4 +233,9 @@ define ('MODULE_WEB', 7);
 
 /* SNMP CONSTANTS */
 define ('SNMP_DIR_MIBS', "attachment/mibs");
+
+/* PASSWORD POLICIES */
+define('PASSSWORD_POLICIES_OK', 0);
+define('PASSSWORD_POLICIES_FIRST_CHANGE', 1);
+define('PASSSWORD_POLICIES_EXPIRED', 2);
 ?>

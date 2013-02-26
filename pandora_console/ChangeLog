@@ -1,3 +1,12 @@
+2013-02-25 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_modules.php: fixed in function
+	"modules_update_agent_module" the check disabled value.
+	
+	Fixes: #3606060
+	
+	* general/login_page.php: cleaned source code style.
+
 2013-02-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/groups/configure_group.php: Fixed the name of the group

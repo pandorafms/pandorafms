@@ -1,3 +1,17 @@
+2013-02-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/styles/pandora.css
+	include/functions_graph.php
+	include/javascript/jquery.pandora.js
+	index.php: Change the HTML native title for
+	the images by a jquery engined title more
+	visible and customizable
+
+	* general/logon_ok.php
+	include/functions_reporting.php: Improve the
+	main page graphs and layout
+
 2013-02-25 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_modules.php: fixed in function

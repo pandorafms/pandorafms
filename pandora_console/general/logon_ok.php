@@ -37,6 +37,7 @@ if(tags_has_user_acl_tags()) {
 // Site news !
 // ---------------------------------------------------------------------------
 
+echo '<div>'; // Container top
 echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">';
 
 switch ($config["dbtype"]) {
@@ -79,26 +80,6 @@ echo '</div>';
 echo '<div style="width:30%; float:left; padding-left: 30px;" id="rightcolumn">';
 $data = reporting_get_group_stats ();
 
-$table->class = "databox";
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->head = array ();
-$table->data = array ();
-$table->width = "100%";
-
-$table->data[0][0] ='<b>'.__('Monitor health').'</b>';
-$table->data[1][0] = 
-	progress_bar($data["monitor_health"], 280, 20, $data["monitor_health"].'% '.__('of monitors up'), 0);
-$table->data[2][0] = '<b>'.__('Module sanity').'</b>';
-$table->data[3][0] =
-	progress_bar($data["module_sanity"], 280, 20, $data["module_sanity"].'% '.__('of total modules inited'), 0);
-$table->data[4][0] = '<b>'.__('Alert level').'</b>';
-$table->data[5][0] =
-	progress_bar($data["alert_level"], 280, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0);
-
-html_print_table ($table);
-unset ($table);
-
 ///////////////
 // Overview
 ///////////////
@@ -111,6 +92,7 @@ $urls['monitor_critical'] = "index.php?sec=estado&amp;sec2=operation/agentes/sta
 $urls['monitor_warning'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=1";
 $urls['monitor_ok'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=0";
 $urls['monitor_unknown'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=3";
+$urls['monitor_not_init'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=5";
 $urls['monitor_alerts'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
 $urls['monitor_alerts_fired'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
 if (check_acl ($config['id_user'], 0, "UM")) {
@@ -128,6 +110,33 @@ $table_transparent->head = array ();
 $table_transparent->data = array ();
 $table_transparent->style[0] = $table_transparent->style[1] = $table_transparent->style[2] = $table_transparent->style[3] = 'text-align:center; width: 25%;';
 $table_transparent->width = "100%";
+
+// Indicators table
+$table_ind = clone $table_transparent;
+
+$tdata[0] = '<fieldset class="databox" style="width:97%;">
+				<legend style="text-align:left; color: #666;">' . 
+					__('Monitor health') . ui_print_help_tip (sprintf(__('%d Not OK monitors'), $data["monitor_not_normal"]), true) . 
+				'</legend>' . 
+				progress_bar($data["monitor_health"], 280, 20, $data["monitor_health"].'% '.__('of monitors up'), 0) . '</fieldset>';
+$table_ind->rowclass[] = '';
+$table_ind->data[] = $tdata;
+
+$tdata[0] = '<fieldset class="databox" style="width:97%;">
+				<legend style="text-align:left; color: #666;">' . 
+					__('Module sanity') . ui_print_help_tip (sprintf(__('%d Not inited monitors'), $data["monitor_not_init"]), true) .
+				'</legend>' . 
+				progress_bar($data["module_sanity"], 280, 20, $data["module_sanity"].'% '.__('of total modules inited'), 0) . '</fieldset>';
+$table_ind->rowclass[] = '';
+$table_ind->data[] = $tdata;
+
+$tdata[0] = '<fieldset class="databox" style="width:97%;">
+				<legend style="text-align:left; color: #666;">' . 
+					__('Alert level') . ui_print_help_tip (sprintf(__('%d Fired alerts'), $data["monitor_alerts_fired"]), true) . 
+				'</legend>' . 
+				progress_bar($data["alert_level"], 280, 20, $data["alert_level"].'% '.__('of defined alerts not fired'), 0) . '</fieldset>';
+$table_ind->rowclass[] = '';
+$table_ind->data[] = $tdata;
 
 // Agents and modules table
 $table_am = clone $table_transparent;
@@ -169,10 +178,22 @@ $table_mbs->rowclass[] = '';
 $table_mbs->data[] = $tdata;
 
 $tdata = array();
-$table_mbs->colspan[count($table_mbs->data)][0] = 4;
-$tdata[0] = '<div style="margin: auto; width: 250px;">' . graph_agent_status (false, 250, 150, true) . '</div>';
+$tdata[0] = html_print_image('images/status_sets/default/agent_no_data_ball.png', true, array('title' => __('Monitor not init'), 'width' => '20px'));
+$tdata[1] = $data["monitor_not_init"] == 0 ? '-' : $data["monitor_not_init"];
+$tdata[1] = '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
+
+$tdata[2] = $tdata[3] = '';
 $table_mbs->rowclass[] = '';
 $table_mbs->data[] = $tdata;
+
+if($data["monitor_checks"] > 0) {
+	$tdata = array();
+	$table_mbs->colspan[count($table_mbs->data)][0] = 4;
+	$table_mbs->cellstyle[count($table_mbs->data)][0] = 'text-align: center;';
+	$tdata[0] = '<div style="margin: auto; width: 250px;">' . graph_agent_status (false, 250, 150, true, true) . '</div>';
+	$table_mbs->rowclass[] = '';
+	$table_mbs->data[] = $tdata;
+}
 
 // Alerts table
 $table_al = clone $table_transparent;
@@ -210,6 +231,12 @@ $table->style[0] = 'text-align:center;';
 $table->width = "100%";
 $table->head[0] = __('Pandora FMS Overview');
 $table->head_colspan[0] = 4; 
+
+// Indicators
+$tdata = array();
+$tdata[0] = html_print_table($table_ind, true);
+$table->rowclass[] = '';
+$table->data[] = $tdata;
 
 // Total agents and modules
 $tdata = array();
@@ -255,9 +282,10 @@ html_print_table($table);
 unset($table);
 
 echo "</div>";
-echo '<div id="activity" style="width:87%;">';
-echo "<br /><br />";
+echo "<div style='clear:both'></div>";
+echo '</div>'; // Container top
 
+echo '<div id="activity" style="width:87%;">';
 // Show last activity from this user
 echo "<h4>" . __('This is your last activity in Pandora FMS console') . "</h4>";
 

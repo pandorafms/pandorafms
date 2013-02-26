@@ -174,4 +174,60 @@ $(document).ready (function () {
 
 	}
 
+	// Forced title code
+	$('IMG.forced_title').hover(function() {
+		///////////////////////////////////////////
+		// Get info of the image
+		///////////////////////////////////////////
+		
+		var img_top = $(this).offset().top;
+		var img_width = $(this).width();
+		var img_height = $(this).height();
+		var img_id = $(this).attr('id');
+		var img_left_mid = $(this).offset().left + (img_width / 2);
+
+		///////////////////////////////////////////
+		// Put title in the layer
+		///////////////////////////////////////////
+		
+		var title = $('#forced_title_'+img_id).html();
+		$('#forced_title_layer').html(title);
+
+		///////////////////////////////////////////		
+		// Get info of the layer
+		///////////////////////////////////////////
+
+		var layer_width = $('#forced_title_layer').width();
+		var layer_height = $('#forced_title_layer').height();
+		
+		///////////////////////////////////////////
+		// Obtain the new position of the layer
+		///////////////////////////////////////////
+
+		// Jquery doesnt know the padding of the layer
+		var layer_padding = 4;
+		
+		// Deduct padding of both sides
+		var layer_top = img_top - layer_height - (layer_padding * 2);
+		if(layer_top < 0) {
+			layer_top = img_top + img_height + (layer_padding * 2);
+		}
+		
+		// Deduct padding of one side
+		var layer_left = img_left_mid - (layer_width / 2) - layer_padding;
+		if(layer_left < 0) {
+			layer_left = 0;
+		}
+		
+		///////////////////////////////////////////
+		// Set the layer position and show
+		///////////////////////////////////////////
+		
+		$('#forced_title_layer').css('left', layer_left);
+		$('#forced_title_layer').css('top', layer_top);
+		$('#forced_title_layer').show();
+	},
+	function () {
+		$('#forced_title_layer').hide();
+	});
 });

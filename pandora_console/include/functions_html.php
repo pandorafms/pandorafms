@@ -834,6 +834,56 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
  *
  * The element will have an id like: "password-$name"
  * 
+ * @param mixed parameters:
+ * 			- id: string
+ * 			- style: string
+ * 			- hidden: boolean
+ * 			- content: string
+ * @param bool return or echo flag
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_div ($options, $return = false) {
+	$output = '<div';
+	
+	//Valid attributes (invalid attributes get skipped)
+	$attrs = array ("id", "style", "class");
+	
+	if (isset ($options['hidden'])) {
+		if (isset($options['style'])) {
+			$options['style'] .= 'display:none;';
+		}
+		else {
+			$options['style'] = 'display:none;';
+		}
+	}
+
+	foreach ($attrs as $attribute) {
+		if (isset ($options[$attribute])) {
+			$output .= ' '.$attribute.'="'.io_safe_input_html ($options[$attribute]).'"';
+		}
+	}
+	
+	$output .= '>';
+	
+	$output .= isset ($options['content']) ? $options['content'] : '';
+	
+	$output .= '</div>';
+
+	if ($return) {
+		return $output;
+	}
+	else {
+		echo $output;
+	}
+}
+
+
+/**
+ * Render an input password element.
+ *
+ * The element will have an id like: "password-$name"
+ * 
  * @param string $name Input name.
  * @param string $value Input value.
  * @param string $alt Alternative HTML string (optional).
@@ -1593,9 +1643,29 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 			$style .= $options["style"]; 
 		}
 		
+		// If title is provided activate forced title
+		if (isset ($options["title"])) {
+			if (isset ($options['class'])) {
+				$options['class'] .= ' forced_title';
+			}
+			else {
+				$options['class'] = 'forced_title';
+			}
+			
+			if (!isset ($options['id'])) {
+				$options['id'] = uniqid();
+			}
+			
+			$params = array('id' => 'forced_title_' . $options['id'], 
+									'class' => 'forced_title_layer', 
+									'content' => $options["title"],
+									'hidden' => true);
+			$output = html_print_div($params, true) . $output;
+		}
+		
 		//Valid attributes (invalid attributes get skipped)
 		$attrs = array ("height", "longdesc", "usemap","width","id",
-			"class","title","lang","xml:lang", "onclick", "ondblclick",
+			"class","lang","xml:lang", "onclick", "ondblclick",
 			"onmousedown", "onmouseup", "onmouseover", "onmousemove", 
 			"onmouseout", "onkeypress", "onkeydown", "onkeyup","pos_tree");
 		

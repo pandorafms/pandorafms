@@ -1345,8 +1345,9 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
  * @param integer width pie graph width
  * @param integer height pie graph height
  * @param bool return or echo flag
+ * @param bool show_not_init flag
  */
-function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $return = false) {
+function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $return = false, $show_not_init = false) {
 	global $config;
 	
 	
@@ -1360,9 +1361,11 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	$fields = array('SUM(critical_count) Critical', 
 				'SUM(warning_count) Warning', 
 				'SUM(normal_count) Normal', 
-				'SUM(unknown_count) Unknown', 
-				'SUM(fired_count) "Fired Alerts"'/*, 
-				'SUM(notinit_count) "Not init"'*/);
+				'SUM(unknown_count) Unknown');
+	
+	if($show_not_init) {
+		$fields[] = 'SUM(notinit_count) "Not init"';
+	}
 	
 	$agent_status = db_get_all_rows_filter('tagente', $filter, $fields);
 	
@@ -1371,7 +1374,11 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
-	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN, COL_ALERTFIRED/*, COL_NOTINIT*/);
+	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
+	
+	if($show_not_init) {
+		$colors[] = COL_NOTINIT;
+	}
 	
 	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
 		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "hidden", $colors);

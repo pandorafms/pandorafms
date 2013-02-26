@@ -99,15 +99,7 @@ $data[1] .= html_print_select (array (), 'select_snmp_oid', $snmp_oid, '', '', 0
 $data[1] .= html_print_image("images/edit.png", true, array("class" => "invisible clickable", "id" => "edit_oid"));
 $data[1] .= '</span>';
 $data[1] .= '</span><span class="right" style="width: 50%; text-align: right">';
-if ($disabledBecauseInPolicy)
-	$disableButton = true;
-else
-	if ($ip_target == '')
-		$disableButton = true;
-	else
-		$disableButton = false;
-
-$data[1] .= html_print_button (__('SNMP walk'), 'snmp_walk', $disableButton, 'snmpBrowserWindow()',
+$data[1] .= html_print_button (__('SNMP walk'), 'snmp_walk', false, 'snmpBrowserWindow()',
 	'class="sub next"', true);
 $data[1] .= ui_print_help_icon ('snmpwalk', true);
 $data[1] .= '</span>';

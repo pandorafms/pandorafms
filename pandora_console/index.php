@@ -553,4 +553,7 @@ echo '</html>';
 
 $run_time = format_numeric (microtime (true) - $config['start_time'], 3);
 echo "\n<!-- Page generated in $run_time seconds -->\n";
+
+// Hidden div to forced title
+html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true));
 ?>

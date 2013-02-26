@@ -881,6 +881,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 	$data["monitor_bad"] = 0; // Critical + Unknown + Warning
 	$data["monitor_warning"] = 0;
 	$data["monitor_critical"] = 0;
+	$data["monitor_not_normal"] = 0;
 	$data["monitor_alerts"] = 0;
 	$data["monitor_alerts_fired"] = 0;
 	$data["monitor_alerts_fire_count"] = 0;
@@ -1068,6 +1069,8 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 			// Get total count of monitors for this group, except disabled.
 			$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
 			
+			// Calculate not_normal monitors
+			$data["monitor_not_normal"] += $data["monitor_checks"] - $data["monitor_ok"];
 		}
 		
 		// Get total count of monitors for this group, except disabled.
@@ -1087,7 +1090,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 	}
 	
 	if ($data["monitor_unknown"] > 0 && $data["monitor_checks"] > 0) {
-		$data["monitor_health"] = format_numeric (100 - ($data["monitor_unknown"] / ($data["monitor_checks"] / 100)), 1);
+		$data["monitor_health"] = format_numeric (100 - ($data["monitor_not_normal"] / ($data["monitor_checks"] / 100)), 1);
 	}
 	else {
 		$data["monitor_health"] = 100;

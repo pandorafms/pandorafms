@@ -157,8 +157,7 @@ if (isset($id_agent_module)) {
 		$edit = true;
 	}
 }
-else 
-{
+else {
 	//Run into a policy
 	$edit = true;
 }
@@ -173,10 +172,10 @@ if (!$edit) {
 	$type_names = db_get_all_rows_sql($sql);
 	
 	$type_names_hash = array();
-	foreach($type_names as $tn) {
+	foreach ($type_names as $tn) {
 		$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
 	}
-
+	
 	$table_simple->data[1][1] = '<em>'.modules_get_moduletype_description ($id_module_type).' ('.$type_names_hash[$id_module_type].')</em>';
 	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(json_encode($type_names_hash)),true);
 }
@@ -196,21 +195,21 @@ else {
 		
 	$table_simple->data[1][1] = html_print_select_from_sql ($sql, 'id_module_type',
 		$idModuleType, '', '', '', true, false, false, $disabledBecauseInPolicy, false, false, 100);
-
+	
 	// Store the relation between id and name of the types on a hidden field
 	$sql = sprintf ('SELECT id_tipo, nombre
 			FROM ttipo_modulo
 			WHERE categoria IN (%s)
 			ORDER BY descripcion',
 			implode (',', $categories));
-		
+	
 	$type_names = db_get_all_rows_sql($sql);
 	
 	$type_names_hash = array();
-	foreach($type_names as $tn) {
+	foreach ($type_names as $tn) {
 		$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
 	}
-
+	
 	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(json_encode($type_names_hash)),true);
 }
 
@@ -372,7 +371,8 @@ $table_advanced->data[6][4] =  html_print_select_from_sql (
 $table_advanced->data[7][0] = __('Quiet');
 $table_advanced->data[7][0] .= ui_print_help_tip(__('The module still stores data but the alerts and events will be stop'), true);
 $table_advanced->colspan[7][1] = 4;
-$table_advanced->data[7][1] = html_print_checkbox('quiet_module', 1, $quiet_module, true);
+$table_advanced->data[7][1] = html_print_checkbox('quiet_module', 1,
+	$quiet_module, true);
 
 $table_advanced->data[8][0] = __('Critical instructions'). ui_print_help_tip(__("Instructions when the status is critical"), true);
 $table_advanced->data[8][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
@@ -391,10 +391,12 @@ $table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minu
 $table_advanced->colspan[11][1] = 4;
 
 $table_advanced->data[12][0] = __('Timeout');
-$table_advanced->data[12][1] = html_print_input_text ('max_timeout', $max_timeout, '', 5, 10, true);
+$table_advanced->data[12][1] = html_print_input_text ('max_timeout',
+	$max_timeout, '', 5, 10, true);
 $table_advanced->data[12][2] = '';
 $table_advanced->data[12][3] = __('Retries');
-$table_advanced->data[12][4] = html_print_input_text ('max_retries', $max_retries, '', 5, 10, true);
+$table_advanced->data[12][4] = html_print_input_text ('max_retries',
+	$max_retries, '', 5, 10, true);
 
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$table_advanced->data[13][0] = __('Category');

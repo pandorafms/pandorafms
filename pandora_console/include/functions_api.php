@@ -3043,9 +3043,9 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_update_network_module_policy', __('Error updating network module in policy. Id_policy cannot be left blank.'));
-		return;			
+		return;
 	}
 	
 	if ($other['data'][0] == ""){

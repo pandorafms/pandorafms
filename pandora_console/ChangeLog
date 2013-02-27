@@ -1,3 +1,19 @@
+2013-02-27 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor_common.php,
+	godmode/agentes/modificar_agente.php,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/agent_manager.php: updated the code to module
+	constants.
+	
+	* include/javascript/pandora_modules.js: fixed the set the
+	module_data from to the json.
+	
+	* include/functions_api.php: cleaned source code style.
+	
+	* include/constants.php: addded lost constant for the module
+	prediction.
+
 2013-02-26  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_filemanager.php: Fixed tooltips to use new format. 

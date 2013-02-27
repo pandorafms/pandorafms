@@ -40,7 +40,7 @@ if (is_ajax ()) {
 		
 		$components = network_components_get_network_components ($id_module_component,
 			array ('id_group' => $id_module_group,
-					'order' => 'name ASC'),
+				'order' => 'name ASC'),
 			array ('id_nc', 'name'));
 		
 		echo json_encode ($components);
@@ -328,11 +328,12 @@ $remote_conf = false;
 
 switch ($moduletype) {
 	case "dataserver":
-	case 1:
-		$moduletype = 1;
+	case MODULE_DATA:
+		$moduletype = MODULE_DATA;
 		// Has remote configuration ?
 		$agent_md5 = md5 (agents_get_name($id_agente), false);
-		$remote_conf = file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5");
+		$remote_conf = file_exists ($config["remote_config"] ."/md5/" .
+			$agent_md5 . ".md5");
 		
 		/* Categories is an array containing the allowed module types
 		 (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */
@@ -349,31 +350,31 @@ switch ($moduletype) {
 		}
 		break;
 	case "networkserver":
-	case 2:
-		$moduletype = 2;
+	case MODULE_NETWORK:
+		$moduletype = MODULE_NETWORK;
 		$categories = array (3, 4, 5);
 		require ('module_manager_editor_common.php');
 		require ('module_manager_editor_network.php');
 		break;
 	case "pluginserver":
-	case 4:
-		$moduletype = 4;
+	case MODULE_PLUGIN:
+		$moduletype = MODULE_PLUGIN;
 		
 		$categories = array (0, 1, 2);
 		require ('module_manager_editor_common.php');
 		require ('module_manager_editor_plugin.php');
 		break;
 	case "predictionserver":
-	case 5:
-		$moduletype = 5;
+	case MODULE_PREDICTION:
+		$moduletype = MODULE_PREDICTION;
 		
 		$categories = array (0, 1);
 		require ('module_manager_editor_common.php');
 		require ('module_manager_editor_prediction.php');
 		break;
 	case "wmiserver":
-	case 6:
-		$moduletype = 6;
+	case MODULE_WMI:
+		$moduletype = MODULE_WMI;
 		
 		$categories = array (0, 1, 2);
 		require ('module_manager_editor_common.php');

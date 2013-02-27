@@ -118,8 +118,10 @@ echo '<div style="height: 5px">&nbsp;</div>';
 if (!$new_agent) {
 	// Agent remote configuration editor
 	$agent_md5 = md5 ($nombre_agente, false);
-	$filename['md5'] = $config["remote_config"]."/md5/".$agent_md5.".md5";
-	$filename['conf'] = $config["remote_config"]."/conf/".$agent_md5.".conf";
+	$filename['md5'] = $config["remote_config"] . "/md5/" .
+		$agent_md5 . ".md5";
+	$filename['conf'] = $config["remote_config"] . "/conf/" .
+		$agent_md5 . ".conf";
 }
 
 $disk_conf = (bool) get_parameter ('disk_conf');
@@ -170,7 +172,7 @@ if (!$new_agent) {
 
 // Delete link from here
 if (!$new_agent) {
-$table->data[0][1] .= "&nbsp;&nbsp;<span align='right'><a onClick=\"if (!confirm('" . __('Are you sure?') . "')) return false;\"  title='".__("Delete agent")."' href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'><img src='images/cross.png'></a>";
+	$table->data[0][1] .= "&nbsp;&nbsp;<span align='right'><a onClick=\"if (!confirm('" . __('Are you sure?') . "')) return false;\"  title='".__("Delete agent")."' href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=$id_agente&search=&offset=0&sort_field=&sort=none'><img src='images/cross.png'></a>";
 }
 
 $table->data[1][0] = __('IP Address');
@@ -274,7 +276,7 @@ foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
 $table->data[4][0] = __('Agent icon') . ui_print_help_tip(__('Agent icon for GIS Maps.'), true);
-if($icon_path == '') {
+if ($icon_path == '') {
 	$display_icons = 'none';
 	// Hack to show no icon. Use any given image to fix not found image errors
 	$path_without = "images/spinner.png";
@@ -331,7 +333,7 @@ $table->data = array ();
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
-if($fields === false) $fields = array();
+if ($fields === false) $fields = array();
 
 foreach ($fields as $field) {
 	
@@ -339,7 +341,7 @@ foreach ($fields as $field) {
 	
 	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
-	if($custom_value === false) {
+	if ($custom_value === false) {
 		$custom_value = '';
 	}
 	
@@ -348,7 +350,7 @@ foreach ($fields as $field) {
 	array_push ($table->data, $data);
 }
 
-if(!empty($fields)) {
+if (!empty($fields)) {
 	ui_toggle(html_print_table ($table, true), __('Custom fields'));
 }
 

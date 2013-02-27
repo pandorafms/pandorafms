@@ -860,7 +860,12 @@ foreach($config['extensions'] as $extension) {
 			}
 			
 			//This extension is only for virtual machines
-			if (strpos($agent['nombre'], "VM_") !== 0) {
+			$vmware_type_id = db_get_value("id_field", "tagent_custom_fields", "name", "vmware_type");
+			$sql_type = "SELECT description FROM tagent_custom_data WHERE id_field = ".$vmware_type_id.
+						" AND id_agent = ".$agent['id_agente'];
+			$vmware_type= db_get_value_sql($sql_type);
+			
+			if ($vmware_type !== "vm") {
 				continue;
 			}
 			

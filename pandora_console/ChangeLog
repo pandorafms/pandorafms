@@ -1,3 +1,13 @@
+2013-02-27 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/agentes/networkmap_list.php,
+	godmode/alerts/alert_templates.php,
+	godmode/events/event_responses.list.php,
+	godmode/netflow/nf_edit.php: fixed the show elements with the limits
+	of user ACL.
+	
+	Fixes: #3605969
+
 2013-02-27 Dario Rodriguez <dario@artica.es>
 
 	* operation/agentes/ver_agente.php: Adapted VMware extension known to

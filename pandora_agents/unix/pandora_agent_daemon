@@ -39,7 +39,7 @@ pidof_pandora () {
 		if [ "$OS_NAME" = "SunOS" ]
 		then
 			ZONENAME_CMD="/bin/zonename"
-			TRUNCATED_DAEMON=`echo "$DAEMON $PANDORA_PATH" | cut -c1-40`
+			TRUNCATED_DAEMON=`echo "$DAEMON $PANDORA_PATH" | cut -c1-20`
 			if [ -x $ZONENAME_CMD ]
 			then
 				ZONE=`$ZONENAME_CMD`

@@ -35,8 +35,21 @@ else
 	PANDORA_USER="root"
 fi
 
+if [ "$4" != "" ]
+then
+	PANDORA_PERL_PATH=$4
+	echo $PANDORA_PERL_PATH > PANDORA_PERL_PATH.temp
+        sed 's/\//\\\//g' PANDORA_PERL_PATH.temp > PANDORA_PERL_PATH.temp2
+
+        PANDORA_PERL_DECODED_PATH=`cat PANDORA_PERL_PATH.temp2`
+        rm PANDORA_PERL_PATH.temp PANDORA_PERL_PATH.temp2
+	#PANDORA_PERL_DECODED_PATH=`echo $PANDORA_PERL_PATH | sed -e "s.\/.\\\\\/.g"`
+else
+	PANDORA_PERL_PATH="perl"
+fi
+
 # Check for Perl 5.6.x or higher available
-PERL_VERSION=`perl -v | egrep 'v5.6|v5.7|v5.8|v5.9|v5.1[0-9]' | grep perl`
+PERL_VERSION=`$PANDORA_PERL_PATH -v | egrep 'v5.6|v5.7|v5.8|v5.9|v5.1[0-9]' | grep perl`
 
 if [ -z "$PERL_VERSION" ]
 then
@@ -68,7 +81,7 @@ fi
 help () {
 	echo "Syntax":
 	echo " "
-	echo "    ./pandora_agent_installer < --mode > [ destination_path ] [ user_to_run_as ]"
+	echo "    ./pandora_agent_installer < --mode > [ destination_path ] [ user_to_run_as ] [custom_perl_path]"
 	echo " "
 	echo "Modes:"
 	echo " "
@@ -81,6 +94,7 @@ help () {
 	echo "   ./pandora_agent_installer --install"
 	echo "   ./pandora_agent_installer --install /opt/pandora"
 	echo "   ./pandora_agent_installer --install \"\" pandora"
+	echo "   ./pandora_agent_installer --install /opt/pandora root /opt/pandora/perl5/usr/local/bin/perl"
 	echo "   ./pandora_agent_installer --uninstall /opt/pandora"
 	echo " "
 }
@@ -247,6 +261,9 @@ install () {
 
 			sed -e "s/^DAEMON\=[.]*/DAEMON\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
 			mv  $DAEMON_TEMP $DAEMON_SCRIPT
+
+			sed -e "s/^DAEMON_TENTACLE\=[.]*/DAEMON_TENTACLE\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
+                        mv  $DAEMON_TEMP $DAEMON_SCRIPT
  
 			sed -e "s/^PANDORA_USER\=.*/PANDORA_USER\=$PANDORA_USER/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
 			mv  $DAEMON_TEMP $DAEMON_SCRIPT
@@ -301,9 +318,20 @@ install () {
 
 	# Copying agent and securing it
 	echo "Copying Pandora FMS Agent to $PANDORA_BASE$PANDORA_BIN..."
-	cp pandora_agent $PANDORA_BASE$PANDORA_BIN
+	
+	if [ "$PANDORA_PERL_DECODED_PATH" != "" ]
+	then
+        	sed -e "s:^#\!.*:#\!$PANDORA_PERL_DECODED_PATH:g" pandora_agent > $PANDORA_BASE$PANDORA_BIN
+	else
+        	cp pandora_agent $PANDORA_BASE$PANDORA_BIN
+	fi
 	chmod 755 $PANDORA_BASE$PANDORA_BIN
-	cp pandora_agent_exec $PANDORA_BASE$PANDORA_EXEC_BIN
+	if [ "$PANDORA_PERL_DECODED_PATH" != "" ]
+        then
+                sed -e "s:^#\!.*:#\!$PANDORA_PERL_DECODED_PATH:g" pandora_agent_exec > $PANDORA_BASE$PANDORA_EXEC_BIN
+        else
+                cp pandora_agent_exec $PANDORA_BASE$PANDORA_EXEC_BIN
+        fi
 	chmod 755 $PANDORA_BASE$PANDORA_EXEC_BIN
 	chown $PANDORA_USER:0 $PANDORA_BASE$PANDORA_BIN
 	chown $PANDORA_USER:0 $PANDORA_BASE$PANDORA_EXEC_BIN
@@ -326,12 +354,22 @@ install () {
 	ln -s $PANDORA_BASE$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
 	
 	echo "Copying tentacle server to $PANDORA_BASE$TENTACLE_SERVER"
-	cp tentacle_server $PANDORA_BASE$TENTACLE_SERVER
+	if [ "$PANDORA_PERL_DECODED_PATH" != "" ]
+        then
+                sed -e "s:^#\!.*:#\!$PANDORA_PERL_DECODED_PATH:g" tentacle_server > $PANDORA_BASE$TENTACLE_SERVER
+        else
+                cp tentacle_server $PANDORA_BASE$TENTACLE_SERVER
+        fi
 	chmod 755 $PANDORA_BASE$TENTACLE_SERVER	
 	chown $PANDORA_USER:0 $PANDORA_BASE$TENTACLE_SERVER
 	
 	echo "Copying tentacle client to $PANDORA_BASE$TENTACLE"
-	cp tentacle_client $PANDORA_BASE$TENTACLE
+	if [ "$PANDORA_PERL_DECODED_PATH" != "" ]
+        then
+                sed -e "s:^#\!.*:#\!$PANDORA_PERL_DECODED_PATH:g" tentacle_client > $PANDORA_BASE$TENTACLE
+        else
+                cp tentacle_client $PANDORA_BASE$TENTACLE
+        fi
 	chmod 755 $PANDORA_BASE$TENTACLE
 	chown $PANDORA_USER:0 $PANDORA_BASE$TENTACLE	
 

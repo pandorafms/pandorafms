@@ -5614,14 +5614,14 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		}
 		if ($other['data'][4] != '')
 			$values['id_usuario'] = $other['data'][4];
-
+		
 		if ($other['data'][5] != '')
 			$values['estado'] = $other['data'][5];
 		$values['timestamp'] = date("Y-m-d H:i:s", get_system_time());
-	
+		
 		$values['evento'] = $id;
 		$values['utimestamp'] = get_system_time ();
-
+		
 		if ($other['data'][6] != '')
 			$values['id_agentmodule'] = $other['data'][6];
 		else {
@@ -5638,7 +5638,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		
 		if ($other['data'][9] != '')
 			$values['criticity'] = $other['data'][9];
-
+		
 		if ($other['data'][11] != '')
 			$values['tags'] = $other['data'][11];
 		if ($other['data'][12] != '')
@@ -5649,7 +5649,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			$values['id_extra'] = $other['data'][13];
 		if ($other['data'][14] != '') {
 			$values['critical_instructions'] = $other['data'][14];
-		}		
+		}
 		if ($other['data'][15] != '') {
 			$values['warning_instructions'] = $other['data'][15];
 		}
@@ -5707,10 +5707,10 @@ function api_get_tactical_view($trash1, $trash2, $trash3, $returnType) {
 			$result = $key.': '.$data.'<br>';
 		else
 			$result .= $key.': '.$data.'<br>'; 
-			
+		
 		$i++;
 	}
-
+	
 	$data = array('type' => 'string', 'data' => $result);
 	
 	returnData($returnType, $data);
@@ -5732,7 +5732,7 @@ function api_get_netflow_get_data ($discard_1, $discard_2, $params) {
 	
 	// Get netflow data
 	$data = netflow_get_data ($start_date, $end_date, $interval_length, $filter, $aggregate, $max, $unit);
-
+	
 	returnData('json', $data);
 	return;
 }
@@ -5750,7 +5750,7 @@ function api_get_netflow_get_stats ($discard_1, $discard_2, $params) {
 	
 	// Get netflow data
 	$data = netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $unit);
-
+	
 	returnData('json', $data);
 	return;
 }
@@ -5775,24 +5775,25 @@ function api_set_validate_event_by_id ($id, $trash1, $trash2, $returnType) {
 	
 	$data['type'] = 'string';
 	$check_id = db_get_value('id_evento', 'tevento', 'id_evento', $id);
-
-	if ($check_id) { //event exists
 	
+	if ($check_id) { //event exists
+		
 		$status = db_get_value('estado', 'tevento', 'id_evento', $id);
 		if ($status == 1) { //event already validated
 			$data['data'] = "Event already validated";
-		} else {
+		}
+		else {
 			$ack_utimestamp = time();
-	
+			
 			events_comment($id, '', "Change status to validated");
-		
+			
 			$values = array(
 				'ack_utimestamp' => $ack_utimestamp,
 				'estado' => 1
 				);
-
+			
 			$result = db_process_sql_update('tevento', $values, array('id_evento' => $id));
-		
+			
 			if ($result === false) {
 				$data['data'] = "Error validating event";
 			}
@@ -5801,12 +5802,13 @@ function api_set_validate_event_by_id ($id, $trash1, $trash2, $returnType) {
 			}
 		}
 		
-	} else {
+	}
+	else {
 		$data['data'] = "Event not exists";
 	}
-
+	
 	returnData($returnType, $data);
-	return;	
+	return;
 }
 
 /**
@@ -5819,14 +5821,14 @@ function api_set_validate_event_by_id ($id, $trash1, $trash2, $returnType) {
  */
 //  http://localhost/pandora_console/include/api.php?op=get&op2=pandora_servers&return_type=csv&apipass=1234&user=admin&pass=pandora
 function api_get_pandora_servers($trash1, $trash2, $other, $returnType) {
-
+	
 	if (!isset($other['data'][0]))
 		$separator = ';'; // by default
 	else
 		$separator = $other['data'][0];
-
+	
 	$servers = servers_get_info ();
-
+	
 	foreach ($servers as $server) {
 		$dd = array (
 			'name' => $server["name"],
@@ -5841,11 +5843,11 @@ function api_get_pandora_servers($trash1, $trash2, $other, $returnType) {
 			'queued_modules' => $server["queued_modules"],
 			'keepalive' => $server['keepalive']
 		);
-
+		
 		// servers_get_info() returns "<a http:....>servername</a>" for recon server's name.
 		// i don't know why and the following line is a temprary workaround... 
 		$dd["name"] = preg_replace( '/<[^>]*>/', "", $dd["name"]);
-
+		
 		switch ($dd['type']) {
 			case "snmp":
 			case "event":
@@ -5861,15 +5863,13 @@ function api_get_pandora_servers($trash1, $trash2, $other, $returnType) {
 			default:
 				break;
 		}
-
+		
 		$returnVar[] = $dd;
 	}
-
+	
 	$data = array('type' => 'array', 'data' => $returnVar);
-
+	
 	returnData($returnType, $data, $separator);
 	return;
-
 }
-
 ?>

@@ -60,7 +60,7 @@ else if ($config['prominent_time'] == 'timestamp') {
 }
 
 $table->data[$row][0] = __('Timestamp or time comparation') . ui_print_help_icon ("time_stamp-comparation", true);
-$table->data[$row][1] = __('Comparation in rollover').' ';
+$table->data[$row][1] = __('Comparation in rollover') . ' ';
 $table->data[$row][1] .= html_print_radio_button ('prominent_time', "comparation", '', $comparation, true);
 $table->data[$row][1] .= '<br />'.__('Timestamp in rollover').' ';
 $table->data[$row][1] .= html_print_radio_button ('prominent_time', "timestamp", '', $timestamp, true);
@@ -97,13 +97,13 @@ $units = array(
 	SECONDS_1MONTH => __('months'),
 	SECONDS_1YEAR => __('years'));
 	
-$table->data[$row][1] = __('Add new custom value to intervals').': ';
+$table->data[$row][1] = __('Add new custom value to intervals') . ': ';
 $table->data[$row][1] .= html_print_input_text ('interval_value', '', '', 5, 5, true);
 $table->data[$row][1] .= html_print_select ($units, 'interval_unit', 1, "", '', '', true, false, false);
 $table->data[$row][1] .= html_print_button (__('Add'), 'interval_add_btn', false, "", 'class="sub next"', true);
 $table->data[$row][1] .= '<br><br>';
 
-$table->data[$row][1] .= __('Delete interval').': ';
+$table->data[$row][1] .= __('Delete interval') . ': ';
 $table->data[$row][1] .= html_print_select (get_periods(false, false), 'intervals', "", "", '', '', true);
 $table->data[$row][1] .= html_print_button (__('Delete'), 'interval_del_btn', empty($config["interval_values"]), "", 'class="sub cancel"', true);
 

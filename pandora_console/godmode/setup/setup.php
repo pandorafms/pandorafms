@@ -126,6 +126,17 @@ switch ($section) {
 // Header
 ui_print_page_header (__('Configuration') . $subpage, "", false, "", true, $buttons);
 
+if (isset($config['error_config_update_config'])) {
+	if ($config['error_config_update_config']['correct'] == false) {
+		ui_print_error_message($config['error_config_update_config']['message']);
+	}
+	else {
+		ui_print_success_message(__('Correct update the setup options'));
+	}
+	
+	unset($config['error_config_update_config']);
+}
+
 switch ($section) {
 	case "general":
 			require_once($config['homedir'] . "/godmode/setup/setup_general.php");

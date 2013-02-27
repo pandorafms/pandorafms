@@ -1,5 +1,18 @@
 2013-02-27 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/setup/setup_general.php, godmode/setup/setup_netflow.php,
+	godmode/setup/setup.php, godmode/setup/performance.php,
+	godmode/setup/setup_visuals.php, include/functions_config.php: added
+	check of update the options in the setup and show the message to
+	success or not the operation for the user.
+	
+	Fixes: #3605972
+	
+	* include/functions_api.php,
+	operation/agentes/estado_generalagente.php: fixed the code style.
+
+2013-02-27 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/javascript/pandora_modules.js, include/functions_api.php:
 	improved the source code style.
 	

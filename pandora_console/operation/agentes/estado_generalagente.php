@@ -231,7 +231,7 @@ if ($config['activate_gis'] || $agent['url_address'] != '') {
 }
 
 // ACCESS RATE GRAPH
-if($config["agentaccess"]) {
+if ($config["agentaccess"]) {
 	$data = array();
 	$data[0] = '<b>' . __('Agent access rate (24h)') . '</b>';
 	$data[1] = graphic_agentaccess($id_agente, 300, 110, 86400, true);
@@ -268,29 +268,4 @@ foreach ($fields as $field) {
 
 html_print_table($table);
 unset($table);
-
-/*
- * ACCESS RATE GRAPH IN HIDDEN BAR
-if($config["agentaccess"]) {
-	$params = array();	 
-	$params['position'] = 'bottom';	 
-	$params['icon_closed'] = 'images/setup.png';	 
-	$params['body_text'] = '';	 
-	$params['body_text'] .= '<b>'.__('Agent access rate (24h)').'</b><br />';	 
-	$params['body_text'] .= '<div style="width:300px; margin: auto;">' . graphic_agentaccess($id_agente, 300, 110, 8640000, true) . '</div>';	 
-
-	$params['icon_closed'] = '/images/chart_curve';	 
-	$params['icon_open'] = '/images/chart_curve';	 
-	$params['height'] = '300px';	 
-	$params['top'] = 'auto_below';	 
-	$params['autotop'] = 'agent_details';	 
-	$params['right'] = 'auto_right';	 
-	$params['autoright'] = 'agent_details';	 
-	$params['icon_width'] = 16;	 
-	$params['icon_height'] = 16;	 
-	$params['vertical_mode'] = 'in';	 
-
-	html_print_side_layer($params);
-}
-*/
 ?>

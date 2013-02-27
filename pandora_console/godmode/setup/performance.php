@@ -74,7 +74,8 @@ $table_other->size[0] = '70%';
 $table_other->size[1] = '30%';
 
 $table_other->data[1][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-$table_other->data[1][1] = html_print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
+$table_other->data[1][1] = html_print_input_text ('step_compact',
+	$config["step_compact"], '', 5, 5, true);
 
 $intervals = array ();
 $intervals[SECONDS_1HOUR] = __('1 hour');
@@ -91,10 +92,6 @@ $table_other->data[2][1] = html_print_select ($intervals, 'sla_period', $config[
 
 $table_other->data[3][0] = __('Default hours for event view');
 $table_other->data[3][1] = html_print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
-
-//$table_other->data[4][0] = __('Compact CSS and JS into header');
-//$table_other->data[4][1] = __('Yes').'&nbsp;'.html_print_radio_button ('compact_header', 1, '', $config["compact_header"], true).'&nbsp;&nbsp;';
-//$table_other->data[4][1] .= __('No').'&nbsp;'.html_print_radio_button ('compact_header', 0, '', $config["compact_header"], true);
 
 $table_other->data[5][0] = __('Use realtime statistics');
 $table_other->data[5][1] = __('Yes').'&nbsp;'.html_print_radio_button ('realtimestats', 1, '', $config["realtimestats"], true).'&nbsp;&nbsp;';

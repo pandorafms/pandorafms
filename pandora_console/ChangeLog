@@ -1,5 +1,15 @@
 2013-02-27 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/javascript/pandora_modules.js, include/functions_api.php:
+	improved the source code style.
+	
+	* operation/agentes/estado_generalagente.php: fixed the set name
+	style for the agent.
+	
+	Fixes: #3606134
+
+2013-02-27 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/module_manager_editor_common.php,
 	godmode/agentes/modificar_agente.php,
 	godmode/agentes/module_manager_editor.php,

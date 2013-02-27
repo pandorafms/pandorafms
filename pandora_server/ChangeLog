@@ -1,3 +1,7 @@
+2013-02-27 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* lib/PandoraFMS/Core.pm: erased lost develop traces.
+
 2013-02-25  Sancho Lerena <slerena@artica.es>
 
 	* PandoraFMS/Config.pm: Fixed parsing of mta_from, avoiding problems

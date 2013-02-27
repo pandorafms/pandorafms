@@ -297,7 +297,7 @@ $(document).ready (function () {
 	
 	$("#zone").attr("disabled", true);
 	$("#timezone").attr("disabled", true);
-
+	
 	$("input[name='acl_enterprise']").click(function() {
 		flag = $(this).is(':checked');
 		if (flag == true) {

@@ -59,9 +59,14 @@ function config_update_value ($token, $value) {
 	
 	$config[$token] = $value;
 	
-	return (bool) db_process_sql_update ('tconfig', 
+	$result = db_process_sql_update ('tconfig', 
 		array ('value' => $value),
 		array ('token' => $token));
+	
+	if ($result === 0)
+		return true;
+	else
+		return (bool) $result;
 }
 
 /**
@@ -71,11 +76,21 @@ function config_update_config () {
 	global $config;
 	
 	/* If user is not even log it, don't try this */
-	if (! isset ($config['id_user']))
+	if (! isset ($config['id_user'])) {
+		$config['error_config_update_config'] = array();
+		$config['error_config_update_config']['correct'] = false;
+		$config['error_config_update_config']['message'] = __('Failed updated: User did not login.');
+		
 		return false;
+	}
 	
-	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user']))
+	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+		$config['error_config_update_config'] = array();
+		$config['error_config_update_config']['correct'] = false;
+		$config['error_config_update_config']['message'] = __('Failed updated: User is not admin.');
+		
 		return false;
+	}
 	
 	$update_config = (bool) get_parameter ('update_config');
 	
@@ -83,39 +98,63 @@ function config_update_config () {
 		db_pandora_audit("Setup", "Setup has changed");
 	}
 	else {
+		//Do none
+		
 		return false;
 	}
 	
+	$error_update = array();
+	
 	$sec2 = get_parameter_get('sec2');
-	switch($sec2) {
+	switch ($sec2) {
 		case 'godmode/setup/setup':
 			$section_setup = get_parameter ('section');
 			//////// MAIN SETUP
 			// Setup now is divided in different tabs
 			switch ($section_setup) {
 				case 'general':
-					config_update_value ('language', (string) get_parameter ('language'));
-					config_update_value ('remote_config', (string) get_parameter ('remote_config'));
-					config_update_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd'));
-					config_update_value ('timesource', (string) get_parameter ('timesource'));
-					config_update_value ('autoupdate', (bool) get_parameter ('autoupdate'));
-					config_update_value ('https', (bool) get_parameter ('https'));
-					config_update_value ('attachment_store', (string) get_parameter ('attachment_store'));
-					config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API'));
-					config_update_value ('api_password', get_parameter('api_password'));
-					config_update_value ('activate_gis', (bool) get_parameter ('activate_gis'));
-					config_update_value ('integria_enabled', get_parameter ('integria_enabled'));
-					config_update_value ('integria_inventory', get_parameter ('integria_inventory'));
-					config_update_value ('integria_api_password', get_parameter ('integria_api_password'));
-					config_update_value ('integria_url', get_parameter ('integria_url'));
-					config_update_value ('activate_netflow', (bool) get_parameter ('activate_netflow'));
+					if (!config_update_value ('language', (string) get_parameter ('language')))
+						$error_update[] = __('Language code for Pandora');
+					if (!config_update_value ('remote_config', (string) get_parameter ('remote_config')))
+						$error_update[] = __('Remote config directory');
+					if (!config_update_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd')))
+						$error_update[] = __('Auto login (hash) password');
+					
+					if (!config_update_value ('timesource', (string) get_parameter ('timesource')))
+						$error_update[] = __('Time source');
+					if (!config_update_value ('autoupdate', (bool) get_parameter ('autoupdate')))
+						$error_update[] = __('Automatic check for updates');
+					if (!config_update_value ('https', (bool) get_parameter ('https')))
+						$error_update[] = __('Enforce https');
+					if (!config_update_value ('attachment_store', (string) get_parameter ('attachment_store')))
+						$error_update[] = __('Attachment store');
+					if (!config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API')))
+						$error_update[] = __('IP list with API access');
+					if (!config_update_value ('api_password', get_parameter('api_password')))
+						$error_update[] = __('Integria API password');
+					if (!config_update_value ('activate_gis', (bool) get_parameter ('activate_gis')))
+						$error_update[] = __('Enable GIS features in Pandora Console');
+					if (!config_update_value ('integria_enabled', get_parameter ('integria_enabled')))
+						$error_update[] = __('Enable Integria incidents in Pandora Console');
+					if (!config_update_value ('integria_inventory', get_parameter ('integria_inventory')))
+						$error_update[] = __('Integria inventory');
+					if (!config_update_value ('integria_api_password', get_parameter ('integria_api_password')))
+						$error_update[] = __('Integria API password');
+					if (!config_update_value ('integria_url', get_parameter ('integria_url')))
+						$error_update[] = __('Integria URL');
+					if (!config_update_value ('activate_netflow', (bool) get_parameter ('activate_netflow')))
+						$error_update[] = __('Enable Netflow');
 					$timezone = (string) get_parameter ('timezone');
 					if ($timezone != "") {
-						config_update_value ('timezone', $timezone);
+						if (!config_update_value ('timezone', $timezone))
+							$error_update[] = __('Timezone setup');
 					}
-					config_update_value ('sound_alert', get_parameter('sound_alert'));
-					config_update_value ('sound_critical', get_parameter('sound_critical'));
-					config_update_value ('sound_warning', get_parameter('sound_warning'));
+					if (!config_update_value ('sound_alert', get_parameter('sound_alert')))
+						$error_update[] = __('Sound for Alert fired');
+					if (!config_update_value ('sound_critical', get_parameter('sound_critical')))
+						$error_update[] = __('Sound for Monitor critical');
+					if (!config_update_value ('sound_warning', get_parameter('sound_warning')))
+						$error_update[] = __('Sound for Monitor warning');
 					# Update of Pandora FMS license 
 					$update_manager_installed = db_get_value('value', 'tconfig', 'token', 'update_manager_installed');
 					
@@ -125,144 +164,247 @@ function config_update_config () {
 							$values = array("value" => $license_info_key);
 							$where = array("key" => 'customer_key');
 							$update_manage_settings_result = db_process_sql_update('tupdate_settings', $values, $where);
+							if (!$update_manage_settings_result)
+								$error_update[] = __('License information');
 						}
 					}
-					config_update_value ('public_url', get_parameter('public_url'));
-					config_update_value ('referer_security', get_parameter('referer_security'));
-					config_update_value ('event_storm_protection', get_parameter('event_storm_protection'));
-					config_update_value ('command_snapshot', get_parameter('command_snapshot'));
+					if (!config_update_value ('public_url', get_parameter('public_url')))
+						$error_update[] = __('Public URL');
+					if (!config_update_value ('referer_security', get_parameter('referer_security')))
+						$error_update[] = __('Referer security');
+					if (!config_update_value ('event_storm_protection', get_parameter('event_storm_protection')))
+						$error_update[] = __('Event storm protection');
+					if (!config_update_value ('command_snapshot', get_parameter('command_snapshot')))
+						$error_update[] = __('Command Snapshot');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
-						config_update_value ('trap2agent', (string) get_parameter ('trap2agent'));
-						config_update_value ('acl_enterprise', get_parameter ('acl_enterprise'));
-						config_update_value ('metaconsole', get_parameter ('metaconsole'));
-						config_update_value ('collection_max_size', get_parameter('collection_max_size'));
-						config_update_value ('event_replication', (int)get_parameter('event_replication'));
+						if (!config_update_value ('trap2agent', (string) get_parameter ('trap2agent')))
+							$error_update[] = __('Forward SNMP traps to agent (if exist)');
+						if (!config_update_value ('acl_enterprise', get_parameter ('acl_enterprise')))
+							$error_update[] = __('Use Enterprise ACL System');
+						if (!config_update_value ('metaconsole', get_parameter ('metaconsole')))
+							$error_update[] = __('Activate Metaconsole');
+						if (!config_update_value ('collection_max_size', get_parameter('collection_max_size')))
+							$error_update[] = __('Size of collection');
+						if (!config_update_value ('event_replication', (int)get_parameter('event_replication')))
+							$error_update[] = __('Events replication');
 						if ((int)get_parameter('event_replication') == 1) {
-							config_update_value ('replication_interval', (int)get_parameter('replication_interval'));
-							config_update_value ('replication_dbhost', (string)get_parameter('replication_dbhost'));
-							config_update_value ('replication_dbname', (string)get_parameter('replication_dbname'));
-							config_update_value ('replication_dbuser', (string)get_parameter('replication_dbuser'));
-							config_update_value ('replication_dbpass', (string)get_parameter('replication_dbpass'));
-							config_update_value ('replication_dbport', (string)get_parameter('replication_dbport'));
-							config_update_value ('replication_mode', (string)get_parameter('replication_mode'));
+							if (!config_update_value ('replication_interval', (int)get_parameter('replication_interval')))
+								$error_update[] = __('Replication interval');
+							if (!config_update_value ('replication_dbhost', (string)get_parameter('replication_dbhost')))
+								$error_update[] = __('Replication DB host');
+							if (!config_update_value ('replication_dbname', (string)get_parameter('replication_dbname')))
+								$error_update[] = __('Replication DB database');
+							if (!config_update_value ('replication_dbuser', (string)get_parameter('replication_dbuser')))
+								$error_update[] = __('Replication DB user');
+							if (!config_update_value ('replication_dbpass', (string)get_parameter('replication_dbpass')))
+								$error_update[] = __('Replication DB password');
+							if (!config_update_value ('replication_dbport', (string)get_parameter('replication_dbport')))
+								$error_update[] = __('Replication DB port');
+							if (!config_update_value ('replication_mode', (string)get_parameter('replication_mode')))
+								$error_update[] = __('Replication mode');
 						}
-						config_update_value ('log_collector', (bool)get_parameter('log_collector'));
+						if (!config_update_value ('log_collector', (bool)get_parameter('log_collector')))
+							$error_update[] = __('Activate Log Collector');
 						
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
-						config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist));
+						if (!config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist)))
+							$error_update[] = __('Inventory changes blacklist');
 						
 					}
 					break;
 				case 'pass':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
-						config_update_value ('enable_pass_policy', get_parameter('enable_pass_policy'));
-						config_update_value ('pass_size', get_parameter('pass_size'));
-						config_update_value ('pass_expire', get_parameter('pass_expire'));
-						config_update_value ('first_login',  get_parameter('first_login'));
-						config_update_value ('mins_fail_pass', get_parameter('mins_fail_pass'));
-						config_update_value ('number_attempts', get_parameter('number_attempts'));
-						config_update_value ('pass_needs_numbers', get_parameter('pass_needs_numbers'));
-						config_update_value ('pass_needs_symbols', get_parameter('pass_needs_symbols'));
-						config_update_value ('enable_pass_policy_admin', get_parameter('enable_pass_policy_admin'));
-						config_update_value ('enable_pass_history', get_parameter('enable_pass_history'));
-						config_update_value ('compare_pass', get_parameter('compare_pass'));
+						if (!config_update_value ('enable_pass_policy', get_parameter('enable_pass_policy')))
+							$error_update[] = __('Enable password policy');
+						
+						if (!config_update_value ('pass_size', get_parameter('pass_size')))
+							$error_update[] = __('Min. size password');
+						if (!config_update_value ('pass_expire', get_parameter('pass_expire')))
+							$error_update[] = __('Password expiration');
+						if (!config_update_value ('first_login',  get_parameter('first_login')))
+							$error_update[] = __('Force change password on first login');
+						if (!config_update_value ('mins_fail_pass', get_parameter('mins_fail_pass')))
+							$error_update[] = __('User blocked if login fails');
+						if (!config_update_value ('number_attempts', get_parameter('number_attempts')))
+							$error_update[] = __('Number of failed login attempts');
+						if (!config_update_value ('pass_needs_numbers', get_parameter('pass_needs_numbers')))
+							$error_update[] = __('Password must have numbers');
+						if (!config_update_value ('pass_needs_symbols', get_parameter('pass_needs_symbols')))
+							$error_update[] = __('Password must have symbols');
+						if (!config_update_value ('enable_pass_policy_admin', get_parameter('enable_pass_policy_admin')))
+							$error_update[] = __('Apply password policy to admin users');
+						if (!config_update_value ('enable_pass_history', get_parameter('enable_pass_history')))
+							$error_update[] = __('Enable password history');
+						if (!config_update_value ('compare_pass', get_parameter('compare_pass')))
+							$error_update[] = __('Compare previous password');
 					}
 					break;
 				case 'auth':
 					//////// AUTHENTICATION SETUP
-					config_update_value ('auth', get_parameter ('auth'));
-					config_update_value ('autocreate_remote_users', get_parameter ('autocreate_remote_users'));
-					config_update_value ('default_remote_profile', get_parameter ('default_remote_profile'));
-					config_update_value ('default_remote_group', get_parameter ('default_remote_group'));
-					config_update_value ('autocreate_blacklist', get_parameter ('autocreate_blacklist'));
+					if (!config_update_value ('auth', get_parameter ('auth')))
+						$error_update[] = __('Authentication method');
+					if (!config_update_value ('autocreate_remote_users', get_parameter ('autocreate_remote_users')))
+						$error_update[] = __('Autocreate remote users');
+					if (!config_update_value ('default_remote_profile', get_parameter ('default_remote_profile')))
+						$error_update[] = __('Autocreate profile');
+					if (!config_update_value ('default_remote_group', get_parameter ('default_remote_group')))
+						$error_update[] = __('Autocreate profile group');
+					if (!config_update_value ('autocreate_blacklist', get_parameter ('autocreate_blacklist')))
+						$error_update[] = __('Autocreate blacklist');
 					
-					config_update_value ('ad_server', get_parameter ('ad_server'));
-					config_update_value ('ad_port', get_parameter ('ad_port'));
-					config_update_value ('ad_start_tls', get_parameter ('ad_start_tls'));
-					config_update_value ('ad_domain', get_parameter ('ad_domain'));
+					if (!config_update_value ('ad_server', get_parameter ('ad_server')))
+						$error_update[] = __('Active directory server');
+					if (!config_update_value ('ad_port', get_parameter ('ad_port')))
+						$error_update[] = __('Active directory port');
+					if (!config_update_value ('ad_start_tls', get_parameter ('ad_start_tls')))
+						$error_update[] = __('Start TLS');
+					if (!config_update_value ('ad_domain', get_parameter ('ad_domain')))
+						$error_update[] = __('Domain');
 					
-					config_update_value ('ldap_server', get_parameter ('ldap_server'));
-					config_update_value ('ldap_port', get_parameter ('ldap_port'));
-					config_update_value ('ldap_version', get_parameter ('ldap_version'));
-					config_update_value ('ldap_start_tls', get_parameter ('ldap_start_tls'));
-					config_update_value ('ldap_base_dn', get_parameter ('ldap_base_dn'));
-					config_update_value ('ldap_login_attr', get_parameter ('ldap_login_attr'));
+					if (!config_update_value ('ldap_server', get_parameter ('ldap_server')))
+						$error_update[] = __('LDAP server');
+					if (!config_update_value ('ldap_port', get_parameter ('ldap_port')))
+						$error_update[] = __('LDAP port');
+					if (!config_update_value ('ldap_version', get_parameter ('ldap_version')))
+						$error_update[] = __('LDAP version');
+					if (!config_update_value ('ldap_start_tls', get_parameter ('ldap_start_tls')))
+						$error_update[] = __('Start TLS');
+					if (!config_update_value ('ldap_base_dn', get_parameter ('ldap_base_dn')))
+						$error_update[] = __('Base DN');
+					if (!config_update_value ('ldap_login_attr', get_parameter ('ldap_login_attr')))
+						$error_update[] = __('Login attribute');
 					
-					config_update_value ('rpandora_server', get_parameter ('rpandora_server'));
-					config_update_value ('rpandora_port', get_parameter ('rpandora_port'));
-					config_update_value ('rpandora_dbname', get_parameter ('rpandora_dbname'));
-					config_update_value ('rpandora_user', get_parameter ('rpandora_user'));
-					config_update_value ('rpandora_pass', get_parameter ('rpandora_pass'));
+					if (!config_update_value ('rpandora_server', get_parameter ('rpandora_server')))
+						$error_update[] = __('Pandora FMS host');
+					if (!config_update_value ('rpandora_port', get_parameter ('rpandora_port')))
+						$error_update[] = __('MySQL port');
+					if (!config_update_value ('rpandora_dbname', get_parameter ('rpandora_dbname')))
+						$error_update[] = __('Database name');
+					if (!config_update_value ('rpandora_user', get_parameter ('rpandora_user')))
+						$error_update[] = __('User');
+					if (!config_update_value ('rpandora_pass', get_parameter ('rpandora_pass')))
+						$error_update[] = __('Password');
 					
-					config_update_value ('rbabel_server', get_parameter ('rbabel_server'));
-					config_update_value ('rbabel_port', get_parameter ('rbabel_port'));
-					config_update_value ('rbabel_dbname', get_parameter ('rbabel_dbname'));
-					config_update_value ('rbabel_user', get_parameter ('rbabel_user'));
-					config_update_value ('rbabel_pass', get_parameter ('rbabel_pass'));
-					
-					config_update_value ('rintegria_server', get_parameter ('rintegria_server'));
-					config_update_value ('rintegria_port', get_parameter ('rintegria_port'));
-					config_update_value ('rintegria_dbname', get_parameter ('rintegria_dbname'));
-					config_update_value ('rintegria_user', get_parameter ('rintegria_user'));
-					config_update_value ('rintegria_pass', get_parameter ('rintegria_pass'));
+					if (!config_update_value ('rbabel_server', get_parameter ('rbabel_server')))
+						$error_update[] = __('Babel Enterprise host');
+					if (!config_update_value ('rbabel_port', get_parameter ('rbabel_port')))
+						$error_update[] = __('MySQL port');
+					if (!config_update_value ('rbabel_dbname', get_parameter ('rbabel_dbname')))
+						$error_update[] = __('Database name');
+					if (!config_update_value ('rbabel_user', get_parameter ('rbabel_user')))
+						$error_update[] = __('User');
+					if (!config_update_value ('rbabel_pass', get_parameter ('rbabel_pass')))
+						$error_update[] = __('Password');
+					if (!config_update_value ('rintegria_server', get_parameter ('rintegria_server')))
+						$error_update[] = __('Integria host');
+					if (!config_update_value ('rintegria_port', get_parameter ('rintegria_port')))
+						$error_update[] = __('MySQL port');
+					if (!config_update_value ('rintegria_dbname', get_parameter ('rintegria_dbname')))
+						$error_update[] = __('Database name');
+					if (!config_update_value ('rintegria_user', get_parameter ('rintegria_user')))
+						$error_update[] = __('User');
+					if (!config_update_value ('rintegria_pass', get_parameter ('rintegria_pass')))
+						$error_update[] = __('Password');
 					/////////////
 					break;
 				case 'perf':
 					//////// PERFORMANCE SETUP
-					config_update_value ('event_purge', get_parameter ('event_purge'));
+					if (!config_update_value ('event_purge', get_parameter ('event_purge')))
+						$error_update[] = 
 					$check_metaconsole_events_history = get_parameter ('metaconsole_events_history', -1);
-					if ($check_metaconsole_events_history != -1)	
-						config_update_value ('metaconsole_events_history', get_parameter ('metaconsole_events_history'));
-					config_update_value ('trap_purge', get_parameter ('trap_purge'));
-					config_update_value ('string_purge', get_parameter ('string_purge'));
-					config_update_value ('audit_purge', get_parameter ('audit_purge'));
-					config_update_value ('gis_purge', get_parameter ('gis_purge'));
-					config_update_value ('days_purge', (int) get_parameter ('days_purge'));
-					config_update_value ('days_delete_unknown', (int) get_parameter ('days_delete_unknown'));
-					config_update_value ('days_compact', (int) get_parameter ('days_compact'));
-					config_update_value ('step_compact', (int) get_parameter ('step_compact'));
-					config_update_value ('sla_period', (int) get_parameter ('sla_period'));
-					config_update_value ('event_view_hr', (int) get_parameter ('event_view_hr'));
-					config_update_value ('realtimestats', get_parameter ('realtimestats'));
-					config_update_value ('stats_interval', get_parameter ('stats_interval'));
-					config_update_value ('agentaccess', (int) get_parameter ('agentaccess'));
-					config_update_value ('compact_header', (bool) get_parameter ('compact_header'));
-					config_update_value ('num_files_attachment', (int) get_parameter ('num_files_attachment'));
+					if ($check_metaconsole_events_history != -1)
+						if (!config_update_value ('metaconsole_events_history', get_parameter ('metaconsole_events_history')))
+							$error_update[] = __('Max. days before delete events');
+					if (!config_update_value ('trap_purge', get_parameter ('trap_purge')))
+						$error_update[] = __('Max. days before delete traps');
+					if (!config_update_value ('string_purge', get_parameter ('string_purge')))
+						$error_update[] = __('Max. days before delete string data');
+					if (!config_update_value ('audit_purge', get_parameter ('audit_purge')))
+						$error_update[] = __('Max. days before delete audit events');
+					if (!config_update_value ('gis_purge', get_parameter ('gis_purge')))
+						$error_update[] = __('Max. days before delete GIS data');
+					if (!config_update_value ('days_purge', (int) get_parameter ('days_purge')))
+						$error_update[] = __('Max. days before purge');
+					if (!config_update_value ('days_delete_unknown', (int) get_parameter ('days_delete_unknown')))
+						$error_update[] = __('Max. days before delete unknown modules');
+					if (!config_update_value ('days_compact', (int) get_parameter ('days_compact')))
+						$error_update[] = __('Max. days before compact data');
+					if (!config_update_value ('step_compact', (int) get_parameter ('step_compact')))
+						$error_update[] = __('Compact interpolation in hours (1 Fine-20 bad)');
+					if (!config_update_value ('sla_period', (int) get_parameter ('sla_period')))
+						$error_update[] = __('SLA period (seconds)');
+					if (!config_update_value ('event_view_hr', (int) get_parameter ('event_view_hr')))
+						$error_update[] = __('Default hours for event view');
+					if (!config_update_value ('realtimestats', get_parameter ('realtimestats')))
+						$error_update[] = __('Use realtime statistics');
+					if (!config_update_value ('stats_interval', get_parameter ('stats_interval')))
+						$error_update[] = __('Batch statistics period (secs)');
+					if (!config_update_value ('agentaccess', (int) get_parameter ('agentaccess')))
+						$error_update[] = __('Use agent access graph');
+					if (!config_update_value ('compact_header', (bool) get_parameter ('compact_header')))
+						$error_update[] = 'Deprecated compact_header';
+					if (!config_update_value ('num_files_attachment', (int) get_parameter ('num_files_attachment')))
+						$error_update[] = __('Max. recommended number of files in attachment directory');
 					/////////////
 					break;
 					
 				case 'vis':
 					//////// VISUAL STYLES SETUP
-					config_update_value ('date_format', (string) get_parameter ('date_format'));
-					config_update_value ('prominent_time', (string) get_parameter ('prominent_time'));
-					config_update_value ('graph_color1', (string) get_parameter ('graph_color1'));
-					config_update_value ('graph_color2', (string) get_parameter ('graph_color2'));
-					config_update_value ('graph_color3', (string) get_parameter ('graph_color3'));
-					config_update_value ('graph_res', (int) get_parameter ('graph_res'));
+					if (!config_update_value ('date_format', (string) get_parameter ('date_format')))
+						$error_update[] = __('Date format string');
+					if (!config_update_value ('prominent_time', (string) get_parameter ('prominent_time')))
+						$error_update[] = __('Timestamp or time comparation');
+					if (!config_update_value ('graph_color1', (string) get_parameter ('graph_color1')))
+						$error_update[] = __('Graph color (min)');
+					if (!config_update_value ('graph_color2', (string) get_parameter ('graph_color2')))
+						$error_update[] = __('Graph color (avg)');
+					if (!config_update_value ('graph_color3', (string) get_parameter ('graph_color3')))
+						$error_update[] = __('Graph color (max)');
+					if (!config_update_value ('graph_res', (int) get_parameter ('graph_res')))
+						$error_update[] = __('Graphic resolution (1-low, 5-high)');
 					$style = (string) get_parameter ('style');
 					if ($style != $config['style'])
 						$style = substr ($style, 0, strlen ($style) - 4);
-					config_update_value ('style', $style);
-					config_update_value ('block_size', (int) get_parameter ('block_size'));
-					config_update_value ('round_corner', (bool) get_parameter ('round_corner'));
-					config_update_value ('status_images_set', (string) get_parameter ('status_images_set'));
-					config_update_value ('fontpath', (string) get_parameter ('fontpath'));
-					config_update_value ('font_size', get_parameter('font_size'));
-					config_update_value ('flash_charts', (bool) get_parameter ('flash_charts'));
-					config_update_value ('custom_logo', (string) get_parameter ('custom_logo'));
-					config_update_value ('enable_refr', get_parameter('enable_refr'));
-					config_update_value ('refr', get_parameter('refr'));
-					config_update_value ('vc_refr', get_parameter('vc_refr'));
-					config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small'));
-					config_update_value ('agent_size_text_medium', get_parameter('agent_size_text_medium'));
-					config_update_value ('module_size_text_small', get_parameter('module_size_text_small'));
-					config_update_value ('module_size_text_medium', get_parameter('module_size_text_medium'));
-					config_update_value ('description_size_text', get_parameter('description_size_text'));
-					config_update_value ('item_title_size_text', get_parameter('item_title_size_text'));
-					config_update_value ('gis_label', get_parameter ('gis_label'));
-					config_update_value ('gis_default_icon', get_parameter ('gis_default_icon'));
+					if (!config_update_value ('style', $style))
+						$error_update[] = __('Style template');
+					if (!config_update_value ('block_size', (int) get_parameter ('block_size')))
+						$error_update[] = __('Block size for pagination');
+					if (!config_update_value ('round_corner', (bool) get_parameter ('round_corner')))
+						$error_update[] = __('Use round corners');
+					if (!config_update_value ('status_images_set', (string) get_parameter ('status_images_set')))
+						$error_update[] = __('Status icon set');
+					if (!config_update_value ('fontpath', (string) get_parameter ('fontpath')))
+						$error_update[] = __('Font path');
+					if (!config_update_value ('font_size', get_parameter('font_size')))
+						$error_update[] = __('Font size');
+					if (!config_update_value ('flash_charts', (bool) get_parameter ('flash_charts')))
+						$error_update[] = __('Interactive charts');
+					if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
+						$error_update[] = __('Custom logo');
+					if (!config_update_value ('enable_refr', get_parameter('enable_refr')))
+						$error_update[] = __('Enable refresh for all pages');
+					if (!config_update_value ('refr', get_parameter('refr')))
+						$error_update[] = __('Global default interval for refresh');
+					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
+						$error_update[] = __('Default interval for refresh on Visual Console');
+					if (!config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small')))
+						$error_update[] = __('Agent size text');
+					if (!config_update_value ('agent_size_text_medium', get_parameter('agent_size_text_medium')))
+						$error_update[] = __('Agent size text');
+					if (!config_update_value ('module_size_text_small', get_parameter('module_size_text_small')))
+						$error_update[] = __('Module size text');
+					if (!config_update_value ('module_size_text_medium', get_parameter('module_size_text_medium')))
+						$error_update[] = __('Description size text');
+					if (!config_update_value ('description_size_text', get_parameter('description_size_text')))
+						$error_update[] = __('Description size text');
+					if (!config_update_value ('item_title_size_text', get_parameter('item_title_size_text')))
+						$error_update[] = __('Item title size text');
+					if (!config_update_value ('gis_label', get_parameter ('gis_label')))
+						$error_update[] = __('GIS Labels');
+					if (!config_update_value ('gis_default_icon', get_parameter ('gis_default_icon')))
+						$error_update[] = __('Default icon in GIS');
 					
 					$interval_values = get_parameter ('interval_values');
 					
@@ -297,27 +439,49 @@ function config_update_config () {
 						$interval_values = implode(',',$interval_values_array);
 					}
 					
-				config_update_value ('interval_values', $interval_values);
+				if (!config_update_value ('interval_values', $interval_values))
+					$error_update[] = __('Delete interval');
 				
 				break;
 			case 'net':
-				config_update_value ('netflow_path', get_parameter ('netflow_path'));
-				config_update_value ('netflow_interval', (int)get_parameter ('netflow_interval'));
-				config_update_value ('netflow_daemon', get_parameter ('netflow_daemon'));
-				config_update_value ('netflow_nfdump', get_parameter ('netflow_nfdump'));
-				config_update_value ('netflow_nfexpire', get_parameter ('netflow_nfexpire'));
-				config_update_value ('netflow_max_resolution', (int)get_parameter ('netflow_max_resolution'));
-				config_update_value ('netflow_disable_custom_lvfilters', get_parameter ('netflow_disable_custom_lvfilters'));
-				config_update_value ('netflow_max_lifetime', (int) get_parameter ('netflow_max_lifetime'));
+				if (!config_update_value ('netflow_path', get_parameter ('netflow_path')))
+					$error_update[] = __('Data storage path');
+				if (!config_update_value ('netflow_interval', (int)get_parameter ('netflow_interval')))
+					$error_update[] = __('Daemon interval');
+				if (!config_update_value ('netflow_daemon', get_parameter ('netflow_daemon')))
+					$error_update[] = __('Daemon binary path');
+				if (!config_update_value ('netflow_nfdump', get_parameter ('netflow_nfdump')))
+					$error_update[] = __('Nfdump binary path');
+				if (!config_update_value ('netflow_nfexpire', get_parameter ('netflow_nfexpire')))
+					$error_update[] = __('Nfexpire binary path');
+				if (!config_update_value ('netflow_max_resolution', (int)get_parameter ('netflow_max_resolution')))
+					$error_update[] = __('Maximum chart resolution');
+				if (!config_update_value ('netflow_disable_custom_lvfilters', get_parameter ('netflow_disable_custom_lvfilters')))
+					$error_update[] = __('Disable custom live view filters');
+				if (!config_update_value ('netflow_max_lifetime', (int) get_parameter ('netflow_max_lifetime')))
+					$error_update[] = __('Netflow max lifetime');
 				break;
 			case 'log':
-				config_update_value ('log_dir', get_parameter('log_dir'));
-				config_update_value ('log_max_lifetime', (int)get_parameter('log_max_lifetime'));
+				if (!config_update_value ('log_dir', get_parameter('log_dir')))
+					$error_update[] = __('Netflow max lifetime');
+				if (!config_update_value ('log_max_lifetime', (int)get_parameter('log_max_lifetime')))
+					$error_update[] = __('Log max lifetime');
 				break;
 			
 		}
+		
+		
+	}
 	
-	
+	if (count($error_update) > 0) {
+		$config['error_config_update_config'] = array();
+		$config['error_config_update_config']['correct'] = false;
+		$values = implode(', ', $error_update);
+		$config['error_config_update_config']['message'] = sprint(__('Failed updated: the next values cannot update: %s'), $values);
+	}
+	else {
+		$config['error_config_update_config'] = array();
+		$config['error_config_update_config']['correct'] = true;
 	}
 	
 	enterprise_include_once('include/functions_policies.php');

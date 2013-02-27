@@ -31,7 +31,14 @@ html_print_submit_button(__('Create response'), 'create_response_button', false,
 echo '</form>';
 echo '</div>';
 
-$event_responses = db_get_all_rows_in_table('tevent_response');
+if (!is_user_admin($config['id_user'])) {
+	$id_groups = array_keys(users_get_groups(false, "PM"));
+	$event_responses = db_get_all_rows_filter('tevent_response',
+		array('id_group' => $id_groups));
+}
+else {
+	$event_responses = db_get_all_rows_in_table('tevent_response');
+}
 
 if(empty($event_responses)) {
 	ui_print_info_message(__('No responses found'));

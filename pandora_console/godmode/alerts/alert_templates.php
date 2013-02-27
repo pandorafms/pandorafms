@@ -256,6 +256,9 @@ $total_templates = alerts_get_alert_templates ($filter, array ('COUNT(*) AS tota
 $total_templates = $total_templates[0]['total'];
 $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
+if (!is_user_admin($config['id_user']))
+	$filter['id_group'] = array_keys(users_get_groups(false, "LM"));
+
 $templates = alerts_get_alert_templates ($filter,
 	array ('id', 'name', 'description', 'type', 'id_group'));
 if ($templates === false)

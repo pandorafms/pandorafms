@@ -3048,38 +3048,40 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
-	if ($other['data'][0] == ""){
+	if ($other['data'][0] == "") {
 		returnError('error_update_network_module_policy', __('Error updating network module in policy. Id_policy_module cannot be left blank.'));
-		return;			
-	}	
+		return;
+	}
 	
 	// Check if the module exists
 	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
-
+	
 	if ($module_policy === false) {
 		returnError('error_update_network_module_policy', __('Error updating network module in policy. Module doesn\'t exists.'));
-		return;					
+		return;
 	}
 	
-	if ($module_policy[0]['id_module'] != 2){
+	if ($module_policy[0]['id_module'] != 2) {
 		returnError('error_update_network_module_policy', __('Error updating network module in policy. Module type is not network type.'));
-		return;	
+		return;
 	}
-
-	$fields_network_module = array('id','description', 'id_module_group', 'min', 'max', 'post_process', 'module_interval', 
-						 'min_warning', 'max_warning', 'str_warning', 'min_critical', 'max_critical', 'str_critical',
-						 'history_data', 'min_ff_event', 'disabled', 'tcp_port', 'snmp_community', 'snmp_oid', 'custom_id');
+	
+	$fields_network_module = array('id','description',
+		'id_module_group', 'min', 'max', 'post_process',
+		'module_interval', 'min_warning', 'max_warning', 'str_warning',
+		'min_critical', 'max_critical', 'str_critical', 'history_data',
+		'min_ff_event', 'disabled', 'tcp_port', 'snmp_community',
+		'snmp_oid', 'custom_id');
 	
 	$cont = 0;
-	foreach ($fields_network_module as $field){
-		if ($other['data'][$cont] != "" and $field != 'id'){
+	foreach ($fields_network_module as $field) {
+		if ($other['data'][$cont] != "" and $field != 'id') {
 			$values[$field] = $other['data'][$cont];
 		}
 		
 		$cont++;
 	}
-	 	
- 
+	
 	$result_update = enterprise_hook('policies_update_module', array($other['data'][0], $values, false)); 
 	
 	

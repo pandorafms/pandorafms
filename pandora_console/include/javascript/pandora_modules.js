@@ -8,11 +8,13 @@ function configure_modules_form () {
 		if (id_modules_icmp.in_array (this.value)) {
 			$("tr#simple-snmp_1, tr#simple-snmp_2, tr#advanced-tcp_send, tr#advanced-tcp_receive").hide ();
 			$("#text-tcp_port").attr ("disabled", "1");
-		} else if (id_modules_snmp.in_array (this.value)) {
+		}
+		else if (id_modules_snmp.in_array (this.value)) {
 			$("tr#simple-snmp_1, tr#simple-snmp_2").show ();
 			$("tr#advanced-tcp_send, tr#advanced-tcp_receive").hide ();
 			$("#text-tcp_port").removeAttr ("disabled");
-		} else if (id_modules_tcp.in_array (this.value)) {
+		}
+		else if (id_modules_tcp.in_array (this.value)) {
 			$("tr#simple-snmp_1, tr#simple-snmp_2").hide ();
 			$("tr#advanced-tcp_send, tr#advanced-tcp_receive").show ();
 			$("#text-tcp_port").removeAttr ("disabled");

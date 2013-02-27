@@ -60,7 +60,7 @@ $table_agent->style[1] = 'width: 100px;';
 $table_agent->style[2] = 'width: 16px;';
 $data = array();
 
-$agent_name = ui_print_agent_name ($agent["id_agente"], true, 500, "text-transform: uppercase; font-size: medium;", true);
+$agent_name = ui_print_agent_name ($agent["id_agente"], true, 500, "font-size: medium;", true);
 
 if ($agent['disabled']) {
 	$agent_name = "<em>" . $agent_name . "</em>" . ui_print_help_tip(__('Disabled'), true);
@@ -76,7 +76,7 @@ $data[0] = ui_print_group_icon ($agent["id_grupo"], true) . '&nbsp;&nbsp;';
 $data[0] .= $agent_name;
 
 $status_img = agents_tree_view_status_img ($agent["critical_count"],
-			$agent["warning_count"], $agent["unknown_count"]);
+	$agent["warning_count"], $agent["unknown_count"]);
 $data[1] = events_tiny_stats ($agent['total_count'], $agent['normal_count'], $agent['critical_count'], $agent['warning_count'], $agent['unknown_count'], true);
 $data[2] = str_replace('.png' ,'_ball.png', $status_img);
 
@@ -86,7 +86,7 @@ $table_agent->rowclass[] = '';
 $data = array();
 $addresses = agents_get_addresses($id_agente);
 $address = agents_get_address($id_agente);
-foreach($addresses as $k => $add) {
+foreach ($addresses as $k => $add) {
 	if($add == $address) {
 		unset($addresses[$k]);
 	}
@@ -201,7 +201,7 @@ if ($config['activate_gis'] || $agent['url_address'] != '') {
 	// Position Information
 	if ($config['activate_gis']) {
 		$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
-
+		
 		$data[$col] = '<b>' . __('Position (Long, Lat)') . '</b>';
 		$col++;
 		

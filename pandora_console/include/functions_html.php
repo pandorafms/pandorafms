@@ -1152,6 +1152,33 @@ function html_print_textarea ($name, $rows, $columns, $value = '', $attributes =
 }
 
 /**
+ * Return a table parameters predefined
+ * 
+ * @param string model
+ * 	- Transparent: More basic template. No borders, all the columns with same width
+ * @param int number of columns
+ * 
+ * @return object Table object 
+ */
+function html_get_predefined_table ($model = 'transparent', $columns = 4) {
+	$width_percent = 100/$columns;
+	
+	switch($model) {
+		case 'transparent':
+		default:
+			$table->class = "none";
+			$table->cellpadding = 0;
+			$table->cellspacing = 0;
+			$table->head = array ();
+			$table->data = array ();
+			$table->style = array_fill(0, 4, 'text-align:center; width: ' . $width_percent . '%;');
+			$table->width = "100%";
+	}
+
+	return $table;
+}
+
+/**
  * Print a nicely formatted table. Code taken from moodle.
  *
  * @param object Object with several properties:
@@ -1231,6 +1258,7 @@ function html_print_table (&$table, $return = false) {
 			}
 		}
 	}
+
 	$styleTable = '';
 	if (isset ($table->styleTable)) {
 		$styleTable = $table->styleTable;
@@ -1259,8 +1287,8 @@ function html_print_table (&$table, $return = false) {
 	}
 	if (isset ($table->cellstyle)) {
 		foreach ($table->cellstyle as $keyrow => $cstyle) {
-			foreach ($cstyle as $key => $style) {
-				$cellstyle[$keyrow][$key] = $style;
+			foreach ($cstyle as $key => $cst) {
+				$cellstyle[$keyrow][$key] = $cst;
 			}
 		}
 	}
@@ -1405,7 +1433,7 @@ function html_print_table (&$table, $return = false) {
 				if (!isset ($style[$key])) {
 					$style[$key] = '';
 				}
-				
+
 				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.'">'. $item .'</td>'."\n";
 			}
 			$output .= '</tr>'."\n";

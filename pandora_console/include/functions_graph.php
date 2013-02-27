@@ -1339,6 +1339,35 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 }
 
 /**
+ * Print a pie graph with alerts defined/fired data
+ * 
+ * @param integer Number of defined alerts
+ * @param integer Number of fired alerts
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param bool return or echo flag
+ */
+function graph_alert_status ($defined_alerts, $fired_alerts, $width = 300, $height = 200, $return = false) {
+	global $config;
+	
+	$data = array(__('Defined alerts') => $defined_alerts, __('Fired alerts') => $fired_alerts);
+	$colors = array(COL_NORMAL, COL_ALERTFIRED);
+	
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("/images/logo_vertical_water.png"));
+	
+	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
+		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
+	
+	if ($return) {
+		return $out;
+	}
+	else {
+		echo $out;
+	}
+}
+
+/**
  * Print a pie graph with events data of agent or all agents (if id_agent = false)
  * 
  * @param integer id_agent Agent ID

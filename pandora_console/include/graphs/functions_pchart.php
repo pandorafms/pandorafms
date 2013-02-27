@@ -407,7 +407,6 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	
 	foreach($data_values as $key => $value) {
 		if(isset($colors[$key])) {
-			html_debug_print(hex_2_rgb($colors[$key]), true);
 			$PieChart->setSliceColor($key, hex_2_rgb($colors[$key]));
 		}
 	}

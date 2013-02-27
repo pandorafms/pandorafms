@@ -239,4 +239,19 @@ define ('SNMP_DIR_MIBS', "attachment/mibs");
 define('PASSSWORD_POLICIES_OK', 0);
 define('PASSSWORD_POLICIES_FIRST_CHANGE', 1);
 define('PASSSWORD_POLICIES_EXPIRED', 2);
+
+/* SERVER TYPES */
+define ('SERVER_TYPE_DATA', 0);
+define ('SERVER_TYPE_NETWORK', 1);
+define ('SERVER_TYPE_SNMP', 2);
+define ('SERVER_TYPE_RECON', 3);
+define ('SERVER_TYPE_PLUGIN', 4);
+define ('SERVER_TYPE_PREDICTION', 5);
+define ('SERVER_TYPE_WMI', 6);
+define ('SERVER_TYPE_EXPORT', 7);
+define ('SERVER_TYPE_INVENTORY', 8);
+define ('SERVER_TYPE_WEB', 9);
+define ('SERVER_TYPE_EVENT', 10);
+define ('SERVER_TYPE_ENTERPRISE_ICMP', 11);
+define ('SERVER_TYPE_ENTERPRISE_SNMP', 12);
 ?>

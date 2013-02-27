@@ -1,3 +1,11 @@
+2013-02-27 Dario Rodriguez <dario@artica.es>
+
+	* include/functions_events.php: Added new fields to events_create_event 
+	function: critical warning and unknown instructions, source and tags.
+	* include/functions_api.php: Reimplemented api_create_event API function, 
+	the behaviour was completly wrong from documented and events_create_event
+	function.
+
 2013-02-27 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/setup/setup_general.php, godmode/setup/setup_netflow.php,

@@ -72,59 +72,170 @@ function servers_get_performance () {
 	global $config;
 	
 	$data = array();
-	
-	// For remote modules:
-	// Get total modules running
+	$data["total_modules"] = 0;
+	$data["total_remote_modules"] = 0;
+	$data["total_local_modules"] = 0;
+	$data["avg_interval_total_modules"] = array();
+	$data["avg_interval_remote_modules"] = array();
+	$data["avg_interval_local_modules"] = 0;
 	
 	if ($config["realtimestats"] == 1){
-		$data["total_remote_modules"] =  db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)
+		$counts = db_get_all_rows_sql ("SELECT tagente_modulo.id_modulo, COUNT(tagente_modulo.id_agente_modulo) modules
 			FROM tagente_modulo, tagente_estado, tagente
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-				AND tagente_modulo.id_modulo != 1 AND tagente_modulo.disabled = 0 AND utimestamp > 0
-				AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente");
+				AND tagente_modulo.disabled = 0 AND module_interval > 0 AND utimestamp > 0 AND delete_pending = 0
+				AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
+
+		if(empty($counts)) {
+			$counts = array();
+		}
+
+		foreach($counts as $c) {
+			switch($c['id_modulo']) {
+				case MODULE_DATA:
+					$data["total_local_modules"] = $c['modules'];
+					break;
+				case MODULE_NETWORK:
+					$data["total_network_modules"] = $c['modules'];
+					break;
+				case MODULE_PLUGIN:
+					$data["total_plugin_modules"] = $c['modules'];
+					break;
+				case MODULE_PREDICTION:
+					$data["total_prediction_modules"] = $c['modules'];
+					break;
+				case MODULE_WMI:
+					$data["total_wmi_modules"] = $c['modules'];
+					break;
+				case MODULE_WEB:
+					$data["total_web_modules"] = $c['modules'];
+					break;
+			}
+			
+			if($c['id_modulo'] != MODULE_DATA) {
+				$data["total_remote_modules"] += $c['modules'];
+			}
+			
+			$data["total_modules"] += $c['modules'];
+		}
 	}
 	else {
-		$data["total_remote_modules"] = db_get_sql ("SELECT SUM(my_modules) FROM tserver WHERE server_type != 0");
+		$counts = db_get_all_rows_sql ("SELECT server_type, my_modules modules FROM tserver GROUP BY server_type");
+
+		if(empty($counts)) {
+			$counts = array();
+		}
+		
+		foreach($counts as $c) {
+			switch ($c['server_type']) {
+				case SERVER_TYPE_DATA:
+					$data["total_local_modules"] = $c['modules'];
+					break;
+				case SERVER_TYPE_NETWORK:
+				case SERVER_TYPE_SNMP:
+				case SERVER_TYPE_ENTERPRISE_ICMP:
+				case SERVER_TYPE_ENTERPRISE_SNMP:
+					$data["total_network_modules"] = $c['modules'];
+					break;
+				case SERVER_TYPE_PLUGIN:
+					$data["total_plugin_modules"] = $c['modules'];
+					break;
+				case SERVER_TYPE_PREDICTION:
+					$data["total_prediction_modules"] = $c['modules'];
+					break;
+				case SERVER_TYPE_WMI:
+					$data["total_wmi_modules"] = $c['modules'];
+					break;
+				case SERVER_TYPE_WEB:
+					$data["total_web_modules"] = $c['modules'];
+					break;
+				case SERVER_TYPE_EXPORT:
+				case SERVER_TYPE_INVENTORY:
+				case SERVER_TYPE_EVENT:
+				case SERVER_TYPE_RECON:
+					break;
+			}
+			
+			if($c['server_type'] != SERVER_TYPE_DATA) {
+				$data["total_remote_modules"] += $c['modules'];
+			}
+			
+			$data["total_modules"] += $c['modules'];
+		}
+	}
+			
+	$interval_avgs = db_get_all_rows_sql ("SELECT tagente_modulo.id_modulo, AVG(tagente_modulo.module_interval) avg_interval
+					FROM tagente_modulo, tagente_estado, tagente
+				WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+					AND tagente_modulo.disabled = 0 AND module_interval > 0 AND utimestamp > 0 AND delete_pending = 0
+					AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
+	
+	foreach($interval_avgs as $ia) {
+		switch($ia['id_modulo']) {
+			case MODULE_DATA:
+				$data["avg_interval_local_modules"] = $ia['avg_interval'];
+				$data["local_modules_rate"] = servers_get_rate($data["avg_interval_local_modules"], $data["total_local_modules"]);
+				break;
+			case MODULE_NETWORK:
+				$data["avg_interval_network_modules"] = $ia['avg_interval'];
+				$data["network_modules_rate"] = servers_get_rate($data["avg_interval_network_modules"], $data["total_network_modules"]);
+				break;
+			case MODULE_PLUGIN:
+				$data["avg_interval_plugin_modules"] = $ia['avg_interval'];
+				$data["plugin_modules_rate"] = servers_get_rate($data["avg_interval_plugin_modules"], $data["total_plugin_modules"]);
+				break;
+			case MODULE_PREDICTION:
+				$data["avg_interval_prediction_modules"] = $ia['avg_interval'];
+				$data["prediction_modules_rate"] = servers_get_rate($data["avg_interval_prediction_modules"], $data["total_prediction_modules"]);
+				break;
+			case MODULE_WMI:
+				$data["avg_interval_wmi_modules"] = $ia['avg_interval'];
+				$data["wmi_modules_rate"] = servers_get_rate($data["avg_interval_wmi_modules"], $data["total_wmi_modules"]);
+				break;
+			case MODULE_WEB:
+				$data["avg_interval_web_modules"] = $ia['avg_interval'];
+				$data["web_modules_rate"] = servers_get_rate($data["avg_interval_web_modules"], $data["total_web_modules"]);
+				break;
+		}
+		
+		if($ia['id_modulo'] != MODULE_DATA) {
+			$data["avg_interval_remote_modules"][] = $ia['avg_interval'];
+		}
+		
+		$data["avg_interval_total_modules"][] = $ia['avg_interval'];
 	}
 	
-	$data["avg_interval_remote_modules"] = db_get_sql ("SELECT AVG(module_interval)
-		FROM tagente_modulo, tagente_estado, tagente
-		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			AND tagente_modulo.disabled = 0 AND id_modulo != 1 AND module_interval > 0 AND utimestamp > 0
-			AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente");
-	
-	if ($data["avg_interval_remote_modules"] == 0)
-		$data["remote_modules_rate"] = 0;
-	else
-		$data["remote_modules_rate"] =  $data["total_remote_modules"] / $data["avg_interval_remote_modules"];
-	
-	// For local modules (ignoring local modules with custom invervals for simplicity).
-	if ($config["realtimestats"] == 1){
-		$data["total_local_modules"] =  db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)
-			FROM tagente_modulo, tagente_estado, tagente
-			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-				AND id_modulo = 1 AND tagente_modulo.disabled = 0 AND utimestamp > 0
-				AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente");
+	if (empty($data["avg_interval_remote_modules"])) {
+		$data["avg_interval_remote_modules"] = 0;
 	}
 	else {
-		$data["total_local_modules"] = db_get_sql ("SELECT SUM(my_modules) FROM tserver WHERE server_type = 0");
+		$data["avg_interval_remote_modules"] = array_sum($data["avg_interval_remote_modules"]) / count($data["avg_interval_remote_modules"]);
 	}
 	
-	$data["avg_interval_local_modules"] = db_get_sql ("SELECT AVG(tagente.intervalo) FROM tagente WHERE  disabled = 0 AND intervalo > 0");
-	
-	if ($data["avg_interval_local_modules"] > 0){
-		$data["local_modules_rate"] =  $data["total_local_modules"] / $data["avg_interval_local_modules"]; 
+	if (empty($data["avg_interval_total_modules"])) {
+		$data["avg_interval_total_modules"] = 0;
 	}
 	else {
-		$data["local_modules_rate"] = 0;
+		$data["avg_interval_total_modules"] = array_sum($data["avg_interval_total_modules"]) / count($data["avg_interval_total_modules"]);
 	}
 	
-	$data["total_modules"] = $data["total_local_modules"] + $data["total_remote_modules"];
-	
+	$data["remote_modules_rate"] = servers_get_rate($data["avg_interval_remote_modules"], $data["total_remote_modules"]);
+	$data["total_modules_rate"] = servers_get_rate($data["avg_interval_total_modules"], $data["total_modules"]);
+
 	return ($data);
 }
 
-
+/**
+ * Get server rate
+ *
+ * @param float avg of interval of these modules
+ * @param int number of modules
+ *
+ * @return float number of modules processed by second
+ */
+function servers_get_rate($avg_interval, $num_modules) {
+	return $avg_interval > 0 ? ($num_modules / $avg_interval) : 0;
+}
 
 /**
  * This function will get all the server information in an array or a specific server
@@ -157,74 +268,69 @@ function servers_get_info ($id_server = -1) {
 	$return = array ();
 	foreach ($result as $server) {
 		switch ($server['server_type']) {
-			case 0:
+			case SERVER_TYPE_DATA:
 				$server["img"] = html_print_image ("images/data.png", true, array ("title" => __('Data server')));
 				$server["type"] = "data";
 				$id_modulo = 1;
 				break;
-			case 1:
+			case SERVER_TYPE_NETWORK:
 				$server["img"] = html_print_image ("images/network.png", true, array ("title" => __('Network server')));
 				$server["type"] = "network";
 				$id_modulo = 2;
 				break;
-			case 2:
+			case SERVER_TYPE_SNMP:
 				$server["img"] = html_print_image ("images/snmp.png", true, array ("title" => __('SNMP Trap server')));
 				$server["type"] = "snmp";
 				$id_modulo = 0;
 				break;
-			case 3:
+			case SERVER_TYPE_RECON:
 				$server["img"] = html_print_image ("images/recon.png", true, array ("title" => __('Recon server')));
 				$server["type"] = "recon";
 				$id_modulo = 0;
 				break;
-			case 4:
+			case SERVER_TYPE_PLUGIN:
 				$server["img"] = html_print_image ("images/plugin.png", true, array ("title" => __('Plugin server')));
 				$server["type"] = "plugin";
 				$id_modulo = 4;
 				break;
-			case 5:
+			case SERVER_TYPE_PREDICTION:
 				$server["img"] = html_print_image ("images/chart_bar.png", true, array ("title" => __('Prediction server')));
 				$server["type"] = "prediction";
 				$id_modulo = 5;
 				break;
-			case 6:
+			case SERVER_TYPE_WMI:
 				$server["img"] = html_print_image ("images/wmi.png", true, array ("title" => __('WMI server')));
 				$server["type"] = "wmi";
 				$id_modulo = 6;
 				break;
-			case 7:
+			case SERVER_TYPE_EXPORT:
 				$server["img"] = html_print_image ("images/server_export.png", true, array ("title" => __('Export server')));
 				$server["type"] = "export";
 				$id_modulo = 0;
 				break;
-			case 8:
+			case SERVER_TYPE_INVENTORY:
 				$server["img"] = html_print_image ("images/page_white_text.png", true, array ("title" => __('Inventory server')));
 				$server["type"] = "inventory";
 				$id_modulo = 0;
 				break;
-			case 9:
+			case SERVER_TYPE_WEB:
 				$server["img"] = html_print_image ("images/world.png", true, array ("title" => __('Web server')));
 				$server["type"] = "web";
 				$id_modulo = 0;
 				break;
-			case 10:
+			case SERVER_TYPE_EVENT:
 				$server["img"] = html_print_image ("images/lightning_go.png", true, array ("title" => __('Event server')));
 				$server["type"] = "event";
 				$id_modulo = 2;
 				break;
-			case 11:
+			case SERVER_TYPE_ENTERPRISE_ICMP:
 				$server["img"] = html_print_image ("images/network.png", true, array ("title" => __('Enterprise ICMP server')));
 				$server["type"] = "enterprise icmp";
 				$id_modulo = 2;
 				break;
-			case 12:
+			case SERVER_TYPE_ENTERPRISE_SNMP:
 				$server["img"] = html_print_image ("images/network.png", true, array ("title" => __('Enterprise SNMP server')));
 				$server["type"] = "enterprise snmp";
-				$id_modulo = 2;
-				break;
-			case 13:
-				$server["img"] = html_print_image ("images/network.png", true, array ("title" => __('Enterprise SNMP server')));
-				$server["type"] = "netflow";
 				$id_modulo = 2;
 				break;
 			default:

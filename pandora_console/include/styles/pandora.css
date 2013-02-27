@@ -1054,9 +1054,14 @@ div#main_pure {
 	*margin-top: 10px !important;
 }
 /* big_data is used in tactical and logon_ok */
-a.big_data {
+.big_data {
 	text-decoration: none; font: bold 2em Arial, Sans-serif;
 }
+
+.med_data {
+	text-decoration: none; font: bold 1.5em Arial, Sans-serif;
+}
+
 .notify {
 	background-color: #f7ffa5;
 	text-align: center;

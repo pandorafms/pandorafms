@@ -20,7 +20,7 @@ function configure_modules_form () {
 	});
 	
 	$("#local_component_group").change (function () {
-	
+		
 		var $select = $("#local_component").hide ();
 		$("#component").hide ();
 		if (this.value == 0) {
@@ -54,7 +54,7 @@ function configure_modules_form () {
 			},
 			"json"
 		);
-	
+		
 		}
 	);
 	
@@ -69,7 +69,7 @@ function configure_modules_form () {
 			
 			$("#textarea_configuration_data").val('');
 			$('#simple-configuration_data').show();
-
+			
 			$("#text-name").val('');
 			$("#textarea_description").val('');
 			$("#checkbox-history_data").check ();
@@ -108,7 +108,7 @@ function configure_modules_form () {
 				configuration_data = js_html_entity_decode (data['data']);
 				$("#text-name").attr ("value", js_html_entity_decode (data["name"]));
 				$("#textarea_description").attr ("value", js_html_entity_decode (data["description"]));
-				$("#textarea_configuration_data").attr ("value", configuration_data);
+				$("#textarea_configuration_data").val(configuration_data);
 				$("#component_loading").hide ();
 				$("#id_module_type option[value="+data["type"]+"]").select (1);
 				$("#text-max").attr ("value", data["max"]);
@@ -119,7 +119,10 @@ function configure_modules_form () {
 				}
 				else {
 					period_select_update('module_interval', data["module_interval"]);
-				}				$("#id_module_group option[value="+data["id_module_group"]+"]").select (1);
+				}
+				
+				$("#id_module_group option[value="+data["id_module_group"]+"]").select (1);
+				
 				if (data["history_data"])
 					$("#checkbox-history_data").check ();
 				else
@@ -137,13 +140,13 @@ function configure_modules_form () {
 				$("#text-warning_inverse").attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
-				if($("#id_category").is("select")) {
+				if ($("#id_category").is("select")) {
 					$("#id_category option[value="+data["id_category"]+"]").select (1);
 				}
 				else {
 					$("#hidden-id_category").val(data["id_category"]);
 				}
-
+				
 				var tags = data["tags"];
 				
 				// Reset the selection of tags (put all of them into available box)
@@ -162,7 +165,7 @@ function configure_modules_form () {
 				
 				if(tags != '') {
 					tags = tags.split(',');
-
+					
 					// Fill the selected tags box with select ones
 					for(i=0; i<tags.length; i++){
 						$("#id_tag_available option").each(function(){
@@ -183,7 +186,7 @@ function configure_modules_form () {
 				$('.macro_field').remove();
 				
 				$('#hidden-macros').val('');
-
+				
 				var legend = '';
 				// If exist macros, load the fields
 				if(data["macros"] != '' && data["macros"] != null) {
@@ -195,7 +198,7 @@ function configure_modules_form () {
 						legend += macro['macro']+" = "+ macro['desc']+"<br>";
 					});
 					$('#configuration_data_legend').html(legend);
-
+					
 					$('#simple-show_configuration_data').show();
 					$('#simple-hide_configuration_data').hide();
 					$('#configuration_data_legend').show();
@@ -300,7 +303,7 @@ function configure_modules_form () {
 				$("#text-warning_inverse").attr ("value", (data["warning_inverse"] == 0) ? 0 : data["warning_inverse"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
-				if($("#id_category").is("select")) {
+				if ($("#id_category").is("select")) {
 					$("#id_category option[value="+data["id_category"]+"]").select (1);
 				}
 				else {
@@ -316,16 +319,16 @@ function configure_modules_form () {
 						$("select[name='id_tag_available[]']").append($("<option></option>").val($(this).attr('value')).html($(this).text()));
 					}
 				});
-				if($("#id_tag_available option").length > 1) {
+				if ($("#id_tag_available option").length > 1) {
 					$("#id_tag_available").find("option[value='']").remove();
 				}
-				if($("#id_tag_selected option").length == 0) {
+				if ($("#id_tag_selected option").length == 0) {
 					$("select[name='id_tag_selected[]']").append($("<option></option>").val('').html('<i>None</i>'));
 				}
 				
-				if(tags != '') {
+				if (tags != '') {
 					tags = tags.split(',');
-
+					
 					// Fill the selected tags box with select ones
 					for(i=0; i<tags.length; i++){
 						$("#id_tag_available option").each(function(){
@@ -341,12 +344,12 @@ function configure_modules_form () {
 						}
 					}
 				}
-
+				
 				// Delete macro fields
 				$('.macro_field').remove();
 				
 				$('#hidden-macros').val('');
-
+				
 				// If exist macros, load the fields
 				if(data["macros"] != '' && data["macros"] != null) {
 					$('#hidden-macros').val(Base64.encode(data["macros"]));
@@ -397,7 +400,7 @@ function configure_modules_form () {
 			$("#message").showMessage (no_plugin_lang);
 			return false;
 		}
-
+		
 		moduletype = $("#hidden-moduletype").val ();
 		if (moduletype == 5) {
 			if ($("#prediction_module").val () == null) {
@@ -449,7 +452,7 @@ function configure_modules_form () {
 		});
 	}
 	
-	if(typeof $("#prediction_id_agent").pandoraSelectAgentModule == 'function') {
+	if (typeof $("#prediction_id_agent").pandoraSelectAgentModule == 'function') {
 		$("#prediction_id_agent").pandoraSelectAgentModule ({
 			moduleSelect: "select#prediction_module"
 		});
@@ -461,13 +464,13 @@ function configure_modules_form () {
 function delete_macro(prefix) {
 	var next_number = parseInt($('#next_macro').html());
 	// Is not possible delete first macro
-	if(next_number == 3) {
+	if (next_number == 3) {
 		$('#delete_macro_button').hide();
 	}
 	var next_row = parseInt($('#next_row').html());
 	$('#next_macro').html(next_number-1);
 	$('#next_row').html(next_row-2);
-
+	
 	var nrow1 = next_row - 2;
 	var nrow2 = next_row - 1;
 	
@@ -477,9 +480,9 @@ function delete_macro(prefix) {
 
 function new_macro(prefix) {
 	$('#delete_macro_button').show();
-
+	
 	var next_row = parseInt($('#next_row').html());
-
+	
 	$('#next_row').html(next_row+2);
 	var nrow1 = next_row - 2;
 	var nrow2 = next_row - 1;
@@ -493,7 +496,7 @@ function new_macro(prefix) {
 	// Clone two last rows
 	var $row1 = $('#'+prefix+nrow1).clone(true);
 	var $row2 = $('#'+prefix+nrow2).clone(true);
-
+	
 	// Change the tr ID
 	$row1.attr('id',prefix+(nrow3));
 	$row2.attr('id',prefix+(nrow4));
@@ -506,14 +509,14 @@ function new_macro(prefix) {
 	$row1.insertAfter('#'+prefix+nrow2);
 	
 	// Change labels
-	for(i=0;i<=3;i++) {
+	for(i = 0; i <= 3; i++) {
 		var label1 = $("#"+prefix+nrow3+"-"+i).html();
 		var exp_reg = new RegExp('field'+current_number, 'g'); 
 		label1 = label1.replace(exp_reg,'field'+next_number);
 		$("#"+prefix+nrow3+"-"+i).html(label1);
 	}
 	
-	for(i=0;i<=1;i++) {
+	for(i = 0; i <= 1; i++) {
 		var label2 = $("#"+prefix+nrow4+"-"+i).html();
 		var exp_reg = new RegExp('field'+current_number, 'g'); 
 		label2 = label2.replace(exp_reg,'field'+next_number);
@@ -561,7 +564,7 @@ function add_macro_field(macro, row_model_id) {
 	var macro_help = macro['help'];
 	var macro_macro = macro['macro'];
 	var macro_value = macro['value'];
-		
+	
 	var row_id = row_model_id + macro_macro;
 	
 	var $macro_field = $('#'+ row_model_id +'_field').clone(true);
@@ -569,12 +572,12 @@ function add_macro_field(macro, row_model_id) {
 	// Change attributes to be unique and with identificable class
 	$macro_field.attr('id',row_id);
 	$macro_field.attr('class','macro_field');
-		
+	
 	// Get the number of fields already printed
 	var fields = $('.macro_field').size();
 	
 	// If is the first, we insert it after model row
-	if(fields == 0) {
+	if (fields == 0) {
 		$macro_field.insertAfter('#'+ row_model_id +'_field');
 	}
 	// If there are more fields, we insert it after the last one
@@ -583,7 +586,7 @@ function add_macro_field(macro, row_model_id) {
 	}
 	
 	// Change the label
-	if(macro_help == '') {
+	if (macro_help == '') {
 		$('#'+row_id).children().eq(0).html(macro_desc);
 	}
 	else {
@@ -597,8 +600,8 @@ function add_macro_field(macro, row_model_id) {
 	$('#'+row_id).children().eq(1).children().attr('id','text-'+macro_macro);
 	$('#'+row_id).children().eq(1).children().attr('name',macro_macro);
 	$('#'+row_id).children().eq(1).children().val(macro_value);
-
-		
+	
+	
 	$('#'+row_id).show();
 }
 
@@ -620,8 +623,8 @@ function load_plugin_macros_fields(row_model_id) {
 		success: function (data) {
 			// Delete all the macro fields
 			$('.macro_field').remove();
-
-			if(data['array'] != null) {
+			
+			if (data['array'] != null) {
 				$('#hidden-macros').val(data['base64']);
 				jQuery.each (data['array'], function (i, macro) {
 					if(macro['desc'] != '') {
@@ -630,6 +633,6 @@ function load_plugin_macros_fields(row_model_id) {
 				});
 			}
 		}
-	});	
+	});
 }
 

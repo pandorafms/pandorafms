@@ -660,36 +660,36 @@ function events_get_description ($id_event) {
  *
  * @return int event id
  */
-function events_create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "", $event_type = "unknown", $priority = 0, $id_agent_module = 0, $id_aam = 0, $critical_instructions = '', $warning_instructions = '', $unknown_instructions = '') {
+function events_create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "", $event_type = "unknown", $priority = 0, $id_agent_module = 0, $id_aam = 0, $critical_instructions = '', $warning_instructions = '', $unknown_instructions = '', $source="Pandora", $tags="") {
 	global $config;
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
 				estado, utimestamp, id_usuario, event_type, criticity,
-				id_agentmodule, id_alert_am, critical_instructions, warning_instructions, unknown_instructions) 
-				VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()), "%s", "%s", %d, %d, %d)',
+				id_agentmodule, id_alert_am, critical_instructions, warning_instructions, unknown_instructions, source, tags) 
+				VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()), "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s")',
 				$id_agent, $id_group, $event, $status, $id_user, $event_type,
-				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions);
+				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions, $source, $tags);
 			break;
 		case "postgresql":
 			$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
 				estado, utimestamp, id_usuario, event_type, criticity,
-				id_agentmodule, id_alert_am) 
-				VALUES (%d, %d, "%s", NOW(), %d, ceil(date_part(\'epoch\', CURRENT_TIMESTAMP)), "%s", "%s", %d, %d, %d)',
+				id_agentmodule, id_alert_am, critical_instructions, warning_instructions, unknown_instructions, source, tags) 
+				VALUES (%d, %d, "%s", NOW(), %d, ceil(date_part(\'epoch\', CURRENT_TIMESTAMP)), "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s")',
 				$id_agent, $id_group, $event, $status, $id_user, $event_type,
-				$priority, $id_agent_module, $id_aam);
+				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions, $source, $tags);
 			break;
 		case "oracle":
 			$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
 				estado, utimestamp, id_usuario, event_type, criticity,
-				id_agentmodule, id_alert_am) 
-				VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d, ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)), "%s", "%s", %d, %d, %d)',
+				id_agentmodule, id_alert_am, critical_instructions, warning_instructions, unknown_instructions, source, tags) 
+				VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d, ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (86400)), "%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s")',
 				$id_agent, $id_group, $event, $status, $id_user, $event_type,
-				$priority, $id_agent_module, $id_aam);
+				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions, $source, $tags);
 			break;
 	}
-	
+
 	return (int) db_process_sql ($sql, "insert_id");
 }
 

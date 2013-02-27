@@ -5580,7 +5580,7 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType) {
 
 //http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|system|3|admin|2|1|10|0|comments||Pandora||critical_inst|warning_inst|unknown_inst|other&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
 function api_set_create_event($id, $trash1, $other, $returnType) {
-	
+
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');
 		return;
@@ -5588,98 +5588,103 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 	else if ($other['type'] == 'array') {
 		
 		$values = array();
+
+		if ($other['data'][0] != '') {
+				$values['event'] = $other['data'][0];
+		} else {
+				returnError('error_parameter', 'Event text required.');
+				return;
+		}
 		
-		if ($other['data'][0] != '')
-			$values['id_grupo'] = $other['data'][0];
-		else {
-			returnError('error_parameter', 'Id group required.');
+		if ($other['data'][1] != '') {
+			$values['id_grupo'] = $other['data'][1];
+		} else {
+			returnError('error_parameter', 'Group ID required.');
 			return;
 		}
-		if ($other['data'][1] != '')
-			$values['event_type'] = $other['data'][1];
-		else {
-			returnError('error_parameter', 'Event type required.');
-			return;
-		}
-		if ($other['data'][2] != '')
+
+		if ($other['data'][2] != '') {
 			$values['id_agente'] = $other['data'][2];
-		else {
-			if ($other['data'][3] != '') {
-				$agent_name = $other['data'][3];
-				$id_agent = agents_get_agent_id ($agent_name);
-				if ($id_agent !== false) {
-					$values['id_agente'] = $id_agent;
-				}
-			}
+		} else {
+			 returnError('error_parameter', 'Agent ID required.');
+                        return;
+		}		
+		
+		if ($other['data'][3] != '') {
+			$values['status'] = $other['data'][3];
+		} else {
+			$values['status'] = 0;
+		}		
+		
+		$values['id_usuario'] = $other['data'][4];		
+		
+		if ($other['data'][5] != '') {
+			$values['event_type'] = $other['data'][5];
+		} else {
+			$values['event_type'] = "unknown";
 		}
-		if ($other['data'][4] != '')
-			$values['id_usuario'] = $other['data'][4];
 		
-		if ($other['data'][5] != '')
-			$values['estado'] = $other['data'][5];
-		$values['timestamp'] = date("Y-m-d H:i:s", get_system_time());
-		
-		$values['evento'] = $id;
-		$values['utimestamp'] = get_system_time ();
-		
-		if ($other['data'][6] != '')
-			$values['id_agentmodule'] = $other['data'][6];
-		else {
-			if ($other['data'][7] != '') {
-				$module_name = $other['data'][7];
-				$id_agent_module = modules_get_agentmodule_id ($module_name, $values['id_agente']);
-				if ($id_agent_module !== false) {
-					$values['id_agentmodule'] = $id_agent_module;
-				}
-			}
+		if ($other['data'][6] != '') {
+			$values['priority'] = $other['data'][6];
+		} else {
+			$values['priority'] = 0;
 		}
-		if ($other['data'][8] != '')
+		
+		if ($other['data'][7] != '') {
+			$values['id_agentmodule'] = $other['data'][7];
+		} else {
+			$value['id_agentemodule'] = 0;
+		}
+		
+		if ($other['data'][8] != '') {
 			$values['id_alert_am'] = $other['data'][8];
+		} else {
+			$values['id_alert_am'] = 0;
+		}
 		
-		if ($other['data'][9] != '')
-			$values['criticity'] = $other['data'][9];
+		if ($other['data'][9] != '') {
+			$values['critical_instructions'] = $other['data'][9];
+		} else {
+			$values['critical_instructions'] = '';
+		}
 		
-		if ($other['data'][11] != '')
-			$values['tags'] = $other['data'][11];
-		if ($other['data'][12] != '')
-			$values['source'] = $other['data'][12];
-		else 
-			$values['source'] = 'Pandora';
-		if ($other['data'][13] != '')
-			$values['id_extra'] = $other['data'][13];
+		if ($other['data'][10] != '') {
+			$values['warning_instructions'] = $other['data'][10];
+		} else {
+			$values['warning_instructions'] = '';
+		}
+		
+		if ($other['data'][11] != '') {
+			$values['unknown_instructions'] = $other['data'][11];
+		} else {
+			$values['unknown_instructions'] = '';
+		}
+		
 		if ($other['data'][14] != '') {
-			$values['critical_instructions'] = $other['data'][14];
+			$values['source'] = $other['data'][14];
+		} else {
+			$values['source'] = "Pandora";
 		}
+		
 		if ($other['data'][15] != '') {
-			$values['warning_instructions'] = $other['data'][15];
-		}
-		if ($other['data'][16] != '') {
-			$values['unknown_instructions'] = $other['data'][16];
-		}
-		$values ['ack_utimestamp'] = 0;
-		
-		if (preg_match("/\w*alert\w*/", $values['event_type'])) {
-			if (($values['id_alert_am'] == '') || ($values['id_alert_am'] == 0)) {
-				returnError('error_parameter', 'Id alert required for this type of event.');
-				return;
-			}
-		}
-		if (preg_match("/\w*going\w*/", $values['event_type'])) {
-			if (($values['id_agentmodule'] == '') || ($values['id_agentmodule'] == 0)) {
-				returnError('error_parameter', 'Id agent module required for this type of event.');
-				return;
-			}
+			$values['tags'] = $other['data'][15];
+		} else {
+			$values['tags'] = "";
 		}
 		
-		$return = db_process_sql_insert('tevento', $values);
-		
-		if ($other['data'][10] != '') { //user comments
+		$return = events_create_event($values['event'], $values['id_grupo'], $values['id_agente'], 
+		$values['status'], $values['id_usuario'], $values['event_type'], 
+		$values['priority'], $value['id_agentemodule'], $values['id_alert_am'], 
+		$values['critical_instructions'], $values['warning_instructions'], 
+		$values['unknown_instructions'], $values['source'], $values['tags']);
+
+		if ($other['data'][12] != '') { //user comments
 			if ($return !== false) { //event successfully created
-				$user_comment = $other['data'][10];
+				$user_comment = $other['data'][12];
 				$res = events_comment ($return, $user_comment);
-				if ($other['data'][17] != '') { //owner user
+				if ($other['data'][13] != '') { //owner user
 					if ($res !== false) { //comment added
-						$owner_user = $other['data'][17];
+						$owner_user = $other['data'][13];
 						events_change_owner ($return, $owner_user, true);
 					}
 				}

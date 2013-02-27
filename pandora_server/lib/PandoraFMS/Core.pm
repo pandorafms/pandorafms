@@ -1402,9 +1402,6 @@ Start the planned downtime, the monthly type.
 sub pandora_planned_downtime_monthly_start($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	logger($pa_config, "[PLANNED_DOWNTIME] " .
-		"Enter pandora_planned_downtime_monthly_start().", 10);
-	
 	#my $local_time = localtime();
 	my @var_localtime = localtime(time);
 	my $year = $var_localtime[5]  + 1900;
@@ -1523,7 +1520,6 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		($number_day_month >= 30)) {
 		$number_day_month = 31;
 	}
-	logger($pa_config, $number_day_month, 10);
 	
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *

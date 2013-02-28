@@ -1,3 +1,11 @@
+2013-02-28  Sancho Lerena <slerena@artica.es>
+
+	* Config.pm: updated version.
+
+	* NetworkServer.pm,
+	PluginServer.pm: Fixed some more un-init values and removed annoying 
+	message and not useful warning about empty return on SNMP call.
+
 2013-02-28  Dario Rodriguez <dario@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Added feature to update custom field

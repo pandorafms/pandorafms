@@ -197,6 +197,11 @@ sub data_consumer ($$) {
 	eval {
 		$module_data = `$command`;
 	};
+
+	# Empty ?
+	if (!defined($module_data)){
+		$module_data = "";
+	}
 	
 	# Clean blank spaces and carriage return from start and end of the data
 	$module_data =~ s/^[\s|\n|\r]*//;

@@ -790,7 +790,7 @@ function deleteConnectionMap(idConnectionMap) {
 		}
 	}
 	
-	checked = $("#radiobtn0001", $("#map_connection_" + idConnectionMap)).attr('checked')
+	checked = $("#radiobtn0001", $("#map_connection_" + idConnectionMap)).attr('checked');
 	$("#map_connection_" + idConnectionMap).remove();
 	
 	if (checked) {
@@ -878,7 +878,7 @@ function fillOrderField() {
 }
 
 function upLayer(idLayer) {
-	var toUpIndex = null
+	var toUpIndex = null;
 	var toDownIndex = null;
 	
 	for (var index in layerList) {
@@ -906,9 +906,9 @@ function upLayer(idLayer) {
 }
 
 function downLayer(idLayer) {
-	var toUpIndex = null
+	var toUpIndex = null;
 	var toDownIndex = null;
-	var found = false
+	var found = false;
 	
 	for (var index in layerList) {
 		

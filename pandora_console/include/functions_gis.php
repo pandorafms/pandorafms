@@ -194,14 +194,14 @@ function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null) {
 								function () { popup.destroy(); });
 						feature.popup = popup;
 						map.addPopup(popup);
-
+						
 						jQuery.ajax ({
 							data: "page=operation/gis_maps/ajax&opt="+featureData.type+"&id=" + featureData.id,
 							type: "GET",
 							dataType: 'json',
 							url: "ajax.php",
 							timeout: 10000,
-							success: function (data) {	
+							success: function (data) {
 								if (data.correct) {
 									$('.cloudContent' + featureData.id).css('text-align', 'left');
 											$('.cloudContent' + featureData.id).html(data.content);

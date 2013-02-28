@@ -1,3 +1,8 @@
+2013-02-28 Dario Rodriguez <dario@artica.es>
+
+	* include/functions_api.php: Added new API function to
+	create custom field and to get custom field ID by name.
+
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/gis_maps/render_view.php: fixed the mysql error

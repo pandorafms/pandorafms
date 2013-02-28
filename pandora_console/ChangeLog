@@ -1,5 +1,11 @@
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_reporting.php: into the function
+	"reporting_get_agents_detailed_event" readded the code lost from the
+	merge from the branch pandora_4.
+
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_config.php, include/functions_io.php: fixed the
 	update the config without enterprise version.
 	

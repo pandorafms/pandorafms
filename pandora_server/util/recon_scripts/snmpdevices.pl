@@ -190,7 +190,7 @@ foreach $addr_item (@net_addr_list) {
 			update_recon_task ($dbh, $task_id, ceil ($i / ($total_hosts / 100)));
 			  
 			my $alive = 0;
-			if (pandora_ping (\%conf, $addr) == 1) {
+			if (pandora_ping (\%conf, $addr, 5, 2) == 1) {
 				$alive = 1;
 			}
 
@@ -321,7 +321,7 @@ foreach $addr_item (@net_addr_list) {
 		my $addr = $addr_item;
 		
 		my $alive = 0;
-		if (pandora_ping (\%conf, $addr) == 1) {
+		if (pandora_ping (\%conf, $addr, 5 ,2) == 1) {
 			$alive = 1;
 		}
 

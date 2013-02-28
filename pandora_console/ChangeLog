@@ -1,3 +1,10 @@
+2013-02-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora_events.js
+	operation/events/events_list.php: Remodelated the filter 
+	save/update feature from the filter form. To new modal
+	windows system
+
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/configurar_agente.php: fixed, now show again

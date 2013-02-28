@@ -87,7 +87,6 @@ if (is_ajax()) {
 	if ($update_event_filter) {
 		$values = array();
 		$id = get_parameter('id');
-		$values['id_name'] = get_parameter('id_name');
 		$values['id_group'] = get_parameter('id_group'); 
 		$values['event_type'] = get_parameter('event_type');
 		$values['severity'] = get_parameter('severity');
@@ -146,6 +145,8 @@ require('events.build_query.php');
 // Now $sql_post have all the where condition
 /////////////////////////////////////////////
 
+$id_name = get_parameter('id_name', '');
+
 echo "<br>";
 //Link to toggle filter
 if (!empty($id_name)) {
@@ -155,47 +156,81 @@ else{
 	echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
 }
 
-//Start div
-echo '<div id="event_control" style="display:none">';
+$filters = events_get_event_filter_select();
 
-// Table for filter controls
-echo '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
+// Some translated words to be used from javascript
+html_print_div(array('hidden' => true, 'id' => 'not_filter_loaded_text', 'content' => __('No filter loaded')));
+html_print_div(array('hidden' => true, 'id' => 'filter_loaded_text', 'content' => __('Filter loaded')));
+html_print_div(array('hidden' => true, 'id' => 'save_filter_text', 'content' => __('Save filter')));
+html_print_div(array('hidden' => true, 'id' => 'load_filter_text', 'content' => __('Load filter')));
 
-$table->id = 'stat_win_form';
+// Save filter div for dialog
+echo '<div id="save_filter_layer" style="display: none">';
+$table->id = 'save_filter_form';
 $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
-$table->styleTable = 'font-weight: bold; color: #555;';
+$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+$table->style[0] = 'width: 50%; width:50%;';
 
-$table->rowstyle[] = 'visibility: hidden;';
-$table->rowid[] = 'row_name';
 $data = array();
+$table->rowid[0] = 'update_save_selector';
+$data[0] = html_print_radio_button('filter_mode', 'new', '', true, true) . __('New filter') . '<br><br>';
+$data[1] = html_print_radio_button('filter_mode', 'update', '', false, true) . __('Update filter') . '<br><br>';
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+$data = array();
+$table->rowid[1] = 'save_filter_row1';
 $data[0] = __('Filter name') . '<br>';
-$data[0] .= html_print_input_text ('id_name', $id_name, '', 15, 255, true);
+$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
 $data[1] = __('Filter group') . '<br>';
 $data[1] .= html_print_select_groups($config["id_user"], "ER", true, 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
-$data[3] = $data[4] = '';
 $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = array();
-$data[0] = __('Group') . '<br>';
-$data[0] .= html_print_select_groups($config["id_user"], "ER", true, 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
-$data[1] = __('Event type') . '<br>';
-$types = get_event_types ();
-// Expand standard array to add not_normal (not exist in the array, used only for searches)
-$types["not_normal"] = __("Not normal");
-$data[1] .= html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
-$data[2] = __('Severity') . '<br>';
-$data[2] .= html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true, false, false);
-$data[3] = __('Event status') . '<br>';
-$fields = events_get_all_status();
-$data[3] .= html_print_select ($fields, 'status', $status, '', '', '', true);
-$data[4] = __('Max. hours old') . '<br>';
-$data[4] .= html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
+$table->rowid[2] = 'save_filter_row2';
+$data[0] = html_print_submit_button (__('Save filter'), 'save_filter', false, 'class="sub upd"', true);
+$table->colspan[2][0] = 2;
+$table->cellstyle[2][0] = 'text-align:right;';
 $table->data[] = $data;
 $table->rowclass[] = '';
+
+$data = array();
+$table->rowid[3] = 'update_filter_row1';
+$data[0] = __("Overwrite filter") . '<br>';
+$data[0] .= html_print_select ($filters, "overwrite_filter", '', '', '', 0, true);
+$data[1] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd"', true);
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+html_print_table($table);
+unset($table);
+echo '</div>';
+
+// Load filter div for dialog
+echo '<div id="load_filter_layer" style="display: none">';
+$table->id = 'load_filter_form';
+$table->width = '98%';
+$table->cellspacing = 4;
+$table->cellpadding = 4;
+$table->class = 'databox';
+$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+$table->style[0] = 'width: 50%; width:50%;';
+
+$data = array();
+$table->rowid[3] = 'update_filter_row1';
+$data[0] = __("Load filter") . '<br>';
+$data[0] .= html_print_select ($filters, "filter_id", '', '', __('None'), 0, true);
+$data[1] = html_print_submit_button (__('Load filter'), 'load_filter', false, 'class="sub upd"', true);
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+html_print_table($table);
+unset($table);
+echo '</div>';
 
 // TAGS
 $tags_select_with = array();
@@ -264,13 +299,56 @@ $tabletags->data[] = $data;
 $tabletags->rowclass[] = '';
 // END OF TAGS
 
+//Start div
+echo '<div id="event_control" style="display:none">';
+
+// Table for filter controls
+echo '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
+
+// Hidden field with the loaded filter name
+html_print_input_hidden('id_name', $id_name);
+
+$table->id = 'stat_win_form';
+$table->width = '98%';
+$table->cellspacing = 4;
+$table->cellpadding = 4;
+$table->class = 'databox';
+$table->styleTable = 'font-weight: bold; color: #555;';
+$table->data = array();
+
 $data = array();
-$data[0] = '<fieldset class="databox" style="width:90%;"><legend>' . __('Tags') . '</legend>' . html_print_table($tabletags, true) . '</fieldset>';
-$table->colspan[count($table->data)][0] = 2;
-$table->rowspan[count($table->data)][0] = 3;
-$data[2] = __('Free search') . '<br>';
-$data[2] .= html_print_input_text ('search', io_safe_output($search), '', 25, 255, true);
-$data[3] = __('Agent search') . '<br>';
+$data[0] = __('Group') . '<br>';
+$data[0] .= html_print_select_groups($config["id_user"], "ER", true, 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
+$data[1] = __('Event type') . '<br>';
+$types = get_event_types ();
+// Expand standard array to add not_normal (not exist in the array, used only for searches)
+$types["not_normal"] = __("Not normal");
+$data[1] .= html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
+$data[2] = __('Severity') . '<br>';
+$data[2] .= html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true, false, false);
+$data[3] = '<fieldset class="databox" style="width:90%;"><legend>' . __('Tags') . '</legend>' . html_print_table($tabletags, true) . '</fieldset>';
+$table->colspan[count($table->data)][3] = 2;
+$table->rowspan[count($table->data)][3] = 4;
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+$data = array();
+$data[0] = __('Event status') . '<br>';
+$fields = events_get_all_status();
+$data[0] .= html_print_select ($fields, 'status', $status, '', '', '', true);
+$data[1] = __('Max. hours old') . '<br>';
+$data[1] .= html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
+$data[2] = __("Repeated") . '<br>';
+$repeated_sel[0] = __("All events");
+$repeated_sel[1] = __("Group events");
+$data[2] .= html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', 0, true);
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+$data = array();
+$data[0] = __('Free search') . '<br>';
+$data[0] .= html_print_input_text ('search', io_safe_output($search), '', 25, 255, true);
+$data[1] = __('Agent search') . '<br>';
 $params = array();
 $params['show_helptip'] = true;
 $params['input_name'] = 'text_agent';
@@ -286,36 +364,36 @@ else {
 	$params['hidden_input_idagent_value'] = $id_agent;
 }
 
-$data[3] .= ui_print_agent_autocomplete_input($params);
-$data[4] = __("Repeated") . '<br>';
-$repeated_sel[0] = __("All events");
-$repeated_sel[1] = __("Group events");
-$data[4] .= html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', 0, true);
+$data[1] .= ui_print_agent_autocomplete_input($params);
+$data[2] = __('User ack.') . '<br>';
+$users = users_get_info ();
+$data[2] .= html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0, true);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = array();
-$data[2] = __("Alert events") . '<br>';
-$data[2] .= html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '', true);
-$data[3] = __('Block size for pagination') . '<br>';
+$data[0] = __("Alert events") . '<br>';
+$data[0] .= html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '', true);
+$data[1] = __('Block size for pagination') . '<br>';
 $lpagination[25] = 25;
 $lpagination[50] = 50;
 $lpagination[100] = 100;
 $lpagination[200] = 200;
 $lpagination[500] = 500;
-$data[3] .= html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"], true);
-$data[4] = __('User ack.') . '<br>';
-$users = users_get_info ();
-$data[4] .= html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0, true);
+$data[1] .= html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"], true);
+$data[2] = '';
 $table->data[] = $data;
 $table->rowclass[] = '';
 
+
 $data = array();
+/*
 $data[1] = __("Load filter") . '<br>';
-$filters = events_get_event_filter_select();
 $data[1] .= html_print_select ($filters, "filter_id", $filter_id, '', __('none'), 0, true);
+* */
 $table->data[] = $data;
 $table->rowclass[] = '';
+
 
 // Trick to catch if the update button has been pushed (don't collapse filter)
 // or autorefresh is in use (collapse filter)
@@ -345,10 +423,19 @@ else{
 //The buttons
 
 $data = array();
-$data[0] = html_print_submit_button (__('Update filter'), 'update_filter', false, 'class="sub upd" style="visibility:hidden"', true);
-$data[0] .= html_print_submit_button (__('Save filter'), 'save_filter', false, 'class="sub upd"', true);
-$data[0] .= html_print_submit_button (__('Update'), 'update', false, 'class="sub upd"', true);
-$table->colspan[count($table->data)][0] = 5;
+$data[0] = '<div style="width:100%; text-align:left">';
+$data[0] .= '<a href="javascript:show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
+$data[0] .= '<a href="javascript:show_load_filter_dialog();">' . html_print_image("images/server_database.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a>&nbsp;';
+if(empty($id_name)) {
+	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' . __('No filter loaded') . '</span>]';
+}
+else {
+	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' . __('Filter loaded') . ': ' . $id_name . '</span>]';
+}
+$data[0] .= '</div>';
+
+$data[1] = html_print_submit_button (__('Update'), 'update', false, 'class="sub upd"', true);
+$table->colspan[count($table->data)][1] = 4;
 $table->rowstyle[count($table->data)] = 'text-align:right;';
 $table->data[] = $data;
 $table->rowclass[] = '';
@@ -475,10 +562,10 @@ $(document).ready( function() {
 		$("#submit-update_filter").css('visibility', '');
 	}
 	
-	$("#filter_id").change(function () {
+	$("#submit-load_filter").click(function () {
 		// If selected 'none' flush filter
 		if ( $("#filter_id").val() == 0 ) {
-			$("#text-id_name").val('');
+			$("#hidden-id_name").val('');
 			$("#ev_group").val(0);
 			$("#event_type").val('');
 			$("#severity").val(-1);
@@ -496,6 +583,9 @@ $(document).ready( function() {
 			$("#id_group").val(0);
 			
 			clear_tags_inputs();
+			
+			// Update the view of filter load with no loaded filters message
+			$('#filter_loaded_span').html($('#not_filter_loaded_text').html());
 		}
 		// If filter selected then load filter
 		else {
@@ -509,7 +599,7 @@ $(document).ready( function() {
 				function (data) {
 					jQuery.each (data, function (i, val) {
 						if (i == 'id_name')
-							$("#text-id_name").val(val);
+							$("#hidden-id_name").val(val);
 						if (i == 'id_group')
 							$("#ev_group").val(val);
 						if (i == 'event_type')
@@ -542,108 +632,121 @@ $(document).ready( function() {
 							$("#id_group").val(val);
 					});
 					reorder_tags_inputs();
+					// Update the info with the loaded filter
+					$('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $("#hidden-id_name").val());
+					
+					// Update the view with the loaded filter
+					$('#submit-update').trigger('click');
 				},
 				"json"
 			);
+		}
+		
+		// Close dialog
+		$('.ui-dialog-titlebar-close').trigger('click');
+	});
+	
+	// Filter save mode selector
+	$("[name='filter_mode']").click(function() {
+		if ($(this).val() == 'new') {
+			$('#save_filter_row1').show();
+			$('#save_filter_row2').show();
+			$('#update_filter_row1').hide();
+		}
+		else {
+			$('#save_filter_row1').hide();
+			$('#save_filter_row2').hide();
+			$('#update_filter_row1').show();
 		}
 	});
 	
 	// This saves an event filter
 	$("#submit-save_filter").click(function () {
-		// Checks if the filter has name or not
-		if ($('#row_name').css('visibility') == 'hidden') {
-			$('#row_name').css('visibility', '');
-			$('#show_filter_error')
-				.html('<h3 class="error"> <?php echo __('Define name and group for the filter and click on Save filter again'); ?> </h3>');
-			$('#row_name').css('color', '#CC0000');
-		// If the filter has name insert in database
+		// If the filter name is blank show error
+		if ($('#text-id_name').val() == '') {
+			$('#show_filter_error').html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
+			
+			// Close dialog
+			$('.ui-dialog-titlebar-close').trigger('click');
+			return false;
 		}
-		else {
-			$('#row_name').css('color', '#555');
-			// If the filter name is blank show error
-			if ($('#text-id_name').val() == '') {
-				$('#show_filter_error').html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
-				return false;
-			}
-			
-			var id_filter_save;
-			
-			jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-				{"page" : "operation/events/events_list",
-				"save_event_filter" : 1,
-				"id_name" : $("#text-id_name").val(),
-				"id_group" : $("#ev_group").val(),
-				"event_type" : $("#event_type").val(),
-				"severity" : $("#severity").val(),
-				"status" : $("#status").val(),
-				"search" : $("#text-search").val(),
-				"text_agent" : $("#text_id_agent").val(),
-				"pagination" : $("#pagination").val(),
-				"event_view_hr" : $("#text-event_view_hr").val(),
-				"id_user_ack" : $("#id_user_ack").val(),
-				"group_rep" : $("#group_rep").val(),
-				"tag_with": Base64.decode($("#hidden-tag_with").val()),
-				"tag_without": Base64.decode($("#hidden-tag_without").val()),
-				"filter_only_alert" : $("#filter_only_alert").val(),
-				"id_group_filter": $("#id_group").val()
-				},
-				function (data) {
-					if (data == 'error') {
-						$('#show_filter_error').html('<h3 class="error"> <?php echo __('Error creating filter'); ?> </h3>');
+		
+		var id_filter_save;
+		
+		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
+			{"page" : "operation/events/events_list",
+			"save_event_filter" : 1,
+			"id_name" : $("#text-id_name").val(),
+			"id_group" : $("#ev_group").val(),
+			"event_type" : $("#event_type").val(),
+			"severity" : $("#severity").val(),
+			"status" : $("#status").val(),
+			"search" : $("#text-search").val(),
+			"text_agent" : $("#text_id_agent").val(),
+			"pagination" : $("#pagination").val(),
+			"event_view_hr" : $("#text-event_view_hr").val(),
+			"id_user_ack" : $("#id_user_ack").val(),
+			"group_rep" : $("#group_rep").val(),
+			"tag_with": Base64.decode($("#hidden-tag_with").val()),
+			"tag_without": Base64.decode($("#hidden-tag_without").val()),
+			"filter_only_alert" : $("#filter_only_alert").val(),
+			"id_group_filter": $("#id_group").val()
+			},
+			function (data) {
+				if (data == 'error') {
+					$('#show_filter_error').html('<h3 class="error"> <?php echo __('Error creating filter'); ?> </h3>');
+				}
+				else {
+					id_filter_save = data;
+					$('#show_filter_error').html('<h3 class="suc"> <?php echo __('Filter created'); ?> </h3>');
+				}
+			});
+		
+		// First remove all options of filters select
+		$('#filter_id').find('option').remove().end();
+		// Add 'none' option the first
+		$('#filter_id').append ($('<option></option>').html ( <?php echo "'" . __('none') . "'" ?> ).attr ("value", 0));	
+		// Reload filters select
+		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
+			{
+				"page" : "operation/events/events_list",
+				"get_event_filters" : 1
+			},
+			function (data) {
+				jQuery.each (data, function (i, val) {
+					s = js_html_entity_decode(val);
+					
+					if (i == id_filter_save){
+						$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
 					}
 					else {
-						id_filter_save = data;
-						$('#show_filter_error').html('<h3 class="suc"> <?php echo __('Filter created'); ?> </h3>');
+						$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));	  
 					}
 				});
-			
-			// First remove all options of filters select
-			$('#filter_id').find('option').remove().end();
-			// Add 'none' option the first
-			$('#filter_id').append ($('<option></option>').html ( <?php echo "'" . __('none') . "'" ?> ).attr ("value", 0));	
-			// Reload filters select
-			jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-				{
-					"page" : "operation/events/events_list",
-					"get_event_filters" : 1
-				},
-				function (data) {
-					jQuery.each (data, function (i, val) {
-						s = js_html_entity_decode(val);
-						
-						if (i == id_filter_save){
-							$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
-						}
-						else {
-							$('#filter_id').append ($('<option></option>').html (s).attr ("value", i));	  
-						}
-					});
-				},
-				"json"
-				);
-			$("#submit-update_filter").css('visibility', '');
-		}
+			},
+			"json"
+			);
+		$("#submit-update_filter").css('visibility', '');
+		
+		// Close dialog
+		$('.ui-dialog-titlebar-close').trigger('click');
+		
+		// Update the info with the loaded filter
+		$("#hidden-id_name").val($('#text-id_name').val());
+		$('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $('#text-id_name').val());
+					
 		return false;
 	});
 	
 	// This updates an event filter
 	$("#submit-update_filter").click(function () {
-		
-		// If the filter name is blank show error
-		if ($('#text-id_name').val() == '') {
-			$('#show_filter_error')
-			.html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
-			
-			return false;
-		}
-		
-		var id_filter_update =  $("#filter_id").val();
+		var id_filter_update =  $("#overwrite_filter").val();
+		var name_filter_update = $("#overwrite_filter option[value='"+id_filter_update+"']").text();
 		
 		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 			{"page" : "operation/events/events_list",
 			"update_event_filter" : 1,
 			"id" : $("#filter_id").val(),
-			"id_name" : $("#text-id_name").val(),
 			"id_group" : $("#ev_group").val(),
 			"event_type" : $("#event_type").val(),
 			"severity" : $("#severity").val(),
@@ -690,7 +793,13 @@ $(document).ready( function() {
 				},
 				"json"
 				);
+				
+			// Close dialog
+			$('.ui-dialog-titlebar-close').trigger('click');
 			
+			// Update the info with the loaded filter
+			$("#hidden-id_name").val($('#text-id_name').val());
+			$('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + name_filter_update);
 			return false;
 	});
 	

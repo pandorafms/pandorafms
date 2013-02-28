@@ -77,6 +77,41 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 	return false;
 }
 
+function show_save_filter_dialog() {
+	$('input:radio[name="filter_mode"]').filter('[value="new"]').trigger('click');
+	$("#save_filter_layer").dialog ({
+					title: $('#save_filter_text').html(),
+					resizable: true,
+					draggable: true,
+					modal: true,
+					overlay: {
+						opacity: 0.5,
+						background: "black"
+					},
+					width: 420,
+					height: 200
+				})
+				.show ();
+	return false;
+}
+
+function show_load_filter_dialog() {
+	$("#load_filter_layer").dialog ({
+					title: $('#load_filter_text').html(),
+					resizable: true,
+					draggable: true,
+					modal: true,
+					overlay: {
+						opacity: 0.5,
+						background: "black"
+					},
+					width: 420,
+					height: 200
+				})
+				.show ();
+	return false;
+}
+
 // Check the response type and open it in a modal dialog or new window 
 function execute_response(event_id, server_id) {
 	var response_id = $('#select_custom_response option:selected').val();

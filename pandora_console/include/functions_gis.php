@@ -787,18 +787,36 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 		db_process_sql_delete('tgis_map_layer_has_tagente', array('tgis_map_layer_id_tmap_layer' => $idLayer['id_tmap_layer']));
 	}
 	
-	db_process_sql_delete('tgis_map_layer', array('tgis_map_id_tgis_map' => $idMap));
 	
 	foreach ($arrayLayers as $index => $layer) {
-		$idLayer = db_process_sql_insert('tgis_map_layer',
-			array(
-				'layer_name' => $layer['layer_name'],
-				'view_layer' => $layer['layer_visible'],
-				'layer_stack_order' => $index,
-				'tgis_map_id_tgis_map' => $idMap,
-				'tgrupo_id_grupo' => $layer['layer_group']
-			)
-		);
+		
+		
+		if ($layer['id'] != 0) {
+			$idLayer = $layer['id'];
+			
+			db_process_sql_update('tgis_map_layer',
+				array(
+					'layer_name' => $layer['layer_name'],
+					'view_layer' => $layer['layer_visible'],
+					'layer_stack_order' => $index,
+					'tgis_map_id_tgis_map' => $idMap,
+					'tgrupo_id_grupo' => $layer['layer_group']
+				),
+				array('id_tmap_layer' => $idLayer));
+		}
+		else {
+			$idLayer = db_process_sql_insert('tgis_map_layer',
+				array(
+					'layer_name' => $layer['layer_name'],
+					'view_layer' => $layer['layer_visible'],
+					'layer_stack_order' => $index,
+					'tgis_map_id_tgis_map' => $idMap,
+					'tgrupo_id_grupo' => $layer['layer_group']
+				)
+			);
+		}
+		
+		
 		
 		if (array_key_exists('layer_agent_list', $layer)) {
 			if (count($layer['layer_agent_list']) > 0) {
@@ -812,6 +830,7 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 				}
 			}
 		}
+		
 	}
 }
 
@@ -1083,7 +1102,8 @@ function gis_get_map_data($idMap) {
 	$layers = db_get_all_rows_sql('SELECT id_tmap_layer, layer_name,
 			tgrupo_id_grupo AS layer_group, view_layer AS layer_visible
 		FROM tgis_map_layer
-		WHERE tgis_map_id_tgis_map = ' . $map['id_tgis_map']);
+		WHERE tgis_map_id_tgis_map = ' . $map['id_tgis_map'] . '
+		ORDER BY layer_stack_order ASC;');
 	if ($layers === false) $layers = array();
 	
 	foreach ($layers as $index => $layer) {
@@ -1175,11 +1195,12 @@ function gis_add_layer_list($layer_list) {
 	foreach ($layer_list as $layer) {
 		//Create the layer temp form as it was in the form
 		$layerTempForm = array();
+		$layerTempForm['id'] = $layer['id'];
 		$layerTempForm['layer_name'] = $layer['layer_name'];
 		$layerTempForm['layer_group'] = $layer['layer_group'];
 		$layerTempForm['layer_visible'] = $layer['layer_visible'];
 		if (array_key_exists('layer_agent_list', $layer)) {
-			foreach($layer['layer_agent_list'] as $agent) {
+			foreach ($layer['layer_agent_list'] as $agent) {
 				$layerTempForm['layer_agent_list'][] = $agent;
 			}
 		}
@@ -1189,7 +1210,9 @@ function gis_add_layer_list($layer_list) {
 		$returnVar .= '
 			<tbody id="layer_item_' . $count . '">
 				<tr>
-					<td class="col1">' . $layer['layer_name'] . '</td>
+					<td class="col1">' .
+						$layer['layer_name'] .
+						'</td>
 					<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer(' . $count . ');">' . html_print_image("images/up.png", true, array("alt" => "")) . '</a></td>
 					<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer(' . $count . ');">' . html_print_image("images/down.png", true, array("alt" => "")) . '</a></td>
 					<td class="col3">

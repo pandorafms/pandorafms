@@ -1,5 +1,10 @@
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_reporting.php: fixed php warning message when
+	calculate the server healty without servers.
+
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_config.php: added code to set the config options
 	for the history actions.
 	

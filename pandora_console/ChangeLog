@@ -1,5 +1,12 @@
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/configurar_agente.php: fixed, now show again
+	the error each case in the action to creation a agent.
+	
+	Fixes: #3606275
+
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/netflow/nf_live_view.php: fixed load filter from the
 	group all.
 	

@@ -471,9 +471,13 @@ if ($delete_conf_file) {
 
 // Show agent creation results
 if ($create_agent) {
+	if (!isset($agent_creation_error)) {
+		$agent_creation_error = __('Could not be created');
+	}
+	
 	ui_print_result_message ($agent_created_ok,
 		__('Successfully created'),
-		__('Could not be created'));
+		$agent_creation_error);
 }
 
 // Fix / Normalize module data

@@ -152,9 +152,17 @@ sub data_consumer ($$) {
 	
 	# Build command to execute
 	my $command = $plugin->{'execute'};
-	
+
+	if (!defined($plugin->{'parameters'})){
+		$plugin->{'parameters'} = "";
+	}
+		
 	my $parameters = $plugin->{'parameters'};
-	
+
+	if (!defined($module->{'macros'})){
+		$module->{'macros'} = "";
+	}
+
 	# Macros
 	eval {
 		if ($module->{'macros'} ne '') {

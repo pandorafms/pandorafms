@@ -94,7 +94,7 @@ if ($add) {
 					}
 				}
 				
-				db_pandora_audit("Masive management", "Add alert action " . json_encode($id_agents), false, false, 'Agents: ' . 
+				db_pandora_audit("Massive management", "Add alert action " . json_encode($id_agents), false, false, 'Agents: ' . 
 					json_encode($id_agents) . ' Alerts : ' . json_encode($agent_alerts) .
 					' Fires Min: ' . $fires_min . ' Fires Max: ' . $fires_max . ' Actions: ' . implode(',',$actions));
 				

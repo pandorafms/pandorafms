@@ -1059,7 +1059,7 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 	$table_sum->cellstyle[count($table_sum->data)][0] = 'text-align: center;';
 	$table_sum->cellstyle[count($table_sum->data)][2] = 'text-align: center;';
 	$tdata[0] = '<span class="med_data" style="color: #666">' . __('Module status') . '</span>';
-	$tdata[2] = '<span class="med_data" style="color: #666">' . __('Alert status') . '</span>';
+	$tdata[2] = '<span class="med_data" style="color: #666">' . __('Alert level') . '</span>';
 	$table_sum->rowclass[] = '';
 	$table_sum->data[] = $tdata;
 		

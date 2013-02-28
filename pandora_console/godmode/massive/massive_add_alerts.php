@@ -78,10 +78,10 @@ function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 	}
 	
 	if ($contsuccess > 0) {
-		db_pandora_audit("Masive management", "Add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
+		db_pandora_audit("Massive management", "Add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
 	}
 	else {
-		db_pandora_audit("Masive management", "Fail try to add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
+		db_pandora_audit("Massive management", "Fail try to add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
 	}
 	
 	ui_print_result_message ($contsuccess > 0,

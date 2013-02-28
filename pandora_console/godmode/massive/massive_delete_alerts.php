@@ -140,11 +140,11 @@ if ($delete) {
 	$result = process_manage_delete ($id_alert_template, $id_agents, $module_names);
 	
 	if ($result) {
-		db_pandora_audit("Masive management", "Delete alert ", false, false,
+		db_pandora_audit("Massive management", "Delete alert ", false, false,
 			'Agent: ' . json_encode($id_agents) . ' Template: ' . $id_alert_template . ' Module: ' . $module_names);
 	}
 	else {
-		db_pandora_audit("Masive management", "Fail try to delete alert", false, false,
+		db_pandora_audit("Massive management", "Fail try to delete alert", false, false,
 			'Agent: ' . json_encode($id_agents) . ' Template: ' . $id_alert_template . ' Module: ' . $module_names);
 	}
 }

@@ -80,11 +80,11 @@ if ($delete) {
 	$result = process_manage_delete ($id_agents);
 	
 	if ($result) {
-		db_pandora_audit("Masive management", "Delete agent ", false, false,
+		db_pandora_audit("Massive management", "Delete agent ", false, false,
 			'Agent: ' . json_encode($id_agents));
 	}
 	else {
-		db_pandora_audit("Masive management", "Fail try to delete agent", false, false,
+		db_pandora_audit("Massive management", "Fail try to delete agent", false, false,
 			'Agent: ' . json_encode($id_agents));
 	}
 }

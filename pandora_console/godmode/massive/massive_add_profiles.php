@@ -60,11 +60,11 @@ if ($create_profiles) {
 	}
 	
 	if ($n_added > 0) {
-		db_pandora_audit("Masive management", "Add profiles", false, false,
+		db_pandora_audit("Massive management", "Add profiles", false, false,
 			'Profiles: ' . 	json_encode($profiles_id) . ' Groups: ' . json_encode($groups_id) . 'Users: ' . json_encode($users_id));
 	}
 	else {
-		db_pandora_audit("Masive management", "Fail to try add profiles", false, false,
+		db_pandora_audit("Massive management", "Fail to try add profiles", false, false,
 			'Profiles: ' . 	json_encode($profiles_id) . ' Groups: ' . json_encode($groups_id) . 'Users: ' . json_encode($users_id));
 	}
 	

@@ -79,10 +79,10 @@ switch($action) {
 		
 		$info = 'Alert: ' . json_encode($id_standby_alerts);
 		if ($result) {
-			db_pandora_audit("Masive management", "Set off standby alerts", false, false, $info);
+			db_pandora_audit("Massive management", "Set off standby alerts", false, false, $info);
 		}
 		else {
-			db_pandora_audit("Masive management", "Fail try to set off standby alerts", false, false, $info);
+			db_pandora_audit("Massive management", "Fail try to set off standby alerts", false, false, $info);
 		}
 		break;
 	case 'set_standby_alerts':
@@ -97,10 +97,10 @@ switch($action) {
 		
 		$info = 'Alert: ' . json_encode($id_not_standby_alerts);
 		if ($result) {
-			db_pandora_audit("Masive management", "Set on standby alerts", false, false, $info);
+			db_pandora_audit("Massive management", "Set on standby alerts", false, false, $info);
 		}
 		else {
-			db_pandora_audit("Masive management", "Fail try to set on standby alerts", false, false, $info);
+			db_pandora_audit("Massive management", "Fail try to set on standby alerts", false, false, $info);
 		}
 		break;
 	default:

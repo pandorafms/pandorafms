@@ -1,5 +1,12 @@
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/netflow/nf_live_view.php: fixed load filter from the
+	group all.
+	
+	Fixes: #3606272
+
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_events.php,
 	images/status_sets/default/severity_informational.png,
 	images/status_sets/default/severity_maintenance_pixel.png,

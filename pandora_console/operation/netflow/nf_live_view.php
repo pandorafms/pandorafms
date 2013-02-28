@@ -273,12 +273,19 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 			"</td>";
 	}
 	
+	
+	
 	echo "<td>" . '<b>'.__('Load filter').'</b>' . "</td>";
 	$user_groups = users_get_groups ($config['id_user'], "AR", $own_info['is_admin'], true);
-	$sql = "SELECT * FROM tnetflow_filter WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
+	$user_groups[0] = 0; //Add all groups.
+	$sql = "SELECT *
+		FROM tnetflow_filter
+		WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
 	echo "<td colspan='3'>" . html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('none'), 0, true) . "</td>";
 	
 	echo "</tr>";
+	
+	
 	
 	echo "<tr class='filter_normal'>";
 	

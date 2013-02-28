@@ -1343,10 +1343,13 @@ function html_print_table (&$table, $return = false) {
 	}
 	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
 	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';
+	
 	$countcols = 0;
+	
 	if (!empty($table->caption)) {
-	$output .= '<caption style="text-align: left"><h4>' . $table->caption . '</h4></caption>';	
+		$output .= '<caption style="text-align: left"><h4>' . $table->caption . '</h4></caption>';
 	}
+	
 	if (!empty ($table->head)) {
 		$countcols = count ($table->head);
 		$output .= '<thead><tr>';

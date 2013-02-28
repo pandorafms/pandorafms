@@ -118,7 +118,7 @@ function db_escape_string_sql($string) {
  *
  * @return int Return the id of row in tsesion or false in case of fail.
  */
-function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = false, $info = '') {
+function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = true, $info = '') {
 	global $config;
 	
 	if ($ip !== false) {

@@ -1,5 +1,12 @@
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_config.php, include/functions_io.php: fixed the
+	update the config without enterprise version.
+	
+	Fixes: #3606331
+
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_reporting.php: fixed php warning message when
 	calculate the server healty without servers.
 

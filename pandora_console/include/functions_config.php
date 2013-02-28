@@ -167,7 +167,7 @@ function config_update_config () {
 							$values = array("value" => $license_info_key);
 							$where = array("key" => 'customer_key');
 							$update_manage_settings_result = db_process_sql_update('tupdate_settings', $values, $where);
-							if (!$update_manage_settings_result)
+							if ($update_manage_settings_result === false)
 								$error_update[] = __('License information');
 						}
 					}
@@ -500,7 +500,7 @@ function config_update_config () {
 		$config['error_config_update_config'] = array();
 		$config['error_config_update_config']['correct'] = false;
 		$values = implode(', ', $error_update);
-		$config['error_config_update_config']['message'] = sprint(__('Failed updated: the next values cannot update: %s'), $values);
+		$config['error_config_update_config']['message'] = sprintf(__('Failed updated: the next values cannot update: %s'), $values);
 	}
 	else {
 		$config['error_config_update_config'] = array();

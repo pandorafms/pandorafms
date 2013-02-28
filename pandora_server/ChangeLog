@@ -1,3 +1,8 @@
+2013-02-28  Dario Rodriguez <dario@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Added feature to update custom field
+	on every XML process only with learning mode enabled.
+
 2013-02-28  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/PluginServer.pm: Removed several "Use of uninitialized i

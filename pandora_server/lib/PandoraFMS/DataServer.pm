@@ -111,7 +111,7 @@ sub data_producer ($) {
 
 		push (@files, $file);
 		$file_count++;
-
+print "QUEUING $file\n";
 		# Do not queue more than max_queue_files files
 		if ($file_count >= $pa_config->{"max_queue_files"}) {
 			last;
@@ -436,6 +436,48 @@ sub process_xml_data ($$$$$) {
 		else {
 			$parent_id = $agent->{'id_parent'};
 		}
+
+                # Process custom fields for update
+                if(defined($data->{'custom_fields'})) {
+                        foreach my $custom_fields (@{$data->{'custom_fields'}}) {
+                                foreach my $custom_field (@{$custom_fields->{'field'}}) {
+                                        my $cf_name = get_tag_value ($custom_field, 'name', '');
+                                        logger($pa_config, "Processing custom field '" . $cf_name . "'", 10);
+
+                                        # Check if the custom field exists
+                                        my $custom_field_info = get_db_single_row ($dbh, 'SELECT * FROM tagent_custom_fields WHERE name = ?', safe_input($cf_name));
+
+                                        # If it exists add the value to the agent
+                                        if (defined ($custom_field_info)) {
+
+						my $custom_field_data = get_db_single_row($dbh, 'SELECT * FROM tagent_custom_data WHERE id_field = ? AND id_agent = ?',
+											$custom_field_info->{"id_field"}, $agent->{"id_agente"});
+
+                                                my $cf_value = get_tag_value ($custom_field, 'value', '');
+
+						#If not defined we must create if defined just updated
+						if(!defined($custom_field_data)) {
+						
+	                                                my $field_agent;
+
+	                                                $field_agent->{'id_agent'} = $agent_id;
+	                                                $field_agent->{'id_field'} = $custom_field_info->{'id_field'};
+	                                                $field_agent->{'description'} = $cf_value;
+
+        	                                        db_process_insert($dbh, 'id_field', 'tagent_custom_data', $field_agent);
+						} else {
+							
+							db_update ($dbh, "UPDATE tagent_custom_data SET description = ? WHERE id_field = ? AND id_agent = ?",
+									$cf_value ,$custom_field_info->{"id_field"}, $agent->{'id_agente'});
+						}
+                                        }
+                                        else {
+                                                logger($pa_config, "The custom field '" . $cf_name . "' does not exist. Discarded from XML", 5);
+                                        }
+                                }
+                        }
+                }
+
 	}
 
 	# Update GIS data only if is allowed and is valid position

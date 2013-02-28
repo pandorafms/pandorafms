@@ -66,8 +66,8 @@ if ($create_network_from_module) {
 	$warning_instructions = $data_module["warning_instructions"];
 	$unknown_instructions = $data_module["unknown_instructions"];
 	$critical_inverse = $data_module["critical_inverse"];
-	$warning_inverse = $data_module["warning_inverse"];	
-	$id_category = $data_module["id_category"];	
+	$warning_inverse = $data_module["warning_inverse"];
+	$id_category = $data_module["id_category"];
 }
 
 $id_component_type = (int) get_parameter ('id_component_type');

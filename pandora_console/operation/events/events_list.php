@@ -494,8 +494,8 @@ $(document).ready( function() {
 			$("#row_name").css('visibility', 'hidden');
 			$("#submit-update_filter").css('visibility', 'hidden');
 			$("#id_group").val(0);
-				
-			clear_tags_inputs();	
+			
+			clear_tags_inputs();
 		}
 		// If filter selected then load filter
 		else {

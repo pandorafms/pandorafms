@@ -1235,12 +1235,17 @@ function events_get_agent ($id_agent, $period, $date = 0,
 	$datelimit = $date - $period;
 	
 	$sql_where = ' AND 1 = 1 ';
+	$criticities = array();
 	if ($filter_event_critical) {
-		$sql_where .= ' AND criticity = 4 ';
+		$criticities[] = 4;
 	}
 	if ($filter_event_warning) {
-		$sql_where .= ' AND criticity = 3 ';
+		$criticities[] = 3;
 	}
+	if (!empty($criticities)) {
+		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
+	}
+	
 	if ($filter_event_validated) {
 		$sql_where .= ' AND estado = 1 ';
 	}
@@ -1314,9 +1319,9 @@ function events_get_event_types ($type_id){
 		case 'normal': $type_desc = __('Monitor Normal');
 				break;
 		case 'alert_fired': $type_desc = __('Alert fired');
-				break;	
+				break;
 		case 'alert_recovered': $type_desc = __('Alert recovered');
-				break;	
+				break;
 		case 'alert_ceased': $type_desc = __('Alert ceased');
 				break;
 		case 'alert_manual_validation': $type_desc = __('Alert manual validation');
@@ -1356,19 +1361,24 @@ function events_get_event_types ($type_id){
 function events_get_severity_types ($severity_id){
 	
 	$diferent_types = get_priorities ();
-
+	
 	$severity_desc = '';
 	switch ($severity_id) {
-		case 0: $severity_desc = __('Maintenance');
-				break;
-		case 1: $severity_desc = __('Informational');
-				break;
-		case 2: $severity_desc = __('Normal');
-				break;
-		case 3: $severity_desc = __('Warning');
-				break;
-		case 4: $severity_desc = __('Critical');
-				break;	
+		case 0:
+			$severity_desc = __('Maintenance');
+			break;
+		case 1:
+			$severity_desc = __('Informational');
+			break;
+		case 2:
+			$severity_desc = __('Normal');
+			break;
+		case 3:
+			$severity_desc = __('Warning');
+			break;
+		case 4:
+			$severity_desc = __('Critical');
+			break;
 		default:
 				if (isset($config['text_char_long'])) {
 					foreach ($diferent_types as $key => $type) {

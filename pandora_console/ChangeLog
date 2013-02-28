@@ -1,3 +1,14 @@
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/modules/manage_network_components_form.php,
+	include/functions_html.php, operation/menu.php,
+	operation/events/events_list.php: improved source code.
+	
+	* include/functions_events.php: fixed into the function
+	"events_get_agent" the query to get criticities.
+	
+	Fixes: #3606285
+
 2013-02-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_io.php

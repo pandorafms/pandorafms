@@ -1195,7 +1195,12 @@ function reporting_get_stats_indicators($data, $width = 280, $height = 20) {
 	$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
 	$servers["up"] = (int) servers_check_status ();
 	$servers["down"] = $servers["all"] - $servers["up"];
-	$servers["health"] = $servers["up"] / ($servers["all"] / 100);
+	if ($servers["all"] == 0) {
+		$servers["health"] = 0;
+	}
+	else {
+		$servers["health"] = $servers["up"] / ($servers["all"] / 100);
+	}
 	
 	$tdata[0] = '<fieldset class="databox" style="width:97%;">
 					<legend style="text-align:left; color: #666;">' . 

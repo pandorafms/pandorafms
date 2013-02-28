@@ -316,7 +316,8 @@ sub pandora_snmp_get_command ($$$$$$$$$$$) {
         	return $output;
 	}
     } else {
-	logger ($pa_config,"[ERROR] Undefined value returned SNMP query. Is the server out of memory?" , 0);
+	logger ($pa_config,"[ERROR] Undefined value returned SNMP query. Is the server out of memory?" , 3);
+	logger ($pa_config,"[ERROR] Snmp Community: $snmp_community SNMP Target: $snmp_target OID: $snmp_oid", 3);
 	return "";
     }
 }

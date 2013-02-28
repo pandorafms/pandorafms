@@ -1,3 +1,10 @@
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/gis_maps/configure_gis_map.php, include/functions_gis.php,
+	operation/gis_maps/render_view.php: fixes for the layers.
+	
+	MERGED FROM THE BRANCH PANDORA_4
+
 2013-02-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php

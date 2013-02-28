@@ -45,7 +45,7 @@ function updateArrowLayers() {
 	var lastIndex = null;
 	
 	for (var index in layerList) {
-
+		
 		//int because in the object array there are method as string
 		if (isInt(index)) {
 			numLayer = layerList[index];
@@ -58,15 +58,15 @@ function updateArrowLayers() {
 			else {
 				$('.up_arrow', layerObj).html('<a class="up_arrow" href="javascript: upLayer(' + numLayer + ');"><?php html_print_image ("images/up.png"); ?></a>');
 			}
-
+			
 			$('.down_arrow', layerObj).html('<a class="down_arrow" href="javascript: downLayer(' + numLayer + ');"><?php html_print_image ("images/down.png"); ?></a>');
-
+			
 			
 			count++;
 			lastIndex = index;
 		}
 	}
-
+	
 	//Last element
 	if (lastIndex != null) {
 		numLayer = layerList[lastIndex];
@@ -101,7 +101,7 @@ switch ($action) {
 		$map_default_altitude = get_parameter('map_default_altitude');
 		$map_group_id = get_parameter('map_group_id');
 		$map_levels_zoom = get_parameter('map_levels_zoom');
-					
+		
 		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
 		
 		
@@ -185,37 +185,7 @@ switch ($action) {
 		html_print_input_hidden('action', 'update_saved');
 		html_print_input_hidden('map_id', $idMap);
 		
-		$mapData = gis_get_map_data($idMap);
-
-		$map_name = $mapData['map']['map_name'];
-		$map_group_id = $mapData['map']['group_id'];
-		$map_zoom_level = $mapData['map']['zoom_level'];
-		$map_background = $mapData['map']['map_background'];
-		$map_initial_longitude = $mapData['map']['initial_longitude'];
-		$map_initial_latitude = $mapData['map']['initial_latitude'];
-		$map_initial_altitude = $mapData['map']['initial_altitude'];
-		$map_default_longitude = $mapData['map']['default_longitude'];
-		$map_default_latitude = $mapData['map']['default_latitude'];
-		$map_default_altitude = $mapData['map']['default_altitude'];
 		
-		$map_connection_list = $mapData['connections'];
-		$map_levels_zoom = gis_get_num_zoom_levels_connection_default($map_connection_list);
-		
-		//$map_levels_zoom = get_parameter('map_levels_zoom');
-		
-		$layer_list = array();
-		foreach ($mapData['layers'] as $layer) {
-			$layerAgentList = array();
-			foreach($layer['layer_agent_list'] as $layerAgent) {
-				$layerAgentList[] = $layerAgent['nombre'];
-			}
-			$layer_list[] = array(
-				'layer_name' => $layer['layer_name'],
-				'layer_group' => $layer['layer_group'],
-				'layer_visible' => $layer['layer_visible'],
-				'layer_agent_list' => $layerAgentList
-				);
-		}
 		break;
 	case 'update_saved':
 		$idMap = get_parameter('map_id');
@@ -239,7 +209,7 @@ switch ($action) {
 				unset($map_connection_list_temp[$index]);
 			}
 		}
-		$layer_list = explode(",",get_parameter('layer_list'));
+		$layer_list = explode(",", get_parameter('layer_list'));
 		foreach ($layer_list as $index => $value) {
 			$cleanValue = trim($value);
 			if ($cleanValue == '') {
@@ -287,7 +257,6 @@ switch ($action) {
 			html_print_input_hidden('action', 'update_saved');
 			$mapCreatedOk = false;
 		}
-		$layer_list = $arrayLayers;
 		
 		ui_print_result_message ($mapCreatedOk, __('Map successfully update'),
 			__('Map could not be update'));
@@ -296,6 +265,46 @@ switch ($action) {
 		html_print_input_hidden('map_id', $idMap);
 		break;
 }
+
+//Load the data in edit or reload in update.
+switch ($action) {
+	case 'edit_map':
+	case 'update_saved':
+		$mapData = gis_get_map_data($idMap);
+		
+		$map_name = $mapData['map']['map_name'];
+		$map_group_id = $mapData['map']['group_id'];
+		$map_zoom_level = $mapData['map']['zoom_level'];
+		$map_background = $mapData['map']['map_background'];
+		$map_initial_longitude = $mapData['map']['initial_longitude'];
+		$map_initial_latitude = $mapData['map']['initial_latitude'];
+		$map_initial_altitude = $mapData['map']['initial_altitude'];
+		$map_default_longitude = $mapData['map']['default_longitude'];
+		$map_default_latitude = $mapData['map']['default_latitude'];
+		$map_default_altitude = $mapData['map']['default_altitude'];
+		
+		$map_connection_list = $mapData['connections'];
+		$map_levels_zoom = gis_get_num_zoom_levels_connection_default($map_connection_list);
+		
+		//$map_levels_zoom = get_parameter('map_levels_zoom');
+		
+		$layer_list = array();
+		foreach ($mapData['layers'] as $layer) {
+			$layerAgentList = array();
+			foreach($layer['layer_agent_list'] as $layerAgent) {
+				$layerAgentList[] = $layerAgent['nombre'];
+			}
+			$layer_list[] = array(
+				'id' => $layer['id_tmap_layer'],
+				'layer_name' => $layer['layer_name'],
+				'layer_group' => $layer['layer_group'],
+				'layer_visible' => $layer['layer_visible'],
+				'layer_agent_list' => $layerAgentList
+				);
+		}
+		break;
+}
+
 
 $table->width = '98%';
 
@@ -561,6 +570,7 @@ function refreshMapView() {
 			}
 		}
 	});
+	
 }
 
 function active_button_add_agent() {
@@ -597,7 +607,7 @@ function deleteLayer(idRow) {
 	$("#hidden-layer_edit_id_form").val('');
 	
 	for (var index in layerList) {
-	
+		
 		//int because in the object array there are method as string
 		if (isInt(index)) {
 			if (layerList[index] == idRow) {
@@ -632,6 +642,7 @@ function newLayer() {
 
 function serializeForm() {
 	layer = {};
+	layer.id = 0;
 	layer.layer_name = $("#text-layer_name_form").val();
 	layer.layer_group = $("#layer_group_form :selected").val();
 	if ($("#checkbox-layer_visible_form:checked").val() == 1)
@@ -754,7 +765,7 @@ function addAgentLayer(agent_name) {
 
 function deleteConnectionMap(idConnectionMap) {
 	for (var index in connectionMaps) {
-	
+		
 		//int because in the object array there are method as string
 		if (isInt(index)) {
 			if (connectionMaps[index] == idConnectionMap) {
@@ -884,6 +895,7 @@ function downLayer(idLayer) {
 	var found = false;
 	
 	for (var index in layerList) {
+		
 		//int because in the object array there are method as string
 		if (isInt(index)) {
 			if (layerList[index] == idLayer) {

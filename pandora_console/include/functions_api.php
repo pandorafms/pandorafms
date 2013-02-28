@@ -763,6 +763,62 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 }
 
 /**
+ *
+ * Creates a custom field
+ *
+ * @param string $name Custom field name
+ * @param boolean $display_front Flag to display custom field in agent's operation view
+ */
+function api_set_create_custom_field($t1, $t2, $other, $returnType) {
+
+	if ($other['type'] == 'string') {
+                returnError('error_parameter', 'Error in the parameters.');
+                return;
+        } else if ($other['type'] == 'array') {
+
+                $name = "";
+
+                if ($other['data'][0] != '') {
+                	$name = $other['data'][0];
+                } else {
+                        returnError('error_parameter', 'Custom field name required');
+                        return;
+                }
+
+		$display_front = 0;
+
+                if ($other['data'][1] != '') {
+                        $display_front = $other['data'][1];
+                } else {
+                        returnError('error_parameter', 'Custom field display flag required');
+                        return;
+                }
+	
+		$result = db_process_sql_insert('tagent_custom_fields', array('name' => $name, 'display_on_front' => $display_front));
+
+	        $data['type'] = "string";
+        	$data["data"] = $result;
+	        returnData("string", $data);
+	}
+}
+
+/**
+ *
+ * Returns ID of custom field zero if not exists
+ *
+ * @param string $name Custom field name
+ */
+function api_get_custom_field_id($t1, $t2, $other, $returnType) {
+
+	$name = $other["data"][0];
+	$id = db_get_value ('id_field', 'tagent_custom_fields', 'name', $name);	
+
+	$data['type'] = "string";
+	$data["data"] = $id;
+	returnData("string", $data);
+}
+
+/**
  * Delete a agent with the name pass as parameter.
  * 
  * @param string $id Name of agent to delete.

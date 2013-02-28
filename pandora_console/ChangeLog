@@ -1,3 +1,8 @@
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/gis_maps/render_view.php: fixed the mysql error
+	messages when have a "none" for group in a layer.
+
 2013-02-22  Sancho Lerena <slerena@artica.es>
 
         * include/api.php: Added a single protection on DoS attacks. 

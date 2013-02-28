@@ -1,3 +1,9 @@
+2013-02-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	operation/agentes/estado_generalagente.php: Improve the
+	forced title in images and the agent operation view
+
 2013-02-28 Dario Rodriguez <dario@artica.es>
 
 	* include/functions_api.php: Added new API function to

@@ -1675,7 +1675,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		}
 		
 		// If title is provided activate forced title
-		if (isset ($options["title"])) {
+		if (isset ($options["title"]) && $options["title"] != '') {
 			if (isset ($options['class'])) {
 				$options['class'] .= ' forced_title';
 			}

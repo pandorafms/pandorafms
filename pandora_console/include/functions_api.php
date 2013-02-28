@@ -3191,44 +3191,51 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
-		returnError('error_update_plugin_module_policy', __('Error updating plugin module in policy. Id_policy cannot be left blank.'));
-		return;			
+	if ($id == "") {
+		returnError('error_update_plugin_module_policy',
+			__('Error updating plugin module in policy. Id_policy cannot be left blank.'));
+		return;
 	}
 	
-	if ($other['data'][0] == ""){
-		returnError('error_update_plugin_module_policy', __('Error updating plugin module in policy. Id_policy_module cannot be left blank.'));
-		return;			
-	}	
+	if ($other['data'][0] == "") {
+		returnError('error_update_plugin_module_policy',
+			__('Error updating plugin module in policy. Id_policy_module cannot be left blank.'));
+		return;
+	}
 	
 	// Check if the module exists
 	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
-
+	
 	if ($module_policy === false) {
-		returnError('error_updating_plugin_module_policy', __('Error updating plugin module in policy. Module doesn\'t exists.'));
-		return;					
+		returnError('error_updating_plugin_module_policy',
+			__('Error updating plugin module in policy. Module doesn\'t exists.'));
+		return;
 	}
 	
-	if ($module_policy[0]['id_module'] != 4){
-		returnError('error_updating_plugin_module_policy', __('Error updating plugin module in policy. Module type is not network type.'));
-		return;	
+	if ($module_policy[0]['id_module'] != 4) {
+		returnError('error_updating_plugin_module_policy',
+			__('Error updating plugin module in policy. Module type is not network type.'));
+		return;
 	}
 	
-	$fields_plugin_module = array('id','disabled', 'id_module_group', 'min_warning', 'max_warning', 'str_warning', 'min_critical', 
-						 'max_critical', 'str_critical', 'min_ff_event', 'history_data', 'tcp_port', 'snmp_community',
-						 'snmp_oid', 'module_interval', 'post_process', 'min', 'max', 'custom_id', 'description', 'id_plugin', 'plugin_user',
-						 'plugin_pass', 'plugin_parameter');
+	$fields_plugin_module = array('id','disabled', 'id_module_group',
+		'min_warning', 'max_warning', 'str_warning', 'min_critical', 
+		'max_critical', 'str_critical', 'min_ff_event', 'history_data',
+		'tcp_port', 'snmp_community', 'snmp_oid', 'module_interval',
+		'post_process', 'min', 'max', 'custom_id', 'description',
+		'id_plugin', 'plugin_user', 'plugin_pass', 'plugin_parameter');
 	
 	$cont = 0;
-	foreach ($fields_plugin_module as $field){
-		if ($other['data'][$cont] != "" and $field != 'id'){
+	foreach ($fields_plugin_module as $field) {
+		if ($other['data'][$cont] != "" and $field != 'id') {
 			$values[$field] = $other['data'][$cont];
 		}
 		
 		$cont++;
 	}
-	 	
-	$result_update = enterprise_hook('policies_update_module', array($other['data'][0], $values, false)); 
+	
+	$result_update = enterprise_hook('policies_update_module',
+		array($other['data'][0], $values, false)); 
 	
 	
 	if ($result_update < 0)
@@ -3519,27 +3526,27 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
-	if ($id == ""){
+	if ($id == "") {
 		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Id_policy cannot be left blank.'));
-		return;			
+		return;
 	}
 	
-	if ($other['data'][0] == ""){
+	if ($other['data'][0] == "") {
 		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Id_policy_module cannot be left blank.'));
-		return;			
-	}	
+		return;
+	}
 	
 	// Check if the module exists
 	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
-
+	
 	if ($module_policy === false) {
 		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Module doesn\'t exists.'));
-		return;					
+		return;
 	}
 	
-	if ($module_policy[0]['id_module'] != 2){
+	if ($module_policy[0]['id_module'] != 2) {
 		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Module type is not SNMP type.'));
-		return;	
+		return;
 	}
 	
 	
@@ -3576,8 +3583,8 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	}
 	
 	$cont = 0;
-	foreach ($fields_snmp_module as $field){
-		if ($other['data'][$cont] != "" and $field != 'id'){
+	foreach ($fields_snmp_module as $field) {
+		if ($other['data'][$cont] != "" and $field != 'id') {
 			$values[$field] = $other['data'][$cont];
 		}
 		

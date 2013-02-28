@@ -1,3 +1,12 @@
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_config.php: added code to set the config options
+	for the history actions.
+	
+	Fixes: #3606285
+	
+	* include/functions_api.php: improved the source code style.
+
 2013-02-27  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_config.php: Include a library in

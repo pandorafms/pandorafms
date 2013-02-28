@@ -111,10 +111,10 @@ if ($update_agents) {
 		
 		
 		if ($n_deleted > 0) {
-			db_pandora_audit("Masive management", "Delete conf file " . $id_agent);
+			db_pandora_audit("Massive management", "Delete conf file " . $id_agent);
 		}
 		else {
-			db_pandora_audit("Masive management", "Try to delete conf file " . $id_agent);
+			db_pandora_audit("Massive management", "Try to delete conf file " . $id_agent);
 		}
 		
 		
@@ -162,11 +162,11 @@ if ($update_agents) {
 	
 	
 	if ($result !== false) {
-		db_pandora_audit("Masive management", "Update agent " . $id_agent, false, false, json_encode($fields));
+		db_pandora_audit("Massive management", "Update agent " . $id_agent, false, false, json_encode($fields));
 	}
 	else {
 		if (isset ($id_agent)) {
-			db_pandora_audit("Masive management", "Try to update agent " . $id_agent, false, false, json_encode($fields));
+			db_pandora_audit("Massive management", "Try to update agent " . $id_agent, false, false, json_encode($fields));
 		}
 	}
 	

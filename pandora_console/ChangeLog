@@ -1,3 +1,25 @@
+2013-02-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_io.php
+	include/functions_ui.php
+	include/functions_reporting.php
+	general/logon_ok.php: Improve the main screen putting the 
+	last activity in left column, adding icons and improving titles
+
+	* godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_copy_modules.php
+	godmode/massive/massive_delete_agents.php
+	godmode/massive/massive_enable_disable_alerts.php
+	godmode/massive/massive_delete_profiles.php
+	godmode/massive/massive_edit_agents.php
+	godmode/massive/massive_delete_action_alerts.php
+	godmode/massive/massive_add_profiles.php
+	godmode/massive/massive_delete_alerts.php
+	godmode/massive/massive_edit_modules.php
+	godmode/massive/massive_standby_alerts.php
+	godmode/massive/massive_add_action_alerts.php: Fix typo in
+	logger actions
+
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_reporting.php: into the function

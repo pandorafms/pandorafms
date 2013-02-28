@@ -79,10 +79,10 @@ switch ($action) {
 		
 		$info = 'Alert: ' . json_encode($id_disabled_alerts);
 		if ($result) {
-			db_pandora_audit("Masive management", "Enable alert", false, false, $info);
+			db_pandora_audit("Massive management", "Enable alert", false, false, $info);
 		}
 		else {
-			db_pandora_audit("Masive management", "Fail try to enable alert", false, false, $info);
+			db_pandora_audit("Massive management", "Fail try to enable alert", false, false, $info);
 		}
 		break;
 	case 'disable_alerts':
@@ -97,10 +97,10 @@ switch ($action) {
 		
 		$info = 'Alert: ' . json_encode($id_enabled_alerts);
 		if ($result) {
-			db_pandora_audit("Masive management", "Disable alert", false, false, $info);
+			db_pandora_audit("Massive management", "Disable alert", false, false, $info);
 		}
 		else {
-			db_pandora_audit("Masive management", "Fail try to Disable alert", false, false, $info);
+			db_pandora_audit("Massive management", "Fail try to Disable alert", false, false, $info);
 		}
 		break;
 	default:

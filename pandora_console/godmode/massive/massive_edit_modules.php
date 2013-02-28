@@ -133,10 +133,10 @@ if ($update) {
 	
 	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);
 	if ($success > 0) {
-		db_pandora_audit("Masive management", "Edit module", false, false, $info);
+		db_pandora_audit("Massive management", "Edit module", false, false, $info);
 	}
 	else {
-		db_pandora_audit("Masive management", "Fail try to edit module", false, false, $info);
+		db_pandora_audit("Massive management", "Fail try to edit module", false, false, $info);
 	}
 }
 

@@ -1534,6 +1534,54 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
  *
  * @return string HTML code if return parameter is true.
  */
+function ui_print_session_action_icon ($action, $return = false) {
+	$key_icon = array(
+			'acl' => 'images/delete.png', 
+			'agent' => 'images/bricks.png', 
+			'module' => 'images/brick.png',
+			'alert' => 'images/bell.png',
+			'incident' => 'images/book_edit.png',
+			'logon' => 'images/house.png',
+			'logoff' => 'images/logout.png',
+			'massive' => 'images/sitemap_color.png',
+			'hack' => 'images/info.png',
+			'event' => 'images/lightning_go.png',
+			'policy' => 'images/policies.png',
+			'report' => 'images/reporting.png',
+			'file collection' => 'images/file.png',
+			'user' => 'images/user.png',
+			'password' => 'images/lock.png',
+			'session' => 'images/heart.png',
+			'snmp' => 'images/snmp.png',
+			'command' => 'images/bell.png',
+			'category' => 'images/god6.png',
+			'dashboard' => 'images/application_double.png',
+			'api' => 'images/page_white_text.png',
+			'db' => 'images/database.png'
+			);
+			
+	$output = '';
+	foreach($key_icon as $key => $icon) {
+		if (stristr($action, $key) !== false) {
+			$output = html_print_image($icon, true, array('title' => $action)) . ' '; 
+			break;
+		}
+	}
+		
+	if ($return)
+		return $output;
+	echo $output;
+}
+
+/** 
+ * Prints only a tip button which shows a text when the user puts the mouse over it.
+ * 
+ * @param string Complete text to show in the tip
+ * @param bool whether to return an output string or echo now
+ * @param img displayed image
+ *
+ * @return string HTML code if return parameter is true.
+ */
 function ui_print_help_tip ($text, $return = false, $img = 'images/tip.png') {
 	$output = '<a href="javascript:" class="tip" >' . html_print_image ($img, true) . '<span style="text-align:center">'.$text.'</span></a>';
 	

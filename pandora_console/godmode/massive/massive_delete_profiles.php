@@ -75,11 +75,11 @@ if ($delete_profiles) {
 	}
 	
 	if ($result) {
-		db_pandora_audit("Masive management", "Delete profile ", false, false,
+		db_pandora_audit("Massive management", "Delete profile ", false, false,
 			'Profiles: ' . json_encode($profiles_id) . ' Groups: ' . $groups_id . ' Users: ' . $users_id);
 	}
 	else {
-		db_pandora_audit("Masive management", "Fail try to delete profile", false, false,
+		db_pandora_audit("Massive management", "Fail try to delete profile", false, false,
 			'Profiles: ' . json_encode($profiles_id) . ' Groups: ' . $groups_id . ' Users: ' . $users_id);
 	}
 	

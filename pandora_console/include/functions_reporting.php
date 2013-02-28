@@ -156,7 +156,7 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period, $date = 
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
-	$datelimit = $date - $period;	
+	$datelimit = $date - $period;
 	
 	$id_module_type = modules_get_agentmodule_type ($id_agent_module);
 	$module_type = modules_get_moduletype_name ($id_module_type);
@@ -2379,7 +2379,9 @@ function reporting_agents_get_group_agents_detailed ($id_group, $period = 0, $da
  * @return A table object (XHTML)
  */
 function reporting_get_agents_detailed_event ($id_agents, $period = 0,
-	$date = 0, $return = false) {
+	$date = 0, $return = false, $filter_event_validated = false,
+	$filter_event_critical = false, $filter_event_warning = false, $filter_event_no_validated = false) {
+	
 	$id_agents = (array)safe_int ($id_agents, 1);
 	
 	if (!is_numeric ($date)) {
@@ -2394,21 +2396,32 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 	}
 	
 	$table->width = '99%';
+	
+	$table->align = array();
+	$table->align[0] = 'center';
+	$table->align[2] = 'center';
+	$table->align[3] = 'center';
+	
 	$table->data = array ();
 	
 	$table->head = array ();
-	$table->head[0] = __('Event name');
-	$table->head[1] = __('Event type');
-	$table->head[2] = __('Criticity');
-	$table->head[3] = __('Count');
-	$table->head[4] = __('Timestamp');
+	$table->head[0] = __('Status');
+	$table->head[1] = __('Count');
+	$table->head[2] = __('Name');
+	$table->head[3] = __('Type');
+	$table->head[4] = __('Criticity');
+	$table->head[5] = __('Val. by');
+	$table->head[6] = __('Timestamp');
 	
 	$events = array ();
 	
 	foreach ($id_agents as $id_agent) {
 		$event = events_get_agent ($id_agent,
 			(int)$period,
-			(int)$date);
+			(int)$date,
+			$filter_event_validated, $filter_event_critical,
+			$filter_event_warning, $filter_event_no_validated);
+		
 		if (!empty ($event)) {
 			array_push ($events, $event);
 		}
@@ -2417,12 +2430,44 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 	if ($events)
 	foreach ($events as $eventRow) {
 		foreach ($eventRow as $event) {
+			//First pass along the class of this row
+			$table->rowclass[] =
+				get_priority_class ($event["criticity"]);
+			
 			$data = array ();
-			$data[0] = io_safe_output($event['evento']);
-			$data[1] = $event['event_type'];
-			$data[2] = get_priority_name ($event['criticity']);
-			$data[3] = $event['count_rep'];
-			$data[4] = $event['time2'];
+			// Colored box
+			switch ($event['estado']) {
+				case 0:
+					$img_st = "images/star.png";
+					$title_st = __('New event');
+					break;
+				case 1:
+					$img_st = "images/tick.png";
+					$title_st = __('Event validated');
+					break;
+				case 2:
+					$img_st = "images/hourglass.png";
+					$title_st = __('Event in process');
+					break;
+			}
+			$data[] = html_print_image ($img_st, true, 
+				array ("class" => "image_status",
+					"width" => 16,
+					"height" => 16,
+					"title" => $title_st));
+			
+			$data[] = $event['count_rep'];
+			
+			$data[] = ui_print_truncate_text(
+				io_safe_output($event['evento']),
+				140, false, true);
+			//$data[] = $event['event_type'];
+			$data[] = events_print_type_img ($event["event_type"], true);
+			
+			$data[] = get_priority_name ($event['criticity']);
+			$data[] = io_safe_output($event['user_name']);
+			$data[] = '<font style="font-size: 6pt;">' .
+				$event['time2'] . '</font>';
 			array_push ($table->data, $data);
 		}
 	}
@@ -2475,66 +2520,71 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$table->head[5] = __('Val. by');
 	$table->head[6] = __('Timestamp');
 	
-	$begin = true;
-	$result = null;
-	$count = 0;
-	while ($event = events_get_group_events_steps($begin, $result, $id_group, $period, $date,
+	$events = events_get_group_events($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated)) {
-		
-		//html_debug_print(++$count, true);
-		
-		$data = array ();
-		$begin = false;
-		
-		// Colored box
-		switch ($event['estado']) {
-			case 0:
-				$img_st = "images/star.png";
-				$title_st = __('New event');
-				break;
-			case 1:
-				$img_st = "images/tick.png";
-				$title_st = __('Event validated');
-				break;
-			case 2:
-				$img_st = "images/hourglass.png";
-				$title_st = __('Event in process');
-				break;
-		}
-		$data[] = html_print_image ($img_st, true, 
-			array ("class" => "image_status",
-				"width" => 16,
-				"height" => 16,
-				"title" => $title_st,
-				"id" => 'status_img_' . $event["id_evento"]));
-		
-		$data[] = ui_print_truncate_text(
-			io_safe_output($event['evento']),
-			140, false, true);
-		
-		//$data[1] = $event['event_type'];
-		$data[] = events_print_type_img ($event["event_type"], true);
-		
-		if (!empty($event['agent_name']))
-			$data[] = $event['agent_name'];
-		else
-			$data[] = __('Pandora System');
-		$data[] = get_priority_name ($event['criticity']);
-		$data[] = io_safe_output($event['user_name']);
-		$data[] = '<font style="font-size: 6pt;">' .
-			$event['timestamp'] .
-			'</font>';
-		array_push ($table->data, $data);
-	}
+		$filter_event_warning, $filter_event_no_validated);
 	
-	if ($html) {
-		return html_print_table ($table, $return);
+	if ($events) {
+		foreach ($events as $event) {
+			//First pass along the class of this row
+			$table->rowclass[] =
+				get_priority_class ($event["criticity"]);
+			
+			$data = array ();
+			
+			// Colored box
+			switch ($event['estado']) {
+				case 0:
+					$img_st = "images/star.png";
+					$title_st = __('New event');
+					break;
+				case 1:
+					$img_st = "images/tick.png";
+					$title_st = __('Event validated');
+					break;
+				case 2:
+					$img_st = "images/hourglass.png";
+					$title_st = __('Event in process');
+					break;
+			}
+			$data[] = html_print_image ($img_st, true, 
+				array ("class" => "image_status",
+					"width" => 16,
+					"height" => 16,
+					"title" => $title_st,
+					"id" => 'status_img_' . $event["id_evento"]));
+			
+			$data[] = ui_print_truncate_text(
+				io_safe_output($event['evento']),
+				140, false, true);
+			
+			//$data[1] = $event['event_type'];
+			$data[] = events_print_type_img ($event["event_type"], true);
+			
+			if (!empty($event['agent_name']))
+				$data[] = $event['agent_name'];
+			else
+				$data[] = __('Pandora System');
+			$data[] = get_priority_name ($event['criticity']);
+			$data[] = io_safe_output($event['user_name']);
+			$data[] = '<font style="font-size: 6pt;">' .
+				$event['timestamp'] .
+				'</font>';
+			array_push ($table->data, $data);
+		}
+		
+		if ($html) {
+			return html_print_table ($table, $return);
+		}
+		else {
+			return $table;
+		}
 	}
 	else {
-		return $table;
+		return false;
 	}
 }
+
 
 /** 
  * Get a detailed report of summarized events per agent

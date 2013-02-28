@@ -1,5 +1,14 @@
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/admin_access_logs.php: cleaned source code style.
+	
+	* include/functions_db.php: fixed the set ip in the function
+	"db_pandora_audit".
+	
+	Fixes: #3606276
+
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/events/events.php: fixed the javascript to use the
 	actual jquery methods for to check all checkboxes.
 	

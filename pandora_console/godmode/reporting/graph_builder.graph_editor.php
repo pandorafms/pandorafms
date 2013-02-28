@@ -137,7 +137,7 @@ echo "</tr><tr>";
 		$connection_names = array();
 
 	$agents_tmp = array();
-	$agents = array();	
+	$agents = array();
 	
 	foreach ($connection_names as $connection) {
 		$connection_data = enterprise_hook('metaconsole_get_connection', array($connection));

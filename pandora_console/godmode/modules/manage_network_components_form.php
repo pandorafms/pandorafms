@@ -329,14 +329,14 @@ function type_change () {
 		document.component.snmp_oid.style.background="#ddd";
 		document.component.snmp_oid.disabled=true;
 		document.component.snmp_community.style.background="#ddd";
-		document.component.snmp_community.disabled=true;	
+		document.component.snmp_community.disabled=true;
 		document.component.tcp_send.style.background="#fff";
 		document.component.tcp_send.disabled=false;
 		document.component.tcp_rcv.style.background="#fff";
 		document.component.tcp_rcv.disabled=false;
 		document.component.tcp_port.style.background="#fff";
 		document.component.tcp_port.disabled=false;
-
+		
 		document.component.snmp_version.style.background="#ddd";
 		document.component.snmp_version.disabled=true;
 		document.component.snmp3_auth_user.style.background="#ddd";
@@ -364,7 +364,7 @@ function type_change () {
 		document.component.tcp_rcv.disabled=false;
 		document.component.tcp_port.style.background="#fff";
 		document.component.tcp_port.disabled=false;
-
+		
 		document.component.snmp_version.style.background="#ddd";
 		document.component.snmp_version.disabled=true;
 		document.component.snmp3_auth_user.style.background="#ddd";

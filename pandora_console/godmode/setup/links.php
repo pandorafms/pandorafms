@@ -107,7 +107,7 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))) {
 	<td class="datos2">'.__('Link').'</td>
 	<td class="datos2">
 	<input type="text" name="link" size="35" value="'.$link.'"></td>';
-	echo '</tr>';	
+	echo '</tr>';
 	echo "</table>";
 	echo "<table width='98%'>";
 	echo "<tr><td align='right'>";

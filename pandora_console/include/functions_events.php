@@ -2092,6 +2092,7 @@ function events_page_general ($event) {
 	$data = array();
 	$data[0] = __('Severity');
 	$event_criticity = get_priority_name ($event["criticity"]);
+	
 	$data[1] = html_print_image ($img_sev, true, 
 		array ("class" => "image_status",
 			"width" => 12,

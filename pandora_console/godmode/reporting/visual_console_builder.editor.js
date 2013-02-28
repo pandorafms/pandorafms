@@ -531,7 +531,7 @@ function loadFieldsFromDB(item) {
 					enterprise_loadFieldsFromDB(data);
 				}
 			}
-		});	
+		});
 }
 
 function setAspectRatioBackground(side) {

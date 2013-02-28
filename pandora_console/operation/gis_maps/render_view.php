@@ -142,9 +142,11 @@ gis_print_map('map', $map['zoom_level'], $map['initial_latitude'],
 
 if ($layers != false) {
 	foreach ($layers as $layer) {
-		gis_make_layer($layer['layer_name'], $layer['view_layer'], null, $layer['id_tmap_layer']);
+		gis_make_layer($layer['layer_name'],
+			$layer['view_layer'], null, $layer['id_tmap_layer']);
 		
 		// calling agents_get_group_agents with none to obtain the names in the same case as they are in the DB.
+		$agentNamesByGroup = array();
 		if ($layer['tgrupo_id_grupo'] >= 0) {
 			$agentNamesByGroup = agents_get_group_agents($layer['tgrupo_id_grupo'],
 				false, 'none', true, true, false);

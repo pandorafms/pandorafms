@@ -1,5 +1,10 @@
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/gis_maps/configure_gis_map.php, include/functions_gis.php,
+	operation/gis_maps/render_view.php: fixes for the layers.
+
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* operation/gis_maps/render_view.php: fixed the mysql error
 	messages when have a "none" for group in a layer.
 

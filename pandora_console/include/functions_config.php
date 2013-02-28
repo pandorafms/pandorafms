@@ -470,6 +470,26 @@ function config_update_config () {
 				if (!config_update_value ('log_max_lifetime', (int)get_parameter('log_max_lifetime')))
 					$error_update[] = __('Log max lifetime');
 				break;
+			case 'hist_db':
+				if (!config_update_value ('history_db_enabled', get_parameter ('history_db_enabled')))
+					$error_update[] = __('Enable history database');
+				if (!config_update_value ('history_db_host', get_parameter ('history_db_host')))
+					$error_update[] = __('Host');
+				if (!config_update_value ('history_db_port', get_parameter ('history_db_port')))
+					$error_update[] = __('Port');
+				if (!config_update_value ('history_db_name', get_parameter ('history_db_name')))
+					$error_update[] = __('Database name');
+				if (!config_update_value ('history_db_user', get_parameter ('history_db_user')))
+					$error_update[] = __('Database user');
+				if (!config_update_value ('history_db_pass', get_parameter ('history_db_pass')))
+					$error_update[] = __('Database password');
+				if (!config_update_value ('history_db_days', get_parameter ('history_db_days')))
+					$error_update[] = __('Days');
+				if (!config_update_value ('history_db_step', get_parameter ('history_db_step')))
+					$error_update[] = __('Step');
+				if (!config_update_value ('history_db_delay', get_parameter ('history_db_delay')))
+					$error_update[] = __('Delay');
+				break;
 			
 		}
 		

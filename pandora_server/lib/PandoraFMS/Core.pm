@@ -1058,6 +1058,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 	
 	my $last_try = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+
+	if (!defined($agent_status->{'datos'})){
+		$agent_status->{'datos'} = "";
+	}
+
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 	
 	db_do ($dbh, 'UPDATE tagente_estado

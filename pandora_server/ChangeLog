@@ -8,6 +8,10 @@
 	* lib/PandoraFMS/PluginServer.pm: Removed several "Use of uninitialized i
 	value in string" errors.
 
+	* lib/PandoraFMS/Core.pm: Fixed more ugly notices due uninitialized vars.
+
+	* util/recon_scripts/snmpdevices.pl: Fixed due new interface.
+ 
 2013-02-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_server: Undid the previous commit since forking after

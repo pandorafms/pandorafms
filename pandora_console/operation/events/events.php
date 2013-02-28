@@ -446,7 +446,13 @@ ui_require_javascript_file('pandora_events');
 $(document).ready( function() {
 	
 	$("input[name=all_validate_box]").change (function() {
-		$("input[name='validate_ids[]']").attr('checked', $(this).attr('checked'));
+		if ($(this).is(":checked")) {
+			$("input[name='validate_ids[]']").check();
+		}
+		else {
+			$("input[name='validate_ids[]']").uncheck();
+		}
+		
 		$("input[name='validate_ids[]']").trigger('change');
 	});
 	

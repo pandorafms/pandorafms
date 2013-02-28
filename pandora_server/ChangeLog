@@ -1,3 +1,14 @@
+2013-02-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_server: Undid the previous commit since forking after
+	  having launched all server threads can lead to trouble.
+
+	* lib/PandoraFMS/Core.pm: Removed some debugging code that polluted the
+	  logs.
+	
+	* lib/PandoraFMS/NetworkServer.pm: Removed a DISTINCT from the query since
+	  module ids are unique.
+
 2013-02-27 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* lib/PandoraFMS/Core.pm: erased lost develop traces.

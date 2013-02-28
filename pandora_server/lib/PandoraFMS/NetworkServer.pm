@@ -105,7 +105,7 @@ sub data_producer ($) {
 		AND (tagente_modulo.flag = 1 OR ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())) 
 		ORDER BY tagente_modulo.flag DESC, time_left ASC, tagente_estado.last_execution_try ASC ', $pa_config->{'servername'});
     } else {
-		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, tagente_estado.last_execution_try, tagente_estado.current_interval + tagente_estado.last_execution_try AS time_left, last_execution_try
+		@rows = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag, tagente_estado.last_execution_try, tagente_estado.current_interval + tagente_estado.last_execution_try AS time_left, last_execution_try
 		FROM tagente, tagente_modulo, tagente_estado
 		WHERE ((server_name = ?) OR (server_name = ANY(SELECT name FROM tserver WHERE status = 0))) 
 		AND tagente_modulo.id_agente = tagente.id_agente

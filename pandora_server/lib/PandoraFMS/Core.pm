@@ -1490,9 +1490,6 @@ Start the planned downtime, the montly type.
 sub pandora_planned_downtime_monthly_stop($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	logger($pa_config, "[PLANNED_DOWNTIME] " .
-		"Enter pandora_planned_downtime_monthly_stop().", 10);
-	
 	#my $local_time = localtime();
 	my @var_localtime = localtime(time);
 	my $year = $var_localtime[5]  + 1900;

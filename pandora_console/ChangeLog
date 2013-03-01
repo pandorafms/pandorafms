@@ -1,3 +1,20 @@
+2013-03-01 Mario Pulido <mario.pulido@artica.es>
+
+	* images/help/service1.png: New file for help.
+
+	* godmode/tag/tag.php,
+	godmode/agentes/agent_manager.php
+	godmode/agentes/module_manager_editor_common.php: New hint help.
+
+	* include/help/en/help_tags_config.php,
+        include/help/en/help_agent_server.php,
+        include/help/en/help_module_definition.php,
+        include/help/en/help_view_services.php,
+        include/help/es/help_module_definition.php,
+        include/help/es/help_tags_config.php,
+        include/help/es/help_agent_server.php: New and improved help files.
+
+
 2013-03-01 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql: fixed bad

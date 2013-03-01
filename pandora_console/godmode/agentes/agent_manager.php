@@ -221,7 +221,7 @@ if ($new_agent) {
 	$server_name = reset(array_keys(servers_get_names()));
 }
 $table->data[6][1] = html_print_select (servers_get_names (),
-	'server_name', $server_name, '', __('None'), 0, true);
+	'server_name', $server_name, '', __('None'), 0, true). ' ' . ui_print_help_icon ('agent_server', true);
 
 // Description
 $table->data[7][0] = __('Description');

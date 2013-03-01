@@ -308,9 +308,9 @@ $table_advanced->data[2][4] = html_print_input_text ('post_process',
 $table_advanced->data[3][0] = __('Min. Value');
 $table_advanced->colspan[3][1] = 2;
 
-$table_advanced->data[3][1] = html_print_input_text ('min', $min, '', 5, 15, true, $disabledBecauseInPolicy);
+$table_advanced->data[3][1] = html_print_input_text ('min', $min, '', 5, 15, true, $disabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Any value below this number is discarted.'), true);
 $table_advanced->data[3][3] = __('Max. Value');
-$table_advanced->data[3][4] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy);
+$table_advanced->data[3][4] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Any value over this number is discarted.'), true);
 
 $table_advanced->data[4][0] = __('Export target'); 
 // Default text message for export target select and disabled option
@@ -391,12 +391,10 @@ $table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minu
 $table_advanced->colspan[11][1] = 4;
 
 $table_advanced->data[12][0] = __('Timeout');
-$table_advanced->data[12][1] = html_print_input_text ('max_timeout',
-	$max_timeout, '', 5, 10, true);
+$table_advanced->data[12][1] = html_print_input_text ('max_timeout', $max_timeout, '', 5, 10, true). ' ' . ui_print_help_tip (__('Seconds that agent will wait for the execution of the module.'), true);
 $table_advanced->data[12][2] = '';
 $table_advanced->data[12][3] = __('Retries');
-$table_advanced->data[12][4] = html_print_input_text ('max_retries',
-	$max_retries, '', 5, 10, true);
+$table_advanced->data[12][4] = html_print_input_text ('max_retries', $max_retries, '', 5, 10, true). ' ' . ui_print_help_tip (__('Number of retries that the module will attempt to run.'), true);
 
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$table_advanced->data[13][0] = __('Category');

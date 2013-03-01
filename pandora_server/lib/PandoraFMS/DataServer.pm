@@ -213,7 +213,7 @@ sub process_xml_data ($$$$$) {
 
 	# Timezone offset must be an integer beween -12 and +12
 	if (!defined($timezone_offset) || $timezone_offset !~ /[-+]?[0-9,11,12]/) {
-		$timezone_offset = 0; # Default value
+		$timezone_offset = 0;
 	}
 	
 	# Parent Agent Name
@@ -227,69 +227,6 @@ sub process_xml_data ($$$$$) {
 		logger($pa_config,"Parent_agent_name: $parent_agent_name parent_id: $parent_id",10);
 	}
 
-	my $valid_position_data = 1; 	
-
-	# Get GIS information
-	my ($longitude, $latitude, $altitude, $position_description) = (
-		$data->{'longitude'}, $data->{'latitude'}, $data->{'altitude'}, 
-		$data->{'position_description'});
-
-	if ($pa_config->{'activate_gis'}) {
-
-		# Validate the GIS informtation
-
-		if (!defined($altitude) || $altitude !~ /[-+]?[0-9,11,12]/) {
-			$altitude = ''; # Default value
-			# This could be a valid position data, not always will get altitude
-		}
-	
-		if (!defined($longitude) || $longitude !~ /[-+]?[0-9,11,12]/) {
-			$longitude = ''; # Default value
-			$valid_position_data = 0;
-		}
-
-		if (!defined($latitude) || $latitude !~ /[-+]?[0-9,11,12]/) {
-			$latitude = ''; # Default value
-			$valid_position_data = 0;
-		}
-
-		if ((!defined($position_description)) && ($latitude ne '')) { #FIXME: Validate the data with a regexp
-
-			# This code gets description (Reverse Geocoding) from a current GPS coordinates using Google maps API
-			# This requires a connection to internet and could be very slow and have a huge impact in performance.
-			# Other methods for reverse geocoding are OpenStreetmaps, in nternet or in a local server
-
-			if ($pa_config->{'google_maps_description'}){
-				my $content = get ('http://maps.google.com/maps/geo?q='.$latitude.','.$longitude.'&output=csv&sensor=false');
-				my @address = split (/\"/,$content);
-				$position_description = $address[1];
-			}
-			elsif ($pa_config->{'openstreetmaps_description'}){
-				# Sample Query: http://nominatim.openstreetmap.org/reverse?format=csv&lat=40.43197&lon=-3.6993818&zoom=18&addressdetails=1&email=info@pandorafms.org
-				# Email address is sent by courtesy to OpenStreetmaps people. 
-				# I read the API :-), thanks guys for your work.
-				# Change here URL to make request to a local openstreetmap server
-				my $content = get ('http://nominatim.openstreetmap.org/reverse?format=csv&lat='.$latitude.'&lon='.$longitude.'&zoom=18&addressdetails=1&email=info@pandorafms.org');
-
-                if ((defined($content)) && ($content ne "")){ 
-				    # Yep, I need to parse the XML output.
-				    my $xs1 = XML::Simple->new();
-				    my $doc = $xs1->XMLin($content);
-				    $position_description = safe_input ($doc->{result}{content});
-                } else {
-				    $position_description = "";
-                }
-
-			}
-		}
-
-        if (!defined($position_description)){
-            $position_description = "";
-        }
-
-		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude position_description=$position_description", 8);
-	}
-
 	# Unknown agent!
 	if (! defined ($agent_name) || $agent_name eq '') {
 		logger($pa_config, "$file_name has data from an unnamed agent", 3);
@@ -300,26 +237,25 @@ sub process_xml_data ($$$$$) {
 	if ( $data->{'timestamp'} =~ /AUTO/ ){
 		$timestamp = strftime ("%Y/%m/%d %H:%M:%S", localtime());
 	}
-	else {
-		if ($timezone_offset != 0) {
+	# Apply an offset to the timestamp
+	elsif ($timezone_offset != 0) {
+			
 		# Modify the timestamp with the timezone_offset
-		logger($pa_config, "Unmodified timestamp = $timestamp", 5);
-			$timestamp =~ /(\d+)[\/|\-](\d+)[\/|\-](\d+) +(\d+):(\d+):(\d+)/;
-			logger($pa_config, "Unmodified timestamp = $1/$2/$3 $4:$5:$6", 5);
-			my $utimestamp = ($timezone_offset * 3600); 
-			eval {
-				$utimestamp += timelocal($6, $5, $4, $3, $2 -1 , $1 - 1900);
-			};
-			if ($@) {
-				logger($pa_config,"WARNING: Invalid timestamp ($@) using server timestamp.", 4);
-				$timestamp = strftime ("%Y/%m/%d %H:%M:%S", localtime());
-			}	
-		logger($pa_config, "Seconds timestamp = $timestamp modified timestamp in seconds $utimestamp with timezone_offset = $timezone_offset", 5);
-	$timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+		logger($pa_config, "Applied a timezone offset of $timestamp to agent " . $data->{'agent_name'}, 10);
+		
+		# Calculate the start date to add the offset
+		my $utimestamp = 0;
+		eval {
+			if ($timestamp =~ /(\d+)[\/|\-](\d+)[\/|\-](\d+) +(\d+):(\d+):(\d+)/) {
+				$utimestamp = timelocal($6, $5, $4, $3, $2 -1 , $1 - 1900);
+			}
+		};
+		
+		# Apply the offset if there were no errors
+		if (! $@ && $utimestamp != 0) {
+			$timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp + ($timezone_offset * 3600)));
 		}
-		logger($pa_config, "Modified timestamp = $timestamp with timezone_offset = $timezone_offset", 5);
 	}
-
 	
 	# Check some variables
 	$interval = 300 if (! defined ($interval) || $interval eq '');
@@ -351,21 +287,9 @@ sub process_xml_data ($$$$$) {
 
 		my $description = '';
 		$description = $data->{'description'} if (defined ($data->{'description'}));
-
-		# Create the agent
-		if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0 ) {
-			logger($pa_config, "Creating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
-		}
-		else { # Ignore agent positional data
-			logger($pa_config, "Creating agent $agent_name", 5);
-			$longitude = undef;
-			$latitude = undef;
-			$altitude = undef;
-			$position_description = undef;
-		}
 		
 		$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address, $group_id, $parent_id, $os, 
-						$description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description, $custom_id, $url_address);
+						$description, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $custom_id, $url_address);
 												 
 		if (! defined ($agent_id)) {
 			return;
@@ -419,12 +343,16 @@ sub process_xml_data ($$$$$) {
 		$agent_version = $agent->{'agent_version'};
 		$timezone_offset = $agent->{'timezone_offset'};
 		$parent_id = $agent->{'id_parent'};
-	} 
-	else { # Learning mode
+	}
+	# Learning mode
+	else { 
+		
 		# Update agent address if necessary
 		if ($address ne '' && $address ne $agent->{'direccion'}) {
+			
 			# Update the main address
 			pandora_update_agent_address ($pa_config, $agent_id, $agent_name, $address, $dbh);
+			
 			# Update the addres list if necessary
 			pandora_add_agent_address($pa_config, $agent_id, $address, $dbh);
 		}
@@ -479,23 +407,16 @@ sub process_xml_data ($$$$$) {
                 }
 
 	}
-
-	# Update GIS data only if is allowed and is valid position
-	if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0) {
-		logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude parent_id: $parent_id", 5);
-	}
-	else {
-		$longitude = undef;
-		$latitude = undef;
-		$altitude = undef;
-		$position_description = undef;
-	}
 	
 	# Update agent information
-	pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, 
-						$longitude, $latitude, $altitude, $position_description, $parent_id);
+	pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $parent_id);
+
+	# Update GIS data
+	if ($pa_config->{'activate_gis'} != 0 && $agent->{'update_gis_data'} == 1) {
+		pandora_update_gis_data ($pa_config, $dbh, $agent_id, $agent_name, $data->{'longitude'}, $data->{'latitude'}, $data->{'altitude'}, $data->{'position_description'}, $timestamp);
+	}
 	
-	
+	# Update keep alive modules
 	pandora_module_keep_alive ($pa_config, $agent_id, $agent_name, $server_id, $dbh);
 	
 	# Process modules

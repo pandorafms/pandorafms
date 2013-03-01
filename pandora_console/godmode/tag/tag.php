@@ -78,7 +78,7 @@ if (defined('METACONSOLE')) {
 else {
 
 	// Header
-	ui_print_page_header (__('Tags configuration'), "images/setup.png", false, "", true, $buttons);
+	ui_print_page_header (__('Tags configuration'), "images/setup.png", false, "tags_config", true, $buttons);
 
 }
 

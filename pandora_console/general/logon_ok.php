@@ -87,7 +87,6 @@ echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">'
 	$table->width = '100%'; //Don't specify px
 	$table->data = array ();
 	$table->size = array ();
-	$table->style[2] = 'text-align:center;';
 	$table->size[1] = '150px';
 	$table->size[2] = '130px';
 	$table->size[4] = '200px';
@@ -144,7 +143,7 @@ echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">'
 		$data[0] = '<strong>' . $session_id_usuario . '</strong>';
 		$data[1] = ui_print_session_action_icon ($session['accion'], true);
 		$data[1] .= $session['accion'];
-		$data[2] = human_time_comparation($session['utimestamp']) . ui_print_help_tip($session['fecha'], true);
+		$data[2] =  ui_print_help_tip($session['fecha'], true) . human_time_comparation($session['utimestamp']);
 		$data[3] = $session_ip_origen;
 		$data[4] = io_safe_output ($session['descripcion']);
 		

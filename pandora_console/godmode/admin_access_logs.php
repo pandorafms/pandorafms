@@ -242,8 +242,9 @@ foreach ($result as $row) {
 			$data[0] = $row["id_usuario"];
 			break;
 	}
-	$data[1] = $row["accion"];
-	$data[2] = $row["fecha"];
+	$data[1] = ui_print_session_action_icon ($row['accion'], true);
+	$data[1] .= $row["accion"];
+	$data[2] = ui_print_help_tip($row['fecha'], true) . human_time_comparation($row['utimestamp']);
 	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":

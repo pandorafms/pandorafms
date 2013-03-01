@@ -1,3 +1,12 @@
+2013-03-01  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/jquery.pandora.js
+	include/functions_servers.php
+	operation/events/event_statistics.php
+	general/logon_ok.php
+	godmode/admin_access_logs.php: Fix little bugs and
+	the server performance counts
+
 2013-02-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_events.js

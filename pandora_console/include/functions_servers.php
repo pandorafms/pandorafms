@@ -83,7 +83,7 @@ function servers_get_performance () {
 		$counts = db_get_all_rows_sql ("SELECT tagente_modulo.id_modulo, COUNT(tagente_modulo.id_agente_modulo) modules
 			FROM tagente_modulo, tagente_estado, tagente
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-				AND tagente_modulo.disabled = 0 AND module_interval > 0 AND utimestamp > 0 AND delete_pending = 0
+				AND tagente_modulo.disabled = 0 AND delete_pending = 0 AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo > 21 AND id_tipo_modulo < 23)))
 				AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
 
 		if(empty($counts)) {
@@ -163,15 +163,51 @@ function servers_get_performance () {
 			$data["total_modules"] += $c['modules'];
 		}
 	}
-			
-	$interval_avgs = db_get_all_rows_sql ("SELECT tagente_modulo.id_modulo, AVG(tagente_modulo.module_interval) avg_interval
+	
+	// Avg of modules interval when modules have module_interval > 0
+	$interval_avgs_modules = db_get_all_rows_sql ("SELECT count(tagente_modulo.id_modulo) modules , tagente_modulo.id_modulo, AVG(tagente_modulo.module_interval) avg_interval
 					FROM tagente_modulo, tagente_estado, tagente
 				WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-					AND tagente_modulo.disabled = 0 AND module_interval > 0 AND utimestamp > 0 AND delete_pending = 0
+					AND tagente_modulo.disabled = 0 AND module_interval > 0 AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo > 21 AND id_tipo_modulo < 23)))
+					AND delete_pending = 0
 					AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
 	
-	foreach($interval_avgs as $ia) {
-		switch($ia['id_modulo']) {
+	if(empty($interval_avgs_modules)) {
+		$interval_avgs_modules = array();
+	}
+	
+	// Transform into a easily format
+	foreach($interval_avgs_modules as $iamodules) {
+		$interval_avgs[$iamodules['id_modulo']]['avg_interval'] = $iamodules['avg_interval'];
+		$interval_avgs[$iamodules['id_modulo']]['modules'] = $iamodules['modules'];
+	}
+	
+	// Avg of agents interval when modules have module_interval == 0
+	$interval_avgs_agents = db_get_all_rows_sql ("SELECT count(tagente_modulo.id_modulo) modules , tagente_modulo.id_modulo, AVG(tagente.intervalo) avg_interval
+					FROM tagente_modulo, tagente_estado, tagente
+				WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+					AND tagente_modulo.disabled = 0 AND module_interval = 0 AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo >= 21 AND id_tipo_modulo <= 24)))
+					AND delete_pending = 0
+					AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
+	
+	if(empty($interval_avgs_agents)) {
+		$interval_avgs_agents = array();
+	}
+	
+	// Merge with the previous calculated array
+	foreach($interval_avgs_agents as $iaagents) {
+		if(!isset($interval_avgs[$iaagents['id_modulo']]['modules'])) {
+			$interval_avgs[$iaagents['id_modulo']]['avg_interval'] = $iaagents['avg_interval'];		
+			$interval_avgs[$iaagents['id_modulo']]['modules'] = $iaagents['modules'];
+		}
+		else {
+			$interval_avgs[$iaagents['id_modulo']]['avg_interval'] = servers_get_avg_interval($interval_avgs[$iaagents['id_modulo']], $iaagents);
+			$interval_avgs[$iaagents['id_modulo']]['modules'] += $iaagents['modules'];
+		}
+	}
+	
+	foreach($interval_avgs as $id_modulo => $ia) {
+		switch($id_modulo) {
 			case MODULE_DATA:
 				$data["avg_interval_local_modules"] = $ia['avg_interval'];
 				$data["local_modules_rate"] = servers_get_rate($data["avg_interval_local_modules"], $data["total_local_modules"]);
@@ -198,7 +234,7 @@ function servers_get_performance () {
 				break;
 		}
 		
-		if($ia['id_modulo'] != MODULE_DATA) {
+		if($id_modulo != MODULE_DATA) {
 			$data["avg_interval_remote_modules"][] = $ia['avg_interval'];
 		}
 		
@@ -225,6 +261,23 @@ function servers_get_performance () {
 	return ($data);
 }
 
+/**
+ * Get avg interval
+ *
+ * @param mixed Array with avg and count data of first part
+ * @param mixed Array with avg and count data of second part
+ *
+ * @return float number of avg modules between two parts
+ */
+ 
+function servers_get_avg_interval($modules_avg_interval1, $modules_avg_interval2) {
+	$total_modules = $modules_avg_interval1['modules'] + $modules_avg_interval2['modules'];
+	
+	$parcial1 = $modules_avg_interval1['avg_interval'] * $modules_avg_interval1['modules'];
+	$parcial2 = $modules_avg_interval2['avg_interval'] * $modules_avg_interval2['modules'];
+	
+	return ($parcial1 + $parcial2) / $total_modules;
+}
 /**
  * Get server rate
  *

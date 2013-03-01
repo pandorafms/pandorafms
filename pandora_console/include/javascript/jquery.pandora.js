@@ -223,6 +223,6 @@ $(document).ready (function () {
 		$('#forced_title_layer').show();
 	},
 	function () {
-		$('#forced_title_layer').hide();
+		$('#forced_title_layer').hide().empty();
 	});
 });

@@ -55,7 +55,8 @@ if(tags_has_user_acl_tags()) {
 	ui_print_tags_warning();
 }
 
-echo '<div style="width:20%; float:left; padding-right: 5%;" id="leftcolumn">';
+echo '<table border=0 style="width:100%;"><tr>';
+echo '<td style="vertical-align: top; min-width: 265px; width:30%; padding-right: 5%;" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
@@ -109,17 +110,17 @@ if ($is_admin) {
 	html_print_table($table);
 }
 
-echo '</div>'; //Left column
+echo '</td>'; //Left column
 
-echo '<div style="width: 70%; float:left;" id="rightcolumn">';
+echo '<td style="vertical-align: top; width: 70%;" id="rightcolumn">';
 
 
 // ---------------------------------------------------------------------
 // Last events information
 // ---------------------------------------------------------------------
+$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
 
-events_print_event_table ("WHERE estado<>1 ", 10, "100%");
-
+events_print_event_table ("estado<>1 $tags_condition", 10, "100%");
 
 // ---------------------------------------------------------------------
 // Server information
@@ -196,5 +197,6 @@ if ($is_admin) {
 }
 
 
-echo '</div>';
+echo '</td>';
+echo '</tr></table>';
 ?>

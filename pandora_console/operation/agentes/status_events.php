@@ -28,6 +28,6 @@ echo "<h4 style='margin-top:0px !important;'>".__('Latest events for this agent'
 
 $tags_condition = tags_get_acl_tags($config['id_user'], $agent['id_grupo'], 'ER', 'event_condition', 'AND');
 
-events_print_event_table ("WHERE id_agente = $id_agente $tags_condition", $limit = 10, $width='100%');
+events_print_event_table ("estado <> 1 $tags_condition", 10, '100%', false, $id_agente);
 
 ?>

@@ -186,6 +186,7 @@ $filter_only_alert = (int) get_parameter('filter_only_alert', -1);
 $filter_id = (int) get_parameter('filter_id', 0);
 $id_name = (string) get_parameter('id_name', '');
 $id_group = (int) get_parameter('id_group', 0);
+$open_filter = (int) get_parameter('open_filter', 0);
 
 $text_agent = (string) get_parameter("text_agent", __("All"));
 
@@ -230,6 +231,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;id_group=" . $id_group .
 	"&amp;history=" . (int)$history .
 	"&amp;section=" . $section .
+	"&amp;open_filter=" . $open_filter .
 	"&amp;pure=" . $config["pure"];
 
 if($meta) {

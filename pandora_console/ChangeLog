@@ -1,3 +1,17 @@
+2013-03-01  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php
+	include/functions_events.php
+	include/constants.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/status_events.php
+	operation/agentes/tactical.php
+	operation/events/event_statistics.php
+	operation/events/events_list.php
+	operation/events/events.php: Improve layouts, graphic
+	of events near tables, colors of events pies, acl tags,
+	etc.
+
 2013-03-01 Mario Pulido <mario.pulido@artica.es>
 
 	* images/help/service1.png: New file for help.

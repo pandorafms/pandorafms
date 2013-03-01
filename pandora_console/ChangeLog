@@ -1,5 +1,9 @@
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_gis.php: fixed the delete layers.
+
+2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/gis_maps/configure_gis_map.php,include/functions_gis.php:
 	cleaned source code style as the trunk.
 

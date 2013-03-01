@@ -95,8 +95,7 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 			num_zoom_levels: null,
 			name: null,
 			type: null,
-			url: null
-		};";
+			url: null};";
 		
 		echo "baselayer['type'] = '" . $baselayer['typeBaseLayer'] . "';";
 		echo "baselayer['name'] = '" . $baselayer['name'] . "';";
@@ -125,6 +124,7 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 	
 	echo "js_printMap(idDiv, initialZoom, centerLatitude, centerLongitude,
 		baselayerList, controlsList)";
+	
 	echo "</script>";
 }
 
@@ -780,19 +780,25 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 		);
 	}
 	
-	$listOldIdLayers = db_get_all_rows_sql('SELECT id_tmap_layer FROM tgis_map_layer WHERE tgis_map_id_tgis_map = ' . $idMap);
+	$listOldIdLayers = db_get_all_rows_sql('SELECT id_tmap_layer
+		FROM tgis_map_layer WHERE tgis_map_id_tgis_map = ' . $idMap);
 	if ($listOldIdLayers == false)
 		$listOldIdLayers = array();
-	foreach($listOldIdLayers as $idLayer) {
-		db_process_sql_delete('tgis_map_layer_has_tagente', array('tgis_map_layer_id_tmap_layer' => $idLayer['id_tmap_layer']));
+	
+	$list_onlyIDsLayers = array();
+	foreach ($listOldIdLayers as $idLayer) {
+		db_process_sql_delete('tgis_map_layer_has_tagente',
+			array('tgis_map_layer_id_tmap_layer' => $idLayer['id_tmap_layer']));
+		
+		$list_onlyIDsLayers[$idLayer['id_tmap_layer']] = 0;
 	}
 	
 	
 	foreach ($arrayLayers as $index => $layer) {
 		
-		
 		if ($layer['id'] != 0) {
 			$idLayer = $layer['id'];
+			unset($list_onlyIDsLayers[$idLayer]);
 			
 			db_process_sql_update('tgis_map_layer',
 				array(
@@ -831,6 +837,12 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 			}
 		}
 		
+	}
+	
+	//Delete layers that not carry the $arrayLayers
+	foreach ($list_onlyIDsLayers as $idLayer => $trash) {
+		db_process_sql_delete('tgis_map_layer',
+			array('id_tmap_layer' => $idLayer));
 	}
 }
 

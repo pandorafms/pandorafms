@@ -1878,90 +1878,122 @@ defined also the parent is updated.
 
 =cut
 ##########################################################################
-sub pandora_update_agent ($$$$$$$;$$$$$$) {
+sub pandora_update_agent ($$$$$$$;$$) {
 	my ($pa_config, $agent_timestamp, $agent_id, $os_version,
 		$agent_version, $agent_interval, $dbh, $timezone_offset,
-		$longitude, $latitude, $altitude, $position_description, $parent_agent_id) = @_;
-	
-	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
-	
+		$parent_agent_id) = @_;
 	
 	# No access update for data without interval.
-	# Single modules from network server, for example. This could be very
-	# Heavy for Pandora FMS
+	# Single modules from network server, for example. This could be very Heavy for Pandora FMS
 	if ($agent_interval != -1){
 		pandora_access_update ($pa_config, $agent_id, $dbh);
+	} else {
+		
+		# Do not update the agent interval
+		$agent_interval = undef;
 	}
 	
-	# No update for interval, timezone and position fields (some old agents don't support it)
-	if ($agent_interval == -1){
-		db_do($dbh, 'UPDATE tagente SET agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
-		$agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
-		
+	# Update tagente
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+	my ($set, $values) = db_update_get_values ({'agent_version' => $agent_version,
+	                                         'intervalo' => $agent_interval,
+	                                         'ultimo_contacto_remoto' => $agent_timestamp,
+	                                         'ultimo_contacto' => $timestamp,
+	                                         'os_version' => $os_version,
+	                                         'timezone_offset' => $timezone_offset,
+	                                         'id_parent' => $parent_agent_id,
+	                                        });
+	
+	db_do ($dbh, "UPDATE tagente SET $set WHERE id_agente = ?", @{$values}, $agent_id);
+}
+
+##########################################################################
+=head2 C<< pandora_update_gis_data (I<$pa_config>, I<$dbh>, I<$agent_id>, I<$longitude>, I<$latitude>, I<$altitude>) >>
+
+Update agent GIS information.
+
+=cut
+##########################################################################
+sub pandora_update_gis_data ($$$$$$$$) {
+	my ($pa_config, $dbh, $agent_id, $agent_name, $longitude, $latitude, $altitude, $position_description, $timestamp) = @_;
+
+	logger($pa_config, "Updating GIS data for agent $agent_name (long: $longitude lat: $latitude alt: $altitude)", 10);
+
+	# Check for valid longitude and latitude
+	if (!defined($longitude) || $longitude !~ /[-+]?[0-9,11,12]/ ||
+	    !defined($latitude) || $latitude !~ /[-+]?[0-9,11,12]/) {
 		return;
 	}
-	
-	if ( defined ($timezone_offset)) {
-		if (defined($parent_agent_id)) {
-			# Update the table tagente with all the new data and set the new parent
-			db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, 
-				timezone_offset = ?, id_parent = ? WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp,
-				$timestamp, $os_version, $timezone_offset, $parent_agent_id, $agent_id);
-		}
-		else {
-			# Update the table tagente with all the new data
-			db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, 
-				timezone_offset = ? WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $agent_id);
-		}
-	}
-	else {
-		if (defined($parent_agent_id)) {
-			# Update the table tagente with all the new data and set the new parent
-			db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, id_parent = ?
-				WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $parent_agent_id, $agent_id);
-		}
-		else {
-			# Update the table tagente with all the new data
-			db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
-				$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
-		}
-	}
-	
-	my $update_gis_data= get_db_value ($dbh, 'SELECT update_gis_data FROM tagente WHERE id_agente = ?', $agent_id);
-	#Test if we have received the optional position parameters
-	if (defined ($longitude) && defined ($latitude) && $pa_config->{'activate_gis'} == 1 && $update_gis_data == 1 ){
-		# Get the last position to see if it has moved.
-		my $last_agent_position= get_db_single_row ($dbh, 'SELECT * FROM tgis_data_status WHERE tagente_id_agente = ?', $agent_id);
-		if(defined($last_agent_position)) {
-			
-			logger($pa_config, "Old Agent data: current_longitude=". $last_agent_position->{'current_longitude'}. " current_latitude="
-				.$last_agent_position->{'current_latitude'}. " current_altitude=". $last_agent_position->{'current_altitude'}. " ID: $agent_id ", 10);
-			
-			# If the agent has moved outside the range stablised as location error
-			if (distance_moved($pa_config, $last_agent_position->{'stored_longitude'}, $last_agent_position->{'stored_latitude'}, 
-				$last_agent_position->{'stored_altitude'}, $longitude, $latitude, $altitude) > $pa_config->{'location_error'}) {
-				#Archive the old position and save new one as status
-				archive_agent_position($pa_config, $last_agent_position->{'start_timestamp'},$timestamp,$last_agent_position->{'stored_longitude'}, $last_agent_position->{'stored_latitude'}, 
-				$last_agent_position->{'stored_altitude'},$last_agent_position->{'description'}, $last_agent_position->{'number_of_packages'},$agent_id, $dbh);
-				if(!defined($altitude) ) {
-					$altitude = 0;
-				}
-				# Save the agent position in the tgis_data_status table
-				update_agent_position($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh, $longitude, $latitude, $altitude, $timestamp, $position_description);
-			}
-			else { #the agent has not moved enougth so just update the status table
-				update_agent_position ($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh);
-			}
-		}
-		else {
-			logger($pa_config, "There was not previous positional data, storing first positioal status",8);
-			save_agent_position($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh, $timestamp, $position_description);
-		}
-	}
-	else {
-		logger($pa_config, "Agent id $agent_id positional data ignored (update_gis_data = $update_gis_data)",10);
-	}
 
+	# Altitude is optional
+	if (!defined($altitude) || $altitude !~ /[-+]?[0-9,11,12]/) {
+		$altitude = '';
+	}
+	
+	# Get position description
+	if ((!defined($position_description))) {
+
+		# This code gets description (Reverse Geocoding) from a current GPS coordinates using Google maps API
+		# This requires a connection to internet and could be very slow and have a huge impact in performance.
+		# Other methods for reverse geocoding are OpenStreetmaps, in nternet or in a local server
+
+		if ($pa_config->{'google_maps_description'}){
+			my $content = get ('http://maps.google.com/maps/geo?q='.$latitude.','.$longitude.'&output=csv&sensor=false');
+			my @address = split (/\"/,$content);
+			$position_description = $address[1];
+		}
+		elsif ($pa_config->{'openstreetmaps_description'}){
+			# Sample Query: http://nominatim.openstreetmap.org/reverse?format=csv&lat=40.43197&lon=-3.6993818&zoom=18&addressdetails=1&email=info@pandorafms.org
+			# Email address is sent by courtesy to OpenStreetmaps people. 
+			# I read the API :-), thanks guys for your work.
+			# Change here URL to make request to a local openstreetmap server
+			my $content = get ('http://nominatim.openstreetmap.org/reverse?format=csv&lat='.$latitude.'&lon='.$longitude.'&zoom=18&addressdetails=1&email=info@pandorafms.org');
+
+			if ((defined($content)) && ($content ne "")){ 
+			
+				# Yep, I need to parse the XML output.
+				my $xs1 = XML::Simple->new();
+				my $doc = $xs1->XMLin($content);
+				$position_description = safe_input ($doc->{result}{content});
+            } else {
+				$position_description = "";
+            }
+
+		}
+
+        if (!defined($position_description)){
+            $position_description = "";
+        }
+
+		logger($pa_config, "Getting GIS Data=longitude=$longitude latitude=$latitude altitude=$altitude position_description=$position_description", 10);
+	}
+	
+	# Get the last position to see if it has moved.
+	my $last_agent_position= get_db_single_row ($dbh, 'SELECT * FROM tgis_data_status WHERE tagente_id_agente = ?', $agent_id);
+	if(defined($last_agent_position)) {
+			
+		logger($pa_config, "Old Agent data: current_longitude=". $last_agent_position->{'current_longitude'}. " current_latitude=".$last_agent_position->{'current_latitude'}. " current_altitude=". $last_agent_position->{'current_altitude'}. " ID: $agent_id ", 10);
+			
+		# If the agent has moved outside the range stablised as location error
+		if (distance_moved($pa_config, $last_agent_position->{'stored_longitude'}, $last_agent_position->{'stored_latitude'}, $last_agent_position->{'stored_altitude'}, $longitude, $latitude, $altitude) > $pa_config->{'location_error'}) {
+
+			#Archive the old position and save new one as status
+			archive_agent_position($pa_config, $last_agent_position->{'start_timestamp'}, $timestamp,$last_agent_position->{'stored_longitude'}, $last_agent_position->{'stored_latitude'}, $last_agent_position->{'stored_altitude'},$last_agent_position->{'description'}, $last_agent_position->{'number_of_packages'},$agent_id, $dbh);
+				
+			$altitude = 0 if (!defined($altitude));
+
+			# Save the agent position in the tgis_data_status table
+			update_agent_position($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh, $longitude, $latitude, $altitude, $timestamp, $position_description);
+		}
+		# The agent has not moved enougth so just update the status table
+		else { 
+			update_agent_position ($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh);
+		}
+	}
+	else {
+		logger($pa_config, "There was not previous positional data, storing first positioal status", 10);
+		save_agent_position($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh, $timestamp, $position_description);
+	}
 }
 
 ##########################################################################
@@ -2372,40 +2404,38 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 		$longitude, $latitude, $altitude, $position_description,
 		$custom_id, $url_address) = @_;
 	
-	if (!defined($custom_id)) {
-		$custom_id = '';
-	}
-	
-	if (!defined($url_address)) {
-		$url_address = '';
-	}
-	
+	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
 	if (!defined($group_id)) {
 		$group_id = $pa_config->{'autocreate_group'};
-	}
-	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
-	
-	$description = "Created by $server_name" unless ($description ne '');
-	my $agent_id;
-	# Test if the optional positional parameters are defined or GIS is disabled
-	if (!defined ($timezone_offset) ) {
-		$agent_id = db_insert ($dbh, 'id_agente', 'INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, server_name, intervalo, id_parent, modo, custom_id, url_address)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)', safe_input($agent_name), $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id, $custom_id, $url_address);
-	}
-	else {
-		$agent_id = db_insert ($dbh, 'id_agente', 'INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, server_name, intervalo, id_parent, 
-			timezone_offset, modo, custom_id, url_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)', safe_input($agent_name), $address, 
-			 $description, $group_id, $os_id, $server_name, $interval, $parent_id, $timezone_offset, $custom_id, $url_address);	
-	}
-	if (defined ($longitude) && defined ($latitude ) && $pa_config->{'activate_gis'} == 1 ) {
-		if (!defined($altitude)) {
-			$altitude = 0;
+		if (! defined (get_group_name ($dbh, $group_id))) {
+			logger($pa_config, "Group id $group_id does not exist (check autocreate_group config token)", 3);
+			return;
 		}
+	}
+
+	$description = "Created by $server_name" unless ($description ne '');	
+	my ($columns, $values) = db_insert_get_values ({ 'nombre' => safe_input($agent_name),
+	                                                 'direccion' => $address,
+	                                                 'comentarios' => $description,
+	                                                 'id_grupo' => $group_id,
+	                                                 'id_os' => $os_id,
+	                                                 'server_name' => $server_name,
+	                                                 'intervalo' => $interval,
+	                                                 'id_parent' => $parent_id,
+	                                                 'modo' => 1,
+	                                                 'custom_id' => $custom_id,
+	                                                 'url_address' => $url_address,
+	                                                 'timezone_offset' => $timezone_offset
+	                                                });                           
+	                                                
+	my $agent_id = db_insert ($dbh, 'id_agente', "INSERT INTO tagente $columns", @{$values});
+
+	# Save GIS data
+	if (defined ($longitude) && defined ($latitude ) && $pa_config->{'activate_gis'} == 1 ) {
+
 		# Save the first position
-		my $utimestamp = time ();
-		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
-		
+		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime (time ()));
 		save_agent_position($pa_config, $longitude, $latitude, $altitude, $agent_id, $dbh, $timestamp, $position_description) ;
 	}
 	
@@ -3223,25 +3253,24 @@ Saves a new agent GIS information record in B<tgis_data_status> table.
 sub save_agent_position($$$$$$;$$) {
 	my ($pa_config, $current_longitude, $current_latitude, $current_altitude, $agent_id, $dbh, $start_timestamp, $description) = @_;
 	
-	if (!defined($description)) {
-		$description = '';
-	}
 	logger($pa_config, "Updating agent position: longitude=$current_longitude, latitude=$current_latitude, altitude=$current_altitude, start_timestamp=$start_timestamp agent_id=$agent_id", 10);
-	
-	if (defined($start_timestamp)) {
-		# Upadate the timestamp of the received agent
-		db_do ($dbh, 'INSERT INTO tgis_data_status (tagente_id_agente, current_longitude , current_latitude, current_altitude, 
-					 stored_longitude , stored_latitude, stored_altitude, start_timestamp, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-					$agent_id, $current_longitude, $current_latitude, $current_altitude, $current_longitude, 
-					$current_latitude, $current_altitude, $start_timestamp, $description);
-	}
-	else {
-		# Upadate the data of the received agent using the default timestamp
-		db_do ($dbh, 'INSERT INTO tgis_data_status (tagente_id_agente, current_longitude , current_latitude, current_altitude, 
-					 stored_longitude , stored_latitude, stored_altitude, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ',
-					$agent_id, $current_longitude, $current_latitude, $current_altitude, $current_longitude, 
-					$current_latitude, $current_altitude, , $description);
-	}
+
+	# Set some default values
+	$description = '' if (!defined($description));
+	$current_altitude = 0 if (!defined($current_altitude));
+
+	my ($columns, $values) = db_insert_get_values ({ 'tagente_id_agente' => $agent_id,
+	                                                 'current_longitude' => $current_longitude,
+	                                                 'current_latitude' => $current_latitude,
+	                                                 'current_altitude' => $current_altitude,
+	                                                 'stored_longitude' => $current_longitude,
+	                                                 'stored_latitude' => $current_latitude,
+	                                                 'stored_altitude' => $current_altitude,
+	                                                 'start_timestamp' => $start_timestamp,
+	                                                 'description' => $description
+	                                                });
+	                                                
+	db_do ($dbh, "INSERT INTO tgis_data_status $columns", @{$values});
 }
 
 ##########################################################################
@@ -3255,6 +3284,7 @@ Updates agent GIS information in B<tgis_data_status> table.
 sub update_agent_position($$$$$$;$$$$$) {
 	my ($pa_config, $current_longitude, $current_latitude, $current_altitude,
 		 $agent_id, $dbh, $stored_longitude, $stored_latitude, $stored_altitude, $start_timestamp, $description) = @_;
+
 	if (defined($stored_longitude) && defined($stored_latitude) && defined($start_timestamp) ) {
 		# Upadate all the position data of the agent
 		logger($pa_config, "Updating agent position: current_longitude=$current_longitude, current_latitude=$current_latitude,
@@ -3607,7 +3637,7 @@ sub pandora_group_statistics ($$) {
 		
 		# Update the record.
 		db_do ($dbh, "DELETE FROM tgroup_stat WHERE id_group = $group");
-		db_do ($dbh, "INSERT INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . db_reserved_word ('non-init') . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
+		db_do ($dbh, "INSERT INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . $PandoraFMS::DB::RDBMS_QUOTE . 'non-init' . $PandoraFMS::DB::RDBMS_QUOTE . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
 
 	}
 

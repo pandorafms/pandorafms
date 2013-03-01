@@ -37,12 +37,13 @@ our @EXPORT = qw(
 		db_disconnect
 		db_do
 		db_insert
+		db_insert_get_values
 		db_process_insert
 		db_process_update
-		db_reserved_word
 		db_string
 		db_text
 		db_update
+		db_update_get_values
 		get_action_id
 		get_addr_id
 		get_agent_addr_id
@@ -80,18 +81,26 @@ our @EXPORT = qw(
 		get_agent_modules
 		get_agentmodule_status
 		get_agentmodule_data
+		$RDBMS
+		$RDBMS_QUOTE
 	);
+
+# Relational database management system in use
+our $RDBMS = '';
+
+# Character used to quote reserved words in the current RDBMS
+our $RDBMS_QUOTE = '';
 
 ##########################################################################
 ## Connect to the DB.
 ##########################################################################
-my $RDBMS = '';
 sub db_connect ($$$$$$) {
 	my ($rdbms, $db_name, $db_host, $db_port, $db_user, $db_pass) = @_;
 	
 	if ($rdbms eq 'mysql') {
 		$RDBMS = 'mysql';
-		
+		$RDBMS_QUOTE = '`';
+	
 		# Connect to MySQL
 		my $dbh = DBI->connect("DBI:mysql:$db_name:$db_host:$db_port", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
@@ -106,6 +115,7 @@ sub db_connect ($$$$$$) {
 	}
 	elsif ($rdbms eq 'postgresql') {
 		$RDBMS = 'postgresql';
+		$RDBMS_QUOTE = '"';
 		
 		# Connect to PostgreSQL
 		my $dbh = DBI->connect("DBI:Pg:dbname=$db_name;host=$db_host;port=$db_port", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
@@ -114,6 +124,7 @@ sub db_connect ($$$$$$) {
 		return $dbh;
 	} elsif ($rdbms eq 'oracle') {
 		$RDBMS = 'oracle';
+		$RDBMS_QUOTE = '"';
 		
 		# Connect to Oracle
 		my $dbh = DBI->connect("DBI:Oracle:dbname=$db_name;host=$db_host;port=$db_port;sid=pandora", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
@@ -616,11 +627,11 @@ sub db_insert ($$$;@) {
 	}
 	# PostgreSQL
 	elsif ($RDBMS eq 'postgresql') {
-		$insert_id = get_db_value ($dbh, $query . ' RETURNING ' . db_reserved_word ($index), @values); 
+		$insert_id = get_db_value ($dbh, $query . ' RETURNING ' . $RDBMS_QUOTE . $index . $RDBMS_QUOTE, @values); 
 	}
 	# Oracle
 	elsif ($RDBMS eq 'oracle') {
-		my $sth = $dbh->prepare($query . ' RETURNING ' . db_reserved_word (uc ($index)) . ' INTO ?');
+		my $sth = $dbh->prepare($query . ' RETURNING ' . $RDBMS_QUOTE . (uc ($index)) . $RDBMS_QUOTE . ' INTO ?');
 		for (my $i = 0; $i <= $#values; $i++) {
 			$sth->bind_param ($i+1, $values[$i]);
 		}
@@ -776,8 +787,13 @@ sub db_do ($$;@) {
 	my ($dbh, $query, @values) = @_;
 	
 	#DBI->trace( 3, '/tmp/dbitrace.log' );
-	
+use Carp;
+eval {	
 	$dbh->do($query, undef, @values);
+};
+if ($@) {
+	print "QUERY: $query\n";
+}
 }
 
 ########################################################################
@@ -792,21 +808,6 @@ sub is_agent_address ($$$) {
 			AND id_agent = ?', $id_addr, $id_agent);
 	
 	return (defined ($id_ag)) ? $id_ag : 0;
-}
-
-########################################################################
-## Escape the given reserved word. 
-########################################################################
-sub db_reserved_word ($) {
-	my $reserved_word = shift;
-	
-	# MySQL
-	return '`' . $reserved_word . '`' if ($RDBMS eq 'mysql');
-	
-	# PostgreSQL
-	return '"' . $reserved_word . '"' if ($RDBMS eq 'postgresql' || $RDBMS eq 'oracle');
-	
-	return $reserved_word;
 }
 
 ##########################################################################
@@ -883,6 +884,65 @@ sub get_priority_name ($) {
 	}
 	
 	return '';
+}
+
+########################################################################
+## Get the set string and array of values to perform un update from a hash.
+########################################################################
+sub db_update_get_values ($) {
+	my ($set_ref) = @_;
+
+	my $set = '';
+	my @values;
+	while (my ($key, $value) = each (%{$set_ref})) {
+
+			# Not value for the given column
+			next if (! defined ($value));
+
+			$set .= "$key = ?,";
+			push (@values, $value);
+	}
+
+	# Remove the last ,
+	chop ($set);
+	
+	return ($set, \@values);
+}
+
+########################################################################
+## Get the string and array of values to perform an insert from a hash.
+########################################################################
+sub db_insert_get_values ($) {
+	my ($insert_ref) = @_;
+
+	my $columns = '(';
+	my @values;
+	while (my ($key, $value) = each (%{$insert_ref})) {
+
+			# Not value for the given column
+			next if (! defined ($value));
+
+			$columns .= $PandoraFMS::DB::RDBMS_QUOTE . "$key" . $PandoraFMS::DB::RDBMS_QUOTE . ",";
+			push (@values, $value);
+	}
+
+	# Remove the last , and close the parentheses
+	chop ($columns);
+	$columns .= ')';
+	
+	# No columns		
+	if ($columns eq '()') {
+		return;
+	}
+
+	# Add placeholders for the values
+	$columns .= ' VALUES (' . ("?," x ($#values + 1));
+
+	# Remove the last , and close the parentheses
+	chop ($columns);
+	$columns .= ')';
+		
+	return ($columns, \@values);
 }
 
 # End of function declaration

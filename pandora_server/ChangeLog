@@ -1,3 +1,10 @@
+2013-03-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/DB.pm,
+	  lib/PandoraFMS/DataServer.pm: Refactored some GIS code. Still needs
+	  testing.
+
 2013-02-28  Sancho Lerena <slerena@artica.es>
 
 	* Config.pm: updated version.

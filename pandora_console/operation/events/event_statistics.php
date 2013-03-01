@@ -48,7 +48,7 @@ echo "</tr>";
 echo "<tr>";
 
 echo "<td>";
-echo "<h3>" . __('Event graph by group') . "</h3>";
+echo "<h3>" . __('Event graph by agent') . "</h3>";
 echo grafico_eventos_grupo(300, 200);
 echo "</td>";
 

@@ -1079,9 +1079,9 @@ ALTER TABLE tevento ADD INDEX `idx_utimestamp` USING BTREE (`utimestamp`);
 ALTER TABLE tserver DROP INDEX keepalive;
 ALTER TABLE tserver DROP INDEX status;
 
-------------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 -- Adapt the talert commands to new macro system
-------------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 
 UPDATE talert_commands SET fields_descriptions = '["Destination&#x20;address","Subject","Text","","","","","","",""]', fields_values = '["","","","","","","","","",""]' WHERE id = 1;
 UPDATE talert_commands SET fields_descriptions = '["Description","","","","","","","","",""]', fields_values = '["","","","","","","","","",""]' WHERE id = 2;

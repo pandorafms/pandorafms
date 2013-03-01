@@ -1,5 +1,10 @@
 2013-03-01 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql: fixed bad
+	formatted commmend line that crash with MariaDB.
+
+2013-03-01 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_gis.php: fixed the delete layers.
 
 2013-03-01  Sergio Martin <sergio.martin@artica.es>

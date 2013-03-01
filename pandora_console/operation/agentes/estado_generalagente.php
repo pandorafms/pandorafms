@@ -262,7 +262,7 @@ $table->style = array_fill(0, 3, 'vertical-align: top;');
 $data = array();
 $data[0] = html_print_table($table_agent, true);
 $data[1] = html_print_table($table_contact, true) . '<br>';
-$data[1] .= html_print_table($table_data, true);
+$data[1] .= empty($table_data->data) ? '' : html_print_table($table_data, true);
 
 $table->rowspan[0][1] = 2;
 

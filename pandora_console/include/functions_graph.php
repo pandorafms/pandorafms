@@ -1442,7 +1442,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 				FROM tevento, tagente_modulo
 				WHERE id_agentmodule = id_agente_modulo
 					AND disabled = 0 AND tevento.id_agente = %d
-				GROUP BY id_agentmodule, nombre LIMIT %d', $id_agent, $max_items);
+				GROUP BY id_agentmodule, nombre ORDER BY count_number DESC LIMIT %d', $id_agent, $max_items);
 			break;
 		case "oracle":
 			$sql = sprintf ('SELECT COUNT(id_evento) AS count_number,
@@ -1450,7 +1450,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 				FROM tevento, tagente_modulo
 				WHERE (id_agentmodule = id_agente_modulo
 					AND disabled = 0 AND tevento.id_agente = %d) AND rownum <= %d
-				GROUP BY id_agentmodule, dbms_lob.substr(nombre,4000,1)', $id_agent, $max_items);
+				GROUP BY id_agentmodule, dbms_lob.substr(nombre,4000,1) ORDER BY count_number DESC', $id_agent, $max_items);
 			break;
 	}
 	
@@ -1982,13 +1982,23 @@ function graph_events_validated($width = 300, $height = 200, $url = "", $meta = 
 	$data_graph = reporting_get_count_events_validated(
 		array('id_group' => array_keys(users_get_groups())));
 	
+	$colors = array();
+	foreach ($data_graph as $k => $v) {
+		if($k == __('Validated')) {
+			$colors[$k] = COL_NORMAL;
+		}
+		else {
+			$colors[$k] = COL_CRITICAL;
+		}
+	}
+	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false, false));
 	
 	echo pie3d_graph(
 		true, $data_graph, $width, $height, __("other"), "",
 		$water_mark,
-		$config['fontpath'], $config['font_size']);
+		$config['fontpath'], $config['font_size'], 1, false, $colors);
 }
 
 /**
@@ -2031,6 +2041,9 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$groupby_extra = '';
 	}
 	
+	// Add tags condition to filter
+	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
+	
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
 	//is required if both DISTINCT() and COUNT() are in the statement 
@@ -2039,18 +2052,18 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
 					id_grupo, COUNT(id_agente) AS count'.$field_extra.'
 				FROM '.$event_table.'
-				WHERE 1=1 %s
+				WHERE 1=1 %s %s
 				GROUP BY id_agente'.$groupby_extra.'
-				ORDER BY count DESC', $url); 
+				ORDER BY count DESC', $url, $tags_condition); 
 			break;
 		case "postgresql":
 		case "oracle":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
 					id_grupo, COUNT(id_agente) AS count'.$field_extra.'
 				FROM '.$event_table.'
-				WHERE 1=1 %s
+				WHERE 1=1 %s %s
 				GROUP BY id_agente, id_grupo'.$groupby_extra.'
-				ORDER BY count DESC', $url); 
+				ORDER BY count DESC', $url, $tags_condition); 
 			break;
 	}
 	
@@ -2091,10 +2104,12 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$data[$name] = $system_events;
 	}
 	
+	/*
 	if ($other_events > 0) {
 		$name = __('Other')." (".$other_events.")";
 		$data[$name] = $other_events;
 	}
+	*/
 	
 	// Sort the data
 	arsort($data);
@@ -2104,7 +2119,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size']);
+		$config['fontpath'], $config['font_size'], 1, 'bottom');
 }
 
 /**
@@ -2112,59 +2127,69 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
  * 
  * @param string filter Filter for query in DB
  */
-function grafico_eventos_total($filter = "") {
+function grafico_eventos_total($filter = "", $width = 320, $height = 200) {
 	global $config;
 	global $graphic_type;
 	
 	$filter = str_replace  ( "\\" , "", $filter);
+	
+	// Add tags condition to filter
+	$tags_condition = tags_get_acl_tags($config['id_user'], 0, 'ER', 'event_condition', 'AND');
+	$filter .= $tags_condition;
+	
 	$data = array ();
 	$legend = array ();
 	$total = 0;
 	
-	$sql = "SELECT COUNT(id_evento)
-		FROM tevento WHERE criticity = 0 $filter";
-	$data[__('Maintenance')] = db_get_sql ($sql);
-	if ($data[__('Maintenance')] == 0) {
-		unset($data[__('Maintenance')]);
+	$sql = "SELECT criticity, COUNT(id_evento) events FROM tevento GROUP BY criticity ORDER BY events DESC";
+	
+	$criticities = db_get_all_rows_sql ($sql);
+	
+	if(empty($criticities)) {
+		$criticities = array();
+		$colors = array();
 	}
 	
-	$sql = "SELECT COUNT(id_evento)
-		FROM tevento WHERE criticity = 1 $filter";
-	$data[__('Informational')] = db_get_sql ($sql);
-	if ($data[__('Informational')] == 0) {
-		unset($data[__('Informational')]);
+	foreach($criticities as $cr) {
+		switch($cr['criticity']) {
+			case EVENT_CRIT_MAINTENANCE:
+				$data[__('Maintenance')] = $cr['events'];
+				$colors[__('Maintenance')] = COL_MAINTENANCE;
+				break;
+			case EVENT_CRIT_INFORMATIONAL:
+				$data[__('Informational')] = $cr['events'];
+				$colors[__('Informational')] = COL_INFORMATIONAL;
+				break;
+			case EVENT_CRIT_NORMAL:
+				$data[__('Normal')] = $cr['events'];
+				$colors[__('Normal')] = COL_NORMAL;
+				break;
+			case EVENT_CRIT_MINOR:
+				$data[__('Minor')] = $cr['events'];
+				$colors[__('Minor')] = COL_MINOR;
+				break;
+			case EVENT_CRIT_WARNING:
+				$data[__('Warning')] = $cr['events'];
+				$colors[__('Warning')] = COL_WARNING;
+				break;
+			case EVENT_CRIT_MAJOR:
+				$data[__('Major')] = $cr['events'];
+				$colors[__('Major')] = COL_MAJOR;
+				break;
+			case EVENT_CRIT_CRITICAL:
+				$data[__('Critical')] = $cr['events'];
+				$colors[__('Critical')] = COL_CRITICAL;
+				break;
+		}
 	}
-	
-	$sql = "SELECT COUNT(id_evento)
-		FROM tevento WHERE criticity = 2 $filter";
-	$data[__('Normal')] = db_get_sql ($sql);
-	if ($data[__('Normal')] == 0) {
-		unset($data[__('Normal')]);
-	}
-	
-	$sql = "SELECT COUNT(id_evento)
-		FROM tevento WHERE criticity = 3 $filter";
-	$data[__('Warning')] = db_get_sql ($sql);
-	if ($data[__('Warning')] == 0) {
-		unset($data[__('Warning')]);
-	}
-	
-	$sql = "SELECT COUNT(id_evento)
-		FROM tevento WHERE criticity = 4 $filter";
-	$data[__('Critical')] = db_get_sql ($sql);
-	if ($data[__('Critical')] == 0) {
-		unset($data[__('Critical')]);
-	}
-	
-	asort ($data);
 	
 	$water_mark = array(
 		'file' => $config['homedir'] . "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
-	return pie3d_graph($config['flash_charts'], $data, 320, 200,
+	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size']);
+		$config['fontpath'], $config['font_size'], 1, false, $colors);
 }
 
 /**

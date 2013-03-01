@@ -733,28 +733,36 @@ function events_tiny_stats ($total_modules, $normal_modules, $critical_modules, 
  * @param int $limit How many events to show
  * @param int $width How wide the table should be 
  * @param bool $return Prints out HTML if false
+ * @param int agent id if is the table of one agent. 0 otherwise
  * 
  * @return string HTML with table element 
  */
-function events_print_event_table ($filter = "", $limit = 10, $width = 440, $return = false) {
+function events_print_event_table ($filter = "", $limit = 10, $width = 440, $return = false, $agent_id = 0) {
 	global $config;
+	
+	if($agent_id == 0) {
+		$agent_condition = '';
+	}
+	else {
+		$agent_condition = "id_agente = $agent_id AND";
+	}
+	
+	if($filter == '') {
+		$filter = '1 = 1';
+	}
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$sql = sprintf ("SELECT * FROM tevento %s ORDER BY timestamp DESC LIMIT %d", $filter, $limit);
+				$sql = sprintf ("SELECT * FROM tevento WHERE %s %s ORDER BY timestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
 			break;
 		case "oracle":
-			if ($filter == "") {
-				$sql = sprintf ("SELECT * FROM tevento WHERE rownum <= %d ORDER BY timestamp DESC", $limit);
-			}
-			else {
-				$sql = sprintf ("SELECT * FROM tevento %s AND rownum <= %d ORDER BY timestamp DESC", $filter, $limit);
-			}
+				$sql = sprintf ("SELECT * FROM tevento WHERE %s %s AND rownum <= %d ORDER BY timestamp DESC", $agent_condition, $filter, $limit);
 			break;
 	}
+
 	$result = db_get_all_rows_sql ($sql);
-	
+
 	if ($result === false) {
 		echo '<div class="nf">'.__('No events').'</div>';
 	}
@@ -770,6 +778,8 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->rowclass = array ();
 		$table->data = array ();
 		$table->align = array ();
+		$table->style[0] = $table->style[1] = $table->style[2] = 'width:25px';
+		$table->style[5] = 'width:180px';
 		
 		$table->head[0] = "<span title='" . __('Validated') . "'>" . __('V.') . "</span>";
 		$table->align[0] = 'center';
@@ -783,7 +793,9 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		
 		$table->head[3] = __('Event name');
 		
-		$table->head[4] = __('Agent name');
+		if($agent_id == 0) {
+			$table->head[4] = __('Agent name');
+		}
 		
 		$table->head[5] = __('Timestamp');
 		$table->headclass[5] = "datos3 f9";
@@ -793,6 +805,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			if (! check_acl ($config["id_user"], $event["id_grupo"], "ER")) {
 				continue;
 			}
+
 			$data = array ();
 			
 			// Colored box
@@ -845,7 +858,9 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			/* Event type */
 			$data[2] = events_print_type_img ($event["event_type"], true);
 			
-			$data[3] = ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '9');
+			if($agent_id == 0) {
+				$data[3] = ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '9');
+			}
 			
 			if ($event["id_agente"] > 0) {
 				// Agent name
@@ -874,9 +889,20 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$events_table = html_print_table ($table, true);
 		$out = '<table><tr><td style="width: 90%; padding-right: 10px;">';
 		$out .= $events_table;
-		$out .= '</td><td style="width: 250px">';
-		$out .= '<b>' . __('Events generated -by module-') . '</b><br>';
-		$out .= graph_event_module (300, 120, $event['id_agente']);
+		
+		if($agent_id != 0) {
+			$out .= '</td><td style="width: 250px">';
+			$out .= '<b>' . __('Events generated -by module-') . '</b><br>';
+			$out .= graph_event_module (250, 100, $event['id_agente']);
+		}
+		else {
+			$out .= '</td><td style="width: 250px; vertical-align: top;"><br>';
+			$out .= '<b>' . __('Event graph') . '</b><br>';
+			$out .= grafico_eventos_total("", 250, 120) . '<br>';
+			$out .= '<b>' . __('Event graph by agent') . '</b><br>';
+			$out .= grafico_eventos_grupo(250, 100);
+		}
+		
 		$out .= '</td></tr></table>';
 
 		

@@ -148,8 +148,18 @@ require('events.build_query.php');
 $id_name = get_parameter('id_name', '');
 
 echo "<br>";
+
+// Trick to catch if any filter button has been pushed (don't collapse filter)
+// or the filter was open before click or autorefresh is in use (collapse filter)
+$update_pressed = get_parameter_post('update', '');
+$update_pressed = (int) !empty($update_pressed);
+
+if ($update_pressed || $open_filter){
+	$open_filter = true;
+}
+
 //Link to toggle filter
-if (!empty($id_name)) {
+if ($open_filter) {
 	echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/go.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
 }
 else{
@@ -308,7 +318,16 @@ echo '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec
 // Hidden field with the loaded filter name
 html_print_input_hidden('id_name', $id_name);
 
-$table->id = 'stat_win_form';
+// Hidden open filter flag
+// If autoupdate is in use collapse filter
+if ($open_filter){
+	html_print_input_hidden('open_filter', 'true');
+} 
+else{
+	html_print_input_hidden('open_filter', 'false');
+}
+
+$table->id = 'events_filter_form';
 $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
@@ -387,45 +406,15 @@ $table->rowclass[] = '';
 
 
 $data = array();
-/*
-$data[1] = __("Load filter") . '<br>';
-$data[1] .= html_print_select ($filters, "filter_id", $filter_id, '', __('none'), 0, true);
-* */
 $table->data[] = $data;
 $table->rowclass[] = '';
-
-
-// Trick to catch if the update button has been pushed (don't collapse filter)
-// or autorefresh is in use (collapse filter)
-$autorefresh_toogle = get_parameter_get('toogle_filter', 'true');
-$update_pressed = get_parameter_post('toogle_filter', 'true');
-// If autoupdate is in use collapse filter
-if ($autorefresh_toogle == 'false'){
-	html_print_input_hidden('toogle_filter', 'true');
-} 
-else{
-	// Keeps state with pagination
-	if ($autorefresh_toogle == 'no') {
-		html_print_input_hidden('toogle_filter', 'false');
-	}
-	else {
-		
-		// If update button has been pushed then don't collapse filter
-		if ($update_pressed == 'false') {
-			html_print_input_hidden('toogle_filter', 'false');
-		} // Else collapse filter
-		else {
-			html_print_input_hidden('toogle_filter', 'true');
-		}
-	}
-}
 
 //The buttons
 
 $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
-$data[0] .= '<a href="javascript:show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
-$data[0] .= '<a href="javascript:show_load_filter_dialog();">' . html_print_image("images/server_database.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a>&nbsp;';
+$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
+$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/server_database.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a>&nbsp;';
 if(empty($id_name)) {
 	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' . __('No filter loaded') . '</span>]';
 }
@@ -552,8 +541,8 @@ var text_none = "<?php echo __('None'); ?>";
 
 $(document).ready( function() {
 	// Don't collapse filter if update button has been pushed
-	if ($("#hidden-toogle_filter").val() == 'false'){
-		$("#event_control").toggle ();
+	if ($("#hidden-open_filter").val() == 'true'){
+		$("#event_control").toggle();
 	}
 	
 	// If selected is not 'none' show filter name

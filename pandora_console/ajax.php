@@ -67,10 +67,20 @@ $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK)
 	$config["relative_path"] = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
 
+// Load user language
+$user_language = get_user_language ($config['id_user']);
+
+$l10n = NULL;
+if (file_exists ('./include/languages/'.$user_language.'.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
+	$l10n->load_tables();
+}
+		
 // Not cool way of know if we are executing from metaconsole or normal console
 if (strpos($_SERVER['HTTP_REFERER'], ENTERPRISE_DIR . '/meta/') !== false)
 	define ('METACONSOLE', true);
 session_write_close ();
+
 if (file_exists ($page)) {
 	require_once ($page);
 }

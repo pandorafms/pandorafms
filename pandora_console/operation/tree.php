@@ -238,21 +238,7 @@ if (is_ajax ())
 				
 				echo $row["nombre"];
 				
-				echo " (";
-				echo '<b>';
-				echo $agent_info["modules"];
-				echo '</b>';
-				if ($agent_info["monitor_alertsfired"] > 0)
-					echo ' : <span class="orange">'.$agent_info["monitor_alertsfired"].'</span>';
-				if ($agent_info["monitor_critical"] > 0)
-					echo ' : <span class="red">'.$agent_info["monitor_critical"].'</span>';
-				if ($agent_info["monitor_warning"] > 0)
-					echo ' : <span class="yellow">'.$agent_info["monitor_warning"].'</span>';
-				if ($agent_info["monitor_unknown"] > 0)
-					echo ' : <span class="grey">'.$agent_info["monitor_unknown"].'</span>';
-				if ($agent_info["monitor_normal"] > 0)
-					echo ' : <span class="green">'.$agent_info["monitor_normal"].'</span>';
-				echo ")";
+				echo " (" . reporting_tiny_stats($row, true) . ")";
 				
 				if ($row['quiet']) {
 					echo "&nbsp;";
@@ -687,6 +673,9 @@ treeview_printTree($activeTab);
 						$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('hiddendiv',0);
 						$('#tree_div'+id_father+'_'+type+'_'+div_id).attr('loadDiv', 1);
 					}
+					
+					// Refresh forced title callback to work with html code created dinamicly
+					forced_title_callback();
 				}
 			});
 		}

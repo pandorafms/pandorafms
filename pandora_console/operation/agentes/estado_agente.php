@@ -455,20 +455,7 @@ foreach ($agents as $agent) {
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	
-	$data[5] = '<b>';
-	$data[5] .= $agent["total_count"];
-	
-	if ($agent["fired_count"] > 0)
-		$data[5] .= ' : <span class="orange">' . $agent["fired_count"] . '</span>';
-	if ($agent["critical_count"] > 0)
-		$data[5] .= ' : <span class="red">' . $agent["critical_count"] . '</span>';
-	if ($agent["warning_count"] > 0)
-		$data[5] .= ' : <span class="yellow">' . $agent["warning_count"] . '</span>';
-	if ($agent["unknown_count"] > 0)
-		$data[5] .= ' : <span class="grey">' . $agent["unknown_count"] . '</span>';
-	if ($agent["normal_count"] > 0)
-		$data[5] .= ' : <span class="green">' . $agent["normal_count"] . '</span>';
-	$data[5] .= '</b>';
+	$data[5] = reporting_tiny_stats($agent, true);
 	
 	$data[6] = $status_img;
 	

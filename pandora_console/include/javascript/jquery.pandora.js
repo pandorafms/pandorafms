@@ -168,9 +168,13 @@ $(document).ready (function () {
 		});
 		
 	}
+	
+	forced_title_callback();
+});
 
+function forced_title_callback() {
 	// Forced title code
-	$('IMG.forced_title').hover(function() {
+	$('.forced_title').hover(function() {
 		///////////////////////////////////////////
 		// Get info of the image
 		///////////////////////////////////////////
@@ -225,4 +229,4 @@ $(document).ready (function () {
 	function () {
 		$('#forced_title_layer').hide().empty();
 	});
-});
+}

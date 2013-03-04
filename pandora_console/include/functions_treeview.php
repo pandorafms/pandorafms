@@ -441,13 +441,20 @@ function treeview_printTree($type) {
 			else {
 				$id = $item['_id_'];
 			}
+
 			echo "<a onfocus='JavaScript: this.blur()' href='javascript: loadSubTree(\"" . $type . "\",\"" . $id . "\", " . $lessBranchs . ", \"\", \"\")'>";
 			
-			echo $img . $item['_iconImg_'] ."&nbsp;" . __($item['_name_']) . ' ('.
-				'<span class="green">'.'<b>'.$item['_num_ok_'].'</b>'.'</span>'. 
-				' : <span class="red">'.$item['_num_critical_'].'</span>' .
-				' : <span class="yellow">'.$item['_num_warning_'].'</span>'.
-				' : <span class="grey">'.$item['_num_unknown_'].'</span>'.') '. "</a>";
+			echo $img . $item['_iconImg_'] ."&nbsp;" . __($item['_name_']) . ' (';
+			
+			$counts_info = array('total_count' => $item['_num_ok_'] + $item['_num_critical_'] + $item['_num_warning_'] + $item['_num_unknown_'],
+					'normal_count' => $item['_num_ok_'],
+					'critical_count' => $item['_num_critical_'],
+					'warning_count' => $item['_num_warning_'],
+					'unknown_count' => $item['_num_unknown_']);
+
+			reporting_tiny_stats($counts_info, false, $type);
+			
+			echo ') '. "</a>";
 			
 			echo "<div hiddenDiv='1' loadDiv='0' style='margin: 0px; padding: 0px;' class='tree_view' id='tree_div_" . $type . "_" . $id . "'></div>";
 			echo "</li>\n";

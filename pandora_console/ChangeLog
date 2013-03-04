@@ -1,5 +1,10 @@
 2013-03-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/constants.php: added constant for the module not init
+	status.
+
+2013-03-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/setup/setup_netflow.php,
 	include/help/ja/help_snmp_trap_types.php,
 	include/functions_extensions.php,

@@ -2656,6 +2656,10 @@ sub cli_validate_all_alerts() {
 	if($res == -1) {
 		print_log "[ERROR] Alerts cannot be validated\n\n";
 	}
+	else {
+		# Update fired alerts count in agents
+		db_update ($dbh, "UPDATE tagente SET fired_count = 0");
+	}
 }
 
 ##############################################################################
@@ -2692,6 +2696,10 @@ sub cli_validate_policy_alerts() {
 	
 	if($res == -1) {
 		print_log "[ERROR] Alerts cannot be validated\n\n";
+	}
+	else {
+		# Update fired alerts count in agents
+		db_update ($dbh, "UPDATE tagente SET fired_count = 0");
 	}
 }
 

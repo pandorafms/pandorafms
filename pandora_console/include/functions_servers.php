@@ -186,7 +186,7 @@ function servers_get_performance () {
 	$interval_avgs_agents = db_get_all_rows_sql ("SELECT count(tagente_modulo.id_modulo) modules , tagente_modulo.id_modulo, AVG(tagente.intervalo) avg_interval
 					FROM tagente_modulo, tagente_estado, tagente
 				WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-					AND tagente_modulo.disabled = 0 AND module_interval = 0 AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo >= 21 AND id_tipo_modulo <= 24)))
+					AND tagente_modulo.disabled = 0 AND module_interval = 0 AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo >= 21 AND id_tipo_modulo <= 23)))
 					AND delete_pending = 0
 					AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
 	

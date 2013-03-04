@@ -155,10 +155,10 @@ function modules_change_disabled($id_agent_module, $new_value = 1) {
 		
 	// Define the operation dependes if is disable or enable
 	if($new_value == 1) {
-		$operation = '- 1';
+		$operation = '-';
 	}
 	else {
-		$operation = '+ 1';
+		$operation = '+';
 	}
 	
 	foreach($id_agent_module as $id_module) {
@@ -175,29 +175,23 @@ function modules_change_disabled($id_agent_module, $new_value = 1) {
 		// Define the field to update depends the status
 		switch($status) {
 			case AGENT_MODULE_STATUS_NO_DATA:
-				$modification = 'notinit_count = notinit_count ' . $operation . ',';
+				$modification = 'notinit_count = notinit_count ' . $operation . ' 1,';
 				break;
 			case AGENT_MODULE_STATUS_CRITICAL_BAD:
-				$modification = 'critical_count = critical_count ' . $operation . ',';
+				$modification = 'critical_count = critical_count ' . $operation . ' 1,';
 				break;
 			case AGENT_MODULE_STATUS_WARNING:
-				$modification = 'warning_count = warning_count ' . $operation . ',';
+				$modification = 'warning_count = warning_count ' . $operation . ' 1,';
 				break;
 			case AGENT_MODULE_STATUS_NORMAL:
-				$modification = 'normal_count = normal_count ' . $operation . ',';
+				$modification = 'normal_count = normal_count ' . $operation . ' 1,';
 				break;
 			case AGENT_MODULE_STATUS_UNKNOW:
-				$modification = 'unknown_count = unknown_count ' . $operation . ',';
+				$modification = 'unknown_count = unknown_count ' . $operation . ' 1,';
 				break;
 			default:
 				$modification = '';
 				break;
-		}
-	
-		// Increase total count of the agent
-		$result = db_process_sql('UPDATE tagente SET ' . $modification . ' total_count = total_count ' . $operation . ' WHERE id_agente = ' . $agent_id);
-		if(!$result)  {
-			return ERR_GENERIC;
 		}
 	}
 
@@ -229,7 +223,8 @@ function modules_delete_agent_module ($id_agent_module) {
 	
 	enterprise_hook('config_agents_delete_module_in_conf', array(modules_get_agentmodule_agent($id_agent_module), modules_get_agentmodule_name($id_agent_module)));
 	
-	db_process_sql_delete ('talert_template_modules', $where);
+	alerts_delete_alert_agent_module (0, $where);
+	
 	db_process_sql_delete ('tgraph_source', $where);
 	db_process_sql_delete ('treport_content', $where);
 	db_process_sql_delete ('tevento', array ('id_agentmodule' => $id_agent_module));

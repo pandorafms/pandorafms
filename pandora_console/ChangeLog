@@ -1,3 +1,11 @@
+2013-03-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_alerts.php
+	include/functions_modules.php
+	include/functions_reporting.php
+	include/functions_servers.php: Fix counts when validate or
+	delete alerts and fix some little bugs of previous commits
+
 2013-03-04 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/constants.php: added constant for the module not init

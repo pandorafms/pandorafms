@@ -1,3 +1,13 @@
+2013-03-04 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/reporting_builder.item_editor.php,
+	include/functions_ui.php, include/functions_reporting.php,
+	include/constants.php, include/ajax/reporting.ajax.php,
+	include/ajax/agent.php, operation/agentes/ver_agente.php: fixed the
+	graphs and the autocomplete.
+	
+	Fixes: #3606284
+
 2013-03-04  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_alerts.php: Update the fired

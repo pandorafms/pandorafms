@@ -65,7 +65,17 @@ if ($add_sla) {
 	$sla_limit = get_parameter('sla_limit', 0);
 	$sla_max = get_parameter('sla_max', 0);
 	$sla_min = get_parameter('sla_min', 0);
-	$server_name = get_parameter('server_name', '');
+	$server_id = (int)get_parameter('server_id', 0);
+	
+	$include_enterprise = enterprise_include("include/functions_metaconsole.php");
+	
+	if ($include_enterprise !== ENTERPRISE_NOT_HOOK) {
+		$connection = metaconsole_get_connection_by_id($server_id);
+	}
+	if (empty($connection)) {
+		$connection = array();
+		$connection['server_name'] = '';
+	}
 	
 	$result = db_process_sql_insert('treport_content_sla_combined', array(
 		'id_report_content' => $id,
@@ -73,7 +83,7 @@ if ($add_sla) {
 		'sla_max' => $sla_max,
 		'sla_min' => $sla_min,
 		'sla_limit' => $sla_limit,
-		'server_name' => $server_name));
+		'server_name' => $connection['server_name']));
 	
 	if ($result === false) {
 		$data['correct'] = 0;
@@ -89,13 +99,23 @@ if ($add_sla) {
 
 if ($add_general) {
 	$id_module = get_parameter('id_module', 0);
-	$server_name = get_parameter('server_name_general', '');
+	$id_server = (int)get_parameter('id_server', 0);
 	$operation = get_parameter('operation', '');
+	
+	$include_enterprise = enterprise_include("include/functions_metaconsole.php");
+	
+	if ($include_enterprise !== ENTERPRISE_NOT_HOOK) {
+		$connection = metaconsole_get_connection_by_id($id_server);
+	}
+	if (empty($connection)) {
+		$connection = array();
+		$connection['server_name'] = '';
+	}
 	
 	$result = db_process_sql_insert('treport_content_item', array(
 		'id_report_content' => $id,
 		'id_agent_module' => $id_module,
-		'server_name' => $server_name,
+		'server_name' => $connection['server_name'],
 		'operation' => $operation));
 	
 	if ($result === false) {

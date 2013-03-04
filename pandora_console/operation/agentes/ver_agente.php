@@ -319,6 +319,7 @@ if (is_ajax ()) {
 		$indexed = (bool) get_parameter ('indexed', true);
 		$agentName = (string) get_parameter ('agent_name', null);
 		$server_name = (string) get_parameter ('server_name', null);
+		$server_id = (int) get_parameter ('server_id', 0);
 		/* This will force to get local modules although metaconsole is active, by default get all modules from all nodes */
 		$force_local_modules = (int) get_parameter ('force_local_modules', 0);
 		
@@ -333,19 +334,21 @@ if (is_ajax ()) {
 			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
 				$connection = metaconsole_get_connection($server_name);
 				
+				if ($server_id > 0) {
+					$connection = metaconsole_get_connection_by_id($server_id);
+				}
+				
+				
 				if (metaconsole_load_external_db($connection) == NOERR) {
-					
 					/* Get all agents if no agent was given */
 					if ($id_agent == 0)
 						$id_agent = array_keys (
 							agents_get_group_agents (
 								array_keys (users_get_groups ()), $search, "none"));
 					
-					
 					$agent_modules = agents_get_modules ($id_agent,
 						($fields != '' ? explode (',', $fields) : "*"),
 						($filter != '' ? $filter : false), $indexed);
-					
 				}
 				// Restore db connection
 				metaconsole_restore_db();

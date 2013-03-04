@@ -258,4 +258,13 @@ define ('SERVER_TYPE_WEB', 9);
 define ('SERVER_TYPE_EVENT', 10);
 define ('SERVER_TYPE_ENTERPRISE_ICMP', 11);
 define ('SERVER_TYPE_ENTERPRISE_SNMP', 12);
+
+/* REPORTS */
+define ('REPORT_TOP_N_MAX', 1);
+define ('REPORT_TOP_N_MIN', 2);
+define ('REPORT_TOP_N_AVG', 0);
+
+define ('REPORT_TOP_N_ONLY_GRAPHS', 2);
+define ('REPORT_TOP_N_SHOW_TABLE_GRAPS', 1);
+define ('REPORT_TOP_N_ONLY_TABLE', 0);
 ?>

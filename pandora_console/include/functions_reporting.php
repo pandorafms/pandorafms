@@ -3286,11 +3286,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			// SLA items sorted descending ()
-			if ($content['top_n'] == 2){
+			if ($content['top_n'] == 2) {
 				arsort($sla_showed_values);
 			}
 			// SLA items sorted ascending
-			else if ($content['top_n'] == 1){
+			else if ($content['top_n'] == 1) {
 				asort($sla_showed_values);
 			}
 			
@@ -4831,17 +4831,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$top_n = $content['top_n'];
 			
 			switch ($top_n) {
-				//Max
-				case 1:
+				case REPORT_TOP_N_MAX:
 					$type_top_n = __('Max');
 					break;
-				//Min
-				case 2:
+				case REPORT_TOP_N_MIN:
 					$type_top_n = __('Min');
 					break;
-				//Nothing or Average
-				case 0: //If nothing is selected then it will be shown the average data
-				case 3:
+				case REPORT_TOP_N_AVG:
+				default:
+					//If nothing is selected then it will be shown the average data
 					$type_top_n = __('Avg');
 					break;
 			}
@@ -4879,7 +4877,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				break;
 			}
 			
-			if ($show_graph == 0 || $show_graph == 1) {
+			if ($show_graph != REPORT_TOP_N_ONLY_GRAPHS) {
 				$table1->width = '99%';
 				$table1->data = array ();
 				$table1->head = array ();
@@ -4911,17 +4909,15 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				
 				switch ($top_n) {
-					//Max
-					case 1:
+					case REPORT_TOP_N_MAX:
 						$value = reporting_get_agentmodule_data_max ($row['id_agent_module'], $content['period']);
 						break;
-					//Min
-					case 2:
+					case REPORT_TOP_N_MIN:
 						$value = reporting_get_agentmodule_data_min ($row['id_agent_module'], $content['period']);
 						break;
-					//Nothing or Average
-					case 0: //If nothing is selected then it will be shown the average data
-					case 3:
+					case REPORT_TOP_N_AVG:
+					default:
+						//If nothing is selected then it will be shown the average data
 						$value = reporting_get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
 						break;
 				}
@@ -5044,10 +5040,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[3][0] = 3;
 			$data = array();
-			if ($show_graph == 1 || $show_graph == 2) {
+			if ($show_graph != REPORT_TOP_N_ONLY_TABLE) {
+				
 				$data[0] = pie3d_graph(false, $data_pie_graph,
-					$sizgraph_w, $sizgraph_h, __("other"), ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']); 
+					$sizgraph_w, $sizgraph_h, __("other"),
+					ui_get_full_url(false, true, false, false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png",
+					$config['fontpath'], $config['font_size']);
+				
 				
 				array_push ($table->data, $data);
 				//Display bars graph
@@ -5055,7 +5054,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$table->style[0] .= 'text-align:center';
 				$height = count($data_pie_graph)*20+35;
 				$data = array();
-				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w, $height, array(), array(), "", "", true, ui_get_full_url(false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
+				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w,
+					$height, array(), array(), "", "", true,
+					ui_get_full_url(false, true, false, false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
 				
 				array_push ($table->data, $data);
 			}

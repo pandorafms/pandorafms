@@ -2379,20 +2379,24 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$return = $parameters['return'];
 	}
 	
+	
 	$input_name = uniqid('agent_autocomplete_'); //Default value
 	if (isset($parameters['input_name'])) {
 		$input_name = $parameters['input_name'];
 	}
+	
 	
 	$input_id = 'text-' . $input_name; //Default value
 	if (isset($parameters['input_id'])) {
 		$input_id = $parameters['input_id'];
 	}
 	
+	
 	$selectbox_group = ''; //Default value
 	if (isset($parameters['selectbox_group'])) {
 		$selectbox_group = $parameters['selectbox_group'];
 	}
+	
 	
 	//Default value
 	$icon_image = html_print_image('images/lightning.png', true, false, true);
@@ -2400,35 +2404,42 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$icon_image = $parameters['icon_image'];
 	}
 	
+	
 	$value = ''; //Default value
 	if (isset($parameters['value'])) {
 		$value = $parameters['value'];
 	}
+	
 	
 	$show_helptip = true; //Default value
 	if (isset($parameters['show_helptip'])) {
 		$show_helptip = $parameters['show_helptip'];
 	}
 	
+	
 	$helptip_text = __("Type at least two characters to search."); //Default value
 	if (isset($parameters['helptip_text'])) {
 		$helptip_text = $parameters['helptip_text'];
 	}
+	
 	
 	$use_hidden_input_idagent = false; //Default value
 	if (isset($parameters['use_hidden_input_idagent'])) {
 		$use_hidden_input_idagent = $parameters['use_hidden_input_idagent'];
 	}
 	
+	
 	$print_hidden_input_idagent = false; //Default value
 	if (isset($parameters['print_hidden_input_idagent'])) {
 		$print_hidden_input_idagent = $parameters['print_hidden_input_idagent'];
 	}
 	
+	
 	$hidden_input_idagent_name = uniqid('agent_autocomplete_idagent_'); //Default value
 	if (isset($parameters['hidden_input_idagent_name'])) {
 		$hidden_input_idagent_name = $parameters['hidden_input_idagent_name'];
 	}
+	
 	
 	$hidden_input_idagent_id = 'hidden-' . $input_name; //Default value
 	if (isset($parameters['hidden_input_idagent_id'])) {
@@ -2440,60 +2451,102 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$hidden_input_idagent_value = $parameters['hidden_input_idagent_value'];
 	}
 	
+	
 	$size = 30; //Default value
 	if (isset($parameters['size'])) {
 		$size = $parameters['size'];
 	}
+	
 	
 	$maxlength = 100; //Default value
 	if (isset($parameters['maxlength'])) {
 		$maxlength = $parameters['maxlength'];
 	}
 	
+	
 	$disabled = false; //Default value
 	if (isset($parameters['disabled'])) {
 		$disabled = $parameters['disabled'];
 	}
+	
 	
 	$selectbox_id = 'id_agent_module'; //Default value
 	if (isset($parameters['selectbox_id'])) {
 		$selectbox_id = $parameters['selectbox_id'];
 	}
 	
+	
 	$add_none_module = true; //Default value
 	if (isset($parameters['add_none_module'])) {
 		$add_none_module = $parameters['add_none_module'];
 	}
+	
 	
 	$none_module_text = '--'; //Default value
 	if (isset($parameters['none_module_text'])) {
 		$none_module_text = $parameters['none_module_text'];
 	}
 	
+	
 	$print_input_server = false; //Default value
 	if (isset($parameters['print_input_server'])) {
 		$print_input_server = $parameters['print_input_server'];
 	}
+	
+	
+	$print_input_id_server = false; //Default value
+	if (isset($parameters['print_input_id_server'])) {
+		$print_input_id_server = $parameters['print_input_id_server'];
+	}
+	
 	
 	$use_input_server = false; //Default value
 	if (isset($parameters['use_input_server'])) {
 		$use_input_server = $parameters['use_input_server'];
 	}
 	
+	
+	$use_input_id_server = false; //Default value
+	if (isset($parameters['use_input_id_server'])) {
+		$use_input_id_server = $parameters['use_input_id_server'];
+	}
+	
+	
 	$input_server_name = uniqid('server_'); //Default value
 	if (isset($parameters['input_server_name'])) {
 		$input_server_name = $parameters['input_server_name'];
 	}
+	
+	
+	$input_id_server_name = uniqid('server_'); //Default value
+	if (isset($parameters['input_id_server_id'])) {
+		$input_id_server_id = $parameters['input_id_server_id'];
+	}
+	
 	
 	$input_server_id = 'hidden-' . $input_server_name; //Default value
 	if (isset($parameters['input_server_id'])) {
 		$input_server_id = $parameters['input_server_id'];
 	}
 	
+	
+	$input_id_server_id = 'hidden-' . $input_id_server_name; //Default value
+	if (isset($parameters['input_id_server_id'])) {
+		$input_id_server_id = $parameters['input_id_server_id'];
+	}
+	
+	
 	$input_server_value = ''; //Default value
 	if (isset($parameters['input_server_value'])) {
 		$input_server_value = $parameters['input_server_value'];
 	}
+	
+	
+	$input_id_server_value = ''; //Default value
+	if (isset($parameters['input_id_server_value'])) {
+		$input_id_server_value = $parameters['input_id_server_value'];
+	}
+	
 	
 	$metaconsole_enabled = false; //Default value
 	if (isset($parameters['metaconsole_enabled'])) {
@@ -2507,12 +2560,20 @@ function ui_print_agent_autocomplete_input($parameters) {
 			$metaconsole_enabled = false;
 	}
 	
+	$spinner_image = html_print_image('images/spinner.gif', true, false, true);
+	if (isset($parameters['spinner_image'])) {
+		$spinner_image = $parameters['spinner_image'];
+	}
+	
+	
 	// Javascript configurations
 	//------------------------------------------------------------------
 	$javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false); //Default value
 	if (isset($parameters['javascript_ajax_page'])) {
 		$javascript_ajax_page = $parameters['javascript_ajax_page'];
 	}
+	
+	
 	
 	$javascript_function_action_after_select = ''; //Default value
 	$javascript_function_action_after_select_js_call = ''; //Default value
@@ -2522,6 +2583,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 			$javascript_function_action_after_select . '();';
 	}
 	
+	
+	
 	if (isset($parameters['javascript_function_action_after_select_js_call'])) {
 		if ($javascript_function_action_after_select_js_call !=
 			$parameters['javascript_function_action_after_select_js_call']) {
@@ -2529,6 +2592,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 				$parameters['javascript_function_action_after_select_js_call'];
 		}
 	}
+	
+	
 	
 	$javascript_function_action_into_source = ''; //Default value
 	$javascript_function_action_into_source_js_call = ''; //Default value
@@ -2538,6 +2603,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 			$javascript_function_action_into_source . '();';
 	}
 	
+	
+	
 	if (isset($parameters['javascript_function_action_into_source_js_call'])) {
 		if ($javascript_function_action_into_source_js_call !=
 			$parameters['javascript_function_action_into_source_js_call']) {
@@ -2546,23 +2613,30 @@ function ui_print_agent_autocomplete_input($parameters) {
 		}
 	}
 	
+	
+	
 	$javascript = true; //Default value
 	if (isset($parameters['javascript'])) {
 		$javascript = $parameters['javascript'];
 	}
+	
+	
 	
 	$javascript_is_function_select = false; //Default value
 	if (isset($parameters['javascript_is_function_select'])) {
 		$javascript_is_function_select = $parameters['javascript_is_function_select'];
 	}
 	
+	
+	
 	$javascript_name_function_select = 'function_select_' . $input_name; //Default value
 	if (isset($parameters['javascript_name_function_select'])) {
 		$javascript_name_function_select = $parameters['javascript_name_function_select'];
 	}
 	
-	$javascript_code_function_select = '';
-	$javascript_code_function_select .= '
+	
+	
+	$javascript_code_function_select = '
 		function function_select_' . $input_name . '(agent_name) {
 			
 			$("#' . $selectbox_id . '").empty ();
@@ -2578,7 +2652,16 @@ function ui_print_agent_autocomplete_input($parameters) {
 			}
 			
 			if (' . ((int)$metaconsole_enabled) . ') {
-				inputs.push ("server_name=" + $("#' . $input_server_id . '").val());
+				if ((' . ((int)$use_input_server) . ')
+						|| (' . ((int)$print_input_server) . ')) {
+					inputs.push ("server_name=" + $("#' . $input_server_id . '").val());
+				}
+				
+				if ((' . ((int)$use_input_id_server) . ')
+						|| (' . ((int)$print_input_id_server) . ')) {
+					inputs.push ("server_id=" + $("#' . $input_id_server_id . '").val());
+				}
+				
 			}
 			
 			if ((' . ((int)$print_hidden_input_idagent) . ')
@@ -2619,13 +2702,19 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$javascript_code_function_select = $parameters['javascript_code_function_select'];
 	}
 	
+	
+	
+	//============ INIT javascript_change_ajax_params ==================
 	//Default value
 	$javascript_page = 'include/ajax/agent';
 	if (isset($parameters['javascript_page'])) {
 		$javascript_page = $parameters['javascript_page'];
 	}
 	
-	$javascript_change_ajax_params_original = array('page' => '"' . $javascript_page . '"',
+	
+	
+	$javascript_change_ajax_params_original = array(
+		'page' => '"' . $javascript_page . '"',
 		'search_agents' => 1,
 		'id_group' => 'function() {
 				var group_id = 0;
@@ -2637,7 +2726,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 				return group_id;
 			}',
 		'q' => 'term');
-		
+	
 	if (!$metaconsole_enabled) {
 		$javascript_change_ajax_params_original['force_local'] = 1;
 	}
@@ -2676,10 +2765,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$javascript_change_ajax_params_text .= '"' . $key . '":' . $param_ajax;
 	}
 	$javascript_change_ajax_params_text .= '};';
+	//============ END javascript_change_ajax_params ===================
 	
-	
-	
-	$spinner_image = html_print_image('images/spinner.gif', true, false, true);
 	
 	
 	$javascript_function_change = ''; //Default value
@@ -2714,7 +2801,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 					else {
 						//Check if other terms cached start with same
 						//letters.
-						//TODO: At the moment disabled
+						//TODO: At the moment DISABLED CODE
 						/*
 						for (i = 1; i < term.length; i++) {
 							var term_match = term.substr(0, term.length - i);
@@ -2772,13 +2859,21 @@ function ui_print_agent_autocomplete_input($parameters) {
 				select: function( event, ui ) {
 					var agent_name = ui.item.name;
 					var agent_id = ui.item.id;
-					var server_name;
+					var server_name = "";
+					var server_id = "";
+					
 					
 					if (' . ((int)$metaconsole_enabled) . ') {
 						server_name = ui.item.server;
 					}
 					else {
 						server_name = ui.item.ip;
+					}
+					
+					
+					if ((' . ((int)$use_input_id_server) . ')
+						|| (' . ((int)$print_input_id_server) . ')) {
+						server_id = ui.item.id_server;
 					}
 					
 					 
@@ -2795,6 +2890,12 @@ function ui_print_agent_autocomplete_input($parameters) {
 					if ((' . ((int)$use_input_server) . ')
 						|| (' . ((int)$print_input_server) . ')) {
 						$("#' . $input_server_id . '").val(server_name);
+					}
+					
+					//Put the server id into the hidden input
+					if ((' . ((int)$use_input_id_server) . ')
+						|| (' . ((int)$print_input_id_server) . ')) {
+						$("#' . $input_id_server_id . '").val(server_id);
 					}
 					
 					//Call the function to select (example fill the modules)
@@ -2905,6 +3006,12 @@ function ui_print_agent_autocomplete_input($parameters) {
 					$("#' . $input_server_id . '").val("");
 				}
 				
+				//Put the server id into the hidden input
+				if ((' . ((int)$use_input_id_server) . ')
+					|| (' . ((int)$print_input_id_server) . ')) {
+					$("#' . $input_id_server_id . '").val("");
+				}
+				
 				return;
 			}
 			
@@ -2948,13 +3055,19 @@ function ui_print_agent_autocomplete_input($parameters) {
 						
 						var agent_name = data[0].name;
 						var agent_id = data[0].id;
-						var server_name;
+						var server_name = "";
+						var server_id = "";
 						
 						if (' . ((int)$metaconsole_enabled) . ') {
 							server_name = data[0].server;
 						}
 						else {
 							server_name = data[0].ip;
+						}
+						
+						if ((' . ((int)$use_input_id_server) . ')
+						|| (' . ((int)$print_input_id_server) . ')) {
+							server_id = data[0].id_server;
 						}
 						
 						if ((' . ((int)$print_hidden_input_idagent) . ')
@@ -2966,6 +3079,12 @@ function ui_print_agent_autocomplete_input($parameters) {
 						if ((' . ((int)$use_input_server) . ')
 							|| (' . ((int)$print_input_server) . ')) {
 							$("#' . $input_server_id . '").val(server_name);
+						}
+						
+						//Put the server id into the hidden input
+						if ((' . ((int)$use_input_id_server) . ')
+							|| (' . ((int)$print_input_id_server) . ')) {
+							$("#' . $input_id_server_id . '").val(server_id);
 						}
 						
 						//Call the function to select (example fill the modules)
@@ -3019,6 +3138,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if ($print_input_server) {
 		$html .= html_print_input_hidden_extended($input_server_name,
 			$input_server_value, $input_server_id, true);
+	}
+	
+	if ($print_input_id_server) {
+		$html .= html_print_input_hidden_extended($input_id_server_name,
+			$input_id_server_value, $input_id_server_id, true);
 	}
 	
 	//Write the javascript

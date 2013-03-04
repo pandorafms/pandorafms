@@ -626,6 +626,7 @@ html_print_input_hidden('id_item', $idItem);
 				
 				html_print_input_hidden('id_agent', $idAgent);
 				html_print_input_hidden ('server_name', $server_name);
+				html_print_input_hidden ('id_server', '');
 				
 				
 				$params = array();
@@ -1043,9 +1044,13 @@ function print_SLA_list($width, $action, $idItem = null) {
 								continue;
 							}
 						}
-						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						$idAgent = db_get_value_filter('id_agente',
+							'tagente_modulo',
+							array('id_agente_modulo' => $item['id_agent_module']));
 						$nameAgent = agents_get_name ($idAgent);
-						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						$nameModule = db_get_value_filter('nombre',
+							'tagente_modulo',
+							array('id_agente_modulo' => $item['id_agent_module']));
 						
 						$server_name_element = '';
 						if ($meta && $server_name != '') 
@@ -1093,9 +1098,9 @@ function print_SLA_list($width, $action, $idItem = null) {
 								$params['javascript_is_function_select'] = true;
 								$params['selectbox_id'] = 'id_agent_module_sla';
 								$params['add_none_module'] = false;
-								$params['use_input_server'] = true;
-								$params['input_server_id'] = 'hidden-server_name';
 								if ($meta) {
+									$params['use_input_id_server'] = true;
+									$params['input_id_server_id'] = 'hidden-id_server';
 									$params['disabled_javascript_on_blur_function'] = true;
 								}
 								ui_print_agent_autocomplete_input($params);
@@ -1123,8 +1128,8 @@ function print_General_list($width, $action, $idItem = null) {
 	global $meta;
 	if (!isset($meta))
 		$meta = false;
-
-
+	
+	
 	include_once($config['homedir'] . '/include/functions_html.php');
 	?>
 	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="98%">
@@ -1209,9 +1214,9 @@ function print_General_list($width, $action, $idItem = null) {
 								$params['javascript_is_function_select'] = true;
 								$params['selectbox_id'] = 'id_agent_module_general';
 								$params['add_none_module'] = false;
-								$params['use_input_server'] = true;
-								$params['input_server_id'] = 'hidden-server_name_general';
 								if ($meta) {
+									$params['use_input_id_server'] = true;
+									$params['input_id_server_id'] = 'hidden-id_server';
 									$params['disabled_javascript_on_blur_function'] = true;
 								}
 								ui_print_agent_autocomplete_input($params);
@@ -1480,7 +1485,7 @@ function deleteGeneralRow(id_row) {
 function addSLARow() {
 	var nameAgent = $("input[name=agent_sla]").val();
 	var idAgent = $("input[name=id_agent_sla]").val();
-	var serverName = $("input[name=server_name]").val();
+	var serverId = $("input[name=id_server]").val();
 	var idModule = $("#id_agent_module_sla").val();
 	var nameModule = $("#id_agent_module_sla :selected").text();
 	var slaMin = $("input[name=sla_min]").val();
@@ -1527,7 +1532,7 @@ function addSLARow() {
 			params.push("sla_min=" + slaMin);
 			params.push("sla_max=" + slaMax);
 			params.push("sla_limit=" + slaLimit);
-			params.push("server_name=" + serverName);
+			params.push("server_id=" + serverId);
 			
 			params.push("page=include/ajax/reporting.ajax");
 			jQuery.ajax ({
@@ -1550,7 +1555,7 @@ function addSLARow() {
 						$(".delete_button", row).attr('href', 'javascript: deleteSLARow(' + data['id'] + ');');
 						$("#list_sla").append($(row).html());
 						$("input[name=id_agent_sla]").val('');
-						$("input[name=server_name]").val('');
+						$("input[name=id_server]").val('');
 						$("input[name=agent_sla]").val('');
 						$("#id_agent_module_sla").empty();
 						$("#id_agent_module_sla").attr('disabled', 'true');
@@ -1570,7 +1575,7 @@ function addSLARow() {
 function addGeneralRow() {
 	var nameAgent = $("input[name=agent_general]").val();
 	var idAgent = $("input[name=id_agent_general]").val();
-	var serverName = $("input[name=server_name_general]").val();
+	var serverId = $("input[name=id_server]").val();
 	var idModule = $("#id_agent_module_general").val();
 	var operation = $("#id_operation_module_general").val();
 	var nameModule = $("#id_agent_module_general :selected").text();
@@ -1626,7 +1631,7 @@ function addGeneralRow() {
 		params.push("add_general=1");
 		params.push("id=" + $("input[name=id_item]").val());
 		params.push("id_module=" + idModule);
-		params.push("server_name_general=" + serverName);
+		params.push("id_server=" + serverId);
 		params.push("operation=" + operation);
 		
 		params.push("page=include/ajax/reporting.ajax");
@@ -1650,12 +1655,12 @@ function addGeneralRow() {
 					$("#list_general").append($(row).html());
 					
 					$("input[name=id_agent_general]").val('');
-					$("input[name=server_name_general]").val('');
+					$("input[name=id_server]").val('');
 					$("input[name=agent_general]").val('');
 					$("#id_operation_module_general").val('avg');
 					$("#id_agent_module_general").empty();
 					$("#id_agent_module_general").attr('disabled', 'true');
-
+					
 				}
 			}
 		});

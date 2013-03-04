@@ -242,7 +242,8 @@ elseif ($search_agents && ($config['metaconsole'] == 1) && defined('METACONSOLE'
 				$data[] = array('id' => $agent['id_agente'],
 					'name' => io_safe_output($agent['nombre']),
 					'ip' => io_safe_output($agent['direccion']),
-					'filter' => 'agent');
+					'filter' => 'agent',
+					'id_server' => $server['id']);
 			}
 		}
 		
@@ -265,7 +266,8 @@ elseif ($search_agents && ($config['metaconsole'] == 1) && defined('METACONSOLE'
 				$data[] = array('id' => $agent['id_agente'],
 					'name' => io_safe_output($agent['nombre']),
 					'ip' => io_safe_output($agent['direccion']),
-					'filter' => 'address');
+					'filter' => 'address',
+					'id_server' => $server['id']);
 			}
 		}
 		
@@ -282,13 +284,15 @@ elseif ($search_agents && ($config['metaconsole'] == 1) && defined('METACONSOLE'
 				$filter_description[] = '(UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
 				break;
 		}
-		$agents = agents_get_agents($filter_description, array ('id_agente', 'nombre', 'direccion'));
+		$agents = agents_get_agents($filter_description,
+			array ('id_agente', 'nombre', 'direccion'));
 		if ($agents !== false) {
 			foreach ($agents as $agent) {
 				$data[] = array('id' => $agent['id_agente'],
 					'name' => io_safe_output($agent['nombre']),
 					'ip' => io_safe_output($agent['direccion']),
-					'filter' => 'description');
+					'filter' => 'description',
+					'id_server' => $server['id']);
 			}
 		}
 		//Restore db connection

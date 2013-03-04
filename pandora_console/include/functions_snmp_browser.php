@@ -369,12 +369,12 @@ function snmp_browser_print_oid ($oid = array(), $custom_action = '', $return = 
  * 
  */
 function snmp_browser_print_container ($return = false, $width = '95%', $height = '500px', $display = '') {
-
+	
 	// Target selection
 	$table->width = '100%';
 	$table->size = array ();
 	$table->data = array ();
-
+	
 	// String search_string
 	$table->data[0][0] = '<strong>'.__('Target IP').'</strong>';
 	$table->data[0][1] = html_print_input_text ('target_ip', '', '', 25, 0, true);
@@ -391,7 +391,7 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_previous.png", true, array ('title' => __('Previous match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchPrevMatch();')) . '</a>';
 	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_next.png", true, array ('title' => __('Next match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchNextMatch();')) . '</a>';
 	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_last.png", true, array ('title' => __('Last match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchLastMatch();')) . '</a>';
-
+	
 	// This extra div that can be handled by jquery's dialog
 	$output =  '<div id="snmp_browser_container" style="display:' . $display . '">';
 	$output .= '<div style="text-align: left; width: ' . $width . '; height: ' . $height . ';">';
@@ -401,16 +401,16 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$output .=   '<div>';
 	$output .=   html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub upd"', true);
 	$output .=   '</div>';
-
+	
 	// SNMP tree container
 	$output .=   '<div style="width: 100%; height: 100%; margin-top: 5px; position: relative;">';
-    $output .=   html_print_input_hidden ('search_count', 0, true);
-    $output .=   html_print_input_hidden ('search_index', -1, true);
-
+	$output .=   html_print_input_hidden ('search_count', 0, true);
+	$output .=   html_print_input_hidden ('search_index', -1, true);
+	
 	// Save some variables for javascript functions
 	$output .=   html_print_input_hidden ('ajax_url', ui_get_full_url("ajax.php"), true);
 	$output .=   html_print_input_hidden ('search_matches_translation', __("Search matches"), true);
-
+	
 	$output .=     '<div id="search_results" style="display: none; padding: 5px; background-color: #EAEAEA; border: 1px solid #E2E2E2; border-radius: 4px;"></div>';
 	$output .=     '<div id="spinner" style="position: absolute; top:0; left:0px; display:none;">' . html_print_image ("images/spinner.gif", true) . '</div>';
 	$output .=     '<div id="snmp_browser" style="height: 100%; overflow: auto; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; "></div>';

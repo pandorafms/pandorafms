@@ -1,5 +1,11 @@
 2013-03-04  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/Core.pm
+	lib/PandoraFMS/DataServer.pm: Clean code and fix some
+	forgotten changes in last GIS code
+
+2013-03-04  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_manage.pl: Update fired alert counts when 
 	use validate_all_alerts option
 

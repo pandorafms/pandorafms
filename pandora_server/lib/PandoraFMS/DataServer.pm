@@ -111,7 +111,7 @@ sub data_producer ($) {
 
 		push (@files, $file);
 		$file_count++;
-print "QUEUING $file\n";
+		
 		# Do not queue more than max_queue_files files
 		if ($file_count >= $pa_config->{"max_queue_files"}) {
 			last;

@@ -1,3 +1,23 @@
+2013-03-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_alerts.php: Update the fired
+	counts on validate alerts function
+
+	* include/functions_events.php
+	include/functions_reporting.php
+	include/javascript/jquery.pandora.js
+	include/functions_treeview.php
+	operation/tree.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/estado_agente.php
+	operation/search_agents.php: Improve and unify code
+	of the status counts in agents list, agent detail, 
+	tree view and search views
+
+	* ajax.php: Load the user language in the
+	ajax entry point. Until now the language was the
+	general!
+
 2013-03-01  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php

@@ -77,7 +77,7 @@ $data[0] .= $agent_name;
 
 $status_img = agents_tree_view_status_img ($agent["critical_count"],
 	$agent["warning_count"], $agent["unknown_count"]);
-$data[1] = events_tiny_stats ($agent['total_count'], $agent['normal_count'], $agent['critical_count'], $agent['warning_count'], $agent['unknown_count'], true);
+$data[1] = reporting_tiny_stats ($agent, true);
 $data[2] = str_replace('.png' ,'_ball.png', $status_img);
 
 $table_agent->data[] = $data;

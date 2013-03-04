@@ -245,17 +245,14 @@ else {
 	foreach ($agents as $agent) {
 		$agent_info = reporting_get_agent_module_info ($agent["id_agente"]);
 		
-		$modulesCell = '<b>'. $agent_info["modules"] . '</b>';
-		if ($agent_info["monitor_alertsfired"] > 0)
-			$modulesCell .= ' : <span class="orange">'.$agent_info["monitor_alertsfired"].'</span>';
-		if ($agent_info["monitor_normal"] > 0)
-			$modulesCell .= '</b> : <span class="green">'.$agent_info["monitor_normal"].'</span>';
-		if ($agent_info["monitor_warning"] > 0)
-			$modulesCell .= ' : <span class="yellow">'.$agent_info["monitor_warning"].'</span>';
-		if ($agent_info["monitor_critical"] > 0)
-			$modulesCell .= ' : <span class="red">'.$agent_info["monitor_critical"].'</span>';
-		if ($agent_info["monitor_unknown"] > 0)
-			$modulesCell .= ' : <span class="grey">'.$agent_info["monitor_unknown"].'</span>';
+		$counts_info = array('total_count' => $agent_info["modules"],
+				'normal_count' => $agent_info["monitor_normal"],
+				'critical_count' => $agent_info["monitor_critical"],
+				'warning_count' => $agent_info["monitor_warning"],
+				'unknown_count' => $agent_info["monitor_unknown"],
+				'fired_count' => $agent_info["monitor_alertsfired"]);
+
+		$modulesCell = reporting_tiny_stats($counts_info, true);
 		
 		if ($agent['disabled']) {
 			$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, "text-transform: uppercase;") . ui_print_help_tip(__('Disabled'), true) . "</em>";

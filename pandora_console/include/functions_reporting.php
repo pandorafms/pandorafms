@@ -6607,4 +6607,105 @@ function reporting_get_count_events_validated ($filter, $period = 0,
 		$filter_event_validated, $filter_event_critical,
 		$filter_event_warning, $filter_event_no_validated);
 }
+
+/**
+ * Print tiny statistics of the status of one agent, group, etc.
+ * 
+ * @param mixed Array with the counts of the total modules, normal modules, critical modules, warning modules, unknown modules and fired alerts
+ * @param bool return or echo flag
+ * 
+ * @return string html formatted tiny stats of modules/alerts of an agent
+ */
+function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent') {
+	$out = '';
+	
+	// Depend the type of object, the stats will refer agents, modules...
+	switch($type) {
+		case 'agent':
+			$template_title['total_count'] = __('%d Total modules');
+			$template_title['normal_count'] = __('%d Normal modules');
+			$template_title['critical_count'] = __('%d Critical modules');
+			$template_title['warning_count'] = __('%d Warning modules');
+			$template_title['unknown_count'] = __('%d Unknown modules');
+			$template_title['fired_count'] = __('%d Fired alerts');
+			break;
+		default:
+			$template_title['total_count'] = __('%d Total agents');
+			$template_title['normal_count'] = __('%d Normal agents');
+			$template_title['critical_count'] = __('%d Critical agents');
+			$template_title['warning_count'] = __('%d Warning agents');
+			$template_title['unknown_count'] = __('%d Unknown agents');
+			$template_title['fired_count'] = __('%d Fired agents');
+			break;
+	}
+	
+	// Store the counts in a data structure to print hidden divs with titles
+	$stats = array();
+
+	if(isset($counts_info['total_count'])) {
+		$total_count = $counts_info['total_count'];
+		$stats[] = array('name' => 'total_count', 'count' => $total_count, 'title' => sprintf($template_title['total_count'], $total_count));
+	}
+	
+	if(isset($counts_info['normal_count'])) {
+		$normal_count = $counts_info['normal_count'];
+		$stats[] = array('name' => 'normal_count', 'count' => $normal_count, 'title' => sprintf($template_title['normal_count'], $normal_count));
+	}
+	
+	if(isset($counts_info['critical_count'])) {
+		$critical_count = $counts_info['critical_count'];
+		$stats[] = array('name' => 'critical_count', 'count' => $critical_count, 'title' => sprintf($template_title['critical_count'], $critical_count));
+	}
+	
+	if(isset($counts_info['warning_count'])) {
+		$warning_count = $counts_info['warning_count'];
+		$stats[] = array('name' => 'warning_count', 'count' => $warning_count, 'title' => sprintf($template_title['warning_count'], $warning_count));
+	}
+	
+	if(isset($counts_info['unknown_count'])) {
+		$unknown_count = $counts_info['unknown_count'];
+		$stats[] = array('name' => 'unknown_count', 'count' => $unknown_count, 'title' => sprintf($template_title['unknown_count'], $unknown_count));
+	}
+	
+	if(isset($counts_info['fired_count'])) {
+		$fired_count = $counts_info['fired_count'];
+		$stats[] = array('name' => 'fired_count', 'count' => $fired_count, 'title' => sprintf($template_title['total_count'], $fired_count));
+	}
+	
+	$uniq_id = uniqid();
+
+	foreach($stats as $stat) {
+		$params = array('id' => 'forced_title_' . $stat['name'] . '_' . $uniq_id, 
+						'class' => 'forced_title_layer', 
+						'content' => $stat['title'],
+						'hidden' => true);
+		$out .= html_print_div($params, true);
+	}
+	
+	// If total count is less than 0, is an error. Never show negative numbers
+	if($total_count < 0) {
+		$total_count = 0;
+	}
+
+	$out .= '<b>' . '<span id="total_count_' . $uniq_id . '" class="forced_title">' . $total_count . '</span>';
+	if (isset($fired_count) && $fired_count > 0)
+		$out .= ' : <span class="orange forced_title" id="fired_count_' . $uniq_id . '">' . $fired_count . '</span>';
+	if (isset($critical_count) && $critical_count > 0)
+		$out .= ' : <span class="red forced_title" id="critical_count_' . $uniq_id . '">' . $critical_count . '</span>';
+	if (isset($warning_counts) && $warning_count > 0)
+		$out .= ' : <span class="yellow forced_title" id="warning_count_' . $uniq_id . '">' . $warning_count . '</span>';
+	if (isset($unknown_count) && $unknown_count > 0)
+		$out .= ' : <span class="grey forced_title" id="unknown_count_' . $uniq_id . '">' . $unknown_count . '</span>';
+	if (isset($normal_count) && $normal_count > 0)
+		$out .= ' : <span class="green forced_title" id="normal_count_' . $uniq_id . '">' . $normal_count . '</span>';
+		
+	$out .= '</b>';
+	
+	if ($return) {
+		return $out;
+	}
+	else {
+		echo $out;
+	}
+}
 ?>

@@ -180,6 +180,7 @@ our @EXPORT = qw(
 	pandora_update_agent
 	pandora_update_agent_address
 	pandora_update_config_token
+	pandora_update_gis_data
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
 	pandora_update_server
@@ -1914,7 +1915,7 @@ Update agent GIS information.
 
 =cut
 ##########################################################################
-sub pandora_update_gis_data ($$$$$$$$) {
+sub pandora_update_gis_data ($$$$$$$$$) {
 	my ($pa_config, $dbh, $agent_id, $agent_name, $longitude, $latitude, $altitude, $position_description, $timestamp) = @_;
 
 	logger($pa_config, "Updating GIS data for agent $agent_name (long: $longitude lat: $latitude alt: $altitude)", 10);

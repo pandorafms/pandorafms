@@ -59,7 +59,7 @@ $table->data[6][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('ne
 $table->data[6][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('netflow_disable_custom_lvfilters', 0, '', $config["netflow_disable_custom_lvfilters"], true).'&nbsp;&nbsp;';
 $table->data[7][0] = '<b>' . __('Netflow max lifetime') . '</b>'.ui_print_help_tip (__("Sets the maximum lifetime for netflow data in days."), true);
 $table->data[7][1] = html_print_input_text ('netflow_max_lifetime', $config['netflow_max_lifetime'], false, 50, 200, true);
-          
+
 echo '<form id="netflow_setup" method="post">';
 
 html_print_table ($table);

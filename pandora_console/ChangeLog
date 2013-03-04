@@ -1,5 +1,13 @@
 2013-03-04 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/setup/setup_netflow.php,
+	include/help/ja/help_snmp_trap_types.php,
+	include/functions_extensions.php,
+	include/functions_snmp_browser.php, include/functions_events.php,
+	include/functions_api.php: improved the code style.
+
+2013-03-04 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/reporting/reporting_builder.item_editor.php,
 	include/functions_ui.php, include/functions_reporting.php,
 	include/constants.php, include/ajax/reporting.ajax.php,

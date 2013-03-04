@@ -770,35 +770,39 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
  * @param boolean $display_front Flag to display custom field in agent's operation view
  */
 function api_set_create_custom_field($t1, $t2, $other, $returnType) {
-
-	if ($other['type'] == 'string') {
-                returnError('error_parameter', 'Error in the parameters.');
-                return;
-        } else if ($other['type'] == 'array') {
-
-                $name = "";
-
-                if ($other['data'][0] != '') {
-                	$name = $other['data'][0];
-                } else {
-                        returnError('error_parameter', 'Custom field name required');
-                        return;
-                }
-
-		$display_front = 0;
-
-                if ($other['data'][1] != '') {
-                        $display_front = $other['data'][1];
-                } else {
-                        returnError('error_parameter', 'Custom field display flag required');
-                        return;
-                }
 	
-		$result = db_process_sql_insert('tagent_custom_fields', array('name' => $name, 'display_on_front' => $display_front));
-
-	        $data['type'] = "string";
-        	$data["data"] = $result;
-	        returnData("string", $data);
+	if ($other['type'] == 'string') {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+	else if ($other['type'] == 'array') {
+		
+		$name = "";
+		
+		if ($other['data'][0] != '') {
+			$name = $other['data'][0];
+		}
+		else {
+			returnError('error_parameter', 'Custom field name required');
+			return;
+		}
+		
+		$display_front = 0;
+		
+		if ($other['data'][1] != '') {
+				$display_front = $other['data'][1];
+		}
+		else {
+			returnError('error_parameter', 'Custom field display flag required');
+			return;
+		}
+		
+		$result = db_process_sql_insert('tagent_custom_fields',
+			array('name' => $name, 'display_on_front' => $display_front));
+		
+		$data['type'] = "string";
+		$data["data"] = $result;
+		returnData("string", $data);
 	}
 }
 
@@ -5372,10 +5376,10 @@ function api_set_new_note_incident($id, $id2, $other, $thrash2) {
 function api_set_disable_module ($agent_name, $module_name, $thrast3, $thrash4) {
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
-    
-    $result = modules_change_disabled($id_agent_module, 1);
-    
-    if($result === NOERR) {
+	
+	$result = modules_change_disabled($id_agent_module, 1);
+	
+	if ($result === NOERR) {
 		returnData('string', array('type' => 'string', 'data' => __('Correct module disable')));
 	}
 	else {
@@ -5396,10 +5400,10 @@ function api_set_disable_module ($agent_name, $module_name, $thrast3, $thrash4) 
 function api_set_enable_module ($agent_name, $module_name, $thrast3, $thrash4) {
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
-    
-    $result = modules_change_disabled($id_agent_module, 1);
-    
-    if($result === NOERR) {
+	
+	$result = modules_change_disabled($id_agent_module, 1);
+	
+	if ($result === NOERR) {
 		returnData('string', array('type' => 'string', 'data' => __('Correct module enable')));
 	}
 	else {
@@ -5420,12 +5424,15 @@ function api_set_enable_module ($agent_name, $module_name, $thrast3, $thrash4) {
  */
 
 function api_set_disable_alert ($agent_name, $module_name, $template_name, $thrash4) {
-
+	
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
-    $id_template = db_get_value_filter('id', 'talert_templates', array('name' => $template_name["data"]));
-
-    db_process_sql("UPDATE talert_template_modules SET disabled = 1 WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template");
+	$id_template = db_get_value_filter('id', 'talert_templates', array('name' => $template_name["data"]));
+	
+	db_process_sql("UPDATE talert_template_modules
+		SET disabled = 1
+		WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template");
+	
 	returnData('string', array('type' => 'string', 'data' => "Correct alert disable"));
 }
 
@@ -5441,12 +5448,15 @@ function api_set_disable_alert ($agent_name, $module_name, $template_name, $thra
  */
 
 function api_set_enable_alert ($agent_name, $module_name, $template_name, $thrash4) {
-
+	
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
-    $id_template = db_get_value_filter('id', 'talert_templates', array('name' => $template_name["data"]));
-
-    db_process_sql("UPDATE talert_template_modules SET disabled = 0 WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template");
+	$id_template = db_get_value_filter('id', 'talert_templates', array('name' => $template_name["data"]));
+	
+	db_process_sql("UPDATE talert_template_modules
+		SET disabled = 0
+		WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template");
+	
 	returnData('string', array('type' => 'string', 'data' => "Correct alert enable"));
 }
 
@@ -5462,11 +5472,14 @@ function api_set_enable_alert ($agent_name, $module_name, $template_name, $thras
  */
 
 function api_set_disable_module_alerts ($agent_name, $module_name, $thrash3, $thrash4) {
-
+	
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
-
-    db_process_sql("UPDATE talert_template_modules SET disabled = 1 WHERE id_agent_module = $id_agent_module");
+	
+	db_process_sql("UPDATE talert_template_modules
+		SET disabled = 1
+		WHERE id_agent_module = $id_agent_module");
+	
 	returnData('string', array('type' => 'string', 'data' => "Correct alerts disable"));
 }
 
@@ -5482,11 +5495,14 @@ function api_set_disable_module_alerts ($agent_name, $module_name, $thrash3, $th
  */
 
 function api_set_enable_module_alerts ($agent_name, $module_name, $thrash3, $thrash4) {
-
+	
 	$id_agent = agents_get_agent_id($agent_name);
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
-
-    db_process_sql("UPDATE talert_template_modules SET disabled = 0 WHERE id_agent_module = $id_agent_module");
+	
+	db_process_sql("UPDATE talert_template_modules
+		SET disabled = 0
+		WHERE id_agent_module = $id_agent_module");
+	
 	returnData('string', array('type' => 'string', 'data' => "Correct alerts enable"));
 }
 
@@ -5525,12 +5541,13 @@ function get_tags($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 **/
 // http://localhost/pandora_console/include/api.php?op=get&op2=total_modules&id=1&apipass=1234&user=admin&pass=pandora
 function api_get_total_modules($id_group, $trash1, $trash2, $returnType) {
-
-	$sql = "SELECT COUNT(*) FROM tagente_modulo				
-			WHERE id_module_group=$id_group";
-
+	
+	$sql = "SELECT COUNT(*)
+		FROM tagente_modulo
+		WHERE id_module_group=$id_group";
+	
 	$total = db_get_value_sql($sql);
-
+	
 	$data = array('type' => 'string', 'data' => $total);
 	
 	returnData($returnType, $data);
@@ -5544,10 +5561,12 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType) {
 **/
 // http://localhost/pandora_console/include/api.php?op=get&op2=total_agents&id=2&apipass=1234&user=admin&pass=pandora
 function api_get_total_agents($id_group, $trash1, $trash2, $returnType) {
-
-	$sql = sprintf('SELECT COUNT(*) FROM tagente WHERE id_grupo=%d AND disabled=0', $id_group);
+	
+	$sql = sprintf('SELECT COUNT(*)
+		FROM tagente
+		WHERE id_grupo=%d AND disabled=0', $id_group);
 	$total_agents = db_get_value_sql($sql);
-
+	
 	$data = array('type' => 'string', 'data' => $total_agents);
 	returnData($returnType, $data);
 }
@@ -5561,14 +5580,16 @@ function api_get_total_agents($id_group, $trash1, $trash2, $returnType) {
 // http://localhost/pandora_console/include/api.php?op=get&op2=agent_name&id=1&apipass=1234&user=admin&pass=pandora
 function api_get_agent_name($id_agent, $trash1, $trash2, $returnType) {
 	
-	$sql = sprintf('SELECT nombre FROM tagente WHERE id_agente = %d', $id_agent);
-	$value = db_get_value_sql($sql);	
+	$sql = sprintf('SELECT nombre
+		FROM tagente
+		WHERE id_agente = %d', $id_agent);
+	$value = db_get_value_sql($sql);
 	if ($value === false) {
 		returnError('id_not_found', $returnType);
 	}
 	
 	$data = array('type' => 'string', 'data' => $value);
-
+	
 	returnData($returnType, $data);
 }
 
@@ -5594,14 +5615,16 @@ function api_get_module_name($id_module, $trash1, $trash2, $returnType) {
 
 // http://localhost/pandora_console/include/api.php?op=get&op2=alert_action_by_group&id=3&id2=1&apipass=1234&user=admin&pass=pandora
 function api_get_alert_action_by_group($id_group, $id_action, $trash2, $returnType) {
-
-	$sql = "SELECT SUM(internal_counter) FROM talert_template_modules
-	WHERE id_alert_template IN 
-	(SELECT id FROM talert_templates
-	WHERE id_group=$id_group AND id_alert_action = $id_action)";
-
+	
+	$sql = "SELECT SUM(internal_counter)
+		FROM talert_template_modules
+		WHERE id_alert_template IN 
+			(SELECT id
+			FROM talert_templates
+			WHERE id_group=$id_group AND id_alert_action = $id_action)";
+	
 	$value = db_get_value_sql($sql);
-
+	
 	if ($value === false) {
 		returnError('data_not_found', $returnType);
 	}
@@ -5616,25 +5639,19 @@ function api_get_alert_action_by_group($id_group, $id_action, $trash2, $returnTy
 
 // http://localhost/pandora_console/include/api.php?op=get&op2=event_info&id=58&apipass=1234&user=admin&pass=pandora
 function api_get_event_info($id_event, $trash1, $trash, $returnType) {
-
+	
 	$sql = "SELECT * FROM tevento WHERE id_evento=$id_event";
 	$event_data = db_get_row_sql($sql);
 	
 	$i = 0;
 	foreach ($event_data as $key => $data) {
-/*
-		if ($i == 0)
-			$result = $data;
-		else 
-			$result .= ';'.$data;
-*/
 		if ($i == 0)
 			$result = $key.': '.$data.'<br>';
 		else
 			$result .= $key.': '.$data.'<br>'; 
 		$i++;
 	}
-
+	
 	$data = array('type' => 'string', 'data' => $result);
 	
 	returnData($returnType, $data);
@@ -5643,7 +5660,7 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType) {
 
 //http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|system|3|admin|2|1|10|0|comments||Pandora||critical_inst|warning_inst|unknown_inst|other&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
 function api_set_create_event($id, $trash1, $other, $returnType) {
-
+	
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');
 		return;
@@ -5651,87 +5668,100 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 	else if ($other['type'] == 'array') {
 		
 		$values = array();
-
+		
 		if ($other['data'][0] != '') {
-				$values['event'] = $other['data'][0];
-		} else {
-				returnError('error_parameter', 'Event text required.');
-				return;
+			$values['event'] = $other['data'][0];
+		}
+		else {
+			returnError('error_parameter', 'Event text required.');
+			return;
 		}
 		
 		if ($other['data'][1] != '') {
 			$values['id_grupo'] = $other['data'][1];
-		} else {
+		}
+		else {
 			returnError('error_parameter', 'Group ID required.');
 			return;
 		}
-
+		
 		if ($other['data'][2] != '') {
 			$values['id_agente'] = $other['data'][2];
-		} else {
-			 returnError('error_parameter', 'Agent ID required.');
-                        return;
-		}		
+		}
+		else {
+			returnError('error_parameter', 'Agent ID required.');
+			return;
+		}
 		
 		if ($other['data'][3] != '') {
 			$values['status'] = $other['data'][3];
-		} else {
+		}
+		else {
 			$values['status'] = 0;
-		}		
+		}
 		
-		$values['id_usuario'] = $other['data'][4];		
+		$values['id_usuario'] = $other['data'][4];
 		
 		if ($other['data'][5] != '') {
 			$values['event_type'] = $other['data'][5];
-		} else {
+		}
+		else {
 			$values['event_type'] = "unknown";
 		}
 		
 		if ($other['data'][6] != '') {
 			$values['priority'] = $other['data'][6];
-		} else {
+		}
+		else {
 			$values['priority'] = 0;
 		}
 		
 		if ($other['data'][7] != '') {
 			$values['id_agentmodule'] = $other['data'][7];
-		} else {
+		}
+		else {
 			$value['id_agentemodule'] = 0;
 		}
 		
 		if ($other['data'][8] != '') {
 			$values['id_alert_am'] = $other['data'][8];
-		} else {
+		}
+		else {
 			$values['id_alert_am'] = 0;
 		}
 		
 		if ($other['data'][9] != '') {
 			$values['critical_instructions'] = $other['data'][9];
-		} else {
+		}
+		else {
 			$values['critical_instructions'] = '';
 		}
 		
 		if ($other['data'][10] != '') {
 			$values['warning_instructions'] = $other['data'][10];
-		} else {
+		}
+		else {
 			$values['warning_instructions'] = '';
 		}
 		
 		if ($other['data'][11] != '') {
 			$values['unknown_instructions'] = $other['data'][11];
-		} else {
+		}
+		else {
 			$values['unknown_instructions'] = '';
 		}
 		
 		if ($other['data'][14] != '') {
 			$values['source'] = $other['data'][14];
-		} else {
+		}
+		else {
 			$values['source'] = "Pandora";
 		}
 		
 		if ($other['data'][15] != '') {
 			$values['tags'] = $other['data'][15];
-		} else {
+		}
+		else {
 			$values['tags'] = "";
 		}
 		
@@ -5740,7 +5770,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		$values['priority'], $value['id_agentemodule'], $values['id_alert_am'], 
 		$values['critical_instructions'], $values['warning_instructions'], 
 		$values['unknown_instructions'], $values['source'], $values['tags']);
-
+		
 		if ($other['data'][12] != '') { //user comments
 			if ($return !== false) { //event successfully created
 				$user_comment = $other['data'][12];

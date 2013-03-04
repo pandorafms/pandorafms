@@ -329,9 +329,10 @@ function extensions_add_godmode_menu_option ($name, $acl, $fatherId = null, $ico
 	global $config;
 	global $extension_file;
 	
-	/* $config['extension_file'] is set in extensions_load_extensions(), since that function must
-	   be called before any function the extension call, we are sure it will 
-	   be set. */
+	/*
+	$config['extension_file'] is set in extensions_load_extensions(),
+	since that function must be called before any function the extension
+	call, we are sure it will be set. */
 	$option_menu['acl'] = $acl;
 	$option_menu['name'] = $name;
 	$extension = &$config['extensions'][$extension_file];
@@ -381,7 +382,7 @@ function extensions_add_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFuncti
 	$extension['extension_ope_tab']['name'] = $tabName;
 	$extension['extension_ope_tab']['icon'] = $tabIcon;
 	$extension['extension_ope_tab']['function'] = $tabFunction;
-        $extension['extension_ope_tab']['version'] = $version;
+	$extension['extension_ope_tab']['version'] = $version;
 }
 
 /**

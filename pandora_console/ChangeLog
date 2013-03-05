@@ -1,3 +1,13 @@
+2013-03-05  Mario Pulido <mario.pulido@artica.es>
+        
+        *include/help/en/help_view_services.php,
+        include/help/es/help_view_services.php:Modified services help.
+        
+        *images/help/service3.png,images/help/service4.png
+        images/help/service5.png, images/help/service6.png
+        images/help/service7.png. images/help/service2.png: Add images to services help.
+
+
 2013-03-05  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php: Fix little

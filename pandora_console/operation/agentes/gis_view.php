@@ -19,9 +19,9 @@ global $config;
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AR") && ! is_user_admin ($config['id_user'])) {
-        db_pandora_audit("ACL Violation", "Trying to access GIS Agent view");
-        require ("general/noaccess.php");
-        return;
+	db_pandora_audit("ACL Violation", "Trying to access GIS Agent view");
+	require ("general/noaccess.php");
+	return;
 }
 
 require_once ('include/functions_gis.php');
@@ -36,29 +36,35 @@ $agentId = get_parameter('id_agente');
 $agent_name = agents_get_name($agentId); 
 $agentData = gis_get_data_last_position_agent($id_agente);
 
+//Avoid the agents with characters that fails the div.
+$agent_name = md5($agent_name);
+
 $url = '';
 //These variables come from index.php
 foreach ($_GET as $key => $value) {
-	$url .= '&amp;'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
+	$url .= '&amp;' . safe_url_extraclean($key) . '=' . safe_url_extraclean($value);
 }
 
 echo "<div style='margin-bottom: 30px;'></div>";
 
 /* Map with the current position */
-echo "<div id=\"".$agent_name."_agent_map\" style=\"border:1px solid black; width:98%; height: 39em;\"></div>";
+echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 39em;\"></div>";
 if (!gis_get_agent_map($agentId, "500px", "98%", true, true, $period)) {
 	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
-} 
+}
 
 switch ($config["dbtype"]) {
 	case "mysql":
-		$timestampLastOperation = db_get_value_sql("SELECT UNIX_TIMESTAMP()");
+		$timestampLastOperation = db_get_value_sql(
+			"SELECT UNIX_TIMESTAMP()");
 		break;
 	case "postgresql":
-		$timestampLastOperation = db_get_value_sql("SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP))");
+		$timestampLastOperation = db_get_value_sql(
+			"SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP))");
 		break;
 	case "oracle":
-		$timestampLastOperation = db_get_value_sql("SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) from dual");
+		$timestampLastOperation = db_get_value_sql(
+			"SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) from dual");
 		break;
 }
 
@@ -84,16 +90,21 @@ echo "</form>";
 
 echo "<h4>" . __("Positional data from the last") . " " . human_time_description_raw ($period) ."</h4>";
 /* Get the total number of Elements for the pagination */ 
-$sqlCount = sprintf ("SELECT COUNT(*) FROM tgis_data_history WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d) ORDER BY end_timestamp DESC", $agentId, get_system_time () - $period);
+$sqlCount = sprintf ("SELECT COUNT(*)
+	FROM tgis_data_history
+	WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)
+	ORDER BY end_timestamp DESC", $agentId, get_system_time () - $period);
 $countData = db_get_value_sql($sqlCount);
+
+
 /* Get the elements to present in this page */
 $sql = sprintf ("SELECT longitude, latitude, altitude, start_timestamp, end_timestamp, description, number_of_packages, manual_placement
 	FROM tgis_data_history
 	WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)  
 	ORDER BY end_timestamp DESC
 	LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
-
 $result = db_get_all_rows_sql ($sql, true);
+
 
 if ($result === false) {
 	echo "<div class='nf'>".__('This agent doesn\'t have any GIS data')."</div>";
@@ -111,10 +122,8 @@ else {
 	$table->title = $agent_name." ". __("positional data");
 	$table->titlestyle = "background-color:#799E48;";
 	html_print_table($table); unset($table);
-
+	
 	ui_pagination ($countData, false) ;
 	echo "<h3>" . __('Total') . ' ' . $countData . ' ' . __('Data') . "</h3>";
 }
-
-
 ?>

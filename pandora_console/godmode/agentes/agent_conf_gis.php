@@ -30,6 +30,9 @@ $agentData = gis_get_data_last_position_agent($id_agente);
 $updateGisData = db_get_value('update_gis_data','tagente', 'id_agente', $id_agente);
 $agent_name = agents_get_name($id_agente);
 
+//Avoid the agents with characters that fails the div.
+$agent_name = md5($agent_name);
+
 /* Map with the current position */
 echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
 

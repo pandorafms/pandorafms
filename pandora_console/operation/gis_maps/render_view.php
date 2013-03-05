@@ -154,6 +154,8 @@ if ($layers != false) {
 		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer'],
 			array('nombre'));
 		
+		
+		
 		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer);
 		
 		foreach ($agentNames as $agentName) {

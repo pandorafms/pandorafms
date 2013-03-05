@@ -239,6 +239,8 @@ switch ($action) {
 			$arrayLayers[] = JSON_decode($layer, true);
 		}
 		
+		
+		
 		$invalidFields = gis_validate_map_data($map_name, $map_zoom_level,
 			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
 			$map_default_longitude, $map_default_latitude, $map_default_altitude,

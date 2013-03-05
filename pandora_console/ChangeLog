@@ -1,3 +1,11 @@
+2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* operation/gis_maps/render_view.php,
+	operation/agentes/gis_view.php,
+	godmode/gis_maps/configure_gis_map.php,
+	godmode/agentes/agent_conf_gis.php, include/functions_gis.php: fixes
+	about agents with white spaces.
+
 2013-02-28 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_gis.php: fixed the delete layers.

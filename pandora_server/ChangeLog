@@ -1,5 +1,10 @@
 2013-03-05  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Add the new fields on snmp alerts
+	(now there are 10 fields). Bug 3605775
+
+2013-03-05  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_manage.pl: Add update counts when validate 
 	all the alerts of a policy in CLI option. Bug 3606759
 

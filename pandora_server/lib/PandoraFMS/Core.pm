@@ -2762,6 +2762,13 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		$alert->{'al_field1'} = subst_alert_macros ($alert->{'al_field1'}, \%macros);
 		$alert->{'al_field2'} = subst_alert_macros ($alert->{'al_field2'}, \%macros);
 		$alert->{'al_field3'} = subst_alert_macros ($alert->{'al_field3'}, \%macros);
+		$alert->{'al_field4'} = subst_alert_macros ($alert->{'al_field4'}, \%macros);
+		$alert->{'al_field5'} = subst_alert_macros ($alert->{'al_field5'}, \%macros);
+		$alert->{'al_field6'} = subst_alert_macros ($alert->{'al_field6'}, \%macros);
+		$alert->{'al_field7'} = subst_alert_macros ($alert->{'al_field7'}, \%macros);
+		$alert->{'al_field8'} = subst_alert_macros ($alert->{'al_field8'}, \%macros);
+		$alert->{'al_field9'} = subst_alert_macros ($alert->{'al_field9'}, \%macros);
+		$alert->{'al_field10'} = subst_alert_macros ($alert->{'al_field10'}, \%macros);
 
 		# Check time threshold
 		$alert->{'last_fired'} = '1970-01-01 00:00:00' unless defined ($alert->{'last_fired'});
@@ -2789,6 +2796,13 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				'field1' => $alert->{'al_field1'},
 				'field2' => $alert->{'al_field2'},
 				'field3' => $alert->{'al_field3'},
+				'field4' => $alert->{'al_field4'},
+				'field5' => $alert->{'al_field5'},
+				'field6' => $alert->{'al_field6'},
+				'field7' => $alert->{'al_field7'},
+				'field8' => $alert->{'al_field8'},
+				'field9' => $alert->{'al_field9'},
+				'field10' => $alert->{'al_field10'},
 				'description' => $alert->{'description'},
 				'times_fired' => $times_fired,
 				'time_threshold' => 0,

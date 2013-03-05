@@ -297,7 +297,8 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('meta_style', 'meta_pandora'),
 ('enable_refr', 0),
 ('show_vc', 1),
-('meta_num_elements', 100);
+('meta_num_elements', 100),
+('inventory_changes_blacklist', '1,2,20,21');
 
 -- -----------------------------------------------------
 -- Table "tpassword_history"

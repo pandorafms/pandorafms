@@ -106,7 +106,8 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('meta_num_elements', 100),
 ('update_manager_installed', 1),
 ('num_files_attachment', 100),
-('show_vc', 1);
+('show_vc', 1),
+('inventory_changes_blacklist', '1,2,20,21');
 
 COMMIT WORK;
 

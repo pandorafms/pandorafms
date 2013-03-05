@@ -1280,7 +1280,7 @@ function modules_get_previous_data ($id_agent_module, $utimestamp = 0, $string =
 			AND utimestamp >= %d 
 		ORDER BY utimestamp DESC',
 		$id_agent_module, $utimestamp, $utimestamp - SECONDS_2DAY);
-
+	
 	return db_get_row_sql ($sql, true);
 }
 

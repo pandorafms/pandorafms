@@ -667,6 +667,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$interval_data = array ();
 	}
 	
+	
 	// Indexing data
 	$interval_data_indexed = array();
 	foreach($interval_data as $idata) {
@@ -697,7 +698,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		array ('id_agentmodule' => $id_agent_module,
 			"utimestamp <= $datelimit",
 			'order' => 'utimestamp DESC'));
-	if(isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
+	if (isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
 		$start_unknown = true;
 	}
 	else {
@@ -707,7 +708,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	
 	//-----------------Set limits of the interval-----------------------
 	// If the starting of the graph is unknown we set it
-	if($start_unknown) {
+	if ($start_unknown) {
 		$interval_data_indexed[$datelimit]['data'] = 0;
 		$interval_data_indexed[$datelimit]['status'] = 4;
 	}
@@ -726,13 +727,14 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	
 	// Get next data (This adds data before the interval of the report)
 	$next_data = modules_get_next_data ($id_agent_module, $date);
+	
 	if ($next_data !== false) {
 		$interval_data_indexed[$date]['data'] = $previous_data['datos'];
 	}
 	else if (count ($interval_data_indexed) > 0) {
 		// Propagate the last known data to the end of the interval (if there is no module data at the end point)
 		ksort($interval_data_indexed);
-		$last_data = array_pop($interval_data_indexed);
+		$last_data = end($interval_data_indexed);
 		$interval_data_indexed[$date] = $last_data;
 	}
 	
@@ -759,8 +761,8 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 			$interval_data_indexed[$date_downtime['date_from']]['status'] = 5;
 			
 			$last_downtime_data = false;
-			foreach($interval_data_indexed as $idi_timestamp => $idi) {
-				if($idi_timestamp != $date_downtime['date_from'] && $idi_timestamp !=  $date_downtime['date_to'] && 
+			foreach ($interval_data_indexed as $idi_timestamp => $idi) {
+				if ($idi_timestamp != $date_downtime['date_from'] && $idi_timestamp !=  $date_downtime['date_to'] && 
 						$idi_timestamp >= $date_downtime['date_from'] && $idi_timestamp <= $date_downtime['date_to']) {
 					$last_downtime_data = $idi['data'];
 					unset($interval_data_indexed[$idi_timestamp]);
@@ -768,7 +770,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 			}
 			
 			// Set the last data of the interval as limit
-			if($last_downtime_data !== false) {
+			if ($last_downtime_data !== false) {
 				$interval_data_indexed[$date_downtime['date_to']]['data'] = $last_downtime_data;
 			}// If there arent data into the downtime, set unknown
 			else {
@@ -3147,7 +3149,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[0][1] = 2;
 			$next_row = 1;
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;
 				$data_desc = array();
@@ -3213,9 +3215,16 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				
 				//Get the array of the sla values
-				$data_sla = reporting_get_agentmodule_sla_array ($sla['id_agent_module'], $content['period'],
-						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
-						$content['time_to']);
+				$data_sla = reporting_get_agentmodule_sla_array (
+					$sla['id_agent_module'],
+					$content['period'],
+					$sla['sla_min'],
+					$sla['sla_max'],
+					$report['datetime'],
+					$content,
+					$content['time_from'],
+					$content['time_to']);
+				
 				
 				if ($data_sla == false) {
 					$data_sla = array();

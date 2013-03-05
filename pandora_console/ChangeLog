@@ -1,3 +1,13 @@
+2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_modules.php: improved the style.
+	
+	* include/functions_reporting.php: fixed into the function
+	"reporting_get_agentmodule_sla_array" when have one data of a
+	module.
+	
+	Fixes: #3606811
+
 2013-03-05  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql
@@ -8,6 +18,16 @@
 	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added CPU
 	and Process inventory change types to black list in default 
 	SQL data script for bug 3606111
+
+2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_modules.php: improved the style.
+	
+	* include/functions_reporting.php: fixed into the function
+	"reporting_get_agentmodule_sla_array" when have one data of a
+	module.
+	
+	Fixes: #3606811
 
 2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
 	

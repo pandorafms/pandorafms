@@ -827,10 +827,12 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 		if (array_key_exists('layer_agent_list', $layer)) {
 			if (count($layer['layer_agent_list']) > 0) {
 				foreach ($layer['layer_agent_list'] as $agent_name) {
+					
 					db_process_sql_insert('tgis_map_layer_has_tagente',
 						array(
 							'tgis_map_layer_id_tmap_layer' => $idLayer,
-							'tagente_id_agente' => agents_get_agent_id($agent_name)
+							'tagente_id_agente' => agents_get_agent_id(
+								io_safe_input($agent_name))
 						)
 					);
 				}
@@ -899,14 +901,17 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 	
 	$agent_name = agents_get_name($agent_id);
 	
+	//Avoid the agents with characters that fails the div.
+	$agent_name = md5($agent_name);
+	
 	$baselayers[0]['name'] = $defaultMap['conection_name'];
 	$baselayers[0]['num_zoom_levels'] = $defaultMap['num_zoom_levels'];
-
+	
 	$conectionData = json_decode($defaultMap['conection_data'], true);
 	$baselayers[0]['typeBaseLayer'] = $conectionData['type'];
 	$controls = array('PanZoomBar', 'ScaleLine', 'Navigation', 'MousePosition');
 	$gmap_layer = false;
-
+	
 	switch ($conectionData['type']) {
 		case 'OSM':
 			$baselayers[0]['url'] = $conectionData['url'];
@@ -935,7 +940,7 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 		<?php
 	}
 	
-	gis_print_map($agent_name."_agent_map", $defaultMap['zoom_level'],
+	gis_print_map($agent_name . "_agent_map", $defaultMap['zoom_level'],
 		$defaultMap['initial_latitude'],
 		$defaultMap['initial_longitude'], $baselayers, $controls);
 		

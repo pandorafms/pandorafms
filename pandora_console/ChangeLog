@@ -1,5 +1,15 @@
 2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* operation/gis_maps/render_view.php,
+	operation/agentes/gis_view.php,
+	godmode/gis_maps/configure_gis_map.php,
+	godmode/agentes/agent_conf_gis.php, include/functions_gis.php: fixes
+	about agents with white spaces.
+
+	MERGED FROM THE BRANCH pandora_4
+
+2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_netflow.php, include/functions_graph.php,
 	include/functions_config.php, include/functions_groups.php: improved
 	source code style.

@@ -1876,7 +1876,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 			$agents = db_get_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN (' . implode(',', $groups) . ')');
 			
 			if ($agents === false) $agents = array();
-		
+			
 			$id_agentsACL = array();
 			foreach ($agents as $agent) {
 				if (array_search($agent['id_agente'], $id_agents) !== false) {
@@ -1890,55 +1890,53 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 	
 	ob_start();
 	
-	ui_require_jquery_file ('autocomplete');
-	
-	?>
-	<script type="text/javascript">
-	function escapeHTML (str)
-	{
-		var div = document.createElement('div');
-		var text = document.createTextNode(str);
-		div.appendChild(text);
-		return div.innerHTML;
-	}
-	
-		$(document).ready (function () {
-			$("#text-<?php echo $name; ?>").autocomplete(
-				"ajax.php",
-				{
-					minChars: 2,
-					scroll:true,
-					extraParams: {
-						page: "include/ajax/module",
-						search_modules: 1,
-						id_agents: '<?php echo json_encode($id_agents); ?>',
-						other_filter: '<?php echo json_encode($filter); ?>'
-					},
-					formatItem: function (data, i, total) {
-						if (total == 0)
-							$("#text-<?php echo $name; ?>").css ('background-color', '#cc0000');
-						else
-							$("#text-<?php echo $name; ?>").css ('background-color', '');
-						
-						if (data == "")
-							return false;
-						
-						return escapeHTML(data[0]);
-					},
-					delay: 200
-				}
-			);
-			
-			$("#text-<?php echo $name; ?>").result (
-				<?php echo $scriptResult; ?>
-			);
-		});
-	</script>
-	<?php
-	
 	html_print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
 		array('style' => 'background: url(images/lightning_blue.png) no-repeat right;'));
 	ui_print_help_tip(__('Type at least two characters to search the module.'), false);
+	
+	$javascript_ajax_page =
+		ui_get_full_url('ajax.php', false, false, false, false);
+	?>
+	<script type="text/javascript">
+		function escapeHTML (str)
+		{
+			var div = document.createElement('div');
+			var text = document.createTextNode(str);
+			div.appendChild(text);
+			return div.innerHTML;
+		}
+		
+		$(document).ready (function () {
+				$("#text-<?php echo $name; ?>").autocomplete({
+					minLength: 2,
+					source: function( request, response ) {
+							var term = request.term; //Word to search
+							
+							data_params = {
+								page: "include/ajax/module",
+								q: term,
+								search_modules: 1,
+								id_agents: '<?php echo json_encode($id_agents); ?>',
+								other_filter: '<?php echo json_encode($filter); ?>'
+							};
+							
+							jQuery.ajax ({
+								data: data_params,
+								async: false,
+								type: "POST",
+								url: action="<?php echo $javascript_ajax_page;?>",
+								timeout: 10000,
+								dataType: "json",
+								success: function (data) {
+										response(data);
+									}
+								});
+						}
+					}
+				);
+			});
+	</script>
+	<?php
 	
 	$output = ob_get_clean();
 	

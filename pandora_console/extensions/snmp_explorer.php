@@ -393,7 +393,6 @@ function snmp_explorer() {
 	ui_require_jquery_file ('pandora.controls');
 	ui_require_jquery_file ('ajaxqueue');
 	ui_require_jquery_file ('bgiframe');
-	//ui_require_jquery_file ('autocomplete');
 ?>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */

@@ -1,3 +1,10 @@
+2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* extensions/snmp_explorer.php: improved the code style.
+	
+	* include/functions_html.php, include/ajax/module.php: rewrote the
+	code for to use the last autocomplete jquery UI.
+
 2013-03-05  Mario Pulido <mario.pulido@artica.es>
         
         *include/help/en/help_view_services.php,

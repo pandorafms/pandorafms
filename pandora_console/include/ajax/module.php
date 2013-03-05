@@ -23,18 +23,20 @@ if ($search_modules) {
 	$filter = get_parameter('q', '') . '%';
 	$other_filter = json_decode(io_safe_output(get_parameter('other_filter')), true);
 	
-	$modules = agents_get_modules($id_agents, false, (array('nombre' => $filter) + $other_filter));
+	$modules = agents_get_modules($id_agents, false,
+		(array('nombre' => $filter) + $other_filter));
 	
 	if ($modules === false) $modules = array();
+	
 	$modules = array_unique($modules);
 	
-	foreach ($modules as $module) {
-		echo io_safe_output($module) . "\n";
-	}
+	$modules = io_safe_output($modules);
+	
+	echo json_encode($modules);
 }
 
 $get_plugin_macros = get_parameter('get_plugin_macros');
-if($get_plugin_macros) {
+if ($get_plugin_macros) {
 	$plugin_macros = db_get_value('macros','tplugin','id',get_parameter('id_plugin',0));
 	
 	$macros = array();

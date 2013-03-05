@@ -801,53 +801,54 @@ foreach ($contents as $content) {
 					fclose($file);
 				}
 			}
-			///
 			break;
 		case 'event_report_module':
-
+			
 			$data["title"] = __('Agents detailed event');
 			$data["objdata"] = array();
-	
+			
 			$date = get_system_time ();
 			$datelimit = $date - $content['period'];
-			///	
+			
 			$sql_count = "SELECT count(*) FROM (SELECT  count(*)
 				FROM tevento
 				WHERE id_agente =".$content['id_agent']." AND utimestamp > $datelimit AND utimestamp <=". $date. 
 				" GROUP BY id_agentmodule, evento) t1";
-	
+			
 			$data_count = db_get_value_sql($sql_count);
 			
 			$temp_file = $config['attachment_store'] . '/event_report_module_' . $time.'_'.$content['id_rc'] . '.tmp';
 			$file = fopen ($temp_file, 'a+');
 			$buffer_file["objdata"] = $config['attachment_store'] . '/event_report_module_' . $time.'_'.$content['id_rc'] . '.tmp';
-				
+			
 			$limit = 1000;
 			$offset = 0;
-				
+			
 			if ($data_count == false) {
 				$content_report = "    <event_report_module/>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
-			} else if ($data_count <= $limit) {
+			}
+			else if ($data_count <= $limit) {
 				$content_report = "    <event_report_module>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
 				
 				$sql = "SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2, id_agentmodule, estado, user_comment, tags, source, id_extra, owner_user
-				FROM tevento
-				WHERE id_agente =".$content['id_agent']." AND utimestamp > $datelimit AND utimestamp <=". $date. 
-				" GROUP BY id_agentmodule, evento";
-
+					FROM tevento
+					WHERE id_agente =".$content['id_agent']." AND utimestamp > $datelimit AND utimestamp <=". $date. 
+					" GROUP BY id_agentmodule, evento";
+				
 				$events = db_get_all_rows_sql($sql);
-
+				
 				xml_file_event ($events, $temp_file, 0, $content['id_agent']);
 				
 				$file = fopen ($temp_file, 'a+');
 				$content_report = "    </event_report_module>\n";
 				$result = fwrite($file, $content_report);
 				
-			} else {
+			}
+			else {
 				$content_report = "    <event_report_module>\n";
 				$result = fwrite($file, $content_report);
 				fclose($file);
@@ -856,10 +857,10 @@ foreach ($contents as $content) {
 				while ($offset < $data_count) {
 					
 					$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2, id_agentmodule, estado, user_comment, tags, source, id_extra, owner_user
-					FROM tevento
-					WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d 
-					GROUP BY id_agentmodule, evento ORDER BY time2 DESC LIMIT %d,%d', $content['id_agent_module'], $datelimit, $date, $offset,$limit);
-
+						FROM tevento
+						WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d 
+						GROUP BY id_agentmodule, evento ORDER BY time2 DESC LIMIT %d,%d', $content['id_agent_module'], $datelimit, $date, $offset,$limit);
+					
 					$events = db_get_all_rows_sql($sql);
 					
 					$position = xml_file_event ($events, $temp_file, $position, $content['id_agent']);	
@@ -875,7 +876,7 @@ foreach ($contents as $content) {
 		case 'alert_report_module':
 			$data["title"] = __('Alert report module');
 			$data["objdata"]["alert_report_module"] = array();
-		
+			
 			$alerts = reporting_alert_reporting_module ($content['id_agent_module'], $content['period'], $report["datetime"], true, false);
 			
 			foreach ($alerts->data as $row) {
@@ -1200,8 +1201,9 @@ foreach ($contents as $content) {
 					$content_report = "    	</module_configuration>\n";
 					$content_report .= "    </configuration_report_agent>\n";
 					$result = fwrite($file, $content_report);		
-
-				} else {
+					
+				}
+				else {
 					$content_report = "    	<module_configuration>\n";
 					
 					$file = fopen ($temp_file, 'a+');
@@ -1369,8 +1371,9 @@ foreach ($contents as $content) {
 						$content_report .= "   </agent_data>\n";
 						$result = fwrite($file, $content_report);
 						
-
-					} else {
+						
+					}
+					else {
 						$content_report = "    	<module_configuration>\n";
 						
 						$file = fopen ($temp_file, 'a+');

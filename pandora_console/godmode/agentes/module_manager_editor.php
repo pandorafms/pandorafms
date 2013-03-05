@@ -214,7 +214,8 @@ if ($id_agent_module) {
 		$mday = $cron_interval[2];
 		$month = $cron_interval[3];
 		$wday = $cron_interval[4];
-	} else {
+	}
+	else {
 		$minute = '*';
 		$hour = '*';
 		$mday = '*';
@@ -396,7 +397,7 @@ switch ($moduletype) {
 }
 
 
-if($config['enterprise_installed'] && $id_agent_module) {
+if ($config['enterprise_installed'] && $id_agent_module) {
 	if (policies_is_module_in_policy($id_agent_module)) {
 		policies_add_policy_linkation($id_agent_module);
 	}

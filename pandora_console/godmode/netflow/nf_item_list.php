@@ -52,13 +52,14 @@ $buttons['edit_report']['text'] = '<a href="' . $config['homeurl'] . 'index.php?
 //Header
 if (! defined ('METACONSOLE')) {
 	ui_print_page_header (__('Report items'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
-} else {
+}
+else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
 		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/operation/netflow/nf_reporting', 'text' => __('Netflow reports')),
 		array('link' => 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_item_list&id=' . $id, 'text' => __('Item list')));
 	ui_meta_print_page_header($nav_bar);
 }
-	
+
 $delete = (bool) get_parameter ('delete');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 $order = get_parameter('order');
@@ -169,15 +170,23 @@ $total_reports_item = $total_reports_item[0]['total'];
 
 //ui_pagination ($total_reports_item, $url);
 
-$sql = "SELECT id_rc FROM tnetflow_report_content where `order`= (select min(`order`) 
-		from tnetflow_report_content 
-		where id_report=$id) and id_report=$id";
+$sql = "SELECT id_rc
+	FROM tnetflow_report_content
+	WHERE `order`= (
+			SELECT min(`order`) 
+			FROM tnetflow_report_content 
+			WHERE id_report=$id)
+		AND id_report=$id";
 $item_min = db_get_row_sql($sql);
 $first_item = $item_min['id_rc'];
 
-$sql = "SELECT id_rc FROM tnetflow_report_content where `order`= (select max(`order`) 
-		from tnetflow_report_content 
-		where id_report=$id) and id_report=$id";
+$sql = "SELECT id_rc
+	FROM tnetflow_report_content
+	WHERE `order`= (
+			SELECT max(`order`) 
+			FROM tnetflow_report_content 
+			WHERE id_report=$id)
+		AND id_report=$id";
 $item_max = db_get_row_sql($sql);
 $last_item = $item_max['id_rc'];
 

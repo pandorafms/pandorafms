@@ -124,10 +124,12 @@ if (is_ajax ())
 				$sql = treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel, $search_free);
 				if ($sql === false) {
 					$rows = array ();
-				} else {
+				}
+				else {
 					$rows = db_get_all_rows_sql($sql);
 				}
-			} else {
+			}
+			else {
 				$rows = array ();
 				foreach ($servers as $server) {
 					if (metaconsole_connect($server) != NOERR) {
@@ -138,7 +140,8 @@ if (is_ajax ())
 					$sql = treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel, $search_free);
 					if ($sql === false) {
 						$server_rows = array ();
-					} else {
+					}
+					else {
 						$server_rows = db_get_all_rows_sql($sql);
 						if ($server_rows === false) {
 							$server_rows = array ();
@@ -539,8 +542,9 @@ switch ($activeTab) {
 if (! defined ('METACONSOLE')) {
 	$onheader = array('tag' => $tags_tab, 'os' => $os_tab, 'group' => $group_tab, 'module_group' => $module_group_tab, 'policies' => $policies_tab, 'module' => $module_tab);
 	ui_print_page_header (__('Tree view')." - ".__('Sort the agents by ') .$order, "images/extensions.png", false, "", false, $onheader);
-} else {
-
+}
+else {
+	
 	ui_meta_add_breadcrumb(array('link' => 'index.php?sec=monitoring&sec2=operation/tree', 'text' => __('Tree View')));
 	ui_meta_print_page_header($nav_bar);
 	
@@ -652,7 +656,8 @@ treeview_printTree($activeTab);
 						//change image of tree [+] to [-]
 						<?php if (! defined ('METACONSOLE')) {
 							echo 'var icon_path = \'operation/tree\';';
-						} else {
+						}
+						else {
 							echo 'var icon_path = \'../../operation/tree\';';
 						}
 						?>

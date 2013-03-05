@@ -5733,7 +5733,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			//Agent's modules
 			if ($modules == null) {
 				$modules = array();
-			} else {
+			}
+			else {
 				$data[0] = '';
 				$data[1] = '<b>'.agents_get_name ($content['id_agent'], 'upper').__(' MODULES').'</b>';
 				$table->colspan[3][1] = 10;
@@ -5873,10 +5874,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				
 				$modules = agents_get_modules ($agent['id_agente']);
-
+				
 				if ($modules == null) {
 					$modules = array();
-				} else {
+				}
+				else {
 					
 					//Agent's modules
 					$data[0] = '';
@@ -5918,50 +5920,52 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				
 				foreach ($modules as $id_agent_module=>$module) {
-				$sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo=$id_agent_module"; 
-				$data_module = db_get_row_sql($sql);
-								
-				$data = array();
-				
-				$data[0] = '';
-				
-				if ($data_module['disabled'] == 0)
-					$disabled = '';
-				else 
-					$disabled = ' (Disabled)';
-				$data[1] = $data_module['nombre'].$disabled;
-				$data[2] = ui_print_moduletype_icon ($data_module['id_tipo_modulo'], true);
-				$data[3] = $data_module['max_warning'].'/'.$data_module['min_warning'].' <br> '.$data_module['max_critical'].'/'.$data_module['min_critical'];
-				$data[4] = $data_module['module_ff_interval'];
-				$data[5] = groups_get_name ($content['id_group'], true);
-				$data[6] = $data_module['descripcion'];
-				
-				if (($data_module['module_interval'] == 0) || ($data_module['module_interval'] == ''))
-					$data[7] = db_get_value('intervalo', 'tagente', 'id_agente', $content['id_agent']);
-				else
-					$data[7] = $data_module['module_interval'];
+					$sql = "SELECT *
+						FROM tagente_modulo
+						WHERE id_agente_modulo=$id_agent_module"; 
+					$data_module = db_get_row_sql($sql);
+					
+					$data = array();
+					
+					$data[0] = '';
+					
+					if ($data_module['disabled'] == 0)
+						$disabled = '';
+					else 
+						$disabled = ' (Disabled)';
+					$data[1] = $data_module['nombre'].$disabled;
+					$data[2] = ui_print_moduletype_icon ($data_module['id_tipo_modulo'], true);
+					$data[3] = $data_module['max_warning'].'/'.$data_module['min_warning'].' <br> '.$data_module['max_critical'].'/'.$data_module['min_critical'];
+					$data[4] = $data_module['module_ff_interval'];
+					$data[5] = groups_get_name ($content['id_group'], true);
+					$data[6] = $data_module['descripcion'];
+					
+					if (($data_module['module_interval'] == 0) || ($data_module['module_interval'] == ''))
+						$data[7] = db_get_value('intervalo', 'tagente', 'id_agente', $content['id_agent']);
+					else
+						$data[7] = $data_module['module_interval'];
 					
 					
-				$data[8] = $data_module['unit'];
-				
-				$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $id_agent_module);
-				modules_get_status($id_agent_module, $module_status['estado'], $module_status['datos'], $status, $title);
-				$data[9] = ui_print_status_image($status, $title, true);
-				
-				$sql_tag = "SELECT name FROM ttag WHERE id_tag IN (
-								SELECT id_tag FROM ttag_module
-								WHERE id_agente_modulo=$id_agent_module)";
-				$tags = db_get_all_rows_sql($sql_tag);
-				if ($tags === false)
-					$tags = '';
-				else
-					$tags = implode (",", $tags);
+					$data[8] = $data_module['unit'];
 					
-				$data[10] = $tags;
-				array_push ($table->data, $data);
-				
-				$i++;
-			}
+					$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $id_agent_module);
+					modules_get_status($id_agent_module, $module_status['estado'], $module_status['datos'], $status, $title);
+					$data[9] = ui_print_status_image($status, $title, true);
+					
+					$sql_tag = "SELECT name FROM ttag WHERE id_tag IN (
+									SELECT id_tag FROM ttag_module
+									WHERE id_agente_modulo=$id_agent_module)";
+					$tags = db_get_all_rows_sql($sql_tag);
+					if ($tags === false)
+						$tags = '';
+					else
+						$tags = implode (",", $tags);
+					
+					$data[10] = $tags;
+					array_push ($table->data, $data);
+					
+					$i++;
+				}
 			
 			}
 			break;
@@ -5970,7 +5974,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'netflow_data':
 		case 'netflow_statistics':
 		case 'netflow_summary':
-
+			
 			// Read the report item
 			$report_id = $report['id_report'];
 			$content_id = $content['id_rc'];
@@ -5984,13 +5988,13 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			// Calculate the start and end dates
 			$end_date = $report['datetime'];
 			$start_date = $end_date - $period;
-
+			
 			// Get item filters
 			$filter = db_get_row_sql("SELECT * FROM tnetflow_filter WHERE id_sg = '" . (int)$content['text'] . "'", false, true);
 			if ($description == '') {
 				$description = $filter['id_name'];
 			}
-
+			
 			$table->colspan[0][0] = 4;
 			$table->data[0][0] = '<h4>' . $description . '</h4>';
 			$table->colspan[1][0] = 4;

@@ -705,7 +705,8 @@ function agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed
 				array_push ($fields, $field.'="'.$value.'"');
 			}
 			$where .= implode (' AND ', $fields);
-		} else {
+		}
+		else {
 			$where .= $filter;
 		}
 	}

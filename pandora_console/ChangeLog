@@ -1,3 +1,11 @@
+2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor.php,
+	godmode/netflow/nf_item_list.php, include/functions_reporting.php,
+	include/functions_modules.php, include/functions_snmp_browser.php,
+	include/functions_agents.php, operation/tree.php,
+	operation/reporting/reporting_xml.php: improved source code style.
+
 2013-03-05  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php

@@ -58,13 +58,13 @@ ALTER TABLE `tincidencia` ADD COLUMN `id_agent` int(10) unsigned NULL default 0;
 -- ---------------------------------------------------------------------
 ALTER TABLE `tagente` ADD COLUMN `url_address` mediumtext NULL;
 ALTER TABLE `tagente` ADD COLUMN `quiet` tinyint(1) NOT NULL DEFAULT '0';
-ALTER TABLE `tagente` ADD COLUMN `normal_count` bigint(20) unsigned NOT NULL default '0';
-ALTER TABLE `tagente` ADD COLUMN `warning_count` bigint(20) unsigned NOT NULL default '0';
-ALTER TABLE `tagente` ADD COLUMN `critical_count` bigint(20) unsigned NOT NULL default '0';
-ALTER TABLE `tagente` ADD COLUMN `unknown_count` bigint(20) unsigned NOT NULL default '0';
-ALTER TABLE `tagente` ADD COLUMN `notinit_count` bigint(20) unsigned NOT NULL default '0';
-ALTER TABLE `tagente` ADD COLUMN `total_count` bigint(20) unsigned NOT NULL default '0';
-ALTER TABLE `tagente` ADD COLUMN `fired_count` bigint(20) unsigned NOT NULL default '0';
+ALTER TABLE `tagente` ADD COLUMN `normal_count` bigint(20) NOT NULL default '0';
+ALTER TABLE `tagente` ADD COLUMN `warning_count` bigint(20) NOT NULL default '0';
+ALTER TABLE `tagente` ADD COLUMN `critical_count` bigint(20) NOT NULL default '0';
+ALTER TABLE `tagente` ADD COLUMN `unknown_count` bigint(20) NOT NULL default '0';
+ALTER TABLE `tagente` ADD COLUMN `notinit_count` bigint(20) NOT NULL default '0';
+ALTER TABLE `tagente` ADD COLUMN `total_count` bigint(20) NOT NULL default '0';
+ALTER TABLE `tagente` ADD COLUMN `fired_count` bigint(20) NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `talert_special_days`

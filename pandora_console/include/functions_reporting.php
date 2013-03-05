@@ -1009,29 +1009,29 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	
 	$tdata = array();
 	$tdata[0] = html_print_image('images/status_sets/default/agent_critical_ball.png', true, array('title' => __('Monitor critical'), 'width' => '20px'));
-	$tdata[1] = $data["monitor_critical"] == 0 ? '-' : $data["monitor_critical"];
+	$tdata[1] = $data["monitor_critical"] <= 0 ? '-' : $data["monitor_critical"];
 	$tdata[1] = '<a style="color: ' . COL_CRITICAL . ';" class="big_data" href="' . $urls['monitor_critical'] . '">' . $tdata[1] . '</a>';
 
 	$tdata[2] = html_print_image('images/status_sets/default/agent_warning_ball.png', true, array('title' => __('Monitor warning'), 'width' => '20px'));
-	$tdata[3] = $data["monitor_warning"] == 0 ? '-' : $data["monitor_warning"];
+	$tdata[3] = $data["monitor_warning"] <= 0 ? '-' : $data["monitor_warning"];
 	$tdata[3] = '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 
 	$tdata = array();
 	$tdata[0] = html_print_image('images/status_sets/default/agent_ok_ball.png', true, array('title' => __('Monitor normal'), 'width' => '20px'));
-	$tdata[1] = $data["monitor_ok"] == 0 ? '-' : $data["monitor_ok"];
+	$tdata[1] = $data["monitor_ok"] <= 0 ? '-' : $data["monitor_ok"];
 	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
 
 	$tdata[2] = html_print_image('images/status_sets/default/agent_no_monitors_ball.png', true, array('title' => __('Monitor unknown'), 'width' => '20px'));
-	$tdata[3] = $data["monitor_unknown"] == 0 ? '-' : $data["monitor_unknown"];
+	$tdata[3] = $data["monitor_unknown"] <= 0 ? '-' : $data["monitor_unknown"];
 	$tdata[3] = '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 
 	$tdata = array();
 	$tdata[0] = html_print_image('images/status_sets/default/agent_no_data_ball.png', true, array('title' => __('Monitor not init'), 'width' => '20px'));
-	$tdata[1] = $data["monitor_not_init"] == 0 ? '-' : $data["monitor_not_init"];
+	$tdata[1] = $data["monitor_not_init"] <= 0 ? '-' : $data["monitor_not_init"];
 	$tdata[1] = '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
 
 	$tdata[2] = $tdata[3] = '';
@@ -1106,11 +1106,11 @@ function reporting_get_stats_alerts($data) {
 
 	$tdata = array();
 	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts'), 'width' => '20px'));
-	$tdata[1] = $data["monitor_alerts"] == 0 ? '-' : $data["monitor_alerts"];
+	$tdata[1] = $data["monitor_alerts"] <= 0 ? '-' : $data["monitor_alerts"];
 	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
 
 	$tdata[2] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts'), 'width' => '20px'));
-	$tdata[3] = $data["monitor_alerts_fired"] == 0 ? '-' : $data["monitor_alerts_fired"];
+	$tdata[3] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
 	$tdata[3] = '<a style="color: ' . COL_ALERTFIRED . ';" class="big_data" href="' . $urls["monitor_alerts_fired"] . '">' . $tdata[3] . '</a>';
 	$table_al->rowclass[] = '';
 	$table_al->data[] = $tdata;
@@ -1170,11 +1170,11 @@ function reporting_get_stats_agents_monitors($data) {
 
 	$tdata = array();
 	$tdata[0] = html_print_image('images/bricks.png', true, array('title' => __('Total agents'), 'width' => '20px'));
-	$tdata[1] = $data["total_agents"] == 0 ? '-' : $data["total_agents"];
+	$tdata[1] = $data["total_agents"] <= 0 ? '-' : $data["total_agents"];
 	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
 
 	$tdata[2] = html_print_image('images/brick.png', true, array('title' => __('Monitor checks'), 'width' => '20px'));
-	$tdata[3] = $data["monitor_checks"] == 0 ? '-' : $data["monitor_checks"];
+	$tdata[3] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
 	$tdata[3] = '<a style="color: black;" class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[3] . '</a>';
 	$table_am->rowclass[] = '';
 	$table_am->data[] = $tdata;

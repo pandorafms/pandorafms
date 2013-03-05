@@ -66,11 +66,12 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 		for ($i = 1; $i <= $depth; $i++) {
 			if ($last_array[$i] == 1) {
 				echo '<img src="' . $url . '/no_branch.png" style="vertical-align: middle;">';
-			} else {
+			}
+			else {
 				echo '<img src="' . $url . '/branch.png" style="vertical-align: middle;">';
 			}
 		}
-	
+		
 		// Branch
 		if (! empty ($sub_level['__LEAVES__'])) {
 			echo "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";	

@@ -2686,20 +2686,29 @@ sub cli_validate_policy_alerts() {
 	
 	if($#policy_alerts_id_array == -1) {
 		print_log "[INFO] No alerts found in the policy '$policy_name'\n\n";
+		return;
 	}
 	
 	$policy_alerts_id = join(',',@policy_alerts_id_array);
 	
+	#Get the fired alerts that match with the filter to update counts after validate it
+	my @fired_alerts = get_db_rows ($dbh, "SELECT id_agent_module, count(id) alerts FROM talert_template_modules WHERE id_policy_alerts IN (?) AND times_fired > 0 GROUP BY id_agent_module", $policy_alerts_id);
+
 	print_log "[INFO] Validating the alerts of the policy '$policy_name'\n\n";
 		
 	my $res = db_update ($dbh, "UPDATE talert_template_modules SET times_fired = 0, internal_counter = 0 WHERE id_policy_alerts IN (?)", $policy_alerts_id);
-	
+		
 	if($res == -1) {
 		print_log "[ERROR] Alerts cannot be validated\n\n";
 	}
 	else {
-		# Update fired alerts count in agents
-		db_update ($dbh, "UPDATE tagente SET fired_count = 0");
+		# Update fired alerts count in agents if necessary
+		if($#fired_alerts > -1) {
+			foreach my $fired_alert (@fired_alerts) {
+				my $id_agent = get_module_agent_id($dbh,  $fired_alert->{'id_agent_module'});
+				db_update ($dbh, 'UPDATE tagente SET fired_count=fired_count-? WHERE id_agente=?', $fired_alert->{'alerts'}, $id_agent);
+			}
+		}
 	}
 }
 

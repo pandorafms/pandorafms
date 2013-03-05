@@ -1,3 +1,15 @@
+2013-03-05  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php
+	pandoradb.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql: set the
+	counts columns of agent table as "signed" to avoid overflow
+	and add check to tactical statistics to avoid show negative
+	numbers
+
+	* godmode/agentes/module_manager_editor_plugin.php: Increase
+	the size of text inputs in plugin modules for bug 3606401
+
 2013-03-05  Junichi Satoh  <junichi@rworks.jp>
 	
 	* include/help/ja/help_tags_config.php,

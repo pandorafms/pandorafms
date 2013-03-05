@@ -84,7 +84,7 @@ if(!empty($macros)) {
 		if(!empty($m['help'])) {
 			$data[0] .= ui_print_help_tip ($m['help'], true);
 		}
-		$data[1] = html_print_input_text($m['macro'], $m['value'], '', 15, 60, true);
+		$data[1] = html_print_input_text($m['macro'], $m['value'], '', 100, 255, true);
 		$table_simple->colspan['macro'.$m['macro']][1] = 3;
 		$table_simple->rowclass['macro'.$m['macro']] = 'macro_field';
 

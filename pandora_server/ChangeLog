@@ -1,3 +1,8 @@
+2013-03-05  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Add update counts when validate 
+	all the alerts of a policy in CLI option. Bug 3606759
+
 2013-03-04  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm

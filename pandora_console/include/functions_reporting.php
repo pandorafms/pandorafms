@@ -6648,7 +6648,8 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent') {
 	$stats = array();
 
 	if(isset($counts_info['total_count'])) {
-		$total_count = $counts_info['total_count'];
+		$not_init = isset($counts_info['notinit_count']) ? $counts_info['notinit_count'] : 0;
+		$total_count = $counts_info['total_count'] - $not_init;
 		$stats[] = array('name' => 'total_count', 'count' => $total_count, 'title' => sprintf($template_title['total_count'], $total_count));
 	}
 	
@@ -6697,7 +6698,7 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent') {
 		$out .= ' : <span class="orange forced_title" id="fired_count_' . $uniq_id . '">' . $fired_count . '</span>';
 	if (isset($critical_count) && $critical_count > 0)
 		$out .= ' : <span class="red forced_title" id="critical_count_' . $uniq_id . '">' . $critical_count . '</span>';
-	if (isset($warning_counts) && $warning_count > 0)
+	if (isset($warning_count) && $warning_count > 0)
 		$out .= ' : <span class="yellow forced_title" id="warning_count_' . $uniq_id . '">' . $warning_count . '</span>';
 	if (isset($unknown_count) && $unknown_count > 0)
 		$out .= ' : <span class="grey forced_title" id="unknown_count_' . $uniq_id . '">' . $unknown_count . '</span>';

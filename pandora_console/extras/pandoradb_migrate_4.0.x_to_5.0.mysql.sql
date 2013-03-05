@@ -438,11 +438,26 @@ ALTER TABLE `tusuario_perfil` ADD COLUMN `tags` TEXT NOT NULL;
 -- ---------------------------------------------------------------------
 ALTER TABLE `ttag` ADD COLUMN `email` text NULL;
 
+-- ---------------------------------------------------------------------
+-- Add more fields in snmp alerts (05/03/13)
+-- ---------------------------------------------------------------------
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field4` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field5` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field6` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field7` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field8` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field9` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field10` text NOT NULL;
+
+-- ---------------------------------------------------------------------
+-- ---------------------------------------------------------------------
+-- DATA
+-- ---------------------------------------------------------------------
+-- ---------------------------------------------------------------------
 
 -- ---------------------------------------------------------------------
 -- Adding new network_component
--- ----------------------------------------------------------------------
-
+-- ---------------------------------------------------------------------
  
 INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `wizard_level`) VALUES ('Free&#x20;RAM','Available&#x20;RAM&#x20;memory&#x20;in&#x20;bytes',16,1,0,0,300,0,'','','','SELECT&#x20;AvailableBytes&#x20;from&#x20;Win32_PerfRawData_PerfOS_Memory',4,6,0,'','','10',0,1,0.00,0.00,NULL,0.00,0.00,NULL,0,NULL,NULL,NULL,0,0,0.0000000000000,'basic');
 INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `wizard_level`) VALUES ('Hostname','The&#x20;hostname&#x20;of&#x20;the&#x20;machine.',16,3,0,0,300,0,'','','','ServerName&#x20;FROM&#x20;Win32_WindowsProductActivation',1,6,0,'','','10',0,1,0.00,0.00,NULL,0.00,0.00,NULL,0,NULL,NULL,NULL,0,0,0.0000000000000,'basic');

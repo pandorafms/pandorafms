@@ -1029,7 +1029,8 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			$nextData = modules_get_next_data ($agent_module_id, $date);
 			if ($nextData !== false) {
 				array_push ($data, $nextData);
-			} else if (count ($data) > 0) {
+			}
+			else if (count ($data) > 0) {
 				// Propagate the last known data to the end of the interval
 				$nextData = array_pop ($data);
 				array_push ($data, $nextData);

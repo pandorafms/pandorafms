@@ -597,7 +597,8 @@ function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $
 		$values[$i]['datetime'] = $end_date;
 		if ($aggregate == 'proto') {
 			$values[$i]['agg'] = $val[3];
-		} else {
+		}
+		else {
 			$values[$i]['agg'] = $val[4];
 		}
 		if (! isset ($val[9])) {
@@ -1002,7 +1003,8 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 			if ($output == 'HTML' || $output == 'PDF') {
 				$html = netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit);
 				return $html;
-			} else if ($output == 'XML') {
+			}
+			else if ($output == 'XML') {
 				return netflow_stat_xml ($data);
 			}
 			break;

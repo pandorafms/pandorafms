@@ -841,7 +841,7 @@ function groups_create_group($group_name, $rest_values){
 	
 	$check = db_get_value('nombre', 'tgrupo', 'nombre', $group_name);
 	
-	if (!$check){
+	if (!$check) {
 		$result = db_process_sql_insert('tgrupo', $values);
 	}
 	else {
@@ -860,10 +860,11 @@ function groups_agent_not_init ($group_array) {
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
@@ -896,7 +897,7 @@ function groups_agent_ok ($group_array) {
 		return 0;
 		
 	}
-	else if (!is_array ($group_array)){
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
 	
@@ -913,10 +914,11 @@ function groups_agent_critical ($group_array) {
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
@@ -928,14 +930,15 @@ function groups_agent_critical ($group_array) {
 // Get warning agents by using the status code in modules.
 
 function groups_agent_warning ($group_array) {
-
+	
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
@@ -946,36 +949,38 @@ function groups_agent_warning ($group_array) {
 // Get monitor NOT INIT, except disabled AND async modules
 
 function groups_monitor_not_init ($group_array) {
-
+	
 	// If there are not groups to query, we jump to nextone
 	
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	//TODO REVIEW ORACLE AND POSTGRES	
+	//TODO REVIEW ORACLE AND POSTGRES
 	return db_get_sql ("SELECT SUM(notinit_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");	
 }
 
 // Get monitor OK, except disabled and non-init
 
 function groups_monitor_ok ($group_array) {
-
+	
 	// If there are not groups to query, we jump to nextone
 	
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
@@ -986,16 +991,17 @@ function groups_monitor_ok ($group_array) {
 // Get monitor CRITICAL, except disabled and non-init
 
 function groups_monitor_critical ($group_array) {
-
+	
 	// If there are not groups to query, we jump to nextone
 	
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
@@ -1012,30 +1018,32 @@ function groups_monitor_warning ($group_array) {
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	//TODO REVIEW ORACLE AND POSTGRES	
+	//TODO REVIEW ORACLE AND POSTGRES
 	return db_get_sql ("SELECT SUM(warning_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");						
 }
 
 // Get monitor UNKNOWN, except disabled and non-init
 
 function groups_monitor_unknown ($group_array) {
-
+	
 	// If there are not groups to query, we jump to nextone
 	
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
@@ -1046,58 +1054,58 @@ function groups_monitor_unknown ($group_array) {
 // Get alerts defined for a given group, except disabled 
 
 function groups_monitor_alerts ($group_array) {
-
+	
 	// If there are not groups to query, we jump to nextone
 	
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
 	
 	return db_get_sql ("SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-				WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0  			
-					AND	talert_template_modules.disabled = 0 
-					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
-					
+		FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
+		WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
+			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
+			AND	talert_template_modules.disabled = 0 
+			AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
 }
 
 // Get alert configured currently FIRED, except disabled 
 
 function groups_monitor_fired_alerts ($group_array) {
-
+	
 	// If there are not groups to query, we jump to nextone
 	
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)){
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
 	
 	return db_get_sql ("SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-				WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 
-					AND talert_template_modules.disabled = 0 
-					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-					AND times_fired > 0");
-					
+		FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
+		WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
+			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 
+			AND talert_template_modules.disabled = 0 
+			AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
+			AND times_fired > 0");
 }
 
 /**
@@ -1114,10 +1122,11 @@ function groups_total_agents ($group_array, $disabled = false) {
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)){
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
@@ -1125,9 +1134,8 @@ function groups_total_agents ($group_array, $disabled = false) {
 	
 	if (!$disabled)
 		$sql .= " AND disabled = 0";
-
+	
 	return db_get_sql ($sql);
-					
 }
 
 /**
@@ -1143,16 +1151,17 @@ function groups_agent_disabled ($group_array) {
 	if (empty ($group_array)) {
 		return 0;
 		
-	} else if (!is_array ($group_array)){
+	}
+	else if (!is_array ($group_array)){
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
 	$sql = "SELECT COUNT(*) FROM tagente WHERE id_grupo IN $group_clause AND disabled = 1";
 	
-	return db_get_sql ($sql);	
+	return db_get_sql ($sql);
 	
 }
 

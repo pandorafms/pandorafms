@@ -1,3 +1,10 @@
+2013-03-05  Junichi Satoh  <junichi@rworks.jp>
+	
+	* include/help/ja/help_tags_config.php,
+        include/help/ja/help_agent_server.php: Added new help files.
+	
+        * include/help/ja/help_module_definition.php: Updated the description.
+
 2013-03-04  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_alerts.php

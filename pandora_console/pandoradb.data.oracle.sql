@@ -111,6 +111,7 @@ INSERT INTO tconfig (token, value) VALUES ('meta_num_elements', 100);
 INSERT INTO tconfig (token, value) VALUES ('update_manager_installed', 1);
 INSERT INTO tconfig (token, value) VALUES ('num_files_attachment', 100);
 INSERT INTO tconfig (token, value) VALUES ('show_vc', 1);
+INSERT INTO tconfig (token, value) VALUES ('inventory_changes_blacklist', '1,2,20,21');
 COMMIT;
 END;;
 

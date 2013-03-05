@@ -1,3 +1,14 @@
+2013-03-05  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql
+	pandoradb.data.postgreSQL.sql
+	pandoradb.data.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Added CPU
+	and Process inventory change types to black list in default 
+	SQL data script for bug 3606111
+
 2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/snmp_explorer.php: improved the code style.

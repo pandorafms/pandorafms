@@ -1,3 +1,24 @@
+2013-03-05  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php: Fix little
+	bug of agents statistics
+
+	* include/help/en/help_field_match_snmp.php
+	include/help/en/help_snmp_alert_field1.php
+	include/help/es/help_field_match_snmp.php
+	include/help/es/help_snmp_alert_field1.php
+	pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	godmode/alerts/configure_alert_action.php
+	godmode/alerts/alert_commands.php
+	godmode/snmpconsole/snmp_alert.php: Adapt snmp alert
+	editor to new alerts macro system. Now there are 10 fields
+	and are dinamically charged from javascript. Bug 3605775
+
 2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/gis_maps/render_view.php,

@@ -469,6 +469,23 @@ ALTER TABLE tusuario_perfil ADD (tags CLOB NOT NULL default '');
 ALTER TABLE ttag ADD (email CLOB NULL);
 
 -- ---------------------------------------------------------------------
+-- Add more fields in snmp alerts (05/03/13)
+-- ---------------------------------------------------------------------
+ALTER TABLE talert_snmp ADD COLUMN (al_field5 CLOB NOT NULL default '');
+ALTER TABLE talert_snmp ADD COLUMN (al_field5 CLOB NOT NULL default '');
+ALTER TABLE talert_snmp ADD COLUMN (al_field6 CLOB NOT NULL default '');
+ALTER TABLE talert_snmp ADD COLUMN (al_field7 CLOB NOT NULL default '');
+ALTER TABLE talert_snmp ADD COLUMN (al_field8 CLOB NOT NULL default '');
+ALTER TABLE talert_snmp ADD COLUMN (al_field9 CLOB NOT NULL default '');
+ALTER TABLE talert_snmp ADD COLUMN (al_field10 CLOB NOT NULL default '');
+
+-- ---------------------------------------------------------------------
+-- ---------------------------------------------------------------------
+-- DATA
+-- ---------------------------------------------------------------------
+-- ---------------------------------------------------------------------
+
+-- ---------------------------------------------------------------------
 -- Adding new network_component
 -- ---------------------------------------------------------------------
 

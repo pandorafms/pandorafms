@@ -39,7 +39,14 @@ $pure = get_parameter('pure', 0);
 if (is_ajax ()) {
 	$get_alert_command = (bool) get_parameter ('get_alert_command');
 	if ($get_alert_command) {
-		$id = (int) get_parameter ('id');
+		$id = (int) get_parameter ('id', 0);
+		
+		// If command ID is not provided, check for action id
+		if($id == 0) {
+			$id_action = (int) get_parameter ('id_action');
+			$id = alerts_get_alert_action_alert_command_id($id_action);
+		}
+		
 		$command = alerts_get_alert_command ($id);
 		
 		// If is setted a description, we change the carriage return by <br> tags

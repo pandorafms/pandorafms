@@ -192,7 +192,7 @@ $(document).ready (function () {
 			value: "1"});
 		values.push ({name: "id",
 			value: this.value});
-		jQuery.get (<?php echo "'" . ui_get_full_url(false, false, false, false) . "'"; ?> + "ajax.php",
+		jQuery.get (<?php echo "'" . ui_get_full_url("ajax.php", false, false, false) . "'"; ?>,
 			values,
 			function (data, status) {
 				original_command = js_html_entity_decode (data["command"]);
@@ -227,7 +227,7 @@ $(document).ready (function () {
 		);
 	});
 	
-	// Charge the fields of the 
+	// Charge the fields of the command
 	$("#id_command").trigger('change');
 });
 

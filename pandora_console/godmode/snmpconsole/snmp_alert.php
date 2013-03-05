@@ -45,9 +45,16 @@ else if (isset ($_GET["submit"])) {
 	$custom_value = (string) get_parameter_post ("custom_value");
 	$time_threshold = (int) get_parameter_post ("time_threshold", SECONDS_5MINUTES);
 	$time_other = (int) get_parameter_post ("time_other", -1);
-	$al_field1 = (string) get_parameter_post ("al_field1");
-	$al_field2 = (string) get_parameter_post ("al_field2");
-	$al_field3 = (string) get_parameter_post ("al_field3");
+	$al_field1 = (string) get_parameter_post ("field1_value");
+	$al_field2 = (string) get_parameter_post ("field2_value");
+	$al_field3 = (string) get_parameter_post ("field3_value");
+	$al_field4 = (string) get_parameter_post ("field4_value");
+	$al_field5 = (string) get_parameter_post ("field5_value");
+	$al_field6 = (string) get_parameter_post ("field6_value");
+	$al_field7 = (string) get_parameter_post ("field7_value");
+	$al_field8 = (string) get_parameter_post ("field8_value");
+	$al_field9 = (string) get_parameter_post ("field9_value");
+	$al_field10 = (string) get_parameter_post ("al_field10");
 	$max_alerts = (int) get_parameter_post ("max_alerts", 1);
 	$min_alerts = (int) get_parameter_post ("min_alerts", 0);
 	$priority = (int) get_parameter_post ("priority", 0);
@@ -70,6 +77,13 @@ else if (isset ($_GET["submit"])) {
 			'al_field1' => $al_field1,
 			'al_field2' => $al_field2,
 			'al_field3' => $al_field3,
+			'al_field4' => $al_field4,
+			'al_field5' => $al_field5,
+			'al_field6' => $al_field6,
+			'al_field7' => $al_field7,
+			'al_field8' => $al_field8,
+			'al_field9' => $al_field9,
+			'al_field10' => $al_field10,
 			'description' => $description,
 			'agent' => $source_ip,
 			'custom_oid' => $custom_value,
@@ -102,7 +116,10 @@ else if (isset ($_GET["submit"])) {
 	else {
 		$sql = sprintf ("UPDATE talert_snmp SET
 			priority = %d, id_alert = %d, al_field1 = '%s',
-			al_field2 = '%s', al_field3 = '%s', description = '%s',
+			al_field2 = '%s', al_field3 = '%s', al_field4 = '%s',
+			al_field5 = '%s', al_field6 = '%s',al_field7 = '%s',
+			al_field8 = '%s', al_field9 = '%s',al_field10 = '%s',
+			description = '%s',
 			agent = '%s', custom_oid = '%s', oid = '%s',
 			time_threshold = %d, max_alerts = %d, min_alerts = %d,
 			_snmp_f1_ = '%s', _snmp_f2_ = '%s', _snmp_f3_ = '%s',
@@ -110,6 +127,8 @@ else if (isset ($_GET["submit"])) {
 			trap_type = %d, single_value = '%s' 
 			WHERE id_as = %d",
 			$priority, $alert_type, $al_field1, $al_field2, $al_field3,
+			$al_field4, $al_field5, $al_field6, $al_field7, $al_field8,
+			$al_field9, $al_field10,
 			$description, $source_ip, $custom_value, $oid, $time_threshold,
 			$max_alerts, $min_alerts, $custom_oid_data_1, $custom_oid_data_2,
 			$custom_oid_data_3, $custom_oid_data_4, $custom_oid_data_5,
@@ -146,6 +165,13 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$al_field1 = $alert["al_field1"];
 	$al_field2 = $alert["al_field2"];
 	$al_field3 = $alert["al_field3"];
+	$al_field4 = $alert["al_field4"];
+	$al_field5 = $alert["al_field5"];
+	$al_field6 = $alert["al_field6"];
+	$al_field7 = $alert["al_field7"];
+	$al_field8 = $alert["al_field8"];
+	$al_field9 = $alert["al_field9"];
+	$al_field10 = $alert["al_field10"];
 	$max_alerts = $alert["max_alerts"];
 	$min_alerts = $alert["min_alerts"];
 	$priority = $alert["priority"];	
@@ -170,6 +196,13 @@ elseif (isset ($_GET["update_alert"])) {
 	$al_field1 = "";
 	$al_field2 = "";
 	$al_field3 = "";
+	$al_field4 = "";
+	$al_field5 = "";
+	$al_field6 = "";
+	$al_field7 = "";
+	$al_field8 = "";
+	$al_field9 = "";
+	$al_field10 = "";
 	$max_alerts = 1;
 	$min_alerts = 0;
 	$priority = 0;
@@ -208,14 +241,12 @@ if (isset ($_GET["update_alert"])) {
 	
 	/* SNMP alert filters */
 	
-	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color">';
+	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox" style="font-weight: bold">';
 	
 	// Description
 	echo '<tr><td class="datos">'.__('Description').'</td><td class="datos">';
 	html_print_input_text ("description", $description, '', 60);
 	echo '</td></tr>';
-	
-	
 	
 	//echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
 	
@@ -310,19 +341,21 @@ if (isset ($_GET["update_alert"])) {
 	//echo '<tr><td class="datos"><b>' . __('Alert configuration') . ui_print_help_icon("snmp_alert_configuration", true) . '</b></td></tr>';
 	
 	// Alert fields
-	echo '<tr><td class="datos">'.__('Field #1 (Alias, name)');
-	echo ui_print_help_icon ("snmp_alert_field1", true);
-	echo '</td><td class="datos">';
-	html_print_input_text ("al_field1", $al_field1, '', 60);
-	echo '</td></tr>';
 	
-	echo '<tr><td class="datos2">'.__('Field #2 (Single Line)').'</td><td class="datos2">';
-	html_print_input_text ("al_field2", $al_field2, '', 60);
-	echo '</td></tr>';
+	$al = array('al_field1' => $al_field1, 'al_field2' => $al_field2, 'al_field3' => $al_field3,
+			'al_field4' => $al_field4, 'al_field5' => $al_field5, 'al_field6' => $al_field6,
+			'al_field7' => $al_field7, 'al_field8' => $al_field8, 'al_field9' => $al_field9,
+			'al_field10' => $al_field10);
 	
-	echo '<tr><td class="datos" valign="top">'.__('Field #3 (Full Text)').'<td class="datos">';
-	html_print_textarea ("al_field3", $al_field3, 4, $al_field3, 'style="width:400px"');
-	echo '</td></tr>';
+	// Hidden div with help hint to fill with javascript
+	html_print_div(array('id' => 'help_snmp_alert_hint', 'content' => ui_print_help_icon ("snmp_alert_field1", true), 'hidden' => true));
+	
+	for ($i=1; $i<=10; $i++) {
+		echo '<tr id="table1-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
+		echo '<td class="datos">'.html_print_image('images/spinner.gif',true);
+		html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
+		echo '</td></tr>';
+	}
 	
 	// Max / Min alerts
 	echo '<tr><td class="datos2">'.__('Min. number of alerts').'</td><td class="datos2">';
@@ -397,6 +430,7 @@ if (isset ($_GET["update_alert"])) {
 	}
 	echo '</td></tr></table>';
 	echo "</table>";
+	echo "</form>";
 }
 else {
 	require_once ('include/functions_alerts.php');
@@ -504,5 +538,53 @@ function time_changed () {
 
 $(document).ready (function () {
 	$('#time_threshold').change (time_changed);
+	
+	$("#alert_type").change (function () {
+		values = Array ();
+		values.push ({name: "page",
+			value: "godmode/alerts/alert_commands"});
+		values.push ({name: "get_alert_command",
+			value: "1"});
+		values.push ({name: "id_action",
+			value: this.value});
+		jQuery.get (<?php echo "'" . ui_get_full_url("ajax.php", false, false, false) . "'"; ?>,
+			values,
+			function (data, status) {
+				original_command = js_html_entity_decode (data["command"]);
+				command_description = js_html_entity_decode (data["description"]);
+				for (i=1; i<=10; i++) {
+					var old_value = '';
+					// Only keep the value if is provided from hidden (first time)
+					if ($("[name=field"+i+"_value]").attr('id') == "hidden-field" + i + "_value") {
+						old_value = $("[name=field"+i+"_value]").val();
+					}
+					
+					// If the row is empty, hide de row
+					if(data["fields_rows"][i] == '') {
+						$('#table1-field'+i).hide();
+					}
+					else {
+						$('#table1-field'+i).replaceWith(data["fields_rows"][i]);
+						
+						// The row provided has a predefined class. We delete it
+						$('#table1-field'+i).removeAttr('class');
+						
+						// Add help hint only in first field
+						if(i == 1) {
+							var td_content = $('#table1-field'+i).find('td').eq(0);
+							td_content.html(td_content.html() + $('#help_snmp_alert_hint').html());
+						}
+						
+						$("[name=field"+i+"_value]").val(old_value);
+						$('#table1-field').show();
+					}
+				}
+			},
+			"json"
+		);
+	});
+	
+	// Charge the fields of the action 
+	$("#alert_type").trigger('change');
 }); 
 </script>

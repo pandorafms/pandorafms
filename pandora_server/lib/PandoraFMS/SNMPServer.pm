@@ -47,42 +47,16 @@ sub new ($$;$) {
 	return undef unless $config->{'snmpconsole'} == 1;
 
 	# Start snmptrapd
-
-	my $pid_file = '/var/run/pandora_snmptrapd.pid';
-
-	my $snmptrapd_running = 0;
-
-	if ( -e $pid_file && open (PIDFILE, $pid_file)) {
-		my $pid = <PIDFILE> + 0;
-		close PIDFILE;
-
-		# Check if snmptrapd is running
-		if ($snmptrapd_running = kill (0, $pid)) {
-			logger ($config, "snmptrapd (pid $pid) is already running, attempting to kill it...", 1);
-			print_message ($config, "snmptrapd (pid $pid) is already running, attempting to kill it...", 1);
-			kill (9, $pid);
-		}
-	}
-
-	# Ignore auth failure traps
-	my $snmp_ignore_authfailure = ($config->{'snmp_ignore_authfailure'} eq '1' ? ' -a' : '');
-
-	# Select agent-addr field of the PDU or PDU source address for V1 traps
-	my $address_format = ($config->{'snmp_pdu_address'} eq '0' ? '%a' : '%b');
-	
-	my $snmptrapd_args = ' -t -On -n' . $snmp_ignore_authfailure . ' -Lf ' . $config->{'snmp_logfile'} . ' -p ' . $pid_file;
-	$snmptrapd_args .=  ' --format1=SNMPv1[**]%4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]' . $address_format . '[**]%N[**]%w[**]%W[**]%q[**]%v\\\n';
-	$snmptrapd_args .=  ' --format2=SNMPv2[**]%4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%b[**]%v\\\n';
-
-	if (system ($config->{'snmp_trapd'} . $snmptrapd_args . ' >/dev/null 2>&1') != 0) {
-		logger ($config, " [E] Could not start snmptrapd.", 1);
-		print_message ($config, " [E] Could not start snmptrapd.", 1);
+	if (start_snmptrapd ($config) != 0) {
 		return undef;
 	}
 
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, 2, $dbh);
 
+	# Save the path of snmptrapd
+	$self->{'snmp_trapd'} = $config->{'snmp_trapd'};
+	
     bless $self, $class;
     return $self;
 }
@@ -223,8 +197,10 @@ sub pandora_snmptrapd {
 sub stop () {
 	my $self = shift;
 
-	system ('kill -9 `cat /var/run/pandora_snmptrapd.pid 2> /dev/null`');
-	unlink ('/var/run/pandora_snmptrapd.pid');
+	if ($self->{'snmp_trapd'} ne 'manual') {
+		system ('kill -9 `cat /var/run/pandora_snmptrapd.pid 2> /dev/null`');
+		unlink ('/var/run/pandora_snmptrapd.pid');
+	}
 	
 	$self->SUPER::stop ();
 }
@@ -251,6 +227,61 @@ sub matches_filter ($$$) {
                         return 1;
                 }
 
+	}
+	
+	return 0;
+}
+
+########################################################################################
+# Start snmptrapd, attempting to kill it if it is already running. Returns 0 if
+# successful, 1 otherwise.
+########################################################################################
+sub start_snmptrapd ($) {
+	my ($config) = @_;
+	
+	my $pid_file = '/var/run/pandora_snmptrapd.pid';
+	my $snmptrapd_running = 0;
+
+	# Manual start of snmptrapd
+	if ($config->{'snmp_trapd'} eq 'manual') {
+		logger ($config, "No SNMP trap daemon configured. Start snmptrapd manually.", 1);
+		print_message ($config, " [*] No SNMP trap daemon configured. Start snmptrapd manually.", 1);
+
+		if (! -f $config->{'snmp_logfile'}) {
+			logger ($config, "SNMP log file " . $config->{'snmp_logfile'} . " not found.", 1);
+			print_message ($config, " [E] SNMP log file " . $config->{'snmp_logfile'} . " not found.", 1);
+			return 1;
+		}
+		
+		return 0;
+	}
+	
+	if ( -e $pid_file && open (PIDFILE, $pid_file)) {
+		my $pid = <PIDFILE> + 0;
+		close PIDFILE;
+
+		# Check if snmptrapd is running
+		if ($snmptrapd_running = kill (0, $pid)) {
+			logger ($config, "snmptrapd (pid $pid) is already running, attempting to kill it...", 1);
+			print_message ($config, "snmptrapd (pid $pid) is already running, attempting to kill it...", 1);
+			kill (9, $pid);
+		}
+	}
+
+	# Ignore auth failure traps
+	my $snmp_ignore_authfailure = ($config->{'snmp_ignore_authfailure'} eq '1' ? ' -a' : '');
+
+	# Select agent-addr field of the PDU or PDU source address for V1 traps
+	my $address_format = ($config->{'snmp_pdu_address'} eq '0' ? '%a' : '%b');
+	
+	my $snmptrapd_args = ' -t -On -n' . $snmp_ignore_authfailure . ' -Lf ' . $config->{'snmp_logfile'} . ' -p ' . $pid_file;
+	$snmptrapd_args .=  ' --format1=SNMPv1[**]%4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]' . $address_format . '[**]%N[**]%w[**]%W[**]%q[**]%v\\\n';
+	$snmptrapd_args .=  ' --format2=SNMPv2[**]%4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%b[**]%v\\\n';
+
+	if (system ($config->{'snmp_trapd'} . $snmptrapd_args . ' >/dev/null 2>&1') != 0) {
+		logger ($config, " [E] Could not start snmptrapd.", 1);
+		print_message ($config, " [E] Could not start snmptrapd.", 1);
+		return 1;
 	}
 	
 	return 0;

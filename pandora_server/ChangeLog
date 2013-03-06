@@ -1,5 +1,10 @@
 2013-03-06  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Fixed alert fired counts when
+	reset internal counter and fired times in threshold loop
+
+2013-03-06  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Add macros substitution in all the
 	text fields of generate event command
 

@@ -1,3 +1,9 @@
+2013-03-06  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Change the update count of fired alerts 
+	condition to increase the count only when a alert is fired first time
+	to avoid broke counts
+
 2013-03-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm: Added an option to start the snmptrapd

@@ -275,7 +275,7 @@ $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = array();
-$data[0] = '<fieldset class="databox" style="width:98%;">
+$data[0] = '<fieldset class="databox" style="width:98%; position: static;">
 				<legend style="text-align:left; color: #666;">' . 
 					__('Events (24h)') . 
 				'</legend>' . 

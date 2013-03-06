@@ -415,8 +415,8 @@ function servers_get_info ($id_server = -1) {
 			$server["module_lag"] = 0;
 			$server["lag"] = 0;
 			
-			// Export server
-			if ($server["server_type"] == 8) {
+			// Inventory server
+			if ($server["server_type"] == SERVER_TYPE_INVENTORY) {
 				
 				// Get modules exported by this server
 				$server["modules"] = db_get_sql ("SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente AND tagente.server_name = '" . $server["name"] . "'");
@@ -445,7 +445,7 @@ function servers_get_info ($id_server = -1) {
 					AND (UNIX_TIMESTAMP() - utimestamp) > tagent_module_inventory.interval");
 			// Export server
 			}
-			else if ($server["server_type"] == 7) {
+			else if ($server["server_type"] == SERVER_TYPE_EXPORT) {
 				
 				// Get modules exported by this server
 				$server["modules"] = db_get_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo, tserver_export WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_export = tserver_export.id AND tserver_export.id_export_server = " . $server["id_server"]);
@@ -458,7 +458,7 @@ function servers_get_info ($id_server = -1) {
 			
 			}
 			// Recon server
-			else if ($server["server_type"] == 3) {
+			else if ($server["server_type"] == SERVER_TYPE_RECON) {
 				
 				$server["name"] = '<a href="index.php?sec=estado&amp;sec2=operation/servers/recon_view&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
 				

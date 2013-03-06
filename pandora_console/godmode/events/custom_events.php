@@ -112,6 +112,9 @@ if ($fields_selected[0]!='') {
 			case 'ack_utimestamp':
 				$result = __('ACK Timestamp');
 				break;
+			case 'instructions':
+				$result = __('Instructions');
+				break;
 			case 'server_name':
 				$result = __('Server name');
 				break;
@@ -158,6 +161,7 @@ $fields_available['source'] = __('Source');
 $fields_available['id_extra'] = __('Extra id');
 $fields_available['owner_user'] = __('Owner');
 $fields_available['ack_utimestamp'] = __('ACK Timestamp');
+$fields_available['instructions'] = __('Instructions');
 $fields_available['server_name'] = __('Server name');
 
 //remove fields already selected

@@ -47,7 +47,7 @@ if (in_array('id_evento', $show_fields)) {
 }
 if (in_array('evento', $show_fields)) {
 	$table->head[$i] = __('Event Name');
-	$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
 	$i++;
 }
 if (in_array('id_agente', $show_fields)) {
@@ -119,6 +119,11 @@ if (in_array('id_extra', $show_fields)) {
 if (in_array('ack_utimestamp', $show_fields)) {
 	$table->head[$i] = __('ACK Timestamp');
 	$table->align[$i] = 'center';
+	$i++;
+}
+if (in_array('instructions', $show_fields)) {
+	$table->head[$i] = __('Instructions');
+	$table->align[$i] = 'left';
 	$i++;
 }
 if ($i != 0 && $allow_action) {
@@ -412,6 +417,24 @@ foreach ($result as $event) {
 		}
 		else {
 			$data[$i] = date ($config["date_format"], $event['ack_utimestamp']);
+		}
+		$i++;
+	}
+	
+	if (in_array('instructions',$show_fields)) {
+		switch($event['event_type']) {
+			case 'going_unknown':
+				$data[$i] = ui_print_truncate_text($event["unknown_instructions"]);
+				break;
+			case 'going_up_critical':
+			case 'going_down_critical':
+				$data[$i] = ui_print_truncate_text($event["critical_instructions"]);
+				break;
+			case 'going_down_warning':
+				$data[$i] = ui_print_truncate_text($event["warning_instructions"]);
+				break;
+			default:
+				$data[$i] = '';
 		}
 		$i++;
 	}

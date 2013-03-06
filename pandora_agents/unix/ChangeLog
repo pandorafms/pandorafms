@@ -1,3 +1,10 @@
+2013-03-06 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* HP-UX/pandora_agent.conf: fixed ps params for "sshDaemon" module
+	for some versions of HP-UX.
+	
+	Fixes: #3606128
+
 2013-02-27  Tomas Palacios <tomas.palacios@artica.es>
 
 	* pandora_agent_installer: Added compatibility for custom perl

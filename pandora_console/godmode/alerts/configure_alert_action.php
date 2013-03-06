@@ -102,6 +102,9 @@ if ($id) {
 	$action_threshold = $action ['action_threshold'];
 }
 
+// Hidden div with help hint to fill with javascript
+html_print_div(array('id' => 'help_alert_macros_hint', 'content' => ui_print_help_icon ('alert_macros', true, ui_get_full_url(false, false, false, false)), 'hidden' => true));
+
 $table->width = '98%';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
@@ -213,6 +216,11 @@ $(document).ready (function () {
 					else {
 						$('#table1-field'+i).replaceWith(data["fields_rows"][i]);
 						$("[name=field"+i+"_value]").val(old_value);
+						// Add help hint only in first field
+						if(i == 1) {
+							var td_content = $('#table1-field'+i).find('td').eq(0);
+							td_content.html(td_content.html() + $('#help_alert_macros_hint').html());
+						}
 						$('#table1-field').show();
 					}
 				}

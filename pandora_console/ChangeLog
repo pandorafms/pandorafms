@@ -1,5 +1,10 @@
 2013-03-06  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/alerts/configure_alert_action.php: Put again
+	a missed help hint for the action macros.
+
+2013-03-06  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_alerts.php: Change the update counts 
 	of fired alerts when validate to do it only when the validation
 	is of a unvalidated alert. This change is to avoid broke 

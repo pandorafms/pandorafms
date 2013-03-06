@@ -1,5 +1,12 @@
 2013-03-06 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_io.php, include/db/mysql.php: fixed warnings
+	messages from PHP.
+	
+	Fixes: #3607014
+
+2013-03-06 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/configurar_agente.php: fixed the lost ip in the
 	audit when create the agent or module.
 

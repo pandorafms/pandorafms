@@ -852,8 +852,15 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Pandora FMS Event
 	} elsif ($clean_name eq "Pandora FMS Event") {
+		$field1 = subst_alert_macros ($field1, \%macros);
+		$field3 = subst_alert_macros ($field3, \%macros);
+		$field4 = subst_alert_macros ($field4, \%macros);
+		$field6 = subst_alert_macros ($field6, \%macros);
+		$field7 = subst_alert_macros ($field7, \%macros);
+		$field8 = subst_alert_macros ($field8, \%macros);
+		
 		# Field 1 (event text)
-		my $event_text = subst_alert_macros ($field1, \%macros);
+		my $event_text = $field1;
 		
 		# Field 2 (event type)
 		my $event_type = $field2;

@@ -1,3 +1,8 @@
+2013-03-06  Dario Rodriguez <dario@artica.es>
+
+	* operation/agentes/ver_agente.php: Adapted view to support
+	new vmware extensions.
+
 2013-03-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* operation/gis_maps/render_view.php,

@@ -650,13 +650,11 @@ foreach ($config['extensions'] as $extension) {
 		if ($extension['extension_ope_tab']['id'] === "vmware_manager") {
 			
 			//Check if OS is vmware
-			$id_os = db_get_value("id_os", "tconfig_os", "name", "VMware");
-			if ($id_os != $agent['id_os']) {
-				continue;
-			}
+			$id_remote_field = db_get_value ("id_field", "tagent_custom_fields", "name", "vmware_type");
+		
+			$vmware_type = db_get_value_filter("description", "tagent_custom_data", array("id_field" => $id_remote_field, "id_agent" => $agent["id_agente"]));
 			
-			//This extension is only for virtual machines
-			if (strpos($agent['nombre'], "VM_") !== 0) {
+			if ($vmware_type != "vm") {
 				continue;
 			}
 			

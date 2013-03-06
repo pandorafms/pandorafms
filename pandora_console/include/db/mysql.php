@@ -712,7 +712,12 @@ function mysql_db_get_all_rows_filter ($table, $filter = array(), $fields = fals
 function mysql_db_get_num_rows ($sql) {
 	$result = mysql_query($sql);
 	
-	return mysql_num_rows($result);
+	if ($result) {
+		return mysql_num_rows($result);
+	}
+	else { 
+		return 0;
+	}
 }
 
 /**
@@ -926,7 +931,12 @@ function mysql_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) {
 	if ($new == true)
 		$result = mysql_query($sql);
 	
-	return mysql_fetch_assoc($result);
+	if ($result) {
+		return mysql_fetch_assoc($result);
+	}
+	else {
+		return array();
+	}
 }
 
 /**

@@ -382,7 +382,7 @@ function __ ($string /*, variable arguments */) {
 			return $tranlateString;
 		}
 	}
-	elseif ($config['enterprise_installed'] && 
+	elseif (enterprise_installed() && 
 				isset($config['translate_string_extension_installed']) && 
 				$config['translate_string_extension_installed'] == 1 &&
 				array_key_exists('translate_string.php', $extensions)) {

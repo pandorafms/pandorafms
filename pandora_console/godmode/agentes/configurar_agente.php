@@ -220,7 +220,7 @@ if ($create_agent) {
 				' Quiet: ' . (int)$quiet;
 			
 			db_pandora_audit("Agent management",
-				"Created agent $nombre_agente", false, false, $info);
+				"Created agent $nombre_agente", false, true, $info);
 		}
 		else {
 			$id_agente = 0;
@@ -1051,7 +1051,7 @@ if ($create_module) {
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
-			"Added module '$name' for agent ".$agent["nombre"], false, false, json_encode($values));
+			"Added module '$name' for agent ".$agent["nombre"], false, true, json_encode($values));
 	}
 }
 

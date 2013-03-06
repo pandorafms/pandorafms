@@ -1,5 +1,10 @@
 2013-03-06 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/configurar_agente.php: fixed the lost ip in the
+	audit when create the agent or module.
+
+2013-03-06 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/reporting/reporting_builder.item_editor.php: added tip for
 	to note the module have another module intervals in the life of this
 	maybe the sumattory is not correct.

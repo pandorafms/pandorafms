@@ -1137,7 +1137,8 @@ function print_General_list($width, $action, $idItem = null) {
 			<tr>
 				<th class="header" scope="col"><?php echo __('Agent');?></th>
 				<th class="header" scope="col"><?php echo __('Module');?></th>
-				<th class="header" scope="col"><?php echo __('Operation');?></th>
+				<th class="header" scope="col"><?php echo __('Operation') .
+					ui_print_help_tip(__("Please be careful, when the module have diferent intervals in their life, the summatory maybe get bad result."), true);?></th>
 				<th class="header" scope="col"><?php echo __('Action');?></th>
 			</tr>
 		</thead>

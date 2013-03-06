@@ -1,3 +1,9 @@
+2013-03-06 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/reporting/reporting_builder.item_editor.php: added tip for
+	to note the module have another module intervals in the life of this
+	maybe the sumattory is not correct.
+
 2013-03-06  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/configure_alert_action.php: Put again

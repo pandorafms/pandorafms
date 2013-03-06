@@ -1,3 +1,13 @@
+2013-03-06  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_servers.php
+	operation/agentes/estado_generalagente.php: Order
+	code and little fix
+
+	* operation/events/events.build_table.php
+	godmode/events/custom_events.php: Add Instructions to
+	custom columns in event view to bug 3607062
+
 2013-03-06  Dario Rodriguez <dario@artica.es>
 
 	* operation/agentes/ver_agente.php: Adapted to new way to detect

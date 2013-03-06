@@ -1177,10 +1177,11 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module, $noACLs = f
 				'internal_counter' => 0),
 			array ('id' => $id));
 			
-		// Update fired alert count on the agent
-		db_process_sql(sprintf('UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente = %d', $agent_id));
 		
 		if ($result > 0) {
+			// Update fired alert count on the agent
+			db_process_sql(sprintf('UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente = %d', $agent_id));
+
 			events_create_event ("Manual validation of alert for ".
 				alerts_get_alert_template_description ($alert["id_alert_template"]),
 				$group_id, $agent_id, 1, $config["id_user"],

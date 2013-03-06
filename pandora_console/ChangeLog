@@ -1,3 +1,10 @@
+2013-03-06  Dario Rodriguez <dario@artica.es>
+
+	* operation/agentes/ver_agente.php: Adapted to new way to detect
+	if an agent is a VMware entity.
+
+	MERGED FROM 4.0.3
+
 2013-03-06 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_io.php, include/db/mysql.php: fixed warnings

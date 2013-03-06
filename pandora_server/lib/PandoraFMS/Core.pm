@@ -564,8 +564,8 @@ sub pandora_process_alert ($$$$$$$$;$) {
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		
-		# Update fired alert count
-		if (defined ($agent)) {
+		# Update fired alert count only in first fired time
+		if (defined ($agent) && $alert->{'times_fired'} == 1) {
 			db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count+1 WHERE id_agente=?', $agent->{'id_agente'});
 		}
 		
@@ -633,6 +633,7 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 					AND ((fires_min = 0 AND fires_max = 0)
 					OR (? >= fires_min AND ? <= fires_max))', 
 					$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'});
+					
 		# Get default action
 		if ($#actions < 0) {
 			@actions = get_db_rows ($dbh, 'SELECT * FROM talert_actions, talert_commands

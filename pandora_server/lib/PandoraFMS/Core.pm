@@ -365,6 +365,11 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		$status = 5;
 	}
 	
+	# Update fired alert when cesead or recover
+	if(defined ($agent) && ($status == 3 || $status == 4)) {
+		db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente=?', $agent->{'id_agente'});
+	}
+	
 	# Check for valid data
 	# Simple alert
 	if (defined ($alert->{'id_template_module'})) {
@@ -438,6 +443,12 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 	# Check min and max alert limits
 	return 2 if (($alert->{'internal_counter'} < $alert->{'min_alerts'}) ||
 		($alert->{'times_fired'} >= $alert->{'max_alerts'}));
+		
+	# Update fired alert first time 
+	# (if is fist time after ceased it was decreased previously and will be compensated)
+	if(defined ($agent)) {
+		db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count+1 WHERE id_agente=?', $agent->{'id_agente'});
+	}
 	
 	return 0; #Launch the alert
 }
@@ -479,11 +490,6 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
 			internal_counter = 0 WHERE id = ?', $id);
 		
-		# Update fired alert count
-		if (defined ($agent)) {
-			db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente=?', $agent->{'id_agente'});
-		}
-		
 		# Critical_instructions, warning_instructions, unknown_instructions
 		my $critical_instructions = get_db_value ($dbh, 'SELECT critical_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
 		my $warning_instructions = get_db_value ($dbh, 'SELECT warning_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
@@ -517,11 +523,6 @@ sub pandora_process_alert ($$$$$$$$;$) {
 			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
 		}
 
-		# Update fired alert count
-		if (defined ($agent)) {
-			db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente=?', $agent->{'id_agente'});
-		}
-
 		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, $extra_macros);
 		return;
 	}
@@ -541,7 +542,6 @@ sub pandora_process_alert ($$$$$$$$;$) {
 	
 	# Increment internal counter
 	if ($rc == 2) {
-		
 		# Update alert status
 		$alert->{'internal_counter'} += 1;
 		
@@ -555,7 +555,6 @@ sub pandora_process_alert ($$$$$$$$;$) {
 	
 	# Execute
 	if ($rc == 0) {
-		
 		# Update alert status
 		$alert->{'times_fired'} += 1;
 		$alert->{'internal_counter'} += 1;
@@ -563,11 +562,6 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = ?,
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
-		
-		# Update fired alert count only in first fired time
-		if (defined ($agent) && $alert->{'times_fired'} == 1) {
-			db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count+1 WHERE id_agente=?', $agent->{'id_agente'});
-		}
 		
 		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh, $timestamp, $extra_macros);
 		return;

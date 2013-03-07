@@ -132,13 +132,19 @@ sub data_producer ($) {
 sub data_consumer ($$) {
 	my ($self, $module_id) = @_;
 	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
-
+	
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $module_id);
 	return unless defined $module;
-
+	
 	# Build command to execute
-	my $wmi_command = $pa_config->{'wmi_client'} . ' -U "' . $module->{'plugin_user'} . '"%"' . $module->{'plugin_pass'} . '"';
-
+	my $wmi_command = '';
+	if ($module->{'plugin_user'}) {
+		$wmi_command = $pa_config->{'wmi_client'} . ' -U "' . $module->{'plugin_user'} . '"%"' . $module->{'plugin_pass'} . '"';
+	}
+	else {
+		$wmi_command = $pa_config->{'wmi_client'} . ' -U "' . $module->{'plugin_user'} . '"';
+	}
+	
 	# Use a custom namespace
 	my $namespace = $module->{'tcp_send'};
 	if ($namespace ne '') {

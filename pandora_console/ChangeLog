@@ -1,5 +1,12 @@
 2013-03-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_reporting.php: fixed the apply format to
+	numeric value in the max item report.
+	
+	MERGE FROM THE BRANCH PANDORA_4
+
+2013-03-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/reporting/reporting_builder.php,
 	godmode/reporting/reporting_builder.item_editor.php: fixed the get
 	modules from items events for reports in metaconsole.

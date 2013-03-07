@@ -125,6 +125,7 @@ ALTER TABLE tplanned_downtime ADD (periodically_day_to NUMBER(19, 0) default NUL
 ALTER TABLE tplanned_downtime ADD (type_downtime VARCHAR2(100) NOT NULL default 'disabled_agents_alerts');
 ALTER TABLE tplanned_downtime ADD (type_execution VARCHAR2(100) NOT NULL default 'once');
 ALTER TABLE tplanned_downtime ADD (type_periodicity VARCHAR2(100) NOT NULL default 'weekly');
+ALTER TABLE tplanned_downtime ADD (id_user VARCHAR2(100) default '0' NOT NULL);
 
 -- -----------------------------------------------------
 -- Table tplanned_downtime_agents

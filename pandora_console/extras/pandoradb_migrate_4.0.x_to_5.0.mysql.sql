@@ -100,6 +100,7 @@ ALTER TABLE `tplanned_downtime` ADD COLUMN `periodically_day_to` int(100) unsign
 ALTER TABLE `tplanned_downtime` ADD COLUMN `type_downtime` varchar(100) NOT NULL default 'disabled_agents_alerts';
 ALTER TABLE `tplanned_downtime` ADD COLUMN `type_execution` varchar(100) NOT NULL default 'once';
 ALTER TABLE `tplanned_downtime` ADD COLUMN `type_periodicity` varchar(100) NOT NULL default 'weekly';
+ALTER TABLE `tplanned_downtime` ADD COLUMN `id_user` varchar(100) NOT NULL default '0';
 
 -- ----------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`

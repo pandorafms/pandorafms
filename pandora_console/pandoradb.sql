@@ -1195,6 +1195,7 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
 	`type_downtime` varchar(100) NOT NULL default 'disabled_agents_alerts',
 	`type_execution` varchar(100) NOT NULL default 'once',
 	`type_periodicity` varchar(100) NOT NULL default 'weekly',
+	`id_user` varchar(100) NOT NULL default '0',
 	PRIMARY KEY (  `id` ) 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

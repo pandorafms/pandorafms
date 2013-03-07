@@ -123,7 +123,7 @@ if (in_array('ack_utimestamp', $show_fields)) {
 }
 if (in_array('instructions', $show_fields)) {
 	$table->head[$i] = __('Instructions');
-	$table->align[$i] = 'left';
+	$table->align[$i] = 'center';
 	$i++;
 }
 if ($i != 0 && $allow_action) {
@@ -430,18 +430,27 @@ foreach ($result as $event) {
 	if (in_array('instructions',$show_fields)) {
 		switch($event['event_type']) {
 			case 'going_unknown':
-				$data[$i] = ui_print_truncate_text(str_replace("\n","<br>", io_safe_output($event["unknown_instructions"])));
+				if(!empty($event["unknown_instructions"])) {
+					$data[$i] = html_print_image('images/page_white_text.png', true, array('title' => str_replace("\n","<br>", io_safe_output($event["unknown_instructions"]))));
+				}
 				break;
 			case 'going_up_critical':
 			case 'going_down_critical':
-				$data[$i] = ui_print_truncate_text(str_replace("\n","<br>", io_safe_output($event["critical_instructions"])));
+				if(!empty($event["critical_instructions"])) {
+					$data[$i] = html_print_image('images/page_white_text.png', true, array('title' => str_replace("\n","<br>", io_safe_output($event["critical_instructions"]))));
+				}
 				break;
 			case 'going_down_warning':
-				$data[$i] = ui_print_truncate_text(str_replace("\n","<br>", io_safe_output($event["warning_instructions"])));
+				if(!empty($event["warning_instructions"])) {
+					$data[$i] = html_print_image('images/page_white_text.png', true, array('title' => str_replace("\n","<br>", io_safe_output($event["warning_instructions"]))));
+				}
 				break;
-			default:
-				$data[$i] = '';
 		}
+		
+		if(!isset($data[$i])) {
+			$data[$i] = '';
+		}
+
 		$i++;
 	}
 	

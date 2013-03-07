@@ -1,3 +1,12 @@
+2013-03-07  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php
+	operation/events/events.build_table.php: Improve instructions
+	in list and details view on agents and fix the bug of doesnt 
+	show the owner in the list table when events are grouped. To fix
+	it I added a couple of subqueries to the grouped query. Yes, I 
+	checked the performance :) Bug: 3607097
+
 2013-03-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_reporting.php: fixed the apply format to

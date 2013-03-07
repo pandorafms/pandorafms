@@ -3531,7 +3531,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
-			$value = format_numeric (reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $report["datetime"]));
+			
+			$value = reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $report["datetime"]);
+			
 			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content ['id_agent_module']);
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">' .
 				format_for_graph($value, 2) . " " . $unit .'</p>';

@@ -1,5 +1,13 @@
 2013-03-07  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_events.php
+	operation/events/events.build_table.php: Fixed the owner info
+	in wrong column of event view for bug 3607097
+
+	Fixed a problem changing the owner when change status too
+
+2013-03-07  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/events/events.build_table.php: Added carriage
 	return support in Instructions column in events view
 

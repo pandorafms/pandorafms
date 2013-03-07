@@ -498,7 +498,7 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 	}
 	
 	// If no new_owner is provided, the current user will be the owner
-	if($new_owner === false) {
+	if(empty($new_owner)) {
 		$new_owner = $config['id_user'];
 	}
 	
@@ -511,9 +511,9 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 	
 	$where = array('id_evento' => $id_event);
 	
-	// If not force, add to where if owner_user <> ''
+	// If not force, add to where if owner_user = ''
 	if(!$force) {
-		$where['owner_user'] = '<>';
+		$where['owner_user'] = '';
 	}
 	
 	$ret = db_process_sql_update($event_table, $values,
@@ -2059,6 +2059,9 @@ function events_page_general ($event) {
 	}
 	else {
 		$user_owner = db_get_value('fullname', 'tusuario', 'id_user', $event["owner_user"]);
+		if(empty($user_owner)) {
+			$user_owner = $event['owner_user'];
+		}
 		$data[1] = $user_owner;
 	}
 	$table_general->data[] = $data;
@@ -2122,6 +2125,9 @@ function events_page_general ($event) {
 		
 	if($event['estado'] == 1) {
 		$user_ack = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
+		if(empty($user_ack)) {
+			$user_ack = $event['id_usuario'];
+		}
 		$date_ack = date ($config["date_format"], $event['ack_utimestamp']);
 		$data[1] = $user_ack.' ('.$date_ack.')';	
 	}

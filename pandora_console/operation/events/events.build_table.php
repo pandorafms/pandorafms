@@ -319,15 +319,21 @@ foreach ($result as $event) {
 		$i++;
 	}
 	
-	if (in_array('owner_user',$show_fields)) {
-		$owner_name = db_get_value('fullname', 'tusuario', 'id_user', $event['owner_user']);
-		$data[$i] = $owner_name;
+	if (in_array('id_usuario',$show_fields)) {
+		$user_name = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
+		if(empty($user_name)) {
+			$user_name = $event['id_usuario'];
+		}
+		$data[$i] = $user_name;
 		$i++;
 	}
 	
-	if (in_array('id_usuario',$show_fields)) {
-		$user_name = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
-		$data[$i] = $user_name;
+	if (in_array('owner_user',$show_fields)) {
+		$owner_name = db_get_value('fullname', 'tusuario', 'id_user', $event['owner_user']);
+		if(empty($owner_name)) {
+			$owner_name = $event['owner_user'];
+		}
+		$data[$i] = $owner_name;
 		$i++;
 	}
 	

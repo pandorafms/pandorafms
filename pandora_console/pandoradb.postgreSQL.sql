@@ -1104,7 +1104,8 @@ CREATE TABLE "tplanned_downtime" (
 	"periodically_day_to" SMALLINT default NULL,
 	"type_downtime" VARCHAR( 100 ) NOT NULL default 'disabled_agents_alerts',
 	"type_execution" VARCHAR( 100 ) NOT NULL default 'once',
-	"type_periodicity" VARCHAR( 100 ) NOT NULL default 'weekly'
+	"type_periodicity" VARCHAR( 100 ) NOT NULL default 'weekly',
+	"id_user" varchar(100) NOT NULL default '0'
 );
 
 -- ---------------------------------------------------------------------

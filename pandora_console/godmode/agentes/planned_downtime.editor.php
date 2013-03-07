@@ -115,6 +115,12 @@ if ($insert_downtime_agent == 1) {
 					'id_agent' => $id_agente_dt,
 					'id_agent_module' => $module["id_agente_modulo"]);
 				$result = db_process_sql_insert('tplanned_downtime_modules', $values);
+				
+				if ($result) {
+					$values = array('id_user' => $config['id_user']);
+					$result = db_process_sql_update('tplanned_downtime',
+						$values, array('id' => $id_downtime));
+				}
 			}
 		}
 	}
@@ -177,7 +183,8 @@ if ($create_downtime || $update_downtime) {
 						'periodically_day_to' => $periodically_day_to,
 						'type_downtime' => $type_downtime,
 						'type_execution' => $type_execution,
-						'type_periodicity' => $type_periodicity
+						'type_periodicity' => $type_periodicity,
+						'id_user' => $config['id_user']
 						);
 					$result = db_process_sql_insert(
 						'tplanned_downtime', $values);
@@ -215,7 +222,8 @@ if ($create_downtime || $update_downtime) {
 					'periodically_day_to' => $periodically_day_to,
 					'type_downtime' => $type_downtime,
 					'type_execution' => $type_execution,
-					'type_periodicity' => $type_periodicity
+					'type_periodicity' => $type_periodicity,
+					'id_user' => $config['id_user']
 					);
 				$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
 			}

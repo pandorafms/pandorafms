@@ -1255,7 +1255,8 @@ CREATE TABLE tplanned_downtime (
 	periodically_day_to NUMBER(19, 0) default NULL,
 	type_downtime VARCHAR2(100) NOT NULL default 'disabled_agents_alerts',
 	type_execution VARCHAR2(100) NOT NULL default 'once',
-	type_periodicity VARCHAR2(100) NOT NULL default 'weekly'
+	type_periodicity VARCHAR2(100) NOT NULL default 'weekly',
+	id_user VARCHAR2(100) default '0' NOT NULL
 );
 CREATE SEQUENCE tplanned_downtime_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tplanned_downtime_inc BEFORE INSERT ON tplanned_downtime REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_inc;;

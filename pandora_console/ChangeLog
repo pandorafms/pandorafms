@@ -1,3 +1,15 @@
+2013-03-07 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* pandoradb.oracle.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	godmode/agentes/planned_downtime.editor.php, pandoradb.sql,
+	pandoradb.postgreSQL.sql: added id_user to planned_downtime table
+	for to know who create or updte any downtime.
+	
+	Fixes: #3607172
+
 2013-03-07  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php

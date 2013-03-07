@@ -1,5 +1,12 @@
 2013-03-07 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* lib/PandoraFMS/Core.pm: added in the start or end of downtimes
+	the event with the id_user.
+	
+	Fixes: #3607163
+
+2013-03-07 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* lib/PandoraFMS/WMIServer.pm: fixed when the wmi query have not a
 	password.
 	

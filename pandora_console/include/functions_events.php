@@ -85,8 +85,10 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 					GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
 					GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
 					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
-					MIN(utimestamp) AS timestamp_rep_min
-				FROM $table
+					MIN(utimestamp) AS timestamp_rep_min,
+					(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
+					(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
+				FROM $table te
 				WHERE 1=1 ".$sql_post."
 				GROUP BY estado, evento, id_agentmodule".$groupby_extra."
 				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
@@ -95,8 +97,10 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '<br>') AS user_comment,
 					array_to_string(array_agg(DISTINCT id_evento), ',') AS similar_ids,
 					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
-					MIN(utimestamp) AS timestamp_rep_min
-				FROM $table
+					MIN(utimestamp) AS timestamp_rep_min,
+					(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
+					(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
+				FROM $table te
 				WHERE 1=1 ".$sql_post."
 				GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra".$groupby_extra."
 				ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
@@ -112,8 +116,10 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 				id_agentmodule, COUNT(*) AS event_rep,
 				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
 				LISTAGG(id_evento, '') AS similar_ids,
-				MIN(utimestamp) AS timestamp_rep_min
-				FROM $table
+				MIN(utimestamp) AS timestamp_rep_min,
+				(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
+				(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
+				FROM $table te
 				WHERE 1=1 ".$sql_post." 
 				GROUP BY estado, to_char(evento), id_agentmodule".$groupby_extra.") b 
 				WHERE a.id_evento=b.id_evento AND 
@@ -1956,7 +1962,7 @@ function events_page_details ($event, $server = "") {
 			$data = array();
 			$data[0] = __('Instructions');
 			if ($event["unknown_instructions"] != '') {
-				$data[1] = $event["unknown_instructions"];
+				$data[1] = str_replace("\n","<br>", io_safe_output($event["unknown_instructions"]));
 			}
 			else {
 				$data[1] = '<i>' . __('N/A') . '</i>';
@@ -1968,7 +1974,7 @@ function events_page_details ($event, $server = "") {
 			$data = array();
 			$data[0] = __('Instructions');
 			if ($event["warning_instructions"] != '') {
-				$data[1] = $event["warning_instructions"];
+				$data[1] = str_replace("\n","<br>", io_safe_output($event["warning_instructions"]));
 			}
 			else {
 				$data[1] = '<i>' . __('N/A') . '</i>';
@@ -1980,7 +1986,7 @@ function events_page_details ($event, $server = "") {
 			$data = array();
 			$data[0] = __('Instructions');
 			if ($event["critical_instructions"] != '') {
-				$data[1] = $event["critical_instructions"];
+				$data[1] = str_replace("\n","<br>", io_safe_output($event["critical_instructions"]));
 			}
 			else {
 				$data[1] = '<i>' . __('N/A') . '</i>';

@@ -428,7 +428,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 		WHERE id_agente_modulo = %d
 			AND utimestamp > %d AND utimestamp <= %d',
 		$id_agent_module, $datelimit, $date);
-			
+	
 	//Add the working times (mon - tue - wed ...) and from time to time
 	$days = array();
 	//Translate to mysql week days
@@ -536,17 +536,18 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	$previous_utimestamp = $first_data['utimestamp'];
 	if ((($max_value > $min_value AND ($first_data['datos'] > $max_value OR $first_data['datos'] < $min_value))) OR
 		($max_value <= $min_value AND $first_data['datos'] < $min_value)) {
-			$previous_status = 1;
-			foreach ($downtime_dates as $date_dt) {
-				if (($date_dt['date_from'] <= $previous_utimestamp) AND ($date_dt['date_to'] >= $previous_utimestamp)) {
-					$previous_status = 0;
-				}
-			}	
+		
+		$previous_status = 1;
+		foreach ($downtime_dates as $date_dt) {
+			if (($date_dt['date_from'] <= $previous_utimestamp) AND ($date_dt['date_to'] >= $previous_utimestamp)) {
+				$previous_status = 0;
+			}
+		}
 	}
 	else {
 		$previous_status = 0;
 	}
-
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {
@@ -670,7 +671,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	}
 	$i = 0;
 	$downtime_dates = array();
-
+	
 	foreach ($downtimes as $downtime) {
 		$id_downtime = $downtime['id_downtime'];
 		$sql_date = "SELECT date_from, date_to FROM tplanned_downtime WHERE id=$id_downtime";
@@ -3111,7 +3112,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
-			$value = format_numeric (reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $report["datetime"]));
+			
+			$value = reporting_get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $report["datetime"]);
+			
 			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content ['id_agent_module']);
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">' .
 				format_for_graph($value, 2) . " " . $unit .'</p>';

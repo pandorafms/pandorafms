@@ -1,3 +1,8 @@
+2013-03-07 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_reporting.php: fixed the apply format to
+	numeric value in the max item report.
+
 2013-03-06  Dario Rodriguez <dario@artica.es>
 
 	* operation/agentes/ver_agente.php: Adapted view to support

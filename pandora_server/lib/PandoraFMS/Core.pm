@@ -1116,7 +1116,8 @@ sub pandora_planned_downtime_disabled_once_stop($$) {
 			SET executed = 0
 			WHERE id = ?', $downtime->{'id'});
 		
-		pandora_event ($pa_config, 'Server ' . $pa_config->{'servername'} . ' stopped planned downtime: ' . $downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+		pandora_event ($pa_config,
+			'(Created by ' . $downtime->{'id_user'} . ') Server ' . $pa_config->{'servername'} . ' stopped planned downtime: ' . $downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_unset_disabled_elements($pa_config,
 			$dbh, $downtime);
@@ -1159,8 +1160,9 @@ sub pandora_planned_downtime_disabled_once_start($$) {
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 1
 			WHERE id = ?', $downtime->{'id'});
+		
 		pandora_event ($pa_config,
-			"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"(Created by " . $downtime->{'id_user'} . ") Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_set_disabled_elements($pa_config,
 			$dbh, $downtime);
@@ -1352,7 +1354,7 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 			SET executed = 0
 			WHERE id = ?', $downtime->{'id'});
 		pandora_event ($pa_config,
-			"Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"(Created by " . $downtime->{'id_user'} . ") Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_unset_quiet_elements($pa_config,
 			$dbh, $downtime->{'id'});
@@ -1393,7 +1395,7 @@ sub pandora_planned_downtime_quiet_once_start($$) {
 			SET executed = 1
 			WHERE id = ?', $downtime->{'id'});
 		pandora_event ($pa_config,
-			"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"(Created by " . $downtime->{'id_user'} . ") Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_set_quiet_elements($pa_config,
 			$dbh, $downtime->{'id'});

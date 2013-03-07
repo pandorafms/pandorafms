@@ -107,6 +107,7 @@ switch ($action) {
 		$show_in_two_columns = 0;
 		$show_in_landscape = 0;
 		$server_name = '';
+		$server_id = 0;
 		break;
 	case 'save':
 	default:
@@ -131,6 +132,7 @@ switch ($action) {
 				$show_in_two_columns = 0;
 				$show_in_landscape = 0;
 				$server_name = '';
+				$server_id = 0;
 				$get_data_editor = false;
 				break;
 		}
@@ -626,9 +628,33 @@ html_print_input_hidden('id_item', $idItem);
 				
 				html_print_input_hidden('id_agent', $idAgent);
 				html_print_input_hidden ('server_name', $server_name);
+				html_print_input_hidden ('server_id', $server_name);
 				html_print_input_hidden ('id_server', '');
 				
 				
+				//////////////////
+				$params = array();
+				$params['show_helptip'] = false;
+				$params['input_name'] = 'agent';
+				$params['value'] = $agent_name;
+				
+				$params['javascript_is_function_select'] = true;
+				$params['selectbox_id'] = 'id_agent_module';
+				$params['add_none_module'] = false;
+				$params['use_hidden_input_idagent'] = true;
+				$params['hidden_input_idagent_id'] = 'hidden-id_agent';
+				if ($meta) {
+					//$params['input_id'] = 'agent_autocomplete';
+					$params['use_input_id_server'] = true;
+					$params['input_id_server_id'] = 'hidden-server_id';
+					$params['metaconsole_enabled'] = true;
+					$params['input_id'] = 'agent_autocomplete_events';
+					$params['javascript_page'] = 'include/ajax/agent';  //'enterprise/meta/include/ajax/events.ajax';
+					$params['input_name'] = 'agent_text';
+				}
+				ui_print_agent_autocomplete_input($params);
+				//////////////////
+				/*
 				$params = array();
 				$params['show_helptip'] = false;
 				$params['input_name'] = 'agent';
@@ -650,12 +676,12 @@ html_print_input_hidden('id_item', $idItem);
 					$params['metaconsole_enabled'] = true;
 				}
 				
-				ui_print_agent_autocomplete_input($params);
+				//ui_print_agent_autocomplete_input($params);
 				
 				// Print a specific control to metaconsole events
 				if ($meta) {
 					$params['input_id'] = 'agent_autocomplete_events';
-					$params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
+					$params['javascript_page'] = 'include/ajax/agent';  //'enterprise/meta/include/ajax/events.ajax';
 					$params['javascript_is_function_select'] = false;
 					//$params['use_hidden_input_idagent'] = false;
 					$params['use_input_server'] = false;
@@ -663,7 +689,7 @@ html_print_input_hidden('id_item', $idItem);
 					
 					ui_print_agent_autocomplete_input($params);
 				}
-				
+				*/
 				?>
 			</td>
 		</tr>

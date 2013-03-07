@@ -283,33 +283,27 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 	$status_sql = ' 1 = 1';
 	if (isset($filter['status'])) {
 		switch ($filter['status']) {
-			// Normal
-			case 0: 
+			case AGENT_MODULE_STATUS_NORMAL:
 				$status_sql =
 					"normal_count = total_count";
 				break;
-			// Warning
-			case 2:
+			case AGENT_MODULE_STATUS_WARNING:
 				$status_sql =
 					"critical_count = 0 AND warning_count > 0";
 				break;
-			// Critical
-			case 1: 
+			case AGENT_MODULE_STATUS_CRITICAL_BAD:
 				$status_sql =
 					"critical_count > 0";
 				break;
-			// Unknown
-			case 3:
+			case AGENT_MODULE_STATUS_UNKNOW:
 				$status_sql =
 					"critical_count = 0 AND warning_count = 0
 						AND unknown_count > 0";
 				break;
-			// Not normal
-			case 4:
+			case AGENT_MODULE_STATUS_NO_DATA:
 				$status_sql = "normal_count <> total_count";
 				break;
-			// Not init
-			case 5:	
+			case AGENT_MODULE_STATUS_NOT_INIT:
 				$status_sql = "notinit_count = total_count";
 				break;
 		}
@@ -408,6 +402,7 @@ function agents_get_agents ($filter = false, $fields = false, $access = 'AR', $o
 				$limit_sql = " LIMIT $offset, $limit "; 
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
+			
 			if ($return)
 				return $sql;
 			else

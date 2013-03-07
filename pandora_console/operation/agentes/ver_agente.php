@@ -334,6 +334,7 @@ if (is_ajax ()) {
 			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
 				$connection = metaconsole_get_connection($server_name);
 				
+				
 				if ($server_id > 0) {
 					$connection = metaconsole_get_connection_by_id($server_id);
 				}

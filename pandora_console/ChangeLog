@@ -1,3 +1,8 @@
+2013-03-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php: Fixed reporting_get_group_stats.
+	  Froze consoles with lots of data and some calculations were wrong.
+
 2013-03-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_reporting.php: fixed the apply format to

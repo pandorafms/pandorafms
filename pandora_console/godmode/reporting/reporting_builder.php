@@ -709,6 +709,11 @@ switch ($action) {
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
 						$values['id_group'] = get_parameter ('combo_group');
 						$values['server_name'] = get_parameter ('server_name');
+						$server_id = (int)get_parameter('server_id');
+						if ($server_id != 0) {
+							$connection = metaconsole_get_connection_by_id($server_id);
+							$values['server_name'] = $connection['server_name'];
+						}
 						if ($values['server_name'] == '')
 							$values['server_name'] = get_parameter ('combo_server');
 						
@@ -929,6 +934,12 @@ switch ($action) {
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
 						$values['id_group'] = get_parameter ('combo_group');
 						$values['server_name'] = get_parameter ('server_name');
+						$server_id = (int)get_parameter('server_id');
+						if ($server_id != 0) {
+							$connection = metaconsole_get_connection_by_id($server_id);
+							
+							$values['server_name'] = $connection['server_name'];
+						}
 						if ($values['server_name'] == '')
 							$values['server_name'] = get_parameter ('combo_server');
 						

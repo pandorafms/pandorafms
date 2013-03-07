@@ -273,6 +273,9 @@ if (is_ajax ())
 			
 			$sql = treeview_getSecondBranchSQL ($fatherType, $id, $id_father);
 			$rows = db_get_all_rows_sql($sql);
+			if (empty($rows)) {
+				$rows = array();
+			}
 			$countRows = count ($rows);
 			
 			if ($countRows === 0) {

@@ -1,3 +1,8 @@
+2013-03-07  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events.build_table.php: Added carriage
+	return support in Instructions column in events view
+
 2013-03-07  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_view_services.php,

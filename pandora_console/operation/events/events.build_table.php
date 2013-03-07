@@ -424,14 +424,14 @@ foreach ($result as $event) {
 	if (in_array('instructions',$show_fields)) {
 		switch($event['event_type']) {
 			case 'going_unknown':
-				$data[$i] = ui_print_truncate_text($event["unknown_instructions"]);
+				$data[$i] = ui_print_truncate_text(str_replace("\n","<br>", io_safe_output($event["unknown_instructions"])));
 				break;
 			case 'going_up_critical':
 			case 'going_down_critical':
-				$data[$i] = ui_print_truncate_text($event["critical_instructions"]);
+				$data[$i] = ui_print_truncate_text(str_replace("\n","<br>", io_safe_output($event["critical_instructions"])));
 				break;
 			case 'going_down_warning':
-				$data[$i] = ui_print_truncate_text($event["warning_instructions"]);
+				$data[$i] = ui_print_truncate_text(str_replace("\n","<br>", io_safe_output($event["warning_instructions"])));
 				break;
 			default:
 				$data[$i] = '';

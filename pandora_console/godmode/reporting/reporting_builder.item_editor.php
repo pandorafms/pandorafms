@@ -58,7 +58,7 @@ $order_uptodown = 0;
 $show_resume = 0;
 $top_n = 0;
 $top_n_value = 10;
-$exception_condition = 0;
+$exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
 $exception_condition_value = 10;
 $modulegroup = 0;
 $period = 86400;
@@ -931,7 +931,20 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_exception_condition" style="" class="datos">
 			<td><?php echo __('Condition');?></td>
 			<td><?php
-				echo __('Everything');
+				$list_exception_condition = array(
+					REPORT_EXCEPTION_CONDITION_EVERYTHING => __('Everything'),
+					REPORT_EXCEPTION_CONDITION_GE => __('Greater or equal (>=)'),
+					REPORT_EXCEPTION_CONDITION_LE => __('Less or equal (<=)'),
+					REPORT_EXCEPTION_CONDITION_L => __('Less (<)'),
+					REPORT_EXCEPTION_CONDITION_G => __('Greater (>)'),
+					REPORT_EXCEPTION_CONDITION_E => __('Equal (=)'),
+					REPORT_EXCEPTION_CONDITION_NE => __('Not equal (!=)'),
+					REPORT_EXCEPTION_CONDITION_OK => __('OK'),
+					REPORT_EXCEPTION_CONDITION_NOT_OK => __('Not OK')
+					);
+				html_print_select($list_exception_condition, 'exception_condition', $exception_condition);
+				
+				/*echo ;
 				html_print_radio_button ('radiobutton_exception_condition', 0, '', $exception_condition);
 				echo __('>=');
 				html_print_radio_button ('radiobutton_exception_condition', 1, '', $exception_condition);
@@ -941,7 +954,7 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_radio_button ('radiobutton_exception_condition', 3, '', $exception_condition);
 				echo __('Not OK');
 				html_print_radio_button ('radiobutton_exception_condition', 4, '', $exception_condition);
-				?></td>
+				*/?></td>
 		</tr>
 		<tr id="row_show_graph" style="" class="datos">
 			<td><?php echo __('Show graph');?></td>

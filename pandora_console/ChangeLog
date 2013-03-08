@@ -1,3 +1,15 @@
+2013-03-07 Mario Pulido <mario.pulido@artica.es>
+
+       *images/help/historyddbb.png,images/help/plugin1.png
+       images/help/plugin2.png, images/help/plugin3.png
+       include/help/es/help_plugin_definition.php
+       include/help/es/help_history_database.php
+       include/help/en/help_history_database.php
+       include/help/en/help_plugin_definition.php: Modified plugin definition help.
+       Add history database help.
+
+
+
 2013-03-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* pandoradb.oracle.sql,

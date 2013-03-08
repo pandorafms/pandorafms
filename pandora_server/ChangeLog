@@ -1,3 +1,8 @@
+2013-03-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Backported snmp_ignore_authfailure and
+	  snmp_pdu_address from 5.0.
+
 2013-02-25  Sancho Lerena <slerena@artica.es>
 
 	* PandoraFMS/Config.pm: Fixed parsing of mta_from, avoiding problems

@@ -243,8 +243,11 @@ sub pandora_load_config {
 	$pa_config->{"snmp_threads"} = 3; # 4.0
 	$pa_config->{"block_size"} = 15; # 4.0
 	
-	$pa_config->{"max_queue_files"} = 500; 
-
+	$pa_config->{"max_queue_files"} = 500;
+	
+	$pa_config->{"snmp_ignore_authfailure"} = 1; # Backported from 5.0
+	$pa_config->{"snmp_pdu_address"} = 0; # Backported from 5.0
+	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
 	$pa_config->{"mta_port"} = '25'; # Introduced on 2.0

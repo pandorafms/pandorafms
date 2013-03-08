@@ -80,7 +80,7 @@ else {
 $data[2] = _('SNMP version');
 
 if ($id_module_type >= 15 && $id_module_type <= 18) {
-	$data[3] = html_print_select ($snmp_versions, 'snmp_version', $snmp_version,
+	$data[3] = html_print_select ($snmp_versions, 'snmp_version', $tcp_send,
 		'', '', '', true, false, false, '', $disabledBecauseInPolicy);
 }
 else {

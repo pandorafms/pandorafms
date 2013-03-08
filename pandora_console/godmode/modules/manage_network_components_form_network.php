@@ -25,11 +25,9 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
-if (! $id) {
+if (!$id && !isset($snmp_community)) {
 	$snmp_community = "public";
 }
-
-
 
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';

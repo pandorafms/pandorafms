@@ -401,24 +401,53 @@ if ($get_events_details) {
 	foreach($events as $event) {
 		switch($event["estado"]) {
 			case 0:
-				$img = "../../images/star.png";
+				$img = ui_get_full_url("images/star.png", false, false, false);
 				$title = __('New event');
 				break;
 			case 1:
-				$img = "../../images/tick.png";
+				$img = ui_get_full_url("images/tick.png", false, false, false);
 				$title = __('Event validated');
 				break;
 			case 2:
-				$img = "../../images/hourglass.png";
+				$img = ui_get_full_url("images/hourglass.png", false, false, false);
 				$title = __('Event in process');
 				break;
 		}
 		
-		$out .= '<tr class="'.get_priority_class ($event['criticity']).'"><td class="'.get_priority_class ($event['criticity']).'">';
-		$out .= '<img src="'.$img.'" alt="'.$title.'" title="'.$title.'">';
-		$out .= '</td><td class="'.get_priority_class ($event['criticity']).'" style="font-size:7pt">';
+		$out .= '<tr class="'.get_priority_class ($event['criticity']).'" style="height: 25px;">';
+		$out .= '<td class="'.get_priority_class ($event['criticity']).'" style="font-size:7pt" colspan=2>';
 		$out .= io_safe_output($event['evento']);
-		$out .= '</td></tr><tr style="font-size:0px; heigth: 0px; background: #999;"><td></td><td>';
+		$out .= '</td></tr>';
+		
+		$out .= '<tr class="'.get_priority_class ($event['criticity']).'" style="font-size:0px; height: 25px;">';
+		$out .= '<td class="'.get_priority_class ($event['criticity']).'" style="width: 18px; text-align:center;">';
+		$out .= html_print_image(ui_get_full_url('images/clock.png', false, false, false), true, array('title' => __('Timestamp')), false, true);
+
+		$out .= '</td>';
+		$out .= '<td class="'.get_priority_class ($event['criticity']).'" style="font-size:7pt">';
+		$out .= date($config['date_format'], $event['utimestamp']);
+		$out .= '</td></tr>';
+		
+		$out .= '<tr class="'.get_priority_class ($event['criticity']).'" style="font-size:0px; height: 25px;">';
+		$out .= '<td class="'.get_priority_class ($event['criticity']).'" style="width: 18px; text-align:center;">';
+		$out .= html_print_image($img, true, array('title' => $title), false, true);
+		$out .= '</td>';
+		$out .= '<td class="'.get_priority_class ($event['criticity']).'" style="font-size:7pt">';
+		$out .= $title;
+		if($event["estado"] == 1) {
+			if(empty($event['id_usuario'])) {
+				$ack_user = '<i>' . __('Auto') . '</i>';
+			}
+			else {
+				$ack_user = $event['id_usuario'];
+			}
+			
+			$out .= ' (' . $ack_user . ')';
+		}
+
+		$out .= '</td></tr>';
+		
+		$out .= '<tr style="font-size:0px; heigth: 0px; background: #999;"><td></td><td>';
 		$out .= '</td></tr><tr style="font-size:0px; heigth: 0px; background: #ccc;"><td></td><td>';
 		$out .= '</td></tr>';
 	}

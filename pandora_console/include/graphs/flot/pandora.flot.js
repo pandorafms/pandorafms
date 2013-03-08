@@ -852,12 +852,20 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			switch(item.series.label) {
 				case legend_alerts+series_suffix_str:
 				case legend_alerts:
-					extra_info = '<b>'+legend_alerts+' - '+labels_long[item.dataIndex]+'</b>'+get_event_details(alertsz[item.dataIndex]);
+					extra_info = '<b>'+legend_alerts+':<br><span style="font-size:xx-small; font-weight: normal;">From: '+labels_long[item.dataIndex];
+					if(labels_long[item.dataIndex+1] != undefined) {
+						extra_info += '<br>To: '+labels_long[item.dataIndex+1];
+					}
+					extra_info += '</span></b>'+get_event_details(alertsz[item.dataIndex]);
 					extra_show = true;
 					break;
 				case legend_events+series_suffix_str:
 				case legend_events:
-					extra_info = '<b>'+legend_events+' - '+labels_long[item.dataIndex]+'</b>'+get_event_details(eventsz[item.dataIndex]);
+					extra_info = '<b>'+legend_events+':<br><span style="font-size:xx-small; font-weight: normal;">From: '+labels_long[item.dataIndex];
+					if(labels_long[item.dataIndex+1] != undefined) {
+						extra_info += '<br>To: '+labels_long[item.dataIndex+1];
+					}
+					extra_info += '</span></b>'+get_event_details(eventsz[item.dataIndex]);
 					extra_show = true;
 					break;
 				default:
@@ -1055,6 +1063,7 @@ function get_event_details (event_ids) {
 			async: false,
 			success: function (data) {
 				table = data;
+				//forced_title_callback();
 			}
 		});
 	}

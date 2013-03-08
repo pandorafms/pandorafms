@@ -1,3 +1,14 @@
+2013-03-08  Sergio Martin <sergio.martin@artica.es>
+
+	* include/ajax/events.php
+	include/graphs/flot/pandora.flot.js: Improve the view
+	of events information in flot graphs for bug 3607101
+
+	* godmode/agentes/module_manager_editor_network.php
+	godmode/modules/manage_network_components_form.php
+	godmode/modules/manage_network_components_form_network.php: Fix
+	some bugs of module templates application and snmp modules edition
+
 2013-03-07 Mario Pulido <mario.pulido@artica.es>
 
        *images/help/historyddbb.png,images/help/plugin1.png

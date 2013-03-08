@@ -35,6 +35,7 @@ if ($create_network_from_module) {
 	
 	$name = $data_module["nombre"];
 	$description = $data_module["descripcion"];
+	$type = $data_module["id_tipo_modulo"];
 	$max = $data_module["max"];
 	$min = $data_module["min"];
 	$module_interval = $data_module["module_interval"];

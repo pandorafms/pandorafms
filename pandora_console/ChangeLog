@@ -1,6 +1,13 @@
 2013-03-08 Miguel de Dios <miguel.dedios@artica.es>
 	
-	*include/constants.php, include/functions_reporting.php,
+	* godmode/agentes/planned_downtime.list.php: added event when some
+	user stop a downtime manuallity.
+	
+	Fixes: #3607163
+
+2013-03-08 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/constants.php, include/functions_reporting.php,
 	godmode/reporting/reporting_builder.item_editor.php,
 	godmode/reporting/reporting_builder.php: into the report element
 	"exception" added more conditions and rewrote the code.

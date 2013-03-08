@@ -5121,22 +5121,35 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$title_exeption = __('Exception');
 			switch ($exception_condition) {
-				case 0:
+				case REPORT_EXCEPTION_CONDITION_EVERYTHING:
 					$title_exeption .= ' - '.__('Everything');
 					break;
-				case 1:
+				case REPORT_EXCEPTION_CONDITION_GE:
 					$title_exeption .= ' - '.__('Modules over or equal to').' '.$exception_condition_value;
 					break;
-				case 2:
+				case REPORT_EXCEPTION_CONDITION_LE:
+					$title_exeption .= ' - '.__('Modules under or equal to').' '.$exception_condition_value;
+					break;
+				case REPORT_EXCEPTION_CONDITION_L:
 					$title_exeption .= ' - '.__('Modules under').' '.$exception_condition_value;
 					break;
-				case 3:
+				case REPORT_EXCEPTION_CONDITION_G:
+					$title_exeption .= ' - '.__('Modules over').' '.$exception_condition_value;
+					break;
+				case REPORT_EXCEPTION_CONDITION_E:
+					$title_exeption .= ' - '.__('Equal to').' '.$exception_condition_value;
+					break;
+				case REPORT_EXCEPTION_CONDITION_NE:
+					$title_exeption .= ' - '.__('Not equal to').' '.$exception_condition_value;
+					break;
+				case REPORT_EXCEPTION_CONDITION_OK:
 					$title_exeption .= ' - '.__('Modules at normal status');
 					break;
-				case 4:
+				case REPORT_EXCEPTION_CONDITION_NOT_OK:
 					$title_exeption .= ' - '.__('Modules at critical or warning status');
 					break;
 			}
+			
 			reporting_header_content($mini, $content, $report, $table, $title_exeption);
 			
 			// Put description at the end of the module (if exists)
@@ -5241,39 +5254,53 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					if ($value > $max) $max = $value;
 					if ($value < $min) $min = $value;
 					$avg += $value;
+					
+					//Skips
 					switch ($exception_condition) {
-						//Display everything
-						case 0:
+						case REPORT_EXCEPTION_CONDITION_EVERYTHING:
 							break;
-						//Display modules over or equal to certain value
-						case 1:
-							//Skip modules under 'value'
+						case REPORT_EXCEPTION_CONDITION_GE:
 							if ($value < $exception_condition_value) {
 								continue 2;
 							}
 							break;
-						//Display modules under a certain value
-						case 2:
-							//Skip modules over or equal to 'value'
-							if ($value >= $exception_condition_value) {
+						case REPORT_EXCEPTION_CONDITION_LE:
+							if ($value > $exception_condition_value) {
 								continue 2;
 							}
 							break;
-						//Display modules at Normal status
-						case 3:
-							//Skip modules without normal status
+						case REPORT_EXCEPTION_CONDITION_L:
+							if ($value > $exception_condition_value) {
+								continue 2;
+							}
+							break;
+						case REPORT_EXCEPTION_CONDITION_G:
+							if ($value < $exception_condition_value) {
+								continue 2;
+							}
+							break;
+						case REPORT_EXCEPTION_CONDITION_E:
+							if ($value != $exception_condition_value) {
+								continue 2;
+							}
+							break;
+						case REPORT_EXCEPTION_CONDITION_NE:
+							if ($value == $exception_condition_value) {
+								continue 2;
+							}
+							break;
+						case REPORT_EXCEPTION_CONDITION_OK:
 							if (modules_get_agentmodule_status($exc['id_agent_module']) != 0) {
 								continue 2;
 							}
 							break;
-						//Display modules at critical, warning or unknown status
-						case 4:
-							//Skip modules at normal status
+						case REPORT_EXCEPTION_CONDITION_NOT_OK:
 							if (modules_get_agentmodule_status($exc['id_agent_module']) == 0) {
 								continue 2;
 							}
 							break;
 					}
+					
 					$i++;
 					$data_exceptions[] = $value;
 					$id_agent_module[] = $exc['id_agent_module'];
@@ -5287,28 +5314,44 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					metaconsole_restore_db();
 				}
 			}
+			
 			//$i <= 0 means that there are no rows on the table, therefore no modules under the conditions defined.
-			if ($i<=0) {
+			if ($i <= 0) {
 				$data = array ();
 				$table->colspan[2][0] = 3;
 				$data[0] = __('There are no');
+				
 				switch ($exception_condition) {
-					case 1:
-						$data[0] .= ' '.__('Modules over or equal to').' '.$exception_condition_value;
-						break;
-					case 2:
-						$data[0] .= ' '.__('Modules under').' '.$exception_condition_value;
-						break;
-					case 3:
-						$data[0] .= ' '.__('Modules at normal status');
-						break;
-					case 4:
-						$data[0] .= ' '.__('Modules at critial or warning status');
-						break;
-					default:
+					case REPORT_EXCEPTION_CONDITION_EVERYTHING:
 						$data[0] .= ' '.__('Modules under those conditions');
 						break;
+					case REPORT_EXCEPTION_CONDITION_GE:
+						$data[0] .= ' '.__('Modules over or equal to').' '.$exception_condition_value;
+						break;
+					case REPORT_EXCEPTION_CONDITION_LE:
+						$data[0] .= ' '.__('Modules less or equal to').' '.$exception_condition_value;
+						break;
+					case REPORT_EXCEPTION_CONDITION_L:
+						$data[0] .= ' '.__('Modules less').' '.$exception_condition_value;
+						break;
+					case REPORT_EXCEPTION_CONDITION_G:
+						$data[0] .= ' '.__('Modules over').' '.$exception_condition_value;
+						break;
+					case REPORT_EXCEPTION_CONDITION_E:
+						$data[0] .= ' '.__('Modules equal to').' '.$exception_condition_value;
+						break;
+					case REPORT_EXCEPTION_CONDITION_NE:
+						$data[0] .= ' '.__('Modules not equal to').' '.$exception_condition_value;
+						break;
+					case REPORT_EXCEPTION_CONDITION_OK:
+						$data[0] .= ' '.__('Modules normal status');
+						break;
+					case REPORT_EXCEPTION_CONDITION_NOT_OK:
+						$data[0] .= ' '.__('Modules at critial or warning status');
+						break;
 				}
+				
+				
 				array_push ($table->data, $data);
 				break;
 			}

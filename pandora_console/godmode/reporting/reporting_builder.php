@@ -703,7 +703,7 @@ switch ($action) {
 						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent');
 						$values['show_resume'] = get_parameter ('checkbox_show_resume');
 						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown');
-						$values['exception_condition'] = get_parameter('radiobutton_exception_condition');
+						$values['exception_condition'] = get_parameter('exception_condition');
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
 						$values['show_graph'] = get_parameter('combo_graph_options');
 						$values['id_module_group'] = get_parameter('combo_modulegroup');

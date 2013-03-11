@@ -1,3 +1,8 @@
+2013-03-11  Dario Rodriguez <dario@artica.es>
+
+	* win32/bin/util/curl.exe: Added curl binary for
+	windows systems.
+
 2013-03-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* unix/pandora_agent: Added debugging information to the execution of

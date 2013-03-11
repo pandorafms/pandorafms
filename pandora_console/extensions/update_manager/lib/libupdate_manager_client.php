@@ -32,6 +32,7 @@ function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $prox
 	$client = new xmlrpc_client($server_path, $server_host, $server_port);
 	
 	$client->setProxy($proxy, $proxy_port, $proxy_user, $proxy_pass);
+	$client->setFollowLocation(true);
 	
 	if (defined ('XMLRPC_DEBUG'))
 		$client->setDebug (XMLRPC_DEBUG);

@@ -448,7 +448,7 @@ $total_modules = db_get_value_sql($sql_total_modules);
 $total_modules = isset ($total_modules) ? $total_modules : 0;
 
 if ($modules === false) {
-	echo "<div class='nf'>".__('No available data to show')."</div>";
+	echo "<div class='nf'>" . __('No available data to show') . "</div>";
 	return;
 }
 
@@ -541,7 +541,7 @@ foreach ($modules as $module) {
 				"alt" => "")) . "&nbsp;";
 	}
 	
-	if(check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 		$data[0] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=' . $id_agente . '&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	}
 	

@@ -1,3 +1,8 @@
+2013-03-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix/pandora_agent: Added debugging information to the execution of
+	  module_exec modules.
+
 2012-08-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/modules/pandora_module_logevent.cc: Get the EventID from the

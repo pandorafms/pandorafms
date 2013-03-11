@@ -1322,9 +1322,11 @@ sub module_exec ($) {
 	# Execute the command
 	if ($module->{'timeout'} == 0) {
 		@data = `$params 2> $DevNull`;
+		log_message ('debug', "Executing module " . $module->{'name'} . " ($params 2> $DevNull)") if ($Conf{'debug'} eq '1');
 	} else {
 		my $cmd = quotemeta ($params);
 		@data = `$Conf{'pandora_exec'} $module->{'timeout'} $cmd 2> $DevNull`;
+		log_message ('debug', "Executing module " . $module->{'name'} . ' (' . $Conf{'pandora_exec'} . ' ' . $module->{'timeout'} . " $cmd 2> $DevNull)") if ($Conf{'debug'} eq '1');
 	}
 
 	# Something went wrong or no data

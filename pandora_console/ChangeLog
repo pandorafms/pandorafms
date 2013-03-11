@@ -1,3 +1,15 @@
+2013-03-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_groups.php
+	include/functions_graph.php: Added extral controls in status
+	count retrieving functions to avoid negative numbers for
+	bug 3607315
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Updated
+	the data of unknown modules to new fields in migration
+
 2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/agentes/planned_downtime.list.php: fixed the lost data

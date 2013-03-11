@@ -1,3 +1,8 @@
+2013-03-11  Koichiro Kikuchi <koichiro@rworks.jp>
+
+	* pandora_agent: Fixed bug that the send_buffered_xml_files
+	 doesn't remove xml files successfully sent.
+
 2013-02-22  Sancho Lerena <slerena@artica.es>
 
 	* Darwin/pandora_agent.conf: Added disk monitor.

@@ -1,5 +1,10 @@
 2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_config.php: fixed PHP notices when the "homeurl"
+	is empty in some installations.
+
+2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_graph.php: change the text of legends of "Data"
 	for "Avg".
 	

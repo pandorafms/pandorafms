@@ -536,8 +536,10 @@ function config_process_config () {
 		config_update_value ('language', 'en');
 	}
 	
-	if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
-		$config['homeurl'] = '/'.$config['homeurl'];
+	if (isset ($config['homeurl']) && (strlen($config['homeurl']) > 0)) {
+		if ($config['homeurl'][0] != '/') {
+			$config['homeurl'] = '/'.$config['homeurl'];
+		}
 	}
 	
 	if (!isset ($config['date_format'])) {

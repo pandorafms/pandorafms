@@ -1,3 +1,8 @@
+2013-03-11 Vanessa Gil <vanessa.gil@artica.es>
+	
+	* util/pandora_revent.pl: Addapted to API's function
+	'create_event'.
+
 2013-03-11  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_xml_stress.conf: Updated conf file to use the new

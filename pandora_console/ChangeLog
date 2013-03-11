@@ -1,5 +1,12 @@
 2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/agentes/planned_downtime.list.php: fixed the lost data
+	from planned downtime, show in the table of audits.
+	
+	Fixes: #3607608
+
+2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_tags.php: fixed the function
 	"tags_get_acl_tags_module_condition" when the user profile is in
 	the all group.

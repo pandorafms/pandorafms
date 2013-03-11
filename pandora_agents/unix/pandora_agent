@@ -115,7 +115,7 @@ my $ConfFile = 'pandora_agent.conf';
 my @BrokerPid;
 
 # Configuration tokens
-my %Conf = (
+my %DefaultConf = (
 	'server_ip' => 'localhost',
 	'server_path' => '/var/spool/pandora/data_in',
 	'logfile' =>'/var/log/pandora/pandora_agent.log',
@@ -160,6 +160,7 @@ my %Conf = (
 	'custom_id' => '',
 	'url_address' => '',
 );
+my %Conf = %DefaultConf;
 
 # Modules
 my @Modules;
@@ -1971,6 +1972,7 @@ while (1) {
 			@Modules = ();
 			@Plugins = ();
 			%Collections = ();
+			%Conf = %DefaultConf;
 			read_config ();
 					
 			# Check for a new configuration

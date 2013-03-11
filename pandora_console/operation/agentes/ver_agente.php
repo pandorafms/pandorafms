@@ -272,7 +272,7 @@ if (is_ajax ()) {
 			}
 			
 			foreach ($nameModules as $nameModule_key => $nameModule_value) {
-				$result[$nameModule_key] = io_safe_output($nameModule_value);
+				$result[$nameModule_key] = ui_print_truncate_text(io_safe_output($nameModule_value), 'module_medium', false, true);
 			}
 		}
 		else {
@@ -302,9 +302,9 @@ if (is_ajax ()) {
 			$result = array();
 			foreach($nameModules as $nameModule) {
 				if (empty($serialized))
-					$result[io_safe_output($nameModule['nombre'])] = io_safe_output($nameModule['nombre']);
+					$result[io_safe_output($nameModule['nombre'])] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
 				else
-					$result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = io_safe_output($nameModule['nombre']);
+					$result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
 			}
 		}
 		

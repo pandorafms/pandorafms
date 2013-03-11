@@ -1,5 +1,17 @@
 2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* extensions/update_manager/lib/functions.ajax.php: disabled the
+	trace.
+	
+	* operation/agentes/ver_agente.php: fixed the output of modules
+	when the names is very large.
+	
+	Fixes: #3607080
+	
+	* godmode/agentes/module_manager.php: cleaned source code style.
+
+2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_config.php: fixed PHP notices when the "homeurl"
 	is empty in some installations.
 

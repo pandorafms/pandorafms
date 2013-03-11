@@ -348,15 +348,45 @@ else {
 	$__id = $__id_pol_mod;
 }
 
-$table_advanced->data[6][1] = html_print_select_from_sql (
-	"SELECT id_tag, name
-	FROM ttag 
-	WHERE id_tag NOT IN (
-		SELECT a.id_tag
-		FROM ttag a, $__table_modules b 
-		WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
-		ORDER BY name", 'id_tag_available[]', '', '','','',
-	true, true, false, false, 'width: 200px', '5');
+if (!tags_has_user_acl_tags($config["id_user"])) {
+	$table_advanced->data[6][1] = html_print_select_from_sql (
+		"SELECT id_tag, name
+		FROM ttag 
+		WHERE id_tag NOT IN (
+			SELECT a.id_tag
+			FROM ttag a, $__table_modules b 
+			WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
+			ORDER BY name", 'id_tag_available[]', '', '','','',
+		true, true, false, false, 'width: 200px', '5');
+}
+else {
+	$user_tags = tags_get_user_tags($config["id_user"], "AW");
+	if (!empty($user_tags)) {
+		$id_user_tags = array_keys($user_tags);
+		
+		$table_advanced->data[6][1] = html_print_select_from_sql (
+			"SELECT id_tag, name
+			FROM ttag 
+			WHERE id_tag IN (" . implode(',',  $id_user_tags) . ") AND
+				id_tag NOT IN (
+				SELECT a.id_tag
+				FROM ttag a, $__table_modules b 
+				WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
+				ORDER BY name", 'id_tag_available[]', '', '','','',
+			true, true, false, false, 'width: 200px', '5');
+	}
+	else {
+		$table_advanced->data[6][1] = html_print_select_from_sql (
+			"SELECT id_tag, name
+			FROM ttag 
+			WHERE id_tag NOT IN (
+				SELECT a.id_tag
+				FROM ttag a, $__table_modules b 
+				WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
+				ORDER BY name", 'id_tag_available[]', '', '','','',
+			true, true, false, false, 'width: 200px', '5');
+	}
+}
 $table_advanced->data[6][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table_advanced->data[6][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete tags to module'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
 

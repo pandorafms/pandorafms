@@ -27,13 +27,14 @@
  * @return mixed Returns count of agents in critical status or false if they aren't.
  */
 function tags_agent_critical ($id_tag) {
-
-	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
-						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente.disabled=0
-						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-						AND ttag_module.id_tag = $id_tag
-						AND critical_count>0");
+	
+	return db_get_sql ("SELECT COUNT(*)
+		FROM tagente, tagente_modulo, ttag_module 
+		WHERE tagente.id_agente = tagente_modulo.id_agente
+			AND tagente.disabled=0
+			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+			AND ttag_module.id_tag = $id_tag
+			AND critical_count>0");
 }
 
  /**
@@ -44,13 +45,14 @@ function tags_agent_critical ($id_tag) {
  * @return mixed Returns count of agents in unknown status or false if they aren't.
  */
 function tags_agent_unknown ($id_tag) {
-
-	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
-						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente.disabled=0
-						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-						AND ttag_module.id_tag = $id_tag
-						AND critical_count=0 AND warning_count=0 AND unknown_count>0");
+	
+	return db_get_sql ("SELECT COUNT(*)
+		FROM tagente, tagente_modulo, ttag_module 
+		WHERE tagente.id_agente = tagente_modulo.id_agente
+			AND tagente.disabled=0
+			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+			AND ttag_module.id_tag = $id_tag
+			AND critical_count=0 AND warning_count=0 AND unknown_count>0");
 }
 
 /**
@@ -62,17 +64,17 @@ function tags_agent_unknown ($id_tag) {
  */
 function tags_total_agents ($id_tag) {
 	
-		// Avoid mysql error
-		if (empty($id_tag))
-			return;
+	// Avoid mysql error
+	if (empty($id_tag))
+		return;
 	
-		$total_agents = "SELECT COUNT(DISTINCT tagente.id_agente) 
-						FROM tagente, tagente_modulo, ttag_module 
-						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-						AND ttag_module.id_tag = " . $id_tag;
-						
-		return db_get_sql ($total_agents);	
+	$total_agents = "SELECT COUNT(DISTINCT tagente.id_agente) 
+		FROM tagente, tagente_modulo, ttag_module 
+		WHERE tagente.id_agente = tagente_modulo.id_agente
+			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+			AND ttag_module.id_tag = " . $id_tag;
+	
+	return db_get_sql ($total_agents);	
 }
 
  /**
@@ -83,13 +85,14 @@ function tags_total_agents ($id_tag) {
  * @return mixed Returns count of agents in normal status or false if they aren't.
  */
 function tags_agent_ok ($id_tag) {
-
-	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
-						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente.disabled=0
-						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-						AND ttag_module.id_tag = $id_tag
-						AND normal_count=total_count");
+	
+	return db_get_sql ("SELECT COUNT(*)
+		FROM tagente, tagente_modulo, ttag_module 
+		WHERE tagente.id_agente = tagente_modulo.id_agente
+			AND tagente.disabled=0
+			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+			AND ttag_module.id_tag = $id_tag
+			AND normal_count=total_count");
 }
 
  /**
@@ -101,12 +104,13 @@ function tags_agent_ok ($id_tag) {
  */
 function tags_agent_warning ($id_tag) {
 	 
-	return db_get_sql ("SELECT COUNT(*) FROM tagente, tagente_modulo, ttag_module 
-						WHERE tagente.id_agente = tagente_modulo.id_agente
-						AND tagente.disabled=0
-						AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
-						AND ttag_module.id_tag = $id_tag
-						AND critical_count=0 AND warning_count>0");
+	return db_get_sql ("SELECT COUNT(*)
+		FROM tagente, tagente_modulo, ttag_module 
+		WHERE tagente.id_agente = tagente_modulo.id_agente
+			AND tagente.disabled=0
+			AND tagente_modulo.id_agente_modulo = ttag_module.id_agente_modulo
+			AND ttag_module.id_tag = $id_tag
+			AND critical_count=0 AND warning_count>0");
 }
  
  /**
@@ -143,7 +147,7 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
 				break;
 		}
 	}
-	else{
+	else {
 		$sql = 'SELECT * FROM ttag';
 	}
 	if ($filter !== false) {
@@ -190,7 +194,7 @@ function tags_search_tag ($tag_name_description = false, $filter = false, $only_
  * @return mixed Tag id or false.
  */
 function tags_create_tag($values) {
-	if (empty($values)){
+	if (empty($values)) {
 		return false;
 	}
 	
@@ -215,7 +219,7 @@ function tags_search_tag_id($id) {
  *
  * @return mixed String with tag name or false.
  */
-function tags_get_name($id){
+function tags_get_name($id) {
 	return db_get_value_filter ('name', 'ttag', array('id_tag' => $id));
 }
 
@@ -226,7 +230,7 @@ function tags_get_name($id){
  *
  * @return int Tag id.
  */
-function tags_get_id($name){
+function tags_get_id($name) {
 	return db_get_value_filter ('id_tag', 'ttag', array('name' => $name));
 }
 
@@ -237,8 +241,8 @@ function tags_get_id($name){
  *
  * @return mixed String with tag description or false.
  */
-function tags_get_description($id){
-		return db_get_value_filter('description', 'ttag', array('id_tag' => $id));
+function tags_get_description($id) {
+	return db_get_value_filter('description', 'ttag', array('id_tag' => $id));
 }
 
 /**
@@ -248,8 +252,8 @@ function tags_get_description($id){
  *
  * @return mixed String with tag url or false.
  */
-function tags_get_url($id){
-		return db_get_value_filter('description', 'ttag', array('id_tag' => $id));
+function tags_get_url($id) {
+	return db_get_value_filter('description', 'ttag', array('id_tag' => $id));
 }
 
 /**
@@ -259,10 +263,10 @@ function tags_get_url($id){
  *
  * @return mixed Int with the tag's count or false.
  */
-function tags_get_modules_count($id){
+function tags_get_modules_count($id) {
 	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', array('id_tag' => $id));
 	$num_policy_modules = (int)db_get_value_filter('count(*)', 'ttag_policy_module', array('id_tag' => $id));
-
+	
 	return $num_modules + $num_policy_modules;
 }
 
@@ -273,7 +277,7 @@ function tags_get_modules_count($id){
  *
  * @return mixed Int with the tag's count or false.
  */
-function tags_get_local_modules_count($id){
+function tags_get_local_modules_count($id) {
 	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', array('id_tag' => $id));
 
 	return $num_modules;
@@ -286,9 +290,9 @@ function tags_get_local_modules_count($id){
  *
  * @return mixed Int with the tag's count or false.
  */
-function tags_get_modules_tag_count($id){
+function tags_get_modules_tag_count($id) {
 	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', array('id_agente_modulo' => $id));
-
+	
 	return $num_modules;
 }
 
@@ -299,9 +303,9 @@ function tags_get_modules_tag_count($id){
  *
  * @return mixed Int with the tag's count or false.
  */
-function tags_get_policy_modules_count($id){
+function tags_get_policy_modules_count($id) {
 	$num_policy_modules = (int)db_get_value_filter('count(*)', 'ttag_policy_module', array('id_tag' => $id));
-
+	
 	return $num_policy_modules;
 }
 
@@ -315,7 +319,7 @@ function tags_get_policy_modules_count($id){
  *
  * @return bool True or false if something goes wrong.
  */
-function tags_update_tag($values, $where){
+function tags_update_tag($values, $where) {
 	return db_process_sql_update ('ttag', $values, $where);
 }
 
@@ -326,7 +330,7 @@ function tags_update_tag($values, $where){
  *
  * @return bool True or false if something goes wrong.
  */
-function tags_delete_tag ($id_tag){
+function tags_delete_tag ($id_tag) {
 	$errn = 0;
 	
 	$result_tag = db_process_delete_temp ('ttag', 'id_tag', $id_tag);
@@ -336,20 +340,20 @@ function tags_delete_tag ($id_tag){
 	$result_module = db_process_delete_temp ('ttag_module', 'id_tag', $id_tag);
 	if ($result_module === false)
 		$errn++;
-
+	
 	$result_policy = db_process_delete_temp ('ttag_policy_module', 'id_tag', $id_tag);
 	if ($result_policy === false)
 		$errn++;
-		
-	if ($errn == 0){
-			db_process_sql_commit();
-			return true;
+	
+	if ($errn == 0) {
+		db_process_sql_commit();
+		return true;
 	}
-	else{
-			db_process_sql_rollback();
-			return false;
+	else {
+		db_process_sql_rollback();
+		return false;
 	}
-
+	
 }
 
 /**
@@ -357,7 +361,7 @@ function tags_delete_tag ($id_tag){
  *
  * @return mixed Int with the tag's count.
  */
-function tags_get_tag_count(){
+function tags_get_tag_count() {
 	return (int)db_get_value('count(*)', 'ttag');
 }
 
@@ -369,7 +373,7 @@ function tags_get_tag_count(){
  *
  * @return bool True or false if something goes wrong.
  */
-function tags_insert_module_tag ($id_agent_module, $tags){
+function tags_insert_module_tag ($id_agent_module, $tags) {
 	$errn = 0;
 	
 	$values = array();
@@ -378,7 +382,7 @@ function tags_insert_module_tag ($id_agent_module, $tags){
 		$tags = array();
 	}
 	
-	foreach ($tags as $tag){
+	foreach ($tags as $tag) {
 		//Protect against default insert
 		if (empty($tag))
 			continue;
@@ -387,10 +391,10 @@ function tags_insert_module_tag ($id_agent_module, $tags){
 		$values['id_agente_modulo'] = $id_agent_module;
 		$result_tag = db_process_sql_insert('ttag_module', $values);
 		if ($result_tag === false)
-			$errn++;		
+			$errn++;
 	}
 	
-/*	if ($errn > 0){
+/*	if ($errn > 0) {
 		db_process_sql_rollback();
 		return false;
 	}
@@ -408,13 +412,13 @@ function tags_insert_module_tag ($id_agent_module, $tags){
  *
  * @return bool True or false if something goes wrong.
  */
-function tags_insert_policy_module_tag ($id_agent_module, $tags){
+function tags_insert_policy_module_tag ($id_agent_module, $tags) {
 	$errn = 0;
 	
 	db_process_sql_begin();
 	
 	$values = array();
-	foreach ($tags as $tag){
+	foreach ($tags as $tag) {
 		//Protect against default insert
 		if (empty($tag))
 			continue;
@@ -423,14 +427,14 @@ function tags_insert_policy_module_tag ($id_agent_module, $tags){
 		$values['id_policy_module'] = $id_agent_module;
 		$result_tag = db_process_sql_insert('ttag_policy_module', $values, false);
 		if ($result_tag === false)
-			$errn++;		
+			$errn++;
 	}
-
-	if ($errn > 0){
+	
+	if ($errn > 0) {
 		db_process_sql_rollback();
 		return false;
 	}
-	else{
+	else {
 		db_process_sql_commit();
 		return true;
 	}
@@ -445,26 +449,26 @@ function tags_insert_policy_module_tag ($id_agent_module, $tags){
  * 
  * @return bool True or false if something goes wrong.
  */
-function tags_update_module_tag ($id_agent_module, $tags, $autocommit = false){
+function tags_update_module_tag ($id_agent_module, $tags, $autocommit = false) {
 	$errn = 0;
-
+	
 	if (empty($tags))
 		$tags = array();
 	
 	/* First delete module tag entries */
 	$result_tag = db_process_sql_delete ('ttag_module', array('id_agente_modulo' => $id_agent_module));
-
+	
 	$values = array();
-	foreach ($tags as $tag){
+	foreach ($tags as $tag) {
 		//Protect against default insert
 		if (empty($tag))
-			continue;		
+			continue;
 		
 		$values['id_tag'] = $tag;
 		$values['id_agente_modulo'] = $id_agent_module;
 		$result_tag = db_process_sql_insert('ttag_module', $values, false);
 		if ($result_tag === false)
-			$errn++;		
+			$errn++;
 	}
 	
 }
@@ -478,15 +482,15 @@ function tags_update_module_tag ($id_agent_module, $tags, $autocommit = false){
  * 
  * @return bool True or false if something goes wrong.
  */
-function tags_update_policy_module_tag ($id_policy_module, $tags, $autocommit = false){
+function tags_update_policy_module_tag ($id_policy_module, $tags, $autocommit = false) {
 	$errn = 0;
-
+	
 	if (empty($tags))
 		$tags = array();
 	
 	/* First delete module tag entries */
 	$result_tag = db_process_sql_delete ('ttag_policy_module', array('id_policy_module' => $id_policy_module));
-
+	
 	$values = array();
 	foreach ($tags as $tag) {
 		//Protect against default insert
@@ -509,7 +513,7 @@ function tags_update_policy_module_tag ($id_policy_module, $tags, $autocommit = 
  *
  * @return mixed Array with module tags or false if something goes wrong.
  */
-function tags_get_module_tags ($id_agent_module){
+function tags_get_module_tags ($id_agent_module) {
 	if (empty($id_agent_module))
 		return false;
 	
@@ -519,7 +523,7 @@ function tags_get_module_tags ($id_agent_module){
 		return array();
 	
 	$return = array();
-	foreach ($tags as $tag){
+	foreach ($tags as $tag) {
 		$return[] = $tag['id_tag'];
 	}
 	
@@ -533,7 +537,7 @@ function tags_get_module_tags ($id_agent_module){
  *
  * @return mixed Array with module tags or false if something goes wrong.
  */
-function tags_get_policy_module_tags ($id_policy_module){
+function tags_get_policy_module_tags ($id_policy_module) {
 	if (empty($id_policy_module))
 		return false;
 	
@@ -543,7 +547,7 @@ function tags_get_policy_module_tags ($id_policy_module){
 		return false;
 	
 	$return = array();
-	foreach ($tags as $tag){
+	foreach ($tags as $tag) {
 		$return[] = $tag['id_tag'];
 	}
 	
@@ -611,7 +615,7 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
 			$title = $tag_url[1];
 			//$link = '<a href="'.$tag_url[1].'" target="_blank">'.html_print_image('images/zoom.png',true, array('alt' => $title, 'title' => $title)).'</a>';
 			$link = '<a href="javascript: openURLTagWindow(\'' . $tag_url[1] . '\');">' . html_print_image('images/zoom.png', true, array('title' => __('Click here to open a popup window with URL tag'))) . '</a>';
-
+		
 		}
 		else {
 			$link = '';
@@ -619,7 +623,7 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
 		
 		$tags[] = $tag.$link;
 	}
-
+	
 	$tags = implode(',',$tags);
 	
 	$tags = str_replace(',',' , ',$tags);
@@ -915,7 +919,7 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 			
 	$profiles_without_tags = db_get_value_sql($query);
 	
-	if($profiles_without_tags > 0) {
+	if ($profiles_without_tags > 0) {
 		return $all_tags;
 	}
 	

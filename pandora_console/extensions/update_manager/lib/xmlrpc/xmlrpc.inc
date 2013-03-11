@@ -829,6 +829,9 @@
 		var $proxy_authtype=1;
 		var $cookies=array();
 		var $extracurlopts=array();
+		var $followlocation=false;
+		var $maxredirs=50;
+		var $redirs=0;
 
 		/**
 		* List of http compression methods accepted by the client for responses.
@@ -877,50 +880,27 @@
 			// allow user to specify all params in $path
 			if($server == '' and $port == '' and $method == '')
 			{
-				$parts = parse_url($path);
-				$server = $parts['host'];
-				$path = isset($parts['path']) ? $parts['path'] : '';
-				if(isset($parts['query']))
-				{
-					$path .= '?'.$parts['query'];
-				}
-				if(isset($parts['fragment']))
-				{
-					$path .= '#'.$parts['fragment'];
-				}
-				if(isset($parts['port']))
-				{
-					$port = $parts['port'];
-				}
-				if(isset($parts['scheme']))
-				{
-					$method = $parts['scheme'];
-				}
-				if(isset($parts['user']))
-				{
-					$this->username = $parts['user'];
-				}
-				if(isset($parts['pass']))
-				{
-					$this->password = $parts['pass'];
-				}
-			}
-			if($path == '' || $path[0] != '/')
-			{
-				$this->path='/'.$path;
+				setup_by_path($path);
 			}
 			else
 			{
-				$this->path=$path;
-			}
-			$this->server=$server;
-			if($port != '')
-			{
-				$this->port=$port;
-			}
-			if($method != '')
-			{
-				$this->method=$method;
+				if($path == '' || $path[0] != '/')
+				{
+					$this->path='/'.$path;
+				}
+				else
+				{
+					$this->path=$path;
+				}
+				$this->server=$server;
+				if($port != '')
+				{
+					$this->port=$port;
+				}
+				if($method != '')
+				{
+					$this->method=$method;
+				}
 			}
 
 			// if ZLIB is enabled, let the client by default accept compressed responses
@@ -940,6 +920,46 @@
 
 			// initialize user_agent string
 			$this->user_agent = $GLOBALS['xmlrpcName'] . ' ' . $GLOBALS['xmlrpcVersion'];
+		}
+
+		/**
+		 * Setup parameters by $path
+		 * @access private
+		 */
+		function setup_by_path($path)
+		{
+			$parts = parse_url($path);
+			$this->server = $parts['host'];
+			$path = isset($parts['path']) ? $parts['path'] : '';
+			if(isset($parts['query']))
+			{
+				$path .= '?'.$parts['query'];
+			}
+			if(isset($parts['fragment']))
+			{
+				$path .= '#'.$parts['fragment'];
+			}
+			if(isset($parts['user']))
+			{
+				$this->username = $parts['user'];
+			}
+			if(isset($parts['pass']))
+			{
+				$this->password = $parts['pass'];
+			}
+			if($path == '' || $path[0] != '/')
+			{
+				$path = '/' . $path;
+			}
+			$this->path=$path;
+			if(isset($parts['port']))
+			{
+				$this->port = $parts['port'];
+			}
+			if(isset($parts['scheme']))
+			{
+				$this->method =  $parts['scheme'];
+			}
 		}
 
 		/**
@@ -1106,6 +1126,25 @@
 			}
 		}
 		
+		/**
+		* Set follow Location: header or not when server response is 301, 302 or 303.
+		* @param bool $follow
+		*/
+		function setFollowLocation( $follow )
+		{
+			$this->followlocation = $follow;
+		}
+
+		/**
+		* Set maximum number of redirection-followings allowed. By default, the limit
+		* is set to 50 redirections. Set this option to -1 to make it limitless.
+		* @param int $num
+		*/
+		function setMaxRedirs( $num )
+		{
+			$this->maxredirs = $num;
+		}
+
 		/**
 		* Directly set cURL options, for extra flexibility
 		* It allows eg. to bind client to a specific IP interface / address
@@ -1407,8 +1446,23 @@
 				$ipd.=fread($fp, 32768);
 			} while(!feof($fp));
 			fclose($fp);
-				
-			$r =& $msg->parseResponse($ipd, false, $this->return_type);
+
+			// Handle Redirect
+			if ($this->followlocation
+				&& preg_match('/^HTTP\/[0-9.]+ 30[123] /', $ipd)
+				&& $this->redirs < $this->maxredirs
+				&& preg_match('/\r\nLocation:\s*([^\r\n]+)/', $ipd, $m)) {
+
+				if ($this->maxredirs != -1)
+				{
+					$this->redirs++;
+				}
+				$this->setup_by_path($m[1]);
+				$r =& $this->send($msg, $timeout);
+			} else {
+				$r =& $msg->parseResponse($ipd, false, $this->return_type);
+				$this->redirs = 0;
+			}
 			return $r;
 		
 		}
@@ -1536,6 +1590,10 @@
 
 			// return the header too
 			curl_setopt($curl, CURLOPT_HEADER, 1);
+
+			// redirect
+			curl_setopt($curl, CURLOPT_FOLLOWLOCATION, $this->followlocation);
+			curl_setopt($curl, CURLOPT_MAXREDIRS, $this->maxredirs);
 
 			// will only work with PHP >= 5.0
 			// NB: if we set an empty string, CURL will add http header indicating

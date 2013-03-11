@@ -1,3 +1,11 @@
+2013-03-11  Kikuchi Koichiro <koichiro@rworks.jp>
+
+	* extensions/update_manager/lib/libupdate_manager_client.php,
+	  extensions/update_manager/lib/xmlrpc/xmlrpc.inc: Added HTTP redirect
+	 support. It fixes an issue that update manager behind http proxy
+	 failed to communicate with update server due to the server's 
+	 "301 Moved Permanently" HTTP response.
+
 2013-03-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora.js: Increase the size of the stat_win

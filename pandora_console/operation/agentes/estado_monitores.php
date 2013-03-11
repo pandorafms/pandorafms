@@ -152,7 +152,8 @@ switch ($config["dbtype"]) {
 		break;
 }
 
-$tags_sql = tags_get_acl_tags($config['id_user'], $agent['id_grupo'], 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+$tags_sql = tags_get_acl_tags($config['id_user'],
+	$agent['id_grupo'], 'AR', 'module_condition', 'AND', 'tagente_modulo');
 
 $status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);
 $status_text_monitor = get_parameter('status_text_monitor', '');
@@ -565,7 +566,8 @@ foreach ($modules as $module) {
 </script>
 <?php
 
-echo "<h4 style='padding-top:0px !important;'>".__('Full list of monitors')."</h4>";
+echo "<h4 style='padding-top:0px !important;'>" .
+	__('Full list of monitors') . "</h4>";
 
 print_form_filter_monitors($status_filter_monitor, $status_text_monitor);
 if (empty ($table->data)) {

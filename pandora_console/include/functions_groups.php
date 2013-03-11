@@ -868,7 +868,9 @@ function groups_agent_not_init ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND notinit_count>0 AND id_grupo IN $group_clause");	
+	$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND notinit_count>0 AND id_grupo IN $group_clause");	
+	
+	return $count > 0 ? $count : 0;
 }
 
 
@@ -886,7 +888,9 @@ function groups_agent_unknown ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo IN $group_clause");
+	
+	return $count > 0 ? $count : 0;
 }
 
 // Get ok agents by using the status code in modules.
@@ -904,7 +908,9 @@ function groups_agent_ok ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo IN $group_clause");
+
+	return $count > 0 ? $count : 0;
 }
 
 // Get critical agents by using the status code in modules.
@@ -923,8 +929,9 @@ function groups_agent_critical ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count>0 AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count>0 AND id_grupo IN $group_clause");
 	
+	return $count > 0 ? $count : 0;	
 }
 
 // Get warning agents by using the status code in modules.
@@ -942,7 +949,9 @@ function groups_agent_warning ($group_array) {
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
-	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo IN $group_clause");	
+	$count = db_get_sql ("SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo IN $group_clause");	
+	
+	return $count > 0 ? $count : 0;
 }
 
 
@@ -964,7 +973,9 @@ function groups_monitor_not_init ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT SUM(notinit_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");	
+	$count = db_get_sql ("SELECT SUM(notinit_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");	
+	
+	return $count > 0 ? $count : 0;
 }
 
 // Get monitor OK, except disabled and non-init
@@ -985,7 +996,9 @@ function groups_monitor_ok ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT SUM(normal_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT SUM(normal_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
+	
+	return $count > 0 ? $count : 0;
 }
 
 // Get monitor CRITICAL, except disabled and non-init
@@ -1006,7 +1019,9 @@ function groups_monitor_critical ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT SUM(critical_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT SUM(critical_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
+	
+	return $count > 0 ? $count : 0;
 }
 
 // Get monitor WARNING, except disabled and non-init
@@ -1027,7 +1042,9 @@ function groups_monitor_warning ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT SUM(warning_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");						
+	$count =  db_get_sql ("SELECT SUM(warning_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");						
+	
+	return $count > 0 ? $count : 0;
 }
 
 // Get monitor UNKNOWN, except disabled and non-init
@@ -1048,7 +1065,9 @@ function groups_monitor_unknown ($group_array) {
 	$group_clause = "(" . $group_clause . ")";
 	
 	//TODO REVIEW ORACLE AND POSTGRES
-	return db_get_sql ("SELECT SUM(unknown_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
+	$count = db_get_sql ("SELECT SUM(unknown_count) FROM tagente WHERE disabled = 0 AND id_grupo IN $group_clause");
+	
+	return $count > 0 ? $count : 0;
 }
 
 // Get alerts defined for a given group, except disabled 
@@ -1162,7 +1181,6 @@ function groups_agent_disabled ($group_array) {
 	$sql = "SELECT COUNT(*) FROM tagente WHERE id_grupo IN $group_clause AND disabled = 1";
 	
 	return db_get_sql ($sql);
-	
 }
 
 ?>

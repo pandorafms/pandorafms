@@ -1108,3 +1108,9 @@ UPDATE talert_commands SET fields_descriptions = '["Community","Destination&#x20
 UPDATE talert_commands SET fields_descriptions = '["Log&#x20;Info&#x20;1","Log&#x20;Info&#x20;2","","","","","","","",""]', fields_values = '["","","","","","","","","",""]' WHERE id = 6;
 UPDATE talert_commands SET fields_descriptions = '["Destination&#x20;number","Message","","","","","","","",""]', fields_values = '["","","","","","","","","",""]' WHERE id = 9;
 UPDATE talert_commands SET fields_descriptions = '["Agent&#x20;name","Module&#x20;name","","","","","","","",""]', fields_values = '["","","","","","","","","",""]' WHERE id = 10;
+
+-- ---------------------------------------------------------------------
+-- Update the data of unknown modules to new fields (11/3/13)
+-- ---------------------------------------------------------------------
+
+UPDATE tagente_estado SET last_known_status = last_status, last_status = 3 WHERE estado = 3;

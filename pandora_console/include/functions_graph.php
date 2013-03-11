@@ -1397,10 +1397,16 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 		$fields[] = 'SUM(notinit_count) "Not init"';
 	}
 	
-	$agent_status = db_get_all_rows_filter('tagente', $filter, $fields);
+	$data = db_get_row_filter('tagente', $filter, $fields);
 	
-	$data = reset($agent_status);
-			
+	// If any value is negative, truncate it to 0
+	function truncate_negatives(&$element) {
+		if($element < 0) {
+			$element = 0;
+		}
+	}
+	array_walk($data, 'truncate_negatives');
+				
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	

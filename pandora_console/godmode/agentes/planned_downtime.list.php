@@ -67,9 +67,12 @@ if ($stop_downtime) {
 	
 	if ($result) {
 		events_create_event ("Manual stop downtime  ".
-			$downtime['name'] . "(" . $downtime['id'] . ") by " .
+			$downtime['name'] . " (" . $downtime['id'] . ") by " .
 			$config['id_user'], 0, 0, EVENT_STATUS_NEW, $config["id_user"],
 			"system", 1);
+		db_pandora_audit("Planned Downtime management",
+			"Manual stop downtime " . $downtime['name'] . " (ID " . $downtime['id'] . ")",
+			false, true);
 		
 		//Reenabled the Agents or Modules or alerts...depends of type
 		$downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);

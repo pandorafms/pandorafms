@@ -1167,7 +1167,7 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module, $noACLs = f
 		$warning_instructions = db_get_value('warning_instructions', 'tagente_modulo', 'id_agente_modulo', $agent_id);
 		$unknown_instructions = db_get_value('unknown_instructions', 'tagente_modulo', 'id_agente_modulo', $agent_id);
 		
-		if (!$noACLs){
+		if (!$noACLs) {
 			if (! check_acl ($config['id_user'], $group_id, "AW")) {
 				continue; 
 			}
@@ -1176,12 +1176,12 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module, $noACLs = f
 			array ('times_fired' => 0,
 				'internal_counter' => 0),
 			array ('id' => $id));
-			
+		
 		
 		if ($result > 0) {
 			// Update fired alert count on the agent
 			db_process_sql(sprintf('UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente = %d', $agent_id));
-
+			
 			events_create_event ("Manual validation of alert for ".
 				alerts_get_alert_template_description ($alert["id_alert_template"]),
 				$group_id, $agent_id, 1, $config["id_user"],

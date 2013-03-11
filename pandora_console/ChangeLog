@@ -1,5 +1,14 @@
 2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_tags.php: fixed the function
+	"tags_get_acl_tags_module_condition" when the user profile is in
+	the all group.
+	
+	* include/functions_reporting.php, include/functions_alerts.php,
+	operation/agentes/estado_monitores.php: improve the code style.
+
+2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/agentes/module_manager_editor_common.php: show only the
 	tags that the user has.
 	

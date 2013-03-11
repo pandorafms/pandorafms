@@ -5382,7 +5382,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					foreach ($data_exceptions as $dex) {
 						$data_hbar[$agent_name[$j]]['g'] = $dex;
 						$data_pie_graph[$agent_name[$j]] = $dex;
-						if  ($show_graph == 0 || $show_graph == 1) {
+						if ($show_graph == 0 || $show_graph == 1) {
 							$data = array();
 							$data[0] = $agent_name[$j];
 							$data[1] = $module_name[$j];

@@ -647,6 +647,7 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
  
 function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = 'module_condition', $query_prefix = '', $query_table = '') {
 	global $config;
+	
 	if($id_user == false) {
 		$id_user = $config['id_user'];
 	}
@@ -663,49 +664,49 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 		}
 	}
 	
-	if((string)$id_group === "0") {
+	if ((string)$id_group === "0") {
 		$id_group = array_keys(users_get_groups($id_user, $access, false));
-
-		if(empty($id_group)) {
+		
+		if (empty($id_group)) {
 			return ERR_WRONG_PARAMETERS;
 		}
 	}
-	elseif(empty($id_group)) {
+	elseif (empty($id_group)) {
 		return ERR_WRONG_PARAMETERS;
 	}
-	elseif(!is_array($id_group)) {
+	elseif (!is_array($id_group)) {
 		$id_group = (array) $id_group;
 	}
-
+	
 	$acl_column = get_acl_column($access);
 	
-	if(empty($acl_column)) {
+	if (empty($acl_column)) {
 		return ERR_WRONG_PARAMETERS;
 	}
 	
 	$query = sprintf("SELECT tags, id_grupo 
 			FROM tusuario_perfil, tperfil
 			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
-			tusuario_perfil.id_usuario = '%s' AND 
-			tperfil.%s = 1 AND
+				tusuario_perfil.id_usuario = '%s' AND 
+				tperfil.%s = 1 AND
 			(tusuario_perfil.id_grupo IN (%s) OR tusuario_perfil.id_grupo = 0)
 			ORDER BY id_grupo", $id_user, $acl_column, implode(',',$id_group));
 	$tags = db_get_all_rows_sql($query);
 	
 	// If not profiles returned, the user havent acl permissions
-	if(empty($tags)) {
+	if (empty($tags)) {
 		return ERR_ACL;
 	}
 	
 	// Array to store groups where there arent tags restriction
 	$non_restriction_groups = array();
-
+	
 	$acltags = array();
-	foreach($tags as $tagsone) {
-		if(empty($tagsone['tags'])) {
+	foreach ($tags as $tagsone) {
+		if (empty($tagsone['tags'])) {
 			// If there arent tags restriction in all groups (group 0), return no condition
-			if($tagsone['id_grupo'] == 0) {
-				switch($return_mode) {
+			if ($tagsone['id_grupo'] == 0) {
+				switch ($return_mode) {
 					case 'data':
 						return array();
 						break;
@@ -722,7 +723,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 		
 		$tags_array = explode(',',$tagsone['tags']);
 		
-		if(!isset($acltags[$tagsone['id_grupo']])) {
+		if (!isset($acltags[$tagsone['id_grupo']])) {
 			$acltags[$tagsone['id_grupo']] = $tags_array;
 		}
 		else {
@@ -731,13 +732,13 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 	}
 	
 	// Delete the groups without tag restrictions from the acl tags array
-	foreach($non_restriction_groups as $nrgroup) {
-		if(isset($acltags[$nrgroup])) {
+	foreach ($non_restriction_groups as $nrgroup) {
+		if (isset($acltags[$nrgroup])) {
 			unset($acltags[$nrgroup]);
 		}
 	}
-		
-	switch($return_mode) {
+	
+	switch ($return_mode) {
 		case 'data':
 			// Stop here and return the array
 			return $acltags;
@@ -745,7 +746,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
 		case 'module_condition':
 			// Return the condition of the tags for tagente_modulo table
 			$condition = tags_get_acl_tags_module_condition($acltags, $query_table);
-			if(!empty($condition)) {
+			if (!empty($condition)) {
 				return " $query_prefix ".$condition;
 			}
 			break;
@@ -771,28 +772,37 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = '
  */
  
 function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
-	if(!empty($modules_table)) {
+	if (!empty($modules_table)) {
 		$modules_table .= '.';
 	}
 	
 	$condition = '';
-	foreach($acltags as $group_id => $group_tags) {
-		if($condition != '') {
+	foreach ($acltags as $group_id => $group_tags) {
+		if ($condition != '') {
 			$condition .= ' OR ';
 		}
 		
 		// Group condition (The module belongs to an agent of the group X)
-		$group_condition = sprintf('%sid_agente IN (SELECT id_agente FROM tagente WHERE id_grupo = %d)', $modules_table, $group_id);
+		if (!array_key_exists(0, array_keys($acltags))) {
+			$group_condition = sprintf('%sid_agente IN (SELECT id_agente FROM tagente WHERE id_grupo = %d)', $modules_table, $group_id);
+		}
+		else {
+			//Avoid the user profiles with all group access.
+			$group_condition = " 1 = 1 ";
+		}
 		// Tags condition (The module has at least one of the restricted tags)
 		$tags_condition = sprintf('%sid_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN (%s))', $modules_table, implode(',',$group_tags));
 		
 		$condition .= "($group_condition AND \n$tags_condition)\n";
 	}
-		
-	if(!empty($condition)) {
+	
+	//Avoid the user profiles with all group access.
+	//if (!empty($condition)) {
+	if (!empty($condition) &&
+		!array_key_exists(0, array_keys($acltags))) {
 		$condition = sprintf("\n((%s) OR %sid_agente NOT IN (SELECT id_agente FROM tagente WHERE id_grupo IN (%s)))", $condition, $modules_table, implode(',',array_keys($acltags)));
 	}
-
+	
 	return $condition;
 }
 

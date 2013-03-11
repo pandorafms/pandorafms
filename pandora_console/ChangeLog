@@ -1,3 +1,10 @@
+2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_graph.php: change the text of legends of "Data"
+	for "Avg".
+	
+	Fixes: #3607218
+
 2013-03-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_groups.php

@@ -6,7 +6,8 @@
 2013-03-11  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_xml_stress.conf: Updated conf file to use the new
-	threshold values in the generation of xml. 
+	threshold values in the generation of xml. Better defaults for
+	proc types. 
 
 2013-03-11  Ramon Novoa  <rnovoa@artica.es>
 

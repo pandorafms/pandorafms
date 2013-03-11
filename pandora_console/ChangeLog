@@ -1,3 +1,13 @@
+2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/constants.php: added lost constant for the 10 minutes.
+	
+	* include/functions_users.php: fixed the first execution of
+	chatlog that throw PHP notice.
+	
+	* include/functions_config.php: fixed PHP notices when the "homeurl"
+	is empty in some installations.
+
 2013-03-11  Kikuchi Koichiro <koichiro@rworks.jp>
 
 	* extensions/update_manager/lib/libupdate_manager_client.php,

@@ -294,7 +294,9 @@ function config_update_config () {
 	enterprise_include_once('include/functions_policies.php');
 	$enterprise = enterprise_include_once ('include/functions_skins.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
-		$config['relative_path'] = get_parameter('relative_path', $config['relative_path']);
+		if (isset($config['relative_path'])) {
+			$config['relative_path'] = get_parameter('relative_path', $config['relative_path']);
+		}
 	}
 }
 
@@ -320,8 +322,10 @@ function config_process_config () {
 		config_update_value ('language', 'en');
 	}
 	
-	if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
-		$config['homeurl'] = '/'.$config['homeurl'];
+	if (isset ($config['homeurl']) && (strlen($config['homeurl']) > 0)) {
+		if ($config['homeurl'][0] != '/') {
+			$config['homeurl'] = '/'.$config['homeurl'];
+		}
 	}
 	
 	if (!isset ($config['date_format'])) {

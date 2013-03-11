@@ -665,10 +665,11 @@ function users_get_last_type_message() {
 		if ($lock) {
 			$text_encode = @file_get_contents($log_chat_file);
 			$log = json_decode($text_encode, true);
-			
-			$last = end($log);
-			
-			$return = $last['type'];
+			if (isset($log)) {
+				$last = end($log);
+				
+				$return = $last['type'];
+			}
 			
 			fclose($fp_global_counter);
 		}

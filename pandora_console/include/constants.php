@@ -51,6 +51,7 @@ define('MIN_WIDTH_CAPTION',420);
 /* Seconds in a time unit constants */
 define('SECONDS_1MINUTE',60);
 define('SECONDS_5MINUTES',300);
+define('SECONDS_10MINUTES',600);
 define('SECONDS_30MINUTES',1800);
 define('SECONDS_1HOUR',3600);
 define('SECONDS_6HOURS',21600);

@@ -10,7 +10,7 @@ function toggleDiv (divid){
 }
 
 function winopeng (url, wid) {
-	open (url, wid,"width=640,height=340,status=no,toolbar=no,menubar=no,scrollbar=no,location=0");
+	open (url, wid,"width=650,height=410,status=no,toolbar=no,menubar=no,scrollbar=no,location=0");
 	// WARNING !! Internet Explorer DOESNT SUPPORT "-" CARACTERS IN WINDOW HANDLE VARIABLE
 	status = wid;
 }

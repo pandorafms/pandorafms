@@ -1,3 +1,9 @@
+2013-03-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora.js: Increase the size of the stat_win
+	graphs pop-up to avoid miss the reload button in explorer browsers
+	for bug 3606507
+
 2013-03-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php: Fixed reporting_get_group_stats.

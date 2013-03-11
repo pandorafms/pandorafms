@@ -1,3 +1,8 @@
+2013-03-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_xml_stress.pl: Added support for critical and warning
+	  thresholds.
+
 2013-03-07 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* lib/PandoraFMS/Core.pm: added in the start or end of downtimes

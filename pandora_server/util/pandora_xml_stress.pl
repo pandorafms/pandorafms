@@ -170,11 +170,29 @@ sub generate_xml_files ($$$$$$) {
 				my $module_time_offset = get_generation_parameter($module, 'time_offset', '0');
 				my $module_src = get_generation_parameter($module, 'src', 'source.txt');
 				
+				my $module_min_critical = get_conf_token ($module, 'module_min_critical', '');
+				my $module_max_critical = get_conf_token ($module, 'module_max_critical', '');
+				my $module_min_warning = get_conf_token ($module, 'module_min_warning', '');
+				my $module_max_warning = get_conf_token ($module, 'module_max_warning', '');
+				
 				# Generate module data
 				$xml_data .= "\t<module>\n";
 				$xml_data .= "\t\t<name>$module_name</name>\n";
 				$xml_data .= "\t\t<description>$module_description</description>\n";			
 				$xml_data .= "\t\t<type>$module_type</type>\n";
+
+				if ($module_min_critical ne '') {
+					$xml_data .= "\t\t<min_critical>$module_min_critical</min_critical>\n";
+				}
+				if ($module_max_critical ne '') {
+					$xml_data .= "\t\t<max_critical>$module_max_critical</max_critical>\n";
+				}
+				if ($module_min_warning ne '') {
+					$xml_data .= "\t\t<min_warning>$module_min_warning</min_warning>\n";
+				}
+				if ($module_max_warning ne '') {
+					$xml_data .= "\t\t<max_warning>$module_max_warning</max_warning>\n";
+				}
 				$xml_data .= "\t\t<unit><![CDATA[$module_unit]]></unit>\n";
 				
 				# Generate data

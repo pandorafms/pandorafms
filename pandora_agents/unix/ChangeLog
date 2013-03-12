@@ -1,3 +1,10 @@
+2013-03-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_revent: Added to repository. Pandora remote event generation
+	  script.
+
+	* pandora_agent_installer: Added the pandora_revent script.
+
 2013-03-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Reset configuration to default values before

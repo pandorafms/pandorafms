@@ -249,6 +249,10 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$legend_events = '';
 	$legend_alerts = '';
 	
+	if (empty($chart_extra_data)) {
+		$chart_extra_data = array();
+	}
+	
 	foreach ($chart_extra_data as $i => $data) {
 		switch ($i) {
 			case 'legend_alerts':
@@ -258,11 +262,11 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 				$legend_events = $data;
 				break;
 			default:
-				if(isset($data['events'])) {
+				if (isset($data['events'])) {
 					$event_ids[] = $i;
 					$events[$i] = $data['events'];
 				}
-				if(isset($data['alerts'])) {
+				if (isset($data['alerts'])) {
 					$alert_ids[] = $i;
 					$alerts[$i] = $data['alerts'];
 				}
@@ -309,7 +313,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	// Parent layer
 	$return .= "</div>";
 	
-	return $return;	
+	return $return;
 }
 
 ///////////////////////////////
@@ -461,7 +465,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 	
 	$return .= "</script>";
 	
-	return $return;	
+	return $return;
 }
 
 // Returns a 3D column chart
@@ -552,7 +556,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	
 	$values2 = array();
 	
-	foreach($data as $jsvar => $values) {
+	foreach ($data as $jsvar => $values) {
 		$values2[] = implode($separator,$values);
 	}
 	
@@ -567,7 +571,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	
 	$return .= "</script>";
 	
-	return $return;	
+	return $return;
 }
 
 function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '') {
@@ -604,8 +608,8 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$intervaltick = $period / $i;
 	
 	$leg_max_length = 0;
-	foreach($legend as $l) {
-		if(strlen($l) > $leg_max_length) {
+	foreach ($legend as $l) {
+		if (strlen($l) > $leg_max_length) {
 			$leg_max_length = strlen($l);
 		}
 	}
@@ -673,12 +677,12 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	
 	$values2 = array();
 	
-	foreach($data as $jsvar => $values) {
+	foreach ($data as $jsvar => $values) {
 		$values2[] = implode($separator,$values);
 		$i ++;
 	}
 	
-	$values = implode($separator2, $values2);	
+	$values = implode($separator2, $values2);
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
@@ -687,6 +691,6 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	
-	return $return;	
+	return $return;
 }
 ?>

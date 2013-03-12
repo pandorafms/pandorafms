@@ -296,7 +296,7 @@ if ($id_np > 0) {
 	
 	echo '<div style="width:'.$table->width.'; text-align:right">';
 	html_print_submit_button (__('Add'), 'crtbutton', false, 'class="sub wand"');
-	echo '</div></form>';	
+	echo '</div></form>';
 }
 
 ?>

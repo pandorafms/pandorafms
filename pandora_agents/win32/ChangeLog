@@ -1,3 +1,11 @@
+2013-03-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/util/pandora_revent.exe: Added to repository. Compiled version of
+	  pandora_revent.pl.
+
+	* installer/pandora.mpi: Added pandora_revent.exe and curl.exe to the
+	  installer.
+
 2013-02-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_logevent.cc: Add the timestamp to the log.

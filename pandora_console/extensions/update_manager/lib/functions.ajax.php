@@ -110,7 +110,11 @@ function update_pandora_get_packages_online_ajax($ajax = true) {
 		
 		$return['last'] = $last;
 		$return['package'] = $package;
-		$return['timestamp'] = date($config["date_format"], $timestamp);
+		if (!isset($config["date_format"]))
+			$default_date_format = "F j, Y, g:i a";
+		else
+			$default_date_format = $config["date_format"];
+		$return['timestamp'] = date($default_date_format, $timestamp);
 		$return['text_adv'] = html_print_image('images/world.png', true);
 		$return['end'] = 1;
 	}

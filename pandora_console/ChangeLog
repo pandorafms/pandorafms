@@ -1,3 +1,14 @@
+2013-03-12 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/modules/manage_network_components_form.php,
+	godmode/modules/manage_network_templates_form.php: improved the code
+	style.
+	
+	* extensions/update_manager/lib/functions.ajax.php,
+	include/graphs/functions_flot.php: fixed the warnings PHP messages.
+	
+	Fixes: #3607177
+
 2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* extensions/update_manager/lib/functions.ajax.php: disabled the

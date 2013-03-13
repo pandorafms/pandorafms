@@ -1,3 +1,11 @@
+2013-03-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Tools.pm: Added support for ranges to server cron
+	  modules.
+
+	* lib/PandoraFMS/ProducerConsumerServer.pm: Update queue stats after
+	  queuing new new modules.
+
 2013-03-11 Vanessa Gil <vanessa.gil@artica.es>
 	
 	* util/pandora_revent.pl: Addapted to API's function

@@ -113,9 +113,6 @@ sub data_producer ($$$$$) {
 			# Get pending tasks
 			my @tasks = &{$self->{'_producer'}}($self);
 			
-			# Update queue size for statistics
-			$self->setQueueSize (scalar @{$task_queue});
-
 			foreach my $task (@tasks) {
 				$sem->down;
 				
@@ -131,6 +128,9 @@ sub data_producer ($$$$$) {
 				
 				$sem->up;
 			}
+
+			# Update queue size for statistics
+			$self->setQueueSize (scalar @{$task_queue});
 
 			threads->yield;
 			sleep ($pa_config->{'server_threshold'});

@@ -72,13 +72,13 @@ function process_manage_delete ($module_name, $id_agents) {
 	// Selection mode by Agents
 	if ($selection_delete_mode == 'agents') {
 		// We are selecting "any" module for the selecteds agents
-		if (($module_name[0] == 0) and (is_array($module_name)) and (count($module_name) == 1))
+		if (($module_name[0] == "0") and (is_array($module_name)) and (count($module_name) == 1))
 			$filter_for_module_deletion = false;
 		else
-			$filter_for_module_deletion = sprintf('nombre IN ("%s")', implode('","',$module_name));
+			$filter_for_module_deletion = sprintf('nombre IN ("%s")', implode('","', $module_name));
 		
 		$modules = agents_get_modules ($id_agents, 'id_agente_modulo',
-		$filter_for_module_deletion, true);
+			$filter_for_module_deletion, true);
 		
 	}
 	else {
@@ -117,24 +117,26 @@ $selection_mode = get_parameter('selection_mode', 'modules');
 $recursion = get_parameter('recursion');
 
 if ($delete) {
-	if ($selection_mode == 'modules') {
-		$force = get_parameter('force_type', false);
-		
-		if ($agents_select == false) {
-			$agents_select = array();
-			$agents_ = array();
-		}
-		
-		foreach($agents_select as $agent_name) {
-			$agents_[] = agents_get_agent_id($agent_name);
-		}
-		$modules_ = $module_name;
-	}
-	else if($selection_mode == 'agents') {
-		$force = get_parameter('force_group', false);
-		
-		$agents_ = $agents_id;
-		$modules_ = $modules_select;
+	switch ($selection_mode) {
+		case 'modules':
+			$force = get_parameter('force_type', false);
+			
+			if ($agents_select == false) {
+				$agents_select = array();
+				$agents_ = array();
+			}
+			
+			foreach ($agents_select as $agent_name) {
+				$agents_[] = agents_get_agent_id($agent_name);
+			}
+			$modules_ = $module_name;
+			break;
+		case 'agents':
+			$force = get_parameter('force_group', false);
+			
+			$agents_ = $agents_id;
+			$modules_ = $modules_select;
+			break;
 	}
 	
 	$count = 0;
@@ -152,8 +154,8 @@ if ($delete) {
 				WHERE t1.id_agente = t2.id_agente AND t2.delete_pending = 0 ' . $condition);
 			foreach($agents_ as $id_agent) {
 				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent['id_agente'], 'id_tipo_modulo' =>  $module_type, 'delete_pending' => 0),'nombre');
-
-				if($module_name == false) {
+				
+				if ($module_name == false) {
 					$module_name = array();
 				}
 				foreach ($module_name as $mod_name) {
@@ -167,7 +169,7 @@ if ($delete) {
 			$agents_ = array_keys (agents_get_group_agents ($group_select, false, "none"));
 			foreach ($agents_ as $id_agent) {
 				$module_name = db_get_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent),'nombre');
-				if($module_name == false) {
+				if ($module_name == false) {
 					$module_name = array();
 				}
 				else {
@@ -181,9 +183,10 @@ if ($delete) {
 		$agents_ = array();
 	}
 	
-	if (!$force)
+	if (!$force) {
 		$result = process_manage_delete ($modules_, $agents_);
-		
+	}
+	
 	if ($result) {
 		db_pandora_audit("Massive management", "Delete module ", false, false,
 			'Agent: ' . json_encode($agents_) . ' Module: ' . $module_name);

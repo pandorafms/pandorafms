@@ -1,3 +1,9 @@
+2013-03-13  Kikuchi Koichiro <koichiro@rworks.jp>
+
+	* extensions/update_manager/lib/xmlrpc/xmlrpc.inc: Keep original
+	 connection params when xmlrpc_client->sendPayloadHTTP10() follows
+	 30x redirect.
+
 2013-03-11 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/constants.php: added lost constant for the 10 minutes.

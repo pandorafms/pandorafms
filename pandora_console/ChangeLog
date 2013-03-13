@@ -1,3 +1,8 @@
+2013-03-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/servers/modificar_server.php: Let an Enterprise SNMP server
+	  claim back modules that were moved to the Network server.
+
 2013-03-13 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_modules.php: fixed the notices PHP.

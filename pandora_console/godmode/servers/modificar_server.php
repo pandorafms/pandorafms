@@ -55,6 +55,11 @@ if (isset($_GET["server"])) {
 else {
 	// Header
 	ui_print_page_header (__('Pandora servers'), "", false, "servers", true);
+
+	// Move SNMP modules back to the enterprise server
+	if (isset($_GET["server_reset_snmp_enterprise"])) {
+		db_process_sql ("UPDATE tagente_estado SET last_error=0 WHERE last_error=1");
+	}
 	
 	if (isset ($_GET["delete"])) {
 		$id_server = get_parameter_get ("server_del");
@@ -161,7 +166,16 @@ else {
 		
 		//Only Pandora Administrator can delete servers
 		if (check_acl ($config["id_user"], 0, "PM")) {
-			$data[8] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">';
+			
+			$data[8] = '';
+			if ($server['type'] == 'enterprise snmp') {
+				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_reset_snmp_enterprise='.$server["id_server"].'">';
+				$data[8] .= html_print_image ('images/target.png', true,
+					array('title' => __('Claim back SNMP modules')));
+				$data[8] .= '</a>&nbsp;&nbsp;';
+			}
+			
+			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$server["id_server"].'">';
 			$data[8] .= html_print_image ('images/config.png', true,
 				array('title' => __('Edit')));
 			$data[8] .= '</a>';

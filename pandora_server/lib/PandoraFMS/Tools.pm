@@ -41,6 +41,7 @@ our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
+    cron_get_closest_in_range
 	cron_next_execution
 	cron_next_execution_date
 	pandora_daemonize
@@ -1071,13 +1072,18 @@ sub cron_next_execution ($) {
 	# Get day of the week and month from cron config
 	my ($mday, $wday) = (split (/\s/, $cron))[2, 4];
 
-	# Get current time
+	# Get current time and day of the week
 	my $cur_time = time();
+	my $cur_wday = (localtime ($cur_time))[6];
 
-	# Any day of the way
+	# Any day of the week
 	if ($wday eq '*') {
 		my $nex_time = cron_next_execution_date ($cron,  $cur_time);
 		return $nex_time - time();
+	}
+	# A range?
+	else {
+		$wday = cron_get_closest_in_range ($cur_wday, $wday);
 	}
 
 	# A specific day of the week
@@ -1125,6 +1131,12 @@ sub cron_next_execution_date ($$) {
 	}
 	my ($cur_min, $cur_hour, $cur_mday, $cur_mon, $cur_year) = (localtime ($cur_time))[1, 2, 3, 4, 5];
 	
+	# Parse intervals
+	$min = cron_get_closest_in_range ($cur_min, $min);
+	$hour = cron_get_closest_in_range ($cur_hour, $hour);
+	$mday = cron_get_closest_in_range ($cur_mday, $mday);
+	$mon = cron_get_closest_in_range ($cur_mon, $mon);
+
 	# Get first next date candidate from cron configuration
 	my ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = ($min, $hour, $mday, $mon, $cur_year);
 
@@ -1188,6 +1200,31 @@ sub cron_next_execution_date ($$) {
 	
 	# Something went wrong, default to 5 minutes
 	return $cur_time + 300;
+}
+
+###############################################################################
+# Returns the closest number to the target inside the given range (including
+# the target itself).
+###############################################################################
+sub cron_get_closest_in_range ($$) {
+	my ($target, $range) = @_;
+
+	# Not a range
+	if ($range !~ /(\d+)\-(\d+)/) {
+		return $range;
+	}
+	
+	# Search the closes number to the target in the given range
+	my $range_start = $1;
+	my $range_end = $2;
+	
+	# Outside the range
+	if ($target <= $range_start || $target > $range_end) {
+		return $range_start;
+	}
+	
+	# Inside the range
+	return $target;
 }
 
 # End of function declaration

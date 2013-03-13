@@ -175,12 +175,23 @@ function update_pandora_download_package() {
 				$package_url . " -O " . $dir . $package .
 				" -o /tmp/" . $package . ".info.txt";
 			
+			if (!empty($settings->proxy)) {
+				$command .= ' -e http_proxy=' . $settings->proxy;
+				if (!empty($settings->proxy_port))
+					$command .= ':' . $settings->proxy_port;
+			}
+			if (!empty($settings->proxy_user))
+				$command .= ' --proxy_user="' . $settings->proxy_user . '"';
+			if (!empty($settings->proxy_pass))
+				$command .= ' --proxy_password="' . $settings->proxy_pass . '"';
+			
 			$return = array('correct' => 0);
 			
-			exec($command);
+			exec($command, $output, $status);
 			unlink('/tmp/' . $package . '.info.txt');
 			
-			$return['correct'] = 1;
+			if ($status == 0)
+				$return['correct'] = 1;
 		}
 		else {
 			if (empty($package_url)) {
@@ -204,6 +215,12 @@ function update_pandora_download_package() {
 				curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 				curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
 				curl_setopt($c, CURLOPT_FILE, $file);
+				if (!empty($settings->proxy))
+					curl_setopt($c, CURLOPT_PROXY, $settings->proxy);
+				if (!empty($settings->proxy_port))
+					curl_setopt($c, CURLOPT_PROXYPORT, $settings->proxy_port);
+				if (!empty($settings->proxy_user) || !empty($settings->proxy_pass))
+					curl_setopt($c, CURLOPT_PROXYUSERPWD, $settings->proxy_user . ':' . $settings->proxy_pass);
 				
 				curl_multi_add_handle($mch ,$c);
 				$running = null;
@@ -232,7 +249,8 @@ function update_pandora_download_package() {
 				}
 				while($running > 0);
 				
-				$return = array('correct' => 1);
+				if (curl_errno($c) == 0) 
+					$return = array('correct' => 1);
 			}
 		}
 		
@@ -350,6 +368,20 @@ function update_pandora_install_package() {
 	
 	unlink("/tmp/$package.info.txt");
 	
+	// check which tar is availble
+	exec('tar --version', $output, $status);
+	$tar_type = 'UNKNOWN';
+	foreach ($output as $line) {
+		if (preg_match('/GNU/', $line)) {
+			$tar_type = 'GNU';
+			break;
+		} else if (preg_match('/bsdtar/', $line)) {
+			$tar_type = 'BSD';
+			break;
+		}
+	}
+	unset($output);
+	
 	//Get total files
 	//The grep command is because the fucking tar don't apply
 	//strip-components in mode "t"
@@ -363,6 +395,10 @@ function update_pandora_install_package() {
 		' --exclude="pandora_console/install.php" --exclude="pandora_console/include/config.php" ' .
 		' --strip-components=1 -C ' . $config['homedir'] . ' 1>/tmp/' . $package . '.files.info.txt';
 	
+	// bsdtar use stderr for verbose output
+	if ($tar_type === 'BSD')
+		$command .= ' 2>&1';
+
 	print_debug_message_trace($command);
 	//html_debug_print($command, true);
 	

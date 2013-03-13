@@ -1,5 +1,10 @@
 2013-03-13  Kikuchi Koichiro <koichiro@rworks.jp>
 
+	* extensions/update_manager/lib/functions.ajax.php: Added proxy
+	 support and bsdtar support.
+
+2013-03-13  Kikuchi Koichiro <koichiro@rworks.jp>
+
 	* extensions/update_manager/lib/xmlrpc/xmlrpc.inc: Keep original
 	 connection params when xmlrpc_client->sendPayloadHTTP10() follows
 	 30x redirect.

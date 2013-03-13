@@ -42,11 +42,11 @@ if ($do_operation) {
 	$result = agents_process_manage_config ($source_id_agent, $destiny_id_agents);
 	
 	if ($result) {
-		db_pandora_audit("Masive management", "Copy modules", false, false,
+		db_pandora_audit("Massive management", "Copy modules", false, false,
 			'Source agent: ' . json_encode($source_id_agent) . ' Destinity agent: ' . json_encode($destiny_id_agents));
 	}
 	else {
-		db_pandora_audit("Masive management", "Fail to try copy modules", false, false,
+		db_pandora_audit("Massive management", "Fail to try copy modules", false, false,
 			'Source agent: ' . json_encode($source_id_agent) . ' Destinity agent: ' . json_encode($destiny_id_agents));
 	}
 }
@@ -177,7 +177,7 @@ echo '</fieldset>';
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_input_hidden ('do_operation', 1);
-html_print_submit_button (__('Copy'), 'go', false, 'class="sub wand"');
+html_print_submit_button (__('Copy'), 'go', true, 'class="sub wand"');
 echo '</div>';
 echo '</form>';
 
@@ -191,11 +191,11 @@ ui_require_jquery_file ('pandora.controls');
 var module_alerts;
 $(document).ready (function () {
 	var source_recursion;
-	$("#checkbox-source_recursion").click(function (){
+	$("#checkbox-source_recursion").click(function () {
 		source_recursion = this.checked ? 1 : 0;
 		$("#source_id_group").trigger("change");
 	});
-
+	
 	$("#source_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#source_id_agent",
 		recursion: function() {return source_recursion},
@@ -203,11 +203,11 @@ $(document).ready (function () {
 	});
 	
 	var destiny_recursion;
-	$("#checkbox-destiny_recursion").click(function (){
+	$("#checkbox-destiny_recursion").click(function () {
 		destiny_recursion = this.checked ? 1 : 0;
 		$("#destiny_id_group").trigger("change");
 	});
-
+	
 	$("#destiny_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#destiny_id_agent",
 		recursion: function() {return destiny_recursion},
@@ -222,9 +222,23 @@ $(document).ready (function () {
 	
 	$("#source_id_agent").change (function () {
 		var id_agent = this.value;
+		
 		if (id_agent == 0) {
+			$("#submit-go").attr("disabled", "disabled");
+			
+			$("span.without_modules, span.without_alerts").hide();
+			$("span.without_modules").hide();
+			$("span.with_modules").hide();
+			$("span.without_alerts").hide();
+			$("span.with_alerts").hide();
+			$("#fieldset_destiny, #target_table-operations").hide();
+			$("#fieldset_targets").hide();
+			
 			return;
 		}
+		
+		$("#submit-go").attr("disabled", false);
+		
 		$("#modules_loading").show ();
 		$("#target_modules option, #target_alerts option").remove ();
 		$("#target_modules, #target_alerts").disable ();
@@ -243,7 +257,8 @@ $(document).ready (function () {
 			function (data, status) {
 				if (data.length == 0) {
 					no_modules = true;
-				} else {
+				}
+				else {
 					jQuery.each (data, function (i, val) {
 						option = $("<option></option>")
 							.attr ("value", val["id_agente_modulo"])
@@ -264,7 +279,8 @@ $(document).ready (function () {
 						module_alerts = Array ();
 						if (! data) {
 							no_alerts = true;
-						} else {
+						}
+						else {
 							jQuery.each (data, function (i, val) {
 								module_name = $("<em></em>").append (val["module_name"]);
 								option = $("<option></option>")
@@ -286,12 +302,14 @@ $(document).ready (function () {
 							
 							$("span.without_modules, span.without_alerts").show ();
 							$("span.with_modules, span.with_alerts, #target_table-operations").hide ();
-						} else {
+						}
+						else {
 							if (no_modules) {
 								$("span.without_modules").show ();
 								$("span.with_modules").hide ();
 								$("#checkbox-copy_modules").uncheck ();
-							} else {
+							}
+							else {
 								$("span.without_modules").hide ();
 								$("span.with_modules").show ();
 								$("#checkbox-copy_modules").check ();
@@ -301,7 +319,8 @@ $(document).ready (function () {
 								$("span.without_alerts").show ();
 								$("span.with_alerts").hide ();
 								$("#checkbox-copy_alerts").uncheck ();
-							} else {
+							}
+							else {
 								$("span.without_alerts").hide ();
 								$("span.with_alerts").show ();
 								$("#checkbox-copy_alerts").check ();

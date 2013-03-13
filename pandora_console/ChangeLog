@@ -1,5 +1,16 @@
 2013-03-13 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/massive/massive_copy_modules.php: improve the form to
+	show the fields when select a agent.
+	
+	* include/functions_modules.php: fixed the notices PHP.
+	
+	Fixes: #3607807
+	
+	MERGED FROM THE TRUNK
+
+2013-03-13 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_modules.php: fixed the massive deletion of
 	modules when only delete one module, the old code deleted all
 	modules in the agents on operation.

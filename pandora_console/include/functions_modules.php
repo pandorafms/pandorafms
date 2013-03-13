@@ -134,10 +134,10 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	if ($remote_conf) {
 		$result = enterprise_hook('config_agents_copy_agent_module_to_agent',
 			array($id_agent_module, $id_new_module));
+		
+		if ($result === false)
+			return false;
 	}
-	
-	if ($result === false)
-		return false;
 	
 	return $id_new_module;
 }

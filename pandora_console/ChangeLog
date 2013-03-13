@@ -1,3 +1,11 @@
+2013-03-13  Kikuchi Koichiro <koichiro@rworks.jp>
+
+	* extensions/update_manager/lib/xmlrpc/xmlrpc.inc: Keep original
+	 connection params when xmlrpc_client->sendPayloadHTTP10() follows
+	 30x redirect.
+
+	Merged from: branch_4.0
+
 2013-03-12 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/modules/manage_network_components_form.php,

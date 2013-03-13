@@ -1457,8 +1457,24 @@
 				{
 					$this->redirs++;
 				}
+				// backup original params
+				$method = $this->method;
+				$server = $this->server;
+				$port = $this->port;
+				$path = $this->path;
+				$username = $this->username;
+				$password = $this->password;
+
 				$this->setup_by_path($m[1]);
 				$r =& $this->send($msg, $timeout);
+
+				// restore original params
+				$this->method = $method;
+				$this->server = $server;
+				$this->path = $path;
+				$this->port = $port;
+				$this->username = $username;
+				$this->password = $password;
 			} else {
 				$r =& $msg->parseResponse($ipd, false, $this->return_type);
 				$this->redirs = 0;

@@ -72,7 +72,7 @@ function process_manage_delete ($module_name, $id_agents) {
 	// Selection mode by Agents
 	if ($selection_delete_mode == 'agents') {
 		// We are selecting "any" module for the selecteds agents
-		if (($module_name[0] == 0) and (is_array($module_name)) and (count($module_name) == 1))
+		if (($module_name[0] == "0") and (is_array($module_name)) and (count($module_name) == 1))
 			$filter_for_module_deletion = false;
 		else
 			$filter_for_module_deletion = sprintf('nombre IN ("%s")', implode('","',$module_name));

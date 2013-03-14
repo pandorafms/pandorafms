@@ -263,8 +263,7 @@ echo __('Default').' ('.$config["global_block_size"].')';
 echo '</td></tr><tr><td class="datos">'.__('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true) . '</td><td class="datos2">';
 echo html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
 
-echo '</td></tr><tr><td class="datos">'.__('Home screen'). ui_print_help_tip(__('
-User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true) .'</td><td class="datos2">';
+echo '</td></tr><tr><td class="datos">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true) .'</td><td class="datos2">';
 $values = array ('Default' =>__('Default'), 'Dashboard'=>__('Dashboard'), 'Visual console'=>__('Visual console'), 'Event list'=>__('Event list'),
 	'Group view'=>__('Group view'), 'Tactical view'=>__('Tactical view'), 'Alert detail' => __('Alert detail'), 'Other'=>__('Other'));
 echo html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);

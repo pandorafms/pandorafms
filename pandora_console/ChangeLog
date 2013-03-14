@@ -1,3 +1,9 @@
+2013-03-14  Mario Pulido  <mario.pulido@artica.es>
+
+	* operation/users/user_edit.php, godmode/users/configure_user.php: Add tip in edit users
+	* include/help/en/help_profile.php, include/help/es/help_profile.php: Modified help file 
+	in profiles management
+
 2013-03-14  Junichi Satoh  <junichi@rworks.jp>
 	
        * include/help/ja/help_history_database.php: Added a new help file.

@@ -111,7 +111,7 @@ switch ($section) {
 		break;
 	case 'perf':
 		$buttons['perf']['active'] = true;
-		$subpage = ' &raquo ' . __('Performance');
+		$subpage = ' &raquo ' . __('Performance') . ' ' . ui_print_help_icon ('performance', true);
 		break;
 	case 'vis':
 		$buttons['vis']['active'] = true;

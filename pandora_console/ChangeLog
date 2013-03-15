@@ -1,10 +1,13 @@
 2013-03-15 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* mobile/*: added first version of new mobile console.
+	
+2013-03-15 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/javascript/jquery.form.js: updated to last version.
 	
 	* include/functions_reporting.php, include/functions_groups.php:
 	added changes for to get the data as hash instead a html.
-
 
 2013-03-15 Miguel de Dios <miguel.dedios@artica.es>
 	

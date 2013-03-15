@@ -1,271 +1,93 @@
 * {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	
-	font-size: 12px;
-	font-family: Arial;
-}
-
-a:hover {
-	text-decoration: none;
+	text-decoration: none !important;
 }
 
 body {
-}
-
-input {
-	border: 1px solid;
-}
-
-.tactical_link {
-	text-decoration: none;
-}
-
-.tactical_link:hover {
-	text-decoration: underline;
-}
-
-.orange {
-	color: #ffa300;
-}
-.green {
-	color: #5a8629;
-}
-.yellow {
-	color: #F3C500;
-}
-.greenb {
-	color: #00aa00;
-}
-.grey {
-	color: #808080;
-	font-weight: bold;
-}
-
-select {
-	border: #CCCCCC 1px solid;
-}
-
-.button_filter {
-	background: url("../../images/zoom.png") no-repeat scroll center center;
-	margin-left: 5px;
-	width: 20px;
-	height: 20px;
-}
-
-input {
-	border: #CCCCCC 1px solid;
-}
-
-.title_h3, .title_h3 * {
-	border-top: 1px solid #CCCCCC;
-	margin: 5px;
-	color: #3F4E2F;
-}
-
-.title_h3_server {
-	border-top: 1px solid #CCCCCC;
-	border-bottom: 1px solid #CCCCCC;
-	margin: 5px;
-	color: #3F4E2F;
-}
-tr.rowPair {
-	background-color: #fff;
-}
-tr.rowOdd {
-	background-color: #EEEEEE;
-}
-tr.rowPair:hover {
-	background-color: #E0E0E0;
-}
-tr.rowOdd:hover {
-	background-color: #E0E0E0
-}
-
-#footer {
-	background: #000;
-	height: 30px;
-	color: #fff;
-	text-align: center;
-	margin-top: 20px;
-	font-size: 10px;
-}
-
-/*----------------INI-LOGIN---------------------------------------------------*/
-#center_div {
+	background-color: white;
+	border-style: none;
+	direction: ltr;
 	display: block;
-	position: absolute;
-	top: 30px;
-	left: 50%;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 11px;
+	margin: 0;
+	text-align: left;
+	vertical-align: top;
 }
 
-#negative_position_div {
-	display: block;
-	position: absolute;
-	left: -335px;
+.group_view tr {
+	border-bottom: 3px solid white !important;
 }
 
-#style_div #shadow {
-	display: block;
-	border: 0px;
-	position: absolute;
-	top: 15px;
-	left: 235px;
-	background: #036A3A;
-	
-	width: 200px;
-	height: 120px;
-	
-	color: #fff;
+tr.group_view_crit, .group_view_crit {
+	background-color: #FA3030;
+	color: #000000 !important;
 }
 
-#style_div #shadow p {
-	position: absolute;
-	bottom: 0px;
-	right: 2px;
+.group_view_crit * {
+	color: #000000 !important;
 }
 
-#style_div #shadow * {
-	font-size: 9px;
+tr.group_view_norm, .group_view_norm {
+	background-color: #FFFFFF;
+	color: #000000 !important;
+}
+.group_view_norm * {
+	color: #000000 !important;
 }
 
-#style_div #version {
-	color: #036A3A;
+tr.group_view_ok, .group_view_ok {
+	background-color: #00C000;
+	color: #000000 !important;
+}
+.group_view_ok * {
+	color: #000000 !important;
 }
 
-#style_div #login_box {
-	background: url("../../../images/pandora_logo.png") bottom left no-repeat #fff;
-	
-	display: block;
-	border: 2px solid #6DC62D;
-	position: absolute;
-	top: 0px;
-	left: 220px;
-	
-	width: 200px;
-	height: 120px;
+tr.group_view_warn, .group_view_warn, tr.group_view_warn.a, a.group_view_warn, tr.a.group_view_warn {
+	background-color: #F5E535;
+}
+a.group_view_warn {
+	color: #000000 !important;
 }
 
-#style_div #text-user {
-	width: 60px;
-	height: 15px;
-	position: absolute;
-	left: 20px;
-	top: 20px;
+tr.group_view_alrm, .group_view_alrm {
+	background-color: #ED8701;
+}
+.group_view_alrm * {
+	color: #000000 !important;
 }
 
-#style_div #password-password {
-	width: 60px;
-	height: 15px; 
-	position: absolute;
-	left: 20px;
-	top: 45px;
+tr.group_view_unk, .group_view_unk {
+	background-color: #C4C4C4;
+}
+.group_view_unk * {
+	color: #000000 !important;
 }
 
-#style_div .login_button {
-	width: 70px;
-	height: 70px;
-	background: url('../../images/key.gif') #fff center no-repeat;
-	border: outset 5px #A3A3A3;
-	position: absolute;
-	left: 120px;
-	top: 10px;
+tr.group_view_data, .group_view_data {
+	color: #000000 !important;
+}
+.group_view_data_unk {
+	color: #303030 !important;
+}
+.group_view_data_ok {
+	color: #00C000 !important;
+}
+.group_view_data_crit {
+	color: #5C0000 !important;
+}
+.group_view_data_alrm {
+	color: #5C1D00 !important;
+}
+.group_view_data_warn {
+	color: #5C5900 !important;
 }
 
-#style_div .login_button:hover {
-	border: outset 5px #E9E9E9;
+/*Fix the square border in search input*/
+.ui-input-search {
+	border-radius: 0.6em 0.6em 0.6em 0.6em !important;
 }
 
-/*STYLE FOR IEXPLOTER MOBILE, MAY BE ANY DAY ERASE THIS LINES*/
-#form_table td {
-	background: url('../../images/transparent_pixel.gif');
+.ui-select {
+	width: 100% !important;
 }
-
-#table_version #text-user {
-	width: 60px;
-	height: 15px;
-}
-
-#table_version #password-password {
-	width: 60px;
-	height: 15px; 
-}
-
-#table_version .login_button {
-	width: 70px;
-	height: 70px;
-	background: url('../../images/key.gif') #fff center no-repeat;
-	border: outset 5px #A3A3A3;
-}
-
-#table_version_negative_position_div {
-	/*margin-left: -120px;*/
-}
-
-/*----------------END-LOGIN---------------------------------------------------*/
-
-
-/*----------------INI-MENU----------------------------------------------------*/
-#top_menu {
-	background: #3F4E2F;
-	overflow: hidden;
-	position: absolute;
-	z-index: 2;
-}
-
-#margin_bottom_menu {
-	/*margin-bottom: 17px;*/
-}
-
-#menu {
-	display: none;
-}
-
-#down_button {
-	height: 20px;
-	background: #fff;
-}
-
-#down_button img {
-	background: #3F4E2F;
-	padding-left: 10px;
-	padding-right: 10px;
-}
-
-.icon_menu {
-	width: 30px;
-	height: 30px;
-}
-/*----------------END-MENU----------------------------------------------------*/
-
-/*----------------INI-EVENTS ROW BACKGROUND-----------------------------------*/
-.datos_green, .datos_greenf9 {
-	background-color: #BBFFA4;
-}
-.datos_red, .datos_redf9 {
-	background-color: #FFC0B5;
-}
-.datos_yellow, .datos_yellowf9 {
-	background-color: #F4FFBF;
-}
-.datos_blue, .datos_bluef9 {
-	background-color: #CDE2EA;
-}
-.datos_grey, .datos_greyf9 {
-	background-color: #E4E4E4;
-}
-/*----------------END-EVENTS ROW BACKGROUND-----------------------------------*/
-
-/*----------------INI-TABLE---------------------------------------------------*/
-th {
-background-color:#9EAC8B;
-color:#FFFFFF;
-text-align:center;
-}
-
-.databox {
-	border: 1px solid #f2f2f2;
-	background-color: #fafafa;
-}
-/*----------------END-TABLE---------------------------------------------------*/

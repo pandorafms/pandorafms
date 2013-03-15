@@ -96,12 +96,22 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	$agent_name = db_get_value('nombre', 'tagente', 'id_agente', $module['id_agente']);	
 	
 	// Actions table
+/*
 	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
 	echo '<tr>';
 	echo '<td><form id="module_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '&tab=data' . $url_hash . '">';
 		html_print_submit_button (__('Go to modules detail'), 'upd_button', false, 'class="sub search"');
 	echo '</form></td></tr>';
+
 	echo '</table>';
+*/
+
+//id_module and id_agent hidden
+echo '<div id="ids" style="display:none;">';
+	html_print_input_text('id_module', $id_module);
+	html_print_input_text('id_agent', $module['id_agente']);
+	html_print_input_text('server_name', $server_name);
+echo '</div>';
 	
 	return;
 }
@@ -350,10 +360,12 @@ function treeview_printTable($id_agente, $server_data = array()) {
 	echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width:100%; text-align: center;">';
 	
 	// If user has access to normal console
+/*
 	echo '<tr>';	
 	echo '<td><form id="agent_detail" method="post" action="' . $console_url . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.$url_hash.'">';
 			html_print_submit_button (__('Go to agent detail'), 'upd_button', false, 'class="sub search"');
 	echo '</form></td></tr>';
+*/
 	
 	echo '</table>';
 	
@@ -1202,3 +1214,89 @@ function treeview_getSecondBranchSQL ($fatherType, $id, $id_father) {
 	return $sql;
 }
 ?>
+
+<script language="javascript" type="text/javascript">
+	$(document).ready (function () {
+
+/*
+		module_id = $('#text-id_module').val();
+		id_agent = $('#text-id_agent').val();
+		server_name = $('#text-server_name').val();	
+
+		$("#submit-upd_button").click( function() {	
+			show_module_detail_dialog(module_id, id_agent, server_name, 0, 86400);
+		});
+
+		$("#submit-updbutton_period").click( function() {
+			//refresh_period_callback();
+
+			var period = $('#period').val();
+			console.log(period);
+			show_module_detail_dialog(module_id, id_agent, server_name, 0, period);
+
+		});
+*/
+
+	});
+
+/*
+	// Show the modal window of an module
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+		$.ajax({
+			type: "POST",
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period,
+			dataType: "html",
+			success: function(data){	
+				$("#module_details_window").hide ()
+					.empty ()
+					.append (data)
+					.dialog ({
+						resizable: true,
+						draggable: true,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						width: 620,
+						height: 500
+					})
+					.show ();
+					refresh_pagination_callback ();
+					
+			}
+		});
+	}
+	
+	function refresh_pagination_callback () {
+		$(".pagination").click( function() {	
+			
+			var classes = $(this).attr('class');
+			classes = classes.split(' ');
+			var offset_class = classes[1];
+			offset_class = offset_class.split('_');
+			var offset = offset_class[1];
+			
+			var period = $('#period').val();
+			//console.log(period);
+			
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			return false;
+		});
+	}
+	
+	function refresh_period_callback () {
+
+		$("#submit-updbutton_period").click( function() {
+			var period = $('#period').val();
+			console.log(period);
+			show_module_detail_dialog(module_id, id_agent, server_name, 0, period);
+			return false;
+		});
+
+	}
+*/
+	
+
+</script>

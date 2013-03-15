@@ -1489,7 +1489,9 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		$inicio_bloque_fake = $inicio_bloque + 1;
 		// To Calculate last block (doesnt end with round data,
 		// it must be shown if not round to block limit)
-		$output .= '<a class="pagination" href="'.$url.'&amp;'.$offset_name.'='.$inicio_bloque.'">';
+		$link_offset = $config['block_size'] * $i;
+
+		$output .= '<a class="pagination offset_' . $link_offset . '" href="'.$url.'&amp;'.$offset_name.'='.$inicio_bloque.'">';
 		if ($inicio_bloque == $offset) {
 			$output .= "<b>[ $i ]</b>";
 		}
@@ -1523,6 +1525,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		echo $output;
 	
 	return $output;
+	
 }
 
 /** 

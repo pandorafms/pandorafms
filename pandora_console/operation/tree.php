@@ -429,8 +429,9 @@ if (is_ajax ())
 						"period=86400&" .
 						"id=" . $row["id_agente_modulo"];
 				}
-				echo "<a href='" . $url_module_data . "'>" . html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
-				
+				//echo "<a href='" . $url_module_data . "'>" . html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
+				echo "<a href='javascript: show_module_detail_dialog(" . $row["id_agente_modulo"] . ", ". $row['id_agente'].", \"" . $server_name . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
+
 				echo " ";
 				
 				$nmodule_alerts = db_get_value_sql(sprintf("SELECT count(*) FROM talert_template_modules WHERE id_agent_module = %s", $row["id_agente_modulo"]));
@@ -609,7 +610,8 @@ echo "<div class='pepito' id='b'></div>";
 echo "<div class='pepito' id='c'></div>";
 ///////// END MENU AND TABS /////////////
 
-
+echo "<div id='module_details_window'></div>";
+ui_require_javascript_file('pandora_modules');
 
 treeview_printTree($activeTab);
 ?>
@@ -792,6 +794,53 @@ treeview_printTree($activeTab);
 			success: function(data){
 				$('#cont').html(data);
 			}
+		});
+	}
+	
+	// Show the modal window of an module
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+		if (period == -1) {
+			period = $('#period').val();
+		}
+		$.ajax({
+			type: "POST",
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period,
+			dataType: "html",
+			success: function(data){	
+				$("#module_details_window").hide ()
+					.empty ()
+					.append (data)
+					.dialog ({
+						resizable: true,
+						draggable: true,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						width: 620,
+						height: 500
+					})
+					.show ();
+					refresh_pagination_callback (module_id, id_agent, server_name);
+					
+			}
+		});
+	}
+	
+	function refresh_pagination_callback (module_id, id_agent, server_name) {
+		$(".pagination").click( function() {		
+			var classes = $(this).attr('class');
+			classes = classes.split(' ');
+			var offset_class = classes[1];
+			offset_class = offset_class.split('_');
+			var offset = offset_class[1];
+		
+			var period = $('#period').val();
+			
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			return false;
 		});
 	}
 </script>

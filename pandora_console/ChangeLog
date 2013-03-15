@@ -1,3 +1,12 @@
+2013-03-15  Vanessa Gil <vanessa.gil@artica.es>
+
+	* include/functions_treeview.php
+	  include/functions_ui.php
+	  include/ajax/module.php
+	  include/javascript/pandora_modules.js
+	  operation/tree.php: Added popup with data
+	module.
+
 2013-03-15 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* include/functions_api.php: Improved performance of

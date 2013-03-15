@@ -1,3 +1,10 @@
+2013-03-15 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* include/functions_api.php: Improved performance of
+	get_tree_agents() API by omitting unnecessary data copies and
+	queries when output fields are explicitly specified.
+
+
 2013-03-14  Mario Pulido  <mario.pulido@artica.es>
 
 	* operation/users/user_edit.php, godmode/users/configure_user.php: Add tip in edit users

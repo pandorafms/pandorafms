@@ -40,7 +40,7 @@ if(tags_has_user_acl_tags()) {
 echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">';
 	//////////////////NEWS BOARD/////////////////////////////
 	echo '<div id="news_board">';
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
@@ -50,7 +50,7 @@ echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">'
 			$sql = "SELECT subject,timestamp,text,author FROM tnews where rownum <= 3 ORDER by timestamp DESC";
 			break;
 	}
-
+	
 	$news = db_get_all_rows_sql ($sql);
 	if ($news !== false) {
 		echo '<table cellpadding="4" cellspacing="4" class="databox">';
@@ -83,7 +83,7 @@ echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">'
 	
 	// Show last activity from this user
 	echo '<div id="activity">';
-
+	
 	$table->width = '100%'; //Don't specify px
 	$table->data = array ();
 	$table->size = array ();
@@ -97,7 +97,7 @@ echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">'
 	$table->head[3] = __('Source IP');
 	$table->head[4] = __('Comments');
 	$table->title = '<span class="med_data">' . __('This is your last activity in Pandora FMS console') . '</span>';
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf ("SELECT id_usuario,accion,fecha,ip_origen,descripcion,utimestamp
@@ -118,12 +118,12 @@ echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">'
 					AND id_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC", $config["id_user"]);
 			break;
 	}
-
+	
 	$sessions = db_get_all_rows_sql ($sql);
-
+	
 	if ($sessions === false)
 		$sessions = array (); 
-
+	
 	foreach ($sessions as $session) {
 		$data = array ();
 		

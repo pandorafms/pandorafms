@@ -1,3 +1,12 @@
+2013-03-15 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/massive/massive_copy_modules.php: uploaded lost changes
+	for previous fixed (days ago).
+	
+	* godmode/groups/group_list.php, include/graphs/functions_flot.php,
+	include/graphs/fgraph.php, include/functions_agents.php,
+	general/logon_ok.php: cleaned source code style.
+
 2013-03-15  Mario Pulido <mario.pulido@artica.es>
 
 	* include/help/en/help_plugin_policy.php

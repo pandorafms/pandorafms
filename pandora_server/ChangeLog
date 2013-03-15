@@ -1,3 +1,8 @@
+2013-03-15  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_database_check.pl: added to trunk repo. Tool to 
+	measure transaction speed in pandora. Merged from 4.x branch.
+ 
 2013-03-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Added support for ranges to server cron

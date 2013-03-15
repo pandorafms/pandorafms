@@ -1,5 +1,12 @@
 2013-03-15  Vanessa Gil <vanessa.gil@artica.es>
 
+	* include/functions_ui.php
+	  operation/agentes/status_monitor: Added popup with data
+	module, remove column 'tags' and changed font size to
+	column 'timestamp'.
+
+2013-03-15  Vanessa Gil <vanessa.gil@artica.es>
+
 	* include/functions_treeview.php
 	  include/functions_ui.php
 	  include/ajax/module.php

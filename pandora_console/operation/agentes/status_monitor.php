@@ -783,7 +783,9 @@ if (! defined ('METACONSOLE')) {
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=module_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown, "alt" => "down")) . '</a>';
 }
 
+/*
 $table->head[4] = __('Tags');
+*/
 
 $table->head[5] = __('Interval'); 
 if (! defined ('METACONSOLE')) {
@@ -911,8 +913,13 @@ foreach ($result as $row) {
 	if ($row["extended_info"] != "") {
 		$data[3] .= ui_print_help_tip ($row["extended_info"], true, '/images/comments.png');
 	}
+	if ($row["tags"] != "") {
+		$data[3] .= ui_print_help_tip ($row["tags"], true, '/images/tip.png');
+	}
 	
+/*
 	$data[4] = ui_print_truncate_text($row['tags'], 'agent_small', false, true, true, '[&hellip;]', 'font-size:7pt;');
+*/
 	
 	$data[5] = ($row['module_interval'] == 0) ? human_time_description_raw($row['agent_interval']) : human_time_description_raw($row['module_interval']);
 	
@@ -973,12 +980,13 @@ foreach ($result as $row) {
 		
 		$data[7] = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
 		if (defined('METACONSOLE'))
-			$data[7] .= "&nbsp;<a href='" . $row['server_url'] . "index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . $row["user"] . "&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
+			//$data[7] .= "&nbsp;<a href='" . $row['server_url'] . "index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&loginhash=auto&loginhash_data=" . $row["hashdata"] . "&loginhash_user=" . $row["user"] . "&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
+			$data[7] .= "<a href='javascript: show_module_detail_dialog(" . $row["id_agente_modulo"] . ", ". $row['id_agent'].", \"" . $row['server_name'] . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
 		else
 			$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
 		
 	}
-	
+
 	$data[8] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);
 	
 	if (is_numeric($row["datos"])) {
@@ -1052,10 +1060,10 @@ foreach ($result as $row) {
 		$interval = $row["agent_interval"];
 	
 	if ($row['estado'] == 3) {
-		$option = array ("html_attr" => 'class="redb"');
+		$option = array ("html_attr" => 'class="redb"',"style" => 'font-size:7pt;');
 	}
 	else {
-		$option = array ();
+		$option = array ("style" => 'font-size:7pt;');
 	}
 	$data[10] = ui_print_timestamp ($row["utimestamp"], true, $option);
 	
@@ -1067,6 +1075,10 @@ if (!empty ($table->data)) {
 else {
 	echo "<div class='nf'>".__('This group doesn\'t have any monitor')."</div>";
 }
+
+echo "<div id='monitor_details_window'></div>";
+ui_require_javascript_file('pandora_modules');
+
 ?>
 <script type="text/javascript">
 	function toggle_full_value(id) {
@@ -1076,5 +1088,52 @@ else {
 		$("#hidden_value_module_" + id).html(old_text);
 		
 		$("#value_module_text_" + id).html(text);
+	}
+	
+	// Show the modal window of an module
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+		if (period == -1) {
+			period = $('#period').val();
+		}
+		$.ajax({
+			type: "POST",
+			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period,
+			dataType: "html",
+			success: function(data){	
+				$("#monitor_details_window").hide ()
+					.empty ()
+					.append (data)
+					.dialog ({
+						resizable: true,
+						draggable: true,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						width: 620,
+						height: 500
+					})
+					.show ();
+					refresh_pagination_callback (module_id, id_agent, server_name);
+					
+			}
+		});
+	}
+	
+	function refresh_pagination_callback (module_id, id_agent, server_name) {
+		$(".pagination").click( function() {		
+			var classes = $(this).attr('class');
+			classes = classes.split(' ');
+			var offset_class = classes[1];
+			offset_class = offset_class.split('_');
+			var offset = offset_class[1];
+		
+			var period = $('#period').val();
+			
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			return false;
+		});
 	}
 </script>

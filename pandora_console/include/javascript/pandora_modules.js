@@ -638,3 +638,30 @@ function load_plugin_macros_fields(row_model_id) {
 	});
 }
 
+// Show the modal window of a module
+function show_module_detail_dialog(module_id, id_agente) {
+	
+	$.ajax({
+		type: "POST",
+		url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+		data: "page=include/ajax/module&get_module_detail=1&id_agente="+id_agente+"&id_module=" + module_id,
+		dataType: "json",
+		success: function(data){
+			$("#module_details_window").hide ()
+				.empty ()
+				.append (data)
+				.dialog ({
+					resizable: true,
+					draggable: true,
+					modal: true,
+					overlay: {
+						opacity: 0.5,
+						background: "black"
+					},
+					width: 620,
+					height: 500
+				})
+				.show ();
+		}
+	});
+}

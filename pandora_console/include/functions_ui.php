@@ -429,7 +429,7 @@ function ui_print_timestamp ($unixtime, $return = false, $option = array ()) {
 		default:
 			//Usually tags have title attributes, so by default we add,
 			//then fall through to add attributes and data
-			$output .= ' title="'.$title.'">'.$data.'</'.$tag.'>';
+			$output .= ' title="'.$title.'" '.$style.'>'.$data.'</'.$tag.'>';
 			break;
 		case "h1":
 		case "h2":

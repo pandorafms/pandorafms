@@ -1,5 +1,10 @@
 2013-03-15  Mario Pulido <mario.pulido@artica.es>
 
+	* include/help/en/help_plugin_policy.php
+	include/help/es/help_plugin_policy.php: Added plugin policy help.
+
+2013-03-15  Mario Pulido <mario.pulido@artica.es>
+
 	* include/help/en/help_performance.php, include/help/es/help_performance.php
  	godmode/setup/setup.php: Add help in performance configuration.
 

@@ -963,10 +963,18 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-			$sql = sprintf ("SELECT id_agente, nombre FROM tagente WHERE (%s %s) AND (%s) ORDER BY nombre", $extra_sql, $search_group_sql, $search_sql);
+			$sql = sprintf ("SELECT id_agente, nombre
+				FROM tagente
+				WHERE (%s %s) AND (%s)
+				ORDER BY nombre",
+				$extra_sql, $search_group_sql, $search_sql);
 			break;
 		case "oracle":
-			$sql = sprintf ("SELECT id_agente, nombre FROM tagente WHERE (%s %s) AND (%s) ORDER BY dbms_lob.substr(nombre,4000,1)", $extra_sql, $search_group_sql, $search_sql);
+			$sql = sprintf ("SELECT id_agente, nombre
+				FROM tagente
+				WHERE (%s %s) AND (%s)
+				ORDER BY dbms_lob.substr(nombre,4000,1)",
+				$extra_sql, $search_group_sql, $search_sql);
 			break;
 	}
 	

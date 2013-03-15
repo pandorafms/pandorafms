@@ -495,15 +495,15 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width, $height,
 		$graph['font_size'] = $font_size;
 		$graph['legend_position'] = $legend_position;
 		$graph['color'] = $colors;
-
+		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		switch($graph_type) {
+		switch ($graph_type) {
 			case "2d":
-					return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=pie2d&ttl=".$ttl."&id_graph=".$id_graph."'>";
+				return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=pie2d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
 			case "3d":
-					return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
+				return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
 		}
 	}

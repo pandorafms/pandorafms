@@ -50,36 +50,33 @@ function include_javascript_dependencies_flot_graph($return = false) {
 			<script language="javascript" type="text/javascript" src="'.
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.symbol.min.js') .'"></script>
 			<script language="javascript" type="text/javascript" src="'.
-				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/pandora.flot.js') .'"></script>
-		';
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/pandora.flot.js') .'"></script>';
 		$output .= "
-		<script type='text/javascript'>
-		function pieHover(event, pos, obj) 
-		{
-			if (!obj)
-				return;
-			percent = parseFloat(obj.series.percent).toFixed(2);
-			$('#hover').html('<span style=\'font-weight: bold; color: '+obj.series.color+'\'>'+obj.series.label+' ('+percent+'%)</span>');
-			$('.legendLabel').each(function() {
-				if($(this).html() == obj.series.label) {
-					$(this).css('font-weight','bold');
-				}
-				else {
-					$(this).css('font-weight','');
-				}
-			});
-		}
-		
-		function pieClick(event, pos, obj) 
-		{
-			if (!obj)
-				return;
-			percent = parseFloat(obj.series.percent).toFixed(2);
-			alert(''+obj.series.label+': '+percent+'%');
-		}
-		</script>
-		"
-		;
+			<script type='text/javascript'>
+			function pieHover(event, pos, obj) 
+			{
+				if (!obj)
+					return;
+				percent = parseFloat(obj.series.percent).toFixed(2);
+				$('#hover').html('<span style=\'font-weight: bold; color: '+obj.series.color+'\'>'+obj.series.label+' ('+percent+'%)</span>');
+				$('.legendLabel').each(function() {
+					if($(this).html() == obj.series.label) {
+						$(this).css('font-weight','bold');
+					}
+					else {
+						$(this).css('font-weight','');
+					}
+				});
+			}
+			
+			function pieClick(event, pos, obj) 
+			{
+				if (!obj)
+					return;
+				percent = parseFloat(obj.series.percent).toFixed(2);
+				alert(''+obj.series.label+': '+percent+'%');
+			}
+			</script>";
 		
 		if (!$return)
 			echo $output;

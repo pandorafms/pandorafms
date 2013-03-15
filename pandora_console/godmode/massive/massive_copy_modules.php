@@ -191,11 +191,11 @@ ui_require_jquery_file ('pandora.controls');
 var module_alerts;
 $(document).ready (function () {
 	var source_recursion;
-	$("#checkbox-source_recursion").click(function (){
+	$("#checkbox-source_recursion").click(function () {
 		source_recursion = this.checked ? 1 : 0;
 		$("#source_id_group").trigger("change");
 	});
-
+	
 	$("#source_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#source_id_agent",
 		recursion: function() {return source_recursion},
@@ -203,11 +203,11 @@ $(document).ready (function () {
 	});
 	
 	var destiny_recursion;
-	$("#checkbox-destiny_recursion").click(function (){
+	$("#checkbox-destiny_recursion").click(function () {
 		destiny_recursion = this.checked ? 1 : 0;
 		$("#destiny_id_group").trigger("change");
 	});
-
+	
 	$("#destiny_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#destiny_id_agent",
 		recursion: function() {return destiny_recursion},
@@ -222,9 +222,23 @@ $(document).ready (function () {
 	
 	$("#source_id_agent").change (function () {
 		var id_agent = this.value;
+		
 		if (id_agent == 0) {
+			$("#submit-go").attr("disabled", "disabled");
+			
+			$("span.without_modules, span.without_alerts").hide();
+			$("span.without_modules").hide();
+			$("span.with_modules").hide();
+			$("span.without_alerts").hide();
+			$("span.with_alerts").hide();
+			$("#fieldset_destiny, #target_table-operations").hide();
+			$("#fieldset_targets").hide();
+			
 			return;
 		}
+		
+		$("#submit-go").attr("disabled", false);
+		
 		$("#modules_loading").show ();
 		$("#target_modules option, #target_alerts option").remove ();
 		$("#target_modules, #target_alerts").disable ();

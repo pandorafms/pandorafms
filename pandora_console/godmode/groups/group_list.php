@@ -30,7 +30,7 @@ if (is_ajax ()) {
 		require ("general/noaccess.php");
 		return;
 	}
-
+	
 	$get_group_json = (bool) get_parameter ('get_group_json');
 	$get_group_agents = (bool) get_parameter ('get_group_agents');
 	
@@ -69,7 +69,7 @@ if (is_ajax ()) {
 		$recursion = (int) get_parameter ('recursion', 0);
 		// Ids of agents to be include in the SQL clause as id_agent IN ()
 		$filter_agents_json = (string) get_parameter ('filter_agents_json', '');
-				
+		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			db_pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
@@ -77,13 +77,13 @@ if (is_ajax ()) {
 			return;
 		}
 		
-		if($filter_agents_json != '') {
+		if ($filter_agents_json != '') {
 			$filter['id_agente'] = json_decode(io_safe_output($filter_agents_json), true);
 		}
 		
 		$filter['disabled'] = $disabled;
 		
-		if($search != '') {
+		if ($search != '') {
 			$filter['string'] = $search;
 		}
 		
@@ -93,7 +93,7 @@ if (is_ajax ()) {
 		echo json_encode ($agents);
 		return;
 	}
-
+	
 	return;
 }
 
@@ -106,7 +106,7 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 
 // Header
 if (defined('METACONSOLE')) {
-
+	
 	user_meta_print_header();
 	$sec = 'advanced';
 	

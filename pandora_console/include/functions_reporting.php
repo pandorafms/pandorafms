@@ -1004,7 +1004,8 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 		$tdata = array();
 		$table_mbs->colspan[count($table_mbs->data)][0] = 4;
 		$table_mbs->cellstyle[count($table_mbs->data)][0] = 'text-align: center;';
-		$tdata[0] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' . graph_agent_status (false, $graph_width, $graph_height, true, true) . '</div>';
+		$tdata[0] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' .
+			graph_agent_status (false, $graph_width, $graph_height, true, true) . '</div>';
 		$table_mbs->rowclass[] = '';
 		$table_mbs->data[] = $tdata;
 	}
@@ -1137,15 +1138,15 @@ function reporting_get_stats_users($data) {
 	else{
 		$urls['defined_users'] = 'javascript:';
 	}
-
+	
 	// Users table
 	$table_us = html_get_predefined_table();
-
+	
 	$tdata = array();
 	$tdata[0] = html_print_image('images/group.png', true, array('title' => __('Defined users'), 'width' => '20px'));
 	$tdata[1] = count (get_users ());
 	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls["defined_users"] . '">' . $tdata[1] . '</a>';
-
+	
 	$tdata[2] = $tdata[3] = '&nbsp;';
 	$table_us->rowclass[] = '';
 	$table_us->data[] = $tdata;
@@ -1166,15 +1167,15 @@ function reporting_get_stats_agents_monitors($data) {
 	$urls = array();
 	$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
 	$urls['monitor_checks'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
-
+	
 	// Agents and modules table
 	$table_am = html_get_predefined_table();
-
+	
 	$tdata = array();
 	$tdata[0] = html_print_image('images/bricks.png', true, array('title' => __('Total agents'), 'width' => '20px'));
 	$tdata[1] = $data["total_agents"] <= 0 ? '-' : $data["total_agents"];
 	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
-
+	
 	$tdata[2] = html_print_image('images/brick.png', true, array('title' => __('Monitor checks'), 'width' => '20px'));
 	$tdata[3] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
 	$tdata[3] = '<a style="color: black;" class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[3] . '</a>';
@@ -1189,7 +1190,7 @@ function reporting_get_stats_agents_monitors($data) {
 				
 	return $output;
 }
-	
+
 function reporting_get_stats_indicators($data, $width = 280, $height = 20) {
 	$table_ind = html_get_predefined_table();
 	

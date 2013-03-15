@@ -1070,7 +1070,7 @@ function html_print_input_hidden_extended($name, $value, $id, $return = false, $
  */
 function html_print_submit_button ($label = 'OK', $name = '', $disabled = false, $attributes = '', $return = false) {
 	if (!$name) {
-		$name="unnamed";
+		$name = "unnamed";
 	}
 	
 	if (is_array ($attributes)) {

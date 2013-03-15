@@ -70,14 +70,14 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 	global $config; 
 	
 	$table = events_get_events_table($meta, $history);
-
-	if($meta) {
+	
+	if ($meta) {
 		$groupby_extra = ', server_id';
 	}
 	else {
 		$groupby_extra = '';
 	}
-		
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
@@ -89,9 +89,9 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 					(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
 					(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
 				FROM $table te
-				WHERE 1=1 ".$sql_post."
-				GROUP BY estado, evento, id_agentmodule".$groupby_extra."
-				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+				WHERE 1=1 " . $sql_post . "
+				GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
+				ORDER BY timestamp_rep DESC LIMIT " . $offset . "," . $pagination;
 			break;
 		case "postgresql":
 			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '<br>') AS user_comment,
@@ -101,9 +101,9 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 					(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
 					(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
 				FROM $table te
-				WHERE 1=1 ".$sql_post."
-				GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra".$groupby_extra."
-				ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
+				WHERE 1=1 " . $sql_post . "
+				GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra" . $groupby_extra . "
+				ORDER BY timestamp_rep DESC LIMIT " . $pagination . " OFFSET " . $offset;
 			break;
 		case "oracle":
 			$set = array();
@@ -111,7 +111,7 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 			$set['offset'] = $offset;
 			// TODO: Remove duplicate user comments
 			$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
-				FROM (SELECT * FROM $table WHERE 1=1 ".$sql_post.") a, 
+				FROM (SELECT * FROM $table WHERE 1=1 " . $sql_post . ") a, 
 				(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
 				id_agentmodule, COUNT(*) AS event_rep,
 				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
@@ -120,8 +120,8 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 				(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
 				(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
 				FROM $table te
-				WHERE 1=1 ".$sql_post." 
-				GROUP BY estado, to_char(evento), id_agentmodule".$groupby_extra.") b 
+				WHERE 1=1 " . $sql_post . " 
+				GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b 
 				WHERE a.id_evento=b.id_evento AND 
 				to_char(a.evento)=to_char(b.evento) 
 				AND a.id_agentmodule=b.id_agentmodule";

@@ -41,7 +41,7 @@ if(enterprise_installed() && defined("METACONSOLE")) {
 // Get the history mode
 $history = (bool) get_parameter('history', 0);
 
-if(isset($config['event_replication']) &&  $config['event_replication'] == 1 && !$meta) {
+if (isset($config['event_replication']) &&  $config['event_replication'] == 1 && !$meta) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer. View disabled due event replication.");
 	ui_print_info_message('Event viewer is disabled due event replication. For more information, please contact with the administrator');
@@ -690,7 +690,7 @@ $(document).ready( function() {
 		id = this.id.split ("-").pop ();
 		
 		$("#delete_cross_"+id).attr ("src", "images/spinner.gif");
-
+		
 		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 			{"page" : "operation/events/events",
 			"delete_event" : 1,

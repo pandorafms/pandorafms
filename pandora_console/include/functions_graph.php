@@ -1383,17 +1383,17 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	
 	$filter = array('disabled' => 0, 'id_grupo' => array_keys(users_get_groups(false, 'AR', false)));
 	
-
-	if(!empty($id_agent)) {
+	
+	if (!empty($id_agent)) {
 		$filter['id_agente'] = $id_agent; 
 	}
 	
 	$fields = array('SUM(critical_count) Critical', 
-				'SUM(warning_count) Warning', 
-				'SUM(normal_count) Normal', 
-				'SUM(unknown_count) Unknown');
+		'SUM(warning_count) Warning', 
+		'SUM(normal_count) Normal', 
+		'SUM(unknown_count) Unknown');
 	
-	if($show_not_init) {
+	if ($show_not_init) {
 		$fields[] = 'SUM(notinit_count) "Not init"';
 	}
 	
@@ -1401,18 +1401,18 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	
 	// If any value is negative, truncate it to 0
 	function truncate_negatives(&$element) {
-		if($element < 0) {
+		if ($element < 0) {
 			$element = 0;
 		}
 	}
 	array_walk($data, 'truncate_negatives');
-				
+	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
 	
 	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
 	
-	if($show_not_init) {
+	if ($show_not_init) {
 		$colors[] = COL_NOTINIT;
 	}
 	

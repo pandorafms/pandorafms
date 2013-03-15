@@ -162,7 +162,7 @@ if ($update_pressed || $open_filter){
 if ($open_filter) {
 	echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/go.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
 }
-else{
+else {
 	echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
 }
 
@@ -291,7 +291,7 @@ $data[0] = html_print_button(__('Add'), 'add_with', $add_with_tag_disabled,
 $data[0] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
 $data[0] .= html_print_button(__('Remove'), 'remove_with', $remove_with_tag_disabled,
 	'', 'class="delete sub"', true);
-	
+
 $data[1] = html_print_button(__('Add'), 'add_without', $add_without_tag_disabled,
 	'', 'class="add sub"', true);
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
@@ -374,7 +374,7 @@ $params['input_name'] = 'text_agent';
 $params['value'] = $text_agent;
 $params['return'] = true;
 
-if($meta) {
+if ($meta) {
 	$params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
 }
 else {
@@ -415,7 +415,7 @@ $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
 $data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
 $data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/server_database.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a>&nbsp;';
-if(empty($id_name)) {
+if (empty($id_name)) {
 	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' . __('No filter loaded') . '</span>]';
 }
 else {

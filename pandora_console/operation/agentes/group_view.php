@@ -50,8 +50,8 @@ $groups_full = users_get_groups ($config['id_user'], "AR", true, true);
 $groups = array();
 foreach($groups_full as $group) {
 	$groups[$group['id_grupo']]['name'] = $group['nombre'];
-
-	if($group['id_grupo'] != 0) {
+	
+	if ($group['id_grupo'] != 0) {
 		$groups[$group['parent']]['childs'][] = $group['id_grupo'];
 		$groups[$group['id_grupo']]['prefix'] = $groups[$group['parent']]['prefix'].'&nbsp;&nbsp;&nbsp;';
 	}
@@ -59,13 +59,14 @@ foreach($groups_full as $group) {
 		$groups[$group['id_grupo']]['prefix'] = '';
 	}
 	
-	if(!isset($groups[$group['id_grupo']]['childs'])) {
+	if (!isset($groups[$group['id_grupo']]['childs'])) {
 		$groups[$group['id_grupo']]['childs'] = array();
 	}
 }
 
-if ($config["realtimestats"] == 0){
-	$updated_time = __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
+if ($config["realtimestats"] == 0) {
+	$updated_time = __('Last update') . " : " .
+		ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 }
 else {
 	$updated_time = __("Updated at realtime");
@@ -74,7 +75,7 @@ else {
 // Header
 ui_print_page_header (__("Group view"), "images/bricks.png", false, "", false, $updated_time );
 
-if(tags_has_user_acl_tags()) {
+if (tags_has_user_acl_tags()) {
 	ui_print_tags_warning();
 }
 

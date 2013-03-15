@@ -1,5 +1,13 @@
 2013-03-15 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/javascript/jquery.form.js: updated to last version.
+	
+	* include/functions_reporting.php, include/functions_groups.php:
+	added changes for to get the data as hash instead a html.
+
+
+2013-03-15 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_events.php, include/functions_html.php,
 	include/functions_graph.php, include/functions_reporting.php,
 	operation/events/events_list.php, operation/events/events.php,

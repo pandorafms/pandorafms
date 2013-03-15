@@ -1191,7 +1191,7 @@ function reporting_get_stats_agents_monitors($data) {
 	return $output;
 }
 
-function reporting_get_stats_indicators($data, $width = 280, $height = 20) {
+function reporting_get_stats_indicators($data, $width = 280, $height = 20, $html = true) {
 	$table_ind = html_get_predefined_table();
 	
 	$servers = array();
@@ -1205,39 +1205,60 @@ function reporting_get_stats_indicators($data, $width = 280, $height = 20) {
 		$servers["health"] = $servers["up"] / ($servers["all"] / 100);
 	}
 	
-	$tdata[0] = '<fieldset class="databox" style="width:97%;">
-					<legend style="text-align:left; color: #666;">' . 
-						__('Server health') . ui_print_help_tip (sprintf(__('%d Downed servers'), $servers["down"]), true) . 
-					'</legend>' . 
-					progress_bar($servers["health"], $width, $height, '', 0) . '</fieldset>';
-	$table_ind->rowclass[] = '';
-	$table_ind->data[] = $tdata;
-
-	$tdata[0] = '<fieldset class="databox" style="width:97%;">
-					<legend style="text-align:left; color: #666;">' . 
-						__('Monitor health') . ui_print_help_tip (sprintf(__('%d Not Normal monitors'), $data["monitor_not_normal"]), true) . 
-					'</legend>' . 
-					progress_bar($data["monitor_health"], $width, $height, $data["monitor_health"].'% '.__('of monitors up'), 0) . '</fieldset>';
-	$table_ind->rowclass[] = '';
-	$table_ind->data[] = $tdata;
-
-	$tdata[0] = '<fieldset class="databox" style="width:97%;">
-					<legend style="text-align:left; color: #666;">' . 
-						__('Module sanity') . ui_print_help_tip (sprintf(__('%d Not inited monitors'), $data["monitor_not_init"]), true) .
-					'</legend>' . 
-					progress_bar($data["module_sanity"], $width, $height, $data["module_sanity"].'% '.__('of total modules inited'), 0) . '</fieldset>';
-	$table_ind->rowclass[] = '';
-	$table_ind->data[] = $tdata;
-
-	$tdata[0] = '<fieldset class="databox" style="width:97%;">
-					<legend style="text-align:left; color: #666;">' . 
-						__('Alert level') . ui_print_help_tip (sprintf(__('%d Fired alerts'), $data["monitor_alerts_fired"]), true) . 
-					'</legend>' . 
-					progress_bar($data["alert_level"], $width, $height, $data["alert_level"].'% '.__('of defined alerts not fired'), 0) . '</fieldset>';
-	$table_ind->rowclass[] = '';
-	$table_ind->data[] = $tdata;
-	
-	return html_print_table($table_ind, true);
+	if ($html) {
+		$tdata[0] = '<fieldset class="databox" style="width:97%;">
+						<legend style="text-align:left; color: #666;">' . 
+							__('Server health') . ui_print_help_tip (sprintf(__('%d Downed servers'), $servers["down"]), true) . 
+						'</legend>' . 
+						progress_bar($servers["health"], $width, $height, '', 0) . '</fieldset>';
+		$table_ind->rowclass[] = '';
+		$table_ind->data[] = $tdata;
+		
+		$tdata[0] = '<fieldset class="databox" style="width:97%;">
+						<legend style="text-align:left; color: #666;">' . 
+							__('Monitor health') . ui_print_help_tip (sprintf(__('%d Not Normal monitors'), $data["monitor_not_normal"]), true) . 
+						'</legend>' . 
+						progress_bar($data["monitor_health"], $width, $height, $data["monitor_health"].'% '.__('of monitors up'), 0) . '</fieldset>';
+		$table_ind->rowclass[] = '';
+		$table_ind->data[] = $tdata;
+		
+		$tdata[0] = '<fieldset class="databox" style="width:97%;">
+						<legend style="text-align:left; color: #666;">' . 
+							__('Module sanity') . ui_print_help_tip (sprintf(__('%d Not inited monitors'), $data["monitor_not_init"]), true) .
+						'</legend>' . 
+						progress_bar($data["module_sanity"], $width, $height, $data["module_sanity"].'% '.__('of total modules inited'), 0) . '</fieldset>';
+		$table_ind->rowclass[] = '';
+		$table_ind->data[] = $tdata;
+		
+		$tdata[0] = '<fieldset class="databox" style="width:97%;">
+						<legend style="text-align:left; color: #666;">' . 
+							__('Alert level') . ui_print_help_tip (sprintf(__('%d Fired alerts'), $data["monitor_alerts_fired"]), true) . 
+						'</legend>' . 
+						progress_bar($data["alert_level"], $width, $height, $data["alert_level"].'% '.__('of defined alerts not fired'), 0) . '</fieldset>';
+		$table_ind->rowclass[] = '';
+		$table_ind->data[] = $tdata;
+		
+		
+		return html_print_table($table_ind, true);
+	}
+	else {
+		$return = array();
+		
+		$return['server_health'] = array(
+			'title' => __('Server health'),
+			'graph' => progress_bar($servers["health"], $width, $height, '', 0));
+		$return['monitor_health'] = array(
+			'title' => __('Monitor health'),
+			'graph' => progress_bar($data["monitor_health"], $width, $height, $data["monitor_health"].'% '.__('of monitors up'), 0));
+		$return['module_sanity'] = array(
+			'title' => __('Module sanity'),
+			'graph' => progress_bar($data["module_sanity"], $width, $height, $data["module_sanity"].'% '.__('of total modules inited'), 0));
+		$return['alert_level'] = array(
+			'title' => __('Alert level'),
+			'graph' => progress_bar($data["alert_level"], $width, $height, $data["alert_level"].'% '.__('of defined alerts not fired'), 0));
+		
+		return $return;
+	}
 }
 
 /** 

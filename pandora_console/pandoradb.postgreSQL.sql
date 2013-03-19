@@ -85,6 +85,8 @@ CREATE TABLE "tagente" (
 	"notinit_count" INTEGER NOT NULL default 0,
 	"total_count" INTEGER NOT NULL default 0,
 	"fired_count" INTEGER NOT NULL default 0
+	"update_module_count" SMALLINT NOT NULL DEFAULT 1,
+	"update_alert_count" SMALLINT NOT NULL DEFAULT 1,
 );
 CREATE INDEX "tagente_nombre_idx" ON "tagente"("nombre");
 CREATE INDEX "tagente_direccion_idx" ON "tagente"("direccion");

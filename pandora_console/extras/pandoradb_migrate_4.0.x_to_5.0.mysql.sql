@@ -65,6 +65,8 @@ ALTER TABLE `tagente` ADD COLUMN `unknown_count` bigint(20) NOT NULL default '0'
 ALTER TABLE `tagente` ADD COLUMN `notinit_count` bigint(20) NOT NULL default '0';
 ALTER TABLE `tagente` ADD COLUMN `total_count` bigint(20) NOT NULL default '0';
 ALTER TABLE `tagente` ADD COLUMN `fired_count` bigint(20) NOT NULL default '0';
+ALTER TABLE `tagente` ADD COLUMN `update_module_count` tinyint(1) NOT NULL DEFAULT '0';
+ALTER TABLE `tagente` ADD COLUMN `update_alert_count` tinyint(1) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `talert_special_days`
@@ -372,31 +374,31 @@ CREATE TABLE IF NOT EXISTS `tevent_response` (
 -- ----------------------------------------------------------------------
 -- Table `talert_actions`
 -- ----------------------------------------------------------------------
-ALTER TABLE `talert_actions` ADD COLUMN `field4` TEXT NOT NULL;
-ALTER TABLE `talert_actions` ADD COLUMN `field5` TEXT NOT NULL;
-ALTER TABLE `talert_actions` ADD COLUMN `field6` TEXT NOT NULL;
-ALTER TABLE `talert_actions` ADD COLUMN `field7` TEXT NOT NULL;
-ALTER TABLE `talert_actions` ADD COLUMN `field8` TEXT NOT NULL;
-ALTER TABLE `talert_actions` ADD COLUMN `field9` TEXT NOT NULL;
-ALTER TABLE `talert_actions` ADD COLUMN `field10` TEXT NOT NULL;
+ALTER TABLE `talert_actions` ADD COLUMN `field4` TEXT;
+ALTER TABLE `talert_actions` ADD COLUMN `field5` TEXT;
+ALTER TABLE `talert_actions` ADD COLUMN `field6` TEXT;
+ALTER TABLE `talert_actions` ADD COLUMN `field7` TEXT;
+ALTER TABLE `talert_actions` ADD COLUMN `field8` TEXT;
+ALTER TABLE `talert_actions` ADD COLUMN `field9` TEXT;
+ALTER TABLE `talert_actions` ADD COLUMN `field10` TEXT;
 
 -- ----------------------------------------------------------------------
 -- Table `talert_templates`
 -- ----------------------------------------------------------------------
-ALTER TABLE `talert_templates` ADD COLUMN `field4` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field5` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field6` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field7` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field8` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field9` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field10` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field4_recovery` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field5_recovery` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field6_recovery` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field7_recovery` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field8_recovery` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field9_recovery` TEXT NOT NULL;
-ALTER TABLE `talert_templates` ADD COLUMN `field10_recovery` TEXT NOT NULL;
+ALTER TABLE `talert_templates` ADD COLUMN `field4` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field5` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field6` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field7` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field8` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field9` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field10` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field4_recovery`;
+ALTER TABLE `talert_templates` ADD COLUMN `field5_recovery`;
+ALTER TABLE `talert_templates` ADD COLUMN `field6_recovery`;
+ALTER TABLE `talert_templates` ADD COLUMN `field7_recovery`;
+ALTER TABLE `talert_templates` ADD COLUMN `field8_recovery`;
+ALTER TABLE `talert_templates` ADD COLUMN `field9_recovery`;
+ALTER TABLE `talert_templates` ADD COLUMN `field10_recovery`;
 
 -- ----------------------------------------------------------------------
 -- Table `talert_commands`
@@ -443,13 +445,13 @@ ALTER TABLE `ttag` ADD COLUMN `email` text NULL;
 -- ---------------------------------------------------------------------
 -- Add more fields in snmp alerts (05/03/13)
 -- ---------------------------------------------------------------------
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field4` text NOT NULL;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field5` text NOT NULL;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field6` text NOT NULL;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field7` text NOT NULL;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field8` text NOT NULL;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field9` text NOT NULL;
-ALTER TABLE `talert_snmp` ADD COLUMN `al_field10` text NOT NULL;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field4` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field5` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field6` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field7` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field8` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field9` text;
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field10` text;
 
 -- ---------------------------------------------------------------------
 -- ---------------------------------------------------------------------

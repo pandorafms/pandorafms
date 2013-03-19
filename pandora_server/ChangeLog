@@ -1,3 +1,10 @@
+2013-03-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm,
+	  bin/pandora_server,
+	  util/pandora_db.pl: Added support for on-demand module status
+	  calculation.
+
 2013-03-15  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_database_check.pl: added to trunk repo. Tool to 

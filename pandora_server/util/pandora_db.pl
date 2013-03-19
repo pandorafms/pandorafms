@@ -688,21 +688,6 @@ sub pandora_checkdb_consistency {
 		db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo = ?', $id_agente_modulo);
 		print "[CHECKDB] Deleting non-existing module $id_agente_modulo in state table \n";
 	}
-
-	print "[CHECKDB] Checking module status count... \n";
-	#my @agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente WHERE normal_count+warning_count+critical_count+unknown_count+notinit_count<>total_count');
-	# Try to update module status count for all agents. Further performance tests need to be done.
-	my @agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente');
-	foreach my $agent (@agents) {
-		my $id_agente = $agent->{'id_agente'};
-		db_do ($dbh, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=0 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
-		critical_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=1 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
-		warning_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=2 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
-		unknown_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=3 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
-		notinit_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND estado=4 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
-		total_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $id_agente . ' AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0))
-		WHERE id_agente = ' . $id_agente);
-	}
 }
 
 ##############################################################################

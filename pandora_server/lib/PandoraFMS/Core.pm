@@ -179,6 +179,8 @@ our @EXPORT = qw(
 	pandora_set_event_storm_protection
 	pandora_update_agent
 	pandora_update_agent_address
+	pandora_update_agent_alert_count
+	pandora_update_agent_module_count
 	pandora_update_config_token
 	pandora_update_gis_data
 	pandora_update_module_on_error
@@ -367,7 +369,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 	
 	# Update fired alert when cesead or recover
 	if(defined ($agent) && ($status == 3 || $status == 4)) {
-		db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente=?', $agent->{'id_agente'});
+		pandora_mark_agent_for_alert_update ($dbh, $agent->{'id_agente'});
 	}
 	
 	# Check for valid data
@@ -447,7 +449,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 	# Update fired alert first time 
 	# (if is fist time after ceased it was decreased previously and will be compensated)
 	if(defined ($agent)) {
-		db_do ($dbh, 'UPDATE tagente SET fired_count=fired_count+1 WHERE id_agente=?', $agent->{'id_agente'});
+		pandora_mark_agent_for_alert_update ($dbh, $agent->{'id_agente'});
 	}
 	
 	return 0; #Launch the alert
@@ -1035,9 +1037,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$status = $new_status;
 
 		# Update module status count
-		update_module_status_count ($dbh, $agent, $status, $last_status);
+		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
 	}
-	# Set unknown modules to normal even if min_ff_event is set
+	# Set not-init modules to normal even if min_ff_event is not matched the first time they receive data
 	elsif ($status == 4) {
 		$new_status = 0;
 		
@@ -1045,7 +1047,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$status = $new_status;
 
 		# Update module status count
-		update_module_status_count ($dbh, $agent, $status, $last_status);
+		pandora_mark_agent_for_module_update ($dbh, $agent->{'id_agente'});
 	}
 		
 	$last_status = $new_status;
@@ -2220,22 +2222,7 @@ sub pandora_delete_module ($$;$) {
 	}
 	
 	# Update module status count
-	if ($module->{'utimestamp'} == 0) {
-		db_do ($dbh, 'UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module->{'id_agente'});
-	}
-	elsif ($module->{'estado'} == 0) {
-		db_do ($dbh, 'UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module->{'id_agente'});
-	}
-	elsif ($module->{'estado'} == 1) {
-		db_do ($dbh, 'UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module->{'id_agente'});
-	}
-	elsif ($module->{'estado'} == 2) {
-		db_do ($dbh, 'UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module->{'id_agente'});
-	}
-	elsif ($module->{'estado'} == 3) {
-		db_do ($dbh, 'UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module->{'id_agente'});
-	}
-	db_do ($dbh, 'UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module->{'id_agente'});
+	pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
 }
 
 ##########################################################################
@@ -2300,14 +2287,7 @@ sub pandora_create_module_from_hash ($$$) {
 	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')', $module_id, $parameters->{'id_agente'}, $status, $status, $status);
 	
 	# Update the module status count. When the module is created disabled dont do it
-	if(!defined($parameters->{'disabled'}) || $parameters->{'disabled'} == 0) {
-		if ($status == 4) {
-			db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
-		}
-		else {
-			db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=?', $parameters->{'id_agente'});
-		}
-	}
+	pandora_mark_agent_for_module_update ($dbh, $parameters->{'id_agente'});
 	
 	return $module_id;
 }
@@ -3801,7 +3781,7 @@ sub pandora_module_unknown ($$) {
 			}
 		
 			# Update module status count
-			update_module_status_count ($dbh, $agent, 0, $module->{'estado'});
+			pandora_mark_agent_for_module_update ($dbh, $agent, 0, $module->{'estado'});
 
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
@@ -3831,7 +3811,7 @@ sub pandora_module_unknown ($$) {
 			}
 		
 			# Update module status count
-			update_module_status_count ($dbh, $agent, 3, $module->{'estado'});
+			pandora_mark_agent_for_module_update ($dbh, $agent, 3, $module->{'estado'});
 		
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
@@ -3905,41 +3885,23 @@ sub pandora_get_module_url_tags ($$$) {
 }
 
 ##########################################################################
-# Update the module status count of an agent.
+# Mark an agent for module status count update.
 ##########################################################################
-sub update_module_status_count ($$$$) {
-	my ($dbh, $agent, $new_status, $last_status) = @_;
-
-	# Substract the previous status
-	my $query_sub = '';
-	if ($last_status == 0) {
-		$query_sub .= 'normal_count=normal_count-1';
-	} elsif ($last_status == 1) {
-		$query_sub .= 'critical_count=critical_count-1';
-	} elsif ($last_status == 2) {
-		$query_sub .= 'warning_count=warning_count-1';
-	} elsif ($last_status == 3) {
-		$query_sub .= 'unknown_count=unknown_count-1';
-	} elsif ($last_status == 4) {
-		$query_sub .= 'notinit_count=notinit_count-1';
-	}
-	
-	# Add the new status
-	my $query_add = '';
-	if ($new_status == 0) {
-		$query_add .= 'normal_count=normal_count+1';
-	} elsif ($new_status == 1) {
-		$query_add .= 'critical_count=critical_count+1';
-	} elsif ($new_status == 2) {
-		$query_add .= 'warning_count=warning_count+1';
-	} elsif ($new_status == 3) {
-		$query_add .= 'unknown_count=unknown_count+1';
-	} elsif ($new_status == 4) {
-		$query_add .= 'notinit_count=notinit_count+1';
-	}
+sub pandora_mark_agent_for_module_update ($$) {
+	my ($dbh, $agent_id) = @_;
 
 	# Update the status count
-	db_do ($dbh, "UPDATE tagente SET $query_sub, $query_add WHERE id_agente=?", $agent->{'id_agente'});
+	db_do ($dbh, "UPDATE tagente SET update_module_count=1 WHERE id_agente=?", $agent_id);
+}
+
+##########################################################################
+# Mark an agent for fired alert count update.
+##########################################################################
+sub pandora_mark_agent_for_alert_update ($$) {
+	my ($dbh, $agent_id) = @_;
+
+	# Update the status count
+	db_do ($dbh, "UPDATE tagente SET update_alert_count=1 WHERE id_agente=?", $agent_id);
 }
 
 ##########################################################################
@@ -3947,6 +3909,49 @@ sub update_module_status_count ($$$$) {
 ##########################################################################
 sub pandora_set_event_storm_protection ($) {
 	$EventStormProtection = shift;
+}
+
+##########################################################################
+# Update the module status count of an agent.
+##########################################################################
+sub pandora_update_agent_count ($$) {
+	my ($dbh, $agent_id) = @_;
+	
+	db_do ($dbh, 'UPDATE tagente SET update_module_count=0,
+	normal_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=0),
+	critical_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=1),
+	warning_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=2),
+	unknown_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=3),
+	notinit_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=4),
+	total_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id .
+	') WHERE id_agente = ' . $agent_id);
+}
+
+##########################################################################
+# Update the module status count of an agent.
+##########################################################################
+sub pandora_update_agent_module_count ($$) {
+	my ($dbh, $agent_id) = @_;
+	
+	db_do ($dbh, 'UPDATE tagente SET update_module_count=0,
+	normal_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=0),
+	critical_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=1),
+	warning_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=2),
+	unknown_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=3),
+	notinit_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=4),
+	total_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id .
+	') WHERE id_agente = ' . $agent_id);
+}
+
+##########################################################################
+# Update the fired alert count of an agent.
+##########################################################################
+sub pandora_update_agent_alert_count ($$) {
+	my ($dbh, $agent_id) = @_;
+	
+	db_do ($dbh, 'UPDATE tagente SET update_alert_count=0,
+	fired_count=(SELECT COUNT(*) FROM tagente_modulo, talert_template_modules WHERE tagente_modulo.id_agente_modulo=talert_template_modules.id_agent_module AND talert_template_modules.disabled=0 AND times_fired>0 AND id_agente=' . $agent_id .
+	') WHERE id_agente = ' . $agent_id);
 }
 
 # End of function declaration

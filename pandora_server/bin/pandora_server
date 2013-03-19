@@ -81,20 +81,6 @@ sub pandora_startup () {
 	pandora_get_sharedconfig (\%Config, $DBH);
 	
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
-
-	# Update module status count
-	print_message (\%Config, " [*] Updating module status count.\n", 1);
-	my @agents = get_db_rows ($DBH, 'SELECT id_agente FROM tagente');
-	foreach my $agent (@agents) {
-		my $agent_id = $agent->{'id_agente'};
-		db_do ($DBH, 'UPDATE tagente SET normal_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=0 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
-		critical_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=1 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
-		warning_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=2 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
-		unknown_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=3 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
-		notinit_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND estado=4 AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0)),
-		total_count=(SELECT COUNT(*) FROM tagente_estado WHERE id_agente=' . $agent_id . ' AND id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled=0))
-		WHERE id_agente = ' . $agent_id);
-	}
 	
 	# Load servers
 	pandora_reset_server (\%Config, $DBH);
@@ -323,7 +309,22 @@ while (1) {
 		# ---------------------------------------------
 		# Tasks executed only each Server Threshold x 30 secs, for low-priority tasks
 		if (($counter % 30) == 0) {
-			
+
+			# Update module status and fired alert counts
+			my @agents = get_db_rows ($DBH, 'SELECT id_agente, nombre, update_module_count, update_alert_count FROM tagente WHERE disabled = 0 AND (update_module_count=1 OR update_alert_count=1)');
+			foreach my $agent (@agents) {
+				print_message (\%Config, " [*] Updating module status and alert fired counts for agent" . $agent->{'nombre'}, 1);
+				
+				if ($agent->{'update_module_count'} == 1) {
+					pandora_update_agent_module_count ($DBH, $agent->{'id_agente'});
+				}
+				
+				if ($agent->{'update_alert_count'} == 1) {
+					pandora_update_agent_alert_count ($DBH, $agent->{'id_agente'});
+				}
+
+			}
+
 			# Keepalive module control.(very DB intensive, not run frecuently
 			pandora_module_keep_alive_nd (\%Config, $DBH);
 			

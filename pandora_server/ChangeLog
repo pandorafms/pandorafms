@@ -1,5 +1,9 @@
 2013-03-19  Ramon Novoa  <rnovoa@artica.es>
 
+	* bin/pandora_server: Moved a log message to verbosity 10.
+
+2013-03-19  Ramon Novoa  <rnovoa@artica.es>
+
 	* bin/pandora_server: Style fix.
 
 2013-03-19  Ramon Novoa  <rnovoa@artica.es>

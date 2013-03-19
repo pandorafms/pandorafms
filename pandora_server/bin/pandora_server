@@ -313,7 +313,7 @@ while (1) {
 			# Update module status and fired alert counts
 			my @agents = get_db_rows ($DBH, 'SELECT id_agente, nombre, update_module_count, update_alert_count FROM tagente WHERE disabled = 0 AND (update_module_count=1 OR update_alert_count=1)');
 			foreach my $agent (@agents) {
-				print_message (\%Config, " [*] Updating module status and alert fired counts for agent " . $agent->{'nombre'}, 1);
+				print_message (\%Config, " [*] Updating module status and alert fired counts for agent " . $agent->{'nombre'}, 10);
 				
 				if ($agent->{'update_module_count'} == 1) {
 					pandora_update_agent_module_count ($DBH, $agent->{'id_agente'});

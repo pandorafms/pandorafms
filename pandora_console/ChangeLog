@@ -1,5 +1,10 @@
 2013-03-19  Ramon Novoa  <rnovoa@artica.es>
 
+	* godmode/servers/modificar_server.php: Added an option to reset
+	  counts.
+
+2013-03-19  Ramon Novoa  <rnovoa@artica.es>
+
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
 	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
 	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: Updated and fixed

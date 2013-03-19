@@ -61,6 +61,11 @@ else {
 		db_process_sql ("UPDATE tagente_estado SET last_error=0 WHERE last_error=1");
 	}
 	
+	// Move SNMP modules back to the enterprise server
+	if (isset($_GET["server_reset_counts"])) {
+		db_process_sql ("UPDATE tagente SET update_module_count=1, update_alert_count=1");
+	}
+
 	if (isset ($_GET["delete"])) {
 		$id_server = get_parameter_get ("server_del");
 		
@@ -168,7 +173,12 @@ else {
 		if (check_acl ($config["id_user"], 0, "PM")) {
 			
 			$data[8] = '';
-			if ($server['type'] == 'enterprise snmp') {
+			if ($server['type'] == 'data') {
+				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_reset_counts='.$server["id_server"].'">';
+				$data[8] .= html_print_image ('images/target.png', true,
+					array('title' => __('Reset module status and fired alert counts')));
+				$data[8] .= '</a>&nbsp;&nbsp;';
+			} else if ($server['type'] == 'enterprise snmp') {
 				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_reset_snmp_enterprise='.$server["id_server"].'">';
 				$data[8] .= html_print_image ('images/target.png', true,
 					array('title' => __('Claim back SNMP modules')));

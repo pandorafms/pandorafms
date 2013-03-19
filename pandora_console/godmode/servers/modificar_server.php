@@ -174,12 +174,12 @@ else {
 			
 			$data[8] = '';
 			if ($server['type'] == 'data') {
-				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_reset_counts='.$server["id_server"].'">';
+				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_counts='.$server["id_server"].'">';
 				$data[8] .= html_print_image ('images/target.png', true,
 					array('title' => __('Reset module status and fired alert counts')));
 				$data[8] .= '</a>&nbsp;&nbsp;';
 			} else if ($server['type'] == 'enterprise snmp') {
-				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_reset_snmp_enterprise='.$server["id_server"].'">';
+				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_snmp_enterprise='.$server["id_server"].'">';
 				$data[8] .= html_print_image ('images/target.png', true,
 					array('title' => __('Claim back SNMP modules')));
 				$data[8] .= '</a>&nbsp;&nbsp;';

@@ -886,16 +886,7 @@ function alerts_delete_alert_agent_module ($id_alert_agent_module, $filter = fal
 	it is automatily because the data base this table have
 	a foreing key and delete on cascade.
 	*/
-	if (@db_process_sql_delete ('talert_template_modules', $filter) !== false) {
-		// If there are fired alert modules, update counts
-		if($fired_alert_modules !== false) {
-			foreach($fired_alert_modules as $fam) {
-				$agent_id = modules_get_agentmodule_agent($fam['id_agent_module']);
-				
-				db_process_sql(sprintf('UPDATE tagente SET fired_count=fired_count-%d WHERE id_agente = %d', $fam['alerts'], $agent_id));
-			}
-		}
-		
+	if (@db_process_sql_delete ('talert_template_modules', $filter) !== false) {	
 		return true;
 	}
 	
@@ -1180,7 +1171,7 @@ function alerts_validate_alert_agent_module ($id_alert_agent_module, $noACLs = f
 		
 		if ($result > 0) {
 			// Update fired alert count on the agent
-			db_process_sql(sprintf('UPDATE tagente SET fired_count=fired_count-1 WHERE id_agente = %d', $agent_id));
+			db_process_sql(sprintf('UPDATE tagente SET update_alert_count=1 WHERE id_agente = %d', $agent_id));
 			
 			events_create_event ("Manual validation of alert for ".
 				alerts_get_alert_template_description ($alert["id_alert_template"]),

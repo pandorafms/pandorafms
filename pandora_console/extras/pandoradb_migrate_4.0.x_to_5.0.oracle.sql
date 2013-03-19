@@ -86,6 +86,8 @@ ALTER TABLE tagente ADD (unknown_count NUMBER(20, 0) default 0 NOT NULL);
 ALTER TABLE tagente ADD (notinit_count NUMBER(20, 0) default 0 NOT NULL);
 ALTER TABLE tagente ADD (total_count NUMBER(20, 0) default 0 NOT NULL);
 ALTER TABLE tagente ADD (fired_count NUMBER(20, 0) default 0 NOT NULL);
+ALTER TABLE tagente ADD (update_module_count NUMBER(5, 0) default 0 NOT NULL);
+ALTER TABLE tagente ADD (update_alert_count NUMBER(5, 0) default 0 NOT NULL);
 
 -- -----------------------------------------------------
 -- Table talert_special_days
@@ -403,13 +405,13 @@ CREATE SEQUENCE tevent_response_s INCREMENT BY 1 START WITH 1;
 -- ----------------------------------------------------------------------
 -- Table talert_actions
 -- ----------------------------------------------------------------------
-ALTER TABLE talert_actions ADD (field4 CLOB NOT NULL;
-ALTER TABLE talert_actions ADD (field5 CLOB NOT NULL;
-ALTER TABLE talert_actions ADD (field6 CLOB NOT NULL;
-ALTER TABLE talert_actions ADD (field7 CLOB NOT NULL;
-ALTER TABLE talert_actions ADD (field8 CLOB NOT NULL;
-ALTER TABLE talert_actions ADD (field9 CLOB NOT NULL;
-ALTER TABLE talert_actions ADD (field10 CLOB NOT NULL;
+ALTER TABLE talert_actions ADD (field4 CLOB default '');
+ALTER TABLE talert_actions ADD (field5 CLOB default '');
+ALTER TABLE talert_actions ADD (field6 CLOB default '');
+ALTER TABLE talert_actions ADD (field7 CLOB default '');
+ALTER TABLE talert_actions ADD (field8 CLOB default '');
+ALTER TABLE talert_actions ADD (field9 CLOB default '');
+ALTER TABLE talert_actions ADD (field10 CLOB default '');
 
 -- ----------------------------------------------------------------------
 -- Table talert_templates

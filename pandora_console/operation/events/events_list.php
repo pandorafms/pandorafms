@@ -154,25 +154,29 @@ echo "<br>";
 $update_pressed = get_parameter_post('update', '');
 $update_pressed = (int) !empty($update_pressed);
 
-if ($update_pressed || $open_filter){
+if ($update_pressed || $open_filter) {
 	$open_filter = true;
 }
 
 //Link to toggle filter
 if ($open_filter) {
-	echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/go.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
+	echo '<a href="#" id="tgl_event_control"><b>' . __('Event control filter') . '</b>&nbsp;'.html_print_image ("images/go.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
 }
 else {
-	echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
+	echo '<a href="#" id="tgl_event_control"><b>' . __('Event control filter') . '</b>&nbsp;'.html_print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'), "id" => 'toggle_arrow')).'</a><br><br>';
 }
 
 $filters = events_get_event_filter_select();
 
 // Some translated words to be used from javascript
-html_print_div(array('hidden' => true, 'id' => 'not_filter_loaded_text', 'content' => __('No filter loaded')));
-html_print_div(array('hidden' => true, 'id' => 'filter_loaded_text', 'content' => __('Filter loaded')));
-html_print_div(array('hidden' => true, 'id' => 'save_filter_text', 'content' => __('Save filter')));
-html_print_div(array('hidden' => true, 'id' => 'load_filter_text', 'content' => __('Load filter')));
+html_print_div(array('hidden' => true,
+	'id' => 'not_filter_loaded_text', 'content' => __('No filter loaded')));
+html_print_div(array('hidden' => true,
+	'id' => 'filter_loaded_text', 'content' => __('Filter loaded')));
+html_print_div(array('hidden' => true,
+	'id' => 'save_filter_text', 'content' => __('Save filter')));
+html_print_div(array('hidden' => true,
+	'id' => 'load_filter_text', 'content' => __('Load filter')));
 
 // Save filter div for dialog
 echo '<div id="save_filter_layer" style="display: none">';
@@ -320,7 +324,7 @@ html_print_input_hidden('id_name', $id_name);
 
 // Hidden open filter flag
 // If autoupdate is in use collapse filter
-if ($open_filter){
+if ($open_filter) {
 	html_print_input_hidden('open_filter', 'true');
 } 
 else{
@@ -337,7 +341,8 @@ $table->data = array();
 
 $data = array();
 $data[0] = __('Group') . '<br>';
-$data[0] .= html_print_select_groups($config["id_user"], "ER", true, 'id_group', $id_group, '', '', 0, true, false, false, 'w130');
+$data[0] .= html_print_select_groups($config["id_user"], "ER", true,
+	'id_group', $id_group, '', '', 0, true, false, false, 'w130');
 $data[1] = __('Event type') . '<br>';
 $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
@@ -386,7 +391,8 @@ else {
 $data[1] .= ui_print_agent_autocomplete_input($params);
 $data[2] = __('User ack.') . '<br>';
 $users = users_get_info ();
-$data[2] .= html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0, true);
+$data[2] .= html_print_select($users, "id_user_ack", $id_user_ack, '',
+	__('Any'), 0, true);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -444,13 +450,13 @@ if ($group_rep == 0) {
 		case "mysql":
 			$sql = "SELECT *, 1 event_rep
 				FROM $event_table
-				WHERE 1=1 ".$sql_post."
+				WHERE 1=1 " . $sql_post . "
 				ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 			break;
 		case "postgresql":
 			$sql = "SELECT *, 1 event_rep
 				FROM $event_table
-				WHERE 1=1 ".$sql_post."
+				WHERE 1=1 " . $sql_post . "
 				ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
 			break;
 		case "oracle":
@@ -459,7 +465,7 @@ if ($group_rep == 0) {
 			$set['offset'] = $offset;
 			$sql = "SELECT *, 1 event_rep
 				FROM $event_table
-				WHERE 1=1 ".$sql_post."
+				WHERE 1=1 " . $sql_post . "
 				ORDER BY utimestamp DESC"; 
 			$sql = oracle_recode_query ($sql, $set);
 			break;
@@ -472,7 +478,7 @@ else {
 	$result = events_get_events_grouped($sql_post, $offset, $pagination, $meta, $history);
 }
 
-if(!empty($result)) {
+if (!empty($result)) {
 	$params = array();
 	$params['position'] = 'right';
 	$params['icon_closed'] = 'images/setup.png';
@@ -485,7 +491,7 @@ if(!empty($result)) {
 	$params['autotop'] = 'menu_tab_frame_view';
 	$params['icon_width'] = 16;
 	$params['icon_height'] = 16;
-
+	
 	html_print_side_layer($params);
 }
 

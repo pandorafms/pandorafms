@@ -18,10 +18,11 @@ class Events {
 	private $default = true;
 	private $free_search = '';
 	private $hours_old = 8;
-	private $status = 2
+	private $status = 3;
 	private $type = "";
 	private $severity = -1;
 	private $filter = 0;
+	private $group = 0;
 	
 	function __construct() {
 		$system = System::getInstance();
@@ -34,6 +35,64 @@ class Events {
 		}
 	}
 	
+	public function ajax($parameter2 = false) {
+		$system = System::getInstance();
+		
+		if (!$this->correct_acl) {
+			return;
+		}
+		else {
+			switch ($parameter2) {
+				case 'get_events':
+					$this->eventsGetFilters();
+					$page = $system->getRequest('page', 0);
+					
+					$system = System::getInstance();
+					
+					$listEvents = $this->getListEvents($page);
+					$events_db = $listEvents['events'];
+					$total_events = $listEvents['total'];
+					
+					$events = array();
+					$end = 1;
+					foreach ($events_db as $event) {
+						$end = 0;
+						$row = array();
+						$row[] = $event['evento'];
+						switch ($event['estado']) {
+							case 0:
+								$img_st = "images/star.png";
+								$title_st = __('New event');
+								break;
+							case 1:
+								$img_st = "images/tick.png";
+								$title_st = __('Event validated');
+								break;
+							case 2:
+								$img_st = "images/hourglass.png";
+								$title_st = __('Event in process');
+								break;
+						}
+						$row[] = html_print_image ($img_st, true, 
+							array ("class" => "image_status",
+								"width" => 16,
+								"height" => 16,
+								"title" => $title_st,
+								"id" => 'status_img_' . $event["id_evento"]));
+						$row[] = ui_print_timestamp ($event['timestamp_rep'], true);
+						$row[] = ui_print_agent_name ($event["id_agente"], true);
+						
+						
+						$events[$event['id_evento']] = $row;
+					}
+					
+					echo json_encode(array('end' => $end, 'events' => $events));
+					
+					break;
+			}
+		}
+	}
+	
 	private function eventsGetFilters() {
 		$system = System::getInstance();
 		
@@ -41,17 +100,20 @@ class Events {
 		if ($this->hours_old != 8) {
 			$this->default = false;
 		}
+		
 		$this->free_search = $system->getRequest('free_search', '');
 		if ($this->free_search != '') {
 			$this->default = false;
 		}
+		
 		$this->status = $system->getRequest('status', __("Status"));
 		if ($this->status === __("Status")) {
-			$this->status = 2;
+			$this->status = 3;
 		}
 		else {
 			$this->default = false;
 		}
+		
 		$this->type = $system->getRequest('type', __("Type"));
 		if ($this->type === __("Type")) {
 			$this->type = "";
@@ -59,6 +121,15 @@ class Events {
 		else {
 			$this->default = false;
 		}
+		
+		$this->severity = $system->getRequest('group', __("Group"));
+		if ($this->severity === __("Group")) {
+			$this->severity = 0;
+		}
+		else {
+			$this->default = false;
+		}
+		
 		$this->severity = $system->getRequest('severity', __("Severity"));
 		if ($this->severity === __("Severity")) {
 			$this->severity = -1;
@@ -76,10 +147,19 @@ class Events {
 		}
 		
 		///The user set a preset filter
-		$this->loadPresetFilter()
+		if ($this->filter > 0) {
+			$this->loadPresetFilter();
+		}
 	}
 	
-	private loadPresetFilter() {
+	private function loadPresetFilter() {
+		$filter = db_get_row('tevent_filter', 'id_filter', $this->filter);
+		
+		$this->free_search = $filter['search'];
+		$this->hours_old = $filter['event_view_hr'];
+		$this->status = $filter['status'];
+		$this->type = $filter['type'];
+		$this->severity = $filter['severity'];
 	}
 	
 	public function show() {
@@ -117,56 +197,66 @@ class Events {
 						'value' => 'events'
 						);
 					$ui->formAddInput($options);
-					$items = array('caca' => 'caca', 'pis' => 'pis',
-						'pedo' => 'pedo');
+					
+					$items = db_get_all_rows_in_table('tevent_filter');
+					$items[] = array('id_filter' => 0, 'id_name' => __('None'));
 					$options = array(
 						'name' => 'filter',
 						'title' => __('Preset Filters'),
 						'label' => __('Preset Filters'),
-						'items' => $items
+						'items' => $items,
+						'item_id' => 'id_filter',
+						'item_value' => 'id_name',
+						'selected' => $this->filter
 						);
 					$ui->formAddSelectBox($options);
-					$items = array('caca' => 'caca', 'pis' => 'pis',
-						'pedo' => 'pedo');
+					
+					$system = System::getInstance();
+					$groups = users_get_groups_for_select(
+						$system->getConfig('id_user'), "ER", true, true, false, 'id_grupo');
 					$options = array(
 						'name' => 'group',
 						'title' => __('Group'),
 						'label' => __('Group'),
-						'items' => $items
+						'items' => $groups,
+						'selected' => $this->group
 						);
-					$items = array('caca' => 'caca', 'pis' => 'pis',
-						'pedo' => 'pedo');
+					$ui->formAddSelectBox($options);
+					
 					$options = array(
 						'name' => 'status',
 						'title' => __('Status'),
 						'label' => __('Status'),
-						'items' => $items
+						'items' => events_get_all_status(),
+						'selected' => $this->status
 						);
 					$ui->formAddSelectBox($options);
-					$items = array('caca' => 'caca', 'pis' => 'pis',
-						'pedo' => 'pedo');
+					
 					$options = array(
 						'name' => 'type',
 						'title' => __('Type'),
 						'label' => __('Type'),
-						'items' => $items
+						'items' => get_event_types(),
+						'selected' => $this->type
 						);
 					$ui->formAddSelectBox($options);
-					$items = array('caca' => 'caca', 'pis' => 'pis',
-						'pedo' => 'pedo');
+					
 					$options = array(
 						'name' => 'severity',
 						'title' => __('Severity'),
 						'label' => __('Severity'),
-						'items' => $items
+						'items' => get_priorities(),
+						'selected' => $this->severity
 						);
 					$ui->formAddSelectBox($options);
+					
 					$options = array(
 						'name' => 'free_search',
 						'value' => $this->free_search,
 						'placeholder' => __('Free search')
 						);
 					$ui->formAddInputSearch($options);
+					
 					$options = array(
 						'label' => __('Max. hours old'),
 						'name' => 'hours_old',
@@ -176,6 +266,7 @@ class Events {
 						'step' => 8
 						);
 					$ui->formAddSlider($options);
+					
 					$options = array(
 						'icon' => 'refresh',
 						'icon_pos' => 'right',
@@ -185,52 +276,239 @@ class Events {
 				$html = $ui->getEndForm();
 				$ui->contentCollapsibleAddItem($html);
 			$ui->contentEndCollapsible();
-			$this->listEvents();
+			$this->listEventsHtml();
 		$ui->endContent();
 		$ui->showPage();
 	}
 	
-	function listEvents() {
-		$ui = Ui::getInstance();
+	private function getListEvents($page = 0) {
 		$system = System::getInstance();
 		
+		//--------------Fill the SQL POST-------------------------------
 		$sql_post = '';
-		$result = events_get_events_grouped($sql_post,
-			0, $system->getPageSize(), false, false);
 		
-		$events = array(
-			array(
-				__('Status') => 'icon',
-				__('Event Name') => 'nombre del evento',
-				__('Timestamp') => '2 days',
-				__('Agent') => 'pepito'),
-			array(
-				__('Status') => 'icon',
-				__('Event Name') => 'nombre del evento',
-				__('Timestamp') => '2 days',
-				__('Agent') => 'pepito'));
+		switch ($this->status) {
+			case 0:
+			case 1:
+			case 2:
+				$sql_post .= " AND estado = " . $this->status;
+				break;
+			case 3:
+				$sql_post .= " AND (estado = 0 OR estado = 2)";
+				break;
+		}
+		
+		if ($this->free_search != "") {
+			$sql_post .= " AND evento LIKE '%" . io_safe_input($this->free_search) . "%'";
+		}
+		
+		if ($this->severity != -1) {
+			switch ($this->severity) {
+				case EVENT_CRIT_WARNING_OR_CRITICAL:
+					$sql_post .= " AND (criticity = " . EVENT_CRIT_WARNING . " OR 
+						criticity = " . EVENT_CRIT_CRITICAL . ")";
+					break;
+				case EVENT_CRIT_NOT_NORMAL:
+					$sql_post .= " AND criticity != " . EVENT_CRIT_NORMAL;
+					break;
+				default:
+					$sql_post .= " AND criticity = " . $this->severity;
+					break;
+			}
+		}
+		
+		if ($this->hours_old > 0) {
+			$unixtime = get_system_time () - ($this->hours_old * SECONDS_1HOUR);
+			$sql_post .= " AND (utimestamp > " . $unixtime . ")";
+		}
+		
+		if ($this->type != "") {
+			// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+			// for the user so for him is presented only "warning, critical and normal"
+			if ($this->type == "warning" || $this->type == "critical"
+				|| $this->type == "normal") {
+				$sql_post .= " AND event_type LIKE '%" . $this->type . "%' ";
+			}
+			elseif ($this->type == "not_normal") {
+				$sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
+			}
+			elseif ($this->type != "all") {
+				$sql_post .= " AND event_type = '" . $this->type."'";
+			}
+			
+		}
+		
+		if ($this->group > 0) {
+			//If a group is selected and it's in the groups allowed
+			$sql_post = " AND id_grupo = " . $this->group;
+		}
+		
+		//--------------------------------------------------------------
+		
+		
+		$events_db = events_get_events_grouped($sql_post,
+			$page * $system->getPageSize(), $system->getPageSize(), false, false);
+		if (empty($events_db)) {
+			$events_db = array();
+		}
+		
+		$total_events = events_get_total_events_grouped($sql_post);
+		
+		return array('events' => $events_db, 'total' => $total_events);
+	}
+	
+	private function listEventsHtml($page = 0) {
+		$system = System::getInstance();
+		
+		$listEvents = $this->getListEvents($page);
+		$events_db = $listEvents['events'];
+		$total_events = $listEvents['total'];
+		
+		if (empty($events_db))
+			$events_db = array();
+		
+		$events = array();
+		$field_event_name = __('Event Name');
+		$field_status = __('Status');
+		$field_timestamp = __('Timestamp');
+		$field_agent = __('Agent');
+		foreach ($events_db as $event) {
+			$row = array();
+			$row[$field_event_name] = $event['evento'];
+			switch ($event['estado']) {
+				case 0:
+					$img_st = "images/star.png";
+					$title_st = __('New event');
+					break;
+				case 1:
+					$img_st = "images/tick.png";
+					$title_st = __('Event validated');
+					break;
+				case 2:
+					$img_st = "images/hourglass.png";
+					$title_st = __('Event in process');
+					break;
+			}
+			$row[$field_status] = html_print_image ($img_st, true, 
+				array ("class" => "image_status",
+					"width" => 16,
+					"height" => 16,
+					"title" => $title_st,
+					"id" => 'status_img_' . $event["id_evento"]));
+			$row[$field_timestamp] = ui_print_timestamp ($event['timestamp_rep'], true);
+			$row[$field_agent] = ui_print_agent_name ($event["id_agente"], true);
+			
+			
+			$events[$event['id_evento']] = $row;
+		}
 		
 		$ui = Ui::getInstance();
-		$table = new Table();
-		$table->importFromHash($events);
-		$ui->contentAddHtml($table->getHTML());
+		if (empty($events)) {
+			$ui->contentAddHtml('<p style="color: #ff0000;">' . __('No events') . '</p>');
+		}
+		else {
+			$table = new Table();
+			$table->importFromHash($events);
+			$ui->contentAddHtml($table->getHTML());
+			
+			if ($system->getPageSize() < $total_events) {
+				$ui->contentAddHtml('<div id="loading_rows">' .
+						html_print_image('images/spinner.gif', true) .
+						' ' . __('Loading...') .
+					'</div>');
+				
+				$this->addJavascriptAddBottom();
+			}
+		}
+	}
+	
+	private function addJavascriptAddBottom() {
+		$ui = Ui::getInstance();
+		
+		$ui->contentAddHtml("<script type=\"text/javascript\">
+				var load_more_rows = 1;
+				var page = 1;
+				$(document).ready(function() {
+					$(window).bind(\"scroll\", function () {
+						
+						if (load_more_rows) {
+							if ($(this).scrollTop() + $(this).height()
+								>= ($(document).height() - 100)) {
+								
+								load_more_rows = 0;
+								
+								postvars = {};
+								postvars[\"action\"] = \"ajax\";
+								postvars[\"parameter1\"] = \"events\";
+								postvars[\"parameter2\"] = \"get_events\";
+								postvars[\"filter\"] = $(\"select[name='filter']\").val();
+								postvars[\"group\"] = $(\"select[name='group']\").val();
+								postvars[\"status\"] = $(\"select[name='status']\").val();
+								postvars[\"type\"] = $(\"select[name='type']\").val();
+								postvars[\"severity\"] = $(\"select[name='severity']\").val();
+								postvars[\"free_search\"] = $(\"input[name='free_search']\").val();
+								postvars[\"hours_old\"] = $(\"input[name='hours_old']\").val();
+								postvars[\"page\"] = page;
+								page++;
+								
+								$.post(\"index.php\",
+									postvars,
+									function (data) {
+										if (data.end) {
+											$(\"#loading_rows\").hide();
+										}
+										else {
+											$.each(data.events, function(key, event) {
+												$(\"table tbody\").append(\"<tr>\" +
+														\"<th></th>\" +
+														\"<td>\" + event[0] + \"</td>\" +
+														\"<td>\" + event[1] + \"</td>\" +
+														\"<td>\" + event[2] + \"</td>\" +
+														\"<td>\" + event[3] + \"</td>\" +
+													\"</tr>\");
+												});
+											
+											load_more_rows = 1;
+										}
+										
+										
+									},
+									\"json\");
+							}
+						}
+					});
+				});
+			</script>");
 	}
 	
 	private function filterEventsGetString() {
-		if ($this->default)
+		if ($this->default) {
 			return __("(Default)");
+		}
 		else {
 			if ($this->filter) {
-				//TODO put the name of filter
+				$filter = db_get_row('tevent_filter', 'id_filter', $this->filter);
+				
+				return sprintf(__('Filter: %s'), $filter['id_name']);
 			}
 			else {
-				/*
-				$string = sprintf(__("(Status: %s Hours: %s Type: %s Severity: %s Free Search: %s)"),
-					$this->hours_old,
-					
+				$status = "";
+				if (!empty($this->status))
+					$status = events_get_status($this->status);
+				$type = "";
+				if (!empty($this->empty))
+					$type = get_event_types($this->type);
+				$severity = "";
+				if ($this->severity != -1)
+					$severity = get_priorities($this->severity);
+				
+				
+				$string = sprintf(
+					__("(Status: %s - Hours: %s - Type: %s - Severity: %s - Free Search: %s)"),
+					$status, $this->hours_old, $type, $severity,
+					$this->free_search);
 				
 				return $string;
-				*/
 			}
 		}
 	}

@@ -17,8 +17,8 @@ $groups = users_get_groups($id_user, 'ER');
 
 //Group selection
 if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
-
-	if($meta) {
+	
+	if ($meta) {
 		// In metaconsole the group search is performed by name
 		$group_name = groups_get_name ($ev_group);
 		$sql_post = " AND group_name = '$group_name'";
@@ -73,11 +73,11 @@ if ($event_type != "") {
 	elseif ($event_type != "all") {
 		$sql_post .= " AND event_type = '" . $event_type."'";
 	}
-
+	
 }
 
 if ($severity != -1) {
-	switch($severity) {
+	switch ($severity) {
 		case EVENT_CRIT_WARNING_OR_CRITICAL:
 			$sql_post .= " AND (criticity = " . EVENT_CRIT_WARNING . " OR 
 								criticity = " . EVENT_CRIT_CRITICAL . ")";
@@ -92,8 +92,8 @@ if ($severity != -1) {
 }
 
 // In metaconsole mode the agent search is performed by name
-if($meta) {
-	if($text_agent != __('All')) {
+if ($meta) {
+	if ($text_agent != __('All')) {
 		$sql_post .= " AND agent_name LIKE '%$text_agent%'";
 	}
 }
@@ -137,6 +137,7 @@ if (!empty($tag_without)) {
 	foreach ($tag_without as $id_tag) {
 		if ($first) $first = false;
 		else $sql_post .= " AND ";
+		
 		$sql_post .= "tags NOT LIKE '%" . tags_get_name($id_tag) . "%'";
 	}
 	$sql_post .= ' ) ';
@@ -163,15 +164,15 @@ $tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER', 'event_co
 $sql_post .= $tags_acls_condition;
 
 // Metaconsole fitlers
-if($meta) {
+if ($meta) {
 	$enabled_nodes = db_get_all_rows_sql('SELECT id FROM tmetaconsole_setup WHERE disabled = 0');
 	
-	if(empty($enabled_nodes)) {
+	if (empty($enabled_nodes)) {
 		$sql_post .= ' AND 1 = 0';
 	}
 	else {
 		$enabled_nodes_id = array();
-		foreach($enabled_nodes as $en) {
+		foreach ($enabled_nodes as $en) {
 			$enabled_nodes_id[] = $en['id'];
 		}
 		$sql_post .= ' AND server_id IN ('.implode(',',$enabled_nodes_id).')';

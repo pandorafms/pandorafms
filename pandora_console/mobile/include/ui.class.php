@@ -472,7 +472,14 @@ class Ui {
 				$item_value = $item;
 			}
 			
-			$html .= "<option value='" . $item_id . "'>" . $item_value . "</option>\n";
+			$selected = '';
+			if (isset($options['selected'])) {
+				if ($options['selected'] == $item_id) {
+					$selected = "selected = 'selected'";
+				}
+			}
+			
+			$html .= "<option " . $selected . " value='" . $item_id . "'>" . $item_value . "</option>\n";
 		}
 		$html .= "</select>\n";
 		

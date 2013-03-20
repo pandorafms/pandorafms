@@ -185,7 +185,7 @@ foreach ($result as $event) {
 	$data[$i] = "#".$event["id_evento"];
 	
 	// Pass grouped values in hidden fields to use it from modal window
-	if($group_rep) {
+	if ($group_rep) {
 		$similar_ids = $event['similar_ids'];
 		$timestamp_first = $event['timestamp_rep_min'];
 		$timestamp_last = $event['timestamp_rep'];
@@ -224,7 +224,7 @@ foreach ($result as $event) {
 	$i++;
 	
 	if (in_array('server_name',$show_fields)) {
-		if($meta) {
+		if ($meta) {
 			$data[$i] = "<a href='" . $event["server_url"] . "/index.php?sec=estado&sec2=operation/agentes/group_view" . $event['server_url_hash'] . "'>" . $event["server_name"] . "</a>";
 		}
 		else {
@@ -290,7 +290,7 @@ foreach ($result as $event) {
 		
 		if ($event["id_agente"] > 0) {
 			// Agent name
-			if($meta) {
+			if ($meta) {
 				$data[$i] = '<b><a href="'.$event["server_url"].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $event["id_agente"] . $event["server_url_hash"] . '">';
 				$data[$i] .= $event["agent_name"];
 				$data[$i] .= "</a></b>";
@@ -338,7 +338,7 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('id_grupo',$show_fields)) {
-		if($meta) {
+		if ($meta) {
 			$data[$i] = $event['group_name'];
 		}
 		else {
@@ -358,7 +358,7 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('id_agentmodule',$show_fields)) {
-		if($meta) {
+		if ($meta) {
 			$data[$i] = '<b><a href="'.$event["server_url"].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $event["id_agente"] . $event["server_url_hash"] . '">';
 			$data[$i] .= $event["module_name"];
 			$data[$i] .= "</a></b>";
@@ -379,8 +379,8 @@ foreach ($result as $event) {
 				$sql = 'SELECT name
 					FROM talert_templates
 					WHERE id IN (SELECT id_alert_template
-					FROM talert_template_modules
-					WHERE id = ' . $event["id_alert_am"] . ');';
+						FROM talert_template_modules
+						WHERE id = ' . $event["id_alert_am"] . ');';
 				
 				$templateName = db_get_sql($sql);
 				$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">'.$templateName.'</a>';

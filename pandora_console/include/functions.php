@@ -855,6 +855,7 @@ function is_module_uncompressed ($module_type) {
 	if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
 		return true;
 	}
+	
 	return false;
 }
 
@@ -863,7 +864,7 @@ function is_module_uncompressed ($module_type) {
  *
  * @return array module_name Module name to check.
  */
-function get_event_types () {
+function get_event_types ($id_type = false) {
 	global $config;
 	
 	$types = array ();
@@ -888,7 +889,13 @@ function get_event_types () {
 		$types[$key] = ui_print_truncate_text($type, GENERIC_SIZE_TEXT, false, true, false);
 	}
 	
-	return $types;
+	if ($id_type === false) {
+		return $types;
+	}
+	else {
+		html_debug_print($id_type);
+		return $types[$id_type];
+	}
 }
 
 /**
@@ -896,7 +903,7 @@ function get_event_types () {
  *
  * @return array An array with all the priorities.
  */
-function get_priorities () {
+function get_priorities ($priority_param = false) {
 	global $config;
 	
 	$priorities = array ();
@@ -914,7 +921,12 @@ function get_priorities () {
 		$priorities[$key] = ui_print_truncate_text($priority, GENERIC_SIZE_TEXT, false, true, false);
 	}
 	
-	return $priorities;
+	if ($priority_param === false) {
+		return $priorities;
+	}
+	else {
+		return $priorities[$priority_param];
+	}
 }
 
 /**

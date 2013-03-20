@@ -1,3 +1,16 @@
+2013-03-20 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/events.php, mobile/include/ui.class.php,
+	mobile/index.php: added first version of events section.
+	
+	* include/functions_incidents.php, include/functions_users.php,
+	include/functions.php, include/functions_groups.php,
+	include/functions_events.php, include/functions_html.php,
+	operation/events/events.build_table.php,
+	operation/events/events.build_query.php,
+	operation/events/events_list.php: some changes for interact with
+	mobile version.
+
 2013-03-20  Mario Pulido <mario.pulido@artica.es>
 	
 	* godmode/setup/setup_general.php: Add help tip in Timezone Setup

@@ -24,7 +24,7 @@
  *
  * @return array The several priorities with their values
  */
-function incidents_get_priorities () {
+function incidents_get_priorities ($priority = false) {
 	$fields = array();
 	$fields[0] = __('Informative');
 	$fields[1] = __('Low');
@@ -33,7 +33,12 @@ function incidents_get_priorities () {
 	$fields[4] = __('Very serious');
 	$fields[10] = __('Maintenance');
 	
-	return $fields;
+	if ($priority === false) {
+		return $fields;
+	}
+	else {
+		return $fields[$priority];
+	}
 }
 
 /**

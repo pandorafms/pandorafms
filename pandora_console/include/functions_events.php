@@ -63,10 +63,11 @@ function events_get_event ($id, $fields = false) {
 	$event = db_get_row ('tevento', 'id_evento', $id, $fields);
 	if (! check_acl ($config['id_user'], $event['id_grupo'], 'ER'))
 		return false;
+	
 	return $event;
 }
 
-function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $meta = false, $history = false) {
+function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $meta = false, $history = false, $total = false) {
 	global $config; 
 	
 	$table = events_get_events_table($meta, $history);
@@ -81,58 +82,92 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 	switch ($config["dbtype"]) {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
-			$sql = "SELECT *, MAX(id_evento) AS id_evento,
-					GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
-					GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
-					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
-					MIN(utimestamp) AS timestamp_rep_min,
-					(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
-					(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
-				FROM $table te
-				WHERE 1=1 " . $sql_post . "
-				GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
-				ORDER BY timestamp_rep DESC LIMIT " . $offset . "," . $pagination;
+			if ($total) {
+				$sql = "SELECT COUNT(*) FROM (SELECT *
+					FROM $table te
+					WHERE 1=1 " . $sql_post . "
+					GROUP BY estado, evento, id_agentmodule" . $groupby_extra . ") AS t";
+			}
+			else {
+				$sql = "SELECT *, MAX(id_evento) AS id_evento,
+						GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
+						GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
+						COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+						MIN(utimestamp) AS timestamp_rep_min,
+						(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
+						(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
+					FROM $table te
+					WHERE 1=1 " . $sql_post . "
+					GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
+					ORDER BY timestamp_rep DESC LIMIT " . $offset . "," . $pagination;
+			}
 			break;
 		case "postgresql":
-			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '<br>') AS user_comment,
-					array_to_string(array_agg(DISTINCT id_evento), ',') AS similar_ids,
-					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+			if ($total) {
+				$sql = "SELECT COUNT(*)
+					FROM $table te
+					WHERE 1=1 " . $sql_post . "
+					GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra" . $groupby_extra;
+			}
+			else {
+				$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '<br>') AS user_comment,
+						array_to_string(array_agg(DISTINCT id_evento), ',') AS similar_ids,
+						COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+						MIN(utimestamp) AS timestamp_rep_min,
+						(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
+						(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
+					FROM $table te
+					WHERE 1=1 " . $sql_post . "
+					GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra" . $groupby_extra . "
+					ORDER BY timestamp_rep DESC LIMIT " . $pagination . " OFFSET " . $offset;
+			}
+			break;
+		case "oracle":
+			if ($total) {
+				$sql = "SELECT COUNT(*)
+					FROM $table te
+					WHERE 1=1 " . $sql_post . " 
+					GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b ";
+			}
+			else {
+				$set = array();
+				$set['limit'] = $pagination;
+				$set['offset'] = $offset;
+				// TODO: Remove duplicate user comments
+				$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
+					FROM (SELECT * FROM $table WHERE 1=1 " . $sql_post . ") a, 
+					(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
+					id_agentmodule, COUNT(*) AS event_rep,
+					LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
+					LISTAGG(id_evento, '') AS similar_ids,
 					MIN(utimestamp) AS timestamp_rep_min,
 					(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
 					(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
-				FROM $table te
-				WHERE 1=1 " . $sql_post . "
-				GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra" . $groupby_extra . "
-				ORDER BY timestamp_rep DESC LIMIT " . $pagination . " OFFSET " . $offset;
-			break;
-		case "oracle":
-			$set = array();
-			$set['limit'] = $pagination;
-			$set['offset'] = $offset;
-			// TODO: Remove duplicate user comments
-			$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
-				FROM (SELECT * FROM $table WHERE 1=1 " . $sql_post . ") a, 
-				(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
-				id_agentmodule, COUNT(*) AS event_rep,
-				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
-				LISTAGG(id_evento, '') AS similar_ids,
-				MIN(utimestamp) AS timestamp_rep_min,
-				(SELECT owner_user FROM tevento WHERE id_evento = MAX(te.id_evento)) owner_user,
-				(SELECT id_usuario FROM tevento WHERE id_evento = MAX(te.id_evento)) id_usuario
-				FROM $table te
-				WHERE 1=1 " . $sql_post . " 
-				GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b 
-				WHERE a.id_evento=b.id_evento AND 
-				to_char(a.evento)=to_char(b.evento) 
-				AND a.id_agentmodule=b.id_agentmodule";
-			$sql = oracle_recode_query ($sql, $set);
+					FROM $table te
+					WHERE 1=1 " . $sql_post . " 
+					GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b 
+					WHERE a.id_evento=b.id_evento AND 
+					to_char(a.evento)=to_char(b.evento) 
+					AND a.id_agentmodule=b.id_agentmodule";
+				$sql = oracle_recode_query ($sql, $set);
+			}
 			break;
 	}
+	
 	
 	//Extract the events by filter (or not) from db
 	$events = db_get_all_rows_sql ($sql);
 	
-	return $events;
+	if ($total) {
+		return reset($events[0]);
+	}
+	else {
+		return $events;
+	}
+}
+
+function events_get_total_events_grouped($sql_post, $meta = false, $history = false) {
+	return events_get_events_grouped($sql_post, 0, 0, $meta, $history, true);
 }
 
 /**
@@ -306,7 +341,7 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1, $m
 			$event = events_get_event ($event);
 		}
 		
-		if($event['id_alert_am'] > 0 && !in_array($event['id_alert_am'], $alerts)) {
+		if ($event['id_alert_am'] > 0 && !in_array($event['id_alert_am'], $alerts)) {
 			$alerts[] = $event['id_alert_am'];
 		}
 		
@@ -385,7 +420,7 @@ function events_change_status ($id_event, $new_status, $meta = false, $history =
 		$ack_user = '';
 	}
 	
-	switch($new_status) {
+	switch ($new_status) {
 		case EVENT_STATUS_NEW:
 			$status_string = 'New';
 			break;
@@ -403,7 +438,7 @@ function events_change_status ($id_event, $new_status, $meta = false, $history =
 	$alerts = array();
 	
 	foreach ($id_event as $k => $id) {
-		if($meta) {
+		if ($meta) {
 			$event_group = events_meta_get_group ($id, $history);
 			$event = events_meta_get_event ($id, false, $history);
 			$server_id = $event['server_id'];
@@ -413,7 +448,7 @@ function events_change_status ($id_event, $new_status, $meta = false, $history =
 			$event = events_get_event ($id);
 		}
 		
-		if($event['id_alert_am'] > 0 && !in_array($event['id_alert_am'], $alerts)) {
+		if ($event['id_alert_am'] > 0 && !in_array($event['id_alert_am'], $alerts)) {
 			$alerts[] = $event['id_alert_am'];
 		}
 		
@@ -487,7 +522,7 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 	$id_event = (array) safe_int ($id_event, 1);
 	
 	foreach ($id_event as $k => $id) {
-		if($meta) {
+		if ($meta) {
 			$event_group = events_meta_get_group ($id, $history);
 		}
 		else {
@@ -499,17 +534,17 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 		}
 	}
 	
-	if(empty($id_event)) {
+	if (empty($id_event)) {
 		return false;
 	}
 	
 	// If no new_owner is provided, the current user will be the owner
-	if(empty($new_owner)) {
+	if (empty($new_owner)) {
 		$new_owner = $config['id_user'];
 	}
 	
 	// Only generate comment when is forced (sometimes is changed the owner when comment)
-	if($force) {
+	if ($force) {
 		events_comment($id_event, '', "Change owner to $new_owner", $meta, $history);
 	}
 	
@@ -518,7 +553,7 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 	$where = array('id_evento' => $id_event);
 	
 	// If not force, add to where if owner_user = ''
-	if(!$force) {
+	if (!$force) {
 		$where['owner_user'] = '';
 	}
 	
@@ -534,7 +569,7 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 
 function events_get_events_table($meta, $history) {
 	if ($meta) {
-		if($history) {
+		if ($history) {
 			$event_table = 'tmetaconsole_event_history';
 		}
 		else {
@@ -1416,18 +1451,23 @@ function events_get_all_status (){
  *
  * @return string Status description.
  */
-function events_get_status ($status_id){
-	switch($status_id) {
-		case -1: $status_desc = __('All event');
-				break;
-		case 0: $status_desc = __('Only new');
-				break;
-		case 1: $status_desc = __('Only validated');
-				break;
-		case 2: $status_desc = __('Only in process');
-				break;
-		case 3: $status_desc = __('Only not validated');
-				break;
+function events_get_status ($status_id) {
+	switch ($status_id) {
+		case -1:
+			$status_desc = __('All event');
+			break;
+		case 0:
+			$status_desc = __('Only new');
+			break;
+		case 1:
+			$status_desc = __('Only validated');
+			break;
+		case 2:
+			$status_desc = __('Only in process');
+			break;
+		case 3:
+			$status_desc = __('Only not validated');
+			break;
 	}
 	
 	return $status_desc;

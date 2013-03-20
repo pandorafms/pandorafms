@@ -47,6 +47,18 @@ if (!$user->isLogged()) {
 }
 
 switch ($action) {
+	case 'ajax':
+		$parameter1 = $system->getRequest('parameter1', false);
+		$parameter2 = $system->getRequest('parameter2', false);
+		
+		switch ($parameter1) {
+			case 'events':
+				$events = new Events();
+				$events->ajax($parameter2);
+				break;
+		}
+		return;
+		break;
 	case 'login':
 		if (!$user->checkLogin()) {
 			$user->showLogin();

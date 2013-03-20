@@ -31,10 +31,12 @@ require_once($config['homedir'] . "/include/functions_groups.php");
  */
 function users_get_info ($order = "fullname", $info = "fullname") {
 	$users = get_users ($order);
+	
 	$ret = array ();
 	foreach ($users as $user_id => $user_info) {
 		$ret[$user_id] = $user_info[$info];
 	}
+	
 	return $ret;
 }
 
@@ -60,12 +62,13 @@ function users_disable ($user_id, $new_disabled_value) {
  */
 function users_get_all_model_groups () {
 	$groups = db_get_all_rows_in_table ('tmodule_group');
-	if($groups === false) {
+	if ($groups === false) {
 		$groups = array();
 	}
+	
 	$returnGroups = array();
 	foreach ($groups as $group)
-	$returnGroups[$group['id_mg']] = $group['name'];
+		$returnGroups[$group['id_mg']] = $group['name'];
 	
 	$returnGroups[0] = "Not assigned"; //Module group external to DB but it exist
 	
@@ -86,12 +89,12 @@ function users_get_all_model_groups () {
  * @return array A list of the groups the user has certain privileges.
  */
 function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGroup = true,  $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
-	if($id_groups === false) {
+	if ($id_groups === false) {
 		$id_groups = null;
 	}
 	
 	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, $returnAllColumns, null);
-
+	
 	if ($id_groups !== null) {
 		$childrens = groups_get_childrens($id_groups);
 		foreach ($childrens as $child) {
@@ -251,7 +254,7 @@ function users_get_first_group ($id_user = false, $privilege = "AR", $all_group 
  */
 function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 	if (empty ($id_agent))
-	return false;
+		return false;
 	
 	if ($id_user == false) {
 		global $config;
@@ -259,6 +262,7 @@ function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 	}
 	
 	$id_group = (int) db_get_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
+	
 	return (bool) check_acl ($id_user, $id_group, $mode);
 }
 
@@ -353,7 +357,7 @@ function users_save_login() {
 	
 	$user = db_get_row_filter('tusuario',
 		array('id_user' => $config['id_user']));
-		
+	
 	$message = sprintf(__('User %s login at %s'), $user['fullname'],
 		date($config['date_format']));
 	users_save_text_message($message, 'notification');
@@ -796,7 +800,7 @@ function users_can_manage_group_all($id_group = 0) {
 	}
 	
 	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
-
+	
 	if (check_acl ($config['id_user'], 0, "PM") || $is_admin) {
 		return true;
 	}

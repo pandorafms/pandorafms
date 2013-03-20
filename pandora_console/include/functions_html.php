@@ -362,10 +362,13 @@ function html_print_select_style ($fields, $name, $selected = '', $style='', $sc
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_select_groups($id_user = false, $privilege = "AR", $returnAllGroup = true,
-	$name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
-	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, 
-	$id_group = false, $keys_field = 'id_grupo') {
+function html_print_select_groups($id_user = false, $privilege = "AR",
+	$returnAllGroup = true, $name, $selected = '', $script = '',
+	$nothing = '', $nothing_value = 0, $return = false,
+	$multiple = false, $sort = true, $class = '', $disabled = false,
+	$style = false, $option_style = false, $id_group = false,
+	$keys_field = 'id_grupo') {
+	
 	global $config;
 	
 	$fields = users_get_groups_for_select($id_user, $privilege,

@@ -188,7 +188,7 @@ class Events {
 		$ui->createDefaultHeader(__("PandoraFMS: Events"));
 		$ui->showFooter(false);
 		$ui->beginContent();
-		$filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
+			$filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
 			$ui->contentBeginCollapsible($filter_title);
 				$ui->beginForm();
 					$options = array(
@@ -374,7 +374,7 @@ class Events {
 		$field_agent = __('Agent');
 		foreach ($events_db as $event) {
 			$row = array();
-			$row[$field_event_name] = $event['evento'];
+			$row[$field_event_name] = io_safe_output($event['evento']);
 			switch ($event['estado']) {
 				case 0:
 					$img_st = "images/star.png";

@@ -41,19 +41,19 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	
 	$table->data[0][0] = __('Group');
 	$table->data[0][1] = html_print_select_groups(false, "AR", true, "ag_group", $id_group, '', '', '', true);
-		
+	
 	$alert_status_filter = array();
 	$alert_status_filter['all_enabled'] = __('All (Enabled)');
 	$alert_status_filter['all'] = __('All');
 	$alert_status_filter['fired'] = __('Fired');
 	$alert_status_filter['notfired'] = __('Not fired');
-	$alert_status_filter['disabled'] = __('Disabled');		
+	$alert_status_filter['disabled'] = __('Disabled');
 	
 	$alert_standby = array();
 	$alert_standby['all'] = __('All');
 	$alert_standby['standby_on'] = __('Standby on');
 	$alert_standby['standby_off'] = __('Standby off');
-		
+	
 	$table->data[0][2] = __('Status');
 	$table->data[0][3] = html_print_select ($alert_status_filter, "filter", $filter, '', '', '', true);
 	$table->data[0][4] = '';
@@ -68,7 +68,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$data .= html_print_table ($table, true);
 	$data .= '</form>';
 	
-	if($return) {
+	if ($return) {
 		return $data;
 	}
 	else {

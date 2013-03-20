@@ -170,7 +170,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	
 	if (($id_agent !== false) && ($idGroup !== false)) {
 		$where_tags = tags_get_acl_tags($config['id_user'], $idGroup, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
-
+		
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo

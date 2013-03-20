@@ -182,7 +182,7 @@ foreach ($timezones as $timezone) {
 	}
 }
 
-$table->data[23][0] = __('Timezone setup');
+$table->data[23][0] = __('Timezone setup'). ' ' . ui_print_help_tip (__('Must have the same time zone as the system or database to avoid mismatches of time.'), true);
 $table->data[23][1] = html_print_input_text_extended ('timezone_text', $config["timezone"], 'text-timezone_text', '', 25, 25, false, '', 'readonly', true); 
 $table->data[23][1] .= '<a id="change_timezone">'.html_print_image ('images/pencil.png', true, array ('title' => __('Change timezone'))).'</a>';
 $table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($zone_name, 'zone', $zone_selected, 'show_timezone();', '', '', true);

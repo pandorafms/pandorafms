@@ -1,3 +1,11 @@
+2013-03-20 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/index.php, mobile/operation/events.php,
+	mobile/operation/alerts.php, include/functions_agents.php,
+	include/functions_alerts.php,
+	operation/agentes/alerts_status.functions.php: added first version
+	of alert view.
+
 2013-03-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/servers/modificar_server.php: Added support for braa_retries.

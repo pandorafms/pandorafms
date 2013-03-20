@@ -29,6 +29,7 @@ require_once('operation/home.php');
 require_once('operation/tactical.php');
 require_once('operation/groups.php');
 require_once('operation/events.php');
+require_once('operation/alerts.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
 
 $system = System::getInstance();
@@ -96,6 +97,10 @@ switch ($action) {
 			case 'events':
 				$events = new Events();
 				$events->show();
+				break;
+			case 'alerts':
+				$alerts = new Alerts();
+				$alerts->show();
 				break;
 		}
 		break;

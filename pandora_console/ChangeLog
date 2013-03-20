@@ -1,3 +1,7 @@
+2013-03-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/servers/modificar_server.php: Added support for braa_retries.
+
 2013-03-20 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/operation/events.php, mobile/include/ui.class.php,

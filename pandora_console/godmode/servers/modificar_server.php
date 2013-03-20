@@ -58,7 +58,7 @@ else {
 
 	// Move SNMP modules back to the enterprise server
 	if (isset($_GET["server_reset_snmp_enterprise"])) {
-		db_process_sql ("UPDATE tagente_estado SET last_error=0 WHERE last_error=1");
+		db_process_sql ("UPDATE tagente_estado SET last_error=0");
 	}
 	
 	// Move SNMP modules back to the enterprise server

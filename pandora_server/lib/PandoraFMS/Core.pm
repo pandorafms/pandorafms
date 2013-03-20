@@ -997,6 +997,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $status_changes = $agent_status->{'status_changes'};
 	my $last_data_value = $agent_status->{'datos'};
 	my $last_known_status = $agent_status->{'last_known_status'};
+	my $last_error = defined ($module->{'last_error'}) ? $module->{'last_error'} : $agent_status->{'last_error'};
 	
 	# Get new status
 	my $new_status = get_module_status ($processed_data, $module, $module_type);
@@ -1074,10 +1075,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		SET datos = ?, estado = ?, last_status = ?, last_known_status = ?,
 			status_changes = ?, utimestamp = ?, timestamp = ?,
 			id_agente = ?, current_interval = ?, running_by = ?,
-			last_execution_try = ?, last_try = ?
+			last_execution_try = ?, last_try = ?, last_error = ?
 		WHERE id_agente_modulo = ?', $processed_data, $status, $last_status, $last_status, $status_changes,
 		$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
-		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $module->{'id_agente_modulo'});
+		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $module->{'id_agente_modulo'});
 	
 	# Save module data. Async and log4x modules are not compressed.
 	if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
@@ -3781,7 +3782,7 @@ sub pandora_module_unknown ($$) {
 			}
 		
 			# Update module status count
-			pandora_mark_agent_for_module_update ($dbh, $agent, 0, $module->{'estado'});
+			pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
 
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
@@ -3811,7 +3812,7 @@ sub pandora_module_unknown ($$) {
 			}
 		
 			# Update module status count
-			pandora_mark_agent_for_module_update ($dbh, $agent, 3, $module->{'estado'});
+			pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
 		
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {

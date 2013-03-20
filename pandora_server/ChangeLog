@@ -1,3 +1,12 @@
+2013-03-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf,
+	  lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/Config.pm,
+	  bin/pandora_server: Added the parameter braa_retries, which lets braa
+	  retry SNMP modules a number of times before handing it over to the
+	  network server.
+
 2013-03-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_server: Moved a log message to verbosity 10.

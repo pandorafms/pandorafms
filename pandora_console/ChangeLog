@@ -1,3 +1,7 @@
+2013-03-20  Mario Pulido <mario.pulido@artica.es>
+	
+	* godmode/setup/setup_general.php: Add help tip in Timezone Setup
+
 2013-03-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/servers/modificar_server.php: Disable auto-refresh when reset

@@ -2175,7 +2175,7 @@ function events_page_general ($event) {
 			$user_ack = $event['id_usuario'];
 		}
 		$date_ack = date ($config["date_format"], $event['ack_utimestamp']);
-		$data[1] = $user_ack.' ('.$date_ack.')';	
+		$data[1] = $user_ack.' ('.$date_ack.')';
 	}
 	else {
 		$data[1] = '<i>'.__('N/A').'</i>';

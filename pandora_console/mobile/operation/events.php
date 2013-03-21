@@ -89,6 +89,122 @@ class Events {
 					echo json_encode(array('end' => $end, 'events' => $events));
 					
 					break;
+				case 'get_detail_event':
+					$id_event = $system->getRequest('id_event', 0);
+					
+					$event = events_get_event($id_event);
+					if ($event) {
+						$event['evento'] = io_safe_output($event['evento']);
+						
+						$event['clean_tags'] = events_clean_tags($event['tags']);
+						$event["timestamp"] = date($system->getConfig("date_format"), strtotime($event["timestamp"]));
+						if(empty($event["owner_user"])) {
+							$event["owner_user"] = '<i>'.__('N/A').'</i>';
+						}
+						else {
+							$user_owner = db_get_value('fullname', 'tusuario', 'id_user', $event["owner_user"]);
+							if (empty($user_owner)) {
+								$user_owner = $event['owner_user'];
+							}
+							$event["owner_user"] = $user_owner;
+						}
+						
+						$event["event_type"] = events_print_type_img ($event["event_type"], true).' '.events_print_type_description($event["event_type"], true);
+						
+						if (!isset($group_rep))
+							$group_rep = 0;
+						
+						if ($group_rep != 0) {
+							if($event["event_rep"] <= 1) {
+								$event["event_repeated"] = '<i>'.__('No').'</i>';
+							}
+							else {
+								$event["event_repeated"] = sprintf("%d Times",$event["event_rep"]);
+							}
+						}
+						else {
+							$event["event_repeated"] = '<i>'.__('No').'</i>';
+						}
+						
+						$event_criticity = get_priority_name ($event["criticity"]);
+						
+						switch ($event["criticity"]) {
+							default:
+							case 0:
+								$img_sev = "images/status_sets/default/severity_maintenance.png";
+								break;
+							case 1:
+								$img_sev = "images/status_sets/default/severity_informational.png";
+								break;
+							case 2:
+								$img_sev = "images/status_sets/default/severity_normal.png";
+								break;
+							case 3:
+								$img_sev = "images/status_sets/default/severity_warning.png";
+								break;
+							case 4:
+								$img_sev = "images/status_sets/default/severity_critical.png";
+								break;
+							case 5:
+								$img_sev = "images/status_sets/default/severity_minor.png";
+								break;
+							case 6:
+								$img_sev = "images/status_sets/default/severity_major.png";
+								break;
+						}
+						
+						$event["criticity"] = html_print_image ($img_sev, true, 
+							array ("class" => "image_status",
+								"width" => 12,
+								"height" => 12,
+								"title" => $event_criticity));
+						$event["criticity"] .= ' '.$event_criticity;
+						
+						
+						if ($event['estado'] == 1) {
+							$user_ack = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
+							if(empty($user_ack)) {
+								$user_ack = $event['id_usuario'];
+							}
+							$date_ack = date ($config["date_format"], $event['ack_utimestamp']);
+							$event["acknowledged_by"] = $user_ack.' ('.$date_ack.')';
+						}
+						else {
+							$event["acknowledged_by"] = '<i>'.__('N/A').'</i>';
+						}
+						
+						// Get Status
+						switch($event['estado']) {
+							case 0:
+								$img_st = "images/star.png";
+								$title_st = __('New event');
+								break;
+							case 1:
+								$img_st = "images/tick.png";
+								$title_st = __('Event validated');
+								break;
+							case 2:
+								$img_st = "images/hourglass.png";
+								$title_st = __('Event in process');
+								break;
+						}
+						$event["status"] = html_print_image($img_st,true).' '.$title_st;
+						
+						$event["group"] = ui_print_group_icon ($event["id_grupo"], true);
+						$event["group"] .= groups_get_name ($event["id_grupo"]);
+						
+						$event["tags"] = tags_get_tags_formatted($event["tags"]);
+						if (empty($event["tags"])) {
+							$event["tags"] = '<i>'.__('N/A').'</i>';
+						}
+						
+						
+						echo json_encode(array('correct' => 1, 'event' => $event));
+					}
+					else {
+						echo json_encode(array('correct' => 0, 'event' => array()));
+					}
+					break;
 			}
 		}
 	}
@@ -106,8 +222,7 @@ class Events {
 			$this->default = false;
 		}
 		
-		$this->status = $system->getRequest('status', __("Status"));
-		if ($this->status === __("Status")) {
+		if (($this->status === __("Status")) || ($this->status == 3)) {
 			$this->status = 3;
 		}
 		else {
@@ -122,9 +237,9 @@ class Events {
 			$this->default = false;
 		}
 		
-		$this->severity = $system->getRequest('group', __("Group"));
-		if ($this->severity === __("Group")) {
-			$this->severity = 0;
+		$this->group = $system->getRequest('group', __("Group"));
+		if (($this->group === __("Group")) || ($this->group == 0)) {
+			$this->group = 0;
 		}
 		else {
 			$this->default = false;
@@ -139,7 +254,7 @@ class Events {
 		}
 		
 		$this->filter = $system->getRequest('filter', __('Preset Filters'));
-		if ($this->filter === __("Preset Filters")) {
+		if (($this->filter === __("Preset Filters")) || ($this->filter == 0)) {
 			$this->filter = 0;
 		}
 		else {
@@ -176,8 +291,12 @@ class Events {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->addDialog(__('You don\'t have access to this page'),
-			__('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database'));
+		
+		$options['type'] = 'onStart';
+		$options['title_text'] = __('You don\'t have access to this page');
+		$options['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+		$ui->addDialog($options);
+		
 		$ui->showPage();
 	}
 	
@@ -185,9 +304,41 @@ class Events {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
+		
+		$options['type'] = 'hidden';
+		
+		$options['dialog_id'] = 'detail_event_dialog';
+		
+		$options['title_close_button'] = true;
+		$options['title_text'] = __('Event detail');
+		
+		$table = new Table();
+		$table->row_keys_as_head_row = true;
+		$table->addRow(array('event_id' => ""), __('Event ID'));
+		$table->addRow(array('event_name' => ""), __('Event name'));
+		$table->addRow(array('event_timestamp' => ""), __('Timestamp'));
+		$table->addRow(array('event_owner' => ""), __('Owner'));
+		$table->addRow(array('event_type' => ""), __('Type'));
+		$table->addRow(array('event_repeated' => ""), __('Repeated'));
+		$table->addRow(array('event_severity' => ""), __('Severity'));
+		$table->addRow(array('event_status' => ""), __('Status'));
+		$table->addRow(array('event_acknowledged_by' => ""), __('Acknowledged by'));
+		$table->addRow(array('event_group' => ""), __('Group'));
+		$table->addRow(array('event_tags' => ""), __('Tags'));
+		$options['content_text'] = $table->getHTML();
+		$options_button = array(
+			'text' => __('Validate'));
+		$options['content_text'] .= $ui->createButton($options_button);
+		
+		$options['button_close'] = false;
+		$ui->addDialog($options);
+		
+		
 		$ui->createDefaultHeader(__("PandoraFMS: Events"));
 		$ui->showFooter(false);
 		$ui->beginContent();
+			$ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' style='display:none;'>detail_event_hook</a>");
+			//$test = "javascript: $(\"#test\").click();";
 			$filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
 			$ui->contentBeginCollapsible($filter_title);
 				$ui->beginForm();
@@ -372,9 +523,13 @@ class Events {
 		$field_status = __('Status');
 		$field_timestamp = __('Timestamp');
 		$field_agent = __('Agent');
+		$row_class = array();
 		foreach ($events_db as $event) {
+			$row_class[$event['id_evento']] = "events " . get_priority_class($event['criticity']);
+			
 			$row = array();
-			$row[$field_event_name] = io_safe_output($event['evento']);
+			$row[$field_event_name] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' . 
+				io_safe_output($event['evento']) . '</a>';
 			switch ($event['estado']) {
 				case 0:
 					$img_st = "images/star.png";
@@ -408,7 +563,10 @@ class Events {
 		}
 		else {
 			$table = new Table();
+			$table->id = 'list_events';
+			$table->setRowClass($row_class);
 			$table->importFromHash($events);
+			$ui->debug($events, true);
 			$ui->contentAddHtml($table->getHTML());
 			
 			if ($system->getPageSize() < $total_events) {
@@ -419,7 +577,65 @@ class Events {
 				
 				$this->addJavascriptAddBottom();
 			}
+			
+			$this->addJavascriptDialog();
 		}
+	}
+	
+	private function addJavascriptDialog() {
+		$ui = Ui::getInstance();
+		
+		$ui->contentAddHtml("
+			<script type=\"text/javascript\">
+				function openDetails(id_event) {
+					$.mobile.showPageLoadingMsg();
+					
+					postvars = {};
+					postvars[\"action\"] = \"ajax\";
+					postvars[\"parameter1\"] = \"events\";
+					postvars[\"parameter2\"] = \"get_detail_event\";
+					postvars[\"id_event\"] = id_event
+					
+					$.post(\"index.php\",
+						postvars,
+						function (data) {
+							if (data.correct) {
+								event = data.event;
+								
+								//Fill the dialog
+								$(\"#detail_event_dialog h1.dialog_title\")
+									.html(event[\"evento\"]);
+								$(\"#detail_event_dialog .cell_event_name\")
+									.html(event[\"evento\"]);
+								$(\"#detail_event_dialog .cell_event_id\")
+									.html(id_event);
+								$(\"#detail_event_dialog .cell_event_timestamp\")
+									.html(event[\"timestamp\"]);
+								$(\"#detail_event_dialog .cell_event_owner\")
+									.html(event[\"owner_user\"]);
+								$(\"#detail_event_dialog .cell_event_type\")
+									.html(event[\"event_type\"]);
+								$(\"#detail_event_dialog .cell_event_repeated\")
+									.html(event[\"event_repeated\"]);
+								$(\"#detail_event_dialog .cell_event_severity\")
+									.html(event[\"criticity\"]);
+								$(\"#detail_event_dialog .cell_event_status\")
+									.html(event[\"status\"]);
+								$(\"#detail_event_dialog .cell_event_acknowledged_by\")
+									.html(event[\"acknowledged_by\"]);
+								$(\"#detail_event_dialog .cell_event_group\")
+									.html(event[\"group\"]);
+								$(\"#detail_event_dialog .cell_event_tags\")
+									.html(event[\"tags\"]);
+								
+								$.mobile.hidePageLoadingMsg();
+								
+								$(\"#detail_event_dialog_hook\").click();
+							}
+						},
+						\"json\");
+				}
+			</script>");
 	}
 	
 	private function addJavascriptAddBottom() {
@@ -459,7 +675,7 @@ class Events {
 										}
 										else {
 											$.each(data.events, function(key, event) {
-												$(\"table tbody\").append(\"<tr>\" +
+												$(\"table#list_events tbody\").append(\"<tr>\" +
 														\"<th></th>\" +
 														\"<td>\" + event[0] + \"</td>\" +
 														\"<td>\" + event[1] + \"</td>\" +

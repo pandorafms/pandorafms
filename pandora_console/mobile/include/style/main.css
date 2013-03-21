@@ -14,6 +14,10 @@ body {
 	vertical-align: top;
 }
 
+
+
+
+/*INIT----------Groups styles-----------------------------------------*/
 .group_view tr {
 	border-bottom: 3px solid white !important;
 }
@@ -82,8 +86,45 @@ tr.group_view_data, .group_view_data {
 .group_view_data_warn {
 	color: #5C5900 !important;
 }
+/*END-----------Groups styles-----------------------------------------*/
 
-/*Fix the square border in search input*/
+
+
+/*INIT----------Events styles-----------------------------------------*/
+.datos_green, .datos_greenf9, .datos_green a, .datos_greenf9 a {
+    background-color: #52A000;
+    color: #FFFFFF;
+}
+.datos_red, .datos_redf9, .datos_red a, .datos_redf9 a {
+    background-color: #FF3E41;
+    color: #FFFFFF !important;
+}
+.datos_yellow, .datos_yellowf9 {
+    background-color: #F5E535;
+    color: #000000;
+}
+a.datos_blue, .datos_bluef9, .datos_blue {
+    background-color: #77E2F2;
+    color: #000000;
+}
+.datos_grey, .datos_greyf9 {
+    background-color: #E4E4E4;
+}
+.datos_pink, .datos_pinkf9 {
+    background-color: #FF92E9;
+}
+.datos_brown, .datos_brownf9 {
+    background-color: #C97A4A;
+}
+
+tr.events {
+	border-bottom: 3px solid white !important;
+}
+/*END-----------Events styles-----------------------------------------*/
+
+
+
+/*INIT---------Fix the square border in search input------------------*/
 .ui-input-search {
 	border-radius: 0.6em 0.6em 0.6em 0.6em !important;
 }
@@ -91,3 +132,21 @@ tr.group_view_data, .group_view_data {
 .ui-select {
 	width: 100% !important;
 }
+/*END----------Fix the square border in search input------------------*/
+
+/*INIT---------Fix to avoid clicks under loading message--------------*/
+.ui-loader-background {
+    width:100% !important;
+    height:100% !important;
+    top:0 !important;
+    margin: 0 !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    display:none !important;
+    position: fixed !important;
+    z-index:100 !important;
+}
+
+.ui-loading .ui-loader-background {
+    display:block !important;
+}
+/*END----------Fix to avoid clicks under loading message--------------*/

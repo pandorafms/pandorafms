@@ -30,6 +30,7 @@ class Ui {
 	private $endForm = true;
 	private $endGrid = true;
 	private $endCollapsible = true;
+	private $dialogs = array();
 	private $dialog = '';
 	
 	public function __construct() {
@@ -100,6 +101,7 @@ class Ui {
 		$this->endGrid = true;
 		$this->endCollapsible = true;
 		$this->dialog = '';
+		$this->dialogs = array();
 	}
 	
 	public function showFooter($show = true) {
@@ -496,23 +498,71 @@ class Ui {
 		//<input type="range" name="slider-fill" id="slider-fill" value="60" min="0" max="1000" step="50" data-highlight="true">
 	}
 	
-	public function addDialog($title = '', $content = '', $button_text = '') {
-		$this->dialog = "<div data-role='dialog' data-close-btn='none'>\n";
-		$this->dialog .= "<div data-role='header'>\n";
-		$this->dialog .= "<h1>" . $title . "</h1>\n";
-		$this->dialog .= "</div>\n";
-		$this->dialog .= "<div data-role='content'>\n";
-		$this->dialog .= $content;
-		$this->dialog .= "<a data-role='button' href='#main_page'>";
-		if (empty($button_text)) {
-			$this->dialog .= __('Close');
+	public function addDialog($options) {
+		
+		$type = 'hidden';
+		
+		$dialog_id = uniqid('dialog_');
+		$dialog_class = '';
+		
+		$title_close_button = false;
+		$title_text = '';
+		
+		$content_id = uniqid('content_');
+		$content_class = '';
+		$content_text = '';
+		
+		$button_close = true;
+		$button_text = __('Close');
+		
+		if (is_array($options)) {
+			if (isset($options['type']))
+				$type = $options['type'];
+			if (isset($options['dialog_id']))
+				$dialog_id = $options['dialog_id'];
+			if (isset($options['dialog_class']))
+				$dialog_class = $options['dialog_class'];
+			if (isset($options['title_close_button']))
+				$title_close_button = $options['title_close_button'];
+			if (isset($options['title_text']))
+				$title_text = $options['title_text'];
+			if (isset($options['content_id']))
+				$content_id = $options['content_id'];
+			if (isset($options['content_class']))
+				$content_class = $options['content_class'];
+			if (isset($options['content_text']))
+				$content_text = $options['content_text'];
+			if (isset($options['button_close']))
+				$button_close = $options['button_close'];
+			if (isset($options['button_text']))
+				$button_text = $options['button_text'];
 		}
-		else {
-			$this->dialog .= $button_text;
+		
+		$html_title_close_button = "";
+		if ($title_close_button) {
+			$html_title_close_button = "data-close-btn='yes'";
 		}
-		$this->dialog .= "</a></p>\n";
-		$this->dialog .= "</div>\n";
-		$this->dialog .= "</div>\n";
+		
+		$dialogHtml = "<div id='" . $dialog_id . "' class='" . $dialog_class . "' data-role='dialog' " . $html_title_close_button . ">\n";
+		$dialogHtml .= "<div data-role='header'>\n";
+		$dialogHtml .= "<h1 class='dialog_title'>" . $title_text . "</h1>\n";
+		$dialogHtml .= "</div>\n";
+		$dialogHtml .= "<div id='" . $content_id . "' class='" . $content_class . "' data-role='content'>\n";
+		$dialogHtml .= $content_text;
+		if ($button_close) {
+			$dialogHtml .= "<a data-role='button' href='#main_page'>";
+			if (empty($button_text)) {
+				$dialogHtml .= __('Close');
+			}
+			else {
+				$dialogHtml .= $button_text;
+			}
+			$dialogHtml .= "</a></p>\n";
+		}
+		$dialogHtml .= "</div>\n";
+		$dialogHtml .= "</div>\n";
+		
+		$this->dialogs[$type][] = $dialogHtml;
 	}
 	
 	public function showError($msg) {
@@ -554,8 +604,13 @@ class Ui {
 		
 		echo "	</head>\n";
 		echo "	<body>\n";
-		if (!empty($this->dialog)) {
-			echo "		" . $this->dialog . "\n";
+		echo "		<div class='ui-loader-background'> </div>";
+		if (!empty($this->dialogs)) {
+			if (!empty($this->dialogs['onStart'])) {
+				foreach ($this->dialogs['onStart'] as $dialog) {
+					echo "		" . $dialog . "\n";
+				}
+			}
 		}
 		echo "		<div data-role='page' id='main_page'>\n";
 		echo "			<div data-role='header' data-position='fixed' >\n";
@@ -579,6 +634,13 @@ class Ui {
 		}
 		echo "			</div>\n";
 		echo "		</div>\n";
+		if (!empty($this->dialogs)) {
+			if (!empty($this->dialogs['hidden'])) {
+				foreach ($this->dialogs['hidden'] as $dialog) {
+					echo "		" . $dialog . "\n";
+				}
+			}
+		}
 		echo "	</body>\n";
 		echo "</html>";
 		ob_end_flush();
@@ -591,9 +653,11 @@ class Ui {
 class Table {
 	private $head = array();
 	private $rows = array();
-	private $id = array();
+	public $id = '';
 	private $rowClass = array();
 	private $class_table = '';
+	private $row_heads = array();
+	public $row_keys_as_head_row = false;
 	
 	public function __construct() {
 		$this->init();
@@ -605,10 +669,25 @@ class Table {
 		$this->rows = array();
 		$this->rowClass = array();
 		$this->class_table = '';
+		$this->row_heads = array();
+		$this->row_keys_as_head_row = false;
 	}
 	
 	public function addHeader($head) {
 		$this->head = $head;
+	}
+	
+	public function addRowHead($key, $head_text) {
+		$this->row_heads[$key] = $head_text;
+	}
+	
+	public function addRow($row = array(), $key = false) {
+		if ($key !== false) {
+			$this->rows[$key] = $row;
+		}
+		else {
+			$this->rows[] = $row;
+		}
 	}
 	
 	public function importFromHash($data) {
@@ -624,7 +703,7 @@ class Table {
 				$table_row[$cell_key] = $value;
 			}
 			
-			$this->rows[] = $table_row;
+			$this->rows[$id] = $table_row;
 		}
 	}
 	
@@ -663,7 +742,6 @@ class Table {
 		$html .= "</tr>\n";
 		$html .= "</thead>\n";
 		
-		
 		$html .= "<tbody>\n";
 		foreach ($this->rows as $key => $row) {
 			$class = '';
@@ -673,9 +751,17 @@ class Table {
 			
 			$html .= "<tr class='" . $class . "'>\n";
 			//Empty head for white space between rows in the responsive vertical layout
-			$html .= "<th></th>\n";
-			foreach ($row as $cell) {
-				$html .= "<td>" . $cell . "</td>\n";
+			if (isset($this->row_heads[$key])) {
+				$html .= "<th>" . $this->row_heads[$key] . "</th>\n";
+			}
+			elseif ($this->row_keys_as_head_row) {
+				$html .= "<th>" . $key . "</th>\n";
+			}
+			else {
+				$html .= "<th></th>\n";
+			}
+			foreach ($row as $key_cell => $cell) {
+				$html .= "<td class='cell_" . $key_cell . "'>" . $cell . "</td>\n";
 			}
 			$html .= "</tr>\n";
 		}

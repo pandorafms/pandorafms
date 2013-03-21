@@ -1,3 +1,11 @@
+2013-03-21 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/groups.php, mobile/operation/tactical.php,
+	mobile/operation/alerts.php, mobile/operation/events.php,
+	mobile/include/style/main.css, mobile/include/ui.class.php,
+	mobile/include/user.class.php, include/functions_events.php: updated
+	the code of events in mobile.
+
 2013-03-20 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/index.php, mobile/operation/events.php,

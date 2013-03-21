@@ -109,8 +109,12 @@ class Alerts {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
-		$ui->addDialog(__('You don\'t have access to this page'),
-			__('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database'));
+		
+		$options['type'] = 'onStart';
+		$options['title_text'] = __('You don\'t have access to this page');
+		$options['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+		$ui->addDialog($options);
+		
 		$ui->showPage();
 	}
 	

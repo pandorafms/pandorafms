@@ -129,12 +129,20 @@ class User {
 		
 		$ui->createPage();
 		if ($this->errorLogin) {
-			$ui->addDialog(__('Login Failed'),
-				__('User not found in database or incorrect password.'));
+			
+			$options['type'] = 'onStart';
+			$options['title_text'] = __('Login Failed');
+			$options['content_text'] = __('User not found in database or incorrect password.');
+			$ui->addDialog($options);
+			
 		}
 		if ($this->logout_action) {
-			$ui->addDialog(__('Logged out'),
-				__('Your session is over. Please close your browser window to close this Pandora session.'));
+			
+			$options['type'] = 'onStart';
+			$options['title_text'] = __('Login out');
+			$options['content_text'] = __('Your session is over. Please close your browser window to close this Pandora session.');
+			$ui->addDialog($options);
+			
 		}
 		$ui->createHeader();
 		$ui->showFooter(false);

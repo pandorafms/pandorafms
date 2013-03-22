@@ -121,17 +121,16 @@ function db_escape_string_sql($string) {
 function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = true, $info = '') {
 	global $config;
 	
-	if ($ip !== false) {
-		if (isset($config["remote_addr"])) {
-			$ip = $config["remote_addr"];
+	// Ignore $ip and always set the ip address
+	if (isset($config["remote_addr"])) {
+		$ip = $config["remote_addr"];
+	}
+	else {
+		if ($_SERVER['REMOTE_ADDR']) {
+			$ip = $_SERVER['REMOTE_ADDR'];
 		}
 		else {
-			if ($_SERVER['REMOTE_ADDR']) {
-				$ip = $_SERVER['REMOTE_ADDR'];
-			}
-			else {
-				$ip = null;
-			}
+			$ip = __('N/A');
 		}
 	}
 	

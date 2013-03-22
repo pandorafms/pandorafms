@@ -1,3 +1,12 @@
+2013-03-22  Mario Pulido <mario.pulido@artica.es>
+
+	* godmode/alerts/configure_alert_template.php,
+	include/help/en/help_conf_alert_template.php,
+        include/help/en/help_manage_alert_list.php,
+        include/help/es/help_conf_alert_template.php,
+        include/help/es/help_manage_alert_list.php,
+        images/help/alert1.png,images/help/alert2.png: Added helps in alerts.
+
 2013-03-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/gis_maps/ajax.php,

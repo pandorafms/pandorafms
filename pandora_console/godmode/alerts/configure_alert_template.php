@@ -70,7 +70,7 @@ if ($a_template !== false) {
 			}
 			else {
 				
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "conf_alert_template", true);
 
 			}
 		}
@@ -93,7 +93,7 @@ if ($a_template !== false) {
 			}
 			else {
 				
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "conf_alert_template", true);
 
 			}
 		}
@@ -115,7 +115,7 @@ else {
 	}
 	else {
 		
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "conf_alert_template", true);
 		
 	}
 }

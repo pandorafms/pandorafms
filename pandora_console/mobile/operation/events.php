@@ -59,6 +59,7 @@ class Events {
 						$end = 0;
 						$row = array();
 						$row[] = $event['evento'];
+						/*
 						switch ($event['estado']) {
 							case 0:
 								$img_st = "images/star.png";
@@ -79,6 +80,21 @@ class Events {
 								"height" => 16,
 								"title" => $title_st,
 								"id" => 'status_img_' . $event["id_evento"]));
+						*/
+						if ($event['estado'] == 1) {
+							$img_st = "images/tick.png";
+							$title_st = __('Event validated');
+							
+							$row[] = html_print_image ($img_st, true, 
+								array ("class" => "image_status",
+									"width" => 16,
+									"height" => 16,
+									"title" => $title_st,
+									"id" => 'status_img_' . $event["id_evento"]));
+						}
+						else {
+							$row[] = '';
+						}
 						$row[] = ui_print_timestamp ($event['timestamp_rep'], true);
 						$row[] = ui_print_agent_name ($event["id_agente"], true);
 						
@@ -90,6 +106,8 @@ class Events {
 					
 					break;
 				case 'get_detail_event':
+					$system = System::getInstance();
+					
 					$id_event = $system->getRequest('id_event', 0);
 					
 					$event = events_get_event($id_event);
@@ -166,7 +184,7 @@ class Events {
 							if(empty($user_ack)) {
 								$user_ack = $event['id_usuario'];
 							}
-							$date_ack = date ($config["date_format"], $event['ack_utimestamp']);
+							$date_ack = date ($system->getConfig("date_format"), $event['ack_utimestamp']);
 							$event["acknowledged_by"] = $user_ack.' ('.$date_ack.')';
 						}
 						else {
@@ -198,11 +216,22 @@ class Events {
 							$event["tags"] = '<i>'.__('N/A').'</i>';
 						}
 						
-						
 						echo json_encode(array('correct' => 1, 'event' => $event));
 					}
 					else {
 						echo json_encode(array('correct' => 0, 'event' => array()));
+					}
+					break;
+				case 'validate_event':
+					$system = System::getInstance();
+					
+					$id_event = $system->getRequest('id_event', 0);
+					
+					if (events_validate_event($id_event)) {
+						echo json_encode(array('correct' => 1));
+					}
+					else {
+						echo json_encode(array('correct' => 0));
 					}
 					break;
 			}
@@ -222,6 +251,7 @@ class Events {
 			$this->default = false;
 		}
 		
+		$this->status = $system->getRequest('status', __("Status"));
 		if (($this->status === __("Status")) || ($this->status == 3)) {
 			$this->status = 3;
 		}
@@ -305,32 +335,53 @@ class Events {
 		
 		$ui->createPage();
 		
-		$options['type'] = 'hidden';
-		
-		$options['dialog_id'] = 'detail_event_dialog';
-		
-		$options['title_close_button'] = true;
-		$options['title_text'] = __('Event detail');
-		
-		$table = new Table();
-		$table->row_keys_as_head_row = true;
-		$table->addRow(array('event_id' => ""), __('Event ID'));
-		$table->addRow(array('event_name' => ""), __('Event name'));
-		$table->addRow(array('event_timestamp' => ""), __('Timestamp'));
-		$table->addRow(array('event_owner' => ""), __('Owner'));
-		$table->addRow(array('event_type' => ""), __('Type'));
-		$table->addRow(array('event_repeated' => ""), __('Repeated'));
-		$table->addRow(array('event_severity' => ""), __('Severity'));
-		$table->addRow(array('event_status' => ""), __('Status'));
-		$table->addRow(array('event_acknowledged_by' => ""), __('Acknowledged by'));
-		$table->addRow(array('event_group' => ""), __('Group'));
-		$table->addRow(array('event_tags' => ""), __('Tags'));
-		$options['content_text'] = $table->getHTML();
-		$options_button = array(
-			'text' => __('Validate'));
-		$options['content_text'] .= $ui->createButton($options_button);
-		
-		$options['button_close'] = false;
+			$options['type'] = 'hidden';
+			
+			$options['dialog_id'] = 'detail_event_dialog';
+			
+			$options['title_close_button'] = true;
+			$options['title_text'] = __('Event detail');
+			
+			$table = new Table();
+			$table->row_keys_as_head_row = true;
+			$table->addRow(array('event_id' => ""), __('Event ID'));
+			$table->addRow(array('event_name' => ""), __('Event name'));
+			$table->addRow(array('event_timestamp' => ""), __('Timestamp'));
+			$table->addRow(array('event_owner' => ""), __('Owner'));
+			$table->addRow(array('event_type' => ""), __('Type'));
+			$table->addRow(array('event_repeated' => ""), __('Repeated'));
+			$table->addRow(array('event_severity' => ""), __('Severity'));
+			$table->addRow(array('event_status' => ""), __('Status'));
+			$table->addRow(array('event_acknowledged_by' => ""), __('Acknowledged by'));
+			$table->addRow(array('event_group' => ""), __('Group'));
+			$table->addRow(array('event_tags' => ""), __('Tags'));
+			$options['content_text'] = $table->getHTML();
+			$options_button = array(
+				'text' => __('Validate'),
+				'id' => 'validate_button',
+				'href' => 'javascript: validateEvent();');
+			$options['content_text'] .= $ui->createButton($options_button);
+			$options_hidden = array(
+				'id' => 'event_id',
+				'value' => 0,
+				'type' => 'hidden'
+				);
+			$options['content_text'] .= $ui->getInput($options_hidden);
+			$options['content_text'] .= '<div id="validate_button_loading" style="display: none; text-align: center;">
+				<img src="images/ajax-loader.gif" /></div>';
+			$options['content_text'] .= '<div id="validate_button_correct" style="display: none; text-align: center;">
+				<h3>' . __('Sucessful validate') . '</h3></div>';
+			$options['content_text'] .= '<div id="validate_button_fail" style="display: none; text-align: center;">
+				<h3 style="color: #ff0000;">' . __('Fail validate') . '</h3></div>';
+			
+			$options['button_close'] = false;
+		$ui->addDialog($options);
+			$options['type'] = 'hidden';
+			
+			$options['dialog_id'] = 'detail_event_dialog_error';
+			$options['title_text'] = __('ERROR: Event detail');
+			$options['content_text'] = '<span style="color: #ff0000;">' .
+				__('Error connecting to DB pandora.') . '</span>';
 		$ui->addDialog($options);
 		
 		
@@ -338,16 +389,18 @@ class Events {
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' style='display:none;'>detail_event_hook</a>");
+			$ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' style='display:none;'>detail_event_dialog_error_hook</a>");
 			//$test = "javascript: $(\"#test\").click();";
 			$filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
 			$ui->contentBeginCollapsible($filter_title);
-				$ui->beginForm();
+				$ui->beginForm("index.php?page=events");
+				/*
 					$options = array(
 						'name' => 'page',
 						'type' => 'hidden',
 						'value' => 'events'
 						);
-					$ui->formAddInput($options);
+					$ui->formAddInput($options);*/
 					
 					$items = db_get_all_rows_in_table('tevent_filter');
 					$items[] = array('id_filter' => 0, 'id_name' => __('None'));
@@ -520,7 +573,7 @@ class Events {
 		
 		$events = array();
 		$field_event_name = __('Event Name');
-		$field_status = __('Status');
+		$field_status = __('Validated');
 		$field_timestamp = __('Timestamp');
 		$field_agent = __('Agent');
 		$row_class = array();
@@ -530,6 +583,7 @@ class Events {
 			$row = array();
 			$row[$field_event_name] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' . 
 				io_safe_output($event['evento']) . '</a>';
+			/*
 			switch ($event['estado']) {
 				case 0:
 					$img_st = "images/star.png";
@@ -544,12 +598,21 @@ class Events {
 					$title_st = __('Event in process');
 					break;
 			}
-			$row[$field_status] = html_print_image ($img_st, true, 
-				array ("class" => "image_status",
-					"width" => 16,
-					"height" => 16,
-					"title" => $title_st,
-					"id" => 'status_img_' . $event["id_evento"]));
+			*/
+			if ($event['estado'] == 1) {
+				$img_st = "images/tick.png";
+				$title_st = __('Event validated');
+				
+				$row[$field_status] = html_print_image ($img_st, true, 
+					array ("class" => "image_status",
+						"width" => 16,
+						"height" => 16,
+						"title" => $title_st,
+						"id" => 'status_img_' . $event["id_evento"]));
+			}
+			else {
+				$row[$field_status] = '';
+			}
 			$row[$field_timestamp] = ui_print_timestamp ($event['timestamp_rep'], true);
 			$row[$field_agent] = ui_print_agent_name ($event["id_agente"], true);
 			
@@ -594,46 +657,118 @@ class Events {
 					postvars[\"action\"] = \"ajax\";
 					postvars[\"parameter1\"] = \"events\";
 					postvars[\"parameter2\"] = \"get_detail_event\";
-					postvars[\"id_event\"] = id_event
+					postvars[\"id_event\"] = id_event;
 					
-					$.post(\"index.php\",
-						postvars,
-						function (data) {
-							if (data.correct) {
-								event = data.event;
-								
-								//Fill the dialog
-								$(\"#detail_event_dialog h1.dialog_title\")
-									.html(event[\"evento\"]);
-								$(\"#detail_event_dialog .cell_event_name\")
-									.html(event[\"evento\"]);
-								$(\"#detail_event_dialog .cell_event_id\")
-									.html(id_event);
-								$(\"#detail_event_dialog .cell_event_timestamp\")
-									.html(event[\"timestamp\"]);
-								$(\"#detail_event_dialog .cell_event_owner\")
-									.html(event[\"owner_user\"]);
-								$(\"#detail_event_dialog .cell_event_type\")
-									.html(event[\"event_type\"]);
-								$(\"#detail_event_dialog .cell_event_repeated\")
-									.html(event[\"event_repeated\"]);
-								$(\"#detail_event_dialog .cell_event_severity\")
-									.html(event[\"criticity\"]);
-								$(\"#detail_event_dialog .cell_event_status\")
-									.html(event[\"status\"]);
-								$(\"#detail_event_dialog .cell_event_acknowledged_by\")
-									.html(event[\"acknowledged_by\"]);
-								$(\"#detail_event_dialog .cell_event_group\")
-									.html(event[\"group\"]);
-								$(\"#detail_event_dialog .cell_event_tags\")
-									.html(event[\"tags\"]);
-								
+					$.ajax ({
+						type: \"POST\",
+						url: \"index.php\",
+						dataType: \"json\",
+						data: postvars,
+						success: 
+							function (data) {
+								if (data.correct) {
+									event = data.event;
+									
+									//Fill the dialog
+									$(\"#detail_event_dialog h1.dialog_title\")
+										.html(event[\"evento\"]);
+									$(\"#detail_event_dialog .cell_event_name\")
+										.html(event[\"evento\"]);
+									$(\"#detail_event_dialog .cell_event_id\")
+										.html(id_event);
+									$(\"#detail_event_dialog .cell_event_timestamp\")
+										.html(event[\"timestamp\"]);
+									$(\"#detail_event_dialog .cell_event_owner\")
+										.html(event[\"owner_user\"]);
+									$(\"#detail_event_dialog .cell_event_type\")
+										.html(event[\"event_type\"]);
+									$(\"#detail_event_dialog .cell_event_repeated\")
+										.html(event[\"event_repeated\"]);
+									$(\"#detail_event_dialog .cell_event_severity\")
+										.html(event[\"criticity\"]);
+									$(\"#detail_event_dialog .cell_event_status\")
+										.html(event[\"status\"]);
+									$(\"#detail_event_dialog .cell_event_acknowledged_by\")
+										.html(event[\"acknowledged_by\"]);
+									$(\"#detail_event_dialog .cell_event_group\")
+										.html(event[\"group\"]);
+									$(\"#detail_event_dialog .cell_event_tags\")
+										.html(event[\"tags\"]);
+									
+									$(\"#event_id\").val(id_event);
+									
+									if (event[\"estado\"] != 1) {
+										$(\"#validate_button\").show();
+									}
+									else {
+										//The event is validated.
+										$(\"#validate_button\").hide();
+									}
+									$(\"#validate_button_loading\").hide();
+									$(\"#validate_button_fail\").hide();
+									$(\"#validate_button_correct\").hide();
+									
+									$.mobile.hidePageLoadingMsg();
+									
+									$(\"#detail_event_dialog_hook\").click();
+								}
+								else {
+									$.mobile.hidePageLoadingMsg();
+									$(\"#detail_event_dialog_error_hook\").click();
+								}
+							},
+						error:
+							function (jqXHR, textStatus, errorThrown) {
 								$.mobile.hidePageLoadingMsg();
-								
-								$(\"#detail_event_dialog_hook\").click();
+								$(\"#detail_event_dialog_error_hook\").click();
 							}
-						},
-						\"json\");
+						});
+				}
+				
+				
+				function validateEvent() {
+					id_event = $(\"#event_id\").val();
+					
+					$(\"#validate_button\").hide();
+					$(\"#validate_button_loading\").show();
+					
+					//Hide the button to close
+					$(\"#detail_event_dialog div.ui-header a.ui-btn-right\")
+						.hide();
+					
+					postvars = {};
+					postvars[\"action\"] = \"ajax\";
+					postvars[\"parameter1\"] = \"events\";
+					postvars[\"parameter2\"] = \"validate_event\";
+					postvars[\"id_event\"] = id_event;
+					
+					$.ajax ({
+						type: \"POST\",
+						url: \"index.php\",
+						dataType: \"json\",
+						data: postvars,
+						success: 
+							function (data) {
+								$(\"#validate_button_loading\").hide();
+								
+								if (data.correct) {
+									$(\"#validate_button_correct\").show();
+								}
+								else {
+									$(\"#validate_button_fail\").show();
+								}
+								
+								$(\"#detail_event_dialog div.ui-header a.ui-btn-right\")
+									.show();
+							},
+						error:
+							function (jqXHR, textStatus, errorThrown) {
+								$(\"#validate_button_loading\").hide();
+								$(\"#validate_button_fail\").show();
+								$(\"#detail_event_dialog div.ui-header a.ui-btn-right\")
+									.show();
+							}
+						});
 				}
 			</script>");
 	}

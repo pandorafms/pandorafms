@@ -123,7 +123,6 @@ tr.events {
 /*END-----------Events styles-----------------------------------------*/
 
 
-
 /*INIT---------Fix the square border in search input------------------*/
 .ui-input-search {
 	border-radius: 0.6em 0.6em 0.6em 0.6em !important;
@@ -133,6 +132,9 @@ tr.events {
 	width: 100% !important;
 }
 /*END----------Fix the square border in search input------------------*/
+
+
+
 
 /*INIT---------Fix to avoid clicks under loading message--------------*/
 .ui-loader-background {

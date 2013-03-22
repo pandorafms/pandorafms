@@ -174,6 +174,10 @@ class Ui {
 	public function createButton($options) {
 		$return = '<a data-role="button" ';
 		
+		if (isset($options['id'])) {
+			$return .= 'id="' . $options['id'] . '" ';
+		}
+		
 		if (isset($options['icon'])) {
 			$return .= 'data-icon="' . $options['icon'] . '" ';
 		}
@@ -365,8 +369,10 @@ class Ui {
 	}
 	
 	public function formAddInput($options) {
-		//$label = '', $name = '', $id = '', $value = '') {
-		
+		$this->formAddHtml($this->getInput($options));
+	}
+	
+	public function getInput($options) {
 		if (empty($options['name'])) {
 			$options['name'] = uniqid('input');
 		}
@@ -393,7 +399,7 @@ class Ui {
 		$html .= "</fieldset>\n";
 		$html .= "</div>\n";
 		
-		$this->formAddHtml($html);
+		return $html;
 	}
 	
 	public function formAddInputPassword($options) {

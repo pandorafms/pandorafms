@@ -594,7 +594,7 @@ function events_get_events_table($meta, $history) {
  *
  * @return bool Whether or not it was successful
  */	
-function events_comment ($id_event, $comment = '', $action = 'Added comment', $meta = false, $history = false) {
+function events_comment ($id_event, $comment = '', $action = 'Added comment', $meta = false, $history = false, $similars = true) {
 	global $config;
 	
 	$event_table = events_get_events_table($meta, $history);
@@ -1439,7 +1439,7 @@ function events_get_all_status (){
 	$fields[0] = __('Only new');
 	$fields[1] = __('Only validated');
 	$fields[2] = __('Only in process');
-	$fields[3] = __('Only not validated');	
+	$fields[3] = __('Only not validated');
 	
 	return $fields;
 } 

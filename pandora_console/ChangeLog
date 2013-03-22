@@ -1,3 +1,15 @@
+2013-03-22 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/db/mysql.php: fixed the querys for the columns with
+	empty string in the function
+	"mysql_db_format_array_where_clause_sql".
+	
+	* include/functions_events.php: added lost parameter $similars in
+	the function "events_change_owner".
+	
+	* operation/events/events.build_query.php: cleaned source code
+	style.
+
 2013-03-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_db.php: Always display the source ip address

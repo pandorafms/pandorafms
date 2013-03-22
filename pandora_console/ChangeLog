@@ -1,5 +1,11 @@
 2013-03-22 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* mobile/images/ajax-loader.gif, mobile/operation/events.php,
+	mobile/include/ui.class.php, mobile/include/style/main.css: more
+	changes in the events view.
+
+2013-03-22 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/db/mysql.php: fixed the querys for the columns with
 	empty string in the function
 	"mysql_db_format_array_where_clause_sql".

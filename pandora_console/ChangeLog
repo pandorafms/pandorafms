@@ -1,5 +1,10 @@
 2013-03-22  Junichi Satoh  <junichi@rworks.jp>
 
+	* extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql: Added missing
+	types.
+
+2013-03-22  Junichi Satoh  <junichi@rworks.jp>
+
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql: Fixed bad
 	sql syntax.
 

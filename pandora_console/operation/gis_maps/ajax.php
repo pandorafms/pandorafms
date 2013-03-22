@@ -139,7 +139,7 @@ switch ($opt) {
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
 		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['tagente_id_agente'] . '">'.agents_get_name($row['tagente_id_agente']).'</a><br />';
-		$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $row['longitude'] . ', ' . $row['latitude'] . ', ' . $row['altitude'] . ') <br />';
+		$returnJSON['content'] .= __('Position (Lat, Long, Alt)') . ': (' . $row['latitude'] . ', ' . $row['longitude'] . ', ' . $row['altitude'] . ') <br />';
 		$returnJSON['content'] .= __('Start contact') . ': ' . $row['start_timestamp'] . '<br />';
 		$returnJSON['content'] .= __('Last contact') . ': ' . $row['end_timestamp'] . '<br />';
 		$returnJSON['content'] .= __('Num reports') . ': '.$row['number_of_packages'].'<br />'; 
@@ -160,11 +160,11 @@ switch ($opt) {
 		
 		//it's positioned in default position of map.
 		if ($agentDataGIS === false) {
-			$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': ' . __("Default position of map.") . '<br />';
+			$returnJSON['content'] .= __('Position (Lat, Long, Alt)') . ': ' . __("Default position of map.") . '<br />';
 		}
 		else 
 		{
-			$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_altitude'] . ') <br />';
+			$returnJSON['content'] .= __('Position (Lat, Long, Alt)') . ': (' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_altitude'] . ') <br />';
 		}
 		$agent_ip_address = agents_get_address ($id_agente);
 		if ($agent_ip_address || $agent_ip_address != '') {

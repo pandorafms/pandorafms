@@ -52,11 +52,11 @@ $table->head[0] =__('Agent position');
 $table->head_colspan[0] = 2;
 
 $table->data[1][0] = __('Latitude: ');
-$table->data[1][1] = html_print_input_text_extended ('latitude', $agentData['stored_latitude'], 'text-latitude', '', 10, 10, false, '',
+$table->data[1][1] = html_print_input_text_extended ('latitude', $agentData['stored_latitude'], 'text-latitude', '', 20, 20, false, '',
 	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
 $table->data[2][0] = __('Longitude: ');
-$table->data[2][1] = html_print_input_text_extended ('longitude', $agentData['stored_longitude'], 'text-longitude', '', 10, 10, false, '',
+$table->data[2][1] = html_print_input_text_extended ('longitude', $agentData['stored_longitude'], 'text-longitude', '', 20, 20, false, '',
 	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
 $table->data[3][0] = __('Altitude: ');

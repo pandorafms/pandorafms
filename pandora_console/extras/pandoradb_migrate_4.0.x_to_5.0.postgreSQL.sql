@@ -166,17 +166,17 @@ ALTER TABLE "tgrupo" ADD COLUMN "contact" text;
 ALTER TABLE "tgrupo" ADD COLUMN "other" text;
 
 -- -----------------------------------------------------
--- Table ""talert_snmp""
+-- Table "talert_snmp"
 -- -----------------------------------------------------
 
-ALTER TABLE ""talert_snmp"" ADD COLUMN "_snmp_f1_" text DEFAULT ''; 
-ALTER TABLE ""talert_snmp"" ADD COLUMN "_snmp_f2_" text DEFAULT ''; 
-ALTER TABLE ""talert_snmp"" ADD COLUMN "_snmp_f3_" text DEFAULT '';
-ALTER TABLE ""talert_snmp"" ADD COLUMN "_snmp_f4_" text DEFAULT '';
-ALTER TABLE ""talert_snmp"" ADD COLUMN "_snmp_f5_" text DEFAULT '';
-ALTER TABLE ""talert_snmp"" ADD COLUMN "_snmp_f6_" text DEFAULT '';
-ALTER TABLE ""talert_snmp"" ADD COLUMN "trap_type" INTEGER NOT NULL DEFAULT '-1';
-ALTER TABLE ""talert_snmp"" ADD COLUMN "single_value" varchar(255) DEFAULT '';
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f1_" text DEFAULT ''; 
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f2_" text DEFAULT ''; 
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f3_" text DEFAULT '';
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f4_" text DEFAULT '';
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f5_" text DEFAULT '';
+ALTER TABLE "talert_snmp" ADD COLUMN "_snmp_f6_" text DEFAULT '';
+ALTER TABLE "talert_snmp" ADD COLUMN "trap_type" INTEGER NOT NULL DEFAULT '-1';
+ALTER TABLE "talert_snmp" ADD COLUMN "single_value" varchar(255) DEFAULT '';
 
 -- -----------------------------------------------------
 -- Table "tagente_modulo"
@@ -196,7 +196,7 @@ ALTER TABLE "tagente_modulo" ADD COLUMN "max_retries" INTEGER default 0;
 ALTER TABLE "tagente_modulo" ADD COLUMN "id_category" INTEGER default 0;
 
 -- Move the number of retries for web modules from plugin_pass to max_retries
-UPDATE "tagente_modulo" SET max_retries=plugin_pass WHERE id_modulo=7;
+UPDATE "tagente_modulo" SET max_retries=CAST(plugin_pass AS INT) WHERE id_modulo=7;
 
 -- -----------------------------------------------------
 -- Table "tevent_filter"
@@ -317,7 +317,7 @@ CREATE TABLE "tpassword_history" (
 -- -----------------------------------------------------
 -- Table "tconfig"
 -- -----------------------------------------------------
-UPDATE TABLE tconfig SET "value"='comparation'
+UPDATE tconfig SET "value"='comparation'
 WHERE "token"='prominent_time';
 
 -- -----------------------------------------------------
@@ -380,7 +380,7 @@ ALTER TABLE "tagente_estado" ADD COLUMN "last_error" INTEGER default 0;
 -- -----------------------------------------------------
 -- Table "tevent_response"
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS "tevent_response" (
+CREATE TABLE "tevent_response" (
 	"id"  SERIAL NOT NULL PRIMARY KEY,
 	"name" varchar(600) NOT NULL default '',
 	"description" TEXT,
@@ -390,7 +390,7 @@ CREATE TABLE IF NOT EXISTS "tevent_response" (
 	"modal_width" INTEGER NOT NULL DEFAULT 0,
 	"modal_height" INTEGER NOT NULL DEFAULT 0,
 	"new_window" INTEGER NOT NULL DEFAULT 0,
-	"params" TEXT,
+	"params" TEXT
 );
 
 -- ----------------------------------------------------------------------
@@ -431,9 +431,9 @@ ALTER TABLE "talert_commands" ADD COLUMN "fields_values" TEXT;
 -- ---------------------------------------------------------------------
 -- Table "tcategory"
 -- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS "tcategory" (
+CREATE TABLE "tcategory" (
 	"id"  SERIAL NOT NULL PRIMARY KEY,
-	"name" varchar(600) NOT NULL default '',
+	"name" varchar(600) NOT NULL default ''
 );
 
 -- ----------------------------------------------------------------------

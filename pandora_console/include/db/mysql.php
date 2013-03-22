@@ -533,7 +533,11 @@ function mysql_db_format_array_where_clause_sql ($values, $join = 'AND', $prefix
 			$query .= sprintf ('%s IN ("%s")', $field, implode ('", "', $value));
 		}
 		else {
-			if ($value[0] == ">") {
+			if (empty($value)) {
+				//Search empty string
+				$query .= sprintf ("%s = ''", $field);
+			}
+			else if ($value[0] == ">") {
 				$value = substr($value,1,strlen($value)-1);
 				$query .= sprintf ("%s > '%s'", $field, $value);
 			}

@@ -159,7 +159,8 @@ else {
 	$group_array = array_keys($groups);
 }
 
-$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER', 'event_condition', 'AND');
+$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
+	'event_condition', 'AND');
 
 $sql_post .= $tags_acls_condition;
 

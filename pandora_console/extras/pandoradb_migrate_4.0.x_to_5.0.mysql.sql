@@ -392,13 +392,13 @@ ALTER TABLE `talert_templates` ADD COLUMN `field7` TEXT;
 ALTER TABLE `talert_templates` ADD COLUMN `field8` TEXT;
 ALTER TABLE `talert_templates` ADD COLUMN `field9` TEXT;
 ALTER TABLE `talert_templates` ADD COLUMN `field10` TEXT;
-ALTER TABLE `talert_templates` ADD COLUMN `field4_recovery`;
-ALTER TABLE `talert_templates` ADD COLUMN `field5_recovery`;
-ALTER TABLE `talert_templates` ADD COLUMN `field6_recovery`;
-ALTER TABLE `talert_templates` ADD COLUMN `field7_recovery`;
-ALTER TABLE `talert_templates` ADD COLUMN `field8_recovery`;
-ALTER TABLE `talert_templates` ADD COLUMN `field9_recovery`;
-ALTER TABLE `talert_templates` ADD COLUMN `field10_recovery`;
+ALTER TABLE `talert_templates` ADD COLUMN `field4_recovery` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field5_recovery` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field6_recovery` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field7_recovery` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field8_recovery` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field9_recovery` TEXT;
+ALTER TABLE `talert_templates` ADD COLUMN `field10_recovery` TEXT;
 
 -- ----------------------------------------------------------------------
 -- Table `talert_commands`

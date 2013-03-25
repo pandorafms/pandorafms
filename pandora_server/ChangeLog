@@ -1,3 +1,9 @@
+2013-03-25 Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* pandora_server_installer: Fixed false recognition of RHEL6.4
+	(it had been recoginzed as Ubuntu incorrecty because of its
+	"/etc/lsb-release"). Merged from trunk.
+
 2013-03-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm: Backported snmp_ignore_authfailure and

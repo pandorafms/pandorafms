@@ -28,7 +28,7 @@ get_distro () {
 	then
 		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
 		LINUX_DISTRO=SUSE
-	elif [ -f "/etc/lsb-release" ]
+	elif [ -f "/etc/lsb-release" ] && [ ! -f "/etc/redhat-release" ]
 	then
 		OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
 		LINUX_DISTRO=UBUNTU

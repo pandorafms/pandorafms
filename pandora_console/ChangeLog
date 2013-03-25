@@ -1,3 +1,8 @@
+2013-03-25  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_manage_alert_list.php: Added description for
+	threshold.
+
 2013-03-22 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/images/ajax-loader.gif, mobile/operation/events.php,

@@ -14,6 +14,7 @@
 
 class Alerts {
 	private $correct_acl = false;
+	private $acl = "LM";
 	
 	private $default = true;
 	
@@ -40,7 +41,7 @@ class Alerts {
 		
 		$system = System::getInstance();
 		
-		if ($system->checkACL("LM")) {
+		if ($system->checkACL($this->acl)) {
 			$this->correct_acl = true;
 		}
 		else {
@@ -50,6 +51,7 @@ class Alerts {
 	
 	private function alertsGetFilters() {
 		$system = System::getInstance();
+		$user = User::getInstance();
 		
 		$this->free_search = $system->getRequest('free_search', '');
 		if ($this->free_search != '') {
@@ -65,7 +67,10 @@ class Alerts {
 		}
 		
 		$this->group = $system->getRequest('group', __("Group"));
-		if ($this->group === __("Group")) {
+		if (!$user->isInGroup($this->acl, $this->group)) {
+			$this->group = 0;
+		}
+		if (($this->group === __("Group")) || ($this->group == 0)) {
 			$this->group = 0;
 		}
 		else {
@@ -195,6 +200,8 @@ class Alerts {
 		
 		$alerts = alerts_get_alerts($this->group,
 			$this->free_search, $this->status, $this->standby, "LM");
+		if (empty($alerts))
+			$alerts = array();
 		
 		$table = array();
 		foreach ($alerts as $alert) {
@@ -220,7 +227,7 @@ class Alerts {
 			
 			$row = array();
 			$row[__('Agent')] = sprintf($disabled_style,
-				'<a href="">' . io_safe_output($alert['agent_name'])) . '</a>';
+				'<a href="index.php?page=agent&id_agente=' . $alert['id_agente'] . '">' . io_safe_output($alert['agent_name'])) . '</a>';
 			$row[__('Module')] = sprintf($disabled_style,
 				io_safe_output($alert['module_name']));
 			$row[__('Template')] = sprintf($disabled_style,

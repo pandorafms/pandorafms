@@ -14,6 +14,7 @@
 
 class Events {
 	private $correct_acl = false;
+	private $acl = "ER";
 	
 	private $default = true;
 	private $free_search = '';
@@ -27,7 +28,7 @@ class Events {
 	function __construct() {
 		$system = System::getInstance();
 		
-		if ($system->checkACL("ER")) {
+		if ($system->checkACL($this->acl)) {
 			$this->correct_acl = true;
 		}
 		else {
@@ -240,6 +241,7 @@ class Events {
 	
 	private function eventsGetFilters() {
 		$system = System::getInstance();
+		$user = User::getInstance();
 		
 		$this->hours_old = $system->getRequest('hours_old', 8);
 		if ($this->hours_old != 8) {
@@ -268,6 +270,9 @@ class Events {
 		}
 		
 		$this->group = $system->getRequest('group', __("Group"));
+		if (!$user->isInGroup($this->acl, $this->group)) {
+			$this->group = 0;
+		}
 		if (($this->group === __("Group")) || ($this->group == 0)) {
 			$this->group = 0;
 		}
@@ -390,7 +395,7 @@ class Events {
 		$ui->beginContent();
 			$ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' style='display:none;'>detail_event_hook</a>");
 			$ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' style='display:none;'>detail_event_dialog_error_hook</a>");
-			//$test = "javascript: $(\"#test\").click();";
+			
 			$filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
 			$ui->contentBeginCollapsible($filter_title);
 				$ui->beginForm("index.php?page=events");
@@ -614,7 +619,8 @@ class Events {
 				$row[$field_status] = '';
 			}
 			$row[$field_timestamp] = ui_print_timestamp ($event['timestamp_rep'], true);
-			$row[$field_agent] = ui_print_agent_name ($event["id_agente"], true);
+			$row[$field_agent] = '<a href="index.php?page=agent&id_agent=' . $event["id_agente"] . '">' .
+				(string) agents_get_name($event["id_agente"]) . '</a>';
 			
 			
 			$events[$event['id_evento']] = $row;
@@ -629,7 +635,6 @@ class Events {
 			$table->id = 'list_events';
 			$table->setRowClass($row_class);
 			$table->importFromHash($events);
-			$ui->debug($events, true);
 			$ui->contentAddHtml($table->getHTML());
 			
 			if ($system->getPageSize() < $total_events) {

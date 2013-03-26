@@ -1,3 +1,11 @@
+2013-03-26 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_tags.php, include/functions_reporting.php,
+	include/constants.php, include/functions_ui.php,
+	operation/agentes/estado_agente.php,
+	operation/agentes/status_monitor.php, mobile/include/style/main.css:
+	some cleans and remove unuseless code.
+
 2013-03-25 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* pandora_console_install: Fixed false recognition of RHEL6.4

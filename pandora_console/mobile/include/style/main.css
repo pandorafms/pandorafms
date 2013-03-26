@@ -93,32 +93,49 @@ tr.group_view_data, .group_view_data {
 /*INIT----------Events styles-----------------------------------------*/
 .datos_green, .datos_greenf9, .datos_green a, .datos_greenf9 a {
     background-color: #52A000;
-    color: #FFFFFF;
+    color: #FFFFFF !important;
+    text-shadow: none !important;
 }
 .datos_red, .datos_redf9, .datos_red a, .datos_redf9 a {
     background-color: #FF3E41;
     color: #FFFFFF !important;
+    text-shadow: none !important;
 }
-.datos_yellow, .datos_yellowf9 {
+
+.datos_yellow, .datos_yellowf9, .datos_yellow a, .datos_yellowf9 a {
     background-color: #F5E535;
-    color: #000000;
+    color: #000000 !important;
+    text-shadow: none !important;
 }
-a.datos_blue, .datos_bluef9, .datos_blue {
+.datos_blue, .datos_bluef9, .datos_blue a, .datos_bluef9 a {
     background-color: #77E2F2;
-    color: #000000;
+    color: #000000 !important;
+    text-shadow: none !important;
 }
-.datos_grey, .datos_greyf9 {
+.datos_grey, .datos_greyf9, .datos_grey a, .datos_greyf9 a {
     background-color: #E4E4E4;
+    color: #000000 !important;
+    text-shadow: none !important;
 }
-.datos_pink, .datos_pinkf9 {
+.datos_pink, .datos_pinkf9, .datos_pink a, .datos_pinkf9 a {
     background-color: #FF92E9;
+    color: #000000 !important;
+    text-shadow: none !important;
 }
-.datos_brown, .datos_brownf9 {
+.datos_brown, .datos_brownf9, .datos_brown a, .datos_brownf9 a {
     background-color: #C97A4A;
+    color: #000000 !important;
+    text-shadow: none !important;
 }
 
 tr.events {
 	border-bottom: 3px solid white !important;
+	font-size: 12px !important;
+}
+
+table#list_events th {
+	font-size: 12px !important;
+	font-weight: bolder !important;
 }
 /*END-----------Events styles-----------------------------------------*/
 

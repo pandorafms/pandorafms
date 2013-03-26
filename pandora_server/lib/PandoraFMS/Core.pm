@@ -155,6 +155,7 @@ our @EXPORT = qw(
 	pandora_get_config_value
 	pandora_get_module_tags
 	pandora_get_module_url_tags
+	pandora_get_os
 	pandora_module_keep_alive
 	pandora_module_keep_alive_nd
 	pandora_module_unknown
@@ -1925,8 +1926,6 @@ Update agent GIS information.
 sub pandora_update_gis_data ($$$$$$$$$) {
 	my ($pa_config, $dbh, $agent_id, $agent_name, $longitude, $latitude, $altitude, $position_description, $timestamp) = @_;
 
-	logger($pa_config, "Updating GIS data for agent $agent_name (long: $longitude lat: $latitude alt: $altitude)", 10);
-
 	# Check for valid longitude and latitude
 	if (!defined($longitude) || $longitude !~ /[-+]?[0-9,11,12]/ ||
 	    !defined($latitude) || $latitude !~ /[-+]?[0-9,11,12]/) {
@@ -1937,6 +1936,8 @@ sub pandora_update_gis_data ($$$$$$$$$) {
 	if (!defined($altitude) || $altitude !~ /[-+]?[0-9,11,12]/) {
 		$altitude = '';
 	}
+
+	logger($pa_config, "Updating GIS data for agent $agent_name (long: $longitude lat: $latitude alt: $altitude)", 10);
 	
 	# Get position description
 	if ((!defined($position_description))) {
@@ -3953,6 +3954,65 @@ sub pandora_update_agent_alert_count ($$) {
 	db_do ($dbh, 'UPDATE tagente SET update_alert_count=0,
 	fired_count=(SELECT COUNT(*) FROM tagente_modulo, talert_template_modules WHERE tagente_modulo.id_agente_modulo=talert_template_modules.id_agent_module AND talert_template_modules.disabled=0 AND times_fired>0 AND id_agente=' . $agent_id .
 	') WHERE id_agente = ' . $agent_id);
+}
+
+########################################################################
+# SUB pandora_get_os (string)
+# Detect OS using a string, and return id_os
+########################################################################
+sub pandora_get_os ($$) {
+	my ($dbh, $os) = @_;
+	
+	if (! defined($os) || $os eq "") {
+		# Other OS
+		return 10;
+	}
+	
+	if ($os =~ m/Windows/i) {
+		return 9;
+	}
+	if ($os =~ m/Cisco/i) {
+		return 7;
+	}
+	if ($os =~ m/SunOS/i || $os =~ m/Solaris/i) {
+		return 2;
+	}
+	if ($os =~ m/AIX/i) {
+		return 3;
+	}
+	if ($os =~ m/HP\-UX/i) {
+		return 5;
+	}
+	if ($os =~ m/Apple/i || $os =~ m/Darwin/i) {
+		return 8;
+	}
+	if ($os =~ m/Linux/i) {
+		return 1;
+	}
+	if ($os =~ m/Enterasys/i || $os =~ m/3com/i) {
+		return 11;
+	}
+	if ($os =~ m/Octopods/i) {
+		return 13;
+	}
+	if ($os =~ m/embedded/i) {
+		return 14;
+	}
+	if ($os =~ m/android/i) {
+		return 15;
+	}
+	if ($os =~ m/BSD/i) {
+		return 4;
+	}
+		
+	# Search for a custom OS
+	my $os_id = get_db_value ($dbh, 'SELECT id_os FROM tconfig_os WHERE name LIKE ?', '%' . $os . '%');
+	if (defined ($os_id)) {
+		return $os_id;
+	}
+
+	# Other OS
+	return 10;
 }
 
 # End of function declaration

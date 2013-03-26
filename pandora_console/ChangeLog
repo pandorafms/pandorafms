@@ -1,5 +1,21 @@
 2013-03-26 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* include/functions_reporting.php, include/functions_groups.php:
+	changes for to use in the calls in mobile version.
+	
+	* mobile/index.php, mobile/operation/events.php,
+	mobile/operation/modules.php, mobile/operation/events,
+	mobile/operation/events/events.php, mobile/operation/agents.php,
+	mobile/operation/tactical.php, mobile/operation/alerts.php,
+	mobile/include/style/main.css, mobile/include/ui.class.php,
+	mobile/include/user.class.php: changes and improves in the code
+	of mobile.
+	
+	* mobile/operation/agents/*, mobile/operation/servers/*: removed
+	the old files from version pandora mobile 4.
+
+2013-03-26 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* include/functions_tags.php, include/functions_reporting.php,
 	include/constants.php, include/functions_ui.php,
 	operation/agentes/estado_agente.php,

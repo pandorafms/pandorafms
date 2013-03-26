@@ -60,6 +60,8 @@ class Tactical {
 		$ui->beginContent();
 			$ui->contentBeginGrid('responsive');
 				$data = reporting_get_group_stats();
+				$data['mobile'] = true;
+				
 				$formatted_data = reporting_get_stats_indicators($data, 280, 20, false);
 				$overview = '<fieldset class="databox" style="width:97%;">
 						<legend style="text-align:left; color: #666;">' .

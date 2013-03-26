@@ -36,7 +36,16 @@ class User {
 	
 	public static function getInstance() {
 		if (!(self::$instance instanceof self)) {
-			self::$instance = new self;
+			//Check if in the session
+			$system = System::getInstance();
+			$user = $system->getSession('user', null);
+			
+			if (!empty($user)) {
+				self::$instance = $user;
+			}
+			else {
+				self::$instance = new self;
+			}
 		}
 		
 		return self::$instance;
@@ -182,7 +191,15 @@ class User {
 	}
 	
 	public function getIdUser() {
-		return $this->user;
+		return $this->user; //Oldies methods
+	}
+	
+	public function isInGroup($access = "AR", $id_group = 0, $name_group = false) {
+		return (bool)check_acl($this->user, $id_group, $access);
+	}
+	
+	public function getIdGroups($access = "AR", $all = false) {
+		return array_keys(users_get_groups($this->user, $access, $all));
 	}
 }
 ?>

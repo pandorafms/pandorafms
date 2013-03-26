@@ -31,7 +31,8 @@ tr.group_view_crit, .group_view_crit {
 	color: #000000 !important;
 }
 
-tr.group_view_norm, .group_view_norm {
+.group_view_normal, .group_view_normal *,
+.group_view_norm, .group_view_norm * {
 	background-color: #FFFFFF;
 	color: #000000 !important;
 }
@@ -39,7 +40,7 @@ tr.group_view_norm, .group_view_norm {
 	color: #000000 !important;
 }
 
-tr.group_view_ok, .group_view_ok {
+.group_view_ok, .group_view_ok * {
 	background-color: #00C000;
 	color: #000000 !important;
 }
@@ -71,20 +72,25 @@ tr.group_view_unk, .group_view_unk {
 tr.group_view_data, .group_view_data {
 	color: #000000 !important;
 }
-.group_view_data_unk {
+.group_view_data_unk * {
 	color: #303030 !important;
 }
-.group_view_data_ok {
+.group_view_data_ok * {
 	color: #00C000 !important;
 }
-.group_view_data_crit {
+.group_view_data_crit * {
 	color: #5C0000 !important;
 }
-.group_view_data_alrm {
+.group_view_data_alrm * {
 	color: #5C1D00 !important;
 }
-.group_view_data_warn {
+.group_view_data_warn * {
 	color: #5C5900 !important;
+}
+
+.group_view * {
+	text-shadow: none !important;
+	font-size: 12px !important;
 }
 /*END-----------Groups styles-----------------------------------------*/
 
@@ -139,6 +145,20 @@ table#list_events th {
 }
 /*END-----------Events styles-----------------------------------------*/
 
+/*INIT-----------Agents styles----------------------------------------*/
+.red, .redb, .redi, .error {
+    color: #CC0000;
+}
+
+.green {
+    color: #5A8629;
+}
+
+.grey {
+    color: #808080;
+    font-weight: bold;
+}
+/*END-----------Agents styles-----------------------------------------*/
 
 /*INIT---------Fix the square border in search input------------------*/
 .ui-input-search {

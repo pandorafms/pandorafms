@@ -1100,9 +1100,23 @@ function reporting_get_stats_alerts($data) {
 	global $config;
 	
 	// Link URLS
-	$urls = array();
-	$urls['monitor_alerts'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
-	$urls['monitor_alerts_fired'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
+	$mobile = false;
+	if (isset($data['mobile'])) {
+		if ($data['mobile']) {
+			$mobile = true;
+		}
+	}
+	
+	if ($mobile) {
+		$urls = array();
+		$urls['monitor_alerts'] = "index.php?page=alerts&status=all_enabled";
+		$urls['monitor_alerts_fired'] = "index.php?page=alerts&status=fired";
+	}
+	else {
+		$urls = array();
+		$urls['monitor_alerts'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
+		$urls['monitor_alerts_fired'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
+	}
 	
 	// Alerts table
 	$table_al = html_get_predefined_table();
@@ -1164,9 +1178,23 @@ function reporting_get_stats_agents_monitors($data) {
 	global $config;
 	
 	// Link URLS
-	$urls = array();
-	$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
-	$urls['monitor_checks'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
+	$mobile = false;
+	if (isset($data['mobile'])) {
+		if ($data['mobile']) {
+			$mobile = true;
+		}
+	}
+	
+	if ($mobile) {
+		$urls = array();
+		$urls['total_agents'] = "index.php?page=agents";
+		$urls['monitor_checks'] = "index.php?page=modules";
+	}
+	else {
+		$urls = array();
+		$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
+		$urls['monitor_checks'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
+	}
 	
 	// Agents and modules table
 	$table_am = html_get_predefined_table();

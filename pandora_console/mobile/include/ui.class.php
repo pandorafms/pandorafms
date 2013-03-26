@@ -717,6 +717,15 @@ class Table {
 		$this->class_table = $class;
 	}
 	
+	public function setId($id = false) {
+		if (empty($id)) {
+			$this->id = uniqid();
+		}
+		else {
+			$this->id = $id;
+		}
+	}
+	
 	public function setRowClass($class = '', $pos = false) {
 		if (is_array($class)) {
 			$this->rowClass = $class;

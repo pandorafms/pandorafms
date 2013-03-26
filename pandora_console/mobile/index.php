@@ -30,17 +30,14 @@ require_once('operation/tactical.php');
 require_once('operation/groups.php');
 require_once('operation/events.php');
 require_once('operation/alerts.php');
+require_once('operation/agents.php');
+require_once('operation/modules.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
 
 $system = System::getInstance();
 
-$user = $system->getSession('user', null);
-if ($user == null) {
-	$user = User::getInstance();
-}
-else {
-	$user->hackInjectConfig();
-}
+$user = User::getInstance();
+$user->hackInjectConfig();
 
 $action = $system->getRequest('action');
 if (!$user->isLogged()) {
@@ -56,6 +53,14 @@ switch ($action) {
 			case 'events':
 				$events = new Events();
 				$events->ajax($parameter2);
+				break;
+			case 'agents':
+				$agents = new Agents();
+				$agents->ajax($parameter2);
+				break;
+			case 'modules':
+				$modules = new Modules();
+				$modules->ajax($parameter2);
 				break;
 		}
 		return;
@@ -101,6 +106,14 @@ switch ($action) {
 			case 'alerts':
 				$alerts = new Alerts();
 				$alerts->show();
+				break;
+			case 'agents':
+				$agents = new Agents();
+				$agents->show();
+				break;
+			case 'modules':
+				$modules = new Modules();
+				$modules->show();
 				break;
 		}
 		break;

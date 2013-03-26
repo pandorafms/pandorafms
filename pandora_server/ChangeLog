@@ -1,3 +1,12 @@
+2013-03-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/Tools.pm,
+	  lib/PandoraFMS/DataServer.pm,
+	  lib/PandoraFMS/ReconServer.pm,
+	  bin/pandora_server: Improved pandora_get_os to support custom operating
+	  systems and moved it from Tools.pm to Core.pm.
+
 2013-03-25 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* pandora_server_installer: Fixed false recognition of RHEL6.4.

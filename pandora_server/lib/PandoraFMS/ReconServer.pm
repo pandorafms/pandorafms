@@ -184,7 +184,7 @@ sub data_consumer ($$) {
 		# Filter by OS
 		my $id_os = 11; # Network by default
 		if ($task->{'os_detect'} == 1){
-			$id_os = guess_os ($pa_config, $addr);
+			$id_os = guess_os ($pa_config, $dbh, $addr);
 			next if ($task->{'id_os'} > 0 && $task->{'id_os'} != $id_os);
 		}
 
@@ -374,7 +374,7 @@ sub get_host_parent {
 		# Detect host's OS
 		my $id_os = 11;
 		if ($os_detect == 1) {
-			$id_os = guess_os ($pa_config, $host_addr);
+			$id_os = guess_os ($pa_config, $dbh, $host_addr);
 		}
 	
 		# Create the host
@@ -405,21 +405,21 @@ sub tcp_scan ($$$) {
 # Guess OS using xprobe2.
 ##########################################################################
 sub guess_os {
-    my ($pa_config, $host) = @_;
+    my ($pa_config, $dbh, $host) = @_;
     
     # Use xprobe2 if available
 	my $xprobe = $pa_config->{'xprobe2'};
 	if (-e $xprobe){
 			my $output = `$xprobe $host 2> /dev/null | grep 'Running OS' | head -1`;
 			return 10 if ($? != 0);
-			return pandora_get_os ($output);
+			return pandora_get_os ($dbh, $output);
 	}
 	
 	# Use nmap by default
 	my $nmap = $pa_config->{'nmap'};
 	my $output = `$nmap -F -O $host 2> /dev/null | grep 'Aggressive OS guesses'`;
 	return 10 if ($? != 0);
-	return pandora_get_os ($output);
+	return pandora_get_os ($dbh, $output);
 }
 
 ##########################################################################

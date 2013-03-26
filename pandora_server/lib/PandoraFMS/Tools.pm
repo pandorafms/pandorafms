@@ -53,7 +53,6 @@ our @EXPORT = qw(
 	is_numeric
 	clean_blank
 	pandora_sendmail
-	pandora_get_os
 	pandora_trash_ascii
 	enterprise_hook
 	enterprise_load
@@ -227,69 +226,6 @@ sub ascii_to_html($) {
 	my $ascii = shift;
 	
 	return "&#x".substr(unpack("H*", pack("N", $ascii)),6,3).";";
-}
-
-
-########################################################################
-# SUB pandora_get_os (string)
-# Detect OS using a string, and return id_os
-########################################################################
-
-sub pandora_get_os ($) {
-	my $command = $_[0];
-	if (defined($command) && $command ne "") {
-		if ($command =~ m/Windows/i) {
-			return 9;
-		}
-		elsif ($command =~ m/Cisco/i) {
-			return 7;
-		}
-		elsif ($command =~ m/SunOS/i) {
-			return 2;
-		}
-		elsif ($command =~ m/Solaris/i) {
-			return 2;
-		}
-		elsif ($command =~ m/AIX/i) {
-			return 3;
-		}
-		elsif ($command =~ m/HP\-UX/i) {
-			return 5;
-		}
-		elsif ($command =~ m/Apple/i) {
-			return 8;
-		} 
-                elsif ($command =~ m/Darwin/i){
-			return 8;
-		}
-		elsif ($command =~ m/Linux/i) {
-			return 1;
-		}
-		elsif ($command =~ m/Enterasys/i) {
-			return 11;
-		}
-		elsif ($command =~ m/3com/i) {
-			return 11;
-		}
-		elsif ($command =~ m/Octopods/i) {
-			return 13;
-		}
-		elsif ($command =~ m/embedded/i) {
-			return 14;
-		}
-		elsif ($command =~ m/android/i) {
-			return 15;
-		}
-		elsif ($command =~ m/BSD/i) {
-			return 4;
-		}
-		else {
-			return 10; # Unknown / Other
-		}
-	}
-	else {
-		return 10;
-	}
 }
 
 ########################################################################

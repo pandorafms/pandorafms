@@ -224,7 +224,6 @@ sub process_xml_data ($$$$$) {
 		if ($parent_id < 1)	{ # Unknown parent
 			$parent_id = 0;
 		}
-		logger($pa_config,"Parent_agent_name: $parent_agent_name parent_id: $parent_id",10);
 	}
 
 	# Unknown agent!
@@ -274,7 +273,7 @@ sub process_xml_data ($$$$$) {
 		}
 		
 		# Get OS, group and description
-		my $os = pandora_get_os ($data->{'os_name'});
+		my $os = pandora_get_os ($dbh, $data->{'os_name'});
 		my $group_id = -1;
 		$group_id = get_group_id ($dbh, $data->{'group'}) if (defined ($data->{'group'}));
 		if ($group_id == -1) {

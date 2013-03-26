@@ -867,20 +867,20 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 
 function reporting_get_stats_servers($tiny = true) {
 	$server_performance = servers_get_performance();
-		
+	
 	// Alerts table
 	$table_srv = html_get_predefined_table();
 	
 	$table_srv->style[0] = $table_srv->style[2] = 'text-align: right; padding: 5px;';
 	$table_srv->style[1] = $table_srv->style[3] = 'text-align: left; padding: 5px;';
-
+	
 	$tdata = array();
 	$tdata[0] = html_print_image('images/brick.png', true, array('title' => __('Total running modules'), 'width' => '20px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_modules"]) . '</span>';
-
+	
 	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
 	$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
-
+	
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
 	
@@ -893,81 +893,81 @@ function reporting_get_stats_servers($tiny = true) {
 	$tdata = array();
 	$tdata[0] = html_print_image('images/data.png', true, array('title' => __('Local modules'), 'width' => '20px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
-
+	
 	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["local_modules_rate"], 2) . '</span>';
 	$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
-
+	
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
 	
-	if($tiny) {
+	if ($tiny) {
 		$tdata = array();
 		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Remote modules'), 'width' => '20px'));
 		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_remote_modules"]) . '</span>';
-
+		
 		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
 		$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
-
+		
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
 	}
 	else {
-		if(isset($server_performance ["total_network_modules"])) {
+		if (isset($server_performance ["total_network_modules"])) {
 			$tdata = array();
 			$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Network modules'), 'width' => '20px'));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_network_modules"]) . '</span>';
-
+			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["network_modules_rate"], 2) . '</span>';
 			$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
-
+			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;
 		}
 		
-		if(isset($server_performance ["total_plugin_modules"])) {
+		if (isset($server_performance ["total_plugin_modules"])) {
 			$tdata = array();
 			$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules'), 'width' => '20px'));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_plugin_modules"]) . '</span>';
-
+			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["plugin_modules_rate"], 2) . '</span>';
 			$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
-
+			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;
 		}
 		
-		if(isset($server_performance ["total_prediction_modules"])) {
+		if (isset($server_performance ["total_prediction_modules"])) {
 			$tdata = array();
 			$tdata[0] = html_print_image('images/chart_bar.png', true, array('title' => __('Prediction modules'), 'width' => '20px'));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_prediction_modules"]) . '</span>';
-
+			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["prediction_modules_rate"], 2) . '</span>';
 			$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
-
+			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;
 		}
 		
-		if(isset($server_performance ["total_wmi_modules"])) {
+		if (isset($server_performance ["total_wmi_modules"])) {
 			$tdata = array();
 			$tdata[0] = html_print_image('images/wmi.png', true, array('title' => __('WMI modules'), 'width' => '20px'));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_wmi_modules"]) . '</span>';
-
+			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["wmi_modules_rate"], 2) . '</span>';
 			$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
-
+			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;
 		}
 		
-		if(isset($server_performance ["total_web_modules"])) {
+		if (isset($server_performance ["total_web_modules"])) {
 			$tdata = array();
 			$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules'), 'width' => '20px'));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_web_modules"]) . '</span>';
-
+			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["web_modules_rate"], 2) . '</span>';
 			$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
-
+			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;
 		}
@@ -979,7 +979,7 @@ function reporting_get_stats_servers($tiny = true) {
 					__('Server performance') . 
 				'</legend>' . 
 				html_print_table($table_srv, true) . '</fieldset>';
-				
+	
 	return $output;
 }
 
@@ -1046,7 +1046,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 					__('Monitors by status') . 
 				'</legend>' . 
 				html_print_table($table_mbs, true) . '</fieldset>';
-				
+	
 	return $output;
 }
 
@@ -1092,7 +1092,7 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 					__('Summary') . 
 				'</legend>' . 
 				html_print_table($table_sum, true) . '</fieldset>';
-				
+	
 	return $output;
 }
 
@@ -1106,12 +1106,12 @@ function reporting_get_stats_alerts($data) {
 	
 	// Alerts table
 	$table_al = html_get_predefined_table();
-
+	
 	$tdata = array();
 	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts'), 'width' => '20px'));
 	$tdata[1] = $data["monitor_alerts"] <= 0 ? '-' : $data["monitor_alerts"];
 	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
-
+	
 	$tdata[2] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts'), 'width' => '20px'));
 	$tdata[3] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
 	$tdata[3] = '<a style="color: ' . COL_ALERTFIRED . ';" class="big_data" href="' . $urls["monitor_alerts_fired"] . '">' . $tdata[3] . '</a>';
@@ -1123,7 +1123,7 @@ function reporting_get_stats_alerts($data) {
 					__('Defined and fired alerts') . 
 				'</legend>' . 
 				html_print_table($table_al, true) . '</fieldset>';
-				
+	
 	return $output;
 }
 
@@ -1156,7 +1156,7 @@ function reporting_get_stats_users($data) {
 					__('Users') . 
 				'</legend>' . 
 				html_print_table($table_us, true) . '</fieldset>';
-				
+	
 	return $output;
 }
 
@@ -1187,7 +1187,7 @@ function reporting_get_stats_agents_monitors($data) {
 					__('Total agents and monitors') . 
 				'</legend>' . 
 				html_print_table($table_am, true) . '</fieldset>';
-				
+	
 	return $output;
 }
 

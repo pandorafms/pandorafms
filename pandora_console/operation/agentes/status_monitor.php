@@ -80,7 +80,7 @@ if (!defined('METACONSOLE')) {
 	if ($ag_group > 0 && check_acl ($config["id_user"], $ag_group, "AR")) {
 		$sql_conditions_group = sprintf (" AND tagente.id_grupo = %d", $ag_group);
 	}
-	elseif($user_groups != '') {
+	elseif ($user_groups != '') {
 		// User has explicit permission on group 1 ?
 		$sql_conditions_group = " AND tagente.id_grupo IN (".$user_groups.")";
 	}
@@ -89,7 +89,7 @@ else {
 	if ($ag_group != "0" && check_acl ($config["id_user"], $ag_group, "AR")) {
 		$sql_conditions_group = sprintf (" AND tagente.id_grupo IN ( SELECT id_grupo FROM tgrupo where nombre = '%s') ", $ag_group);
 	}
-	elseif($user_groups != '') {
+	elseif ($user_groups != '') {
 		// User has explicit permission on group 1 ?
 		$sql_conditions_group = " AND tagente.id_grupo IN (".$user_groups.")";
 	}
@@ -121,23 +121,23 @@ if ($ag_freestring != "") {
 }
 
 // Status selector
-if ($status == 0) { //Normal
+if ($status == AGENT_MODULE_STATUS_NORMAL) { //Normal
 	$sql_conditions .= " AND tagente_estado.estado = 0 
 	AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100))) ";
 }
-elseif ($status == 2) { //Critical
+elseif ($status == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
 	$sql_conditions .= " AND tagente_estado.estado = 1 AND utimestamp > 0";
 }
-elseif ($status == 1) { //Warning
+elseif ($status == AGENT_MODULE_STATUS_WARNING) { //Warning
 	$sql_conditions .= " AND tagente_estado.estado = 2 AND utimestamp > 0";	
 }
-elseif ($status == 4) { //Not normal
+elseif ($status == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
 	$sql_conditions .= " AND tagente_estado.estado <> 0";
 } 
-elseif ($status == 3) { //Unknown
+elseif ($status == AGENT_MODULE_STATUS_UNKNOW) { //Unknown
 	$sql_conditions .= " AND tagente_estado.estado = 3 AND tagente_estado.utimestamp <> 0";
 }
-elseif ($status == 5) { //Not init
+elseif ($status == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
 	$sql_conditions .= " AND tagente_estado.utimestamp = 0
 		AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";
 }
@@ -146,16 +146,16 @@ elseif ($status == 5) { //Not init
 if ($tag_filter !== 0) {
 	if (defined('METACONSOLE')) {
 		$sql_conditions .= " AND tagente_modulo.id_agente_modulo IN (
-			SELECT ttag_module.id_agente_modulo
-			FROM ttag_module
-			WHERE ttag_module.id_tag IN (SELECT id_tag FROM ttag where name LIKE '%" . $tag_filter . "%')
+				SELECT ttag_module.id_agente_modulo
+				FROM ttag_module
+				WHERE ttag_module.id_tag IN (SELECT id_tag FROM ttag where name LIKE '%" . $tag_filter . "%')
 			)";
 	}
 	else{
 		$sql_conditions .= " AND tagente_modulo.id_agente_modulo IN (
-			SELECT ttag_module.id_agente_modulo
-			FROM ttag_module
-			WHERE ttag_module.id_tag = " . $tag_filter . "
+				SELECT ttag_module.id_agente_modulo
+				FROM ttag_module
+				WHERE ttag_module.id_tag = " . $tag_filter . "
 			)";
 	
 	}
@@ -256,7 +256,7 @@ if (defined('METACONSOLE')) {
 	
 	if ($servers === false)
 		$servers = array();
-		
+	
 	$result = array();
 	foreach($servers as $server) {
 		// If connection was good then retrieve all data server
@@ -336,12 +336,12 @@ echo '<td>' . __('Monitor status') . "</td>";
 echo "<td>";
 
 $fields = array ();
-$fields[0] = __('Normal'); 
-$fields[1] = __('Warning');
-$fields[2] = __('Critical');
-$fields[3] = __('Unknown');
-$fields[4] = __('Not normal'); //default
-$fields[5] = __('Not init');
+$fields[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
+$fields[AGENT_MODULE_STATUS_WARNING] = __('Warning');
+$fields[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
+$fields[AGENT_MODULE_STATUS_UNKNOW] = __('Unknown');
+$fields[AGENT_MODULE_STATUS_NOT_NORMAL] = __('Not normal'); //default
+$fields[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 
 html_print_select ($fields, "status", $status, '', __('All'), -1,
 	false, false, true, '', false, 'width: 125px;');
@@ -554,7 +554,7 @@ switch ($sortField) {
 			'order' => 'ASC');
 		break;
 }
-		
+
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = "SELECT
@@ -590,8 +590,10 @@ switch ($config["dbtype"]) {
 			tagente_modulo.critical_instructions,
 			tagente_modulo.warning_instructions,
 			tagente_modulo.unknown_instructions,
-			tagente_estado.utimestamp AS utimestamp".$sql_from . $sql_conditions_all." ORDER BY " . $order['field'] . " " . $order['order'] 
-			. " LIMIT ".$offset.",".$limit_sql;
+			tagente_estado.utimestamp AS utimestamp" .
+			$sql_from . $sql_conditions_all . "
+			ORDER BY " . $order['field'] . " " . $order['order'] . "
+			LIMIT ".$offset.",".$limit_sql;
 		break;
 	case "postgresql":
 		$sql = "SELECT
@@ -684,7 +686,9 @@ if (! defined ('METACONSOLE')) {
 }
 else {
 	// For each server defined and not disabled:
-	$servers = db_get_all_rows_sql ("SELECT * FROM tmetaconsole_setup WHERE disabled = 0");
+	$servers = db_get_all_rows_sql ("SELECT *
+		FROM tmetaconsole_setup
+		WHERE disabled = 0");
 	if ($servers === false)
 		$servers = array();
 	
@@ -986,7 +990,7 @@ foreach ($result as $row) {
 			$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . html_print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
 		
 	}
-
+	
 	$data[8] = ui_print_module_warn_value($row['max_warning'], $row['min_warning'], $row['str_warning'], $row['max_critical'], $row['min_critical'], $row['str_critical']);
 	
 	if (is_numeric($row["datos"])) {
@@ -1095,12 +1099,13 @@ ui_require_javascript_file('pandora_modules');
 		if (period == -1) {
 			period = $('#period').val();
 		}
+		
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period,
 			dataType: "html",
-			success: function(data){	
+			success: function(data) {
 				$("#monitor_details_window").hide ()
 					.empty ()
 					.append (data)
@@ -1116,14 +1121,14 @@ ui_require_javascript_file('pandora_modules');
 						height: 500
 					})
 					.show ();
-					refresh_pagination_callback (module_id, id_agent, server_name);
-					
+				
+				refresh_pagination_callback (module_id, id_agent, server_name);
 			}
 		});
 	}
 	
 	function refresh_pagination_callback (module_id, id_agent, server_name) {
-		$(".pagination").click( function() {		
+		$(".pagination").click( function() {
 			var classes = $(this).attr('class');
 			classes = classes.split(' ');
 			var offset_class = classes[1];
@@ -1133,6 +1138,7 @@ ui_require_javascript_file('pandora_modules');
 			var period = $('#period').val();
 			
 			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			
 			return false;
 		});
 	}

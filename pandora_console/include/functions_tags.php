@@ -648,7 +648,7 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
 function tags_get_acl_tags($id_user, $id_group, $access = 'AR', $return_mode = 'module_condition', $query_prefix = '', $query_table = '') {
 	global $config;
 	
-	if($id_user == false) {
+	if ($id_user == false) {
 		$id_user = $config['id_user'];
 	}
 	

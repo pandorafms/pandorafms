@@ -627,7 +627,14 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_mediu
 	if ($cutname) {
 		$agent_name = ui_print_truncate_text($agent_name, $cutoff, true, true, true, '[&hellip;]', $style);
 	}
-	$output = '<a style="' . $style . '" href="'.$server_url.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.$extra_params.'" title="'.$agent_name_full.'"><b><span style="'.$style.'">'.$agent_name.'</span></b></a>';
+	
+	$url = $server_url . 'index.php?sec=estado&amp;'. 
+		'sec2=operation/agentes/ver_agente&amp;' .
+		'id_agente=' . $id_agent.$extra_params;
+	
+	$output = '<a style="' . $style . '"' .
+		' href="' . $url . '"' .
+		' title="'.$agent_name_full.'"><b><span style="'.$style.'">'.$agent_name.'</span></b></a>';
 	
 	//TODO: Add a pretty javascript (using jQuery) popup-box with agent details
 	

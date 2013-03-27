@@ -8,14 +8,23 @@ body {
 	direction: ltr;
 	display: block;
 	font-family: Arial,Helvetica,sans-serif;
-	font-size: 11px;
+	font-size: 12px !important;
 	margin: 0;
 	text-align: left;
 	vertical-align: top;
 }
 
+.ui-header .ui-title {
+	font-size: 14px !important;
+}
 
+label, input, .ui-btn-inner {
+	font-size: 12px !important;
+}
 
+#tactical * {
+	font-size: 14px !important;
+}
 
 /*INIT----------Groups styles-----------------------------------------*/
 .group_view tr {
@@ -145,6 +154,8 @@ table#list_events th {
 }
 /*END-----------Events styles-----------------------------------------*/
 
+
+
 /*INIT-----------Agents styles----------------------------------------*/
 .red, .redb, .redi, .error {
     color: #CC0000;
@@ -160,6 +171,8 @@ table#list_events th {
 }
 /*END-----------Agents styles-----------------------------------------*/
 
+
+
 /*INIT---------Fix the square border in search input------------------*/
 .ui-input-search {
 	border-radius: 0.6em 0.6em 0.6em 0.6em !important;
@@ -169,7 +182,6 @@ table#list_events th {
 	width: 100% !important;
 }
 /*END----------Fix the square border in search input------------------*/
-
 
 
 

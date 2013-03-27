@@ -17,6 +17,7 @@ class Ui {
 	private static $instance;
 	
 	private $title;
+	private $page_name;
 	
 	private $endHeader = false;
 	private $header = array();
@@ -81,9 +82,19 @@ class Ui {
 		}
 	}
 	
-	public function createPage($title = null) {
+	public function createPage($title = null, $page_name = null) {
 		if (!isset($title)) {
 			$this->title = __('Pandora FMS mobile');
+		}
+		else {
+			$this->title = $title;
+		}
+		
+		if (!isset($page_name)) {
+			$this->page_name = 'main_page';
+		}
+		else {
+			$this->page_name = $page_name;
 		}
 		
 		$this->html = '';
@@ -193,7 +204,7 @@ class Ui {
 			$return .= 'href="#" ';
 		}
 		
-		$return .= '>';
+		$return .= ' data-ajax="false">';
 		
 		if (isset($options['text'])) {
 			$return .= $options['text'];
@@ -265,8 +276,13 @@ class Ui {
 		$this->grid['cells'] = array();
 	}
 	
-	public function contentGridAddCell($html) {
-		$this->grid['cells'][] = $html;
+	public function contentGridAddCell($html, $key = false) {
+		$k = uniqid('cell_');
+		if ($key !== false) {
+			$k = $key;
+		}
+		
+		$this->grid['cells'][$k] = $html;
 	}
 	
 	public function contentEndGrid() {
@@ -278,10 +294,11 @@ class Ui {
 		$convert_cells_jquery_grid = array('a', 'b', 'c', 'd', 'e');
 		
 		$html = "<div class='ui-grid-" .
-			$convert_columns_jquery_grid[count($this->grid['cells'])] . " ui-responsive'>\n";
+			$convert_columns_jquery_grid[count($this->grid['cells'])] .
+			" ui-responsive'>\n";
 		
 		reset($convert_cells_jquery_grid);
-		foreach ($this->grid['cells'] as $cell) {
+		foreach ($this->grid['cells'] as $key => $cell) {
 			switch ($this->grid['mode']) {
 				default:
 				case 'responsive':
@@ -290,7 +307,7 @@ class Ui {
 					break;
 			}
 			next($convert_cells_jquery_grid);
-			$html .= "<div class='ui-body ui-body-d'>\n";
+			$html .= "<div id='" . $key . "' class='ui-body ui-body-d'>\n";
 			$html .= $cell;
 			$html .= "</div>\n";
 			
@@ -352,7 +369,7 @@ class Ui {
 	public function getEndForm() {
 		$this->endForm = true;
 		
-		$html = "<form action='" . $this->form['action'] . "' " .
+		$html = "<form data-ajax='false' action='" . $this->form['action'] . "' " .
 			"method='" . $this->form['method'] . "'>\n";
 		foreach ($this->form['fields'] as $field) {
 			$html .= $field . "\n";
@@ -618,7 +635,7 @@ class Ui {
 				}
 			}
 		}
-		echo "		<div data-role='page' id='main_page'>\n";
+		echo "		<div data-dom-cache='false' data-role='page' id='" . $this->page_name . "'>\n";
 		echo "			<div data-role='header' data-position='fixed' >\n";
 		echo "				<h1>" . $this->header['title'] . "</h1>\n";
 		echo "				" . $this->header['button_left'] . "\n";
@@ -647,6 +664,14 @@ class Ui {
 				}
 			}
 		}
+		echo "<script type='text/javascript'>
+			$(document).bind('mobileinit', function(){
+				//Disable ajax link
+				$('.disable-ajax').click(function(event){
+					$.mobile.ajaxFormsEnabled = false;
+				});
+			});
+			</script>";
 		echo "	</body>\n";
 		echo "</html>";
 		ob_end_flush();

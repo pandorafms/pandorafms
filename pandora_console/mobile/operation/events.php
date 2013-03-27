@@ -59,7 +59,8 @@ class Events {
 					foreach ($events_db as $event) {
 						$end = 0;
 						$row = array();
-						$row[] = $event['evento'];
+						$row[] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' . 
+							io_safe_output($event['evento']) . '</a>';
 						/*
 						switch ($event['estado']) {
 							case 0:
@@ -82,11 +83,19 @@ class Events {
 								"title" => $title_st,
 								"id" => 'status_img_' . $event["id_evento"]));
 						*/
+						$row[] = ui_print_timestamp ($event['timestamp_rep'], true);
+						
+						$row[] = ui_print_agent_name ($event["id_agente"], true);
+						
+						$status =
+							html_print_image ("mobile/images/" .
+								get_priority_class($event['criticity']) . ".png", true);
+						$status .= "&nbsp;";
 						if ($event['estado'] == 1) {
 							$img_st = "images/tick.png";
 							$title_st = __('Event validated');
 							
-							$row[] = html_print_image ($img_st, true, 
+							$status .= html_print_image ($img_st, true, 
 								array ("class" => "image_status",
 									"width" => 16,
 									"height" => 16,
@@ -94,10 +103,10 @@ class Events {
 									"id" => 'status_img_' . $event["id_evento"]));
 						}
 						else {
-							$row[] = '';
+							$status .= '';
 						}
-						$row[] = ui_print_timestamp ($event['timestamp_rep'], true);
-						$row[] = ui_print_agent_name ($event["id_agente"], true);
+						
+						$row[] = $status;
 						
 						
 						$events[$event['id_evento']] = $row;
@@ -578,12 +587,13 @@ class Events {
 		
 		$events = array();
 		$field_event_name = __('Event Name');
-		$field_status = __('Validated');
 		$field_timestamp = __('Timestamp');
 		$field_agent = __('Agent');
+		$field_status = __('Status');
 		$row_class = array();
 		foreach ($events_db as $event) {
-			$row_class[$event['id_evento']] = "events " . get_priority_class($event['criticity']);
+			$row_class[$event['id_evento']] = "events";
+			// . get_priority_class($event['criticity']);
 			
 			$row = array();
 			$row[$field_event_name] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' . 
@@ -604,11 +614,20 @@ class Events {
 					break;
 			}
 			*/
+			
+			$row[$field_timestamp] = ui_print_timestamp ($event['timestamp_rep'], true);
+			$row[$field_agent] = '<a href="index.php?page=agent&id_agent=' . $event["id_agente"] . '">' .
+				(string) agents_get_name($event["id_agente"]) . '</a>';
+			
+			$row[$field_status] =
+				html_print_image ("mobile/images/" .
+					get_priority_class($event['criticity']) . ".png", true);
+			$row[$field_status] .= "&nbsp;";
 			if ($event['estado'] == 1) {
 				$img_st = "images/tick.png";
 				$title_st = __('Event validated');
 				
-				$row[$field_status] = html_print_image ($img_st, true, 
+				$row[$field_status] .= html_print_image ($img_st, true, 
 					array ("class" => "image_status",
 						"width" => 16,
 						"height" => 16,
@@ -616,11 +635,9 @@ class Events {
 						"id" => 'status_img_' . $event["id_evento"]));
 			}
 			else {
-				$row[$field_status] = '';
+				$row[$field_status] .= '';
 			}
-			$row[$field_timestamp] = ui_print_timestamp ($event['timestamp_rep'], true);
-			$row[$field_agent] = '<a href="index.php?page=agent&id_agent=' . $event["id_agente"] . '">' .
-				(string) agents_get_name($event["id_agente"]) . '</a>';
+			
 			
 			
 			$events[$event['id_evento']] = $row;
@@ -784,53 +801,69 @@ class Events {
 		$ui->contentAddHtml("<script type=\"text/javascript\">
 				var load_more_rows = 1;
 				var page = 1;
+				
+				function add_rows(data) {
+					if (data.end) {
+						$(\"#loading_rows\").hide();
+					}
+					else {
+						$.each(data.events, function(key, event) {
+							$(\"table#list_events tbody\").append(\"<tr class='events'>\" +
+									\"<th></th>\" +
+									\"<td>\" + event[0] + \"</td>\" +
+									\"<td>\" + event[1] + \"</td>\" +
+									\"<td>\" + event[2] + \"</td>\" +
+									\"<td>\" + event[3] + \"</td>\" +
+								\"</tr>\");
+							});
+						
+						//$.mobile.changePage();
+						//$(document).page();
+						//$(\"table#list_events\").table().table('refresh');
+						
+						load_more_rows = 1;
+					}
+				}
+				
+				function ajax_load_rows() {
+					if (load_more_rows) {
+						
+						load_more_rows = 0;
+						
+						postvars = {};
+						postvars[\"action\"] = \"ajax\";
+						postvars[\"parameter1\"] = \"events\";
+						postvars[\"parameter2\"] = \"get_events\";
+						postvars[\"filter\"] = $(\"select[name='filter']\").val();
+						postvars[\"group\"] = $(\"select[name='group']\").val();
+						postvars[\"status\"] = $(\"select[name='status']\").val();
+						postvars[\"type\"] = $(\"select[name='type']\").val();
+						postvars[\"severity\"] = $(\"select[name='severity']\").val();
+						postvars[\"free_search\"] = $(\"input[name='free_search']\").val();
+						postvars[\"hours_old\"] = $(\"input[name='hours_old']\").val();
+						postvars[\"page\"] = page;
+						page++;
+						
+						$.post(\"index.php\",
+							postvars,
+							function (data) {
+								add_rows(data);
+								
+								//For large screens load the new events
+								if (document.documentElement.scrollHeight == document.documentElement.clientHeight) {
+									ajax_load_rows();
+								}
+							},
+							\"json\");
+					}
+				}
+				
 				$(document).ready(function() {
 					$(window).bind(\"scroll\", function () {
-						
-						if (load_more_rows) {
-							if ($(this).scrollTop() + $(this).height()
-								>= ($(document).height() - 100)) {
-								
-								load_more_rows = 0;
-								
-								postvars = {};
-								postvars[\"action\"] = \"ajax\";
-								postvars[\"parameter1\"] = \"events\";
-								postvars[\"parameter2\"] = \"get_events\";
-								postvars[\"filter\"] = $(\"select[name='filter']\").val();
-								postvars[\"group\"] = $(\"select[name='group']\").val();
-								postvars[\"status\"] = $(\"select[name='status']\").val();
-								postvars[\"type\"] = $(\"select[name='type']\").val();
-								postvars[\"severity\"] = $(\"select[name='severity']\").val();
-								postvars[\"free_search\"] = $(\"input[name='free_search']\").val();
-								postvars[\"hours_old\"] = $(\"input[name='hours_old']\").val();
-								postvars[\"page\"] = page;
-								page++;
-								
-								$.post(\"index.php\",
-									postvars,
-									function (data) {
-										if (data.end) {
-											$(\"#loading_rows\").hide();
-										}
-										else {
-											$.each(data.events, function(key, event) {
-												$(\"table#list_events tbody\").append(\"<tr>\" +
-														\"<th></th>\" +
-														\"<td>\" + event[0] + \"</td>\" +
-														\"<td>\" + event[1] + \"</td>\" +
-														\"<td>\" + event[2] + \"</td>\" +
-														\"<td>\" + event[3] + \"</td>\" +
-													\"</tr>\");
-												});
-											
-											load_more_rows = 1;
-										}
-										
-										
-									},
-									\"json\");
-							}
+						if ($(this).scrollTop() + $(this).height()
+							>= ($(document).height() - 100)) {
+							
+							ajax_load_rows();
 						}
 					});
 				});

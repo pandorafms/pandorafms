@@ -1,3 +1,13 @@
+2013-03-27 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/events.php, mobile/operation/tactical.php,
+	mobile/include/ui.class.php, mobile/include/style/main.css,
+	mobile/images/datos_blue.png, mobile/images/datos_brown.png,
+	mobile/images/datos_green.png, mobile/images/datos_pink.png,
+	mobile/images/datos_grey.png, mobile/images/datos_red.png,
+	mobile/images/datos_yellow.png: some fixes and changes in the
+	Pandora mobile.
+
 2013-03-27  Mario Pulido <mario.pulido@artica.es>
 	
 	* include/help/es/help_network_map_enterprise.php,

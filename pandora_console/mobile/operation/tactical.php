@@ -97,7 +97,7 @@ class Tactical {
 					reporting_get_stats_agents_monitors($data);
 				$graph_js = ob_get_clean();
 				$formatted_data = $graph_js . $formatted_data;
-				$ui->contentGridAddCell($formatted_data);
+				$ui->contentGridAddCell($formatted_data, 'tactical');
 			$ui->contentEndGrid();
 			
 			$this->getLastActivity();

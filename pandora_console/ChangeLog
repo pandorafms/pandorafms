@@ -1,3 +1,11 @@
+2013-03-27  Mario Pulido <mario.pulido@artica.es>
+	
+	* include/help/es/help_network_map_enterprise.php,
+       include/help/en/help_network_map_enterprise.php,
+       images/help/netmap1.png,images/help/netmap2.png
+       images/help/netmap3.png: Modified networkmap enterprise help.
+
+
 2013-03-27  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_plugin_definition.php: Updated help.

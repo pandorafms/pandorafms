@@ -1,3 +1,7 @@
+2013-03-27  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_conf_alert_template.php: Added a new help file.
+
 2013-03-26 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_reporting.php, include/functions_groups.php:

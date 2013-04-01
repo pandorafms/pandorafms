@@ -53,7 +53,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 mkdir -p $RPM_BUILD_ROOT%{_mandir}/man1/
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/lib/pandora/.ssh
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/
 
@@ -78,11 +78,11 @@ rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
 install -m 0644 util/pandora_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server
 install -m 0640 conf/pandora_server.conf $RPM_BUILD_ROOT%{_sysconfdir}/pandora/
 
-cat <<EOF > $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/pandora_db
+cat <<EOF > $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/pandora_db
 #!/bin/bash
 %__perl %{prefix}/pandora_server/util/pandora_db.pl %{_sysconfdir}/pandora/pandora_server.conf
 EOF
-chmod 0755 $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/pandora_db
+chmod 0755 $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/pandora_db
 
 %clean
 rm -fr $RPM_BUILD_ROOT
@@ -135,7 +135,7 @@ exit 0
 %doc AUTHORS COPYING ChangeLog README
 %{_sysconfdir}/rc.d/init.d/pandora_server
 %{_sysconfdir}/rc.d/init.d/tentacle_serverd
-%{_sysconfdir}/cron.daily/pandora_db
+%{_sysconfdir}/cron.hourly/pandora_db
 %config(noreplace) %{_sysconfdir}/logrotate.d/pandora_server
 
 %defattr(755,pandora,root)

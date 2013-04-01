@@ -1,3 +1,12 @@
+2013-04-01  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/postinst,
+	pandora_server.redhat.spec,
+	pandora_server.spec,
+	pandora_server_installer: Moved maintance process to hourly
+	instead daily. Improves performance and avoid locks on heavy 
+	loaded systems.
+
 2013-03-25 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* pandora_server_installer: Fixed false recognition of RHEL6.4

@@ -88,12 +88,12 @@ update-rc.d pandora_server defaults
 echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
 update-rc.d tentacle_serverd defaults
 
-if [ -d /etc/cron.daily ]
+if [ -d /etc/cron.hourly ]
 then
-	echo "Create the Cron script to run daily Pandora DB tool"
-	echo "#!/bin/bash" > /etc/cron.daily/pandora_db	
+	echo "Create the Cron script to run hourly Pandora DB tool"
+	echo "#!/bin/bash" > /etc/cron.hourly/pandora_db	
 	echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_db	
-	chmod 750 /etc/cron.daily/pandora_db
+	chmod 750 /etc/cron.hourly/pandora_db
 else
 	echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
 	echo "   perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"

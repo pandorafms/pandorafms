@@ -65,9 +65,9 @@ rm /etc/init.d/tentacle_serverd
 update-rc.d pandora_server remove
 update-rc.d tentacle_serverd remove
 
-if [ -d /etc/cron.daily ]
+if [ -d /etc/cron.hourly ]
 then
-	rm /etc/cron.daily/pandora_db
+	rm /etc/cron.hourly/pandora_db
 fi
 
 rm /usr/bin/pandora_exec

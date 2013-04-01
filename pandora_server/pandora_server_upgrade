@@ -47,10 +47,12 @@ install () {
 	cp util/pandora_server /etc/init.d
 	cp util/tentacle_serverd /etc/init.d
 
-	if [ ! -e /etc/cron.daily/pandora_db ]
+	if [ ! -e /etc/cron.hourly/pandora_db ]
 	then
-		echo "You don't have a /etc/cron.daily/pandora_purge_db file, you should consider"
-		echo "to setup the Pandora FMS daily Database Maintance script: "
+		echo "You don't have a /etc/cron.hourly/pandora_db file, you should consider"
+		echo "to setup the Pandora FMS Database Maintance script. Create with 755 perms a file in /etc/cron.hourly "
+		echo "called 'pandora_db', with following contents: "
+		echo " "
 		echo "	perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
 	fi
 
@@ -66,7 +68,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 4.0dev Server Upgrade (c) 2009-2010 Artica ST"
+echo "Pandora FMS 5.0 Server Upgrade (c) 2009-2013 Artica ST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 echo " "
 

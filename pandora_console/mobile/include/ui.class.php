@@ -777,7 +777,7 @@ class Table {
 		//Empty head for white space between rows in the responsive vertical layout
 		$html .= "<th></th>\n";
 		foreach ($this->head as $head) {
-			$html .= "<th>" . $head . "</th>\n";
+			$html .= "<th class='head_horizontal'>" . $head . "</th>\n";
 		}
 		$html .= "</tr>\n";
 		$html .= "</thead>\n";
@@ -792,13 +792,13 @@ class Table {
 			$html .= "<tr class='" . $class . "'>\n";
 			//Empty head for white space between rows in the responsive vertical layout
 			if (isset($this->row_heads[$key])) {
-				$html .= "<th>" . $this->row_heads[$key] . "</th>\n";
+				$html .= "<th class='head_vertical'>" . $this->row_heads[$key] . "</th>\n";
 			}
 			elseif ($this->row_keys_as_head_row) {
-				$html .= "<th>" . $key . "</th>\n";
+				$html .= "<th class='head_vertical'>" . $key . "</th>\n";
 			}
 			else {
-				$html .= "<th></th>\n";
+				$html .= "<th class='head_vertical'></th>\n";
 			}
 			foreach ($row as $key_cell => $cell) {
 				$html .= "<td class='cell_" . $key_cell . "'>" . $cell . "</td>\n";

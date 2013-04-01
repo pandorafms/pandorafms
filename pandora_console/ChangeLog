@@ -1,5 +1,11 @@
 2013-04-01 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* mobile/operation/events.php, mobile/include/ui.class.php,
+	mobile/include/style/main.css: changes for to show better the tables
+	with reflow and responsive.
+
+2013-04-01 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* mobile/operation/events.php, mobile/include/style/main.css: first
 	version of custom responsive view for details events.
 

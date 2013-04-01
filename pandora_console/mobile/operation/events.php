@@ -59,7 +59,9 @@ class Events {
 					foreach ($events_db as $event) {
 						$end = 0;
 						$row = array();
-						$row[] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' . 
+						$row[] = '
+						<b class="ui-table-cell-label">' . __('Event Name') . '</b>
+						<a class="ui-link" href="javascript: openDetails(' . $event['id_evento'] . ')">' . 
 							io_safe_output($event['evento']) . '</a>';
 						/*
 						switch ($event['estado']) {
@@ -83,9 +85,11 @@ class Events {
 								"title" => $title_st,
 								"id" => 'status_img_' . $event["id_evento"]));
 						*/
-						$row[] = ui_print_timestamp ($event['timestamp_rep'], true);
+						$row[] = '<b class="ui-table-cell-label">' . __('Timestamp') . '</b>' .
+							ui_print_timestamp ($event['timestamp_rep'], true);
 						
-						$row[] = ui_print_agent_name ($event["id_agente"], true);
+						$row[] = '<b class="ui-table-cell-label">' . __('Agent') . '</b>' .
+							ui_print_agent_name ($event["id_agente"], true);
 						
 						$status =
 							html_print_image ("mobile/images/" .
@@ -106,7 +110,8 @@ class Events {
 							$status .= '';
 						}
 						
-						$row[] = $status;
+						$row[] = '<b class="ui-table-cell-label">' . __('Status') . '</b>' .
+							$status;
 						
 						
 						$events[$event['id_evento']] = $row;
@@ -864,9 +869,12 @@ class Events {
 					}
 					else {
 						$.each(data.events, function(key, event) {
-							$(\"table#list_events tbody\").append(\"<tr class='events'>\" +
-									\"<th></th>\" +
-									\"<td>\" + event[0] + \"</td>\" +
+							$(\"table#list_events tbody\").append(
+								\"<tr class='events'>\" +
+									\"<th class='head_vertical'></th>\" +
+									\"<td class='cell_0'>\" +
+										event[0] +
+									\"</td>\" +
 									\"<td>\" + event[1] + \"</td>\" +
 									\"<td>\" + event[2] + \"</td>\" +
 									\"<td>\" + event[3] + \"</td>\" +

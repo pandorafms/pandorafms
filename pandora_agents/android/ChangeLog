@@ -1,3 +1,10 @@
+2013-04-01  Sergio Martin <sergio.martin@artica.es>
+
+	* src/pandroid/agent/PandroidAgentListener.java: Fixed 
+	a crash bug in some devices when try to retrieve the 
+	coordinates provider. Close unclosed cursor and change some
+	error logs to normal logs
+
 2012-09-24 Mark Holland <mark@mark-holland.me.uk>
 
 	* src/pandroid/agent/PandroidAgentListener.java:

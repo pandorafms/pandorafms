@@ -369,7 +369,60 @@ class Events {
 			$table->addRow(array('event_acknowledged_by' => ""), __('Acknowledged by'));
 			$table->addRow(array('event_group' => ""), __('Group'));
 			$table->addRow(array('event_tags' => ""), __('Tags'));
-			$options['content_text'] = $table->getHTML();
+			
+			//Content
+			ob_start();
+			?>
+			<table class="pandora_responsive">
+				<tbody>
+					<tr class="event_id">
+						<th><?php echo __('Event ID');?></th>
+						<td class="cell_event_id"></td>
+					</tr>
+					<tr class="event_name">
+						<th><?php echo __('Event name');?></th>
+						<td class="cell_event_name"></td>
+					</tr>
+					<tr class="event_timestamp">
+						<th><?php echo __('Timestamp');?></th>
+						<td class="cell_event_timestamp"></td>
+					</tr>
+					<tr class="event_owner">
+						<th><?php echo __('Owner');?></th>
+						<td class="cell_event_owner"></td>
+					</tr>
+					<tr class="event_type">
+						<th><?php echo __('Type');?></th>
+						<td class="cell_event_type"></td>
+					</tr>
+					<tr class="event_repeated">
+						<th><?php echo __('Repeated');?></th>
+						<td class="cell_event_repeated"></td>
+					</tr>
+					<tr class="event_severity">
+						<th><?php echo __('Severity');?></th>
+						<td class="cell_event_severity"></td>
+					</tr>
+					<tr class="event_status">
+						<th><?php echo __('Status');?></th>
+						<td class="cell_event_status"></td>
+					</tr>
+					<tr class="event_acknowledged_by">
+						<th><?php echo __('Acknowledged by');?></th>
+						<td class="cell_event_acknowledged_by"></td>
+					</tr>
+					<tr class="event_group">
+						<th><?php echo __('Group');?></th>
+						<td class="cell_event_group"></td>
+					</tr>
+					<tr class="event_tags">
+						<th><?php echo __('Tags');?></th>
+						<td class="cell_event_tags"></td>
+					</tr>
+				</tbody>
+			</table>
+			<?php
+			$options['content_text'] = ob_get_clean();
 			$options_button = array(
 				'text' => __('Validate'),
 				'id' => 'validate_button',
@@ -389,6 +442,9 @@ class Events {
 				<h3 style="color: #ff0000;">' . __('Fail validate') . '</h3></div>';
 			
 			$options['button_close'] = false;
+			
+			
+			
 		$ui->addDialog($options);
 			$options['type'] = 'hidden';
 			

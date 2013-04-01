@@ -1,3 +1,9 @@
+2013-04-01  Sancho Lerena <slerena@artica.es>
+
+        * unix/plugins/inventory: Improved software inventory in RPM format.
+        Removed dupes and "orphan" lines.
+
+
 2012-12-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* shellscript/aix/pandora_agent.conf,

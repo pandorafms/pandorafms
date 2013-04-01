@@ -171,8 +171,8 @@ sub get_software_module_data ($$) {
 	if ($distrib_id eq 'DEBIAN') {
 		@soft = `dpkg -l | grep ii`;
 	} else {
-
-		@soft = `rpm -q -a --qf "ii %{NAME} %{VERSION} %{SUMMARY}\n"`;
+		# Sometimes rpm return data splitted in two lines, and with dupes. Thats bad for our inventory system
+		@soft = `rpm -q -a --qf "ii %{NAME} %{VERSION} %{SUMMARY}\n" | grep "^ii" | sort -u`;
 	}
 
 

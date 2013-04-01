@@ -726,17 +726,6 @@ else
 	$alerttab['active'] = false;
 
 
-/* SLA view */
-$slatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente='.$id_agente.'">'
-	. html_print_image("images/images.png", true, array("title" => __('S.L.A.')))
-	. '</a>';
-if ($tab == 'sla') {
-	$slatab['active'] = true;
-}
-else {
-	$slatab['active'] = false;
-}
-
 
 /* Inventory */
 $inventorytab = enterprise_hook ('inventory_tab');
@@ -832,7 +821,6 @@ $onheader = array('manage' => $managetab,
 	'main' => $maintab, 
 	'data' => $datatab,
 	'alert' => $alerttab,
-	'sla' => $slatab, 
 	'inventory' => $inventorytab,
 	'collection' => $collectiontab, 
 	'group' => $grouptab,
@@ -914,9 +902,6 @@ switch($tab) {
 	case "alert":
 		$header_description = ' - ' . __('Alerts');
 		break;
-	case "sla":
-		$header_description = ' - ' . __('S.L.A.');
-		break;
 	case "inventory":
 		$header_description = ' - ' . __('Inventory');
 		break;
@@ -954,9 +939,6 @@ switch ($tab) {
 		break;
 	case "gis":
 		require ("gis_view.php");
-		break;
-	case "sla":
-		require ("sla_view.php");
 		break;
 	case "manage":
 		require ("estado_generalagente.php");

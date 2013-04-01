@@ -374,12 +374,12 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 		mkdir $PANDORA_HOME 2> /dev/null
 		cp -R util $PANDORA_HOME
 		
-		if [ -d /etc/cron.daily ]
+		if [ -d /etc/cron.hourly ]
 		then
-			echo "Creating the Cron script to run daily Pandora DB tool"
-			echo "#!/bin/bash" > /etc/cron.daily/pandora_db	
-			echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_db	
-			chmod +x /etc/cron.daily/pandora_db
+			echo "Creating the Cron script to run Pandora DB tool each hour"
+			echo "#!/bin/bash" > /etc/cron.hourly/pandora_db	
+			echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.hourly/pandora_db	
+			chmod +x /etc/cron.hourly/pandora_db
 		else
 			if [ "$DISTRO" = "FreeBSD" ]
 			then
@@ -392,7 +392,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 					echo "The crontab for pandora_db.pl is already configured."
 				fi
 			else
-				echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
+				echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (hourly) on your master server:"
 				echo "	perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
 			fi
 		fi
@@ -480,7 +480,7 @@ uninstall () {
 	rm -Rf /usr/bin/pandora_server 2> /dev/null
 	rm -Rf /usr/bin/pandora_exec 2> /dev/null
 	rm -Rf $PANDORA_HOME
-	rm -Rf /etc/cron.daily/pandora_db
+	rm -Rf /etc/cron.hourly/pandora_db
 	rm -Rf /etc/logrotate.d/pandora
 	if [ "$DISTRO" = "UBUNTU" ] || [ "$DISTRO" = "DEBIAN" ]
 	then

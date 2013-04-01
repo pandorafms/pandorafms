@@ -1,5 +1,8 @@
 2013-04-01  Sancho Lerena <slerena@artica.es>
 
+	* operation/agentes/sla_view.php,
+	operation/agentes/ver_agente.php: Removed old "SLA view", now unused.
+
 	* general/error_authconfig.php,
 	general/error_dbconfig.php,	
 	general/error_emptyconfig.php,

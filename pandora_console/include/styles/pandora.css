@@ -1409,7 +1409,7 @@ div#head {
 	width: auto;
 	height: auto;
 	background-color: #000;
-	background-image: url(../../images/header_f2.png);
+	background-image: url(../../images/header_f2.jpg);
 }
 
 div#foot {
@@ -1751,7 +1751,7 @@ span#plugin_description {
 /*SIDEBAR*/
 .menu_sidebar {
 	color:#000;
-	background:#cccacb url('../../images/login_background.png') right center no-repeat;
+	background:#cccacb url('../../images/login_background.jpg') right center no-repeat;
 
 	margin-left: 10px;
 	padding-left: 0px;

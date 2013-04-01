@@ -18,7 +18,7 @@ ui_require_css_file ('jquery-ui-1.10.0.custom');
 ui_require_jquery_file('jquery-ui-1.10.0.custom');
 
 ?>
-<img src="images/login_background.png" id="login_body">
+<img src="images/login_background.jpg" id="login_body">
 <div class="databox_logout" id="login">
 	<br>
 	<h1 id="log"><?php echo __('Logged out'); ?></h1>

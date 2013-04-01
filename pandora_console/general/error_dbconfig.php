@@ -33,7 +33,7 @@
 <body>
 
 
-<img src="images/login_background.png" id="login_body">
+<img src="images/login_background.jpg" id="login_body">
 <div class="databox_logout" id="login">
 	<br>
 	<h1 id="log">Problem with Pandora FMS database</h1>

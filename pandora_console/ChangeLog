@@ -1,3 +1,25 @@
+2013-04-01  Sancho Lerena <slerena@artica.es>
+
+	* general/error_authconfig.php,
+	general/error_dbconfig.php,	
+	general/error_emptyconfig.php,
+	general/error_install.php,
+	general/error_noconfig.php,
+	general/error_perms.php,
+	general/login_page.php,
+	general/logoff.php,
+	include/styles/pandora.css,
+	include/styles/pandora_black.css,
+	include/styles/pandora_minimal.css: replaced PNG images for JPG version, much lighter.
+
+	* images/header_f2.jpg,
+	images/header_f2b.jpg,
+	images/login_background.jpg: New JPG version of old PNG images.
+
+	* images/header_f2.png,
+	images/header_f2b.png,
+	images/login_background.png: Removed PNG's.
+
 2013-03-25 Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* pandora_console_installer: Fixed false recognition of RHEL6.4.

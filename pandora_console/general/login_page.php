@@ -21,7 +21,7 @@ if (!empty ($page) && !empty ($sec)) {
 		$url .= '&amp;'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 	}
 }
-echo '<img src="images/login_background.png" id="login_body">';
+echo '<img src="images/login_background.jpg" id="login_body">';
 
 echo '<div class="databox_login" id="login">';
 

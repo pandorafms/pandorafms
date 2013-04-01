@@ -276,7 +276,20 @@ table#list_events th {
 	}
 }
 
+#list_events a {
+	color: #333333 !important;
+}
+
+@media screen and (max-width: 35em) {
+	/* Put in new line the event name */
+	#list_events tbody tr.events td.cell_0 b.ui-table-cell-label {
+		display: block;
+	}
+}
+
 /*END-----------Events styles-----------------------------------------*/
+
+
 
 
 
@@ -306,6 +319,27 @@ table#list_events th {
 	width: 100% !important;
 }
 /*END----------Fix the square border in search input------------------*/
+
+
+
+
+/*INIT---------Fix the tons of air between the rows in small table----*/
+.head_vertical {
+	margin-top: 0px !important;
+	border-top: 1px solid grey;
+}
+
+.head_horizontal {
+	border-bottom: 1px solid grey !important;
+}
+
+@media screen and (max-width: 35em) {
+	.ui-table th, .ui-table td {
+		padding: 0px !important;
+	}
+}
+/*END----------Fix the tons of air between the rows in small table----*/
+
 
 
 

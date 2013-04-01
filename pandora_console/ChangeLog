@@ -1,3 +1,8 @@
+2013-04-01 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/events.php, mobile/include/style/main.css: first
+	version of custom responsive view for details events.
+
 2013-04-01  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/sla_view.php,

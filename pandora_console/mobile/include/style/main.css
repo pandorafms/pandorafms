@@ -152,6 +152,130 @@ table#list_events th {
 	font-size: 12px !important;
 	font-weight: bolder !important;
 }
+
+@media screen and (max-width: 320px)
+{
+	.pandora_responsive th {
+		padding-right: 10px;
+		padding-left: 10px;
+	}
+	
+	.pandora_responsive .event_id td,
+	.pandora_responsive .event_id th,
+	.pandora_responsive .event_name td,
+	.pandora_responsive .event_name th,
+	.pandora_responsive .event_owner th,
+	.pandora_responsive .event_timestamp th,
+	.pandora_responsive .event_timestamp td,
+	.pandora_responsive .event_type td,
+	.pandora_responsive .event_type th {
+		float: left;
+	}
+	
+	.pandora_responsive .event_id {
+		float: left;
+	}
+	
+	.pandora_responsive .event_name {
+		
+	}
+	
+	.cell_event_name {
+		padding-left: 10px;
+	}
+	
+	.event_timestamp td,
+	.event_timestamp th {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	
+	.cell_event_name {
+		width: 300px;
+	}
+	
+	.cell_event_owner {
+		float: left;
+	}
+	
+	.event_type th {
+		float: left;
+	}
+	
+	.cell_event_type {
+		float: left;
+	}
+	
+	.event_owner {
+		float: left;
+	}
+	
+	.event_type {
+		float: left;
+	}
+	
+	.event_repeated {
+		clear: left;
+		float: left;
+	}
+	
+	.event_repeated > th {
+		float: left;
+	}
+	
+	
+	.cell_event_repeated {
+		float: left;
+	}
+	
+	.event_severity {
+		float: left;
+	}
+	
+	.event_severity > th {
+		float: left;
+	}
+	
+	.cell_event_severity {
+		float: left;
+	}
+	
+	.event_status > th {
+		float: left;
+	}
+	
+	.cell_event_status {
+		float: left;
+	}
+	
+	.event_acknowledged_by > th {
+		float: left;
+	}
+	
+	.cell_event_acknowledged_by {
+		float: left;
+	}
+	
+	.event_group > th {
+		float: left;
+	}
+	
+	.cell_event_group {
+		float: left;
+	}
+	
+	.event_tags > th {
+		float: left;
+		margin-top: 10px;
+	}
+	
+	.cell_event_tags {
+		float: left;
+		padding-left: 10px;
+		width: 300px;
+	}
+}
+
 /*END-----------Events styles-----------------------------------------*/
 
 

@@ -376,7 +376,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 		then
 			echo "Creating the Cron script to run Pandora DB tool each hour"
 			echo "#!/bin/bash" > /etc/cron.hourly/pandora_db	
-			echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_db	
+			echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.hourly/pandora_db	
 			chmod +x /etc/cron.hourly/pandora_db
 		else
 			if [ "$DISTRO" = "FreeBSD" ]
@@ -390,7 +390,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 					echo "The crontab for pandora_db.pl is already configured."
 				fi
 			else
-				echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
+				echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (hourly) on your master server:"
 				echo "	perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
 			fi
 		fi

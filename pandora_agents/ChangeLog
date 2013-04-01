@@ -1,3 +1,8 @@
+2013-04-01  Sancho Lerena <slerena@artica.es>
+
+	* unix/plugins/inventory: Improved software inventory in RPM format.
+	Removed dupes and "orphan" lines.
+
 2013-03-11  Dario Rodriguez <dario@artica.es>
 
 	* win32/bin/util/curl.exe: Added curl binary for

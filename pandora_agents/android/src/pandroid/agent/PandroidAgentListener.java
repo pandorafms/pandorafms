@@ -484,19 +484,19 @@ try { // catches IOException below
     	
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);  
 		List<String> providers = lm.getProviders(true);
-		Log.e("PANDROID providers count", "" + providers.size());
+		Log.d("PANDROID providers count", "" + providers.size());
 
 		/* Loop over the array backwards, and if you get an accurate location, then break out the loop*/
 		Location loc = null;
 
 		for (int i=providers.size()-1; i>=0; i--) {
-			Log.e("PANDROID providers", providers.get(i));
+			Log.d("PANDROID providers", providers.get(i));
 		    loc = lm.getLastKnownLocation(providers.get(i));
 		    if (loc != null) break;
 		}
 
 		if (loc != null) {
-			Log.e("PANDROID", "loc != null");
+			Log.d("PANDROID", "loc != null");
 			//if(latitude != loc.getLatitude() || longitude != loc.getLongitude()) {
 				lastGpsContactDateTime = getHumanDateTime(-1);
 			//}
@@ -511,6 +511,12 @@ try { // catches IOException below
 			criteria.setBearingRequired(false);
 			criteria.setCostAllowed(true);
 			String bestProvider = lm.getBestProvider(criteria, true);
+			
+			// If not provider found, abort GPS retrieving
+			if (bestProvider == null) {
+				Log.e("LOCATION", "No location provider found!");
+				return;
+			}
 			
 			lm.requestLocationUpdates(bestProvider, Core.defaultInterval, 1000,
 				new LocationListener() {
@@ -612,11 +618,11 @@ try { // catches IOException below
         String gpsStatus = getSharedData("PANDROID_DATA", "gpsStatus", Core.defaultGpsStatus, "string");
         
         if(gpsStatus.equals("enabled")) {
-        	Log.e("PANDROID AGENT", "ENABLED");
+        	Log.d("PANDROID AGENT", "ENABLED");
 			gpsLocation();
         }
         else {
-        	Log.e("PANDROID AGENT", "DISABLED");
+        	Log.d("PANDROID AGENT", "DISABLED");
             putSharedData("PANDROID_DATA", "latitude", "181.0", "float");
             putSharedData("PANDROID_DATA", "longitude", "181.0", "float");
         }
@@ -886,6 +892,8 @@ try { // catches IOException below
             putSharedData("PANDROID_DATA", "missedCalls", ""+missed, "integer");
             putSharedData("PANDROID_DATA", "outgoingCalls", ""+outgoing, "integer");
 		}
+		
+		c.close();
 	}// end getCalls
 	/**
 	 *  Retrieves the current cell signal strength in dB

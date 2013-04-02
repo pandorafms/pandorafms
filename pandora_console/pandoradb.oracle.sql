@@ -453,6 +453,7 @@ CREATE OR REPLACE TRIGGER talert_template_mod_ac_update1 AFTER UPDATE OF ID ON t
 
 CREATE TABLE talert_special_days (
 	id NUMBER(10,0) NOT NULL PRIMARY KEY,
+	id_group NUMBER(10, 0) default 0 NOT NULL, 
 	date DATE default '0000-00-00' NOT NULL,
 	same_day VARCHAR2(20) default 'sunday',
 	description CLOB,

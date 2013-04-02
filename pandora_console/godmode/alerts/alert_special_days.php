@@ -3,7 +3,7 @@
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Copyright (c) 2012 Junichi Satoh
+// Copyright (c) 2012-2013 Junichi Satoh
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -49,7 +49,9 @@ $delete_special_day = (bool) get_parameter ('delete_special_day');
 if ($create_special_day) {
 	$date = (string) get_parameter ('date');
 	$same_day = (string) get_parameter ('same_day');
-	$description = (string) get_parameter ('description');
+	$values = array();
+	$values['id_group'] = (string) get_parameter ('id_group');
+	$values['description'] = (string) get_parameter ('description');
 	
 	list($year, $month, $day) = explode("-", $date);
 	if ($year == '*') {
@@ -68,8 +70,8 @@ if ($create_special_day) {
 			$result = '';
 		}
 		else {
-			$result = alerts_create_alert_special_day ($date, $same_day, array ('description' => $description));
-			$info = 'Date: ' . $date . ' Same day of the week: ' . $same_day . ' Description: ' . $description;
+			$result = alerts_create_alert_special_day ($date, $same_day, $values);
+			$info = 'Date: ' . $date . ' Same day of the week: ' . $same_day . ' Description: ' . $values['description'];
 		}
 	}
 	
@@ -91,6 +93,7 @@ if ($update_special_day) {
 	$date = (string) get_parameter ('date');
 	$same_day = (string) get_parameter ('same_day');
 	$description = (string) get_parameter ('description');
+	$id_group = (string) get_parameter ('id_group');
 	
 	list($year, $month, $day) = explode("-", $date);
 	if ($year == '*') {
@@ -101,6 +104,7 @@ if ($update_special_day) {
 	
 	$values = array ();
 	$values['date'] = $date;
+	$values['id_group'] = $id_group;
 	$values['same_day'] = $same_day;
 	$values['description'] = $description;
 	
@@ -147,18 +151,25 @@ $table->head = array ();
 $table->head[0] = __('Date');
 $table->head[1] = __('Same day of the week');
 $table->head[2] = __('Description');
-$table->head[3] = __('Delete');
+$table->head[3] = __('Group');
+$table->head[4] = __('Delete');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[0] = '20%';
 $table->size[1] = '15%';
-$table->size[2] = '60%';
+$table->size[2] = '55%';
 $table->size[3] = '5%';
+$table->size[4] = '5%';
 $table->align = array ();
 $table->align[3] = 'center';
+$table->align[4] = 'center';
 
-$special_days = db_get_all_rows_in_table ('talert_special_days', 'date');
+$filter = array();
+if (!is_user_admin($config['id_user']))
+	$filter['id_group'] = array_keys(users_get_groups(false, "LM"));
+
+$special_days = db_get_all_rows_filter ('talert_special_days', $filter);
 if ($special_days === false)
 	$special_days = array ();
 
@@ -194,8 +205,8 @@ foreach ($special_days as $special_day) {
 			break;
 	} 
 	$data[2] = $special_day['description'];
-	$data[3] = '';
-	$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&delete_special_day=1&id='.$special_day['id'].'"
+	$data[3] = ui_print_group_icon ($special_day["id_group"], true);
+	$data[4] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&delete_special_day=1&id='.$special_day['id'].'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 		html_print_image("images/cross.png", true) . '</a>';
 	

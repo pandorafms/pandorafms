@@ -3,7 +3,7 @@
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Copyright (c) 2012 Junichi Satoh
+// Copyright (c) 2012-2013 Junichi Satoh
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -36,6 +36,7 @@ $command = '';
 $description = '';
 $date = '';
 $same_day = '';
+$id_group = 0;
 if ($id) {
 	$special_day = alerts_get_alert_special_day ($id);
 	$date = str_replace('0001', '*', $special_day['date']);
@@ -59,7 +60,17 @@ $table->data = array ();
 $table->data[0][0] = __('Date');
 $table->data[0][1] = html_print_input_text ('date', $date, '', 10, 10, true);
 $table->data[0][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-date'),this);"));
-$table->data[1][0] = __('Same day of the week');
+$table->data[1][0] = __('Group');
+$groups = users_get_groups ();
+$own_info = get_user_info ($config['id_user']);
+// Only display group "All" if user is administrator or has "PM" privileges
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+	$display_all_group = true;
+else
+	$display_all_group = false;
+$table->data[1][1] = html_print_select_groups(false, "LW", $display_all_group, 'id_group', $id_group, '', '', 0, true);
+
+$table->data[2][0] = __('Same day of the week');
 $days = array ();
 $days["monday"] = __('Monday');
 $days["tuesday"] = __('Tuesday');
@@ -68,12 +79,10 @@ $days["thursday"] = __('Thursday');
 $days["friday"] = __('Friday');
 $days["saturday"] = __('Saturday');
 $days["sunday"] = __('Sunday');
-$table->data[1][1] = html_print_select ($days, "same_day", $same_day, '', '', 0, true, false, false);
+$table->data[2][1] = html_print_select ($days, "same_day", $same_day, '', '', 0, true, false, false);
 
-#$table->data[1][1] = html_print_input_text ('same_day', $same_day, '', 80, 255, true);
-
-$table->data[2][0] = __('Description');
-$table->data[2][1] = html_print_textarea ('description', 10, 30, $description, '', true);
+$table->data[3][0] = __('Description');
+$table->data[3][1] = html_print_textarea ('description', 10, 30, $description, '', true);
 
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days">';
 html_print_table ($table);

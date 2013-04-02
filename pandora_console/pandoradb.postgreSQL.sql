@@ -392,6 +392,7 @@ CREATE TABLE "talert_template_module_actions" (
 CREATE TYPE type_talert_special_days_same_day AS ENUM ('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
 CREATE TABLE "talert_special_days" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
+	"id_group" INTEGER NOT NULL default 0,
 	"date" DATE NOT NULL default '0001-01-01',
 	"same_day" type_talert_special_days_same_day NOT NULL default 'sunday',
 	"description" TEXT

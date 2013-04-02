@@ -405,6 +405,29 @@ table#list_events th {
 	color: #808080;
 	font-weight: bold;
 }
+
+@media screen and (max-width: 35em) {
+	#list_agents .cell_2 .ui-table-cell-label,
+	#list_agents .cell_3 .ui-table-cell-label,
+	#list_agents .cell_6 .ui-table-cell-label,
+	#list_agents .cell_7 .ui-table-cell-label {
+		min-width: auto !important;
+	}
+	
+	#list_agents .cell_3 .ui-table-cell-label,
+	#list_agents .cell_6 .ui-table-cell-label,
+	#list_agents .cell_7 .ui-table-cell-label {
+		padding-left: 10px;
+	}
+	
+	#list_agents .cell_2,
+	#list_agents .cell_3,
+	#list_agents .cell_6,
+	#list_agents .cell_7 {
+		display: inline !important;
+		float: none !important;
+	}
+}
 /*END-----------Agents styles-----------------------------------------*/
 
 

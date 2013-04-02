@@ -1,5 +1,10 @@
 2013-04-02 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* mobile/operation/agents.php, mobile/include/style/main.css:
+	improved the view of list of agents.
+
+2013-04-02 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* mobile/operation/groups.php, mobile/include/style/main.css,
 	include/functions_ui.php, include/functions_groups.php: change the
 	skin of list groups.

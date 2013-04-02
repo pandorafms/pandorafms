@@ -61,7 +61,30 @@ class Agents {
 					
 					if (!empty($listAgents['agents'])) {
 						$end = 0;
-						$agents = $listAgents['agents'];
+						
+						$agents = array();
+						foreach ($listAgents['agents'] as $key => $agent) {
+							$agent[0] = '<b class="ui-table-cell-label">' . 
+								__('Agent') . '</b>' . $agent[0];
+							$agent[1] = '<b class="ui-table-cell-label">' . 
+								__('Description') . '</b>' . $agent[1];
+							$agent[2] = '<b class="ui-table-cell-label">' . 
+								__('OS') . '</b>' . $agent[2];
+							$agent[3] = '<b class="ui-table-cell-label">' . 
+								__('Group') . '</b>' . $agent[3];
+							$agent[4] = '<b class="ui-table-cell-label">' . 
+								__('Interval') . '</b>' . $agent[4];
+							$agent[5] = '<b class="ui-table-cell-label">' . 
+								__('Modules') . '</b>' . $agent[5];
+							$agent[6] = '<b class="ui-table-cell-label">' . 
+								__('Status') . '</b>' . $agent[6];
+							$agent[7] = '<b class="ui-table-cell-label">' . 
+								__('Alerts') . '</b>' . $agent[7];
+							$agent[8] = '<b class="ui-table-cell-label">' . 
+								__('Last contact') . '</b>' . $agent[8];
+						}
+						
+						$agents[$key] = $agent;
 					}
 					
 					echo json_encode(array('end' => $end, 'agents' => $agents));
@@ -232,8 +255,8 @@ class Agents {
 			$row[0] = $row[__('Agent')] = io_safe_output($agent['nombre']);
 			$row[1] = $row[__('Description')] = ui_print_truncate_text($agent["description"], 'description', false, true);
 			$row[2] = $row[__('OS')] = ui_print_os_icon ($agent["id_os"], false, true);
-			$row[3] = $row[__('Interval')] = human_time_description_raw($agent["intervalo"]);
-			$row[4] = $row[__('Group')] = ui_print_group_icon ($agent["id_grupo"], true);
+			$row[3] = $row[__('Group')] = ui_print_group_icon ($agent["id_grupo"], true);
+			$row[4] = $row[__('Interval')] = human_time_description_raw($agent["intervalo"]);
 			$row[5] = $row[__('Modules')] = reporting_tiny_stats($agent, true);
 			$row[6] = $row[__('Status')] = agents_tree_view_status_img ($agent["critical_count"],
 				$agent["warning_count"], $agent["unknown_count"]);
@@ -327,17 +350,17 @@ class Agents {
 										else {
 											$.each(data.agents, function(key, agent) {
 												$(\"table#list_agents tbody\")
-													.append(\"<tr>\" +
-														\"<th></th>\" +
-														\"<td>\" + agent[0] + \"</td>\" +
-														\"<td>\" + agent[1] + \"</td>\" +
-														\"<td>\" + agent[2] + \"</td>\" +
-														\"<td>\" + agent[3] + \"</td>\" +
-														\"<td>\" + agent[4] + \"</td>\" +
-														\"<td>\" + agent[5] + \"</td>\" +
-														\"<td>\" + agent[6] + \"</td>\" +
-														\"<td>\" + agent[7] + \"</td>\" +
-														\"<td>\" + agent[8] + \"</td>\" +
+													.append(\"<tr class=''>\" +
+														\"<th class='head_vertical'></th>\" +
+														\"<td class='cell_0'>\" + agent[0] + \"</td>\" +
+														\"<td class='cell_1'>\" + agent[1] + \"</td>\" +
+														\"<td class='cell_2'>\" + agent[2] + \"</td>\" +
+														\"<td class='cell_3'>\" + agent[3] + \"</td>\" +
+														\"<td class='cell_4'>\" + agent[4] + \"</td>\" +
+														\"<td class='cell_5'>\" + agent[5] + \"</td>\" +
+														\"<td class='cell_6'>\" + agent[6] + \"</td>\" +
+														\"<td class='cell_7'>\" + agent[7] + \"</td>\" +
+														\"<td class='cell_8'>\" + agent[8] + \"</td>\" +
 													\"</tr>\");
 												});
 											

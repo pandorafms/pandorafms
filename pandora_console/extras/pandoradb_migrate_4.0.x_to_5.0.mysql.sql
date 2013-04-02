@@ -73,6 +73,7 @@ ALTER TABLE `tagente` ADD COLUMN `update_alert_count` tinyint(1) NOT NULL DEFAUL
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `talert_special_days` (
 	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`id_group` INT(10) NOT NULL DEFAULT 0,
 	`date` date NOT NULL DEFAULT '0000-00-00',
 	`same_day` enum('monday','tuesday','wednesday','thursday','friday','saturday','sunday') NOT NULL DEFAULT 'sunday',
 	`description` text,

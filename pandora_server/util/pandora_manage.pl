@@ -1095,7 +1095,7 @@ sub cli_create_network_module($) {
 	my $policy_id;
 	
 	if($in_policy == 0) {
-		my $agent_id = get_agent_id($dbh,$agent_name);
+		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
 		
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
@@ -1222,7 +1222,7 @@ sub cli_create_snmp_module($) {
 	my $policy_id;
 	
 	if($in_policy == 0) {
-		my $agent_id = get_agent_id($dbh,$agent_name);
+		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
 		
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
@@ -1353,7 +1353,7 @@ sub cli_create_plugin_module($) {
 	my $policy_id;
 
 	if($in_policy == 0) {
-		my $agent_id = get_agent_id($dbh,$agent_name);
+		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
 		
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);

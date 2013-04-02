@@ -47,7 +47,7 @@ if(defined('METACONSOLE')) {
 	ui_meta_print_header(__('Categories configuration'), __('List'), $buttons);
 }
 else {
-	ui_print_page_header (__('Categories configuration'), "images/setup.png", false, "", true, $buttons);
+	ui_print_page_header (__('Categories configuration'), "images/setup.png", false, "categories", true, $buttons);
 }
 
 // Two actions can performed in this page: search and delete categories

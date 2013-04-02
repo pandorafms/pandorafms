@@ -1,3 +1,8 @@
+2013-04-02  Mario Pulido <mario.pulido@artica.es> 
+
+	* include/help/en/help_inventory_tab.php,
+	include/help/es/help_inventory_tab.php: Changes in help of inventory.
+
 2013-04-02 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/operation/agents.php, mobile/include/style/main.css:

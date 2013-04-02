@@ -1,3 +1,9 @@
+2013-04-02  Dario Rodriguez <dario@artica.es>
+
+	* include/functions_api.php: New function to create a tag
+	via API.
+	* include/functions_tags.php: Create tag only if not exists.
+
 2013-04-02  Mario Pulido <mario.pulido@artica.es> 
 
 	* include/help/en/help_inventory_tab.php,

@@ -1,3 +1,9 @@
+2013-04-02 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/groups.php, mobile/include/style/main.css,
+	include/functions_ui.php, include/functions_groups.php: change the
+	skin of list groups.
+
 2013-04-02  Mario Pulido <mario.pulido@artica.es>     
 
 	* godmode/category/category.php,

@@ -487,12 +487,12 @@ function ui_print_tags_warning ($return = false) {
  * @return string HTML code if return parameter is true.
  */
 function ui_print_group_icon ($id_group, $return = false, $path = "groups_small", $style='', $link = true) {
-	if($id_group > 0)
+	if ($id_group > 0)
 		$icon = (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 	else
 		$icon = "world";
 	
-	if($style == '')
+	if ($style == '')
 		$style = 'width: 16px; height: 16px;';
 	
 	$output = '';

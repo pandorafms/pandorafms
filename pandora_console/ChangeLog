@@ -5,6 +5,11 @@
 
 2013-04-02 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* mobile/include/style/main.css: improved the style of view module
+	list.
+
+2013-04-02 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* mobile/operation/agents.php, mobile/include/style/main.css:
 	improved the view of list of agents.
 

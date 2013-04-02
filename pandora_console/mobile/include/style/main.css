@@ -432,6 +432,28 @@ table#list_events th {
 
 
 
+/*INIT-----------Modules styles---------------------------------------*/
+@media screen and (max-width: 35em) {
+	#list_Modules .cell_1 .ui-table-cell-label,
+	#list_Modules .cell_5 .ui-table-cell-label,
+	#list_Modules .cell_6 .ui-table-cell-label {
+		min-width: auto !important;
+	}
+	
+	#list_Modules .cell_5 .ui-table-cell-label,
+	#list_Modules .cell_6 .ui-table-cell-label {
+		padding-left: 10px;
+	}
+	
+	#list_Modules .cell_1,
+	#list_Modules .cell_5,
+	#list_Modules .cell_6 {
+		display: inline !important;
+		float: none !important;
+	}
+}
+/*END------------Modules styles---------------------------------------*/
+
 
 
 /*INIT---------Fix the square border in search input------------------*/

@@ -321,7 +321,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		my $date = sprintf("%4d%02d%02d", $year + 1900, $mon + 1, $mday);
 		# '0001' means every year.
 		my $date_every_year = sprintf("0001%02d%02d", $mon + 1, $mday);
-		my $special_day = get_db_value ($dbh, 'SELECT same_day FROM talert_special_days WHERE date = ? OR date = ? ORDER BY date DESC', $date, $date_every_year);
+		my $special_day = get_db_value ($dbh, 'SELECT same_day FROM talert_special_days WHERE (date = ? OR date = ?) AND (id_group = 0 OR id_group = ?) ORDER BY date DESC', $date, $date_every_year, $alert->{'id_group'});
 		if ($special_day ne '') {
 			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $special_day . ")", 10);
 			return 1 if ($alert->{$special_day} != 1);

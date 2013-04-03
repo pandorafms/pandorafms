@@ -279,7 +279,11 @@ $table->align[1] = 'center';
 $table->align[2] = 'center';
 $table->align[3] = 'center';
 
-$actions = db_get_all_rows_in_table ('talert_actions');
+$filter = array();
+if (!is_user_admin($config['id_user']))
+        $filter['id_group'] = array_keys(users_get_groups(false, "LM"));
+
+$actions = db_get_all_rows_filter ('talert_actions', $filter);
 if ($actions === false)
 	$actions = array ();
 

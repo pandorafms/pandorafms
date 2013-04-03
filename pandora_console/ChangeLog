@@ -1,3 +1,10 @@
+2013-04-03  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/alerts/alert_actions.php: Fixed that any groups are shown
+	to all users even if user has no permission to access the group.
+
+	Merged from trunk.
+
 2013-04-01  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/sla_view.php,

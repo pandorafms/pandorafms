@@ -290,11 +290,6 @@ UPDATE `tusuario` SET `metaconsole_access` = 'advanced' WHERE `is_admin` = 1;
 ALTER TABLE `tmensajes` MODIFY COLUMN `mensaje` TEXT NOT NULL;
 
 -- ----------------------------------------------------------------------
--- Table `talert_compound`
--- ----------------------------------------------------------------------
-ALTER TABLE `talert_compound` ADD COLUMN `special_day` tinyint(1) DEFAULT '0';
-
--- ----------------------------------------------------------------------
 -- Table `talert_commands`
 -- ----------------------------------------------------------------------
 INSERT INTO `talert_commands` (`name`, `command`, `description`, `internal`) VALUES ('Validate Event','Internal type','This alert validate the events matched with a module given the agent name (_field1_) and module name (_field2_)', 1);

@@ -249,12 +249,6 @@ ALTER TABLE treport_content_item ADD (operation CLOB default '');
 ALTER TABLE tmensajes MODIFY mensaje VARCHAR2(255) NOT NULL DEFAULT '';
 
 -- -----------------------------------------------------
--- Table talert_compound
--- -----------------------------------------------------
-
-ALTER TABLE talert_compound ADD (special_day NUMBER(5,0) default 0);
-
--- -----------------------------------------------------
 -- Table tnetwork_component
 -- -----------------------------------------------------
 

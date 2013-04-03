@@ -1,5 +1,10 @@
 2013-04-03  Junichi Satoh  <junichi@rworks.jp>
 
+	* godmode/alerts/alert_actions.php: Fixed that any groups are shown
+	to all users even if user has no permission to access the group.
+
+2013-04-03  Junichi Satoh  <junichi@rworks.jp>
+
 	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
 	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
 	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: Removed an unnecessary

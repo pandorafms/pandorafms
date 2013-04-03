@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# **********************************************************************
+# Tentacle Server Daemon launcher for NetBSD
+# (c) 2013 Hiroki SHIMIZU <shimizu@rworks.jp>
+#
+# **********************************************************************
+
+# PROVIDE: tentacle_server
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+# Add the following line to /etc/rc.conf to enable `tentacle_server':
+#
+# tentacle_server="YES"
+#
+
+. "/etc/rc.subr"
+
+name="tentacle_server"
+rcvar=${name}
+
+# read configuration and set defaults
+tentacle_server=${tentacle_server:-"NO"}
+tentacle_server_flags=${tentacle_server_flags:-"-a 0.0.0.0 -p 41121 -s /var/spool/pandora/data_in -i.*\.conf:conf\;.*\.md5:md5\;.*\.zip:collections -d"}
+tentacle_server_user=${tentacle_server_user:-"pandora"}
+load_rc_config $name
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+
+command=/usr/local/bin/${name}
+
+pidfile=/var/run/$name.pid
+start_postcmd=start_postcmd
+stop_postcmd=stop_postcmd
+
+procname="/usr/pkg/perl"
+
+start_postcmd()
+{
+	TENTACLE_PID=`pgrep -f none $name`
+	echo $TENTACLE_PID > $pidfile
+}
+
+stop_postcmd()
+{
+	rm -f $pidfile
+}
+
+run_rc_command "$1"

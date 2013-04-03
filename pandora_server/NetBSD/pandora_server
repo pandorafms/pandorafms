@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# **********************************************************************
+# Pandora FMS Server Daemon launcher for NetBSD
+# (c) 2013 Hiroki SHIMIZU <shimizu@rworks.jp>
+#
+# **********************************************************************
+
+# PROVIDE: pandora_server
+# REQUIRE: LOGIN mysqld
+# KEYWORD: shutdown
+
+# Add the following line to /etc/rc.conf to enable `pandora_server':
+#
+# pandora_server="YES"
+#
+
+. "/etc/rc.subr"
+
+name="pandora_server"
+rcvar=${name}
+
+# read configuration and set defaults
+pandora_server=${pandora_server:-"NO"}
+load_rc_config $name
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+
+pidfile=/var/run/$name.pid
+command=/usr/local/bin/${name}
+command_args="-D -P ${pidfile} /usr/local/etc/pandora/pandora_server.conf"
+required_files="/usr/local/etc/pandora/pandora_server.conf"
+
+procname="/usr/pkg/bin/perl"
+
+run_rc_command "$1"

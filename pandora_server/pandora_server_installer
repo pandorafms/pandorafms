@@ -71,6 +71,11 @@ get_distro () {
 		LINUX_DISTRO="FreeBSD"
 		OS_VERSION=`uname -r`
 		LINUX=NO
+	elif [ `uname -s` = "NetBSD" ]
+	then
+		LINUX_DISTRO="NetBSD"
+		OS_VERSION=`uname -r`
+		LINUX=NO
 	else
 		# Default to Linux is false, test for real Linux above - that way we don't assume we can just plunk down files everywhere
 		LINUX_DISTRO=`uname -s`
@@ -90,13 +95,13 @@ install () {
 
 	if [ ! -z "$SECOPT" ]
 	then
-		if [ "$SECOPT" == "--force" ]
+		if [ "$SECOPT" = "--force" ]
 		then
 			FORCE=1
 		fi
 	fi
 			
-	if [ $DEPENDENCIAS -gt 0 ] && [ $FORCE == 0 ]
+	if [ $DEPENDENCIAS -gt 0 ] && [ $FORCE -eq 0 ]
 	then
 		echo "You are missing the following dependencies"
 		echo " "
@@ -161,6 +166,24 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 			PANDORA_SERVER=/usr/local/etc/rc.d/pandora_server
 			TENTACLE_SERVER=/usr/local/etc/rc.d/tentacle_server
 			PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
+		elif [ "$DISTRO" = "NetBSD" ]
+		then
+			echo "NetBSD detected"
+			PANDORA_SPOOL=/var/spool/pandora
+			PANDORA_HOME=/usr/local/share/pandora_server
+			PANDORA_CFG_DIR=/usr/local/etc/pandora
+			PANDORA_LOG=/var/log/pandora
+			PANDORA_SERVER=/etc/rc.d/pandora_server
+			TENTACLE_SERVER=/etc/rc.d/tentacle_server
+			PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
+                
+			sed s:/usr/bin/perl:/usr/pkg/bin/perl: bin/pandora_server > bin/tmp
+			mv bin/tmp bin/pandora_server
+			sed s:/usr/bin/perl:/usr/pkg/bin/perl: bin/pandora_exec > bin/tmp
+			mv bin/tmp bin/pandora_exec
+			sed s:/usr/bin/perl:/usr/pkg/bin/perl: bin/tentacle_server > bin/tmp
+			mv bin/tmp bin/tentacle_server
+
 		fi
 		
 		echo "Installing binaries and libraries"
@@ -175,7 +198,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 				echo "ERROR compiling Pandora FMS Server from sources. Aborting"
 				exit 1
 			fi
-			if [ "$DISTRO" != "FreeBSD" ]
+			if [ "$DISTRO" != "FreeBSD" -a "$DISTRO" != "NetBSD" ]
 			then
 				ln -s /usr/local/bin/pandora_server /usr/bin
 				ln -s /usr/local/bin/pandora_exec /usr/bin		
@@ -265,6 +288,14 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 		then
 			echo cp FreeBSD/pandora_server.conf $PANDORA_CFG_DIR
                 	cp FreeBSD/pandora_server.conf $PANDORA_CFG_DIR
+		elif [ "$DISTRO" = "NetBSD" ]
+		then
+			if [ ! -d $PANDORA_CFG_DIR ]
+			then
+				mkdir -p $PANDORA_CFG_DIR
+			fi
+			echo cp NetBSD/pandora_server.conf $PANDORA_CFG_DIR
+			cp NetBSD/pandora_server.conf $PANDORA_CFG_DIR     
 		else
 			echo cp conf/pandora_server.conf $PANDORA_CFG_DIR
 			cp conf/pandora_server.conf $PANDORA_CFG_DIR
@@ -312,6 +343,12 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 				cp FreeBSD/pandora_server $PANDORA_SERVER 
 				chmod 555 $PANDORA_SERVER
                         fi
+			if [ "$DISTRO" = "NetBSD" ]
+			then
+				echo "Copying the daemon script into $PANDORA_SERVER"
+				cp NetBSD/pandora_server $PANDORA_SERVER 
+				chmod 555 $PANDORA_SERVER
+			fi
 		fi
 
 		if [ -d /etc/logrotate.d ]; then
@@ -367,11 +404,25 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 					echo "Installing Tentacle Server manual"
 					cp man/man1/tentacle_server.1.gz /usr/local/man/man1
 				fi
+				if [ "$DISTRO" = "NetBSD" ]
+				then
+					echo "Installing tentacle server"
+					cp bin/tentacle_server /usr/local/bin
+					chown pandora /usr/local/bin/tentacle_server
+					cp NetBSD/tentacle_server $TENTACLE_SERVER
+					chmod 555 $TENTACLE_SERVER
+					echo "Installing Tentacle Server manual"
+					cp man/man1/tentacle_server.1.gz /usr/share/man/man1
+				fi
 			fi
 		fi
 
 		echo "Creating Pandora FMS distribution directory in $PANDORA_HOME"
 		mkdir $PANDORA_HOME 2> /dev/null
+		if [ ! -d $PANDORA_HOME ]
+		then
+			mkdir -p $PANDORA_HOME
+		fi
 		cp -R util $PANDORA_HOME
 		
 		if [ -d /etc/cron.hourly ]
@@ -381,7 +432,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 			echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.hourly/pandora_db	
 			chmod +x /etc/cron.hourly/pandora_db
 		else
-			if [ "$DISTRO" = "FreeBSD" ]
+			if [ "$DISTRO" = "FreeBSD" -o "$DISTRO" = "NetBSD" ]
 			then
 				grep pandora_db.pl /etc/crontab > /dev/null 2>&1
 				if [ $? -ne 0 ]
@@ -413,19 +464,39 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 			echo "Define 'pandora_server_enable=\"YES\"' in /etc/rc.conf to enable pandora server daemon."
 			echo "Define 'tentacle_server_enable=\"YES\"' in /etc/rc.conf to enable tentacle server daemon."
 		fi
+
+		if [ "$DISTRO" = "NetBSD" ]
+		then
+			echo " "
+			echo "Define 'pandora_server=\"YES\"' in /etc/rc.conf to enable pandora server daemon."
+			echo "Define 'tentacle_server=\"YES\"' in /etc/rc.conf to enable tentacle server daemon."
+                fi
+
 	fi
 
 }
 
-uninstall_freebsd () {
-	PANDORA_SPOOL=/var/spool/pandora
-	PANDORA_HOME=/usr/local/share/pandora_server
-	PANDORA_CFG_DIR=/usr/local/etc/pandora
-	PANDORA_LOG=/var/log/pandora
-	PANDORA_SERVER=/usr/local/etc/rc.d/pandora_server
-	TENTACLE_SERVER=/usr/local/etc/rc.d/tentacle_server
-	PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
-	TMP_CRONTAB=/tmp/crontab.tmp
+uninstall_bsd () {
+	if [ "$DISTRO" = "FreeBSD" ]
+	then
+		PANDORA_SPOOL=/var/spool/pandora
+		PANDORA_HOME=/usr/local/share/pandora_server
+		PANDORA_CFG_DIR=/usr/local/etc/pandora
+		PANDORA_LOG=/var/log/pandora
+		PANDORA_SERVER=/usr/local/etc/rc.d/pandora_server
+		TENTACLE_SERVER=/usr/local/etc/rc.d/tentacle_server
+		PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
+		TMP_CRONTAB=/tmp/crontab.tmp
+	else
+		PANDORA_SPOOL=/var/spool/pandora
+		PANDORA_HOME=/usr/local/share/pandora_server
+		PANDORA_CFG_DIR=/usr/local/etc/pandora
+		PANDORA_LOG=/var/log/pandora
+		PANDORA_SERVER=/etc/rc.d/pandora_server
+		TENTACLE_SERVER=/etc/rc.d/tentacle_server
+		PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
+		TMP_CRONTAB=/tmp/crontab.tmp
+        fi
 
 	echo "Removing Pandora Servers"
 	rm -Rf $PANDORA_SPOOL/data_in/
@@ -452,9 +523,9 @@ uninstall () {
 	GET_DISTRO="`get_distro`"
 	DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
 	if [ "`uname -s`" != "Linux" ]; then
-		if [ "$DISTRO" = "FreeBSD" ]
+		if [ "$DISTRO" = "FreeBSD" -o "$DISTRO" = "NetBSD" ]
 		then
-			uninstall_freebsd
+			uninstall_bsd
 		else
 			echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
 		fi

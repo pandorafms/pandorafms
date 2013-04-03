@@ -6,6 +6,11 @@ WriteMakefile(
 	(($^O eq 'freebsd')
 		? (INSTALLSITELIB => '') : ()
 	),
+	($^O eq 'netbsd') ? (
+		INSTALLSITELIB => '/usr/pkg/lib/perl5',
+		INSTALLSITESCRIPT => '/usr/local/bin',
+	) :(),
+
 	NAME            => 'PandoraFMS',
 	VERSION_FROM    => 'lib/PandoraFMS/Config.pm',
 	AUTHOR 			=> 'Artica ST <info@artica.es>',

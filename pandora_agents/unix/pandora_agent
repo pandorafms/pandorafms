@@ -1578,7 +1578,7 @@ sub check_module_cron ($) {
 	return 1 unless ($module->{'cron'} ne '');
 
 	# Check if the module was already executed
-	return 0 unless (time() > $module->{'cron_utimestamp'});
+	return 0 unless (time() >= $module->{'cron_utimestamp'});
 
 	# Get cron configuration
 	my @cron_params = split (/\s/, $module->{'cron'});
@@ -1932,6 +1932,9 @@ if ($Conf{'udp_server'} == 1){
 # Must be set to 0 if the agent is a broker agent
 my $main_agent = -1;
 
+# base time to start eatch iteration with the same interval.
+my $iter_base_time = time();
+
 # Loop
 while (1) {
 
@@ -2159,7 +2162,17 @@ while (1) {
 		# Cron mode
 		last if ($Conf{'cron_mode'} == 1);
 
-		sleep ($Conf{'intensive_interval'});
+		$iter_base_time += $Conf{'intensive_interval'};
+		my $now = time();
+
+		my $interval_remain = $iter_base_time - $now;
+
+		if ($interval_remain >= 0) {
+			sleep ($interval_remain);
+		} else {
+			# don't sleep if iteraion took more than "intensive_interval" seconds
+			$iter_base_time = $now; # use current time as base time
+		}
 	}
 	# Finish if broker agent
 	else {

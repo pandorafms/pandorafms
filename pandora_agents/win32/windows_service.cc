@@ -120,7 +120,7 @@ Windows_Service::execRunFunction () {
 		do {
 			(this->*run_function) ();
 
-			if (sleep_time > 0)
+			if (sleep_time <= 0)
 				break;
 
 			ticknow = GetTickCount();

@@ -263,12 +263,6 @@ ALTER TABLE "treport_content_item" ADD COLUMN "operation" text default '';
 ALTER TABLE "tmensajes" ALTER COLUMN "mensaje" TYPE TEXT;
 
 -- -----------------------------------------------------
--- Table "talert_compound"
--- -----------------------------------------------------
-
-ALTER TABLE "talert_compound" ADD COLUMN "special_day" SMALLINT default 0;
-
--- -----------------------------------------------------
 -- Table "tnetwork_component"
 -- -----------------------------------------------------
 

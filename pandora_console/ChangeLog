@@ -1,3 +1,10 @@
+2013-04-03  Junichi Satoh  <junichi@rworks.jp>
+
+	* extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql: Removed an unnecessary
+	modification, because 'talert_compound' is obsolete.
+
 2013-04-02  Dario Rodriguez <dario@artica.es>
 
 	* include/functions_api.php: New function to create a tag

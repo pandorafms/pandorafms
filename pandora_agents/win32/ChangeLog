@@ -1,3 +1,8 @@
+2013-04-03  Koichiro KIKUCHI <koichiro@rworks.jp>
+
+	* windows_service.cc: Adjust sleep time so that each iteration *starts"
+	 with the same interval.
+
 2013-03-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/util/pandora_revent.exe: Added to repository. Compiled version of

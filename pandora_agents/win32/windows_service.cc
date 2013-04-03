@@ -111,13 +111,32 @@ Windows_Service::setInitFunction (void (Windows_Service::*f) ()) {
  */
 void
 Windows_Service::execRunFunction () {
+	int sleep_time_remain;
+	DWORD tickbase, ticknow;
+
 	if (run_function != NULL) {
-		(this->*run_function) ();
-		if (sleep_time > 0) {
-			while (WaitForSingleObject (stop_event, sleep_time) != WAIT_OBJECT_0) {
-				(this->*run_function) ();
+		tickbase = GetTickCount();
+
+		do {
+			(this->*run_function) ();
+
+			if (sleep_time > 0)
+				break;
+
+			ticknow = GetTickCount();
+
+			// Subtract time taken by run_funtion() from sleep_time
+			// to *start* each iteration with the same interval
+			sleep_time_remain = sleep_time - (ticknow - tickbase);
+
+			if (0 <= sleep_time_remain && sleep_time_remain <= sleep_time) {
+				tickbase += sleep_time;
+			} else {
+				// run_function() took more than "sleep_time", or something goes wrong.
+				sleep_time_remain = 0; // don't sleep
+				tickbase = ticknow; // use current ticks as base ticks
 			}
-		}
+		} while (WaitForSingleObject (stop_event, sleep_time_remain) != WAIT_OBJECT_0);
 	}
 }
 

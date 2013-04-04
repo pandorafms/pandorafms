@@ -1,3 +1,8 @@
+2013-04-04  Mario Pulido <mario.pulido@artica.es>
+
+	* extensions/update_manager/main.php: Fixed information bug and
+	added help tip in offline packages loader
+
 2013-04-04  Mario Pulido <mario.pulido@artica.es>	
 
 	* include/help/en/help_recontask.php,

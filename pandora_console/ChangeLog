@@ -1,3 +1,26 @@
+2013-04-04  Junichi Satoh  <junichi@rworks.jp>
+
+	* images/status_sets/color_text/agent_critical_ball.png,
+	images/status_sets/color_text/agent_down_ball.png,
+	images/status_sets/color_text/agent_no_monitors_ball.png,
+	images/status_sets/color_text/agent_ok_ball.png,
+	images/status_sets/color_text/agent_warning_ball.png,
+	images/status_sets/color_text/alert_disabled_ball.png,
+	images/status_sets/color_text/alert_fired_ball.png,
+	images/status_sets/color_text/alert_not_fired_ball.png,
+	images/status_sets/color_text/module_critical_ball.png,
+	images/status_sets/color_text/module_no_data_ball.png,
+	images/status_sets/color_text/module_warning_ball.png,
+	images/status_sets/color_text/server_down_ball.png,
+	images/status_sets/color_text/server_ok_ball.png,
+	images/status_sets/color_text/severity_informational.png,
+	images/status_sets/color_text/severity_maintenance.png,
+	images/status_sets/color_text/severity_normal.png,
+	images/status_sets/color_text/severity_warning.png: Added missing
+	image files.
+
+	Merged from trunk.
+
 2013-04-03  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/alerts/alert_actions.php: Fixed that any groups are shown

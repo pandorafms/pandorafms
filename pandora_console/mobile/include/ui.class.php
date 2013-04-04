@@ -437,6 +437,27 @@ class Ui {
 		$this->formAddInput($options);
 	}
 	
+	public function formAddInpuDate($options) {
+		$options['type'] = 'date';
+		$options['data-clear-btn'] = "false";
+		
+		$this->formAddInput($options);
+	}
+	
+	public function formAddCheckbox($options) {
+		$options['type'] = 'checkbox';
+		
+		if (isset($options['checked'])) {
+			if ($options['checked']) {
+				$options['checked'] = 'checked';
+			}
+			else {
+				unset($options['checked']);
+			}
+		}
+		$this->formAddInput($options);
+	}
+	
 	public function formAddSubmitButton($options) {
 		$options['type'] = 'submit';
 		

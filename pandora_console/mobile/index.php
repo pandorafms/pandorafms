@@ -32,6 +32,7 @@ require_once('operation/events.php');
 require_once('operation/alerts.php');
 require_once('operation/agents.php');
 require_once('operation/modules.php');
+require_once('operation/module_graph.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
 
 $system = System::getInstance();
@@ -61,6 +62,10 @@ switch ($action) {
 			case 'modules':
 				$modules = new Modules();
 				$modules->ajax($parameter2);
+				break;
+			case 'module_graph':
+				$module_graph = new ModuleGraph();
+				$module_graph->ajax($parameter2);
 				break;
 		}
 		return;
@@ -114,6 +119,10 @@ switch ($action) {
 			case 'modules':
 				$modules = new Modules();
 				$modules->show();
+				break;
+			case 'module_graph':
+				$module_graph = new ModuleGraph();
+				$module_graph->show();
 				break;
 		}
 		break;

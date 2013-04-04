@@ -440,7 +440,10 @@ class Modules {
 					}
 				}
 				
-				$row[7] = $row[__('Data')] = $output;
+				$row[7] = $row[__('Data')] = 
+					'<a data-ajax="false" href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '">' .
+						html_print_image('images/chart_curve.png', true, array ("style" => 'vertical-align: middle;')) . '</a>' .
+					'&nbsp;' . $output;
 				
 				if (!$ajax) {
 					unset($row[0]);

@@ -112,10 +112,11 @@ Windows_Service::setInitFunction (void (Windows_Service::*f) ()) {
 void
 Windows_Service::execRunFunction () {
 	int sleep_time_remain;
-	DWORD tickbase, ticknow;
+	DWORD ticknow;
 
 	if (run_function != NULL) {
-		tickbase = GetTickCount();
+		// init here
+		setIterationBaseTicks(GetTickCount());
 
 		do {
 			(this->*run_function) ();
@@ -127,14 +128,14 @@ Windows_Service::execRunFunction () {
 
 			// Subtract time taken by run_funtion() from sleep_time
 			// to *start* each iteration with the same interval
-			sleep_time_remain = sleep_time - (ticknow - tickbase);
+			sleep_time_remain = sleep_time - (ticknow - iter_base_ticks);
 
 			if (0 <= sleep_time_remain && sleep_time_remain <= sleep_time) {
-				tickbase += sleep_time;
+				setIterationBaseTicks(iter_base_ticks + sleep_time);
 			} else {
 				// run_function() took more than "sleep_time", or something goes wrong.
 				sleep_time_remain = 0; // don't sleep
-				tickbase = ticknow; // use current ticks as base ticks
+				setIterationBaseTicks(ticknow); // use current ticks as base ticks
 			}
 		} while (WaitForSingleObject (stop_event, sleep_time_remain) != WAIT_OBJECT_0);
 	}
@@ -173,6 +174,19 @@ void
 Windows_Service::setSleepTime (unsigned int s) {
 	sleep_time = s;
 	current_service->sleep_time = sleep_time;
+}
+
+/** 
+ * Set the base tick count.
+ *
+ * This ticks used to start each iteration with the same
+ * interval (this->sleep_time)
+ * @param ticks base tick count..
+ */
+void
+Windows_Service::setIterationBaseTicks(DWORD ticks) {
+	iter_base_ticks = ticks;
+	current_service->iter_base_ticks = ticks;
 }
 
 /** 

@@ -1629,8 +1629,6 @@ void
 Pandora_Windows_Service::pandora_run_broker (string config) {
 	Pandora_Agent_Conf  *conf = NULL;
 	string server_addr;
-    int startup_delay = 0;
-    static unsigned char delayed = 0;
 	unsigned char data_flag = 0;
 	unsigned char intensive_match;
 	
@@ -1725,7 +1723,7 @@ Pandora_Windows_Service::pandora_run () {
 	string server_addr, conf_file, *all_conf;
 	int startup_delay = 0;
 	int i, num;
-	static unsigned char delayed = 0;
+	static bool startup = true;
 	unsigned char data_flag = 0;
 	unsigned char intensive_match;
 	
@@ -1733,12 +1731,16 @@ Pandora_Windows_Service::pandora_run () {
 	
 	conf = this->getConf ();
 	
+	/* process only once at startup */
+	if (startup) {
+		startup = false;
  	/* Sleep if a startup delay was specified */
  	startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
-	if (startup_delay > 0 && delayed == 0) {
-		delayed = 1;
+		if (startup_delay > 0) {
 		pandoraLog ("Delaying startup %d miliseconds", startup_delay);
 		Sleep (startup_delay);
+	}
+		setIterationBaseTicks(GetTickCount());
 	}
 
 	/* Set the run time */

@@ -42,6 +42,7 @@ protected:
 private:
 	HANDLE    stop_event;
 	int       sleep_time;
+	DWORD     iter_base_ticks;
 	SC_HANDLE sc_service;
 	
 	void (Windows_Service::*run_function)  ();
@@ -62,6 +63,7 @@ public:
 	void  setInitFunction  (void (Windows_Service::*f) ());
 	LPSTR getServiceName   ();
 	void  setSleepTime     (unsigned int s);
+	void  setIterationBaseTicks(DWORD ticks);
 
 	void  execRunFunction  ();
 	void  execInitFunction ();

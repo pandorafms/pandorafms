@@ -1,3 +1,10 @@
+2013-04-04  Koichiro KIKUCHI <koichiro@rworks.jp>
+
+	* windows_service.cc,
+	  pandora_windows_service.cc,
+	  windows_service.h: Set iteration base ticks after sleeping startup_delay
+	 to exclude time taken by startup_delay from sleep time subtraction.
+
 2013-04-03  Koichiro KIKUCHI <koichiro@rworks.jp>
 
 	* windows_service.cc: Fixed typo of my previous commit.

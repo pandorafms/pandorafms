@@ -385,7 +385,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 				if [ $? -ne 0 ]
 				then
 					echo "# Pandora FMS" >> /etc/crontab
-					echo "2 0       *       *       *       root    perl /usr/local/share/pandora_server/util/pandora_db.pl /usr/local/etc/pandora/pandora_server.conf" >> /etc/crontab
+					echo "2	*	*	*	*	root	perl /usr/local/share/pandora_server/util/pandora_db.pl /usr/local/etc/pandora/pandora_server.conf" >> /etc/crontab
 				else
 					echo "The crontab for pandora_db.pl is already configured."
 				fi

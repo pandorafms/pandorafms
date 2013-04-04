@@ -1,3 +1,10 @@
+2013-04-04  Junichi Satoh <junichi@rworks.jp>
+
+	* pandora_server_installer: As the same as Linux, changed cron setting
+	of maintenance process for BSD to hourly.
+
+	Merged from trunk.
+
 2013-04-01  Sancho Lerena <slerena@artica.es>
 
 	* DEBIAN/postinst,

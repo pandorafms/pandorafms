@@ -119,7 +119,7 @@ function main_view_enterprise($settings, $user_key) {
 			__('Update Manager is one of the most advanced features of Pandora FMS Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.') .
 		'</p>' .
 		'<p>' .
-		__('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, just delete extension or remove remote server address from Update Manager plugin setup.') .
+		__('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, remove remote server address from Update Manager plugin setup.') .
 		'</p>');
 	
 	
@@ -174,7 +174,7 @@ function main_view_enterprise($settings, $user_key) {
 	$table = null;
 	$table->width = '98%';
 	$table->data = array();
-	$table->data[1][0] = '<h5>'.__('Offline packages loader').'</h5>' . 
+	$table->data[1][0] = '<h5>'.__('Offline packages loader'). ' ' . 		 			ui_print_help_tip (__('Apply, in order, the packets corresponding to your current version'), true) . '</h5>' . 
 		'<input type="hidden" name="upload_package" value="1">' .
 		'<input type="file" size="55" name="fileloaded">' . 
 		'&nbsp;<input class="sub next" type="submit" name="upload_button" value="' . __('Upload') . '">';

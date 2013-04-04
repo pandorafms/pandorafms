@@ -98,7 +98,7 @@ $label = base64_decode(get_parameter('label', ''));
 		<?php
 		
 		// Get input parameters
-		$label = get_parameter ("label","");	
+		$label = get_parameter ("label","");
 		if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
 			echo "<h3 class='error'>" .
 				__('There was a problem locating the source of the graph') .
@@ -130,10 +130,10 @@ $label = base64_decode(get_parameter('label', ''));
 		
 		$time_compare = false;
 		
-		if($time_compare_separated) {
+		if ($time_compare_separated) {
 			$time_compare = 'separated';
 		}
-		else if($time_compare_overlapped) {
+		else if ($time_compare_overlapped) {
 			$time_compare = 'overlapped';
 		}
 		
@@ -258,7 +258,7 @@ $label = base64_decode(get_parameter('label', ''));
 		$data[1] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-
+		
 		$data = array();
 		$data[0] = __('Zoom factor');
 		$options = array ();
@@ -270,31 +270,31 @@ $label = base64_decode(get_parameter('label', ''));
 		$data[1] = html_print_select ($options, "zoom", $zoom, '', '', 0, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-
+		
 		$data = array();
 		$data[0] = __('Time range');
 		$data[1] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-
+		
 		$data = array();
 		$data[0] = __('Show events');
 		$data[1] = html_print_checkbox ("draw_events", 1, (bool) $draw_events, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-
+		
 		$data = array();
 		$data[0] = __('Show alerts');
 		$data[1] = html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-
+		
 		$data = array();
 		$data[0] = __('Show event graph');
 		$data[1] = html_print_checkbox ("show_events_graph", 1, (bool) $show_events_graph, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-
+		
 		switch ($graph_type) {
 			case 'boolean':
 			case 'sparse':
@@ -303,7 +303,7 @@ $label = base64_decode(get_parameter('label', ''));
 				$data[1] = html_print_checkbox ("time_compare_overlapped", 1, (bool) $time_compare_overlapped, true);
 				$table->data[] = $data;
 				$table->rowclass[] = '';
-
+				
 				$data = array();
 				$data[0] = __('Time compare') . ' (' . __('Separated') . ')';
 				$data[1] = html_print_checkbox ("time_compare_separated", 1, (bool) $time_compare_separated, true);
@@ -339,7 +339,7 @@ $label = base64_decode(get_parameter('label', ''));
 		
 		html_print_side_layer($params);
 		?>
-
+		
 	</body>
 </html>
 <script>

@@ -197,9 +197,9 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 	$values2 = array();
 	$i = 0;
 	$max_x = 0;
-	foreach($data as $jsvar => $values) {
+	foreach ($data as $jsvar => $values) {
 		$n_values = count($values);
-		if($n_values > $max_x) {
+		if ($n_values > $max_x) {
 			$max_x = $n_values;
 		}
 		

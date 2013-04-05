@@ -218,7 +218,7 @@ $table->data[8][1] = html_print_select ($lpagination, "pagination", $pagination,
 $table->data[9][0] = '<b>' . __('Max. hours old') . '</b>';
 $table->data[9][1] = html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
 
-$table->data[10][0] = '<b>' . __('User ack.') . '</b>';
+$table->data[10][0] = '<b>' . __('User ack.') . '</b>'. ' ' . ui_print_help_tip (__('Choose between the users who have validated an event. '), true);
 $users = users_get_info ();
 $table->data[10][1] = html_print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0, true);
 

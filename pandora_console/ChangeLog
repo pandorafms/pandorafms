@@ -1,3 +1,7 @@
+2013-04-05  Mario Pulido <mario.pulido@artica.es>
+
+	* godmode/events/event_edit_filter.php: Added help tip in event editor.
+
 2013-04-05 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/operation/agents.php, mobile/operation/tactical.php,

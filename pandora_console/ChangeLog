@@ -1,3 +1,10 @@
+2013-04-05 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/agents.php, mobile/operation/tactical.php,
+	mobile/operation/home.php, mobile/include/style/main.css,
+	include/functions_html.php, include/functions_reporting.php: some
+	fixes and improves in the mobile console.
+
 2013-04-05  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_recontask.php: Updated help.

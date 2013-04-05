@@ -30,9 +30,9 @@ class Home {
 		$ui->createDefaultHeader(__("PandoraFMS: Home"));
 		$ui->showFooter(false);
 		$ui->beginContent();
-			$ui->beginForm();
+			$ui->beginForm("index.php?page=agents");
 			$options = array(
-				'name' => 'global_search',
+				'name' => 'free_search',
 				'value' => $this->global_search,
 				'placeholder' => __('Global search')
 				);
@@ -60,97 +60,16 @@ class Home {
 					'text' => __('Alerts'),
 					'href' => 'index.php?page=alerts');
 			$ui->contentAddHtml($ui->createButton($options));
-			//~ 
-			//~ $ui->contentAddHtml('
-			//~ <style>
-//~ /* Basic styles */
-//~ .container div {
-    //~ text-align: left;
-    //~ border-color: #ddd;
-//~ }
-  //~ .container p {
-    //~ color: #777;
-    //~ line-height: 140%
-//~ }
-//~ /* Stack all blocks to start */
-//~ .container .ui-block-a,
-//~ .container .ui-block-b,
-//~ .container .ui-block-c {
-    //~ width: 100%;
-    //~ float: none;
-//~ }
-//~ /* 1st breakpoint - Float B and C, leave A full width on top */
-//~ @media all and (min-width: 42em){
-    //~ .container div {
-       //~ min-height:14em;
-    //~ }
-    //~ .container .ui-block-b,
-    //~ .container .ui-block-c {
-      //~ float:left;
-      //~ width: 49.95%;
-    //~ }
-    //~ .container .ui-block-b p,
-    //~ .container .ui-block-c p {
-      //~ font-size:.8em;
-    //~ }
-//~ }
-//~ /* 2nd breakpoint - Float all, 50/25/25 */
-//~ @media all and (min-width: 55em){
-    //~ .container div {
-       //~ min-height:17em;
-    //~ }
-    //~ .container .ui-block-a,
-    //~ .container .ui-block-c {
-      //~ float:left;
-      //~ width: 49.95%;
-    //~ }
-    //~ .container .ui-block-b,
-    //~ .container .ui-block-c {
-      //~ float:left;
-      //~ width: 24.925%;
-    //~ }
-//~ }
-//~ /* 3rd breakpoint - Bump up font size at very wide screens */
-//~ @media all and (min-width: 75em){
-    //~ .container {
-      //~ font-size:125%;
-    //~ }
-    //~ .container .ui-block-a,
-    //~ .container .ui-block-c {
-      //~ float:left;
-      //~ width: 49.95%;
-    //~ }
-    //~ .container .ui-block-b,
-    //~ .container .ui-block-c {
-      //~ float:left;
-      //~ width: 24.925%;
-    //~ }
-//~ }
-			//~ </style>
-			//~ <div class="container">
-    //~ <!-- Lead story block -->
-    //~ <div class="ui-block-a">
-      //~ <div class="ui-body ui-body-d">
-        //~ <h2>Apple schedules iPad Mini event for October 23</h2>
-        //~ <p>One of the worst-kept secrets in tech has been confirmed: Apple will hold an event October 23 in San Jose, California, at which the company is widely expected to unveil a smaller, cheaper version of its popular iPad called "Mini".</p>
-      //~ </div>
-    //~ </div>
-    //~ <!-- secondary story block #1 -->
-    //~ <div class="ui-block-b">
-      //~ <div class="ui-body ui-body-d">
-        //~ <h4>Microsoft Surface tablet goes on sale for $499</h4>
-        //~ <p>The Microsoft Surface tablet picture has come into focus. The Redmond giant filled in the blanks on the new tablets availability and specs.</p>
-      //~ </div>
-     //~ </div>
-    //~ <!-- secondary story block #2 -->
-    //~ <div class="ui-block-c">
-      //~ <div class="ui-body ui-body-d">
-        //~ <h4>AOL unveils Alto, an email service that syncs 5 accounts</h4>
-        //~ <p>AOL, struggling to shed its outdated image, is reimagining one of the most visibly aging parts of its platform: Its email service. </p>
-      //~ </div>
-     //~ </div>
-//~ </div>');
-		
+			$options = array('icon' => 'grid',
+					'pos' => 'right',
+					'text' => __('Agents'),
+					'href' => 'index.php?page=agents');
+			$ui->contentAddHtml($ui->createButton($options));
+			$options = array('icon' => 'check',
+					'pos' => 'right',
+					'text' => __('Modules'),
+					'href' => 'index.php?page=modules');
+			$ui->contentAddHtml($ui->createButton($options));
 		$ui->endContent();
 		$ui->showPage();
 		return;

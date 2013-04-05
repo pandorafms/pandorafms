@@ -22,9 +22,19 @@ label, input, .ui-btn-inner {
 	font-size: 12px !important;
 }
 
+
+
+/*INIT----------Tactical styles-----------------------------------------*/
 #tactical * {
 	font-size: 14px !important;
 }
+
+#tactical a {
+	font-size: 25px !important;
+}
+/*END-----------Tactical styles-----------------------------------------*/
+
+
 
 /*INIT----------Groups styles-----------------------------------------*/
 .group_view tr {

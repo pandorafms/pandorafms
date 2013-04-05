@@ -983,24 +983,35 @@ function reporting_get_stats_servers($tiny = true) {
 	return $output;
 }
 
-function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_height = 150) {
+function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_height = 150, $links = false) {
 	global $config;
 	
 	// Link URLS
-	$urls = array();
-	$urls['monitor_critical'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=2";
-	$urls['monitor_warning'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=1";
-	$urls['monitor_ok'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=0";
-	$urls['monitor_unknown'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=3";
-	$urls['monitor_not_init'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=5";
-
+	if ($links === false) {
+		$urls = array();
+		$urls['monitor_critical'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=2";
+		$urls['monitor_warning'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=1";
+		$urls['monitor_ok'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=0";
+		$urls['monitor_unknown'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=3";
+		$urls['monitor_not_init'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=5";
+	}
+	else {
+		$urls = array();
+		$urls['monitor_critical'] = $links['monitor_critical'];
+		$urls['monitor_warning'] = $links['monitor_warning'];
+		$urls['monitor_ok'] = $links['monitor_ok'];
+		$urls['monitor_unknown'] = $links['monitor_unknown'];
+		$urls['monitor_not_init'] = $links['monitor_not_init'];
+	}
+	
 	// Modules by status table
 	$table_mbs = html_get_predefined_table();
-
+	$table_mbs->class = "tactical_monitors";
+	
 	$table_mbs->style[0] = $table_mbs->style[2] = 'text-align: right; padding-right: 3px;';
 	$table_mbs->style[1] = $table_mbs->style[3] = 'text-align: left; padding-left: 3px;';
-
-	if($data["monitor_checks"] > 0) {
+	
+	if ($data["monitor_checks"] > 0) {
 		$tdata = array();
 		$table_mbs->colspan[count($table_mbs->data)][0] = 4;
 		$table_mbs->cellstyle[count($table_mbs->data)][0] = 'text-align: center;';
@@ -1014,33 +1025,33 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	$tdata[0] = html_print_image('images/status_sets/default/agent_critical_ball.png', true, array('title' => __('Monitor critical'), 'width' => '20px'));
 	$tdata[1] = $data["monitor_critical"] <= 0 ? '-' : $data["monitor_critical"];
 	$tdata[1] = '<a style="color: ' . COL_CRITICAL . ';" class="big_data" href="' . $urls['monitor_critical'] . '">' . $tdata[1] . '</a>';
-
+	
 	$tdata[2] = html_print_image('images/status_sets/default/agent_warning_ball.png', true, array('title' => __('Monitor warning'), 'width' => '20px'));
 	$tdata[3] = $data["monitor_warning"] <= 0 ? '-' : $data["monitor_warning"];
 	$tdata[3] = '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
-
+	
 	$tdata = array();
 	$tdata[0] = html_print_image('images/status_sets/default/agent_ok_ball.png', true, array('title' => __('Monitor normal'), 'width' => '20px'));
 	$tdata[1] = $data["monitor_ok"] <= 0 ? '-' : $data["monitor_ok"];
 	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
-
+	
 	$tdata[2] = html_print_image('images/status_sets/default/agent_no_monitors_ball.png', true, array('title' => __('Monitor unknown'), 'width' => '20px'));
 	$tdata[3] = $data["monitor_unknown"] <= 0 ? '-' : $data["monitor_unknown"];
 	$tdata[3] = '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
-
+	
 	$tdata = array();
 	$tdata[0] = html_print_image('images/status_sets/default/agent_no_data_ball.png', true, array('title' => __('Monitor not init'), 'width' => '20px'));
 	$tdata[1] = $data["monitor_not_init"] <= 0 ? '-' : $data["monitor_not_init"];
 	$tdata[1] = '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
-
+	
 	$tdata[2] = $tdata[3] = '';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
-
+	
 	$output = '<fieldset class="databox" style="width:97%;">
 				<legend style="text-align:left; color: #666;">' . 
 					__('Monitors by status') . 

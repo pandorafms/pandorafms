@@ -82,9 +82,9 @@ class Agents {
 								__('Alerts') . '</b>' . $agent[7];
 							$agent[8] = '<b class="ui-table-cell-label">' . 
 								__('Last contact') . '</b>' . $agent[8];
+							
+							$agents[$key] = $agent;
 						}
-						
-						$agents[$key] = $agent;
 					}
 					
 					echo json_encode(array('end' => $end, 'agents' => $agents));

@@ -1,3 +1,7 @@
+2013-04-05  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_recontask.php: Updated help.
+
 2013-04-04 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/graphs/functions_flot.php, operation/agentes/stat_win.php:

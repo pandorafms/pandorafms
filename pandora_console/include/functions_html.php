@@ -1177,7 +1177,7 @@ function html_get_predefined_table ($model = 'transparent', $columns = 4) {
 			$table->style = array_fill(0, 4, 'text-align:center; width: ' . $width_percent . '%;');
 			$table->width = "100%";
 	}
-
+	
 	return $table;
 }
 

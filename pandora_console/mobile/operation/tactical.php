@@ -62,19 +62,22 @@ class Tactical {
 				$data = reporting_get_group_stats();
 				$data['mobile'] = true;
 				
-				$formatted_data = reporting_get_stats_indicators($data, 280, 20, false);
+				$formatted_data = reporting_get_stats_indicators($data, 200, 10, false);
+				/*
 				$overview = '<fieldset class="databox" style="width:97%;">
 						<legend style="text-align:left; color: #666;">' .
 							$formatted_data['server_health']['title'] . 
 						'</legend>' . 
 						$formatted_data['server_health']['graph'] . 
 					'</fieldset>' .
+					
 					'<fieldset class="databox" style="width:97%;">
 						<legend style="text-align:left; color: #666;">' .
 							$formatted_data['monitor_health']['title'] . 
 						'</legend>' . 
 						$formatted_data['monitor_health']['graph'] . 
 					'</fieldset>' .
+					
 					'</fieldset>' .
 					'<fieldset class="databox" style="width:97%;">
 						<legend style="text-align:left; color: #666;">' .
@@ -89,11 +92,37 @@ class Tactical {
 						'</legend>' . 
 						$formatted_data['alert_level']['graph'] . 
 					'</fieldset>';
+				*/
+				$overview = '<table>
+						<tr>
+							<td>' . $formatted_data['server_health']['title'] . '</td>
+							<td>' . $formatted_data['server_health']['graph'] . '</td>
+						</tr>
+						<tr>
+							<td>' . $formatted_data['monitor_health']['title'] . '</td>
+							<td>' . $formatted_data['monitor_health']['graph'] . '</td>
+						</tr>
+						<tr>
+							<td>' . $formatted_data['module_sanity']['title'] . '</td>
+							<td>' . $formatted_data['module_sanity']['graph'] . '</td>
+						</tr>
+						<tr>
+							<td>' . $formatted_data['alert_level']['title'] . '</td>
+							<td>' . $formatted_data['alert_level']['graph'] . '</td>
+						</tr>
+					</table>';
+				
 				$ui->contentGridAddCell($overview);
 				
 				$formatted_data = reporting_get_stats_alerts($data);
 				ob_start();
-				$formatted_data .= reporting_get_stats_modules_status($data) . "<br />\n" .
+				$links = array();
+				$links['monitor_critical'] = "index.php?page=modules&status=1";
+				$links['monitor_warning'] = "index.php?page=modules&status=2";
+				$links['monitor_ok'] = "index.php?page=modules&status=0";
+				$links['monitor_unknown'] = "index.php?page=modules&status=3";
+				$links['monitor_not_init'] = "index.php?page=modules&status=5";
+				$formatted_data .= reporting_get_stats_modules_status($data, 250, 150, $links) . "<br />\n" .
 					reporting_get_stats_agents_monitors($data);
 				$graph_js = ob_get_clean();
 				$formatted_data = $graph_js . $formatted_data;

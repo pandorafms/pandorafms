@@ -14,6 +14,10 @@ body {
 	vertical-align: top;
 }
 
+.small {
+	font-size: 10px !important;
+}
+
 .ui-header .ui-title {
 	font-size: 14px !important;
 }
@@ -402,9 +406,9 @@ table#list_events th {
 }
 
 @media screen and (max-width: 35em) {
-	/* Put in new line the event name */
+	/* Hide the title of event name */
 	#list_events tbody tr.events td.cell_0 b.ui-table-cell-label {
-		display: block;
+		display: none;
 	}
 }
 
@@ -432,7 +436,9 @@ table#list_events th {
 	#list_agents .cell_2 .ui-table-cell-label,
 	#list_agents .cell_3 .ui-table-cell-label,
 	#list_agents .cell_6 .ui-table-cell-label,
-	#list_agents .cell_7 .ui-table-cell-label {
+	#list_agents .cell_4 .ui-table-cell-label,
+	#list_agents .cell_5 .ui-table-cell-label,
+	#list_agents .cell_8 .ui-table-cell-label {
 		min-width: auto !important;
 	}
 	
@@ -448,6 +454,25 @@ table#list_events th {
 	#list_agents .cell_7 {
 		display: inline !important;
 		float: none !important;
+	}
+	
+	#list_agents .cell_4,
+	#list_agents .cell_8 {
+		display: inline !important;
+		float: none !important;
+	}
+	
+	#list_agents .cell_8 {
+		display: inline !important;
+		float: none !important;
+	}
+	
+	#list_agents b.ui-table-cell-label {
+		display: none;
+	}
+	
+	#list_agents .show_collapside {
+		display: inline !important;
 	}
 }
 /*END-----------Agents styles-----------------------------------------*/

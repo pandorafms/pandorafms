@@ -867,25 +867,26 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			/* Event type */
 			$data[2] = events_print_type_img ($event["event_type"], true);
 			
-			if($agent_id == 0) {
-				$data[3] = ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '9');
-			}
+			/* Event text */
+			$data[3] = ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '9');
 			
-			if ($event["id_agente"] > 0) {
-				// Agent name
-				// Get class name, for the link color...
-				$myclass =  get_priority_class ($event["criticity"]);
-				
-				$data[4] = "<a class='$myclass' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'>".agents_get_name ($event["id_agente"]). "</A>";
-				
-			// ui_print_agent_name ($event["id_agente"], true, 25, '', true);
-			// for System or SNMP generated alerts
-			}
-			elseif ($event["event_type"] == "system") {
-				$data[4] = __('System');
-			}
-			else {
-				$data[4] = __('Alert')."SNMP";
+			if($agent_id == 0) {
+				if ($event["id_agente"] > 0) {
+					// Agent name
+					// Get class name, for the link color...
+					$myclass =  get_priority_class ($event["criticity"]);
+					
+					$data[4] = "<a class='$myclass' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'>".agents_get_name ($event["id_agente"]). "</A>";
+					
+				// ui_print_agent_name ($event["id_agente"], true, 25, '', true);
+				// for System or SNMP generated alerts
+				}
+				elseif ($event["event_type"] == "system") {
+					$data[4] = __('System');
+				}
+				else {
+					$data[4] = __('Alert')."SNMP";
+				}
 			}
 			
 			// Timestamp

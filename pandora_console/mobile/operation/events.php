@@ -127,6 +127,15 @@ class Events {
 					
 					$event = events_get_event($id_event);
 					if ($event) {
+						//Check if it is a event from module.
+						if ($event['id_agentmodule'] > 0) {
+							$event['module_graph_link'] =
+								'<a data-ajax="false" href="index.php?page=module_graph&id=' . $event['id_agentmodule'] . '">' .
+								html_print_image('images/chart_curve.png', true, array ("style" => 'vertical-align: middle;')) .
+								'</a>';
+						}
+						
+						
 						$event['evento'] = io_safe_output($event['evento']);
 						
 						$event['clean_tags'] = events_clean_tags($event['tags']);
@@ -361,32 +370,17 @@ class Events {
 			$options['title_close_button'] = true;
 			$options['title_text'] = __('Event detail');
 			
-			$table = new Table();
-			$table->row_keys_as_head_row = true;
-			$table->addRow(array('event_id' => ""), __('Event ID'));
-			$table->addRow(array('event_name' => ""), __('Event name'));
-			$table->addRow(array('event_timestamp' => ""), __('Timestamp'));
-			$table->addRow(array('event_owner' => ""), __('Owner'));
-			$table->addRow(array('event_type' => ""), __('Type'));
-			$table->addRow(array('event_repeated' => ""), __('Repeated'));
-			$table->addRow(array('event_severity' => ""), __('Severity'));
-			$table->addRow(array('event_status' => ""), __('Status'));
-			$table->addRow(array('event_acknowledged_by' => ""), __('Acknowledged by'));
-			$table->addRow(array('event_group' => ""), __('Group'));
-			$table->addRow(array('event_tags' => ""), __('Tags'));
-			
 			//Content
 			ob_start();
 			?>
 			<table class="pandora_responsive">
 				<tbody>
+					<tr class="event_name">
+						<td class="cell_event_name" colspan="2"></td>
+					</tr>
 					<tr class="event_id">
 						<th><?php echo __('Event ID');?></th>
 						<td class="cell_event_id"></td>
-					</tr>
-					<tr class="event_name">
-						<th><?php echo __('Event name');?></th>
-						<td class="cell_event_name"></td>
 					</tr>
 					<tr class="event_timestamp">
 						<th><?php echo __('Timestamp');?></th>
@@ -419,6 +413,11 @@ class Events {
 					<tr class="event_group">
 						<th><?php echo __('Group');?></th>
 						<td class="cell_event_group"></td>
+					</tr>
+					</tr>
+					<tr class="event_module_graph">
+						<th><?php echo __('Module Graph');?></th>
+						<td class="cell_module_graph"></td>
 					</tr>
 					<tr class="event_tags">
 						<th><?php echo __('Tags');?></th>
@@ -777,6 +776,13 @@ class Events {
 										.html(event[\"group\"]);
 									$(\"#detail_event_dialog .cell_event_tags\")
 										.html(event[\"tags\"]);
+									
+									//The link to module graph
+									$(\".event_module_graph\").hide();
+									if (event[\"id_agentmodule\"] != \"0\") {
+										$(\".event_module_graph\").show();
+										$(\".cell_module_graph\").html(event[\"module_graph_link\"]);
+									}
 									
 									$(\"#event_id\").val(id_event);
 									

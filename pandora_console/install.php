@@ -498,6 +498,9 @@ function install_step2() {
 			if (PHP_OS == "FreeBSD") {
 				$res += check_exists ("/usr/local/bin/twopi","Graphviz Binary");
 			}
+			else if (PHP_OS == "NetBSD") {
+				$res += check_exists ("/usr/pkg/bin/twopi","Graphviz Binary");
+			}
 			else {
 				$res += check_exists ("/usr/bin/twopi","Graphviz Binary");
 			}

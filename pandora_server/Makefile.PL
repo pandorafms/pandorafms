@@ -7,7 +7,7 @@ WriteMakefile(
 		? (INSTALLSITELIB => '') : ()
 	),
 	($^O eq 'netbsd') ? (
-		INSTALLSITELIB => '/usr/pkg/lib/perl5',
+		INSTALLSITELIB => '',
 		INSTALLSITESCRIPT => '/usr/local/bin',
 	) :(),
 

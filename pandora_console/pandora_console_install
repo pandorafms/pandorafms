@@ -51,7 +51,12 @@ get_distro () {
 						then
 							LINUX_DISTRO=FreeBSD
 						else
-							LINUX_DISTRO=GENERIC
+							if [ "$OS_NAME" = "NetBSD" ]
+							then
+								LINUX_DISTRO=NetBSD
+							else
+								LINUX_DISTRO=GENERIC
+							fi
 						fi
 						OS_VERSION=`uname -r`
 					fi
@@ -81,7 +86,12 @@ uninstall () {
 				then
 					PANDORA_HOME="/usr/local/www/data/pandora_console /usr/local/www/apache22/data/pandora_console"
 				else
-					PANDORA_HOME=/srv/www/htdocs/pandora_console
+					if [ "$DISTRO" = "NetBSD" ]
+					then
+						PANDORA_HOME="/usr/pkg/share/httpd/htdocs/pandora_console"
+					else
+						PANDORA_HOME=/srv/www/htdocs/pandora_console
+					fi
 				fi
 			fi
 		fi
@@ -123,8 +133,14 @@ install () {
 					fi
 					PANDORA_CONF=$PANDORA_HOME/include/config.php
 				else
-					PANDORA_HOME=/srv/www/htdocs/pandora_console
-					PANDORA_CONF=$PANDORA_HOME/include/config.php
+					if [ "$DISTRO" = "NetBSD" ]
+					then
+						PANDORA_HOME=/usr/pkg/share/httpd/htdocs/pandora_console
+						PANDORA_CONF=$PANDORA_HOME/include/config.php
+					else
+						PANDORA_HOME=/srv/www/htdocs/pandora_console
+						PANDORA_CONF=$PANDORA_HOME/include/config.php
+					fi
 				fi
 			fi
 		fi
@@ -190,7 +206,7 @@ install () {
 				chown -R apache:apache $PANDORA_HOME
 				chown -R pandora:apache /var/spool/pandora/	
 			else
-				if [ "$DISTRO" = "FreeBSD" ]
+				if [ "$DISTRO" = "FreeBSD" -o "$DISTRO" = "NetBSD" ]
 				then
 					chown -R www:www $PANDORA_HOME
 					chown -R pandora:www /var/spool/pandora/

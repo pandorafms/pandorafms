@@ -360,6 +360,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client perl-S
 					echo "Installing tentacle server"
 					cp bin/tentacle_server /usr/local/bin
 					chown pandora /usr/local/bin/tentacle_server
+					chmod 555 /usr/local/bin/tentacle_server
 					cp FreeBSD/tentacle_server $TENTACLE_SERVER
 					chmod 555 $TENTACLE_SERVER
 					echo "Installing Tentacle Server manual"

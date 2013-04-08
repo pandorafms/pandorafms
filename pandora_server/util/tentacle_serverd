@@ -113,9 +113,9 @@ case "$1" in
 		else
 			kill $TENTACLE_PID
 			sleep 1
-			TENTACLE_PID=`get_pid`
+			_PID=`get_pid`
 
-			if [ ! -z "$TENTACLE_PID" ]; then
+			if [ "$_PID" = "$TENTACLE_PID" ]; then
 				echo "Tentacle Server could not be stopped"
 				rc_status -s
 			fi

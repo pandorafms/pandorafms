@@ -1,5 +1,10 @@
 2013-04-08 Hirofumi Kosaka <kosaka@rworks.jp>
 
+	* util/tentacle_serverd: Tiny improvement. Changed to use
+	target process id to check if the process has been stopped.
+
+2013-04-08 Hirofumi Kosaka <kosaka@rworks.jp>
+
 	* util/pandora_server: Small improvement. Pinned target
 	process id to be killed when stopping Pandora Server, to avoid
 	to kill other processes that could be invoked in different

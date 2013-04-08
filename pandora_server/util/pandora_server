@@ -108,8 +108,8 @@ case "$1" in
 
 		while [ $COUNTER -lt $MAXWAIT ]
 	 		do
- 				PANDORA_PID=`pidof_pandora`
-				if [ -z "$PANDORA_PID" ]
+ 				_PID=`pidof_pandora`
+				if [ "$_PID" != "$PANDORA_PID" ]
  				then
 					COUNTER=$MAXWAIT
 				fi
@@ -119,7 +119,7 @@ case "$1" in
 		
 			# Send a KILL -9 signal to process, if it's alive after 60secs, we need
 			# to be sure is really dead, and not pretending...
-			if [ ! -z "$PANDORA_PID" ]
+			if [ "$_PID" = "$PANDORA_PID" ]
 			then
 				kill -9 $PANDORA_PID   > /dev/null 2>&1
 			fi

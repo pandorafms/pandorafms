@@ -492,12 +492,35 @@ table#list_events th {
 		padding-left: 10px;
 	}
 	
-	#list_Modules .cell_1,
-	#list_Modules .cell_5,
-	#list_Modules .cell_6 {
+	#list_Modules .cell_3,
+	#list_Modules .cell_4 {
 		display: inline !important;
 		float: none !important;
 	}
+	
+	#list_Modules .cell_0 .ui-table-cell-label,
+	#list_Modules .cell_1 .ui-table-cell-label,
+	#list_Modules .cell_3 .ui-table-cell-label,
+	#list_Modules .cell_4 .ui-table-cell-label,
+	#list_Modules .cell_5 .ui-table-cell-label {
+		display: none;
+	}
+	
+	#list_Modules .show_collapside {
+		display: inline !important;
+	}
+	
+	#list_Modules .data {
+		white-space: nowrap;
+	}
+	
+	#list_Modules .cell_2 {
+		display: none !important;
+	}
+}
+
+#list_Modules .cell_5 a {
+	color: #000000 !important;
 }
 /*END------------Modules styles---------------------------------------*/
 

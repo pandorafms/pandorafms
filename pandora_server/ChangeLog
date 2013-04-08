@@ -1,3 +1,10 @@
+2013-04-08  Hirofumi Kosaka <kosaka@rworks.jp>
+
+        * util/tentacle_serverd: Tiny improvement. Changed to use
+	target process id to check if the process is actually stopped.
+
+	Merged from trunk.
+
 2013-04-08  Junichi Satoh <junichi@rworks.jp>
 
 	* pandora_server_installer: Fixed wrong permission of tentacle_server

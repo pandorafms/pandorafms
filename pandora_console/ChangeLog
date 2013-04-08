@@ -1,3 +1,8 @@
+2013-04-08 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/modules.php, mobile/include/style/main.css: some
+	fixes and improves for the list of modules.
+
 2013-04-07  Junichi Satoh  <junichi@rworks.jp>
 
 	* pandora_console_install, install.php: Added support for NetBSD.

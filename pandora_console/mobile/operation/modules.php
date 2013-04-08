@@ -351,12 +351,12 @@ class Modules {
 			$modules = array();
 			foreach ($modules_db as $module) {
 				$row = array();
-				$row[0] = $row[__('Agent name')] = $module['agent_name'];
-				$row[1] = $row[__('Type')] = html_print_image("images/" .
-					modules_show_icon_type($module["module_type"]), true);
-				$row[2] = $row[__('Module name')] = $module['module_name'];
-				$row[3] = $row[__('Tags')] = $module['tags'];
-				$row[4] = $row[__('Interval')] = ($module['module_interval'] == 0) ? human_time_description_raw($module['agent_interval']) : human_time_description_raw($module['module_interval']);
+				$row[0] = $row[__('Agent name')] =
+					'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Agent') . ' </span>' .
+					$module['agent_name'] . '</span>';
+				$row[2] = $row[__('Module name')] =
+					'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Module') . ' </span>' .
+					$module['module_name'];
 				if ($module['utimestamp'] == 0 && (($module['module_type'] < 21 ||
 					$module['module_type'] > 23) && $module['module_type'] != 100)) {
 					$row[5] = $row[__('Status')] = ui_print_status_image(STATUS_MODULE_NO_DATA,
@@ -395,8 +395,18 @@ class Modules {
 							break;
 					}
 				}
-				$row[6] = $row[__('Timestamp')] = ui_print_timestamp(
-					$module["utimestamp"], true);
+				
+				$row[4] = $row[__('Interval')] =
+					($module['module_interval'] == 0) ? human_time_description_raw($module['agent_interval']) : human_time_description_raw($module['module_interval']);
+					
+				$row[4] = $row[__('Interval')] = '<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Interval.') . ' </span>' .
+					$row[__('Interval')] .
+					'</span>';
+				
+				
+				$row[6] = $row[__('Timestamp')] =
+					'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">&nbsp;' . __('Last update.') . ' </span>' .
+					ui_print_timestamp($module["utimestamp"], true) . '</span>';
 				if (is_numeric($module["datos"])) {
 					$output = format_numeric($module["datos"]);
 					
@@ -441,15 +451,16 @@ class Modules {
 				}
 				
 				$row[7] = $row[__('Data')] = 
-					'<a data-ajax="false" href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '">' .
-						html_print_image('images/chart_curve.png', true, array ("style" => 'vertical-align: middle;')) . '</a>' .
-					'&nbsp;' . $output;
+					'<span style="white-space: nowrap;">' .
+					'<span style="display: none;" class="show_collapside">' . $row[__('Status')] . '&nbsp;&nbsp;</span>' .
+					'<a data-ajax="false" class="ui-link" href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '">' .
+						'<span style="vertical-align: 30%;">' . html_print_image('images/chart_curve.png', true, array ("style" => 'vertical-align: middle;')) . '</span>' .
+					'&nbsp;' . $output . '</a>' . '</span>';
 				
 				if (!$ajax) {
 					unset($row[0]);
 					unset($row[1]);
 					unset($row[2]);
-					unset($row[3]);
 					unset($row[4]);
 					unset($row[5]);
 					unset($row[6]);
@@ -524,17 +535,15 @@ class Modules {
 											$(\"#loading_rows\").hide();
 										}
 										else {
-											$.each(data.module, function(key, module) {
-												$(\"table#list_events tbody\").append(\"<tr>\" +
-														\"<th></th>\" +
-														\"<td>\" + module[0] + \"</td>\" +
-														\"<td>\" + module[1] + \"</td>\" +
-														\"<td>\" + module[2] + \"</td>\" +
-														\"<td>\" + module[3] + \"</td>\" +
-														\"<td>\" + module[4] + \"</td>\" +
-														\"<td>\" + module[5] + \"</td>\" +
-														\"<td>\" + module[6] + \"</td>\" +
-														\"<td>\" + module[7] + \"</td>\" +
+											$.each(data.modules, function(key, module) {
+												$(\"table#list_Modules tbody\").append(\"<tr>\" +
+														\"<th class='head_vertical'></th>\" +
+														\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[0] + \"</td>\" +
+														\"<td class='cell_1'><b class='ui-table-cell-label'>" . __('Module name') . "</b>\" + module[2] + \"</td>\" +
+														\"<td class='cell_2'><b class='ui-table-cell-label'>" . __('Status') . "</b>\" + module[5] + \"</td>\" +
+														\"<td class='cell_3'><b class='ui-table-cell-label'>" . __('Interval') . "</b>\" + module[4] + \"</td>\" +
+														\"<td class='cell_4'><b class='ui-table-cell-label'>" . __('Timestamp') . "</b>\" + module[6] + \"</td>\" +
+														\"<td class='cell_5'><b class='ui-table-cell-label'>" . __('Data') . "</b>\" + module[7] + \"</td>\" +
 													\"</tr>\");
 												});
 											

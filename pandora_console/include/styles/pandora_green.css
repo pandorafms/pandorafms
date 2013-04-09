@@ -1514,3 +1514,57 @@ div.cellBig {
 	width: 30px !important;
 	text-align: center;
 }
+
+
+
+/* Standard styles for status colos (groups, events, backgrounds...) */
+tr.group_view_crit, .group_view_crit {
+	background-color:  #FA3030;
+}
+
+tr.group_view_norm, .group_view_norm {
+	background-color: #ffffff;
+}
+tr.group_view_ok, .group_view_ok {
+	background-color: #00C000;
+}
+
+tr.group_view_warn, .group_view_warn, tr.group_view_warn.a, a.group_view_warn, tr.a.group_view_warn {
+	background-color: #F5E535;
+}
+
+a.group_view_warn {
+	color: #000;
+}
+
+tr.group_view_alrm, .group_view_alrm {
+	background-color: #ED8701;
+}
+
+tr.group_view_unk, .group_view_unk {
+	background-color: #C4C4C4;
+}
+
+tr.group_view_data, .group_view_data {
+	color: #000;
+}
+
+.group_view_data_unk {
+	color: #303030;
+}
+
+.group_view_data_ok{
+	color: #00C000;
+}
+
+.group_view_data_crit {
+	color: #5C0000;
+}
+
+.group_view_data_alrm {
+	color: #5C1D00;
+}
+
+.group_view_data_warn {
+	color: #5C5900;
+}

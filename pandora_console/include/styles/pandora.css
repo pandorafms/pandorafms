@@ -1409,7 +1409,7 @@ td.scwWeek {
 	color: #000 !important;
 }
 
-/* Today selector */                                      
+/* Today selector */
 td.scwFoot {
 	background-color: #daedae;
 	color: #000;
@@ -1425,7 +1425,7 @@ tfoot.scwFoot {
 }
 
 .scwFoot :hover{
-        color: #FFA500 !important;
+	color: #FFA500 !important;
 }
 
 /* Cells divs to set individual styles with the table objects */

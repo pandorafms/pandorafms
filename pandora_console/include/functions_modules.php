@@ -172,7 +172,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 		
 		if ($source_tags ==  false)
 			$source_tags = array();
-		
+			
 		tags_insert_module_tag($id_new_module, $source_tags);
 		
 		//Added the config data if necesary

@@ -25,7 +25,7 @@ require_once ($config['homedir'].'/include/functions_users.php');
  */
 function groups_check_used($idGroup) {
 	global $config;
-
+	
 	$return = array();
 	$return['return'] = false;
 	$return['tables'] = array();
@@ -53,7 +53,7 @@ function groups_check_used($idGroup) {
 			$numRows = db_get_num_rows('SELECT * FROM talert_actions WHERE id_group = ' . $idGroup);
 			break;
 	}
-
+	
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Alert Actions'); 
@@ -68,7 +68,7 @@ function groups_check_used($idGroup) {
 			$numRows = db_get_num_rows('SELECT * FROM talert_templates WHERE id_group = ' . $idGroup);
 			break;
 	}
-
+	
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Alert Templates'); 
@@ -87,7 +87,7 @@ function groups_check_used($idGroup) {
 		$return['return'] = true;
 		$return['tables'][] = __('Recon task'); 
 	}
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":	
@@ -125,7 +125,7 @@ function groups_check_used($idGroup) {
 			$numRows = db_get_num_rows('SELECT * FROM tlayout WHERE id_group = ' . $idGroup);
 			break;
 	}
-
+	
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Layout visual console'); 

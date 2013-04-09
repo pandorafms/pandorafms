@@ -1,3 +1,14 @@
+2013-03-13 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_groups.php, include/functions_modules.php:
+	improved the source code style.
+	
+	* include/styles/pandora_green.css,
+	include/styles/pandora_legacy.css, include/styles/pandora.css: added
+	lost styles for color of rows in group status page.
+	
+	Fixes: #3576296
+
 2013-04-04  Junichi Satoh  <junichi@rworks.jp>
 
 	* images/status_sets/color_text/agent_critical_ball.png,

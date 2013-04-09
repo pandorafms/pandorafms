@@ -1,5 +1,10 @@
 2013-04-09 Miguel de Dios <miguel.dedios@artica.es>
 	
+	* godmode/reporting/visual_console_builder.editor.js: fixed a
+	warning message in javascript for null var when the map is empty.
+
+2013-04-09 Miguel de Dios <miguel.dedios@artica.es>
+	
 	* godmode/extensions.php: removed the link to delete or disable the
 	update manager because this extension runs inner inner the guts of
 	Pandora and when disabled or deleted causes more problems.

@@ -67,7 +67,7 @@ class Groups {
 		$ui->showFooter(false);
 		$ui->beginContent();
 			
-			$ui->contentAddHtml('<div data-role="collapsible-set" data-theme="a" data-content-theme="d">');
+			$ui->contentAddHtml('<div class="list_groups" data-role="collapsible-set" data-theme="a" data-content-theme="d">');
 				$count = 0;
 				foreach ($this->groups as $group) {
 					$ui->contentAddHtml('

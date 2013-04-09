@@ -22,9 +22,13 @@ class Alerts {
 	private $group = 0;
 	private $status = 'all';
 	private $standby = -1;
+	private $id_agent = 0;
+	private $all_alerts = false;
 	
 	private $alert_status_items = null;
 	private $alert_standby_items = null;
+	
+	private $columns = null;
 	
 	function __construct() {
 		$this->alert_status_items = array(
@@ -38,6 +42,8 @@ class Alerts {
 			'-1' => __('All'),
 			'1' => __('Standby on'),
 			'0' => __('Standby off'));
+		
+		$this->columns = array('agent' => 1);
 		
 		$system = System::getInstance();
 		
@@ -83,6 +89,15 @@ class Alerts {
 		}
 		else {
 			$this->default = false;
+		}
+	}
+	
+	public function setFilters($filters) {
+		if (isset($filters['id_agent'])) {
+			$this->id_agent = $filters['id_agent'];
+		}
+		if (isset($filters['all_alerts'])) {
+			$this->all_alerts = $filters['all_alerts'];
 		}
 	}
 	
@@ -193,13 +208,20 @@ class Alerts {
 		$ui->showPage();
 	}
 	
+	public function disabledColumns($columns = null) {
+		if (!empty($columns)) {
+			foreach ($columns as $column) {
+				unset($this->columns[$column]);
+			}
+		}
+	}
 	
-	private function listAlertsHtml () {
+	public function listAlertsHtml ($return = false) {
 		$countAlerts = alerts_get_alerts($this->group,
-			$this->free_search, $this->status, $this->standby, "LM", true);
+			$this->free_search, $this->status, $this->standby, "LM", true, $this->id_agent);
 		
 		$alerts = alerts_get_alerts($this->group,
-			$this->free_search, $this->status, $this->standby, "LM");
+			$this->free_search, $this->status, $this->standby, "LM", false, $this->id_agent);
 		if (empty($alerts))
 			$alerts = array();
 		
@@ -226,8 +248,10 @@ class Alerts {
 			}
 			
 			$row = array();
-			$row[__('Agent')] = sprintf($disabled_style,
-				'<a href="index.php?page=agent&id_agente=' . $alert['id_agente'] . '">' . io_safe_output($alert['agent_name'])) . '</a>';
+			if ($this->columns['agent']) {
+				$row[__('Agent')] = sprintf($disabled_style,
+					'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $alert['id_agente'] . '">' . io_safe_output($alert['agent_name'])) . '</a>';
+			}
 			$row[__('Module')] = sprintf($disabled_style,
 				io_safe_output($alert['module_name']));
 			$row[__('Template')] = sprintf($disabled_style,
@@ -242,12 +266,23 @@ class Alerts {
 		
 		$ui = UI::getInstance();
 		if (empty($table)) {
-			$ui->contentAddHtml('<p style="color: #ff0000;">' . __('No alerts') . '</p>');
+			$html = '<p style="color: #ff0000;">' . __('No alerts') . '</p>';
+			if (!$return) {
+				$ui->contentAddHtml($html);
+			}
+			else {
+				return $html;
+			}
 		}
 		else {
 			$tableHTML = new Table();
 			$tableHTML->importFromHash($table);
-			$ui->contentAddHtml($tableHTML->getHTML());
+			if (!$return) {
+				$ui->contentAddHtml($tableHTML->getHTML());
+			}
+			else {
+				return $tableHTML->getHTML();
+			}
 		}
 	}
 	

@@ -22,8 +22,12 @@ class Modules {
 	private $free_search = '';
 	private $module_group = -1;
 	private $tag = '';
+	private $id_agent = 0;
+	private $all_modules = false;
 	
 	private $list_status = null;
+	
+	private $columns = null;
 	
 	function __construct() {
 		$system = System::getInstance();
@@ -36,6 +40,8 @@ class Modules {
 			AGENT_MODULE_STATUS_UNKNOW => __('Unknown'),
 			AGENT_MODULE_STATUS_NOT_NORMAL => __('Not normal'), //default
 			AGENT_MODULE_STATUS_NOT_INIT => __('Not init'));
+		
+		$this->columns = array('agent' => 1);
 		
 		if ($system->checkACL($this->acl)) {
 			$this->correct_acl = true;
@@ -68,6 +74,23 @@ class Modules {
 					
 					echo json_encode(array('end' => $end, 'modules' => $modules));
 					break;
+			}
+		}
+	}
+	
+	public function setFilters($filters) {
+		if (isset($filters['id_agent'])) {
+			$this->id_agent = $filters['id_agent'];
+		}
+		if (isset($filters['all_modules'])) {
+			$this->all_modules = $filters['all_modules'];
+		}
+	}
+	
+	public function disabledColumns($columns = null) {
+		if (!empty($columns)) {
+			foreach ($columns as $column) {
+				unset($this->columns[$column]);
 			}
 		}
 	}
@@ -233,6 +256,12 @@ class Modules {
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
 		
 		
+		// Part SQL for the id_agent
+		$sql_conditions_agent = '';
+		if ($this->id_agent != 0) {
+			$sql_conditions_agent = " AND tagente_modulo.id_agente = " . $this->id_agent;
+		}
+		
 		// Part SQL for the Group 
 		if ($this->group != 0) {
 			$sql_conditions_group = " AND tagente.id_grupo = " . $this->group;
@@ -293,7 +322,7 @@ class Modules {
 				WHERE ttag_module.id_tag = " . $this->tag . ")";
 		}
 		
-		$sql_conditions_all = $sql_conditions_base . $sql_conditions .
+		$sql_conditions_all = $sql_conditions_base . $sql_conditions_agent . $sql_conditions .
 			$sql_conditions_group . $sql_conditions_tags;
 		
 		
@@ -338,10 +367,12 @@ class Modules {
 		$sql = " FROM tagente, tagente_modulo, tagente_estado" . 
 			$sql_conditions_all;
 		
-		$sql_limit = "ORDER BY tagente.nombre ASC
-			LIMIT " . (int)($page * $system->getPageSize()) . "," . (int)$system->getPageSize();
+		$sql_limit = "ORDER BY tagente.nombre ASC ";
+		if (!$this->all_modules) {
+			$sql_limit = " LIMIT " . (int)($page * $system->getPageSize()) . "," . (int)$system->getPageSize();
+		}
 		
-		$total = db_get_value_sql($sql_total. $sql);
+		$total = db_get_value_sql($sql_total. $sql); html_debug_print($sql_select . $sql . $sql_limit, true);
 		$modules_db = db_get_all_rows_sql($sql_select . $sql . $sql_limit);
 		
 		if (empty($modules_db)) {
@@ -351,9 +382,13 @@ class Modules {
 			$modules = array();
 			foreach ($modules_db as $module) {
 				$row = array();
-				$row[0] = $row[__('Agent name')] =
-					'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Agent') . ' </span>' .
-					$module['agent_name'] . '</span>';
+				if ($this->columns['agent']) {
+					$row[0] = $row[__('Agent name')] =
+						'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Agent') . ' </span>' .
+						'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $module["id_agent"] . '">' . $module['agent_name'] . '</a>' .
+						'</span>';
+				}
+				
 				$row[2] = $row[__('Module name')] =
 					'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Module') . ' </span>' .
 					$module['module_name'];
@@ -458,7 +493,9 @@ class Modules {
 					'&nbsp;' . $output . '</a>' . '</span>';
 				
 				if (!$ajax) {
-					unset($row[0]);
+					if ($this->columns['agent']) {
+						unset($row[0]);
+					}
 					unset($row[1]);
 					unset($row[2]);
 					unset($row[4]);
@@ -474,31 +511,43 @@ class Modules {
 		return array('modules' => $modules, 'total' => $total);
 	}
 	
-	private function listModulesHtml($page = 0) {
+	public function listModulesHtml($page = 0, $return = false) {
 		$system = System::getInstance();
 		$ui = Ui::getInstance();
 		
 		$listModules = $this->getListModules($page);
-		$ui->debug($listModules, true);
+		//$ui->debug($listModules, true);
 		
 		if ($listModules['total'] == 0) {
-			$ui->contentAddHtml('<p style="color: #ff0000;">' . __('No modules') . '</p>');
+			$html = '<p style="color: #ff0000;">' . __('No modules') . '</p>';
+			if (!$return) {
+				$ui->contentAddHtml($html);
+			}
 		}
 		else {
 			$table = new Table();
 			$table->id = 'list_Modules';
 			$table->importFromHash($listModules['modules']);
-			$ui->contentAddHtml($table->getHTML());
+			if (!$return) {
+				$ui->contentAddHtml($table->getHTML());
+			}
+			else {
+				$html .= $table->getHTML();
+			}
 			
-			if ($system->getPageSize() < $listModules['total']) {
-				$ui->contentAddHtml('<div id="loading_rows">' .
-						html_print_image('images/spinner.gif', true) .
-						' ' . __('Loading...') .
-					'</div>');
-				
-				$this->addJavascriptAddBottom();
+			if (!$this->all_modules) {
+				if ($system->getPageSize() < $listModules['total']) {
+					$ui->contentAddHtml('<div id="loading_rows">' .
+							html_print_image('images/spinner.gif', true) .
+							' ' . __('Loading...') .
+						'</div>');
+					
+					$this->addJavascriptAddBottom();
+				}
 			}
 		}
+		
+		return $html;
 	}
 	
 	private function addJavascriptAddBottom() {

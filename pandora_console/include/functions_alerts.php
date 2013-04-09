@@ -23,7 +23,7 @@ require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . '/include/functions_modules.php');
 require_once($config['homedir'] . '/include/functions_users.php');
 
-function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $standby = -1, $acl = false, $total = false) {
+function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $standby = -1, $acl = false, $total = false, $id_agent = 0) {
 	$sql = "";
 	$alerts = array();
 	
@@ -107,6 +107,10 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
 			AND (t1.name LIKE "%' . $free_search . '%"
 				OR t2.nombre LIKE "%' . $free_search . '%"
 				OR t3.nombre LIKE "%' . $free_search . '%")';
+	
+	if ($id_agent != 0) {
+		$sql .= ' AND t3.id_agente = ' . $id_agent;
+	}
 	
 	$row_alerts = db_get_all_rows_sql($sql);
 	

@@ -1,3 +1,15 @@
+2013-04-09 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/index.php, mobile/operation/groups.php,
+	mobile/operation/agents.php, mobile/operation/alerts.php,
+	mobile/operation/agent.php, mobile/operation/events.php,
+	mobile/operation/modules.php, mobile/include/style/main.css: 
+	
+	* include/functions_alerts.php include/functions_groups.php: some
+	changes for the mobile.
+	
+	* operation/agentes/ver_agente.php: cleaned source code style.
+
 2013-04-08 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/operation/modules.php, mobile/include/style/main.css: some

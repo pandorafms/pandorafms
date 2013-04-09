@@ -24,9 +24,17 @@ class Events {
 	private $severity = -1;
 	private $filter = 0;
 	private $group = 0;
+	private $id_agent = 0;
+	private $all_events = false;
+	
+	private $columns = null;
+	
+	private $readOnly = false;
 	
 	function __construct() {
 		$system = System::getInstance();
+		
+		$this->columns = array('agent' => 1);
 		
 		if ($system->checkACL($this->acl)) {
 			$this->correct_acl = true;
@@ -34,6 +42,10 @@ class Events {
 		else {
 			$this->correct_acl = false;
 		}
+	}
+	
+	public function setReadOnly() {
+		$this->readOnly = true;
 	}
 	
 	public function ajax($parameter2 = false) {
@@ -262,6 +274,14 @@ class Events {
 		}
 	}
 	
+	public function disabledColumns($columns = null) {
+		if (!empty($columns)) {
+			foreach ($columns as $column) {
+				unset($this->columns[$column]);
+			}
+		}
+	}
+	
 	private function eventsGetFilters() {
 		$system = System::getInstance();
 		$user = User::getInstance();
@@ -322,6 +342,15 @@ class Events {
 		///The user set a preset filter
 		if ($this->filter > 0) {
 			$this->loadPresetFilter();
+		}
+	}
+	
+	public function setFilters($filters) {
+		if (isset($filters['id_agent'])) {
+			$this->id_agent = $filters['id_agent'];
+		}
+		if (isset($filters['all_events'])) {
+			$this->all_events = $filters['all_events'];
 		}
 	}
 	
@@ -621,6 +650,10 @@ class Events {
 			$sql_post = " AND id_grupo = " . $this->group;
 		}
 		
+		if ($this->id_agente > 0) {
+			$sql_post = " AND id_agente = " . $this->id_agente;
+		}
+		
 		//--------------------------------------------------------------
 		
 		
@@ -635,7 +668,7 @@ class Events {
 		return array('events' => $events_db, 'total' => $total_events);
 	}
 	
-	private function listEventsHtml($page = 0) {
+	public function listEventsHtml($page = 0, $return = false) {
 		$system = System::getInstance();
 		
 		$listEvents = $this->getListEvents($page);
@@ -656,8 +689,13 @@ class Events {
 			// . get_priority_class($event['criticity']);
 			
 			$row = array();
-			$row[$field_event_name] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' . 
-				io_safe_output($event['evento']) . '</a>';
+			if ($this->readOnly) {
+				$row[$field_event_name] = io_safe_output($event['evento']);
+			}
+			else {
+				$row[$field_event_name] = '<a href="javascript: openDetails(' . $event['id_evento'] . ')">' . 
+					io_safe_output($event['evento']) . '</a>';
+			}
 			/*
 			switch ($event['estado']) {
 				case 0:
@@ -676,8 +714,11 @@ class Events {
 			*/
 			
 			$row[$field_timestamp] = ui_print_timestamp ($event['timestamp_rep'], true);
-			$row[$field_agent] = '<a href="index.php?page=agent&id_agent=' . $event["id_agente"] . '">' .
-				(string) agents_get_name($event["id_agente"]) . '</a>';
+			
+			if ($this->columns['agent']) {
+				$row[$field_agent] = '<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $event["id_agente"] . '">' .
+					(string) agents_get_name($event["id_agente"]) . '</a>';
+			}
 			
 			$row[$field_status] =
 				html_print_image ("mobile/images/" .
@@ -705,25 +746,35 @@ class Events {
 		
 		$ui = Ui::getInstance();
 		if (empty($events)) {
-			$ui->contentAddHtml('<p style="color: #ff0000;">' . __('No events') . '</p>');
+			if (!$return) {
+				$ui->contentAddHtml('<p style="color: #ff0000;">' . __('No events') . '</p>');
+			}
+			else {
+				return '<p style="color: #ff0000;">' . __('No events') . '</p>';
+			}
 		}
 		else {
 			$table = new Table();
 			$table->id = 'list_events';
 			$table->setRowClass($row_class);
 			$table->importFromHash($events);
-			$ui->contentAddHtml($table->getHTML());
-			
-			if ($system->getPageSize() < $total_events) {
-				$ui->contentAddHtml('<div id="loading_rows">' .
-						html_print_image('images/spinner.gif', true) .
-						' ' . __('Loading...') .
-					'</div>');
+			if (!$return) {
+				$ui->contentAddHtml($table->getHTML());
 				
-				$this->addJavascriptAddBottom();
+				if ($system->getPageSize() < $total_events) {
+					$ui->contentAddHtml('<div id="loading_rows">' .
+							html_print_image('images/spinner.gif', true) .
+							' ' . __('Loading...') .
+						'</div>');
+					
+					$this->addJavascriptAddBottom();
+				}
+				
+				$this->addJavascriptDialog();
 			}
-			
-			$this->addJavascriptDialog();
+			else {
+				return $table->getHTML();
+			}
 		}
 	}
 	

@@ -248,11 +248,11 @@ class Agents {
 		
 		if (empty($agents_db))
 			$agents_db = array();
-		
+					html_debug_print($agents_db, true);
 		foreach ($agents_db as $agent) {
 			$row = array();
 			
-			$row[0] = $row[__('Agent')] = io_safe_output($agent['nombre']);
+			$row[0] = $row[__('Agent')] = '<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . io_safe_output($agent['nombre']) . '</a>';
 			$row[1] = $row[__('Description')] = '<span class="small">' .
 				ui_print_truncate_text($agent["description"], 'description', false, true) .
 				'</span>';

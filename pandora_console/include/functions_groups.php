@@ -775,7 +775,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups, $
 	else {
 		//if ($data["total_agents"] > 0) {
 		if (true) {
-			$row[__('Agents')] = "<a href='index.php?page=agents&id_group=" . $id_group . "'>";
+			$row[__('Agents')] = "<a class='link_count' href='index.php?page=agents&id_group=" . $id_group . "'>";
 			$row[__('Agents')] .= $data["total_agents"];
 			$row[__('Agents')] .= "</a>";
 		}
@@ -804,7 +804,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups, $
 	else {
 		//if ($data["agents_unknown"] > 0) {
 		if (true) {
-			$row[__('Agents unknown')] = "<a href='index.php?page=agents&id_group=" . $id_group . "&status=3'>";
+			$row[__('Agents unknown')] = "<a class='link_count' href='index.php?page=agents&id_group=" . $id_group . "&status=3'>";
 			$row[__('Agents unknown')] .= $data["agents_unknown"];
 			$row[__('Agents unknown')] .= "</a>";
 		}
@@ -830,7 +830,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups, $
 	else {
 		//if ($data["monitor_unknown"] > 0) {
 		if (true) {
-			$row[__('Unknown')] = "<a href='index.php?page=modules&id_group=" . $id_group . "&status=3'>";
+			$row[__('Unknown')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=3'>";
 			$row[__('Unknown')] .= $data["monitor_unknown"];
 			$row[__('Unknown')] .= "</a>";
 		}
@@ -857,7 +857,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups, $
 	else {
 		//if ($data["monitor_not_init"] > 0) {
 		if (true) {
-			$row[__('Not init')] = "<a href='index.php?page=modules&id_group=" . $id_group . "&status=5'>";
+			$row[__('Not init')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=5'>";
 			$row[__('Not init')] .= $data["monitor_not_init"];
 			$row[__('Not init')] .= "</a>";
 		}
@@ -883,7 +883,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups, $
 	else {
 		//if ($data["monitor_ok"] > 0) {
 		if (true) {
-			$row[__('Normal')] = "<a href='index.php?page=modules&id_group=" . $id_group . "&status=0'>";
+			$row[__('Normal')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=0'>";
 			$row[__('Normal')] .= $data["monitor_ok"];
 			$row[__('Normal')] .= "</a>";
 		}
@@ -910,7 +910,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups, $
 	else {
 		//if ($data["monitor_warning"] > 0) {
 		if (true) {
-			$row[__('Warning')] = "<a href='index.php?page=modules&id_group=" . $id_group . "&status=1'>";
+			$row[__('Warning')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=1'>";
 			$row[__('Warning')] .= $data["monitor_warning"];
 			$row[__('Warning')] .= "</a>";
 		}
@@ -937,7 +937,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups, $
 	else {
 		//if ($data["monitor_critical"] > 0) {
 		if (true) {
-			$row[__('Critical')] = "<a href='index.php?page=modules&id_group=" . $id_group . "&status=2'>";
+			$row[__('Critical')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=2'>";
 			$row[__('Critical')] .= $data["monitor_critical"];
 			$row[__('Critical')] .= "</a>";
 		}
@@ -964,7 +964,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups, $
 	else {
 		//if ($data["monitor_alerts_fired"] > 0) {
 		if (true) {
-			$row[__('Alerts fired')] = "<a href='index.php?page=alerts&group=" . $id_group . "&status=fired'>";;
+			$row[__('Alerts fired')] = "<a class='link_count' href='index.php?page=alerts&group=" . $id_group . "&status=fired'>";;
 			$row[__('Alerts fired')] .= $data["monitor_alerts_fired"];
 			$row[__('Alerts fired')] .= "</a>";
 		}

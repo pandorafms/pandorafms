@@ -136,7 +136,7 @@ if (is_ajax ()) {
 				AND id_alert_template = '.$id_template.'
 				AND id_agente IN (' . implode(',', $idAgents) . ')';
 			
-		if($selection_mode == 'common') {
+		if ($selection_mode == 'common') {
 			$sql .= ' AND (
 					SELECT count(nombre)
 					FROM tagente_modulo t3, talert_template_modules t4
@@ -847,7 +847,7 @@ foreach($config['extensions'] as $extension) {
 			
 			//Check if OS is vmware
 			$id_remote_field = db_get_value ("id_field", "tagent_custom_fields", "name", "vmware_type");
-		
+			
 			$vmware_type = db_get_value_filter("description", "tagent_custom_data", array("id_field" => $id_remote_field, "id_agent" => $agent["id_agente"]));
 			
 			if ($vmware_type != "vm") {

@@ -226,6 +226,17 @@ tr.group_view_data, .group_view_data {
 	text-shadow: none !important;
 	font-size: 12px !important;
 }
+
+.list_groups .link_count {
+	display: inline !important;
+}
+
+.list_groups .link_count.ui-link-inherit {
+	margin-top: -5px;
+	position: absolute;
+	right: 10px;
+	top: 0;
+}
 /*END-----------Groups styles-----------------------------------------*/
 
 
@@ -430,6 +441,10 @@ table#list_events th {
 .grey {
 	color: #808080;
 	font-weight: bold;
+}
+
+.cell_0 a {
+	color: #000000 !important;
 }
 
 @media screen and (max-width: 35em) {

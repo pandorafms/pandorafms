@@ -87,8 +87,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	
 	var legends = $('#'+graph_id+' .legendLabel');
 	legends.each(function () {
-		// fix the widths so they don't jump around
-		$(this).css('width', $(this).width()+5);
+		$(this).css('width', $(this).width());
 		$(this).css('font-size', font_size+'pt');
 	});
 	
@@ -194,8 +193,16 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 		pixelPerValue = parseInt(plot.width()) / maxvalue;
 		
 		inCanvasValuePos = parseInt(pixelPerValue * ($('#value_'+i+'_'+graph_id).html()));
-		
-		$('#value_'+i+'_'+graph_id).css('left',plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);
+		label_width = ($('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);		
+
+		label_left_offset = plot.offset().left + inCanvasValuePos + 5; //Label located on right side of bar + 5 pixels
+
+		//If label fit into the bar just recalculate left position to fit on right side of bar
+		if (inCanvasValuePos > label_width) {
+			label_left_offset = plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3;
+		}
+
+		$('#value_'+i+'_'+graph_id).css('left',label_left_offset);
 		i++;
 	});
 	
@@ -453,7 +460,6 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 			var extra_width = parseInt($('#extra_'+graph_id).css('width').split('px')[0]);
 			$('#extra_'+graph_id).css('left',pos.pageX-(extra_width/2)+'px');
 			$('#extra_'+graph_id).css('top',plot.offset().top-extra_height-5+'px');
-			
 			$('#extra_'+graph_id).show();
 		}
 	});

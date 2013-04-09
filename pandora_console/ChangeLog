@@ -1,4 +1,14 @@
-2013-03-13 Miguel de Dios <miguel.dedios@artica.es>
+2013-04-09 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* godmode/extensions.php: removed the link to delete or disable the
+	update manager because this extension runs inner inner the guts of
+	Pandora and when disabled or deleted causes more problems.
+	
+	Fixes: #3609993
+	
+	MERGED FROM THE TRUNK
+
+2013-04-09 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_groups.php, include/functions_modules.php:
 	improved the source code style.

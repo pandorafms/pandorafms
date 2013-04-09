@@ -40,16 +40,14 @@ $enabled = get_parameter("enabled", "");
 $disabled = get_parameter("disabled", "");
 
 
-if ($delete != ""){
+if ($delete != "") {
 	if ($enterprise) {
-		if (!file_exists($config["homedir"]."/enterprise/extensions/ext_backup"))
-		{
+		if (!file_exists($config["homedir"]."/enterprise/extensions/ext_backup")) {
 			mkdir($config["homedir"]."/enterprise/extensions/ext_backup");
 		}
 	}
 	else {
-		if (!file_exists($config["homedir"]."/extensions/ext_backup"))
-		{
+		if (!file_exists($config["homedir"]."/extensions/ext_backup")) {
 			mkdir($config["homedir"]."/extensions/ext_backup");
 		}
 	}
@@ -62,7 +60,7 @@ if ($delete != ""){
 		$source = $config["homedir"]."/extensions/" . $delete;
 		$endFile = $config["homedir"]."/extensions/ext_backup/" . $delete;
 	}
-		
+	
 	
 	rename($source, $endFile);
 	
@@ -103,14 +101,12 @@ if ($enabled != '') {
 
 if ($disabled != '') {
 	if ($enterprise) {
-		if (!file_exists($config["homedir"]."/enterprise/extensions/disabled"))
-		{
+		if (!file_exists($config["homedir"]."/enterprise/extensions/disabled")) {
 			mkdir($config["homedir"]."/enterprise/extensions/disabled");
 		}
 	}
 	else {
-		if (!file_exists($config["homedir"]."/extensions/disabled"))
-		{
+		if (!file_exists($config["homedir"]."/extensions/disabled")) {
 			mkdir($config["homedir"]."/extensions/disabled");
 		}
 	}
@@ -123,7 +119,7 @@ if ($disabled != '') {
 		$source = $config["homedir"]."/extensions/" . $disabled;
 		$endFile = $config["homedir"]."/extensions/disabled/" . $disabled;
 	}
-		
+	
 	
 	rename($source, $endFile);
 	
@@ -191,39 +187,43 @@ foreach ($extensions as $file => $extension) {
 		$on = html_print_image("images/dot_green.disabled.png", true); 
 		$off = html_print_image("images/dot_red.disabled.png", true);
 		$data[] = '<i style="color: grey;">' . $file . '</i>';
-
+		
 		//Get version of this extensions
 		if ($config['extensions'][$file]['operation_menu']) {
 			$data[] = $config['extensions'][$file]['operation_menu']['version'];
 		}
-
+		
 		if ($config['extensions'][$file]['godmode_menu']) {
-
+			
 			$data[] = $config['extensions'][$file]['godmode_menu']['version'];
 		}
-
-                if ($config['extensions'][$file]['extension_ope_tab']) {
-                        $data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
-                } else if ($config['extensions'][$file]['extension_god_tab']) {
-                        $data[] = $config['extensions'][$file]['extension_god_tab']['version'];
-                }
-
-
+		
+		if ($config['extensions'][$file]['extension_ope_tab']) {
+			$data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
+		}
+		else if ($config['extensions'][$file]['extension_god_tab']) {
+			$data[] = $config['extensions'][$file]['extension_god_tab']['version'];
+		}
+		
+		
 	}
 	else {
 		$data[] = $file;
-
+		
 		//Get version of this extension
-                if ($config['extensions'][$file]['operation_menu']) {
-                        $data[] = $config['extensions'][$file]['operation_menu']['version'];
-                } else if ($config['extensions'][$file]['godmode_menu']) {
-                        $data[] = $config['extensions'][$file]['godmode_menu']['version'];
-                } else if (isset($config['extensions'][$file]['extension_ope_tab'])) {
-		        $data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
-                } else if ($config['extensions'][$file]['extension_god_tab']) {
-                        $data[] = $config['extensions'][$file]['extension_god_tab']['version'];
-                }
-
+		if ($config['extensions'][$file]['operation_menu']) {
+			$data[] = $config['extensions'][$file]['operation_menu']['version'];
+		}
+		else if ($config['extensions'][$file]['godmode_menu']) {
+			$data[] = $config['extensions'][$file]['godmode_menu']['version'];
+		}
+		else if (isset($config['extensions'][$file]['extension_ope_tab'])) {
+			$data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
+		}
+		else if ($config['extensions'][$file]['extension_god_tab']) {
+			$data[] = $config['extensions'][$file]['extension_god_tab']['version'];
+		}
+		
 	}
 	
 	if ($extension['enterprise']) {
@@ -282,13 +282,20 @@ foreach ($extensions as $file => $extension) {
 		$data[] = $off;
 	}
 	
-	if (!$extension['enabled']) {
-		$data[] = '<a title="' . __('Delete') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&delete='.$file.'" class="mn">' . html_print_image("images/cross.disabled.png", true) . '</a>' .
-			' <a title="' . __('Enable') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&enabled='.$file.'" class="mn">' . html_print_image("images/lightbulb_off.png", true) . '</a>';
+	//Avoid to delete or disabled update_manager
+	if ($file != "update_manager.php") {
+		if (!$extension['enabled']) {
+			$data[] = '<a title="' . __('Delete') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&delete='.$file.'" class="mn">' . html_print_image("images/cross.disabled.png", true) . '</a>' .
+				' <a title="' . __('Enable') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&enabled='.$file.'" class="mn">' . html_print_image("images/lightbulb_off.png", true) . '</a>';
+		}
+		else {
+			$data[] = '<a title="' . __('Delete') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&delete='.$file.'" class="mn">' . html_print_image("images/cross.png", true) . '</a>' .
+				' <a title="' . __('Disable') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&disabled='.$file.'" class="mn">' . html_print_image("images/lightbulb.png", true) . '</a>';
+		}
 	}
 	else {
-		$data[] = '<a title="' . __('Delete') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&delete='.$file.'" class="mn">' . html_print_image("images/cross.png", true) . '</a>' .
-			' <a title="' . __('Disable') . '" href="index.php?sec=gextensions&amp;sec2=godmode/extensions&enterprise=' . (int)$extension['enterprise'] . '&disabled='.$file.'" class="mn">' . html_print_image("images/lightbulb.png", true) . '</a>';
+		$data[] = "";
+		$data[] = "";
 	}
 	
 	// Filter operation and godmode extensions not included in metaconsole
@@ -298,7 +305,7 @@ foreach ($extensions as $file => $extension) {
 		if (!empty($config['extensions'][$file]['godmode_menu']['fatherId']) and !array_key_exists($config['extensions'][$file]['godmode_menu']['fatherId'], $menu))
 			continue;
 	}
-
+	
 	$table->data[] = $data;
 }
 html_print_table ($table);

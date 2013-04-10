@@ -1,5 +1,11 @@
 2013-04-10  Sergio Martin <sergio.martin@artica.es>
 
+	* D       operation/agentes/estado_ultimopaquete.php
+	M       operation/agentes/ver_agente.php: Restore a bad merged
+	file from last commit and delete unused file
+
+2013-04-10  Sergio Martin <sergio.martin@artica.es>
+
     *
 M       include/functions_html.php
 D       include/styles/tip.css

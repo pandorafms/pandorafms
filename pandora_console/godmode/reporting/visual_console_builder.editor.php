@@ -52,7 +52,7 @@ if (defined('METACONSOLE')) {
 else {
 	html_print_input_hidden('metaconsole', 0);
 }
-
+visual_map_editor_print_hack_translate_strings();
 visual_map_editor_print_item_palette($visualConsole['id'], $background);
 
 if (!defined('METACONSOLE')) {

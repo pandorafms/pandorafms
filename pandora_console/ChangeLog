@@ -1,5 +1,16 @@
 2013-04-10 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/reporting/visual_console_builder.editor.js: fixed the
+	autosave and non-autosave actions.
+	
+	Fixes: #3609806
+	
+	* godmode/reporting/visual_console_builder.editor.php: re-added
+	the translations to strings for the error messages for user across
+	the javascript.
+
+2013-04-10 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_visual_map_editor.php: fixed the lost field
 	for the label in the items.
 

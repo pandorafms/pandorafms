@@ -160,7 +160,7 @@ class Groups {
 		
 		// For each valid group for this user, take data from agent and modules
 		foreach ($groups as $id_group => $group) {
-			$rows = groups_get_group_row($id_group, $groups, $group, $printed_groups, false);
+			$rows = groups_get_group_row_data($id_group, $groups, $group, $printed_groups);
 			
 			if (!empty($rows))
 				$return = array_merge($return, $rows);

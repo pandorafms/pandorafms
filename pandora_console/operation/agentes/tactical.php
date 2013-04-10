@@ -56,7 +56,7 @@ if(tags_has_user_acl_tags()) {
 }
 
 echo '<table border=0 style="width:100%;"><tr>';
-echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right: 10px;" id="leftcolumn">';
+echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right: 10px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
@@ -115,7 +115,7 @@ if ($is_admin) {
 
 echo '</td>'; //Left column
 
-echo '<td style="vertical-align: top; width: 75%;" id="rightcolumn">';
+echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightcolumn">';
 
 
 // ---------------------------------------------------------------------

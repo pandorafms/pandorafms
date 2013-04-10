@@ -903,7 +903,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		}
 		
 		$events_table = html_print_table ($table, true);
-		$out = '<table width="98%"><tr><td style="width: 90%; padding-right: 10px;">';
+		$out = '<table width="98%"><tr><td style="width: 90%; padding-right: 10px; vertical-align: top; padding-top: 0px;">';
 		$out .= $events_table;
 		
 		if($agent_id != 0) {

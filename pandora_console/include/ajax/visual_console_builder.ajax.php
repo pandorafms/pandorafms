@@ -65,6 +65,7 @@ $type_percentile = get_parameter('type_percentile', 'percentile');
 $value_show = get_parameter('value_show', 'percent');
 $metaconsole = get_parameter('metaconsole', 0);
 $server_name = get_parameter('server_name', null);
+$server_id = (int)get_parameter('server_id', 0);
 $id_agent = get_parameter('id_agent', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
 
@@ -333,6 +334,10 @@ switch ($action) {
 						$values['id_metaconsole'] = db_get_value('id',
 							'tmetaconsole_setup', 'server_name', $server_name);
 					}
+					if ($server_id > 0) {
+						$values['id_metaconsole'] = $server_id;
+					}
+					
 					
 					if ($id_agent !== null) {
 						$values['id_agent'] = $id_agent;
@@ -546,8 +551,13 @@ switch ($action) {
 		$values['pos_y'] = $top;
 		
 		if (defined('METACONSOLE') && $metaconsole) {
-			$values['id_metaconsole'] = db_get_value('id',
-				'tmetaconsole_setup', 'server_name', $server_name);
+			if ($server_id > 0) {
+				$values['id_metaconsole'] = $server_id;
+			}
+			else {
+				$values['id_metaconsole'] = db_get_value('id',
+					'tmetaconsole_setup', 'server_name', $server_name);
+			}
 			$values['id_agent'] = $id_agent;
 		}
 		else {

@@ -219,6 +219,7 @@ function readFields() {
 		values['metaconsole'] = 1;
 		values['id_agent'] = $("#hidden-agent").val();
 		values['server_name'] = $("#id_server_name").val();
+		values['server_id'] = $("input[name='id_server_metaconsole']").val();
 	}
 	else {
 		values['metaconsole'] = 0;
@@ -1510,13 +1511,6 @@ function eventsItems(drag) {
 	$('.item').unbind('click');
 	$('.item').unbind('dragstop');
 	$('.item').unbind('dragstart');
-	
-	//Check if exist or create the previous draggable
-	check_draggable = $(".item").data();
-	if (check_draggable) {
-		if (typeof(check_draggable.uiDraggable) != "undefined")
-			$(".item").draggable('destroy');
-	}
 	
 	//$(".item").resizable(); //Disable but run in ff and in the waste (aka micro$oft IE) show ungly borders
 	

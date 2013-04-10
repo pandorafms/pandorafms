@@ -401,6 +401,8 @@ else {
 	$url_view = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap=' . $idVisualConsole . '&refr=' . $view_refresh;
 }
 
+
+
 $buttons = array(
 	'view' => array('active' => false,
 		'text' => '<a href="' . $url_view . '">' .

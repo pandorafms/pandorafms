@@ -1,4 +1,13 @@
 2013-04-10 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_visual_map_editor.php,
+	include/ajax/visual_console_builder.ajax.php,
+	godmode/reporting/visual_console_builder.php,
+	godmode/reporting/visual_console_builder.data.php,
+	godmode/reporting/visual_console_builder.editor.js: some fixes in
+	the visualconsole.
+
+2013-04-10 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/ajax/visual_console_builder.ajax.php: fixed the name of
 	agent in a Console without metaconsole.

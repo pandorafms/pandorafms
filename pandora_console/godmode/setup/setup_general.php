@@ -192,17 +192,17 @@ $table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($timezone_n, 'timezone'
 $sounds = get_sounds();
 $table->data[24][0] = __('Sound for Alert fired');
 $table->data[24][1] = html_print_select($sounds, 'sound_alert', $config['sound_alert'], 'replaySound(\'alert\');', '', '', true);
-$table->data[24][1] .= ' <a href="javascript: toggleButton(\'alert\');">' . html_print_image("images/control_play.png", true, array("id" => "button_sound_alert", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
+$table->data[24][1] .= ' <a href="javascript: toggleButton(\'alert\');">' . html_print_image("images/control_play_col.png", true, array("id" => "button_sound_alert", "style" => "vertical-align: middle;", "width" => "16", "title" => __('Play sound'))) . '</a>';
 $table->data[24][1] .= '<div id="layer_sound_alert"></div>';
 
 $table->data[25][0] = __('Sound for Monitor critical');
 $table->data[25][1] = html_print_select($sounds, 'sound_critical', $config['sound_critical'], 'replaySound(\'critical\');', '', '', true);
-$table->data[25][1] .= ' <a href="javascript: toggleButton(\'critical\');">' . html_print_image("images/control_play.png", true, array("id" => "button_sound_critical", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
+$table->data[25][1] .= ' <a href="javascript: toggleButton(\'critical\');">' . html_print_image("images/control_play_col.png", true, array("id" => "button_sound_critical", "style" => "vertical-align: middle;", "width" => "16", "title" => __('Play sound'))) . '</a>';
 $table->data[25][1] .= '<div id="layer_sound_critical"></div>';
 
 $table->data[26][0] = __('Sound for Monitor warning');
 $table->data[26][1] = html_print_select($sounds, 'sound_warning', $config['sound_warning'], 'replaySound(\'warning\');', '', '', true);
-$table->data[26][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . html_print_image("images/control_play.png", true, array("id" => "button_sound_warning", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
+$table->data[26][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . html_print_image("images/control_play_col.png", true, array("id" => "button_sound_warning", "style" => "vertical-align: middle;", "width" => "16", "title" => __('Play sound'))) . '</a>';
 $table->data[26][1] .= '<div id="layer_sound_warning"></div>';
 
 $table->data[27][0] = __('License information');
@@ -259,18 +259,18 @@ echo '</form>';
 ?>
 <script type="text/javascript">
 function toggleButton(type) {
-	if ($("#button_sound_" + type).attr('src') == 'images/control_pause.png') {
-		$("#button_sound_" + type).attr('src', 'images/control_play.png');
+	if ($("#button_sound_" + type).attr('src') == 'images/control_pause_col.png') {
+		$("#button_sound_" + type).attr('src', 'images/control_play_col.png');
 		$('#layer_sound_' + type).html("");
 	}
 	else {
-		$("#button_sound_" + type).attr('src', 'images/control_pause.png');
+		$("#button_sound_" + type).attr('src', 'images/control_pause_col.png');
 		$('#layer_sound_' + type).html("<audio src='" + $("#sound_" + type).val() + "' autoplay='true' hidden='true' loop='true'>");
 	}
 }
 
 function replaySound(type) {
-	if ($("#button_sound_" + type).attr('src') == 'images/control_pause.png') {
+	if ($("#button_sound_" + type).attr('src') == 'images/control_pause_col.png') {
 		$('#layer_sound_' + type).html("");
 		$('#layer_sound_' + type).html("<audio src='" + $("#sound_" + type).val() + "' autoplay='true' hidden='true' loop='true'>");
 	}

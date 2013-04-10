@@ -248,12 +248,12 @@ if ($config["pure"] == 0 || $meta) {
 	// Fullscreen
 	$fullscreen['active'] = false;
 	$fullscreen['text'] = '<a href="'.$url.'&amp;pure=1">' . 
-		html_print_image("images/fullscreen.png", true, array ("title" => __('Full screen'))) .'</a>';
+		html_print_image("images/full_screen.png", true, array ("title" => __('Full screen'))) .'</a>';
 	
 	// Event list
 	$list['active'] = false;
 	$list['text'] = '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">' . 
-		html_print_image("images/god6.png", true, array("title" => __('Event list'))) . '</a>';
+		html_print_image("images/events_list.png", true, array("title" => __('Event list'))) . '</a>';
 	
 	// History event list
 	$history_list['active'] = false;
@@ -273,11 +273,11 @@ if ($config["pure"] == 0 || $meta) {
 	// CSV
 	$csv['active'] = false;
 	$csv['text'] = '<a href="operation/events/export_csv.php?' . $params . '">' . 
-		html_print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>';
+		html_print_image("images/csv_mc.png", true, array ("title" => __('Export to CSV file'))) .'</a>';
 	
 	// Sound events
 	$sound_event['active'] = false;
-	$sound_event['text'] = '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>';
+	$sound_event['text'] = '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/sound.png', true, array('title' => __('Sound events'))) . '</a>';
 	
 	// If the user has administrator permission display manage tab
 	if (check_acl ($config["id_user"], 0, "EW")) {
@@ -286,16 +286,17 @@ if ($config["pure"] == 0 || $meta) {
 		$manage_events['text'] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
 			html_print_image("images/setup.png", true, array ("title" => __('Manage events'))) . '</a>';
 		
+		$manage_events['godmode'] = true;
+		
 		$onheader = array(
-			'separator' => '',
+			'manage_events' => $manage_events,
 			'fullscreen' => $fullscreen,
 			'list' => $list,
 			'history' => $history_list,
 			'rss' => $rss,
 			'marquee' => $marquee,
 			'csv' => $csv,
-			'sound_event' => $sound_event,
-			'manage_events' => $manage_events) ;
+			'sound_event' => $sound_event) ;
 	}
 	else {
 		$onheader = array('fullscreen' => $fullscreen,
@@ -329,7 +330,7 @@ if ($config["pure"] == 0 || $meta) {
 	
 	if (! defined ('METACONSOLE')) {
 		unset($onheader['history']);
-		ui_print_page_header (__("Events"), "images/lightning_go.png",
+		ui_print_page_header (__("Events"), "images/op_events.png",
 			false, "eventview", false, $onheader);
 	}
 	else {

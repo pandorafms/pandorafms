@@ -41,7 +41,7 @@ require_once($config['homedir'] . '/include/functions_html.php');
  *
  * @return string Truncated text.
  */
-function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '[&hellip;]', $style = false) {
+function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '&hellip;', $style = false) {
 	global $config;
 	
 	if (is_string($numChars)) {
@@ -105,12 +105,7 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 			}
 		}
 		if ($showTextInAToopTip) {
-			if ($style !== false) {
-				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span style="' . $style . '">' . $text . '</span>' . html_print_image ('images/tip.png', true) . '</a>';
-			}
-			else {
-				$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span>' . $text . '</span>' . html_print_image ('images/tip.png', true) . '</a>';
-			}
+			$truncateText = $truncateText . ui_print_help_tip($text, true);
 		}
 		else {
 			if ($style !== false) {
@@ -250,7 +245,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 			<td class="icon">';
 	if (!$no_close_bool) {
 		$output .= '<a href="javascript: close_info_box(\'' . $id . '\')">' .
-			html_print_image($hack_metaconsole . 'images/cross.disabled.png', true) . '</a>';
+			html_print_image($hack_metaconsole . 'images/blade.png', true) . '</a>';
 	}
 	
 	$output .= 	'</td>
@@ -507,11 +502,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 	if (empty ($icon))
 		$output .= '<span title="'. groups_get_name($id_group, true).'">&nbsp;-&nbsp</span>';
 	else {
-		$hack_metaconsole = '';
-		if (defined('METACONSOLE'))
-			$hack_metaconsole = '../../';
-		
-		$output .= html_print_image($hack_metaconsole . "images/" . $path . "/" . $icon . ".png",
+		$output .= html_print_image("images/" . $path . "/" . $icon . ".png",
 			true, array("style" => $style, "class" => "bot", "alt" => groups_get_name($id_group, true), "title" => groups_get_name ($id_group, true)));
 	}
 	
@@ -570,17 +561,17 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
  * 
  * @return string HTML with icon of the OS
  */
-function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true, $networkmap = false, $only_src = false, $relative = false) {
+function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = true, $networkmap = false, $only_src = false, $relative = false, $options = false) {
 	$subfolter = 'os_icons';
 	if ($networkmap) {
 		$subfolter = 'networkmap';
 	}
-	
+
 	$icon = (string) db_get_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
 		if ($only_src) {
-			$output = html_print_image("images/" . $subfolter . "/unknown.png", false, false, true, $relative);
+			$output = html_print_image("images/" . $subfolter . "/unknown.png", false, $options, true, $relative);
 		}
 		else {
 			return "-";
@@ -589,10 +580,11 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 	
 	if ($apply_skin) {
 		if ($only_src) {
-			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, false, true, $relative);
+			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, true, $relative);
 		}
 		else {
-			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, array("alt" => $os_name, "title" => $os_name), false, $relative);
+			$options['title'] = $os_name;
+			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, false, $relative);
 		}
 	}
 	else
@@ -600,7 +592,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false, $apply_skin = 
 		$output = "images/" . $subfolter . "/" . $icon;
 	
 	if ($name === true) {
-		$output .= ' - ' . $os_name;
+		$output .= '&nbsp;&nbsp;' . $os_name;
 	}
 	
 	if (!$return)
@@ -945,10 +937,11 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  * @param string Id of the help article
  * @param bool Whether to return or output the result
  * @param string Home url if its necessary 
+ * @param string Image path
  * 
  * @return string The help tip
  */
-function ui_print_help_icon ($help_id, $return = false, $home_url = '') {
+function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image = "images/help.png") {
 	if (empty($home_url))
 		$home_url = "";
 	
@@ -956,7 +949,7 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '') {
 		$home_url = "../../" . $home_url;
 	}
 	
-	$output = '&nbsp;'.html_print_image ("images/help.png", true, 
+	$output = '&nbsp;'.html_print_image ($image, true, 
 		array ("class" => "img_help",
 			"title" => __('Help'),
 			"onclick" => "open_help ('".$help_id."','".$home_url."')"));
@@ -1230,7 +1223,6 @@ function ui_process_page_head ($string, $bitfield) {
 		$config['css'] = array_merge (array (
 			"common" => "include/styles/common.css", 
 			"menu" => "include/styles/menu.css", 
-			"tip", "include/styles/tip.css", 
 			$config['style'] => "include/styles/".$config['style'].".css"), $config['css']);
 	}
 	
@@ -1482,7 +1474,7 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 			$index_page_prev = 0;
 		$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.html_print_image ("images/go_previous.png", true, array ("class" => "bot")).'</a>';
 	}
-	$output .= "&nbsp;&nbsp;";
+
 	// Draw blocks markers
 	// $i stores number of page
 	for ($i = $inicio_pag; $i < $index_limit; $i++) {
@@ -1491,7 +1483,13 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		if ($final_bloque > $count){ // if upper limit is beyond max, this shouldnt be possible !
 			$final_bloque = ($i-1) * $pagination + $count-(($i-1) * $pagination);
 		}
-		$output .= "<span>";
+		
+		if ($inicio_bloque == $offset) {
+			$output .= "<span style='font-weight: bold;'>";
+		}
+		else {
+			$output .= "<span>";
+		}		
 		
 		$inicio_bloque_fake = $inicio_bloque + 1;
 		// To Calculate last block (doesnt end with round data,
@@ -1499,15 +1497,11 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		$link_offset = $config['block_size'] * $i;
 
 		$output .= '<a class="pagination offset_' . $link_offset . '" href="'.$url.'&amp;'.$offset_name.'='.$inicio_bloque.'">';
-		if ($inicio_bloque == $offset) {
-			$output .= "<b>[ $i ]</b>";
-		}
-		else {
-			$output .= "[ $i ]";
-		}
+		$output .= "[ $i ]";
+		
 		$output .= '</a></span>';
 	}
-	$output .= "&nbsp;&nbsp;";
+	$output .= "&nbsp;";
 	// Show NEXT PAGE (fast forward)
 	// Index_counter stores max of blocks
 	if (($paginacion_maxima == 1) AND (($index_counter - $i) > 0)) {
@@ -1532,7 +1526,6 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 		echo $output;
 	
 	return $output;
-	
 }
 
 /** 
@@ -1547,19 +1540,19 @@ function ui_pagination ($count, $url = false, $offset = 0, $pagination = 0, $ret
 function ui_print_session_action_icon ($action, $return = false) {
 	$key_icon = array(
 			'acl' => 'images/delete.png', 
-			'agent' => 'images/bricks.png', 
+			'agent' => 'images/agent.png', 
 			'module' => 'images/brick.png',
 			'alert' => 'images/bell.png',
 			'incident' => 'images/book_edit.png',
 			'logon' => 'images/house.png',
-			'logoff' => 'images/logout.png',
+			'logoff' => 'images/house.png',
 			'massive' => 'images/sitemap_color.png',
 			'hack' => 'images/info.png',
 			'event' => 'images/lightning_go.png',
 			'policy' => 'images/policies.png',
 			'report' => 'images/reporting.png',
 			'file collection' => 'images/file.png',
-			'user' => 'images/user.png',
+			'user' => 'images/user_green.png',
 			'password' => 'images/lock.png',
 			'session' => 'images/heart.png',
 			'snmp' => 'images/snmp.png',
@@ -1567,7 +1560,8 @@ function ui_print_session_action_icon ($action, $return = false) {
 			'category' => 'images/god6.png',
 			'dashboard' => 'images/application_double.png',
 			'api' => 'images/page_white_text.png',
-			'db' => 'images/database.png'
+			'db' => 'images/database.png',
+			'setup' => 'images/cog.png'
 			);
 			
 	$output = '';
@@ -1593,7 +1587,7 @@ function ui_print_session_action_icon ($action, $return = false) {
  * @return string HTML code if return parameter is true.
  */
 function ui_print_help_tip ($text, $return = false, $img = 'images/tip.png') {
-	$output = '<a href="javascript:" class="tip" >' . html_print_image ($img, true) . '<span style="text-align:center">'.$text.'</span></a>';
+	$output = '<a href="javascript:" class="tip" >' . html_print_image ($img, true, array('title' => $text)) . '</a>';
 	
 	if ($return)
 		return $output;
@@ -1788,11 +1782,18 @@ function ui_get_status_images_path () {
  * @param string
  * @param string 
  * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param array options to set image attributes: I.E.: style
+ * @param Path of the image, if not provided use the status path
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_status_image ($type, $title = "", $return = false, $options = false) {
-	list ($imagepath) = ui_get_status_images_path ();
+function ui_print_status_image ($type, $title = "", $return = false, $options = false, $path = false) {
+	if($path === false) {
+		list ($imagepath) = ui_get_status_images_path ();
+	}
+	else {
+		$imagepath = $path;
+	}
 	
 	$imagepath .= "/" . $type;
 	
@@ -2089,11 +2090,11 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
 function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = ""){
 	$title = io_safe_input_html($title);
 	if (($icon == "") && ($godmode == true)) {
-		$icon = "images/setup.png";
+		$icon = "images/gm_setup.png";
 	}
 	
 	if (($icon == "") && ($godmode == false)) {
-		$icon = "images/comments.png";
+		$icon = "images/op_monitoring.png";
 	}
 	
 	if ($godmode == true) {
@@ -2111,11 +2112,11 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 	
 	
-	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . html_print_image($icon, true, array("style" => "margin-bottom: -3px;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
-	$buffer .= $title;
+	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . html_print_image($icon, true, array("style" => "margin-bottom: -3px;", "class" => "bottom", "border" => "0", "alt" => "", 'width' => '24px')) . '&nbsp; ';
+	$buffer .= '<span style="display: inline-block; vertical-align: top; margin-top: 2px;">' . ui_print_truncate_text($title, 45);
 	if ($help != "")
 		$buffer .= "&nbsp;&nbsp;" . ui_print_help_icon ($help, true);
-	$buffer .= '</li></ul></div>';
+	$buffer .= '</span></li></ul></div>';
 	
 	if (is_array($options)) {
 		$buffer .= '<div id="menu_tab"><ul class="mn">';
@@ -2133,6 +2134,17 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 						}
 					}
 					
+					// Tabs forced to other styles
+					if (isset($option['godmode']) && $option['godmode']) {
+						$class .= ' tab_godmode';
+					}
+					else if (isset($option['operation']) && ($option['operation'])) {
+						$class .= ' tab_operation';
+					}
+					else {
+						$class .= $godmode ? ' tab_godmode' : ' tab_operation';
+					}
+					
 					$buffer .= '<li class="' . $class . '">';
 					$buffer .= $option['text'];
 					$buffer .= '</li>';
@@ -2148,13 +2160,13 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	}
 	else {
 		if ($options != "") {
-			$buffer .= '<div id="menu_tab"><ul class="mn"><li class="nomn">';
+			$buffer .= '<div id="menu_tab"><ul class="mn"><li>';
 			$buffer .= $options;
 			$buffer .= '</li></ul></div>';
 		}
 	}
 	
-	$buffer .=  '</div>';  //<br /><br /><br />';
+	$buffer .=  '</div>';
 	
 	if (!$return)
 		echo $buffer;
@@ -2409,7 +2421,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 	
 	
 	//Default value
-	$icon_image = html_print_image('images/lightning.png', true, false, true);
+	$icon_image = html_print_image('images/agent_unknown.png', true, false, true);
 	if (isset($parameters['icon_image'])) {
 		$icon_image = $parameters['icon_image'];
 	}

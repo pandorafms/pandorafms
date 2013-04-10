@@ -36,7 +36,7 @@ if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NO
 
 $buttons['graph_list'] = array('active' => true,
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">' .
-		html_print_image("images/god6.png", true, array ("title" => __('Graph list'))) .'</a>');
+		html_print_image("images/list.png", true, array ("title" => __('Graph list'))) .'</a>');
 		
 if ($enterpriseEnable){
 	$buttons = reporting_enterprise_add_template_graph_tabs($buttons);
@@ -65,7 +65,7 @@ $id = (int) get_parameter ('id');
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 
 // Header
-ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/reporting.png", false, "", false, $buttons);
+ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/chart.png", false, "", false, $buttons);
 
 // Delete module SQL code
 if ($delete_graph) {
@@ -151,7 +151,7 @@ if (! empty ($graphs)) {
 	if (check_acl ($config['id_user'], 0, "RW")) {
 		$table->align[4] = 'center';
 		$table->head[4] = __('Op.');
-		$table->size[4] = '70px';
+		$table->size[4] = '90px';
 	}
 	$table->data = array ();
 	
@@ -170,7 +170,7 @@ if (! empty ($graphs)) {
 			$data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.
 			$graph['id_graph'].'">'.html_print_image("images/config.png", true).'</a>';
 			
-			$data[4] .= '&nbsp;&nbsp;';
+			$data[4] .= '&nbsp;';
 			
 			$data[4] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs&delete_graph=1&id='
 				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))

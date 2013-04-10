@@ -40,7 +40,7 @@ if (!defined('METACONSOLE')) {
 	'user' => array(
 		'active' => false,
 		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">' . 
-			html_print_image ("images/god3.png", true, array ("title" => __('User management'))) .'</a>'),
+			html_print_image ("images/gm_users.png", true, array ("title" => __('User management'))) .'</a>'),
 	'profile' => array(
 		'active' => false,
 		'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">' . 
@@ -48,7 +48,7 @@ if (!defined('METACONSOLE')) {
 			
 	$buttons[$tab]['active'] = true;
 
-	ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/god3.png", false, "profile", true, $buttons);
+	ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/gm_users.png", false, "profile", true, $buttons);
 	$sec = 'gusuarios';
 }
 else {

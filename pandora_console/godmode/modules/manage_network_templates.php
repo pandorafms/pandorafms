@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "", false, "template_tab", true);
+ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "images/gm_modules.png", false, "template_tab", true);
 
 
 require_once ('include/functions_network_profiles.php');
@@ -205,13 +205,13 @@ foreach ($result as $row) {
 	$data[2] = html_print_input_image ("delete_profile", "images/cross.png",
 		$row["id_np"],'', true,
 		array ('onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;'));
-	$data[2] .= html_print_input_image ("export_profile", "images/lightning_go.png",
-		$row["id_np"], '', true, array('title' => 'Export'));
+	$data[2] .= html_print_input_image ("export_profile", "images/csv.png",
+		$row["id_np"], '', true, array('title' => 'Export to CSV'));
 	$data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' .
 		'&delete_profile=1&delete_profile=' . $row['id_np'] . '" ' .
 		'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array('title' => __('Delete'))) . '</a>';
 	$data[2] .= '&nbsp;&nbsp;<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' .
-		'&export_profile=' . $row['id_np'] . '">' . html_print_image("images/lightning_go.png", true, array('title' => __('Export'))) . '</a>' .
+		'&export_profile=' . $row['id_np'] . '">' . html_print_image("images/csv.png", true, array('title' => __('Export to CSV'))) . '</a>' .
 		html_print_checkbox_extended ('delete_multiple[]', $row['id_np'], false, false, '', 'class="check_delete"', true);
 	
 	array_push ($table->data, $data);

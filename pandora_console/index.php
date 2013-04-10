@@ -153,7 +153,7 @@ $search = get_parameter_get("head_search_keywords");
 if (strlen($search) > 0) {
 	$config['search_keywords'] = trim(get_parameter('keywords'));
 	// If not search category providad, we'll use an agent search
-	$config['search_category'] = get_parameter('search_category', 'agents');
+	$config['search_category'] = get_parameter('search_category', 'all');
 	if (($config['search_keywords'] != 'Enter keywords to search') && (strlen($config['search_keywords']) > 0))
 		$searchPage = true;
 }
@@ -531,6 +531,7 @@ else {
 }
 
 if ($config["pure"] == 0) {
+	echo '<div style="clear:both"></div>';
 	echo '</div>'; // main
 	echo '<div style="clear:both">&nbsp;</div>';
 	echo '</div>'; // page (id = page)

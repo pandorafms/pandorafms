@@ -17,9 +17,9 @@
 */
 
 .menu {
-	border-width: 1px 0 0 1px;
+	border-width: 1px 0 0 0px;
 	border-style: solid;
-	border-color: #dadbdc;
+	border-color: #777;
 }
 .menu ul {
 	list-style-type: none;
@@ -34,13 +34,40 @@
 .menu li.selected {
 	background-color: #d9fb86 !important;
 }
+
 .menu li a {
-	background-color: inherit;
-	color: #000000;
+	/*background-color: inherit;*/
+	color: #FFFFFF;
+	/*font-weight: bold;*/
 	display:block; /* This makes it so that the whole li is clickable */
 	text-decoration:none;
-	padding: 6px;
-	margin-left: 23px;
+	padding: 9px;
+	margin-left: 28px;
+}
+
+.submenu_text{
+	background-repeat: no-repeat !important;
+	height: 100%;
+	padding: 8px 0px 8px 17px;
+	margin-left: 10px;
+}
+
+.submenu_text_middle{
+	background-image: url(../../images/submenu_tree_middle.png) !important;	
+}
+
+.submenu_text_last{
+	background-image: url(../../images/submenu_tree_last.png) !important;	
+}
+
+.submenu2_text_middle{
+	background-image: url(../../images/submenu2_tree_middle.png) !important;
+	padding-left: 25px;	
+}
+
+.submenu2_text_last{
+	background-image: url(../../images/submenu2_tree_last.png) !important;
+	padding-left: 25px;
 }
 
 .menu li.subselected a{
@@ -49,37 +76,39 @@
 
 .menu a:hover {
 	text-decoration:none;
-	color: #D54E21;
+	border:1px;
 }
 .submenu {
 	font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
 	margin: 0px 10px 0px 0;
-	width: 164px;
+	width: 173px;
 }
 .submenu li a {
-	background-color: #fff;
+	background-color: #222;
 	margin-left: 0px;
-	padding-left: 29px;
+	/*padding-left: 29px;*/
 	display:block;
-	border-width: 1px 1px 0 1px;
+	border-width: 0px 0px 0px 0px;
 	border-style: solid;
-	border-color: #dadbdc;
+	border-color: #666;
+	padding: 0px;
 }
 
 .submenu2 li a {
-background-color: #fff;
+	background-color: #111;
 	margin-left: 0px;
-	padding-left: 40px;
+	padding-left: 0px;
 	display:block;
-	border-width: 1px 1px 0 1px;
-	border-style: solid;
-	border-color: #dadbdc;
+}
+
+.submenu2 li a:hover {
+	background-color: #111 !important;
 }
 
 .menu li img.toggle {
 	visibility: hidden;
 	float:right;
-	margin: -20px 2px 0 0; /* Positions it back where it should be */
+	margin: -20px 0px 0 0; /* Positions it back where it should be */
 	border-left: 1px;
 }
 .menu li.has_submenu.selected > img.toggle,
@@ -92,12 +121,16 @@ background-color: #fff;
 	background-color: #E4E4E4 !important;
 }
 
-.submenu2_not_selected a {
-	font-weight: normal;
+.submenu_not_selected a, .submenu2_not_selected a {
+	font-weight: normal !important;
 }
 
 .menu li.submenu_selected a {
 	font-weight: bold;
+}
+
+.submenu_selected {
+	margin-bottom: 0px !important;
 }
 
 .menu .menu_icon, .menu li.links {
@@ -112,57 +145,35 @@ background-color: #fff;
 }
 
 .menu {
-	width: 164px;
+	width: 173px;
 
 }
 /* Icons specified here */
 #icon_oper-networkconsole {
- 	background-image: url(../../images/plotchart.png);
+ 	background-image: url(../../images/op_network.png);
 }
-#icon_oper-dashboard {
- 	background-image: url(../../images/house.png);
-}
-#icon_oper-metaconsole {
- 	background-image: url(../../images/application_double.png);
-}
-
 #icon_oper-agents {
-	background-image: url(../../images/bricks.png);
-}
-#icon_oper-services {
-	background-image: url(../../images/box.png);
-}
-#icon_oper-servers {
-	background-image: url(../../images/server.png);
-}
-#icon_oper-incidents {
-	background-image: url(../../images/book_edit.png);
+	background-image: url(../../images/op_monitoring.png);
 }
 #icon_oper-events {
-	background-image: url(../../images/lightning_go.png);
+	background-image: url(../../images/op_events.png);
 }
 /* users */
 #icon_oper-users {
-	background-image: url(../../images/group.png);
+	background-image: url(../../images/op_workspace.png);
 }
 /* trap console */
 #icon_oper-snmpc, #icon_god-snmpc {
-	background-image: url(../../images/computer_error.png);
-}
-#icon_oper-messages {
-	background-image: url(../../images/email.png);
+	background-image: url(../../images/op_snmp.png);
 }
 #icon_oper-reporting {
-	background-image: url(../../images/reporting.png);
-}
-#icon_oper-visualc {
-	background-image: url(../../images/monitor.png);
+	background-image: url(../../images/op_reporting.png);
 }
 #icon_oper-gismaps {
-	background-image: url(../../images/server_web.png);
+	background-image: url(../../images/op_gis.png);
 }
 #icon_oper-netflow {
-	background-image: url(../../images/networkmap/so_cisco_new.png);
+	background-image: url(../../images/op_netflow.png);
 }
 #icon_oper-extensions, #icon_god-extensions {
 	background-image: url(../../images/extensions.png);
@@ -170,52 +181,46 @@ background-color: #fff;
 
 /* Godmode images */
 #icon_god-gismaps {
-	background-image: url(../../images/server_web.png);
+	background-image: url(../../images/gm_gis.png);
 }
 #icon_god-agents {
-	background-image: url(../../images/god1.png);
+	background-image: url(../../images/gm_monitoring.png);
 }
 #icon_god-massive {
-	background-image: url(../../images/sitemap_color.png);
+	background-image: url(../../images/gm_massive_operations.png);
 }
 #icon_god-services {
 	background-image: url(../../images/box.png);
 }
 #icon_god-modules {
-	background-image: url(../../images/brick.png);
+	background-image: url(../../images/gm_modules.png);
 }
 #icon_god-alerts {
-	background-image: url(../../images/god2.png);
+	background-image: url(../../images/gm_alerts.png);
 }
 #icon_god-dbmaint {
-	background-image: url(../../images/god8.png);
+	background-image: url(../../images/gm_db.png);
 }
 #icon_god-users {
-	background-image: url(../../images/god3.png);
+	background-image: url(../../images/gm_users.png);
 }
 #icon_god-reporting {
 	background-image: url(../../images/reporting_edit.png);
 }
-#icon_god-map {
-	background-image: url(../../images/god9.png);
-}
-#icon_god-profiles {
-	background-image: url(../../images/god4.png);
-}
 #icon_god-servers {
-	background-image: url(../../images/god5.png);
+	background-image: url(../../images/gm_servers.png);
 }
 #icon_god-audit {
-	background-image: url(../../images/god6.png);
+	background-image: url(../../images/gm_log.png);
 }
 #icon_god-netflow {
-	background-image: url(../../images/networkmap/so_cisco_new.png);
+	background-image: url(../../images/gm_netflow.png);
 }
 #icon_god-setup {
-	background-image: url(../../images/god7.png);
+	background-image: url(../../images/gm_setup.png);
 }
 #icon_god-policies {
-	background-image: url(../../images/policies.png);
+	background-image: url(../../images/gm_policies.png);
 }
 #icon_oper-inventory {
 	background-image: url(../../images/page_white_text.png);
@@ -224,13 +229,13 @@ background-color: #fff;
 	background-image: url(../../images/tag_red.png);
 }
 #icon_god-events {
-	background-image: url(../../images/lightning_go.png);
+	background-image: url(../../images/gm_events.png);
 }
 
 #menu_container {
 	z-index: 3;
 	position: absolute;
-	left: -130px;
+	left: -140px;
 	background-color: #AAA;
 	height: 100%;
 }

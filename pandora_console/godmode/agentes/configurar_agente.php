@@ -237,7 +237,7 @@ if ($id_agente) {
 	
 	/* View tab */
 	$viewtab['text'] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">' 
-		. html_print_image ("images/zoom.png", true, array ("title" =>__('View')))
+		. html_print_image ("images/operation.png", true, array ("title" =>__('View')))
 		. '</a>';
 	
 	if ($tab == 'view')
@@ -245,9 +245,11 @@ if ($id_agente) {
 	else
 		$viewtab['active'] = false;
 	
+	$viewtab['operation'] = 1;
+	
 	/* Main tab */
 	$maintab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">' 
-		. html_print_image ("images/cog.png", true, array ("title" =>__('Setup')))
+		. html_print_image ("images/gm_setup.png", true, array ("title" =>__('Setup')))
 		. '</a>';
 	if ($tab == 'main')
 		$maintab['active'] = true;
@@ -256,7 +258,7 @@ if ($id_agente) {
 		
 	/* Module tab */
 	$moduletab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">' 
-		. html_print_image ("images/brick.png", true, array ("title" =>__('Modules')))
+		. html_print_image ("images/gm_modules.png", true, array ("title" =>__('Modules')))
 		. '</a>';
 	
 	if($tab == 'module')
@@ -266,7 +268,7 @@ if ($id_agente) {
 	
 	/* Alert tab */
 	$alerttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">' 
-		. html_print_image ("images/bell.png", true, array ("title" =>__('Alerts')))
+		. html_print_image ("images/gm_alerts.png", true, array ("title" =>__('Alerts')))
 		. '</a>';
 	
 	if ($tab == 'alert')
@@ -276,7 +278,7 @@ if ($id_agente) {
 	
 	/* Template tab */
 	$templatetab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">' 
-		. html_print_image ("images/network.png", true, array ("title" =>__('Module templates')))
+		. html_print_image ("images/templates.png", true, array ("title" =>__('Module templates')))
 		. '</a>';
 	
 	if ($tab == 'template')
@@ -313,7 +315,7 @@ if ($id_agente) {
 	/* Group tab */
 	
 	$grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'
-		. html_print_image ("images/agents_group.png", true, array( "title" => __('Group')))
+		. html_print_image ("images/group.png", true, array( "title" => __('Group')))
 		. '</a>';
 	
 	$grouptab['active'] = false;
@@ -324,7 +326,7 @@ if ($id_agente) {
 	if ($config['activate_gis']) {
 		
 		$gistab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente.'">'
-			. html_print_image ("images/world.png", true, array ( "title" => __('GIS data')))
+			. html_print_image ("images/gm_gis.png", true, array ( "title" => __('GIS data')))
 			. '</a>';
 		
 		if ($tab == "gis")
@@ -349,7 +351,6 @@ if ($id_agente) {
 	
 	if (check_acl ($config["id_user"], $group, "AW", $id_agente)) {
 		$onheader = array('view' => $viewtab,
-			'separator' => "",
 			'main' => $maintab,
 			'module' => $moduletab,
 			'alert' => $alerttab,

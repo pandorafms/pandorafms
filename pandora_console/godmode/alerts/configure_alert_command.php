@@ -58,7 +58,7 @@ if (defined('METACONSOLE'))
 	alerts_meta_print_header();
 else
 	ui_print_page_header (__('Alerts') . ' &raquo; ' .
-		__('Configure alert command'), "images/god2.png", false, "", true);
+		__('Configure alert command'), "images/gm_alerts.png", false, "", true);
 
 $table->width = '98%';
 $table->style = array ();

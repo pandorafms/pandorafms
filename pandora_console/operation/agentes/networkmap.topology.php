@@ -93,7 +93,9 @@ if ($result !== false) {
 		
 		return;
 	}
+	echo "<div style='text-align:center'>";
 	html_print_image ($filename_img, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
+	echo "</div>";
 	require ($filename_map);
 }
 else {

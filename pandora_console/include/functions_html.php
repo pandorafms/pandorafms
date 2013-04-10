@@ -1204,6 +1204,7 @@ function html_get_predefined_table ($model = 'transparent', $columns = 4) {
  *	$table->cellpadding - Padding on each cell
  *	$table->cellspacing - Spacing between cells
  *	$table->cellstyle - Style of a cell
+ *	$table->cellclass - Class of a cell
  *	$table->class - CSS table class
  *	$table->id - Table ID (useful in JavaScript)
  *	$table->headclass[] - An array of classes for each heading
@@ -1292,6 +1293,13 @@ function html_print_table (&$table, $return = false) {
 		foreach ($table->cellstyle as $keyrow => $cstyle) {
 			foreach ($cstyle as $key => $cst) {
 				$cellstyle[$keyrow][$key] = $cst;
+			}
+		}
+	}
+	if (isset ($table->cellclass)) {
+		foreach ($table->cellclass as $keyrow => $cclass) {
+			foreach ($cclass as $key => $ccl) {
+				$cellclass[$keyrow][$key] = $ccl;
 			}
 		}
 	}
@@ -1421,6 +1429,9 @@ function html_print_table (&$table, $return = false) {
 				if (!isset ($cellstyle[$keyrow][$key])) {
 					$cellstyle[$keyrow][$key] = '';
 				}
+				if (!isset ($cellclass[$keyrow][$key])) {
+					$cellclass[$keyrow][$key] = '';
+				}
 				if (!isset ($colspan[$keyrow][$key])) {
 					$colspan[$keyrow][$key] = '';
 				}
@@ -1440,7 +1451,7 @@ function html_print_table (&$table, $return = false) {
 					$style[$key] = '';
 				}
 
-				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.'">'. $item .'</td>'."\n";
+				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="' . $class . ' ' . $cellclass[$keyrow][$key] . '">'. $item .'</td>'."\n";
 			}
 			$output .= '</tr>'."\n";
 		}
@@ -1614,6 +1625,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			$skin_path = enterprise_hook('skins_get_image_path',array($src));
+			//html_debug_print($skin_path);
 			if ($skin_path)
 				$src = $skin_path;
 		}
@@ -1894,7 +1906,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 	ob_start();
 	
 	html_print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
-		array('style' => 'background: url(images/lightning_blue.png) no-repeat right;'));
+		array('style' => 'background: url(images/module_unknown.png) no-repeat right;'));
 	ui_print_help_tip(__('Type at least two characters to search the module.'), false);
 	
 	$javascript_ajax_page =

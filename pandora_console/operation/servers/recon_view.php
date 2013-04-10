@@ -23,9 +23,9 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
 require_once ($config["homedir"] . '/include/functions_servers.php');
 require_once ($config['homedir'] . "/include/functions_network_profiles.php");
 
-$options = "<li><a href='index.php?sec=estado&sec2=operation/servers/recon_view'>" . html_print_image("images/refresh.png", true) . "</a></li>";
+$options[]['text'] = "<a href='index.php?sec=estado&sec2=operation/servers/recon_view'>" . html_print_image("images/header_refresh.png", true) . "</a>";
 
-ui_print_page_header (__('Recon View'), "images/server.png", false, "", false, $options);
+ui_print_page_header (__('Recon View'), "images/op_recon.png", false, "", false, $options);
 
 
 if (! check_acl ($config['id_user'], 0, "PM")) {

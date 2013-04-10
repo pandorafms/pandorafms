@@ -429,7 +429,6 @@ if (is_ajax ())
 						"period=86400&" .
 						"id=" . $row["id_agente_modulo"];
 				}
-				//echo "<a href='" . $url_module_data . "'>" . html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
 				echo "<a href='javascript: show_module_detail_dialog(" . $row["id_agente_modulo"] . ", ". $row['id_agente'].", \"" . $server_name . "\", 0, 86400)'>". html_print_image ("images/binary.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
 
 				echo " ";
@@ -500,17 +499,17 @@ $img_style = array ("class" => "top", "width" => 16);
 $activeTab = get_parameter('sort_by','group');
 
 $os_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=os'>"
-	. html_print_image ("images/computer.png", true, array ("title" => __('OS'))) . "</a>", 'active' => $activeTab == "os");
+	. html_print_image ("images/operating_system.png", true, array ("title" => __('OS'))) . "</a>", 'active' => $activeTab == "os");
 
 $group_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=group'>"
 	. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>", 'active' => $activeTab == "group");
 
 $module_group_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=module_group'>"
-	. html_print_image ("images/agents_group.png", true, array ("title" => __('Module groups'))) . "</a>", 'active' => $activeTab == "module_group");
+	. html_print_image ("images/module_group.png", true, array ("title" => __('Module groups'))) . "</a>", 'active' => $activeTab == "module_group");
 
 if ($enterpriseEnable) {
 	$policies_tab = array('text' => "<a href='index.php?sec=estado&sec2=operation/tree&refr=0&sort_by=policies'>"
-		. html_print_image ("images/policies.png", true, array ("title" => __('Policies'))) . "</a>", 'active' => $activeTab == "policies");
+		. html_print_image ("images/policies_mc.png", true, array ("title" => __('Policies'))) . "</a>", 'active' => $activeTab == "policies");
 }
 else {
 	$policies_tab = '';
@@ -520,7 +519,7 @@ $module_tab = array('text' => "<a href='index.php?extension_in_menu=estado&sec=e
 	. html_print_image ("images/brick.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $activeTab == "module");
 
 $tags_tab = array('text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&sort_by=tag&pure=$pure'>"
-	. html_print_image ("images/tag_red.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
+	. html_print_image ("images/tag.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
 	
 switch ($activeTab) {
 	case 'group':
@@ -558,7 +557,7 @@ else {
 		. html_print_image ("images/group.png", true, array ("title" => __('Groups'))) . "</a>",
 		'active' => $activeTab == "group");
 	$tags_tab = array('text' => "<a href='index.php?&sec=monitoring&sec2=operation/tree&refr=0&tab=tag&pure=$pure'>"
-				. html_print_image ("images/tag_red.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
+				. html_print_image ("images/tag.png", true, array ("title" => __('Tags'))) . "</a>", 'active' => $activeTab == "tag");
 	$subsections = array('group' => $group_tab, 'tag' => $tags_tab);
 	switch ($activeTab) {
 		case 'group':

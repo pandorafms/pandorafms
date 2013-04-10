@@ -34,7 +34,7 @@ $snmp_type = (int) get_parameter ("snmp_type", 0);
 $snmp_value = (string) get_parameter ("snmp_value", '');
 $generate_trap = (bool) get_parameter ("generate_trap", 0);
 
-ui_print_page_header (__("SNMP Trap generator"), "images/computer_error.png", false, "", false);
+ui_print_page_header (__("SNMP Trap generator"), "images/op_snmp.png", false, "", false);
 
 if($generate_trap) {
 	$result = true;
@@ -50,7 +50,7 @@ if($generate_trap) {
 	__('Could not be generated'));
 }
 
-$traps_generator = '<form method="POST" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_trap_generator">';
+$traps_generator = '<form method="POST" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
 $table->width = '90%';
 $table->size = array ();
 $table->data = array ();

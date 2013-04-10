@@ -61,7 +61,7 @@ if ((!$copy_action) && (!$delete_action) && (!$update_action)) {
 		alerts_meta_print_header ();
 	}
 	else {	
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
 	}
 }
 
@@ -86,7 +86,7 @@ if ($copy_action) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
 				}
 			}
 		} // If user tries to copy an action of others groups
@@ -104,7 +104,7 @@ if ($copy_action) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
 				}
 			}
 			else {
@@ -121,7 +121,7 @@ if ($copy_action) {
 			alerts_meta_print_header ();
 		}
 		else {
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
 		}
 	}
 	$result = alerts_clone_alert_action ($id);
@@ -199,7 +199,7 @@ if ($update_action) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
 				}
 			}
 		}
@@ -210,7 +210,7 @@ if ($update_action) {
 			alerts_meta_print_header ();
 		}
 		else {
-			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+			ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
 		}
 	}
 	
@@ -277,7 +277,7 @@ if ($delete_action) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
 				}
 			}
 		// If user tries to delete an action of others groups
@@ -296,7 +296,7 @@ if ($delete_action) {
 					alerts_meta_print_header ();
 				}
 				else {	
-					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "alert_action", true);
+					ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "alert_action", true);
 				}
 			}
 			else {
@@ -309,7 +309,7 @@ if ($delete_action) {
 	}
 	else
 		// Header
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/gm_alerts.png", false, "", true);
 	
 	
 	$result = alerts_delete_alert_action ($id);

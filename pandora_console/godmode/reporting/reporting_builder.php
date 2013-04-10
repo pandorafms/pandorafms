@@ -233,7 +233,7 @@ switch ($action) {
 		$buttons = array(
 			'list_reports' => array('active' => false,
 				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
-					html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
+					html_print_image("images/op_reporting.png", true, array ("title" => __('Main'))) .'</a>')
 			);
 		
 		if ($enterpriseEnable) {
@@ -266,7 +266,7 @@ switch ($action) {
 		}
 		// Page header for normal console
 		else
-			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting.png", false, "",false, $buttons);
+			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/op_reporting.png", false, "", false, $buttons);
 		
 		if ($action == 'delete_report') {
 			$result = reports_delete_report ($idReport);
@@ -377,7 +377,8 @@ switch ($action) {
 				$next++;
 				$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
 				$table->size = array ();
-				$table->size[$next] = '60px';
+				$table->size[$next] = '80px';
+				$table->style[$next] = 'text-align:center;';
 			
 			}
 			
@@ -405,8 +406,8 @@ switch ($action) {
 				$data[1] = $report['description'];
 				
 				$data[2] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'&pure='.$pure.'">' .
-					html_print_image("images/reporting.png", true) . '</a>';
-				$data[3] = '<a href="'. ui_get_full_url(false, false, false, false) . 'ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/database_lightning.png", true) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
+					html_print_image("images/html.png", true, array('title' => __('HTML view'))) . '</a>';
+				$data[3] = '<a href="'. ui_get_full_url(false, false, false, false) . 'ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/xml.png", true, array('title' => __('Export to XML'))) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway
 				
 				
 				//Calculate dinamically the number of the column
@@ -454,7 +455,7 @@ switch ($action) {
 					$data[$next] .= html_print_input_image ('edit', 'images/config.png', 1, '', true, array ('title' => __('Edit')));
 					$data[$next] .= '</form>';
 					
-					$data[$next] .= '&nbsp;&nbsp;<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+					$data[$next] .= '<form method="post" style="display:inline;" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 					$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 					$data[$next] .= html_print_input_hidden ('action','delete_report', true);
 					$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
@@ -1346,7 +1347,7 @@ switch ($action) {
 			$buttons = array(
 				'list_reports' => array('active' => false,
 					'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">' . 
-						html_print_image("images/god6.png", true, array ("title" => __('Main'))) .'</a>')
+						html_print_image("images/op_reporting.png", true, array ("title" => __('Main'))) .'</a>')
 				);
 			
 			$buttons = reporting_enterprise_add_main_Tabs($buttons);
@@ -1377,7 +1378,7 @@ switch ($action) {
 			}
 			// Page header for normal console
 			else
-				ui_print_page_header (__('Reporting') . $subsection, "images/reporting_edit.png", false, "", true, $buttons);
+				ui_print_page_header (__('Reporting') . $subsection, "images/op_reporting.png", false, "", false, $buttons);
 			
 			reporting_enterprise_select_main_tab($action);
 		}
@@ -1395,13 +1396,13 @@ if ($enterpriseEnable) {
 $buttons = array(
 	'main' => array('active' => false,
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $idReport . '&pure='.$pure.'">' . 
-			html_print_image("images/reporting_edit.png", true, array ("title" => __('Main'))) .'</a>'),
+			html_print_image("images/op_reporting.png", true, array ("title" => __('Main'))) .'</a>'),
 	'list_items' => array('active' => false,
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . '&pure='.$pure.'">' . 
-			html_print_image("images/god6.png", true, array ("title" => __('List items'))) .'</a>'),
+			html_print_image("images/list.png", true, array ("title" => __('List items'))) .'</a>'),
 	'item_editor' => array('active' => false,
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report=' . $idReport . '&pure='.$pure.'">' . 
-			html_print_image("images/config.png", true, array ("title" => __('Item editor'))) .'</a>')
+			html_print_image("images/pen.png", true, array ("title" => __('Item editor'))) .'</a>')
 	);
 
 if ($enterpriseEnable) {
@@ -1410,7 +1411,7 @@ if ($enterpriseEnable) {
 
 $buttons['view'] = array('active' => false,
 	'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=' . $idReport . '&pure='.$pure.'">' . 
-		html_print_image("images/reporting.png", true, array ("title" => __('View report'))) .'</a>');
+		html_print_image("images/operation.png", true, array ("title" => __('View report'))) .'</a>');
 
 $buttons[$activeTab]['active'] = true;
 
@@ -1436,7 +1437,7 @@ if ($enterpriseEnable and defined('METACONSOLE')) {
 	ui_meta_print_header(__('Reporting'). $textReportName, "", $buttons);
 }
 else
-	ui_print_page_header(__('Reporting') . $textReportName, "images/reporting_edit.png", false, "reporting_" . $activeTab . "_tab", true, $buttons);
+	ui_print_page_header(__('Reporting') . $textReportName, "images/op_reporting.png", false, "reporting_" . $activeTab . "_tab", false, $buttons);
 
 if ($resultOperationDB !== null) {
 	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action'));

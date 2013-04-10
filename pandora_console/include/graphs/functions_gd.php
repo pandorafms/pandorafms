@@ -308,10 +308,14 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 			$defined_color = ImageColorAllocate($image, $color[0], $color[1], $color[2]);
 		}
 		
-		$soft_green = ImageColorAllocate($image,176, 255, 84);
-		$soft_yellow = ImageColorAllocate($image,255, 230, 84);
-		$soft_red = ImageColorAllocate($image,255, 154, 84);
-		$other_red = ImageColorAllocate($image,238, 0, 0);
+		$soft_green = ImageColorAllocate($image,218, 235, 175);
+		$soft_green_border = ImageColorAllocate($image,158, 201, 103);
+		$soft_yellow = ImageColorAllocate($image,251, 242, 154);
+		$soft_yellow_border = ImageColorAllocate($image,231, 215, 82);
+		$soft_red = ImageColorAllocate($image,255, 196, 157);
+		$soft_red_border = ImageColorAllocate($image,255, 154, 84);
+		$other_red = ImageColorAllocate($image,239, 141, 122);
+		$other_red_border = ImageColorAllocate($image,255, 112, 86);
 		
 		ImageRectangleWithRoundedCorners($image,0,0,$width-1,$height-1,$radius,$back,false);
 		
@@ -326,17 +330,24 @@ function gd_progress_bar ($width, $height, $progress, $title, $font, $out_of_lim
 				if (isset($defined_color)) {
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $defined_color);
 				}
-				elseif ($rating > 70)
+				elseif ($rating > 70) {
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_green);
-				elseif ($rating > 50)
+					$bordercolor = $soft_green_border;
+				}
+				elseif ($rating > 50) {
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_yellow);
-				elseif ($rating > 30)
+					$bordercolor = $soft_yellow_border;
+				}
+				elseif ($rating > 30) {
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $soft_red);
+					$bordercolor = $soft_red_border;
+				}
 				else if($rating > 0) {
 					if($radius != 0) {
 						$x2 = $ratingbar30;
 					}
 					ImageRectangleWithRoundedCorners($image, $x1, $y1, $x2, $y2, $radius, $other_red);
+					$bordercolor = $other_red_border;
 				}
 				break;
 			case 1:

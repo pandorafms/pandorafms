@@ -108,13 +108,15 @@ else {
 		'user' => array(
 			'active' => false,
 			'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">' . 
-				html_print_image ("images/god3.png", true, array ("title" => __('User management'))) .'</a>'),
+				html_print_image ("images/gm_users.png", true, array ("title" => __('User management'))) .'</a>'),
 		'profile' => array(
 			'active' => false,
 			'text' => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">' . 
 				html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
 	
-	ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true, $buttons);
+	$buttons[$tab]['active'] = true;
+
+	ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/gm_users.png", false, "", true, $buttons);
 	
 	$sec = 'gusuarios';
 	
@@ -199,7 +201,8 @@ $table->head[5] = '<span title="Operations">' . __('Op.') . '</span>';
 $table->align[2] = "center";
 $table->align[3] = "center";
 $table->align[5] = "left";
-$table->size[5] = '65px';
+$table->size[2] = '150px';
+$table->size[5] = '85px';
 
 $info1 = array ();
 
@@ -303,7 +306,7 @@ foreach ($info as $user_id => $user_info) {
 	}
 	$data[5] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, array('title' => __('Edit'))).'</a>';
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
-		$data[5] .= "&nbsp;&nbsp;<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
+		$data[5] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
 	}
 	else {
 		$data[5] .= ''; //Delete button not in this mode

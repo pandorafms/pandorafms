@@ -27,8 +27,15 @@ function users_extension_main_god ($god = true) {
 		}
 	}
 	
+	if($god) {
+		$image = "images/gm_users.png";
+	}
+	else {
+		$image = "images/op_workspace.png";
+	}
+	
 	// Header
-	ui_print_page_header (__("Users connected"), "images/group.png", false, "", $god);
+	ui_print_page_header (__("Users connected"), $image, false, "", $god);
 	
 	// Get user conected last 5 minutes
 	switch ($config["dbtype"]) {

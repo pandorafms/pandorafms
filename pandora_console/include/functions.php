@@ -855,7 +855,6 @@ function is_module_uncompressed ($module_type) {
 	if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
 		return true;
 	}
-	
 	return false;
 }
 

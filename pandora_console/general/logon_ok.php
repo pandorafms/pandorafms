@@ -87,15 +87,16 @@ echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">'
 	$table->width = '100%'; //Don't specify px
 	$table->data = array ();
 	$table->size = array ();
-	$table->size[1] = '150px';
-	$table->size[2] = '130px';
-	$table->size[4] = '200px';
+	$table->size[2] = '150px';
+	$table->size[3] = '130px';
+	$table->size[5] = '200px';
 	$table->head = array ();
 	$table->head[0] = __('User');
-	$table->head[1] = __('Action');
-	$table->head[2] = __('Date');
-	$table->head[3] = __('Source IP');
-	$table->head[4] = __('Comments');
+	$table->head[1] = '';
+	$table->head[2] = __('Action');
+	$table->head[3] = __('Date');
+	$table->head[4] = __('Source IP');
+	$table->head[5] = __('Comments');
 	$table->title = '<span class="med_data">' . __('This is your last activity in Pandora FMS console') . '</span>';
 	
 	switch ($config["dbtype"]) {
@@ -142,10 +143,10 @@ echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">'
 		
 		$data[0] = '<strong>' . $session_id_usuario . '</strong>';
 		$data[1] = ui_print_session_action_icon ($session['accion'], true);
-		$data[1] .= $session['accion'];
-		$data[2] =  ui_print_help_tip($session['fecha'], true) . human_time_comparation($session['utimestamp']);
-		$data[3] = $session_ip_origen;
-		$data[4] = io_safe_output ($session['descripcion']);
+		$data[2] = $session['accion'];
+		$data[3] =  ui_print_help_tip($session['fecha'], true) . human_time_comparation($session['utimestamp']);
+		$data[4] = $session_ip_origen;
+		$data[5] = io_safe_output ($session['descripcion']);
 		
 		array_push ($table->data, $data);
 	}

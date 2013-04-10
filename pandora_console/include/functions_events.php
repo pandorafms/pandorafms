@@ -782,13 +782,16 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->width = $width;
 		$table->class = "databox";
 		$table->title = __('Latest events');
+		$table->titleclass = 'tabletitle';
+		$table->titlestyle = 'text-transform:uppercase;';
 		$table->headclass = array ();
 		$table->head = array ();
 		$table->rowclass = array ();
+		$table->cellclass = array ();
 		$table->data = array ();
 		$table->align = array ();
-		$table->style[0] = $table->style[1] = $table->style[2] = 'width:25px';
-		$table->style[5] = 'width:180px';
+		$table->style[0] = $table->style[1] = $table->style[2] = 'width:25px; background: #E8E8E8;';
+		$table->style[4] = 'width:120px';
 		
 		$table->head[0] = "<span title='" . __('Validated') . "'>" . __('V.') . "</span>";
 		$table->align[0] = 'center';
@@ -892,25 +895,41 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			// Timestamp
 			$data[5] = ui_print_timestamp ($event["timestamp"], true, array('style' => 'font-size: 7px'));
 			
-			array_push ($table->rowclass, get_priority_class ($event["criticity"]));
+			$class = get_priority_class ($event["criticity"]);
+			$cell_classes[3] = $cell_classes[4] = $cell_classes[5] = $class;
+			array_push ($table->cellclass, $cell_classes);
+			//array_push ($table->rowclass, get_priority_class ($event["criticity"]));
 			array_push ($table->data, $data);
 		}
 		
 		$events_table = html_print_table ($table, true);
-		$out = '<table><tr><td style="width: 90%; padding-right: 10px;">';
+		$out = '<table width="98%"><tr><td style="width: 90%; padding-right: 10px;">';
 		$out .= $events_table;
 		
 		if($agent_id != 0) {
-			$out .= '</td><td style="width: 250px">';
-			$out .= '<b>' . __('Events generated -by module-') . '</b><br>';
-			$out .= graph_event_module (250, 100, $event['id_agente']);
+			$out .= '</td><td style="width: 250px; vertical-align: top;">';
+			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
+			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
+					<legend>' . 
+						__('Events generated -by module-') . 
+					'</legend>' . 
+					graph_event_module (250, 100, $event['id_agente']) . '</fieldset>';
+			$out .= '</td></tr></table>';
 		}
 		else {
-			$out .= '</td><td style="width: 250px; vertical-align: top;"><br>';
-			$out .= '<b>' . __('Event graph') . '</b><br>';
-			$out .= grafico_eventos_total("", 250, 120) . '<br>';
-			$out .= '<b>' . __('Event graph by agent') . '</b><br>';
-			$out .= grafico_eventos_grupo(250, 100);
+			$out .= '</td><td style="width: 250px; vertical-align: top;">';
+			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
+			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
+					<legend>' . 
+						__('Event graph') . 
+					'</legend>' . 
+					grafico_eventos_total("", 250, 100) . '</fieldset>';
+			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
+					<legend>' . 
+						__('Event graph by agent') . 
+					'</legend>' . 
+					grafico_eventos_grupo(250, 100) . '</fieldset>';
+			$out .= '</td></tr></table>';
 		}
 		
 		$out .= '</td></tr></table>';

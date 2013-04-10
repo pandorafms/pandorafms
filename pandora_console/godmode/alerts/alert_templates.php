@@ -127,7 +127,7 @@ if (!$delete_template) {
 		alerts_meta_print_header ();
 	}
 	else {
-		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
+		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alert_template", true);
 	}
 }
 if ($update_template) {
@@ -167,7 +167,7 @@ if ($delete_template) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
+					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alert_template", true);
 				}
 			}
 		} // If user tries to delete a template of others groups
@@ -184,7 +184,7 @@ if ($delete_template) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
+					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alert_template", true);
 				}
 			}
 			else {
@@ -200,7 +200,7 @@ if ($delete_template) {
 			alerts_meta_print_header ();
 		}
 		else {
-			ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "alert_template", true);
+			ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alert_template", true);
 		}
 	}
 	
@@ -304,7 +304,7 @@ foreach ($templates as $template) {
 	$data[4] .= html_print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
 	$data[4] .= '</form> ';
 	
-	$data[4] .= '&nbsp;&nbsp;<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+	$data[4] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
 	$data[4] .= html_print_input_hidden ('delete_template', 1, true);
 	$data[4] .= html_print_input_hidden ('id', $template['id'], true);
 	$data[4] .= html_print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));

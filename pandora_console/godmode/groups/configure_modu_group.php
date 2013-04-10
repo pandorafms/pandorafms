@@ -26,7 +26,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-ui_print_page_header (__("Module group management"), "images/god1.png", false, "", true, "");
+ui_print_page_header (__("Module group management"), "images/module_group.png", false, "", true, "");
 
 // Init vars
 $icon = "";

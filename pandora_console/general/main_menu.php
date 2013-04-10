@@ -23,7 +23,7 @@ if (! isset ($config["id_user"])) {
 // Menu container prepared to autohide menu
 echo '<div id="menu_container_old">';
 
-echo '<div class="tit bg">:: '.__('Operation').' ::</div>';
+echo '<div class="tit bg titop">:: '.__('Operation').' ::</div>';
 require ("operation/menu.php");
 
 //Check all enterprise ACL used in godmenu items to print menu headers
@@ -63,13 +63,13 @@ $(document).ready( function() {
 	function handlerIn() {
 		handsIn = 1;
 		if(openTime == 0) {
-			$('#menu_container').animate({"left": "+=130px"}, 200);
+			$('#menu_container').animate({"left": "+=140px"}, 200);
 			openTime = new Date().getTime();
 			
 			// Close in 1 second if is not closed manually
 			setTimeout(function(){
 				if(openTime > 0 && handsIn == 0) {
-					$('#menu_container').animate({"left": "-=130px"}, 100);
+					$('#menu_container').animate({"left": "-=140px"}, 100);
 					openTime = 0;
 				}
 			}, 1000);
@@ -81,7 +81,7 @@ $(document).ready( function() {
 		var openedTime = new Date().getTime() - openTime;
 		
 		if(openedTime > 1000) {
-			$('#menu_container').animate({"left": "-=130px"}, 100);
+			$('#menu_container').animate({"left": "-=140px"}, 100);
 			openTime = 0;
 		}
 	}

@@ -59,7 +59,7 @@ function mainAgentsModules() {
 		$updated_info = __("Updated at realtime");
 	}
 	
-	$updated_time = html_print_image ("images/information.png", true, array ("title" => __('Last update'), "style" => 'margin: 5px 3px 0px 10px')).$updated_info;
+	$updated_time = $updated_info;
 	
 	$modulegroup = get_parameter('modulegroup', 0);
 	$refr = get_parameter('refr', 30); // By default 30 seconds
@@ -94,13 +94,13 @@ function mainAgentsModules() {
 	$comborefr .= "</form>";
 	
 	if ($config["pure"] == 0) {
-		$fullscreen = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
-			. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+		$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
+			. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
 	}
 	else {
-		$fullscreen = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;refr=0&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
-			. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+		$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;refr=0&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
+			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
 		$config['refr'] = $refr;
 	}
@@ -114,7 +114,7 @@ function mainAgentsModules() {
 	}
 	
 	// Header
-	ui_print_page_header (__("Agents/Modules"), "images/bricks.png", false, "", false, $onheader);
+	ui_print_page_header (__("Agents/Modules"), "images/module_mc.png", false, "", false, $onheader);
 	
 	// Old style table, we need a lot of special formatting,don't use table function
 	// Prepare old-style table
@@ -198,7 +198,6 @@ function mainAgentsModules() {
 	}
 	// Prepare pagination
 	ui_pagination ((int)count(agents_get_agents ($filter_agents)));
-	echo "<br>";
 	
 	foreach ($agents as $agent) {
 		// Get stats for this group

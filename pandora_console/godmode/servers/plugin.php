@@ -81,9 +81,9 @@ if (($create != "") OR ($view != "")) {
 	}
 	else {
 		if ($create != "")
-			ui_print_page_header (__('Plugin creation') . ui_print_help_icon("plugin_definition", true), "", false, "", true);
+			ui_print_page_header (__('Plugin creation'), "images/gm_servers.png", false, "plugin_definition", true);
 		else {
-			ui_print_page_header (__('Plugin update') . ui_print_help_icon("plugin_definition", true), "", false, "", true);
+			ui_print_page_header (__('Plugin update'), "images/gm_servers.png", false, "plugin_definition", true);
 		}
 	}
 	
@@ -291,7 +291,7 @@ else {
 		$sec = 'advanced';
 	}
 	else {
-		ui_print_page_header (__('Plugins registered in Pandora FMS'), "", false, "", true);
+		ui_print_page_header (__('Plugins registered in Pandora FMS'), "images/gm_servers.png", false, "", true);
 	}
 	
 	// Update plugin
@@ -434,7 +434,7 @@ else {
 		echo "<th>".__('Name')."</th>";
 		echo "<th>".__('Type')."</th>";
 		echo "<th>".__('Command')."</th>";
-		echo "<th style='width:50px;'>" . '<span title="Operations">' . __('Op.') . '</span>' . "</th>";
+		echo "<th style='width:70px;'>" . '<span title="Operations">' . __('Op.') . '</span>' . "</th>";
 		$color = 0;
 		
 		foreach ($rows as $row) {

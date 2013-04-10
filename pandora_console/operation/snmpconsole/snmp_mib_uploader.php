@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 require_once ("include/functions_filemanager.php");
 
 // Header
-ui_print_page_header (__('MIB uploader'), "", false, "", true);
+ui_print_page_header (__('MIB uploader'), "images/op_snmp.png", false, "", false);
 
 if (isset($config['filemanager']['message'])) {
 	echo $config['filemanager']['message'];

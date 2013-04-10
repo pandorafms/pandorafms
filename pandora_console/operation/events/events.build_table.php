@@ -159,7 +159,6 @@ foreach ($result as $event) {
 	
 	//First pass along the class of this row
 	$myclass = get_priority_class ($event["criticity"]);
-	$table->rowclass[] = $myclass;
 	
 	//print status
 	$estado = $event["estado"];
@@ -183,7 +182,7 @@ foreach ($result as $event) {
 	$i = 0;
 	
 	$data[$i] = "#".$event["id_evento"];
-	
+
 	// Pass grouped values in hidden fields to use it from modal window
 	if ($group_rep) {
 		$similar_ids = $event['similar_ids'];
@@ -207,6 +206,7 @@ foreach ($result as $event) {
 		
 		// If meta activated, propagate the id of the event on node (source id)
 		$data[$i] .= html_print_input_hidden('source_id_' . $event["id_evento"], $event['id_source_event'], true);
+		$table->cellclass[count($table->data)][$i] = $myclass;
 	}
 	else {
 		$server_id = 0;
@@ -230,6 +230,7 @@ foreach ($result as $event) {
 		else {
 			$data[$i] = db_get_value('name','tserver');
 		}
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	if (in_array('estado',$show_fields)) {
@@ -243,6 +244,7 @@ foreach ($result as $event) {
 	}
 	if (in_array('id_evento',$show_fields)) {
 		$data[$i] = $event["id_evento"];
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -282,6 +284,7 @@ foreach ($result as $event) {
 			$data[$i] .= '</a>';
 		}
 		$data[$i] .= '</span>';
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -303,6 +306,7 @@ foreach ($result as $event) {
 			$data[$i] .= '';
 		}
 		$data[$i] .= '</span>';
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -316,6 +320,7 @@ foreach ($result as $event) {
 			$data[$i] .= ui_print_timestamp ($event["timestamp"], true);
 		}
 		$data[$i] .= '</span>';
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -325,6 +330,7 @@ foreach ($result as $event) {
 			$user_name = $event['id_usuario'];
 		}
 		$data[$i] = $user_name;
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -334,6 +340,7 @@ foreach ($result as $event) {
 			$owner_name = $event['owner_user'];
 		}
 		$data[$i] = $owner_name;
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -349,11 +356,13 @@ foreach ($result as $event) {
 			}
 			$data[$i] = $group_name;
 		}
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
 	if (in_array('event_type',$show_fields)) {
 		$data[$i] = events_print_type_description($event["event_type"], true);
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -367,6 +376,7 @@ foreach ($result as $event) {
 			$data[$i] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">'
 				. db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]).'</a>';
 		}
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -389,31 +399,37 @@ foreach ($result as $event) {
 				$data[$i] = '';
 			}
 		}
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
 	if (in_array('criticity',$show_fields)) {
 		$data[$i] = get_priority_name ($event["criticity"]);
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
 	if (in_array('user_comment',$show_fields)) {
 		$data[$i] = '<span id="comment_header_' . $event['id_evento'] . '">' .ui_print_truncate_text(strip_tags($event["user_comment"])) . '</span>';
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
 	if (in_array('tags',$show_fields)) {
 		$data[$i] = tags_get_tags_formatted($event['tags']);
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
 	if (in_array('source',$show_fields)) {
 		$data[$i] = $event["source"];
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
 	if (in_array('id_extra',$show_fields)) {
 		$data[$i] = $event["id_extra"];
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -424,6 +440,7 @@ foreach ($result as $event) {
 		else {
 			$data[$i] = date ($config["date_format"], $event['ack_utimestamp']);
 		}
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -451,6 +468,7 @@ foreach ($result as $event) {
 			$data[$i] = '';
 		}
 
+		$table->cellclass[count($table->data)][$i] = $myclass;
 		$i++;
 	}
 	
@@ -462,7 +480,7 @@ foreach ($result as $event) {
 			$data[$i] .= '<a href="javascript:validate_event_advanced('.$event["id_evento"].', 1)" id="validate-'.$event["id_evento"].'">';
 			$data[$i] .= html_print_image ("images/ok.png", true,
 				array ("title" => __('Validate event')));
-			$data[$i] .= '</a>&nbsp;';
+			$data[$i] .= '</a>';
 		}
 		
 		// Delete event
@@ -471,7 +489,7 @@ foreach ($result as $event) {
 				$data[$i] .= '<a class="delete_event" href="javascript:" id="delete-'.$event['id_evento'].'">';
 				$data[$i] .= html_print_image ("images/cross.png", true,
 					array ("title" => __('Delete event'), "id" => 'delete_cross_' . $event['id_evento']));
-				$data[$i] .= '</a>&nbsp;';
+				$data[$i] .= '</a>';
 			}
 			else {
 				$data[$i] .= html_print_image ("images/cross.disabled.png", true,
@@ -483,7 +501,7 @@ foreach ($result as $event) {
 		$data[$i] .= html_print_input_hidden('event_title_'.$event["id_evento"], "#".$event["id_evento"]." - ".$event["evento"], true);
 		$data[$i] .= html_print_image ("images/eye.png", true,
 			array ("title" => __('Show more')));	
-		$data[$i] .= '</a>&nbsp;';
+		$data[$i] .= '</a>';
 		$i++;
 		
 		if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {

@@ -359,9 +359,9 @@ function visual_map_editor_print_toolbox() {
 		
 		enterprise_hook("enterprise_visual_map_editor_print_toolbox");
 		
-		visual_map_print_button_editor('save_visualmap', __('Save'), 'right', true, 'save_min', true);
 		$text_autosave = __('Auto Save') . html_print_checkbox('auto_save', 0, true, true, false, "click_button_toolbox('auto_save');");
 		visual_map_print_item_toolbox('auto_save', $text_autosave, 'right');
+		visual_map_print_button_editor('save_visualmap', __('Save'), 'right', true, 'save_min', true);
 		visual_map_print_button_editor('show_grid', __('Show grid'), 'right', true, 'grid_min', true);
 		visual_map_print_button_editor('edit_item', __('Update item'), 'right', true, 'config_min', true);
 		visual_map_print_button_editor('delete_item', __('Delete item'), 'right', true, 'delete_min', true);

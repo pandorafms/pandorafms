@@ -19,46 +19,13 @@ global $config;
 include_once('include/functions_reports.php');
 
 $linkReport = false;
-$searchReports = check_acl ($config["id_user"], 0, "IR");
+$searchReports = check_acl ($config["id_user"], 0, "RR");
 
 if (check_acl ($config['id_user'], 0, "IW")) {
 	$linkReport = true;
 }
 
-$reports = false;
-
-//Check ACL
-$userreports = reports_get_reports();
-
-$userreports_id = array();
-foreach($userreports as $userreport) {
-	$userreports_id[] = $userreport['id_report'];
-}
-
-if(!$userreports_id){
-	$reports_condition = " AND 1<>1";
-}
-else {
-	$reports_condition = " AND id_report IN (".implode(',',$userreports_id).")";
-}
-	
-$reports = false;
-
-if($searchReports) {
-	$sql = "SELECT id_report, name, description
-		FROM treport
-		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition.
-		" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
-	$reports = db_process_sql($sql);
-
-	$sql = "SELECT COUNT(id_report) AS count
-		FROM treport
-		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')";
-	$totalReports = db_get_row_sql($sql);
-	$totalReports = $totalReports['count'];
-}
-
-if ($reports === false) {
+if ($reports === false || !$searchReports) {
 		echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
 }
 else {

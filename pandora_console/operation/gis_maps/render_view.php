@@ -87,16 +87,18 @@ $layers = gis_get_layers($idMap);
 $buttons = array();
 
 if ($config["pure"] == 0) {
-	$buttons[] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.$config["refr"].'&amp;pure=1">' .
-		html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode'))) . "</a>";
+	$buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.$config["refr"].'&amp;pure=1">' .
+		html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode'))) . "</a>";
 }
 else {
-	$buttons[] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.$config["refr"].'">' . 
+	$buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.$config["refr"].'">' . 
 		html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode'))) . "</a>";
 }
 
-if (check_acl ($config["id_user"], $map['group_id'], "IW"))
-	$buttons [] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='. $idMap.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+if (check_acl ($config["id_user"], $map['group_id'], "IW")) {
+	$buttons['setup']['text'] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='. $idMap.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+	$buttons['setup']['godmode'] = 1;
+}
 
 $buttonsString = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' .
 	html_print_image("images/bricks.png", true, array("class" => "top", "border" => '0')) . '&nbsp; Agent&nbsp;-&nbsp;test_gis1</a></li></ul></div><div id="menu_tab"><ul class="mn"><li class="nomn"><a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente=3">' . html_print_image("images/setup.png", true, array("class" => "top", "title" => "Manage", "border" => "0", "width" => "16", "title" => "Manage")) . '&nbsp;</a></li><li class="nomn_high"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' . html_print_image("images/monitor.png", true, array("class" => "top", "title" => "Main", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=data">' . html_print_image("images/lightbulb.png", true, array("class" => "top", "title" => "Data", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=alert">' . html_print_image("images/bell.png", true, array("class" => "top", "title" => "Alerts", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=sla&amp;id_agente=3">' . html_print_image("images/images.png", true, array("class" => "top", "title" => "S.L.A.", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;group_id=2">' . html_print_image("images/agents_group.png", true, array("class" => "top", "title" => "Group", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=inventory&amp;id_agente=3">' . html_print_image("images/page_white_text.png", true, array("class" => "top", "title" => "Inventory", "border" => "0", "width" => "16")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente=3">' . html_print_image("images/world.png", array("class" => "top", "title" => "GIS data", "border" => "0")) . '&nbsp;</a>';
@@ -112,22 +114,18 @@ $times = array(
 	SECONDS_1HOUR => __('1 hour'),
 	SECONDS_2HOUR => __('2 hours'));
 
-$buttons[] = '&nbsp;' . __('Refresh: ') . html_print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false) . "&nbsp;";
+$buttons[]['text'] = '&nbsp;' . __('Refresh: ') . html_print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false) . "&nbsp;";
 
-$buttons[] = '<a id="button_status_all" href="javascript: changeShowStatus(\'all\');" style="border: 1px black solid;">' .
-	__('All') . '</a>';
-$buttons[] = '<a id="button_status_bad" href="javascript: changeShowStatus(\'bad\');"><div style="height: 18px;">' . 
-	html_print_image("images/status_sets/default/agent_critical_ball.png", true, array("title" => __('Critical'))) . '</div></a>';
-$buttons[] = '<a id="button_status_warning" href="javascript: changeShowStatus(\'warning\');"><div style="height: 18px;">' .
-	html_print_image("images/status_sets/default/agent_warning_ball.png", true, array("title" => __('Warning'))) . '</div></a>';
-$buttons[] = '<a id="button_status_ok" href="javascript: changeShowStatus(\'ok\');"><div style="height: 18px;">' .
-	html_print_image("images/status_sets/default/agent_ok_ball.png", true, array("title" => __('Ok'))) . '</div></a>';
-$buttons[] = '<a id="button_status_default" href="javascript: changeShowStatus(\'default\');"><div style="height: 18px;">' .
-	html_print_image("images/status_sets/default/agent_no_monitors_ball.png", true, array("title" => __('Other'))) . '</div></a>';
-$buttons[] = __('Show agents by state: ');
+$status = array(
+	'all' => __('All'),
+	'bad' => __('Critical'),
+	'warning' => __('Warning'),
+	'ok' => __('Ok'),
+	'default' => __('Other'));
 
+$buttons[]['text'] = '&nbsp;' . __('Show agents by state: ') . html_print_select($status, 'show_status', 'all', 'changeShowStatus(this.value);', '', 0, true, false, false) . "&nbsp;";
 
-ui_print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "", false, "", false, $buttons);
+ui_print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "images/op_gis.png", false, "", false, $buttons);
 
 if ($config["pure"] == 0) {
 	echo "<div id='map' style='width: 99%; height: 500px; border: 1px solid black;' ></div>";

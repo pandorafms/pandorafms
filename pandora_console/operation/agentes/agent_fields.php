@@ -35,7 +35,7 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 	require_once ("general/noaccess.php");
 	return;
 }
-ui_print_page_header (__('Agent custom fields'), 'images/note.png', false, "", false);
+ui_print_page_header (__('Agent custom fields'), 'images/custom_field.png', false, "", false);
 
 echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width: 450px">';
 // Custom fields

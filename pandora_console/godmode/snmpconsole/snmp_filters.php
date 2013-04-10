@@ -32,14 +32,14 @@ $filter = (string) get_parameter ('filter', '');
 // Create/update header
 if ($edit_filter > -2) {
 	if ($edit_filter > -1) {
-		ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update filter'), "images/computer_error.png", false, "", true);
+		ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update filter'), "images/op_snmp.png", false, "", false);
 	}
 	else {
-		ui_print_page_header (__('SNMP Console')." &raquo; ".__('Create filter'), "images/computer_error.png", false, "", true);
+		ui_print_page_header (__('SNMP Console')." &raquo; ".__('Create filter'), "images/op_snmp.png", false, "", false);
 	}
 }
 else {// Overview header
-	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Filter overview'), "images/computer_error.png", false, "", true);
+	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Filter overview'), "images/op_snmp.png", false, "", false);
 }
 
 // Create/update filter
@@ -95,7 +95,7 @@ if ($edit_filter > -2) {
 	$table->data[1][0] = __('Filter');
 	$table->data[1][1] = html_print_input_text ('filter', $filter, '', 60, 100, true);
 	
-	echo '<form action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters" method="post">';
+	echo '<form action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters" method="post">';
 	html_print_input_hidden ('update_filter', $edit_filter);
 	html_print_table ($table);
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -133,11 +133,11 @@ else {
 	
 	foreach ($result as $row) {
 		$data = array ();
-		$data[0] = '<a href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' . $row['description'] . '</a>';
+		$data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' . $row['description'] . '</a>';
 		$data[1] = $row['filter'];
-		$data[2] = '<a href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' .
+		$data[2] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' .
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
-			'&nbsp;&nbsp;<a onclick="if (confirm(\'' . __('Are you sure?') . '\')) return true; else return false;" href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$row['id_snmp_filter'].'">' .
+			'&nbsp;&nbsp;<a onclick="if (confirm(\'' . __('Are you sure?') . '\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$row['id_snmp_filter'].'">' .
 			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
 		array_push ($table->data, $data);
 	}
@@ -149,7 +149,7 @@ else {
 	unset ($table);
 	
 	echo '<div style="text-align:right; width:98%">';
-	echo '<form name="agente" method="post" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_filters&edit_filter=-1">';
+	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter=-1">';
 	html_print_submit_button (__('Create'), 'submit_button', false, 'class="sub next"');
 	echo '</form></div>';
 }

@@ -90,7 +90,10 @@ function menu_print_menu (&$menu) {
 		
 		$submenu_output = '';
 		
+		$count_sub = 0;
 		foreach ($main["sub"] as $subsec2 => $sub) {
+			$count_sub++;
+			
 			//Init some variables
 			$visible = false;
 			$selected = false;
@@ -177,11 +180,19 @@ function menu_print_menu (&$menu) {
 			}
 			if (! isset ($sub["refr"])) {
 				$sub["refr"] = 0;
-			} 
+			}
+			
+			// Define submenu class to draw tree image
+			if($count_sub >= count($main['sub'])) {
+				$sub_tree_class = 'submenu_text submenu_text_last';
+			}
+			else {
+				$sub_tree_class = 'submenu_text submenu_text_middle';
+			}
 			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
-				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"]."</a>";
+				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
 				
 				if(isset($sub['sub2']) || $selected) {
 					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
@@ -204,6 +215,9 @@ function menu_print_menu (&$menu) {
 					$secExtensionBool = $sub["extension"];
 				else
 					$secExtensionBool = false;
+				
+				// DISABLE SUBMENU IMAGES
+				$secExtensionBool = false;
 				
 				if ($secExtensionBool) {
 					$imageIconDefault = 'images/extensions.png';
@@ -249,7 +263,8 @@ function menu_print_menu (&$menu) {
 				else {
 					$title = '';
 				}
-				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
+				
+				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' . $sub["refr"] : '').$link_add.'"' . $title . '><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
 				
 				if (isset($sub['sub2'])) {
 					$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
@@ -269,7 +284,10 @@ function menu_print_menu (&$menu) {
 				
 				$submenu2_list = '';
 				
+				$count_sub2 = 0;
 				foreach ($sub['sub2'] as $key => $sub2) {
+					$count_sub2++;
+					
 					$link = "index.php?sec=".$sec."&sec2=".$key;
 					
 					//Display if one submenu2 was selected!
@@ -279,8 +297,16 @@ function menu_print_menu (&$menu) {
 					
 					$class = "submenu2";
 					
+					// Define submenu2 class to draw tree image
+					if($count_sub2 >= count($sub['sub2'])) {
+						$sub_tree_class = 'submenu_text submenu2_text_last';
+					}
+					else {
+						$sub_tree_class = 'submenu_text submenu2_text_middle';
+					}
+				
 					$submenu2_list .= '<li class="'.$class.'" style="font-weight: normal;">';
-					$submenu2_list .= '<a style="font-weight:normal;" href="'.$link.'">'.$sub2["text"].'</a></li>';
+					$submenu2_list .= '<a style="font-weight:normal;" href="'.$link.'"><div class="' . $sub_tree_class . '">'.$sub2["text"].'</div></a></li>';
 				}
 				
 				//Add submenu2 to submenu string

@@ -324,7 +324,7 @@ div#menu {
 div#head {
 	font-size: 8pt;
 	width: 960px;
-	height: 64px;/*84px;*/ /*height: 60px;*/
+	height: 84px;/*84px;*/ /*height: 60px;*/
 	padding-top: 1px;
 	background: #0359AF;
 	-moz-border-radius: 10px;
@@ -374,7 +374,7 @@ div#head {
 }
 
 #head .header_search input {
-	background: white url(images/lupa_15x15.png) no-repeat right;
+	background: white url(images/input_zoom.png) no-repeat right;
 	height: 19px;
 	padding: 0px 3px;
 	margin: 0px;
@@ -543,12 +543,14 @@ input.sub:hover {
 }
 
 input.next, input.upd, input.ok, input.wand, input.delete, input.search,
-input.copy, input.add, input.graph, input.percentile, input.binary,
-input.camera, input.config, input.cancel {
+input.copy, input.add, input.graph, input.percentile_item, input.binary,
+input.camera, input.config, input.cancel,
+input.save, input.service {
 	padding-right: 21px;
 }
-input.delete_min, input.graph_min, input.percentile_min, input.binary_min,
-input.camera_min, input.config_min, input.label_min, input.icon_min, input.grid_min  {
+input.delete_min, input.graph_min, input.percentile_item_min, input.binary_min,
+input.camera_min, input.config_min, input.label_min, input.icon_min, input.grid_min,
+input.save_min, input.service_min {
 	padding-right: 25px;
 }
 input.next {
@@ -567,7 +569,7 @@ input.search {
 	background: #D0E6FB url(../../images/zoom.png) no-repeat right 3px;
 }
 input.copy {
-	background: #D0E6FB url(../../../../..//images/copy.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/copy.png) no-repeat right 3px;
 }
 input.ok {
 	background: #D0E6FB url(../../images/ok.png) no-repeat right 3px;
@@ -576,70 +578,70 @@ input.add {
 	background: #D0E6FB url(../../images/add.png) no-repeat right 3px;
 }
 input.graph {
-	background: #D0E6FB url(../../../../..//images/chart_curve.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/chart_curve.png) no-repeat right 3px;
 }
-input.percentile {
-	background: #D0E6FB url(../../../../..//images/chart_bar.png) no-repeat right 3px;
+input.percentile_item {
+	background: #D0E6FB url(../../images/chart_bar.png) no-repeat right 3px;
 }
 input.binary {
-	background: #D0E6FB url(../../../../..//images/binary.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/binary.png) no-repeat right 3px;
 }
 input.camera {
-	background: #D0E6FB url(../../../../..//images/camera.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/camera.png) no-repeat right 3px;
 }
 input.config {
-	background: #D0E6FB url(../../../../..//images/config.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/config.png) no-repeat right 3px;
 }
 input.cancel {
-	background: #D0E6FB url(../../../../..//images/cancel.png) no-repeat right 3px;
+	background: #D0E6FB url(../../images/cancel.png) no-repeat right 3px;
 }
 input.delete_min[disabled] {
-	background: #e5e5e5 url(../../../../../images/cross.disabled.png) no-repeat center;
+	background: #e5e5e5 url(../../images/cross.disabled.png) no-repeat center;
 }
 input.delete_min {
-	background: #e5e5e5 url(../../../../../images/cross.png) no-repeat center;
+	background: #e5e5e5 url(../../images/cross.png) no-repeat center;
 }
 input.graph_min {
-	background: #e5e5e5 url(../../../../../images/chart_curve.png) no-repeat center;
+	background: #e5e5e5 url(../../images/chart_curve.png) no-repeat center;
 }
 input.graph_min[disabled] {
-	background: #e5e5e5 url(../../../../../images/chart_curve.disabled.png) no-repeat center;
+	background: #e5e5e5 url(../../images/chart_curve.disabled.png) no-repeat center;
 }
-input.percentile_min {
-	background: #e5e5e5 url(../../../../../images/chart_bar.png) no-repeat center;
+input.percentile_item_min {
+	background: #e5e5e5 url(../../images/chart_bar.png) no-repeat center;
 }
-input.percentile_min[disabled] {
-	background: #e5e5e5 url(../../../../../images/chart_bar.disabled.png) no-repeat center;
+input.percentile_item_min[disabled] {
+	background: #e5e5e5 url(../../images/chart_bar.disabled.png) no-repeat center;
 }
 input.binary_min {
-	background: #e5e5e5 url(../../../../../images/binary.png) no-repeat center;
+	background: #e5e5e5 url(../../images/binary.png) no-repeat center;
 }
 input.binary_min[disabled] {
-	background: #e5e5e5 url(../../../../../images/binary.disabled.png) no-repeat center;
+	background: #e5e5e5 url(../../images/binary.disabled.png) no-repeat center;
 }
 input.camera_min {
-	background: #e5e5e5 url(../../../../../images/camera.png) no-repeat center;
+	background: #e5e5e5 url(../../images/camera.png) no-repeat center;
 }
 input.camera_min[disabled] {
-	background: #e5e5e5 url(../../../../../images/camera.disabled.png) no-repeat center;
+	background: #e5e5e5 url(../../images/camera.disabled.png) no-repeat center;
 }
 input.config_min {
-	background: #e5e5e5 url(../../../../../images/config.png) no-repeat center;
+	background: #e5e5e5 url(../../images/config.png) no-repeat center;
 }
 input.config_min[disabled] {
-	background: #e5e5e5 url(../../../../../images/config.disabled.png) no-repeat center;
+	background: #e5e5e5 url(../../images/config.disabled.png) no-repeat center;
 }
 input.label_min {
-	background: #e5e5e5 url(../../../../../images/tag_red.png) no-repeat center;
+	background: #e5e5e5 url(../../images/tag_red.png) no-repeat center;
 }
 input.label_min[disabled] {
-	background: #e5e5e5 url(../../../../../images/tag_red.disabled.png) no-repeat center;
+	background: #e5e5e5 url(../../images/tag_red.disabled.png) no-repeat center;
 }
 input.icon_min {
-	background: #e5e5e5 url(../../../../../images/photo.png) no-repeat center;
+	background: #e5e5e5 url(../../images/photo.png) no-repeat center;
 }
 input.icon_min[disabled] {
-	background: #e5e5e5 url(../../../../../images/photo.disabled.png) no-repeat center;
+	background: #e5e5e5 url(../../images/photo.disabled.png) no-repeat center;
 }
 input.grid_min {
 	background: #e5e5e5 url(../../images/grid.png) no-repeat center;
@@ -647,6 +649,19 @@ input.grid_min {
 input.grid_min[disabled] {
 	background: #e5e5e5 url(../../images/grid.disabled.png) no-repeat center;
 }
+input.save_min {
+	background: #e5e5e5 url(../../images/disk.png) no-repeat center;
+}
+input.save_min[disabled] {
+	background: #e5e5e5 url(../../images/disk.disabled.png) no-repeat center;
+}
+input.service_min {
+	background: #e5e5e5 url(../../images/box.png) no-repeat center;
+}
+input.service_min[disabled] {
+	background: #e5e5e5 url(../../images/box.disabled.png) no-repeat center;
+}
+
 #toolbox {
 	margin-top: 10px;
 }
@@ -902,6 +917,11 @@ div.title_line {
 	-moz-box-shadow: 0px 2px 2px #5C350E inset;
 	-webkit-box-shadow: 0px 2px 2px #5C350E inset;
 	box-shadow: 0px 2px 2px #5C350E inset;
+}
+
+/* Header icons size */
+#menu_tab img, #menu_tab_left img {
+	width: 16px;
 }
 
 #menu_tab .mn li a {
@@ -2097,4 +2117,39 @@ tfoot.scwFoot {
 .info_box .icon {
 	width: 30px !important;
 	text-align: center;
+}
+
+input.search_input {
+	background: white url('../../images/zoom.png') no-repeat right; 
+	padding: 0; 
+	padding-left:0px; 
+	margin: 0; 
+	width: 100%; 
+	height: 19px; 
+	margin-bottom: 5px; 
+	margin-left: 2px;
+}
+
+a.tip {
+	display: inline !important;
+	background: none !important;
+}
+
+/* Images forced title */
+
+DIV.forced_title_layer {
+	display: block;
+	text-decoration: none;
+	position: absolute;
+	z-index: 100;
+	border: 1px solid #708090;
+	background-color: #333;
+	color: #DDD;
+	padding: 4px;
+	font-weight: bold;
+	font-size: small;
+	
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
 }

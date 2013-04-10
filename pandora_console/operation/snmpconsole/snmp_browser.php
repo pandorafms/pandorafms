@@ -65,15 +65,15 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 }
 
 // Header
-$url = 'index.php?sec=estado&sec2=operation/snmpconsole/snmp_browser&refr=' . $config["refr"] . '&pure=' . $config["pure"];
+$url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_browser&refr=' . $config["refr"] . '&pure=' . $config["pure"];
 if ($config["pure"]) {
 	// Windowed
-	$link = '<a target="_top" href="'.$url.'&pure=0&refr=30">' . html_print_image("images/normalscreen.png", true, array("title" => __('Normal screen')))  . '</a>';
+	$link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=30">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';
 } else {
 	// Fullscreen
-	$link = '<a target="_top" href="'.$url.'&pure=1&refr=0">' . html_print_image("images/fullscreen.png", true, array("title" => __('Full screen'))) . '</a>';
+	$link['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=0">' . html_print_image("images/full_screen.png", true, array("title" => __('Full screen'))) . '</a>';
 }
-ui_print_page_header (__("SNMP Browser"), "images/computer_error.png", false, "", false, $link);
+ui_print_page_header (__("SNMP Browser"), "images/op_snmp.png", false, "", false, array($link));
 
 // SNMP tree container
 snmp_browser_print_container ();

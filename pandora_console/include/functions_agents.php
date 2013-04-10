@@ -2024,4 +2024,21 @@ function agents_tree_view_status_img ($critical, $warning, $unknown) {
 		return ui_print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
 	}
 }
+
+//Returns the status image to display agent detail view
+
+function agents_detail_view_status_img ($critical, $warning, $unknown) {
+	if ($critical > 0) {
+		return ui_print_status_image (STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'), true, false, 'images');
+	}
+	else if ($warning > 0) {
+		return ui_print_status_image (STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true, false, 'images');
+	}
+	else if ($unknown > 0) {
+		return ui_print_status_image (STATUS_AGENT_UNKNOWN, __('At least one module is in UKNOWN status'), true, false, 'images');	
+	}
+	else {
+		return ui_print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true, false, 'images');
+	}
+}
 ?>

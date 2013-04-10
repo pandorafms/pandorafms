@@ -184,10 +184,10 @@ if ($edit_graph) {
 				html_print_image("images/setup.png", true, array ("title" => __('Setup'))) .'</a>'),
 		'graph_editor' => array('active' => false,
 			'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=' . $id_graph . '">' . 
-				html_print_image("images/config.png", true, array ("title" => __('Graph editor'))) .'</a>'),
+				html_print_image("images/builder.png", true, array ("title" => __('Graph editor'))) .'</a>'),
 		'view' => array('active' => false,
 			'text' => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=' . $id_graph . '">' . 
-				html_print_image("images/chart_curve.png", true, array ("title" => __('View graph'))) .'</a>')
+				html_print_image("images/operation.png", true, array ("title" => __('View graph'))) .'</a>')
 		);
 	
 	$buttons[$active_tab]['active'] = true;
@@ -208,13 +208,13 @@ if (isset($name))
 $tab = get_parameter("tab", ""); 
 switch ($tab) {
 	case "main": 
-		ui_print_page_header ($head, "", false, "graph_builder", true, $buttons);
+		ui_print_page_header ($head, "images/chart.png", false, "graph_builder", false, $buttons);
 		break;
 	case "graph_editor":
-		ui_print_page_header ($head, "", false, "graph_editor", true, $buttons);
+		ui_print_page_header ($head, "images/chart.png", false, "graph_editor", false, $buttons);
 		break;
 	default:
-		ui_print_page_header ($head, "", false, "graph_builder", true, $buttons);
+		ui_print_page_header ($head, "images/chart.png", false, "graph_builder", false, $buttons);
 		break;
 }
 

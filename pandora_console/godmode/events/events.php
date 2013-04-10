@@ -29,22 +29,23 @@ if (! check_acl ($config["id_user"], 0, "EW")) {
 $section = (string) get_parameter ("section", "filter");
 
 // Draws header
+$buttons['view'] = array('active' => false, 
+			'text' => '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">' . 
+			html_print_image("images/operation.png", true, array("title" => __('View events'))) . '</a>',
+			'operation' => true);
+			
 $buttons['filter'] = array('active' => false, 
 			'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
-			html_print_image("images/lightning_go.png", true, array ("title" => __('Create filter'))) . '</a>');
+			html_print_image("images/filter_mc.png", true, array ("title" => __('Create filter'))) . '</a>');
 
 if (check_acl ($config["id_user"], 0, "PM")) {
 	$buttons['responses'] = array('active' => false, 	
 				'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">' .
-				html_print_image("images/cog.png", true, array ("title" => __('Event responses'))) . '</a>');
+				html_print_image("images/event_responses.png", true, array ("title" => __('Event responses'))) . '</a>');
 	$buttons['fields'] = array('active' => false, 	
 				'text' => '<a href="index.php?sec=geventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">' .
-				html_print_image("images/pencil.png", true, array ("title" => __('Custom fields'))) . '</a>');
+				html_print_image("images/custom_columns.png", true, array ("title" => __('Custom fields'))) . '</a>');
 }
-$buttons['separator'] = '';
-$buttons['view'] = array('active' => false, 
-			'text' => '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">' . 
-			html_print_image("images/god6.png", true, array("title" => __('View events'))) . '</a>');
 
 switch ($section) {
 	case 'filter':
@@ -69,7 +70,7 @@ switch ($section) {
 }
 
 	if (! defined ('METACONSOLE')) {
-		ui_print_page_header (__("Manage events") . $subpage, "images/lightning_go.png", false, "", true, $buttons);
+		ui_print_page_header (__("Manage events") . $subpage, "images/gm_events.png", false, "", true, $buttons);
 	}
 	else {
 		ui_meta_print_header(__("Manage events") . $subpage, "", $buttons);

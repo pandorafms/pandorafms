@@ -37,7 +37,7 @@ $buttons = array(
 	'list' => array(
 		'active' => false,
 		'text' => '<a href="index.php?sec=gmodules&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
-			html_print_image ("images/god6.png", true, array ("title" => __('List categories'))) .'</a>'));
+			html_print_image ("images/list.png", true, array ("title" => __('List categories'))) .'</a>'));
 
 $buttons[$tab]['active'] = false;
 
@@ -46,7 +46,7 @@ if (defined('METACONSOLE')) {
 	ui_meta_print_header(__('Categories configuration'), __('Editor'), $buttons);
 }
 else {
-	ui_print_page_header (__('Categories configuration'), "images/setup.png", false, "", true, $buttons);
+	ui_print_page_header (__('Categories configuration'), "images/gm_modules.png", false, "", true, $buttons);
 }
 
 

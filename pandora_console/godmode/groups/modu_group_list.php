@@ -51,7 +51,7 @@ if (is_ajax ()) {
 }
 
 // Header
-ui_print_page_header (__("Module groups defined in Pandora"), "images/god1.png", false, "", true, "");
+ui_print_page_header (__("Module groups defined in Pandora"), "images/module_group.png", false, "", true, "");
 
 $create_group = (bool) get_parameter ('create_group');
 $update_group = (bool) get_parameter ('update_group');

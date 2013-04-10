@@ -28,7 +28,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 
 require_once('include/functions_networkmap.php');
 
-ui_print_page_header(__('Network map'), "images/bricks.png", false, "network_map", false);
+ui_print_page_header(__('Network map'), "images/op_network.png", false, "network_map", false);
 
 // Delete networkmap action
 $id_networkmap = get_parameter ('id_networkmap', 0);

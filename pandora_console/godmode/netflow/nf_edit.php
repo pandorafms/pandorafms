@@ -34,7 +34,7 @@ $pure = get_parameter('pure', 0);
 
 //Header
 if (! defined ('METACONSOLE')) {
-	ui_print_page_header (__('Manage Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true);
+	ui_print_page_header (__('Manage Netflow Filter'), "images/gm_netflow.png", false, "", true);
 }
 else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),

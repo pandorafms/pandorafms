@@ -275,11 +275,11 @@ else {
 				'list' => array(
 					'active' => false,
 					'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">' . 
-						html_print_image ("images/god6.png", true, array ("title" => __('List alerts'))) .'</a>'),
+						html_print_image ("images/list.png", true, array ("title" => __('List alerts'))) .'</a>'),
 				'builder' => array(
 					'active' => false,
 					'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">' . 
-						html_print_image ("images/config.png", true, array ("title" => __('Builder alert'))) .'</a>'));
+						html_print_image ("images/pen.png", true, array ("title" => __('Builder alert'))) .'</a>'));
 			
 			$buttons[$tab]['active'] = true;
 		}
@@ -288,10 +288,10 @@ else {
 		}
 		
 		if ($tab == 'list') {
-			ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+			ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/gm_alerts.png", false, "manage_alert_list", true, $buttons);
 		}
 		else {
-			ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+			ui_print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/gm_alerts.png", false, "manage_alert_list", true, $buttons);
 		}
 		
 	} 

@@ -68,7 +68,7 @@ global $config;
 
 check_login ();
 
-ui_print_page_header (__('Webchat'), "images/group.png", false, "", false, "");
+ui_print_page_header (__('Webchat'), "images/comments.png", false, "", false, "");
 
 $table = null;
 

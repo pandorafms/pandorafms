@@ -48,18 +48,17 @@ $tab = 'view';
 
 /* Setup tab */
 $viewtab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente">' 
-		. html_print_image ("images/zoom.png", true, array ("title" =>__('View')))
+		. html_print_image ("images/operation.png", true, array ("title" =>__('View')))
 		. '</a>';
 		
-if($tab == 'view')
-	$viewtab['active'] = true;
-else
-	$viewtab['active'] = false;
+$viewtab['operation'] = true;
+		
+$viewtab['active'] = false;
 	
 $onheader = array('view' => $viewtab);
 
 // Header
-ui_print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "", false, "", true, $onheader);
+ui_print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "images/agent_mc.png", false, "", true, $onheader);
 
 // Perform actions
 $agent_to_delete = (int)get_parameter('borrar_agente');

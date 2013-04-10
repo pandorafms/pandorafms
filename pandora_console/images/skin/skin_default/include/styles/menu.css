@@ -83,7 +83,7 @@
 }
 
 .menu li.links {
-	background-image: url(../../../../../images/link.png);
+	background-image: url(../../images/link.png);
 	background-position: 4px 8px;
 }
 /* Icons specified here */
@@ -108,6 +108,9 @@
 }
 #icon_oper-events {
 	background-image: url(../../images/lightning_go.png);
+}
+#icon_oper-netflow {
+	background-image: url(../../images/op_netflow.png);
 }
 /* users */
 #icon_oper-users {
@@ -151,7 +154,7 @@
 	background-image: url(../../images/box.png);
 }
 #icon_god-modules {
-	background-image: url(../../../../../images/brick.png);
+	background-image: url(../../images/brick.png);
 }
 #icon_god-alerts {
 	background-image: url(../../../../../images/god2.png);
@@ -181,7 +184,7 @@
 	background-image: url(../../../../../images/god7.png);
 }
 #icon_god-policies {
-	background-image: url(../../../../../images/policies.png);
+	background-image: url(../../images/policies.png);
 }
 #icon_oper-inventory {
 	background-image: url(../../images/page_white_text.png);
@@ -191,4 +194,7 @@
 }
 #icon_god-events {
 	background-image: url(../../images/lightning_go.png);
+}
+#icon_god-netflow {
+	background-image: url(../../images/gm_netflow.png);
 }

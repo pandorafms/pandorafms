@@ -48,7 +48,7 @@ else {
 }
 
 // Header
-ui_print_page_header (__("Tactical view"), "images/bricks.png", false, "", false, $updated_time );
+ui_print_page_header (__("Tactical view"), "images/op_monitoring.png", false, "", false, $updated_time);
 $data = reporting_get_group_stats();
 
 if(tags_has_user_acl_tags()) {
@@ -56,20 +56,21 @@ if(tags_has_user_acl_tags()) {
 }
 
 echo '<table border=0 style="width:100%;"><tr>';
-echo '<td style="vertical-align: top; min-width: 265px; width:30%; padding-right: 5%;" id="leftcolumn">';
+echo '<td style="vertical-align: top; min-width: 265px; width:25%; padding-right: 20px;" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
 $table->width = "100%";
 $table->class = "";
-$table->cellpadding = 4;
-$table->cellspacing = 4;
+$table->cellpadding = 2;
+$table->cellspacing = 2;
 $table->border = 0;
 $table->head = array ();
 $table->data = array ();
 $table->style = array ();
 
-$table->data[0][0] = reporting_get_stats_indicators($data, 140, 20);
+$table->data[0][0] = reporting_get_stats_indicators($data, 180, 20);
+$table->rowclass[] = '';
 
 
 html_print_table ($table);
@@ -88,15 +89,16 @@ $table->data = array ();
 $table->style = array ();
 
 $table->data[0][0] = reporting_get_stats_alerts($data);
-$table->data[0][0] .= reporting_get_stats_modules_status($data, 200, 100) . '<br>';
-$table->data[0][0] .= reporting_get_stats_agents_monitors($data) . '<br>';
+$table->data[0][0] .= reporting_get_stats_modules_status($data, 200, 100);
+$table->data[0][0] .= reporting_get_stats_agents_monitors($data);
+$table->rowclass[] = '';
 
 html_print_table($table);
 // ---------------------------------------------------------------------
 // Server performance 
 // ---------------------------------------------------------------------
 if ($is_admin) {
-	$table->width = "100%";
+	$table->width = "99%";
 	$table->class = "";
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
@@ -106,13 +108,14 @@ if ($is_admin) {
 	$table->style = array ();
 
 	$table->data[0][0] = reporting_get_stats_servers(false);
+	$table->rowclass[] = '';
 
 	html_print_table($table);
 }
 
 echo '</td>'; //Left column
 
-echo '<td style="vertical-align: top; width: 70%;" id="rightcolumn">';
+echo '<td style="vertical-align: top; width: 75%;" id="rightcolumn">';
 
 
 // ---------------------------------------------------------------------
@@ -126,74 +129,8 @@ events_print_event_table ("estado<>1 $tags_condition", 10, "100%");
 // Server information
 // ---------------------------------------------------------------------
 if ($is_admin) {
-	$serverinfo = servers_get_info ();
-	$cells = array ();
-	
-	if ($serverinfo === false) {
-		$serverinfo = array ();
-	}
-	
-	$table->class = "databox";
-	$table->cellpadding = 4;
-	$table->cellspacing = 4;
-	$table->width = "100%";
-	
-	$table->title = __('Tactical server information');
-	$table->titlestyle = "background-color:#799E48;";
-	
-	$table->head = array ();
-	$table->head[0] = __('Name');
-	$table->head[1] = __('Type');
-	$table->head[2] = __('Status');
-	$table->head[3] = __('Load');
-	$table->head[4] = __('Lag').' ' . ui_print_help_icon ("serverlag", true);
-	$table->align[2] = 'center';
-	$table->align[3] = 'center';
-	$table->align[4] = 'right';
-	
-	$table->data = array ();
-	
-	foreach ($serverinfo as $server) {
-		$data = array ();
-		$data[0] = $server["name"];
-		$data[1] = '<span style="white-space:nowrap;">'.$server["img"].'</span> ('.ucfirst($server["type"]).")";
-		if ($server["master"] == 1)
-			$data[1] .= ui_print_help_tip (__("This is a master server"), true);
-		
-		if ($server["status"] == 0){
-			$data[2] = ui_print_status_image (STATUS_SERVER_DOWN, '', true);
-		}
-		else {
-			$data[2] = ui_print_status_image (STATUS_SERVER_OK, '', true);
-		}
-		
-		if ($server["type"] != "snmp") {
-			$data[3] = progress_bar($server["load"], 80, 20);
-			
-			if ($server["type"] != "recon"){
-				$data[4] = $server["lag_txt"];
-			}
-			else {
-				$data[4] = __("N/A");
-			}
-		}
-		else {
-			$data[3] = "";
-			$data[4] = __("N/A");
-		}
-		
-		array_push ($table->data, $data);
-	}
-	
-	if (!empty ($table->data)) {
-		html_print_table ($table);
-	}
-	else {
-		echo '<div class="nf">' .
-			__('There are no servers configured in the database') .
-			'</div>';
-	}
-	unset ($table);
+	$tiny = true;
+	require($config['homedir'] . '/godmode/servers/servers.build_table.php');
 }
 
 

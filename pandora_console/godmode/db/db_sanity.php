@@ -26,7 +26,7 @@ if (! check_acl ($config["id_user"], 0, "DM")) {
 	return;
 }
 
-ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database sanity tool'), "images/god8.png", false, "", true);
+ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database sanity tool'), "images/gm_db.png", false, "", true);
 
 $sanity = get_parameter ("sanity", 0);
 

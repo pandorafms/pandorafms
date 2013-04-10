@@ -692,12 +692,14 @@ if (check_acl ($config['id_user'],$id_grupo, "AW") || $is_extra) {
 		$managetab['active'] = true;
 	else
 		$managetab['active'] = false;
+		
+	$managetab['godmode'] = 1;
 }
 
 
 /* Main tab */
 $maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'
-	. html_print_image("images/monitor.png", true, array("title" => __('Main')))
+	. html_print_image("images/agent_mc.png", true, array("title" => __('Main')))
 	. '</a>';
 if ($tab == 'main')
 	$maintab['active'] = true;
@@ -705,27 +707,14 @@ else
 	$maintab['active'] = false;
 
 
-/* Data */
-$datatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=data">'
-	. html_print_image("images/lightbulb.png", true, array("title" => __('Data')))
-	. '</a>';
-
-if (($tab == 'data') OR ($tab == 'data_view'))
-	$datatab['active'] = true;
-else
-	$datatab['active'] = false;
-
-
 /* Alert tab */
 $alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'
-	. html_print_image("images/bell.png", true, array("title" => __('Alerts')))
+	. html_print_image("images/op_alerts.png", true, array("title" => __('Alerts')))
 	. '</a>';
 if ($tab == 'alert')
 	$alerttab['active'] = true;
 else
 	$alerttab['active'] = false;
-
-
 
 /* Inventory */
 $inventorytab = enterprise_hook ('inventory_tab');
@@ -744,19 +733,11 @@ $policyTab = enterprise_hook('policy_tab');
 if ($policyTab == -1)
 	$policyTab = "";
 
-
-/* Group tab */
-$grouptab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$id_grupo.'">'
-	. html_print_image("images/agents_group.png", true, array( "title" =>  __('Group')))
-	. '</a>';
-$grouptab['active']=false;
-
-
 /* GIS tab */
 $gistab="";
 if ($config['activate_gis']) {
 	$gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'
-		.html_print_image("images/world.png", true, array( "title" => __('GIS data')))
+		.html_print_image("images/op_gis.png", true, array( "title" => __('GIS data')))
 		.'</a>';
 	
 	if ($tab == 'gis')
@@ -794,7 +775,7 @@ else
 
 /* Custom fields tab */
 $custom_fields['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'
-	. html_print_image("images/note.png", true, array("title" => __('Custom fields')))
+	. html_print_image("images/custom_field.png", true, array("title" => __('Custom fields')))
 	. '</a>';
 if ($tab == 'custom_fields') {
 	$custom_fields['active'] = true;
@@ -806,7 +787,7 @@ else {
 
 /* Graphs tab */
 $graphs['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'">'
-	. html_print_image("images/chart_curve.png", true, array("title" => __('Graphs')))
+	. html_print_image("images/chart.png", true, array("title" => __('Graphs')))
 	. '</a>';
 if ($tab == 'graphs') {
 	$graphs['active'] = true;
@@ -817,13 +798,10 @@ else {
 
 
 $onheader = array('manage' => $managetab,
-	'separator' => "",
 	'main' => $maintab, 
-	'data' => $datatab,
 	'alert' => $alerttab,
 	'inventory' => $inventorytab,
 	'collection' => $collectiontab, 
-	'group' => $grouptab,
 	'gis' => $gistab,
 	'custom' => $custom_fields,
 	'graphs' => $graphs,
@@ -951,9 +929,6 @@ switch ($tab) {
 		break;
 	case "data_view":
 		require ("datos_agente.php");
-		break;
-	case "data":
-		require ("estado_ultimopaquete.php");
 		break;
 	case "alert":
 		require ("alerts_status.php");

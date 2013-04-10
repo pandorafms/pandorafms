@@ -1,5 +1,10 @@
 2013-04-10 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_visual_map_editor.php: fixed the lost field
+	for the label in the items.
+
+2013-04-10 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_visual_map_editor.php,
 	include/ajax/visual_console_builder.ajax.php,
 	godmode/reporting/visual_console_builder.php,

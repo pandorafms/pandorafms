@@ -227,11 +227,7 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
  * @return none
  */
 function changeShowStatus(newShowStatus) {
-	
-	$("#button_status_" + statusShow).attr('style', '');
-	statusShow = newShowStatus;
-	$("#button_status_" + statusShow).attr('style', 'border: 1px black solid;');
-	
+	statusShow = newShowStatus;	
 	hideAgentsStatus();
 	js_refreshParentLines();
 }

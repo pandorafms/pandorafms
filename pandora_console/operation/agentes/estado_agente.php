@@ -128,15 +128,14 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 		. html_print_image ("images/setup.png", true, array ("title" =>__('Setup')))
 		. '</a>';
 	
-	if($tab == 'setup')
-		$setuptab['active'] = true;
-	else
-		$setuptab['active'] = false;
+	$setuptab['godmode'] = true;
+	
+	$setuptab['active'] = false;
 		
 	$onheader = array('setup' => $setuptab);
 }
 
-ui_print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status", false, $onheader);
+ui_print_page_header ( __("Agent detail"), "images/agent_mc.png", false, "agent_status", false, $onheader);
 
 if(tags_has_user_acl_tags()) {
 	ui_print_tags_warning();

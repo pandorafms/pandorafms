@@ -58,7 +58,7 @@ $(document).ready (function () {
 		return false;
 	});
 	
-	$("a#show_systemalert_dialog").click (function () {
+	$("a.show_systemalert_dialog").click (function () {
 		jQuery.get ("ajax.php",
 			{"page": "operation/system_alert"},
 			function (data, status) {
@@ -176,6 +176,12 @@ function forced_title_callback() {
 	// Forced title code
 	$('.forced_title').hover(function() {
 		///////////////////////////////////////////
+		// Put the layer in the left-top corner to fill it
+		///////////////////////////////////////////
+		$('#forced_title_layer').css('left', 0);
+		$('#forced_title_layer').css('top', 0);
+
+		///////////////////////////////////////////
 		// Get info of the image
 		///////////////////////////////////////////
 		
@@ -207,7 +213,7 @@ function forced_title_callback() {
 		var layer_padding = 4;
 		
 		// Deduct padding of both sides
-		var layer_top = img_top - layer_height - (layer_padding * 2);
+		var layer_top = img_top - layer_height - (layer_padding * 2) - 5;
 		if(layer_top < 0) {
 			layer_top = img_top + img_height + (layer_padding * 2);
 		}
@@ -216,6 +222,13 @@ function forced_title_callback() {
 		var layer_left = img_left_mid - (layer_width / 2) - layer_padding;
 		if(layer_left < 0) {
 			layer_left = 0;
+		}
+		
+		var real_layer_width = layer_width + (layer_padding * 2) + 5;
+		var layer_right = layer_left + real_layer_width;
+		var screen_width = $(window).width();
+		if(screen_width < layer_right) {
+			layer_left = screen_width - real_layer_width;
 		}
 		
 		///////////////////////////////////////////

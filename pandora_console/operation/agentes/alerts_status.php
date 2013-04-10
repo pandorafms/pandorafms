@@ -99,7 +99,7 @@ else {
 	
 	$print_agent = true;
 	
-	ui_print_page_header (__('Alert detail'), "images/bricks.png", false, "alert_validation");
+	ui_print_page_header (__('Alert detail'), "images/op_alerts.png", false, "alert_validation");
 }
 
 if ($alert_validate) {

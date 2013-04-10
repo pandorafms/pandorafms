@@ -122,7 +122,7 @@ elseif (isset ($_GET["create"]) or isset($_GET["crt"])) {
 }
 
 // Headers
-ui_print_page_header (__('Manage recontask') . " " . ui_print_help_icon ("recontask", true), "", false, "", true);
+ui_print_page_header (__('Manage recontask'), "", false, "recontask", true);
 
 
 $table->width='98%';

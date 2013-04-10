@@ -58,7 +58,7 @@ function mainAgentsAlerts() {
 		$updated_info = __("Updated at realtime");
 	}
 	
-	$updated_time = html_print_image ("images/information.png", true, array ("title" => __('Last update'), "style" => 'margin: 5px 3px 0px 10px')).$updated_info;
+	$updated_time = $updated_info;
 	
 	$refr = get_parameter('refr', 30); // By default 30 seconds
 	
@@ -86,13 +86,13 @@ function mainAgentsAlerts() {
 	$comborefr .= "</form>";
 	
 	if ($config["pure"] == 0) {
-		$fullscreen = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_alerts&amp;pure=1&amp;offset='.$offset.'&group_id='.$group_id.'">'
-			. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+		$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_alerts&amp;pure=1&amp;offset='.$offset.'&group_id='.$group_id.'">'
+			. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
 	}
 	else {
-		$fullscreen = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_alerts&amp;refr=0&amp;offset='.$offset.'&group_id='.$group_id.'">'
-			. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+		$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_alerts&amp;refr=0&amp;offset='.$offset.'&group_id='.$group_id.'">'
+			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
 		$config['refr'] = $refr;
 	}
@@ -105,7 +105,7 @@ function mainAgentsAlerts() {
 	}
 	
 	// Header
-	ui_print_page_header (__("Agents/Alerts"), "images/bell.png", false, "", false, $onheader);
+	ui_print_page_header (__("Agents/Alerts"), "images/op_alerts.png", false, "", false, $onheader);
 	
 	// Old style table, we need a lot of special formatting,don't use table function
 	// Prepare old-style table
@@ -163,7 +163,6 @@ function mainAgentsAlerts() {
 	
 	// Prepare pagination
 	ui_pagination ($nagents);
-	echo "<br>";
 	
 	echo '<table cellpadding="4" cellspacing="4" border="0" width=98%>';
 	echo "<th width='140px' height='25px'>".__("Agents")." / ".__("Alert templates")."</th>";

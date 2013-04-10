@@ -875,11 +875,11 @@ function reporting_get_stats_servers($tiny = true) {
 	$table_srv->style[1] = $table_srv->style[3] = 'text-align: left; padding: 5px;';
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/brick.png', true, array('title' => __('Total running modules'), 'width' => '20px'));
+	$tdata[0] = html_print_image('images/module.png', true, array('title' => __('Total running modules'), 'width' => '25px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_modules"]) . '</span>';
 	
 	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
-	$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 	
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
@@ -891,22 +891,22 @@ function reporting_get_stats_servers($tiny = true) {
 	$table_srv->data[] = $tdata;
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/data.png', true, array('title' => __('Local modules'), 'width' => '20px'));
+	$tdata[0] = html_print_image('images/database25.png', true, array('title' => __('Local modules'), 'width' => '25px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
 	
 	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["local_modules_rate"], 2) . '</span>';
-	$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 	
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
 	
 	if ($tiny) {
 		$tdata = array();
-		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Remote modules'), 'width' => '20px'));
+		$tdata[0] = html_print_image('images/network25.png', true, array('title' => __('Remote modules'), 'width' => '25px'));
 		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_remote_modules"]) . '</span>';
 		
 		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
-		$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 		
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
@@ -914,11 +914,11 @@ function reporting_get_stats_servers($tiny = true) {
 	else {
 		if (isset($server_performance ["total_network_modules"])) {
 			$tdata = array();
-			$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Network modules'), 'width' => '20px'));
+			$tdata[0] = html_print_image('images/network25.png', true, array('title' => __('Network modules'), 'width' => '25px'));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_network_modules"]) . '</span>';
 			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["network_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;
@@ -926,11 +926,11 @@ function reporting_get_stats_servers($tiny = true) {
 		
 		if (isset($server_performance ["total_plugin_modules"])) {
 			$tdata = array();
-			$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules'), 'width' => '20px'));
+			$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules'), 'width' => '25px'));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_plugin_modules"]) . '</span>';
 			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["plugin_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;
@@ -938,11 +938,11 @@ function reporting_get_stats_servers($tiny = true) {
 		
 		if (isset($server_performance ["total_prediction_modules"])) {
 			$tdata = array();
-			$tdata[0] = html_print_image('images/chart_bar.png', true, array('title' => __('Prediction modules'), 'width' => '20px'));
+			$tdata[0] = html_print_image('images/bars25.png', true, array('title' => __('Prediction modules'), 'width' => '25px'));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_prediction_modules"]) . '</span>';
 			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["prediction_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;
@@ -950,11 +950,11 @@ function reporting_get_stats_servers($tiny = true) {
 		
 		if (isset($server_performance ["total_wmi_modules"])) {
 			$tdata = array();
-			$tdata[0] = html_print_image('images/wmi.png', true, array('title' => __('WMI modules'), 'width' => '20px'));
+			$tdata[0] = html_print_image('images/wmi25.png', true, array('title' => __('WMI modules'), 'width' => '25px'));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_wmi_modules"]) . '</span>';
 			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["wmi_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;
@@ -962,11 +962,11 @@ function reporting_get_stats_servers($tiny = true) {
 		
 		if (isset($server_performance ["total_web_modules"])) {
 			$tdata = array();
-			$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules'), 'width' => '20px'));
+			$tdata[0] = html_print_image('images/web25.png', true, array('title' => __('Web modules'), 'width' => '25px'));
 			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_web_modules"]) . '</span>';
 			
 			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["web_modules_rate"], 2) . '</span>';
-			$tdata[3] = html_print_image('images/brick.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '10px')) . '/sec </span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;
@@ -974,8 +974,8 @@ function reporting_get_stats_servers($tiny = true) {
 		
 	}
 	
-	$output = '<fieldset class="databox" style="width:97%;">
-				<legend style="text-align:left; color: #666;">' . 
+	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+				<legend>' . 
 					__('Server performance') . 
 				'</legend>' . 
 				html_print_table($table_srv, true) . '</fieldset>';
@@ -1006,54 +1006,49 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	
 	// Modules by status table
 	$table_mbs = html_get_predefined_table();
-	$table_mbs->class = "tactical_monitors";
-	
-	$table_mbs->style[0] = $table_mbs->style[2] = 'text-align: right; padding-right: 3px;';
-	$table_mbs->style[1] = $table_mbs->style[3] = 'text-align: left; padding-left: 3px;';
-	
-	if ($data["monitor_checks"] > 0) {
-		$tdata = array();
-		$table_mbs->colspan[count($table_mbs->data)][0] = 4;
-		$table_mbs->cellstyle[count($table_mbs->data)][0] = 'text-align: center;';
-		$tdata[0] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' .
-			graph_agent_status (false, $graph_width, $graph_height, true, true) . '</div>';
-		$table_mbs->rowclass[] = '';
-		$table_mbs->data[] = $tdata;
-	}
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/status_sets/default/agent_critical_ball.png', true, array('title' => __('Monitor critical'), 'width' => '20px'));
+	$tdata[0] = html_print_image('images/module_critical.png', true, array('title' => __('Monitor critical'), 'width' => '22px'));
 	$tdata[1] = $data["monitor_critical"] <= 0 ? '-' : $data["monitor_critical"];
 	$tdata[1] = '<a style="color: ' . COL_CRITICAL . ';" class="big_data" href="' . $urls['monitor_critical'] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/status_sets/default/agent_warning_ball.png', true, array('title' => __('Monitor warning'), 'width' => '20px'));
+	$tdata[2] = html_print_image('images/module_warning.png', true, array('title' => __('Monitor warning'), 'width' => '22px'));
 	$tdata[3] = $data["monitor_warning"] <= 0 ? '-' : $data["monitor_warning"];
 	$tdata[3] = '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/status_sets/default/agent_ok_ball.png', true, array('title' => __('Monitor normal'), 'width' => '20px'));
+	$tdata[0] = html_print_image('images/module_ok.png', true, array('title' => __('Monitor normal'), 'width' => '22px'));
 	$tdata[1] = $data["monitor_ok"] <= 0 ? '-' : $data["monitor_ok"];
 	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/status_sets/default/agent_no_monitors_ball.png', true, array('title' => __('Monitor unknown'), 'width' => '20px'));
+	$tdata[2] = html_print_image('images/module_unknown.png', true, array('title' => __('Monitor unknown'), 'width' => '22px'));
 	$tdata[3] = $data["monitor_unknown"] <= 0 ? '-' : $data["monitor_unknown"];
 	$tdata[3] = '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/status_sets/default/agent_no_data_ball.png', true, array('title' => __('Monitor not init'), 'width' => '20px'));
+	$tdata[0] = html_print_image('images/module_notinit.png', true, array('title' => __('Monitor not init'), 'width' => '22px'));
 	$tdata[1] = $data["monitor_not_init"] <= 0 ? '-' : $data["monitor_not_init"];
 	$tdata[1] = '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
 	
 	$tdata[2] = $tdata[3] = '';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
+
+	if($data["monitor_checks"] > 0) {
+		$tdata = array();
+		$table_mbs->colspan[count($table_mbs->data)][0] = 4;
+		$table_mbs->cellstyle[count($table_mbs->data)][0] = 'text-align: center;';
+		$tdata[0] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' . graph_agent_status (false, $graph_width, $graph_height, true, true) . '</div>';
+		$table_mbs->rowclass[] = '';
+		$table_mbs->data[] = $tdata;
+	}
 	
-	$output = '<fieldset class="databox" style="width:97%;">
-				<legend style="text-align:left; color: #666;">' . 
+	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+				<legend>' . 
 					__('Monitors by status') . 
 				'</legend>' . 
 				html_print_table($table_mbs, true) . '</fieldset>';
@@ -1098,8 +1093,8 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 		$table_sum->rowclass[] = '';
 		$table_sum->data[] = $tdata;
 	
-	$output = '<fieldset class="databox" style="width:97%;">
-				<legend style="text-align:left; color: #666;">' . 
+	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+				<legend>' . 
 					__('Summary') . 
 				'</legend>' . 
 				html_print_table($table_sum, true) . '</fieldset>';
@@ -1135,7 +1130,7 @@ function reporting_get_stats_alerts($data) {
 	$tdata = array();
 	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts'), 'width' => '20px'));
 	$tdata[1] = $data["monitor_alerts"] <= 0 ? '-' : $data["monitor_alerts"];
-	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
+	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
 	
 	$tdata[2] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts'), 'width' => '20px'));
 	$tdata[3] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
@@ -1143,8 +1138,8 @@ function reporting_get_stats_alerts($data) {
 	$table_al->rowclass[] = '';
 	$table_al->data[] = $tdata;
 	
-	$output = '<fieldset class="databox" style="width:97%;">
-				<legend style="text-align:left; color: #666;">' . 
+	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+				<legend>' . 
 					__('Defined and fired alerts') . 
 				'</legend>' . 
 				html_print_table($table_al, true) . '</fieldset>';
@@ -1168,7 +1163,7 @@ function reporting_get_stats_users($data) {
 	$table_us = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/group.png', true, array('title' => __('Defined users'), 'width' => '20px'));
+	$tdata[0] = html_print_image('images/user_green.png', true, array('title' => __('Defined users'), 'width' => '20px'));
 	$tdata[1] = count (get_users ());
 	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls["defined_users"] . '">' . $tdata[1] . '</a>';
 	
@@ -1176,8 +1171,8 @@ function reporting_get_stats_users($data) {
 	$table_us->rowclass[] = '';
 	$table_us->data[] = $tdata;
 	
-	$output = '<fieldset class="databox" style="width:97%;">
-				<legend style="text-align:left; color: #666;">' . 
+	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+				<legend>' . 
 					__('Users') . 
 				'</legend>' . 
 				html_print_table($table_us, true) . '</fieldset>';
@@ -1211,18 +1206,18 @@ function reporting_get_stats_agents_monitors($data) {
 	$table_am = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/bricks.png', true, array('title' => __('Total agents'), 'width' => '20px'));
+	$tdata[0] = html_print_image('images/agent.png', true, array('title' => __('Total agents'), 'width' => '22px'));
 	$tdata[1] = $data["total_agents"] <= 0 ? '-' : $data["total_agents"];
 	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/brick.png', true, array('title' => __('Monitor checks'), 'width' => '20px'));
+	$tdata[2] = html_print_image('images/module.png', true, array('title' => __('Monitor checks'), 'width' => '22px'));
 	$tdata[3] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
 	$tdata[3] = '<a style="color: black;" class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[3] . '</a>';
 	$table_am->rowclass[] = '';
 	$table_am->data[] = $tdata;
 	
-	$output = '<fieldset class="databox" style="width:97%;">
-				<legend style="text-align:left; color: #666;">' . 
+	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+				<legend>' . 
 					__('Total agents and monitors') . 
 				'</legend>' . 
 				html_print_table($table_am, true) . '</fieldset>';
@@ -1245,32 +1240,32 @@ function reporting_get_stats_indicators($data, $width = 280, $height = 20, $html
 	}
 	
 	if ($html) {
-		$tdata[0] = '<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' . 
+		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+						<legend>' . 
 							__('Server health') . ui_print_help_tip (sprintf(__('%d Downed servers'), $servers["down"]), true) . 
 						'</legend>' . 
 						progress_bar($servers["health"], $width, $height, '', 0) . '</fieldset>';
 		$table_ind->rowclass[] = '';
 		$table_ind->data[] = $tdata;
 		
-		$tdata[0] = '<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' . 
+		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+						<legend>' . 
 							__('Monitor health') . ui_print_help_tip (sprintf(__('%d Not Normal monitors'), $data["monitor_not_normal"]), true) . 
 						'</legend>' . 
 						progress_bar($data["monitor_health"], $width, $height, $data["monitor_health"].'% '.__('of monitors up'), 0) . '</fieldset>';
 		$table_ind->rowclass[] = '';
 		$table_ind->data[] = $tdata;
 		
-		$tdata[0] = '<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' . 
+		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+						<legend>' . 
 							__('Module sanity') . ui_print_help_tip (sprintf(__('%d Not inited monitors'), $data["monitor_not_init"]), true) .
 						'</legend>' . 
 						progress_bar($data["module_sanity"], $width, $height, $data["module_sanity"].'% '.__('of total modules inited'), 0) . '</fieldset>';
 		$table_ind->rowclass[] = '';
 		$table_ind->data[] = $tdata;
 		
-		$tdata[0] = '<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' . 
+		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+						<legend>' . 
 							__('Alert level') . ui_print_help_tip (sprintf(__('%d Fired alerts'), $data["monitor_alerts_fired"]), true) . 
 						'</legend>' . 
 						progress_bar($data["alert_level"], $width, $height, $data["alert_level"].'% '.__('of defined alerts not fired'), 0) . '</fieldset>';

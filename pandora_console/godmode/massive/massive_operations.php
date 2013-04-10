@@ -108,7 +108,7 @@ if ($option == '') {
 }
 
 $alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
-	. html_print_image ('images/bell.png', true, array ('title' => __('Alerts operations')))
+	. html_print_image ('images/op_alerts.png', true, array ('title' => __('Alerts operations')))
 	. '</a>', 'active' => $tab == 'massive_alerts');
 
 $userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
@@ -138,7 +138,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 $onheader['massive_alerts'] = $alertstab;
 $onheader['policies'] = $policiestab;
 
-ui_print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], "images/sitemap_color.png", false, "", true, $onheader);
+ui_print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], "images/gm_massive_operations.png", false, "", true, $onheader);
 
 // Checks if the PHP configuration is correctly
 if ((get_cfg_var("max_execution_time") != 0) or (get_cfg_var("max_input_time") != -1)){

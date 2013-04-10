@@ -387,7 +387,7 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$table->data[1][1] = html_print_input_text ('starting_oid', '.1.3.6.1.2', '', 25, 0, true);
 	$table->data[1][2] = '<strong>'.__('Search text').'</strong>';
 	$table->data[1][3] = html_print_input_text ('search_text', '', '', 25, 0, true);
-	$table->data[1][4] = '<a href="javascript:">' . html_print_image ("images/lupa.png", true, array ('title' => __('Search'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchText();')) . '</a>';
+	$table->data[1][4] = '<a href="javascript:">' . html_print_image ("images/zoom.png", true, array ('title' => __('Search'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchText();')) . '</a>';
 	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_first.png", true, array ('title' => __('First match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchFirstMatch();')) . '</a>';
 	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_previous.png", true, array ('title' => __('Previous match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchPrevMatch();')) . '</a>';
 	$table->data[1][4] .= '&nbsp;' . '<a href="javascript:">' . html_print_image ("images/go_next.png", true, array ('title' => __('Next match'), 'style' => 'vertical-align: middle;', 'onclick' => 'searchNextMatch();')) . '</a>';

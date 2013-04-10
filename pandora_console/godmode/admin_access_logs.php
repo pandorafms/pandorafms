@@ -30,7 +30,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-ui_print_page_header (__('Pandora audit')." &raquo; ".__('Review Logs'), "", false, "", true );
+ui_print_page_header (__('Pandora audit')." &raquo; ".__('Review Logs'), "images/gm_log.png", false, "", true );
 
 $offset = get_parameter ("offset", 0);
 $tipo_log = get_parameter ("tipo_log", 'all');

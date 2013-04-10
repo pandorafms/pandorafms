@@ -49,7 +49,7 @@ if ($date == '') {
 }
 
 // Header
-ui_print_page_header (__('Alerts').' &raquo; '.__('Configure special day'), "images/god2.png", false, "", true);
+ui_print_page_header (__('Alerts').' &raquo; '.__('Configure special day'), "images/gm_alerts.png", false, "", true);
 
 $table->width = '98%';
 $table->style = array ();

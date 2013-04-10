@@ -48,15 +48,15 @@ if ($id) {
 
 //Header
 if (! defined ('METACONSOLE')) {
-	$buttons['edit'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'
-		. html_print_image ("images/edit.png", true, array ("title" => __('Filter list')))
+	$buttons['edit']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit">'
+		. html_print_image ("images/list.png", true, array ("title" => __('Filter list')))
 		. '</a>';
 		
-	$buttons['add'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'
-		. html_print_image ("images/add.png", true, array ("title" => __('Add filter')))
+	$buttons['add']['text'] = '<a href="index.php?sec=netf&sec2=godmode/netflow/nf_edit_form">'
+		. html_print_image ("images/add_mc.png", true, array ("title" => __('Add filter')))
 		. '</a>';
 	
-	ui_print_page_header (__('Netflow Filter'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+	ui_print_page_header (__('Netflow Filter'), "images/gm_netflow.png", false, "", true, $buttons);
 }
 else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),

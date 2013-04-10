@@ -241,4 +241,3 @@ if ($get_module_detail) {
 
 
 ?>
-

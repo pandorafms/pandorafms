@@ -222,7 +222,6 @@ $(document).ready (function () {
 	
 	$("#source_id_agent").change (function () {
 		var id_agent = this.value;
-		
 		if (id_agent == 0) {
 			$("#submit-go").attr("disabled", "disabled");
 			

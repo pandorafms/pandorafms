@@ -30,7 +30,7 @@ require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . '/include/functions_users.php');
 
-ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database debug'), "images/god8.png", false, "", true);
+ui_print_page_header (__('Database maintenance').' &raquo; '.__('Database debug'), "images/gm_db.png", false, "", true);
 
 
 if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {

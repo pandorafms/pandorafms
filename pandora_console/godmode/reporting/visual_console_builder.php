@@ -402,21 +402,21 @@ else {
 }
 
 $buttons = array(
+	'view' => array('active' => false,
+		'text' => '<a href="' . $url_view . '">' .
+			html_print_image ("images/operation.png", true, array ("title" => __('View'))) .'</a>'),
 	'data' => array('active' => false,
 		'text' => '<a href="' . $url_base . $action . '&tab=data&id_visual_console=' . $idVisualConsole . '">' . 
-			html_print_image ("images/god9.png", true, array ("title" => __('Data'))) .'</a>'),
+			html_print_image ("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>'),
 	'list_elements' => array('active' => false,
 		'text' => '<a href="' . $url_base . $action . '&tab=list_elements&id_visual_console=' . $idVisualConsole . '">' .
-			html_print_image ("images/god6.png", true, array ("title" => __('List elements'))) .'</a>'),
+			html_print_image ("images/list.png", true, array ("title" => __('List elements'))) .'</a>'),
 	'wizard' => array('active' => false,
 		'text' => '<a href="' . $url_base . $action . '&tab=wizard&id_visual_console=' . $idVisualConsole . '">' .
 			html_print_image ("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>'),
 	'editor' => array('active' => false,
 		'text' => '<a href="' . $url_base . $action . '&tab=editor&id_visual_console=' . $idVisualConsole . '">' .
-			html_print_image ("images/config.png", true, array ("title" => __('Editor'))) .'</a>'),
-	'view' => array('active' => false,
-		'text' => '<a href="' . $url_view . '">' .
-			html_print_image ("images/eye.png", true, array ("title" => __('View'))) .'</a>'),);
+			html_print_image ("images/builder.png", true, array ("title" => __('Builder'))) .'</a>'));
 
 if ($action == 'new' || $idVisualConsole === false) {
 	$buttons = array('data' => $buttons['data']); //Show only the data tab
@@ -428,7 +428,7 @@ if ($action == 'new' || $idVisualConsole === false) {
 $buttons[$activeTab]['active'] = true;
  
 if (!defined('METACONSOLE'))
-	ui_print_page_header(__('Visual console') . " &raquo; " . $visualConsoleName, "images/reporting_edit.png", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
+	ui_print_page_header(__('Visual console') . " &raquo; " . $visualConsoleName, "images/op_reporting.png", false, "visual_console_editor_" . $activeTab . "_tab", false, $buttons);
 else {
 	// Print header
 	//ui_meta_print_header(__('Visual console') . " &raquo; " . $visualConsoleName, "", $buttons);

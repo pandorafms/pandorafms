@@ -28,7 +28,7 @@ if (!check_acl($config['id_user'], 0, "PM")) {
 }
 
 // Header
-ui_print_page_header (__("Agents custom fields manager"), "images/note.png", false, "", true, "");
+ui_print_page_header (__("Agents custom fields manager"), "images/custom_field.png", false, "", true, "");
 
 $create_field = (bool) get_parameter ('create_field');
 $update_field = (bool) get_parameter ('update_field');

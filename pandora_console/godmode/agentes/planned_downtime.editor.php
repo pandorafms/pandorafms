@@ -30,7 +30,7 @@ require_once ('include/functions_users.php');
 // Header
 ui_print_page_header(
 	__("Planned Downtime") . ui_print_help_icon ('planned_downtime', true),
-	"images/god1.png",
+	"images/gm_monitoring.png",
 	false,
 	"",
 	true,

@@ -124,7 +124,7 @@ if (is_ajax ()) {
 if (defined('METACONSOLE'))
 	alerts_meta_print_header();
 else
-	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert commands'), "images/god2.png", false, "alert_command", true);
+	ui_print_page_header (__('Alerts').' &raquo; '.__('Alert commands'), "images/gm_alerts.png", false, "alert_command", true);
 
 $update_command = (bool) get_parameter ('update_command');
 $create_command = (bool) get_parameter ('create_command');

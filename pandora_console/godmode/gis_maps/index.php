@@ -62,7 +62,7 @@ switch ($action) {
 		break;
 }
 
-ui_print_page_header (__('GIS Maps builder'), "images/server_web.png", false, "gis_map_builder", true);
+ui_print_page_header (__('GIS Maps builder'), "images/gm_gis.png", false, "gis_map_builder", true);
 
 $table->width = '98%';
 $table->head[0] = __('Map name');
@@ -105,8 +105,8 @@ if ($maps){
 			$default_button = html_print_radio_button_extended('default_map', $map['id_tgis_map'], '', $checked, false, "setDefault(" . $map['id_tgis_map'] . ");", '', true);
 			array_push($table_info, $default_button);
 		}
-		$buttons = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">' . html_print_image ("images/config.png", true).'</a>&nbsp;&nbsp;';
-		$buttons .= '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">' . html_print_image ("images/cross.png", true).'</a>';
+		$buttons = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">' . html_print_image ("images/config.png", true, array('title' => __('Edit'))).'</a>&nbsp;&nbsp;';
+		$buttons .= '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">' . html_print_image ("images/cross.png", true, array('title' => __('Delete'))).'</a>';
 		array_push ($table_info, $buttons);
 		$table->data[] = $table_info;
 	}

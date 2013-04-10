@@ -89,7 +89,7 @@ else {
 	else
 		$title_in_header = __("Create group");
 	
-	ui_print_page_header ($title_in_header, "images/god1.png", false, "", true, "");
+	ui_print_page_header ($title_in_header, "images/group.png", false, "", true, "");
 	$sec = 'gagente';
 
 }

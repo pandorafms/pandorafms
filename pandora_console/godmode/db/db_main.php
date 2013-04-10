@@ -66,7 +66,7 @@ switch ($config["dbtype"]) {
 $max_access = 1000000;
 $max_data = 12000000;
 
-ui_print_page_header (__('Current database maintenance setup'), "", false, "", true);
+ui_print_page_header (__('Current database maintenance setup'), "images/gm_db.png", false, "", true);
 
 echo '<table class=databox width="98%" cellspacing="4" cellpadding="4" border="0">';
 

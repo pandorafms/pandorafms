@@ -51,7 +51,7 @@ $buttons['edit_report']['text'] = '<a href="' . $config['homeurl'] . 'index.php?
 		
 //Header
 if (! defined ('METACONSOLE')) {
-	ui_print_page_header (__('Report items'), "images/networkmap/so_cisco_new.png", false, "", true, $buttons);
+	ui_print_page_header (__('Report items'), "images/gm_netflow.png", false, "", true, $buttons);
 }
 else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),

@@ -29,18 +29,18 @@ if ($show_sent) {
 
 $buttons['message_list'] = array('active' => $active_list,
 	'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list">' .
-	html_print_image("images/email.png", true, array ("title" => __('Message list'))) .'</a>');
+	html_print_image("images/email_inbox.png", true, array ("title" => __('Received messages'))) .'</a>');
 
 $buttons['sent_messages'] = array('active' => $active_sent,
 	'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list&amp;show_sent=1">' .
-	html_print_image("images/email_go.png", true, array ("title" => __('Sent messages'))) .'</a>');
+	html_print_image("images/email_outbox.png", true, array ("title" => __('Sent messages'))) .'</a>');
 
 $buttons['create_message'] = array('active' => false,
 	'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_edit">' .
-	html_print_image("images/email_edit.png", true, array ("title" => __('Create message'))) .'</a>');
+	html_print_image("images/new_message.png", true, array ("title" => __('Create message'))) .'</a>');
 
 if (!is_ajax ()) {
-	ui_print_page_header (__('Messages'), "images/email.png", false, "", false, $buttons);
+	ui_print_page_header (__('Messages'), "images/email_mc.png", false, "", false, $buttons);
 }
 
 if ($mark_unread) {

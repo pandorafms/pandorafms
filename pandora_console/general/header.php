@@ -29,9 +29,9 @@ $_SESSION["alert_msg"] = "";
 config_check();
 
 ?>
-<table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px; margin-top: 5px;" border="0">
+<table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px; margin-top: 0px; height: 100%" border="0">
 	<tr>
-		<td rowspan="2">
+		<td style="width:250px; vertical-align: top;">
 			<a href="index.php?sec=main">
 				<?php
 				if (!defined ('PANDORA_ENTERPRISE')) {
@@ -43,181 +43,233 @@ config_check();
 				?>
 			</a>
 		</td>
-		<td width="20%">
-			<?php 
-				if (is_user_admin ($config["id_user"]) == 1)
-					html_print_image("images/user_suit.png" , false, array("class" => 'bot', "alt" => 'user'));
-				else
-					html_print_image("images/user_green.png" , false, array("class" => 'bot', "alt" => 'user'));
-			?>
-			<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
+		<td style="min-width:250px;">
 			<?php
-			
-			if ($config["metaconsole"] == 0) {
-				$msg_cnt = messages_get_count ($config["id_user"]);
-				if ($msg_cnt > 0) {
-					echo '<div id="dialog_messages" style="display: none"></div>';
-					ui_require_css_file ('dialog');
-					
-					echo '<a href="ajax.php?page=operation/messages/message_list" title="' . __("Message overview") . '" id="show_messages_dialog">';
-					html_print_image ("images/email.png", false,
-					array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot"));
-					echo '</a>';
-					echo "&nbsp;";
-					echo "&nbsp;";
-				}
-			}
-			
-			echo "<span id='icon_new_messages_chat' style='display: none;'>";
-			echo "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
-			html_print_image('images/comments.png');
-			echo "</a>";
-			echo "</span>";
-			
-			if ($config["alert_cnt"] > 0) {
-				echo '<div id="alert_messages" style="display: none"></div>';
-				ui_require_css_file ('dialog');
+				$table->class = "none";
+				$table->cellpadding = 0;
+				$table->cellspacing = 0;
+				$table->head = array ();
+				$table->data = array ();
+				$table->style[0] = $table->style[2] = $table->style[4] = 'width: 27px; text-align:center; height: 27px; padding-left: 12px; padding-right: 2px;';
+				$table->rowclass[0] = '';
+				$table->styleTable = 'margin: auto; margin-top: 20px;';
 				
-				echo '<a href="ajax.php?page=operation/system_alert" title="'.__("System alerts detected - Please fix as soon as possible").'" id="show_systemalert_dialog">'; 
-				html_print_image ("images/error.png", false,
-					array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot"));
-				echo '</a>';
-				echo "&nbsp;";
-				echo "&nbsp;";
-			}
-			
-			echo '<a class="white_bold" href="' . ui_get_full_url('index.php?bye=bye') . '">';
-			html_print_image("images/log-out.png", false, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
-			echo '</a>';
-			
-			// Main help icon
-			echo "&nbsp;";
-			echo "&nbsp;";
-			echo ui_print_help_icon ("main_help", true);
-			if ($config['metaconsole'] == 1) {
-				echo "&nbsp;";
-				echo "&nbsp;";
-				html_print_image("images/application_double.png", false, array("alt" => __('Metaconsole activated'), "class" => 'bot', "title" => __('You are using metaconsole')));
-			}
-			?>
-		</td>
-		<td width="20%">
-			<?php
-			//if ($config["metaconsole"] == 0) {
-				echo '<a class="white_bold" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
-				
+				// Servers check
+				$servers = array();
 				$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
 				$servers["up"] = (int) servers_check_status ();
 				$servers["down"] = $servers["all"] - $servers["up"];
 				if ($servers["up"] == 0) {
 					//All Servers down or no servers at all
-					echo html_print_image("images/cross.png", true, array("alt" => 'cross', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Down');
+					$servers_check_img = html_print_image("images/header_down.png", true, array("alt" => 'cross', "class" => 'bot', 'title' => __('All systems').': '.__('Down')));
+					$servers_check_txt = __('All systems').': '.__('Down');
 				}
 				elseif ($servers["down"] != 0) {
 					//Some servers down
-					echo html_print_image("images/error.png", true, array("alt" => 'error', "class" => 'bot')) . '&nbsp;'.$servers["down"].' '.__('servers down');
+					$servers_check_img = html_print_image("images/header_warning.png", true, array("alt" => 'error', "class" => 'bot', 'title' => $servers["down"].' '.__('servers down')));
+					$servers_check_txt = $servers["down"].' '.__('servers down');
 				}
 				else {
 					//All servers up
-					echo html_print_image("images/ok.png", true, array("alt" => 'ok', "class" => 'bot')) . '&nbsp;'.__('All systems').': '.__('Ready');
+					$servers_check_img = html_print_image("images/header_ready.png", true, array("alt" => 'ok', "class" => 'bot', 'title' => __('All systems').': '.__('Ready')));
+					$servers_check_txt = __('All systems').': '.__('Ready');
 				}
 				unset ($servers); // Since this is the header, we don't like to trickle down variables.
-				echo '</a>';
-			//}
-			?>
-		</td>
-		<td width="20%">
-			<?php
-			// Autorefresh
-			$ignored_params = array ('agent_config' => false, 'code' => false);
-			if ($config['enable_refr']) {
-				$ignored_params['refr'] = 0;
-				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
-				echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
-				echo '</a>';
-			}
-			else {
 				
-				if (!isset($_GET['sec2'])) 
-					$_GET['sec2'] = '';
+				$servers_link_open = '<a class="white_bold" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
+				$servers_link_close = '</a>';
 				
-				if (($config['refr']) && (($_GET['sec2'] == 'operation/agentes/tactical') || ($_GET['sec2'] == 'operation/agentes/estado_agente') ||
-					($_GET['sec2'] == 'operation/agentes/group_view') || ($_GET['sec2'] == 'operation/events/events') || 
-					($_GET['sec2'] == 'enterprise/dashboard/main_dashboard'))) {
-					
-						echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
-						echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
-						echo '</a>';
+				$table->data[0][0] = $servers_link_open . $servers_check_img . $servers_link_close;
+				$table->data[0][1] = $servers_link_open . $servers_check_txt . $servers_link_close;
+				
+				// Autorefresh
+				$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Configure autorefresh')));
+				$autorefresh_txt = __('Autorefresh');
+				$autorefresh_additional = '';
+				
+				$ignored_params = array ('agent_config' => false, 'code' => false);
+				if ($config['enable_refr']) {
+					$ignored_params['refr'] = 0;
+					$autorefresh_txt .= ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 				}
 				else {
-					$ignored_params['refr'] = '';
-					echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh').'</a>'; 
-					$values = array (
-						'5' => __('5 seconds'),
-						'10' => __('10 seconds'),
-						'15' => __('15 seconds'),
-						'30' => __('30 seconds'),
-						(string)SECONDS_1MINUTE => __('1 minute'),
-						(string)SECONDS_2MINUTES => __('2 minutes'),
-						(string)SECONDS_5MINUTES => __('5 minutes'),
-						(string)SECONDS_15MINUTES => __('15 minutes'),
-						(string)SECONDS_30MINUTES => __('30 minutes'),
-						(string)SECONDS_1HOUR => __('1 hour'));
-					echo '<span id="combo_refr" style="display: none">';
-					html_print_select ($values, 'ref', '', '', __('Select'), '0', false, false, false);
-					unset ($values);
-					echo '</span>';
+					if (!isset($_GET['sec2'])) 
+						$_GET['sec2'] = '';
+					
+					if (($config['refr']) && (($_GET['sec2'] == 'operation/agentes/tactical') || ($_GET['sec2'] == 'operation/agentes/estado_agente') ||
+						($_GET['sec2'] == 'operation/agentes/group_view') || ($_GET['sec2'] == 'operation/events/events') || 
+						($_GET['sec2'] == 'enterprise/dashboard/main_dashboard'))) {
+						
+							$autorefresh_txt .= ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
+					}
+					else {
+						$ignored_params['refr'] = '';
+						$values = array (
+							'5' => __('5 seconds'),
+							'10' => __('10 seconds'),
+							'15' => __('15 seconds'),
+							'30' => __('30 seconds'),
+							(string)SECONDS_1MINUTE => __('1 minute'),
+							(string)SECONDS_2MINUTES => __('2 minutes'),
+							(string)SECONDS_5MINUTES => __('5 minutes'),
+							(string)SECONDS_15MINUTES => __('15 minutes'),
+							(string)SECONDS_30MINUTES => __('30 minutes'),
+							(string)SECONDS_1HOUR => __('1 hour'));
+						$autorefresh_additional = '<span id="combo_refr" style="display: none">';
+						$autorefresh_additional .= html_print_select ($values, 'ref', '', '', __('Select'), '0', true, false, false);
+						$autorefresh_additional .= '</span>';
+						unset ($values);
+					}
 				}
-			}
 			
+				$autorefresh_link_open_img = '<a class="white_bold autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
+				$autorefresh_link_open_txt = '<a class="white_bold autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
+				$autorefresh_link_close = '</a>';
+				
+				$table->data[0][2] = $autorefresh_link_open_img . $autorefresh_img . $autorefresh_link_close;
+				$table->data[0][3] = $autorefresh_link_open_txt . $autorefresh_txt . $autorefresh_link_close . $autorefresh_additional;
+				
+				// Maintenance
+				$maintenance_txt = __('Maintenance');
+				
+				if ($config["alert_cnt"] > 0) {
+					echo '<div id="alert_messages" style="display: none"></div>';
+					ui_require_css_file ('dialog');
+					
+					$maintenance_link = 'javascript:';
+					$maintenance_title = __("System alerts detected - Please fix as soon as possible");
+					$maintenance_class = $maintenance_id = 'show_systemalert_dialog white_bold';
+					
+					$maintenance_link_open_txt =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '" id="show_systemalert_dialog">'; 
+					$maintenance_link_open_img =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '">'; 
+					$maintenance_link_close =  '</a>'; 
+					$maintenance_img = $maintenance_link_open_img . html_print_image ("images/header_warning.png", true, array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot")) . $maintenance_link_close;
+					$maintenance_txt = $maintenance_link_open_txt . $maintenance_txt . $maintenance_link_close;
+				}
+				else {
+					$maintenance_img = html_print_image ("images/header_ready.png", true, array ("title" => __('There are not warnings'), "id" => "yougotalert", "class" => "bot"));
+				}
+			
+				$table->data[0][4] = $maintenance_img;
+				$table->data[0][5] = $maintenance_txt;
+
+				html_print_table($table);
+				
+				unset($table);
 			?>
 		</td>
-		<td width='20%' rowspan='2'>
+		<td style="min-width:120px;">
 			<?php
-			echo "<a href='index.php?sec=main'>";
-			if (isset($config["custom_logo"]))
-				echo html_print_image("images/custom_logo/" . $config["custom_logo"], true,array("height" => '60', "width" => '139', "alt" => 'Logo'));
-			echo "</a>";
+				$table->class = "none";
+				$table->cellpadding = 0;
+				$table->cellspacing = 0;
+				$table->head = array ();
+				$table->data = array ();
+				$table->style[0] = $table->style[2] = 'width: 27px; text-align:center; height: 27px; padding-left: 12px; padding-right: 2px;';
+				$table->rowclass[0] = '';
+				$table->styleTable = 'margin-top: 20px;';
+				
+				// User
+				if (is_user_admin ($config["id_user"]) == 1)
+					$table->data[0][0] = html_print_image("images/header_user_admin.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
+				else
+					$table->data[0][0] = html_print_image("images/header_user.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
+				
+				$table->data[0][0] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit">' . $table->data[0][0] . '</a>';
+				
+				$table->data[0][1] = '<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white"> [<b>' . $config["id_user"] . '</b>]</a>';
+
+				// Logout
+				$table->data[0][2] = '<a class="white_bold" href="' . ui_get_full_url('index.php?bye=bye') . '">';
+				$table->data[0][2] .= html_print_image("images/header_logout.png", true, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
+				$table->data[0][2] .= '</a>';
+				
+				$table->data[0][3] = '<a class="white_bold" href="' . ui_get_full_url('index.php?bye=bye') . '">';
+				$table->data[0][3] .= __('Logout');
+				$table->data[0][3] .= '</a>';
+
+				html_print_table($table);
+				
+				unset($table);
 			?>
 		</td>
-	</tr>
-	<tr>
-		<td colspan="2">
-		<?php
-		//if ($config["metaconsole"] == 0) {
-		?>
-			<form method="get" style="" name="quicksearch" action="">
-				<script type="text/javascript">
-				var fieldKeyWordEmpty = true;
-				</script>
-				<input type="text" id="keywords" name="keywords"
-					<?php
-					if (!isset($config['search_keywords']))
-						echo "value='" . __("Enter keywords to search") . "'";
-					else if (strlen($config['search_keywords']) == 0)
-						echo "value='" . __("Enter keywords to search") . "'";
-					else
-						echo "value='" . $config['search_keywords'] . "'";
-					?>
-					onfocus="javascript: if (fieldKeyWordEmpty) $('#keywords').val('');"
-					size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
-				<!-- onClick="javascript: document.quicksearch.submit()" -->
-				<input type='hidden' name='head_search_keywords' value='abc' />
-				<?php
-					ui_print_help_tip (__("Blank characters are used as AND conditions"));
-				?>
-			</form>
-		<?php
-		//}
-		?>
-		</td>
-		<td>
+		<td style="min-width:240px;">
 			<?php
-			if ($config["metaconsole"] == 0) {
-				echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events">' . html_print_image("images/lightning_go.png", true, array("alt" => 'lightning_go', "class" => 'bot')) . '&nbsp;'.__('Events').'</a>';
-			}
+				$table->class = "none";
+				$table->cellpadding = 0;
+				$table->cellspacing = 0;
+				$table->head = array ();
+				$table->data = array ();
+				$table->style[0] = $table->style[1] = $table->style[2] = 'text-align:right; padding-right: 2px; width: 1px;';
+				$table->style[3] = 'width: 180px;';
+				$table->style[4] = 'padding-left: 10px; width: 20px;';
+				$table->width = "100%";
+				$table->styleTable = 'margin: auto; margin-top: 20px; padding-right: 5px;';
+				$table->rowclass[0] = '';
+
+				// Main help icon
+				$table->data[0][0] = ui_print_help_icon ("main_help", true, '', 'images/header_help.png');
+				
+				// Messages
+				$msg_cnt = messages_get_count ($config["id_user"]);
+				if ($msg_cnt > 0) {
+					echo '<div id="dialog_messages" style="display: none"></div>';
+					ui_require_css_file ('dialog');
+					
+					$table->data[0][1] = '<a href="ajax.php?page=operation/messages/message_list" title="' . __("Message overview") . '" id="show_messages_dialog">';
+					$table->data[0][1] .= html_print_image ("images/header_email.png", true, array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot", 'style' => 'width:24px;'));
+					$table->data[0][1] .= '</a>';
+				}
+				else {
+					$table->data[0][1] = '';
+				}
+				
+				// Chat messages
+				$table->data[0][2] = "<span id='icon_new_messages_chat' style='display: none;'>";
+				$table->data[0][2] .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
+				$table->data[0][2] .= html_print_image('images/header_chat.png', true, array('style' => 'width:22px;', "title" => __('New chat message')));
+				$table->data[0][2] .= "</a>";
+				$table->data[0][2] .= "</span>";
+			
+				// Search bar
+				$search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
+				$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
+				$search_bar .= '<input type="text" id="keywords" name="keywords"';
+				if (!isset($config['search_keywords']))
+					$search_bar .= "value='" . __("Enter keywords to search") . "'";
+				else if (strlen($config['search_keywords']) == 0)
+					$search_bar .= "value='" . __("Enter keywords to search") . "'";
+				else
+					$search_bar .= "value='" . $config['search_keywords'] . "'";
+					
+				$search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
+						size="60" class="search_input" />';
+						
+				//$search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
+				
+				$search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
+				$search_bar .= '</form>';
+				
+				$table->data[0][3] = $search_bar;
+				
+				$table->data[0][4] = ui_print_help_tip (__("Blank characters are used as AND conditions"), true);
+				
+				html_print_table($table);
+				
+				unset($table);
 			?>
 		</td>
+		<!--
+		<td style="text-align:center">
+			<?php
+				echo "<a href='index.php?sec=main'>";
+				if (isset($config["custom_logo"])) {
+					echo html_print_image("images/custom_logo/" . $config["custom_logo"], true, array("height" => '60', "width" => '139', "alt" => 'Logo'));
+				}
+				echo "</a>";
+			?>
+		</td>
+		-->
 	</tr>
 </table>
 
@@ -270,13 +322,11 @@ config_check();
 		}
 		else {
 		?>
-			$("a#autorefresh").click (function () {
-				var a = this;
-				
-				$(this).hide ().unbind ("click");
-				$("#combo_refr").show ();
+			$("a.autorefresh").click (function () {
+				$("a.autorefresh_txt").toggle ();
+				$("#combo_refr").toggle ();
 				$("select#ref").change (function () {
-					href = $(a).attr ("href");
+					href = $(this).attr ("href");
 					$(document).attr ("location", href + this.value);
 				});
 				

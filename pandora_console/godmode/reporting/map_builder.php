@@ -23,7 +23,7 @@ if (defined('METACONSOLE'))
 	$hack_metaconsole = '../../';
 
 if (!defined('METACONSOLE')) {
-	ui_print_page_header (__('Reporting') .' &raquo; ' . __('Visual Console'), "images/reporting.png", false, "map_builder");
+	ui_print_page_header (__('Reporting') .' &raquo; ' . __('Visual Console'), "images/op_reporting.png", false, "map_builder");
 }
 
 $id_layout = (int) get_parameter ('id_layout');

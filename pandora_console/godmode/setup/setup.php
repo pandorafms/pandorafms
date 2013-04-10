@@ -70,7 +70,7 @@ $buttons = array();
 // Draws header
 $buttons['general'] = array('active' => false, 
 			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general">' .
-			html_print_image("images/god6.png", true, array ("title" => __('General'))) . '</a>');
+			html_print_image("images/gm_setup.png", true, array ("title" => __('General'))) . '</a>');
 
 if (enterprise_installed()) {
 	$buttons = setup_enterprise_add_Tabs($buttons);
@@ -78,21 +78,21 @@ if (enterprise_installed()) {
 
 $buttons['auth'] = array('active' => false, 
 			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=auth">' .
-			html_print_image("images/books.png", true, array ("title" => __('Authentication'))) . '</a>');
+			html_print_image("images/key.png", true, array ("title" => __('Authentication'))) . '</a>');
 			
 $buttons['perf'] = array('active' => false, 
 			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=perf">' .
-			html_print_image("images/up.png", true, array ("title" => __('Performance'))) . '</a>');
+			html_print_image("images/performance.png", true, array ("title" => __('Performance'))) . '</a>');
 			
 $buttons['vis'] = array('active' => false, 
 			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=vis">' .
-			html_print_image("images/chart_curve.png", true, array ("title" => __('Visual styles'))) . '</a>');
+			html_print_image("images/chart.png", true, array ("title" => __('Visual styles'))) . '</a>');
 
 if (check_acl ($config['id_user'], 0, "AW")) {
 	if ($config['activate_netflow']) {
 		$buttons['net'] = array('active' => false, 
 				'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=net">' .
-				html_print_image("images/networkmap/so_cisco_new.png", true, array ("title" => __('Netflow'))) . '</a>');
+				html_print_image("images/op_netflow.png", true, array ("title" => __('Netflow'))) . '</a>');
 	}
 }
 

@@ -33,10 +33,10 @@ if ($id_field) {
 	$field = db_get_row_filter('tagent_custom_fields',array('id_field' => $id_field));
 	$name = $field['name'];
 	$display_on_front = $field['display_on_front'];
-	ui_print_page_header (__("Update agent custom field"), "images/note.png", false, "", true, "");
+	ui_print_page_header (__("Update agent custom field"), "images/custom_field.png", false, "", true, "");
 }
 else {
-	ui_print_page_header (__("Create agent custom field"), "images/note.png", false, "", true, "");
+	ui_print_page_header (__("Create agent custom field"), "images/custom_field.png", false, "", true, "");
 }
 
 $table->width = '98%';

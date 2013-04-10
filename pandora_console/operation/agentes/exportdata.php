@@ -33,7 +33,7 @@ ui_require_javascript_file ('calendar');
 
 
 // Header
-ui_print_page_header (__("Export data"), "images/server_export.png");
+ui_print_page_header (__("Export data"), "images/server_export_mc.png");
 
 $group = get_parameter_post ('group', 0);
 $agentName = get_parameter_post ('agent', 0);

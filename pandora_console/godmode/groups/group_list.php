@@ -113,7 +113,7 @@ if (defined('METACONSOLE')) {
 }
 else {
 	
-	ui_print_page_header (__("Groups defined in Pandora"), "images/god1.png", false, "", true, "");
+	ui_print_page_header (__("Groups defined in Pandora"), "images/group.png", false, "", true, "");
 	$sec = 'gagente';
 
 }

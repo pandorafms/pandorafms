@@ -75,15 +75,28 @@ else {
 $data[0] = ui_print_group_icon ($agent["id_grupo"], true) . '&nbsp;&nbsp;';
 $data[0] .= $agent_name;
 
-$status_img = agents_tree_view_status_img ($agent["critical_count"],
+$status_img = agents_detail_view_status_img ($agent["critical_count"],
 	$agent["warning_count"], $agent["unknown_count"]);
 $data[1] = reporting_tiny_stats ($agent, true);
-$data[2] = str_replace('.png' ,'_ball.png', $status_img);
+$data[2] = $status_img;
+
+$table_agent->data[] = $data;
+$table_agent->rowclass[] = '';
+$table_agent->cellstyle[][0] = '';
+
+
+$data = array();
+
+$data[0] = ui_print_os_icon ($agent["id_os"], true, true, true, false, false, false, array('style' => 'margin:0px 5px 0px 4px;')) . '&nbsp;';
+$data[0] .= '<span title="'.$agent["os_version"].'" style="vertical-align:top; padding-top: 6px; display: inline-block;"><i>'.$agent["os_version"].'</i></span>';
+$table_agent->cellstyle[][0] = 'padding-left:50px;';
+
+$data[1] = graph_agent_status ($id_agente, 160, 120, true);
+$table_agent->rowspan[1][1] = 6;
 
 $table_agent->data[] = $data;
 $table_agent->rowclass[] = '';
 
-$data = array();
 $addresses = agents_get_addresses($id_agente);
 $address = agents_get_address($id_agente);
 foreach ($addresses as $k => $add) {
@@ -91,49 +104,32 @@ foreach ($addresses as $k => $add) {
 		unset($addresses[$k]);
 	}
 }
-$data[0] = html_print_image('images/world.png', true, array('title' => __('IP address'))) . '&nbsp;&nbsp;';
-$data[0] .= empty($address) ? '<em>' . __('N/A') . '</em>' : $address;
-if (!empty($addresses)) {
-	$data[0] .= ui_print_help_tip(__('Other IP addresses').': <br>'.implode('<br>',$addresses), true);
+
+if(!empty($address)) {
+	$data = array();
+	$data[0] = html_print_image('images/world.png', true, array('title' => __('IP address'))) . '&nbsp;&nbsp;';
+	$data[0] .= '<span style="vertical-align:top; padding-top: 6px; display: inline-block;">';
+	$data[0] .= empty($address) ? '<em>' . __('N/A') . '</em>' : $address;
+	$data[0] .= '</div>';
+	$table_agent->cellstyle[][0] = 'padding-left:50px;';
+	$table_agent->data[] = $data;
+	$table_agent->rowclass[] = '';
 }
-$table_agent->cellstyle[1][0] = 'padding-left:50px;';
-
-$data[1] = graph_agent_status ($id_agente, 160, 160, true);
-$table_agent->rowspan[1][1] = 6;
-
-$table_agent->data[] = $data;
-$table_agent->rowclass[] = '';
 
 $data = array();
-$data[0] = html_print_image('images/information.png', true, array('title' => __('Agent Version'))) . '&nbsp;&nbsp;';
+$data[0] = html_print_image('images/version.png', true, array('title' => __('Agent Version'))) . '&nbsp;&nbsp;';
+$data[0] .= '<span style="vertical-align:top; padding-top: 6px; display: inline-block;">';
 $data[0] .= $agent["agent_version"];
-$table_agent->cellstyle[][0] = 'padding-left:50px;';
-$table_agent->data[] = $data;
-$table_agent->rowclass[] = '';
-
-$data = array();
-$data[0] = ui_print_os_icon ($agent["id_os"], true, array('title' => __('Operating system'))) . '&nbsp;&nbsp;';
-$data[0] .= '&nbsp;<i><span title="'.$agent["os_version"].'">'.$agent["os_version"].' </span></i>';
-$table_agent->cellstyle[][0] = 'padding-left:50px;';
-$table_agent->data[] = $data;
-$table_agent->rowclass[] = '';
-
-$data = array();
-$data[0] = html_print_image('images/bricks.png', true, array('title' => __('Parent'))) . '&nbsp;&nbsp;';
-if ($agent["id_parent"] == 0) {
-	$data[0] .= '<em>' . __('N/A') . '</em>'; 
-}
-else {
-	$data[0] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.agents_get_name ($agent["id_parent"]).'</a>';
-}
-
+$data[0] .= '</span>';
 $table_agent->cellstyle[][0] = 'padding-left:50px;';
 $table_agent->data[] = $data;
 $table_agent->rowclass[] = '';
 
 $data = array();
 $data[0] = html_print_image('images/default_list.png', true, array('title' => __('Description'))) . '&nbsp;&nbsp;';
+$data[0] .= '<span style="vertical-align:top; padding-top: 6px; display: inline-block;">';
 $data[0] .= empty($agent["comentarios"]) ? '<em>' . __('N/A') . '</em>' : $agent["comentarios"];
+$data[0] .= '</span>';
 $table_agent->cellstyle[][0] = 'padding-left:50px;';
 $table_agent->data[] = $data;
 $table_agent->rowclass[] = '';
@@ -149,7 +145,7 @@ $table_contact->class = 'databox';
 $table_contact->style[0] = 'width: 30%;';
 $table_contact->style[1] = 'width: 70%;';
 
-$table_contact->head[0] = html_print_image('images/clock.png', true) . ' <span class="med_data">' . __('Agent contact') . '</span>';
+$table_contact->head[0] = ' <span class="med_data">' . __('Agent contact') . '</span>';
 $table_contact->head_colspan[0] = 2;
 
 $data = array();
@@ -187,8 +183,41 @@ $table_data->class = 'databox';
 $table_data->style[0] = 'width: 30%;';
 $table_data->style[1] = 'width: 70%;';
 
-$table_data->head[0] = html_print_image('images/page_white_text.png', true) . ' <span class="med_data">' . __('Agent info') . '</span>';
+$table_data->head[0] = ' <span class="med_data">' . __('Agent info') . '</span>';
 $table_data->head_colspan[0] = 2;
+
+if (!empty($addresses)) {
+	$data = array();
+	$data[0] = '<b>' . __('Other IP addresses') . '</b>';
+	$data[1] = implode('<br>',$addresses);
+	$table_data->data[] = $data;
+}
+
+$data = array();
+$data[0] = '<b>' . __('Parent') . '</b>';
+if ($agent["id_parent"] == 0) {
+	$data[1] = '<em>' . __('N/A') . '</em>'; 
+}
+else {
+	$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.agents_get_name ($agent["id_parent"]).'</a>';
+}
+
+$table_data->data[] = $data;
+
+$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]));
+
+if(enterprise_installed()) {
+	$data = array();
+	$data[0] = '<b>' . __('Remote configuration') . '</b>';
+	if (!$has_remote_conf) {
+		$data[1] = __('Disabled'); 
+	}
+	else {
+		$data[1] = __('Enabled');
+	}
+
+	$table_data->data[] = $data;
+}
 
 if ($config['activate_gis'] || $agent['url_address'] != '') {
 	$data = array();
@@ -253,7 +282,7 @@ foreach ($fields as $field) {
 
 $table = null;
 $table->id = 'agent_details';
-$table->width = '100%';
+$table->width = '99%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
@@ -267,7 +296,7 @@ $data[1] .= empty($table_data->data) ? '' : html_print_table($table_data, true);
 $table->rowspan[0][1] = 2;
 
 $data[2] = '<div style="width:100%; text-align:right">';
-$data[2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
+$data[2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a><br>';
 $data[2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'), "alt" => "")) . '</a>';
 $data[2] .= '</div>';
 
@@ -275,7 +304,7 @@ $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = array();
-$data[0] = '<fieldset class="databox" style="width:98%; position: static;">
+$data[0] = '<fieldset class="databox" style="width:96%; position: static;">
 				<legend style="text-align:left; color: #666;">' . 
 					__('Events (24h)') . 
 				'</legend>' . 
@@ -286,7 +315,7 @@ $data[0] = '<fieldset class="databox" style="width:98%; position: static;">
 
 // ACCESS RATE GRAPH
 if ($config["agentaccess"]) {
-	$data[0] .= '<fieldset class="databox" style="width:98%; position: static;">
+	$data[0] .= '<fieldset class="databox" style="width:96%; position: static;">
 					<legend style="text-align:left; color: #666;">' . 
 						__('Agent access rate (24h)') . 
 					'</legend>' . 

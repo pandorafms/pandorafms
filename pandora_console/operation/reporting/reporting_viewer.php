@@ -63,19 +63,19 @@ $enable_init_date = get_parameter('enable_init_date', 0);
 
 $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time&pure=$pure";
 
-$options['setup'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=new&tab=item_editor&id_report=$id_report&pure=$pure'>"
+$options['setup']['text'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=new&tab=item_editor&id_report=$id_report&pure=$pure'>"
 . html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
 . "</a>";
 
 if(!defined('METACONSOLE')) {
 	if ($config["pure"] == 0) {
-		$options['screen'] = "<a href='$url&pure=1&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>"
-			. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+		$options['screen']['text'] = "<a href='$url&pure=1&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>"
+			. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
 	}
 	else {
-		$options['screen'] = "<a href='$url&pure=0&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>"
-			. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+		$options['screen']['text'] = "<a href='$url&pure=0&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>"
+			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
 	}
 }
@@ -92,7 +92,7 @@ if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
 }
 else
 	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom reporting'). " - ".$report["name"],
-		"images/reporting.png", false, "", false, $options);
+		"images/op_reporting.png", false, "", false, $options);
 
 if ($enable_init_date) {
 	if ($datetime_init > $datetime) {
@@ -100,6 +100,7 @@ if ($enable_init_date) {
 	}
 }
 
+$table->id = 'controls_table';
 $table->width = '99%';
 $table->class = 'databox';
 $table->style = array ();
@@ -122,8 +123,10 @@ else {
 $table->size = array ();
 $table->size[0] = '60px';
 $table->colspan[0][1] = 2;
+$table->rowspan[0][0] = 2;
+$table->style[0] = 'text-align:center;';
 $table->data = array ();
-$table->data[0][0] = html_print_image("images/reporting.png", true, array("width" => "32", "height" => "32")); 
+$table->data[0][0] = html_print_image("images/reporting32.png", true, array("width" => "32", "height" => "32")); 
 if ($report['description'] != '') {
 	$table->data[0][1] = '<div style="float:left">'.$report['description'].'</div>';
 }
@@ -138,7 +141,6 @@ if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
 }
 $table->data[0][1] .= '</div>';
 
-$table->data[1][0] = '';
 $table->data[1][1] = '<div style="float:left;padding-top:3px;">' . __('From') . ': </div>';
 $table->data[1][1] .= html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
 $table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 7, 7, true). ' ';
@@ -164,6 +166,7 @@ echo '</div>';
  */
 
 ui_require_jquery_file ("ui-timepicker-addon");
+
 ?>
 <script language="javascript" type="text/javascript">
 
@@ -198,20 +201,20 @@ $(document).ready (function () {
 	$('[id^=text-date_init]').datepicker ({changeMonth: true, changeYear: true, showAnim: "slideDown"});
 	
 	
-	$("*", "#table1-0").css("display", ""); //Re-show the first row of form.
+	$("*", "#controls_table-0").css("display", ""); //Re-show the first row of form.
 	
 	/* Show/hide begin date reports controls */
 	$("#checkbox-enable_init_date").click(function() {
 		flag = $("#checkbox-enable_init_date").is(':checked');
 		if (flag == true) {
-			$("#table1-1-1").css("display", "");
-			$("#table1-1-2").css("display", "");
+			$("#controls_table-1-1").css("display", "");
+			$("#controls_table-1-2").css("display", "");
 			$("#string_to").show();
 			$("#string_items").hide();
 		}
 		else {
-			$("#table1-1-1").css("display", "none");
-			$("#table1-1-2").css("display", "");
+			$("#controls_table-1-1").css("display", "none");
+			$("#controls_table-1-2").css("display", "");
 			$("#string_to").hide();
 			$("#string_items").show();
 		}

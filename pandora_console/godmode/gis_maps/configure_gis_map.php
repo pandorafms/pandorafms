@@ -17,7 +17,7 @@ global $config;
 
 check_login ();
 
-ui_print_page_header (__('GIS Maps builder'), "images/server_web.png", false, "configure_gis_map", true);
+ui_print_page_header (__('GIS Maps builder'), "images/gm_gis.png", false, "configure_gis_map", true);
 
 
 require_once ('include/functions_gis.php');

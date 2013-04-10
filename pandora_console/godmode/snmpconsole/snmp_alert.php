@@ -28,15 +28,15 @@ if (! check_acl ($config['id_user'], 0, "LW")) {
 
 if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
 	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Create alert'),
-		"images/computer_error.png", false, "snmp_alert", true);
+		"images/op_snmp.png", false, "snmp_alert", false);
 }
 else if (isset ($_GET["update_alert"]) && $_GET["update_alert"] != "-1") {
 	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'),
-		"images/computer_error.png", false, "snmp_alert", true);
+		"images/op_snmp.png", false, "snmp_alert", false);
 }
 else if (isset ($_GET["submit"])) {
 	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'),
-		"images/computer_error.png", false, "snmp_alert", true);
+		"images/op_snmp.png", false, "snmp_alert", false);
 	$id_as = (int) get_parameter_get ("submit", -1);
 	$source_ip = (string) get_parameter_post ("source_ip");
 	$alert_type = (int) get_parameter_post ("alert_type"); //Event, e-mail
@@ -147,7 +147,7 @@ else if (isset ($_GET["submit"])) {
 	}
 }
 else {
-	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Alert overview'), "images/computer_error.png", false, "snmp_alert", true);
+	ui_print_page_header (__('SNMP Console')." &raquo; ".__('Alert overview'), "images/op_snmp.png", false, "snmp_alert", false);
 }
 
 // From variable init
@@ -237,7 +237,7 @@ if (isset ($_GET["delete_alert"])) { // Delete alert
 // Alert form
 if (isset ($_GET["update_alert"])) {
 	//the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
-	echo '<form name="agente" method="post" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
+	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
 	
 	/* SNMP alert filters */
 	
@@ -477,7 +477,7 @@ else {
 	
 	foreach ($result as $row) {
 		$data = array ();
-		$data[0] = '<a href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' . alerts_get_alert_action_name ($row["id_alert"]) . '</a>';
+		$data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' . alerts_get_alert_action_name ($row["id_alert"]) . '</a>';
 		
 		$data[1] = __('SNMP Agent');
 		$data[1] = $row["agent"];
@@ -496,9 +496,9 @@ else {
 			$data[6] = __('Never');
 		}
 		
-		$data[7] = '<a href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' .
+		$data[7] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">' .
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
-			'&nbsp;&nbsp;<a href="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">'  .
+			'&nbsp;&nbsp;<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">'  .
 			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
 		$idx = count ($table->data); //The current index of the table is 1 less than the count of table data so we count before adding to table->data
 		array_push ($table->data, $data);
@@ -513,7 +513,7 @@ else {
 	unset ($table);
 	
 	echo '<div style="text-align:right; width:98%">';
-	echo '<form name="agente" method="post" action="index.php?sec=estado&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';
+	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';
 	html_print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
 	echo "</form></div>";
 	

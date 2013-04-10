@@ -65,7 +65,7 @@ $buttons = array(
 	'list' => array(
 		'active' => false,
 		'text' => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">' . 
-			html_print_image ("images/god6.png", true, array ("title" => __('List tags'))) .'</a>'));
+			html_print_image ("images/list.png", true, array ("title" => __('List tags'))) .'</a>'));
 
 $buttons[$tab]['active'] = true;
 
@@ -78,7 +78,7 @@ if (defined('METACONSOLE')) {
 else {
 
 	// Header
-	ui_print_page_header (__('Tags configuration'), "images/setup.png", false, "tags_config", true, $buttons);
+	ui_print_page_header (__('Tags configuration'), "images/tag.png", false, "tags_config", true, $buttons);
 
 }
 

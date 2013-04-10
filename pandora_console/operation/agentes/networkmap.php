@@ -194,17 +194,17 @@ if ($recenter_networkmap) {
 if ($pure == 1) {
 	$buttons['screen'] = array('active' => false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab='.$activeTab.'">' . 
-			html_print_image("images/normalscreen.png", true, array ('title' => __('Normal screen'))) .'</a>');
+			html_print_image("images/normal_screen.png", true, array ('title' => __('Normal screen'))) .'</a>');
 }
 else {
 	$buttons['screen'] = array('active' => false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;pure=1&amp;tab='.$activeTab.'">' . 
-			html_print_image("images/fullscreen.png", true, array ('title' => __('Full screen'))) .'</a>');
+			html_print_image("images/full_screen.png", true, array ('title' => __('Full screen'))) .'</a>');
 }
 if ($config['enterprise_installed']) {
 	$buttons['policies'] = array('active' => $activeTab == 'policies',
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=policies&amp;pure='.$pure.'">' . 
-			html_print_image("images/policies.png", true, array ("title" => __('Policies view'))) .'</a>');
+			html_print_image("images/policies_mc.png", true, array ("title" => __('Policies view'))) .'</a>');
 }
 
 $buttons['groups'] = array('active' => $activeTab == 'groups',
@@ -213,7 +213,7 @@ $buttons['groups'] = array('active' => $activeTab == 'groups',
 
 $buttons['topology'] = array('active' => $activeTab == 'topology',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
-		html_print_image("images/recon.png", true, array ("title" => __('Topology view'))) .'</a>');
+		html_print_image("images/op_network.png", true, array ("title" => __('Topology view'))) .'</a>');
 
 $buttons['separator'] = array('separator' => '');
 
@@ -229,12 +229,12 @@ $buttons['combolist'] = $combolist;
 
 $buttons['addmap'] = array('active' => $activeTab == false,
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;add_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
-		html_print_image("images/add.png", true, array ("title" => __('Add map'))) .'</a>');
+		html_print_image("images/add_mc.png", true, array ("title" => __('Add map'))) .'</a>');
 
 if (!$nomaps && $id_networkmap != 0) {
 	$buttons['deletemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;delete_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
-			html_print_image("images/cross.png", true, array ("title" => __('Delete map'))) .'</a>');
+			html_print_image("images/delete_mc.png", true, array ("title" => __('Delete map'))) .'</a>');
 	
 	$buttons['savemap'] = array('active' => $activeTab == false,
 		'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;save_networkmap=1
@@ -245,7 +245,7 @@ if (!$nomaps && $id_networkmap != 0) {
 			'&amp;dont_show_subgroups='.$dont_show_subgroups.'&amp;hidepolicymodules='.$hidepolicymodules.'
 			&amp;module_group='.$module_group.'&amp;pure='.$pure.'&amp;hidden_options='.(int)$hidden_options.'
 			&amp;show_snmp_modules='.(int)$show_snmp_modules.'">' . 
-			html_print_image("images/file.png", true, array ("title" => __('Save map'))) .'</a>');
+			html_print_image("images/save_mc.png", true, array ("title" => __('Save map'))) .'</a>');
 }
 
 $title = '';
@@ -265,7 +265,7 @@ if (!empty($name)) {
 	$title .= " &raquo; ". mb_substr($name, 0, 25);
 }
 
-ui_print_page_header (__('Network map')." - ".$title, "images/bricks.png", false, "network_map", false, $buttons);
+ui_print_page_header (__('Network map')." - ".$title, "images/op_network.png", false, "network_map", false, $buttons);
 
 if(tags_has_user_acl_tags()) {
 	ui_print_tags_warning();

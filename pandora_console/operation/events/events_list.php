@@ -420,7 +420,7 @@ $table->rowclass[] = '';
 $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
 $data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
-$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/server_database.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a>&nbsp;';
+$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a>&nbsp;';
 if (empty($id_name)) {
 	$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' . __('No filter loaded') . '</span>]';
 }

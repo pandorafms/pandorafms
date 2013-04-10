@@ -54,7 +54,7 @@ if ($al_action !== false){
 			if (defined('METACONSOLE'))
 				alerts_meta_print_header();
 			else
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "", true);
 		}
 	} // If user tries to edit an action of others groups
 	else {
@@ -70,7 +70,7 @@ if ($al_action !== false){
 			if (defined('METACONSOLE'))
 				alerts_meta_print_header();
 			else
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);		
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "", true);		
 		}
 		else {
 			db_pandora_audit("ACL Violation",
@@ -85,7 +85,7 @@ else {
 	if (defined('METACONSOLE'))
 		alerts_meta_print_header();
 	else
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/gm_alerts.png", false, "", true);
 }
 
 $name = '';
@@ -105,6 +105,7 @@ if ($id) {
 // Hidden div with help hint to fill with javascript
 html_print_div(array('id' => 'help_alert_macros_hint', 'content' => ui_print_help_icon ('alert_macros', true, ui_get_full_url(false, false, false, false)), 'hidden' => true));
 
+$table->id = 'table_macros';
 $table->width = '98%';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
@@ -211,17 +212,17 @@ $(document).ready (function () {
 					
 					// If the row is empty, hide de row
 					if(data["fields_rows"][i] == '') {
-						$('#table1-field'+i).hide();
+						$('#table_macros-field'+i).hide();
 					}
 					else {
-						$('#table1-field'+i).replaceWith(data["fields_rows"][i]);
+						$('#table_macros-field'+i).replaceWith(data["fields_rows"][i]);
 						$("[name=field"+i+"_value]").val(old_value);
 						// Add help hint only in first field
 						if(i == 1) {
-							var td_content = $('#table1-field'+i).find('td').eq(0);
+							var td_content = $('#table_macros-field'+i).find('td').eq(0);
 							td_content.html(td_content.html() + $('#help_alert_macros_hint').html());
 						}
-						$('#table1-field').show();
+						$('#table_macros-field').show();
 					}
 				}
 				

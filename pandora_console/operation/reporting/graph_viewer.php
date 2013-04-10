@@ -106,24 +106,24 @@ if ($view_graph) {
 	$url = "index.php?sec=reporting&sec2=operation/reporting/graph_viewer&id=$id_graph&view_graph=1";
 	
 	if (check_acl ($config['id_user'], 0, "IW")) {
-		$options['setup'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=$id_graph'>"
+		$options['setup']['text'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=$id_graph'>"
 				. html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
 				. "</a>";
 	}
 			
 	if ($config["pure"] == 0) {
-		$options['screen'] = "<a href='$url&pure=1'>"
-			. html_print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+		$options['screen']['text'] = "<a href='$url&pure=1'>"
+			. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
 	}
 	else {
-		$options['screen'] = "<a href='$url&pure=0'>"
-			. html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+		$options['screen']['text'] = "<a href='$url&pure=0'>"
+			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
 	}
 	
 	// Header
-	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom graphs')." - ".$graph['name'], "images/reporting.png", false, "", false, $options);
+	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom graphs')." - ".$graph['name'], "images/chart.png", false, "", false, $options);
 	
 	echo "<table class='databox_frame' cellpadding='0' cellspacing='0' width='98%'>";
 	echo "<tr><td>";

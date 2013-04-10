@@ -14,7 +14,14 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-extensions_add_opemode_tab_agent ('ssh_gateway','SSH Gateway','extensions/ssh_gateway/secure_console.png',"ssh_gateway", "v1r1");
+$id_agente = get_parameter ("id_agente");
+	
+// This extension is usefull only if the agent has associated IP
+$address = agents_get_address($id_agente);
+
+if(!empty($address)) {
+	extensions_add_opemode_tab_agent ('ssh_gateway','SSH Gateway','extensions/ssh_gateway/secure_console.png',"ssh_gateway", "v1r1");
+}
 
 function ssh_gateway () {
 	
@@ -33,7 +40,8 @@ function ssh_gateway () {
 		$USER = "<auto>";
 	
 	$id_agente = get_parameter ("id_agente");
-		$ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
+
+	$ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
 	
 	if ($HOST == "")
 		$HOST = $ip;

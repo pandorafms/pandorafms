@@ -295,8 +295,8 @@ foreach ($extensions as $file => $extension) {
 	}
 	else {
 		$data[] = "";
-		$data[] = "";
 	}
+	
 	$table->data[] = $data;
 }
 html_print_table ($table);

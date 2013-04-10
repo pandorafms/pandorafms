@@ -103,7 +103,7 @@ $start_date = $end_date - $period;
 
 if (! defined ('METACONSOLE')) {
 	//Header
-	ui_print_page_header (__('Netflow live view'), "images/networkmap/so_cisco_new.png", false, "", false, array ());
+	ui_print_page_header (__('Netflow live view'), "images/op_netflow.png", false, "", false, array ());
 	if (! is_executable ($config['netflow_nfdump'])) {
 		ui_print_error_message(
 			sprintf(__('nfdump binary (%s) not found!'),

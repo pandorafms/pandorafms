@@ -74,7 +74,7 @@ if(enterprise_installed() && defined("METACONSOLE")) {
 	$url = 'index.php?sec=advanced&amp;sec2=advanced/users_setup&amp;tab=user_edit';
 }
 else {
-	ui_print_page_header (__('User detail editor'), "images/group.png", false, "", false, "");
+	ui_print_page_header (__('User detail editor'), "images/op_workspace.png", false, "", false, "");
 	$url = 'index.php?sec=workspace&amp;sec2=operation/users/user_edit';
 }
 
@@ -168,136 +168,146 @@ if ($status != -1) {
 		__('Error updating user info'));
 }
 
+$table->id = 'user_form';
+$table->width = '98%';
+$table->cellspacing = 4;
+$table->cellpadding = 4;
+$table->class = '';
 
-echo '<form name="user_mod" method="post" action="'.$url.'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
-
-echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
-
-echo '<tr><td class="datos">'.__('User ID').'</td>';
-echo '<td class="datos">';
-echo "<b>$id</b>";
-echo "</td>";
-
+$data = array();
+$data[0] = '<b>' . __('User ID') . '</b>';
+$data[1] = '<b>' . __('Full (display) name') . '</b>';
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
-echo "<td rowspan=4>";
 if (is_user_admin ($id)) {
-	echo html_print_image('images/people_1.png', true); 
+	$data[2] = html_print_image('images/people_1.png', true); 
 } 
 else {
-	echo html_print_image('images/people_2.png', true); 
+	$data[2] = html_print_image('images/people_2.png', true); 
+}
+if ($view_mode === false) {
+	$table->rowspan[0][2] = 6;
+}
+else {
+	$table->rowspan[0][2] = 4;
 }
 
-echo '</td></tr><tr><td class="datos2">'.__('Full (display) name').'</td><td class="datos2">';
-html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 35, 100, $view_mode, '', 'class="input"');
+$table->cellstyle[0][2] = 'text-align:center;';
+$table->rowclass[] = '';
+$table->rowstyle[] = 'font-weight: bold;';
+$table->data[] = $data;
 
-// Not used anymore. In 3.0 database schema continues storing it, but will be removed in the future, or we will 'reuse'
-// the database fields for anything more useful.
+$data = array();
+$data[0] = $id;
+$data[1] = html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 40, 100, $view_mode, '', 'class="input"', true);
+$table->rowclass[] = '';
+$table->rowstyle[] = '';
+$table->data[] = $data;
 
-/*
-echo '</td></tr><tr><td class="datos">'.__('First name').'</td><td class="datos">';
-html_print_input_text_extended ("firstname", $user_info["firstname"], '', '', 25, 100, $view_mode, '', 'class="input"');
+$data = array();
+$data[0] = __('E-mail');
+$data[1] = __('Phone number');
+$table->rowclass[] = '';
+$table->rowstyle[] = 'font-weight: bold;';
+$table->data[] = $data;
 
-echo '</td></tr><tr><td class="datos2">'.__('Last name').'</td><td class="datos2">';
-html_print_input_text_extended ("lastname", $user_info["lastname"], '', '', 25, 100, $view_mode, '', 'class="input"');
+$data = array();
+$data[0] = html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"', true);
+$data[1] = html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true);
+$table->rowclass[] = '';
+$table->rowstyle[] = '';
+$table->data[] = $data;
 
-*/
 if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
-		echo '</td></tr><tr><td class="datos">'.__('New Password').'</td><td class="datos">';
-		html_print_input_text_extended ("password_new", "", '', '', '15', '25', $view_mode, '', 'class="input"', false, true);
-		echo '</td></tr><tr><td class="datos">'.__('Password confirmation').'</td><td class="datos">';
-		html_print_input_text_extended ("password_conf", "", '', '', '15', '25', $view_mode, '', 'class="input"', false, true);
+		$data = array();
+		$data[0] = __('New Password');
+		$data[1] = __('Password confirmation');
+		$table->rowclass[] = '';
+		$table->rowstyle[] = 'font-weight: bold;';
+		$table->data[] = $data;
+		
+		$data = array();
+		$data[0] = html_print_input_text_extended ("password_new", "", '', '', '40', '25', $view_mode, '', 'class="input"', true, true);
+		$data[1] = html_print_input_text_extended ("password_conf", "", '', '', '40', '25', $view_mode, '', 'class="input"', true, true);
+		$table->rowclass[] = '';
+		$table->rowstyle[] = '';
+		$table->data[] = $data;
 	}
 	else {
-		echo '<i>'.__('You can not change your password from Pandora FMS under the current authentication scheme').'</i>';
+		$data = array();
+		$data[0] = '<i>'.__('You can not change your password from Pandora FMS under the current authentication scheme').'</i>';
+		$table->rowclass[] = '';
+		$table->rowstyle[] = '';
+		$table->colspan[count($table-data)][0] = 2;
+		$table->data[] = $data;
 	}
 }
 
-echo '</td></tr><tr><td class="datos2">'.__('E-mail').'</td><td class="datos2">';
-html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"');
+$data = array();
+$data[0] = __('Block size for pagination') . ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true);
+$data[1] = __('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
+$data[2] = __('Language');
+$table->rowclass[] = '';
+$table->rowstyle[] = 'font-weight: bold;';
+$table->data[] = $data;
 
-echo '</td></tr><tr><td class="datos">'.__('Phone number').'</td><td class="datos">';
-html_print_input_text_extended ("phone", $user_info["phone"], '', '', '10', '30', $view_mode, '', 'class="input"');
-
-echo '</td></tr><tr><td class="datos">'.__('Language').'</td><td class="datos2">';
-echo html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
-	'language', $user_info["language"], '', __('Default'), 'default', true);
-
-echo '</td></tr><tr><td class="datos2">'.__('Comments').'</td><td class="datos">';
-html_print_textarea ("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''));
-html_print_input_hidden('quick_language_change', 1);
-
-$own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-	$display_all_group = true;
-else
-	$display_all_group = false;
-
-$usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
-$id_usr = $config['id_user'];
-
-// User only can change skins if has more than one group 
-if (count($usr_groups) > 1) {
-	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
-	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-		echo '</td></tr><tr><td class="datos">' . __('Skin') . '</td><td class="datos2">';
-		echo skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
-	}
-}
-
-echo '</td></tr><tr><td class="datos">'.__('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true).'</td><td class="datos2">';
-$values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
-echo html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
-echo '</td></tr><tr><td class="datos">'.__('Block size for pagination'). ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true) . '</td><td class="datos2">';
+$data = array();
 if ($user_info["block_size"] == 0) {
 	$block_size = $config["global_block_size"];
 }
 else {
 	$block_size = $user_info["block_size"];
 }
+$data[0] = html_print_input_text ('block_size', $block_size, '', 5, 5, true);
+$data[0] .= html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true);
+$data[0] .= __('Default').' ('.$config["global_block_size"].')';
+$values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
+$data[1] = html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
+$data[2] = html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
+	'language', $user_info["language"], '', __('Default'), 'default', true);
+$table->rowclass[] = '';
+$table->rowstyle[] = '';
+$table->data[] = $data;
 
-echo html_print_input_text ('block_size', $block_size, '', 5, 5, true);
-echo html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true);
-echo __('Default').' ('.$config["global_block_size"].')';
+$data = array();
+$data[0] = __('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true);
+$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
+$table->rowclass[] = '';
+$table->rowstyle[] = 'font-weight: bold;';
+$table->data[] = $data;
 
-echo '</td></tr><tr><td class="datos">'.__('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true) . '</td><td class="datos2">';
-echo html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
-
-echo '</td></tr><tr><td class="datos">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true) .'</td><td class="datos2">';
+$data = array();
+$data[0] = html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
 $values = array ('Default' =>__('Default'), 'Dashboard'=>__('Dashboard'), 'Visual console'=>__('Visual console'), 'Event list'=>__('Event list'),
 	'Group view'=>__('Group view'), 'Tactical view'=>__('Tactical view'), 'Alert detail' => __('Alert detail'), 'Other'=>__('Other'));
-echo html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
-echo "&nbsp;&nbsp;";
+$data[1] = html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
+$data[2] = '';
+$table->rowclass[] = '';
+$table->rowstyle[] = '';
+$table->data[] = $data;
 
-$dashboards = get_user_dashboards ($config['id_user']);
-$dashboards_aux = array();
-if ($dashboards === false) {
-	$dashboards = array('None'=>'None');
-}
-else {
-	foreach ($dashboards as $key=>$dashboard) {
-		$dashboards_aux[$dashboard['name']] = $dashboard['name'];
-	}
-}
-echo html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
 
-$layouts = visual_map_get_user_layouts ($config['id_user'], true);
-$layouts_aux = array();
-if ($layouts === false) {
-	$layouts_aux = array('None'=>'None');
-}
-else {
-	foreach ($layouts as $layout) {
-		$layouts_aux[$layout] = $layout;
-	}
-}
-echo html_print_select ($layouts_aux, 'visual_console', $user_info["data_section"], '', '', '', true);
+$data = array();
+$data[0] = __('Comments');
+$table->colspan[count($table->data)][0] = 3;
+$table->rowclass[] = '';
+$table->rowstyle[] = 'font-weight: bold;';
+$table->data[] = $data;
 
-echo html_print_input_text ('data_section', $user_info["data_section"], '', 60, 255, true, false);
+$data = array();
+$data[0] = html_print_textarea("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''), true);
+$data[0] .= html_print_input_hidden('quick_language_change', 1, true);
+$table->colspan[count($table->data)][0] = 3;
+$table->rowclass[] = '';
+$table->rowstyle[] = '';
+$table->data[] = $data;
 
-echo '</td></tr></table>';
+echo '<form name="user_mod" method="post" action="'.$url.'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
 
-echo '<div style="width:90%; text-align:right;">';
+html_print_table($table);
+
+
+echo '<div style="width:' . $table->width . '; text-align:right;">';
 if (!$config["user_can_update_info"]) {
 	echo '<i>'.__('You can not change your user info from Pandora FMS under the current authentication scheme').'</i>';
 }
@@ -305,6 +315,8 @@ else {
 	html_print_submit_button (__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
 }
 echo '</div></form>';
+
+unset($table);
 
 echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
 
@@ -356,7 +368,7 @@ $(document).ready (function () {
 	});
 	
 	function check_default_block_size() {
-		if($("#checkbox-default_block_size").attr('checked')) {
+		if($("#checkbox-default_block_size").is(':checked')) {
 			$("#text-block_size").attr('disabled', true);
 		}
 		else {

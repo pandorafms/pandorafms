@@ -43,11 +43,9 @@ else {
 }
 
 if (defined('METACONSOLE')) {
-
 	$sec = 'advanced';
 }
 else {
-
 	$sec = 'galertas';
 }
 
@@ -64,14 +62,10 @@ if ($a_template !== false) {
 		else {
 			// Header
 			if (defined('METACONSOLE')) {
-				
 				alerts_meta_print_header();
-
 			}
 			else {
-				
 				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "conf_alert_template", true);
-
 			}
 		}
 		 
@@ -87,14 +81,10 @@ if ($a_template !== false) {
 		if ($is_in_group) {
 			// Header
 			if (defined('METACONSOLE')) {
-				
 				alerts_meta_print_header();
-
 			}
 			else {
-				
-				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "conf_alert_template", true);
-
+				ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "images/gm_alerts.png", false, "", true);
 			}
 		}
 		else {
@@ -109,14 +99,10 @@ if ($a_template !== false) {
 else {
 	// Header
 	if (defined('METACONSOLE')) {
-		
 		alerts_meta_print_header();
-		
 	}
 	else {
-		
-		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "conf_alert_template", true);
-		
+		ui_print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "images/gm_alerts.png", false, "", true);
 	}
 }
 

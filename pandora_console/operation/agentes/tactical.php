@@ -56,7 +56,7 @@ if(tags_has_user_acl_tags()) {
 }
 
 echo '<table border=0 style="width:100%;"><tr>';
-echo '<td style="vertical-align: top; min-width: 265px; width:25%; padding-right: 20px;" id="leftcolumn">';
+echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right: 10px;" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
@@ -69,7 +69,7 @@ $table->head = array ();
 $table->data = array ();
 $table->style = array ();
 
-$table->data[0][0] = reporting_get_stats_indicators($data, 180, 20);
+$table->data[0][0] = reporting_get_stats_indicators($data, 120, 20);
 $table->rowclass[] = '';
 
 
@@ -89,7 +89,7 @@ $table->data = array ();
 $table->style = array ();
 
 $table->data[0][0] = reporting_get_stats_alerts($data);
-$table->data[0][0] .= reporting_get_stats_modules_status($data, 200, 100);
+$table->data[0][0] .= reporting_get_stats_modules_status($data, 180, 100);
 $table->data[0][0] .= reporting_get_stats_agents_monitors($data);
 $table->rowclass[] = '';
 

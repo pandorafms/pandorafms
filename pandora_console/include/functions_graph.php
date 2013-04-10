@@ -2068,7 +2068,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 			break;
 	}
 	
-	$result = db_get_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql, false, false);
 	if ($result === false) {
 		$result = array();
 	}
@@ -2120,7 +2120,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size'], 1);
+		$config['fontpath'], $config['font_size'], 1, 'bottom');
 }
 
 /**
@@ -2144,7 +2144,7 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200) {
 	
 	$sql = "SELECT criticity, COUNT(id_evento) events FROM tevento GROUP BY criticity ORDER BY events DESC";
 	
-	$criticities = db_get_all_rows_sql ($sql);
+	$criticities = db_get_all_rows_sql ($sql, false, false);
 	
 	if(empty($criticities)) {
 		$criticities = array();
@@ -2190,7 +2190,7 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200) {
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size'], 1, false, $colors);
+		$config['fontpath'], $config['font_size'], 1, 'bottom', $colors);
 }
 
 /**

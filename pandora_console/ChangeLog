@@ -1,3 +1,17 @@
+2013-04-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	include/functions_graph.php
+	include/functions_events.php
+	include/functions_reporting.php
+	operation/agentes/tactical.php
+	images/header_help.png
+	general/header.php: Adapt the screen to
+	1024 resolutions reducing header and tactical
+	view
+
+	* images/tree.png: Add tree new icon
+
 2013-04-10 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/operation/groups.php: changed the call to get groups to

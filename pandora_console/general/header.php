@@ -38,21 +38,21 @@ config_check();
 					echo html_print_image('images/pandora_header_logo.png', true, array("alt" => 'Pandora FMS Opensource', "border" => '0'));
 				}
 				else {
-					echo html_print_image('images/pandora_header_logo_enterprise.png', true, array("alt" => 'Pandora FMS Enterprise', "border" => '0'));
+					echo html_print_image('images/pandora_header_logo_enterprise.png', true, array("alt" => 'Pandora FMS Enterprise', "border" => '0', 'width' => '250px'));
 				}
 				?>
 			</a>
 		</td>
-		<td style="min-width:250px;">
+		<td style="min-width:120px;">
 			<?php
 				$table->class = "none";
 				$table->cellpadding = 0;
 				$table->cellspacing = 0;
 				$table->head = array ();
 				$table->data = array ();
-				$table->style[0] = $table->style[2] = $table->style[4] = 'width: 27px; text-align:center; height: 27px; padding-left: 12px; padding-right: 2px;';
+				$table->style[0] = $table->style[2] = $table->style[4] = 'width: 22px; text-align:center; height: 22px; padding-left: 12px; padding-right: 2px;';
 				$table->rowclass[0] = '';
-				$table->styleTable = 'margin: auto; margin-top: 20px;';
+				$table->styleTable = 'margin: auto; margin-top: 15px;';
 				
 				// Servers check
 				$servers = array();
@@ -76,7 +76,7 @@ config_check();
 				}
 				unset ($servers); // Since this is the header, we don't like to trickle down variables.
 				
-				$servers_link_open = '<a class="white_bold" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
+				$servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
 				$servers_link_close = '</a>';
 				
 				$table->data[0][0] = $servers_link_open . $servers_check_img . $servers_link_close;
@@ -122,15 +122,15 @@ config_check();
 					}
 				}
 			
-				$autorefresh_link_open_img = '<a class="white_bold autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
-				$autorefresh_link_open_txt = '<a class="white_bold autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
+				$autorefresh_link_open_img = '<a class="white autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
+				$autorefresh_link_open_txt = '<a class="white autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
 				$autorefresh_link_close = '</a>';
 				
 				$table->data[0][2] = $autorefresh_link_open_img . $autorefresh_img . $autorefresh_link_close;
 				$table->data[0][3] = $autorefresh_link_open_txt . $autorefresh_txt . $autorefresh_link_close . $autorefresh_additional;
 				
 				// Maintenance
-				$maintenance_txt = __('Maintenance');
+				//$maintenance_txt = __('Maintenance');
 				
 				if ($config["alert_cnt"] > 0) {
 					echo '<div id="alert_messages" style="display: none"></div>';
@@ -138,7 +138,7 @@ config_check();
 					
 					$maintenance_link = 'javascript:';
 					$maintenance_title = __("System alerts detected - Please fix as soon as possible");
-					$maintenance_class = $maintenance_id = 'show_systemalert_dialog white_bold';
+					$maintenance_class = $maintenance_id = 'show_systemalert_dialog white';
 					
 					$maintenance_link_open_txt =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '" id="show_systemalert_dialog">'; 
 					$maintenance_link_open_img =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '">'; 
@@ -151,7 +151,7 @@ config_check();
 				}
 			
 				$table->data[0][4] = $maintenance_img;
-				$table->data[0][5] = $maintenance_txt;
+				//$table->data[0][5] = $maintenance_txt;
 
 				html_print_table($table);
 				
@@ -165,50 +165,47 @@ config_check();
 				$table->cellspacing = 0;
 				$table->head = array ();
 				$table->data = array ();
-				$table->style[0] = $table->style[2] = 'width: 27px; text-align:center; height: 27px; padding-left: 12px; padding-right: 2px;';
+				$table->style[0] = $table->style[1] = 'width: 22px; text-align:center; height: 22px; padding-right: 2px;';
 				$table->rowclass[0] = '';
-				$table->styleTable = 'margin-top: 20px;';
+				$table->styleTable = 'margin-top: 15px;';
+				
+				// Logout
+				$table->data[0][0] = '<a class="white" href="' . ui_get_full_url('index.php?bye=bye') . '">';
+				$table->data[0][0] .= html_print_image("images/header_logout.png", true, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
+				$table->data[0][0] .= '</a>';
 				
 				// User
 				if (is_user_admin ($config["id_user"]) == 1)
-					$table->data[0][0] = html_print_image("images/header_user_admin.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
+					$table->data[0][1] = html_print_image("images/header_user_admin.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
 				else
-					$table->data[0][0] = html_print_image("images/header_user.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
+					$table->data[0][1] = html_print_image("images/header_user.png" , true, array("title" => __('Edit my user'), "class" => 'bot', "alt" => 'user'));
 				
-				$table->data[0][0] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit">' . $table->data[0][0] . '</a>';
+				$table->data[0][1] = '<a href="index.php?sec=workspace&sec2=operation/users/user_edit">' . $table->data[0][1] . '</a>';
 				
-				$table->data[0][1] = '<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white"> [<b>' . $config["id_user"] . '</b>]</a>';
-
-				// Logout
-				$table->data[0][2] = '<a class="white_bold" href="' . ui_get_full_url('index.php?bye=bye') . '">';
-				$table->data[0][2] .= html_print_image("images/header_logout.png", true, array("alt" => __('Logout'), "class" => 'bot', "title" => __('Logout')));
-				$table->data[0][2] .= '</a>';
-				
-				$table->data[0][3] = '<a class="white_bold" href="' . ui_get_full_url('index.php?bye=bye') . '">';
-				$table->data[0][3] .= __('Logout');
-				$table->data[0][3] .= '</a>';
+				$table->data[0][2] = '<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white"> [<b>' . $config["id_user"] . '</b>]</a>';
 
 				html_print_table($table);
 				
 				unset($table);
 			?>
 		</td>
-		<td style="min-width:240px;">
+		<td style="min-width:200px;">
 			<?php
 				$table->class = "none";
 				$table->cellpadding = 0;
 				$table->cellspacing = 0;
 				$table->head = array ();
 				$table->data = array ();
-				$table->style[0] = $table->style[1] = $table->style[2] = 'text-align:right; padding-right: 2px; width: 1px;';
-				$table->style[3] = 'width: 180px;';
-				$table->style[4] = 'padding-left: 10px; width: 20px;';
+				$table->style[0] = $table->style[1] = 'width: 22px; text-align:center; height: 22px; padding-right: 2px;';
+				$table->style[3] = $table->style[4] = $table->style[5] = 'text-align:right; padding-right: 2px; width: 1px;';
+				$table->style[6] = 'width: 120px;';
+				$table->style[7] = 'padding-left: 10px; padding-left: 10px; width: 20px;';
 				$table->width = "100%";
-				$table->styleTable = 'margin: auto; margin-top: 20px; padding-right: 5px;';
+				$table->styleTable = 'margin: auto; margin-top: 15px; padding-right: 5px;';
 				$table->rowclass[0] = '';
 
 				// Main help icon
-				$table->data[0][0] = ui_print_help_icon ("main_help", true, '', 'images/header_help.png');
+				$table->data[0][3] = ui_print_help_icon ("main_help", true, '', 'images/header_help.png');
 				
 				// Messages
 				$msg_cnt = messages_get_count ($config["id_user"]);
@@ -216,20 +213,20 @@ config_check();
 					echo '<div id="dialog_messages" style="display: none"></div>';
 					ui_require_css_file ('dialog');
 					
-					$table->data[0][1] = '<a href="ajax.php?page=operation/messages/message_list" title="' . __("Message overview") . '" id="show_messages_dialog">';
-					$table->data[0][1] .= html_print_image ("images/header_email.png", true, array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot", 'style' => 'width:24px;'));
-					$table->data[0][1] .= '</a>';
+					$table->data[0][4] = '<a href="ajax.php?page=operation/messages/message_list" title="' . __("Message overview") . '" id="show_messages_dialog">';
+					$table->data[0][4] .= html_print_image ("images/header_email.png", true, array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot", 'style' => 'width:24px;'));
+					$table->data[0][4] .= '</a>';
 				}
 				else {
-					$table->data[0][1] = '';
+					$table->data[0][4] = '';
 				}
 				
 				// Chat messages
-				$table->data[0][2] = "<span id='icon_new_messages_chat' style='display: none;'>";
-				$table->data[0][2] .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
-				$table->data[0][2] .= html_print_image('images/header_chat.png', true, array('style' => 'width:22px;', "title" => __('New chat message')));
-				$table->data[0][2] .= "</a>";
-				$table->data[0][2] .= "</span>";
+				$table->data[0][5] = "<span id='icon_new_messages_chat' style='display: none;'>";
+				$table->data[0][5] .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
+				$table->data[0][5] .= html_print_image('images/header_chat.png', true, array('style' => 'width:22px;', "title" => __('New chat message')));
+				$table->data[0][5] .= "</a>";
+				$table->data[0][5] .= "</span>";
 			
 				// Search bar
 				$search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
@@ -250,9 +247,9 @@ config_check();
 				$search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
 				$search_bar .= '</form>';
 				
-				$table->data[0][3] = $search_bar;
+				$table->data[0][6] = $search_bar;
 				
-				$table->data[0][4] = ui_print_help_tip (__("Blank characters are used as AND conditions"), true);
+				$table->data[0][7] = ui_print_help_tip (__("Blank characters are used as AND conditions"), true);
 				
 				html_print_table($table);
 				

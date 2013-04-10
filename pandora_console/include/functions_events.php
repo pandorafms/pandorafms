@@ -907,33 +907,32 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$out .= $events_table;
 		
 		if($agent_id != 0) {
-			$out .= '</td><td style="width: 250px; vertical-align: top;">';
+			$out .= '</td><td style="width: 200px; vertical-align: top;">';
 			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
 			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
 					<legend>' . 
 						__('Events generated -by module-') . 
 					'</legend>' . 
-					graph_event_module (250, 100, $event['id_agente']) . '</fieldset>';
+					graph_event_module (180, 100, $event['id_agente']) . '</fieldset>';
 			$out .= '</td></tr></table>';
 		}
 		else {
-			$out .= '</td><td style="width: 250px; vertical-align: top;">';
+			$out .= '</td><td style="width: 200px; vertical-align: top;">';
 			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
 			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
 					<legend>' . 
 						__('Event graph') . 
 					'</legend>' . 
-					grafico_eventos_total("", 250, 100) . '</fieldset>';
+					grafico_eventos_total("", 180, 60) . '</fieldset>';
 			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
 					<legend>' . 
 						__('Event graph by agent') . 
 					'</legend>' . 
-					grafico_eventos_grupo(250, 100) . '</fieldset>';
+					grafico_eventos_grupo(180, 60) . '</fieldset>';
 			$out .= '</td></tr></table>';
 		}
 		
 		$out .= '</td></tr></table>';
-
 		
 		unset ($table);
 		

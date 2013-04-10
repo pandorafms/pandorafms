@@ -1483,6 +1483,10 @@ function deleteDB(idElement) {
 }
 
 function activeToolboxButton(id, active) {
+	if ($("input." + id + "[name=button_toolbox2]").length == 0) {
+		return;
+	}
+	
 	if (active) {
 		$("input." + id + "[name=button_toolbox2]").removeAttr('disabled');
 	}
@@ -1774,7 +1778,7 @@ function click_button_toolbox(id) {
 			break;
 		case 'auto_save':
 			if (autosave) {
-				activeToolboxButton('save', true);
+				activeToolboxButton('save_visualmap', true);
 				autosave = false;
 				
 				//Disable all toolbox buttons.
@@ -1788,6 +1792,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('simple_value', false);
 				activeToolboxButton('label', false);
 				activeToolboxButton('icon', false);
+				activeToolboxButton('service', false);
 				
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
@@ -1817,7 +1822,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('icon', true);
 			}
 			break;
-		case 'save':
+		case 'save_visualmap':
 			var status = true;
 			activeToolboxButton('save', false);
 			jQuery.each(list_actions_pending_save, function(key, action_pending_save) {

@@ -224,7 +224,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend, $long_in
 			$nbuttons++;
 		}
 		
-		$menu_width = 18 * $nbuttons + 8;
+		$menu_width = 25 * $nbuttons + 8;
 		$return .= "<div id='menu_$graph_id' style='display:none; text-align:center; width:".$menu_width."px; position:relative; border: solid 1px #666; border-bottom: 0px; padding: 4px 4px 4px 4px'>
 			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
 		if ($threshold) {

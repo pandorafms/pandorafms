@@ -1,3 +1,35 @@
+2013-04-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	include/functions_ui.php
+	include/functions_events.php
+	include/graphs/functions_flot.php
+	operation/events/events_list.php
+	operation/agentes/tactical.php
+	images/cross_undo.png
+	images/header_user.png
+	images/pandora_header_logo_enterprise.png
+	images/note.png
+	images/header_chat.png
+	images/enterprise_icon.png
+	images/header_warning.png
+	images/header_ready.png
+	images/header_blackout.png
+	images/header_refresh.png
+	images/header_logout.png
+	images/eye.png
+	images/header_email.png
+	images/pandora_header_logo.png
+	images/header_down.png
+	images/header_user_admin.png
+	images/header_help.png
+	images/bin.png
+	general/header.php: Change the header to tiny 
+	version and clean/change more icons
+
+	* operation/agentes/datos_agente.php: Restore
+	accidentaly deleted file
+
 2013-04-10 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js: fixed the

@@ -1698,15 +1698,10 @@ div#head {
 	height: auto;
 	background-color: #000;
 	background-image: url(../../images/header_blackout.png);
-	height: 68px;
+	height: 47px;
 	min-width: 882px;
 	color: white;
 }
-
-div#head .bot{
-	width: 20px;
-}
-
 
 div#foot {
 	width: auto;
@@ -2068,9 +2063,9 @@ li.links a:hover  {
 input#text-id_parent.ac_input, input, textarea, select {
 	background-color: #ffffff !important;
 	border: 1px solid #cbcbcb;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
 }
 
 span#plugin_description {

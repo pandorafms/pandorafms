@@ -949,7 +949,7 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 		$home_url = "../../" . $home_url;
 	}
 	
-	$output = '&nbsp;'.html_print_image ($image, true, 
+	$output = html_print_image ($image, true, 
 		array ("class" => "img_help",
 			"title" => __('Help'),
 			"onclick" => "open_help ('".$help_id."','".$home_url."')"));
@@ -1341,7 +1341,7 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	if ($config['flash_charts']) {
 		//Include the javascript for the js charts library
-		include_once('include/graphs/functions_flot.php');
+		include_once($config["homedir"] . '/include/graphs/functions_flot.php');
 		$output .= include_javascript_dependencies_flot_graph(true);
 	}
 	

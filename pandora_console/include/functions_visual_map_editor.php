@@ -132,8 +132,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				$params['disabled_javascript_on_blur_function'] = true;
 				
 				$params['print_input_server'] = true;
+				$params['print_input_id_server'] = true;
 				$params['input_server_id'] = 'id_server_name';
+				$params['input_id_server_name'] = 'id_server_metaconsole';
 				$params['input_server_value'] = '';
+				$params['use_input_id_server'] = true;
 				$params['metaconsole_enabled'] = true;
 				$params['print_hidden_input_idagent'] = true;
 			}

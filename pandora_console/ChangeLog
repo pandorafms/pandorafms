@@ -1,3 +1,8 @@
+2013-04-10 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/groups.php: changed the call to get groups to
+	new function.
+
 2013-04-10  Sergio Martin <sergio.martin@artica.es>
 
 	* D       operation/agentes/estado_ultimopaquete.php

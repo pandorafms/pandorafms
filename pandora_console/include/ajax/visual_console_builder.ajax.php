@@ -454,9 +454,15 @@ switch ($action) {
 				}
 				
 				
-				$elementFields['agent_name'] =
-					io_safe_output(agents_get_name($elementFields['id_agent']))
-					. " (" . io_safe_output($connection['server_name']) . ")";
+				if (!empty($connection['server_name'])) {
+					$elementFields['agent_name'] =
+						io_safe_output(agents_get_name($elementFields['id_agent']))
+						. " (" . io_safe_output($connection['server_name']) . ")";
+				}
+				else {
+					$elementFields['agent_name'] =
+						io_safe_output(agents_get_name($elementFields['id_agent']));
+				}
 				
 				//Make the html of select box of modules about id_agent.
 				if ($elementFields['id_agent'] != 0) {

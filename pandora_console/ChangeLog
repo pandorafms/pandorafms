@@ -1,3 +1,8 @@
+2013-04-10 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/ajax/visual_console_builder.ajax.php: fixed the name of
+	agent in a Console without metaconsole.
+
 2013-04-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

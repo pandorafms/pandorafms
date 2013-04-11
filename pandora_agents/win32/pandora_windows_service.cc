@@ -486,7 +486,10 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 	    CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
 		return -1;
 	}
-	
+
+	/* close thread handle, because it won't be used */
+	CloseHandle (pi.hThread);
+
 	/* Timeout */
 	tentacle_timeout = atoi (conf->getValue ("tentacle_timeout").c_str ());
 	if (tentacle_timeout <= 0) {
@@ -497,7 +500,7 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 	}
 
     if (WaitForSingleObject(pi.hProcess, tentacle_timeout) == WAIT_TIMEOUT) {
-		TerminateProcess(pi.hThread, STILL_ACTIVE);
+		TerminateProcess(pi.hProcess, STILL_ACTIVE);
 		CloseHandle (pi.hProcess);
 		return -1;
 	}
@@ -909,7 +912,7 @@ Pandora_Windows_Service::checkCollections () {
 	
 	int flag, i;
 	char *coll_md5 = NULL, *server_coll_md5 = NULL;
-	string collection_name, collections_dir, collection_md5, tmp;
+	string collection_name, collections_dir, collection_path, collection_md5, tmp;
 	string collection_zip, install_dir, temp_dir, dest_dir, path, env;
 
 	/*Get collections directory*/
@@ -930,13 +933,31 @@ Pandora_Windows_Service::checkCollections () {
 		collection_name = conf->getCurrentCollectionName();	
 
 		if(! conf->getCurrentCollectionVerify() ) {	
-			/*Add the collection directory to the path*/
-			tmp = collections_dir + collection_name;
-			path = getenv ("PATH");
-			env = "PATH=" + path + ";" + tmp;
-			putenv (env.c_str ());
-			conf->setCurrentCollectionVerify();
+			int found;
 
+			/*Add the collection directory to the path (if not exists in %path%)*/
+			collection_path = collections_dir + collection_name;
+			path = getenv ("PATH");
+
+			/* check if the path is just included in the middle of %path% */
+			tmp = collection_path + ";";	/* Added a separator */
+			if(path.find(tmp) == string::npos) {
+
+				/* check if the path is the last entry of %path% */
+				if( ((found = path.rfind(collection_path)) != string::npos)
+				   && ((found + collection_path.length()) == path.length()) )
+				{
+					/* included already (at the tail of %path%) */
+					;
+				}
+				else {
+					/* it's new ! */
+					env = "PATH=" + path + ";" + collection_path;
+					putenv (env.c_str ());
+				}
+			}
+
+			conf->setCurrentCollectionVerify();
 		}
 		
 		collection_zip = collection_name+".zip";

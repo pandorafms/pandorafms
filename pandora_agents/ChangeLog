@@ -1,3 +1,10 @@
+2013-04-11  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* win32/pandora_windows_service.cc: Fixed possible resource leaks;
+	  - putenv() could run out the environment variable area, if
+            using both file_collection and broker_agent.
+	  - possible handle leak at launching tentacle_client.
+
 2013-04-01  Sancho Lerena <slerena@artica.es>
 
         * unix/plugins/inventory: Improved software inventory in RPM format.

@@ -117,7 +117,7 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 	
 	foreach ($user_groups_tree as $group) {
 		$groupName = ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false);
-
+		
 		$fields[$group[$keys_field]] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
 	}
 	

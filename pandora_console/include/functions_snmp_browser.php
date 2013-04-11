@@ -207,7 +207,7 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.') {
 		$sub_oid = "";
 	}
 	
-	return$oid_tree;
+	return $oid_tree;
 }
 
 /**

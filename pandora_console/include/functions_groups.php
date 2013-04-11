@@ -458,6 +458,21 @@ function groups_get_id_recursive($id_parent, $all = false) {
 	return $return;
 }
 
+function groups_flatten_tree_groups($tree, $deep) {
+	foreach ($tree as $key => $group) {
+		$return[$key] = $group;
+		unset($return[$key]['branch']);
+		$return[$key]['deep'] = $deep;
+		
+		if (!empty($group['branch'])) {
+			$return = $return +
+				groups_flatten_tree_groups($group['branch'], $deep + 1);
+		}
+	}
+	
+	return $return;
+}
+
 /**
  * Make with a list of groups a treefied list of groups.
  *
@@ -467,29 +482,28 @@ function groups_get_id_recursive($id_parent, $all = false) {
  *
  * @return array The treefield list of groups.
  */
-function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
+function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
 	$return = array();
 	
+	$pointer_to_parent = array();
+	$tree = array();
 	foreach ($groups as $key => $group) {
-		if (($key === 0 || $key === __('All')) && ($parent === 0 || $parent === __('All'))) {
-			//When the groups is the all group
-			$group['deep'] = $deep;
-			$group['hash_branch'] = true;
-			$deep ++;
-			$return = $return + array($key => $group);
+		if (!isset($pointer_to_parent[$group['parent']])) {
+			$group['branch'] = array();
+			$group['hash_branch'] = false;
+			$tree[$key] = $group;
+			$pointer_to_parent[$key] = &$tree[$key];
 		}
-		else if ($group['parent'] == $parent) {
-			$group['deep'] = $deep;
-			$branch = groups_get_groups_tree_recursive($groups, $key, $deep + 1);
-			if (empty($branch)) {
-				$group['hash_branch'] = false;
-			}
-			else {
-				$group['hash_branch'] = true;
-			}
-			$return = $return + array($key => $group) + $branch;
+		else {
+			$group['branch'] = array();
+			$pointer_to_parent[$group['parent']]['branch'][$key] = $group;
+			$pointer_to_parent[$group['parent']]['hash_branch'] = true;
+			
+			$pointer_to_parent[$key] = &$pointer_to_parent[$group['parent']]['branch'][$key];
 		}
 	}
+	
+	$return = groups_flatten_tree_groups($tree, 0);
 	
 	return $return;
 }

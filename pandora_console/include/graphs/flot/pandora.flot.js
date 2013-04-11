@@ -165,7 +165,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 					{
 					  // align if we are to the right
 					  alignTicksWithAxis: 1,
-					  position: 'right',
+					  position: 'right'
 					  
 					  //tickFormatter: dFormatter
 					} ]
@@ -194,14 +194,14 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 		
 		inCanvasValuePos = parseInt(pixelPerValue * ($('#value_'+i+'_'+graph_id).html()));
 		label_width = ($('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);		
-
+		
 		label_left_offset = plot.offset().left + inCanvasValuePos + 5; //Label located on right side of bar + 5 pixels
-
+		
 		//If label fit into the bar just recalculate left position to fit on right side of bar
 		if (inCanvasValuePos > label_width) {
 			label_left_offset = plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3;
 		}
-
+		
 		$('#value_'+i+'_'+graph_id).css('left',label_left_offset);
 		i++;
 	});
@@ -310,7 +310,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 					{
 						// align if we are to the right
 						alignTicksWithAxis: 1,
-						position: 'right',
+						position: 'right'
 						
 						//tickFormatter: dFormatter
 					} ]
@@ -613,14 +613,14 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 			data: critical_min, 
 			label: null,
 			color: critical,
-			lines: { show: true, fill: false, lineWidth:3},
+			lines: { show: true, fill: false, lineWidth:3}
 		});
 		threshold_data.push({ 
 			id: 'warning_min',
 			data: warning_min, 
 			label: null,
 			color: warning,
-			lines: { show: true, fill: false, lineWidth:3},
+			lines: { show: true, fill: false, lineWidth:3}
 		});
 	}
 	
@@ -660,7 +660,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 					{
 					  // align if we are to the right
 					  alignTicksWithAxis: 1,
-					  position: 'right',
+					  position: 'right'
 					  
 					  //tickFormatter: dFormatter
 					} ]
@@ -720,7 +720,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 						minTickSize: new_steps,
 						color: '#000'
 						} ],
-				legend: { show: false },
+				legend: { show: false }
 			}));
 		
 		$('#menu_cancelzoom_'+graph_id).attr('src',homeurl+'/images/zoom_cross.png');

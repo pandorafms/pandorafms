@@ -1,3 +1,13 @@
+2013-04-11 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/groups/group_list.php, include/functions_groups.php:
+	optimize the access to the groups in systems with a huge groups.
+	
+	* include/functions_snmp_browser.php, include/functions_users.php:
+	clean source code style.
+	
+	* pandoradb.sql: added key for the parent group.
+
 2013-04-11  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/visual_console/render_view.php

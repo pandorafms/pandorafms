@@ -528,7 +528,8 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 	`description` text,
 	`contact` text,
 	`other` text,
- 	PRIMARY KEY  (`id_grupo`)
+ 	PRIMARY KEY  (`id_grupo`),
+ 	KEY `parent_index` (`parent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------

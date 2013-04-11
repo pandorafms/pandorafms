@@ -2112,7 +2112,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 	
 	
-	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . html_print_image($icon, true, array("style" => "margin-bottom: -3px;", "class" => "bottom", "border" => "0", "alt" => "", 'width' => '24px')) . '&nbsp; ';
+	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . html_print_image($icon, true, array("style" => "vertical-align:middle;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
 	$buffer .= '<span style="display: inline-block; vertical-align: top; margin-top: 2px;">' . ui_print_truncate_text($title, 45);
 	if ($help != "")
 		$buffer .= "&nbsp;&nbsp;" . ui_print_help_icon ($help, true);

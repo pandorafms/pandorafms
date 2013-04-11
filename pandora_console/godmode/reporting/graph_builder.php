@@ -181,7 +181,7 @@ if ($edit_graph) {
 	$buttons = array(
 		'main' => array('active' => false,
 			'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id=' . $id_graph . '">' . 
-				html_print_image("images/setup.png", true, array ("title" => __('Setup'))) .'</a>'),
+				html_print_image("images/chart.png", true, array ("title" => __('Main data'))) .'</a>'),
 		'graph_editor' => array('active' => false,
 			'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=' . $id_graph . '">' . 
 				html_print_image("images/builder.png", true, array ("title" => __('Graph editor'))) .'</a>'),

@@ -230,13 +230,15 @@ $label = base64_decode(get_parameter('label', ''));
 			$params['body_text'] .= html_print_input_hidden ("type", $type, true);
 		}
 		
-		$table->id = 'stat_win_form';
-		$table->width = '100%';
-		$table->size[0] = '50%';
-		$table->cellspacing = 2;
-		$table->cellpadding = 2;
-		$table->class = 'databox_frame';
+		// FORM TABLE
 		
+		$table = html_get_predefined_table('transparent', 2);
+		$table->width = '98%';
+		$table->id = 'stat_win_form_div';
+		$table->style[0] = 'text-align:left;';
+		$table->style[1] = 'text-align:left;';
+		$table->size[0] = '60%';
+
 		$data = array();
 		$data[0] = __('Refresh time');
 		$data[1] = html_print_extended_select_for_time("refresh", $refresh, '', '', 0, 7, true);
@@ -318,9 +320,23 @@ $label = base64_decode(get_parameter('label', ''));
 				break;
 		}
 		
+		$form_table = html_print_table($table, true);
+		
+		unset($table);
+		
+		$table->id = 'stat_win_form';
+		$table->width = '100%';
+		$table->cellspacing = 2;
+		$table->cellpadding = 2;
+		$table->class = 'databox_frame';
+		
 		$data = array();
-		$data[0] = '';
-		$data[1] = '<div style="width:100%; text-align:right;">' . html_print_submit_button (__('Reload'), "submit", false, 'class="sub next"', true) . "</div>";
+		$data[0] = html_print_div(array('content' => $form_table, 'style' => 'overflow: auto; height: 220px'), true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+		
+		$data = array();
+		$data[0] = '<div style="width:100%; text-align:right;">' . html_print_submit_button (__('Reload'), "submit", false, 'class="sub next"', true) . "</div>";
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		

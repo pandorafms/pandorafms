@@ -105,11 +105,22 @@ if ($view_graph) {
 	
 	$url = "index.php?sec=reporting&sec2=operation/reporting/graph_viewer&id=$id_graph&view_graph=1";
 	
-	if (check_acl ($config['id_user'], 0, "IW")) {
-		$options['setup']['text'] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=$id_graph'>"
-				. html_print_image ("images/setup.png", true, array ("title" => __('Setup')))
-				. "</a>";
+	$options = array();
+	
+	if (check_acl ($config['id_user'], 0, "RW")) {
+		$options = array(
+			'main' => array('active' => false,
+				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id=' . $id_graph . '">' . 
+					html_print_image("images/chart.png", true, array ("title" => __('Main data'))) .'</a>'),
+			'graph_editor' => array('active' => false,
+				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=' . $id_graph . '">' . 
+					html_print_image("images/builder.png", true, array ("title" => __('Graph editor'))) .'</a>')
+			);
 	}
+	
+	$options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=' . $id_graph . '">' . 
+					html_print_image("images/operation.png", true, array ("title" => __('View graph'))) .'</a>';
+	$options['view']['active'] = true;
 			
 	if ($config["pure"] == 0) {
 		$options['screen']['text'] = "<a href='$url&pure=1'>"
@@ -120,6 +131,9 @@ if ($view_graph) {
 		$options['screen']['text'] = "<a href='$url&pure=0'>"
 			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
+			
+		// In full screen, the manage options are not available
+		$options = array('view' => $options['view'], 'screen' => $options['screen']);
 	}
 	
 	// Header

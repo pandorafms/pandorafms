@@ -1,3 +1,20 @@
+2013-04-11  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/visual_console/render_view.php
+	operation/reporting/reporting_viewer.php
+	operation/reporting/graph_viewer.php
+	godmode/reporting/visual_console_builder.php
+	godmode/reporting/graph_builder.php
+	godmode/reporting/reporting_builder.php: Redistribute
+	the options of some sections to improve the usability
+
+	* images/cross_undo.png
+	images/load.png: Change some images
+
+	* operation/agentes/stat_win.php: Fix the problem of 
+	the height of module graphs form layer adding a scroll
+	div
+
 2013-04-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

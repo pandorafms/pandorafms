@@ -1396,7 +1396,7 @@ if ($enterpriseEnable) {
 $buttons = array(
 	'main' => array('active' => false,
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report=' . $idReport . '&pure='.$pure.'">' . 
-			html_print_image("images/op_reporting.png", true, array ("title" => __('Main'))) .'</a>'),
+			html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>'),
 	'list_items' => array('active' => false,
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . '&pure='.$pure.'">' . 
 			html_print_image("images/list.png", true, array ("title" => __('List items'))) .'</a>'),

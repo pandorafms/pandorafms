@@ -215,7 +215,7 @@ int Pandora::process_command (Pandora_Windows_Service *service, char *command) {
 
 	/* Re-run */
 	if (strcmp (operation, "REFRESH") == 0) {
-		service->pandora_run ();
+		service->pandora_run (1);
 		return 0;
 	}
 	

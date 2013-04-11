@@ -1,3 +1,18 @@
+2013-04-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	include/functions_ui.php
+	operation/users/user_edit.php
+	general/header.php: Fix some visual aspects and
+	missed skins option in user editor deleted in last
+	commits
+
+	* images/input_filter.png
+	images/input_pdf.png: Add new images to buttons
+
+	* images/skin: Move whole skins folder
+	to enterprise version
+
 2013-04-11 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/groups/group_list.php, include/functions_groups.php:

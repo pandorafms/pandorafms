@@ -50,7 +50,7 @@ config_check();
 				$table->cellspacing = 0;
 				$table->head = array ();
 				$table->data = array ();
-				$table->style[0] = $table->style[1] = $table->style[3] = $table->style[4] = $table->style[5] = $table->style[6] = $table->style[9] = 'width: 22px; text-align:center; height: 22px; padding-right: 9px;';
+				$table->style[0] = $table->style[1] = $table->style[3] = $table->style[4] = $table->style[5] = $table->style[6] = $table->style[8] = $table->style[9] = 'width: 22px; text-align:center; height: 22px; padding-right: 9px;';
 				$table->style[7] = 'width: 20px; padding-right: 9px;';
 				$table->style['searchbar'] = 'width: 180px; min-width: 180px;';
 				$table->style[11] = 'padding-left: 10px; padding-right: 5px;width: 16px;';
@@ -170,7 +170,7 @@ config_check();
 				// Chat messages
 				$table->data[0][8] = "<span id='icon_new_messages_chat' style='display: none;'>";
 				$table->data[0][8] .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
-				$table->data[0][8] .= html_print_image('images/header_chat.png', true, array('style' => 'width:22px;', "title" => __('New chat message')));
+				$table->data[0][8] .= html_print_image('images/header_chat.png', true, array("title" => __('New chat message')));
 				$table->data[0][8] .= "</a>";
 				$table->data[0][8] .= "</span>";
 				

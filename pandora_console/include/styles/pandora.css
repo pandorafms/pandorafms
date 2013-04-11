@@ -395,7 +395,7 @@ input.sub[disabled] {
 input.next, input.upd, input.ok, input.wand, input.delete, input.cog,
 input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,
-input.cancel, input.default {
+input.cancel, input.default, input.filter, input.pdf {
 	padding-right: 30px;
 	
 }
@@ -560,6 +560,38 @@ input.config {
     background: url(../../images/input_config.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
     /* estándar */
     background: url(../../images/input_config.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
+input.filter {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_filter.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_filter.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_filter.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_filter.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_filter.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_filter.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_filter.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
+input.pdf {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_pdf.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_pdf.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_pdf.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_pdf.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_pdf.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_pdf.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_pdf.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
 #toolbox #auto_save {
 	padding-top: 5px;

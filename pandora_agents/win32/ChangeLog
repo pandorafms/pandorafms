@@ -1,3 +1,13 @@
+2013-04-11  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* pandora_windows_service.cc: Fixed possible resource leaks;
+	  - putenv() could run out the environment variable area, if
+            using both file_collection and broker_agent.
+	  - possible handle leak at launching tentacle_client.
+	* Cleaned source code style.
+
+	Merged from branch 4.x.
+
 2013-04-04  Koichiro KIKUCHI <koichiro@rworks.jp>
 
 	* windows_service.cc,

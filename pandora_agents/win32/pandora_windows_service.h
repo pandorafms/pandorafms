@@ -89,6 +89,7 @@ namespace Pandora {
 		Pandora_Windows_Service     ();
 
 	public:
+		void           pandora_run  (int forced_run);
 		void           pandora_run  ();
 		void           pandora_init ();
 		

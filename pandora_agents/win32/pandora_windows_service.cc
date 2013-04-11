@@ -1740,6 +1740,11 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 
 void
 Pandora_Windows_Service::pandora_run () {
+	pandora_run (0);
+}
+
+void
+Pandora_Windows_Service::pandora_run (int forced_run) {
 	Pandora_Agent_Conf  *conf = NULL;
 	string server_addr, conf_file, *all_conf;
 	int startup_delay = 0;
@@ -1821,7 +1826,7 @@ Pandora_Windows_Service::pandora_run () {
 
 			/* Evaluate intensive conditions */
 			intensive_match = module->evaluateIntensiveConditions ();
-			if (intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
+			if (forced_run != 1 && intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
 				module->setNoOutput ();
 				this->modules->goNext ();
 				continue;
@@ -1842,7 +1847,7 @@ Pandora_Windows_Service::pandora_run () {
 		}
 	}
 
-	if (data_flag == 1 || this->timestamp + this->interval_sec <= this->run_time) {
+	if (forced_run == 1 || data_flag == 1 || this->timestamp + this->interval_sec <= this->run_time) {
 				
 		// Send the XML
 		if (!server_addr.empty ()) {

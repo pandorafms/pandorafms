@@ -496,7 +496,47 @@ sub parse_conf_modules($) {
 
 			# Make the module run the first time
 			$module->{'counter'} = $module->{'intensive_interval'};
+			
+			# Replace macros		
+			foreach my $token (keys (%{$module})) {
 
+				# No need to skip macros for now, since it's a hash ref and only array refs
+				# are searched for macros.
+				#if ($token eq 'macros') {
+				#	next;
+				#}
+
+				# No defined value for conf token
+				if (! defined ($module->{$token})) {
+					next;
+				}
+						
+				# Simple configuration token
+				if(ref($module->{$token}) eq ''){
+					while (my ($macro, $subst) = each (%{$module->{'macros'}})) {
+						eval {
+							$module->{$token} =~ s/$macro/$subst/g;
+						};
+					}
+				}
+				# Hash array
+				elsif (ref($module->{$token}) eq 'ARRAY'){
+					for (my $i = 0; $i <= $#{$module->{$token}}; $i++) {
+						
+						# Array of configuration tokens
+						foreach my $key (keys ($module->{$token}->[$i])) {
+							
+							# Each configuration token is a hash
+							while (my ($macro, $subst) = each (%{$module->{'macros'}})) {
+								eval {
+									$module->{$token}->[$i]->{$key} =~ s/$macro/$subst/g;
+								}
+							}
+						}
+					}
+				}
+			}
+	
 			push (@Modules, $module);
 		# Plugin
 		} elsif ($line =~ /^\s*module_plugin\s+(.+)$/) {
@@ -1312,13 +1352,6 @@ sub module_exec ($) {
 	return () unless ($module->{'params'} ne '');
 
 	my $params = $module->{'params'};
-	
-	# If there are macros, we apply it on params
-	eval {
-		foreach my $macro (keys(%{$module->{'macros'}})) {
-			$params =~ s/$macro/$module->{'macros'}{$macro}/g;
-		}
-	};
 		
 	# Execute the command
 	if ($module->{'timeout'} == 0) {

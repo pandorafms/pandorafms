@@ -1,3 +1,8 @@
+2013-04-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_factory.cc: Added macro support to all
+	  configuration tokens.
+
 2013-04-12  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* modules/pandora_module_exec.cc: Fixed possible resource leaks,

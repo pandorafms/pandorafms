@@ -532,13 +532,552 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 			pos = macro_name.find (" ");
 			if(pos != 0) {
 				// Split name of the macro y value
-				macro_value = macro_name.substr (pos);
+				macro_value = macro_name.substr (pos + 1);
 				macro_name.erase(pos, macro_name.size () - pos);
 				
-				// Search the macro in the module_exec and replace it
-				pos_macro = module_exec.find(macro_name);
-				if (pos_macro != string::npos){
-					module_exec.replace(pos_macro, macro_name.size(), macro_value);
+				// Replace macros
+				if (module_name != "") {
+					pos_macro = module_name.find(macro_name);
+					if (pos_macro != string::npos){
+						module_name.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_type != "") {
+					pos_macro = module_type.find(macro_name);
+					if (pos_macro != string::npos){
+						module_type.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (precondition_list.size () > 0) {
+					precondition_iter = precondition_list.begin ();
+					for (precondition_iter = precondition_list.begin ();
+					     precondition_iter != precondition_list.end ();
+					     precondition_iter++) {
+
+						pos_macro = precondition_iter->find(macro_name);
+						if (pos_macro != string::npos){
+							precondition_iter->replace(pos_macro, macro_name.size(), macro_value);
+						}
+
+					}
+				}
+
+				if (module_precondition != "") {
+					pos_macro = module_precondition.find(macro_name);
+					if (pos_macro != string::npos){
+						module_precondition.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_interval != "") {
+					pos_macro = module_interval.find(macro_name);
+					if (pos_macro != string::npos){
+						module_interval.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_exec != "") {
+					pos_macro = module_exec.find(macro_name);
+					if (pos_macro != string::npos){
+						module_exec.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_proc != "") {
+					pos_macro = module_proc.find(macro_name);
+					if (pos_macro != string::npos){
+						module_proc.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_service != "") {
+					pos_macro = module_service.find(macro_name);
+					if (pos_macro != string::npos){
+						module_service.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_freedisk != "") {
+					pos_macro = module_freedisk.find(macro_name);
+					if (pos_macro != string::npos){
+						module_freedisk.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_freedisk_percent != "") {
+					pos_macro = module_freedisk_percent.find(macro_name);
+					if (pos_macro != string::npos){
+						module_freedisk_percent.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_freememory != "") {
+					pos_macro = module_freememory.find(macro_name);
+					if (pos_macro != string::npos){
+						module_freememory.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_freememory_percent != "") {
+					pos_macro = module_freememory_percent.find(macro_name);
+					if (pos_macro != string::npos){
+						module_freememory_percent.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_cpuusage != "") {
+					pos_macro = module_cpuusage.find(macro_name);
+					if (pos_macro != string::npos){
+						module_cpuusage.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_inventory != "") {
+					pos_macro = module_inventory.find(macro_name);
+					if (pos_macro != string::npos){
+						module_inventory.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_odbc != "") {
+					pos_macro = module_odbc.find(macro_name);
+					if (pos_macro != string::npos){
+						module_odbc.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_max != "") {
+					pos_macro = module_max.find(macro_name);
+					if (pos_macro != string::npos){
+						module_max.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_min != "") {
+					pos_macro = module_min.find(macro_name);
+					if (pos_macro != string::npos){
+						module_min.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_post_process != "") {
+					pos_macro = module_post_process.find(macro_name);
+					if (pos_macro != string::npos){
+						module_post_process.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_min_critical != "") {
+					pos_macro = module_min_critical.find(macro_name);
+					if (pos_macro != string::npos){
+						module_min_critical.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_max_critical != "") {
+					pos_macro = module_max_critical.find(macro_name);
+					if (pos_macro != string::npos){
+						module_max_critical.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_min_warning != "") {
+					pos_macro = module_min_warning.find(macro_name);
+					if (pos_macro != string::npos){
+						module_min_warning.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_max_warning != "") {
+					pos_macro = module_max_warning.find(macro_name);
+					if (pos_macro != string::npos){
+						module_max_warning.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_disabled != "") {
+					pos_macro = module_disabled.find(macro_name);
+					if (pos_macro != string::npos){
+						module_disabled.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_min_ff_event != "") {
+					pos_macro = module_min_ff_event.find(macro_name);
+					if (pos_macro != string::npos){
+						module_min_ff_event.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_description != "") {
+					pos_macro = module_description.find(macro_name);
+					if (pos_macro != string::npos){
+						module_description.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_odbc_query != "") {
+					pos_macro = module_odbc_query.find(macro_name);
+					if (pos_macro != string::npos){
+						module_odbc_query.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_logevent != "") {
+					pos_macro = module_logevent.find(macro_name);
+					if (pos_macro != string::npos){
+						module_logevent.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_source != "") {
+					pos_macro = module_source.find(macro_name);
+					if (pos_macro != string::npos){
+						module_source.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_eventtype != "") {
+					pos_macro = module_eventtype.find(macro_name);
+					if (pos_macro != string::npos){
+						module_eventtype.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_eventcode != "") {
+					pos_macro = module_eventcode.find(macro_name);
+					if (pos_macro != string::npos){
+						module_eventcode.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_pattern != "") {
+					pos_macro = module_pattern.find(macro_name);
+					if (pos_macro != string::npos){
+						module_pattern.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_application != "") {
+					pos_macro = module_application.find(macro_name);
+					if (pos_macro != string::npos){
+						module_application.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_async != "") {
+					pos_macro = module_async.find(macro_name);
+					if (pos_macro != string::npos){
+						module_async.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_start_command != "") {
+					pos_macro = module_start_command.find(macro_name);
+					if (pos_macro != string::npos){
+						module_start_command.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_watchdog != "") {
+					pos_macro = module_watchdog.find(macro_name);
+					if (pos_macro != string::npos){
+						module_watchdog.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_wmiquery != "") {
+					pos_macro = module_wmiquery.find(macro_name);
+					if (pos_macro != string::npos){
+						module_wmiquery.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_wmicolumn != "") {
+					pos_macro = module_wmicolumn.find(macro_name);
+					if (pos_macro != string::npos){
+						module_wmicolumn.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_retries != "") {
+					pos_macro = module_retries.find(macro_name);
+					if (pos_macro != string::npos){
+						module_retries.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_startdelay != "") {
+					pos_macro = module_startdelay.find(macro_name);
+					if (pos_macro != string::npos){
+						module_startdelay.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_retrydelay != "") {
+					pos_macro = module_retrydelay.find(macro_name);
+					if (pos_macro != string::npos){
+						module_retrydelay.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_perfcounter != "") {
+					pos_macro = module_perfcounter.find(macro_name);
+					if (pos_macro != string::npos){
+						module_perfcounter.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_tcpcheck != "") {
+					pos_macro = module_tcpcheck.find(macro_name);
+					if (pos_macro != string::npos){
+						module_tcpcheck.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_port != "") {
+					pos_macro = module_port.find(macro_name);
+					if (pos_macro != string::npos){
+						module_port.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_timeout != "") {
+					pos_macro = module_timeout.find(macro_name);
+					if (pos_macro != string::npos){
+						module_timeout.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_regexp != "") {
+					pos_macro = module_regexp.find(macro_name);
+					if (pos_macro != string::npos){
+						module_regexp.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_plugin != "") {
+					pos_macro = module_plugin.find(macro_name);
+					if (pos_macro != string::npos){
+						module_plugin.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_save != "") {
+					pos_macro = module_save.find(macro_name);
+					if (pos_macro != string::npos){
+						module_save.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (condition_list.size () > 0) {
+					condition_iter = condition_list.begin ();
+					for (condition_iter = condition_list.begin ();
+						condition_iter != condition_list.end ();
+						condition_iter++) {
+
+						pos_macro = condition_iter->find(macro_name);
+						if (pos_macro != string::npos){
+							condition_iter->replace(pos_macro, macro_name.size(), macro_value);
+						}
+					}
+				}
+
+				if (module_crontab != "") {
+					pos_macro = module_crontab.find(macro_name);
+					if (pos_macro != string::npos){
+						module_crontab.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_cron_interval != "") {
+					pos_macro = module_cron_interval.find(macro_name);
+					if (pos_macro != string::npos){
+						module_cron_interval.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_noseekeof != "") {
+					pos_macro = module_noseekeof.find(macro_name);
+					if (pos_macro != string::npos){
+						module_noseekeof.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_ping != "") {
+					pos_macro = module_ping.find(macro_name);
+					if (pos_macro != string::npos){
+						module_ping.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_ping_count != "") {
+					pos_macro = module_ping_count.find(macro_name);
+					if (pos_macro != string::npos){
+						module_ping_count.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_ping_timeout != "") {
+					pos_macro = module_ping_timeout.find(macro_name);
+					if (pos_macro != string::npos){
+						module_ping_timeout.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_snmpget != "") {
+					pos_macro = module_snmpget.find(macro_name);
+					if (pos_macro != string::npos){
+						module_snmpget.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_snmp_version != "") {
+					pos_macro = module_snmp_version.find(macro_name);
+					if (pos_macro != string::npos){
+						module_snmp_version.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_snmp_community != "") {
+					pos_macro = module_snmp_community.find(macro_name);
+					if (pos_macro != string::npos){
+						module_snmp_community.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_snmp_agent != "") {
+					pos_macro = module_snmp_agent.find(macro_name);
+					if (pos_macro != string::npos){
+						module_snmp_agent.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_snmp_oid != "") {
+					pos_macro = module_snmp_oid.find(macro_name);
+					if (pos_macro != string::npos){
+						module_snmp_oid.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_advanced_options != "") {
+					pos_macro = module_advanced_options.find(macro_name);
+					if (pos_macro != string::npos){
+						module_advanced_options.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_cooked != "") {
+					pos_macro = module_cooked.find(macro_name);
+					if (pos_macro != string::npos){
+						module_cooked.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (intensive_condition_list.size () > 0) {
+					intensive_condition_iter = intensive_condition_list.begin ();
+					for (intensive_condition_iter = intensive_condition_list.begin ();
+						intensive_condition_iter != intensive_condition_list.end ();
+						intensive_condition_iter++) {
+							
+						pos_macro = intensive_condition_iter->find(macro_name);
+						if (pos_macro != string::npos){
+							intensive_condition_iter->replace(pos_macro, macro_name.size(), macro_value);
+						}
+					}
+				}
+
+				if (module_unit != "") {
+					pos_macro = module_unit.find(macro_name);
+					if (pos_macro != string::npos){
+						module_unit.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_group != "") {
+					pos_macro = module_group.find(macro_name);
+					if (pos_macro != string::npos){
+						module_group.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_custom_id != "") {
+					pos_macro = module_custom_id.find(macro_name);
+					if (pos_macro != string::npos){
+						module_custom_id.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_str_warning != "") {
+					pos_macro = module_str_warning.find(macro_name);
+					if (pos_macro != string::npos){
+						module_str_warning.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_str_critical != "") {
+					pos_macro = module_str_critical.find(macro_name);
+					if (pos_macro != string::npos){
+						module_str_critical.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_critical_instructions != "") {
+					pos_macro = module_critical_instructions.find(macro_name);
+					if (pos_macro != string::npos){
+						module_critical_instructions.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_warning_instructions != "") {
+					pos_macro = module_warning_instructions.find(macro_name);
+					if (pos_macro != string::npos){
+						module_warning_instructions.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_unknown_instructions != "") {
+					pos_macro = module_unknown_instructions.find(macro_name);
+					if (pos_macro != string::npos){
+						module_unknown_instructions.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_tags != "") {
+					pos_macro = module_tags.find(macro_name);
+					if (pos_macro != string::npos){
+						module_tags.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_critical_inverse != "") {
+					pos_macro = module_critical_inverse.find(macro_name);
+					if (pos_macro != string::npos){
+						module_critical_inverse.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_warning_inverse != "") {
+					pos_macro = module_warning_inverse.find(macro_name);
+					if (pos_macro != string::npos){
+						module_warning_inverse.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_quiet != "") {
+					pos_macro = module_quiet.find(macro_name);
+					if (pos_macro != string::npos){
+						module_quiet.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_ff_interval != "") {
+					pos_macro = module_ff_interval.find(macro_name);
+					if (pos_macro != string::npos){
+						module_ff_interval.replace(pos_macro, macro_name.size(), macro_value);
+					}
 				}
 			}
 		}

@@ -1,3 +1,10 @@
+2013-04-12  Hirofumi Kosaka <kosaka@rworks.jp>
+
+	* modules/pandora_module_exec.cc: Fixed possible resource leaks,
+	only when CreateProcess() or CreatePipe() would fail.
+
+	Merged from branch 4.x
+
 2013-04-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.cc,

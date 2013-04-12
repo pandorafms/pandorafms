@@ -185,17 +185,6 @@ $values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
 $values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
 $values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
 
-$table->data[$row][0] = __('Enable refresh for all pages');
-$table->data[$row][1] = __('Yes').'&nbsp;'.html_print_radio_button ('enable_refr', 1, '', $config["enable_refr"], true).'&nbsp;&nbsp;';
-$table->data[$row][1] .= __('No').'&nbsp;'.html_print_radio_button ('enable_refr', 0, '', $config["enable_refr"], true);
-
-$row++;
-
-$table->data[$row][0] = __('Global default interval for refresh') . ui_print_help_tip(__('This interval will affect all pages'), true);
-$table->data[$row][1] = html_print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);
-
-$row++;
-
 $table->data[$row][0] = __('Default interval for refresh on Visual Console') . ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
 $table->data[$row][1] = html_print_select ($values, 'vc_refr', $config["vc_refr"], '', 'N/A', 0, true, false, false);
 

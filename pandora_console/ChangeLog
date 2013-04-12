@@ -1,3 +1,12 @@
+2013-04-12 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/setup/setup_visuals.php, include/functions_config.php,
+	include/config_process.php, general/header.php: fixed the
+	autorefresh and set a white list of pages with autorefresh in
+	config_process.
+	
+	Fixes: #3609243
+
 2013-04-12  Mario Pulido <mario.pulido@artica.es> 
 
        * godmode/alerts/configure_alert_action.php,

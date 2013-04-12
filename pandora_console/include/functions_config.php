@@ -386,10 +386,6 @@ function config_update_config () {
 						$error_update[] = __('Interactive charts');
 					if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
 						$error_update[] = __('Custom logo');
-					if (!config_update_value ('enable_refr', get_parameter('enable_refr')))
-						$error_update[] = __('Enable refresh for all pages');
-					if (!config_update_value ('refr', get_parameter('refr')))
-						$error_update[] = __('Global default interval for refresh');
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
 						$error_update[] = __('Default interval for refresh on Visual Console');
 					if (!config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small')))
@@ -1019,16 +1015,8 @@ function config_process_config () {
 		config_update_value ('dbtype', 'mysql');
 	}
 	
-	if (!isset ($config['enable_refr'])) {
-		config_update_value ('enable_refr', 0);
-	}
-	
 	if (!isset ($config['vc_refr'])) {
 		config_update_value ('vc_refr', 60);
-	}
-	
-	if (!isset ($config['refr'])) {
-		config_update_value ('refr', '');
 	}
 	
 	if (!isset($config['agent_size_text_small'])) {

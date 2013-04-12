@@ -33,7 +33,7 @@ if (empty($script_tz)){
 
 global $develop_bypass;
 /* Help to debug problems. Override global PHP configuration */
-$develop_bypass = 0;
+$develop_bypass = 1;
 
 if ($develop_bypass != 1) {
 	// error_reporting(E_ALL);
@@ -202,6 +202,23 @@ include_graphs_dependencies($config['homedir'].'/');
 if (isset($_POST['vc_refr'])){
 	config_update_value ('vc_refr', get_parameter('vc_refr', $config['vc_refr']));
 }
+
+
+//======= Autorefresh code =============================================
+$config['autorefresh_white_list'] = array(
+	'operation/agentes/tactical',
+	'operation/agentes/group_view',
+	'operation/agentes/estado_agente',
+	'operation/agentes/alerts_status',
+	'operation/agentes/status_monitor',
+	'enterprise/operation/services/services',
+	'enterprise/dashboard/main_dashboard',
+	'operation/reporting/graph_viewer',
+	'operation/snmpconsole/snmp_view',
+	'operation/agentes/networkmap',
+	'enterprise/operation/services/services',
+	'operation/events/events');
+//======================================================================
 
 
 //======================================================================

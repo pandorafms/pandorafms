@@ -470,10 +470,10 @@ foreach ($modules as $module) {
 				$module_value = io_safe_output($module["datos"]);
 			}
 			
-			// There are carriage returns here ?
 			// If carriage returns present... then is a "Snapshot" data (full command output)
-			if (($config['command_snapshot']) && (preg_match ("/[\n]+/i", io_safe_output($module["datos"])))) {
-				
+			$is_snapshot = is_snapshot_data ( $module_value );
+			
+			if (($config['command_snapshot']) && ($is_snapshot)){
 				$handle = "snapshot"."_".$module["id_agente_modulo"];
 				$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 				$win_handle = dechex(crc32($handle));

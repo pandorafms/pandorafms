@@ -112,8 +112,7 @@ else if (preg_match ("/string/", $moduletype_name)) {
 	
 	$columns = array(
 		"Timestamp" => array("utimestamp", 			"modules_format_timestamp", 		"align" => "left"),
-		"Data" => array("datos", 				"modules_format_data", 				"align" => "left"),
-		"Time" => array("utimestamp", 			"modules_format_time", 				"align" => "center")
+		"Data" => array("datos", 				"modules_format_data", 				"align" => "left")
 	);
 }
 else {

@@ -1,3 +1,15 @@
+2013-04-12  Sancho Lerena <slerena@artica.es>
+
+	* include/functions.php: Added a new function to detect
+	when a string data is a snapshot or now (by counting 
+	\n > 2).
+
+	* operation/agentes/datos_agente.php: Removed duped
+	column with datetime information on string data.
+
+	* operation/agentes/estado_monitores.php: Using snapshot
+	detect function. 
+
 2013-04-12  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_graph.php: Optimize the event graphs

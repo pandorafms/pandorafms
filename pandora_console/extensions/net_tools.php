@@ -14,32 +14,39 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-extensions_add_opemode_tab_agent ('network_tools','Network Tools','extensions/net_tools/nettool.png',"main_net_tools", "v1r1");
+$id_agente = get_parameter ("id_agente");
+
+// This extension is usefull only if the agent has associated IP
+$address = agents_get_address($id_agente);
+
+if(!empty($address) || empty($id_agente)) {
+	extensions_add_opemode_tab_agent ('network_tools','Network Tools','extensions/net_tools/nettool.png',"main_net_tools", "v1r1");
+}
 
 function whereis_the_command ($command) {
-
+	
 	ob_start();
 	system('whereis '. $command);
 	$output = ob_get_clean();
 	$result = explode(':', $output);
 	$result = trim($result[1]);
-
+	
 	if ( empty($result)) {
 		return NULL;
 	}
-
+	
 	$result = explode(' ', $result);
 	$fullpath = trim($result[0]);
-
+	
 	if (! file_exists($fullpath)) {
 		return NULL;
 	}
-
+	
 	return $fullpath;
 }
 
 function main_net_tools () {
-
+	
 	$id_agente = get_parameter ("id_agente");
 	$ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
 	if ($ip == "") {
@@ -67,13 +74,13 @@ function main_net_tools () {
 	echo "<input name=submit type=submit class='sub next' value='".__('Execute')."'>";
 	echo "</tr></table>";
 	echo "</form>";
-
-
+	
+	
 	$operation = get_parameter ("operation",0);
 	$community = get_parameter ("community","public");
-
-	switch($operation){
-	case 1:
+	
+	switch($operation) {
+		case 1:
 			$traceroute = whereis_the_command ('traceroute');
 			if (empty($traceroute)) {
 				ui_print_error_message(__('Traceroute executable does not exist.'));
@@ -84,95 +91,89 @@ function main_net_tools () {
 				echo system ("$traceroute $ip");
 				echo "</pre>";
 			}
-
-                break;
-
-        case 2: 
+			break;
+		case 2: 
 			$ping = whereis_the_command ('ping');
 			if (empty($ping)) {
-        			ui_print_error_message(__('Ping executable does not exist.'));
-        		}
-        		else {
-	        		echo "<h3>".__("Ping to "). $ip. "</h3>";
+				ui_print_error_message(__('Ping executable does not exist.'));
+			}
+			else {
+				echo "<h3>".__("Ping to "). $ip. "</h3>";
 				echo "<pre>";
 				echo system ("$ping -c 5 $ip");
 				echo "</pre>";
-        		}
-                break;
-                
-        case 4: 
+			}
+			break;
+		case 4:
 			$nmap = whereis_the_command ('nmap');
 			if (empty($nmap)) {
-        			ui_print_error_message(__('Nmap executable does not exist.'));
-        		}
-        		else {
-        			echo "<h3>".__("Basic TCP Scan on "). $ip. "</h3>";
-                	echo "<pre>";
-                	echo system ("$nmap -F $ip");
-                	echo "</pre>";
-        		}
-                break;
-        
-        case 5: 
-        		echo "<h3>".__("Domain and IP information for "). $ip. "</h3>";
-
+				ui_print_error_message(__('Nmap executable does not exist.'));
+			}
+			else {
+				echo "<h3>".__("Basic TCP Scan on "). $ip. "</h3>";
+				echo "<pre>";
+				echo system ("$nmap -F $ip");
+				echo "</pre>";
+			}
+			break;
+		case 5: 
+			echo "<h3>".__("Domain and IP information for "). $ip. "</h3>";
+			
 			$dig = whereis_the_command ('dig');
 			if (empty($dig)) {
-        			ui_print_error_message(__('Dig executable does not exist.'));
-        		}
-        		else {
-        			echo "<pre>";
+				ui_print_error_message(__('Dig executable does not exist.'));
+			}
+			else {
+				echo "<pre>";
 				echo system ("dig $ip");
 				echo "</pre>";
-        		}
-
+			}
+			
 			$whois = whereis_the_command ('whois');
 			if (empty($whois)) {
-        			ui_print_error_message(__('Whois executable does not exist.'));
-        		}
-        		else {
-        			echo "<pre>";
+				ui_print_error_message(__('Whois executable does not exist.'));
+			}
+			else {
+				echo "<pre>";
 				echo system ("whois $ip");
 				echo "</pre>";
-        		}
-                break;
-
-        case 3:
+			}
+			break;
+		case 3:
 			echo "<h3>".__("SNMP information for "). $ip. "</h3>";
-
+			
 			$snmpget = whereis_the_command ('snmpget');
 			if (empty($snmpget)) {
-        			ui_print_error_message(__('SNMPget executable does not exist.'));
-        		}
-        		else {
-        			echo "<h4>Uptime</h4>";
-                	echo "<pre>";
-                	echo exec ("$snmpget -Ounv -v1 -c $community $ip .1.3.6.1.2.1.1.3.0 ");
-                	echo "</pre>";
-	        		echo "<h4>Device info</h4>";              
-	                echo "<pre>";
+				ui_print_error_message(__('SNMPget executable does not exist.'));
+			}
+			else {
+				echo "<h4>" . __("Uptime") . "</h4>";
+				echo "<pre>";
+				echo exec ("$snmpget -Ounv -v1 -c $community $ip .1.3.6.1.2.1.1.3.0 ");
+				echo "</pre>";
+				echo "<h4>" . __("Device info") . "</h4>";
+				echo "<pre>";
+				
+				echo system ("$snmpget -Ounv -v1 -c $community $ip .1.3.6.1.2.1.1.1.0 ");
+				echo "</pre>";
+				
+				echo "<h4>Interface Information</h4>";
+				echo "<table class=databox>";
+				echo "<tr><th>".__("Interface");
+				echo "<th>".__("Status");
+				
+				$int_max =  exec ("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.1.0 ");
+				
+				for ($ax=0; $ax < $int_max; $ax++){
+					$interface = exec ("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.2.1.2.$ax ");
+					$estado = exec ("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.2.1.8.$ax ");
+					echo "<tr><td>$interface<td>$estado";
+				}
+				echo "</table>";
+			}
+			break;
+	}
 	
-	                echo system ("$snmpget -Ounv -v1 -c $community $ip .1.3.6.1.2.1.1.1.0 ");
-	                echo "</pre>";
-	
-	                echo "<h4>Interface Information</h4>";                
-	                echo "<table class=databox>";
-	                echo "<tr><th>".__("Interface");
-	                echo "<th>".__("Status");
-	
-	                $int_max =  exec ("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.1.0 ");
-	
-	                for ($ax=0; $ax < $int_max; $ax++){
-	                    $interface = exec ("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.2.1.2.$ax ");
-	                    $estado = exec ("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.2.1.8.$ax ");
-	                    echo "<tr><td>$interface<td>$estado";
-	                }
-	                echo "</table>";
-        		}
-                break;
-    }
-
-    echo "</div>";
+	echo "</div>";
 }
-
 ?>

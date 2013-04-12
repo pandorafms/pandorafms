@@ -1,3 +1,10 @@
+2013-04-12 Sancho Lerena <slerena@artica.es>
+
+	* * extensions/net_tools.php
+	extensions/ssh_gateway.php
+	extensions/vnc_view.php: Not shown if agent doesnt have IP. Added
+	support to SSH extension to use custom ports.
+
 2013-04-09 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/extensions.php: removed the link to delete or disable the

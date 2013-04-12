@@ -1,3 +1,15 @@
+2013-04-12  Mario Pulido <mario.pulido@artica.es>
+	
+	* godmode/users/configure_user.php,
+	godmode/modules/manage_network_components_form_common.php,
+        godmode/modules/manage_network_components_form_network.php,
+        include/help/en/help_meta_access.php,
+        include/help/es/help_meta_access.php: Added meta_access help in 
+	user editor and module network creation.
+
+	*godmode/modules/manage_network_components_form_network.php: Added 
+	help tips in module network creation 
+
 2013-04-12  Sancho Lerena <slerena@artica.es>
 
 	* include/functions.php: Added a new function to detect

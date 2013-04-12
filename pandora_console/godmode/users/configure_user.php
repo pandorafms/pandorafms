@@ -462,7 +462,7 @@ if (enterprise_installed() && defined('METACONSOLE')) {
 	if (isset($user_info["metaconsole_access"])) {
 		$user_info_metaconsole_access = $user_info["metaconsole_access"];
 	}
-	$table->data[12][0] = __('Metaconsole access');
+	$table->data[12][0] = __('Metaconsole access'). ' ' .ui_print_help_icon ('meta_access', true);
 	$metaconsole_accesses = array('basic' => __('Basic'),
 		'advanced' => __('Advanced'));
 	$table->data[12][1] = html_print_select($metaconsole_accesses,

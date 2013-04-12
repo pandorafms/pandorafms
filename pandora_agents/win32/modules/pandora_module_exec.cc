@@ -80,6 +80,8 @@ Pandora_Module_Exec::run () {
 	if (! CreatePipe (&out_read, &new_stdout, &attributes, 0)) {
 		pandoraLog ("CreatePipe failed. Err: %d", GetLastError ());
 		this->has_output = false;
+
+		CloseHandle (job);
 		return;
 	}
 
@@ -111,6 +113,9 @@ Pandora_Module_Exec::run () {
 		pandoraLog ("Pandora_Module_Exec: %s CreateProcess failed. Err: %d",
 			    this->module_name.c_str (), GetLastError ());
 		this->has_output = false;
+
+		/* Close job */
+		CloseHandle (job);
 	} else {
 		char          buffer[BUFSIZE + 1];
 		unsigned long read, avail;
@@ -135,7 +140,7 @@ Pandora_Module_Exec::run () {
 				break;
 			} else if(this->getTimeout() < GetTickCount() - tickbase) {
 				/* STILL_ACTIVE */
-				TerminateProcess(pi.hThread, STILL_ACTIVE);
+				TerminateProcess(pi.hProcess, STILL_ACTIVE);
 				pandoraLog ("Pandora_Module_Exec: %s timed out (retcode: %d)", this->module_name.c_str (), STILL_ACTIVE);
 				break;
 			}

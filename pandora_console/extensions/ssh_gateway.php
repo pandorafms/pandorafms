@@ -29,6 +29,7 @@ function ssh_gateway () {
 	
 	$HOST = get_parameter ("host", "");
 	$USER = get_parameter ("user", "");
+	$PORT = get_parameter ("port", 0);
 	
 	// TODO: Put aditional filtering for ";" and "&" characters in user & host for security
 	// because these params are passed to server exec() call :)
@@ -50,12 +51,14 @@ function ssh_gateway () {
 		if ($COMMIT == 1) {
 			echo "<h3 class=error>".__("You need to specify a user and a host address")."</h3>";
 		}
-		
+
 		echo "<form method=post>";
 		echo "<table class=databox cellspacing=4 cellpadding=4>";
 		echo "<td>".__("Host address")."<td><input type=text size=25 value='$HOST' name=host>";
 		echo "<tr>";
 		echo "<td>".__("User")."<td><input type=text size=25 value='$USER' name=user>";
+		echo "<tr>";
+        	echo "<td>".__("Port (use 0 for default)")."<td><input type=text size=5 value='$PORT' name=port>";	
 		echo "<tr><td>";
 		echo __("Connect mode")."<td><select name=mode>";
 		if ($MODE == "telnet") {
@@ -74,10 +77,18 @@ function ssh_gateway () {
 	}
 	
 	else {
+		if ($MODE == "telnet"){
+               		if ($PORT == 0)
+                        	$PORT = 23;
+        	} else {
+                	if ($PORT == 0)
+                        	$PORT = 22;
+        	}
+
 		if ($MODE == "ssh")
-			echo "<iframe style='border: 0px' src='http://".$SERVER_ADDR.":8022/anyterm.html?param=$USER@$HOST' width='100%' height=550>";
+			echo "<iframe style='border: 0px' src='http://".$SERVER_ADDR.":8022/anyterm.html?param=-p $PORT $USER@$HOST' width='100%' height=550>";
 		else
-			echo "<iframe style='border: 0px' src='http://".$SERVER_ADDR.":8023/anyterm.html?param=$HOST' width='100%' height=550>";
+			echo "<iframe style='border: 0px' src='http://".$SERVER_ADDR.":8023/anyterm.html?param=$HOST $PORT' width='100%' height=550>";
 		
 		echo "</iframe>";
 	}

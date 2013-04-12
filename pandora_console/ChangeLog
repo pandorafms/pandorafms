@@ -1,3 +1,13 @@
+2013-04-12  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_graph.php: Optimize the event graphs
+	queries that appear in tactican and agent view
+
+	* extensions/net_tools.php
+	extensions/ssh_gateway.php
+	extensions/vnc_view.php: Fixing the network extensions in
+	extensions manager
+
 2013-04-11 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/graphs/functions_flot.php,

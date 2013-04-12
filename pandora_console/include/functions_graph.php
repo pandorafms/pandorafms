@@ -1439,19 +1439,17 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 		case "mysql":
 		case "postgresql":
 			$sql = sprintf ('SELECT COUNT(id_evento) AS count_number,
-					nombre
-				FROM tevento, tagente_modulo
-				WHERE id_agentmodule = id_agente_modulo
-					AND disabled = 0 AND tevento.id_agente = %d
-				GROUP BY id_agentmodule, nombre ORDER BY count_number DESC LIMIT %d', $id_agent, $max_items);
+					id_agentmodule
+				FROM tevento
+				WHERE tevento.id_agente = %d
+				GROUP BY id_agentmodule ORDER BY count_number DESC LIMIT %d', $id_agent, $max_items);
 			break;
 		case "oracle":
 			$sql = sprintf ('SELECT COUNT(id_evento) AS count_number,
-					dbms_lob.substr(nombre,4000,1) AS nombre
-				FROM tevento, tagente_modulo
-				WHERE (id_agentmodule = id_agente_modulo
-					AND disabled = 0 AND tevento.id_agente = %d) AND rownum <= %d
-				GROUP BY id_agentmodule, dbms_lob.substr(nombre,4000,1) ORDER BY count_number DESC', $id_agent, $max_items);
+					id_agentmodule
+				FROM tevento
+				WHERE tevento.id_agente = %d AND rownum <= %d
+				GROUP BY id_agentmodule ORDER BY count_number DESC', $id_agent, $max_items);
 			break;
 	}
 	
@@ -1465,18 +1463,15 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	}
 	
 	foreach ($events as $event) {
-		$key = io_safe_output($event['nombre']) .
-			' ('.$event['count_number'].')';
+		if($event['id_agentmodule'] == 0) {
+			$key = __('System') . ' ('.$event['count_number'].')';
+		}
+		else {
+			$key = modules_get_agentmodule_name ($event['id_agentmodule']) .
+				' ('.$event['count_number'].')';
+		}
+		
 		$data[$key] = $event["count_number"];
-	}
-	
-	/* System events */
-	$sql = "SELECT COUNT(*)
-		FROM tevento
-		WHERE id_agentmodule = 0 AND id_agente = $id_agent";
-	$value = db_get_sql ($sql);
-	if ($value > 0) {
-		$data[__('System').' ('.$value.')'] = $value;
 	}
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -2051,11 +2046,11 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
-					id_grupo, COUNT(id_agente) AS count'.$field_extra.'
+					COUNT(id_agente) AS count'.$field_extra.'
 				FROM '.$event_table.'
 				WHERE 1=1 %s %s
 				GROUP BY id_agente'.$groupby_extra.'
-				ORDER BY count DESC', $url, $tags_condition); 
+				ORDER BY count DESC LIMIT 8', $url, $tags_condition); 
 			break;
 		case "postgresql":
 		case "oracle":
@@ -2064,7 +2059,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 				FROM '.$event_table.'
 				WHERE 1=1 %s %s
 				GROUP BY id_agente, id_grupo'.$groupby_extra.'
-				ORDER BY count DESC', $url, $tags_condition); 
+				ORDER BY count DESC LIMIT 8', $url, $tags_condition); 
 			break;
 	}
 	
@@ -2077,6 +2072,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	$other_events = 0;
 	
 	foreach ($result as $row) {
+		$row["id_grupo"] = agents_get_agent_group ($row["id_agente"]);
 		if (!check_acl ($config["id_user"], $row["id_grupo"], "ER") == 1)
 			continue;
 		

@@ -82,44 +82,55 @@ config_check();
 				
 				$table->data[0][0] = $servers_link_open . $servers_check_img . $servers_link_close;
 				
-				// Autorefresh
-				$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Configure autorefresh')));
+				
+				
+				
+				
+				
+				
+				
+				
+				//======= Autorefresh code =============================
 				$autorefresh_txt = '';
 				$autorefresh_additional = '';
 				
 				$ignored_params = array ('agent_config' => false, 'code' => false);
-				if ($config['enable_refr']) {
-					$ignored_params['refr'] = 0;
-					$autorefresh_txt .= ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
+				
+				if (!isset($_GET['sec2'])) {
+					$_GET['sec2'] = '';
+				}
+				if (!isset($_GET['refr'])) {
+					$_GET['refr'] = null;
+				}
+				
+				if (array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) {
+					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Configure autorefresh')));
+					
+					if ($_GET['refr']) {
+						$autorefresh_txt .= ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
+					}
+					
+					$ignored_params['refr'] = '';
+					$values = array (
+						'5' => __('5 seconds'),
+						'10' => __('10 seconds'),
+						'15' => __('15 seconds'),
+						'30' => __('30 seconds'),
+						(string)SECONDS_1MINUTE => __('1 minute'),
+						(string)SECONDS_2MINUTES => __('2 minutes'),
+						(string)SECONDS_5MINUTES => __('5 minutes'),
+						(string)SECONDS_15MINUTES => __('15 minutes'),
+						(string)SECONDS_30MINUTES => __('30 minutes'),
+						(string)SECONDS_1HOUR => __('1 hour'));
+					$autorefresh_additional = '<span id="combo_refr" style="display: none; padding-right: 9px;">';
+					$autorefresh_additional .= html_print_select ($values, 'ref', '', '', __('Select'), '0', true, false, false);
+					$autorefresh_additional .= '</span>';
+					unset ($values);
 				}
 				else {
-					if (!isset($_GET['sec2'])) 
-						$_GET['sec2'] = '';
+					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Disabled autorefresh')));
 					
-					if (($config['refr']) && (($_GET['sec2'] == 'operation/agentes/tactical') || ($_GET['sec2'] == 'operation/agentes/estado_agente') ||
-						($_GET['sec2'] == 'operation/agentes/group_view') || ($_GET['sec2'] == 'operation/events/events') || 
-						($_GET['sec2'] == 'enterprise/dashboard/main_dashboard'))) {
-						
-							$autorefresh_txt .= ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
-					}
-					else {
-						$ignored_params['refr'] = '';
-						$values = array (
-							'5' => __('5 seconds'),
-							'10' => __('10 seconds'),
-							'15' => __('15 seconds'),
-							'30' => __('30 seconds'),
-							(string)SECONDS_1MINUTE => __('1 minute'),
-							(string)SECONDS_2MINUTES => __('2 minutes'),
-							(string)SECONDS_5MINUTES => __('5 minutes'),
-							(string)SECONDS_15MINUTES => __('15 minutes'),
-							(string)SECONDS_30MINUTES => __('30 minutes'),
-							(string)SECONDS_1HOUR => __('1 hour'));
-						$autorefresh_additional = '<span id="combo_refr" style="display: none">';
-						$autorefresh_additional .= html_print_select ($values, 'ref', '', '', __('Select'), '0', true, false, false);
-						$autorefresh_additional .= '</span>';
-						unset ($values);
-					}
+					$ignored_params['refr'] = false;
 				}
 				
 				$autorefresh_link_open_img = '<a class="white autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
@@ -127,7 +138,11 @@ config_check();
 				$autorefresh_link_close = '</a>';
 				
 				$table->data[0][1] = $autorefresh_link_open_img . $autorefresh_img . $autorefresh_link_close;
-				$table->data[0][2] .= $autorefresh_link_open_txt . $autorefresh_txt . $autorefresh_link_close . $autorefresh_additional;
+				$table->data[0][2] = $autorefresh_link_open_txt . $autorefresh_txt . $autorefresh_link_close . $autorefresh_additional;
+				//======================================================
+				
+				
+				
 				
 				if ($config["alert_cnt"] > 0) {
 					echo '<div id="alert_messages" style="display: none"></div>';
@@ -141,7 +156,6 @@ config_check();
 					$maintenance_link_open_img =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '">'; 
 					$maintenance_link_close =  '</a>'; 
 					$maintenance_img = $maintenance_link_open_img . html_print_image ("images/header_warning.png", true, array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot")) . $maintenance_link_close;
-					$maintenance_txt = $maintenance_link_open_txt . $maintenance_txt . $maintenance_link_close;
 				}
 				else {
 					$maintenance_img = html_print_image ("images/header_ready.png", true, array ("title" => __('There are not warnings'), "id" => "yougotalert", "class" => "bot"));
@@ -261,7 +275,7 @@ config_check();
 		
 		
 		<?php
-		if ($config["refr"]) {
+		if ($_GET["refr"]) {
 		?>
 			t = new Date();
 			t.setTime (t.getTime () + <?php echo $config["refr"] * 1000; ?>);
@@ -269,26 +283,26 @@ config_check();
 				layout: '%M%nn%M:%S%nn%S',
 				labels: ['', '', '', '', '', '', ''],
 				onExpiry: function () {
-						$(this).text ("...");
+						href = $("a.autorefresh").attr ("href");
+						href = href + <?php echo $_GET["refr"]; ?>;
+						$(document).attr ("location", href);
 					}
 				});
 		<?php
 		}
-		else {
 		?>
-			$("a.autorefresh").click (function () {
-				$("a.autorefresh_txt").toggle ();
-				$("#combo_refr").toggle ();
-				$("select#ref").change (function () {
-					href = $(this).attr ("href");
-					$(document).attr ("location", href + this.value);
-				});
-				
-				return false;
+		
+		$("a.autorefresh").click (function () {
+			$("a.autorefresh_txt").toggle ();
+			$("#combo_refr").toggle ();
+			$("#combo_refr").css('padding-right', '9px');
+			$("select#ref").change (function () {
+				href = $("a.autorefresh").attr ("href");
+				$(document).attr ("location", href + this.value);
 			});
-		<?php
-		}
-		?>
+			
+			return false;
+		});
 	});
 /* ]]> */
 </script>

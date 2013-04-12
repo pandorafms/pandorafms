@@ -112,7 +112,7 @@ function configure_modules_form () {
 				$("#textarea_description").attr ("value", js_html_entity_decode (data["description"]));
 				$("#textarea_configuration_data").val(configuration_data);
 				$("#component_loading").hide ();
-				$("#id_module_type option[value="+data["type"]+"]").select (1);
+				$("#id_module_type").val(data["type"]);
 				$("#text-max").attr ("value", data["max"]);
 				$("#text-min").attr ("value", data["min"]);
 				// Workaround to update the advanced select control from html and ajax
@@ -264,7 +264,7 @@ function configure_modules_form () {
 			function (data, status) {
 				$("#text-name").attr ("value", js_html_entity_decode (data["name"]));
 				$("#textarea_description").attr ("value", js_html_entity_decode (data["description"]));
-				$("#id_module_type option[value="+data["type"]+"]").select (1);
+				$("#id_module_type").val(data["type"]);
 				$("#text-max").attr ("value", data["max"]);
 				$("#text-min").attr ("value", data["min"]);
 				// Workaround to update the advanced select control from html and ajax

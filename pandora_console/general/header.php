@@ -57,7 +57,7 @@ config_check();
 				$table->width = "100%";
 				$table->styleTable = 'margin: auto; margin-top: 0px;';
 				$table->rowclass[0] = '';
-
+				
 				// Servers check
 				$servers = array();
 				$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
@@ -121,7 +121,7 @@ config_check();
 						unset ($values);
 					}
 				}
-			
+				
 				$autorefresh_link_open_img = '<a class="white autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
 				$autorefresh_link_open_txt = '<a class="white autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
 				$autorefresh_link_close = '</a>';
@@ -146,7 +146,7 @@ config_check();
 				else {
 					$maintenance_img = html_print_image ("images/header_ready.png", true, array ("title" => __('There are not warnings'), "id" => "yougotalert", "class" => "bot"));
 				}
-			
+				
 				$table->data[0][3] = $maintenance_img;
 				
 				// Main help icon
@@ -195,10 +195,10 @@ config_check();
 					$search_bar .= "value='" . __("Enter keywords to search") . "'";
 				else
 					$search_bar .= "value='" . $config['search_keywords'] . "'";
-					
+				
 				$search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-						style="margin-top:5px;" class="search_input" />';
-						
+					style="margin-top:5px;" class="search_input" />';
+				
 				//$search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
 				
 				$search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
@@ -235,7 +235,7 @@ config_check();
 		
 		/* Temporal fix to hide graphics when ui_dialog are displayed */
 		$("#yougotalert").click(function () { 
-			$("#agent_access").css("display", "none");	
+			$("#agent_access").css("display", "none");
 		});
 		$("#ui_close_dialog_titlebar").click(function () {
 			$("#agent_access").css("display","");

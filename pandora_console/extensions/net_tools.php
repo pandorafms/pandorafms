@@ -15,11 +15,11 @@
 // GNU General Public License for more details.
 
 $id_agente = get_parameter ("id_agente");
-	
+
 // This extension is usefull only if the agent has associated IP
 $address = agents_get_address($id_agente);
 
-if(!empty($address)) {
+if(!empty($address) || empty($id_agente)) {
 	extensions_add_opemode_tab_agent ('network_tools','Network Tools','extensions/net_tools/nettool.png',"main_net_tools", "v1r1");
 }
 

@@ -19,7 +19,7 @@ $id_agente = get_parameter ("id_agente");
 // This extension is usefull only if the agent has associated IP
 $address = agents_get_address($id_agente);
 
-if(!empty($address)) {
+if(!empty($address) || empty($id_agente)) {
 	extensions_add_opemode_tab_agent ('ssh_gateway','SSH Gateway','extensions/ssh_gateway/secure_console.png',"ssh_gateway", "v1r1");
 }
 

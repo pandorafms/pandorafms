@@ -139,7 +139,7 @@ if (check_acl ($config['id_user'], 0, "PM")){
 $table->data[2][1] .= '<div id="command_description" style=""></div>';
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = html_print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
-$table->data[3][1] .= ' '.__('seconds') . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
+$table->data[3][1] .= ' '.__('seconds') . ui_print_help_icon ('action_threshold', true);
 $table->data[4][0] = __('Command preview');
 $table->data[4][1] = html_print_textarea ('command_preview', 10, 30, '',
 	'disabled="disabled"', true);

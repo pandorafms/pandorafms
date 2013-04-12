@@ -537,7 +537,7 @@ if ($step == 2) {
 		$table->colspan['field'.$i][1] = 3;
 		$table->rowclass['field'.$i] = 'row_field';
 
-		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) . ui_print_help_icon ('alert_macros', true, ui_get_full_url(false, false, false, false));
+		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) . ui_print_help_icon ('alert_macros', true);
 		$table->data['field'.$i][1] = html_print_textarea ('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px;" class="fields"', true);
 	}
 	

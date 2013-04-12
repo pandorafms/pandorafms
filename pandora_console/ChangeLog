@@ -1,3 +1,10 @@
+2013-04-12  Mario Pulido <mario.pulido@artica.es> 
+
+       * godmode/alerts/configure_alert_action.php,
+        godmode/alerts/configure_alert_command.php,
+        godmode/alerts/configure_alert_template.php:Fixed help views 
+	in Metaconsole
+
 2013-04-12 Miguel de Dios <miguel.dedios@artica.es>
 
 	* ChangeLog: updload lost changes.

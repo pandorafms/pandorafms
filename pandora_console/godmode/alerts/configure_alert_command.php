@@ -74,7 +74,7 @@ $table->data[0][2] = html_print_input_text ('name', $name, '', 35, 255, true);
 
 $table->colspan[1][1] = 3;
 $table->data[1][0] = __('Command');
-$table->data[1][0] .= ui_print_help_icon ('alert_macros', true, ui_get_full_url(false, false, false, false));
+$table->data[1][0] .= ui_print_help_icon ('alert_macros', true);
 $table->data[1][1] = html_print_input_text ('command', $command, '', 80, 255, true);
 
 $table->colspan[2][1] = 3;
@@ -87,7 +87,7 @@ for ($i=1; $i<=10; $i++) {
 	
 	// Only show help on first row
 	if ($i == 1) {
-		$table->data['field'.$i][0] .= ui_print_help_icon ('alert_fields_description', true, ui_get_full_url(false, false, false, false));
+		$table->data['field'.$i][0] .= ui_print_help_icon ('alert_fields_description', true);
 	}
 	
 	if (!empty($fields_descriptions)) {
@@ -102,7 +102,7 @@ for ($i=1; $i<=10; $i++) {
 	
 	// Only show help on first row
 	if ($i == 1) {
-		$table->data['field'.$i][2] .= ui_print_help_icon ('alert_fields_values', true, ui_get_full_url(false, false, false, false));
+		$table->data['field'.$i][2] .= ui_print_help_icon ('alert_fields_values', true);
 	}
 	
 	if (!empty($fields_values)) {

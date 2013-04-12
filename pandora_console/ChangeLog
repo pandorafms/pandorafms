@@ -1,3 +1,16 @@
+2013-04-12 Miguel de Dios <miguel.dedios@artica.es>
+
+	* ChangeLog: updload lost changes.
+
+2013-04-12 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/javascript/pandora_modules.js: fixed the change the
+	type of module when select network or local component.
+	
+	Fixes: #3610671
+	
+	* general/header.php: cleaned source code style.
+
 2013-04-12  Sancho Lerena <slerena@artica.es>
 
 	* extensions/ssh_gateway.php: Implemented support to connect

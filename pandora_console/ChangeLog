@@ -1,3 +1,7 @@
+2013-04-13  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_meta_access.php: Added a new help file.
+
 2013-04-12 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/setup/setup_visuals.php, include/functions_config.php,

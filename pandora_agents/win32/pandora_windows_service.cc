@@ -1349,7 +1349,7 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 
 	/* Copy the XML to temporal file */
 	pandoraDebug ("Copying XML on %s", tmp_filepath.c_str ());
-	conf_fh = fopen (tmp_filepath.c_str (), "w");
+	conf_fh = fopen (tmp_filepath.c_str (), "wb");
 	if (conf_fh == NULL) {
 		pandoraLog ("Error when saving the XML in %s",
 			    tmp_filepath.c_str ());

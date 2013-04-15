@@ -135,9 +135,6 @@ $values[300] = human_time_description_raw (300);
 $values[600] = human_time_description_raw (600);
 $values[1800] = human_time_description_raw (1800);
 
-$table->data[15][0] = __('Global default interval for refresh') . ui_print_help_tip(__('This interval will affect all pages'), true);
-$table->data[15][1] = html_print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);
-
 $table->data[16][0] = __('Default interval for refresh on Visual Console') . ui_print_help_tip(__('This interval will affect to Visual Console pages'), true);
 $table->data[16][1] = html_print_select ($values, 'vc_refr', $config["vc_refr"], '', 'N/A', 0, true, false, false);
 

@@ -52,7 +52,7 @@ config_check();
 			<a href="index.php?sec=workspace&amp;sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
 			
-			if ($config["metaconsole"] == 0){
+			if ($config["metaconsole"] == 0) {
 				$msg_cnt = messages_get_count ($config["id_user"]);
 				if ($msg_cnt > 0) {
 					echo '<div id="dialog_messages" style="display: none"></div>';
@@ -98,10 +98,10 @@ config_check();
 			echo ui_print_help_icon ("main_help", true);
 			if ($config['metaconsole'] == 1) {
 				echo "&nbsp;";
-				echo "&nbsp;";				
+				echo "&nbsp;";
 				html_print_image("images/application_double.png", false, array("alt" => __('Metaconsole activated'), "class" => 'bot', "title" => __('You are using metaconsole')));
-			}			
-						
+			}
+			
 			echo '</td>';
 		echo '<td width="20%">';
 			
@@ -126,17 +126,21 @@ config_check();
 				unset ($servers); // Since this is the header, we don't like to trickle down variables.
 				echo '</a>';
 			}
-
-?>
+		
+		?>
 		</td>
 		<td width="20%">
 			<?php
 			// Autorefresh
+			if (!isset($_GET['refr'])) {
+				$_GET['refr'] = null;
+			}
+			
 			$ignored_params = array ('agent_config' => false, 'code' => false);
-			if ($config["refr"]) {
+			if ($_GET['refr']) {
 				$ignored_params['refr'] = 0;
 				echo '<a id="autorefresh" class="white_bold" href="' . ui_get_url_refresh ($ignored_params).'">' . html_print_image("images/page_refresh.png", true, array("class" => 'bot', "alt" => 'lightning')) . '&nbsp;'. __('Autorefresh'); 
-				echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
+				echo ' (<span id="refrcounter">'.date ("i:s", $_GET['refr']).'</span>)';
 				echo '</a>';
 			}
 			else {
@@ -164,14 +168,14 @@ config_check();
 		if (isset($config["custom_logo"]))
 			echo html_print_image("images/custom_logo/" . $config["custom_logo"], true,array("height" => '60', "width" => '139', "alt" => 'Logo'));
 		echo "</a>";
-?>
+		?>
 		</td>
 	</tr>
 	<tr>
 		<td colspan="2">
 		
 		<?php
-		if ($config["metaconsole"] == 0){
+		if ($config["metaconsole"] == 0) {
 		?>
 		<form method="get" style="" name="quicksearch" action="">
 			<script type="text/javascript">
@@ -199,9 +203,9 @@ config_check();
 		</td>
 		<td>
 		<?php
-if ($config["metaconsole"] == 0){
-	echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events">' . html_print_image("images/lightning_go.png", true, array("alt" => 'lightning_go', "class" => 'bot')) . '&nbsp;'.__('Events').'</a>';
-}
+		if ($config["metaconsole"] == 0) {
+			echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events">' . html_print_image("images/lightning_go.png", true, array("alt" => 'lightning_go', "class" => 'bot')) . '&nbsp;'.__('Events').'</a>';
+		}
 		?>
 		</td>
 	</tr>
@@ -230,15 +234,32 @@ if ($config["metaconsole"] == 0){
 			$("#agent_access").css("display","");
 		});
 		
-		<?php if ($msg_cnt > 0): ?>
+		
+		<?php
+		if ($msg_cnt > 0) {
+		?>
 			$("#yougotmail").pulsate ();
-		<?php endif; ?>
-		<?php if ($config["alert_cnt"] > 0): ?>
+		<?php
+		}
+		?>
+		
+		
+		<?php
+		if ($config["alert_cnt"] > 0) {
+		?>
 			$("#yougotalert").pulsate ();
-		<?php endif; ?>
-		<?php if ($config["refr"]): ?>
+		<?php
+		}
+		?>
+		
+		
+		
+		
+		<?php
+		if ($_GET['refr']) {
+		?>
 			t = new Date();
-			t.setTime (t.getTime () + <?php echo $config["refr"] * 1000; ?>);
+			t.setTime (t.getTime () + <?php echo $_GET['refr'] * 1000; ?>);
 			$("#refrcounter").countdown ({until: t, 
 				layout: '%M%nn%M:%S%nn%S',
 				labels: ['', '', '', '', '', '', ''],
@@ -246,7 +267,10 @@ if ($config["metaconsole"] == 0){
 						$(this).text ("...");
 					}
 				});
-		<?php else: ?>
+		<?php
+		}
+		else {
+		?>
 			$("a#autorefresh").click (function () {
 				var a = this;
 				
@@ -259,7 +283,9 @@ if ($config["metaconsole"] == 0){
 				
 				return false;
 			});
-		<?php endif; ?>
+		<?php
+		}
+		?>
 	});
 /* ]]> */
 </script>

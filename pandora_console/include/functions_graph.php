@@ -1321,9 +1321,10 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
-	
-	if ($empty_data)
-		$out = fs_error_image();
+
+	if ($empty_data) {
+		$out = graph_nodata_image($width, $height);
+	}
 	else {
 		$out = area_graph($config['flash_charts'], $data, $width, $height,
 			null, null, null, ui_get_full_url("images/image_problem.opaque.png"), "", "", ui_get_full_url(false, false, false, false),
@@ -1366,6 +1367,13 @@ function graph_alert_status ($defined_alerts, $fired_alerts, $width = 300, $heig
 	else {
 		echo $out;
 	}
+}
+
+// If any value is negative, truncate it to 0
+function truncate_negatives(&$element) {
+        if($element < 0) {
+                $element = 0;
+        }
 }
 
 /**
@@ -3844,5 +3852,16 @@ function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=
 			return "";
 			break;
 	}
+}
+
+function graph_nodata_image($width = 300, $height = 110, $type = 'area') {
+	$image = ui_get_full_url('images/image_problem_' . $type . '.png', false, false, false); 
+		
+	$text_div = '<div class="nodata_text">' . __('No data to show') . '</div>';
+		
+	$image_div = '<div class="nodata_container" style="background-image: url(\'' . $image . '\');">' . $text_div . '</div>';
+
+	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px;">' . $image_div . '</div>';
+	return $div;
 }
 ?>

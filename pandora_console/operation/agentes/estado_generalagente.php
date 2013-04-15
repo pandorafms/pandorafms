@@ -72,7 +72,7 @@ else {
 	$agent_name = $agent_name;
 }
 
-$data[0] = ui_print_group_icon ($agent["id_grupo"], true) . '&nbsp;&nbsp;';
+$data[0] = ui_print_group_icon ($agent["id_grupo"], true) . '&nbsp;';
 $data[0] .= $agent_name;
 
 $status_img = agents_detail_view_status_img ($agent["critical_count"],
@@ -88,7 +88,7 @@ $table_agent->cellstyle[][0] = '';
 $data = array();
 
 $data[0] = ui_print_os_icon ($agent["id_os"], true, true, true, false, false, false, array('style' => 'margin:0px 5px 0px 4px;')) . '&nbsp;';
-$data[0] .= '<span title="'.$agent["os_version"].'" style="vertical-align:top; padding-top: 6px; display: inline-block;"><i>'.$agent["os_version"].'</i></span>';
+$data[0] .= ui_print_help_tip($agent["os_version"], true);
 $table_agent->cellstyle[][0] = 'padding-left:50px;';
 
 $data[1] = graph_agent_status ($id_agente, 160, 120, true);

@@ -389,7 +389,7 @@ else {
 if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "AM")) {
 	if (count($alerts['alerts_simple']) > 0) {
 		echo '<div class="action-buttons" style="width: '.$table->width.';">';
-		html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub upd"', false);
+		html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
 		echo '</div>';
 	}
 }

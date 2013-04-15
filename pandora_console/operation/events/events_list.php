@@ -489,7 +489,7 @@ else {
 }
 
 if (!empty($result)) {		
-	$graph .= '<fieldset class="databox tactical_set" style="width:93%;">
+	$graph = '<fieldset class="databox tactical_set" style="width:93%;">
 			<legend>' . 
 				__('Events generated -by module-') . 
 			'</legend>' . 

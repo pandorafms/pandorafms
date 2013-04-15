@@ -1906,7 +1906,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 	ob_start();
 	
 	html_print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
-		array('style' => 'background: url(images/module_unknown.png) no-repeat right;'));
+		array('style' => 'background: url(images/input_module.png) no-repeat right;'));
 	ui_print_help_tip(__('Type at least two characters to search the module.'), false);
 	
 	$javascript_ajax_page =

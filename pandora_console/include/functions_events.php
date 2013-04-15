@@ -911,7 +911,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
 			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
 					<legend>' . 
-						__('Events generated -by module-') . 
+						__('Events -by module-') . 
 					'</legend>' . 
 					graph_event_module (180, 100, $event['id_agente']) . '</fieldset>';
 			$out .= '</td></tr></table>';
@@ -1622,14 +1622,14 @@ function events_page_responses ($event) {
 	$event_responses = db_get_all_rows_in_table('tevent_response');
 	
 	if(empty($event_responses)) {
-		$data[1] .= '<i>'.__('N/A').'</i>';
+		$data[1] = '<i>'.__('N/A').'</i>';
 	}
 	else {
 		$responses = array();
 		foreach($event_responses as $v) {
 			$responses[$v['id']] = $v['name'];
 		}
-		$data[1] .= html_print_select($responses,'select_custom_response','','','','',true, false, false);
+		$data[1] = html_print_select($responses,'select_custom_response','','','','',true, false, false);
 		
 		if(isset($event['server_id'])) {
 			$server_id = $event['server_id'];
@@ -1734,7 +1734,7 @@ function events_page_custom_fields ($event) {
 	$table->class = "databox alternate";
 	
 	$all_customs_fields = (bool)check_acl($config["id_user"],
-	$agent["id_grupo"], "AW");
+	$event["id_grupo"], "AW");
 	
 	if ($all_customs_fields) {
 		$fields = db_get_all_rows_filter('tagent_custom_fields');
@@ -2166,6 +2166,7 @@ function events_page_comments ($event) {
 	/////////
 	// Comments
 	/////////
+	global $config;
 	
 	$table_comments->width = '100%';
 	$table_comments->data = array ();

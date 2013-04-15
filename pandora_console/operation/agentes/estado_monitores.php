@@ -326,10 +326,10 @@ foreach ($modules as $module) {
 	$data = array ();
 	if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
 		if ($module["flag"] == 0) {
-			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;flag=1&amp;refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "alt" => __('Force'))) . '</a>';
+			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;flag=1&amp;refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
 		}
 		else {
-			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => "0", "alt" => "refresh")) . '</a>';
+			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => "0", "title" => __("Refresh"))) . '</a>';
 		}
 	}
 	else {
@@ -386,7 +386,7 @@ foreach ($modules as $module) {
 	$data[2] = servers_show_type ($module['id_modulo']) . '&nbsp;';
 	
 	if (check_acl ($config['id_user'], $id_grupo, "AW")) 
-		$data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
+		$data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "", "title" => __('Edit'))) . '</a>';
 	
 	$data[3] = "";
 	if ($module['quiet']) {

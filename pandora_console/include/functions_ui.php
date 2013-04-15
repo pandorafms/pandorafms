@@ -240,9 +240,9 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 	$output = '<table cellspacing="0" cellpadding="0" id="' . $id . '" ' . $attributes . '
 		class="info_box ' . $id . ' ' . $class . '" style="' . $force_style . '">
 		<tr>
-			<td class="icon">' . html_print_image($icon_image, true) . '</td>
-			<td class="title"><b>' . $text_title . '</b></td>
-			<td class="icon">';
+			<td class="icon" rowspan="2" style="padding-right: 10px; padding-top: 3px;">' . html_print_image($icon_image, true) . '</td>
+			<td class="title" style="text-transform: uppercase; padding-top: 10px;"><b>' . $text_title . '</b></td>
+			<td class="icon" style="text-align: right; padding-right: 3px;">';
 	if (!$no_close_bool) {
 		$output .= '<a href="javascript: close_info_box(\'' . $id . '\')">' .
 			html_print_image($hack_metaconsole . 'images/blade.png', true) . '</a>';
@@ -251,8 +251,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 	$output .= 	'</td>
 		</tr>
 		<tr>
-			<td></td>
-			<td style="color:#000000">' . $text_message . '</td>
+			<td style="color:#222">' . $text_message . '</td>
 			<td></td>
 		</tr>
 		</table>';
@@ -727,7 +726,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	$data[$index['force_execution']] = '';
 	if ($alert["force_execution"] == 0) {
 		$data[$index['force_execution']] =
-			'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "alt" => __('Force'))) . '</a>';
+			'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
 	} 
 	else {
 		$data[$index['force_execution']] =
@@ -2112,7 +2111,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . html_print_image($icon, true, array("style" => "vertical-align:middle;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
 	$buffer .= '<span style="display: inline-block; vertical-align: top; margin-top: 2px;">' . ui_print_truncate_text($title, 45);
 	if ($help != "")
-		$buffer .= "&nbsp;&nbsp;" . ui_print_help_icon ($help, true);
+		$buffer .= "<div style='float: right;'>" . ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
 	$buffer .= '</span></li></ul></div>';
 	
 	if (is_array($options)) {
@@ -2418,7 +2417,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 	
 	
 	//Default value
-	$icon_image = html_print_image('images/agent_unknown.png', true, false, true);
+	$icon_image = html_print_image('images/input_agent.png', true, false, true);
 	if (isset($parameters['icon_image'])) {
 		$icon_image = $parameters['icon_image'];
 	}

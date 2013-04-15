@@ -248,6 +248,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if (empty($chart_data)) {
+		return graph_nodata_image();
 		return '<img src="' . $no_data_image . '" />';
 	}
 	

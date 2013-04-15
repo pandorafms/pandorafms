@@ -1,3 +1,29 @@
+2013-04-15  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/styles/pandora.css
+	include/functions_ui.php
+	include/functions_graph.php
+	include/functions_events.php
+	include/graphs/fgraph.php
+	operation/events/events_list.php
+	operation/agentes/alerts_status.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/estado_monitores.php
+	images/help.png
+	images/blade.png
+	images/image_problem_pie.png
+	images/input_module.png
+	images/err.png
+	images/image_problem_area.png
+	images/input_agent.png
+	images/help_w.png
+	images/suc.png
+	images/image_problem_bars.png
+	images/information.png: Change new icons, modernize the
+	error, success and info messages and more aesthetic changes
+	Fix warning and notices from previous commit
+
 2013-04-15 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.item_editor.php: fixed the

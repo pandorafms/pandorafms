@@ -281,11 +281,12 @@ $remove_with_tag_disabled = empty($tag_with_temp);
 $add_without_tag_disabled = empty($tags_select_without);
 $remove_without_tag_disabled = empty($tag_without_temp);
 
+$tabletags = html_get_predefined_table('transparent', 2);
 $tabletags->id = 'filter_events_tags';
 $tabletags->width = '100%';
 $tabletags->cellspacing = 4;
 $tabletags->cellpadding = 4;
-$tabletags->class = '';
+$tabletags->class = 'noshadow';
 $tabletags->styleTable = 'border: 0px;';
 
 $data = array();
@@ -359,7 +360,7 @@ $types["not_normal"] = __("Not normal");
 $data[1] .= html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
 $data[2] = __('Severity') . '<br>';
 $data[2] .= html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true, false, false);
-$data[3] = '<fieldset class="databox" style="width:90%;"><legend>' . __('Tags') . '</legend>' . html_print_table($tabletags, true) . '</fieldset>';
+$data[3] = '<fieldset class="databox" style="width:95%;"><legend>' . __('Tags') . '</legend>' . html_print_table($tabletags, true) . '</fieldset>';
 $table->colspan[count($table->data)][3] = 2;
 $table->rowspan[count($table->data)][3] = 4;
 $table->data[] = $data;

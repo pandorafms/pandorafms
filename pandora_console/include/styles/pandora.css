@@ -449,6 +449,22 @@ input.wand {
     /* estándar */
     background: url(../../images/input_wand.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
+input.wand:disabled {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_wand.disabled.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_wand.disabled.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_wand.disabled.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_wand.disabled.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_wand.disabled.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_wand.disabled.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_wand.disabled.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
 input.search {
 	/* Browser without multibackground support */
 	background: #efefef url(../../images/input_zoom.png) no-repeat 90% 3px !important;
@@ -464,6 +480,22 @@ input.search {
     background: url(../../images/input_zoom.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
     /* estándar */
     background: url(../../images/input_zoom.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
+input.search:disabled {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_zoom.disabled.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_zoom.disabled.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_zoom.disabled.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_zoom.disabled.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_zoom.disabled.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_zoom.disabled.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_zoom.disabled.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
 input.ok {
 	/* Browser without multibackground support */
@@ -481,6 +513,22 @@ input.ok {
     /* estándar */
     background: url(../../images/input_tick.png) no-repeat 95% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
+input.ok:disabled {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_tick.disabled.png) no-repeat 95% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_tick.disabled.png) no-repeat 95% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_tick.disabled.png) no-repeat 95% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_tick.disabled.png) no-repeat 95% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_tick.disabled.png) no-repeat 95% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_tick.disabled.png) no-repeat 95% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_tick.disabled.png) no-repeat 95% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
 input.add {
 	/* Browser without multibackground support */
 	background: #efefef url(../../images/input_add.png) no-repeat 90% 3px !important;
@@ -496,6 +544,22 @@ input.add {
     background: url(../../images/input_add.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
     /* estándar */
     background: url(../../images/input_add.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
+input.add:disabled {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_add.disabled.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_add.disabled.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_add.disabled.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_add.disabled.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_add.disabled.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_add.disabled.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_add.disabled.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
 input.cancel {
 	/* Browser without multibackground support */
@@ -513,6 +577,22 @@ input.cancel {
     /* estándar */
     background: url(../../images/input_cross.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
+input.cancel:disabled {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_cross.disabled.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_cross.disabled.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_cross.disabled.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_cross.disabled.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_cross.disabled.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_cross.disabled.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_cross.disabled.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
 input.delete {
 	/* Browser without multibackground support */
 	background: #efefef url(../../images/input_delete.png) no-repeat 90% 3px !important;
@@ -528,6 +608,22 @@ input.delete {
     background: url(../../images/input_delete.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
     /* estándar */
     background: url(../../images/input_delete.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
+input.delete:disabled {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_delete.disabled.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_delete.disabled.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_delete.disabled.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_delete.disabled.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_delete.disabled.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_delete.disabled.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_delete.disabled.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
 input.cog {
 	/* Browser without multibackground support */
@@ -545,6 +641,22 @@ input.cog {
     /* estándar */
     background: url(../../images/input_cog.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
+input.cog:disabled {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_cog.disabled.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_cog.disabled.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_cog.disabled.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_cog.disabled.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_cog.disabled.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_cog.disabled.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_cog.disabled.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
 input.config {
 	/* Browser without multibackground support */
 	background: #efefef url(../../images/input_config.png) no-repeat 90% 3px !important;
@@ -560,6 +672,22 @@ input.config {
     background: url(../../images/input_config.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
     /* estándar */
     background: url(../../images/input_config.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
+input.config:disabled {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_config.disabled.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_config.disabled.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_config.disabled.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_config.disabled.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_config.disabled.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_config.disabled.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_config.disabled.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
 input.filter {
 	/* Browser without multibackground support */
@@ -577,6 +705,22 @@ input.filter {
     /* estándar */
     background: url(../../images/input_filter.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
+input.filter:disabled {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_filter.disabled.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_filter.disabled.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_filter.disabled.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_filter.disabled.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_filter.disabled.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_filter.disabled.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_filter.disabled.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
 input.pdf {
 	/* Browser without multibackground support */
 	background: #efefef url(../../images/input_pdf.png) no-repeat 90% 3px !important;
@@ -592,6 +736,22 @@ input.pdf {
     background: url(../../images/input_pdf.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
     /* estándar */
     background: url(../../images/input_pdf.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
+}
+input.pdf:disabled {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_pdf.disabled.png) no-repeat 90% 3px !important;
+    /* Safari 4-5, Chrome 1-9 */
+    background: url(../../images/input_pdf.disabled.png) no-repeat 90% 3px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#dfdfdf)) !important;
+    /* Safari 5.1+, Chrome 10+ */
+	background: url(../../images/input_pdf.disabled.png) no-repeat 90% 3px, -webkit-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Firefox 3.6+ */
+    background: url(../../images/input_pdf.disabled.png) no-repeat 90% 3px, -moz-linear-gradient(top, #ffffff, #dfdfdf) !important;
+    /* Opera 11.10+ */
+    background: url(../../images/input_pdf.disabled.png) no-repeat 90% 3px, -o-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* IE 10 */
+    background: url(../../images/input_pdf.disabled.png) no-repeat 90% 3px, -ms-linear-background(top, #ffffff, #dfdfdf) !important;
+    /* estándar */
+    background: url(../../images/input_pdf.disabled.png) no-repeat 90% 3px, linear-background(top, #ffffff, #dfdfdf) !important;
 }
 #toolbox #auto_save {
 	padding-top: 5px;
@@ -717,8 +877,7 @@ td input[type=checkbox]
   -o-transform: scale(1.3); /* Opera */
   -webkit-transform: scale(1.3); /* Safari and Chrome */
   padding: 10px;
-  margin-top: 7px;
-  margin-left: 15px;
+  margin-top: 2px;
   display: table-cell; 
   vertical-align: top;
   
@@ -2217,6 +2376,16 @@ input.search_input {
 	margin-left: 2px;
 }
 
+td input, td select {
+	margin-top: 4px;
+}
+
+.noshadow {
+	-moz-box-shadow: 0px !important;
+	-webkit-box-shadow: 0px !important;
+	box-shadow: 0px !important;
+}
+
 /* Images forced title */
 
 DIV.forced_title_layer {
@@ -2234,4 +2403,11 @@ DIV.forced_title_layer {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
+}
+
+/* Graphs styles */
+
+DIV.legend>DIV {
+	width: 100% !important;
+	opacity: 0.65 !important;
 }

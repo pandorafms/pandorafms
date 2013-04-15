@@ -1328,7 +1328,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 		$out = area_graph($config['flash_charts'], $data, $width, $height,
 			null, null, null, ui_get_full_url("images/image_problem.opaque.png"), "", "", ui_get_full_url(false, false, false, false),
 			$water_mark,
-			$config['fontpath'], $config['font_size'], "");
+			$config['fontpath'], $config['font_size'], "", 1, array(), array(), 0, 0, '', false, '', false);
 	}
 	
 	if($return) {

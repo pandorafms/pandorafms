@@ -1,3 +1,65 @@
+2013-04-15  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/styles/pandora.css
+	include/functions_ui.php
+	include/functions_graph.php
+	include/functions_events.php
+	include/graphs/functions_flot.php
+	include/graphs/flot/pandora.flot.js
+	include/graphs/fgraph.php
+	operation/events/events_list.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/stat_win.php
+	images/file.png
+	images/collection_col.png
+	images/input_update.disabled.png
+	images/input_wand.disabled.png
+	images/heart_col.png
+	images/calendar_view_day.png
+	images/reporting.png
+	images/input_tick.png
+	images/input_zoom.disabled.png
+	images/input_tick.disabled.png
+	images/input_go.disabled.png
+	images/clock.png
+	images/input_pdf.disabled.png
+	images/tree.png
+	images/groups_small/transmit.png
+	images/groups_small/drive_network.png
+	images/groups_small/eye.png
+	images/groups_small/printer.png
+	images/groups_small/lightning.png
+	images/groups_small/clock.png
+	images/groups_small/bricks.png
+	images/groups_small/chart_organisation.png
+	images/groups_small/world.png
+	images/groups_small/lock.png
+	images/groups_small/network.png
+	images/groups_small/plugin.png
+	images/groups_small/images.png
+	images/groups_small/without_group.png
+	images/groups_small/mail.png
+	images/groups_small/house.png
+	images/groups_small/application_osx_terminal.png
+	images/groups_small/server_database.png
+	images/groups_small/computer.png
+	images/groups_small/database_gear.png
+	images/groups_small/heart.png
+	images/groups_small/firewall.png
+	images/groups_small/applications.png
+	images/input_delete.disabled.png
+	images/input_filter.disabled.png
+	images/category_col.png
+	images/input_cog.disabled.png
+	images/input_add.disabled.png
+	images/input_cross.disabled.png
+	images/recon.png
+	images/pandora_header_logo.png
+	images/dashboard_col.png
+	images/input_config.disabled.png: Change groups icons, 
+	change more icons and images and fix some layout bugs
+
 2013-04-13  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_meta_access.php: Added a new help file.

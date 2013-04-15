@@ -235,9 +235,9 @@ $label = base64_decode(get_parameter('label', ''));
 		$table = html_get_predefined_table('transparent', 2);
 		$table->width = '98%';
 		$table->id = 'stat_win_form_div';
-		$table->style[0] = 'text-align:left;';
+		$table->style[0] = 'text-align:left; padding: 7px;';
 		$table->style[1] = 'text-align:left;';
-		$table->size[0] = '60%';
+		$table->size[0] = '50%';
 
 		$data = array();
 		$data[0] = __('Refresh time');
@@ -257,7 +257,7 @@ $label = base64_decode(get_parameter('label', ''));
 		$data = array();
 		$data[0] = __('Begin date');
 		$data[1] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 15, 255, true);
-		$data[1] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
+		$data[1] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);", "style" => 'vertical-align: bottom;'));
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
@@ -348,7 +348,7 @@ $label = base64_decode(get_parameter('label', ''));
 		$params['icon_open'] = '/images/graphmenu_arrow.png';
 		
 		// SIZE
-		$params['width'] = 400;
+		$params['width'] = 500;
 		
 		// POSITION
 		$params['position'] = 'left';

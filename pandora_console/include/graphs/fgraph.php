@@ -234,14 +234,14 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	$long_index, $no_data_image, $xaxisname = "", $yaxisname = "", $homeurl="",
 	$water_mark = "", $font = '', $font_size = '', $unit = '', $ttl = 1, $series_type = array(),
 	$chart_extra_data = array(), $yellow_threshold = 0, $red_threshold = 0, $adapt_key = '', $force_integer = false,
-	$series_suffix_str = '') {
-	
+	$series_suffix_str = '', $menu = true) {
+
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
-	// ATTENTION: The min size is 130x150 
+	// ATTENTION: The min size is 110x150 
 	// It's not the same minsize for all graphs, but we are choosed a prudent minsize for all
-	if ($height <= 130) {
-		$height = 130;
+	if ($height <= 110) {
+		$height = 110;
 	}
 	if ($width < 150) {
 		$width = 150;
@@ -252,7 +252,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color, $legend,
 	}
 	
 	if ($flash_chart) {
-		return flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $series_type, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str);
+		return flot_area_simple_graph($chart_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark_url, $series_type, $chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key, $force_integer, $series_suffix_str, $menu);
 	}
 	else {
 		$graph = array();

@@ -161,7 +161,7 @@ function html_print_side_layer ($params) {
 			break;
 	}
 		
-	$out_html = '<div id="side_layer" class="menu_sidebar ' . $round_class . '" style="display:none; z-index:1; overflow: hidden; height: ' . $params['height'] . ';">';
+	$out_html = '<div id="side_layer" class="menu_sidebar ' . $round_class . '" style="display:none; z-index:1; overflow: hidden; height: ' . $params['height'] . '; width: ' . $params['width'] . ';">';
 
 	$table->id = 'side_layer_layout';
 	$table->width = $params['width'] . 'px';
@@ -636,13 +636,13 @@ function html_print_extended_select_for_time ($name, $selected = '', $script = '
 	ob_start();
 	
 	echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
-		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'))).'</a>';
+		echo ' <a href="javascript:">'.html_print_image('images/pencil.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('Custom'), 'title' => __('Custom'), 'style' => 'width: 18px;')).'</a>';
 		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
 			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
 	echo '</div>';
 	
 	echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
-		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('List'), 'title' => __('List'))).'</a>';
+		echo ' <a href="javascript:">'.html_print_image('images/default_list.png',true,array('class' => $uniq_name . '_toggler', 'alt' => __('List'), 'title' => __('List'), 'style' => 'width: 18px;')).'</a>';
 		html_print_input_text ($uniq_name . '_text', $selected, '', $size);
 	
 		html_print_input_hidden ($name, $selected, false, $uniq_name);

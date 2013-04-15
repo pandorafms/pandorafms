@@ -1,3 +1,8 @@
+2013-04-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/pandora_windows_service.cc: Open the XML data file in binary
+	  mode to avoid getting extra carriage returns.
+
 2013-04-11  Hirofumi Kosaka <kosaka@rworks.jp>
 
 	* win32/pandora_windows_service.cc: Fixed possible resource leaks;

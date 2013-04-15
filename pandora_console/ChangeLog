@@ -1,5 +1,12 @@
 2013-04-15 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/reporting/reporting_builder.item_editor.php: fixed the
+	hide autocomplete agent in all cases.
+	
+	Fixes: #3609628
+
+2013-04-15 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_html.php, include/javascript/jquery.pandora.js:
 	improved the source code style.
 

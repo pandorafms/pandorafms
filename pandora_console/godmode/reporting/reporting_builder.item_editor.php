@@ -569,17 +569,54 @@ html_print_input_hidden('id_item', $idItem);
 			</td>
 		</tr>
 		<tr id="row_working_time">
-			<td style="vertical-align: top;"><?php echo __('Working time');?></td>
+			<td style="vertical-align: top;">
+				<?php echo __('Working time');?>
+			</td>
 			<td>
 				<table border="0">
 					<tr>
-						<td><?php echo __('Monday'); html_print_checkbox('monday', 1, $monday);?></td>
-						<td><?php echo __('Tuesday'); html_print_checkbox('tuesday', 1, $tuesday);?></td>
-						<td><?php echo __('Wednesday'); html_print_checkbox('wednesday', 1, $wednesday);?></td>
-						<td><?php echo __('Thursday'); html_print_checkbox('thursday', 1, $thursday);?></td>
-						<td><?php echo __('Friday'); html_print_checkbox('friday', 1, $friday);?></td>
-						<td><?php echo __('Saturday'); html_print_checkbox('saturday', 1, $saturday);?></td>
-						<td><?php echo __('Sunday'); html_print_checkbox('sunday', 1, $sunday);?></td>
+						<td>
+							<?php
+							echo __('Monday');
+							html_print_checkbox('monday', 1, $monday);
+							?>
+						</td>
+						<td>
+							<?php
+							echo __('Tuesday');
+							html_print_checkbox('tuesday', 1, $tuesday);
+							?>
+						</td>
+						<td>
+							<?php
+							echo __('Wednesday');
+							html_print_checkbox('wednesday', 1, $wednesday);
+							?>
+						</td>
+						<td>
+							<?php
+							echo __('Thursday');
+							html_print_checkbox('thursday', 1, $thursday);
+							?>
+						</td>
+						<td>
+							<?php
+							echo __('Friday');
+							html_print_checkbox('friday', 1, $friday);
+							?>
+						</td>
+						<td>
+							<?php
+							echo __('Saturday');
+							html_print_checkbox('saturday', 1, $saturday);
+							?>
+						</td>
+						<td>
+							<?php
+							echo __('Sunday');
+							html_print_checkbox('sunday', 1, $sunday);
+							?>
+						</td>
 					</tr>
 					<tr>
 						<td><?php echo __('Time from');?></td>
@@ -595,15 +632,20 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Group');?></td>
 			<td style="">
-				<?php html_print_select_groups($config['id_user'],
-					"AR", true, 'combo_group', $group, '');?>
+				<?php
+				html_print_select_groups($config['id_user'],
+					"AR", true, 'combo_group', $group, '');
+				?>
 			</td>
 		</tr>
 		<tr id="row_module_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Module group');?></td>
 			<td style="">
-				<?php html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
-				'combo_modulegroup', $modulegroup, '',__('All'));?>
+				<?php
+				html_print_select_from_sql(
+					"SELECT * FROM tmodule_group ORDER BY name",
+					'combo_modulegroup', $modulegroup, '',__('All'));
+				?>
 			</td>
 		</tr>
 		<tr id="row_agent" style="" class="datos">
@@ -627,9 +669,9 @@ html_print_input_hidden('id_item', $idItem);
 				}
 				
 				html_print_input_hidden('id_agent', $idAgent);
-				html_print_input_hidden ('server_name', $server_name);
-				html_print_input_hidden ('server_id', $server_name);
-				html_print_input_hidden ('id_server', '');
+				html_print_input_hidden('server_name', $server_name);
+				html_print_input_hidden('server_id', $server_name);
+				html_print_input_hidden('id_server', '');
 				
 				
 				//////////////////
@@ -1756,8 +1798,8 @@ function chooseType() {
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
 	
-	$('#agent_autocomplete').show();
-	$('#agent_autocomplete_events').hide();
+	//$('#agent_autocomplete').show();
+	$('#agent_autocomplete_events').show();
 	
 	switch (type) {
 		case 'event_report_group':

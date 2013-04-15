@@ -1,5 +1,10 @@
 2013-04-15  Sergio Martin <sergio.martin@artica.es>
 
+	* general/header.php: Adding id to the header table
+	to avoid jquery malfunctions in other places
+
+2013-04-15  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php
 	include/styles/pandora.css
 	include/functions_ui.php

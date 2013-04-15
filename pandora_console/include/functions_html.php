@@ -1640,7 +1640,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 	// If metaconsole is activated and image doesn't exists try to search on normal console
 	if (defined('METACONSOLE')) {
 		if (!$relative) {
-			if (false === @file_get_contents($src,0,null,0,1)) {
+			if (false === @file_get_contents($src, 0, null, 0, 1)) {
 				$src = ui_get_full_url('../../' . $src_tmp); 
 			}
 		}
@@ -1658,7 +1658,7 @@ function html_print_image ($src, $return = false, $options = false, $return_src 
 		return io_safe_input($src);
 	}
 	
-	$output = '<img src="'.$src.'" '; // Dont use safe_input here or the performance will dead
+	$output = '<img src="' . $src . '" '; // Dont use safe_input here or the performance will dead
 	$style = '';
 	
 	if (!empty ($options)) {

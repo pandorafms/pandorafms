@@ -145,7 +145,7 @@ $table_contact->class = 'databox';
 $table_contact->style[0] = 'width: 30%;';
 $table_contact->style[1] = 'width: 70%;';
 
-$table_contact->head[0] = ' <span class="med_data">' . __('Agent contact') . '</span>';
+$table_contact->head[0] = ' <span>' . __('Agent contact') . '</span>';
 $table_contact->head_colspan[0] = 2;
 
 $data = array();
@@ -183,7 +183,7 @@ $table_data->class = 'databox';
 $table_data->style[0] = 'width: 30%;';
 $table_data->style[1] = 'width: 70%;';
 
-$table_data->head[0] = ' <span class="med_data">' . __('Agent info') . '</span>';
+$table_data->head[0] = ' <span>' . __('Agent info') . '</span>';
 $table_data->head_colspan[0] = 2;
 
 if (!empty($addresses)) {
@@ -320,7 +320,7 @@ if ($config["agentaccess"]) {
 						__('Agent access rate (24h)') . 
 					'</legend>' . 
 					'<div style="margin: auto; text-align:center; width: 300px;">' .
-					graphic_agentaccess($id_agente, 300, 110, 86400, true) . 
+					graphic_agentaccess($id_agente, 300, 100, 86400, true) . 
 					'</div>' . 
 					'</fieldset>';
 }

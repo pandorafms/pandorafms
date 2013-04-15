@@ -964,116 +964,53 @@ function events_print_type_img ($type, $return = false, $only_url = false) {
 	
 	switch ($type) {
 		case "alert_recovered":
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/error.png";
-			}
-			else {
-				$output .= html_print_image ("images/error.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "bell.png";
 			break;
 		case "alert_manual_validation":
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/eye.png";
-			}
-			else {
-				$output .= html_print_image ("images/eye.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
-			break;
-		case "going_up_warning":
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/b_yellow.png";
-			}
-			else {
-				$output .= html_print_image ("images/b_yellow.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "ok.png";
 			break;
 		case "going_down_critical":
 		case "going_up_critical": //This is to be backwards compatible
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/b_red.png";
-			}
-			else {
-				$output .= html_print_image ("images/b_red.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "module_critical.png";
 			break;
 		case "going_up_normal":
 		case "going_down_normal": //This is to be backwards compatible
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/b_green.png";
-			}
-			else {
-				$output .= html_print_image ("images/b_green.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "module_ok.png";
 			break;
+		case "going_up_warning":
 		case "going_down_warning":
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/b_yellow.png";
-			}
-			else {
-				$output .= html_print_image ("images/b_yellow.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "module_warning.png";
 			break;
 		case "going_unknown":
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/b_blue.png";
-			}
-			else {
-				$output .= html_print_image ("images/b_blue.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "module_unknown.png";
 			break;
 		case "alert_fired":
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/bell.png";
-			}
-			else { 
-				$output .= html_print_image ("images/bell.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "bell_error.png";
 			break;
 		case "system":
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/cog.png";
-			}
-			else {
-				$output .= html_print_image ("images/cog.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "cog.png";
 			break;
 		case "recon_host_detected":
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/network.png";
-			}
-			else {
-				$output .= html_print_image ("images/network.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "recon.png";
 			break;
 		case "new_agent":
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/wand.png";
-			}
-			else {
-				$output .= html_print_image ("images/wand.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "agent.png";
+			break;
+		case "configuration_change":
+			$icon = "config.png";
 			break;
 		case "unknown": 
 		default:
-			if ($only_url) {
-				$output = $urlImage . "/" . "images/err.png";
-			}
-			else {
-				$output .= html_print_image ("images/err.png", true,
-					array ("title" => events_print_type_description($type, true)));
-			}
+			$icon = "lightning_go.png";
 			break;
+	}
+	
+	if ($only_url) {
+		$output = $urlImage . "/" . "images/" . $icon;
+	}
+	else {
+		$output .= html_print_image ("images/" . $icon, true,
+			array ("title" => events_print_type_description($type, true)));
 	}
 	
 	if ($return)

@@ -78,6 +78,8 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 			conf_pie.legend.position = "s";
 			break;
 		case 'right':
+		case 'inner':
+			conf_pie.legend.container = $('#'+graph_id+"_legend");
 		default:
 			//TODO FOR TOP OR LEFT OR RIGHT
 			break;
@@ -704,7 +706,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend, colors, 
 	// Connection between plot and miniplot
 	
 	$('#'+graph_id).bind('plotselected', function (event, ranges) {
-		// do the zooming
+		// do the zooming if exist menu to undo it
+		if (menu == 0) {
+			return;
+		}
 		dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
 		dataInPlot = plot.getData()[0].data.length;
 		

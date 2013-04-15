@@ -487,9 +487,6 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 	else
 		$icon = "world";
 	
-	if ($style == '')
-		$style = 'width: 16px; height: 16px;';
-	
 	$output = '';
 	
 	// Don't show link in metaconsole
@@ -1541,25 +1538,25 @@ function ui_print_session_action_icon ($action, $return = false) {
 	$key_icon = array(
 			'acl' => 'images/delete.png', 
 			'agent' => 'images/agent.png', 
-			'module' => 'images/brick.png',
+			'module' => 'images/module.png',
 			'alert' => 'images/bell.png',
-			'incident' => 'images/book_edit.png',
+			'incident' => 'images/default_list.png',
 			'logon' => 'images/house.png',
 			'logoff' => 'images/house.png',
-			'massive' => 'images/sitemap_color.png',
-			'hack' => 'images/info.png',
+			'massive' => 'images/config.png',
+			'hack' => 'images/application_edit.png',
 			'event' => 'images/lightning_go.png',
 			'policy' => 'images/policies.png',
 			'report' => 'images/reporting.png',
-			'file collection' => 'images/file.png',
+			'file collection' => 'images/collection_col.png',
 			'user' => 'images/user_green.png',
 			'password' => 'images/lock.png',
-			'session' => 'images/heart.png',
+			'session' => 'images/heart_col.png',
 			'snmp' => 'images/snmp.png',
 			'command' => 'images/bell.png',
-			'category' => 'images/god6.png',
-			'dashboard' => 'images/application_double.png',
-			'api' => 'images/page_white_text.png',
+			'category' => 'images/category_col.png',
+			'dashboard' => 'images/dashboard_col.png',
+			'api' => 'images/eye.png',
 			'db' => 'images/database.png',
 			'setup' => 'images/cog.png'
 			);

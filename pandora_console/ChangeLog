@@ -1,3 +1,8 @@
+2013-04-15 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_html.php, include/javascript/jquery.pandora.js:
+	improved the source code style.
+
 2013-04-15  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php

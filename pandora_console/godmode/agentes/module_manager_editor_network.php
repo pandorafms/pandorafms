@@ -33,8 +33,9 @@ if (strstr($page, "policy_modules") === false) {
 	if ($config['enterprise_installed']) {
 		$disabledBecauseInPolicy = policies_is_module_in_policy($id_agent_module) && policies_is_module_linked($id_agent_module);
 	}
-	else
+	else {
 		$disabledBecauseInPolicy = false;
+	}
 	if ($disabledBecauseInPolicy)
 		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
 }
@@ -113,13 +114,13 @@ $data[0] = __('TCP send') . ' ' . ui_print_help_icon ("tcp_send", true);
 $data[1] = html_print_textarea ('tcp_send', 2, 65, $tcp_send, $disabledTextBecauseInPolicy, true);
 $table_advanced->colspan['tcp_send'][1] = 3;
 
-push_table_advanced ($data, 'tcp_send');
+push_table_simple ($data, 'tcp_send');
 
 $data[0] = __('TCP receive');
 $data[1] = html_print_textarea ('tcp_rcv', 2, 65, $tcp_rcv, $disabledTextBecauseInPolicy, true);
 $table_advanced->colspan['tcp_receive'][1] = 3;
 
-push_table_advanced ($data, 'tcp_receive');
+push_table_simple ($data, 'tcp_receive');
 
 if ($id_module_type >= 15 && $id_module_type <= 18) {
 	/* SNMP */
@@ -207,25 +208,25 @@ $(document).ready (function () {
 	});
 	
 	$("#select_snmp_oid").click (
-	function () {
-		$(this).css ("width", "auto"); 
-		$(this).css ("min-width", "180px"); 
-	});	
+		function () {
+			$(this).css ("width", "auto"); 
+			$(this).css ("min-width", "180px"); 
+		});
 	
 	$("#select_snmp_oid").blur (function () {
 		$(this).css ("width", "180px"); 
 	});
 	
 	$("#id_module_type").click (
-	function () {
-		$(this).css ("width", "auto"); 
-		$(this).css ("min-width", "180px"); 
-	});
+		function () {
+			$(this).css ("width", "auto"); 
+			$(this).css ("min-width", "180px"); 
+		});
 	
 	$("#id_module_type").blur (function () {
 		$(this).css ("width", "180px"); 
 	});
-
+	
 	// Keep elements in the form and the SNMP browser synced
 	$('#text-ip_target').keyup(function() {
 		$('#text-target_ip').val($(this).val());
@@ -243,11 +244,11 @@ $(document).ready (function () {
 
 // Show the SNMP browser window
 function snmpBrowserWindow () {
-
+	
 	// Keep elements in the form and the SNMP browser synced
 	$('#text-target_ip').val($('#text-ip_target').val());
 	$('#text-community').val($('#text-snmp_community').val());
-		
+	
 	$("#snmp_browser_container").show().dialog ({
 		title: '',
 		resizable: true,

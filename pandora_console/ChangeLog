@@ -1,3 +1,14 @@
+2013-04-16 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_common.php,
+	include/javascript/pandora_modules.js: fixed the hidden fields for
+	tcp checks.
+	
+	Fixes: #3611054
+	
+	* godmode/setup/setup_visuals.php: improved the source code style.
+
 2013-04-16  Mario Pulido <mario.pulido@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Fixed helps view in Agent config

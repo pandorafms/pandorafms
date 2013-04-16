@@ -6,20 +6,22 @@ var id_modules_snmp = Array (15, 16, 17, 18);
 function configure_modules_form () {
 	$("#id_module_type").change (function () {
 		if (id_modules_icmp.in_array (this.value)) {
-			$("tr#simple-snmp_1, tr#simple-snmp_2, tr#advanced-tcp_send, tr#advanced-tcp_receive").hide ();
+			$("tr#simple-snmp_1, tr#simple-snmp_2, tr#simple-tcp_send, tr#simple-tcp_receive").hide ();
 			$("#text-tcp_port").attr ("disabled", "1");
 		}
 		else if (id_modules_snmp.in_array (this.value)) {
 			$("tr#simple-snmp_1, tr#simple-snmp_2").show ();
-			$("tr#advanced-tcp_send, tr#advanced-tcp_receive").hide ();
+			$("tr#simple-tcp_send, tr#simple-tcp_receive").hide ();
 			$("#text-tcp_port").removeAttr ("disabled");
 		}
 		else if (id_modules_tcp.in_array (this.value)) {
 			$("tr#simple-snmp_1, tr#simple-snmp_2").hide ();
-			$("tr#advanced-tcp_send, tr#advanced-tcp_receive").show ();
+			$("tr#simple-tcp_send, tr#simple-tcp_receive").show ();
 			$("#text-tcp_port").removeAttr ("disabled");
 		}
 	});
+	
+	$("#id_module_type").trigger("change");
 	
 	$("#local_component_group").change (function () {
 		

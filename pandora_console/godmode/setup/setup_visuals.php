@@ -96,7 +96,7 @@ $units = array(
 	SECONDS_1DAY => __('days'),
 	SECONDS_1MONTH => __('months'),
 	SECONDS_1YEAR => __('years'));
-	
+
 $table->data[$row][1] = __('Add new custom value to intervals') . ': ';
 $table->data[$row][1] .= html_print_input_text ('interval_value', '', '', 5, 5, true);
 $table->data[$row][1] .= html_print_select ($units, 'interval_unit', 1, "", '', '', true, false, false);
@@ -298,7 +298,7 @@ $(document).ready (function () {
 
 function changeIcons() {
 	icon = $("#gis_default_icon :selected").val();
-
+	
 	$("#icon_without_status").attr("src", "images/spinner.png");
 	$("#icon_default").attr("src", "images/spinner.png");
 	$("#icon_ok").attr("src", "images/spinner.png");

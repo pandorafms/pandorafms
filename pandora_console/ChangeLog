@@ -1,3 +1,8 @@
+2013-04-16 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/setup/setup.php: updated the method to fill the header
+	with the new header.
+
 2013-04-16  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_ui.php

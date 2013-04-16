@@ -69,35 +69,36 @@ $buttons = array();
 
 // Draws header
 $buttons['general'] = array('active' => false, 
-			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general">' .
-			html_print_image("images/gm_setup.png", true, array ("title" => __('General'))) . '</a>');
+	'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general">' .
+	html_print_image("images/gm_setup.png", true, array ("title" => __('General'))) . '</a>');
 
 if (enterprise_installed()) {
 	$buttons = setup_enterprise_add_Tabs($buttons);
 }
 
 $buttons['auth'] = array('active' => false, 
-			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=auth">' .
-			html_print_image("images/key.png", true, array ("title" => __('Authentication'))) . '</a>');
-			
+	'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=auth">' .
+	html_print_image("images/key.png", true, array ("title" => __('Authentication'))) . '</a>');
+
 $buttons['perf'] = array('active' => false, 
-			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=perf">' .
-			html_print_image("images/performance.png", true, array ("title" => __('Performance'))) . '</a>');
-			
+	'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=perf">' .
+	html_print_image("images/performance.png", true, array ("title" => __('Performance'))) . '</a>');
+
 $buttons['vis'] = array('active' => false, 
-			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=vis">' .
-			html_print_image("images/chart.png", true, array ("title" => __('Visual styles'))) . '</a>');
+	'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=vis">' .
+	html_print_image("images/chart.png", true, array ("title" => __('Visual styles'))) . '</a>');
 
 if (check_acl ($config['id_user'], 0, "AW")) {
 	if ($config['activate_netflow']) {
 		$buttons['net'] = array('active' => false, 
-				'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=net">' .
-				html_print_image("images/op_netflow.png", true, array ("title" => __('Netflow'))) . '</a>');
+			'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=net">' .
+			html_print_image("images/op_netflow.png", true, array ("title" => __('Netflow'))) . '</a>');
 	}
 }
 
+$help_header = '';
 if (enterprise_installed()) {
-	$subpage = setup_enterprise_add_subsection_main($section, $buttons);
+	$subpage = setup_enterprise_add_subsection_main($section, $buttons, $help_header);
 }
 
 switch ($section) {
@@ -111,7 +112,8 @@ switch ($section) {
 		break;
 	case 'perf':
 		$buttons['perf']['active'] = true;
-		$subpage = ' &raquo ' . __('Performance') . ' ' . ui_print_help_icon ('performance', true);
+		$subpage = ' &raquo ' . __('Performance');
+		$help_header = 'performance';
 		break;
 	case 'vis':
 		$buttons['vis']['active'] = true;
@@ -124,7 +126,7 @@ switch ($section) {
 }
 
 // Header
-ui_print_page_header (__('Configuration') . $subpage, "", false, "", true, $buttons);
+ui_print_page_header (__('Configuration') . $subpage, "", false, $help_header, true, $buttons);
 
 if (isset($config['error_config_update_config'])) {
 	if ($config['error_config_update_config']['correct'] == false) {
@@ -139,23 +141,23 @@ if (isset($config['error_config_update_config'])) {
 
 switch ($section) {
 	case "general":
-			require_once($config['homedir'] . "/godmode/setup/setup_general.php");
-			break;
+		require_once($config['homedir'] . "/godmode/setup/setup_general.php");
+		break;
 	case "auth":
-			require_once($config['homedir'] . "/godmode/setup/setup_auth.php");
-			break;
+		require_once($config['homedir'] . "/godmode/setup/setup_auth.php");
+		break;
 	case "perf":
-			require_once($config['homedir'] . "/godmode/setup/performance.php");
-			break;
+		require_once($config['homedir'] . "/godmode/setup/performance.php");
+		break;
 	case "net":
-			require_once($config['homedir'] . "/godmode/setup/setup_netflow.php");
-			break;
+		require_once($config['homedir'] . "/godmode/setup/setup_netflow.php");
+		break;
 	case "vis":
-			require_once($config['homedir'] . "/godmode/setup/setup_visuals.php");
-			break;
+		require_once($config['homedir'] . "/godmode/setup/setup_visuals.php");
+		break;
 	default:
-			enterprise_hook('setup_enterprise_select_tab', array($section));
-			break;
+		enterprise_hook('setup_enterprise_select_tab', array($section));
+		break;
 }
 
 ?>

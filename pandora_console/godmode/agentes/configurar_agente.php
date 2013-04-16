@@ -395,32 +395,39 @@ if ($id_agente) {
 			$onheader = $onheader + array($id => $extension_tab);
 		}
 	}
-	
+
+	$help_header = '';
 	// This add information to the header 
 	switch ($tab) {
 		case "main":
 			$tab_description = '- '. __('Setup'); 
 			break;
 		case "collection":
-			$tab_description = '- ' . __('Collection') . ui_print_help_icon('collection_tab', true);
+			$tab_description = '- ' . __('Collection') ;
+			$help_header = 'collection_tab';
 			break;
 		case "inventory":
-			$tab_description = '- ' . __('Inventory') . ui_print_help_icon('inventory_tab', true);
+			$tab_description = '- ' . __('Inventory');
+			$help_header = 'inventory_tab';
 			break;
 		case "plugins":
-			$tab_description = '- ' . __('Agent plugins') . ui_print_help_icon('plugins_tab', true);
+			$tab_description = '- ' . __('Agent plugins');
+			$help_header = 'plugins_tab';
 			break;
 		case "module":
 			$tab_description = '- '. __('Modules');
 			break;
 		case "alert":
-			$tab_description = '- ' . __('Alert') . ui_print_help_icon('manage_alert_list', true);
+			$tab_description = '- ' . __('Alert');
+			$help_header = 'manage_alert_list';
 			break;
 		case "template":
-			$tab_description = '- ' . __('Templates') . ui_print_help_icon('template_tab', true);
+			$tab_description = '- ' . __('Templates');
+			$help_header = 'template_tab';
 			break;
 		case "gis":
-			$tab_description = '- ' . __('Gis') . ui_print_help_icon('gis_tab', true);
+			$tab_description = '- ' . __('Gis');
+			$help_header = 'gis_tab';
 			break;
 		case "incident":
 			$tab_description = '- ' . __('Incidents');
@@ -429,7 +436,8 @@ if ($id_agente) {
 			$id_extension = get_parameter('id_extension', '');
 			switch ($id_extension) {
 				case "snmp_explorer":
-					$tab_description = '- ' . __('SNMP explorer') . ui_print_help_icon('snmp_explorer', true);
+					$tab_description = '- ' . __('SNMP explorer');
+					$help_header = 'snmp_explorer';
 					break;
 			}
 			break;
@@ -439,7 +447,7 @@ if ($id_agente) {
 	
 	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' .
 		agents_get_name ($id_agente) .
-		' ' . $tab_description, "images/setup.png", false, "", true, $onheader);
+		' ' . $tab_description, "images/setup.png", false, $help_header , true, $onheader);
 }
 else {
 	// Create agent 

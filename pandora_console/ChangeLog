@@ -1,3 +1,8 @@
+2013-04-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/db/mysql.php: Fix a bug with the dbresource in the 
+	function that count the result of a query.
+
 2013-04-16 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/agentes/module_manager_editor_network.php,

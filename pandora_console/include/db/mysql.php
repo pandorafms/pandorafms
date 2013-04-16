@@ -714,7 +714,9 @@ function mysql_db_get_all_rows_filter ($table, $filter = array(), $fields = fals
  * @return integer The count of rows of query.
  */
 function mysql_db_get_num_rows ($sql) {
-	$result = mysql_query($sql);
+	global $config;
+	
+	$result = mysql_query($sql, $config['dbconnection']);
 	
 	if ($result) {
 		return mysql_num_rows($result);

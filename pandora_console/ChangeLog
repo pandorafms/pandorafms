@@ -1,3 +1,7 @@
+2013-04-16 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/groups/group_list.php: fixed notice PHP.
+
 2013-04-16  Sergio Martin <sergio.martin@artica.es>
 
 	* include/db/mysql.php: Fix a bug with the dbresource in the 

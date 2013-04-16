@@ -329,7 +329,12 @@ if (!empty($groups)) {
 			$symbol = '+';
 		}
 		
-		if ($group['hash_branch']) {
+		$group_hash_branch = false;
+		if (isset($group['hash_branch'])) {
+			$group_hash_branch = $group['hash_branch'];
+		}
+		
+		if ($group_hash_branch) {
 			$data[0] = '<strong>'.$tabulation . ' ' . 
 				'<a href="javascript: showBranch(' . $group['id_grupo'] .
 				', ' . $group['parent'] . ');" title="' . __('Show branch children') .
@@ -337,7 +342,7 @@ if (!empty($groups)) {
 				$symbol . '</span> '. ui_print_truncate_text($group['nombre']) . '</a></strong>';
 		}
 		else {
-			$data[0] = '<strong>'.$tabulation . ' ' . ui_print_truncate_text($group['nombre']) . '</strong>';
+			$data[0] = '<strong>' . $tabulation . ' ' . ui_print_truncate_text($group['nombre']) . '</strong>';
 		}
 		$data[1] = $group['id_grupo'];
 		$data[2] = ui_print_group_icon($group['id_grupo'], true);

@@ -1,3 +1,10 @@
+2013-04-16  Mario Pulido <mario.pulido@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Fixed helps view in Agent config
+
+	*include/help/es/help_alert-matches.php,
+        include/help/en/help_alert-matches.php: Modified alert help (Scaling alerts)
+
 2013-04-16  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

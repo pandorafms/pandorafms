@@ -1,5 +1,10 @@
 2013-04-16 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/agentes/alerts_status.php: fixed the PHP warnings and
+	improved the show when have not alerts.
+
+2013-04-16 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/groups/group_list.php: fixed notice PHP.
 
 2013-04-16  Sergio Martin <sergio.martin@artica.es>

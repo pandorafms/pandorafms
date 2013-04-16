@@ -1,3 +1,17 @@
+2013-04-16  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	images/blade.png: Aesthetic changes
+		
+	* include/ajax/events.php
+	include/functions_ui.php
+	include/javascript/pandora_events.js
+	operation/events/events.build_table.php
+	operation/events/events.php
+	include/functions_config.php: Add the readonly
+	mode to events list when the new option is 
+	enabled on setup
+
 2013-04-16 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/setup/setup.php: updated the method to fill the header

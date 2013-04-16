@@ -41,11 +41,22 @@ if(enterprise_installed() && defined("METACONSOLE")) {
 // Get the history mode
 $history = (bool) get_parameter('history', 0);
 
-if (isset($config['event_replication']) &&  $config['event_replication'] == 1 && !$meta) {
-	db_pandora_audit("ACL Violation",
-		"Trying to access event viewer. View disabled due event replication.");
-	ui_print_info_message('Event viewer is disabled due event replication. For more information, please contact with the administrator');
-	return;
+$readonly = false;
+
+if(!$meta) {
+	if (isset($config['event_replication']) &&  
+		$config['event_replication'] == 1) {
+			
+		if($config['show_events_in_local'] == 0) {
+			db_pandora_audit("ACL Violation",
+				"Trying to access event viewer. View disabled due event replication.");
+			ui_print_info_message('Event viewer is disabled due event replication. For more information, please contact with the administrator');
+			return;
+		}
+		else {
+			$readonly = true;
+		}
+	}
 }
 
 if (is_ajax ()) {

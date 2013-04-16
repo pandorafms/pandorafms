@@ -907,7 +907,7 @@ switch($tab) {
 }
 
 ui_print_page_header(__('Agent') . '&nbsp;-&nbsp;' .
-	ui_print_truncate_text(agents_get_name($id_agente), 'agent_small', false) .
+	agents_get_name($id_agente) .
 	$header_description, $icon, false, "", false, $onheader);
 
 

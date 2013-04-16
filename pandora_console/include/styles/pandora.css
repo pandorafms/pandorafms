@@ -84,7 +84,7 @@ textarea.conf_error {
 	background-repeat: no-repeat;
 	background-position: top right;
 }
-input {
+input, select {
 	padding: 2px 3px 4px 3px;
 }
 input.button {
@@ -95,7 +95,6 @@ input.button {
 	margin: 10px 15px;
 }
 select {
-	padding: 0px;
 	border:1px solid #ddd;
 }
 checkbox {
@@ -2399,7 +2398,7 @@ DIV.forced_title_layer {
 	display: block;
 	text-decoration: none;
 	position: absolute;
-	z-index: 100;
+	z-index: 100000;
 	border: 1px solid #708090;
 	background-color: #333;
 	color: #DDD;

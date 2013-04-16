@@ -207,6 +207,8 @@ function config_update_config () {
 								$error_update[] = __('Replication DB port');
 							if (!config_update_value ('replication_mode', (string)get_parameter('replication_mode')))
 								$error_update[] = __('Replication mode');
+							if (!config_update_value ('show_events_in_local', (string)get_parameter('show_events_in_local')))
+								$error_update[] = __('Show events list in local console (read only)');
 						}
 						if (!config_update_value ('log_collector', (bool)get_parameter('log_collector')))
 							$error_update[] = __('Activate Log Collector');
@@ -677,6 +679,10 @@ function config_process_config () {
 	
 	if (!isset ($config["replication_mode"])) {
 		config_update_value ('replication_mode', "only_validated");
+	}
+	
+	if (!isset ($config["show_events_in_local"])) {
+		config_update_value ('show_events_in_local', 0);
 	}
 	
 	if (!isset ($config["log_collector"])) {

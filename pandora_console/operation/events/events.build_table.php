@@ -475,25 +475,28 @@ foreach ($result as $event) {
 	if ($i != 0 && $allow_action) {
 		//Actions
 		$data[$i] = '';
-		// Validate event
-		if (($event["estado"] != 1) && (tags_check_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags']) == 1)) {
-			$data[$i] .= '<a href="javascript:validate_event_advanced('.$event["id_evento"].', 1)" id="validate-'.$event["id_evento"].'">';
-			$data[$i] .= html_print_image ("images/ok.png", true,
-				array ("title" => __('Validate event')));
-			$data[$i] .= '</a>';
-		}
 		
-		// Delete event
-		if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
-			if($event['estado'] != 2) {
-				$data[$i] .= '<a class="delete_event" href="javascript:" id="delete-'.$event['id_evento'].'">';
-				$data[$i] .= html_print_image ("images/cross.png", true,
-					array ("title" => __('Delete event'), "id" => 'delete_cross_' . $event['id_evento']));
+		if(!$readonly) {
+			// Validate event
+			if (($event["estado"] != 1) && (tags_check_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags']) == 1)) {
+				$data[$i] .= '<a href="javascript:validate_event_advanced('.$event["id_evento"].', 1)" id="validate-'.$event["id_evento"].'">';
+				$data[$i] .= html_print_image ("images/ok.png", true,
+					array ("title" => __('Validate event')));
 				$data[$i] .= '</a>';
 			}
-			else {
-				$data[$i] .= html_print_image ("images/cross.disabled.png", true,
-					array ("title" => __('Is not allowed delete events in process'))).'&nbsp;';
+			
+			// Delete event
+			if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags']) == 1) {
+				if($event['estado'] != 2) {
+					$data[$i] .= '<a class="delete_event" href="javascript:" id="delete-'.$event['id_evento'].'">';
+					$data[$i] .= html_print_image ("images/cross.png", true,
+						array ("title" => __('Delete event'), "id" => 'delete_cross_' . $event['id_evento']));
+					$data[$i] .= '</a>';
+				}
+				else {
+					$data[$i] .= html_print_image ("images/cross.disabled.png", true,
+						array ("title" => __('Is not allowed delete events in process'))).'&nbsp;';
+				}
 			}
 		}
 		
@@ -539,10 +542,10 @@ if (!empty ($table->data)) {
 	
 	if ($allow_action) {
 		echo '<div style="width:'.$table->width.';" class="action-buttons">';
-		if (tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
+		if (!$readonly && tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
 			html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected();', 'class="sub ok"');
 		}
-		if (tags_check_acl ($config["id_user"], 0,"EM", $event['clean_tags']) == 1) {
+		if (!$readonly && tags_check_acl ($config["id_user"], 0,"EM", $event['clean_tags']) == 1) {
 			html_print_button(__('Delete selected'), 'delete_button', false, 'delete_selected();', 'class="sub delete"');
 			?>
 			<script type="text/javascript">

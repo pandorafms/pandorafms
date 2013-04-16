@@ -2111,7 +2111,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . html_print_image($icon, true, array("style" => "vertical-align:middle;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
 	$buffer .= '<span style="display: inline-block; vertical-align: top; margin-top: 2px;">' . ui_print_truncate_text($title, 45);
 	if ($help != "")
-		$buffer .= "<div style='float: right;'>" . ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
+		$buffer .= "<div class='head_help' style='float: right; margin-top: -3px !important; margin-left: 2px !important;'>" . ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
 	$buffer .= '</span></li></ul></div>';
 	
 	if (is_array($options)) {

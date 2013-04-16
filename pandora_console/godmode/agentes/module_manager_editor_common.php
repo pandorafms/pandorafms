@@ -139,7 +139,9 @@ if (!empty($id_agent_module) && isset($id_agente)) {
 }
 
 $disabled_enable = 0;
-$policy_link = db_get_value('policy_linked', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+$policy_link = db_get_value('policy_linked', 'tagente_modulo',
+	'id_agente_modulo', $id_agent_module);
+
 if ($policy_link != 0) {
 	$disabled_enable = 1;
 }
@@ -237,7 +239,8 @@ if (modules_is_string_type($id_module_type) || $edit) {
 }
 
 $table_simple->data[2][1] .= '<br /><em>'.__('Inverse interval').'</em>';
-$table_simple->data[2][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
+$table_simple->data[2][1] .= html_print_checkbox ("warning_inverse", 1,
+	$warning_inverse, true);
 $table_simple->data[2][2] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
 $table_simple->data[2][3] = '';
 

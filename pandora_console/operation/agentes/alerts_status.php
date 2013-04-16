@@ -54,7 +54,11 @@ $flag_alert = (bool) get_parameter ('force_execution', 0);
 $alert_validate = (bool) get_parameter ('alert_validate', 0);
 $tab = get_parameter_get ("tab", null);
 
-$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$config["refr"].'&filter='.$filter.'&filter_standby='.$filter_standby.'&ag_group='.$id_group;
+$refr = (int)get_parameter('refr', 0);
+
+$url = 'index.php?sec=' . $sec . '&sec2=' . $sec2 . '&refr=' . $refr .
+	'&filter=' . $filter . '&filter_standby=' . $filter_standby .
+	'&ag_group=' . $id_group;
 
 if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, "AW")) {
 	forceExecution($id_group);
@@ -104,7 +108,8 @@ else {
 
 if ($alert_validate) {
 	if (check_acl ($config["id_user"], $id_group, "AW") == 0) {
-		echo '<h3 class="error">'.__('Insufficient permissions to validate alerts').'</h3>';
+		echo '<h3 class="error">' .
+			__('Insufficient permissions to validate alerts') . '</h3>';
 	}
 	else {
 		validateAlert();
@@ -376,25 +381,25 @@ foreach ($alerts['alerts_simple'] as $alert) {
 	array_push ($table->data, ui_format_alert_row ($alert, $print_agent, $url, 'font-size: 7pt;'));
 }
 
-echo '<form method="post" action="'.$url.'">';
-
 if (!empty ($table->data)) {
+	echo '<form method="post" action="'.$url.'">';
+	
 	ui_pagination ($countAlertsSimple, $url,  $offset_simple, 0, false, 'offset_simple');
 	html_print_table ($table);
+	
+	if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "AM")) {
+		if (count($alerts['alerts_simple']) > 0) {
+			echo '<div class="action-buttons" style="width: '.$table->width.';">';
+			html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
+			echo '</div>';
+		}
+	}
+	
+	echo '</form>';
 }
 else {
 	echo '<div class="nf">'.__('No alerts found').'</div>';
 }
-
-if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "AM")) {
-	if (count($alerts['alerts_simple']) > 0) {
-		echo '<div class="action-buttons" style="width: '.$table->width.';">';
-		html_print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub ok"', false);
-		echo '</div>';
-	}
-}
-
-echo '</form>';
 
 ui_require_css_file('cluetip');
 ui_require_jquery_file('cluetip');

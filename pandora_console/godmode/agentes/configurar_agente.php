@@ -438,7 +438,7 @@ if ($id_agente) {
 	}
 	
 	ui_print_page_header (__('Agent configuration') . ' -&nbsp;' .
-		ui_print_truncate_text(agents_get_name ($id_agente), 'agent_small', false) .
+		agents_get_name ($id_agente) .
 		' ' . $tab_description, "images/setup.png", false, "", true, $onheader);
 }
 else {

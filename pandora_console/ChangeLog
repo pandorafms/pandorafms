@@ -1,5 +1,14 @@
 2013-04-16  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_ui.php
+	images/information_big.png
+	images/help2.png
+	images/info.png
+	images/information.png: Add new information icon for
+	ui messages
+
+2013-04-16  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/ver_agente.php
 	godmode/agentes/configurar_agente.php: Fixed double truncate
 	in header. Now the truncate is encapsulated into header

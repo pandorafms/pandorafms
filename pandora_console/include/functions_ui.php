@@ -222,7 +222,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 		switch ($class) {
 			default:
 			case 'info':
-				$icon_image = 'images/information.png';
+				$icon_image = 'images/information_big.png';
 				break;
 			case 'error':
 				$icon_image = 'images/err.png';

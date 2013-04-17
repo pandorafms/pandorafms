@@ -2434,11 +2434,9 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 ##########################################################################
 # Add an address if not exists and add this address to taddress_agent if not exists
 ##########################################################################
-sub pandora_add_agent_address ($$$$) {
-	my ($pa_config, $agent_id, $addr, $dbh) = @_;
-	
-	my $agent_name = get_agent_name($dbh, $agent_id);
-	
+sub pandora_add_agent_address ($$$$$) {
+	my ($pa_config, $agent_id, $agent_name, $addr, $dbh) = @_;
+		
 	# Add the new address if it does not exist
 	my $addr_id = get_addr_id ($dbh, $addr);
 	

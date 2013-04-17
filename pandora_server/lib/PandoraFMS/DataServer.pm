@@ -262,8 +262,21 @@ sub process_xml_data ($$$$$) {
 	
 	# Get agent address from the XML if available
 	my $address = '' ;
-	$address = $data->{'address'} if (defined ($data->{'address'}));
+	my @address_list;
+	if (defined ($data->{'address'}) && $data->{'address'} ne '') {
+		@address_list = split (',', $data->{'address'});
 
+		# Trim addresses
+		for (my $i = 0; $i <= $#address_list; $i++) {
+			$address_list[$i] =~ s/^\s+|\s+$//g ;
+		}
+		
+		# Save the first address as the main address
+		$address = $address_list[0];
+		$address =~ s/^\s+|\s+$//g ;
+		shift (@address_list);
+}
+	
 	# Get agent id
 	my $agent_id = get_agent_id ($dbh, $agent_name);
 	if ($agent_id < 1) {
@@ -294,6 +307,11 @@ sub process_xml_data ($$$$$) {
 			return;
 		}
 		
+		# Add the main address to the address list
+		if ($address ne '') {
+			pandora_add_agent_address($pa_config, $agent_id, $agent_name, $address, $dbh);
+		}
+
 		# Process custom fields
 		if(defined($data->{'custom_fields'})) {
 			foreach my $custom_fields (@{$data->{'custom_fields'}}) {
@@ -345,15 +363,16 @@ sub process_xml_data ($$$$$) {
 	}
 	# Learning mode
 	else { 
-		
-		# Update agent address if necessary
+	
+		# Update the main address
 		if ($address ne '' && $address ne $agent->{'direccion'}) {
-			
-			# Update the main address
 			pandora_update_agent_address ($pa_config, $agent_id, $agent_name, $address, $dbh);
-			
-			# Update the addres list if necessary
-			pandora_add_agent_address($pa_config, $agent_id, $address, $dbh);
+			pandora_add_agent_address($pa_config, $agent_id, $agent_name, $address, $dbh);
+		}
+		
+		# Update additional addresses
+		foreach my $address (@address_list) {
+			pandora_add_agent_address($pa_config, $agent_id, $agent_name, $address, $dbh);
 		}
 		
 		# Update parent if is allowed and is valid

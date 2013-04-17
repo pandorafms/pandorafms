@@ -84,8 +84,13 @@ textarea.conf_error {
 	background-repeat: no-repeat;
 	background-position: top right;
 }
-input, select {
+input {
 	padding: 2px 3px 4px 3px;
+	vertical-align: middle;
+}
+select {
+	padding: 2px 3px 3px 3px;
+	vertical-align: middle;
 }
 input.button {
 	font-family: Arial,Sans-serif; 
@@ -1169,6 +1174,12 @@ div.title_line {
 	background: #db6351;
 	border-top: none;
 }
+
+#menu_tab li.nomn, #menu_tab li {
+	width: 30px;
+	height: 28px;
+}
+
 /* TAB TITLE */
 #menu_tab_left {
 	margin-left: 0px !important;
@@ -2062,18 +2073,13 @@ div.cellBig {
 
 .info_box {
 	background: #FFF;
-	margin: 10px auto;
+	margin: 10px auto !important;
 	padding: 0px 5px 5px 10px;
 	border: 3px solid #D1D1D1;
 	width: 85% !important;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
-/*
-	-moz-box-shadow: 0px 2px 2px #010E1B !important;
-	-webkit-box-shadow: 0px 2px 2px #010E1B !important;
-	box-shadow: 0px 2px 2px #010E1B !important;
-*/
 }
 
 .info_box .title * {
@@ -2365,6 +2371,11 @@ span#plugin_description {
 a.tip {
 	display: inline !important;
 	cursor: help;
+}
+
+a.tip>img {
+	vertical-align: top !important;
+	margin-left: 2px;
 }
 
 input.search_input {

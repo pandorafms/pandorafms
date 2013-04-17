@@ -1,3 +1,26 @@
+2013-04-17  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	operation/agentes/ver_agente.php
+	images/network_small.png
+	images/agent_sync.png
+	images/module_sync.png
+	images/network_mc.png
+	images/group_sync.png
+	images/database_mc.png
+	images/tag_sync.png
+	images/alerts_template.png
+	images/alerts_command.png
+	images/alerts_sync.png
+	images/gm_tag.png
+	images/gm_agent.png
+	images/users_sync.png
+	images/groups_small/email.png
+	images/groups_small/mail.png
+	images/gm_category.png
+	images/policies_queue.png
+	images/alerts_action.png: Several aesthetic changes
+
 2013-04-16 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/agentes/alerts_status.php: fixed the PHP warnings and

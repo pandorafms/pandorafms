@@ -764,7 +764,7 @@ if ($config['integria_enabled'] == 0 and $total_incidents > 0) {
 /* Url address tab */
 if ($agent['url_address'] != '') {
 	$urladdresstab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=url_address&id_agente='.$id_agente.'">' 
-		. html_print_image ("images/link2.png", true, array ("title" =>__('Url address')))
+		. html_print_image ("images/link.png", true, array ("title" =>__('Url address')))
 		. '</a>';
 }
 if ($tab == 'url_address')

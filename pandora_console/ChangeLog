@@ -1,3 +1,10 @@
+2013-04-17 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_ui.php: fixed the data to show in the
+	autocomplete when it is not set kind of data.
+	
+	Fixes: #3607968
+
 2013-04-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

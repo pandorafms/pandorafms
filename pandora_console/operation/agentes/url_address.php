@@ -25,7 +25,7 @@ if (! check_acl ($config["id_user"], $id_grupo, "AW", $id_agente)) {
 	return;
 }
 
-echo "<iframe src=\"" . $agent['url_address'] . "\" width='100%' height=550>";
+echo "<iframe src=\"" . $agent['url_address'] . "\" width='99%' height='550'>";
 echo "</iframe>";
 
 ?>

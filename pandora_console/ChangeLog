@@ -1,5 +1,11 @@
 2013-04-17 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/agentes/url_address.php: fixed the width of iframe.
+	
+	Fixes: #3611067
+
+2013-04-17 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_treeview.php: fixed the PHP warning.
 	
 	Fixes: #3611072

@@ -29,7 +29,7 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 		$console_url = $server_data['server_url'] . '/';
 		$url_hash = metaconsole_get_servers_url_hash($server_data);
 	}
-
+	
 	require_once ($config["homedir"] . "/include/functions_agents.php");
 	require_once ($config["homedir"] . "/include/functions_graph.php");
 	include_graphs_dependencies($config['homedir'].'/');
@@ -38,7 +38,7 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	enterprise_include_once ('meta/include/functions_modules_meta.php');
 	enterprise_include_once ('meta/include/functions_ui_meta.php');
 	enterprise_include_once ('meta/include/functions_metaconsole.php');
-
+	
 	$filter["id_agente_modulo"] = $id_module;
 
 	$module = db_get_row_filter ("tagente_modulo", $filter);

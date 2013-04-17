@@ -1,3 +1,8 @@
+2013-04-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc: Fixed a bug when concatenating multiple ip
+	  addresses.
+
 2013-04-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_factory.cc: Added macro support to all

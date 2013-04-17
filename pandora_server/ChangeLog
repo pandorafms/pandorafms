@@ -1,5 +1,11 @@
 2013-04-17  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Server.pm,
+	  bin/pandora_server: Moved server tasks to their own thread. Fixes
+	  bug #3609450.
+
+2013-04-17  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/WMIServer.pm: Style fix.
 
 	* lib/PandoraFMS/Core.pm,

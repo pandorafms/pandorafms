@@ -215,6 +215,12 @@ sub checkThreads ($) {
 	
 	foreach my $tid (@{$self->{'_threads'}}) {
 		my $thr = threads->object ($tid);
+		
+		# May happen when the server is killed
+		if (! defined ($thr)) {
+			next;
+		}
+		
 		return 1 unless $thr->can ('is_running');
 		return 0 unless $thr->is_running ();
 	}

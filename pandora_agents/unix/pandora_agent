@@ -2030,8 +2030,15 @@ while (1) {
 		# Check if address is auto to get the local ip
 		if ($Conf{'address'} eq 'auto') {
 			# Tested on Ubuntu, debian, Suse, Solaris 10 and AIX 5.1
-			$address = `ifconfig -a | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | head -1 | sed -e 's/addr\\://' | sed -e 's/inet\\://'`;
-			chomp($address);
+			my @address_list = `ifconfig -a | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | sed -e 's/addr\\://' | sed -e 's/inet\\://'`;
+			for (my $i = 0; $i <= $#address_list; $i++) {		
+				chomp($address_list[$i]);
+				if ($i > 0) {
+					$address .= ',';
+				}
+				
+				$address .= $address_list[$i];
+			}			
 		}
 		else {
 			$address = $Conf{'address'};

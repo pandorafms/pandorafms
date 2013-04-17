@@ -2874,6 +2874,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 					
 					return;
 				},
+				//---END source-----------------------------------------
 				select: function( event, ui ) {
 					var agent_name = ui.item.name;
 					var agent_id = ui.item.id;
@@ -2939,6 +2940,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 				}
 				
 				switch (item.filter) {
+					default:
 					case \'agent\':
 						return $("<li style=\'background: #DFFFC4;\'></li>")
 							.data("item.autocomplete", item)

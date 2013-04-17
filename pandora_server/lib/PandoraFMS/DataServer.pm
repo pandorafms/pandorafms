@@ -547,6 +547,7 @@ sub process_module_data ($$$$$$$$$) {
 	$ModuleSem->down ();
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text ('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 	if (! defined ($module)) {
+		
 		# Do not auto create modules
 		if ($pa_config->{'autocreate'} ne '1') {
 			logger($pa_config, "Module '$module_name' not found for agent '$agent_name' and module auto-creation disabled.", 10);
@@ -619,6 +620,7 @@ sub process_module_data ($$$$$$$$$) {
 		# Set default values
 		$module_conf->{'descripcion'} = $module->{'descripcion'} unless defined ($module_conf->{'descripcion'});
 		$module_conf->{'extended_info'} = $module->{'extended_info'} unless defined ($module_conf->{'extended_info'});
+		$module_conf->{'module_interval'} = $module->{'module_interval'} unless defined ($module_conf->{'module_interval'});
 	}
 
 	# Update module configuration if in learning mode and not a policy module
@@ -702,13 +704,13 @@ sub update_module_configuration ($$$$) {
 	my ($pa_config, $dbh, $module, $module_conf) = @_;
 
 	# Update if at least one of the configuration tokens has changed
-	foreach my $conf_token ('descripcion', 'extended_info') {
+	foreach my $conf_token ('descripcion', 'extended_info', 'module_interval') {
 		if ($module->{$conf_token} ne $module_conf->{$conf_token}) {
 			logger ($pa_config, "Updating configuration for module '" . safe_output($module->{'nombre'})	. "'.", 10);
 
-			db_do ($dbh, 'UPDATE tagente_modulo SET descripcion = ?, extended_info = ?
+			db_do ($dbh, 'UPDATE tagente_modulo SET descripcion = ?, extended_info = ?, module_interval = ?
 				WHERE id_agente_modulo = ?', $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
-				$module_conf->{'extended_info'}, $module->{'id_agente_modulo'});
+				$module_conf->{'extended_info'}, $module_conf->{'module_interval'}, $module->{'id_agente_modulo'});
 			last;
 		}
 	}
@@ -716,6 +718,7 @@ sub update_module_configuration ($$$$) {
 	# Update module hash
 	$module->{'extended_info'} = $module_conf->{'extended_info'} if (defined($module_conf->{'extended_info'})) ;
 	$module->{'descripcion'} = ($module_conf->{'descripcion'} eq '') ? $module->{'descripcion'} : $module_conf->{'descripcion'};
+	$module->{'module_interval'} = ($module_conf->{'module_interval'} eq '') ? $module->{'module_interval'} : $module_conf->{'module_interval'};
 }
 
 1;

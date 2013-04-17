@@ -1,5 +1,10 @@
 2013-04-17  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/DataServer.pm: Update the module interval. Fixes bug
+	  #3610666.
+
+2013-04-17  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Server.pm,
 	  bin/pandora_server: Moved server tasks to their own thread. Fixes
 	  bug #3609450.

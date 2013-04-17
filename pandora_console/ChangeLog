@@ -1,5 +1,9 @@
 2013-04-17 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/ajax/module.php: fixed the PHP warnings.
+
+2013-04-17 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/agentes/url_address.php: fixed the width of iframe.
 	
 	Fixes: #3611067

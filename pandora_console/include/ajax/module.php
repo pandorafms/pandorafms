@@ -73,30 +73,37 @@ if ($get_module_detail) {
 	$formtable->data = array ();
 	$formtable->size = array ();
 
-	$periods = array(300=>__('5 minutes'), 1800=>__('30 minutes'), 3600=>__('1 hour'), 21600=>__('6 hours'), 43200=>__('12 hours'),
-					86400=>__('1 day'), 604800=>__('1 week'), 1296000=>__('15 days'), 2592000=>__('1 month'), 7776000=>__('3 months'),
-					15552000=>__('6 months'), 31104000=>__('1 year'), 62208000=>__('2 years'), 93312000=>__('3 years')
-				);
-
+	$periods = array(SECONDS_5MINUTES =>__('5 minutes'),
+		SECONDS_30MINUTES =>__('30 minutes'),
+		SECONDS_1HOUR =>__('1 hour'),
+		SECONDS_6HOURS =>__('6 hours'),
+		SECONDS_12HOURS =>__('12 hours'),
+		SECONDS_1DAY =>__('1 day'),
+		SECONDS_1WEEK =>__('1 week'),
+		SECONDS_15DAYS =>__('15 days'),
+		SECONDS_1MONTH =>__('1 month'),
+		SECONDS_3MONTHS =>__('3 months'),
+		SECONDS_6MONTHS =>__('6 months'),
+		SECONDS_1YEAR =>__('1 year'),
+		SECONDS_2YEARS =>__('2 years'),
+		SECONDS_3YEARS =>__('3 years'));
+	
 	$formtable->data[0][0] = __('Select period:');
 	$formtable->data[0][1] = html_print_select ($periods, 'period', $period, '', '', 0, true, false, false);
 	$formtable->data[0][2] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name . "\", 0, -1)'>". html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
-
+	
 	html_print_table($formtable);
-
+	
 	$moduletype_name = modules_get_moduletype_name (modules_get_agentmodule_type ($module_id));
-
+	
 	$offset = (int) get_parameter("offset");
 	$block_size = (int) $config["block_size"];
-
+	
 	$columns = array ();
-
-	$datetime_from = strtotime ($date_from.' '.$time_from);
-	$datetime_to = strtotime ($date_to.' '.$time_to);
-
+	
 	if ($moduletype_name == "log4x") {
 		$table->width = "100%";
-
+		
 		$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 		
 		$columns = array(

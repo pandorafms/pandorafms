@@ -931,13 +931,16 @@ sub check_remote_config () {
 	return if (recv_file ($RemoteConfFile) != 0);
 	log_message ('remote config', 'Configuration has changed!');
 
+	# Save the new configuration
+	move ("$Conf{'temporal'}/$RemoteConfFile", "$ConfDir/$ConfFile");
+
 	# Empty modules, plugins and collections
 	@Modules = ();
 	@Plugins = ();
 	%Collections = ();
+	%Conf = %DefaultConf;
 
-	# Save the new configuration and reload it
-	move ("$Conf{'temporal'}/$RemoteConfFile", "$ConfDir/$ConfFile");
+	# Reload the new configuration
 	read_config ();
 	
 	# Log file may have changed

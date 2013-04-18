@@ -1,5 +1,16 @@
 2013-04-17 Miguel de Dios <miguel.dedios@artica.es>
 
+	* pandoradb.postgreSQL.sql: improved the code source style.
+	
+	* pandoradb.oracle.sql: fixed duplicated fields
+	"critical_instructions", "warning_instructions" and
+	"unknown_instructions" in the table "tagente_modulo".
+	
+	* godmode/agentes/module_manager_editor.php,
+	godmode/agentes/configurar_agente.php: fixed PHP warnings.
+
+2013-04-17 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/visual_console/render_view.php,
 	godmode/reporting/visual_console_builder.php,
 	include/functions_events.php: some fixes about PHP warnings.

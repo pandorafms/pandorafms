@@ -231,9 +231,9 @@ CREATE TABLE "tagente_modulo" (
 	"wizard_level" type_tagente_modulo_wizard_level default 'nowizard',
 	"macros" TEXT default '',
 	"critical_instructions" TEXT default '',
-    "warning_instructions" TEXT default '',
-    "unknown_instructions" TEXT default '',
-    "quiet" SMALLINT NOT NULL default 0,
+	"warning_instructions" TEXT default '',
+	"unknown_instructions" TEXT default '',
+	"quiet" SMALLINT NOT NULL default 0,
 	"critical_inverse" SMALLINT NOT NULL default 0,
 	"warning_inverse" SMALLINT NOT NULL default 0,
 	"id_category" INTEGER NOT NULL default 0

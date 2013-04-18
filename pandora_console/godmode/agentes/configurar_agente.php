@@ -754,7 +754,7 @@ if ($update_module || $create_module) {
 		}
 		
 		$macros_for_data = enterprise_hook('config_agents_get_macros_data_conf', array($_POST));
-
+		
 		if($macros_for_data !== ENTERPRISE_NOT_HOOK && $macros_for_data != '') {
 			// Add macros to configuration file
 			$new_configuration_data = str_replace('module_end', $macros_for_data."module_end", $new_configuration_data);

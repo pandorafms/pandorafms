@@ -2271,7 +2271,8 @@ sub pandora_create_module_from_network_component ($$$$) {
 sub pandora_create_module_from_hash ($$$) {
 	my ($pa_config, $parameters, $dbh) = @_;
 	
-	logger($pa_config, "Creating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
+	logger($pa_config,
+		"Creating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
 	
 	# Delete tags that will not be stored in tagente_modulo
 	delete $parameters->{'data'};
@@ -2279,7 +2280,8 @@ sub pandora_create_module_from_hash ($$$) {
 	delete $parameters->{'datalist'};
 	delete $parameters->{'status'};
 	
-	my $module_id = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $parameters);
+	my $module_id = db_process_insert($dbh, 'id_agente_modulo',
+		'tagente_modulo', $parameters);
 	
 	my $status = 4;
 	if (defined ($parameters->{'id_tipo_modulo'}) && ($parameters->{'id_tipo_modulo'} == 21 || $parameters->{'id_tipo_modulo'} == 22 || $parameters->{'id_tipo_modulo'} == 23)) {
@@ -2436,7 +2438,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 ##########################################################################
 sub pandora_add_agent_address ($$$$$) {
 	my ($pa_config, $agent_id, $agent_name, $addr, $dbh) = @_;
-		
+	
 	# Add the new address if it does not exist
 	my $addr_id = get_addr_id ($dbh, $addr);
 	

@@ -201,7 +201,7 @@ if ($id_agent_module) {
 	$critical_instructions = $module['critical_instructions'];
 	$warning_instructions = $module['warning_instructions'];
 	$unknown_instructions = $module['unknown_instructions'];
-
+	
 	$critical_inverse = $module['critical_inverse'];
 	$warning_inverse = $module['warning_inverse'];
 	
@@ -292,6 +292,8 @@ else {
 		$mday = '*';
 		$month = '*';
 		$wday = '*';
+		
+		$ff_interval = 0;
 	}
 }
 

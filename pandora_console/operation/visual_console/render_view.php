@@ -25,8 +25,26 @@ if (!defined('METACONSOLE'))
 else
 	$id_layout = (int) get_parameter ('id_visualmap');
 
+if (!defined('METACONSOLE')) {
+	if ($id_layout) {
+		$default_action = 'edit';
+	}
+	else {
+		$default_action = 'new';
+	}
+	$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), $default_action);
+}
+else {
+	$action = get_parameterBetweenListValues('action2', array('new', 'save', 'edit', 'update', 'delete'), $default_action);
+}
+
 $refr = (int) get_parameter ('refr', $config['vc_refr']);
 $vc_refr = false;
+
+if (isset($config['vc_refr']) and $config['vc_refr'] != 0)
+	$view_refresh = $config['vc_refr'];
+else
+	$view_refresh = '60';
 
 // Get input parameter for layout id
 if (! $id_layout) {
@@ -50,7 +68,7 @@ $background = $layout["background"];
 $bwidth = $layout["width"];
 $bheight = $layout["height"];
 
-$pure_url = "&pure=".$config["pure"];
+$pure_url = "&pure=" . $config["pure"];
 
 if (! check_acl ($config["id_user"], $id_group, "RR")) {
 	db_pandora_audit("ACL Violation", "Trying to access visual console without group access");
@@ -62,25 +80,25 @@ if (! check_acl ($config["id_user"], $id_group, "RR")) {
 $options = array();
 
 $options['consoles_list']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .
-			html_print_image ("images/visual_console.png", true, array ("title" => __('Visual consoles list'))) .'</a>';
-				
+	html_print_image ("images/visual_console.png", true, array ("title" => __('Visual consoles list'))) .'</a>';
+
 if (check_acl ($config["id_user"], $id_group, "RW")) {
 	$url_base = 'index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&action=';
-
+	
 	$hash = md5($config["dbpass"]. $id_layout. $config["id_user"]);
-
+	
 	$options['public_link']['text'] = '<a href="' . ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config["id_user"]) . '" target="_blank">'.
 		html_print_image ("images/camera_mc.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
 	$options['public_link']['active'] = false;
 	
 	$options['data']['text'] = '<a href="' . $url_base . $action . '&tab=data&id_visual_console=' . $id_layout . '">' . 
-				html_print_image ("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>';
+		html_print_image ("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>';
 	$options['list_elements']['text'] = '<a href="' . $url_base . $action . '&tab=list_elements&id_visual_console=' . $id_layout . '">' .
-				html_print_image ("images/list.png", true, array ("title" => __('List elements'))) .'</a>';
+		html_print_image ("images/list.png", true, array ("title" => __('List elements'))) .'</a>';
 	$options['wizard']['text'] = '<a href="' . $url_base . $action . '&tab=wizard&id_visual_console=' . $id_layout . '">' .
-				html_print_image ("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>';
+		html_print_image ("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>';
 	$options['editor']['text'] = '<a href="' . $url_base . $action . '&tab=editor&id_visual_console=' . $id_layout . '">' .
-				html_print_image ("images/builder.png", true, array ("title" => __('Builder'))) .'</a>';
+		html_print_image ("images/builder.png", true, array ("title" => __('Builder'))) .'</a>';
 }
 
 $options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $id_layout . '&refr=' . $view_refresh . '">' . html_print_image ("images/operation.png", true, array ("title" => __('View'))) .'</a>';
@@ -95,7 +113,7 @@ if (!defined('METACONSOLE')) {
 		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">'
 			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
-			
+		
 		// In full screen, the manage options are not available
 		$options = array('view' => $options['view'], 'pure' => $options['pure']);
 	}

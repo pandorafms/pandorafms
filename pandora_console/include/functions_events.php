@@ -401,7 +401,7 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1, $m
  * @param bool history mode flag
  *
  * @return bool Whether or not it was successful
- */	
+ */
 function events_change_status ($id_event, $new_status, $meta = false, $history = false) { 
 	global $config;
 	
@@ -467,7 +467,7 @@ function events_change_status ($id_event, $new_status, $meta = false, $history =
 		'estado' => $new_status,
 		'id_usuario' => $ack_user,
 		'ack_utimestamp' => $ack_utimestamp);
-		
+	
 	$ret = db_process_sql_update($event_table, $values,
 		array('id_evento' => $id_event));
 	
@@ -730,7 +730,7 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0, $id_use
 				$priority, $id_agent_module, $id_aam, $critical_instructions, $warning_instructions, $unknown_instructions, $source, $tags);
 			break;
 	}
-
+	
 	return (int) db_process_sql ($sql, "insert_id");
 }
 
@@ -749,14 +749,14 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0, $id_use
 function events_print_event_table ($filter = "", $limit = 10, $width = 440, $return = false, $agent_id = 0) {
 	global $config;
 	
-	if($agent_id == 0) {
+	if ($agent_id == 0) {
 		$agent_condition = '';
 	}
 	else {
 		$agent_condition = "id_agente = $agent_id AND";
 	}
 	
-	if($filter == '') {
+	if ($filter == '') {
 		$filter = '1 = 1';
 	}
 	
@@ -769,9 +769,9 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 				$sql = sprintf ("SELECT * FROM tevento WHERE %s %s AND rownum <= %d ORDER BY timestamp DESC", $agent_condition, $filter, $limit);
 			break;
 	}
-
+	
 	$result = db_get_all_rows_sql ($sql);
-
+	
 	if ($result === false) {
 		echo '<div class="nf">'.__('No events').'</div>';
 	}
@@ -817,7 +817,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			if (! check_acl ($config["id_user"], $event["id_grupo"], "ER")) {
 				continue;
 			}
-
+			
 			$data = array ();
 			
 			// Colored box
@@ -844,19 +844,19 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			
 			switch ($event["criticity"]) {
 				default:
-				case 0: 
+				case EVENT_CRIT_MAINTENANCE: 
 					$img = "images/status_sets/default/severity_maintenance.png";
 					break;
-				case 1:
+				case EVENT_CRIT_INFORMATIONAL:
 					$img = "images/status_sets/default/severity_informational.png";
 					break;
-				case 2:
+				case EVENT_CRIT_NORMAL:
 					$img = "images/status_sets/default/severity_normal.png";
 					break;
-				case 3:
+				case EVENT_CRIT_WARNING:
 					$img = "images/status_sets/default/severity_warning.png";
 					break;
-				case 4:
+				case EVENT_CRIT_CRITICAL:
 					$img = "images/status_sets/default/severity_critical.png";
 					break;
 			}
@@ -906,7 +906,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$out = '<table width="98%"><tr><td style="width: 90%; padding-right: 10px; vertical-align: top; padding-top: 0px;">';
 		$out .= $events_table;
 		
-		if($agent_id != 0) {
+		if ($agent_id != 0) {
 			$out .= '</td><td style="width: 200px; vertical-align: top;">';
 			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
 			$out .= '<fieldset class="databox tactical_set" style="width:93%;">
@@ -936,7 +936,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		
 		unset ($table);
 		
-		if($return) {
+		if ($return) {
 			return $out;
 		}
 		else {
@@ -1184,12 +1184,12 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
 	
 	
 	$sql = sprintf ('SELECT *,
-		(SELECT t2.nombre
-			FROM tagente AS t2
-			WHERE t2.id_agente = t3.id_agente) AS agent_name,
-		(SELECT t2.fullname
-			FROM tusuario AS t2
-			WHERE t2.id_user = t3.id_usuario) AS user_name
+			(SELECT t2.nombre
+				FROM tagente AS t2
+				WHERE t2.id_agente = t3.id_agente) AS agent_name,
+			(SELECT t2.fullname
+				FROM tusuario AS t2
+				WHERE t2.id_user = t3.id_usuario) AS user_name
 		FROM tevento AS t3
 		WHERE utimestamp > %d AND utimestamp <= %d
 			AND id_grupo IN (%s) ' . $sql_where . '
@@ -1298,44 +1298,57 @@ function events_get_module ($id_agent_module, $period, $date = 0) {
 function events_get_event_types ($type_id){
 	
 	$diferent_types = get_event_types ();
-
+	
 	$type_desc = '';
 	switch($type_id) {
-		case 'unknown': $type_desc = __('Unknown');
-				break;
-		case 'critical': $type_desc = __('Monitor Critical');
-				break;
-		case 'warning': $type_desc = __('Monitor Warning');
-				break;
-		case 'normal': $type_desc = __('Monitor Normal');
-				break;
-		case 'alert_fired': $type_desc = __('Alert fired');
-				break;
-		case 'alert_recovered': $type_desc = __('Alert recovered');
-				break;
-		case 'alert_ceased': $type_desc = __('Alert ceased');
-				break;
-		case 'alert_manual_validation': $type_desc = __('Alert manual validation');
-				break;
-		case 'recon_host_detected': $type_desc = __('Recon host detected');
-				break;
-		case 'system': $type_desc = __('System');
-				break;
-		case 'error': $type_desc = __('Error');
-				break;
-		case 'configuration_change': $type_desc = __('Configuration change');
-				break;
-		case 'not_normal': $type_desc = __('Not normal');
-				break;
+		case 'unknown':
+			$type_desc = __('Unknown');
+			break;
+		case 'critical':
+			$type_desc = __('Monitor Critical');
+			break;
+		case 'warning':
+			$type_desc = __('Monitor Warning');
+			break;
+		case 'normal':
+			$type_desc = __('Monitor Normal');
+			break;
+		case 'alert_fired':
+			$type_desc = __('Alert fired');
+			break;
+		case 'alert_recovered':
+			$type_desc = __('Alert recovered');
+			break;
+		case 'alert_ceased':
+			$type_desc = __('Alert ceased');
+			break;
+		case 'alert_manual_validation':
+			$type_desc = __('Alert manual validation');
+			break;
+		case 'recon_host_detected':
+			$type_desc = __('Recon host detected');
+			break;
+		case 'system':
+			$type_desc = __('System');
+			break;
+		case 'error':
+			$type_desc = __('Error');
+			break;
+		case 'configuration_change':
+			$type_desc = __('Configuration change');
+			break;
+		case 'not_normal':
+			$type_desc = __('Not normal');
+			break;
 		default:
-				if (isset($config['text_char_long'])) {
-					foreach ($diferent_types as $key => $type) {
-						if ($key == $type_id){
-							$type_desc = ui_print_truncate_text($type, $config['text_char_long'], false, true, false);
-						}
+			if (isset($config['text_char_long'])) {
+				foreach ($diferent_types as $key => $type) {
+					if ($key == $type_id){
+						$type_desc = ui_print_truncate_text($type, $config['text_char_long'], false, true, false);
 					}
 				}
-				break;
+			}
+			break;
 	}
 	
 	return $type_desc;
@@ -1355,30 +1368,30 @@ function events_get_severity_types ($severity_id){
 	
 	$severity_desc = '';
 	switch ($severity_id) {
-		case 0:
+		case EVENT_CRIT_MAINTENANCE:
 			$severity_desc = __('Maintenance');
 			break;
-		case 1:
+		case EVENT_CRIT_INFORMATIONAL:
 			$severity_desc = __('Informational');
 			break;
-		case 2:
+		case EVENT_CRIT_NORMAL:
 			$severity_desc = __('Normal');
 			break;
-		case 3:
+		case EVENT_CRIT_WARNING:
 			$severity_desc = __('Warning');
 			break;
-		case 4:
+		case EVENT_CRIT_CRITICAL:
 			$severity_desc = __('Critical');
 			break;
 		default:
-				if (isset($config['text_char_long'])) {
-					foreach ($diferent_types as $key => $type) {
-						if ($key == $severity_id){
-							$severity_desc = ui_print_truncate_text($type, $config['text_char_long'], false, true, false);
-						}
+			if (isset($config['text_char_long'])) {
+				foreach ($diferent_types as $key => $type) {
+					if ($key == $severity_id){
+						$severity_desc = ui_print_truncate_text($type, $config['text_char_long'], false, true, false);
 					}
 				}
-				break;
+			}
+			break;
 	}
 	
 	return $severity_desc;
@@ -1389,7 +1402,7 @@ function events_get_severity_types ($severity_id){
  *
  * @return array Status description array.
  */
-function events_get_all_status (){
+function events_get_all_status () {
 	$fields = array ();
 	$fields[-1] = __('All event');
 	$fields[0] = __('Only new');
@@ -1446,7 +1459,7 @@ function events_check_event_filter_group ($id_filter) {
 	$groups_id = array();
 	$has_permission = false;
 	
-	foreach($groups_user as $key => $groups){
+	foreach ($groups_user as $key => $groups) {
 		if ($groups['id_grupo'] == $id_group)
 			return true;
 	}
@@ -1460,7 +1473,9 @@ function events_check_event_filter_group ($id_filter) {
  * @return array
  */
 function events_get_macros() {
-	return array('_agent_address_' => __('Agent address'), '_agent_id_' => __('Agent id'), '_event_id_' => __('Event id'));
+	return array('_agent_address_' => __('Agent address'),
+		'_agent_id_' => __('Agent id'),
+		'_event_id_' => __('Event id'));
 }
 
 /**
@@ -1473,17 +1488,17 @@ function events_get_macros() {
  * @return array A event filter matching id and filter or false.
  */
 function events_get_event_filter ($id_filter, $filter = false, $fields = false) {
-
-		if (empty($id_filter)){
-			return false;
-		}
-
-		if (! is_array ($filter)){
-			$filter = array ();
-			$filter['id_filter'] = (int) $id_filter;
-		}
 	
-		return db_get_row_filter ('tevent_filter', $filter, $fields);
+	if (empty($id_filter)) {
+		return false;
+	}
+	
+	if (! is_array ($filter)) {
+		$filter = array ();
+		$filter['id_filter'] = (int) $id_filter;
+	}
+	
+	return db_get_row_filter ('tevent_filter', $filter, $fields);
 }
 
 /**
@@ -1502,10 +1517,10 @@ function events_get_event_filter_select(){
 	
 	$event_filters = db_get_all_rows_sql($sql);
 	
-	if ($event_filters === false){
+	if ($event_filters === false) {
 		return array();
 	}
-	else{
+	else {
 		$result = array();
 		foreach ($event_filters as $event_filter){
 			$result[$event_filter['id_filter']] = $event_filter['id_name'];
@@ -1532,7 +1547,7 @@ function events_page_responses ($event) {
 	$table_responses->style[0] = 'width:35%; font-weight: bold; text-align: left;';
 	$table_responses->style[1] = 'text-align: left;';
 	$table_responses->class = "databox alternate";
-
+	
 	if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'])) {
 		// Owner
 		$data = array();
@@ -1893,24 +1908,32 @@ function events_page_details ($event, $server = "") {
 		
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Graph').'</div>';
-		$graph_type = return_graphtype ($module["module_type"]);
-
+		$module_module_type = -1;
+		if (isset($module["module_type"])) {
+			$module_module_type = $module["module_type"];
+		}
+		$graph_type = return_graphtype ($module_module_type);
+		
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["module_name"]));
-
-		$link ="winopeng('".$serverstring."operation/agentes/stat_win.php?type=".$graph_type."&period=86400&id=" . $module["id_agente_modulo"] . "&label=" . base64_encode($module["module_name"].$hashstring) . "&refresh=600','day_".$win_handle."')";
-
+		
+		$module_module_name = '';
+		if (isset($module["module_name"])) {
+			$module_module_name = $module["module_name"];
+		}
+		$link ="winopeng('" . $serverstring . "operation/agentes/stat_win.php?type=" . $graph_type."&period=86400&id=" . $module["id_agente_modulo"] . "&label=" . base64_encode($module_module_name . $hashstring) . "&refresh=600','day_".$win_handle."')";
+		
 		$data[1] = '<a href="javascript:'.$link.'">';
 		$data[1] .= html_print_image('images/chart_curve.png',true);
 		$data[1] .= '</a>';
 		$table_details->data[] = $data;
 	}
-
+	
 	$data = array();
 	$data[0] = __('Alert details');
 	$data[1] = $event["id_alert_am"] == 0 ? '<i>' . __('N/A') . '</i>' : '';
 	$table_details->data[] = $data;
 	
-	if($event["id_alert_am"] != 0) {
+	if ($event["id_alert_am"] != 0) {
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Source').'</div>';
 		$data[1] = '<a href="'.$serverstring.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert'.$hashstring.'">';
@@ -1934,8 +1957,8 @@ function events_page_details ($event, $server = "") {
 		
 		$data[1] .= $templateName;
 		
-		$data[1] .= '</a>';			
-
+		$data[1] .= '</a>';
+		
 		$table_details->data[] = $data;
 		
 		$data = array();
@@ -1990,7 +2013,7 @@ function events_page_details ($event, $server = "") {
 			$table_details->data[] = $data;
 			break;
 	}
-		
+	
 	$data = array();
 	$data[0] = __('Extra id');
 	if ($event["id_extra"] != '') {
@@ -2012,7 +2035,7 @@ function events_page_details ($event, $server = "") {
 	$table_details->data[] = $data;
 	
 	$details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
-
+	
 	return $details;
 }
 
@@ -2022,10 +2045,10 @@ function events_page_general ($event) {
 	
 	//$group_rep = $event['similar_ids'] == -1 ? 1 : count(explode(',',$event['similar_ids']));
 	global $group_rep;
-
-	/////////
+	
+	////////////////////////////////////////////////////////////////////
 	// General
-	/////////
+	////////////////////////////////////////////////////////////////////
 	
 	$table_general->width = '100%';
 	$table_general->data = array ();
@@ -2056,7 +2079,7 @@ function events_page_general ($event) {
 	
 	$data = array();
 	$data[0] = __('Owner');
-	if(empty($event["owner_user"])) {
+	if (empty($event["owner_user"])) {
 		$data[1] = '<i>'.__('N/A').'</i>';
 	}
 	else {
@@ -2124,8 +2147,8 @@ function events_page_general ($event) {
 	// If event is validated, show who and when acknowleded it
 	$data = array();
 	$data[0] = __('Acknowledged by');
-		
-	if($event['estado'] == 1) {
+	
+	if ($event['estado'] == 1) {
 		$user_ack = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
 		if(empty($user_ack)) {
 			$user_ack = $event['id_usuario'];
@@ -2149,7 +2172,7 @@ function events_page_general ($event) {
 	
 	if ($event["tags"] != '') {
 		$tags = tags_get_tags_formatted($event["tags"]);
-				
+		
 		$data[1] = $tags;
 	}
 	else {
@@ -2163,9 +2186,9 @@ function events_page_general ($event) {
 }
 
 function events_page_comments ($event) {
-	/////////
+	////////////////////////////////////////////////////////////////////
 	// Comments
-	/////////
+	////////////////////////////////////////////////////////////////////
 	global $config;
 	
 	$table_comments->width = '100%';
@@ -2173,7 +2196,7 @@ function events_page_comments ($event) {
 	$table_comments->head = array ();
 	$table_comments->style[0] = 'width:35%; vertical-align: top; text-align: left;';
 	$table_comments->style[1] = 'text-align: left;';
-	$table_comments->class = "databox alternate";	
+	$table_comments->class = "databox alternate";
 	
 	$comments_array = explode('<br>',io_safe_output($event["user_comment"]));
 	

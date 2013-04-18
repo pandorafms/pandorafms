@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2005-2012 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2013 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@ use strict;
 use Time::Local;		# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
 use POSIX qw(strftime);
+use Time::HiRes qw/usleep/;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -30,7 +31,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "4.0.3 PS130116";
+my $version = "4.1 PS130418";
 
 # Pandora server configuration
 my %conf;
@@ -104,12 +105,14 @@ sub pandora_purgedb ($$) {
 		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
 			db_do ($dbh, "DELETE FROM tagente_datos WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
 			print "[PURGE] Data deletion Progress %$ax .. \r";
+
+			# Do a nanosleep here for 0,01 sec
+			usleep (10000);
 		}
 	    print "\n";
 	} else {
 		print "[PURGE] No data in tagente_datos\n";
 	}
-
 
     # Delete inventory data, only if enterprise is enabled
     # We use the same value than regular data purge interval
@@ -131,6 +134,8 @@ sub pandora_purgedb ($$) {
 		    for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
 			    db_do ($dbh, "DELETE FROM tagente_datos_inventory WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
 			    print "[PURGE] Inventory data deletion Progress %$ax .. \r";
+			    # Do a nanosleep here for 0,01 sec
+				usleep (10000);
 		    }
 	        print "\n";
 	    } else {
@@ -150,6 +155,8 @@ sub pandora_purgedb ($$) {
 		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
 			db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
 			print "[PURGE] Log4x data deletion progress %$ax .. \r";
+			# Do a nanosleep here for 0,01 sec
+			usleep (10000);
 		}
 		print "\n";
 	} else {
@@ -171,6 +178,8 @@ sub pandora_purgedb ($$) {
 		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
 			db_do ($dbh, "DELETE FROM tagente_datos_string WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
 			print "[PURGE] String deletion Progress %$ax .. \r";
+			# Do a nanosleep here for 0,01 sec
+			usleep (10000);
 		}
 	    print "\n";
 	} else {
@@ -258,6 +267,8 @@ sub pandora_purgedb ($$) {
 		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
 			db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark);
 			print "[PURGE] Agent access deletion progress %$ax .. \r";
+			# Do a nanosleep here for 0,01 sec
+			usleep (10000);
 		}
 	    print "\n";
 	} else {
@@ -349,6 +360,7 @@ sub pandora_compactdb ($$) {
 				delete($count_hash{$key});
 			}
 
+			usleep (1000); # Very small usleep, just to don't burn the DB
 			# Move to the next interval
 			$start_utime = $stop_utime;
 	}
@@ -447,6 +459,9 @@ sub pandora_checkdb_integrity {
     # Delete all non-used IP addresses from taddress
     db_do ($dbh, 'DELETE FROM taddress WHERE id_a NOT IN (SELECT id_a FROM taddress_agent)');
 
+	# Do a nanosleep here for 0,01 sec
+	usleep (10000);
+
     print "[INTEGRITY] Deleting orphan alerts \n";
 
     # Delete alerts assigned to inexistant modules
@@ -462,9 +477,6 @@ sub pandora_checkdb_integrity {
 
     # Delete orphan data_inc reference records
     db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
-    
-    # Delete all non-used IP addresses from taddress
-    db_do ($dbh, 'DELETE FROM taddress WHERE id_a NOT IN (SELECT id_a FROM taddress_agent)');
     
     # Check enterprise tables
     enterprise_hook ('pandora_checkdb_integrity_enterprise', [$dbh]);
@@ -498,13 +510,16 @@ sub pandora_checkdb_consistency {
 		# Delete the module
 		db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agente_modulo);
 
+		# Do a nanosleep here for 0,001 sec
+		usleep (100000);
+
 		# Delete any alerts associated to the module
 		db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $id_agente_modulo);
 	}
 
 	print "[CHECKDB] Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days)... \n";
 	if ($conf{'_days_delete_unknown'} > 0) {
-		my @modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_estado WHERE estado = 3 AND utimestamp < UNIX_TIMESTAMP() - ?', 86400 * $conf{'_days_delete_unknown'});
+		my @modules = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_agente FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND estado = 3 AND utimestamp < UNIX_TIMESTAMP() - ?', 86400 * $conf{'_days_delete_unknown'});
 		foreach my $module (@modules) {
 			my $id_agente_modulo = $module->{'id_agente_modulo'};
 	
@@ -513,10 +528,13 @@ sub pandora_checkdb_consistency {
 			next if (defined($is_policy_module) && $is_policy_module);
 	
 			# Delete the module
-			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);;
+			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = ?', $id_agente_modulo);
 	
 			# Delete any alerts associated to the module
 			db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ? AND NOT EXISTS (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente_modulo = ?)', $id_agente_modulo, $id_agente_modulo);
+
+			# Do a nanosleep here for 0,001 sec
+			usleep (100000);
 		}
 	}
 	print "[CHECKDB] Checking database consistency (Missing status)... \n";
@@ -546,6 +564,10 @@ sub pandora_checkdb_consistency {
 		next if (defined ($count) && $count > 0);
 	
 		db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo = ?', $id_agente_modulo);
+
+		# Do a nanosleep here for 0,001 sec
+		usleep (100000);
+
 		print "[CHECKDB] Deleting non-existing module $id_agente_modulo in state table \n";
 	}
 }

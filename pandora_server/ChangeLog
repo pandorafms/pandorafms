@@ -1,3 +1,9 @@
+2013-04-18  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_db.pl: Added a usleep() inside loops to aliviate
+	SQL transactions. This should help to improve performance and
+	avoid lockings.
+
 2013-04-08  Hirofumi Kosaka <kosaka@rworks.jp>
 
         * util/tentacle_serverd: Tiny improvement. Changed to use

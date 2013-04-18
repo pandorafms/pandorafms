@@ -1229,10 +1229,10 @@ function return_graphtype ($id_module_type) {
 		case 24:
 			return "log4x";
 			break;
+		default:
+			return "sparse";
+			break;
 	}
-	
-	
-	return "sparse";
 }
 
 /**

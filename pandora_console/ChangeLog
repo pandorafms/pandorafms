@@ -1,5 +1,13 @@
 2013-04-17 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/visual_console/render_view.php,
+	godmode/reporting/visual_console_builder.php,
+	include/functions_events.php: some fixes about PHP warnings.
+	
+	Fixes: #3611022
+
+2013-04-17 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/ajax/module.php: fixed the PHP warnings.
 
 2013-04-17 Miguel de Dios <miguel.dedios@artica.es>

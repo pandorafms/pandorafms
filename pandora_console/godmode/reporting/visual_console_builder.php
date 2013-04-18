@@ -37,6 +37,8 @@ else {
 	$idVisualConsole = get_parameter('id_visual_console', 0);
 }
 
+$id_layout = 0;
+
 if (!defined('METACONSOLE')) {
 	$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), 'new');
 }
@@ -46,6 +48,7 @@ else {
 
 $activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'editor'), 'data');
 
+$refr = (int) get_parameter ('refr', $config['vc_refr']);
 
 //Save/Update data in DB
 $statusProcessInDB = null;
@@ -402,8 +405,8 @@ else {
 }
 
 // Hash for auto-auth in public link
-$hash = md5($config["dbpass"]. $id_layout. $config["id_user"]);	
-				
+$hash = md5($config["dbpass"] . $id_layout . $config["id_user"]);
+
 $buttons = array(
 	'consoles_list' => array('active' => false,
 		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .

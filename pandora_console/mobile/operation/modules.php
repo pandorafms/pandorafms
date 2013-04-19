@@ -620,7 +620,7 @@ class Modules {
 			
 			$module_group = db_get_value('name',
 				'tmodule_group', 'id_mg', $this->module_group);
-			$module_groups = io_safe_output($module_groups);
+			$module_group = io_safe_output($module_group);
 			$tag = tags_get_name($this->tag);
 			
 			$string = sprintf(

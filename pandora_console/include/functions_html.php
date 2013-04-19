@@ -860,7 +860,7 @@ function html_print_div ($options, $return = false) {
 			$options['style'] = 'display:none;';
 		}
 	}
-
+	
 	foreach ($attrs as $attribute) {
 		if (isset ($options[$attribute])) {
 			$output .= ' '.$attribute.'="'.io_safe_input_html ($options[$attribute]).'"';
@@ -872,7 +872,7 @@ function html_print_div ($options, $return = false) {
 	$output .= isset ($options['content']) ? $options['content'] : '';
 	
 	$output .= '</div>';
-
+	
 	if ($return) {
 		return $output;
 	}

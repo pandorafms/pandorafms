@@ -1,4 +1,11 @@
-2013-04-17 Miguel de Dios <miguel.dedios@artica.es>
+2013-04-19 Miguel de Dios <miguel.dedios@artica.es>
+
+	* mobile/operation/modules.php: fixed the typo bugs in the code.
+	
+	* include/functions_tags.php, include/functions_html.php: cleaned
+	source code style.
+
+2013-04-18 Miguel de Dios <miguel.dedios@artica.es>
 
 	* pandoradb.postgreSQL.sql: improved the code source style.
 	

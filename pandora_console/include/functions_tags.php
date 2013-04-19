@@ -825,19 +825,19 @@ function tags_get_acl_tags_event_condition($acltags) {
 	// Get all tags of the system
 	$all_tags = tags_get_all_tags(false);
 	
-	foreach($acltags as $group_id => $group_tags) {
+	foreach ($acltags as $group_id => $group_tags) {
 		// Group condition (The module belongs to an agent of the group X)
 		$group_condition = sprintf('id_grupo = %d',$group_id);
 		
 		// Tags condition (The module has at least one of the restricted tags)
 		$tags_condition = '';
-		foreach($group_tags as $tag) {
+		foreach ($group_tags as $tag) {
 			// If the tag ID doesnt exist, ignore
-			if(!isset($all_tags[$tag])) {
+			if (!isset($all_tags[$tag])) {
 				continue;
 			}
 			
-			if($tags_condition != '') {
+			if ($tags_condition != '') {
 				$tags_condition .= " OR \n";
 			}
 			
@@ -852,21 +852,21 @@ function tags_get_acl_tags_event_condition($acltags) {
 		}
 		
 		// If there is not tag condition ignore
-		if(empty($tags_condition)) {
+		if (empty($tags_condition)) {
 			continue;
 		}
 		
-		if($condition != '') {
+		if ($condition != '') {
 			$condition .= ' OR ';
 		}
 		
 		$condition .= "($group_condition AND \n($tags_condition))\n";
 	}
 	
-	if(!empty($condition)) {
+	if (!empty($condition)) {
 		$condition = sprintf("\n((%s) OR id_grupo NOT IN (%s))", $condition, implode(',',array_keys($acltags)));
 	}
-
+	
 	return $condition;
 }
 

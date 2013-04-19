@@ -533,6 +533,8 @@ class Modules {
 			}
 			else {
 				$html .= $table->getHTML();
+				
+				return $html;
 			}
 			
 			if (!$this->all_modules) {
@@ -546,8 +548,6 @@ class Modules {
 				}
 			}
 		}
-		
-		return $html;
 	}
 	
 	private function addJavascriptAddBottom() {
@@ -572,7 +572,7 @@ class Modules {
 								postvars[\"group\"] = $(\"select[name='group']\").val();
 								postvars[\"status\"] = $(\"select[name='status']\").val();
 								postvars[\"type\"] = $(\"select[name='module_group']\").val();
-								postvars[\"severity\"] = $(\"select[name='tag']\").val();
+								postvars[\"tag\"] = $(\"select[name='tag']\").val();
 								postvars[\"free_search\"] = $(\"input[name='free_search']\").val();
 								postvars[\"page\"] = page;
 								page++;

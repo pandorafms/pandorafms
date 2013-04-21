@@ -40,8 +40,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '130420';
-use constant AGENT_BUILD => '130421';
+use constant AGENT_VERSION => '130421';
+use constant AGENT_BUILD => '130422';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {

@@ -5,7 +5,7 @@
 # (c) 2008-2010 Artica ST
 # (c) 2008-2010 Sancho Lerena <slerena@gmail.com>
 # 
-# This is a generic installer for all Unix-like systems.(AIX, HP-UX, SunOS, Linux, FreeBSD)
+# This is a generic installer for all Unix-like systems.(AIX, HP-UX, SunOS, Linux, FreeBSD, NetBSD)
 # Please see http://www.pandorafms.org. This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
@@ -47,6 +47,10 @@ then
 	#PANDORA_PERL_DECODED_PATH=`echo $PANDORA_PERL_PATH | sed -e "s.\/.\\\\\/.g"`
 else
 	PANDORA_PERL_PATH="perl"
+	if [ "$OS_NAME" = "NetBSD" ]
+	then
+		PANDORA_PERL_DECODED_PATH="/usr/pkg/bin/perl"
+	fi
 fi
 
 # Check for Perl 5.6.x or higher available
@@ -61,7 +65,7 @@ then
 fi
 
 UNIX_KIND=`uname -s`
-if [ -z "`echo Linux HP-UX SunOS AIX Solaris Darwin BSD bsd FreeBSD | grep \"$UNIX_KIND\"`" ]
+if [ -z "`echo Linux HP-UX SunOS AIX Solaris Darwin BSD bsd FreeBSD NetBSD | grep \"$UNIX_KIND\"`" ]
 then
 	echo "This system: '$UNIX_KIND' is not supported by this script"
 	echo "Please make the install yourself as it's described in documentation"
@@ -112,6 +116,17 @@ uninstall () {
 		TENTACLE=/usr/local/bin/tentacle_client
 		TENTACLE_SERVER=/usr/local/bin/tentacle_server
 		PANDORA_MAN=/usr/local/man
+	fi
+	if [ "$OS_NAME" = "NetBSD" ]
+	then
+		PANDORA_HOME=/usr/local/share/pandora_agent
+		PANDORA_BIN=/usr/local/bin/pandora_agent
+		PANDORA_EXEC_BIN=/usr/local/bin/pandora_agent_exec
+		PANDORA_REVENT_BIN=/usr/local/bin/pandora_revent
+		PANDORA_CFG=/usr/local/etc/pandora
+		TENTACLE=/usr/local/bin/tentacle_client
+		TENTACLE_SERVER=/usr/local/bin/tentacle_server
+		PANDORA_MAN=/usr/share/man
 	fi
 
 	echo "Removing Pandora FMS Agent..."
@@ -191,6 +206,18 @@ install () {
 		PANDORA_MAN=/usr/local/man
 	fi
 
+	if [ "$OS_NAME" = "NetBSD" ]
+	then
+		PANDORA_HOME=/usr/local/share/pandora_agent
+		PANDORA_BIN=/usr/local/bin/pandora_agent
+		PANDORA_EXEC_BIN=/usr/local/bin/pandora_agent_exec
+		PANDORA_REVENT_BIN=/usr/local/bin/pandora_revent
+		PANDORA_CFG=/usr/local/etc/pandora
+		TENTACLE=/usr/local/bin/tentacle_client
+		TENTACLE_SERVER=/usr/local/bin/tentacle_server
+		PANDORA_MAN=/usr/share/man
+	fi
+
 	echo "Detecting Unix distribution: $OS_NAME version $OS_VERSION"
 	if [ -f $PANDORA_BASE$PANDORA_HOME ] && [ "$FORCE" = "0" ]
 	then
@@ -220,6 +247,10 @@ install () {
 		then
 			DAEMON_SCRIPT=FreeBSD/pandora_agent
 			DAEMON_TEMP=pandora_agent_daemon_temp
+		elif [ "$OS_NAME" = "NetBSD" ]
+		then
+			DAEMON_SCRIPT=NetBSD/pandora_agent
+			DAEMON_TEMP=pandora_agent_daemon_temp
 		else
 			DAEMON_SCRIPT=pandora_agent_daemon
 			DAEMON_TEMP=pandora_agent_daemon_temp
@@ -240,7 +271,7 @@ install () {
 		PANDORA_BASE_DECODED=`cat PANDORA_BASE.temp2`
 		rm PANDORA_BASE.temp PANDORA_BASE.temp2
 
-		if [ "$OS_NAME" = "FreeBSD" ]
+		if [ "$OS_NAME" = "FreeBSD" -o "$OS_NAME" = "NetBSD" ]
 		then
 			sed -e "s/^PATH\=[.]*/PATH\=$PANDORA_BASE_DECODED\/usr\/local\/bin\:/g" $DAEMON_SCRIPT > $DAEMON_TEMP
 			mv $DAEMON_TEMP $DAEMON_SCRIPT
@@ -285,7 +316,7 @@ install () {
 		mkdir -p $PANDORA_BASE 2> /dev/null
 		mkdir -p $PANDORA_BASE/var/log 2> /dev/null
 		mkdir -p $PANDORA_BASE/$PANDORA_MAN/man1 2> /dev/null
-		if [ "$OS_NAME" = "FreeBSD" ]
+		if [ "$OS_NAME" = "FreeBSD" -o "$OS_NAME" = "NetBSD" ]
 		then
 			mkdir -p $PANDORA_BASE/usr/local/bin 2> /dev/null
 		else
@@ -322,7 +353,7 @@ install () {
 
 	# Copying agent and securing it
 	echo "Copying Pandora FMS Agent to $PANDORA_BASE$PANDORA_BIN..."
-	
+
 	if [ "$PANDORA_PERL_DECODED_PATH" != "" ]
 	then
         	sed -e "s:^#\!.*:#\!$PANDORA_PERL_DECODED_PATH:g" pandora_agent > $PANDORA_BASE$PANDORA_BIN
@@ -356,7 +387,23 @@ install () {
 	fi
 
 	echo "Copying Pandora FMS Agent plugins to $PANDORA_BASE$PANDORA_HOME/plugins..."
-	cp -r plugins $PANDORA_BASE$PANDORA_HOME
+
+	if [ "$OS_NAME" = "NetBSD" ]
+	then
+		if [ ! -d $PANDORA_BASE$PANDORA_HOME/plugins ]
+		then
+			mkdir -p $PANDORA_BASE$PANDORA_HOME/plugins
+		fi
+		for i in `ls -1 plugins`
+		do 
+			sed s:/usr/bin/perl:/usr/pkg/bin/perl: plugins/$i > plugins/$i.tmp
+			cp plugins/$i.tmp $PANDORA_BASE$PANDORA_HOME/plugins/$i
+			rm plugins/$i.tmp
+		done
+	else
+		cp -r plugins $PANDORA_BASE$PANDORA_HOME
+	fi
+
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/plugins
 	ln -s $PANDORA_BASE$PANDORA_HOME/plugins $PANDORA_BASE$PANDORA_CFG
 
@@ -397,7 +444,7 @@ install () {
 	chmod 711 $PANDORA_BASE$PANDORA_LOG_DIR
 	chmod 640 $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
 	chown $PANDORA_USER:0 $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
-	if [ "$OS_NAME" = "FreeBSD" ]
+	if [ "$OS_NAME" = "FreeBSD" -o "$OS_NAME" = "NetBSD" ]
 	then
 		chown $PANDORA_USER:daemon $PANDORA_BASE$PANDORA_TEMP
 		chmod -R 770 $PANDORA_BASE$PANDORA_TEMP
@@ -410,7 +457,7 @@ install () {
 	chmod 600 $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
 	chown $PANDORA_USER $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
 
-	if [ "$OS_NAME" = "FreeBSD" ]
+	if [ "$OS_NAME" = "FreeBSD" -o "$OS_NAME" = "NetBSD" ]
 	then
 		echo "Linking start-up daemon script 'pandora_agent' on $OS_NAME";
 	else
@@ -471,6 +518,14 @@ install () {
 		chown root:wheel $PANDORA_STARTUP
 	fi
 
+	if [ "$OS_NAME" = "NetBSD" ]
+	then
+		PANDORA_STARTUP=/etc/rc.d/pandora_agent
+		cp NetBSD/pandora_agent $PANDORA_STARTUP
+		chmod 555 $PANDORA_STARTUP
+		chown root:wheel $PANDORA_STARTUP
+	fi
+
 	echo "Done."
 	echo " "
 	echo "You have your startup script ready at $PANDORA_STARTUP"
@@ -486,6 +541,9 @@ install () {
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then
 		echo "Define 'pandora_agent_enable=\"YES\"' in /etc/rc.conf to enable the daemon."
+	elif [ "$OS_NAME" = "NetBSD" ]
+	then
+		echo "Define 'pandora_agent=\"YES\"' in /etc/rc.conf to enable the daemon."
 	else
 		echo "Check your startup configuration to be sure Pandora FMS Agent is ready "
 		echo "to start automatically when system restarts":

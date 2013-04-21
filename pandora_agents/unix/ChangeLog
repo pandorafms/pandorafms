@@ -1,3 +1,12 @@
+2013-04-21  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent_installer: Added support for NetBSD.
+
+	* NetBSD/pandora_agent, NetBSD/pandora_agent.conf: Added launcher
+	script and configuration file for NetBSD.
+
+	Contributed by Hiroki SHIMIZU. Thanks!
+
 2013-04-17  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Added support for sending multiple ip addresses.

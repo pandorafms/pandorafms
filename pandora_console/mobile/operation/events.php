@@ -212,16 +212,17 @@ class Events {
 								"width" => 12,
 								"height" => 12,
 								"title" => $event_criticity));
-						$event["criticity"] .= ' '.$event_criticity;
+						$event["criticity"] .= ' ' . $event_criticity;
 						
 						
 						if ($event['estado'] == 1) {
 							$user_ack = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
-							if(empty($user_ack)) {
+							if (empty($user_ack)) {
 								$user_ack = $event['id_usuario'];
 							}
 							$date_ack = date ($system->getConfig("date_format"), $event['ack_utimestamp']);
-							$event["acknowledged_by"] = $user_ack.' ('.$date_ack.')';
+							$event["acknowledged_by"] = $user_ack .
+								' (' . $date_ack . ')';
 						}
 						else {
 							$event["acknowledged_by"] = '<i>'.__('N/A').'</i>';
@@ -277,7 +278,7 @@ class Events {
 	public function disabledColumns($columns = null) {
 		if (!empty($columns)) {
 			foreach ($columns as $column) {
-				unset($this->columns[$column]);
+				$this->columns[$column] = 1;
 			}
 		}
 	}
@@ -650,8 +651,8 @@ class Events {
 			$sql_post = " AND id_grupo = " . $this->group;
 		}
 		
-		if ($this->id_agente > 0) {
-			$sql_post = " AND id_agente = " . $this->id_agente;
+		if ($this->id_agent > 0) {
+			$sql_post = " AND id_agente = " . $this->id_agent;
 		}
 		
 		//--------------------------------------------------------------
@@ -1006,7 +1007,7 @@ class Events {
 				if (!empty($this->status))
 					$status = events_get_status($this->status);
 				$type = "";
-				if (!empty($this->empty))
+				if (!empty($this->type))
 					$type = get_event_types($this->type);
 				$severity = "";
 				if ($this->severity != -1)

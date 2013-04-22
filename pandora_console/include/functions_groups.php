@@ -703,6 +703,10 @@ function groups_get_group_row_data($id_group, $group_all, $group, &$printed_grou
 	$row['group_icon'] = html_print_image("images/groups_small/" . $icon . ".png",
 		true, false, true);
 	
+	if (!isset($html)) {
+		$html = false;
+	}
+	
 	//Update network group
 	if ($html) {
 		echo "<td class='group_view_data'  style='text-align: center; vertica-align: middle;'>";
@@ -730,7 +734,7 @@ function groups_get_group_row_data($id_group, $group_all, $group, &$printed_grou
 	$row[__('Agents')] = "<a class='link_count' href='index.php?page=agents&id_group=" . $id_group . "'>";
 	$row[__('Agents')] .= $data["total_agents"];
 	$row[__('Agents')] .= "</a>";
-
+	
 	// Agents unknown
 	$row[__('Agents unknown')] = "<a class='link_count' href='index.php?page=agents&id_group=" . $id_group . "&status=3'>";
 	$row[__('Agents unknown')] .= $data["agents_unknown"];

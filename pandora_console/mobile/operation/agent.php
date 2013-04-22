@@ -89,7 +89,7 @@ class Agent {
 					if ($this->agent['disabled']) {
 						$agent_name = "<em>" . $agent_name . "</em>" . ui_print_help_tip(__('Disabled'), true);
 					}
-					else if ($agent['quiet']) {
+					else if ($this->agent['quiet']) {
 						$agent_name = "<em>" . $agent_name . "&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
 					}
 					else {
@@ -98,7 +98,7 @@ class Agent {
 					
 					
 					$addresses = agents_get_addresses($this->id);
-					$address = agents_get_address($id_agente);
+					$address = agents_get_address($this->id);
 					foreach ($addresses as $k => $add) {
 						if($add == $address) {
 							unset($addresses[$k]);
@@ -111,7 +111,7 @@ class Agent {
 					}
 					
 					$last_contant = '<b>' . __('Last contact') . ' / ' . __('Remote') . '</b>&nbsp;'
-						.ui_print_timestamp ($agent["ultimo_contacto"], true);
+						.ui_print_timestamp ($this->agent["ultimo_contacto"], true);
 					
 					$description =
 						empty($agent["comentarios"]) ? '<em>' . __('N/A') . '</em>' : $this->agent["comentarios"];
@@ -130,7 +130,7 @@ class Agent {
 					$graph_js = ob_get_clean();
 					$html = $graph_js . $html;
 					$html .= "<b>" . __('Events (24h)') . "</b><br />";
-					$html .= graph_graphic_agentevents ($id_agente, 250, 15, 86400, '', true);
+					$html .= graph_graphic_agentevents ($this->id, 250, 15, 86400, '', true);
 				$ui->contentGridAddCell($html);
 				$ui->contentEndGrid();
 				

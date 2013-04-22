@@ -74,7 +74,7 @@ if (is_ajax ()){
 }
 
 // Header
-if($meta) {
+if ($meta) {
 	user_meta_print_header();
 	$url = 'index.php?sec=advanced&amp;sec2=advanced/users_setup&amp;tab=user_edit';
 }
@@ -283,7 +283,7 @@ else
 $usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 $id_usr = $config['id_user'];
 
-if(!$meta) {
+if (!$meta) {
 	$data = array();
 	$data[0] = __('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true);
 	$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);

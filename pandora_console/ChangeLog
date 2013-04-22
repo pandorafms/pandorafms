@@ -1,3 +1,11 @@
+2013-04-22 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/users/user_edit.php, include/functions_graph.php:
+	improved the source code style.
+	
+	* mobile/operation/agent.php, mobile/operation/modules.php: somes
+	fixes.
+
 2013-04-22  Mario Pulido <mario.pulido@artica.es>         
 
 	* include/help/es/help_alerts.php,

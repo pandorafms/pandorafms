@@ -1,3 +1,8 @@
+2013-04-22  Mario Pulido <mario.pulido@artica.es>         
+
+	* include/help/es/help_alerts.php,
+        include/help/en/help_alerts.php: Changes in help style
+
 2013-04-22 Miguel de Dios <miguel.dedios@artica.es>
 
 	* mobile/operation/events.php, mobile/operation/module_graph.php,

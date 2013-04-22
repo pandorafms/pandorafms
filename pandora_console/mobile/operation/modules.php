@@ -85,6 +85,9 @@ class Modules {
 		if (isset($filters['all_modules'])) {
 			$this->all_modules = $filters['all_modules'];
 		}
+		if (isset($filters['status'])) {
+			$this->status = $filters['status'];
+		}
 	}
 	
 	public function disabledColumns($columns = null) {
@@ -517,7 +520,9 @@ class Modules {
 		
 		$listModules = $this->getListModules($page);
 		//$ui->debug($listModules, true);
-		
+		html_debug_print("-----------", true);
+		html_debug_print($listModules, true);
+		html_debug_print("===========", true);
 		if ($listModules['total'] == 0) {
 			$html = '<p style="color: #ff0000;">' . __('No modules') . '</p>';
 			if (!$return) {

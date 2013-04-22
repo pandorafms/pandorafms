@@ -1371,9 +1371,9 @@ function graph_alert_status ($defined_alerts, $fired_alerts, $width = 300, $heig
 
 // If any value is negative, truncate it to 0
 function truncate_negatives(&$element) {
-        if($element < 0) {
-                $element = 0;
-        }
+	if ($element < 0) {
+		$element = 0;
+	}
 }
 
 /**

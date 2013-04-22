@@ -263,7 +263,7 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period, $date = 
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($interval_data, $previous_data);
 		}
-	
+		
 		// Get next data
 		$next_data = modules_get_next_data ($id_agent_module, $date);
 		if ($next_data !== false) {
@@ -346,7 +346,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module, $period, $date = 
 			$previous_data['utimestamp'] = $datelimit;
 			array_unshift ($interval_data, $previous_data);
 		}
-	
+		
 		// Get next data
 		$next_data = modules_get_next_data ($id_agent_module, $date);
 		if ($next_data !== false) {
@@ -695,7 +695,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data (This adds data before the interval of the report)
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -709,7 +709,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-
+	
 	// We need more or equal two points
 	if (count ($interval_data) < 2) {
 		return false;
@@ -5531,7 +5531,7 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
 	}
-
+	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
 	if ($next_data !== false) {
@@ -5581,6 +5581,343 @@ function reporting_get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	}
 	
 	return $critical_period;
+}
+
+/**
+ * Print tiny statistics of the status of one agent, group, etc.
+ * 
+ * @param mixed Array with the counts of the total modules, normal modules, critical modules, warning modules, unknown modules and fired alerts
+ * @param bool return or echo flag
+ * 
+ * @return string html formatted tiny stats of modules/alerts of an agent
+ */
+function reporting_tiny_stats ($agent, $return = false, $type = 'agent') {
+	$out = '';
+	
+	$counts_info["fired_count"] = agents_get_alerts_fired ($agent["id_agente"]);
+	$counts_info["critical_count"] = agents_monitor_critical ($agent["id_agente"]);
+	$counts_info["warning_count"] = agents_monitor_warning ($agent["id_agente"]);
+	$counts_info["unknown_count"] = agents_monitor_unknown ($agent["id_agente"]);
+	$counts_info["normal_count"] = agents_monitor_ok ($agent["id_agente"]);
+	$counts_info["total_count"] = $counts_info["critical_count"]
+		+ $counts_info["warning_count"]
+		+ $counts_info["unknown_count"]
+		+ $counts_info["normal_count"];
+	
+	
+	// Depend the type of object, the stats will refer agents, modules...
+	switch($type) {
+		case 'agent':
+			$template_title['total_count'] = __('%d Total modules');
+			$template_title['normal_count'] = __('%d Normal modules');
+			$template_title['critical_count'] = __('%d Critical modules');
+			$template_title['warning_count'] = __('%d Warning modules');
+			$template_title['unknown_count'] = __('%d Unknown modules');
+			$template_title['fired_count'] = __('%d Fired alerts');
+			break;
+		default:
+			$template_title['total_count'] = __('%d Total agents');
+			$template_title['normal_count'] = __('%d Normal agents');
+			$template_title['critical_count'] = __('%d Critical agents');
+			$template_title['warning_count'] = __('%d Warning agents');
+			$template_title['unknown_count'] = __('%d Unknown agents');
+			$template_title['fired_count'] = __('%d Fired alerts');
+			break;
+	}
+	
+	// Store the counts in a data structure to print hidden divs with titles
+	$stats = array();
+	
+	if (isset($counts_info['total_count'])) {
+		$not_init = isset($counts_info['notinit_count']) ? $counts_info['notinit_count'] : 0;
+		$total_count = $counts_info['total_count'] - $not_init;
+		$stats[] = array('name' => 'total_count', 'count' => $total_count, 'title' => sprintf($template_title['total_count'], $total_count));
+	}
+	
+	if (isset($counts_info['normal_count'])) {
+		$normal_count = $counts_info['normal_count'];
+		$stats[] = array('name' => 'normal_count', 'count' => $normal_count, 'title' => sprintf($template_title['normal_count'], $normal_count));
+	}
+	
+	if (isset($counts_info['critical_count'])) {
+		$critical_count = $counts_info['critical_count'];
+		$stats[] = array('name' => 'critical_count', 'count' => $critical_count, 'title' => sprintf($template_title['critical_count'], $critical_count));
+	}
+	
+	if (isset($counts_info['warning_count'])) {
+		$warning_count = $counts_info['warning_count'];
+		$stats[] = array('name' => 'warning_count', 'count' => $warning_count, 'title' => sprintf($template_title['warning_count'], $warning_count));
+	}
+	
+	if (isset($counts_info['unknown_count'])) {
+		$unknown_count = $counts_info['unknown_count'];
+		$stats[] = array('name' => 'unknown_count', 'count' => $unknown_count, 'title' => sprintf($template_title['unknown_count'], $unknown_count));
+	}
+	
+	if (isset($counts_info['fired_count'])) {
+		$fired_count = $counts_info['fired_count'];
+		$stats[] = array('name' => 'fired_count', 'count' => $fired_count, 'title' => sprintf($template_title['fired_count'], $fired_count));
+	}
+	
+	$uniq_id = uniqid();
+	
+	foreach ($stats as $stat) {
+		$params = array('id' => 'forced_title_' . $stat['name'] . '_' . $uniq_id, 
+			'class' => 'forced_title_layer', 
+			'content' => $stat['title'],
+			'hidden' => true);
+		$out .= html_print_div($params, true);
+	}
+	
+	// If total count is less than 0, is an error. Never show negative numbers
+	if ($total_count < 0) {
+		$total_count = 0;
+	}
+	
+	$out .= '<b>' . '<span id="total_count_' . $uniq_id . '" class="forced_title">' . $total_count . '</span>';
+	if (isset($fired_count) && $fired_count > 0)
+		$out .= ' : <span class="orange forced_title" id="fired_count_' . $uniq_id . '">' . $fired_count . '</span>';
+	if (isset($critical_count) && $critical_count > 0)
+		$out .= ' : <span class="red forced_title" id="critical_count_' . $uniq_id . '">' . $critical_count . '</span>';
+	if (isset($warning_count) && $warning_count > 0)
+		$out .= ' : <span class="yellow forced_title" id="warning_count_' . $uniq_id . '">' . $warning_count . '</span>';
+	if (isset($unknown_count) && $unknown_count > 0)
+		$out .= ' : <span class="grey forced_title" id="unknown_count_' . $uniq_id . '">' . $unknown_count . '</span>';
+	if (isset($normal_count) && $normal_count > 0)
+		$out .= ' : <span class="green forced_title" id="normal_count_' . $uniq_id . '">' . $normal_count . '</span>';
+	
+	$out .= '</b>';
+	
+	if ($return) {
+		return $out;
+	}
+	else {
+		echo $out;
+	}
+}
+
+function reporting_get_stats_indicators($data, $width = 280, $height = 20, $html = true) {
+	$table_ind = html_get_predefined_table();
+	
+	$servers = array();
+	$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
+	$servers["up"] = (int) servers_check_status ();
+	$servers["down"] = $servers["all"] - $servers["up"];
+	if ($servers["all"] == 0) {
+		$servers["health"] = 0;
+	}
+	else {
+		$servers["health"] = $servers["up"] / ($servers["all"] / 100);
+	}
+	
+	if ($html) {
+		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+						<legend>' . 
+							__('Server health') . ui_print_help_tip (sprintf(__('%d Downed servers'), $servers["down"]), true) . 
+						'</legend>' . 
+						progress_bar($servers["health"], $width, $height, '', 0) . '</fieldset>';
+		$table_ind->rowclass[] = '';
+		$table_ind->data[] = $tdata;
+		
+		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+						<legend>' . 
+							__('Monitor health') . ui_print_help_tip (sprintf(__('%d Not Normal monitors'), $data["monitor_not_normal"]), true) . 
+						'</legend>' . 
+						progress_bar($data["monitor_health"], $width, $height, $data["monitor_health"].'% '.__('of monitors up'), 0) . '</fieldset>';
+		$table_ind->rowclass[] = '';
+		$table_ind->data[] = $tdata;
+		
+		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+						<legend>' . 
+							__('Module sanity') . ui_print_help_tip (sprintf(__('%d Not inited monitors'), $data["monitor_not_init"]), true) .
+						'</legend>' . 
+						progress_bar($data["module_sanity"], $width, $height, $data["module_sanity"].'% '.__('of total modules inited'), 0) . '</fieldset>';
+		$table_ind->rowclass[] = '';
+		$table_ind->data[] = $tdata;
+		
+		$tdata[0] = '<fieldset class="databox tactical_set" style="width:93%;">
+						<legend>' . 
+							__('Alert level') . ui_print_help_tip (sprintf(__('%d Fired alerts'), $data["monitor_alerts_fired"]), true) . 
+						'</legend>' . 
+						progress_bar($data["alert_level"], $width, $height, $data["alert_level"].'% '.__('of defined alerts not fired'), 0) . '</fieldset>';
+		$table_ind->rowclass[] = '';
+		$table_ind->data[] = $tdata;
+		
+		
+		return html_print_table($table_ind, true);
+	}
+	else {
+		$return = array();
+		
+		$return['server_health'] = array(
+			'title' => __('Server health'),
+			'graph' => progress_bar($servers["health"], $width, $height, '', 0));
+		$return['monitor_health'] = array(
+			'title' => __('Monitor health'),
+			'graph' => progress_bar($data["monitor_health"], $width, $height, $data["monitor_health"].'% '.__('of monitors up'), 0));
+		$return['module_sanity'] = array(
+			'title' => __('Module sanity'),
+			'graph' => progress_bar($data["module_sanity"], $width, $height, $data["module_sanity"].'% '.__('of total modules inited'), 0));
+		$return['alert_level'] = array(
+			'title' => __('Alert level'),
+			'graph' => progress_bar($data["alert_level"], $width, $height, $data["alert_level"].'% '.__('of defined alerts not fired'), 0));
+		
+		return $return;
+	}
+}
+
+function reporting_get_stats_alerts($data) {
+	global $config;
+	
+	// Link URLS
+	$mobile = false;
+	if (isset($data['mobile'])) {
+		if ($data['mobile']) {
+			$mobile = true;
+		}
+	}
+	
+	if ($mobile) {
+		$urls = array();
+		$urls['monitor_alerts'] = "index.php?page=alerts&status=all_enabled";
+		$urls['monitor_alerts_fired'] = "index.php?page=alerts&status=fired";
+	}
+	else {
+		$urls = array();
+		$urls['monitor_alerts'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
+		$urls['monitor_alerts_fired'] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&filter=fired";
+	}
+	
+	// Alerts table
+	$table_al = html_get_predefined_table();
+	
+	$tdata = array();
+	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts'), 'width' => '20px'));
+	$tdata[1] = $data["monitor_alerts"] <= 0 ? '-' : $data["monitor_alerts"];
+	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
+	
+	$tdata[2] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts'), 'width' => '20px'));
+	$tdata[3] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
+	$tdata[3] = '<a style="color: ' . COL_ALERTFIRED . ';" class="big_data" href="' . $urls["monitor_alerts_fired"] . '">' . $tdata[3] . '</a>';
+	$table_al->rowclass[] = '';
+	$table_al->data[] = $tdata;
+	
+	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+				<legend>' . 
+					__('Defined and fired alerts') . 
+				'</legend>' . 
+				html_print_table($table_al, true) . '</fieldset>';
+	
+	return $output;
+}
+
+function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_height = 150, $links = false) {
+	global $config;
+	
+	// Link URLS
+	if ($links === false) {
+		$urls = array();
+		$urls['monitor_critical'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=2";
+		$urls['monitor_warning'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=1";
+		$urls['monitor_ok'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=0";
+		$urls['monitor_unknown'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=3";
+		$urls['monitor_not_init'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=5";
+	}
+	else {
+		$urls = array();
+		$urls['monitor_critical'] = $links['monitor_critical'];
+		$urls['monitor_warning'] = $links['monitor_warning'];
+		$urls['monitor_ok'] = $links['monitor_ok'];
+		$urls['monitor_unknown'] = $links['monitor_unknown'];
+		$urls['monitor_not_init'] = $links['monitor_not_init'];
+	}
+	
+	// Modules by status table
+	$table_mbs = html_get_predefined_table();
+	
+	$tdata = array();
+	$tdata[0] = html_print_image('images/module_critical.png', true, array('title' => __('Monitor critical'), 'width' => '22px'));
+	$tdata[1] = $data["monitor_critical"] <= 0 ? '-' : $data["monitor_critical"];
+	$tdata[1] = '<a style="color: ' . COL_CRITICAL . ';" class="big_data" href="' . $urls['monitor_critical'] . '">' . $tdata[1] . '</a>';
+	
+	$tdata[2] = html_print_image('images/module_warning.png', true, array('title' => __('Monitor warning'), 'width' => '22px'));
+	$tdata[3] = $data["monitor_warning"] <= 0 ? '-' : $data["monitor_warning"];
+	$tdata[3] = '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
+	$table_mbs->rowclass[] = '';
+	$table_mbs->data[] = $tdata;
+	
+	$tdata = array();
+	$tdata[0] = html_print_image('images/module_ok.png', true, array('title' => __('Monitor normal'), 'width' => '22px'));
+	$tdata[1] = $data["monitor_ok"] <= 0 ? '-' : $data["monitor_ok"];
+	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
+	
+	$tdata[2] = html_print_image('images/module_unknown.png', true, array('title' => __('Monitor unknown'), 'width' => '22px'));
+	$tdata[3] = $data["monitor_unknown"] <= 0 ? '-' : $data["monitor_unknown"];
+	$tdata[3] = '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
+	$table_mbs->rowclass[] = '';
+	$table_mbs->data[] = $tdata;
+	
+	$tdata = array();
+	$tdata[0] = html_print_image('images/module_notinit.png', true, array('title' => __('Monitor not init'), 'width' => '22px'));
+	$tdata[1] = $data["monitor_not_init"] <= 0 ? '-' : $data["monitor_not_init"];
+	$tdata[1] = '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
+	
+	$tdata[2] = $tdata[3] = '';
+	$table_mbs->rowclass[] = '';
+	$table_mbs->data[] = $tdata;
+	
+	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+				<legend>' . 
+					__('Monitors by status') . 
+				'</legend>' . 
+				html_print_table($table_mbs, true) . '</fieldset>';
+	
+	return $output;
+}
+
+function reporting_get_stats_agents_monitors($data) {
+	global $config;
+	
+	// Link URLS
+	$mobile = false;
+	if (isset($data['mobile'])) {
+		if ($data['mobile']) {
+			$mobile = true;
+		}
+	}
+	
+	if ($mobile) {
+		$urls = array();
+		$urls['total_agents'] = "index.php?page=agents";
+		$urls['monitor_checks'] = "index.php?page=modules";
+	}
+	else {
+		$urls = array();
+		$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
+		$urls['monitor_checks'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
+	}
+	
+	// Agents and modules table
+	$table_am = html_get_predefined_table();
+	
+	$tdata = array();
+	$tdata[0] = html_print_image('images/agent.png', true, array('title' => __('Total agents'), 'width' => '22px'));
+	$tdata[1] = $data["total_agents"] <= 0 ? '-' : $data["total_agents"];
+	$tdata[1] = '<a style="color: black;" class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
+	
+	$tdata[2] = html_print_image('images/module.png', true, array('title' => __('Monitor checks'), 'width' => '22px'));
+	$tdata[3] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
+	$tdata[3] = '<a style="color: black;" class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[3] . '</a>';
+	$table_am->rowclass[] = '';
+	$table_am->data[] = $tdata;
+	
+	$output = '<fieldset class="databox tactical_set" style="width:93%;">
+				<legend>' . 
+					__('Total agents and monitors') . 
+				'</legend>' . 
+				html_print_table($table_am, true) . '</fieldset>';
+	
+	return $output;
 }
 
 ?>

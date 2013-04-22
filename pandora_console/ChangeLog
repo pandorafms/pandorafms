@@ -1,3 +1,21 @@
+2013-04-22 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php, include/functions_alerts.php,
+	include/functions_tags.php, include/functions_html.php,
+	include/functions_events.php, include/functions_users.php,
+	include/functions_groups.php, include/functions_graph.php,
+	include/functions_reporting.php: added functions from Pandora 5 for
+	to use in new Pandora Mobile.
+	
+	* include/constants.php: : added contants from Pandora 5 for to use
+	in new Pandora Mobile.
+	
+	* operation/agentes/status_monitor.php,
+	operation/agentes/estado_agente.php: cleaned source code style.
+	
+	* mobile/*: adapted the Pandora Mobile code from Pandora 5 and
+	erased the old Pandora Mobile.
+
 2013-04-15 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* godmode/setup/setup_visuals.php, general/header.php: removed the

@@ -12,13 +12,14 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-require_once("system.class.php");
-
+//Singleton
 class DB {
+	private static $instance;
+	
 	private $system;
 	private $engine;
 	
-	public function __construct($system, $engine = 'mysql') {
+	public function __construct($engine = 'mysql') {
 		$this->system = &$system;
 		$this->engine = $engine;
 		
@@ -27,6 +28,14 @@ class DB {
 				//NONE
 				break;
 		}
-	} 
+	}
+	
+	public static function getInstance($engine = 'mysql') {
+		if (!(self::$instance instanceof self)) {
+			self::$instance = new self($engine);
+		}
+		
+		return self::$instance;
+	}
 }
 ?>

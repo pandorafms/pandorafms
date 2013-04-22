@@ -131,7 +131,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$filter = '';
 		$disabled = $filter;
 	}
-
+	
 	switch ($disabled) {
 		case "notfired":
 			$filter .= ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
@@ -148,7 +148,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		default:
 			$filter .= '';
 	}
-
+	
 	if (is_array ($options)) {
 		$filter .= db_format_array_where_clause_sql ($options);
 	}
@@ -178,7 +178,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		
 		$subQuery = implode (",", $id_modules);
 	}
-
+	
 	$orderbyText = '';
 	if ($orderby !== false) {
 		if (is_array($orderby)) {
@@ -193,7 +193,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
-
+	
 	// TODO: Clean extra_sql
 	$extra_sql = '';
 	
@@ -1965,14 +1965,14 @@ function agents_get_alerts_fired ($id_agent, $filter="") {
 	}
 	
 	$mod_clause = "(".implode(",", $modules_agent).")";	
-
+	
 	return db_get_sql ("SELECT COUNT(times_fired) FROM talert_template_modules WHERE times_fired != 0 AND id_agent_module IN ".$mod_clause);
 }
 
 //Returns the alert image to display tree view
 
 function agents_tree_view_alert_img ($alert_fired) {
-
+	
 	if ($alert_fired) {
 		return ui_print_status_image (STATUS_ALERT_FIRED, __('Alert fired'), true);
 	} else {
@@ -1995,8 +1995,6 @@ function agetns_tree_view_status_img ($critical, $warning, $unknown) {
 	}
 	else {
 		return ui_print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
-	}	
-}		
-
-	
+	}
+}
 ?>

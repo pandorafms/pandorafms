@@ -40,14 +40,14 @@ if (is_ajax ()) {
 	
 	if ($get_actions_alert_template) {
 		$id_template = get_parameter("id_template");
-
+		
 		$own_info = get_user_info ($config['id_user']);
 		$usr_groups = array();
 		$usr_groups = users_get_groups($config['id_user'], 'LW', true);
 		
 		$filter_groups = '';
 		$filter_groups = implode(',', array_keys($usr_groups));		
-
+		
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ("SELECT t1.id, t1.name,
@@ -152,17 +152,17 @@ $onheader = array();
 if (check_acl ($config['id_user'], 0, "AW")) {
 	// Prepare the tab system to the future
 	$tab = 'setup';
-
+	
 	/* Setup tab */
 	$setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">' 
-			. html_print_image ("images/setup.png", true, array ("title" =>__('Setup')))
-			. '</a>';
-			
+		. html_print_image ("images/setup.png", true, array ("title" =>__('Setup')))
+		. '</a>';
+	
 	if($tab == 'setup')
 		$setuptab['active'] = true;
 	else
 		$setuptab['active'] = false;
-		
+	
 	$onheader = array('setup' => $setuptab);
 }
 
@@ -174,7 +174,7 @@ if (isset($result_delete)) {
 		ui_print_success_message(__("Sucessfully deleted agent"));
 	else
 		ui_print_error_message(__("There was an error message deleting the agent"));
-}	
+}
 
 echo '<form method="post" action="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '">';
 
@@ -406,9 +406,9 @@ $table->head[8] = __('Last contact'). ' ' .
 		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 $table->align = array ();
-		
+
 //Only for AW flag
-if (check_acl ($config["id_user"], $group_id, "AW")) {		
+if (check_acl ($config["id_user"], $group_id, "AW")) {
 	$table->head[9] = __('R');
 	$table->align[9] = "center";
 	$table->head[10] = __('Delete');
@@ -437,9 +437,9 @@ foreach ($agents as $agent) {
 		$table->rowclass[$iterator] = 'rowOdd';
 	$rowPair = !$rowPair;
 	$iterator++;
-		
+	
 	$agent_info["monitor_alertsfired"] = agents_get_alerts_fired ($agent["id_agente"]);
-						
+	
 	$agent_info["monitor_critical"] = agents_monitor_critical ($agent["id_agente"]);
 	$agent_info["monitor_warning"] = agents_monitor_warning ($agent["id_agente"]);
 	$agent_info["monitor_unknown"] = agents_monitor_unknown ($agent["id_agente"]);
@@ -447,16 +447,17 @@ foreach ($agents as $agent) {
 	
 	$agent_info["alert_img"] = agents_tree_view_alert_img ($agent_info["monitor_alertsfired"]);
 	
-	$agent_info["status_img"] = agetns_tree_view_status_img ($agent_info["monitor_critical"],
-															$agent_info["monitor_warning"],
-															$agent_info["monitor_unknown"]);
-															
+	$agent_info["status_img"] = agetns_tree_view_status_img(
+		$agent_info["monitor_critical"],
+		$agent_info["monitor_warning"],
+		$agent_info["monitor_unknown"]);
+	
 	//Count all modules
 	$agent_info["modules"] = $agent_info["monitor_critical"] + $agent_info["monitor_warning"] + $agent_info["monitor_unknown"] + $agent_info["monitor_normal"];
 	
 	$data = array ();
 	
-	$data[0] = '';		
+	$data[0] = '';
 	$data[0] .= '<span class="left">';
 	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:6.5pt !important;', true);
 	$data[0] .= '</span>';
@@ -493,7 +494,7 @@ foreach ($agents as $agent) {
 	
 	$data[5] = '<b>';
 	$data[5] .= $agent_info["modules"];
-
+	
 	if ($agent_info["monitor_alertsfired"] > 0)
 		$data[5] .= ' : <span class="orange">'.$agent_info["monitor_alertsfired"].'</span>';
 	if ($agent_info["monitor_critical"] > 0)
@@ -520,7 +521,7 @@ foreach ($agents as $agent) {
 		$data[8] = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
 	else
 		$data[8] = $time;
-
+	
 	// This old code was returning "never" on agents without modules, BAD !!
 	// And does not print outdated agents in red. WRONG !!!!
 	// $data[7] = ui_print_timestamp ($agent_info["last_contact"], true);

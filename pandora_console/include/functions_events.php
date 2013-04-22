@@ -51,6 +51,7 @@ function events_get_events ($filter = false, $fields = false) {
 function events_get_event ($id, $fields = false) {
 	if (empty ($id))
 		return false;
+	
 	global $config;
 	
 	if (is_array ($fields)) {
@@ -114,7 +115,7 @@ function events_get_similar_ids ($id, $status = 0, $validated_limit_time = 0) {
 				array ('id_evento'));
 			break;
 	}
-			
+	
 	if ($events === false)
 		return $ids;
 	
@@ -257,25 +258,25 @@ function events_validate_event ($id_event, $similars = true, $comment = '', $new
 		// Oldstyle SQL to avoid innecesary PHP foreach
 		case 'mysql':
 			$sql_validation = "UPDATE tevento 
-								   SET estado = " . $new_status .", 
-									   id_usuario = '" . $config['id_user'] . "', 
-									   user_comment=concat(user_comment, '" . $comment . "') 
-								   WHERE id_evento in (" . implode(',', $id_event) . ")";
+				SET estado = " . $new_status .", 
+					id_usuario = '" . $config['id_user'] . "', 
+					user_comment=concat(user_comment, '" . $comment . "') 
+				WHERE id_evento in (" . implode(',', $id_event) . ")";
 			
 			if ($new_status == 1)
 				$sql_validation .= " AND estado <> 1";
 			else if ($new_status == 2)
 				$sql_validation .= " AND estado NOT IN (1,2)";
-			   
+			
 			$ret = db_process_sql($sql_validation);
 			break;
 		case 'postgresql':
 		case 'oracle':
 			$sql_validation = "UPDATE tevento 
-								   SET estado = " . $new_status . ", 
-									   id_usuario = '" . $config['id_user'] . "', 
-									   user_comment=user_comment || '" . $comment . "') 
-								   WHERE id_evento in (" . implode(',', $id_event) . ")";	
+				SET estado = " . $new_status . ", 
+					id_usuario = '" . $config['id_user'] . "', 
+					user_comment=user_comment || '" . $comment . "') 
+				WHERE id_evento in (" . implode(',', $id_event) . ")";	
 			
 			if ($new_status == 1)
 				$sql_validation .= " AND estado <> 1";
@@ -424,7 +425,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->head[3] = __('Event name');
 		
 		$table->head[4] = __('Agent name');
-				
+		
 		$table->head[5] = __('Timestamp');
 		$table->headclass[5] = "datos3 f9";
 		$table->align[5] = "right";
@@ -484,9 +485,9 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			
 			/* Event type */
 			$data[2] = events_print_type_img ($event["event_type"], true);
-					
+			
 			$data[3] = ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '9');
-
+			
 			if ($event["id_agente"] > 0) {
 				// Agent name
 				// Get class name, for the link color...
@@ -503,7 +504,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			else {
 				$data[4] = __('Alert')."SNMP";
 			}
-						
+			
 			// Timestamp
 			$data[5] = ui_print_timestamp ($event["timestamp"], true, array('style' => 'font-size: 7px'));
 			
@@ -1125,5 +1126,108 @@ function events_get_module ($id_agent_module, $period, $date = 0) {
 		GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $id_agent_module, $datelimit, $date);
 	
 	return db_get_all_rows_sql ($sql);
+}
+
+/**
+ * Return all descriptions of event status.
+ *
+ * @return array Status description array.
+ */
+function events_get_all_status () {
+	$fields = array ();
+	$fields[-1] = __('All event');
+	$fields[0] = __('Only new');
+	$fields[1] = __('Only validated');
+	$fields[2] = __('Only in process');
+	$fields[3] = __('Only not validated');
+	
+	return $fields;
+}
+
+function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1) {
+	global $config; 
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			db_process_sql ('SET group_concat_max_len = 9999999');
+			$sql = "SELECT *, MAX(id_evento) AS id_evento,
+					GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
+					GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
+					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+					MIN(utimestamp) AS timestamp_rep_min
+				FROM tevento
+				WHERE 1=1 ".$sql_post."
+				GROUP BY estado, evento, id_agentmodule
+				ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+			break;
+		case "postgresql":
+			$sql = "SELECT *, MAX(id_evento) AS id_evento, array_to_string(array_agg(DISTINCT user_comment), '<br>') AS user_comment,
+					array_to_string(array_agg(DISTINCT id_evento), ',') AS similar_ids,
+					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+					MIN(utimestamp) AS timestamp_rep_min
+				FROM tevento
+				WHERE 1=1 ".$sql_post."
+				GROUP BY estado, evento, id_agentmodule, id_evento, id_agente, id_usuario, id_grupo, estado, timestamp, utimestamp, event_type, id_alert_am, criticity, user_comment, tags, source, id_extra
+				ORDER BY timestamp_rep DESC LIMIT ".$pagination." OFFSET ".$offset;
+			break;
+		case "oracle":
+			$set = array();
+			$set['limit'] = $pagination;
+			$set['offset'] = $offset;
+			// TODO: Remove duplicate user comments
+			$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
+				FROM (SELECT * FROM tevento WHERE 1=1 ".$sql_post.") a, 
+				(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
+				id_agentmodule, COUNT(*) AS event_rep,
+				LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
+				LISTAGG(id_evento, '') AS similar_ids,
+				MIN(utimestamp) AS timestamp_rep_min
+				FROM tevento 
+				WHERE 1=1 ".$sql_post." 
+				GROUP BY estado, to_char(evento), id_agentmodule) b 
+				WHERE a.id_evento=b.id_evento AND 
+				to_char(a.evento)=to_char(b.evento) 
+				AND a.id_agentmodule=b.id_agentmodule";
+			$sql = oracle_recode_query ($sql, $set);
+			break;
+	}
+	
+	//Extract the events by filter (or not) from db
+	$events = db_get_all_rows_sql ($sql);
+	
+	return $events;
+}
+
+function events_get_total_events_grouped($sql_post, $meta = false, $history = false) {
+	return events_get_events_grouped($sql_post, 0, 0, $meta, $history, true);
+}
+
+/**
+ * Decode a numeric status into status description.
+ *
+ * @param int $status_id Numeric status.
+ *
+ * @return string Status description.
+ */
+function events_get_status ($status_id) {
+	switch ($status_id) {
+		case -1:
+			$status_desc = __('All event');
+			break;
+		case 0:
+			$status_desc = __('Only new');
+			break;
+		case 1:
+			$status_desc = __('Only validated');
+			break;
+		case 2:
+			$status_desc = __('Only in process');
+			break;
+		case 3:
+			$status_desc = __('Only not validated');
+			break;
+	}
+	
+	return $status_desc;
 }
 ?>

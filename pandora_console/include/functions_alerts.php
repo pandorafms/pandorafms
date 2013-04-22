@@ -23,6 +23,107 @@ require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . '/include/functions_modules.php');
 require_once($config['homedir'] . '/include/functions_users.php');
 
+function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $standby = -1, $acl = false, $total = false, $id_agent = 0) {
+	$sql = "";
+	$alerts = array();
+	
+	//----------- Group ------------------------------------------------
+	if ($id_group != 0) {
+		if ($acl !== false) {
+			$groups = users_get_groups (false, $acl, false);
+			
+			if (array_key_exists($id_group, $groups)) {
+				$group_query = " AND t3.id_grupo = " . $id_group . " ";
+			}
+			else {
+				//Set to fail the query
+				$group_query = " AND 1=0 ";
+			}
+		}
+		else {
+			$group_query = " AND t3.id_grupo = " . $id_group . " ";
+		}
+	}
+	else {
+		if ($acl !== false) {
+			$groups = users_get_groups (false, $acl, false);
+			
+			$id_groups = array_keys($groups);
+			
+			$group_query = " AND t3.id_grupo IN (" . implode(',', $id_groups) . ") ";
+		}
+		else {
+			$group_query = "";
+		}
+	}
+	
+	//------------ Status ----------------------------------------------
+	switch ($status) {
+		case "notfired":
+			$status_query = ' AND t0.times_fired = 0 AND t0.disabled = 0';
+			break;
+		case "fired":
+			$status_query = ' AND t0.times_fired > 0 AND t0.disabled = 0';
+			break;
+		case "disabled":
+			$status_query = ' AND t0.disabled = 1';
+			break;
+		case "all_enabled":
+			$status_query = ' AND t0.disabled = 0';
+			break;
+		default:
+			$status_query = '';
+			break;
+	}
+	
+	//----------- Standby ----------------------------------------------
+	$standby_query = '';
+	if ($standby != -1) {
+		$status_query .= ' AND t0.standby = ' . $standby . ' ';
+	}
+	
+	//----------- Free search ------------------------------------------
+	$free_search = io_safe_input($free_search);
+	
+	//----------- Make the query ---------------------------------------
+	if ($total) {
+		$sql = 'SELECT COUNT(*)';
+	}
+	else {
+		$sql = 'SELECT *, t2.nombre AS module_name,
+			t3.nombre AS agent_name, t1.name AS template_name,
+			t0.disabled AS alert_disabled ';
+	}
+	$sql .= '
+		FROM talert_template_modules AS t0
+		INNER JOIN talert_templates AS t1
+			ON t0.id_alert_template = t1.id
+		INNER JOIN tagente_modulo AS t2
+			ON t0.id_agent_module = t2.id_agente_modulo
+		INNER JOIN tagente AS t3
+			ON t2.id_agente = t3.id_agente
+		WHERE 1=1
+			' . $status_query . ' ' . $standby_query . ' ' . $group_query . '
+			AND (t1.name LIKE "%' . $free_search . '%"
+				OR t2.nombre LIKE "%' . $free_search . '%"
+				OR t3.nombre LIKE "%' . $free_search . '%")';
+	
+	if ($id_agent != 0) {
+		$sql .= ' AND t3.id_agente = ' . $id_agent;
+	}
+	
+	$row_alerts = db_get_all_rows_sql($sql);
+	
+	if ($total) {
+		return reset($row_alerts[0]);
+	}
+	else {
+		
+		
+		return $row_alerts;
+	}
+}
+
 /**
  * Get fired status from any alert of agent in group.
  * 

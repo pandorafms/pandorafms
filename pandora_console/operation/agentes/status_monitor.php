@@ -57,18 +57,14 @@ $sort = get_parameter('sort', 'none');
 echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . $sortField . '&amp;sort=' . $sort .'">';
 
 echo '<table cellspacing="4" cellpadding="4" width="98%" class="databox">
-	<tr>';
-
-
-
-echo '
+	<tr>
 		<td valign="middle">' . __('Group') . '</td>
 		<td valign="middle">' . 
 			html_print_select_groups(false, "AR", true, "ag_group",
 				$ag_group, '', '', '0', true, false, false, 'w130',
 				false, 'width:150px;') . '
-		</td>';
-		echo '<td>' . __('Monitor status') . "</td>";
+		</td>
+		<td>' . __('Monitor status') . "</td>";
 
 
 
@@ -135,12 +131,12 @@ switch ($config["dbtype"]) {
 		$flag_is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 		
 		$sql = ' SELECT distinct(nombre)
-		FROM tagente_modulo
-		WHERE nombre <> \'delete_pending\' AND id_agente IN
-		(
-			SELECT id_agente
-			FROM tagente
-			WHERE';
+			FROM tagente_modulo
+			WHERE nombre <> \'delete_pending\' AND id_agente IN
+			(
+				SELECT id_agente
+				FROM tagente
+				WHERE';
 		
 		$sql .= $extra_sql.'(';
 		

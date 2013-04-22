@@ -346,24 +346,24 @@ function tags_insert_policy_module_tag ($id_agent_module, $tags){
  */
 function tags_update_module_tag ($id_agent_module, $tags, $autocommit = false){
 	$errn = 0;
-
+	
 	if (empty($tags))
 		$tags = array();
 	
 	/* First delete module tag entries */
 	$result_tag = db_process_sql_delete ('ttag_module', array('id_agente_modulo' => $id_agent_module));
-
+	
 	$values = array();
 	foreach ($tags as $tag){
 		//Protect against default insert
 		if (empty($tag))
-			continue;		
+			continue;
 		
 		$values['id_tag'] = $tag;
 		$values['id_agente_modulo'] = $id_agent_module;
 		$result_tag = db_process_sql_insert('ttag_module', $values, false);
 		if ($result_tag === false)
-			$errn++;		
+			$errn++;
 	}
 	
 }
@@ -379,13 +379,13 @@ function tags_update_module_tag ($id_agent_module, $tags, $autocommit = false){
  */
 function tags_update_policy_module_tag ($id_policy_module, $tags, $autocommit = false){
 	$errn = 0;
-
+	
 	if (empty($tags))
 		$tags = array();
 	
 	/* First delete module tag entries */
 	$result_tag = db_process_sql_delete ('ttag_policy_module', array('id_policy_module' => $id_policy_module));
-
+	
 	$values = array();
 	foreach ($tags as $tag) {
 		//Protect against default insert
@@ -466,5 +466,42 @@ function tags_get_all_tags () {
 	}
 	
 	return $return;
+}
+
+/**
+ * Give format to tags when go concatened with url.
+ *
+ * @param string name of tags serialized
+ * @param bool flag to return the url or not
+ * 
+ * @return string Tags with url format
+ */
+function tags_get_tags_formatted ($tags_array, $get_url = true) {
+	if(!is_array($tags_array)) {
+		$tags_array = explode(',',$tags_array);
+	}
+	
+	$tags = array();
+	foreach($tags_array as $t) {
+		$tag_url = explode(' ', trim($t));
+		$tag = $tag_url[0];
+		if(isset($tag_url[1]) && $tag_url[1] != '' && $get_url) {
+			$title = $tag_url[1];
+			//$link = '<a href="'.$tag_url[1].'" target="_blank">'.html_print_image('images/zoom.png',true, array('alt' => $title, 'title' => $title)).'</a>';
+			$link = '<a href="javascript: openURLTagWindow(\'' . $tag_url[1] . '\');">' . html_print_image('images/zoom.png', true, array('title' => __('Click here to open a popup window with URL tag'))) . '</a>';
+		
+		}
+		else {
+			$link = '';
+		}
+		
+		$tags[] = $tag.$link;
+	}
+	
+	$tags = implode(',',$tags);
+	
+	$tags = str_replace(',',' , ',$tags);
+	
+	return $tags;
 }
 ?>

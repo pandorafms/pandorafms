@@ -262,9 +262,9 @@ function groups_get_parents($parent, $onlyPropagate = false, $groups = null) {
 	if (empty($groups)) {
 		$groups = db_get_all_rows_in_table('tgrupo');
 	}
-
+	
 	$return = array();
-
+	
 	foreach ($groups as $key => $group) {
 		if ($group['id_grupo'] == 0) {
 			continue;
@@ -273,7 +273,7 @@ function groups_get_parents($parent, $onlyPropagate = false, $groups = null) {
 			$return = $return + array($group['id_grupo'] => $group) + groups_get_parents($group['parent'], $groups);
 		}
 	}
-
+	
 	return $return;
 }
 
@@ -308,14 +308,14 @@ function groups_safe_acl ($id_user, $id_groups, $access) {
 	elseif (!is_array ($id_groups)) {
 		return array ();
 	}
-
+	
 	foreach ($id_groups as $group) {
 		//Check ACL. If it doesn't match, remove the group
 		if (!check_acl ($id_user, $group, $access)) {
 			unset ($id_groups[$group]);
 		}
 	}
-
+	
 	return $id_groups;
 }
 
@@ -342,9 +342,9 @@ function groups_is_all_group($idGroups) {
 	$arrayGroups = array($idGroups);
 	else
 	$arrayGroups = $idGroups;
-
+	
 	$groupsDB = db_get_all_rows_in_table ('tgrupo');
-
+	
 	$returnVar = true;
 	foreach ($groupsDB as $group) {
 		if (!in_array($group['id_grupo'], $arrayGroups)) {
@@ -352,7 +352,7 @@ function groups_is_all_group($idGroups) {
 			break;
 		}
 	}
-
+	
 	return $returnVar;
 }
 
@@ -371,7 +371,7 @@ function groups_get_icon ($id_group) {
 		$icon = (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 		
 		if ($icon == '') {
-			$icon = 'without_group';	
+			$icon = 'without_group';
 		}
 		
 		return $icon;
@@ -387,14 +387,14 @@ function groups_get_icon ($id_group) {
  */
 function groups_get_all($groupWithAgents = false) {
 	global $config;
-
+	
 	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
-
+	
 	global $config;
-
+	
 	if ($groupWithAgents)
 	$sql .= ' WHERE id_grupo IN (SELECT id_grupo FROM tagente GROUP BY id_grupo)';
-
+	
 	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
@@ -404,9 +404,9 @@ function groups_get_all($groupWithAgents = false) {
 			$sql .= ' ORDER BY dbms_lob.substr(nombre,4000,1) DESC';
 			break;
 	}
-
+	
 	$rows = db_get_all_rows_sql ($sql);
-
+	
 	if($rows === false) {
 		$rows = array();
 	}
@@ -416,7 +416,7 @@ function groups_get_all($groupWithAgents = false) {
 		if (check_acl ($config['id_user'], $row["id_grupo"], "AR"))
 		$return[$row['id_grupo']] = $row['nombre'];
 	}
-
+	
 	return $return;
 }
 
@@ -430,12 +430,12 @@ function groups_get_all($groupWithAgents = false) {
  */
 function groups_get_id_recursive($id_parent, $all = false) {
 	$return = array();
-
+	
 	$return = array_merge($return, array($id_parent));
-
+	
 	//Check propagate
 	$id = db_get_value_filter('id_grupo', 'tgrupo', array('id_grupo' => $id_parent, 'propagate' => 1));
-
+	
 	if (($id !== false) || $all) {
 		$children = db_get_all_rows_filter("tgrupo", array('parent' => $id_parent, 'disabled' => 0), array('id_grupo'));
 		if ($children === false) {
@@ -448,12 +448,12 @@ function groups_get_id_recursive($id_parent, $all = false) {
 			}
 			$children = $temp;
 		}
-
+		
 		foreach ($children as $id_children) {
 			$return = array_merge($return, groups_get_id_recursive($id_children, $all));
 		}
 	}
-
+	
 	return $return;
 }
 
@@ -468,7 +468,7 @@ function groups_get_id_recursive($id_parent, $all = false) {
  */
 function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
 	$return = array();
-
+	
 	foreach ($groups as $key => $group) {
 		if (($key == 0) && ($parent == 0)) { //When the groups is the all group
 			$group['deep'] = $deep;
@@ -488,7 +488,7 @@ function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
 			$return = $return + array($key => $group) + $branch;
 		}
 	}
-
+	
 	return $return;
 }
 
@@ -501,20 +501,20 @@ function groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
  */
 function groups_get_status ($id_group = 0) {
 	$agents = agents_get_group_agents($id_group);
-
+	
 	$agents_status = array();
 	foreach($agents as $key => $agent){
 		$agents_status[] = agents_get_status($key);
 	}
-
+	
 	$childrens = groups_get_childrens($id_group);
-
+	
 	foreach($childrens as $key => $child){
 		$agents_status[] = groups_get_status($key);
 	}
-
+	
 	// Status is 0 for normal, 1 for critical, 2 for warning and 3/-1 for unknown. 4 for fired alerts
-
+	
 	// Checking if any agent has fired alert (4)
 	if(is_int(array_search(4,$agents_status))){
 		return 4;
@@ -538,7 +538,7 @@ function groups_get_status ($id_group = 0) {
 	else {
 		return 0;
 	}
-
+	
 	return $status;
 }
 
@@ -574,12 +574,12 @@ function groups_get_users ($id_group, $filter = false) {
 	
 	$resulta = array();
 	$resulta = db_get_all_rows_filter ("tusuario_perfil", $filter);
-
+	
 	// The users of the group All (0) will be also returned
 	$filter['id_grupo'] = 0;
 	$resultb = array();
 	$resultb = db_get_all_rows_filter ("tusuario_perfil", $filter);
-
+	
 	if($resulta == false && $resultb == false)
 		$result = false;
 	elseif($resulta == false)
@@ -588,7 +588,7 @@ function groups_get_users ($id_group, $filter = false) {
 		$result = $resulta;
 	else
 		$result = array_merge($resulta,$resultb);
-
+	
 	if ($result === false)
 	return array ();
 	
@@ -603,7 +603,7 @@ function groups_get_users ($id_group, $filter = false) {
 			array_push ($retval, get_user_info ($user));
 		}
 	}
-
+	
 	return $retval;
 }
 
@@ -628,13 +628,13 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	if ($id_group < 0) 
 		return; 
-
+	
 	// Get stats for this group
 	$data = reporting_get_group_stats($id_group);
-
+	
 	if ($data["total_agents"] == 0)
 		return; // Skip empty groups
-
+	
 	// Calculate entire row color
 	if ($data["monitor_alerts_fired"] > 0){
 		echo "<tr class='group_view_alrm' style='height: 35px;'>";
@@ -674,7 +674,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	if ($data["total_agents"] > 0)
 		echo "<a class='group_view_data' style='font-weight: bold; font-size: 18px; text-align: center;' 
 			href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
-		
+	
 	//Total agent field given by function reporting_get_group_stats return the number of agents
 	//of this groups and its children. It was done to print empty fathers of children groups.
 	//We need to recalculate the total agents for this group here to get only the total agents
@@ -693,7 +693,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	echo $data["total_agents"];
 	echo "</a>";
-		
+	
 	// Agents unknown
 	if ($data["agents_unknown"] > 0) {
 		echo "<td class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'>";
@@ -706,7 +706,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	else {
 		echo "<td></td>";
 	}
-
+	
 	// Monitors Unknown
 	if ($data["monitor_unknown"] > 0){
 		echo "<td class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'>";
@@ -719,8 +719,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	else {
 		echo "<td></td>";
 	}
-
-
+	
+	
 	// Monitors Not Init
 	if ($data["monitor_not_init"] > 0){
 		echo "<td class='group_view_data_unk' style='font-weight: bold; font-size: 18px; text-align: center;'>";
@@ -1258,12 +1258,162 @@ function groups_total_agents ($group_array) {
 	} else if (!is_array ($group_array)){
 		$group_array = array($group_array);
 	}
-			
+	
 	$group_clause = implode (",", $group_array);
 	$group_clause = "(" . $group_clause . ")";
 	
 	return db_get_sql ("SELECT COUNT(*) FROM tagente WHERE id_grupo IN $group_clause AND disabled = 0");
-					
+	
 }
 
+/**
+ * Returning data for a row in the groups view (Recursive function)
+ *
+ * @param int $id_group The group id of the row
+ * @param array $group_all An array of all groups
+ * @param array $group arrayy The group name and childs
+ * @param array $printed_groups The printed groups list (by reference)
+ *
+ */
+function groups_get_group_row_data($id_group, $group_all, $group, &$printed_groups) {
+	global $config;
+	
+	$rows = array();
+	$row = array();
+	
+	if (isset($printed_groups[$id_group])) {
+		return;
+	}
+	
+	// Store printed group to not print it again
+	$printed_groups[$id_group] = 1;
+	
+	if ($id_group < 0) 
+		return; 
+	
+	// Get stats for this group
+	$data = reporting_get_group_stats($id_group);
+	
+	if ($data["total_agents"] == 0)
+		return; // Skip empty groups
+	
+	// Calculate entire row color
+	if ($data["monitor_alerts_fired"] > 0) {
+		$row["status"] = "group_view_alrm";
+	}
+	elseif ($data["monitor_critical"] > 0) {
+		$row["status"] = "group_view_crit";
+	}
+	elseif ($data["monitor_warning"] > 0) {
+		$row["status"] = "group_view_warn";
+	}
+	elseif (($data["monitor_unknown"] > 0) || ($data["agents_unknown"] > 0)) {
+		$row["status"] = "group_view_unk";
+	}
+	elseif ($data["monitor_ok"] > 0) {
+		$row["status"] = "group_view_ok";
+	}
+	else {
+		$row["status"] = "group_view_normal";
+	}
+	
+	// Group name
+	$group_cell = __('Group');
+	$row[$group_cell] = $group['prefix'];
+	$row[$group_cell] .= "<a href='index.php?page=agents&id_group=" . $id_group . "'>";
+	$row[$group_cell] .= ui_print_group_icon ($id_group, true, "groups_small", '', false);
+	$row[$group_cell] .= ui_print_truncate_text($group['name']);
+	$row[$group_cell] .= "</a>";
+	
+	$row['group_name'] = ui_print_truncate_text($group['name']);
+	
+	if ($id_group > 0)
+		$icon = (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+	else
+		$icon = "world";
+	
+	$row['group_icon'] = html_print_image("images/groups_small/" . $icon . ".png",
+		true, false, true);
+	
+	if (!isset($html)) {
+		$html = false;
+	}
+	
+	//Update network group
+	if ($html) {
+		echo "<td class='group_view_data'  style='text-align: center; vertica-align: middle;'>";
+		if (check_acl ($config['id_user'], $id_group, "AW")) {
+			echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' .
+				html_print_image("images/target.png", true, array("border" => '0', "alt" => __('Force'))) . '</a>';
+		}
+		echo "</td>";
+	}
+	
+	
+	
+	// Total agents
+	if ($id_group != 0) {
+		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente)
+			FROM tagente 
+			WHERE id_grupo = $id_group AND disabled = 0");
+	}
+	else {
+		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente)
+			FROM tagente 
+			WHERE disabled = 0");
+	}
+	
+	$row[__('Agents')] = "<a class='link_count' href='index.php?page=agents&id_group=" . $id_group . "'>";
+	$row[__('Agents')] .= $data["total_agents"];
+	$row[__('Agents')] .= "</a>";
+	
+	// Agents unknown
+	$row[__('Agents unknown')] = "<a class='link_count' href='index.php?page=agents&id_group=" . $id_group . "&status=3'>";
+	$row[__('Agents unknown')] .= $data["agents_unknown"];
+	$row[__('Agents unknown')] .= "</a>";
+	
+	// Monitors Unknown
+	$row[__('Unknown')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=3'>";
+	$row[__('Unknown')] .= $data["monitor_unknown"];
+	$row[__('Unknown')] .= "</a>";
+	
+	// Monitors Not Init
+	$row[__('Not init')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=5'>";
+	$row[__('Not init')] .= $data["monitor_not_init"];
+	$row[__('Not init')] .= "</a>";
+	
+	// Monitors OK
+	$row[__('Normal')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=0'>";
+	$row[__('Normal')] .= $data["monitor_ok"];
+	$row[__('Normal')] .= "</a>";
+	
+	// Monitors Warning
+	$row[__('Warning')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=1'>";
+	$row[__('Warning')] .= $data["monitor_warning"];
+	$row[__('Warning')] .= "</a>";
+	
+	// Monitors Critical
+	$row[__('Critical')] = "<a class='link_count' href='index.php?page=modules&id_group=" . $id_group . "&status=2'>";
+	$row[__('Critical')] .= $data["monitor_critical"];
+	$row[__('Critical')] .= "</a>";
+	
+	// Alerts fired
+	$row[__('Alerts fired')] = "<a class='link_count' href='index.php?page=alerts&group=" . $id_group . "&status=fired'>";;
+	$row[__('Alerts fired')] .= $data["monitor_alerts_fired"];
+	$row[__('Alerts fired')] .= "</a>";
+	
+	$rows[$id_group] = $row;
+	
+	foreach ($group['childs'] as $child) {
+		$sub_rows = groups_get_group_row_data($child, $group_all,
+			$group_all[$child], $printed_groups);
+		
+		if (!$html) {
+			if (!empty($sub_rows))
+				$rows = $rows + $sub_rows;
+		}
+	}
+	
+	return $rows;
+}
 ?>

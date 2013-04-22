@@ -26,61 +26,61 @@ define("GRAPH_LINE", 2);
 define("GRAPH_STACKED_LINE", 3);
 
 function get_graph_statistics ($chart_array) {
+	
+	/// IMPORTANT!
+	///
+	/// The calculus for AVG, MIN and MAX values are in this function
+	/// because it must be done based on graph array data not using reporting 
+	/// function to get coherent data between stats and graph visualization
+	
+	$stats = array ();
+	
+	$count = 0;
+	
+	$size = sizeof($chart_array);
+	
+	//Initialize stats array
+	$stats = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
+	
+	foreach ($chart_array as $item) {
+			
+			//Sum all values later divide by the number of elements
+			$stats['avg'] = $stats['avg'] + $item;
+			
+			//Get minimum
+			if ($stats['min'] == null) {
+				$stats['min'] = $item;
+			} else if ($item < $stats['min']) {
+					$stats['min'] = $item;
+			}
+			
+			//Get maximum
+			if ($stats['max'] == null) {
+					$stats['max'] = $item;
+			} else if ($item > $stats['max']) {
+					$stats['max'] = $item;
+			}
+			
+			$count++;
+			
+			//Get last data
+			if ($count == $size) {
+				$stats['last'] = $item;
+			}
+}
 
-        /// IMPORTANT!
-        ///
-        /// The calculus for AVG, MIN and MAX values are in this function
-        /// because it must be done based on graph array data not using reporting 
-        /// function to get coherent data between stats and graph visualization
+	//End the calculus for average
+	if ($count > 0) {
 
-        $stats = array ();
+			$stats['avg'] = $stats['avg'] / $count;
+	}
 
-        $count = 0;
-
-        $size = sizeof($chart_array);
-
-        //Initialize stats array
-        $stats = array ("avg" => 0, "min" => null, "max" => null, "last" => 0);
-
-        foreach ($chart_array as $item) {
-                
-		//Sum all values later divide by the number of elements
-                $stats['avg'] = $stats['avg'] + $item;
-
-                //Get minimum
-                if ($stats['min'] == null) {
-			$stats['min'] = $item;
-                } else if ($item < $stats['min']) {
-                        $stats['min'] = $item;
-                }
-
-                //Get maximum
-                if ($stats['max'] == null) {
-                        $stats['max'] = $item;
-                } else if ($item > $stats['max']) {
-                        $stats['max'] = $item;
-                }
-		
-		$count++;
-
-                //Get last data
-                if ($count == $size) {
-                	$stats['last'] = $item;
-                }
-	}	
-
-        //End the calculus for average
-        if ($count > 0) {
-
-                $stats['avg'] = $stats['avg'] / $count;
-        }
-
-        //Format stat data to display properly
-        $stats['last'] = round($stats['last'], 2);
-        $stats['avg'] = round($stats['avg'], 2);
-        $stats['min'] = round($stats['min'], 2);
-        $stats['max'] = round($stats['max'], 2);
-
+	//Format stat data to display properly
+	$stats['last'] = round($stats['last'], 2);
+	$stats['avg'] = round($stats['avg'], 2);
+	$stats['min'] = round($stats['min'], 2);
+	$stats['max'] = round($stats['max'], 2);
+	
 	return $stats;
 }
 
@@ -627,12 +627,12 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only, $pure,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$only_image, $homeurl, $ttl, $projection, $compare);
-
+	
 	if ($return_data) {
 		return $data_returned;
 	}
 	
-	if($compare === 'overlapped') {
+	if ($compare === 'overlapped') {
 		$i = 0;
 		foreach($chart as $k=>$v) {
 			if(!isset($chart_prev[$i])) {
@@ -2440,8 +2440,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 }
 
 function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
-	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure = 0,
-	$date = 0, $only_image = false, $homeurl = '', $compare = false) {
+	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0,
+	$pure = 0, $date = 0, $only_image = false, $homeurl = '', $compare = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -3326,5 +3326,159 @@ function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=
 	}
 	
 	return "$n";
+}
+
+
+/**
+ * Print a pie graph with events data of agent or all agents (if id_agent = false)
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param bool return or echo flag
+ * @param bool show_not_init flag
+ */
+function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $return = false, $show_not_init = false) {
+	global $config;
+	
+	$data["Critical"] = agents_monitor_critical ($id_agent);
+	$data["Warning"] = agents_monitor_warning ($id_agent);
+	$data["Unknown"] = agents_monitor_unknown ($id_agent);
+	$data["Normal"] = agents_monitor_ok ($id_agent);
+	
+	array_walk($data, 'truncate_negatives');
+	
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
+	
+	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
+	
+	if ($show_not_init) {
+		$colors[] = COL_NOTINIT;
+	}
+	
+	$out = pie2d_graph(false, $data, $width, $height, __("other"),
+		ui_get_full_url(false), $water_mark, $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
+	
+	if ($return) {
+		return $out;
+	}
+	else {
+		echo $out;
+	}
+}
+
+
+/**
+ * Print a static graph with event data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ * @param string homeurl
+ * @param bool return or echo the result
+ */
+function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false) {
+	global $config;
+	global $graphic_type;
+	
+	$data = array ();
+	
+	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	
+	$interval = (int) ($period / $resolution);
+	$date = get_system_time ();
+	$datelimit = $date - $period;
+	$periodtime = floor ($period / $interval);
+	$time = array ();
+	$data = array ();
+	$legend = array();
+	$full_legend = array();
+	
+	$cont = 0;
+	for ($i = 0; $i < $interval; $i++) {
+		$bottom = $datelimit + ($periodtime * $i);
+		if (! $graphic_type) {
+			if ($config['flash_charts']) {
+				$name = date('H:i', $bottom);
+			}
+			else {
+				$name = date('H\h', $bottom);
+			}
+		}
+		else {
+			$name = $bottom;
+		}
+		
+		// Show less values in legend
+		if ($cont == 0 or $cont % 2)
+			$legend[$cont] = $name;
+		
+		$full_legend[$cont] = $name;
+		
+		$top = $datelimit + ($periodtime * ($i + 1));
+		$event = db_get_row_filter ('tevento',
+			array ('id_agente' => $id_agent,
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top), 'criticity, utimestamp');
+		
+		if (!empty($event['utimestamp'])){
+			$data[$cont]['utimestamp'] = $periodtime;
+			switch ($event['criticity']) {
+				case 3:
+					$data[$cont]['data'] = 2;
+					break;
+				case 4:
+					$data[$cont]['data'] = 3;
+					break;
+				default:
+					$data[$cont]['data'] = 1;
+					break;
+			}
+		}
+		else {
+			$data[$cont]['utimestamp'] = $periodtime;
+			$data[$cont]['data'] = 1;
+		}
+		$cont++;
+	}
+	
+	$colors = array(
+		1 => COL_NORMAL,
+		2 => COL_WARNING,
+		3 => COL_CRITICAL,
+		4 => COL_UNKNOWN);
+	
+	// Draw slicebar graph
+	if (false) {
+		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+	}
+	else {
+		$out = slicesbar_graph($data, $period, $width, $height, $colors,
+			$config['fontpath'], $config['round_corner'], $homeurl);
+		
+		// Draw legend
+		$out .=  "<br>";
+		$out .=  "&nbsp;";
+		foreach ($legend as $hour) {
+			$out .=  "<span style='font-size: 6pt'>" . $hour . "</span>";
+			$out .=  "&nbsp;";
+		}
+	}
+	
+	if ($return) {
+		return $out;
+	}
+	else {
+		echo $out;
+	}
+}
+
+// If any value is negative, truncate it to 0
+function truncate_negatives(&$element) {
+	if ($element < 0) {
+		$element = 0;
+	}
 }
 ?>

@@ -1495,7 +1495,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 					delay: 200
 				}
 			);
-
+			
 			$("#text-<?php echo $name; ?>").result (
 				<?php echo $scriptResult; ?>
 			);
@@ -1506,7 +1506,7 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 	html_print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
 		array('style' => 'background: url(images/lightning_blue.png) no-repeat right;'));
 	ui_print_help_tip(__('Type at least two characters to search the module.'), false);
-
+	
 	$output = ob_get_clean();
 	
 	if ($return) {
@@ -1515,5 +1515,81 @@ function html_print_autocomplete_modules($name = 'module', $default = '', $id_ag
 	else {
 		echo $output;
 	}
+}
+
+/**
+ * Render an input password element.
+ *
+ * The element will have an id like: "password-$name"
+ * 
+ * @param mixed parameters:
+ * 			- id: string
+ * 			- style: string
+ * 			- hidden: boolean
+ * 			- content: string
+ * @param bool return or echo flag
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_div ($options, $return = false) {
+	$output = '<div';
+	
+	//Valid attributes (invalid attributes get skipped)
+	$attrs = array ("id", "style", "class");
+	
+	if (isset ($options['hidden'])) {
+		if (isset($options['style'])) {
+			$options['style'] .= 'display:none;';
+		}
+		else {
+			$options['style'] = 'display:none;';
+		}
+	}
+	
+	foreach ($attrs as $attribute) {
+		if (isset ($options[$attribute])) {
+			$output .= ' '.$attribute.'="'.io_safe_input_html ($options[$attribute]).'"';
+		}
+	}
+	
+	$output .= '>';
+	
+	$output .= isset ($options['content']) ? $options['content'] : '';
+	
+	$output .= '</div>';
+	
+	if ($return) {
+		return $output;
+	}
+	else {
+		echo $output;
+	}
+}
+
+/**
+ * Return a table parameters predefined
+ * 
+ * @param string model
+ * 	- Transparent: More basic template. No borders, all the columns with same width
+ * @param int number of columns
+ * 
+ * @return object Table object 
+ */
+function html_get_predefined_table ($model = 'transparent', $columns = 4) {
+	$width_percent = 100/$columns;
+	
+	switch($model) {
+		case 'transparent':
+		default:
+			$table->class = "none";
+			$table->cellpadding = 0;
+			$table->cellspacing = 0;
+			$table->head = array ();
+			$table->data = array ();
+			$table->style = array_fill(0, 4, 'text-align:center; width: ' . $width_percent . '%;');
+			$table->width = "100%";
+	}
+	
+	return $table;
 }
 ?>

@@ -732,4 +732,52 @@ function users_check_users() {
 	
 	return;
 }
+
+/**
+ * Get all the groups a user has reading privileges with the special format to use it on select.
+ *
+ * @param string User id
+ * @param string The privilege to evaluate, and it is false then no check ACL.
+ * @param boolean $returnAllGroup Flag the return group, by default true.
+ * @param boolean $returnAllColumns Flag to return all columns of groups.
+ * @param array $id_groups The id of node that must do not show the children and own.
+ * @param string $keys_field The field of the group used in the array keys. By default ID
+ *
+ * @return array A list of the groups the user has certain privileges.
+ */
+function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGroup = true,  $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
+	if ($id_groups === false) {
+		$id_groups = null;
+	}
+	
+	$user_groups = users_get_groups ($id_user, $privilege, $returnAllGroup, $returnAllColumns, null);
+	
+	if ($id_groups !== null) {
+		$childrens = groups_get_childrens($id_groups);
+		foreach ($childrens as $child) {
+			unset($user_groups[$child['id_grupo']]);
+		}
+		unset($user_groups[$id_groups]);
+	}
+	
+	if (empty($user_groups)) {
+		$user_groups_tree = array();
+	}
+	else {
+		// First group it's needed to retrieve its parent group
+		$first_group = reset(array_slice($user_groups, 0, 1));
+		$parent_group = $first_group['parent'];
+		
+		$user_groups_tree = groups_get_groups_tree_recursive($user_groups, $parent_group);
+	}
+	$fields = array();
+	
+	foreach ($user_groups_tree as $group) {
+		$groupName = ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false);
+		
+		$fields[$group[$keys_field]] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
+	}
+	
+	return $fields;
+}
 ?>

@@ -15,20 +15,30 @@
 if (!isset($config)) {
 	require_once('../include/config.php');
 }
-require_once('db.class.php');
 
+//Singleton
 class System {
+	private static $instance;
+	
 	private $session;
 	private $config;
-	private $db;
 	
 	function __construct() {
-		$this->loadConfig();	
-		$this->db = new DB($this, $this->getConfig('db_engine', 'mysql'));
+		$this->loadConfig();
+		
+		DB::getInstance($this->getConfig('db_engine', 'mysql'));
 		
 		session_start();
 		$this->session = $_SESSION;
 		session_write_close();
+	}
+	
+	public static function getInstance() {
+		if (!(self::$instance instanceof self)) {
+			self::$instance = new self;
+		}
+		
+		return self::$instance;
 	}
 	
 	private function loadConfig() {
@@ -84,12 +94,6 @@ class System {
 		}
 	}
 	
-	public function debug($var) {
-		echo "<pre>";
-		var_dump($var);
-		echo "</pre>";
-	}
-	
 	public function sessionDestroy() {
 		session_start();
 		session_destroy();
@@ -97,6 +101,18 @@ class System {
 	
 	public function getPageSize() {
 		return 10;
+	}
+	
+	public function checkACL($access = "AR", $group_id = 0) {
+		if (check_acl($this->getConfig('id_user'), $group_id, $access)) {
+			return true;
+		}
+		else {
+			db_pandora_audit("ACL Violation",
+				"Trying to access to Mobile Page");
+			
+			return false;
+		}
 	}
 }
 ?>

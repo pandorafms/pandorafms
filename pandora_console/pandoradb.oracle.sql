@@ -242,6 +242,9 @@ CREATE TABLE tagente_modulo (
 	warning_instructions CLOB default '',
 	unknown_instructions CLOB default '',
 	quiet NUMBER(5, 0) default 0 NOT NULL,
+	critical_instructions VARCHAR2(255) default '',
+	warning_instructions VARCHAR2(255) default '',
+	unknown_instructions VARCHAR2(255) default '',
 	critical_inverse NUMBER(1, 0) default 0 NOT NULL,
 	warning_inverse NUMBER(1, 0) default 0 NOT NULL,
 	id_category NUMBER(10, 0) default 0 NOT NULL,
@@ -939,6 +942,9 @@ CREATE TABLE tusuario (
 	login_blocked NUMBER(5,0) default 0 NOT NULL,
 	metaconsole_access VARCHAR2(100) default 'basic' NOT NULL,
 	not_login NUMBER(5,0) default 0 NOT NULL,
+	metaconsole_agents_manager NUMBER(10, 0) default 0 NOT NULL,
+	metaconsole_assigned_server NUMBER(10, 0) default 0 NOT NULL,
+	metaconsole_access_node NUMBER(10, 0) default 0 NOT NULL,
 	CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced'))
 );
 

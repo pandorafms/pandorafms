@@ -479,6 +479,14 @@ ALTER TABLE talert_snmp ADD COLUMN (al_field9 CLOB NOT NULL default '');
 ALTER TABLE talert_snmp ADD COLUMN (al_field10 CLOB NOT NULL default '');
 
 -- ---------------------------------------------------------------------
+-- Add metaconsole fields to user table (17/04/13)
+-- ---------------------------------------------------------------------
+ALTER TABLE tusuario ADD COLUMN (metaconsole_agents_manager NUMBER(10, 0) default 0 NOT NULL);
+ALTER TABLE tusuario ADD COLUMN (metaconsole_assigned_server NUMBER(10, 0) default 0 NOT NULL);
+ALTER TABLE tusuario ADD COLUMN (metaconsole_access_node NUMBER(10, 0) default 0 NOT NULL);
+
+
+-- ---------------------------------------------------------------------
 -- ---------------------------------------------------------------------
 -- DATA
 -- ---------------------------------------------------------------------

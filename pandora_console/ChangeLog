@@ -1,3 +1,39 @@
+2013-04-22  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	include/functions_ui.php
+	include/functions_db.php
+	index.php
+	images/splash_bg.png
+	images/pandora_login.png
+	images/login_background.jpg
+	images/pandora_tinylogo.png
+	images/input_user.png
+	images/input_lock.png
+	images/pandora_login_enterprise.png
+	general/error_emptyconfig.php
+	general/error_perms.php
+	general/error_authconfig.php
+	general/login_page.php
+	general/error_noconfig.php
+	general/logoff.php
+	general/error_install.php
+	general/error_dbconfig.php
+	general/error_screen.php: Change the login appearence
+	unifyng code of login, logout and error screens
+
+	* pandoradb.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql
+	extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql
+	godmode/users/configure_user.php
+	operation/users/user_edit.php: Added new options in user 
+	configuration to metaconsole agents editor and more meta
+	options. Avoid to show useless options when metaconsole
+	is enabled
+
 2013-04-20  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_alert-matches.php: Updated help.

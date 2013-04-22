@@ -22,6 +22,11 @@ include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
 
+$meta = false;
+if(enterprise_installed() && defined("METACONSOLE")) {
+	$meta = true;
+}
+
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 
 //Add the columns for the enterprise Pandora edition.
@@ -61,7 +66,7 @@ if (!check_referer()) {
 $tab = get_parameter('tab', 'user');
 
 // Header
-if (defined('METACONSOLE')) {
+if ($meta) {
 
 	user_meta_print_header();
 	$sec = 'advanced';
@@ -366,6 +371,7 @@ if ($delete_profile) {
 		__('Could not be deleted'));
 }
 
+$table->id = 'user_configuration_table';
 $table->width = '98%';
 $table->data = array ();
 $table->colspan = array ();
@@ -439,11 +445,13 @@ else {
 	$id_usr = $id;
 }
 
-// User only can change skins if has more than one group 
-if (count($usr_groups) > 1) {
-	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-		$table->data[10][0] = __('Skin');
-		$table->data[10][1] = skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+if(!$meta) {
+	// User only can change skins if has more than one group 
+	if (count($usr_groups) > 1) {
+		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+			$table->data[10][0] = __('Skin');
+			$table->data[10][1] = skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+		}
 	}
 }
 
@@ -473,6 +481,35 @@ if (enterprise_installed() && defined('METACONSOLE')) {
 $table->data[13][0] = __('Not Login');
 $table->data[13][0] .= ui_print_help_tip(__('The user with not login set only can access to API.'), true);
 $table->data[13][1] = html_print_checkbox('not_login', 1, $user_info["not_login"], true);
+
+if($meta) {
+	enterprise_include('include/functions_metaconsole.php');
+	$data = array();
+	$data[0] = __('Enable agents managment');
+	$data[1] = html_print_checkbox('metaconsole_agents_manager', 1, $user_info["metaconsole_agents_manager"], true);
+	$table->rowclass[] = '';
+	$table->rowstyle[] = 'font-weight: bold;';
+	$table->data['metaconsole_agents_manager'] = $data;
+		
+	$data = array();
+	$data[0] = __('Assigned node'). ui_print_help_tip(__('Server where the agents managed of this user will be placed'), true);
+	$servers = metaconsole_get_servers();
+	$servers_for_select = array();
+	foreach($servers as $server) {
+		$servers_for_select[$server['id']] = $server['server_name'];
+	}
+	$data[1] = html_print_select($servers_for_select, 'metaconsole_assigned_server', $user_info["metaconsole_assigned_server"], '', '', -1, true, false, false);
+	$table->rowclass[] = '';
+	$table->rowstyle[] = 'font-weight: bold;';
+	$table->data['metaconsole_assigned_server'] = $data;
+	
+	$data = array();
+	$data[0] = __('Enable node access'). ui_print_help_tip(__('With this option enabled, the user will can access to nodes console'), true);
+	$data[2] = html_print_checkbox('metaconsole_access_node', 1, $user_info["metaconsole_access_node"], true);
+	$table->rowclass[] = '';
+	$table->rowstyle[] = '';
+	$table->data['metaconsole_access_node'] = $data;
+}
 
 echo '<form method="post" autocomplete="off">';
 
@@ -592,3 +629,24 @@ array_push ($table->data, $data);
 html_print_table ($table);
 unset ($table);
 ?>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+$(document).ready (function () {
+	$('input:radio[name="is_admin"]').change(function() {
+		if($('#radiobtn0002').prop('checked')) {			
+			$('#user_configuration_table-metaconsole_agents_manager').show();
+			$('#user_configuration_table-metaconsole_assigned_server').show();
+			$('#user_configuration_table-metaconsole_access_node').show();
+		}
+		else {			
+			$('#user_configuration_table-metaconsole_agents_manager').hide();
+			$('#user_configuration_table-metaconsole_assigned_server').hide();
+			$('#user_configuration_table-metaconsole_access_node').hide();
+		}
+	});
+	
+	$('input:radio[name="is_admin"]').trigger('change');
+});
+/* ]]> */
+</script>

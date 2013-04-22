@@ -831,6 +831,9 @@ CREATE TABLE "tusuario" (
 	"failed_attempt" INTEGER NOT NULL DEFAULT 0,
 	"login_blocked" SMALLINT NOT NULL default 0,
 	"not_login" SMALLINT NOT NULL default 0,
+	"metaconsole_agents_manager" SMALLINT DEFAULT 0,
+	"metaconsole_assigned_server" INTEGER NOT NULL default 0,
+	"metaconsole_access_node" SMALLINT DEFAULT 0,
 	"metaconsole_access" type_tusuario_metaconsole_access default 'basic'
 );
 

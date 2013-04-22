@@ -53,6 +53,12 @@ div#page {
 	top: 0;
 	left: 0;
 	z-index: -999;
+	
+	background-image: url('../../images/login_background.jpg');
+	background-size: cover;
+	-moz-background-size: cover;
+	-webkit-background-size: cover;
+	-o-background-size: cover;
 }
 
 @media screen and (max-width: 1024px) { /* Specific to this particular image */
@@ -152,10 +158,23 @@ a.white {
 p.center {
 	text-align: center;
 }
-h1#log {
+h1#log_title {
 	font-size: 18px;
 	margin-bottom: 0px;
-	color: #000;
+	color: #CCC;
+}
+div#log_msg {
+	display:none;
+}
+div#error_buttons {
+	margin-top: 20px;
+}
+div#error_buttons a{
+	margin: 14px;
+}
+p.log_in {
+	color: #CCC;
+	padding: 0px 10px;
 }
 h1#log_f {
 	color: #c00;
@@ -163,9 +182,6 @@ h1#log_f {
 	padding-bottom: 3px;
 }
 div#login {
-	margin: 0 auto;
-	padding-top: 63px;
-	width: 657px;
 	border-left: solid 1px #000;
 	border-top: solid 1px #000;
 	border-bottom: solid 2px #000;
@@ -173,8 +189,36 @@ div#login {
 	font-size: 12px !important; 
 }
 div#login_in, #login_f {
-	margin: 0 auto 0 140px;
-	width: 400px;
+	/*margin: 0 auto 0 140px;
+	width: 400px;*/
+}
+
+/* Style for login form */
+.databox_login, .databox_logout {
+	border: none !important;
+	background-color: #888888;
+	padding: 8px;
+	border-radius: 11px;
+	height: 300px;
+}
+
+#login_inner {
+	background: url('../../images/splash_bg.png') #111;
+	width: 100%;
+	height: 100%;
+	border-radius: 11px;
+	overflow: hidden;
+}
+#login_outer {
+	-moz-box-shadow: 0px 0px 8px #ffffff; 
+	-webkit-box-shadow: 0px 0px 18px #ffffff; 
+	box-shadow: 0px 0px 18px rgba(200, 200, 200, 0.2);
+	padding: 3px;
+	border-radius: 11px;
+	width: 250px !important;
+	height: 300px;
+	margin: 50px auto;
+	background: transparent;
 }
 div#error_login {
 	#margin: 0 auto;
@@ -260,11 +304,11 @@ div#main_help {
 	width: 100%;
 	padding-left: 0px;
 	padding-top: 0px;
-	background-color: #fefefe;
-	background-image: url(../../images/backgrounds/background4.jpg);
+	background-color: #ffffff;
 	margin-top: 0px;
 	margin-left: 0px;
 	margin-right: 0px;
+	border-radius: 10px;
 }
 div#menu {
 	width: 165px;
@@ -300,17 +344,43 @@ div#foot {
 	height: 70px; 
 	margin: 0 auto 0 44%; 
 	overflow: hidden; 
-	position: fixed;	
+	position: fixed;
+	display: none;	
+}
+
+IMG.login_logo {
+	border: 0px;
+	width: 150px;
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+input.login:focus {
+	outline-width: 0;
+	-moz-box-shadow:    0px 0px 3px 2px #7fbe41;
+	-webkit-box-shadow: 0px 0px 3px 2px #7fbe41;
+	box-shadow:         0px 0px 3px 2px #7fbe41;
+}
+
+DIV.login_button {
+	text-align:right;
+	width: 144px;
+	margin: 18px auto;
+}
+
+DIV.login_nick {
+	
+}
+
+DIV.login_pass {
+	margin-top: 21px;
 }
 
 #ver_num {
-	bottom: 0; 
-	height: 20px; 
-	right: 0; 
-	padding-right: 20px; 
-	overflow: hidden; 
-	position: fixed; 
-	color: #696969
+	position: relative; 
+	color: #696969;
+	font-size: xx-small;
+	margin-top: 32px;
 }
 label {
 	display: block;
@@ -335,10 +405,12 @@ input.datos_readonly {
 input.login {
 	border: 0px none;
 	background-color: #ebebeb !important;
-	margin: 0px 0 8px 20px;
+	margin: 0px auto;
 	width: 135px;
 	height: 18px;
 }
+
+
 
 /* FF hack for login inputs */
 @-moz-document url-prefix() {
@@ -402,6 +474,22 @@ input.percentile, input.binary, input.camera, input.config,
 input.cancel, input.default, input.filter, input.pdf {
 	padding-right: 30px;
 	
+}
+
+input.login_user {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_user.png) no-repeat 7px 1px !important;
+	padding-left: 32px;
+	width: 106px;
+	color: #222;
+}
+
+input.login_password {
+	/* Browser without multibackground support */
+	background: #efefef url(../../images/input_lock.png) no-repeat 7px 1px !important;
+	padding-left: 32px;
+	width: 106px;
+	color: #222;
 }
 
 input.next {
@@ -1395,26 +1483,15 @@ table.databox_grid td {
 table.alternate tr:nth-child(odd) td{
 	background-color: #e4e5e4;
 }
-/* Style for login form */
-.databox_login {
-	#margin-top: 100px !important;
-	width: 657px !important;
-	height: 400px;
-	#margin-bottom: 5px;
-	#margin-top: 5px;
-	#margin-left: 0px;
-	border: none !important; 
-	background-color: #fafafa;
-	background: url(../../images/splash_pandora.png) no-repeat; 
-}
-/* Style for login form */
+
+/* Style for login form 
 .databox_logout {
 	width: 657px !important;
 	height: 400px;
 	border: none !important; 
 	background-color: #fafafa;
 	background: url(../../images/splash_logout.png) no-repeat; 
-}
+}*/
 
 .databox_error {
 	width: 657px !important;
@@ -2376,6 +2453,7 @@ a.tip {
 a.tip>img {
 	vertical-align: top !important;
 	margin-left: 2px;
+	margin-right: 2px;
 }
 
 input.search_input {

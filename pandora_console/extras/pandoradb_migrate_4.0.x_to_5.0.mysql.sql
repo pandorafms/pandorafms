@@ -450,6 +450,13 @@ ALTER TABLE `talert_snmp` ADD COLUMN `al_field9` text;
 ALTER TABLE `talert_snmp` ADD COLUMN `al_field10` text;
 
 -- ---------------------------------------------------------------------
+-- Add metaconsole fields to user table (17/04/13)
+-- ---------------------------------------------------------------------
+ALTER TABLE `tusuario` ADD COLUMN `metaconsole_agents_manager` tinyint(1) unsigned NOT NULL default 0;
+ALTER TABLE `tusuario` ADD COLUMN `metaconsole_assigned_server` int(10) unsigned NOT NULL default 0;
+ALTER TABLE `tusuario` ADD COLUMN `metaconsole_access_node` tinyint(1) unsigned NOT NULL default 0;
+
+-- ---------------------------------------------------------------------
 -- ---------------------------------------------------------------------
 -- DATA
 -- ---------------------------------------------------------------------

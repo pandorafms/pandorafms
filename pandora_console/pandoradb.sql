@@ -900,6 +900,9 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`login_blocked` tinyint(1) unsigned NOT NULL default 0,
 	`metaconsole_access` enum('basic','advanced') default 'basic',
 	`not_login` tinyint(1) unsigned NOT NULL DEFAULT 0,
+	`metaconsole_agents_manager` tinyint(1) unsigned NOT NULL default 0,
+	`metaconsole_assigned_server` int(10) unsigned NOT NULL default 0,
+	`metaconsole_access_node` tinyint(1) unsigned NOT NULL default 0,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

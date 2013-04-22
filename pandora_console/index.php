@@ -27,7 +27,8 @@ if ($develop_bypass != 1) {
 	// If no config file, automatically try to install
 	if (! file_exists ("include/config.php")) {
 		if (! file_exists ("install.php")) {
-			include ("general/error_noconfig.php");
+			$login_screen = 'error_noconfig';
+			require('general/error_screen.php');
 			exit;
 		}
 		else {
@@ -35,26 +36,30 @@ if ($develop_bypass != 1) {
 			exit;
 		}
 	}
+
 	if (filesize("include/config.php") == 0) {
 		include ("install.php");
 		exit;
 	}
 	// Check for installer presence
 	if (file_exists ("install.php")) {
-		include "general/error_install.php";
+		$login_screen = 'error_install';
+		require('general/error_screen.php');
 		exit;
 	}
 	// Check perms for config.php
 	if ((substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0600") &&
 		(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&
 		(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
-		include "general/error_perms.php";
+		$login_screen = 'error_perms';
+		require('general/error_screen.php');
 		exit;
 	}
 }
 
 if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.php"))) {
-	include ("general/error_noconfig.php");
+	$login_screen = 'error_noconfig';
+	require('general/error_screen.php');
 	exit;
 }
 

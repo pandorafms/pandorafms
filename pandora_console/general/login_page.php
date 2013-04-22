@@ -14,6 +14,39 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+if(isset($config["homedir"])) {
+	$homedir = $config["homedir"] . '/';
+}
+else {
+	$homedir = '';
+}
+	
+include_once($homedir . 'include/functions_ui.php');
+include_once($homedir . 'include/functions.php');
+include_once($homedir . 'include/functions_html.php');
+
+if(!isset($login_screen)) {
+	$login_screen = 'login';
+}
+
+switch($login_screen) {
+	case 'login':
+		$logo_link = 'http://www.pandorafms.com';
+		$logo_title = __('Go to Pandora FMS Website');
+		break;
+	case 'logout':
+		$logo_link = 'index.php';
+		$logo_title = __('Go to Login');
+		break;
+	default:
+		error_reporting(0);
+		$error_info = ui_get_error($login_screen);
+		$logo_link = 'index.php';
+		$logo_title = __('Refresh');
+		break;
+}
+
+
 $url = '?login=1';
 //These variables come from index.php
 if (!empty ($page) && !empty ($sec)) {
@@ -21,64 +54,83 @@ if (!empty ($page) && !empty ($sec)) {
 		$url .= '&amp;'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 	}
 }
-echo '<img src="' . ui_get_full_url('images/login_background.jpg') . '" id="login_body">';
-
+echo '<div id="login_body"></div>';
+echo '<div id="login_outer">';
 echo '<div class="databox_login" id="login">';
+echo '<div id="login_inner">';
 
-//	echo "<h1>Put here your custom welcome message</h1>";
-
-//echo '<br /><br /><br />';
 echo '
 	<div id="login_in">
 		<form method="post" action="' . ui_get_full_url('index.php'.$url) . '">';
 
-//TODO: Put branding in variables (external file) or database
-/* CUSTOM BRANDING STARTS HERE */
+	//TODO: Put branding in variables (external file) or database
+	/* CUSTOM BRANDING STARTS HERE */
 
-// Replace the following with your own URL and logo.
-// A mashup of the Pandora FMS logo and your companies highly preferred
-echo '&nbsp;&nbsp;<a href="http://pandorafms.org" title="Go to pandorafms.org...">';
-if (defined ('PANDORA_ENTERPRISE')) {
-	html_print_image ("images/pandora_login_enterprise.png", false, array ("alt" => "logo", "border" => 0));
-}
-else {
-	html_print_image ("images/pandora_login.png", false, array ("alt" => "logo", "border" => 0));
-}
-echo '</a>';
-
-// This prints the current pandora console version.
-// For stable/live function it might be wise to comment it out
-
-/* CUSTOM BRANDING ENDS HERE */
-
-
-echo '<div style="text-align: center; height: 5px !important;">&nbsp;</div>'; 
-
-if (!empty ($page) && !empty ($sec)) {
-	foreach ($_POST as $key => $value) {
-		html_print_input_hidden ($key, $value);
+	// Replace the following with your own URL and logo.
+	// A mashup of the Pandora FMS logo and your companies highly preferred
+	echo '<a href="' . $logo_link . '">';
+	if (defined ('PANDORA_ENTERPRISE')) {
+		html_print_image ($config['homeurl'] . "/images/pandora_login_enterprise.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 	}
-}
+	else {
+		html_print_image ($config['homeurl'] . "/images/pandora_login.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+	}
+	echo '</a>';
 
-echo '<br />'.html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login"', true).
-	'<br>
-		<br />'.html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login"', true, true).
-	'<br>';
-	echo '<div style="float: right; margin-top: -70px; margin-right: 25px">';
-	html_print_input_image ("Login", "images/login_botton.png", 'Login');
-	echo '</div>';
+	// This prints the current pandora console version.
+	// For stable/live function it might be wise to comment it out
+
+	/* CUSTOM BRANDING ENDS HERE */
+
+
+	echo '<div style="text-align: center; height: 5px !important;">&nbsp;</div>'; 
+
+	echo '<br />';
+	
+	switch($login_screen) {
+		case 'login':
+			if (!empty ($page) && !empty ($sec)) {
+				foreach ($_POST as $key => $value) {
+					html_print_input_hidden ($key, $value);
+				}
+			}
+			echo '<div class="login_nick">';
+			html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login login_user"');
+			echo '</div>';
+			echo '<div class="login_pass">';
+			html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login login_password"', false, true);
+			echo '</div>';
+			echo '<div class="login_button">';
+			html_print_submit_button(__("Log-in"), "login", false, 'class="sub next"');
+			echo '</div>';
+			break;
+		case 'logout':
+			echo '<h1 id="log_title">' . __('Logged out') . '</h1>';
+			echo '<p class="log_in">';
+			echo __('Your session is over. Please close your browser window to close this Pandora session.').'<br /><br />';
+			echo '</p>';
+			break;
+		default:
+			if(isset($error_info)) {
+				echo '<h1 id="log_title">' . $error_info['title'] . '</h1>';
+				echo '<div id="error_buttons">';
+				echo '<a href="index.php">' . html_print_image($config['homeurl'] . '/images/refresh.png', true, array('title' => __('Refresh')), false, true) . '</a>';
+				echo '<a href="javascript: modal_alert_critical()">' . html_print_image($config['homeurl'] . '/images/help.png', true, array('title' => __('View details')), false, true) . '</a>';
+				echo '</div>';
+				echo '<div id="log_msg">';
+				echo $error_info['message'];
+				echo '</div>';
+			}
+			break;
+	}
+		
+	echo '<div id="ver_num">' . $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
 
 echo '</form>
 	</div>
+</div>
+</div>
 </div>';
-
-echo '<div id="bottom_logo">';
-if (defined('PANDORA_ENTERPRISE')) 
-	echo html_print_image('images/bottom_logo_enterprise.png', true, array ("alt" => "logo", "border" => 0));
-else
-	echo html_print_image('images/bottom_logo.png', true, array ("alt" => "logo", "border" => 0));
-echo '</div>';
-echo '<div id="ver_num">' . $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
 
 
 if (isset ($login_failed)) {
@@ -201,12 +253,48 @@ ui_require_jquery_file('jquery-ui-1.10.0.custom');
 	<![endif]-->
 <?php
 }
+
+// Hidden div to forced title
+html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true));
+
+html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 ?>
 
-
+<script type="text/javascript" src="include/javascript/jquery-1.9.0.js"></script>
+<script type="text/javascript" src="include/javascript/jquery.pandora.js"></script>
+<script type="text/javascript" src="include/javascript/jquery.jquery-ui-1.10.0.custom.js"></script>
 <script type="text/javascript" language="javascript">
 	/* <![CDATA[ */
 	
+	function modal_alert_critical() {
+		$("#modal_alert").hide ()
+			.empty ()
+			.append ($('#log_msg').html())
+			.dialog ({
+				title: $('#log_title').html(),
+				resizable: true,
+				draggable: false,
+				modal: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+				width: 500,
+				height: 300
+			})
+			.show ();
+	}
+	<?php
+	switch($login_screen) {
+		case 'error_authconfig':
+		case 'error_emptyconfig':
+	?>
+			// Auto popup
+			//modal_alert_critical();
+	<?php
+			break;
+		default:
+	?>
 	$(document).ready (function () {
 		// IE9- modal warning window
 		$(function() {
@@ -245,5 +333,9 @@ ui_require_jquery_file('jquery-ui-1.10.0.custom');
 	});
 	
 	$('#nick').focus();
+	
+	<?php 
+	}
+	?>
 	/* ]]> */
 </script>

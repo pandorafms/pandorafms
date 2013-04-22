@@ -827,8 +827,8 @@ class Table {
 			$html .= "</tr>\n";
 		}
 		
-		$html .= "</table>\n";
 		$html .= "</tbody>\n";
+		$html .= "</table>\n";
 		
 		return $html;
 	}

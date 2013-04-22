@@ -1037,8 +1037,8 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	$tdata[2] = $tdata[3] = '';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
-
-	if($data["monitor_checks"] > 0) {
+	
+	if ($data["monitor_checks"] > 0) {
 		$tdata = array();
 		$table_mbs->colspan[count($table_mbs->data)][0] = 4;
 		$table_mbs->cellstyle[count($table_mbs->data)][0] = 'text-align: center;';
@@ -1061,7 +1061,7 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 	
 	// Alerts table
 	$table_sum = html_get_predefined_table();
-
+	
 	$tdata = array();
 	$table_sum->colspan[count($table_sum->data)][0] = 2;
 	$table_sum->colspan[count($table_sum->data)][2] = 2;
@@ -1071,20 +1071,20 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 	$tdata[2] = '<span class="med_data" style="color: #666">' . __('Alert level') . '</span>';
 	$table_sum->rowclass[] = '';
 	$table_sum->data[] = $tdata;
-		
+	
 	$tdata = array();
 	$table_sum->colspan[count($table_sum->data)][0] = 2;
 	$table_sum->colspan[count($table_sum->data)][2] = 2;
 	$table_sum->cellstyle[count($table_sum->data)][0] = 'text-align: center;';
 	$table_sum->cellstyle[count($table_sum->data)][2] = 'text-align: center;';
 	
-	if($data["monitor_checks"] > 0) {
+	if ($data["monitor_checks"] > 0) {
 		$tdata[0] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' . graph_agent_status (false, $graph_width, $graph_height, true, true) . '</div>';
 	}
 	else {
 		$tdata[2] = html_print_image('images/image_problem.png', true, array('width' => $graph_width));
 	}
-	if($data["monitor_alerts"] > 0) {
+	if ($data["monitor_alerts"] > 0) {
 		$tdata[2] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' . graph_alert_status ($data["monitor_alerts"], $data["monitor_alerts_fired"], $graph_width, $graph_height, true, true) . '</div>';
 	}
 	else {
@@ -1155,7 +1155,7 @@ function reporting_get_stats_users($data) {
 	if (check_acl ($config['id_user'], 0, "UM")) {
 		$urls['defined_users'] = "index.php?sec=gusuarios&amp;sec2=godmode/users/user_list";
 	}
-	else{
+	else {
 		$urls['defined_users'] = 'javascript:';
 	}
 	

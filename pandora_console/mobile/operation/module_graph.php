@@ -116,6 +116,7 @@ class ModuleGraph {
 					
 					$urlImage = ui_get_full_url(false);
 					
+					$time_compare = false;
 					if ($this->time_compare_separated) {
 						$time_compare = 'separated';
 					}
@@ -177,7 +178,7 @@ class ModuleGraph {
 							}
 							break;
 						case 'log4x':
-							$graph .= grafico_modulo_log4x ($this->id,
+							$graph = grafico_modulo_log4x ($this->id,
 								$this->period, $this->draw_events,
 								$this->width, $this->height,
 								$label, $unit_name, $this->draw_alerts,

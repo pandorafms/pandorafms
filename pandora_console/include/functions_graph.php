@@ -2372,7 +2372,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
-			if($config['flash_charts']) {
+			if ($config['flash_charts']) {
 				$name = date('H:i', $bottom);
 			}
 			else {
@@ -2409,7 +2409,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 					break;
 			}
 		}
-		else{
+		else {
 			$data[$cont]['utimestamp'] = $periodtime;
 			$data[$cont]['data'] = 1;
 		}
@@ -2417,7 +2417,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	}
 	
 	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
-
+	
 	// Draw slicebar graph
 	if ($config['flash_charts']) {
 		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
@@ -2434,7 +2434,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		}
 	}
 	
-	if($return) {
+	if ($return) {
 		return $out;
 	}
 	else {
@@ -2607,7 +2607,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$event_value = 0;
 		$alert_value = 0;
 		$unknown_value = 0;
-
+		
 		$event_ids = array();
 		$alert_ids = array();
 		while (isset ($events[$k]) &&
@@ -2631,7 +2631,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			}
 			$k++;
 		}
-
+		
 		if($is_unknown) {
 			$unknown_value++;
 		}
@@ -2730,12 +2730,12 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			}
 		}
 		
-
+		
 		//Boolean graph doesn't have min!!!
 		/*if (!$avg_only) {
 			$chart[$timestamp]['min'.$series_suffix] = 0;
 		}*/
-	
+		
 		if(!empty($event_ids)) {
 			$chart_extra_data[count($chart)-1]['events'] = implode(',',$event_ids);
 		}
@@ -2747,7 +2747,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	
 	// Get min, max and avg (less efficient but centralized for all modules and reports)
 	$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
-
+	
 	// Fix event and alert scale
 	foreach ($chart as $timestamp => $chart_data) {
 		if ($show_events) {
@@ -2766,7 +2766,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			}
 		}
 	}
-
+	
 	///////////////////////////////////////////////////
 	// Set the title and time format
 	if ($period <= SECONDS_6HOURS) {
@@ -2812,7 +2812,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	else {
 		$legend['sum'.$series_suffix] = __('Data').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
-
+	
 	}
 	//$legend['baseline'.$series_suffix] = __('Baseline').$series_suffix_str;
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -2848,7 +2848,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	global $long_index;
 	global $series_type;
 	global $chart_extra_data;
-
+	
 	$series_suffix_str = '';
 	if ($compare !== false) {
 		$series_suffix = '2';
@@ -3066,7 +3066,7 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 	
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png"));
-
+	
 	$legend = array (__('Max.') . ' ' . format_numeric($max) . ' ' . __('Min.') . ' ' . format_numeric($min) . ' ' . __('Avg.') . ' ' . format_numeric ($avg));
 	return area_graph($flash_chart, $chart, $width, $height, array (), $legend,
 		array (), ui_get_full_url("images/image_problem.opaque.png"), "", "", $homeurl,
@@ -3098,12 +3098,12 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
 		}
 		$i++;
 	}
-
+	
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
 	}
-
+	
 	return pie3d_graph($flash_chart, $values, 320, 200,
 		__('Other'), $config['homeurl'], $config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size'], $ttl);
@@ -3829,7 +3829,7 @@ function grafico_modulo_log4x_format_x_axis ( $number , $decimals=2, $dec_point=
 
 function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
 {
-	switch($number) {
+	switch ($number) {
 		case 6:
 			return "FATAL";
 			break;
@@ -3855,13 +3855,18 @@ function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=
 }
 
 function graph_nodata_image($width = 300, $height = 110, $type = 'area') {
-	$image = ui_get_full_url('images/image_problem_' . $type . '.png', false, false, false); 
-		
-	$text_div = '<div class="nodata_text">' . __('No data to show') . '</div>';
-		
-	$image_div = '<div class="nodata_container" style="background-image: url(\'' . $image . '\');">' . $text_div . '</div>';
-
-	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px;">' . $image_div . '</div>';
+	$image = ui_get_full_url('images/image_problem_' . $type . '.png',
+		false, false, false); 
+	
+	$text_div = '<div class="nodata_text">' .
+		__('No data to show') . '</div>';
+	
+	$image_div = '<div class="nodata_container" style="background-image: url(\'' . $image . '\');">' .
+		$text_div . '</div>';
+	
+	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px;">' .
+		$image_div . '</div>';
+	
 	return $div;
 }
 ?>

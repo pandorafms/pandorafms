@@ -90,7 +90,7 @@ class Modules {
 	public function disabledColumns($columns = null) {
 		if (!empty($columns)) {
 			foreach ($columns as $column) {
-				unset($this->columns[$column]);
+				$this->columns[$column] = 0;
 			}
 		}
 	}
@@ -532,7 +532,7 @@ class Modules {
 				$ui->contentAddHtml($table->getHTML());
 			}
 			else {
-				$html .= $table->getHTML();
+				$html = $table->getHTML();
 				
 				return $html;
 			}

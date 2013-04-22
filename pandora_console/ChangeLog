@@ -1,3 +1,12 @@
+2013-04-22 Miguel de Dios <miguel.dedios@artica.es>
+
+	* mobile/operation/events.php, mobile/operation/module_graph.php,
+	mobile/operation/modules.php, mobile/operation/agent.php,
+	mobile/include/ui.class.php: some fixes.
+	
+	* include/functions_reporting.php, include/functions_groups.php,
+	include/functions_graph.php: some fixes.
+
 2013-04-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

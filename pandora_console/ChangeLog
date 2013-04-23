@@ -1,5 +1,10 @@
 2013-04-23 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_ui.php, include/javascript/pandora_modules.js:
+	cleaned source code style.
+
+2013-04-23 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_filemanager.php: fixed the javascript to show
 	the controls to upload file, create directory and create text file.
 	

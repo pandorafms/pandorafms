@@ -50,7 +50,7 @@ if (is_ajax ()) {
 		echo '<br>';
 		echo '<strong>'.__('Number of policy modules').': </strong>' . 
 		tags_get_policy_modules_count($id_tag);
-	
+		
 		return;
 	}
 	return;
@@ -76,10 +76,10 @@ if (defined('METACONSOLE')) {
 	
 }
 else {
-
+	
 	// Header
 	ui_print_page_header (__('Tags configuration'), "images/tag.png", false, "tags_config", true, $buttons);
-
+	
 }
 
 // Two actions can performed in this page: search and delete tags
@@ -181,7 +181,22 @@ if (!empty($result)) {
 			html_print_image("images/zoom.png", true, array("id" => 'tag-details-'.$tag['id_tag'], "class" => "img_help")) . '</a> ';
 		
 		$data[3] .= tags_get_modules_count($tag["id_tag"]);
-		$data[4] = $tag["email"];
+		
+		$email_large = io_safe_output($tag["email"]);
+		$email_small = substr($email_large,0, 24);
+		if ($email_large == $email_small) {
+			$output = $email_large;
+		}
+		else {
+			$output = 
+				"<div title='" . sprintf(__('Emails for the tag: %s'), $tag['name']) . "' style='display: none;' class='email_large' id='email_large_" . $tag["id_tag"] . "'>" .
+					$email_large . "</div>" . 
+				'<span id="value_' . $tag["id_tag"] . '">' .
+				$email_small . '</span> ' .
+				"<a href='javascript: show_dialog(" . $tag["id_tag"] . ")'>" . html_print_image("images/rosette.png", true) . "" . "</a></span>";
+		}
+		$data[4] = $output;
+		
 		$data[5] = "<a href='index.php?sec=".$sec."&sec2=godmode/tag/edit_tag&action=update&id_tag=".$tag["id_tag"] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
 		$data[5] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag["id_tag"] . '"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
 		array_push ($table->data, $data);
@@ -205,4 +220,18 @@ ui_require_jquery_file ('cluetip');
 		return false;
 	});
 /* ]]> */
+</script>
+<script type="text/javascript">
+	$(document).ready(function () {
+		$(".email_large").dialog(
+			{
+				autoOpen: false,
+				resizable: true,
+				width: 400,
+				height: 200
+			});
+	});
+	function show_dialog(id) {
+		$("#email_large_" + id).dialog("open");
+	}
 </script>

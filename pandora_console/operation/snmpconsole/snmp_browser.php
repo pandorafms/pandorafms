@@ -34,7 +34,8 @@ if (is_ajax()) {
 		$snmp_tree = snmp_browser_get_tree ($target_ip, $community, $starting_oid);
 		if (! is_array ($snmp_tree)) {
 			echo $snmp_tree;
-		} else {
+		}
+		else {
 			snmp_browser_print_tree ($snmp_tree);
 		}
 		return;
@@ -46,7 +47,7 @@ if (is_ajax()) {
 		if ($custom_action != "") {
 			$custom_action = urldecode (base64_decode ($custom_action));
 		}
-
+		
 		$oid = snmp_browser_get_oid ($target_ip, $community, $target_oid);
 		snmp_browser_print_oid ($oid, $custom_action);
 		return;
@@ -69,7 +70,8 @@ $url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_browser&refr='
 if ($config["pure"]) {
 	// Windowed
 	$link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=30">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';
-} else {
+}
+else {
 	// Fullscreen
 	$link['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=0">' . html_print_image("images/full_screen.png", true, array("title" => __('Full screen'))) . '</a>';
 }

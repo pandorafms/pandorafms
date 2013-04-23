@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-//import android.util.Log;
+import android.util.Log;
 
 public class Core {
 	
@@ -173,7 +173,10 @@ public class Core {
     
     static volatile public long lastContact = CONST_INVALID_CONTACT;
     static volatile public int contactError = CONST_CONTACT_ERROR;
-        
+    
+    
+    static DataBaseHandler db;
+    
     public Core() {
     	
     }
@@ -211,39 +214,38 @@ public class Core {
     		con = context;
     	}
     	
-    	SharedPreferences agentPreferences = con.getSharedPreferences(
-			con.getString(R.string.const_string_preferences),
-			Activity.MODE_PRIVATE);
+    	
+    	
     		
-    	latitude = agentPreferences.getFloat("latitude", CONST_INVALID_COORDS);
-    	longitude = agentPreferences.getFloat("longitude", CONST_INVALID_COORDS);
-    	batteryLevel = agentPreferences.getInt("batteryLevel", CONST_INVALID_BATTERY_LEVEL);
-    	orientation = agentPreferences.getFloat("orientation", CONST_INVALID_ORIENTATION);
-    	proximity = agentPreferences.getFloat("proximity", CONST_INVALID_PROXIMITY);
-    	taskStatus = agentPreferences.getString("taskStatus", defaultTaskStatus);
-		task = agentPreferences.getString("task", defaultTask);
-		taskHumanName = agentPreferences.getString("taskHumanName", defaultTaskHumanName);
-		taskRun = agentPreferences.getString("taskRun", defaultTaskRun);
-		memoryStatus = agentPreferences.getString("memoryStatus", defaultMemoryStatus);
-		availableRamKb = agentPreferences.getLong("availableRamKb", defaultRam);
-		totalRamKb = agentPreferences.getLong("totalRamKb", defaultRam);
-		lastContact = agentPreferences.getLong("lastContact", defaultContact);
-		contactError = agentPreferences.getInt("contactError", defaultContactError);
-		simID = agentPreferences.getString("simID", defaultSimID);
-		upTime = agentPreferences.getLong("upTime", Core.defaultUpTime);
-		SMSReceived = agentPreferences.getInt("SMSReceived", defaultSMSReceived);
-		SMSSent = agentPreferences.getInt("SMSSent", defaultSMSSent);
-		networkOperator = agentPreferences.getString("networkOperator", defaultNetworkOperator);
-		networkType = agentPreferences.getString("networkType", defaultNetworkType);
-		phoneType = agentPreferences.getString("phoneType", defaultPhoneType);
-		signalStrength = agentPreferences.getInt("signalStrength", defaultSignalStrength);
-		incomingCalls = agentPreferences.getInt("incomingCalls", defaultIncomingCalls);
-		missedCalls = agentPreferences.getInt("missedCalls", defaultMissedCalls);
-		outgoingCalls = agentPreferences.getInt("outgoingCalls", defaultOutgoingCalls);
-		receiveBytes = agentPreferences.getLong("receiveBytes", defaultReceiveBytes);
-		transmitBytes = agentPreferences.getLong("transmitBytes", defaultTransmitBytes);
-		helloSignal = agentPreferences.getInt("helloSignal", defaultHelloSignal);
-		roaming = agentPreferences.getInt("roaming", defaultRoaming);
+    	latitude = Float.parseFloat(getValue(con, "latitude"));
+    	longitude = Float.parseFloat(getValue(con, "longitude"));
+    	batteryLevel = Integer.parseInt(getValue(con, "batteryLevel"));
+    	orientation = Float.parseFloat(getValue(con, "orientation"));
+    	proximity = Float.parseFloat(getValue(con, "proximity"));
+    	taskStatus = getValue(con, "taskStatus");
+		task = getValue(con, "task");
+		taskHumanName = getValue(con, "taskHumanName");
+		taskRun = getValue(con, "taskRun");
+		memoryStatus = getValue(con, "memoryStatus");
+		availableRamKb = Long.parseLong(getValue(con, "availableRamKb"));
+		totalRamKb = Long.parseLong(getValue(con, "totalRamKb"));
+		lastContact = Long.parseLong(getValue(con, "lastContact"));
+		contactError = Integer.parseInt(getValue(con, "contactError"));
+		simID = getValue(con, "simID");
+		upTime = Long.parseLong(getValue(con, "upTime"));
+		SMSReceived = Integer.parseInt(getValue(con, "SMSReceived"));
+		SMSSent = Integer.parseInt(getValue(con, "SMSSent"));
+		networkOperator = getValue(con, "networkOperator");
+		networkType = getValue(con, "networkType");
+		phoneType = getValue(con, "phoneType");
+		signalStrength = Integer.parseInt(getValue(con, "signalStrength"));
+		incomingCalls = Integer.parseInt(getValue(con, "incomingCalls"));
+		missedCalls = Integer.parseInt(getValue(con, "missedCalls"));
+		outgoingCalls = Integer.parseInt(getValue(con, "outgoingCalls"));
+		receiveBytes = Long.parseLong(getValue(con, "receiveBytes"));
+		transmitBytes = Long.parseLong(getValue(con, "transmitBytes"));
+		helloSignal = Integer.parseInt(getValue(con, "helloSignal"));
+		roaming = Integer.parseInt(getValue(con, "roaming"));
 		
     }// end loadLastValues
     
@@ -252,41 +254,38 @@ public class Core {
     		con = context;
     	}
     	
-    	SharedPreferences agentPreferences = con.getSharedPreferences(
-    		con.getString(R.string.const_string_preferences),
-    		Activity.MODE_PRIVATE);
-    		
-		serverAddr = agentPreferences.getString("serverAddr", defaultServerAddr);
-		serverPort = agentPreferences.getString("serverPort", defaultServerPort);
-		interval = agentPreferences.getInt("interval", defaultInterval);
-		agentName = agentPreferences.getString("agentName", defaultAgentName+"_"+Installation.id(context));
-		mobileWebURL = agentPreferences.getString("mobileWebURL", defaultmobileWebURL);
-		gpsStatus = agentPreferences.getString("gpsStatus", defaultGpsStatus);
-		memoryStatus = agentPreferences.getString("memoryStatus", defaultMemoryStatus);
-		taskStatus = agentPreferences.getString("taskStatus", defaultTaskStatus);
-		task = agentPreferences.getString("task", defaultTask);
-		taskHumanName = agentPreferences.getString("taskHumanName", defaultTaskHumanName);
-		taskRun = agentPreferences.getString("taskRun", defaultTaskRun);
-		password = agentPreferences.getString("password", defaultPassword);
-		passwordCheck = agentPreferences.getString("passwordCheck", defaultPasswordCheck);
-		simIDReport = agentPreferences.getString("simIDReport", defaultSimIDReport);
-		DeviceUpTimeReport = agentPreferences.getString("DeviceUpTimeReport", defaultDeviceUpTimeReport);
-	    NetworkOperatorReport = agentPreferences.getString("NetworkOperatorReport", defaultNetworkOperatorReport);
-	    NetworkTypeReport = agentPreferences.getString("NetworkTypeReport", defaultNetworkTypeReport);
-	    PhoneTypeReport = agentPreferences.getString("PhoneTypeReport", defaultPhoneTypeReport);
-	    SignalStrengthReport = agentPreferences.getString("SignalStrengthReport", defaultSignalStrengthReport);
-	    ReceivedSMSReport = agentPreferences.getString("ReceivedSMSReport", defaultReceivedSMSReport);
-	    SentSMSReport = agentPreferences.getString("SentSMSReport", defaultSentSMSReport);
-	    IncomingCallsReport = agentPreferences.getString("IncomingCallsReport", defaultIncomingCallsReport);
-	    MissedCallsReport = agentPreferences.getString("MissedCallsReport", defaultMissedCallsReport);
-	    OutgoingCallsReport = agentPreferences.getString("OutgoingCallsReport", defaultOutgoingCallsReport);
-	    BytesReceivedReport = agentPreferences.getString("BytesReceivedReport", defaultBytesReceivedReport);
-	    BytesSentReport = agentPreferences.getString("BytesSentReport", defaultBytesSentReport);
-	    HelloSignalReport = agentPreferences.getString("HelloSignalReport", defaultHelloSignalReport);
-	    BatteryLevelReport = agentPreferences.getString("BatteryLevelReport", defaultBatteryLevelReport);
-	    RoamingReport = agentPreferences.getString("RoamingReport", defaultRoamingReport);
-	    InventoryReport = agentPreferences.getString("InventoryReport", defaultInventoryReport);
-	    NotificationCheck = agentPreferences.getString("NotificationCheck", defaultNotificationCheck);
+    	
+		serverAddr = getValue(con, "serverAddr");
+		serverPort = getValue(con, "serverPort");
+		interval = Integer.parseInt(getValue(con, "interval"));
+		agentName = getValue(con, "agentName");
+		mobileWebURL = getValue(con, "mobileWebURL");
+		gpsStatus = getValue(con, "gpsStatus");
+		memoryStatus = getValue(con, "memoryStatus");
+		taskStatus = getValue(con, "taskStatus");
+		task = getValue(con, "task");
+		taskHumanName = getValue(con, "taskHumanName");
+		taskRun = getValue(con, "taskRun");
+		password = getValue(con, "password");
+		passwordCheck = getValue(con, "passwordCheck");
+		simIDReport = getValue(con, "simIDReport");
+		DeviceUpTimeReport  = getValue(con, "DeviceUpTimeReport");
+	    NetworkOperatorReport = getValue(con, "NetworkOperatorReport");
+	    NetworkTypeReport = getValue(con, "NetworkTypeReport");
+	    PhoneTypeReport = getValue(con, "PhoneTypeReport");
+	    SignalStrengthReport = getValue(con, "SignalStrengthReport");
+	    ReceivedSMSReport = getValue(con, "ReceivedSMSReport");
+	    SentSMSReport = getValue(con, "SentSMSReport");
+	    IncomingCallsReport = getValue(con, "IncomingCallsReport");
+	    MissedCallsReport = getValue(con, "MissedCallsReport");
+	    OutgoingCallsReport = getValue(con, "OutgoingCallsReport");
+	    BytesReceivedReport = getValue(con, "BytesReceivedReport");
+	    BytesSentReport = getValue(con, "BytesSentReport");
+	    HelloSignalReport = getValue(con, "HelloSignalReport");
+	    BatteryLevelReport = getValue(con, "BatteryLevelReport");
+	    RoamingReport = getValue(con, "RoamingReport");
+	    InventoryReport = getValue(con, "InventoryReport");
+	    NotificationCheck = getValue(con, "NotificationCheck");
     }// end loadConf
     
     static public boolean updateConf(Context context) {
@@ -318,60 +317,167 @@ public class Core {
     		con = context;
     	}
     	
-		SharedPreferences agentPreferences = con.getSharedPreferences(
-			con.getString(R.string.const_string_preferences),
-			Activity.MODE_PRIVATE);
-		SharedPreferences.Editor editor = agentPreferences.edit();
+				
 		
-		editor.putString("serverAddr", _serverAddr);
-		editor.putString("serverPort", _serverPort);
-		editor.putInt("interval", _interval);
-		editor.putString("agentName", _agentName);
-		editor.putString("gpsStatus", _gpsStatus);
-		editor.putString("memoryStatus", _memoryStatus);
-		editor.putString("taskStatus", _taskStatus);
-		editor.putString("task", _task);
-		editor.putString("taskHumanName", _taskHumanName);
-		editor.putString("simID", _simID);
-		editor.putString("simIDReport", _simIDReport);
-		editor.putLong("UpTime", _upTime);
-		editor.putString("networkOperator", _networkOperator);
-		editor.putInt("SMSReceived", _smsReceived);
-		editor.putInt("SMSSent", _smsSent);
-		editor.putString("networkType", _networkType);
-		editor.putString("phoneType", _phoneType);
-		editor.putInt("signalStrength", _signalStrength);
-		editor.putInt("incomingCalls", _incomingCalls);
-		editor.putInt("missedCalls", _missedCalls);
-		editor.putInt("outgoingCalls", _outgoingCalls);
-		editor.putLong("receiveBytes", _receiveBytes);
-		editor.putLong("transmitBytes", _transmitBytes);
-		editor.putString("password", _password);
-		editor.putString("passwordCheck", _passwordCheck);
-		editor.putInt("helloSignal", _helloSignal);
-		editor.putInt("roaming", _roaming);
-		editor.putString("DeviceUpTimeReport", _DeviceUpTimeReport); 
-		editor.putString("NetworkOperatorReport", _NetworkOperatorReport); 
-		editor.putString("NetworkTypeReport", _NetworkTypeReport); 
-		editor.putString("PhoneTypeReport", _PhoneTypeReport); 
-		editor.putString("SignalStrengthReport", _SignalStrengthReport);
-		editor.putString("ReceivedSMSReport", _ReceivedSMSReport);
-		editor.putString("SentSMSReport", _SentSMSReport);
-		editor.putString("IncomingCallsReport", _IncomingCallsReport); 
-		editor.putString("MissedCallsReport", _MissedCallsReport); 
-		editor.putString("OutgoingCallsReport", _OutgoingCallsReport); 
-		editor.putString("BytesReceivedReport", _BytesReceivedReport); 
-		editor.putString("BytesSentReport", _BytesSentReport); 
-		editor.putString("HelloSignalReport", _HelloSignalReport); 
-		editor.putString("BatteryLevelReport", _BatteryLevelReport);
-		editor.putString("RoamingReport", _RoamingReport);
-		editor.putString("InventoryReport", _InventoryReport);
-		editor.putString("NotificationCheck", _NotificationCheck);
-		editor.putString("mobileWebURL", _mobileWebURL);
+		updateValue(con,"serverAddr", _serverAddr);
+		updateValue(con,"serverPort", _serverPort);
+		updateValue(con,"interval", ""+_interval);
+		updateValue(con,"agentName", _agentName);
+		updateValue(con,"gpsStatus", _gpsStatus);
+		updateValue(con,"memoryStatus", _memoryStatus);
+		updateValue(con,"taskStatus", _taskStatus);
+		updateValue(con,"task", _task);
+		updateValue(con,"taskHumanName", _taskHumanName);
+		updateValue(con,"simID", _simID);
+		updateValue(con,"simIDReport", _simIDReport);
+		updateValue(con,"upTime", ""+_upTime);
+		updateValue(con,"networkOperator", _networkOperator);
+		updateValue(con,"SMSReceived", ""+_smsReceived);
+		updateValue(con,"SMSSent", ""+_smsSent);
+		updateValue(con,"networkType", _networkType);
+		updateValue(con,"phoneType", _phoneType);
+		updateValue(con,"signalStrength", ""+_signalStrength);
+		updateValue(con,"incomingCalls", ""+_incomingCalls);
+		updateValue(con,"missedCalls", ""+_missedCalls);
+		updateValue(con,"outgoingCalls", ""+_outgoingCalls);
+		updateValue(con,"receiveBytes", ""+_receiveBytes);
+		updateValue(con,"transmitBytes", ""+_transmitBytes);
+		updateValue(con,"password", _password);
+		updateValue(con,"passwordCheck", _passwordCheck);
+		updateValue(con,"helloSignal", ""+_helloSignal);
+		updateValue(con,"roaming", ""+_roaming);
+		updateValue(con,"DeviceUpTimeReport", _DeviceUpTimeReport); 
+		updateValue(con,"NetworkOperatorReport", _NetworkOperatorReport); 
+		updateValue(con,"NetworkTypeReport", _NetworkTypeReport); 
+		updateValue(con,"PhoneTypeReport", _PhoneTypeReport); 
+		updateValue(con,"SignalStrengthReport", _SignalStrengthReport);
+		updateValue(con,"ReceivedSMSReport", _ReceivedSMSReport);
+		updateValue(con,"SentSMSReport", _SentSMSReport);
+		updateValue(con,"IncomingCallsReport", _IncomingCallsReport); 
+		updateValue(con,"MissedCallsReport", _MissedCallsReport); 
+		updateValue(con,"OutgoingCallsReport", _OutgoingCallsReport); 
+		updateValue(con,"BytesReceivedReport", _BytesReceivedReport); 
+		updateValue(con,"BytesSentReport", _BytesSentReport); 
+		updateValue(con,"HelloSignalReport", _HelloSignalReport); 
+		updateValue(con,"BatteryLevelReport", _BatteryLevelReport);
+		updateValue(con,"RoamingReport", _RoamingReport);
+		updateValue(con,"InventoryReport", _InventoryReport);
+		updateValue(con,"NotificationCheck", _NotificationCheck);
+		updateValue(con,"mobileWebURL", _mobileWebURL);
 		
-		if (editor.commit()) {
-			return true;
-		}
-		return false;
+		
+		return true;
 	}// end updateConf
+    
+    
+    
+    
+  //Initialize database
+  	public static void initDatabase(Context context){
+  		if (con == null) {
+      		con = context;
+      	}
+  	db = new DataBaseHandler(con);
+  	
+  	addValue(con,"serverAddr",defaultServerAddr);
+  	addValue(con,"serverPort",defaultServerPort);
+  	addValue(con,"interval",""+defaultInterval);
+  	addValue(con,"agentName",defaultAgentName+"_"+Installation.id(context));
+  	addValue(con,"mobileWebURL",defaultmobileWebURL);
+  	addValue(con,"gpsStatus",defaultGpsStatus);
+  	addValue(con,"memoryStatus",defaultMemoryStatus);
+  	addValue(con,"taskStatus",defaultTaskStatus);
+  	addValue(con,"task",defaultTask);
+  	addValue(con,"taskHumanName",defaultTaskHumanName);
+  	addValue(con,"simIDReport",defaultSimIDReport);
+  	addValue(con,"passwordCheck",defaultPasswordCheck);
+  	addValue(con,"DeviceUpTimeReport",defaultDeviceUpTimeReport);
+  	addValue(con,"NetworkOperatorReport",defaultNetworkOperatorReport);
+  	addValue(con,"NetworkTypeReport",defaultNetworkTypeReport);
+  	addValue(con,"PhoneTypeReport",defaultPhoneTypeReport);
+  	addValue(con,"SignalStrengthReport",defaultSignalStrengthReport);
+  	addValue(con,"ReceivedSMSReport",defaultReceivedSMSReport);
+  	addValue(con,"SentSMSReport",defaultSentSMSReport);
+  	addValue(con,"IncomingCallsReport",defaultIncomingCallsReport);
+  	addValue(con,"MissedCallsReport",defaultMissedCallsReport);
+  	addValue(con,"OutgoingCallsReport",defaultOutgoingCallsReport);
+  	addValue(con,"BytesReceivedReport",defaultBytesReceivedReport);
+  	addValue(con,"BytesSentReport",defaultBytesSentReport);
+  	addValue(con,"HelloSignalReport",defaultHelloSignalReport);
+  	addValue(con,"BatteryLevelReport",defaultHelloSignalReport);
+  	addValue(con,"RoamingReport",defaultRoamingReport);
+  	addValue(con,"InventoryReport",defaultRoamingReport);
+  	addValue(con,"NotificationCheck",defaultNotificationCheck);
+  	
+  	addValue(con,"hasSim", ""+defaultHasSim);
+      
+  	addValue(con,"password",defaultPassword);
+     
+  	addValue(con,"latitude",""+CONST_INVALID_COORDS);
+  	addValue(con,"longitude",""+CONST_INVALID_COORDS);
+  	addValue(con,"batteryLevel",""+CONST_INVALID_BATTERY_LEVEL);
+  	addValue(con,"orientation",""+CONST_INVALID_ORIENTATION);
+  	addValue(con,"proximity",""+CONST_INVALID_PROXIMITY);
+  	addValue(con,"taskRun",defaultTaskRun);
+  	addValue(con,"availableRamKb",""+defaultRam);
+  	addValue(con,"totalRamKb",""+defaultRam);
+  	addValue(con,"simID",defaultSimID);
+  	addValue(con,"upTime",""+defaultUpTime);
+  	addValue(con,"SMSReceived",""+defaultSMSReceived);
+  	addValue(con,"SMSSent",""+defaultSMSSent);
+  	addValue(con,"networkOperator",defaultNetworkOperator);
+  	addValue(con,"networkType",defaultNetworkType);
+  	addValue(con,"phoneType",defaultPhoneType);
+  	addValue(con,"signalStrength",""+defaultSignalStrength);
+  	addValue(con,"incomingCalls",""+defaultIncomingCalls);
+  	addValue(con,"missedCalls",""+defaultMissedCalls);
+  	addValue(con,"outgoingCalls",""+defaultOutgoingCalls);
+  	addValue(con,"receiveBytes",""+defaultReceiveBytes);
+  	addValue(con,"transmitBytes",""+defaultTransmitBytes);
+  	addValue(con,"helloSignal",""+defaultHelloSignal);
+  	addValue(con,"roaming",""+defaultRoaming);
+      
+  	addValue(con,"lastContact",""+CONST_INVALID_CONTACT);
+  	addValue(con,"contactError",""+CONST_CONTACT_ERROR);
+      
+  	}
+  	
+  	//Adds a new row "name" with the value "value"
+  	public static void addValue(Context context, String name, String value){
+  		db = new DataBaseHandler(con);
+  		
+  		DataHandler dh = new DataHandler(name, value);
+  		
+  		db.addValue(dh);
+  		
+  	}
+  	
+  	//Updates a given row "name" with a "value"
+  	public static void updateValue(Context context, String name, String value){
+  		db = new DataBaseHandler(con);
+  		//Retrieve id of row to update
+  		int id = getDataHandler(con, name).get_id();
+  		
+  		DataHandler dh = new DataHandler(id, name, value);
+  		
+  		db.updateValue(dh);
+  	}
+  	
+  	//Returns the DataHandler object of the given row "name"
+  	public static DataHandler getDataHandler(Context context, String name){
+  		db = new DataBaseHandler(con);
+  		
+  		return db.getValue(name);
+  	}
+  	
+  	//Returns the value of the given row "name"
+  	public static String getValue(Context context, String name){
+  		db = new DataBaseHandler(con);
+  		
+  		return db.getValue(name).get_value();
+  		
+  	}
+  	
+  	
+  	
 }

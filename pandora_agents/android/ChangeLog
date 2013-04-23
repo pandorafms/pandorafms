@@ -1,4 +1,4 @@
-2012-04-23 Mark Holland <mark@mark-holland.me.uk>
+2013-04-23 Mark Holland <mark@mark-holland.me.uk>
 
 	* src/pandroid/agent/Core.java: Migrated from shared
 	preferences to sqlite database. Method to create and

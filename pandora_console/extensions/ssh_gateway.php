@@ -19,7 +19,7 @@ $id_agente = get_parameter ("id_agente");
 // This extension is usefull only if the agent has associated IP
 $address = agents_get_address($id_agente);
 
-if(!empty($address) || empty($id_agente)) {
+if (!empty($address) || empty($id_agente)) {
 	extensions_add_opemode_tab_agent ('ssh_gateway','SSH Gateway','extensions/ssh_gateway/secure_console.png',"ssh_gateway", "v1r1");
 }
 
@@ -41,7 +41,7 @@ function ssh_gateway () {
 		$USER = "<auto>";
 	
 	$id_agente = get_parameter ("id_agente");
-
+	
 	$ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
 	
 	if ($HOST == "")
@@ -51,14 +51,14 @@ function ssh_gateway () {
 		if ($COMMIT == 1) {
 			echo "<h3 class=error>".__("You need to specify a user and a host address")."</h3>";
 		}
-
+		
 		echo "<form method=post>";
 		echo "<table class=databox cellspacing=4 cellpadding=4>";
 		echo "<td>".__("Host address")."<td><input type=text size=25 value='$HOST' name=host>";
 		echo "<tr>";
 		echo "<td>".__("User")."<td><input type=text size=25 value='$USER' name=user>";
 		echo "<tr>";
-        	echo "<td>".__("Port (use 0 for default)")."<td><input type=text size=5 value='$PORT' name=port>";	
+		echo "<td>".__("Port (use 0 for default)")."<td><input type=text size=5 value='$PORT' name=port>";	
 		echo "<tr><td>";
 		echo __("Connect mode")."<td><select name=mode>";
 		if ($MODE == "telnet") {
@@ -77,14 +77,15 @@ function ssh_gateway () {
 	}
 	
 	else {
-		if ($MODE == "telnet"){
-               		if ($PORT == 0)
-                        	$PORT = 23;
-        	} else {
-                	if ($PORT == 0)
-                        	$PORT = 22;
-        	}
-
+		if ($MODE == "telnet") {
+			if ($PORT == 0)
+				$PORT = 23;
+		}
+		else {
+			if ($PORT == 0)
+				$PORT = 22;
+		}
+		
 		if ($MODE == "ssh")
 			echo "<iframe style='border: 0px' src='http://".$SERVER_ADDR.":8022/anyterm.html?param=-p $PORT $USER@$HOST' width='100%' height=550>";
 		else

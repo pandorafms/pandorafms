@@ -1,3 +1,13 @@
+2013-04-23 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/tag/tag.php: fixed the column for large list of emails,
+	now it shows a dialog.
+	
+	Fixes: #3611472
+	
+	* include/functions_api.php, operation/snmpconsole/snmp_browser.php,
+	extensions/ssh_gateway.php: cleaned source code style.
+
 2013-04-22 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/users/user_edit.php, include/functions_graph.php:

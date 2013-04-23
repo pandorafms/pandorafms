@@ -5700,34 +5700,38 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType) {
 
 //http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_tag&other=tag_name|tag_description|tag_url|tag_email&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
 function api_set_create_tag ($id, $trash1, $other, $returnType) {
-
+	
 	$data = array();
-
+	
 	if ($other['type'] == 'string') {
-                $data["name"] = $other["data"];
-        } else if ($other['type'] == 'array') {
-
-        	$data['name'] = $other["data"][0];
-
+		$data["name"] = $other["data"];
+	}
+	else if ($other['type'] == 'array') {
+		
+		$data['name'] = $other["data"][0];
+		
 		if ($other["data"][1] != '') {
-	        	$data['description'] = $other["data"][1];
-		} else {
+			$data['description'] = $other["data"][1];
+		}
+		else {
 			$data['description'] = "";
 		}
-
+		
 		if ($other["data"][1] != '') {
-	        	$data['url'] = $other["data"][2];
-		} else {
+			$data['url'] = $other["data"][2];
+		}
+		else {
 			$data['url'] = "";
 		}
-
+		
 		if ($other["data"][1] != '') {
-	        	$data['email'] = $other["data"][3];
-		} else {
+			$data['email'] = $other["data"][3];
+		}
+		else {
 			$data['email'] = '';
 		}
 	}
-      
+	
 	tags_create_tag ($data);
 }
 

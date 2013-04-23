@@ -113,7 +113,7 @@ public class PandroidAgentListener extends Service {
 	}
 	
 	
-	
+	/*
 	private void contact(){
         Date date = new Date();
         
@@ -156,9 +156,9 @@ public class PandroidAgentListener extends Service {
         
         updateValues();
 	}
+	*/
 	
 	
-	/*
 	private void contact(){
 			
 		/*
@@ -168,7 +168,7 @@ public class PandroidAgentListener extends Service {
 		       		Toast.LENGTH_SHORT);
 		toast.setGravity(Gravity.BOTTOM,0,0);
 		toast.show();
-		
+		*/
 		
 		    
 		Date date = new Date();
@@ -223,7 +223,7 @@ public class PandroidAgentListener extends Service {
         	
         }//end doInBackground
    }
-   */
+   
     ////////////////////////////////////////////////////////////////////////////////////////
     //  From unfinished task of buffering unsent xml files when no connection available   //
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -955,12 +955,14 @@ try { // catches IOException below
 	
 	
 	private void putSharedData(String preferenceName, String tokenName, String data, String type) {
-		int mode = Activity.MODE_PRIVATE;
-		SharedPreferences agentPreferences = getSharedPreferences(preferenceName, mode);
-		SharedPreferences.Editor editor = agentPreferences.edit();
+		//int mode = Activity.MODE_PRIVATE;
+		//SharedPreferences agentPreferences = getSharedPreferences(preferenceName, mode);
+		//SharedPreferences.Editor editor = agentPreferences.edit();
 		
-				
+		Core.updateValue(this, tokenName, data);	
+		/*
 		if(type == "boolean") {
+			Core.updateValue(this, tokenName, data)
 			editor.putBoolean(tokenName, Boolean.parseBoolean(data));
 		}
 		else if(type == "float") {
@@ -977,12 +979,16 @@ try { // catches IOException below
 		}
 		
 		editor.commit();
+		*/
     }
     
     private String getSharedData(String preferenceName, String tokenName, String defaultValue, String type) {
-		int mode = Activity.MODE_PRIVATE;
-		SharedPreferences agentPreferences = getSharedPreferences(preferenceName, mode);
+		//int mode = Activity.MODE_PRIVATE;
+		//SharedPreferences agentPreferences = getSharedPreferences(preferenceName, mode);
 		
+    	return Core.getValue(this, tokenName);
+    	
+    	/*
 		if(type == "boolean") {
 			boolean a = agentPreferences.getBoolean(tokenName, Boolean.parseBoolean(defaultValue));
 			return Boolean.valueOf(a).toString();
@@ -1004,6 +1010,7 @@ try { // catches IOException below
 		}
 		
 		return "";
+		*/
     }
 	
     private String getHumanDateTime(long unixtime){

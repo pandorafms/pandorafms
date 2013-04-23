@@ -146,7 +146,7 @@ public class Setup extends Activity {
         webButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
         		 getDataFromView();
-        		 Core.updateConf(getApplicationContext());
+        		 //Core.updateConf(getApplicationContext());
 
         		 String url = Core.mobileWebURL;
         		 if (!url.startsWith("https://") && !url.startsWith("http://")){
@@ -433,7 +433,7 @@ public class Setup extends Activity {
         	Core.NotificationCheck = "disabled";
         
         
-        Core.updateConf(getApplicationContext());
+        //Core.updateConf(getApplicationContext());
     }
     
 	private void loadViews(){
@@ -535,7 +535,7 @@ public class Setup extends Activity {
 		@Override
 		   public void onClick(View v) {
 				Core.passwordCheck = "disabled";
-				Core.updateConf(getApplicationContext());
+				//Core.updateConf(getApplicationContext());
 				dialog.dismiss();
 				createPass();
 			} // end onClick
@@ -551,11 +551,12 @@ public class Setup extends Activity {
 					Core.passwordCheck = "disabled";
 				else
 					Core.passwordCheck = "enabled";	
-				Core.updateConf(getApplicationContext());
+				//Core.updateConf(getApplicationContext());
 				dialog.dismiss();
 			} // end onClick
 		});//end clickListener
 		
+		Core.updateConf(getApplicationContext());
 		dialog.show();
 	}
 	
@@ -585,7 +586,7 @@ public class Setup extends Activity {
 		    	if(TextUtils.isEmpty(createpass_password))
 		    	{
 		    		Core.password = Core.defaultPassword;
-		    		Core.updateConf(getApplicationContext());
+		    		//Core.updateConf(getApplicationContext());
 		    		InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
                     im.hideSoftInputFromWindow(text.getWindowToken(), 0);
 		    		dialog.dismiss();
@@ -607,7 +608,7 @@ public class Setup extends Activity {
 		    	else if(createpass_password.equals(createpass_password2))
 		        {
 		        	Core.password = createpass_password;
-		        	Core.updateConf(getApplicationContext());
+		        	//Core.updateConf(getApplicationContext());
 		        	//Core.restartAgentListener(getApplicationContext());
 		        	InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
                     im.hideSoftInputFromWindow(text.getWindowToken(), 0);
@@ -639,6 +640,7 @@ public class Setup extends Activity {
 			
 		});//end clickListener
 			
+		Core.updateConf(getApplicationContext());
 		dialog.show();
 
 	}// end createPass

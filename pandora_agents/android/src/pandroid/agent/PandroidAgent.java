@@ -16,16 +16,17 @@ package pandroid.agent;
 
 import java.io.File;
 
-//import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
+import android.util.Log;
+import android.widget.TabHost;
+//import android.app.Dialog;
 //import android.util.Log;
 //import android.view.WindowManager.LayoutParams;
-import android.widget.TabHost;
 
 public class PandroidAgent extends TabActivity {
 	
@@ -33,9 +34,15 @@ public class PandroidAgent extends TabActivity {
     int defaultInterval = 300;
     TabHost tabHost;
     
+    
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        
+        
+        
         /*
         final Dialog dialog = new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
 		dialog.setContentView(R.layout.welcome);
@@ -58,6 +65,10 @@ public class PandroidAgent extends TabActivity {
         //Requires The agent name to use installation id
         File installation = new File(getApplicationContext().getFilesDir(), "INSTALLATION");
         if(!installation.exists()){
+        	//Create database with default values
+        	DataBaseHandler db = new DataBaseHandler(this);
+        	Core.initDatabase(this);
+            //Log.d("DATABASE",Core.db.getValue("latitude").get_value());
         	Core.restartAgentListener(getApplicationContext());
         }
         else{
@@ -111,6 +122,7 @@ public class PandroidAgent extends TabActivity {
     	
     	if(Core.helloSignal == 0)
     		Core.helloSignal = 1;
+    	//dubious
     	Core.updateConf(getApplicationContext());
     }
     

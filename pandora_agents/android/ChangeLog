@@ -1,3 +1,26 @@
+2012-04-23 Mark Holland <mark@mark-holland.me.uk>
+
+	* src/pandroid/agent/Core.java: Migrated from shared
+	preferences to sqlite database. Method to create and
+	initialize database with default values.
+
+	* src/pandroid/agent/DataBaseHandler.java: Creates
+	a database and provides methods for interaction.
+
+	* src/pandroid/agent/DataHandler.java: Objects for
+	facilitating interaction of data with the database.
+
+	* src/pandroid/agent/PandroidAgent.java: If first run
+	then creates and initializes database. Needs to be 
+	replaced by copying default db that would ship with 
+	pandroid.
+
+	* src/pandroid/agent/PandroidAgentListener.java: Adapted
+	get and put sharedData to use database instead,
+
+	* src/pandroid/agent/Setup.java: Reduced
+	configuration updates
+
 2013-04-01  Sergio Martin <sergio.martin@artica.es>
 
 	* src/pandroid/agent/PandroidAgentListener.java: Fixed 

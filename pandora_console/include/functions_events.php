@@ -1689,9 +1689,10 @@ function events_page_responses ($event) {
 // If server_id > 0, is a metaconsole query
 function events_get_response_target($event_id, $response_id, $server_id, $history = false) {
 	global $config;
+	
 	$event_response = db_get_row('tevent_response','id',$response_id);
 	
-	if($server_id > 0) {
+	if ($server_id > 0) {
 		$meta = true;
 	}
 	else {
@@ -1699,9 +1700,9 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 	}
 	
 	$event_table = events_get_events_table($meta, $history);
-
+	
 	$event = db_get_row($event_table,'id_evento', $event_id);
-		
+	
 	$macros = array_keys(events_get_macros());
 	
 	$target = io_safe_output($event_response['target']);
@@ -1737,9 +1738,10 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 
 function events_page_custom_fields ($event) {
 	global $config;
-	/////////
+	
+	////////////////////////////////////////////////////////////////////
 	// Custom fields
-	/////////
+	////////////////////////////////////////////////////////////////////
 	
 	$table->width = '100%';
 	$table->data = array ();
@@ -1786,14 +1788,14 @@ function events_page_custom_fields ($event) {
 	}
 	
 	$custom_fields = '<div id="extended_event_custom_fields_page" class="extended_event_pages">'.html_print_table($table, true).'</div>';
-
+	
 	return $custom_fields;
 }
 
 function events_page_details ($event, $server = "") {
 	global $img_sev;
 	global $config;
-
+	
 	// If server is provided, get the hash parameters
 	if (!empty($server)) { 
 		$hashdata = metaconsole_get_server_hashdata($server);
@@ -1804,10 +1806,10 @@ function events_page_details ($event, $server = "") {
 		$hashstring = "";
 		$serverstring = "";
 	}
-		
-	/////////
+	
+	////////////////////////////////////////////////////////////////////
 	// Details
-	/////////
+	////////////////////////////////////////////////////////////////////
 	
 	$table_details->width = '100%';
 	$table_details->data = array ();
@@ -1816,7 +1818,7 @@ function events_page_details ($event, $server = "") {
 	$table_details->style[1] = 'text-align: left;';
 	$table_details->class = "databox alternate";
 	
-	switch($event['event_type']) {
+	switch ($event['event_type']) {
 		case 'going_unknown':
 		case 'going_up_warning':
 		case 'going_down_warning':
@@ -1832,7 +1834,7 @@ function events_page_details ($event, $server = "") {
 	else {
 		$agent = array();
 	}
-
+	
 	$data = array();
 	$data[0] = __('Agent details');
 	$data[1] = empty($agent) ? '<i>' . __('N/A') . '</i>' : '';
@@ -1853,12 +1855,12 @@ function events_page_details ($event, $server = "") {
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('OS').'</div>';
 		$data[1] = ui_print_os_icon ($agent["id_os"], true, true).' ('.$agent["os_version"].')';
 		$table_details->data[] = $data;
-
+		
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last contact').'</div>';
 		$data[1] = $agent["ultimo_contacto"] == "1970-01-01 00:00:00" ? '<i>'.__('N/A').'</i>' : $agent["ultimo_contacto"];
 		$table_details->data[] = $data;
-
+		
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last remote contact').'</div>';
 		$data[1] = $agent["ultimo_contacto_remoto"] == "1970-01-01 00:00:00" ? '<i>'.__('N/A').'</i>' : $agent["ultimo_contacto_remoto"];
@@ -1876,31 +1878,32 @@ function events_page_details ($event, $server = "") {
 	else {
 		$module = array();
 	}
-		
+	
 	$data = array();
 	$data[0] = __('Module details');
 	$data[1] = empty($module) ? '<i>' . __('N/A') . '</i>' : '';
 	$table_details->data[] = $data;
-		
+	
 	if (!empty($module)) {
 		// Module name
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
-		$data[1] = '<a href="'.$serverstring.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data'.$hashstring.'"><b>';
+		$data[1] = '<a href="' . $serverstring . 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data'.$hashstring.'"><b>';
 		$data[1] .= $module['nombre'];
 		$data[1] .= '</b></a>';
 		$table_details->data[] = $data;
 		
 		// Module group
 		$data = array();
-		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Module group').'</div>';
+		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">' .
+			__('Module group') . '</div>';
 		$id_module_group = $module['id_module_group'];
-		if($id_module_group == 0) {
+		if ($id_module_group == 0) {
 			$data[1] = __('No assigned');
 		}
 		else {
 			$module_group = db_get_value('name', 'tmodule_group', 'id_mg', $id_module_group);
-			$data[1] = '<a href="'.$serverstring.'index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . $hashstring.'">';
+			$data[1] = '<a href="'.$serverstring . 'index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . $hashstring.'">';
 			$data[1] .= $module_group;
 			$data[1] .= '</a>';
 		}
@@ -1914,7 +1917,8 @@ function events_page_details ($event, $server = "") {
 		}
 		$graph_type = return_graphtype ($module_module_type);
 		
-		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["module_name"]));
+		$win_handle=dechex(crc32($module["id_agente_modulo"] .
+			$module["nombre"]));
 		
 		$module_module_name = '';
 		if (isset($module["module_name"])) {

@@ -1546,7 +1546,7 @@ function events_page_responses ($event) {
 	$table_responses->head = array ();
 	$table_responses->style[0] = 'width:35%; font-weight: bold; text-align: left;';
 	$table_responses->style[1] = 'text-align: left;';
-	$table_responses->class = "databox alternate";
+	$table_responses->class = "alternate rounded_cells";
 	
 	if (tags_check_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'])) {
 		// Owner
@@ -1748,7 +1748,7 @@ function events_page_custom_fields ($event) {
 	$table->head = array ();
 	$table->style[0] = 'width:35%; font-weight: bold; text-align: left;';
 	$table->style[1] = 'text-align: left;';
-	$table->class = "databox alternate";
+	$table->class = "alternate rounded_cells";
 	
 	$all_customs_fields = (bool)check_acl($config["id_user"],
 	$event["id_grupo"], "AW");
@@ -1816,7 +1816,7 @@ function events_page_details ($event, $server = "") {
 	$table_details->head = array ();
 	$table_details->style[0] = 'width:35%; font-weight: bold; text-align: left;';
 	$table_details->style[1] = 'text-align: left;';
-	$table_details->class = "databox alternate";
+	$table_details->class = "alternate rounded_cells";
 	
 	switch ($event['event_type']) {
 		case 'going_unknown':
@@ -2059,7 +2059,7 @@ function events_page_general ($event) {
 	$table_general->head = array ();
 	$table_general->style[0] = 'width:35%; font-weight: bold; text-align: left;';
 	$table_general->style[1] = 'text-align: left;';
-	$table_general->class = "databox alternate";
+	$table_general->class = "alternate rounded_cells";
 	
 	$data = array();
 	$data[0] = __('Event ID');
@@ -2200,7 +2200,7 @@ function events_page_comments ($event) {
 	$table_comments->head = array ();
 	$table_comments->style[0] = 'width:35%; vertical-align: top; text-align: left;';
 	$table_comments->style[1] = 'text-align: left;';
-	$table_comments->class = "databox alternate";
+	$table_comments->class = "alternate rounded_cells";
 	
 	$comments_array = explode('<br>',io_safe_output($event["user_comment"]));
 	

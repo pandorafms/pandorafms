@@ -54,7 +54,7 @@ echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">'
 	$news = db_get_all_rows_sql ($sql);
 	if ($news !== false) {
 		echo '<table cellpadding="4" cellspacing="4" class="databox">';
-		echo '<tr><th><span class="med_data">' . __('News board') . '</span></th></tr>';
+		echo '<tr><th><span>' . __('News board') . '</span></th></tr>';
 		if ($config["prominent_time"] == "timestamp") {
 			$comparation_suffix = "";
 		}
@@ -97,7 +97,7 @@ echo '<div style="width:50%; float:left; padding-right: 30px;" id="leftcolumn">'
 	$table->head[3] = __('Date');
 	$table->head[4] = __('Source IP');
 	$table->head[5] = __('Comments');
-	$table->title = '<span class="med_data">' . __('This is your last activity in Pandora FMS console') . '</span>';
+	$table->title = '<span>' . __('This is your last activity in Pandora FMS console') . '</span>';
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -178,7 +178,7 @@ $table->head = array ();
 $table->data = array ();
 $table->style[0] = 'text-align:center;';
 $table->width = "100%";
-$table->head[0] = '<span class="med_data">' . __('Pandora FMS Overview') . '</span>';
+$table->head[0] = '<span>' . __('Pandora FMS Overview') . '</span>';
 $table->head_colspan[0] = 4; 
 
 // Indicators

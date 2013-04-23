@@ -72,21 +72,25 @@ if (! $id || ! file_exists ($help_file)) {
 
 /* Show help */
 echo '<div id="main_help">';
-echo '<div>';
-echo '<span style="float:left; margin: 20px; padding: 0px">';
-echo html_print_image('images/pandora_textlogo.png', true, array("border" => '0'));
+echo '<span style="float:left; margin: 20px 20px 0px 20px; padding: 0px">';
+echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
 echo "</span>";
-echo '<p style="padding-right: 20px; padding-top: 20px; text-align: right"><strong>'.__('Pandora FMS help system').'</strong></p>';
-echo '</div><br>';
-echo '<hr width="100%" size="1" />';
+echo '<p style="text-align: right"><strong style="float: right; padding-top: 12px; padding-right: 8px;">'. html_print_image('images/interrogant.png', true, array('title' => __('Pandora FMS help system'))) . '</strong></p>';
+echo '<div style="clear:both;"></div>';
 echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left">';
-echo '<div style="font-size: 12px; margin-left: 30px; margin-right:25px;">';
+echo '<div style="font-size: 12px; margin-left: 20px; margin-right:20px;" class="databox">';
+ob_start();
 require_once ($help_file);
-echo '</div>';
-echo '<br /><br /><hr width="100%" size="1" />';
-echo '<div style="text-align: center; padding: 15px; background-color: #6E6E6E; font-family: verdana, arial; font-size: 11px;">';
+$help = ob_get_contents();
+ob_end_clean();
+
+// Add a line after H1 tags
+$help = str_replace('</H1>', '</H1><HR>', $help);
+$help = str_replace('</h1>', '</h1><hr>', $help);
+echo $help;
+echo '<br /><br /></div>';
+echo '<div style="text-align: center; padding: 15px; font-family: verdana, arial; font-size: 11px;">';
 include ('footer.php');
-echo '</div>';
 ?>
 </body>
 </html>

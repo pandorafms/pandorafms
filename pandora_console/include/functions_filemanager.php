@@ -438,21 +438,21 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	?>
 	<script type="text/javascript">
 	function show_form_create_folder() {
-		$("#table1-1").css('display', '');
+		$("#table2-1").css('display', '');
 		
 		$("#main_buttons").css("display", "none");
 		$("#create_folder").css("display", "");
 	}
 	
 	function show_upload_file() {
-		$("#table1-1").css('display', '');
+		$("#table2-1").css('display', '');
 		
 		$("#main_buttons").css("display", "none");
 		$("#upload_file").css("display", "");
 	}
 	
 	function show_create_text_file() {
-		$("#table1-1").css('display', '');
+		$("#table2-1").css('display', '');
 		
 		$("#main_buttons").css("display", "none");
 		$("#create_text_file").css("display", "");
@@ -460,7 +460,7 @@ function filemanager_file_explorer($real_directory, $relative_directory, $url, $
 	
 	function show_main_buttons_folder() {
 		//$("#main_buttons").css("display", "");
-		$("#table1-1").css('display', 'none');
+		$("#table2-1").css('display', 'none');
 		$("#create_folder").css("display", "none");
 		$("#upload_file").css("display", "none");
 		$("#create_text_file").css("display", "none");

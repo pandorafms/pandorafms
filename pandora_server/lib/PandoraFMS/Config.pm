@@ -262,6 +262,9 @@ sub pandora_load_config {
 	# braa for enterprise snmp server
 	$pa_config->{"braa"} = "/usr/bin/braa";
 
+	# SNMP enterprise retries (for braa)
+	$pa_config->{"braa_retries"} = 3; # Backported from 5.0
+	
 	# Xprobe2 for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
 
@@ -530,6 +533,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^braa\s(.*)/i) {
 			$pa_config->{'braa'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^braa_retries\s([0-9]*)/i) {
+			$pa_config->{"braa_retries"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
 			$pa_config->{'xprobe2'}= clean_blank($1); 

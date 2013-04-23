@@ -286,7 +286,7 @@ if ($get_extended_event) {
 	$tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true).__('Comments')."</a></li>";
 	if (!$readonly && 
 		(tags_check_acl ($config['id_user'], $event['id_grupo'], "EW", $event['clean_tags']) || tags_check_acl ($config['id_user'], $event['id_grupo'], "EM", $event['clean_tags']))) {
-		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/cog.png',true).__('Responses')."</a></li>";
+		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png',true).__('Responses')."</a></li>";
 	}
 	$tabs .= "</ul>";
 	

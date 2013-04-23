@@ -69,7 +69,10 @@ echo '
 	// Replace the following with your own URL and logo.
 	// A mashup of the Pandora FMS logo and your companies highly preferred
 	echo '<a href="' . $logo_link . '">';
-	if (defined ('PANDORA_ENTERPRISE')) {
+	if (defined ('METACONSOLE')) {
+		html_print_image ("enterprise/meta/images/pandora_login_enterprise.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+	}
+	else if (defined ('PANDORA_ENTERPRISE')) {
 		html_print_image ($config['homeurl'] . "/images/pandora_login_enterprise.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 	}
 	else {
@@ -101,7 +104,7 @@ echo '
 			html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login login_password"', false, true);
 			echo '</div>';
 			echo '<div class="login_button">';
-			html_print_submit_button(__("Log-in"), "login", false, 'class="sub next"');
+			html_print_submit_button(__("Login"), "login", false, 'class="sub next_login"');
 			echo '</div>';
 			break;
 		case 'logout':

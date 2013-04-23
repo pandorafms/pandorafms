@@ -1,3 +1,20 @@
+2013-04-23  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/dialog.css
+	include/styles/images/dialog-titlebar-close.png
+	include/styles/pandora.css
+	include/ajax/events.php
+	include/functions_events.php
+	images/event_responses_col.png
+	images/interrogant.png
+	general/pandora_help.php
+	general/footer.php
+	general/login_page.php
+	general/logon_ok.php: Change the help screens and 
+	the modal windows visual style to new design.
+	Little fixes to support metaconsole login and 
+	some visual changes
+
 2013-04-23 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_ui.php, include/javascript/pandora_modules.js:

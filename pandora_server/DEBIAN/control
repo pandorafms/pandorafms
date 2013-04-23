@@ -1,5 +1,5 @@
 package: pandorafms-server
-Version: 130422
+Version: 5.0dev-130423
 Architecture: all
 Priority: optional
 Section: admin

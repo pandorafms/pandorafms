@@ -327,7 +327,7 @@ $tabletags->rowclass[] = '';
 echo '<div id="event_control" style="display:none">';
 
 // Table for filter controls
-echo '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
+echo '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. (int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
 
 // Hidden field with the loaded filter name
 html_print_input_hidden('id_name', $id_name);

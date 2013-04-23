@@ -34,7 +34,7 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 
 // Set metaconsole mode
 $meta = false;
-if(enterprise_installed() && defined("METACONSOLE")) {
+if (enterprise_installed() && defined("METACONSOLE")) {
 	$meta = true;
 }
 
@@ -43,7 +43,7 @@ $history = (bool) get_parameter('history', 0);
 
 $readonly = false;
 
-if(!$meta) {
+if (!$meta) {
 	if (isset($config['event_replication']) &&  
 		$config['event_replication'] == 1) {
 			
@@ -226,7 +226,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;severity=" . $severity . 
 	"&amp;status=" . $status . 
 	"&amp;ev_group=" . $ev_group . 
-	"&amp;refr=" . $config["refr"] . 
+	"&amp;refr=" . (int)get_parameter("refr", 0) . 
 	"&amp;id_agent=" . $id_agent . 
 	"&amp;pagination=" . $pagination . 
 	"&amp;group_rep=" . $group_rep . 
@@ -245,7 +245,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;open_filter=" . $open_filter .
 	"&amp;pure=" . $config["pure"];
 
-if($meta) {
+if ($meta) {
 	$params .= "&amp;text_agent=" . $text_agent;
 }
 

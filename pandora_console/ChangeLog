@@ -1,5 +1,12 @@
 2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/users/user_edit.php: fixed the call to function from
+	enterprise in the open source installations.
+	
+	Fixes: #3611329
+
+2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php, include/functions_servers.php:
 	fixed the set default value for "local_modules_rate".
 	

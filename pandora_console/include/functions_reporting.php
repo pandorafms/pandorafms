@@ -894,7 +894,8 @@ function reporting_get_stats_servers($tiny = true) {
 	$tdata[0] = html_print_image('images/database.png', true, array('title' => __('Local modules'), 'width' => '25px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
 	
-	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["local_modules_rate"], 2) . '</span>';
+	$tdata[2] = '<span class="med_data">' .
+		format_numeric($server_performance ["local_modules_rate"], 2) . '</span>';
 	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 	
 	$table_srv->rowclass[] = '';

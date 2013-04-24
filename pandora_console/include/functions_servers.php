@@ -78,18 +78,19 @@ function servers_get_performance () {
 	$data["avg_interval_total_modules"] = array();
 	$data["avg_interval_remote_modules"] = array();
 	$data["avg_interval_local_modules"] = 0;
+	$data["local_modules_rate"] = 0;
 	
-	if ($config["realtimestats"] == 1){
+	if ($config["realtimestats"] == 1) {
 		$counts = db_get_all_rows_sql ("SELECT tagente_modulo.id_modulo, COUNT(tagente_modulo.id_agente_modulo) modules
 			FROM tagente_modulo, tagente_estado, tagente
 			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 				AND tagente_modulo.disabled = 0 AND delete_pending = 0 AND (utimestamp > 0 OR (id_tipo_modulo = 100 OR (id_tipo_modulo > 21 AND id_tipo_modulo < 23)))
 				AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
-
-		if(empty($counts)) {
+		
+		if (empty($counts)) {
 			$counts = array();
 		}
-
+		
 		foreach($counts as $c) {
 			switch($c['id_modulo']) {
 				case MODULE_DATA:
@@ -121,8 +122,8 @@ function servers_get_performance () {
 	}
 	else {
 		$counts = db_get_all_rows_sql ("SELECT server_type, my_modules modules FROM tserver GROUP BY server_type");
-
-		if(empty($counts)) {
+		
+		if (empty($counts)) {
 			$counts = array();
 		}
 		
@@ -172,12 +173,12 @@ function servers_get_performance () {
 					AND delete_pending = 0
 					AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
 	
-	if(empty($interval_avgs_modules)) {
+	if (empty($interval_avgs_modules)) {
 		$interval_avgs_modules = array();
 	}
 	
 	// Transform into a easily format
-	foreach($interval_avgs_modules as $iamodules) {
+	foreach ($interval_avgs_modules as $iamodules) {
 		$interval_avgs[$iamodules['id_modulo']]['avg_interval'] = $iamodules['avg_interval'];
 		$interval_avgs[$iamodules['id_modulo']]['modules'] = $iamodules['modules'];
 	}
@@ -190,7 +191,7 @@ function servers_get_performance () {
 					AND delete_pending = 0
 					AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente GROUP BY tagente_modulo.id_modulo");
 	
-	if(empty($interval_avgs_agents)) {
+	if (empty($interval_avgs_agents)) {
 		$interval_avgs_agents = array();
 	}
 	
@@ -206,7 +207,7 @@ function servers_get_performance () {
 		}
 	}
 	
-	foreach($interval_avgs as $id_modulo => $ia) {
+	foreach ($interval_avgs as $id_modulo => $ia) {
 		switch($id_modulo) {
 			case MODULE_DATA:
 				$data["avg_interval_local_modules"] = $ia['avg_interval'];
@@ -234,7 +235,7 @@ function servers_get_performance () {
 				break;
 		}
 		
-		if($id_modulo != MODULE_DATA) {
+		if ($id_modulo != MODULE_DATA) {
 			$data["avg_interval_remote_modules"][] = $ia['avg_interval'];
 		}
 		

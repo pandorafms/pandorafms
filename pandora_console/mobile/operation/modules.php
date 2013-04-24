@@ -155,16 +155,10 @@ class Modules {
 	}
 	
 	private function show_fail_acl() {
-		$ui = Ui::getInstance();
-		
-		$ui->createPage();
-		
-		$options['type'] = 'onStart';
-		$options['title_text'] = __('You don\'t have access to this page');
-		$options['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
-		$ui->addDialog($options);
-		
-		$ui->showPage();
+		$error['title_text'] = __('You don\'t have access to this page');
+		$error['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+		$home = new Home();
+		$home->show($error);
 	}
 	
 	private function show_modules() {
@@ -375,7 +369,7 @@ class Modules {
 			$sql_limit = " LIMIT " . (int)($page * $system->getPageSize()) . "," . (int)$system->getPageSize();
 		}
 		
-		$total = db_get_value_sql($sql_total. $sql); html_debug_print($sql_select . $sql . $sql_limit, true);
+		$total = db_get_value_sql($sql_total. $sql);
 		$modules_db = db_get_all_rows_sql($sql_select . $sql . $sql_limit);
 		
 		if (empty($modules_db)) {
@@ -520,9 +514,7 @@ class Modules {
 		
 		$listModules = $this->getListModules($page);
 		//$ui->debug($listModules, true);
-		html_debug_print("-----------", true);
-		html_debug_print($listModules, true);
-		html_debug_print("===========", true);
+		
 		if ($listModules['total'] == 0) {
 			$html = '<p style="color: #ff0000;">' . __('No modules') . '</p>';
 			if (!$return) {
@@ -537,6 +529,7 @@ class Modules {
 				$ui->contentAddHtml($table->getHTML());
 			}
 			else {
+				$table->id = 'list_Modules_Embedded';
 				$html = $table->getHTML();
 				
 				return $html;

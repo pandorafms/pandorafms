@@ -19,7 +19,7 @@ class Home {
 		$this->global_search = '';
 	}
 	
-	public function show() {
+	public function show($error = null) {
 		global $config;
 		
 		require_once ($config["homedir"] . '/include/functions_graph.php');
@@ -27,6 +27,12 @@ class Home {
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
+			if (isset($error)) {
+				$options['type'] = 'onStart';
+				$options['title_text'] = $error['title_text'];
+				$options['content_text'] = $error['content_text'];
+				$ui->addDialog($options);
+			}
 		$ui->createDefaultHeader(__("PandoraFMS: Home"));
 		$ui->showFooter(false);
 		$ui->beginContent();

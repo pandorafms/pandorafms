@@ -14,7 +14,7 @@
 
 class Events {
 	private $correct_acl = false;
-	private $acl = "ER";
+	private $acl = "IR";
 	
 	private $default = true;
 	private $free_search = '';
@@ -349,16 +349,10 @@ class Events {
 	}
 	
 	private function show_fail_acl() {
-		$ui = Ui::getInstance();
-		
-		$ui->createPage();
-		
-		$options['type'] = 'onStart';
-		$options['title_text'] = __('You don\'t have access to this page');
-		$options['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
-		$ui->addDialog($options);
-		
-		$ui->showPage();
+		$error['title_text'] = __('You don\'t have access to this page');
+		$error['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+		$home = new Home();
+		$home->show($error);
 	}
 	
 	private function show_events() {
@@ -606,15 +600,34 @@ class Events {
 			
 		}
 		
-		if ($this->group > 0) {
+		$system = System::getInstance();
+		$groups = users_get_groups($system->getConfig('id_user'), 'IR');
+		
+		//Group selection
+		if ($this->group > 0 && in_array ($this->group, array_keys ($groups))) {
 			//If a group is selected and it's in the groups allowed
-			$sql_post = " AND id_grupo = " . $this->group;
+			$sql_post .= " AND id_grupo = " . $this->group;
+		}
+		else {
+			if (is_user_admin ($system->getConfig('id_user'))) {
+				//Do nothing if you're admin, you get full access
+				$sql_post .= "";
+			}
+			else {
+				//Otherwise select all groups the user has rights to.
+				$sql_post .= " AND id_grupo IN (" .
+					implode (",", array_keys ($groups)) . ")";
+			}
 		}
 		
 		if ($this->id_agent > 0) {
-			$sql_post = " AND id_agente = " . $this->id_agent;
+			$sql_post .= " AND id_agente = " . $this->id_agent;
 		}
 		
+		// Skip system messages if user is not PM
+		if (!check_acl($system->getConfig('id_user'), 0, "PM")) {
+			$sql_post .= " AND id_grupo != 0";
+		}
 		//--------------------------------------------------------------
 		
 		

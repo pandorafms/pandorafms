@@ -33,7 +33,7 @@ $free_search = get_parameter("free_search", '');
 
 $sec2 = get_parameter_get ('sec2');
 $sec2 = safe_url_extraclean ($sec2);
-	
+
 $sec = get_parameter_get ('sec');
 $sec = safe_url_extraclean ($sec);
 
@@ -56,11 +56,11 @@ if ($idAgent != 0) {
 	$id_group = agents_get_agent_group ($idAgent);
 	
 	$is_extra = enterprise_hook('policies_is_agent_extra_policy', array($id_agente));
-
+	
 	if($is_extra === ENTERPRISE_NOT_HOOK) {
 		$is_extra = false;
 	}
-
+	
 	if (!check_acl ($config["id_user"], $id_group, "AR") && !$is_extra) {
 		db_pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
@@ -81,7 +81,7 @@ else {
 	}
 	
 	$agents = array_keys(agents_get_group_agents(array_keys(users_get_groups($config["id_user"], 'AR', false))));
-
+	
 	$idGroup = $id_group;
 	
 	$print_agent = true;
@@ -91,7 +91,7 @@ else {
 
 if ($alert_validate) {
 	if (check_acl ($config["id_user"], $id_group, "AW") == 0) {
-                echo '<h3 class="error">'.__('Insufficient permissions to validate alerts').'</h3>';
+		echo '<h3 class="error">'.__('Insufficient permissions to validate alerts').'</h3>';
 	}
 	else {
 	validateAlert();
@@ -285,9 +285,9 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[6] = __('Action');
 		$table->head[7] = __('Last fired');
 		$table->head[8] = __('Status');
-        if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
+		if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
 			$table->head[9] = __('Validate');
-		}	
+		}
 		$table->align[8] = 'center';
 		$table->align[9] = 'center';
 	}
@@ -305,7 +305,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
-	    if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
+		if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
 			$table->head[8] = __('Validate');
 		}
 		$table->align[7] = 'center';
@@ -330,7 +330,7 @@ else
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
-	        if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
+		if (check_acl ($config["id_user"], $id_group, "AW") == 1) {
 			$table->head[8] = __('Validate');
 		}
 		$table->align[7] = 'center';
@@ -373,7 +373,7 @@ foreach ($alerts['alerts_simple'] as $alert) {
 	array_push ($table->data, ui_format_alert_row ($alert, false, $print_agent, $url, 'font-size: 7pt;'));
 }
 
-echo '<form method="post" action="'.$url.'">';
+echo '<form method="post" action="' . $url . '">';
 
 if (!empty ($table->data)) {
 	ui_pagination ($countAlertsSimple, $url,  $offset_simple, 0, false, 'offset_simple');
@@ -404,7 +404,7 @@ $table->data = array ();
 
 foreach ($alerts['alerts_combined'] as $alert) {
 	array_push ($table->data, ui_format_alert_row ($alert, true, $print_agent));
-}	
+}
 
 if (!empty ($table->data)) {
 	ui_pagination ($countAlertsCombined, $url, $offset_combined, 0, false, 'offset_combined');

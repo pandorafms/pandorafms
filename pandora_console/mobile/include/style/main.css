@@ -537,6 +537,46 @@ table#list_events th {
 #list_Modules .cell_5 a {
 	color: #000000 !important;
 }
+
+@media screen and (max-width: 35em) {
+	#list_Modules_Embedded .cell_1 .ui-table-cell-label,
+	#list_Modules_Embedded .cell_6 .ui-table-cell-label {
+		min-width: auto !important;
+	}
+	
+	#list_Modules_Embedded .cell_6 .ui-table-cell-label {
+		padding-left: 10px;
+	}
+	
+	#list_Modules_Embedded .cell_3,
+	#list_Modules_Embedded .cell_4 {
+		display: inline !important;
+		float: none !important;
+	}
+	
+	#list_Modules_Embedded .cell_0 .ui-table-cell-label,
+	#list_Modules_Embedded .cell_1 .ui-table-cell-label,
+	#list_Modules_Embedded .cell_3 .ui-table-cell-label,
+	#list_Modules_Embedded .cell_4 .ui-table-cell-label {
+		display: none;
+	}
+	
+	#list_Modules_Embedded .show_collapside {
+		display: inline !important;
+	}
+	
+	#list_Modules_Embedded .data {
+		white-space: nowrap;
+	}
+	
+	#list_Modules_Embedded .cell_2 {
+		display: none !important;
+	}
+}
+
+#list_Modules_Embedded .cell_4 a {
+	color: #000000 !important;
+}
 /*END------------Modules styles---------------------------------------*/
 
 

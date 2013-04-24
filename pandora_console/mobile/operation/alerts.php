@@ -14,7 +14,7 @@
 
 class Alerts {
 	private $correct_acl = false;
-	private $acl = "LM";
+	private $acl = "AR";
 	
 	private $default = true;
 	
@@ -33,7 +33,7 @@ class Alerts {
 	function __construct() {
 		$this->alert_status_items = array(
 			'all_enabled' => __('All (Enabled)'),
-			'all' => __('All'), 
+			'all' => __('All'),
 			'fired' => __('Fired'),
 			'notfired' => __('Not fired'),
 			'disabled' => __('Disabled'));
@@ -126,16 +126,10 @@ class Alerts {
 	}
 	
 	private function show_fail_acl() {
-		$ui = Ui::getInstance();
-		
-		$ui->createPage();
-		
-		$options['type'] = 'onStart';
-		$options['title_text'] = __('You don\'t have access to this page');
-		$options['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
-		$ui->addDialog($options);
-		
-		$ui->showPage();
+		$error['title_text'] = __('You don\'t have access to this page');
+		$error['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+		$home = new Home();
+		$home->show($error);
 	}
 	
 	private function show_alerts() {
@@ -218,10 +212,10 @@ class Alerts {
 	
 	public function listAlertsHtml ($return = false) {
 		$countAlerts = alerts_get_alerts($this->group,
-			$this->free_search, $this->status, $this->standby, "LM", true, $this->id_agent);
+			$this->free_search, $this->status, $this->standby, "AR", true, $this->id_agent);
 		
 		$alerts = alerts_get_alerts($this->group,
-			$this->free_search, $this->status, $this->standby, "LM", false, $this->id_agent);
+			$this->free_search, $this->status, $this->standby, "AR", false, $this->id_agent);
 		if (empty($alerts))
 			$alerts = array();
 		

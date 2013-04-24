@@ -39,16 +39,10 @@ class Tactical {
 	}
 	
 	private function show_fail_acl() {
-		$ui = Ui::getInstance();
-		
-		$ui->createPage();
-		
-		$options['type'] = 'onStart';
-		$options['title_text'] = __('You don\'t have access to this page');
-		$options['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
-		$ui->addDialog($options);
-		
-		$ui->showPage();
+		$error['title_text'] = __('You don\'t have access to this page');
+		$error['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+		$home = new Home();
+		$home->show($error);
 	}
 	
 	private function show_tactical() {
@@ -63,36 +57,7 @@ class Tactical {
 				$data['mobile'] = true;
 				
 				$formatted_data = reporting_get_stats_indicators($data, 200, 10, false);
-				/*
-				$overview = '<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' .
-							$formatted_data['server_health']['title'] . 
-						'</legend>' . 
-						$formatted_data['server_health']['graph'] . 
-					'</fieldset>' .
-					
-					'<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' .
-							$formatted_data['monitor_health']['title'] . 
-						'</legend>' . 
-						$formatted_data['monitor_health']['graph'] . 
-					'</fieldset>' .
-					
-					'</fieldset>' .
-					'<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' .
-							$formatted_data['module_sanity']['title'] . 
-						'</legend>' . 
-						$formatted_data['module_sanity']['graph'] . 
-					'</fieldset>' .
-					'</fieldset>' .
-					'<fieldset class="databox" style="width:97%;">
-						<legend style="text-align:left; color: #666;">' .
-							$formatted_data['alert_level']['title'] . 
-						'</legend>' . 
-						$formatted_data['alert_level']['graph'] . 
-					'</fieldset>';
-				*/
+				
 				$overview = '<table>
 						<tr>
 							<td>' . $formatted_data['server_health']['title'] . '</td>

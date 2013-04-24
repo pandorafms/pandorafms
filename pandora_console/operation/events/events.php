@@ -96,7 +96,7 @@ if (is_ajax ()) {
 		}
 		
 		// If the event is not repited, the similars will be disabled
-		if($event_rep == 1) {
+		if ($event_rep == 1) {
 			$similars = false;
 		}
 		
@@ -115,7 +115,7 @@ if (is_ajax ()) {
 		$event_rep = get_parameter("event_rep", 1);
 		
 		// If the event is not repited, the similars will be disabled
-		if($event_rep == 1) {
+		if ($event_rep == 1) {
 			$similars = false;
 		}
 		
@@ -245,7 +245,7 @@ if ($config["pure"] == 0) {
 		);
 	
 	ui_print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $buttons);
-
+	
 	?>
 	<script type="text/javascript">
 	function openSoundEventWindow() {
@@ -259,7 +259,7 @@ if ($config["pure"] == 0) {
 	
 	function openURLTagWindow(url) {
 		window.open(url, '','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
-	}	
+	}
 	
 	</script>
 	<?php
@@ -349,7 +349,7 @@ if ($validate) {
 if ($delete) {
 	// Ids contains ids and count of the events separated by low bar
 	$ids_array = get_parameter ("eventid", -1);
-
+	
 	if(count($ids_array) == 1 && $ids_array[0] == -1) {
 		$ids = $ids_array;
 		$events_rep = array();
@@ -388,156 +388,156 @@ ui_require_jquery_file ('autocomplete');
 
 ?>
 <script language="javascript" type="text/javascript">
-/* <![CDATA[ */
-
-$(document).ready( function() {
-
-	$("#text_id_agent").autocomplete(
-			"ajax.php",
-			{
-				minChars: 2,
-				scroll:true,
-				extraParams: {
-					page: "operation/agentes/exportdata",
-					search_agents: 1,
-					add: '<?php echo json_encode(array('-1' => __("All"), '0' => __("System")));?>',
-					id_group: function() { return $("#id_group").val(); }
-				},
-				formatItem: function (data, i, total) {
-					if (total == 0)
-						$("#text_id_agent").css ('background-color', '#cc0000');
-					else
-						$("#text_id_agent").css ('background-color', '');
-					if (data == "")
-						return false;
-					
-					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-				},
-				delay: 200
+	/* <![CDATA[ */
+	
+	$(document).ready( function() {
+		
+		$("#text_id_agent").autocomplete(
+				"ajax.php",
+				{
+					minChars: 2,
+					scroll:true,
+					extraParams: {
+						page: "operation/agentes/exportdata",
+						search_agents: 1,
+						add: '<?php echo json_encode(array('-1' => __("All"), '0' => __("System")));?>',
+						id_group: function() { return $("#id_group").val(); }
+					},
+					formatItem: function (data, i, total) {
+						if (total == 0)
+							$("#text_id_agent").css ('background-color', '#cc0000');
+						else
+							$("#text_id_agent").css ('background-color', '');
+						if (data == "")
+							return false;
+						
+						return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+					},
+					delay: 200
+				}
+			);
+		
+		$("input[name=allbox]").change (function() {
+			$("input[name='eventid[]']").attr('checked', $(this).attr('checked'));
+		});
+		
+		$('.select_validate').change (function() {
+			display = $(".standby_alert_checkbox").css('display');
+			
+			if (display != 'none') {
+				$(".standby_alert_checkbox").css('display', 'none');
 			}
-		);
-	
-	$("input[name=allbox]").change (function() {
-		$("input[name='eventid[]']").attr('checked', $(this).attr('checked'));
-	});
-	
-	$('.select_validate').change (function() {
-		display = $(".standby_alert_checkbox").css('display');
-
-		if (display != 'none') {
-			$(".standby_alert_checkbox").css('display', 'none');
-		}
-		else {
-			$(".standby_alert_checkbox").css('display', '');
-		}
-	});
-	
-	$("#tgl_event_control").click (function () {
-		$("#event_control").toggle ();
-		return false;
-	});
-	
-	$("a.validate_event").click (function () {
-		$tr = $(this).parents ("tr");
+			else {
+				$(".standby_alert_checkbox").css('display', '');
+			}
+		});
 		
-		id = this.id.split ("-").pop ();
+		$("#tgl_event_control").click (function () {
+			$("#event_control").toggle ();
+			return false;
+		});
 		
-		var comment = $('#textarea_comment_'+id).val();
-		var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process
-		var checkbox_standby_alert = $('#checkbox-standby-alert-'+id).attr('checked');
-		var similars = $('#group_rep').val();
-		var event_rep = $('#hidden-event_rep_'+id).val();
-		var validated_limit_time = $('#hidden-validated_limit_time_'+id).val();
-		
-		if (!select_validate) {
-			select_validate = 1;
-		}
-		
-		if (checkbox_standby_alert) {
+		$("a.validate_event").click (function () {
+			$tr = $(this).parents ("tr");
+			
+			id = this.id.split ("-").pop ();
+			
+			var comment = $('#textarea_comment_'+id).val();
+			var select_validate = $('#select_validate_'+id).val(); // 1 validate, 2 in process
+			var checkbox_standby_alert = $('#checkbox-standby-alert-'+id).attr('checked');
+			var similars = $('#group_rep').val();
+			var event_rep = $('#hidden-event_rep_'+id).val();
+			var validated_limit_time = $('#hidden-validated_limit_time_'+id).val();
+			
+			if (!select_validate) {
+				select_validate = 1;
+			}
+			
+			if (checkbox_standby_alert) {
+				jQuery.post ("ajax.php",
+					{"page" : "operation/events/events",
+					"standby_alert" : 1,
+					"id" : id
+					},
+					function (data, status) {
+						if (data != "ok") {
+							$("#result")
+								.showMessage ("<?php echo __('Could not set standby alert')?>")
+								.addClass ("error");
+						}
+					},
+					"html"
+				);
+			}
+			
 			jQuery.post ("ajax.php",
 				{"page" : "operation/events/events",
-				"standby_alert" : 1,
-				"id" : id
+				"validate_event" : 1,
+				"id" : id,
+				"comment" : comment,
+				"new_status" : select_validate,
+				"similars" : similars,
+				"event_rep" : event_rep,
+				"validated_limit_time" : validated_limit_time
 				},
 				function (data, status) {
-					if (data != "ok") {
+					if (data == "ok") {
+						$("#status_img_"+id).attr ("src", "images/spinner.gif");
+						location.reload();
+					}
+					else {
 						$("#result")
-							.showMessage ("<?php echo __('Could not set standby alert')?>")
+							.showMessage ("<?php echo __('Could not be validated')?>")
 							.addClass ("error");
 					}
 				},
 				"html"
 			);
-		}
+			//toggleCommentForm(id);
+		});
 		
-		jQuery.post ("ajax.php",
-			{"page" : "operation/events/events",
-			"validate_event" : 1,
-			"id" : id,
-			"comment" : comment,
-			"new_status" : select_validate,
-			"similars" : similars,
-			"event_rep" : event_rep,
-			"validated_limit_time" : validated_limit_time
-			},
-			function (data, status) {
-				if (data == "ok") {
-					$("#status_img_"+id).attr ("src", "images/spinner.gif");
-					location.reload();
-				}
-				else {
-					$("#result")
-						.showMessage ("<?php echo __('Could not be validated')?>")
-						.addClass ("error");
-				}
-			},
-			"html"
-		);
-		//toggleCommentForm(id);
+		$("a.delete_event").click (function () {
+			confirmation = confirm("<?php echo __('Are you sure?'); ?>");
+			if (!confirmation) {
+				return;
+			}
+			$tr = $(this).parents ("tr");
+			id = this.id.split ("-").pop ();
+			
+			var event_rep = $('#hidden-event_rep_'+id).val();
+			var validated_limit_time = $('#hidden-validated_limit_time_'+id).val();
+			var similars = $('#group_rep').val();
+			
+			jQuery.post ("ajax.php",
+				{"page" : "operation/events/events",
+				"delete_event" : 1,
+				"id" : id,
+				"similars" : similars,
+				"event_rep" : event_rep,
+				"validated_limit_time" : validated_limit_time
+				},
+				function (data, status) {
+					if (data == "ok") {
+						$tr.remove ();
+						$('#show_message_error').html('<h3 class="suc"> <?php echo __('Successfully delete'); ?> </h3>');
+					}
+					else
+						$('#show_message_error').html('<h3 class="error"> <?php echo __('Error deleting event'); ?> </h3>');
+				},
+				"html"
+			);
+			return false;
+		});
+		
+		function toggleDiv (divid) {
+			if (document.getElementById(divid).style.display == 'none') {
+				document.getElementById(divid).style.display = 'block';
+			}
+			else {
+				document.getElementById(divid).style.display = 'none';
+			}
+		}
 	});
-	
-	$("a.delete_event").click (function () {
-		confirmation = confirm("<?php echo __('Are you sure?'); ?>");
-		if (!confirmation) {
-			return;
-		}
-		$tr = $(this).parents ("tr");
-		id = this.id.split ("-").pop ();
-		
-		var event_rep = $('#hidden-event_rep_'+id).val();
-		var validated_limit_time = $('#hidden-validated_limit_time_'+id).val();
-		var similars = $('#group_rep').val();
-		
-		jQuery.post ("ajax.php",
-			{"page" : "operation/events/events",
-			"delete_event" : 1,
-			"id" : id,
-			"similars" : similars,
-			"event_rep" : event_rep,
-			"validated_limit_time" : validated_limit_time
-			},
-			function (data, status) {
-				if (data == "ok") {
-					$tr.remove ();
-					$('#show_message_error').html('<h3 class="suc"> <?php echo __('Successfully delete'); ?> </h3>');
-				}
-				else
-					$('#show_message_error').html('<h3 class="error"> <?php echo __('Error deleting event'); ?> </h3>');
-			},
-			"html"
-		);
-		return false;
-	});
-	
-	function toggleDiv (divid) {
-		if (document.getElementById(divid).style.display == 'none') {
-			document.getElementById(divid).style.display = 'block';
-		}
-		else {
-			document.getElementById(divid).style.display = 'none';
-		}
-	}
-});
 	
 	function toggleCommentForm(id_event) {
 		display = $('.event_form_' + id_event).css('display');
@@ -556,7 +556,7 @@ $(document).ready( function() {
 	
 	function toggleVisibleExtendedInfo(id_event) {
 		display = $('.event_info_' + id_event).css('display');
-
+		
 		if (display != 'none') {
 			$('.event_info_' + id_event).css('display', 'none');
 		}

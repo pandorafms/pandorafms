@@ -1,3 +1,18 @@
+2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
+	
+	* mobile/operation/agents.php, mobile/operation/tactical.php,
+	mobile/operation/home.php, mobile/operation/alerts.php,
+	mobile/operation/agent.php, mobile/operation/events.php,
+	mobile/operation/module_graph.php, mobile/operation/modules.php,
+	mobile/operation/groups.php, mobile/include/style/main.css: some
+	fixes.
+	
+	* include/functions_reporting.php: some fixes in the images that
+	they aren't.
+	
+	* operation/agentes/alerts_status.php, operation/events/events.php:
+	cleaned source code style.
+
 2013-04-22 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* include/functions_agents.php, include/functions_alerts.php,

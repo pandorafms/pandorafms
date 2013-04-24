@@ -58,12 +58,26 @@ else {
 
 	// Move SNMP modules back to the enterprise server
 	if (isset($_GET["server_reset_snmp_enterprise"])) {
-		db_process_sql ("UPDATE tagente_estado SET last_error=0");
+		$result = db_process_sql ("UPDATE tagente_estado SET last_error=0");
+	
+		if($result === false) {
+			ui_print_error_message(__('Unsuccessfull action'));
+		}
+		else {
+			ui_print_success_message(__('Successfully action'));
+		}
 	}
 	
 	// Move SNMP modules back to the enterprise server
 	if (isset($_GET["server_reset_counts"])) {
-		db_process_sql ("UPDATE tagente SET update_module_count=1, update_alert_count=1");
+		$reslt = db_process_sql ("UPDATE tagente SET update_module_count=1, update_alert_count=1");
+		
+		if($result === false) {
+			ui_print_error_message(__('Unsuccessfull action'));
+		}
+		else {
+			ui_print_success_message(__('Successfully action'));
+		}
 	}
 
 	if (isset ($_GET["delete"])) {

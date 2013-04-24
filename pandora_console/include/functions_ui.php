@@ -2123,8 +2123,8 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 		$buffer .= '<div id="menu_tab"><ul class="mn">';
 		foreach ($options as $key => $option) {
 			if ($key === 'separator') {
-				$buffer .= '<li class='.$separator_class.'>';
-				$buffer .= '</li>';
+				//$buffer .= '<li class='.$separator_class.'>';
+				//$buffer .= '</li>';
 			}
 			else {
 				if (is_array($option)) {

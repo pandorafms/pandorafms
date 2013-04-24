@@ -1,3 +1,11 @@
+2013-04-24  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_db.pl: patched the code of tagente_datos purge to have n chunks, 
+	and in each chunk run a DELETE of only 1000 records at a time (with a LIMIT), 
+	adding a 0,0001 second usleep() there, gives time to MySQL to put other 
+	operations between, and locks doesn't appear to be a problem anymore. This
+	should solve many problems detected in the past.
+
 2013-04-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm: Merged the braa_retries option from trunk.

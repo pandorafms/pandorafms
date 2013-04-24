@@ -31,15 +31,16 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "4.1 PS130418";
+my $version = "4.1 PS130424";
 
 # Pandora server configuration
 my %conf;
 
 my $BIG_OPERATION_STEP = 100; # Long operations are divided in XX steps for performance
-
-# FLUSH in each IO
-$| = 0;
+my $SMALL_OPERATION_STEP = 1000; # Each long operations has a LIMIT of SMALL_OPERATION_STEP to avoid locks. 
+                                 #Increate to 3000~5000 in fast systems decrease to 500 or 250 on systems with locks
+# FLUSH in each IO 
+$| = 1;
 
 # Init
 pandora_init(\%conf);
@@ -88,8 +89,12 @@ sub pandora_purgedb ($$) {
 	my $first_mark;
 	my $total_time;
 	my $purge_steps;
+	my $purge_count;
 
-    # Numeric data deletion
+	my $mark1;
+	my $mark2;
+
+        # Numeric data deletion
 
 	print "[PURGE] Deleting old data... \n";
 
@@ -97,19 +102,32 @@ sub pandora_purgedb ($$) {
 	# steps (100 fixed by default)
 	# Starting from the oldest record on the table
 
+	# WARNING. This code is EXTREMELLY important. This block (data deletion) could KILL a database if 
+	# you alter code and you don't know exactly what are you doing. Please take in mind this code executes each hour
+	# and has been patches MANY times. Before altering anything, think twice !
+
 	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos ORDER BY utimestamp ASC LIMIT 1');
 	if (defined ($first_mark)) {
 		$total_time = $ulimit_timestamp - $first_mark;
 		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-	
+			
 		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-			db_do ($dbh, "DELETE FROM tagente_datos WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
-			print "[PURGE] Data deletion Progress %$ax .. \r";
 
-			# Do a nanosleep here for 0,01 sec
-			usleep (10000);
+			$mark1 = $first_mark + ($purge_steps * $ax);
+			$mark2 = $first_mark + ($purge_steps * ($ax -1));	
+		
+			# Let's split the intervals in $SMALL_OPERATION_STEP deletes each
+			$purge_count = get_db_value ($dbh, "SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE utimestamp < $mark1 AND utimestamp > $mark2");
+			while ($purge_count > 0){
+				print ".";
+				db_do ($dbh, "DELETE FROM tagente_datos WHERE utimestamp < $mark1 AND utimestamp > $mark2 LIMIT $SMALL_OPERATION_STEP");
+				# Do a nanosleep here for 0,001 sec
+                        	usleep (10000);
+				$purge_count = $purge_count - $SMALL_OPERATION_STEP;
+			}
+			print "\n[PURGE] Data deletion Progress (".$ax."%) ";
 		}
-	    print "\n";
+		print "\n";
 	} else {
 		print "[PURGE] No data in tagente_datos\n";
 	}
@@ -122,7 +140,7 @@ sub pandora_purgedb ($$) {
         print "[PURGE] Deleting old inventory data... \n";
 
 	    # This could be very timing consuming, so make 
-        # this operation in $BIG_OPERATION_STEP 
+            # this operation in $BIG_OPERATION_STEP 
 	    # steps (100 fixed by default)
 	    # Starting from the oldest record on the table
 
@@ -130,7 +148,6 @@ sub pandora_purgedb ($$) {
 	    if (defined ($first_mark)) {
 		    $total_time = $ulimit_timestamp - $first_mark;
 		    $purge_steps = int($total_time / $BIG_OPERATION_STEP);
-	
 		    for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
 			    db_do ($dbh, "DELETE FROM tagente_datos_inventory WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
 			    print "[PURGE] Inventory data deletion Progress %$ax .. \r";
@@ -454,13 +471,11 @@ sub pandora_checkdb_integrity {
     # Delete all records on tgroup_stats
     db_do ($dbh, 'DELETE FROM tgroup_stat');
 
-    print "[INTEGRITY] Deleting non-used IP addresses \n";
-
+	
+    #print "[INTEGRITY] Deleting non-used IP addresses \n";
+    # DISABLED - Takes too much time and benefits of this are unclear....
     # Delete all non-used IP addresses from taddress
-    db_do ($dbh, 'DELETE FROM taddress WHERE id_a NOT IN (SELECT id_a FROM taddress_agent)');
-
-	# Do a nanosleep here for 0,01 sec
-	usleep (10000);
+    #db_do ($dbh, 'DELETE FROM taddress WHERE id_a NOT IN (SELECT id_a FROM taddress_agent)');
 
     print "[INTEGRITY] Deleting orphan alerts \n";
 
@@ -602,7 +617,6 @@ sub pandoradb_main ($$$) {
 	if (defined ($history_dbh)) {
 		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
 	}
-
 	# Compact on if enable and DaysCompact are below DaysPurge 
 	if (($conf->{'_onlypurge'} == 0) && ($conf->{'_days_compact'} < $conf->{'_days_purge'})) {
 		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh);

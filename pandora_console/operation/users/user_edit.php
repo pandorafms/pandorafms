@@ -288,27 +288,27 @@ if (!$meta) {
 	$data[0] = __('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true);
 	$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
 	// User only can change skins if has more than one group 
-	if (count($usr_groups) > 1) {
-		$data[2] = __('Skin');
-	}
-	else {
-		$data[2] = '';
+	$data[2] = '';
+	if (function_exists('skins_print_select')) {
+		if (count($usr_groups) > 1) {
+			$data[2] = __('Skin');
+		}
 	}
 	$table->rowclass[] = '';
 	$table->rowstyle[] = 'font-weight: bold;';
 	$table->data[] = $data;
-
+	
 	$data = array();
 	$data[0] = html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
 	$values = array ('Default' =>__('Default'), 'Dashboard'=>__('Dashboard'), 'Visual console'=>__('Visual console'), 'Event list'=>__('Event list'),
 		'Group view'=>__('Group view'), 'Tactical view'=>__('Tactical view'), 'Alert detail' => __('Alert detail'), 'Other'=>__('Other'));
 	$data[1] = html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
 	// User only can change skins if has more than one group 
-	if (count($usr_groups) > 1) {
-		$data[2] = skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
-	}
-	else {
-		$data[2] = '';
+	$data[2] = '';
+	if (function_exists('skins_print_select')) {
+		if (count($usr_groups) > 1) {
+			$data[2] = skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+		}
 	}
 	$table->rowclass[] = '';
 	$table->rowstyle[] = '';

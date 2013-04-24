@@ -1,3 +1,10 @@
+2013-04-24  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/servers/servers.build_table.php
+	godmode/servers/modificar_server.php: Rewrite missed
+	servers buttons in last huge merge. Add success/error
+	messages on this actions
+
 2013-04-23  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/dialog.css

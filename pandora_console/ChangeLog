@@ -1,5 +1,12 @@
 2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/agentes/networkmap.topology.php: fixed the PHP
+	notice in the enterprise Dashboard.
+	
+	Fixes: #3611685
+
+2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/agentes/networkmap.php,
 	include/functions_networkmap.php: set the background transparent.
 	

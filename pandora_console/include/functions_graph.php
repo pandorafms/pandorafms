@@ -2496,7 +2496,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp <= $datelimit",
 				'order' => 'utimestamp DESC'));
-		if(isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
+		if (isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
 			$start_unknown = true;
 		}
 		
@@ -2554,7 +2554,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		graphic_error ();
 	}
 	
-	if (empty($unit_name)){
+	if (empty($unit_name)) {
 		$unit = modules_get_unit($agent_module_id);
 	}
 	else

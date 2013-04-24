@@ -892,7 +892,6 @@ function get_event_types ($id_type = false) {
 		return $types;
 	}
 	else {
-		html_debug_print($id_type);
 		return $types[$id_type];
 	}
 }

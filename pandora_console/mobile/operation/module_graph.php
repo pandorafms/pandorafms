@@ -135,7 +135,7 @@ class ModuleGraph {
 								$this->avg_only, false, $date, false,
 								$urlImage, 'adapter_' . $this->graph_type,
 								$time_compare, $this->unknown_graph);
-							if ($show_events_graph) {
+							if ($this->draw_events) {
 								$graph .= '<br>';
 								$graph .= graphic_module_events($this->id,
 									$this->width, $this->height,
@@ -154,7 +154,7 @@ class ModuleGraph {
 								$urlImage, 1, false,
 								'adapter_' . $this->graph_type,
 								$time_compare, $this->unknown_graph);
-							if ($show_events_graph) {
+							if ($this->draw_events) {
 								$graph .= '<br>';
 								$graph .= graphic_module_events($this->id,
 									$this->width, $this->height,
@@ -169,7 +169,7 @@ class ModuleGraph {
 								$label, null, $this->draw_alerts, 1,
 								false, $date, false, $urlImage,
 								'adapter_' . $this->graph_type);
-							if ($show_events_graph) {
+							if ($this->draw_events) {
 								$graph .= '<br>';
 								$graph .= graphic_module_events($this->id,
 									$this->width, $this->height,
@@ -183,7 +183,7 @@ class ModuleGraph {
 								$this->width, $this->height,
 								$label, $unit_name, $this->draw_alerts,
 								1, $pure, $date);
-							if ($show_events_graph) {
+							if ($this->draw_events) {
 								$graph .= '<br>';
 								$graph .= graphic_module_events($this->id,
 									$this->width, $this->height,
@@ -213,16 +213,10 @@ class ModuleGraph {
 	}
 	
 	private function show_fail_acl() {
-		$ui = Ui::getInstance();
-		
-		$ui->createPage();
-		
-		$options['type'] = 'onStart';
-		$options['title_text'] = __('You don\'t have access to this page');
-		$options['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
-		$ui->addDialog($options);
-		
-		$ui->showPage();
+		$error['title_text'] = __('You don\'t have access to this page');
+		$error['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+		$home = new Home();
+		$home->show($error);
 	}
 	
 	private function javascript_code() {
@@ -291,6 +285,8 @@ class ModuleGraph {
 	}
 	
 	private function showModuleGraph() {
+		$agent_name = agents_get_name($this->module['id_agente']);
+		
 		$ui = Ui::getInstance();
 		
 		$ui->createPage();
@@ -303,7 +299,8 @@ class ModuleGraph {
 				'value' => $this->id,
 				'type' => 'hidden'
 				)));
-			$ui->contentBeginCollapsible("Options");
+			$title = sprintf(__('Options for %s : %s'), $agent_name, $this->module["nombre"]);
+			$ui->contentBeginCollapsible($title);
 				$ui->beginForm("index.php?page=module_graph&id=" . $this->id);
 					$options = array(
 						'name' => 'draw_alerts',
@@ -362,21 +359,6 @@ class ModuleGraph {
 						'step' => 4
 						);
 					$ui->formAddSlider($options);
-					
-					/*
-					$items = array('1' => __('x1'),
-						'2' => __('x2'),
-						'3' => __('x3'),
-						'4' => __('x4'));
-					$options = array(
-						'name' => 'zoom',
-						'title' => __('Zoom'),
-						'label' => __('Zoom'),
-						'items' => $items,
-						'selected' => $this->zoom
-						);
-					$ui->formAddSelectBox($options);
-					*/
 					
 					$options = array(
 						'name' => 'start_date',

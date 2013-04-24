@@ -1,3 +1,15 @@
+2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
+
+	* mobile/operation/groups.php, mobile/operation/agents.php,
+	mobile/operation/tactical.php, mobile/operation/alerts.php,
+	mobile/operation/agent.php, mobile/operation/events.php,
+	mobile/operation/module_graph.php, mobile/operation/modules.php,
+	mobile/include/style/main.css: some fixes.
+	
+	* include/functions.php: erased the lost trace.
+	
+	* include/functions_graph.php: cleaned source code style.
+
 2013-04-24  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/servers/servers.build_table.php

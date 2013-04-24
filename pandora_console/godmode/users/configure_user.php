@@ -67,7 +67,7 @@ $tab = get_parameter('tab', 'user');
 
 // Header
 if ($meta) {
-
+	
 	user_meta_print_header();
 	$sec = 'advanced';
 	
@@ -445,7 +445,7 @@ else {
 	$id_usr = $id;
 }
 
-if(!$meta) {
+if (!$meta) {
 	// User only can change skins if has more than one group 
 	if (count($usr_groups) > 1) {
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {

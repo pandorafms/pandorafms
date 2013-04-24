@@ -1,5 +1,11 @@
 2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/agentes/planned_downtime.editor.php: fixed the header.
+	
+	Fixes: #3611687
+
+2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* mobile/operation/groups.php, mobile/operation/agents.php,
 	mobile/operation/tactical.php, mobile/operation/alerts.php,
 	mobile/operation/agent.php, mobile/operation/events.php,

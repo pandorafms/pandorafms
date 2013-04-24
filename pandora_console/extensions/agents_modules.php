@@ -90,7 +90,7 @@ function mainAgentsModules() {
 			(string)SECONDS_2MINUTES => __('2 minutes'),
 			(string)SECONDS_5MINUTES => __('5 minutes'),
 			(string)SECONDS_10MINUTES => __('10 minutes')),
-			'refr', $config['refr'], $script = 'this.form.submit()', '', 0, true, false, false, '', false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
+			'refr', (int)get_parameter('refr', 0), $script = 'this.form.submit()', '', 0, true, false, false, '', false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
 	$comborefr .= "</form>";
 	
 	if ($config["pure"] == 0) {

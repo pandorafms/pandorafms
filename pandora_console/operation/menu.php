@@ -111,8 +111,8 @@ if (check_acl ($config['id_user'], 0, "RR")) {
 	if (!empty($config['vc_refr'])) {
 		$sub["godmode/reporting/map_builder"]["refr"] = $config['vc_refr'];
 	}
-	else if (!empty($config['refr'])) {
-		$sub["godmode/reporting/map_builder"]["refr"] = $config['refr'];
+	else if (((int)get_parameter('refr', 0)) > 0) {
+		$sub["godmode/reporting/map_builder"]["refr"] = (int)get_parameter('refr', 0);
 	}
 	else {
 		$sub["godmode/reporting/map_builder"]["refr"] = 60;
@@ -149,8 +149,8 @@ if (check_acl ($config['id_user'], 0, "RR")) {
 		if (!empty($config['vc_refr'])) {
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['vc_refr'];
 		}
-		elseif (!empty($config['refr'])) {
-			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['refr'];
+		elseif (((int)get_parameter('refr', 0)) > 0) {
+			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = (int)get_parameter('refr', 0);
 		}
 		else {
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;

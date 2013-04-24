@@ -215,8 +215,6 @@ $buttons['topology'] = array('active' => $activeTab == 'topology',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
 		html_print_image("images/op_network.png", true, array ("title" => __('Topology view'))) .'</a>');
 
-$buttons['separator'] = array('separator' => '');
-
 $combolist = '<form name="query_sel" method="post" action="index.php?sec=network&sec2=operation/agentes/networkmap">';
 
 $combolist .= html_print_select($networkmaps, 'id_networkmap', $id_networkmap, 'onchange:this.form.submit()', __('No selected'), 0, true, false, false, '', false, 'margin-top:4px; margin-left:3px; width:150px;');

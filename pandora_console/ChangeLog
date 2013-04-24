@@ -1,5 +1,16 @@
 2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* operation/agentes/networkmap.php,
+	include/functions_networkmap.php: set the background transparent.
+	
+	Fixes: #3611686
+	
+	* include/styles/pandora.css, include/functions_ui.php: fixed the
+	tabs in the header when the tab is bigger that standar tab, and
+	the separator doesn't print.
+
+2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/agentes/planned_downtime.editor.php: fixed the header.
 	
 	Fixes: #3611687

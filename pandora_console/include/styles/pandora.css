@@ -1261,7 +1261,7 @@ div.title_line {
 	line-height: 18px;
 	margin-left: 3px;
 	margin-right: 0px;
-
+	
 	-moz-border-top-right-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 	border-top-right-radius: 5px;	
@@ -1333,7 +1333,7 @@ div.title_line {
 }
 
 #menu_tab li.nomn, #menu_tab li {
-	width: 30px;
+	min-width: 30px;
 	height: 28px;
 }
 

@@ -1,5 +1,14 @@
 2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/tag/edit_tag.php: change the input text for textarea for
+	large list of emails.
+	
+	Fixes: #3611473
+	
+	* pandoradb.sql: cleaned source code style.
+
+2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/agentes/networkmap.topology.php: fixed the PHP
 	notice in the enterprise Dashboard.
 	

@@ -1,5 +1,13 @@
 2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* extensions/agents_alerts.php, extensions/agents_modules.php,
+	godmode/menu.php, operation/menu.php: fixed old references to the
+	config refr.
+	
+	Fixes: #3611361
+
+2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/events/event_responses.editor.php: set the sizes of
 	the widgets for the form in the metaconsole.
 	

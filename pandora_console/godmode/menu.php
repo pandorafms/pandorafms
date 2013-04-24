@@ -138,12 +138,7 @@ if (check_acl ($config['id_user'], 0, "IW")) {
 	if ($config['activate_gis']) {
 		$menu_godmode["godgismaps"]["text"] = __('GIS Maps builder');
 		$menu_godmode["godgismaps"]["sec2"] = "godmode/gis_maps/index";
-		if (!empty($config['refr'])) {
-			$menu_godmode["godgismaps"]["refr"] = $config['refr'];
-		}
-		else {
-			$menu_godmode["godgismaps"]["refr"] = 60;
-		}
+		$menu_godmode["godgismaps"]["refr"] = (int)get_parameter('refr', 60);
 		$menu_godmode["godgismaps"]["id"] = "god-gismaps";
 	}
 }

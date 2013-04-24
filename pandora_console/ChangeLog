@@ -1,5 +1,14 @@
 2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/events/event_responses.editor.php: set the sizes of
+	the widgets for the form in the metaconsole.
+	
+	Fixes: #3611423
+	
+	* godmode/users/configure_user.php
+
+2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/tag/edit_tag.php: change the input text for textarea for
 	large list of emails.
 	

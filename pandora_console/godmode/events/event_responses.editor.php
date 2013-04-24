@@ -25,9 +25,20 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
+$meta = false;
+if(enterprise_installed() && defined("METACONSOLE")) {
+	$meta = true;
+}
+
+$class_description = 'response_description';
+if ($meta) {
+	$class_description = 'response_description_metaconsole';
+}
+
+
 $event_response_id = get_parameter('id_response',0);
 
-if($event_response_id > 0) {
+if ($event_response_id > 0) {
 	$event_response = db_get_row('tevent_response','id',$event_response_id);
 }
 else {
@@ -55,7 +66,8 @@ $table->data = array();
 
 $data = array();
 $data[0] = __('Name');
-$data[1] = html_print_input_text('name',$event_response['name'],'',100,255,true);
+$data[1] = html_print_input_text('name', $event_response['name'], '',
+	50, 255, true);
 $data[1] .= html_print_input_hidden('id_response',$event_response['id'],true);
 
 $data[2] = __('Group');
@@ -65,7 +77,8 @@ $table->data[0] = $data;
 $data = array();
 $table->colspan[1][1] = 3;
 $data[0] = __('Description');
-$data[1] = html_print_textarea('description',5,40,$event_response['description'],'',true);
+$data[1] = html_print_textarea('description', 5, 40,
+	$event_response['description'], 'class="' . $class_description . '"', true);
 $table->data[1] = $data;
 
 $data = array();
@@ -74,10 +87,10 @@ $locations = array(__('Modal window'), __('New window'));
 $data[1] = html_print_select($locations,'new_window',$event_response['new_window'],'','','',true);
 
 $data[2] = '<span class="size">'.__('Size').'</span>';
-if($event_response['modal_width'] == 0) {
+if ($event_response['modal_width'] == 0) {
 	$event_response['modal_width'] = 620;
 }
-if($event_response['modal_height'] == 0) {
+if ($event_response['modal_height'] == 0) {
 	$event_response['modal_height'] = 500;
 }
 $data[3] = '<span class="size">'.__('Width').' (px) </span>';
@@ -88,7 +101,8 @@ $table->data[2] = $data;
 
 $data = array();
 $data[0] = __('Parameters').ui_print_help_icon ("response_parameters", true);
-$data[1] = html_print_input_text('params',$event_response['params'],'',100,255,true);
+$data[1] = html_print_input_text('params', $event_response['params'],
+	'', 50, 255, true);
 $types = array('url' => __('URL'), 'command' => __('Command'));
 $data[2] = __('Type');
 $data[3] = html_print_select($types,'type',$event_response['type'],'','','',true);
@@ -97,11 +111,12 @@ $table->data[3] = $data;
 $data = array();
 $table->colspan[4][1] = 3;
 $data[0] = '<span id="command_label" class="labels">'.__('Command').'</span><span id="url_label" style="display:none;" class="labels">'.__('URL').'</span>'.ui_print_help_icon ("response_macros", true);
-$data[1] = html_print_input_text('target',$event_response['target'],'',150,255,true);
+$data[1] = html_print_input_text('target', $event_response['target'],
+	'', 100, 255, true);
 $types = array('url' => __('URL'), 'command' => __('Command'));
 $table->data[4] = $data;
 
-if($event_response_id == 0) {
+if ($event_response_id == 0) {
 	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'].'">';
 	html_print_table($table);
 	echo '<br><br><div style="width:90%;text-align:right;">';
@@ -124,9 +139,10 @@ $('#type').change(function() {
 	$('.labels').hide();
 	$('#'+$(this).val()+'_label').show();
 	
-	switch($(this).val()) {
+	switch ($(this).val()) {
 		case 'command':
-			$('#new_window option[value="0"]').attr('selected','selected');
+			$('#new_window option[value="0"]')
+				.attr('selected','selected');
 			$('#new_window').attr('disabled','disabled');
 			break;
 		case 'url':
@@ -136,7 +152,7 @@ $('#type').change(function() {
 });
 
 $('#new_window').change(function() {
-	switch($(this).val()) {
+	switch ($(this).val()) {
 		case '0':
 			$('.size').css('visibility','visible');
 			break;

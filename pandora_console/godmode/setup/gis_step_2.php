@@ -124,9 +124,9 @@ switch ($action) {
 					);
 				break;
 		}
-				
+		
 		//TODO VALIDATE PARAMETERS
-		if ($mapConnection_name != "" && $mapConnection_type != ""){
+		if ($mapConnection_name != "" && $mapConnection_type != "") {
 			gis_save_map_connection($mapConnection_name, $mapConnection_group,
 				$mapConnection_numLevelsZoom, $mapConnection_defaultZoom,
 				$mapConnection_defaultLatitude, $mapConnection_defaultLongitude,

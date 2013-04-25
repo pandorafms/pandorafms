@@ -260,7 +260,7 @@ if (defined('METACONSOLE')) {
 	$result = array();
 	foreach($servers as $server) {
 		// If connection was good then retrieve all data server
-		if (metaconsole_connect($server) == NOERR){
+		if (metaconsole_connect($server) == NOERR) {
 			$connection = true;
 		}
 		else {

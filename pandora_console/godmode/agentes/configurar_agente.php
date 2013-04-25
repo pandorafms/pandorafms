@@ -1177,7 +1177,7 @@ if ($delete_module) { // DELETE agent module !
 			// Get number of components pending to delete to know when it's needed to update orders 
 			$num_components = count($result_components);
 			$last_target_module = 0;
-			foreach ($result_components as $id_target_module){
+			foreach ($result_components as $id_target_module) {
 				// Detects change of component or last component to update orders
 				if (($count_components == $num_components) or
 					($last_target_module != $id_target_module)) {

@@ -123,7 +123,7 @@ if ($create_tag) {
 
 // Form fields are filled here
 // Get results when update action is performed
-if ($action == "update" && $id_tag != 0){
+if ($action == "update" && $id_tag != 0) {
 	$result_tag = tags_search_tag_id($id_tag);
 	$name_tag = $result_tag["name"]; 
 	$description_tag = $result_tag["description"];
@@ -179,7 +179,7 @@ echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 		echo "</td>";
 	echo "</tr>";
 	echo "<tr>";
-		if ($action == "update"){
+		if ($action == "update") {
 			echo "<td align='center'>";
 			html_print_input_hidden ('update_tag', 1);
 			echo "</td>";
@@ -187,7 +187,7 @@ echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 			html_print_submit_button (__('Update'), 'update_button', false, 'class="sub next"');
 			echo "</td>";
 		}
-		if ($action == "new"){
+		if ($action == "new") {
 			echo "<td align=center>";
 			html_print_input_hidden ('create_tag', 1);
 			echo "</td>";

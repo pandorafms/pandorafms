@@ -31,7 +31,7 @@ function pluginreg_extension_main () {
 	
 	echo "<br><br>";
 	
-	if (!isset ($_FILES['plugin_upload']['tmp_name'])){
+	if (!isset ($_FILES['plugin_upload']['tmp_name'])) {
 		// Upload form
 		echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";
 		echo '<table class="databox" id="table1" width="98%" border="0" cellpadding="4" cellspacing="4">';
@@ -67,7 +67,7 @@ function pluginreg_extension_main () {
 	}
 	
 	// Parse with sections
-	if (! $ini_array = parse_ini_file($config["attachment_store"] . "/plugin_definition.ini", true)){
+	if (! $ini_array = parse_ini_file($config["attachment_store"] . "/plugin_definition.ini", true)) {
 		echo "<h2 class=error>".__("Cannot load INI file")."</h2>";
 		return;
 	}
@@ -77,7 +77,7 @@ function pluginreg_extension_main () {
 	// Version 2: From 5.0
 	$version = isset($ini_array["plugin_definition"]["version"]) ? $ini_array["plugin_definition"]["version"] : 1;
 	
-	if(!isset($ini_array["plugin_definition"]["execution_postcommand"])) {
+	if (!isset($ini_array["plugin_definition"]["execution_postcommand"])) {
 		$ini_array["plugin_definition"]["execution_postcommand"] = '';
 	}
 	
@@ -92,11 +92,12 @@ function pluginreg_extension_main () {
 	
 	$file_exec_path = $exec_path;
 	
-	if (isset($ini_array["plugin_definition"]["execution_command"]) && ($ini_array["plugin_definition"]["execution_command"] != "")){
+	if (isset($ini_array["plugin_definition"]["execution_command"]) &&
+		($ini_array["plugin_definition"]["execution_command"] != "")) {
 		$exec_path = $ini_array["plugin_definition"]["execution_command"] . " " . $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
 	}
 	
-	if (!file_exists($file_exec_path)){
+	if (!file_exists($file_exec_path)) {
 		echo "<h2 class=error>".__("Plugin exec not found. Aborting!")."</h2>";
 		unlink ($config["attachment_store"] . "/plugin_definition.ini");
 		return;
@@ -148,7 +149,7 @@ function pluginreg_extension_main () {
 	
 	$create_id = db_process_sql_insert('tplugin', $values);
 	
-	for ($ax=1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++){
+	for ($ax = 1; $ax <= $ini_array["plugin_definition"]["total_modules_provided"]; $ax++) {
 		$label = "module".$ax;
 		
 		$values = array(

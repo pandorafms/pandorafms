@@ -79,7 +79,7 @@ function update_pandora_administration($settings, $user_key) {
 	
 	$conf_update_pandora = update_pandora_get_conf();
 	
-	if (!empty($conf_update_pandora['last_installed'])){
+	if (!empty($conf_update_pandora['last_installed'])) {
 		echo '<h4>';
 		echo __('Your Pandora FMS open source package installed is') .
 			' ' . $conf_update_pandora['last_installed'];

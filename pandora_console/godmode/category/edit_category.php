@@ -99,7 +99,7 @@ if ($create_category) {
 
 // Form fields are filled here
 // Get results when update action is performed
-if ($action == "update" && $id_category != 0){
+if ($action == "update" && $id_category != 0) {
 	$result_category = db_get_row_filter('tcategory', array('id' => $id_category));
 	$name_category = $result_category["name"]; 
 } // If current action is create (new) or somethig goes wrong fields are filled with void value
@@ -122,7 +122,7 @@ echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 		echo "</td>";
 	echo "</tr>";
 	echo "<tr>";
-		if ($action == "update"){
+		if ($action == "update") {
 			echo "<td align=center>";
 			html_print_input_hidden ('update_category', 1);
 			echo "</td>";
@@ -130,7 +130,7 @@ echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
 			html_print_submit_button (__('Update'), 'update_button', false, 'class="sub next"');
 			echo "</td>";
 		}
-		if ($action == "new"){
+		if ($action == "new") {
 			echo "<td align=center>";
 			html_print_input_hidden ('create_category', 1);
 			echo "</td>";

@@ -139,7 +139,7 @@ if ($create_group) {
 	
 	/*Check if name field is empty*/
 	if ($name != "") {
-		if (!$check){
+		if (!$check) {
 			$values = array(
 				'nombre' => $name,
 				'icon' => substr ($icon, 0, -4),

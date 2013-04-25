@@ -194,11 +194,11 @@ echo '</div>';
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-
+	
 	$("#right").click (function () {
 		jQuery.each($("select[name='fields_available[]'] option:selected"), function (key, value) {
 			field_name = $(value).html();
-			if (field_name != <?php echo "'".__('None')."'"; ?>){
+			if (field_name != <?php echo "'".__('None')."'"; ?>) {
 				id_field = $(value).attr('value');
 				$("select[name='fields_selected[]']").append($("<option></option>").html(field_name).attr("value", id_field));
 				$("#fields_available").find("option[value='" + id_field + "']").remove();

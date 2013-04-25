@@ -456,7 +456,7 @@ $(document).ready (function () {
 	$("select#id_os").pandoraSelectOS ();
 	
 	var recursion;
-	$("#checkbox-recursion").click(function (){
+	$("#checkbox-recursion").click(function () {
 		recursion = this.checked ? 1 : 0;
 		$("#id_group").trigger("change");
 	});

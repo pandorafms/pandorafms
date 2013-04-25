@@ -316,7 +316,7 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 ui_require_jquery_file ('form');
 ui_require_jquery_file ('pandora.controls');
 
-if ($selection_mode == 'modules'){
+if ($selection_mode == 'modules') {
 	$modules_row = '';
 	$agents_row = 'none';
 }
@@ -404,19 +404,19 @@ $(document).ready (function () {
 	
 	$('input[type=checkbox]').change (
 		function () {
-			if(this.id == "checkbox-force_type"){
-				if(this.checked) {
+			if (this.id == "checkbox-force_type") {
+				if (this.checked) {
 					$(".select_modules_row_2").css('display', 'none');
 					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").show ();
 				}
 				else {
 					$(".select_modules_row_2").css('display', '');
-					if($('#module_name option:selected').val() == undefined) {
+					if ($('#module_name option:selected').val() == undefined) {
 						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8").hide ();
 					}
 				}
 			}
-			else if(this.id == "checkbox-recursion"){
+			else if (this.id == "checkbox-recursion") {
 				$("#groups_select").trigger("change");
 			}
 			else {

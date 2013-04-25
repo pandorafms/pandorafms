@@ -67,13 +67,13 @@ if ($add) {
 			$agent_alerts = agents_get_alerts($id_agents);
 			$cont = 0;
 			$agent_alerts_id = array();
-			foreach($agent_alerts['simple'] as $agent_alert){
+			foreach ($agent_alerts['simple'] as $agent_alert) {
 				if (in_array($agent_alert['id_alert_template'], $id_alert_templates)) {
 					$agent_alerts_id[$cont] = $agent_alert['id'];
 					$cont = $cont + 1;
 				}
 			}
-					
+			
 			$options = array();
 			
 			if($fires_min > 0)

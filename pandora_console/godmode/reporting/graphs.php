@@ -35,30 +35,33 @@ if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NO
 }
 
 $buttons['graph_list'] = array('active' => true,
-		'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">' .
-		html_print_image("images/list.png", true, array ("title" => __('Graph list'))) .'</a>');
-		
+	'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">' .
+	html_print_image("images/list.png", true, array ("title" => __('Graph list'))) .'</a>');
+
 if ($enterpriseEnable){
 	$buttons = reporting_enterprise_add_template_graph_tabs($buttons);
 }
 
 $subsection = '';
-switch ($activeTab){
-
-	case 'main':	$buttons['graph_list']['active'] = true;
-					$subsection = ' &raquo; '.__('Graph list');
-					break;
-	default:		$subsection = reporting_enterprise_add_graph_template_subsection($activeTab, $buttons);
-					break;
-	}
+switch ($activeTab) {
+	case 'main':
+		$buttons['graph_list']['active'] = true;
+		$subsection = ' &raquo; '.__('Graph list');
+		break;
+	default:
+		$subsection = reporting_enterprise_add_graph_template_subsection($activeTab, $buttons);
+		break;
+}
 
 switch ($activeTab) {
-	case 'main':	require_once('godmode/reporting/graphs.php');
-					break;
-	default:		reporting_enterprise_select_graph_template_tab($activeTab);
-					break;
+	case 'main':
+		require_once('godmode/reporting/graphs.php');
+		break;
+	default:
+		reporting_enterprise_select_graph_template_tab($activeTab);
+		break;
 }
-	
+
 $delete_graph = (bool) get_parameter ('delete_graph');
 $view_graph = (bool) get_parameter ('view_graph');
 $id = (int) get_parameter ('id');
@@ -76,7 +79,7 @@ if ($delete_graph) {
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
-			
+		
 		$result = db_process_sql_delete("tgraph", array('id_graph' =>$id));
 		
 		if ($result) {
@@ -104,8 +107,8 @@ if ($multiple_delete) {
 	
 	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tgraph',
-			array ('id_graph' => $id));
-	
+			array('id_graph' => $id));
+		
 		if ($result === false) {
 			db_process_sql_rollback();
 			break;
@@ -116,8 +119,10 @@ if ($multiple_delete) {
 		db_process_sql_commit();
 	}
 	
-	if ($result !== false) $result = true;
-	else $result = false;
+	if ($result !== false)
+		$result = true;
+	else
+		$result = false;
 	
 	$str_ids = implode (',', $ids);
 	if ($result) {
@@ -135,7 +140,7 @@ if ($multiple_delete) {
 
 $graphs = custom_graphs_get_user ($config['id_user'], false, true, "RR");
 
-if (! empty ($graphs)) {
+if (!empty ($graphs)) {
 	$table->width = '98%';
 	$tale->class = 'databox_frame';
 	$table->align = array ();

@@ -1,5 +1,14 @@
 2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/users/user_list.php: changed the table layout and other
+	stetical things.
+	
+	Fixes: #3611684
+	
+	* include/functions_html.php: cleaned the source code style.
+
+2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/alerts/alert_list.list.php,
 	godmode/setup/setup_general.php, extensions/pandora_logs.php: some
 	fixes in the source code from the indications of bug in the tracker.

@@ -93,12 +93,12 @@ switch ($sortField) {
 		break;
 }
 
-			
+
 $buttons[$tab]['active'] = true;
 
 // Header
 if (defined('METACONSOLE')) {
-
+	
 	user_meta_print_header();
 	$sec = 'advanced';
 	
@@ -116,7 +116,7 @@ else {
 				html_print_image ("images/profiles.png", true, array ("title" => __('Profile management'))) .'</a>'));
 	
 	$buttons[$tab]['active'] = true;
-
+	
 	ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/gm_users.png", false, "", true, $buttons);
 	
 	$sec = 'gusuarios';
@@ -136,7 +136,7 @@ if (isset ($_GET["user_del"])) { //delete user
 		
 		if ($result) {
 			users_save_logout($user_row, true);
-		
+			
 			db_pandora_audit("User management",
 				__("Deleted user %s", io_safe_input($id_user)));
 		}
@@ -147,7 +147,7 @@ if (isset ($_GET["user_del"])) { //delete user
 		
 		// Delete the user in all the consoles
 		if (defined ('METACONSOLE') && isset ($_GET["delete_all"])) {
-
+			
 			$servers = metaconsole_get_servers();
 			foreach ($servers as $server) {
 				
@@ -163,7 +163,7 @@ if (isset ($_GET["user_del"])) { //delete user
 				
 				// Restore the db connection
 				metaconsole_restore_db();
-
+				
 				// Log to the metaconsole too
 				if ($result) {
 					db_pandora_audit("User management",
@@ -216,6 +216,7 @@ $table->head = array ();
 $table->data = array ();
 $table->align = array ();
 $table->size = array ();
+$table->valign = array();
 
 $table->head[0] = __('User ID') . ' ' .
 	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=id_user&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectUserIDUp)) . '</a>' .
@@ -226,15 +227,23 @@ $table->head[1] = __('Name') . ' ' .
 $table->head[2] = __('Last contact') . ' ' . 
 	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_connect&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastConnectUp )) . '</a>' .
 	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_connect&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastConnectDown)) . '</a>';
-$table->head[3] = __('Profile');
-$table->head[4] = __('Description');
-$table->head[5] = '<span title="Operations">' . __('Op.') . '</span>';
+$table->head[3] = __('Admin');
+$table->head[4] = __('Profile');
+$table->head[5] = __('Description');
+$table->head[6] = '<span title="Operations">' . __('Op.') . '</span>';
 
-$table->align[2] = "center";
+$table->align[2] = "right";
 $table->align[3] = "center";
-$table->align[5] = "left";
 $table->size[2] = '150px';
-$table->size[5] = '85px';
+$table->size[6] = '85px';
+
+$table->valign[0] = 'top';
+$table->valign[1] = 'top';
+$table->valign[2] = 'top';
+$table->valign[3] = 'top';
+$table->valign[4] = 'top';
+$table->valign[5] = 'top';
+$table->valign[6] = 'top';
 
 $info1 = array ();
 
@@ -259,7 +268,7 @@ else {
 		unset($g);
 	}
 }
-	
+
 // Prepare pagination
 ui_pagination (count($info));
 
@@ -294,12 +303,13 @@ foreach ($info as $user_id => $user_info) {
 	$iterator++;
 	
 	$data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.$user_id.'</a>';
-	$data[1] = $user_info["fullname"] . '<a href="#" class="tip"><span>';
-	$data[1] .= __('First name') . ': ' . $user_info["firstname"].'<br />';
-	$data[1] .= __('Last name') . ': ' . $user_info["lastname"].'<br />';
-	$data[1] .= __('Phone') . ': ' . $user_info["phone"].'<br />';
-	$data[1] .= __('E-mail') . ': ' . $user_info["email"].'<br />';
-	$data[1] .= '</span></a>';
+	$data[1] = '<ul style="margin-top: 0 !important; margin-left: auto !important; padding-left: 10px !important; list-style-type: none !important;">';
+	$data[1] .= '<li>' . $user_info["fullname"] . '</li>';
+	$data[1] .= '<li><b>' . __('First name') . ':</b> ' . $user_info["firstname"] . '</li>';
+	$data[1] .= '<li><b>' . __('Last name') . ':</b> ' . $user_info["lastname"] . '</li>';
+	$data[1] .= '<li><b>' . __('Phone') . ':</b> ' . $user_info["phone"] . '</li>';
+	$data[1] .= '<li><b>' . __('E-mail') . ':</b> ' . $user_info["email"] . '</li>';
+	$data[1] .= '</ul>';
 	$data[2] = ui_print_timestamp ($user_info["last_connect"], true);
 	
 	if ($user_info["is_admin"]) {
@@ -308,43 +318,51 @@ foreach ($info as $user_id => $user_info) {
 				"title" => __('Administrator'))) . '&nbsp;';
 	}
 	else {
+		/*
 		$data[3] = html_print_image ("images/user_green.png", true,
 			array ("alt" => __('User'),
 				"title" => __('Standard User'))) . '&nbsp;';
+		*/
+		$data[3] = "";
 	}
 	
-	$data[3] .= '<a href="#" class="tip"><span>';
+	$data[4] = "";
 	$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_id);
 	if ($result !== false) {
+		$data[4] .= "<table width='100%'>";
 		foreach ($result as $row) {
-			$data[3] .= profile_get_name ($row["id_perfil"]);
-			$data[3] .= " / ";
-			$data[3] .= groups_get_name ($row["id_grupo"]);
-			$data[3] .= "<br />";
+			$data[4] .= "<tr>";
+			$data[4] .= "<td>";
+			$data[4] .= profile_get_name ($row["id_perfil"]);
+			$data[4] .= "</td>";
+			$data[4] .= "<td align='right'>";
+			$data[4] .= groups_get_name ($row["id_grupo"], true);
+			$data[4] .= "</td>";
+			$data[4] .= "</tr>";
 		}
+		$data[4] .= "</table>";
 	}
 	else {
-		$data[3] .= __('The user doesn\'t have any assigned profile/group');
+		$data[4] .= __('The user doesn\'t have any assigned profile/group');
 	}
-	$data[3] .= "</span></a>";
 	
-	$data[4] = ui_print_string_substr ($user_info["comments"], 24, true);
+	$data[5] = ui_print_string_substr ($user_info["comments"], 24, true);
 	
 	if ($user_info['disabled'] == 0) {
-		$data[5] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, array('title' => __('Disable'))).'</a>';
+		$data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, array('title' => __('Disable'))).'</a>';
 	}
 	else {
-		$data[5] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=0&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb_off.png', true, array('title' => __('Enable'))).'</a>';
+		$data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=0&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb_off.png', true, array('title' => __('Enable'))).'</a>';
 	}
-	$data[5] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, array('title' => __('Edit'))).'</a>';
+	$data[6] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, array('title' => __('Edit'))).'</a>';
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
-		$data[5] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
+		$data[6] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
 		if (defined('METACONSOLE')) {
-			$data[5] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, array ('title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('" .__('Deleting User %s from all consoles', $user_info['id_user']) . ". " . __('Are you sure?') ."')) return false"))."</a>";	
+			$data[6] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, array ('title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('" .__('Deleting User %s from all consoles', $user_info['id_user']) . ". " . __('Are you sure?') ."')) return false"))."</a>";	
 		}
 	}
 	else {
-		$data[5] .= ''; //Delete button not in this mode
+		$data[6] .= ''; //Delete button not in this mode
 	}
 	array_push ($table->data, $data);
 }

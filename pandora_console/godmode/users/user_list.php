@@ -21,6 +21,7 @@ check_login ();
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
+enterprise_include_once ('include/functions_metaconsole.php');
 enterprise_include_once ('meta/include/functions_users_meta.php');
 
 if (! check_acl ($config['id_user'], 0, "UM")) {
@@ -135,17 +136,48 @@ if (isset ($_GET["user_del"])) { //delete user
 		
 		if ($result) {
 			users_save_logout($user_row, true);
-		}
 		
-		db_pandora_audit("User management",
-			"Deleted user ".io_safe_input($id_user));
+			db_pandora_audit("User management",
+				__("Deleted user %s", io_safe_input($id_user)));
+		}
 		
 		ui_print_result_message ($result,
 			__('Successfully deleted'),
 			__('There was a problem deleting the user'));
+		
+		// Delete the user in all the consoles
+		if (defined ('METACONSOLE') && isset ($_GET["delete_all"])) {
+
+			$servers = metaconsole_get_servers();
+			foreach ($servers as $server) {
+				
+				// Connect to the remote console
+				metaconsole_connect($server);
+				
+				// Delete the user
+				$result = delete_user ($id_user);
+				if ($result) {
+					db_pandora_audit("User management",
+					__("Deleted user %s from metaconsole", io_safe_input($id_user)));
+				}
+				
+				// Restore the db connection
+				metaconsole_restore_db();
+
+				// Log to the metaconsole too
+				if ($result) {
+					db_pandora_audit("User management",
+				                     __("Deleted user %s from %s", io_safe_input($id_user), io_safe_input($server['server_name'])));
+				}
+				ui_print_result_message ($result,
+					__('Successfully deleted from %s', io_safe_input($server['server_name'])),
+					__('There was a problem deleting the user from %s', io_safe_input($server['server_name'])));
+			}
+		}
 	}
-	else
+	else {
 		ui_print_error_message (__('There was a problem deleting the user'));
+	}
 }
 elseif (isset ($_GET["profile_del"])) { //delete profile
 	$id_profile = (int) get_parameter_post ("delete_profile");
@@ -307,6 +339,9 @@ foreach ($info as $user_id => $user_info) {
 	$data[5] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, array('title' => __('Edit'))).'</a>';
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
 		$data[5] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
+		if (defined('METACONSOLE')) {
+			$data[5] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, array ('title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('" .__('Deleting User %s from all consoles', $user_info['id_user']) . ". " . __('Are you sure?') ."')) return false"))."</a>";	
+		}
 	}
 	else {
 		$data[5] .= ''; //Delete button not in this mode

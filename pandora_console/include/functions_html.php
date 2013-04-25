@@ -1262,7 +1262,7 @@ function html_print_table (&$table, $return = false) {
 			}
 		}
 	}
-
+	
 	$styleTable = '';
 	if (isset ($table->styleTable)) {
 		$styleTable = $table->styleTable;

@@ -47,7 +47,7 @@ $table->head[4] = __('Delete');
 
 $table->data = array();
 
-if(isset($result['file'][0]) && is_array($result['file'][0])){
+if (isset($result['file'][0]) && is_array($result['file'][0])) {
 	$files = $result['file'];
 }
 else {

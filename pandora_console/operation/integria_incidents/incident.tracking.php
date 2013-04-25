@@ -24,7 +24,7 @@ $table->head[2] = __('Date');
 
 $table->data = array();
 
-if(isset($result['tracking'][0]) && is_array($result['tracking'][0])){
+if (isset($result['tracking'][0]) && is_array($result['tracking'][0])) {
 	$tracking = $result['tracking'];
 }
 else {
@@ -32,7 +32,7 @@ else {
 }
 
 $row = 0;
-foreach($tracking as $value) {
+foreach ($tracking as $value) {
 	
 	$table->data[$row][0] = $value['description'];
 	$table->data[$row][1] = $value['id_user'];

@@ -68,7 +68,7 @@ echo '<td>';
 html_print_select ($status, 'search_status', $search_status, '', '', 0, false);
 echo '</td>';
 echo '<td>';
-if (isset($groups)){
+if (isset($groups)) {
 html_print_select ($groups, 'search_group', $search_group, '', '', 0, false, false, false);
 }
 echo '</td>';

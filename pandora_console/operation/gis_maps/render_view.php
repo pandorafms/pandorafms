@@ -87,11 +87,11 @@ $layers = gis_get_layers($idMap);
 $buttons = array();
 
 if ($config["pure"] == 0) {
-	$buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.$config["refr"].'&amp;pure=1">' .
+	$buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int)get_parameter('refr', 0)).'&amp;pure=1">' .
 		html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode'))) . "</a>";
 }
 else {
-	$buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.$config["refr"].'">' . 
+	$buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int)get_parameter('refr', 0)).'">' . 
 		html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode'))) . "</a>";
 }
 

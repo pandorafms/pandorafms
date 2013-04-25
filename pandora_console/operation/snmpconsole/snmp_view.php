@@ -354,7 +354,7 @@ $table->data[4][1] = '<strong>'.__('Type').'</strong>' . ui_print_help_tip(__('S
 $trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
 $table->data[4][2] = html_print_select ($trap_types, 'trap_type', $trap_type, 'this.form.submit();', '', '', true, false, false);
 
-$filter = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.$config["refr"].'&pure='.$config["pure"].'">';
+$filter = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.((int)get_parameter('refr', 0)).'&pure='.$config["pure"].'">';
 $filter .= html_print_table($table, true);
 $filter .= '<div style="width: ' . $table->width . '; text-align: right;">';
 $filter .= html_print_submit_button(__('Update'), 'search', false, 'class="sub upd"', true);
@@ -371,7 +371,7 @@ $trapcount = db_get_sql ("SELECT COUNT(id_trap) FROM ttrap " . $whereSubquery);
 $urlPagination = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=" . $filter_agent
 	. "&filter_oid=" . $filter_oid . "&filter_severity=" . $filter_severity
 	. "&filter_fired=" . $filter_fired . "&filter_status=" . $filter_status
-	. "&search_string=" . $search_string . "&pagination=".$pagination."&offset=".$offset."&refr=".$config["refr"]."&pure=".$config["pure"];
+	. "&search_string=" . $search_string . "&pagination=".$pagination."&offset=".$offset."&refr=".((int)get_parameter('refr', 0))."&pure=".$config["pure"];
 ui_pagination ($trapcount, $urlPagination, $offset, $pagination);
 
 echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pagination='.$pagination.'&offset='.$offset.'">';

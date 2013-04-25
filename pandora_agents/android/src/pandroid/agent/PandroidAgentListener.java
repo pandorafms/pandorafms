@@ -123,6 +123,7 @@ public class PandroidAgentListener extends Service {
         // Keep lastXML sended if is not empty (empty means error sending it)
         String lastXML = buildXML();
         
+        
 		String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
 
 		String destFileName = agentName + "." + System.currentTimeMillis() + ".data";
@@ -158,71 +159,72 @@ public class PandroidAgentListener extends Service {
 	}
 	
 	
-	
-//	private void contact(){
-//			
-//		/*
-//		Toast toast = Toast.makeText(getApplicationContext(),
-//		 
-//				    getString(R.string.loading),
-//		       		Toast.LENGTH_SHORT);
-//		toast.setGravity(Gravity.BOTTOM,0,0);
-//		toast.show();
-//		*/
-//		
-//		    
-//		Date date = new Date();
-//        
-//    	putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
-//        
-//        String lastXML = "";
-//        new contactTask().execute(lastXML);
-//        updateValues();
-//		
-//	}//end contact
-//      
-//    private class contactTask extends AsyncTask<String, Void, Void>{
-//        		
-//        	@Override
-//        	protected Void doInBackground(String...params) {  
-//        			
-//        	String lastXML = params[0];
-//        	lastXML = buildXML();
-//        	String destFileName = "";
-//        	String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
-//        	destFileName = agentName + "." + System.currentTimeMillis() + ".data";
-//        	
-//        	writeFile(destFileName, lastXML);
-//        	String[] tentacleData = {
-//  				  "-a",
-//  				  getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
-//  				  "-p",
-//  				  Core.defaultServerPort,
-//  				  "-v",
-//  				  "/data/data/pandroid.agent/files/" + destFileName
-//  	    		  };
-//
-//        	int tentacleRet = new tentacle_client().tentacle_client(tentacleData);
-//        	
-//        	putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");	
-//        	if(tentacleRet == 0) {
-//        		putSharedData("PANDROID_DATA", "contactError", "0", "integer");
-//        		// Deleting the file after send it
-//        		// move to only delete if sent successfully
-//        		File file = new File("/data/data/pandroid.agent/files/" + destFileName);
-//        		file.delete();
-//        		if (Core.helloSignal >= 1)
-//        				Core.helloSignal = 0;
-//        		Core.updateConf(getApplicationContext());
-//           }
-//           else{
-//        	   putSharedData("PANDROID_DATA", "contactError", "1", "integer");
-//           }
-//        return null;
-//        	
-//        }//end doInBackground
-//   }
-   
+	/*
+	private void contact(){
+			
+		/*
+		Toast toast = Toast.makeText(getApplicationContext(),
+		 
+				    getString(R.string.loading),
+		       		Toast.LENGTH_SHORT);
+		toast.setGravity(Gravity.BOTTOM,0,0);
+		toast.show();
+		
+		
+		    
+		Date date = new Date();
+        
+    	putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
+        
+        String lastXML = "";
+        new contactTask().execute(lastXML);
+        updateValues();
+		
+	}//end contact
+       
+        
+    private class contactTask extends AsyncTask<String, Void, Void>{
+        		
+        	@Override
+        	protected Void doInBackground(String...params) {  
+        			
+        	String lastXML = params[0];
+        	lastXML = buildXML();
+        	String destFileName = "";
+        	String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
+        	destFileName = agentName + "." + System.currentTimeMillis() + ".data";
+        	
+        	writeFile(destFileName, lastXML);
+        	String[] tentacleData = {
+  				  "-a",
+  				  getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
+  				  "-p",
+  				  Core.defaultServerPort,
+  				  "-v",
+  				  "/data/data/pandroid.agent/files/" + destFileName
+  	    		  };
+
+        	int tentacleRet = new tentacle_client().tentacle_client(tentacleData);
+        	
+        	putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");	
+        	if(tentacleRet == 0) {
+        		putSharedData("PANDROID_DATA", "contactError", "0", "integer");
+        		// Deleting the file after send it
+        		// move to only delete if sent successfully
+        		File file = new File("/data/data/pandroid.agent/files/" + destFileName);
+        		file.delete();
+        		if (Core.helloSignal >= 1)
+        				Core.helloSignal = 0;
+        		Core.updateConf(getApplicationContext());
+           }
+           else{
+        	   putSharedData("PANDROID_DATA", "contactError", "1", "integer");
+           }
+        return null;
+        	
+        }//end doInBackground
+   }
+   */
     ////////////////////////////////////////////////////////////////////////////////////////
     //  From unfinished task of buffering unsent xml files when no connection available   //
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -392,6 +394,11 @@ public class PandroidAgentListener extends Service {
 			buffer += buildmoduleXML("helloSignal","Hello Signal", "generic_data", helloSignal);
 		
 		
+		//UTF-8 TEST//
+		
+		String iso_8859_1String = "ÀÁÈÉÌÍÙÚÜàáèéìíòóùúü";
+		
+		buffer += buildmoduleXML("iso-8859-1Test","Testing iso-8859-1 Values", "generic_data_string", iso_8859_1String);
 			
 		
 		// End_Modules
@@ -403,7 +410,7 @@ public class PandroidAgentListener extends Service {
 	}// end buildXML
 	
     private void writeFile(String fileName, String textToWrite) {
-try { // catches IOException below
+    	try { // catches IOException below
     		/*
     		String UTF8 = "utf8";
     		int BUFFER_SIZE = 8192;
@@ -954,14 +961,12 @@ try { // catches IOException below
 	
 	
 	private void putSharedData(String preferenceName, String tokenName, String data, String type) {
-		//int mode = Activity.MODE_PRIVATE;
-		//SharedPreferences agentPreferences = getSharedPreferences(preferenceName, mode);
-		//SharedPreferences.Editor editor = agentPreferences.edit();
+		int mode = Activity.MODE_PRIVATE;
+		SharedPreferences agentPreferences = getSharedPreferences(preferenceName, mode);
+		SharedPreferences.Editor editor = agentPreferences.edit();
 		
-		Core.updateValue(this, tokenName, data);	
-		/*
+				
 		if(type == "boolean") {
-			Core.updateValue(this, tokenName, data)
 			editor.putBoolean(tokenName, Boolean.parseBoolean(data));
 		}
 		else if(type == "float") {
@@ -978,16 +983,12 @@ try { // catches IOException below
 		}
 		
 		editor.commit();
-		*/
     }
     
     private String getSharedData(String preferenceName, String tokenName, String defaultValue, String type) {
-		//int mode = Activity.MODE_PRIVATE;
-		//SharedPreferences agentPreferences = getSharedPreferences(preferenceName, mode);
+		int mode = Activity.MODE_PRIVATE;
+		SharedPreferences agentPreferences = getSharedPreferences(preferenceName, mode);
 		
-    	return Core.getValue(this, tokenName);
-    	
-    	/*
 		if(type == "boolean") {
 			boolean a = agentPreferences.getBoolean(tokenName, Boolean.parseBoolean(defaultValue));
 			return Boolean.valueOf(a).toString();
@@ -1009,7 +1010,6 @@ try { // catches IOException below
 		}
 		
 		return "";
-		*/
     }
 	
     private String getHumanDateTime(long unixtime){

@@ -113,7 +113,7 @@ public class PandroidAgentListener extends Service {
 	}
 	
 	
-	/*
+	
 	private void contact(){
         Date date = new Date();
         
@@ -156,73 +156,72 @@ public class PandroidAgentListener extends Service {
         
         updateValues();
 	}
-	*/
 	
 	
-	private void contact(){
-			
-		/*
-		Toast toast = Toast.makeText(getApplicationContext(),
-		 
-				    getString(R.string.loading),
-		       		Toast.LENGTH_SHORT);
-		toast.setGravity(Gravity.BOTTOM,0,0);
-		toast.show();
-		*/
-		
-		    
-		Date date = new Date();
-        
-    	putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
-        
-        String lastXML = "";
-        new contactTask().execute(lastXML);
-        updateValues();
-		
-	}//end contact
-       
-        
-    private class contactTask extends AsyncTask<String, Void, Void>{
-        		
-        	@Override
-        	protected Void doInBackground(String...params) {  
-        			
-        	String lastXML = params[0];
-        	lastXML = buildXML();
-        	String destFileName = "";
-        	String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
-        	destFileName = agentName + "." + System.currentTimeMillis() + ".data";
-        	
-        	writeFile(destFileName, lastXML);
-        	String[] tentacleData = {
-  				  "-a",
-  				  getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
-  				  "-p",
-  				  Core.defaultServerPort,
-  				  "-v",
-  				  "/data/data/pandroid.agent/files/" + destFileName
-  	    		  };
-
-        	int tentacleRet = new tentacle_client().tentacle_client(tentacleData);
-        	
-        	putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");	
-        	if(tentacleRet == 0) {
-        		putSharedData("PANDROID_DATA", "contactError", "0", "integer");
-        		// Deleting the file after send it
-        		// move to only delete if sent successfully
-        		File file = new File("/data/data/pandroid.agent/files/" + destFileName);
-        		file.delete();
-        		if (Core.helloSignal >= 1)
-        				Core.helloSignal = 0;
-        		Core.updateConf(getApplicationContext());
-           }
-           else{
-        	   putSharedData("PANDROID_DATA", "contactError", "1", "integer");
-           }
-        return null;
-        	
-        }//end doInBackground
-   }
+	
+//	private void contact(){
+//			
+//		/*
+//		Toast toast = Toast.makeText(getApplicationContext(),
+//		 
+//				    getString(R.string.loading),
+//		       		Toast.LENGTH_SHORT);
+//		toast.setGravity(Gravity.BOTTOM,0,0);
+//		toast.show();
+//		*/
+//		
+//		    
+//		Date date = new Date();
+//        
+//    	putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
+//        
+//        String lastXML = "";
+//        new contactTask().execute(lastXML);
+//        updateValues();
+//		
+//	}//end contact
+//      
+//    private class contactTask extends AsyncTask<String, Void, Void>{
+//        		
+//        	@Override
+//        	protected Void doInBackground(String...params) {  
+//        			
+//        	String lastXML = params[0];
+//        	lastXML = buildXML();
+//        	String destFileName = "";
+//        	String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
+//        	destFileName = agentName + "." + System.currentTimeMillis() + ".data";
+//        	
+//        	writeFile(destFileName, lastXML);
+//        	String[] tentacleData = {
+//  				  "-a",
+//  				  getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
+//  				  "-p",
+//  				  Core.defaultServerPort,
+//  				  "-v",
+//  				  "/data/data/pandroid.agent/files/" + destFileName
+//  	    		  };
+//
+//        	int tentacleRet = new tentacle_client().tentacle_client(tentacleData);
+//        	
+//        	putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");	
+//        	if(tentacleRet == 0) {
+//        		putSharedData("PANDROID_DATA", "contactError", "0", "integer");
+//        		// Deleting the file after send it
+//        		// move to only delete if sent successfully
+//        		File file = new File("/data/data/pandroid.agent/files/" + destFileName);
+//        		file.delete();
+//        		if (Core.helloSignal >= 1)
+//        				Core.helloSignal = 0;
+//        		Core.updateConf(getApplicationContext());
+//           }
+//           else{
+//        	   putSharedData("PANDROID_DATA", "contactError", "1", "integer");
+//           }
+//        return null;
+//        	
+//        }//end doInBackground
+//   }
    
     ////////////////////////////////////////////////////////////////////////////////////////
     //  From unfinished task of buffering unsent xml files when no connection available   //
@@ -304,7 +303,7 @@ public class PandroidAgentListener extends Service {
 		String helloSignal = getSharedData("PANDROID_DATA", "helloSignal", ""+Core.defaultHelloSignal, "integer");
 		String roaming = getSharedData("PANDROID_DATA", "roaming", ""+Core.defaultRoaming, "integer");
 		
-		String SimIDReport = getSharedData("PANDROID_DATA", "SimIDReport", Core.defaultSimIDReport, "string");
+		String simIDReport = getSharedData("PANDROID_DATA", "simIDReport", Core.defaultSimIDReport, "string");
 		String DeviceUpTimeReport = getSharedData("PANDROID_DATA", "DeviceUpTimeReport", Core.defaultDeviceUpTimeReport, "string");
 		String NetworkOperatorReport = getSharedData("PANDROID_DATA", "NetworkOperatorReport", Core.defaultNetworkOperatorReport, "string");
 		String NetworkTypeReport = getSharedData("PANDROID_DATA", "NetworkTypeReport", Core.defaultNetworkTypeReport, "string");
@@ -362,7 +361,7 @@ public class PandroidAgentListener extends Service {
 			buffer += buildmoduleXML("upTime","Total device uptime in seconds.", "generic_data", upTime);
 		
 		if (Core.hasSim){
-			if (SimIDReport.equals("enabled"))
+			if (simIDReport.equals("enabled"))
 				buffer += buildmoduleXML("simID", "The Sim ID.", "generic_data_string", SimID);
 			if (NetworkOperatorReport.equals("enabled"))
 				buffer += buildmoduleXML("networkOperator","Currently registered network operator", "generic_data_string", networkOperator);

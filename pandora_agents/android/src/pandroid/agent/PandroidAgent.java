@@ -66,8 +66,8 @@ public class PandroidAgent extends TabActivity {
         File installation = new File(getApplicationContext().getFilesDir(), "INSTALLATION");
         if(!installation.exists()){
         	//Create database with default values
-        	DataBaseHandler db = new DataBaseHandler(this);
-        	Core.initDatabase(this);
+        	//DataBaseHandler db = new DataBaseHandler(this,"pandroid", null, 1);
+        	
             //Log.d("DATABASE",Core.db.getValue("latitude").get_value());
         	Core.restartAgentListener(getApplicationContext());
         }

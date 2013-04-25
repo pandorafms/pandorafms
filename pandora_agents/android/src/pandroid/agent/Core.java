@@ -14,14 +14,10 @@
 
 package pandroid.agent;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-
-import android.util.Log;
 
 public class Core {
 	
@@ -371,7 +367,7 @@ public class Core {
     
     
     
-    
+    /*
   //Initialize database
   	public static void initDatabase(Context context){
   		if (con == null) {
@@ -451,10 +447,10 @@ public class Core {
   		db.addValue(dh);
   		
   	}
-  	
+  	*/
   	//Updates a given row "name" with a "value"
-  	public static void updateValue(Context context, String name, String value){
-  		db = new DataBaseHandler(con);
+  	public static synchronized void updateValue(Context context, String name, String value){
+  		db = new DataBaseHandler(con, "pandroid", null, 1);
   		//Retrieve id of row to update
   		int id = getDataHandler(con, name).get_id();
   		
@@ -464,15 +460,15 @@ public class Core {
   	}
   	
   	//Returns the DataHandler object of the given row "name"
-  	public static DataHandler getDataHandler(Context context, String name){
-  		db = new DataBaseHandler(con);
+  	public static synchronized DataHandler getDataHandler(Context context, String name){
+  		db = new DataBaseHandler(con, "pandroid", null, 1);
   		
   		return db.getValue(name);
   	}
   	
   	//Returns the value of the given row "name"
-  	public static String getValue(Context context, String name){
-  		db = new DataBaseHandler(con);
+  	public static synchronized String getValue(Context context, String name){
+  		db = new DataBaseHandler(con, "pandroid", null, 1);
   		
   		return db.getValue(name).get_value();
   		

@@ -133,11 +133,11 @@ if ($searchUsers) {
 		ORDER BY " . $order['field'] . " " . $order['order'] . " 
 		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	$users = db_process_sql($sql);
-
-	if($users !== false) {
+	
+	if ($users !== false) {
 		//Check ACLs
 		$users_id = array();
-		foreach($users as $key => $user){
+		foreach ($users as $key => $user) {
 			if (!check_acl ($config["id_user"], users_get_groups ($user["id_user"]), "UM") && $config["id_user"] != $user["id_user"]) {
 				unset($users[$key]);
 			}

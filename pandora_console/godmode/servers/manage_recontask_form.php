@@ -54,8 +54,8 @@ if (isset ($_GET["update"]) or (isset($_GET["crt"]))) { // Edit mode
 		}
 	}
 
-	if ($update_recon){
-		if (!isset($id_rt)){
+	if ($update_recon) {
+		if (!isset($id_rt)) {
 			$id_rt = (int) get_parameter_get ("update");
 		}
 		$row = db_get_row ("trecon_task","id_rt",$id_rt);

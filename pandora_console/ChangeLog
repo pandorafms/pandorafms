@@ -1,3 +1,18 @@
+2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extensions/agents_modules.php: changed the header of the table
+	agents modules, now it uses css3 (and some tricks in javascript)
+	and the text for the modules is vertical.
+	
+	Fixes: #3539424
+	
+	* operation/integria_incidents/incident.list.php,
+	operation/search_users.getdata.php,
+	godmode/servers/manage_recontask_form.php,
+	godmode/massive/massive_delete_action_alerts.php,
+	godmode/modules/manage_network_components_form.php: improved the
+	source code style.
+
 2013-04-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* images/cross_double.png,

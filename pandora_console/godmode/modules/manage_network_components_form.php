@@ -413,12 +413,12 @@ $(document).ready (function () {
 		});
 	});
 	$("#submit-crt").click(function () {
-		$('#id_tag_selected option').map(function(){
+		$('#id_tag_selected option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});
 	$("#submit-upd").click(function () {
-		$('#id_tag_selected option').map(function(){
+		$('#id_tag_selected option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});

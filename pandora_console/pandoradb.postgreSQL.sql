@@ -108,7 +108,6 @@ CREATE INDEX "tagente_datos_utimestamp_idx" ON "tagente_datos"("utimestamp");
 -- Table `tagente_datos_inc`
 -- ---------------------------------------------------------------------
 CREATE TABLE "tagente_datos_inc" (
-	"id_adi" SERIAL NOT NULL PRIMARY KEY,
 	"id_agente_modulo" INTEGER NOT NULL default 0,
 	"datos" DOUBLE PRECISION default NULL,
 	"utimestamp" INTEGER NOT NULL default 0

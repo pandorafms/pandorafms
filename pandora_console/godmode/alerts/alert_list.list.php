@@ -41,7 +41,7 @@ else {
 }
 
 // Table for filter controls
-$form_filter = '<form method="post" action="index.php?sec='.$sec.'&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
+$form_filter = '<form method="post" action="index.php?sec='.$sec.'&amp;sec2=godmode/alerts/alert_list&amp;refr=' . ((int)get_parameter('refr', 0)) . '&amp;pure='.$config["pure"].'">';
 $form_filter .= "<input type='hidden' name='search' value='1' />\n";
 $form_filter .= '<table style="width: 98%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
 $form_filter .= "<tr>\n";

@@ -150,12 +150,14 @@ if ($config["integria_enabled"]) {
 				continue;
 			}
 			$invexp = explode(',',$inv);
-			if (substr($invexp[1], 0, 1) == '"'
-				&& substr($invexp[1], strlen($invexp[1])-1, 1) == '"') {
-				$invexp[1] = substr($invexp[1], 1, strlen($invexp[1])-2);
+			if (count($invexp) > 2) {
+				if (substr($invexp[1], 0, 1) == '"'
+					&& substr($invexp[1], strlen($invexp[1])-1, 1) == '"') {
+					$invexp[1] = substr($invexp[1], 1, strlen($invexp[1])-2);
+				}
+				
+				$inventories[$invexp[0]] = $invexp[1];
 			}
-			
-			$inventories[$invexp[0]] = $invexp[1];
 		}
 	}
 	$table->data[22][0] = __('Integria inventory');

@@ -1,3 +1,13 @@
+2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extensions/agents_modules.php: changed the header of the table
+	agents modules, now it uses css3 (and some tricks in javascript)
+	and the text for the modules is vertical.
+	
+	Fixes: #3539424
+	
+	MERGED FROM THE TRUNK
+
 2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
 	
 	* mobile/operation/agents.php, mobile/operation/tactical.php,

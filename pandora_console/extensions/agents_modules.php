@@ -85,12 +85,14 @@ function mainAgentsModules() {
 	$comborefr = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => 0, 'hor_offset' => 0)).'">';
 	$comborefr .= '<b>'.__('Refresh').'</b>';
 	$comborefr .= html_print_select (
-		array('30' => '30 '.__('seconds'),
+		array('30' => '30 ' . __('seconds'),
 			(string)SECONDS_1MINUTE => __('1 minute'),
 			(string)SECONDS_2MINUTES => __('2 minutes'),
 			(string)SECONDS_5MINUTES => __('5 minutes'),
 			(string)SECONDS_10MINUTES => __('10 minutes')),
-			'refr', (int)get_parameter('refr', 0), $script = 'this.form.submit()', '', 0, true, false, false, '', false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
+		'refr', (int)get_parameter('refr', 0),
+		$script = 'this.form.submit()', '', 0, true, false, false, '',
+		false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
 	$comborefr .= "</form>";
 	
 	if ($config["pure"] == 0) {
@@ -137,8 +139,8 @@ function mainAgentsModules() {
 	$name = '';
 	$cont = 0;
 	
-	foreach($all_modules as $key => $module) {
-		if($module == $name) {
+	foreach ($all_modules as $key => $module) {
+		if ($module == $name) {
 			$modules_by_name[$cont-1]['id'][] = $key;
 		}
 		else {
@@ -149,32 +151,35 @@ function mainAgentsModules() {
 		}
 	}
 	
-	if($config["pure"] == 1) {
+	if ($config["pure"] == 1) {
 		$block = count($modules_by_name);
 	}
 	
 	$filter_groups = array ('offset' => (int) $offset,
 		'limit' => (int) $config['block_size']);
 	
-	if($group_id > 0) {
+	if ($group_id > 0) {
 		$filter_groups['id_grupo'] = $group_id;
 	}
 	
 	$agents = agents_get_agents ($filter_groups);
 	$nagents = count($agents);
 	
-	if($all_modules == false || $agents == false) {
+	if ($all_modules == false || $agents == false) {
 		echo "<div class='nf'>".__('There are no agents with modules')."</div>";
 		return;
 	}
 	
-	echo '<table cellpadding="4" cellspacing="4" border="0" width=98%>';
+	echo '<table cellpadding="4" cellspacing="4" border="0">';
 	
-	echo "<th width='140px' height='25px'>".__("Agents")." / ".__("Modules")."</th>";
+	echo "<tr>";
 	
-	if($hor_offset > 0) {
+	echo "<th width='140px' height='25px' valign='bottom' style='text-align: right !important;'>" . __("Agents") . " / " . __("Modules") . "</th>";
+	
+	if ($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
-		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".html_print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
+		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='" . ($nagents + 1) . "'>" .
+			"<a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=" . $new_hor_offset . "&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".html_print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
 	}
 	$nmodules = 0;
 	foreach ($modules_by_name as $module) {
@@ -184,16 +189,26 @@ function mainAgentsModules() {
 			continue;
 		}
 		
-		echo '<th width="20px" >'. html_print_image('images/information.png', true, array('title' => io_safe_output($module['name']))) ."</th>";
+		$text = ui_print_truncate_text(io_safe_output($module['name']), 'module_small');
+		
+		echo '<th align="center" width="20px" id="th_module_r_' . $nmodules . '" class="th_class_module_r">
+				<div style="width: 30px;">
+					<div id="div_module_r_' . $nmodules . '" style="display: none;" class="rotate_text_module">' .
+						$text .
+					'</div>
+				</div>
+			</th>';
 	}
 	
-	if(($hor_offset + $block) < $nmodules) {
+	if (($hor_offset + $block) < $nmodules) {
 		$new_hor_offset = $hor_offset+$block;
 		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."&modulegroup=".$modulegroup."'>".html_print_image("images/darrowright.png",true, array('title' => __('More modules')))."</a> </th>";
 	}
 	
+	echo "</tr>";
+	
 	$filter_agents = false;
-	if($group_id > 0) {
+	if ($group_id > 0) {
 		$filter_agents = array('id_grupo' => $group_id);
 	}
 	// Prepare pagination
@@ -307,6 +322,42 @@ function mainAgentsModules() {
 		'</li>' .
 		"</ul>" .
 	"</p>";
+	
+	echo "
+		<style type='text/css'>
+			.rotate_text_module {
+				-webkit-transform: rotate(270deg);
+				-moz-transform: rotate(270deg);
+				-o-transform: rotate(270deg);
+				writing-mode: lr-tb;
+				white-space: nowrap;
+			}
+		</style>
+		<script type='text/javascript'>
+			$(document).ready(function () {
+				//Get max width of name of modules
+				max_width = 0;
+				$.each($('.th_class_module_r'), function (i, elem) {
+					id = $(elem).attr('id').replace('th_module_r_', '');
+					
+					width = $(\"#div_module_r_\" + id).width();
+					
+					if (max_width < width) {
+						max_width = width;
+					} 
+				});
+				
+				$.each($('.th_class_module_r'), function (i, elem) {
+					id = $(elem).attr('id').replace('th_module_r_', '');
+					$(\"#th_module_r_\" + id).height(($(\"#div_module_r_\" + id).width() + 10) + 'px');
+					console.log($(\"#div_module_r_\" + id).width());
+					//$(\"#div_module_r_\" + id).css('margin-top', (max_width - $(\"#div_module_r_\" + id).width()) + 'px');
+					$(\"#div_module_r_\" + id).css('margin-top', (max_width - 20) + 'px');
+					$(\"#div_module_r_\" + id).show();
+				});
+			});
+		</script>
+		";
 }
 
 extensions_add_operation_menu_option(__("Agents/Modules view"), 'estado', 'agents_modules/icon_menu.png', "v1r1");

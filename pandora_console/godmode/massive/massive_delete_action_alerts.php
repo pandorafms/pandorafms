@@ -61,7 +61,7 @@ if ($delete) {
 			$agent_alerts = agents_get_alerts($id_agents);
 			
 			$alerts_agent_modules = array();
-			foreach ($agent_alerts['simple'] as $agent_alert){
+			foreach ($agent_alerts['simple'] as $agent_alert) {
 				if (in_array($agent_alert['id_alert_template'], $id_alert_templates)) {
 					$alerts_agent_modules = array_merge($alerts_agent_modules, alerts_get_alerts_agent_module ($agent_alert['id_agent_module'], true, false, 'id'));
 				}
@@ -192,7 +192,7 @@ $(document).ready (function () {
 	update_alerts();
 	
 	var recursion;
-	$("#checkbox-recursion").click(function (){
+	$("#checkbox-recursion").click(function () {
 		recursion = this.checked ? 1 : 0;
 		$("#id_group").trigger("change");
 	});

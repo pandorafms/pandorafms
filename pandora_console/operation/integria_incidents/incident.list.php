@@ -41,8 +41,8 @@ if (isset ($result_groups['group'])) {
 
 $resolutions[0] = __('None');
 
-if (isset ($result_resolutions['resolution'])){
-	foreach($result_resolutions['resolution'] as $res) {
+if (isset ($result_resolutions['resolution'])) {
+	foreach ($result_resolutions['resolution'] as $res) {
 		$resolutions[$res['id']] = $res['name'];
 	}
 }

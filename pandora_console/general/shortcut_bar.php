@@ -296,8 +296,8 @@ echo "</div>";
 		}
 		
 		$('#shortcut_button').click (function () {
-			if ($('#shotcut_bar').css('height') == '0px'){
-				$('#shotcut_bar').css({height: 0}).animate({ height: '20' }, 900);	
+			if ($('#shotcut_bar').css('height') == '0px') {
+				$('#shotcut_bar').css({height: 0}).animate({ height: '20' }, 900);
 				$('#shortcut_button').css({height: 22}).animate({ height: '40' }, 900);
 				jQuery.post ("ajax.php",
 					{"page" : "general/shortcut_bar",

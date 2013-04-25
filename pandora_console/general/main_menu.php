@@ -67,7 +67,7 @@ $(document).ready( function() {
 			openTime = new Date().getTime();
 			
 			// Close in 1 second if is not closed manually
-			setTimeout(function(){
+			setTimeout(function() {
 				if(openTime > 0 && handsIn == 0) {
 					$('#menu_container').animate({"left": "-=140px"}, 100);
 					openTime = 0;

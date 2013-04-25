@@ -28,7 +28,7 @@ if ($searchGraphs) {
 	
 	$usergraphs_id = array_keys($usergraphs);
 	
-	if(!$usergraphs_id){
+	if (!$usergraphs_id) {
 		$graphs_condition = " AND 1<>1";
 	}
 	else {
@@ -41,7 +41,7 @@ if ($searchGraphs) {
 	
 	$sql_count = "SELECT COUNT(id_graph) AS count $fromwhere";
 	
-	if($only_count) {
+	if ($only_count) {
 		$totalGraphs = db_get_value_sql($sql_count);
 	}
 	else {

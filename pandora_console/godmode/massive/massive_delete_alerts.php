@@ -250,7 +250,7 @@ $(document).ready (function () {
 		);
 	});
 	
-	$("#checkbox-recursion").click(function (){
+	$("#checkbox-recursion").click(function () {
 		$("#id_group").trigger("change");
 	});
 	

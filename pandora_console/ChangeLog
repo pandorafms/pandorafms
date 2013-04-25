@@ -1,3 +1,16 @@
+2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
+
+	* general/shortcut_bar.php, general/main_menu.php,
+	extensions/update_manager/update_pandora.php,
+	extensions/plugin_registration.php, godmode/setup/gis_step_2.php,
+	godmode/massive/massive_delete_alerts.php,
+	godmode/alerts/alert_actions.php, godmode/tag/edit_tag.php,
+	godmode/category/edit_category.php,
+	godmode/agentes/configurar_agente.php,
+	operation/snmpconsole/snmp_view.php,
+	operation/search_graphs.getdata.php,
+	operation/agentes/status_monitor.php: cleaned source code style.
+
 2013-04-24 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/users/user_edit.php: fixed the call to function from

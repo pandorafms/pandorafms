@@ -1,5 +1,12 @@
 2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/javascript/pandora.js: set the title for the large
+	modules.
+	
+	Fixes: #3609509
+
+2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
+
 	* extensions/agents_alerts.php, extensions/snmp_explorer.php,
 	extensions/insert_data.php, extensions/net_tools.php,
 	extensions/resource_exportation.php, extensions/system_info.php,

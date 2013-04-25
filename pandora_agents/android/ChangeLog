@@ -1,3 +1,22 @@
+2013-04-25 Mark Holland <mark@mark-holland.me.uk>
+
+	* src/pandroid/agent/Core.java: Changed get and update
+	database values methods to support new DataBaseHandler.
+
+	* src/pandroid/agent/DataBaseHandler.java: Complete rewrite.
+
+	* src/pandroid/agent/PandroidAgent.java: Removed initiate
+	database, database now supplied with build.
+
+	* src/pandroid/agent/PandroidAgentListener.java: changed
+	SimIDReport to simIDReport to reflect database.
+
+	* assets/database/pandroid.zip: zipped sqlite3
+	database containing all default values.
+
+	* libs/android-sqlite-asset-helper.jar: library to facilitate
+	database operations. Only temporarily being used.
+
 2013-04-23 Mark Holland <mark@mark-holland.me.uk>
 
 	* src/pandroid/agent/Core.java: Migrated from shared

@@ -41,27 +41,27 @@ $form .= "</form>";
 
 ui_toggle($form, __('Add workunit'));
 
-if(isset($result['workunit'][0]) && is_array($result['workunit'][0])){
+if (isset($result['workunit'][0]) && is_array($result['workunit'][0])) {
 	$workunits = $result['workunit'];
 }
 else {
 	$workunits = $result;
 }
 
-foreach($workunits as $value) {
+foreach ($workunits as $value) {
 	$table->width = "98%";
 	$table->class = "databox";
 	$table->colspan[1][0] = 4;
 	$table->size[0] = "80%";
 	$table->size[1] = "20%";
-
+	
 	$table->data = array();
-
-	$table->data[0][0] = $value['id_user']." ".__('said')." ".$value['timestamp'];
-	$table->data[0][1] = $value['duration']." ".__('Hours')." ".__('Public').": ".$value['public'];
+	
+	$table->data[0][0] = $value['id_user'] . " " . __('said') . " " . $value['timestamp'];
+	$table->data[0][1] = $value['duration'] . " " . __('Hours') . " " . __('Public') . ": " . $value['public'];
 	
 	$table->data[1][0] = $value['description'];
-
+	
 	html_print_table($table);
 }
 ?>

@@ -138,10 +138,11 @@ switch ($action) {
 			}
 		else
 			$errorfill = true;
-
+		
 		require_once('gis.php');
 		return;
-		}
+		break;
+}
 
 $table->width = '90%';
 

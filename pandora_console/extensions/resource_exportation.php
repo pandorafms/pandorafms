@@ -248,7 +248,7 @@ function output_xml_visual_console($id) {
 	echo "<width>" . io_safe_output($visual_map['width']) . "</width>\n";
 	$items = db_get_all_rows_field_filter('tlayout_data', 'id_layout', $visual_map['id']);
 	if ($items === false) $items = array();
-	foreach ($items as $item){
+	foreach ($items as $item) {
 		echo "<item>\n";
 		echo "<other_id>" . $item['id'] . "</other_id>\n"; //OLD ID USE FOR parent item 
 		if (!empty($item['label'])) {

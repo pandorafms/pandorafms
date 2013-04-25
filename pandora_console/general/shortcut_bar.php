@@ -309,8 +309,8 @@ echo "</div>";
 				);
 			}
 			else {
-				$('#shotcut_bar').css({height: 20}).animate({ height: '0' }, 900);	
-				$('#shortcut_button').css({height: 40}).animate({ height: '22' }, 900);		
+				$('#shotcut_bar').css({height: 20}).animate({ height: '0' }, 900);
+				$('#shortcut_button').css({height: 40}).animate({ height: '22' }, 900);
 				jQuery.post ("ajax.php",
 					{"page" : "general/shortcut_bar",
 					 "update_shortcut_state": 1,
@@ -323,11 +323,12 @@ echo "</div>";
 		});
 	});
 	
-	var id_user = $('#hidden-shortcut_id_user').val();	
+	var id_user = $('#hidden-shortcut_id_user').val();
 	function shortcut_check_alerts() {
 		jQuery.post ("ajax.php",
-			{"page" : "operation/agentes/alerts_status",
-			 "get_alert_fired": 1
+			{
+				"page" : "operation/agentes/alerts_status",
+				"get_alert_fired": 1
 			},
 			function (data) {
 				$('#shortcut_alerts_fired').text(data);

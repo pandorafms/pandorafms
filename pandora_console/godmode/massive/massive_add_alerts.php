@@ -62,7 +62,7 @@ function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 		}
 	}
 	
-	if(count($module_names) == 1 && $module_names[0] == '0'){
+	if(count($module_names) == 1 && $module_names[0] == '0') {
 		$modules_id = agents_common_modules ($id_agents, false, true);
 	}
 	

@@ -554,7 +554,7 @@ $(document).ready( function() {
 	}
 	
 	// Don't collapse filter if update button has been pushed
-	if ($("#hidden-open_filter").val() == 'true'){
+	if ($("#hidden-open_filter").val() == 'true') {
 		$("#event_control").toggle();
 	}
 	
@@ -807,7 +807,7 @@ $(document).ready( function() {
 	
 	// Change toggle arrow when it's clicked
 	$("#tgl_event_control").click(function() {
-		if ($("#toggle_arrow").attr("src").match(/[^\.]+down\.png/) == null){
+		if ($("#toggle_arrow").attr("src").match(/[^\.]+down\.png/) == null) {
 			var params = [];
 			params.push("get_image_path=1");
 			params.push("img_src=images/down.png");

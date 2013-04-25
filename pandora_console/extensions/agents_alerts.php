@@ -275,7 +275,7 @@ function print_alerts_summary_modal_window($id, $alerts) {
 			$actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
 			foreach ($actions as $action) {
 				$actionText .= '<div><span class="action_name"><li>' . $action['name'];
-				if ($action["fires_min"] != $action["fires_max"]){
+				if ($action["fires_min"] != $action["fires_max"]) {
 					$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
 				}
 				$actionText .= '</li></span><br /></div>';
@@ -283,7 +283,7 @@ function print_alerts_summary_modal_window($id, $alerts) {
 			$actionText .= '</ul></div>';
 		}
 		else {
-			if(!empty($actionDefault)) {
+			if (!empty($actionDefault)) {
 				$actionText = db_get_sql ("SELECT name FROM talert_actions WHERE id = $actionDefault"). " <i>(".__("Default") . ")</i>";
 			}
 		}

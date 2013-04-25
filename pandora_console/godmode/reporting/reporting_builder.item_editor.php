@@ -482,7 +482,7 @@ html_print_input_hidden('id_item', $idItem);
 				// Get group list that user has access
 				$groups_user = users_get_groups ($config['id_user'], "RW", $own_info['is_admin'], true);
 				$groups_id = array();
-				foreach($groups_user as $key => $groups){
+				foreach ($groups_user as $key => $groups) {
 					$groups_id[] = $groups['id_grupo'];
 				}
 				

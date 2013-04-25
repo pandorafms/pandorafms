@@ -17,7 +17,7 @@
 function view_logfile ($file_name) {
 	global $config;
 	
-	if (!file_exists($file_name)){
+	if (!file_exists($file_name)) {
 		echo "<h2 class='error'>".__("Cannot find file"). "(".$file_name;
 		echo ")</h2>";
 	}

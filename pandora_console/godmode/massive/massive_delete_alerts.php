@@ -72,8 +72,8 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 	
 	$module_selection_mode =  get_parameter('modules_selection_mode');
 	
-	foreach($module_names as $module){
-		foreach($id_agents as $id_agent) {
+	foreach ($module_names as $module) {
+		foreach ($id_agents as $id_agent) {
 			$module_id = modules_get_agentmodule_id($module, $id_agent);
 			$modules_id[] = $module_id['id_agente_modulo'];
 		}
@@ -83,7 +83,7 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 	if (count($module_names) == 1 && $module_names[0] == '0') {
 		
 		if ($module_selection_mode == 'common')
-				$modules_id = agents_common_modules_with_alerts ($id_agents, false, true);
+			$modules_id = agents_common_modules_with_alerts ($id_agents, false, true);
 		else {
 			// For agents selected
 			$modules_id = array();
@@ -111,12 +111,12 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 	
 	$conttotal = 0;
 	$contsuccess = 0;
-	foreach($modules_id as $module){
+	foreach ($modules_id as $module) {
 		$success = alerts_delete_alert_agent_module (false,
 		array ('id_agent_module' => $module,
 			'id_alert_template' => $id_alert_template));
 		
-		if($success)
+		if ($success)
 			$contsuccess ++;
 		$conttotal ++;
 	}

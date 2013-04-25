@@ -2146,17 +2146,19 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200) {
 	$legend = array ();
 	$total = 0;
 	
-	$sql = "SELECT criticity, COUNT(id_evento) events FROM tevento GROUP BY criticity ORDER BY events DESC";
+	$sql = "SELECT criticity, COUNT(id_evento) events
+		FROM tevento
+		GROUP BY criticity ORDER BY events DESC";
 	
 	$criticities = db_get_all_rows_sql ($sql, false, false);
 	
-	if(empty($criticities)) {
+	if (empty($criticities)) {
 		$criticities = array();
 		$colors = array();
 	}
 	
-	foreach($criticities as $cr) {
-		switch($cr['criticity']) {
+	foreach ($criticities as $cr) {
+		switch ($cr['criticity']) {
 			case EVENT_CRIT_MAINTENANCE:
 				$data[__('Maintenance')] = $cr['events'];
 				$colors[__('Maintenance')] = COL_MAINTENANCE;
@@ -2395,13 +2397,13 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 				'utimestamp > '.$bottom,
 				'utimestamp < '.$top), 'criticity, utimestamp');
 		
-		if (!empty($event['utimestamp'])){
+		if (!empty($event['utimestamp'])) {
 			$data[$cont]['utimestamp'] = $periodtime;
 			switch ($event['criticity']) {
-				case 3:
+				case EVENT_CRIT_WARNING:
 					$data[$cont]['data'] = 2;
 					break;
-				case 4:
+				case EVENT_CRIT_CRITICAL:
 					$data[$cont]['data'] = 3;
 					break;
 				default:

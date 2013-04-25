@@ -1,3 +1,18 @@
+2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/events/custom_events.php,
+	godmode/massive/massive_enable_disable_alerts.php,
+	godmode/massive/massive_edit_agents.php,
+	godmode/massive/massive_delete_modules.php,
+	godmode/massive/massive_add_action_alerts.php,
+	godmode/massive/massive_delete_profiles.php,
+	godmode/massive/massive_delete_alerts.php,
+	godmode/groups/modu_group_list.php, godmode/groups/group_list.php,
+	godmode/reporting/graph_builder.php, godmode/reporting/graphs.php,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/configure_alert_action.php, include/functions_ui.php,
+	include/functions_graph.php: improved the source code.
+
 2013-04-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql,

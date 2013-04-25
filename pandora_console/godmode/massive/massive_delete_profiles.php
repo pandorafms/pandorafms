@@ -50,13 +50,13 @@ if ($delete_profiles) {
 	$groups_id = get_parameter ('groups_id', -1);
 	$users_id = get_parameter ('users_id', -1);
 	
-	if($profiles_id == -1 || $groups_id == -1 || $users_id == -1){
+	if ($profiles_id == -1 || $groups_id == -1 || $users_id == -1) {
 		$result = false;
 	}
 	else { 
-		foreach($profiles_id as $profile) {
-			foreach($groups_id as $group) {
-				foreach($users_id as $id_up) {
+		foreach ($profiles_id as $profile) {
+			foreach ($groups_id as $group) {
+				foreach ($users_id as $id_up) {
 					 if ($id_up == 0) {
 						echo '<h3 class="error">'.__('Not deleted. You must select an existing user').'</h3>';
 						$result="";

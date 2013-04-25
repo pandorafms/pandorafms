@@ -65,11 +65,11 @@ if ($create_group) {
 	$alerts_disabled = (bool) get_parameter ('alerts_disabled');
 	$custom_id = (string) get_parameter ('custom_id');
 	$check = db_get_value('name', 'tmodule_group', 'name', $name);
-
-	if ($name){
+	
+	if ($name) {
 		if (!$check) {
 			$result = db_process_sql_insert('tmodule_group', array('name' => $name));
-	
+			
 			if ($result) {
 				ui_print_success_message(__('Group successfully created')); 
 			}

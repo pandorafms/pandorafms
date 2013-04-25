@@ -130,7 +130,7 @@ $table->data[2][0] = __('Command');
 $table->data[2][1] = html_print_select_from_sql ('SELECT id, name FROM talert_commands',
 	'id_command', $id_command, '', __('None'), 0, true);
 $table->data[2][1] .= ' ';
-if (check_acl ($config['id_user'], 0, "PM")){
+if (check_acl ($config['id_user'], 0, "PM")) {
 	$table->data[2][1] .= html_print_image ('images/add.png', true);
 	$table->data[2][1] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
 	$table->data[2][1] .= __('Create Command');
@@ -144,7 +144,7 @@ $table->data[4][0] = __('Command preview');
 $table->data[4][1] = html_print_textarea ('command_preview', 10, 30, '',
 	'disabled="disabled"', true);
 $row = 5;
-for ($i=1; $i<=10; $i++) {
+for ($i = 1; $i <= 10; $i++) {
 	$table->data['field'.$i][0] = html_print_image('images/spinner.gif',true);
 	$table->data['field'.$i][1] = html_print_image('images/spinner.gif',true);
 	// Store the value in a hidden to keep it on first execution

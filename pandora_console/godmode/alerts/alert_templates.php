@@ -155,7 +155,7 @@ if ($delete_template) {
 	
 	if ($al_template !== false){
 		// If user tries to delete a template with group=ALL then must have "PM" access privileges
-		if ($al_template['id_group'] == 0){
+		if ($al_template['id_group'] == 0) {
 			if (! check_acl ($config['id_user'], 0, "PM")) {
 				db_pandora_audit("ACL Violation",
 					"Trying to access Alert Management");
@@ -167,7 +167,10 @@ if ($delete_template) {
 					alerts_meta_print_header ();
 				}
 				else {
-					ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alert_template", true);
+					ui_print_page_header(
+						__('Alerts') . " &raquo; " .  __('Alert templates'),
+						"images/gm_alerts.png", false, "alert_template",
+						true);
 				}
 			}
 		} // If user tries to delete a template of others groups

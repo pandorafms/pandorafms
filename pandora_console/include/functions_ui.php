@@ -1724,8 +1724,9 @@ function ui_print_module_warn_value ($max_warning, $min_warning, $str_warning, $
 	
 	$data .= " - ";
 	
-	if ($max_critical != $min_critical){
-		$data .= format_for_graph($max_critical) ."/". format_for_graph ($min_critical);
+	if ($max_critical != $min_critical) {
+		$data .= format_for_graph($max_critical) . "/" .
+			format_for_graph ($min_critical);
 	}
 	else {
 		$data .= __("N/A");

@@ -243,10 +243,10 @@ if (!$delete_module) {
 		$chunk1 = array();
 		$chunk1 = explode ("|", $chunkdata);
 		$modules="";$weights="";
-		for ($a=0; $a < count($chunk1); $a++){
+		for ($a = 0; $a < count($chunk1); $a++) {
 			$chunk2[$a] = array();
 			$chunk2[$a] = explode ( ",", $chunk1[$a]);
-			if (strpos($modules, $chunk2[$a][1]) == 0){ // Skip dupes
+			if (strpos($modules, $chunk2[$a][1]) == 0) { // Skip dupes
 				$module_array[] = $chunk2[$a][1];
 				$agent_array[] = $chunk2[$a][0];
 				$weight_array[] = $chunk2[$a][2];

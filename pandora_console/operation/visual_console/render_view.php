@@ -106,11 +106,11 @@ $options['view']['active'] = true;
 
 if (!defined('METACONSOLE')) {
 	if ($config["pure"] == 0) {
-		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">' . html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
+		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.((int)get_parameter('refr', 0)).'&amp;pure=1">' . html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
 	}
 	else {
-		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">'
+		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.((int)get_parameter('refr', 0)).'">'
 			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
 		
@@ -161,7 +161,7 @@ if ($vc_refr) {
 
 echo '<div style="height:30px">&nbsp;</div>';
 
-if ($config['pure'] && $config["refr"] != 0) {
+if ($config['pure'] && ((int)get_parameter('refr', 0)) != 0) {
 	echo '<div id="countdown"><br /></div>';
 }
 
@@ -180,7 +180,7 @@ else
 html_print_table ($table);
 echo '</form>';
 
-if ($config["pure"] && $config["refr"] != 0) {
+if ($config["pure"] && ((int)get_parameter('refr', 0)) != 0) {
 	ui_require_jquery_file ('countdown');
 	ui_require_css_file ('countdown');
 }
@@ -195,10 +195,10 @@ $(document).ready (function () {
 	});
 	
 	<?php
-	if ($config["pure"] && $config["refr"] > 0) {
+	if ($config["pure"] && ((int)get_parameter('refr', 0)) > 0) {
 	?>
 		t = new Date();
-		t.setTime (t.getTime() + <?php echo $config["refr"] * 1000; ?>);
+		t.setTime (t.getTime() + <?php echo ((int)get_parameter('refr', 0)) * 1000; ?>);
 		$("#countdown").countdown({
 			until: t,
 			format: 'MS',

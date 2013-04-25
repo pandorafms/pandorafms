@@ -718,7 +718,7 @@ $(document).ready( function() {
 				jQuery.each (data, function (i, val) {
 					s = js_html_entity_decode(val);
 					
-					if (i == id_filter_save){
+					if (i == id_filter_save) {
 						$('#filter_id').append ($('<option selected="selected"></option>').html (s).attr ("value", i));
 					}
 					else {

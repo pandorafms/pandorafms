@@ -275,7 +275,7 @@ if (($create != "") OR ($view != "")) {
 	echo '<table width="98%">';
 	echo '<tr><td align="right">';
 	
-	if ($create != ""){
+	if ($create != "") {
 		echo "<input name='crtbutton' type='submit' class='sub wand' value='" .
 			__('Create') . "'>";
 	}
@@ -295,7 +295,7 @@ else {
 	}
 	
 	// Update plugin
-	if (isset($_GET["update_plugin"])){ // if modified any parameter
+	if (isset($_GET["update_plugin"])) { // if modified any parameter
 		$plugin_id = get_parameter ("update_plugin", 0);
 		$plugin_name = get_parameter ("form_name", "");
 		$plugin_description = get_parameter ("form_description", "");
@@ -308,7 +308,7 @@ else {
 		// Get macros
 		$i = 1;
 		$macros = array();
-		while(1) {
+		while (1) {
 			$macro = (string)get_parameter ('field'.$i.'_macro');
 			if($macro == '') {
 				break;
@@ -350,7 +350,7 @@ else {
 	}
 	
 	// Create plugin
-	if (isset($_GET["create_plugin"])){	 
+	if (isset($_GET["create_plugin"])) {
 		$plugin_name = get_parameter ("form_name", "");
 		$plugin_description = get_parameter ("form_description", "");
 		$plugin_max_timeout = get_parameter ("form_max_timeout", "");

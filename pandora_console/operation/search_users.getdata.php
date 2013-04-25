@@ -146,11 +146,11 @@ if ($searchUsers) {
 			}
 		}
 		
-		if($only_count) {
+		if ($only_count) {
 			unset($users);
 		}
 		
-		if(!$users_id) {
+		if (!$users_id) {
 			$user_condition = "";
 		}
 		else {

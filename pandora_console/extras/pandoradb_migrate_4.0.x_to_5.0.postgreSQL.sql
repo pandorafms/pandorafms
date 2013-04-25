@@ -1114,3 +1114,10 @@ UPDATE "talert_commands" SET "fields_descriptions" = '["Agent&#x20;name","Module
 -- ---------------------------------------------------------------------
 
 UPDATE tagente_estado SET last_known_status = last_status, last_status = 3 WHERE estado = 3;
+
+-- ---------------------------------------------------------------------
+-- Table `tagente_datos_inc`
+-- ---------------------------------------------------------------------
+
+ALTER TABLE tagente_datos_inc DROP COLUMN id_adi;
+

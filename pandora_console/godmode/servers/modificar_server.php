@@ -68,7 +68,7 @@ else {
 		}
 	}
 	
-	// Move SNMP modules back to the enterprise server
+	// Reset module count
 	if (isset($_GET["server_reset_counts"])) {
 		$reslt = db_process_sql ("UPDATE tagente SET update_module_count=1, update_alert_count=1");
 		

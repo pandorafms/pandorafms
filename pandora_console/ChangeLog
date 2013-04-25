@@ -1,3 +1,15 @@
+2013-04-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.postgreSQL.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.mysql.sql,
+	  extras/pandoradb_migrate_4.0.x_to_5.0.oracle.sql,
+	  pandoradb.postgreSQL.sql,
+	  pandoradb.oracle.sql: Removed an unused column from tagente_datos_inc.
+	  Fixes bug #3611681.
+
+	* godmode/servers/modificar_server.php: Fixed a comment.
+
 2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js: set the title for the large

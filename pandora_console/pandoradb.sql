@@ -102,11 +102,9 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
 -- Table `tagente_datos_inc`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
-	`id_adi` int(10) unsigned NOT NULL auto_increment,
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` double(18,2) default NULL,
 	`utimestamp` int(20) unsigned default '0',
-	PRIMARY KEY  (`id_adi`),
 	KEY `data_inc_index_1` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -1,5 +1,13 @@
 2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/alerts/alert_list.list.php,
+	godmode/setup/setup_general.php, extensions/pandora_logs.php: some
+	fixes in the source code from the indications of bug in the tracker.
+	
+	Fixes: #3611333
+
+2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
+
 	* extensions/agents_modules.php: changed the header of the table
 	agents modules, now it uses css3 (and some tricks in javascript)
 	and the text for the modules is vertical.

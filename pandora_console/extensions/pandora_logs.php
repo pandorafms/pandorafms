@@ -17,13 +17,29 @@
 function view_logfile ($file_name) {
 	global $config;
 	
+	$memory_limit = ini_get("memory_limit");
+	if (strstr("M", $memory_limit) !== false) {
+		$memory_limit = str_replace("M", "", $memory_limit);
+		$memory_limit = $memory_limit * 1024 * 1024;
+		
+		//Arbitrary size for the PHP program
+		$memory_limit = $memory_limit - (8 * 1024 * 1024);
+	}
+	
+	
+	
 	if (!file_exists($file_name)) {
 		echo "<h2 class='error'>".__("Cannot find file"). "(".$file_name;
 		echo ")</h2>";
 	}
 	else {
 		$file_size = filesize($file_name);
-		if ($file_size > 512000) {
+		
+		if ($memory_limit < $file_size) {
+			echo "<h2>$file_name (" . __("File is too large than PHP memory allocated in the system.") . ")</h2>";
+			echo "<h2>" . __("The preview file is imposible.") . "</h2>";
+		}
+		else if ($file_size > 512000) {
 			$data = file_get_contents ($file_name, false, NULL, $file_size - 512000);
 			echo "<h2>$file_name (".__("File is too large (> 500KB)").")</h2>";
 			

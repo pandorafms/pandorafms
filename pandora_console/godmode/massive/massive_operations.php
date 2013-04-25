@@ -141,7 +141,7 @@ $onheader['policies'] = $policiestab;
 ui_print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], "images/gm_massive_operations.png", false, "", true, $onheader);
 
 // Checks if the PHP configuration is correctly
-if ((get_cfg_var("max_execution_time") != 0) or (get_cfg_var("max_input_time") != -1)){
+if ((get_cfg_var("max_execution_time") != 0) or (get_cfg_var("max_input_time") != -1)) {
 	echo '<div id="notify_conf" class="notify">';
 	echo __("In order to perform massive operations, PHP needs a correct configuration in timeout parameters. Please, open your PHP configuration file (php.ini) for example: <i>sudo vi /etc/php5/apache2/php.ini;</i><br> And set your timeout parameters to a correct value: <br><i> max_execution_time = 0</i> and <i>max_input_time = -1</i>");
 	echo '</div>';

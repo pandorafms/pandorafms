@@ -127,7 +127,7 @@ function mainInsertData() {
 			}
 			ui_print_error_message($msg);
 		}
-		if($done > 0){
+		if ($done > 0) {
 			$msg = sprintf(__('Save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']);
 			if($done > 1) {
 				$msg .= " ($done)";

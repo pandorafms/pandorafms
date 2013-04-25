@@ -241,8 +241,8 @@ function mainAgentsModules() {
 			}
 			
 			$match = false;
-			foreach($module['id'] as $module_id){
-				if(!$match && array_key_exists($module_id,$agent_modules)) {
+			foreach ($module['id'] as $module_id) {
+				if (!$match && array_key_exists($module_id,$agent_modules)) {
 					$status = modules_get_agentmodule_status($module_id);
 					echo "<td style='text-align: center;'>";
 					$win_handle = dechex(crc32($module_id.$module["name"]));
@@ -250,7 +250,7 @@ function mainAgentsModules() {
 					$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module_id."&label=".base64_encode($module["name"])."&refresh=600','day_".$win_handle."')";
 					
 					echo '<a href="javascript:'.$link.'">';
-					switch($status){
+					switch ($status) {
 						case 0:
 							ui_print_status_image ('module_ok.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;

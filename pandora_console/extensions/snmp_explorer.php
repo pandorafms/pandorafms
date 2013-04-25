@@ -148,14 +148,14 @@ function snmp_explorer() {
 		$errors = array();
 		$done = 0;
 		
-		foreach($id_snmp as $id) {
-			if (isset($interfaces[$id]['ifName']) && $interfaces[$id]['ifName']['value'] != ""){
+		foreach ($id_snmp as $id) {
+			if (isset($interfaces[$id]['ifName']) && $interfaces[$id]['ifName']['value'] != "") {
 				$ifname = $interfaces[$id]['ifName']['value'];
 			}
-			else if (isset($interfaces[$id]['ifDescr']) && $interfaces[$id]['ifDescr']['value'] != ""){
+			else if (isset($interfaces[$id]['ifDescr']) && $interfaces[$id]['ifDescr']['value'] != "") {
 				$ifname = $interfaces[$id]['ifDescr']['value'];
 			}
-			foreach($modules as $module) {
+			foreach ($modules as $module) {
 				$oid_array = explode('.',$module);
 				$oid_array[count($oid_array)-1] = $id;
 				$oid = implode('.',$oid_array);
@@ -252,13 +252,13 @@ function snmp_explorer() {
 	
 	// Create the interface list for the interface
 	$interfaces_list = array();
-	foreach ($interfaces as $interface){
+	foreach ($interfaces as $interface) {
 		// Get the interface name, removing " " characters and avoid "blank" interfaces
-		if (isset($interface['ifName']) && $interface['ifName']['value'] != ""){
-				$ifname = $interface['ifName']['value'];
+		if (isset($interface['ifName']) && $interface['ifName']['value'] != "") {
+			$ifname = $interface['ifName']['value'];
 		}
-		else if (isset($interface['ifDescr']) && $interface['ifDescr']['value'] != ""){
-				$ifname = $interface['ifDescr']['value'];
+		else if (isset($interface['ifDescr']) && $interface['ifDescr']['value'] != "") {
+			$ifname = $interface['ifDescr']['value'];
 		}
 		else {
 			continue;
@@ -432,45 +432,45 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
 	
 	jQuery.post ('ajax.php', 
-				{"page" : "godmode/agentes/agent_manager",
-				 "get_modules_json_for_multiple_snmp": 1,
-				 "id_snmp[]": idSNMP,
-				 "id_snmp_serialize": $("#hidden-id_snmp_serialize").val()
-				 },
-				 function (data) {
-					 $('#module').empty ();
-					 c = 0;
-					 jQuery.each (data, function (i, val) {
-								  s = js_html_entity_decode(val);
-								  $('#module').append ($('<option></option>').html (s).attr ("value", i));
-								  $('#module').fadeIn ('normal');
-								  c++;
-								  });
-					 if(c == 0){
-						 if (typeof($(document).data('text_for_module')) != 'undefined') {
-							 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
-						 }
-						 else {
-							 if (typeof(data['any_text']) != 'undefined') {
-								 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
-							 }
-							 else {
-								 var anyText = $("#any_text").html(); //Trick for catch the translate text.
-								 
-								 if (anyText == null) {
-									 anyText = 'Any';
-								 }
-								 
-								 $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
-							 }
-						 }
-					 }
-					 if (selected != undefined)
-					 $('#module').attr ('value', selected);
-					 $('#module').removeAttr('disabled');
-				 },
-				 "json"
-				 );
+		{"page" : "godmode/agentes/agent_manager",
+			"get_modules_json_for_multiple_snmp": 1,
+			"id_snmp[]": idSNMP,
+			"id_snmp_serialize": $("#hidden-id_snmp_serialize").val()
+		},
+		function (data) {
+			$('#module').empty ();
+			c = 0;
+			jQuery.each (data, function (i, val) {
+				s = js_html_entity_decode(val);
+				$('#module').append ($('<option></option>').html (s).attr ("value", i));
+				$('#module').fadeIn ('normal');
+				c++;
+				});
+			
+			if (c == 0) {
+				if (typeof($(document).data('text_for_module')) != 'undefined') {
+					$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+				}
+				else {
+					if (typeof(data['any_text']) != 'undefined') {
+						$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+					}
+					else {
+						var anyText = $("#any_text").html(); //Trick for catch the translate text.
+						
+						if (anyText == null) {
+							anyText = 'Any';
+						}
+						
+						$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+					}
+				}
+			}
+			if (selected != undefined)
+				$('#module').attr ('value', selected);
+			$('#module').removeAttr('disabled');
+		},
+		"json");
 }
 
 /* ]]> */

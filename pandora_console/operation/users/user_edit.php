@@ -35,7 +35,9 @@ $status = get_parameter ("status", -1); // Flag to print action status message
 $user_info = get_user_info ($id);
 $id = $user_info["id_user"]; //This is done in case there are problems with uppercase/lowercase (MySQL auth has that problem)
 
-if ((!check_acl ($config["id_user"], users_get_groups ($id), "UM")) AND ($id != $config["id_user"])){
+if ((!check_acl ($config["id_user"], users_get_groups ($id), "UM"))
+	AND ($id != $config["id_user"])) {
+	
 	db_pandora_audit("ACL Violation","Trying to view a user without privileges");
 	require ("general/noaccess.php");
 	exit;

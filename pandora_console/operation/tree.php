@@ -336,7 +336,9 @@ if (is_ajax ())
 					html_print_image ("operation/tree/last_leaf.png", false, array ("style" => 'vertical-align: middle;', "id" => "tree_image_os_" . $row["id_agente"], "pos_tree" => "2" ));
 				
 				// This line checks for (non-initialized) asyncronous modules
-				if ($row["estado"] == 0 AND $row["utimestamp"] == 0 AND ($row["id_tipo_modulo"] >= 21 AND $row["id_tipo_modulo"] <= 23)){
+				if ($row["estado"] == 0 AND $row["utimestamp"] == 0
+					AND ($row["id_tipo_modulo"] >= 21
+					AND $row["id_tipo_modulo"] <= 23)) {
 					$status = STATUS_MODULE_NO_DATA;
 					$title = __('UNKNOWN');
 				} // Else checks module status
@@ -651,7 +653,7 @@ treeview_printTree($activeTab);
 				url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
 				data: "page=<?php echo $_GET['sec2']; ?>&ajax_treeview=1&type=" + 
 					type + "&id=" + div_id + "&less_branchs=" + less_branchs + "&id_father=" + id_father + "&status=" + status + "&search_free=" + search_free + "&server_name=" + server_name,
-				success: function(msg){
+				success: function(msg) {
 					if (msg.length != 0) {
 						$('#tree_div'+id_father+'_'+type+'_'+div_id).hide();
 						$('#tree_div'+id_father+'_'+type+'_'+div_id).html(msg);
@@ -766,7 +768,7 @@ treeview_printTree($activeTab);
 			type: "POST",
 			url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
 			data: "page=<?php echo $_GET['sec2']; ?>&printTable=1&id_agente=" + id_agent + "&server_name=" + server_name,
-			success: function(data){
+			success: function(data) {
 				$('#cont').html(data);
 			}
 		});
@@ -779,7 +781,7 @@ treeview_printTree($activeTab);
 			type: "POST",
 			url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
 			data: "page=<?php echo $_GET['sec2']; ?>&printAlertsTable=1&id_module=" + id_module + "&server_name=" + server_name,
-			success: function(data){
+			success: function(data) {
 				$('#cont').html(data);
 			}
 		});
@@ -790,7 +792,7 @@ treeview_printTree($activeTab);
 			type: "POST",
 			url: <?php echo '"' . ui_get_full_url("ajax.php", false, false, false) . '"'; ?>,
 			data: "page=<?php echo $_GET['sec2']; ?>&printModuleTable=1&id_module=" + id_module + "&server_name=" + server_name,
-			success: function(data){
+			success: function(data) {
 				$('#cont').html(data);
 			}
 		});
@@ -806,7 +808,7 @@ treeview_printTree($activeTab);
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period,
 			dataType: "html",
-			success: function(data){	
+			success: function(data) {
 				$("#module_details_window").hide ()
 					.empty ()
 					.append (data)

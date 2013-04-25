@@ -164,7 +164,7 @@ function main_net_tools () {
 				
 				$int_max =  exec ("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.1.0 ");
 				
-				for ($ax=0; $ax < $int_max; $ax++){
+				for ($ax=0; $ax < $int_max; $ax++) {
 					$interface = exec ("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.2.1.2.$ax ");
 					$estado = exec ("$snmpget -Oqunv -v1 -c $community $ip .1.3.6.1.2.1.2.2.1.8.$ax ");
 					echo "<tr><td>$interface<td>$estado";

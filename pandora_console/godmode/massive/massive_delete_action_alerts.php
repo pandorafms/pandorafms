@@ -78,7 +78,7 @@ if ($delete) {
 				foreach ($alerts_agent_modules as $alert_agent_module) {
 					$agent_module_actions = alerts_get_alert_agent_module_actions ($alert_agent_module['id'], array('id','id_alert_action'));
 					
-					foreach ($agent_module_actions as $agent_module_action){
+					foreach ($agent_module_actions as $agent_module_action) {
 						foreach ($actions as $action) {
 							if ($agent_module_action['id_alert_action'] == $action) {
 								$result = alerts_delete_alert_agent_module_action ($agent_module_action['id']);

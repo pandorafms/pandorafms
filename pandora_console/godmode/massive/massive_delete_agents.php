@@ -135,7 +135,7 @@ ui_require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 $(document).ready (function () {
 	var recursion;
-	$("#checkbox-recursion").click(function (){
+	$("#checkbox-recursion").click(function () {
 		recursion = this.checked ? 1 : 0;
 		$("#id_group").trigger("change");
 	});

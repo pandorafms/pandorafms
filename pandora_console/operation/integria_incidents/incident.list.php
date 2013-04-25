@@ -22,8 +22,8 @@ global $result_status;
 global $result_groups;
 global $result_resolutions;
 
-if (isset ($result_status['status'])){
-
+if (isset ($result_status['status'])) {
+	
 	foreach($result_status['status'] as $st) {
 		$status[$st['id']] = $st['name'];
 	}
@@ -33,7 +33,7 @@ if (isset ($result_status['status'])){
 $status[0] = __('Any');
 $status[-10] = __('Not closed');
 
-if (isset ($result_groups['group'])){
+if (isset ($result_groups['group'])) {
 	foreach($result_groups['group'] as $gr) {
 		$groups[$gr['id']] = $gr['name'];
 	}
@@ -105,7 +105,7 @@ $table->head[10] = __('Action');
 $table->align[4] = "center";
 $table->align[5] = "center";
 
-if(isset($result['incident'][0]) && is_array($result['incident'][0])){
+if(isset($result['incident'][0]) && is_array($result['incident'][0])) {
 	$incidents = $result['incident'];
 }
 else {

@@ -168,7 +168,7 @@ function show_logfile($file_name, $numLines = 2000) {
 function logFilesLines($file_name, $numLines) {
 	global $config;
 	
-	if (!file_exists($file_name)){
+	if (!file_exists($file_name)) {
 		return '';
 	} 
 	else {

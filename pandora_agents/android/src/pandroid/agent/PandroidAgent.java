@@ -16,17 +16,16 @@ package pandroid.agent;
 
 import java.io.File;
 
+//import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.widget.TabHost;
-//import android.app.Dialog;
 //import android.util.Log;
 //import android.view.WindowManager.LayoutParams;
+import android.widget.TabHost;
 
 public class PandroidAgent extends TabActivity {
 	
@@ -34,13 +33,15 @@ public class PandroidAgent extends TabActivity {
     int defaultInterval = 300;
     TabHost tabHost;
     
-    
-    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        //database//
         
+        
+        Core.loadConfDatabase(this);
+        Core.loadLastValuesDatabase(this);
         
         
         /*
@@ -65,10 +66,6 @@ public class PandroidAgent extends TabActivity {
         //Requires The agent name to use installation id
         File installation = new File(getApplicationContext().getFilesDir(), "INSTALLATION");
         if(!installation.exists()){
-        	//Create database with default values
-        	//DataBaseHandler db = new DataBaseHandler(this,"pandroid", null, 1);
-        	
-            //Log.d("DATABASE",Core.db.getValue("latitude").get_value());
         	Core.restartAgentListener(getApplicationContext());
         }
         else{
@@ -109,11 +106,13 @@ public class PandroidAgent extends TabActivity {
     public void onPause(){
     	super.onPause();
     	Core.updateConf(getApplicationContext());
+    	Core.updateDatabase(this);
     }
     
     public void onDestroy(){
     	super.onDestroy();
     	Core.updateConf(getApplicationContext());
+    	Core.updateDatabase(this);
     	
     }
     //Sets hello signal to 1(first connect since pandroid was closed)
@@ -122,7 +121,6 @@ public class PandroidAgent extends TabActivity {
     	
     	if(Core.helloSignal == 0)
     		Core.helloSignal = 1;
-    	//dubious
     	Core.updateConf(getApplicationContext());
     }
     

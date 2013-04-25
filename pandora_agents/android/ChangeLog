@@ -1,5 +1,21 @@
 2013-04-25 Mark Holland <mark@mark-holland.me.uk>
 
+	* src/pandroid/agent/Core.java: Separate load and store
+	methods for SharedPreferences and database.
+
+	* src/pandroid/agent/PandroidAgent.java: Values retrieved from
+	database onCreate. onPause and onDestroy values are saved to 
+	database.
+
+	* src/pandroid/agent/PandroidAgentListener.java: Reverted to using
+	SharedPreferences at runtime, database used when app not in view.
+	Added module as proof of iso-8859-1 now working.
+
+	* Pandroid Agent v3.0_iso-8859-1.apk: For testing whether
+	configuration is no longer lost after an amount of time.
+
+2013-04-25 Mark Holland <mark@mark-holland.me.uk>
+
 	* src/pandroid/agent/Core.java: Changed get and update
 	database values methods to support new DataBaseHandler.
 

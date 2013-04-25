@@ -1,3 +1,9 @@
+2013-04-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* images/cross_double.png,
+	  godmode/users/user_list.php: Added support to delete users from all
+	  consoles to the metaconsole. Fixes bug #3607619.
+
 2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/events/custom_events.php,

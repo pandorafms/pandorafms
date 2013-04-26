@@ -1658,6 +1658,7 @@ div#main_pure {
 }
 .img_help {
 	cursor: help;
+	margin-top: -5px;
 }
 #loading {
 	position:fixed;

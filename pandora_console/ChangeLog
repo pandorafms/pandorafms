@@ -1,3 +1,21 @@
+2013-04-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css: Fix aesthetical issues
+
+	* include/functions_modules.php: Mark as needy to calculate
+	the module status count in an agent when disable/enable one of
+	his modules. The part of server to avoid disabled modules in
+	counts was made by ramon. BUG #3611683
+
+	* godmode/users/configure_user.php: Fix warnings due the 
+	latest fields added to database schemma
+
+	* images/blank.gif: Add a missed image
+
+	* godmode/agentes/agent_template.php: Fix a little feedback
+	bug on template application and add category id to the 
+	fields copied from components to modules when apply a template
+
 2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/users/user_list.php: changed the table layout and other

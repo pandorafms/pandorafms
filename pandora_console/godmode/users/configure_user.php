@@ -127,6 +127,12 @@ if ($new_user && $config['admin_can_add_user']) {
 	//This attributes are inherited from global configuration
 	$user_info['block_size'] = $config["block_size"];
 	$user_info['flash_chart'] = $config["flash_charts"];
+	
+	if (enterprise_installed() && defined('METACONSOLE')) {
+		$user_info['metaconsole_agents_manager'] = 0;
+		$user_info['metaconsole_assigned_server'] = '';
+		$user_info['metaconsole_access_node'] = 0;
+	}
 }
 
 if ($create_user) {
@@ -158,6 +164,9 @@ if ($create_user) {
 		$values['last_pass_change'] = date ("Y/m/d H:i:s", get_system_time());
 		if(defined('METACONSOLE')) {
 			$values['metaconsole_access'] = get_parameter ('metaconsole_access', 'basic');
+			$values['metaconsole_agents_manager'] = get_parameter ('metaconsole_agents_manager', '0');
+			$values['metaconsole_assigned_server'] = get_parameter ('metaconsole_assigned_server', '');
+			$values['metaconsole_access_node'] = get_parameter ('metaconsole_access_node', '0');
 		}
 	}
 	$values["not_login"] = (bool)get_parameter ('not_login', false);
@@ -253,6 +262,9 @@ if ($update_user) {
 	
 	if(enterprise_installed() && defined('METACONSOLE')) {
 		$values['metaconsole_access'] = get_parameter ('metaconsole_access');
+		$values['metaconsole_agents_manager'] = get_parameter ('metaconsole_agents_manager', '0');
+		$values['metaconsole_assigned_server'] = get_parameter ('metaconsole_assigned_server', '');
+		$values['metaconsole_access_node'] = get_parameter ('metaconsole_access_node', '0');
 	}
 	$values["not_login"] = (bool)get_parameter ('not_login', false);
 	

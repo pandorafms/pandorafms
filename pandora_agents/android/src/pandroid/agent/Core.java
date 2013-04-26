@@ -177,6 +177,10 @@ public class Core {
     
     static DataBaseHandler db;
     
+    //Single SharedPreferences object
+    static volatile public SharedPreferences agentPreferences;
+    static volatile public SharedPreferences.Editor editor;
+    
     public Core() {
     	
     }
@@ -214,9 +218,7 @@ public class Core {
     		con = context;
     	}
     	
-    	SharedPreferences agentPreferences = con.getSharedPreferences(
-			con.getString(R.string.const_string_preferences),
-			Activity.MODE_PRIVATE);
+    	agentPreferences = PandroidAgent.getSharedPrefs();
     		
     	latitude = agentPreferences.getFloat("latitude", CONST_INVALID_COORDS);
     	longitude = agentPreferences.getFloat("longitude", CONST_INVALID_COORDS);
@@ -255,9 +257,7 @@ public class Core {
     		con = context;
     	}
     	
-    	SharedPreferences agentPreferences = con.getSharedPreferences(
-    		con.getString(R.string.const_string_preferences),
-    		Activity.MODE_PRIVATE);
+    	agentPreferences = PandroidAgent.getSharedPrefs();
     		
 		serverAddr = agentPreferences.getString("serverAddr", defaultServerAddr);
 		serverPort = agentPreferences.getString("serverPort", defaultServerPort);
@@ -321,10 +321,8 @@ public class Core {
     		con = context;
     	}
     	
-		SharedPreferences agentPreferences = con.getSharedPreferences(
-			con.getString(R.string.const_string_preferences),
-			Activity.MODE_PRIVATE);
-		SharedPreferences.Editor editor = agentPreferences.edit();
+		agentPreferences = PandroidAgent.getSharedPrefs();
+		editor = PandroidAgent.getEditor();
 		
 		editor.putString("serverAddr", _serverAddr);
 		editor.putString("serverPort", _serverPort);
@@ -379,203 +377,256 @@ public class Core {
 	}// end updateConf
     
     
-    //database//
-    
-    static synchronized public void loadLastValuesDatabase(Context context) {
-    	if (con == null) {
-    		con = context;
-    	}
-    	
-    	
-    	
-    		
-    	latitude = Float.parseFloat(getDatabaseValue(con, "latitude"));
-    	longitude = Float.parseFloat(getDatabaseValue(con, "longitude"));
-    	batteryLevel = Integer.parseInt(getDatabaseValue(con, "batteryLevel"));
-    	orientation = Float.parseFloat(getDatabaseValue(con, "orientation"));
-    	proximity = Float.parseFloat(getDatabaseValue(con, "proximity"));
-    	taskStatus = getDatabaseValue(con, "taskStatus");
-		task = getDatabaseValue(con, "task");
-		taskHumanName = getDatabaseValue(con, "taskHumanName");
-		taskRun = getDatabaseValue(con, "taskRun");
-		memoryStatus = getDatabaseValue(con, "memoryStatus");
-		availableRamKb = Long.parseLong(getDatabaseValue(con, "availableRamKb"));
-		totalRamKb = Long.parseLong(getDatabaseValue(con, "totalRamKb"));
-		lastContact = Long.parseLong(getDatabaseValue(con, "lastContact"));
-		contactError = Integer.parseInt(getDatabaseValue(con, "contactError"));
-		simID = getDatabaseValue(con, "simID");
-		upTime = Long.parseLong(getDatabaseValue(con, "upTime"));
-		SMSReceived = Integer.parseInt(getDatabaseValue(con, "SMSReceived"));
-		SMSSent = Integer.parseInt(getDatabaseValue(con, "SMSSent"));
-		networkOperator = getDatabaseValue(con, "networkOperator");
-		networkType = getDatabaseValue(con, "networkType");
-		phoneType = getDatabaseValue(con, "phoneType");
-		signalStrength = Integer.parseInt(getDatabaseValue(con, "signalStrength"));
-		incomingCalls = Integer.parseInt(getDatabaseValue(con, "incomingCalls"));
-		missedCalls = Integer.parseInt(getDatabaseValue(con, "missedCalls"));
-		outgoingCalls = Integer.parseInt(getDatabaseValue(con, "outgoingCalls"));
-		receiveBytes = Long.parseLong(getDatabaseValue(con, "receiveBytes"));
-		transmitBytes = Long.parseLong(getDatabaseValue(con, "transmitBytes"));
-		helloSignal = Integer.parseInt(getDatabaseValue(con, "helloSignal"));
-		roaming = Integer.parseInt(getDatabaseValue(con, "roaming"));
+    public synchronized static void putSharedData(String preferenceName, String tokenName, String data, String type) {
+		int mode = Activity.MODE_PRIVATE;
+		agentPreferences = PandroidAgent.getSharedPrefs();
+		editor = PandroidAgent.getEditor();
 		
-    }// end loadLastValues
-    
-    static synchronized public void loadConfDatabase(Context context) {
-    	if (con == null) {
-    		con = context;
-    	}
-    	
-    	
-		serverAddr = getDatabaseValue(con, "serverAddr");
-		serverPort = getDatabaseValue(con, "serverPort");
-		interval = Integer.parseInt(getDatabaseValue(con, "interval"));
-		agentName = getDatabaseValue(con, "agentName");
-		mobileWebURL = getDatabaseValue(con, "mobileWebURL");
-		gpsStatus = getDatabaseValue(con, "gpsStatus");
-		memoryStatus = getDatabaseValue(con, "memoryStatus");
-		taskStatus = getDatabaseValue(con, "taskStatus");
-		task = getDatabaseValue(con, "task");
-		taskHumanName = getDatabaseValue(con, "taskHumanName");
-		taskRun = getDatabaseValue(con, "taskRun");
-		password = getDatabaseValue(con, "password");
-		passwordCheck = getDatabaseValue(con, "passwordCheck");
-		simIDReport = getDatabaseValue(con, "simIDReport");
-		DeviceUpTimeReport  = getDatabaseValue(con, "DeviceUpTimeReport");
-	    NetworkOperatorReport = getDatabaseValue(con, "NetworkOperatorReport");
-	    NetworkTypeReport = getDatabaseValue(con, "NetworkTypeReport");
-	    PhoneTypeReport = getDatabaseValue(con, "PhoneTypeReport");
-	    SignalStrengthReport = getDatabaseValue(con, "SignalStrengthReport");
-	    ReceivedSMSReport = getDatabaseValue(con, "ReceivedSMSReport");
-	    SentSMSReport = getDatabaseValue(con, "SentSMSReport");
-	    IncomingCallsReport = getDatabaseValue(con, "IncomingCallsReport");
-	    MissedCallsReport = getDatabaseValue(con, "MissedCallsReport");
-	    OutgoingCallsReport = getDatabaseValue(con, "OutgoingCallsReport");
-	    BytesReceivedReport = getDatabaseValue(con, "BytesReceivedReport");
-	    BytesSentReport = getDatabaseValue(con, "BytesSentReport");
-	    HelloSignalReport = getDatabaseValue(con, "HelloSignalReport");
-	    BatteryLevelReport = getDatabaseValue(con, "BatteryLevelReport");
-	    RoamingReport = getDatabaseValue(con, "RoamingReport");
-	    InventoryReport = getDatabaseValue(con, "InventoryReport");
-	    NotificationCheck = getDatabaseValue(con, "NotificationCheck");
-    }// end loadConf
-    
-    static synchronized public boolean updateDatabase(Context context) {
-    	return updateDatabase(context, serverAddr, serverPort, interval, agentName,
-    		gpsStatus, memoryStatus, taskStatus, task, taskHumanName, simID, simIDReport, upTime,
-    		networkOperator, SMSReceived, SMSSent, networkType, phoneType, signalStrength,
-    		incomingCalls, missedCalls, outgoingCalls, receiveBytes, transmitBytes, password, helloSignal,
-    		passwordCheck, DeviceUpTimeReport, NetworkOperatorReport, NetworkTypeReport, PhoneTypeReport,
-    		SignalStrengthReport, ReceivedSMSReport, SentSMSReport, IncomingCallsReport, MissedCallsReport,
-    		OutgoingCallsReport, BytesReceivedReport, BytesSentReport, HelloSignalReport, BatteryLevelReport,
-    		RoamingReport, roaming, mobileWebURL, InventoryReport , NotificationCheck
-    		);
-    	
-    }// end updateConf
-    
-    static synchronized public boolean updateDatabase(Context context, String _serverAddr,
-    	String _serverPort, int _interval, String _agentName, String _gpsStatus,
-    	String _memoryStatus, String _taskStatus, String _task,
-    	String _taskHumanName, String _simID, String _simIDReport, long _upTime, String _networkOperator,
-    	int _smsReceived, int _smsSent, String _networkType, String _phoneType, int _signalStrength,
-    	int _incomingCalls, int _missedCalls, int _outgoingCalls, long _receiveBytes, long _transmitBytes,
-    	String _password, int _helloSignal, String _passwordCheck, String _DeviceUpTimeReport, String _NetworkOperatorReport,
-    	String _NetworkTypeReport, String _PhoneTypeReport, String _SignalStrengthReport, String _ReceivedSMSReport,
-    	String _SentSMSReport, String _IncomingCallsReport, String _MissedCallsReport, String _OutgoingCallsReport, String _BytesReceivedReport,
-    	String _BytesSentReport, String _HelloSignalReport, String _BatteryLevelReport, String _RoamingReport, int _roaming, String _mobileWebURL,
-    	String _InventoryReport, String _NotificationCheck) {
-    	
-    	if (con == null) {
-    		con = context;
-    	}
-    	
 				
+		if(type == "boolean") {
+			editor.putBoolean(tokenName, Boolean.parseBoolean(data));
+		}
+		else if(type == "float") {
+			editor.putFloat(tokenName, Float.parseFloat(data));
+		}
+		else if(type == "integer") {
+			editor.putInt(tokenName, Integer.parseInt(data));
+		}
+		else if(type == "long") {
+			editor.putLong(tokenName, Long.parseLong(data));
+		}
+		else if(type == "string") {
+			editor.putString(tokenName, data);
+		}
 		
-		updateDatabaseValue(con,"serverAddr", _serverAddr);
-		updateDatabaseValue(con,"serverPort", _serverPort);
-		updateDatabaseValue(con,"interval", ""+_interval);
-		updateDatabaseValue(con,"agentName", _agentName);
-		updateDatabaseValue(con,"gpsStatus", _gpsStatus);
-		updateDatabaseValue(con,"memoryStatus", _memoryStatus);
-		updateDatabaseValue(con,"taskStatus", _taskStatus);
-		updateDatabaseValue(con,"task", _task);
-		updateDatabaseValue(con,"taskHumanName", _taskHumanName);
-		updateDatabaseValue(con,"simID", _simID);
-		updateDatabaseValue(con,"simIDReport", _simIDReport);
-		updateDatabaseValue(con,"upTime", ""+_upTime);
-		updateDatabaseValue(con,"networkOperator", _networkOperator);
-		updateDatabaseValue(con,"SMSReceived", ""+_smsReceived);
-		updateDatabaseValue(con,"SMSSent", ""+_smsSent);
-		updateDatabaseValue(con,"networkType", _networkType);
-		updateDatabaseValue(con,"phoneType", _phoneType);
-		updateDatabaseValue(con,"signalStrength", ""+_signalStrength);
-		updateDatabaseValue(con,"incomingCalls", ""+_incomingCalls);
-		updateDatabaseValue(con,"missedCalls", ""+_missedCalls);
-		updateDatabaseValue(con,"outgoingCalls", ""+_outgoingCalls);
-		updateDatabaseValue(con,"receiveBytes", ""+_receiveBytes);
-		updateDatabaseValue(con,"transmitBytes", ""+_transmitBytes);
-		updateDatabaseValue(con,"password", _password);
-		updateDatabaseValue(con,"passwordCheck", _passwordCheck);
-		updateDatabaseValue(con,"helloSignal", ""+_helloSignal);
-		updateDatabaseValue(con,"roaming", ""+_roaming);
-		updateDatabaseValue(con,"DeviceUpTimeReport", _DeviceUpTimeReport); 
-		updateDatabaseValue(con,"NetworkOperatorReport", _NetworkOperatorReport); 
-		updateDatabaseValue(con,"NetworkTypeReport", _NetworkTypeReport); 
-		updateDatabaseValue(con,"PhoneTypeReport", _PhoneTypeReport); 
-		updateDatabaseValue(con,"SignalStrengthReport", _SignalStrengthReport);
-		updateDatabaseValue(con,"ReceivedSMSReport", _ReceivedSMSReport);
-		updateDatabaseValue(con,"SentSMSReport", _SentSMSReport);
-		updateDatabaseValue(con,"IncomingCallsReport", _IncomingCallsReport); 
-		updateDatabaseValue(con,"MissedCallsReport", _MissedCallsReport); 
-		updateDatabaseValue(con,"OutgoingCallsReport", _OutgoingCallsReport); 
-		updateDatabaseValue(con,"BytesReceivedReport", _BytesReceivedReport); 
-		updateDatabaseValue(con,"BytesSentReport", _BytesSentReport); 
-		updateDatabaseValue(con,"HelloSignalReport", _HelloSignalReport); 
-		updateDatabaseValue(con,"BatteryLevelReport", _BatteryLevelReport);
-		updateDatabaseValue(con,"RoamingReport", _RoamingReport);
-		updateDatabaseValue(con,"InventoryReport", _InventoryReport);
-		updateDatabaseValue(con,"NotificationCheck", _NotificationCheck);
-		updateDatabaseValue(con,"mobileWebURL", _mobileWebURL);
+		editor.commit();
+    }
+    
+    public synchronized static String getSharedData(String preferenceName, String tokenName, String defaultValue, String type) {
+		int mode = Activity.MODE_PRIVATE;
+		agentPreferences = PandroidAgent.getSharedPrefs();
 		
+		if(type == "boolean") {
+			boolean a = agentPreferences.getBoolean(tokenName, Boolean.parseBoolean(defaultValue));
+			return Boolean.valueOf(a).toString();
+		}
+		else if(type == "float") {
+			float a = agentPreferences.getFloat(tokenName, Float.parseFloat(defaultValue));
+			return Float.valueOf(a).toString();
+		}
+		else if(type == "integer") {
+			int a = agentPreferences.getInt(tokenName, Integer.parseInt(defaultValue));
+			return Integer.valueOf(a).toString();
+		}
+		else if(type == "long") {
+			long a = agentPreferences.getLong(tokenName, Long.parseLong(defaultValue));
+			return Long.valueOf(a).toString();
+		}
+		else if(type == "string") {
+			return agentPreferences.getString(tokenName, defaultValue);
+		}
 		
-		return true;
-	}// end updateConf
+		return "";
+    }
     
     
-    
-//  //Adds a new row "name" with the value "value"
-//  	public static void addValue(Context context, String name, String value){
-//  		db = new DataBaseHandler(con);
+//    //database//
+//    
+//    static synchronized public void loadLastValuesDatabase(Context context) {
+//    	if (con == null) {
+//    		con = context;
+//    	}
+//    	
+//    	
+//    	
+//    		
+//    	latitude = Float.parseFloat(getDatabaseValue(con, "latitude"));
+//    	longitude = Float.parseFloat(getDatabaseValue(con, "longitude"));
+//    	batteryLevel = Integer.parseInt(getDatabaseValue(con, "batteryLevel"));
+//    	orientation = Float.parseFloat(getDatabaseValue(con, "orientation"));
+//    	proximity = Float.parseFloat(getDatabaseValue(con, "proximity"));
+//    	taskStatus = getDatabaseValue(con, "taskStatus");
+//		task = getDatabaseValue(con, "task");
+//		taskHumanName = getDatabaseValue(con, "taskHumanName");
+//		taskRun = getDatabaseValue(con, "taskRun");
+//		memoryStatus = getDatabaseValue(con, "memoryStatus");
+//		availableRamKb = Long.parseLong(getDatabaseValue(con, "availableRamKb"));
+//		totalRamKb = Long.parseLong(getDatabaseValue(con, "totalRamKb"));
+//		lastContact = Long.parseLong(getDatabaseValue(con, "lastContact"));
+//		contactError = Integer.parseInt(getDatabaseValue(con, "contactError"));
+//		simID = getDatabaseValue(con, "simID");
+//		upTime = Long.parseLong(getDatabaseValue(con, "upTime"));
+//		SMSReceived = Integer.parseInt(getDatabaseValue(con, "SMSReceived"));
+//		SMSSent = Integer.parseInt(getDatabaseValue(con, "SMSSent"));
+//		networkOperator = getDatabaseValue(con, "networkOperator");
+//		networkType = getDatabaseValue(con, "networkType");
+//		phoneType = getDatabaseValue(con, "phoneType");
+//		signalStrength = Integer.parseInt(getDatabaseValue(con, "signalStrength"));
+//		incomingCalls = Integer.parseInt(getDatabaseValue(con, "incomingCalls"));
+//		missedCalls = Integer.parseInt(getDatabaseValue(con, "missedCalls"));
+//		outgoingCalls = Integer.parseInt(getDatabaseValue(con, "outgoingCalls"));
+//		receiveBytes = Long.parseLong(getDatabaseValue(con, "receiveBytes"));
+//		transmitBytes = Long.parseLong(getDatabaseValue(con, "transmitBytes"));
+//		helloSignal = Integer.parseInt(getDatabaseValue(con, "helloSignal"));
+//		roaming = Integer.parseInt(getDatabaseValue(con, "roaming"));
+//		
+//    }// end loadLastValues
+//    
+//    static synchronized public void loadConfDatabase(Context context) {
+//    	if (con == null) {
+//    		con = context;
+//    	}
+//    	
+//    	
+//		serverAddr = getDatabaseValue(con, "serverAddr");
+//		serverPort = getDatabaseValue(con, "serverPort");
+//		interval = Integer.parseInt(getDatabaseValue(con, "interval"));
+//		agentName = getDatabaseValue(con, "agentName");
+//		mobileWebURL = getDatabaseValue(con, "mobileWebURL");
+//		gpsStatus = getDatabaseValue(con, "gpsStatus");
+//		memoryStatus = getDatabaseValue(con, "memoryStatus");
+//		taskStatus = getDatabaseValue(con, "taskStatus");
+//		task = getDatabaseValue(con, "task");
+//		taskHumanName = getDatabaseValue(con, "taskHumanName");
+//		taskRun = getDatabaseValue(con, "taskRun");
+//		password = getDatabaseValue(con, "password");
+//		passwordCheck = getDatabaseValue(con, "passwordCheck");
+//		simIDReport = getDatabaseValue(con, "simIDReport");
+//		DeviceUpTimeReport  = getDatabaseValue(con, "DeviceUpTimeReport");
+//	    NetworkOperatorReport = getDatabaseValue(con, "NetworkOperatorReport");
+//	    NetworkTypeReport = getDatabaseValue(con, "NetworkTypeReport");
+//	    PhoneTypeReport = getDatabaseValue(con, "PhoneTypeReport");
+//	    SignalStrengthReport = getDatabaseValue(con, "SignalStrengthReport");
+//	    ReceivedSMSReport = getDatabaseValue(con, "ReceivedSMSReport");
+//	    SentSMSReport = getDatabaseValue(con, "SentSMSReport");
+//	    IncomingCallsReport = getDatabaseValue(con, "IncomingCallsReport");
+//	    MissedCallsReport = getDatabaseValue(con, "MissedCallsReport");
+//	    OutgoingCallsReport = getDatabaseValue(con, "OutgoingCallsReport");
+//	    BytesReceivedReport = getDatabaseValue(con, "BytesReceivedReport");
+//	    BytesSentReport = getDatabaseValue(con, "BytesSentReport");
+//	    HelloSignalReport = getDatabaseValue(con, "HelloSignalReport");
+//	    BatteryLevelReport = getDatabaseValue(con, "BatteryLevelReport");
+//	    RoamingReport = getDatabaseValue(con, "RoamingReport");
+//	    InventoryReport = getDatabaseValue(con, "InventoryReport");
+//	    NotificationCheck = getDatabaseValue(con, "NotificationCheck");
+//    }// end loadConf
+//    
+//    static synchronized public boolean updateDatabase(Context context) {
+//    	return updateDatabase(context, serverAddr, serverPort, interval, agentName,
+//    		gpsStatus, memoryStatus, taskStatus, task, taskHumanName, simID, simIDReport, upTime,
+//    		networkOperator, SMSReceived, SMSSent, networkType, phoneType, signalStrength,
+//    		incomingCalls, missedCalls, outgoingCalls, receiveBytes, transmitBytes, password, helloSignal,
+//    		passwordCheck, DeviceUpTimeReport, NetworkOperatorReport, NetworkTypeReport, PhoneTypeReport,
+//    		SignalStrengthReport, ReceivedSMSReport, SentSMSReport, IncomingCallsReport, MissedCallsReport,
+//    		OutgoingCallsReport, BytesReceivedReport, BytesSentReport, HelloSignalReport, BatteryLevelReport,
+//    		RoamingReport, roaming, mobileWebURL, InventoryReport , NotificationCheck
+//    		);
+//    	
+//    }// end updateConf
+//    
+//    static synchronized public boolean updateDatabase(Context context, String _serverAddr,
+//    	String _serverPort, int _interval, String _agentName, String _gpsStatus,
+//    	String _memoryStatus, String _taskStatus, String _task,
+//    	String _taskHumanName, String _simID, String _simIDReport, long _upTime, String _networkOperator,
+//    	int _smsReceived, int _smsSent, String _networkType, String _phoneType, int _signalStrength,
+//    	int _incomingCalls, int _missedCalls, int _outgoingCalls, long _receiveBytes, long _transmitBytes,
+//    	String _password, int _helloSignal, String _passwordCheck, String _DeviceUpTimeReport, String _NetworkOperatorReport,
+//    	String _NetworkTypeReport, String _PhoneTypeReport, String _SignalStrengthReport, String _ReceivedSMSReport,
+//    	String _SentSMSReport, String _IncomingCallsReport, String _MissedCallsReport, String _OutgoingCallsReport, String _BytesReceivedReport,
+//    	String _BytesSentReport, String _HelloSignalReport, String _BatteryLevelReport, String _RoamingReport, int _roaming, String _mobileWebURL,
+//    	String _InventoryReport, String _NotificationCheck) {
+//    	
+//    	if (con == null) {
+//    		con = context;
+//    	}
+//    	
+//				
+//		
+//		updateDatabaseValue(con,"serverAddr", _serverAddr);
+//		updateDatabaseValue(con,"serverPort", _serverPort);
+//		updateDatabaseValue(con,"interval", ""+_interval);
+//		updateDatabaseValue(con,"agentName", _agentName);
+//		updateDatabaseValue(con,"gpsStatus", _gpsStatus);
+//		updateDatabaseValue(con,"memoryStatus", _memoryStatus);
+//		updateDatabaseValue(con,"taskStatus", _taskStatus);
+//		updateDatabaseValue(con,"task", _task);
+//		updateDatabaseValue(con,"taskHumanName", _taskHumanName);
+//		updateDatabaseValue(con,"simID", _simID);
+//		updateDatabaseValue(con,"simIDReport", _simIDReport);
+//		updateDatabaseValue(con,"upTime", ""+_upTime);
+//		updateDatabaseValue(con,"networkOperator", _networkOperator);
+//		updateDatabaseValue(con,"SMSReceived", ""+_smsReceived);
+//		updateDatabaseValue(con,"SMSSent", ""+_smsSent);
+//		updateDatabaseValue(con,"networkType", _networkType);
+//		updateDatabaseValue(con,"phoneType", _phoneType);
+//		updateDatabaseValue(con,"signalStrength", ""+_signalStrength);
+//		updateDatabaseValue(con,"incomingCalls", ""+_incomingCalls);
+//		updateDatabaseValue(con,"missedCalls", ""+_missedCalls);
+//		updateDatabaseValue(con,"outgoingCalls", ""+_outgoingCalls);
+//		updateDatabaseValue(con,"receiveBytes", ""+_receiveBytes);
+//		updateDatabaseValue(con,"transmitBytes", ""+_transmitBytes);
+//		updateDatabaseValue(con,"password", _password);
+//		updateDatabaseValue(con,"passwordCheck", _passwordCheck);
+//		updateDatabaseValue(con,"helloSignal", ""+_helloSignal);
+//		updateDatabaseValue(con,"roaming", ""+_roaming);
+//		updateDatabaseValue(con,"DeviceUpTimeReport", _DeviceUpTimeReport); 
+//		updateDatabaseValue(con,"NetworkOperatorReport", _NetworkOperatorReport); 
+//		updateDatabaseValue(con,"NetworkTypeReport", _NetworkTypeReport); 
+//		updateDatabaseValue(con,"PhoneTypeReport", _PhoneTypeReport); 
+//		updateDatabaseValue(con,"SignalStrengthReport", _SignalStrengthReport);
+//		updateDatabaseValue(con,"ReceivedSMSReport", _ReceivedSMSReport);
+//		updateDatabaseValue(con,"SentSMSReport", _SentSMSReport);
+//		updateDatabaseValue(con,"IncomingCallsReport", _IncomingCallsReport); 
+//		updateDatabaseValue(con,"MissedCallsReport", _MissedCallsReport); 
+//		updateDatabaseValue(con,"OutgoingCallsReport", _OutgoingCallsReport); 
+//		updateDatabaseValue(con,"BytesReceivedReport", _BytesReceivedReport); 
+//		updateDatabaseValue(con,"BytesSentReport", _BytesSentReport); 
+//		updateDatabaseValue(con,"HelloSignalReport", _HelloSignalReport); 
+//		updateDatabaseValue(con,"BatteryLevelReport", _BatteryLevelReport);
+//		updateDatabaseValue(con,"RoamingReport", _RoamingReport);
+//		updateDatabaseValue(con,"InventoryReport", _InventoryReport);
+//		updateDatabaseValue(con,"NotificationCheck", _NotificationCheck);
+//		updateDatabaseValue(con,"mobileWebURL", _mobileWebURL);
+//		
+//		
+//		return true;
+//	}// end updateConf
+//    
+//    
+//    
+////  //Adds a new row "name" with the value "value"
+////  	public static void addValue(Context context, String name, String value){
+////  		db = new DataBaseHandler(con);
+////  		
+////  		DataHandler dh = new DataHandler(name, value);
+////  		
+////  		db.addValue(dh);
+////  		
+////  	}
+//  	
+//  	//Updates a given row "name" with a "value"
+//  	public static synchronized void updateDatabaseValue(Context context, String name, String value){
+//  		db = new DataBaseHandler(con, "pandroid", null, 1);
+//  		//Retrieve id of row to update
+//  		int id = getDataHandler(con, name).get_id();
 //  		
-//  		DataHandler dh = new DataHandler(name, value);
+//  		DataHandler dh = new DataHandler(id, name, value);
 //  		
-//  		db.addValue(dh);
+//  		db.updateValue(dh);
+//  	}
+//  	
+//  	//Returns the DataHandler object of the given row "name"
+//  	public static synchronized DataHandler getDataHandler(Context context, String name){
+//  		db = new DataBaseHandler(con, "pandroid", null, 1);
+//  		
+//  		return db.getValue(name);
+//  	}
+//  	
+//  	//Returns the value of the given row "name"
+//  	public static synchronized String getDatabaseValue(Context context, String name){
+//  		db = new DataBaseHandler(con, "pandroid", null, 1);
+//  		
+//  		return db.getValue(name).get_value();
 //  		
 //  	}
-  	
-  	//Updates a given row "name" with a "value"
-  	public static synchronized void updateDatabaseValue(Context context, String name, String value){
-  		db = new DataBaseHandler(con, "pandroid", null, 1);
-  		//Retrieve id of row to update
-  		int id = getDataHandler(con, name).get_id();
-  		
-  		DataHandler dh = new DataHandler(id, name, value);
-  		
-  		db.updateValue(dh);
-  	}
-  	
-  	//Returns the DataHandler object of the given row "name"
-  	public static synchronized DataHandler getDataHandler(Context context, String name){
-  		db = new DataBaseHandler(con, "pandroid", null, 1);
-  		
-  		return db.getValue(name);
-  	}
-  	
-  	//Returns the value of the given row "name"
-  	public static synchronized String getDatabaseValue(Context context, String name){
-  		db = new DataBaseHandler(con, "pandroid", null, 1);
-  		
-  		return db.getValue(name).get_value();
-  		
-  	}
 }

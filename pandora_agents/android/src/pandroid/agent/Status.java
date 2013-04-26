@@ -94,9 +94,7 @@ public class Status  extends Activity {
 	private void updateLastXML() {
 		
 		TextView xml = (TextView) this.findViewById(R.id.xml);
-		SharedPreferences agentPreferences = getSharedPreferences(
-    			getString(R.string.const_string_preferences),
-    			Activity.MODE_PRIVATE);
+		SharedPreferences agentPreferences = PandroidAgent.getSharedPrefs();
 		
 		String lastXML = agentPreferences.getString("lastXML", "[no data]");
 		xml.setText("Last XML builded: \n\n" + lastXML);

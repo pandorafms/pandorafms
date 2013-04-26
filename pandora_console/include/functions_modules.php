@@ -152,52 +152,30 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
  */
 function modules_change_disabled($id_agent_module, $new_value = 1) {
 	$id_agent_module = (array) $id_agent_module;
-		
-	// Define the operation dependes if is disable or enable
-	if($new_value == 1) {
-		$operation = '-';
-	}
-	else {
-		$operation = '+';
-	}
+	
+	$id_agent_module_changed = array();
 	
 	foreach($id_agent_module as $id_module) {
-		// If the module is already disabled/enabled abort
+		// If the module is already disabled/enabled ignore
 		$current_disabled = db_get_value('disabled', 'tagente_modulo', 'id_agente_modulo', $id_module);
 		if($current_disabled == $new_value) {
 			continue;
 		}
 		
-		$status = modules_get_agentmodule_status($id_module);
-	
-		$agent_id = modules_get_agentmodule_agent($id_module);
-
-		// Define the field to update depends the status
-		switch($status) {
-			case AGENT_MODULE_STATUS_NO_DATA:
-				$modification = 'notinit_count = notinit_count ' . $operation . ' 1,';
-				break;
-			case AGENT_MODULE_STATUS_CRITICAL_BAD:
-				$modification = 'critical_count = critical_count ' . $operation . ' 1,';
-				break;
-			case AGENT_MODULE_STATUS_WARNING:
-				$modification = 'warning_count = warning_count ' . $operation . ' 1,';
-				break;
-			case AGENT_MODULE_STATUS_NORMAL:
-				$modification = 'normal_count = normal_count ' . $operation . ' 1,';
-				break;
-			case AGENT_MODULE_STATUS_UNKNOW:
-				$modification = 'unknown_count = unknown_count ' . $operation . ' 1,';
-				break;
-			default:
-				$modification = '';
-				break;
-		}
+		$id_agent_changed[] = modules_get_agentmodule_agent($id_module); 
+		$id_agent_module_changed[] = $id_module;
 	}
 
-	$result = db_process_sql_update('tagente_modulo', array('disabled' => $new_value), array('id_agente_modulo' => $id_agent_module));
+	if(empty($id_agent_module_changed)) {
+		$result = false;
+	}
+	else {
+		$result = db_process_sql_update('tagente_modulo', array('disabled' => (int) $new_value), array('id_agente_modulo' => $id_agent_module_changed));
+	}
 
 	if($result) {
+		// Change the agent flag to update modules count
+		db_process_sql_update('tagente', array('update_module_count' => 1), array('id_agente' => $id_agent_changed));
 		return NOERR;
 	}
 	else {
@@ -316,10 +294,7 @@ function modules_update_agent_module ($id, $values, $onlyNoDeletePending = false
 	
 	// Disable action requires a special function
 	if (isset($values['disabled'])) {
-		$result_disable = NOERR;
-		if ($values['disabled'])
-			$result_disable = modules_change_disabled($id,
-				$values['disabled']);
+		$result_disable = modules_change_disabled($id, $values['disabled']);
 		
 		unset($values['disabled']);
 	}

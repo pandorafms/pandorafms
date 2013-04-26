@@ -94,7 +94,8 @@ if (isset ($_POST["template_id"])) {
 				'warning_inverse' => $row2['warning_inverse'],
 				'critical_instructions' => $row2['critical_instructions'],
 				'warning_instructions' => $row2['warning_instructions'],
-				'unknown_instructions' => $row2['unknown_instructions']
+				'unknown_instructions' => $row2['unknown_instructions'],
+				'id_category' => $row2['id_category']
 				);
 			
 			$name = $row2["name"];
@@ -111,6 +112,9 @@ if (isset ($_POST["template_id"])) {
 				
 				if ($id_agente_modulo === false) {
 					$error_count++;
+				}
+				else {
+					$success_count++;
 				}
 			}
 		}

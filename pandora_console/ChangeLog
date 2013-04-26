@@ -1,3 +1,12 @@
+2013-04-26 Vanessa Gil <vanessa.gil@artica.es>
+
+	* index.php
+	pandoradb.oracle.sql
+	pandoradb.postgreSQL.sql
+	pandoradb.sql
+	include/functions.php
+	operation/users/user_edit.php: Added custom home screen.
+
 2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
 
 	* extensions/agents_modules.php: changed the header of the table

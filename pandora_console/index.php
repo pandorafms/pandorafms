@@ -363,7 +363,78 @@ else {
 		} 
 		else echo '<br /><strong class="error">'.__('Sorry! I can\'t find the page!').'</strong>';
 	}
-	else require ("general/logon_ok.php");
+	//else require ("general/logon_ok.php");
+	else {
+		//home screen chosen by the user
+		$home_page ='';
+		if (isset($config['id_user'])) {
+			$user_info = users_get_user_by_id($config['id_user']);
+			$home_page = io_safe_output($user_info['section']);
+			$home_url = $user_info['data_section'];
+		}
+		
+		if ($home_page != '') {
+			switch($home_page) {
+				case 'Event list':
+					require ('operation/events/events.php');
+					break;
+				case 'Group view':
+					require ('operation/agentes/group_view.php');
+					break;
+				case 'Alert detail':
+					require ('operation/agentes/alerts_status.php');
+					break;
+				case 'Tactical view':
+					require ('operation/agentes/tactical.php');
+					break;
+				case 'Default':
+					require ('general/logon_ok.php');
+					break;
+				case 'Dashboard':
+					$id_dashboard = db_get_value('id', 'tdashboard', 'name', $home_url);
+					$str = 'sec=visualc&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard;
+					parse_str($str, $res);
+					foreach ($res as $key => $param) {
+						$_GET[$key] = $param;
+					}
+					require(ENTERPRISE_DIR.'/dashboard/main_dashboard.php');
+					break;
+				case 'Visual console':
+					$id_visualc = db_get_value('id', 'tlayout', 'name', $home_url);
+					if (($home_url == '') || ($id_visualc == false)) {
+						$str = 'sec=visualc&sec2=operation/visual_console/index&refr=60';
+					} else 
+					$str = 'sec=visualc&sec2=operation/visual_console/render_view&id='.$id_visualc .'&refr=60';
+					parse_str($str, $res);
+					foreach ($res as $key => $param) {
+						$_GET[$key] = $param;
+					}
+					require($_GET["sec2"].'.php');
+					break;
+				case 'Other':
+					$home_url = io_safe_output($home_url);
+					parse_str ($home_url, $res);
+					foreach ($res as $key => $param) {
+						$_GET[$key] = $param;
+					}
+					if (isset($_GET['sec2'])) {
+						$file = $_GET['sec2'].'.php';
+						
+						if (!file_exists ($file)) {
+							unset($_GET['sec2']);
+							require('general/logon_ok.php');
+						}
+						else {
+							require($file);
+						}
+					}
+					break;
+			}
+		}
+		else {
+			require("general/logon_ok.php");
+		}
+	}
 }
 
 if ($config["pure"] == 0) {

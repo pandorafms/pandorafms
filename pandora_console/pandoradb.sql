@@ -748,6 +748,8 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `block_size` int(4) NOT NULL DEFAULT 20,
   `flash_chart` int(4) NOT NULL DEFAULT 1,
   `id_skin` int(10) unsigned NOT NULL,
+  `section` TEXT NOT NULL,
+  `data_section` TEXT NOT NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

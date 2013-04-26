@@ -1555,4 +1555,19 @@ function copy_dir($src, $dst) {
 	}
 	closedir($dir); 
 }
+
+/**
+ * Get user's dashboards
+ *
+ * @param int user id.
+ *
+ * @return array Dashboard name of the given user.
+ */
+function get_user_dashboards ($id_user) {
+	$sql = "SELECT name
+		FROM tdashboard
+		WHERE id_user="."'".$id_user."'";
+	
+	return db_get_all_rows_sql ($sql);
+}
 ?>

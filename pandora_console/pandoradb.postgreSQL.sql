@@ -674,7 +674,9 @@ CREATE TABLE "tusuario" (
 	"timezone" varchar(50) default '',
 	"block_size" INTEGER NOT NULL default 20,
 	"flash_chart" INTEGER NOT NULL default 1,
-	"id_skin" INTEGER NOT NULL DEFAULT 0
+	"id_skin" INTEGER NOT NULL DEFAULT 0,
+	"section" varchar(255) NOT NULL DEFAULT '',
+	"data_section" varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE TABLE "tusuario_perfil" (

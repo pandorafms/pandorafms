@@ -22,6 +22,7 @@ check_login ();
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
+include_once ($config['homedir'] . '/include/functions_visual_map.php');
 
 $id = get_parameter_get ("id", $config["id_user"]); // ID given as parameter
 $status = get_parameter ("status", -1); // Flag to print action status message
@@ -64,6 +65,19 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	}
 	
 	$upd_info["flash_chart"] = get_parameter ("flash_charts", $config["flash_charts"]);
+	$upd_info["section"] = get_parameter ("section", $user_info["section"]);
+	$upd_info["data_section"] = get_parameter ("data_section", '');
+	
+	$section = io_safe_output($upd_info["section"]);
+	if (($section == 'Event list') || ($section == 'Group view') || ($section == 'Alert detail') || ($section == 'Tactical view') || ($section == 'Default')) {
+		$upd_info["data_section"] = '';
+	}
+	else if ($section == 'Dashboard') {
+		$upd_info["data_section"] = $dashboard;
+	}
+	else if ($section == 'Visual console') {
+		$upd_info["data_section"] = $visual_console;
+	}
 
 	if ( !empty ($password_new)) {
 		if ($config["user_can_update_password"] && $password_confirm == $password_new) {
@@ -197,6 +211,38 @@ echo html_print_input_text ('block_size', $block_size, '', 5, 5, true);
 echo html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true);
 echo __('Default').' ('.$config["global_block_size"].')';
 
+echo '</td></tr><tr><td class="datos">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true) .'</td><td class="datos2">';
+$values = array ('Default' =>__('Default'), 'Dashboard'=>__('Dashboard'), 'Visual console'=>__('Visual console'), 'Event list'=>__('Event list'),
+	'Group view'=>__('Group view'), 'Tactical view'=>__('Tactical view'), 'Alert detail' => __('Alert detail'), 'Other'=>__('Other'));
+echo html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
+echo "&nbsp;&nbsp;";
+
+$dashboards = get_user_dashboards ($config['id_user']);
+$dashboards_aux = array();
+if ($dashboards === false) {
+	$dashboards = array('None'=>'None');
+}
+else {
+	foreach ($dashboards as $key=>$dashboard) {
+		$dashboards_aux[$dashboard['name']] = $dashboard['name'];
+	}
+}
+echo html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
+
+$layouts = visual_map_get_user_layouts ($config['id_user'], true);
+$layouts_aux = array();
+if ($layouts === false) {
+	$layouts_aux = array('None'=>'None');
+}
+else {
+	foreach ($layouts as $layout) {
+		$layouts_aux[$layout] = $layout;
+	}
+}
+echo html_print_select ($layouts_aux, 'visual_console', $user_info["data_section"], '', '', '', true);
+
+echo html_print_input_text ('data_section', $user_info["data_section"], '', 60, 255, true, false);
+
 echo '</td></tr></table>';
 
 echo '<div style="width:90%; text-align:right;">';
@@ -256,5 +302,53 @@ $(document).ready (function () {
 			$("#text-block_size").removeAttr('disabled');
 		}
 	}
+	
+	show_data_section();
 });
+
+function show_data_section () {
+	section=$("#section").val();
+	switch (section) {
+		case <?php echo "'" . __('Dashboard') . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . __('Visual console') . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "");
+			break;
+		case <?php echo "'" . __('Event list') . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . __('Group view') . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . __('Tactical view') . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . __('Alert detail') . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . __('Other') . "'"; ?>:
+			$("#text-data_section").css("display", "");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . __('Default') . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+	}
+}
 </script>

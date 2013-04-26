@@ -1,5 +1,10 @@
 2013-04-26 Vanessa Gil <vanessa.gil@artica.es>
 
+	* operation/users/user_edit.php: Removed option
+	'Dashboard' in home screen when version is open.
+
+2013-04-26 Vanessa Gil <vanessa.gil@artica.es>
+
 	* index.php
 	pandoradb.oracle.sql
 	pandoradb.postgreSQL.sql

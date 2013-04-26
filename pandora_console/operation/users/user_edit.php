@@ -24,6 +24,11 @@ include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
 include_once ($config['homedir'] . '/include/functions_visual_map.php');
 
+$is_enterprise = false;
+if (file_exists (ENTERPRISE_DIR . "/index.php")) {
+	$is_enterprise = true;
+}
+
 $id = get_parameter_get ("id", $config["id_user"]); // ID given as parameter
 $status = get_parameter ("status", -1); // Flag to print action status message
 
@@ -212,22 +217,28 @@ echo html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0,
 echo __('Default').' ('.$config["global_block_size"].')';
 
 echo '</td></tr><tr><td class="datos">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true) .'</td><td class="datos2">';
-$values = array ('Default' =>__('Default'), 'Dashboard'=>__('Dashboard'), 'Visual console'=>__('Visual console'), 'Event list'=>__('Event list'),
+$values = array ('Default' =>__('Default'), 'Visual console'=>__('Visual console'), 'Event list'=>__('Event list'),
 	'Group view'=>__('Group view'), 'Tactical view'=>__('Tactical view'), 'Alert detail' => __('Alert detail'), 'Other'=>__('Other'));
+
+if ($is_enterprise) {
+	array_push($values, array('Dashboard' => __('Dashboard')));
+}
 echo html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
 echo "&nbsp;&nbsp;";
 
-$dashboards = get_user_dashboards ($config['id_user']);
-$dashboards_aux = array();
-if ($dashboards === false) {
-	$dashboards = array('None'=>'None');
-}
-else {
-	foreach ($dashboards as $key=>$dashboard) {
-		$dashboards_aux[$dashboard['name']] = $dashboard['name'];
+if ($is_enterprise) {
+	$dashboards = get_user_dashboards ($config['id_user']);
+	$dashboards_aux = array();
+	if ($dashboards === false) {
+		$dashboards = array('None'=>'None');
 	}
+	else {
+		foreach ($dashboards as $key=>$dashboard) {
+			$dashboards_aux[$dashboard['name']] = $dashboard['name'];
+		}
+	}
+	echo html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
 }
-echo html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
 
 $layouts = visual_map_get_user_layouts ($config['id_user'], true);
 $layouts_aux = array();

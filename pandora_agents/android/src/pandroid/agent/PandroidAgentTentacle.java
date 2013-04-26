@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -71,9 +72,11 @@ class tentacle_client {
 	    
 	    getInfo("\n*** Starting tentacle client ***\n",verbose);
 	    
-	    Socket socketCliente = null;
+	    Socket socketCliente = new Socket();
+	    
 	    try {
-	    	socketCliente = new Socket(address, port);
+	    	socketCliente.connect(new InetSocketAddress(address, port), 1000);
+	    	
 	    } catch (UnknownHostException e) {
 	    	getError("Host don't exists");
 	    	return -1;
@@ -81,6 +84,7 @@ class tentacle_client {
 	    	getError("Could not connect: The host is down");
 	    	return -1;
 	    }
+	    
 
 	    DataOutputStream serverOutput = null;
 	    
@@ -186,7 +190,7 @@ class tentacle_client {
     }
     
     private void log (String msg) {
-    	
+    	Log.e("Tentacle",msg);
     	//Context context = getApplicationContext();
     	//int duration = Toast.LENGTH_SHORT;
 

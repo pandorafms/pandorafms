@@ -2176,13 +2176,8 @@ sub pandora_create_module ($$$$$$$$$$) {
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
 	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\')', $module_id, $agent_id, $status, $status, $status);
 	
-	# Update the module status count
-	if ($status == 4) {
-		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=?', $agent_id);
-	}
-	else {
-		db_do ($dbh, 'UPDATE tagente SET total_count=total_count+1, normal_count=normal_count+1 WHERE id_agente=?', $agent_id);
-	}
+	# Update the module status count. When the module is created disabled dont do it
+	pandora_mark_agent_for_module_update ($dbh, $agent_id);
 	
 	return $module_id;
 }
@@ -3936,12 +3931,12 @@ sub pandora_update_agent_module_count ($$) {
 	my ($dbh, $agent_id) = @_;
 	
 	db_do ($dbh, 'UPDATE tagente SET update_module_count=0,
-	normal_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=0),
-	critical_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=1),
-	warning_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=2),
-	unknown_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=3),
-	notinit_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=4),
-	total_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id .
+	normal_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=0),
+	critical_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=1),
+	warning_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=2),
+	unknown_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=3),
+	notinit_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=4),
+	total_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id .
 	') WHERE id_agente = ' . $agent_id);
 }
 
@@ -3952,7 +3947,7 @@ sub pandora_update_agent_alert_count ($$) {
 	my ($dbh, $agent_id) = @_;
 	
 	db_do ($dbh, 'UPDATE tagente SET update_alert_count=0,
-	fired_count=(SELECT COUNT(*) FROM tagente_modulo, talert_template_modules WHERE tagente_modulo.id_agente_modulo=talert_template_modules.id_agent_module AND talert_template_modules.disabled=0 AND times_fired>0 AND id_agente=' . $agent_id .
+	fired_count=(SELECT COUNT(*) FROM tagente_modulo, talert_template_modules WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=talert_template_modules.id_agent_module AND talert_template_modules.disabled=0 AND times_fired>0 AND id_agente=' . $agent_id .
 	') WHERE id_agente = ' . $agent_id);
 }
 

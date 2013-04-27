@@ -1,5 +1,20 @@
 2013-04-27 Mark Holland <mark@mark-holland.me.uk>
 
+	* src/pandroid/agent/Core.java: Reverted to previous commit
+	SharedPreferences.
+
+	* src/pandroid/agent/PandroidAgent.java: Reverted to previous commit
+	SharedPreferences.
+
+	* src/pandroid/agent/PandroidAgentListener.java: Notification only
+	shows when attempting to send xml, can't work out how to have it 
+	persistent and not dissapear when Pandroid activity is destroyed.
+
+	* src/pandroid/agent/SMSBroadcastReceiver.java: Reverted to previous 
+	commit SharedPreferences.
+	
+2013-04-27 Mark Holland <mark@mark-holland.me.uk>
+
 	* assets/database/pandroid.zip: Added buffer size initial value.
 
 	* layout: Added buffer size text edit.

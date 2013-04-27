@@ -36,14 +36,14 @@ import android.util.Log;
 	        			int defaultSMSReceived = 0;
 	        			int mode = Activity.MODE_PRIVATE;
 	        			
-	        			
-	        			int sms = HelperSharedPreferences.getSharedPreferencesInt(context, "SMSReceived", defaultSMSReceived);
+	        			SharedPreferences pref = PandroidAgent.getSharedPrefs();
+	        			int sms = pref.getInt("SMSReceived", defaultSMSReceived);
 	        			
 	        			sms++;
 	        			
-	        			
-	        			HelperSharedPreferences.putSharedPreferencesInt(context, "SMSReceived", sms);
-	        			
+	        			SharedPreferences.Editor editor = pref.edit();
+	        			editor.putInt("SMSReceived", sms);
+	        			editor.commit();
 	        		
 	                }//end if
        

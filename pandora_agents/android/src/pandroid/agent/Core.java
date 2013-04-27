@@ -19,7 +19,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-
+import android.content.SharedPreferences;
 
 //import android.util.Log;
 
@@ -42,9 +42,9 @@ public class Core {
 	//					  DEFAULT CONFIGURATION MODULES					//
 	//																	//
 	
-    static volatile public String defaultServerAddr = "firefly.artica.es";  //master address
+    static volatile public String defaultServerAddr = "192.168.1.45";  //master address
     static volatile public String defaultServerPort = "41121";
-    static volatile public int defaultInterval = 300;
+    static volatile public int defaultInterval = 20;
     static volatile public String defaultAgentName = "pandroid";
     static volatile public String defaultmobileWebURL = "firefly.artica.es/pandora_demo/mobile";
     static volatile public String defaultGpsStatus = "enabled"; // "disabled" or "enabled"
@@ -97,6 +97,7 @@ public class Core {
     static volatile public int defaultHelloSignal = 2;
     static volatile public int defaultRoaming = 0;
     static volatile public long defaultBufferSize = 256;
+    
     
     static volatile public String defaultPassword = "";
        
@@ -179,6 +180,7 @@ public class Core {
     
     
     
+    
     public Core() {
     	
     }
@@ -216,38 +218,39 @@ public class Core {
     		con = context;
     	}
     	
-    	
+    	SharedPreferences agentPreferences = con.getSharedPreferences(
+    			con.getString(R.string.const_string_preferences),
+    			Activity.MODE_PRIVATE);
     		
-    	latitude = HelperSharedPreferences.getSharedPreferencesFloat(con, "latitude", CONST_INVALID_COORDS);
-    	longitude = HelperSharedPreferences.getSharedPreferencesFloat(con, "longitude", CONST_INVALID_COORDS);
-    	batteryLevel = HelperSharedPreferences.getSharedPreferencesInt(con, "batteryLevel", CONST_INVALID_BATTERY_LEVEL);
-    	orientation = HelperSharedPreferences.getSharedPreferencesFloat(con, "orientation", CONST_INVALID_ORIENTATION);
-    	proximity = HelperSharedPreferences.getSharedPreferencesFloat(con, "proximity", CONST_INVALID_PROXIMITY);
-    	taskStatus = HelperSharedPreferences.getSharedPreferencesString(con, "taskStatus", defaultTaskStatus);
-		task = HelperSharedPreferences.getSharedPreferencesString(con, "task", defaultTask);
-		taskHumanName = HelperSharedPreferences.getSharedPreferencesString(con, "taskHumanName", defaultTaskHumanName);
-		taskRun = HelperSharedPreferences.getSharedPreferencesString(con, "taskRun", defaultTaskRun);
-		memoryStatus = HelperSharedPreferences.getSharedPreferencesString(con, "memoryStatus", defaultMemoryStatus);
-		availableRamKb = HelperSharedPreferences.getSharedPreferencesLong(con, "availableRamKb", defaultRam);
-		totalRamKb = HelperSharedPreferences.getSharedPreferencesLong(con, "totalRamKb", defaultRam);
-		lastContact = HelperSharedPreferences.getSharedPreferencesLong(con, "lastContact", defaultContact);
-		contactError = HelperSharedPreferences.getSharedPreferencesInt(con, "contactError", defaultContactError);
-		simID = HelperSharedPreferences.getSharedPreferencesString(con, "simID", defaultSimID);
-		upTime = HelperSharedPreferences.getSharedPreferencesLong(con, "upTime", Core.defaultUpTime);
-		SMSReceived = HelperSharedPreferences.getSharedPreferencesInt(con, "SMSReceived", defaultSMSReceived);
-		SMSSent = HelperSharedPreferences.getSharedPreferencesInt(con, "SMSSent", defaultSMSSent);
-		networkOperator = HelperSharedPreferences.getSharedPreferencesString(con, "networkOperator", defaultNetworkOperator);
-		networkType = HelperSharedPreferences.getSharedPreferencesString(con, "networkType", defaultNetworkType);
-		phoneType = HelperSharedPreferences.getSharedPreferencesString(con, "phoneType", defaultPhoneType);
-		signalStrength = HelperSharedPreferences.getSharedPreferencesInt(con, "signalStrength", defaultSignalStrength);
-		incomingCalls = HelperSharedPreferences.getSharedPreferencesInt(con, "incomingCalls", defaultIncomingCalls);
-		missedCalls = HelperSharedPreferences.getSharedPreferencesInt(con, "missedCalls", defaultMissedCalls);
-		outgoingCalls = HelperSharedPreferences.getSharedPreferencesInt(con, "outgoingCalls", defaultOutgoingCalls);
-		receiveBytes = HelperSharedPreferences.getSharedPreferencesLong(con, "receiveBytes", defaultReceiveBytes);
-		transmitBytes = HelperSharedPreferences.getSharedPreferencesLong(con, "transmitBytes", defaultTransmitBytes);
-		helloSignal = HelperSharedPreferences.getSharedPreferencesInt(con, "helloSignal", defaultHelloSignal);
-		roaming = HelperSharedPreferences.getSharedPreferencesInt(con, "roaming", defaultRoaming);
-		bufferSize = HelperSharedPreferences.getSharedPreferencesLong(con, "bufferSize", defaultBufferSize);
+    	latitude = agentPreferences.getFloat("latitude", CONST_INVALID_COORDS);
+    	longitude = agentPreferences.getFloat("longitude", CONST_INVALID_COORDS);
+    	batteryLevel = agentPreferences.getInt("batteryLevel", CONST_INVALID_BATTERY_LEVEL);
+    	orientation = agentPreferences.getFloat("orientation", CONST_INVALID_ORIENTATION);
+    	proximity = agentPreferences.getFloat("proximity", CONST_INVALID_PROXIMITY);
+    	taskStatus = agentPreferences.getString("taskStatus", defaultTaskStatus);
+		task = agentPreferences.getString("task", defaultTask);
+		taskHumanName = agentPreferences.getString("taskHumanName", defaultTaskHumanName);
+		taskRun = agentPreferences.getString("taskRun", defaultTaskRun);
+		memoryStatus = agentPreferences.getString("memoryStatus", defaultMemoryStatus);
+		availableRamKb = agentPreferences.getLong("availableRamKb", defaultRam);
+		totalRamKb = agentPreferences.getLong("totalRamKb", defaultRam);
+		lastContact = agentPreferences.getLong("lastContact", defaultContact);
+		contactError = agentPreferences.getInt("contactError", defaultContactError);
+		simID = agentPreferences.getString("simID", defaultSimID);
+		upTime = agentPreferences.getLong("upTime", Core.defaultUpTime);
+		SMSReceived = agentPreferences.getInt("SMSReceived", defaultSMSReceived);
+		SMSSent = agentPreferences.getInt("SMSSent", defaultSMSSent);
+		networkOperator = agentPreferences.getString("networkOperator", defaultNetworkOperator);
+		networkType = agentPreferences.getString("networkType", defaultNetworkType);
+		phoneType = agentPreferences.getString("phoneType", defaultPhoneType);
+		signalStrength = agentPreferences.getInt("signalStrength", defaultSignalStrength);
+		incomingCalls = agentPreferences.getInt("incomingCalls", defaultIncomingCalls);
+		missedCalls = agentPreferences.getInt("missedCalls", defaultMissedCalls);
+		outgoingCalls = agentPreferences.getInt("outgoingCalls", defaultOutgoingCalls);
+		receiveBytes = agentPreferences.getLong("receiveBytes", defaultReceiveBytes);
+		transmitBytes = agentPreferences.getLong("transmitBytes", defaultTransmitBytes);
+		helloSignal = agentPreferences.getInt("helloSignal", defaultHelloSignal);
+		roaming = agentPreferences.getInt("roaming", defaultRoaming);
 		
     }// end loadLastValues
     
@@ -256,40 +259,41 @@ public class Core {
     		con = context;
     	}
     	
-    	
+    	SharedPreferences agentPreferences = con.getSharedPreferences(
+    			con.getString(R.string.const_string_preferences),
+    			Activity.MODE_PRIVATE);
     		
-		serverAddr = HelperSharedPreferences.getSharedPreferencesString(con, "serverAddr", defaultServerAddr);
-		serverPort = HelperSharedPreferences.getSharedPreferencesString(con, "serverPort", defaultServerPort);
-		interval = HelperSharedPreferences.getSharedPreferencesInt(con, "interval", defaultInterval);
-		agentName = HelperSharedPreferences.getSharedPreferencesString(con, "agentName", defaultAgentName+"_"+Installation.id(context));
-		mobileWebURL = HelperSharedPreferences.getSharedPreferencesString(con, "mobileWebURL", defaultmobileWebURL);
-		gpsStatus = HelperSharedPreferences.getSharedPreferencesString(con, "gpsStatus", defaultGpsStatus);
-		memoryStatus = HelperSharedPreferences.getSharedPreferencesString(con, "memoryStatus", defaultMemoryStatus);
-		taskStatus = HelperSharedPreferences.getSharedPreferencesString(con, "taskStatus", defaultTaskStatus);
-		task = HelperSharedPreferences.getSharedPreferencesString(con, "task", defaultTask);
-		taskHumanName = HelperSharedPreferences.getSharedPreferencesString(con, "taskHumanName", defaultTaskHumanName);
-		taskRun = HelperSharedPreferences.getSharedPreferencesString(con, "taskRun", defaultTaskRun);
-		password = HelperSharedPreferences.getSharedPreferencesString(con, "password", defaultPassword);
-		passwordCheck = HelperSharedPreferences.getSharedPreferencesString(con, "passwordCheck", defaultPasswordCheck);
-		simIDReport = HelperSharedPreferences.getSharedPreferencesString(con, "simIDReport", defaultSimIDReport);
-		DeviceUpTimeReport = HelperSharedPreferences.getSharedPreferencesString(con, "DeviceUpTimeReport", defaultDeviceUpTimeReport);
-	    NetworkOperatorReport = HelperSharedPreferences.getSharedPreferencesString(con, "NetworkOperatorReport", defaultNetworkOperatorReport);
-	    NetworkTypeReport = HelperSharedPreferences.getSharedPreferencesString(con, "NetworkTypeReport", defaultNetworkTypeReport);
-	    PhoneTypeReport = HelperSharedPreferences.getSharedPreferencesString(con, "PhoneTypeReport", defaultPhoneTypeReport);
-	    SignalStrengthReport = HelperSharedPreferences.getSharedPreferencesString(con, "SignalStrengthReport", defaultSignalStrengthReport);
-	    ReceivedSMSReport = HelperSharedPreferences.getSharedPreferencesString(con, "ReceivedSMSReport", defaultReceivedSMSReport);
-	    SentSMSReport = HelperSharedPreferences.getSharedPreferencesString(con, "SentSMSReport", defaultSentSMSReport);
-	    IncomingCallsReport = HelperSharedPreferences.getSharedPreferencesString(con, "IncomingCallsReport", defaultIncomingCallsReport);
-	    MissedCallsReport = HelperSharedPreferences.getSharedPreferencesString(con, "MissedCallsReport", defaultMissedCallsReport);
-	    OutgoingCallsReport = HelperSharedPreferences.getSharedPreferencesString(con, "OutgoingCallsReport", defaultOutgoingCallsReport);
-	    BytesReceivedReport = HelperSharedPreferences.getSharedPreferencesString(con, "BytesReceivedReport", defaultBytesReceivedReport);
-	    BytesSentReport = HelperSharedPreferences.getSharedPreferencesString(con, "BytesSentReport", defaultBytesSentReport);
-	    HelloSignalReport = HelperSharedPreferences.getSharedPreferencesString(con, "HelloSignalReport", defaultHelloSignalReport);
-	    BatteryLevelReport = HelperSharedPreferences.getSharedPreferencesString(con, "BatteryLevelReport", defaultBatteryLevelReport);
-	    RoamingReport = HelperSharedPreferences.getSharedPreferencesString(con, "RoamingReport", defaultRoamingReport);
-	    InventoryReport = HelperSharedPreferences.getSharedPreferencesString(con, "InventoryReport", defaultInventoryReport);
-	    NotificationCheck = HelperSharedPreferences.getSharedPreferencesString(con, "NotificationCheck", defaultNotificationCheck);
-	    bufferSize = HelperSharedPreferences.getSharedPreferencesLong(con, "bufferSize", defaultBufferSize);
+		serverAddr = agentPreferences.getString("serverAddr", defaultServerAddr);
+		serverPort = agentPreferences.getString("serverPort", defaultServerPort);
+		interval = agentPreferences.getInt("interval", defaultInterval);
+		agentName = agentPreferences.getString("agentName", defaultAgentName+"_"+Installation.id(context));
+		mobileWebURL = agentPreferences.getString("mobileWebURL", defaultmobileWebURL);
+		gpsStatus = agentPreferences.getString("gpsStatus", defaultGpsStatus);
+		memoryStatus = agentPreferences.getString("memoryStatus", defaultMemoryStatus);
+		taskStatus = agentPreferences.getString("taskStatus", defaultTaskStatus);
+		task = agentPreferences.getString("task", defaultTask);
+		taskHumanName = agentPreferences.getString("taskHumanName", defaultTaskHumanName);
+		taskRun = agentPreferences.getString("taskRun", defaultTaskRun);
+		password = agentPreferences.getString("password", defaultPassword);
+		passwordCheck = agentPreferences.getString("passwordCheck", defaultPasswordCheck);
+		simIDReport = agentPreferences.getString("simIDReport", defaultSimIDReport);
+		DeviceUpTimeReport = agentPreferences.getString("DeviceUpTimeReport", defaultDeviceUpTimeReport);
+	    NetworkOperatorReport = agentPreferences.getString("NetworkOperatorReport", defaultNetworkOperatorReport);
+	    NetworkTypeReport = agentPreferences.getString("NetworkTypeReport", defaultNetworkTypeReport);
+	    PhoneTypeReport = agentPreferences.getString("PhoneTypeReport", defaultPhoneTypeReport);
+	    SignalStrengthReport = agentPreferences.getString("SignalStrengthReport", defaultSignalStrengthReport);
+	    ReceivedSMSReport = agentPreferences.getString("ReceivedSMSReport", defaultReceivedSMSReport);
+	    SentSMSReport = agentPreferences.getString("SentSMSReport", defaultSentSMSReport);
+	    IncomingCallsReport = agentPreferences.getString("IncomingCallsReport", defaultIncomingCallsReport);
+	    MissedCallsReport = agentPreferences.getString("MissedCallsReport", defaultMissedCallsReport);
+	    OutgoingCallsReport = agentPreferences.getString("OutgoingCallsReport", defaultOutgoingCallsReport);
+	    BytesReceivedReport = agentPreferences.getString("BytesReceivedReport", defaultBytesReceivedReport);
+	    BytesSentReport = agentPreferences.getString("BytesSentReport", defaultBytesSentReport);
+	    HelloSignalReport = agentPreferences.getString("HelloSignalReport", defaultHelloSignalReport);
+	    BatteryLevelReport = agentPreferences.getString("BatteryLevelReport", defaultBatteryLevelReport);
+	    RoamingReport = agentPreferences.getString("RoamingReport", defaultRoamingReport);
+	    InventoryReport = agentPreferences.getString("InventoryReport", defaultInventoryReport);
+	    NotificationCheck = agentPreferences.getString("NotificationCheck", defaultNotificationCheck);
     }// end loadConf
     
     static synchronized public boolean updateConf(Context context) {
@@ -300,7 +304,7 @@ public class Core {
     		passwordCheck, DeviceUpTimeReport, NetworkOperatorReport, NetworkTypeReport, PhoneTypeReport,
     		SignalStrengthReport, ReceivedSMSReport, SentSMSReport, IncomingCallsReport, MissedCallsReport,
     		OutgoingCallsReport, BytesReceivedReport, BytesSentReport, HelloSignalReport, BatteryLevelReport,
-    		RoamingReport, roaming, mobileWebURL, InventoryReport, NotificationCheck, bufferSize
+    		RoamingReport, roaming, mobileWebURL, InventoryReport ,NotificationCheck, bufferSize
     		);
     	
     }// end updateConf
@@ -321,60 +325,120 @@ public class Core {
     		con = context;
     	}
     	
+    	SharedPreferences agentPreferences = con.getSharedPreferences(
+    			con.getString(R.string.const_string_preferences),
+    			Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = agentPreferences.edit();
 		
+		editor.putString("serverAddr", _serverAddr);
+		editor.putString("serverPort", _serverPort);
+		editor.putInt("interval", _interval);
+		editor.putString("agentName", _agentName);
+		editor.putString("gpsStatus", _gpsStatus);
+		editor.putString("memoryStatus", _memoryStatus);
+		editor.putString("taskStatus", _taskStatus);
+		editor.putString("task", _task);
+		editor.putString("taskHumanName", _taskHumanName);
+		editor.putString("simID", _simID);
+		editor.putString("simIDReport", _simIDReport);
+		editor.putLong("UpTime", _upTime);
+		editor.putString("networkOperator", _networkOperator);
+		editor.putInt("SMSReceived", _smsReceived);
+		editor.putInt("SMSSent", _smsSent);
+		editor.putString("networkType", _networkType);
+		editor.putString("phoneType", _phoneType);
+		editor.putInt("signalStrength", _signalStrength);
+		editor.putInt("incomingCalls", _incomingCalls);
+		editor.putInt("missedCalls", _missedCalls);
+		editor.putInt("outgoingCalls", _outgoingCalls);
+		editor.putLong("receiveBytes", _receiveBytes);
+		editor.putLong("transmitBytes", _transmitBytes);
+		editor.putString("password", _password);
+		editor.putString("passwordCheck", _passwordCheck);
+		editor.putInt("helloSignal", _helloSignal);
+		editor.putInt("roaming", _roaming);
+		editor.putString("DeviceUpTimeReport", _DeviceUpTimeReport); 
+		editor.putString("NetworkOperatorReport", _NetworkOperatorReport); 
+		editor.putString("NetworkTypeReport", _NetworkTypeReport); 
+		editor.putString("PhoneTypeReport", _PhoneTypeReport); 
+		editor.putString("SignalStrengthReport", _SignalStrengthReport);
+		editor.putString("ReceivedSMSReport", _ReceivedSMSReport);
+		editor.putString("SentSMSReport", _SentSMSReport);
+		editor.putString("IncomingCallsReport", _IncomingCallsReport); 
+		editor.putString("MissedCallsReport", _MissedCallsReport); 
+		editor.putString("OutgoingCallsReport", _OutgoingCallsReport); 
+		editor.putString("BytesReceivedReport", _BytesReceivedReport); 
+		editor.putString("BytesSentReport", _BytesSentReport); 
+		editor.putString("HelloSignalReport", _HelloSignalReport); 
+		editor.putString("BatteryLevelReport", _BatteryLevelReport);
+		editor.putString("RoamingReport", _RoamingReport);
+		editor.putString("InventoryReport", _InventoryReport);
+		editor.putString("NotificationCheck", _NotificationCheck);
+		editor.putString("mobileWebURL", _mobileWebURL);
+		editor.putLong("bufferSize", _bufferSize);
 		
-    	HelperSharedPreferences.putSharedPreferencesString(con, "serverAddr", _serverAddr);
-		HelperSharedPreferences.putSharedPreferencesString(con, "serverPort", _serverPort);
-		HelperSharedPreferences.putSharedPreferencesInt(con, "interval", _interval);
-		HelperSharedPreferences.putSharedPreferencesString(con, "agentName", _agentName);
-		HelperSharedPreferences.putSharedPreferencesString(con, "gpsStatus", _gpsStatus);
-		HelperSharedPreferences.putSharedPreferencesString(con, "memoryStatus", _memoryStatus);
-		HelperSharedPreferences.putSharedPreferencesString(con, "taskStatus", _taskStatus);
-		HelperSharedPreferences.putSharedPreferencesString(con, "task", _task);
-		HelperSharedPreferences.putSharedPreferencesString(con, "taskHumanName", _taskHumanName);
-		HelperSharedPreferences.putSharedPreferencesString(con, "simID", _simID);
-		HelperSharedPreferences.putSharedPreferencesString(con, "simIDReport", _simIDReport);
-		HelperSharedPreferences.putSharedPreferencesLong(con, "upTime", _upTime);
-		HelperSharedPreferences.putSharedPreferencesString(con, "networkOperator", _networkOperator);
-		HelperSharedPreferences.putSharedPreferencesInt(con, "SMSReceived", _smsReceived);
-		HelperSharedPreferences.putSharedPreferencesInt(con, "SMSSent", _smsSent);
-		HelperSharedPreferences.putSharedPreferencesString(con, "networkType", _networkType);
-		HelperSharedPreferences.putSharedPreferencesString(con, "phoneType", _phoneType);
-		HelperSharedPreferences.putSharedPreferencesInt(con, "signalStrength", _signalStrength);
-		HelperSharedPreferences.putSharedPreferencesInt(con, "incomingCalls", _incomingCalls);
-		HelperSharedPreferences.putSharedPreferencesInt(con, "missedCalls", _missedCalls);
-		HelperSharedPreferences.putSharedPreferencesInt(con, "outgoingCalls", _outgoingCalls);
-		HelperSharedPreferences.putSharedPreferencesLong(con,  "receiveBytes", _receiveBytes);
-		HelperSharedPreferences.putSharedPreferencesLong(con,  "transmitBytes", _transmitBytes);
-		HelperSharedPreferences.putSharedPreferencesString(con, "password", _password);
-		HelperSharedPreferences.putSharedPreferencesString(con, "passwordCheck", _passwordCheck);
-		HelperSharedPreferences.putSharedPreferencesInt(con, "helloSignal", _helloSignal);
-		HelperSharedPreferences.putSharedPreferencesInt(con, "roaming", _roaming);
-		HelperSharedPreferences.putSharedPreferencesString(con, "DeviceUpTimeReport", _DeviceUpTimeReport); 
-		HelperSharedPreferences.putSharedPreferencesString(con, "NetworkOperatorReport", _NetworkOperatorReport); 
-		HelperSharedPreferences.putSharedPreferencesString(con, "NetworkTypeReport", _NetworkTypeReport); 
-		HelperSharedPreferences.putSharedPreferencesString(con, "PhoneTypeReport", _PhoneTypeReport); 
-		HelperSharedPreferences.putSharedPreferencesString(con, "SignalStrengthReport", _SignalStrengthReport);
-		HelperSharedPreferences.putSharedPreferencesString(con, "ReceivedSMSReport", _ReceivedSMSReport);
-		HelperSharedPreferences.putSharedPreferencesString(con, "SentSMSReport", _SentSMSReport);
-		HelperSharedPreferences.putSharedPreferencesString(con, "IncomingCallsReport", _IncomingCallsReport); 
-		HelperSharedPreferences.putSharedPreferencesString(con, "MissedCallsReport", _MissedCallsReport); 
-		HelperSharedPreferences.putSharedPreferencesString(con, "OutgoingCallsReport", _OutgoingCallsReport); 
-		HelperSharedPreferences.putSharedPreferencesString(con, "BytesReceivedReport", _BytesReceivedReport); 
-		HelperSharedPreferences.putSharedPreferencesString(con, "BytesSentReport", _BytesSentReport); 
-		HelperSharedPreferences.putSharedPreferencesString(con, "HelloSignalReport", _HelloSignalReport); 
-		HelperSharedPreferences.putSharedPreferencesString(con, "BatteryLevelReport", _BatteryLevelReport);
-		HelperSharedPreferences.putSharedPreferencesString(con, "RoamingReport", _RoamingReport);
-		HelperSharedPreferences.putSharedPreferencesString(con, "InventoryReport", _InventoryReport);
-		HelperSharedPreferences.putSharedPreferencesString(con, "NotificationCheck", _NotificationCheck);
-		HelperSharedPreferences.putSharedPreferencesString(con, "mobileWebURL", _mobileWebURL);
-		HelperSharedPreferences.putSharedPreferencesLong(con,  "bufferSize", _bufferSize);
-		
-		return true;
+		if (editor.commit()) {
+			return true;
+		}
+		return false;
 	}// end updateConf
     
     
-   
+    public synchronized static void putSharedData(String preferenceName, String tokenName, String data, String type) {
+		int mode = Activity.MODE_PRIVATE;
+		SharedPreferences agentPreferences = con.getSharedPreferences(
+    			con.getString(R.string.const_string_preferences),
+    			Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = agentPreferences.edit();
+		
+				
+		if(type == "boolean") {
+			editor.putBoolean(tokenName, Boolean.parseBoolean(data));
+		}
+		else if(type == "float") {
+			editor.putFloat(tokenName, Float.parseFloat(data));
+		}
+		else if(type == "integer") {
+			editor.putInt(tokenName, Integer.parseInt(data));
+		}
+		else if(type == "long") {
+			editor.putLong(tokenName, Long.parseLong(data));
+		}
+		else if(type == "string") {
+			editor.putString(tokenName, data);
+		}
+		
+		editor.commit();
+    }
+    
+    public synchronized static String getSharedData(String preferenceName, String tokenName, String defaultValue, String type) {
+		int mode = Activity.MODE_PRIVATE;
+		SharedPreferences agentPreferences = con.getSharedPreferences(
+    			con.getString(R.string.const_string_preferences),
+    			Activity.MODE_PRIVATE);
+		
+		if(type == "boolean") {
+			boolean a = agentPreferences.getBoolean(tokenName, Boolean.parseBoolean(defaultValue));
+			return Boolean.valueOf(a).toString();
+		}
+		else if(type == "float") {
+			float a = agentPreferences.getFloat(tokenName, Float.parseFloat(defaultValue));
+			return Float.valueOf(a).toString();
+		}
+		else if(type == "integer") {
+			int a = agentPreferences.getInt(tokenName, Integer.parseInt(defaultValue));
+			return Integer.valueOf(a).toString();
+		}
+		else if(type == "long") {
+			long a = agentPreferences.getLong(tokenName, Long.parseLong(defaultValue));
+			return Long.valueOf(a).toString();
+		}
+		else if(type == "string") {
+			return agentPreferences.getString(tokenName, defaultValue);
+		}
+		
+		return "";
+    }
     
     
 //    //database//
@@ -539,41 +603,5 @@ public class Core {
 //		return true;
 //	}// end updateConf
 //    
-//    
-//    
-////  //Adds a new row "name" with the value "value"
-////  	public static void addValue(Context context, String name, String value){
-////  		db = new DataBaseHandler(con);
-////  		
-////  		DataHandler dh = new DataHandler(name, value);
-////  		
-////  		db.addValue(dh);
-////  		
-////  	}
-//  	
-//  	//Updates a given row "name" with a "value"
-//  	public static synchronized void updateDatabaseValue(Context context, String name, String value){
-//  		db = new DataBaseHandler(con, "pandroid", null, 1);
-//  		//Retrieve id of row to update
-//  		int id = getDataHandler(con, name).get_id();
-//  		
-//  		DataHandler dh = new DataHandler(id, name, value);
-//  		
-//  		db.updateValue(dh);
-//  	}
-//  	
-//  	//Returns the DataHandler object of the given row "name"
-//  	public static synchronized DataHandler getDataHandler(Context context, String name){
-//  		db = new DataBaseHandler(con, "pandroid", null, 1);
-//  		
-//  		return db.getValue(name);
-//  	}
-//  	
-//  	//Returns the value of the given row "name"
-//  	public static synchronized String getDatabaseValue(Context context, String name){
-//  		db = new DataBaseHandler(con, "pandroid", null, 1);
-//  		
-//  		return db.getValue(name).get_value();
-//  		
-//  	}
+
 }

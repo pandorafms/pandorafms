@@ -114,6 +114,8 @@
 	<string name="mobileWebURL">"Mobile服务器的URL："</string>
 	<string name="go_to_web">"查看手机网站"</string>
 	
+	<string name="bufferSize">XML 緩衝區大小(KB)</string>
+	
 	<string name="enter">"进入"</string>
 	<string name="back">"背面"</string>
 	<string name="yes">"是"</string>

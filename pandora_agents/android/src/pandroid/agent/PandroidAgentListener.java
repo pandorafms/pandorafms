@@ -63,6 +63,7 @@ import android.widget.Toast;
 public class PandroidAgentListener extends Service {
 	
 	private NotificationManager notificationManager;
+	private Notification notification;
 	
     Handler h = new Handler();
     String lastGpsContactDateTime = "";
@@ -71,36 +72,23 @@ public class PandroidAgentListener extends Service {
 	@Override
 	public void onCreate() {
 		
-		try {
-            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        } catch (Exception e) {
-            Log.e("notification", e.toString());
-        }
 		
-		if(Core.NotificationCheck == "enabled"){
-			
-			Notification notification = new Notification(R.drawable.icon, getText(R.string.ticker_text),
-					System.currentTimeMillis());
-			Intent notificationIntent = new Intent(this,PandroidAgent.class);
-			notificationIntent.setAction("android.intent.action.MAIN");
-			notificationIntent.addCategory("android.intent.category.LAUNCHER");
-			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, Notification.FLAG_NO_CLEAR);
-			notification.setLatestEventInfo(this, getText(R.string.notification_title), getText(R.string.notification_message), pendingIntent); 
-			notification.flags |= Notification.FLAG_ONGOING_EVENT;
-			notificationManager.notify(1, notification);
-		}
-		else{
-			CancelNotification(getApplicationContext(),1);
-		}
 	}
+	
+	
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
         wakeLock.acquire();
+        
+        
 		updateValues();
 		contact();
+		
+		
+		
 		wakeLock.release();
 		stopSelf(startId);
 		
@@ -174,7 +162,7 @@ public class PandroidAgentListener extends Service {
 		    
 		Date date = new Date();
         
-    	Core.putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
+		HelperSharedPreferences.putSharedPreferencesLong(this, "lastContact", date.getTime() / 1000);
         Boolean xmlBuilt = true;
         String xml = "";
         
@@ -224,7 +212,7 @@ public class PandroidAgentListener extends Service {
         			
         			String[] tentacleData = {
             				"-a",
-            				Core.getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
+            				HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "serverAddr", ""),
             				"-p",
             				Core.defaultServerPort,
             				"-v",
@@ -235,7 +223,7 @@ public class PandroidAgentListener extends Service {
             		tentacleRet = new tentacle_client().tentacle_client(tentacleData);
             		
             		if(tentacleRet == 0) {
-            			Core.putSharedData("PANDROID_DATA", "contactError", "0", "integer");
+            			HelperSharedPreferences.putSharedPreferencesInt(getApplicationContext(), "contactError", 0);
             			// Deleting the file after send it
             			// move to only delete if sent successfully
             			File file = new File("/data/data/pandroid.agent/files/" + destFileName);
@@ -247,7 +235,7 @@ public class PandroidAgentListener extends Service {
             		}
             		if(tentacleRet == -1){
             			//file not deleted
-            			Core.putSharedData("PANDROID_DATA", "contactError", "1", "integer");
+            			HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "contactError", 1);
             			contact = false;
             		}
             		i++;
@@ -269,18 +257,26 @@ public class PandroidAgentListener extends Service {
     		String lastXML = buildXML();
     		
     		String destFileName = "";
-    		String agentName = Core.getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
+    		String agentName = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "agentName", Core.defaultAgentName);
     		destFileName = agentName + "." + System.currentTimeMillis() + ".data";
     		
+    		long bufferSize = 0;
+    		String[] buffer = getApplicationContext().fileList();
     		
-    		//Check if number of files is less than a value
-    		if(getApplicationContext().fileList().length < 100){
+    		for(int i = 1; i<buffer.length;i++){
+    			File file = new File("/data/data/pandroid.agent/files/" + buffer[i]);
+    			bufferSize += file.length();
+    		}
+    		Log.d("Buffer size:",""+bufferSize);
+    		
+    		//Check if size of buffer is less than a value
+    		if((bufferSize/1024) < Core.bufferSize){
     			writeFile(destFileName, lastXML);
-    			Core.putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
+    			HelperSharedPreferences.putSharedPreferencesString(getApplicationContext(), "lastXML", lastXML);
     		}else{
     			//buffer full
     		}
-    		Core.putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
+    		HelperSharedPreferences.putSharedPreferencesString(getApplicationContext(), "lastXML", lastXML);
     		
     		return lastXML;
     		
@@ -319,15 +315,15 @@ public class PandroidAgentListener extends Service {
 		String gpsData = "";
 		buffer += "<?xml version='1.0' encoding='iso-8859-1'?>\n";
 		
-		String latitude = Core.getSharedData("PANDROID_DATA", "latitude", "181", "float");
-		String longitude = Core.getSharedData("PANDROID_DATA", "longitude", "181", "float");
+		String latitude = ""+HelperSharedPreferences.getSharedPreferencesFloat(getApplicationContext(), "latitude", 181);
+		String longitude = ""+HelperSharedPreferences.getSharedPreferencesFloat(getApplicationContext(), "longitude", 181);
 
 		if(!latitude.equals("181.0") && !longitude.equals("181.0")) {
 			gpsData = " latitude='" + latitude + "' longitude='" + longitude + "'";
 		}
 		
-		String agentName = Core.getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
-		String interval = Core.getSharedData("PANDROID_DATA", "interval", Integer.toString(Core.defaultInterval), "integer");
+		String agentName = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "agentName", Core.defaultAgentName);
+		String interval = ""+HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "interval", Core.defaultInterval);
 		
 		buffer += "<agent_data " +
 			"description='' group='' os_name='android' os_version='"+Build.VERSION.RELEASE+"' " +		
@@ -339,51 +335,51 @@ public class PandroidAgentListener extends Service {
 		//									MODULES											//
 		//																					//
 		
-		String orientation = Core.getSharedData("PANDROID_DATA", "orientation", "361", "float");
-		String proximity = Core.getSharedData("PANDROID_DATA", "proximity", "-1.0", "float");
-		String batteryLevel = Core.getSharedData("PANDROID_DATA", "batteryLevel", "-1", "integer");
-		String taskStatus = Core.getSharedData("PANDROID_DATA", "taskStatus", "disabled", "string");
-		String taskRun = Core.getSharedData("PANDROID_DATA", "taskRun", "false", "string");
-		String taskHumanName = Core.getSharedData("PANDROID_DATA", "taskHumanName", "", "string");
+		String orientation = ""+HelperSharedPreferences.getSharedPreferencesFloat(getApplicationContext(), "orientation", 361);
+		String proximity = ""+HelperSharedPreferences.getSharedPreferencesFloat(getApplicationContext(), "proximity", -1.0f);
+		String batteryLevel = ""+HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "batteryLevel", -1);
+		String taskStatus = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "taskStatus", "disabled");
+		String taskRun = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "taskRun", "false");
+		String taskHumanName = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "taskHumanName", "");
 		taskHumanName = StringEscapeUtils.escapeHtml4(taskHumanName);
 		
-		String task = Core.getSharedData("PANDROID_DATA", "task", "", "string");
-		String memoryStatus = Core.getSharedData("PANDROID_DATA", "memoryStatus", Core.defaultMemoryStatus, "string");
-		String availableRamKb = Core.getSharedData("PANDROID_DATA", "availableRamKb", "0" , "long");
-		String totalRamKb = Core.getSharedData("PANDROID_DATA", "totalRamKb", "0", "long");
-		String SimID = Core.getSharedData("PANDROID_DATA", "simID", Core.defaultSimID, "string");
-		String upTime = Core.getSharedData("PANDROID_DATA", "upTime", ""+Core.defaultUpTime, "long");
-		String networkOperator  = Core.getSharedData("PANDROID_DATA", "networkOperator", Core.defaultNetworkOperator, "string");
-		String SMSReceived = Core.getSharedData("PANDROID_DATA", "SMSReceived", ""+Core.defaultSMSReceived, "integer");
-		String SMSSent = Core.getSharedData("PANDROID_DATA", "SMSSent", ""+Core.defaultSMSSent, "integer");
-		String networkType = Core.getSharedData("PANDROID_DATA", "networkType", Core.defaultNetworkType, "string");
-		String phoneType = Core.getSharedData("PANDROID_DATA", "networkType", Core.defaultNetworkType, "string");
-		String signalStrength = Core.getSharedData("PANDROID_DATA", "signalStrength", ""+Core.defaultSignalStrength, "integer");
-		String incomingCalls = Core.getSharedData("PANDROID_DATA", "incomingCalls", ""+Core.defaultIncomingCalls, "integer");
-		String missedCalls = Core.getSharedData("PANDROID_DATA", "missedCalls", ""+Core.defaultMissedCalls, "integer");
-		String outgoingCalls = Core.getSharedData("PANDROID_DATA", "outgoingCalls", ""+Core.defaultOutgoingCalls, "integer");
-		String receiveBytes = Core.getSharedData("PANDROID_DATA", "receiveBytes", ""+Core.defaultReceiveBytes, "long");
-		String transmitBytes = Core.getSharedData("PANDROID_DATA", "transmitBytes", ""+Core.defaultTransmitBytes, "long");
-		String helloSignal = Core.getSharedData("PANDROID_DATA", "helloSignal", ""+Core.defaultHelloSignal, "integer");
-		String roaming = Core.getSharedData("PANDROID_DATA", "roaming", ""+Core.defaultRoaming, "integer");
+		String task = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "task", "");
+		String memoryStatus = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "memoryStatus", Core.defaultMemoryStatus);
+		String availableRamKb = ""+HelperSharedPreferences.getSharedPreferencesLong(getApplicationContext(), "availableRamKb", 0);
+		String totalRamKb = ""+HelperSharedPreferences.getSharedPreferencesLong(getApplicationContext(), "totalRamKb", 0);
+		String SimID = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "simID", Core.defaultSimID);
+		String upTime = ""+HelperSharedPreferences.getSharedPreferencesLong(getApplicationContext(), "upTime", Core.defaultUpTime);
+		String networkOperator = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "networkOperator", Core.defaultNetworkOperator);
+		String SMSReceived = ""+HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "SMSReceived", Core.defaultSMSReceived);
+		String SMSSent = ""+HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "SMSSent", Core.defaultSMSSent);
+		String networkType = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "networkType", Core.defaultNetworkType);
+		String phoneType = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "networkType", Core.defaultNetworkType);
+		String signalStrength = ""+HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "signalStrength", Core.defaultSignalStrength);
+		String incomingCalls = ""+HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "incomingCalls", Core.defaultIncomingCalls);
+		String missedCalls = ""+HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "missedCalls", Core.defaultMissedCalls);
+		String outgoingCalls = ""+HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "outgoingCalls", Core.defaultOutgoingCalls);
+		String receiveBytes = ""+HelperSharedPreferences.getSharedPreferencesLong(getApplicationContext(), "receiveBytes", Core.defaultReceiveBytes);
+		String transmitBytes = ""+HelperSharedPreferences.getSharedPreferencesLong(getApplicationContext(), "transmitBytes", Core.defaultTransmitBytes);
+		String helloSignal = ""+HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "helloSignal", Core.defaultHelloSignal);
+		String roaming = ""+HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "roaming", Core.defaultRoaming);
 		
-		String simIDReport = Core.getSharedData("PANDROID_DATA", "simIDReport", Core.defaultSimIDReport, "string");
-		String DeviceUpTimeReport = Core.getSharedData("PANDROID_DATA", "DeviceUpTimeReport", Core.defaultDeviceUpTimeReport, "string");
-		String NetworkOperatorReport = Core.getSharedData("PANDROID_DATA", "NetworkOperatorReport", Core.defaultNetworkOperatorReport, "string");
-		String NetworkTypeReport = Core.getSharedData("PANDROID_DATA", "NetworkTypeReport", Core.defaultNetworkTypeReport, "string");
-		String PhoneTypeReport = Core.getSharedData("PANDROID_DATA", "PhoneTypeReport", Core.defaultPhoneTypeReport, "string");
-		String SignalStrengthReport = Core.getSharedData("PANDROID_DATA", "SignalStrengthReport", Core.defaultSignalStrengthReport, "string");
-		String ReceivedSMSReport = Core.getSharedData("PANDROID_DATA", "ReceivedSMSReport", Core.defaultReceivedSMSReport, "string");
-		String SentSMSReport = Core.getSharedData("PANDROID_DATA", "SentSMSReport", Core.defaultSentSMSReport, "string");
-		String IncomingCallsReport = Core.getSharedData("PANDROID_DATA", "IncomingCallsReport", Core.defaultIncomingCallsReport, "string");
-		String MissedCallsReport = Core.getSharedData("PANDROID_DATA", "MissedCallsReport", Core.defaultMissedCallsReport, "string");
-		String OutgoingCallsReport = Core.getSharedData("PANDROID_DATA", "OutgoingCallsReport", Core.defaultOutgoingCallsReport, "string");
-		String BytesReceivedReport = Core.getSharedData("PANDROID_DATA", "BytesReceivedReport", Core.defaultBytesReceivedReport, "string");
-		String BytesSentReport = Core.getSharedData("PANDROID_DATA", "BytesSentReport", Core.defaultBytesSentReport, "string");
-		String HelloSignalReport = Core.getSharedData("PANDROID_DATA", "HelloSignalReport", Core.defaultHelloSignalReport, "string");
-		String BatteryLevelReport = Core.getSharedData("PANDROID_DATA", "BatteryLevelReport", Core.defaultBatteryLevelReport, "string");
-		String RoamingReport = Core.getSharedData("PANDROID_DATA", "RoamingReport", Core.defaultRoamingReport, "string");
-		String InventoryReport = Core.getSharedData("PANDROID_DATA", "InventoryReport", Core.defaultInventoryReport, "string");
+		String simIDReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "simIDReport", Core.defaultSimIDReport);
+		String DeviceUpTimeReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "DeviceUpTimeReport", Core.defaultDeviceUpTimeReport);
+		String NetworkOperatorReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "NetworkOperatorReport", Core.defaultNetworkOperatorReport);
+		String NetworkTypeReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "NetworkTypeReport", Core.defaultNetworkTypeReport);
+		String PhoneTypeReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "PhoneTypeReport", Core.defaultPhoneTypeReport);
+		String SignalStrengthReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "SignalStrengthReport", Core.defaultSignalStrengthReport);
+		String ReceivedSMSReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "ReceivedSMSReport", Core.defaultReceivedSMSReport);
+		String SentSMSReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "SentSMSReport", Core.defaultSentSMSReport);
+		String IncomingCallsReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "IncomingCallsReport", Core.defaultIncomingCallsReport);
+		String MissedCallsReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "MissedCallsReport", Core.defaultMissedCallsReport);
+		String OutgoingCallsReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "OutgoingCallsReport", Core.defaultOutgoingCallsReport);
+		String BytesReceivedReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "BytesReceivedReport", Core.defaultBytesReceivedReport);
+		String BytesSentReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "BytesSentReport", Core.defaultBytesSentReport);
+		String HelloSignalReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "HelloSignalReport", Core.defaultHelloSignalReport);
+		String BatteryLevelReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "BatteryLevelReport", Core.defaultBatteryLevelReport);
+		String RoamingReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "RoamingReport", Core.defaultRoamingReport);
+		String InventoryReport = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "InventoryReport", Core.defaultInventoryReport);
 
 		if(InventoryReport.equals("enabled"))
 		{
@@ -568,8 +564,8 @@ public class PandroidAgentListener extends Service {
 			//if(latitude != loc.getLatitude() || longitude != loc.getLongitude()) {
 				lastGpsContactDateTime = getHumanDateTime(-1);
 			//}
-            Core.putSharedData("PANDROID_DATA", "latitude", Double.valueOf(loc.getLatitude()).toString(), "float");
-            Core.putSharedData("PANDROID_DATA", "longitude", Double.valueOf(loc.getLongitude()).toString(), "float");
+			HelperSharedPreferences.putSharedPreferencesFloat(getApplicationContext(), "latitude", (float) loc.getLatitude());
+			HelperSharedPreferences.putSharedPreferencesFloat(getApplicationContext(), "longitude", (float) loc.getLongitude());
 		}
 		else {
 			Criteria criteria = new Criteria();
@@ -589,10 +585,8 @@ public class PandroidAgentListener extends Service {
 			lm.requestLocationUpdates(bestProvider, Core.defaultInterval, 1000,
 				new LocationListener() {
 					public void onLocationChanged(Location location) {
-						Core.putSharedData("PANDROID_DATA", "latitude",
-								Double.valueOf(location.getLatitude()).toString(), "float");
-				        Core.putSharedData("PANDROID_DATA", "longitude",
-				        		Double.valueOf(location.getLongitude()).toString(), "float");
+						HelperSharedPreferences.putSharedPreferencesFloat(getApplicationContext(), "latitude",(float) location.getLatitude());
+						HelperSharedPreferences.putSharedPreferencesFloat(getApplicationContext(), "longitude",(float) location.getLongitude());
 					}
 					public void onStatusChanged(String s, int i, Bundle bundle) {
 						
@@ -601,8 +595,7 @@ public class PandroidAgentListener extends Service {
 						// try switching to a different provider
 					}
 					public void onProviderDisabled(String s) {
-						Core.putSharedData("PANDROID_DATA", "enabled_location_provider",
-							"disabled", "string");
+						HelperSharedPreferences.putSharedPreferencesString(getApplicationContext(), "enabled_location_provider", "disabled");
 					}
 				});
 		}
@@ -616,7 +609,7 @@ public class PandroidAgentListener extends Service {
     		int scale = batteryIntent.getIntExtra("scale", -1);
     		//double level = -1;
     		if (rawlevel >= 0 && scale > 0) {
-    			Core.putSharedData("PANDROID_DATA", "batteryLevel", Integer.valueOf((rawlevel * 100) / scale).toString(), "integer");
+    			HelperSharedPreferences.putSharedPreferencesInt(getApplicationContext(), "batteryLevel", (rawlevel * 100) / scale);
     		}
     }
     
@@ -683,7 +676,7 @@ public class PandroidAgentListener extends Service {
 	private void updateValues() {
 		
 		batteryLevel();
-        String gpsStatus = Core.getSharedData("PANDROID_DATA", "gpsStatus", Core.defaultGpsStatus, "string");
+        String gpsStatus = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "gpsStatus", Core.defaultGpsStatus);
         
         if(gpsStatus.equals("enabled")) {
         	Log.d("PANDROID AGENT", "ENABLED");
@@ -691,8 +684,8 @@ public class PandroidAgentListener extends Service {
         }
         else {
         	Log.d("PANDROID AGENT", "DISABLED");
-            Core.putSharedData("PANDROID_DATA", "latitude", "181.0", "float");
-            Core.putSharedData("PANDROID_DATA", "longitude", "181.0", "float");
+        	HelperSharedPreferences.putSharedPreferencesFloat(getApplicationContext(), "latitude", 181.0f);
+        	HelperSharedPreferences.putSharedPreferencesFloat(getApplicationContext(), "longitude", 181.0f);
         }
         
         //sensors();
@@ -715,7 +708,7 @@ public class PandroidAgentListener extends Service {
 	}
 	
 	private void getMemoryStatus() {
-		String memoryStatus = Core.getSharedData("PANDROID_DATA", "memoryStatus", Core.defaultMemoryStatus, "string");
+		String memoryStatus = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "memoryStatus", Core.defaultMemoryStatus);
 		long availableRamKb = 0;
 		long totalRamKb = 0;
 		
@@ -741,14 +734,14 @@ public class PandroidAgentListener extends Service {
 		    }
 		}
 		
-		Core.putSharedData("PANDROID_DATA", "availableRamKb", "" + availableRamKb, "long");
-		Core.putSharedData("PANDROID_DATA", "totalRamKb", "" + totalRamKb, "long");
+		HelperSharedPreferences.putSharedPreferencesLong(getApplicationContext(), "availableRamKb", availableRamKb);
+		HelperSharedPreferences.putSharedPreferencesLong(getApplicationContext(), "totalRamKb", totalRamKb);
 	}// end getMemoryStatus
 	
 	private void getTaskStatus() {
-		String taskStatus = Core.getSharedData("PANDROID_DATA", "taskStatus", Core.defaultTaskStatus, "string");
-		String task = Core.getSharedData("PANDROID_DATA", "task", Core.defaultTask, "string");
-		String taskHumanName = Core.getSharedData("PANDROID_DATA", "taskHumanName", Core.defaultTaskHumanName, "string");
+		String taskStatus = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "taskStatus", Core.defaultTaskStatus);
+		String task = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "task", Core.defaultTask);
+		String taskHumanName = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "taskHumanName", Core.defaultTaskHumanName);
 		String run = "false";
 		
 		if (taskStatus.equals("enabled")) {
@@ -768,7 +761,7 @@ public class PandroidAgentListener extends Service {
 				}
 			}
 		}
-		Core.putSharedData("PANDROID_DATA", "taskRun", run, "string");
+		HelperSharedPreferences.putSharedPreferencesString(getApplicationContext(), "taskRun", run);
 	}//end getTaskStatus
 	
 	/**
@@ -776,12 +769,12 @@ public class PandroidAgentListener extends Service {
 	 */
 	private void getSimID(){
 		
-			String simID = Core.getSharedData("PANDROID_DATA", "simID", Core.defaultSimID, "string");
+			String simID = HelperSharedPreferences.getSharedPreferencesString(getApplicationContext(), "simID", Core.defaultSimID);
 		
 			String serviceName = Context.TELEPHONY_SERVICE;
 			TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
 			simID = telephonyManager.getSimSerialNumber();
-			Core.putSharedData("PANDROID_DATA", "simID", simID, "string");
+			HelperSharedPreferences.putSharedPreferencesString(getApplicationContext(), "simID", simID);
 	}
 	/**
 	 * 	Retrieves the time in seconds since the device was switched on
@@ -790,7 +783,7 @@ public class PandroidAgentListener extends Service {
 		long upTime = Core.defaultUpTime;
 		upTime = SystemClock.elapsedRealtime()/1000;
 		if(upTime != 0)
-			Core.putSharedData("PANDROID_DATA", "upTime", ""+upTime, "long");
+			HelperSharedPreferences.putSharedPreferencesLong(getApplicationContext(), "upTime", upTime);
 	}
 	/**
 	 * 	Retrieve currently registered network operator, i.e. vodafone, movistar, etc...
@@ -802,15 +795,15 @@ public class PandroidAgentListener extends Service {
 		networkOperator = telephonyManager.getNetworkOperatorName();
 	    
 		if(networkOperator != null)
-			Core.putSharedData("PANDROID_DATA", "networkOperator", networkOperator, "string");
+			HelperSharedPreferences.putSharedPreferencesString(getApplicationContext(), "networkOperator", networkOperator);
 	}
 	/**
 	 *  Retrieves the number of sent sms messages using the android messaging app only
 	 */
 	private void getSMSSent(){
 		
-		String SMSSent = ""+Core.defaultSMSSent;
-		SMSSent = Core.getSharedData("PANDROID_DATA", "SMSSent", ""+Core.defaultSMSSent, "integer");
+		int SMSSent = Core.defaultSMSSent;
+		SMSSent = HelperSharedPreferences.getSharedPreferencesInt(getApplicationContext(), "SMSSent", Core.defaultSMSSent);
 		Uri allMessages = Uri.parse("content://sms/sent");
 		Cursor c = getContentResolver().query(allMessages, null, null, null, null);
 		int totalMessages = 0;
@@ -826,10 +819,10 @@ public class PandroidAgentListener extends Service {
 		
 		c.close();
 		
-		SMSSent =""+ totalMessages;
+		SMSSent = totalMessages;
 		
-		if(SMSSent != null)
-			Core.putSharedData("PANDROID_DATA", "SMSSent", SMSSent, "integer");
+		if(SMSSent != 0)
+			HelperSharedPreferences.putSharedPreferencesInt(getApplicationContext(), "SMSSent", SMSSent);
 		
 	}// end getSMSSent
 	/**
@@ -893,7 +886,7 @@ public class PandroidAgentListener extends Service {
 				break;          
 		}
 		if(networkType != null)
-			Core.putSharedData("PANDROID_DATA", "networkType", networkType, "string");
+			HelperSharedPreferences.putSharedPreferencesString(getApplicationContext(), "networkType", networkType);
 		
 	}// end getNetworkType
 	
@@ -922,7 +915,7 @@ public class PandroidAgentListener extends Service {
 				break;
 		}
 		if(phoneType != null)
-			Core.putSharedData("PANDROID_DATA", "phoneType", phoneType, "string");
+			HelperSharedPreferences.putSharedPreferencesString(getApplicationContext(), "phoneType", phoneType);
 	}// end getPhoneType
 	
 	/**
@@ -956,9 +949,9 @@ public class PandroidAgentListener extends Service {
                     c.moveToNext();
 			}
             
-			Core.putSharedData("PANDROID_DATA", "incomingCalls", ""+incoming, "integer");
-            Core.putSharedData("PANDROID_DATA", "missedCalls", ""+missed, "integer");
-            Core.putSharedData("PANDROID_DATA", "outgoingCalls", ""+outgoing, "integer");
+			HelperSharedPreferences.putSharedPreferencesInt(getApplicationContext(), "incomingCalls", incoming);
+			HelperSharedPreferences.putSharedPreferencesInt(getApplicationContext(), "missedCalls", missed);
+			HelperSharedPreferences.putSharedPreferencesInt(getApplicationContext(), "outgoingCalls", outgoing);
 		}
 		
 		c.close();
@@ -979,17 +972,17 @@ public class PandroidAgentListener extends Service {
 		public void onSignalStrengthsChanged(SignalStrength signalStrength)
 		{
 			super.onSignalStrengthsChanged(signalStrength);
-			String signalStrengthValue = ""+Core.defaultSignalStrength;
+			int signalStrengthValue = Core.defaultSignalStrength;
 			if (signalStrength.isGsm()) {
                 if (signalStrength.getGsmSignalStrength() != 99)
-                    signalStrengthValue =""+ (signalStrength.getGsmSignalStrength() * 2 - 113);
+                    signalStrengthValue = (signalStrength.getGsmSignalStrength() * 2 - 113);
                 else
-                    signalStrengthValue =""+ (signalStrength.getGsmSignalStrength());
+                    signalStrengthValue = (signalStrength.getGsmSignalStrength());
             }
 			else{
-               signalStrengthValue ="" + (signalStrength.getCdmaDbm());
+               signalStrengthValue = (signalStrength.getCdmaDbm());
             }
-			Core.putSharedData("PANDROID_DATA", "signalStrength", signalStrengthValue, "integer");
+			HelperSharedPreferences.putSharedPreferencesInt(getApplicationContext(), "signalStrength", signalStrengthValue);
 		}
 	};
 	/**
@@ -1003,8 +996,8 @@ public class PandroidAgentListener extends Service {
 		
 		if (receiveBytes != TrafficStats.UNSUPPORTED && transmitBytes != TrafficStats.UNSUPPORTED) 
 		{
-			Core.putSharedData("PANDROID_DATA", "receiveBytes", ""+receiveBytes, "long" );
-			Core.putSharedData("PANDROID_DATA", "transmitBytes", ""+transmitBytes, "long" );
+			HelperSharedPreferences.putSharedPreferencesLong(getApplicationContext(), "receiveBytes", receiveBytes);
+			HelperSharedPreferences.putSharedPreferencesLong(getApplicationContext(), "transmitBytes", transmitBytes);
 		}
 	}
 	/**
@@ -1016,9 +1009,9 @@ public class PandroidAgentListener extends Service {
 		boolean roaming = telephone.isNetworkRoaming();
 		
 		if(roaming)
-			Core.putSharedData("PANDROID_DATA", "roaming", "1", "integer" );
+			HelperSharedPreferences.putSharedPreferencesInt(getApplicationContext(), "roaming", 1);
 		else
-			Core.putSharedData("PANDROID_DATA", "roaming", "0", "integer" );
+			HelperSharedPreferences.putSharedPreferencesInt(getApplicationContext(), "roaming", 0);
 	}
 	
 	
@@ -1082,8 +1075,8 @@ public class PandroidAgentListener extends Service {
     
 		@Override
 	    public void onLocationChanged(Location loc) {
-            Core.putSharedData("PANDROID_DATA", "latitude", Double.valueOf(loc.getLatitude()).toString(), "float");
-            Core.putSharedData("PANDROID_DATA", "longitude", Double.valueOf(loc.getLongitude()).toString(), "float");
+			HelperSharedPreferences.putSharedPreferencesFloat(getApplicationContext(), "latitude", (float)loc.getLatitude());
+			HelperSharedPreferences.putSharedPreferencesFloat(getApplicationContext(), "longitude", (float)loc.getLongitude());
 	    }
 	    
 	    @Override

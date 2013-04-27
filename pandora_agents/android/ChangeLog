@@ -1,3 +1,32 @@
+2013-04-27 Mark Holland <mark@mark-holland.me.uk>
+
+	* assets/database/pandroid.zip: Added buffer size initial value.
+
+	* layout: Added buffer size text edit.
+
+	* src/pandroid/agent/Core.java: Added variable for buffer size 
+	with initial value of 256KB. Moved all preference reading/editing 
+	to HelperSharedPreferences.
+
+	* src/pandroid/agent/DataBaseHandler.java: Now extends 
+	sqliteassethelper library.
+
+	* src/pandroid/agent/HelperSharedPreferences: New helper class in 
+	attempt to mitigate SharedPreferences loss.
+
+	* src/pandroid/agent/PandroidAgent.java: Removed SharedPreferences
+	references and methods.
+
+	* src/pandroid/agent/PandroidAgentListener.java: Rewritten all get
+	and put preferences to use HelperSharedPreferences instead.
+
+	* src/pandroid/agent/Setup.java: Added views for buffer size.
+
+	* src/pandroid/agent/SMSBroadcastReceiver.java: Changed to use
+	HelperSharedPreferences.
+	
+	* values: Added buffer size to all strings.
+
 2013-04-26 Mark Holland <mark@mark-holland.me.uk>
 
 	* src/pandroid/agent/Core.java: Single SharedPreferences and
@@ -16,8 +45,8 @@
 	* src/pandroid/agent/PandroidAgentTentacle.java: Changed socket to
 	timeout after 1000ms.
 
-	* src/pandroid/agent/SMSBroadcastReceiver.java: Changed SharedPreferences
-	to static version from PandroidAgent.java	
+	* src/pandroid/agent/SMSBroadcastReceiver.java: Changed 
+	SharedPreferences to static version from PandroidAgent.java	
 
 	* Pandroid Agent v3.0_iso-8859-1.apk: Updated to include latest
 	changes.
@@ -40,6 +69,12 @@
 
 2013-04-25 Mark Holland <mark@mark-holland.me.uk>
 
+	* assets/database/pandroid.zip: zipped sqlite3
+	database containing all default values.
+
+	* libs/android-sqlite-asset-helper.jar: library to facilitate
+	database operations. Only temporarily being used.
+
 	* src/pandroid/agent/Core.java: Changed get and update
 	database values methods to support new DataBaseHandler.
 
@@ -51,12 +86,7 @@
 	* src/pandroid/agent/PandroidAgentListener.java: changed
 	SimIDReport to simIDReport to reflect database.
 
-	* assets/database/pandroid.zip: zipped sqlite3
-	database containing all default values.
-
-	* libs/android-sqlite-asset-helper.jar: library to facilitate
-	database operations. Only temporarily being used.
-
+	
 2013-04-23 Mark Holland <mark@mark-holland.me.uk>
 
 	* src/pandroid/agent/Core.java: Migrated from shared

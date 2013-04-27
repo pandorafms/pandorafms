@@ -113,6 +113,8 @@
 	<string name="mobileWebURL">"モバイル·サーバーのURL："</string>
 	<string name="go_to_web">"携帯サイトを見る"</string>
 	
+	<string name="bufferSize">XML バッファサイズ(KB)</string>
+	
 	<string name="enter">"入力"</string>
 	<string name="back">"戻る"</string>
 	<string name="yes">"はい"</string>

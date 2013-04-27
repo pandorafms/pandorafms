@@ -95,6 +95,18 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true" />
+                
+                <TextView
+                    android:id="@+id/field6"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/bufferSize" />
+
+                <EditText
+                    android:id="@+id/bufferSize"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
 
                 <Button
                     android:id="@+id/goToWebButton"

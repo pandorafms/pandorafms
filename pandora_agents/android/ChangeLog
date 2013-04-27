@@ -1,5 +1,10 @@
 2013-04-27 Mark Holland <mark@mark-holland.me.uk>
 
+	* Pandroid Agent v3.0_iso-8859-1.apk: Updated with buffer size
+	selection.
+
+2013-04-27 Mark Holland <mark@mark-holland.me.uk>
+
 	* src/pandroid/agent/Core.java: Reverted to previous commit
 	SharedPreferences.
 

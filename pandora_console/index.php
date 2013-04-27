@@ -369,8 +369,15 @@ else {
 		$home_page ='';
 		if (isset($config['id_user'])) {
 			$user_info = users_get_user_by_id($config['id_user']);
-			$home_page = io_safe_output($user_info['section']);
-			$home_url = $user_info['data_section'];
+
+			// This only will be running on 4.1 or higher.
+			if (isset($user_info['section'])){
+				$home_page = io_safe_output($user_info['section']);
+				$home_url = $user_info['data_section'];
+			} else {
+				$home_page ="";
+				$home_url = "";
+			}
 		}
 		
 		if ($home_page != '') {

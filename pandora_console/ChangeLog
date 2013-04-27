@@ -1,3 +1,16 @@
+2013-04-28  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_html.php: Fixed notice on undef variable.
+
+	* index.php: Fixed use of not exist variable on 4.0 for a feature on
+	4.1.
+
+	* operation/users/user_edit.php: Fixed same problem than index.php
+
+	* pandoradb_data.sql: Updated DB schema and version.
+
+	* include/config_process.php: Yes!, we move into 4.1 !!
+
 2013-04-26 Vanessa Gil <vanessa.gil@artica.es>
 
 	* operation/users/user_edit.php: Removed option

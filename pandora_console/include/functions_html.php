@@ -333,7 +333,10 @@ function html_print_select ($fields, $name, $selected = '', $script = '', $nothi
 						$lastopttype = $label['optgroup'];
 					}
 				}
-				$optlabel = $label['name'];
+				if (isset($label["name"]))
+					$optlabel = $label['name'];
+				else
+					$optlabel = "";
 			}
 			
 			$output .= '<option value="'.$value.'"';

@@ -20,6 +20,8 @@ import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
@@ -36,7 +38,8 @@ public class PandroidAgent extends TabActivity {
     int defaultInterval = 300;
     TabHost tabHost;
     
-   
+    static SharedPreferences agentPreferences;
+    static Editor editor;
   
     
     @Override
@@ -46,7 +49,11 @@ public class PandroidAgent extends TabActivity {
         //database//
         
         
+        agentPreferences = this.getSharedPreferences(
+    			this.getString(R.string.const_string_preferences),
+    			Activity.MODE_PRIVATE);
         
+        editor = agentPreferences.edit();
         
         //Core.loadConfDatabase(this);
         //Core.loadLastValuesDatabase(this);
@@ -137,7 +144,15 @@ public class PandroidAgent extends TabActivity {
         tabHost.setCurrentTab(tab);
     }
 
+	public static SharedPreferences getSharedPrefs() {
+		// TODO Auto-generated method stub
+		return agentPreferences;
+	}
 	
+	public static Editor getEditor() {
+		// TODO Auto-generated method stub
+		return editor;
+	}
     
     
 }

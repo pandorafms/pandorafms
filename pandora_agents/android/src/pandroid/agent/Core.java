@@ -42,9 +42,9 @@ public class Core {
 	//					  DEFAULT CONFIGURATION MODULES					//
 	//																	//
 	
-    static volatile public String defaultServerAddr = "192.168.1.45";  //master address
+    static volatile public String defaultServerAddr = "firefly.artica.es";  //master address
     static volatile public String defaultServerPort = "41121";
-    static volatile public int defaultInterval = 20;
+    static volatile public int defaultInterval = 300;
     static volatile public String defaultAgentName = "pandroid";
     static volatile public String defaultmobileWebURL = "firefly.artica.es/pandora_demo/mobile";
     static volatile public String defaultGpsStatus = "enabled"; // "disabled" or "enabled"

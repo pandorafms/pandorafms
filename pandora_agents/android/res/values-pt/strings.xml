@@ -115,6 +115,8 @@
 	<string name="mobileWebURL">"URL do servidor móvel:"</string>
 	<string name="go_to_web">"Veja o site móvel"</string>
 	
+	<string name="bufferSize">Tamanho do buffer XML(KB)</string>
+	
 	<string name="enter">"Enter"</string>
 	<string name="back">"voltar"</string>
 	<string name="yes">"SIM"</string>

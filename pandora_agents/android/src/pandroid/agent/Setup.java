@@ -290,6 +290,9 @@ public class Setup extends Activity {
 		
 		editText = (EditText) findViewById(R.id.mobileWebURLInput);
 		Core.mobileWebURL = editText.getText().toString();
+		
+		editText = (EditText) findViewById(R.id.bufferSize);
+		Core.bufferSize = Long.valueOf(editText.getText().toString()).longValue();
         
         checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
         if (checkBox.isChecked())
@@ -455,6 +458,9 @@ public class Setup extends Activity {
 		
 		editText = (EditText) findViewById(R.id.mobileWebURLInput);
 		editText.setText(Core.mobileWebURL);
+		
+		editText = (EditText) findViewById(R.id.bufferSize);
+		editText.setText(Long.toString(Core.bufferSize));
         
         checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
         checkBox.setChecked(Core.gpsStatus.equals("enabled"));

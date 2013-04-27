@@ -115,6 +115,8 @@
 	<string name="mobileWebURL">"Mobile-Server URL:"</string>
 	<string name="go_to_web">"Zur mobilen Website"</string>
 	
+	<string name="bufferSize">XML Puffergröße(KB)</string>
+	
 	<string name="enter">"Eingangsbereich"</string>
 	<string name="back">"zurück"</string>
 	<string name="yes">"ja"</string>

@@ -1,5 +1,11 @@
 2013-04-28 Mark Holland <mark@mark-holland.me.uk>
 	
+	* layout/spinner.xml: Changed spinnner text color to green.
+
+	* Pandroid Agent v3.0_iso-8859-1.apk: Updated to latest version.
+
+2013-04-28 Mark Holland <mark@mark-holland.me.uk>
+	
 	* AndroidMainfest.xml: Set theme to themes.xml, moved permissions
 	and uses to top of file.
 

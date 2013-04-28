@@ -29,6 +29,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -241,7 +242,7 @@ public class Setup extends Activity {
 		    }
 		    
 			ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
-		    	android.R.layout.simple_spinner_item, listProcessHuman);
+		    	R.layout.spinner, listProcessHuman);
 		    combo.setAdapter(spinnerArrayAdapter);
 		    
 		    combo.setSelection(position);
@@ -799,7 +800,6 @@ public class Setup extends Activity {
         ParentActivity.switchTab(indexTabToSwitchTo);
 	}
 	
-	//TODO
 	public static void CancelNotification(Context ctx, int notifyId) {
 	    String ns = Context.NOTIFICATION_SERVICE;
 	    NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);

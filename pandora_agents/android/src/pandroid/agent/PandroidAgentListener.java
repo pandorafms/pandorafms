@@ -1129,7 +1129,6 @@ public class PandroidAgentListener extends Service {
         return humanDateTime;
     }
     
-    //TODO
     public static void CancelNotification(Context ctx, int notifyId) {
 	    String ns = Context.NOTIFICATION_SERVICE;
 	    NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);

@@ -56,7 +56,6 @@ public class Core {
     static volatile public String defaultDeviceUpTimeReport = "enabled"; // "disabled" or "enabled"
     static volatile public String defaultInventoryReport = "disabled"; // "disabled" or "enabled"
     static volatile public String defaultHelloSignalReport = "enabled"; // "disabled" or "enabled"
-    //TODO
     static volatile public String defaultNotificationCheck = "enabled"; // "disabled" or "enabled"
     
     static volatile public boolean defaultHasSim = false;
@@ -136,7 +135,6 @@ public class Core {
     static volatile public String InventoryReport = defaultRoamingReport;
     static volatile public String HelloSignalReport = defaultHelloSignalReport;
     static volatile public String RoamingReport = defaultRoamingReport;
-    //TODO
     static volatile public String NotificationCheck = defaultNotificationCheck;
     
     //hasSim values
@@ -298,7 +296,6 @@ public class Core {
 	    HelloSignalReport = agentPreferences.getString("HelloSignalReport", defaultHelloSignalReport);
 	    password = agentPreferences.getString("password", defaultPassword);
 		passwordCheck = agentPreferences.getString("passwordCheck", defaultPasswordCheck);
-		//TODO
 		NotificationCheck = agentPreferences.getString("NotificationCheck", defaultNotificationCheck);
 		hasSim = agentPreferences.getBoolean("hasSim", defaultHasSim);
 	    //hasSim values
@@ -329,7 +326,6 @@ public class Core {
     		signalStrength, SignalStrengthReport, SMSReceived,  ReceivedSMSReport, SMSSent, SentSMSReport,
     		incomingCalls,  IncomingCallsReport, missedCalls,  MissedCallsReport, outgoingCalls, OutgoingCallsReport, 
     		receiveBytes, BytesReceivedReport,  transmitBytes, BytesSentReport, RoamingReport, roaming,  
-    		//TODO
     		NotificationCheck 
     		);
     	
@@ -368,7 +364,6 @@ public class Core {
 		editor.putString("gpsStatus", _gpsStatus);
 		editor.putString("BatteryLevelReport", _BatteryLevelReport);
 		editor.putString("memoryStatus", _memoryStatus);
-		//TODO
 		editor.putLong("UpTime", _upTime);
 		editor.putString("DeviceUpTimeReport", _DeviceUpTimeReport);
 		editor.putString("InventoryReport", _InventoryReport);
@@ -405,7 +400,6 @@ public class Core {
 		editor.putString("BytesSentReport", _BytesSentReport); 
 		editor.putString("RoamingReport", _RoamingReport);
 		editor.putInt("roaming", _roaming);
-		//TODO
 		editor.putString("NotificationCheck", _NotificationCheck);
 		
 		

@@ -38,7 +38,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/notificationCheck"
                     android:textColor="#bbbbbb"
-                    android:textSize="14sp" />
+                    android:textSize="14sp" 
+                    android:paddingTop="5sp"/>
 
                 <TextView
                     android:id="@+id/field1"

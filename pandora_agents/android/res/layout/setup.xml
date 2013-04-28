@@ -39,7 +39,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/notificationCheck"
                     android:textColor="#bbbbbb"
-                    android:textSize="14sp" />
+                    android:textSize="14sp" 
+                    android:paddingTop="5sp"/>
 
                 <TextView
                     android:id="@+id/field1"
@@ -146,7 +147,8 @@
                         android:id="@+id/processes_combo"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone" />
+                         />
+                    
                 </LinearLayout>
                 
                 <CheckBox

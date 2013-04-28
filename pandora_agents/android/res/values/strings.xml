@@ -50,7 +50,7 @@
 	<string name="pandroid_agent_copyright">Copyright © 2011 Artica</string>
 	<string name="about_desc">Pandroid Agent logo</string>
 	<string name="help_str">Help</string>
-	<string name="memory_avaliable_str" formatted="false">Avaliable: &#37;iKb Total: &#37;iKb</string>
+	<string name="memory_avaliable_str" formatted="false">Available: &#37;iKb Total: &#37;iKb</string>
 	<string name="never_str">Never.</string>
 	<string name="now_str">Now.</string>
 	<string name="seconds_str">seconds ago.</string>
@@ -60,7 +60,7 @@
 		Pandroid Agent is an Android Pandora FMS agent for Pandora FMS. &lt;p&gt;
 		Pandora FMS is a general purpose monitoring system. With the android agent you can get all sorts of information from your device,
 		 the gps location, how much battery is left, available memory on the device, monitoring if a process is active, the time since the device
-		  was turned on, a HELLO signal for monitoring installations of the app, an inventory with all the installed apps aswell as information 
+		  was turned on, a HELLO signal for monitoring installations of the app, an inventory with all the installed apps as well as information 
 		  for android phones with a sim card; the sim card ID, the number of SMS sent/received, the number of calls incoming/missed/outgoing, 
 		  the network operator and type, the phone type, the mobile signal strength, the number of bytes sent/received over the mobile network.
 		  Complete source code is provided.&lt;p&gt;See more about Pandora FMS at &lt;a href=&quot;http://pandorafms.com&quot;&gt;http://pandoraFMS.com&lt;/a&gt;&lt;/p&gt;
@@ -116,7 +116,7 @@
 	<string name="password_repeat">Repeat Password</string>
 	<string name="password_choose_text">Do you want to set a password?</string>
 	<string name="password_checkbox">Don\'t ask again</string>
-	<string name="password_created">Password sucessfully created</string>
+	<string name="password_created">Password successfully created</string>
 	<string name="password_removed">No password set</string>
 	<string name="set_password">Create/Change password</string>
 	
@@ -133,6 +133,7 @@
 	<string name="simIDReport">Report Sim ID</string>
 	<string name="gpsReport">Report GPS data</string>
 	<string name="memoryReport">Report available memory</string>
+	<string name="taskToReport">Choose task to report:</string>
 	<string name="taskReport">Report task</string>
 	<string name="uptimeReport">Report device up time</string>
 	<string name="NetworkOperatorReport">Report network operator</string>

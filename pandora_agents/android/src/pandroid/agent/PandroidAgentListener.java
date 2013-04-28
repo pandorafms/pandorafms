@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.app.ActivityManager.RunningAppProcessInfo;
@@ -36,6 +37,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -62,7 +65,6 @@ import android.widget.Toast;
 
 public class PandroidAgentListener extends Service {
 	
-	private NotificationManager notificationManager;
 	
     Handler h = new Handler();
     String lastGpsContactDateTime = "";
@@ -71,63 +73,69 @@ public class PandroidAgentListener extends Service {
 	@Override
 	public void onCreate() {
 		
-		try {
-            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        } catch (Exception e) {
-            Log.e("notification", e.toString());
-        }
-		
-		if(Core.NotificationCheck == "enabled"){
-			
-			Notification notification = new Notification(R.drawable.icon, getText(R.string.ticker_text),
-					System.currentTimeMillis());
-			Intent notificationIntent = new Intent(this,PandroidAgent.class);
-			notificationIntent.setAction("android.intent.action.MAIN");
-			notificationIntent.addCategory("android.intent.category.LAUNCHER");
-			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, Notification.FLAG_NO_CLEAR);
-			notification.setLatestEventInfo(this, getText(R.string.notification_title), getText(R.string.notification_message), pendingIntent); 
-			notification.flags |= Notification.FLAG_ONGOING_EVENT;
-			notificationManager.notify(1, notification);
-		}
-		else{
-			CancelNotification(getApplicationContext(),1);
-		}
+//		try {
+//            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        } catch (Exception e) {
+//            Log.e("notification", e.toString());
+//        }
+//		
+//		if(Core.NotificationCheck == "enabled"){
+//			
+//			Notification notification = new Notification(R.drawable.icon, getText(R.string.ticker_text),
+//					System.currentTimeMillis());
+//			Intent notificationIntent = new Intent(this,PandroidAgent.class);
+//			notificationIntent.setAction("android.intent.action.MAIN");
+//			notificationIntent.addCategory("android.intent.category.LAUNCHER");
+//			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, Notification.FLAG_NO_CLEAR);
+//			notification.setLatestEventInfo(this, getText(R.string.notification_title), getText(R.string.notification_message), pendingIntent); 
+//			notification.flags |= Notification.FLAG_ONGOING_EVENT;
+//			notificationManager.notify(1, notification);
+//		}
+//		else{
+//			CancelNotification(getApplicationContext(),42);
+//		}
 	}
+	
+	
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
         wakeLock.acquire();
+        Core.loadConf(this);
 		updateValues();
 		contact();
 		
 		try {
-            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification notification = new Notification(R.drawable.icon, getText(R.string.ticker_text),
+    				System.currentTimeMillis());
+    		Intent notificationIntent = new Intent(this,PandroidAgent.class);
+    		notificationIntent.setAction("android.intent.action.MAIN");
+    		notificationIntent.addCategory("android.intent.category.LAUNCHER");
+    		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, Notification.FLAG_NO_CLEAR);
+    		notification.setLatestEventInfo(this, getText(R.string.notification_title), getText(R.string.notification_message), pendingIntent); 
+    		notification.flags |= Notification.FLAG_ONGOING_EVENT;
+    		
+    		
+    		if(Core.NotificationCheck == "enabled"){
+    			CancelNotification(getApplicationContext(),42);
+    			notificationManager.notify(42, notification);
+    		}
+    		else{
+    			CancelNotification(getApplicationContext(),42);
+    		}
+    		
+    		
         } catch (Exception e) {
             Log.e("notification", e.toString());
         }
 		
-		Notification notification = new Notification(R.drawable.icon, getText(R.string.ticker_text),
-				System.currentTimeMillis());
-		Intent notificationIntent = new Intent(this,PandroidAgent.class);
-		notificationIntent.setAction("android.intent.action.MAIN");
-		notificationIntent.addCategory("android.intent.category.LAUNCHER");
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, Notification.FLAG_NO_CLEAR);
-		notification.setLatestEventInfo(this, getText(R.string.notification_title), getText(R.string.notification_message), pendingIntent); 
-		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 		
-		if(Core.NotificationCheck == "enabled"){
-			notificationManager.notify(1, notification);
+		finally{
+			wakeLock.release();
 		}
-		else{
-			CancelNotification(getApplicationContext(),1);
-		}
-		
-		startForeground(42,notification);
-		
-		wakeLock.release();
-		stopSelf(startId);
 		
 	    return START_NOT_STICKY;
 	}
@@ -142,14 +150,14 @@ public class PandroidAgentListener extends Service {
 //	private void contact(){
 //        Date date = new Date();
 //        
-//    	Core.putSharedData("PANDROID_DATA", "contactError", "0", "integer");
-//        Core.putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
+//    	putSharedData("PANDROID_DATA", "contactError", "0", "integer");
+//        putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
 //        
 //        // Keep lastXML sended if is not empty (empty means error sending it)
 //        String lastXML = buildXML();
 //        
 //        
-//		String agentName = Core.getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
+//		String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
 //
 //		String destFileName = agentName + "." + System.currentTimeMillis() + ".data";
 //		
@@ -157,7 +165,7 @@ public class PandroidAgentListener extends Service {
 //
 //		String[] tentacleData = {
 //				  "-a",
-//				  Core.getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
+//				  getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
 //				  "-p",
 //				  Core.defaultServerPort,
 //				  "-v",
@@ -171,13 +179,13 @@ public class PandroidAgentListener extends Service {
 //    	file.delete();
 //		
 //        if(tentacleRet == 0) {
-//            Core.putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
+//            putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
 //            if (Core.helloSignal >= 1)
 //				Core.helloSignal = 0;
 //            Core.updateConf(getApplicationContext());
 //        }
 //        else {
-//        	Core.putSharedData("PANDROID_DATA", "contactError", "1", "integer");
+//        	putSharedData("PANDROID_DATA", "contactError", "1", "integer");
 //        }
 //        
 //        updateValues();
@@ -199,7 +207,7 @@ public class PandroidAgentListener extends Service {
 		    
 		Date date = new Date();
         
-    	Core.putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
+    	putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
         Boolean xmlBuilt = true;
         String xml = "";
         
@@ -213,9 +221,8 @@ public class PandroidAgentListener extends Service {
 			xmlBuilt = false;
 		}
     	
+    	new contactTask().execute(xml);
     	
-        
-        new contactTask().execute(xml);
         updateValues();
 		
 	}//end contact
@@ -233,14 +240,10 @@ public class PandroidAgentListener extends Service {
         	protected Integer doInBackground(String... lastXML) { 
         		
         		
-        		//Check for files
-        	
         		String[] buffer = getApplicationContext().fileList();
-//        		for(int i = 0; i<buffer.length; i++){
-//        			Log.d("buffer", buffer[i]);
-//        		}
         		Integer tentacleRet = null;
-        		//files in buffer
+        		
+        		
         		boolean contact = true;
         		int i = 1;
         		while(getApplicationContext().fileList().length > 1 && contact) {
@@ -249,7 +252,7 @@ public class PandroidAgentListener extends Service {
         			
         			String[] tentacleData = {
             				"-a",
-            				Core.getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
+            				getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
             				"-p",
             				Core.defaultServerPort,
             				"-v",
@@ -260,7 +263,7 @@ public class PandroidAgentListener extends Service {
             		tentacleRet = new tentacle_client().tentacle_client(tentacleData);
             		
             		if(tentacleRet == 0) {
-            			Core.putSharedData("PANDROID_DATA", "contactError", "0", "integer");
+            			putSharedData("PANDROID_DATA", "contactError", "0", "integer");
             			// Deleting the file after send it
             			// move to only delete if sent successfully
             			File file = new File("/data/data/pandroid.agent/files/" + destFileName);
@@ -272,7 +275,7 @@ public class PandroidAgentListener extends Service {
             		}
             		if(tentacleRet == -1){
             			//file not deleted
-            			Core.putSharedData("PANDROID_DATA", "contactError", "1", "integer");
+            			putSharedData("PANDROID_DATA", "contactError", "1", "integer");
             			contact = false;
             		}
             		i++;
@@ -294,7 +297,7 @@ public class PandroidAgentListener extends Service {
     		String lastXML = buildXML();
     		
     		String destFileName = "";
-    		String agentName = Core.getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
+    		String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
     		destFileName = agentName + "." + System.currentTimeMillis() + ".data";
     		
     		
@@ -310,58 +313,32 @@ public class PandroidAgentListener extends Service {
     		//Check if size of buffer is less than a value
     		if((bufferSize/1024) < Core.bufferSize){
     			writeFile(destFileName, lastXML);
-    			Core.putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
+    			putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
     		}else{
     			//buffer full
     		}
-    		Core.putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
+    		putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
     		
     		return lastXML;
     		
     	}
     }
    
-    ////////////////////////////////////////////////////////////////////////////////////////
-    //  From unfinished task of buffering unsent xml files when no connection available   //
-    ////////////////////////////////////////////////////////////////////////////////////////
-    
-    /*
-	public boolean saveArray(String[] array, String arrayName, Context mContext) {   
-	    SharedPreferences prefs = mContext.getSharedPreferences("PANDROID_DATA", 0);  
-	    SharedPreferences.Editor editor = prefs.edit();  
-	    editor.putInt(arrayName +"_size", array.length);  
-	    for(int i=0;i<array.length;i++)  
-	        editor.putString(arrayName + "_" + i, array[i]);  
-	    return editor.commit();  
-	} 
-	
-	public String[] loadArray(String arrayName, Context mContext) {  
-	    SharedPreferences prefs = mContext.getSharedPreferences("PANDROID_DATA", 0);  
-	    int size = prefs.getInt(arrayName + "_size", 0);  
-	    String array[] = new String[size];  
-	    for(int i=0;i<size;i++)  
-	        array[i] = prefs.getString(arrayName + "_" + i, null);  
-	    return array;  
-	}  
-	*/
-	
-	////////////////////////////////////////////////////////////////////////////////////////
-	
-	
-	private String buildXML(){
+    private String buildXML(){
 		String buffer = "";
 		String gpsData = "";
 		buffer += "<?xml version='1.0' encoding='iso-8859-1'?>\n";
 		
-		String latitude = Core.getSharedData("PANDROID_DATA", "latitude", "181", "float");
-		String longitude = Core.getSharedData("PANDROID_DATA", "longitude", "181", "float");
+		String latitude = getSharedData("PANDROID_DATA", "latitude", "181", "float");
+		String longitude = getSharedData("PANDROID_DATA", "longitude", "181", "float");
 
 		if(!latitude.equals("181.0") && !longitude.equals("181.0")) {
 			gpsData = " latitude='" + latitude + "' longitude='" + longitude + "'";
 		}
 		
-		String agentName = Core.getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
-		String interval = Core.getSharedData("PANDROID_DATA", "interval", Integer.toString(Core.defaultInterval), "integer");
+		String interval = getSharedData("PANDROID_DATA", "interval", Integer.toString(Core.defaultInterval), "integer");
+		String agentName = getSharedData("PANDROID_DATA", "agentName", Core.defaultAgentName, "string");
+		
 		
 		buffer += "<agent_data " +
 			"description='' group='' os_name='android' os_version='"+Build.VERSION.RELEASE+"' " +		
@@ -373,51 +350,51 @@ public class PandroidAgentListener extends Service {
 		//									MODULES											//
 		//																					//
 		
-		String orientation = Core.getSharedData("PANDROID_DATA", "orientation", "361", "float");
-		String proximity = Core.getSharedData("PANDROID_DATA", "proximity", "-1.0", "float");
-		String batteryLevel = Core.getSharedData("PANDROID_DATA", "batteryLevel", "-1", "integer");
-		String taskStatus = Core.getSharedData("PANDROID_DATA", "taskStatus", "disabled", "string");
-		String taskRun = Core.getSharedData("PANDROID_DATA", "taskRun", "false", "string");
-		String taskHumanName = Core.getSharedData("PANDROID_DATA", "taskHumanName", "", "string");
+//		String orientation = getSharedData("PANDROID_DATA", "orientation", "361", "float");
+//		String proximity = getSharedData("PANDROID_DATA", "proximity", "-1.0", "float");
+		String batteryLevel = getSharedData("PANDROID_DATA", "batteryLevel", "-1", "integer");
+		String taskStatus = getSharedData("PANDROID_DATA", "taskStatus", "disabled", "string");
+		String taskRun = getSharedData("PANDROID_DATA", "taskRun", "false", "string");
+		String taskHumanName = getSharedData("PANDROID_DATA", "taskHumanName", "", "string");
 		taskHumanName = StringEscapeUtils.escapeHtml4(taskHumanName);
+		String task = getSharedData("PANDROID_DATA", "task", "", "string");
+		String memoryStatus = getSharedData("PANDROID_DATA", "memoryStatus", Core.defaultMemoryStatus, "string");
+		String availableRamKb = getSharedData("PANDROID_DATA", "availableRamKb", "0" , "long");
+		String totalRamKb = getSharedData("PANDROID_DATA", "totalRamKb", "0", "long");
+		String upTime = getSharedData("PANDROID_DATA", "upTime", ""+Core.defaultUpTime, "long");
+		String helloSignal = getSharedData("PANDROID_DATA", "helloSignal", ""+Core.defaultHelloSignal, "integer");
 		
-		String task = Core.getSharedData("PANDROID_DATA", "task", "", "string");
-		String memoryStatus = Core.getSharedData("PANDROID_DATA", "memoryStatus", Core.defaultMemoryStatus, "string");
-		String availableRamKb = Core.getSharedData("PANDROID_DATA", "availableRamKb", "0" , "long");
-		String totalRamKb = Core.getSharedData("PANDROID_DATA", "totalRamKb", "0", "long");
-		String SimID = Core.getSharedData("PANDROID_DATA", "simID", Core.defaultSimID, "string");
-		String upTime = Core.getSharedData("PANDROID_DATA", "upTime", ""+Core.defaultUpTime, "long");
-		String networkOperator  = Core.getSharedData("PANDROID_DATA", "networkOperator", Core.defaultNetworkOperator, "string");
-		String SMSReceived = Core.getSharedData("PANDROID_DATA", "SMSReceived", ""+Core.defaultSMSReceived, "integer");
-		String SMSSent = Core.getSharedData("PANDROID_DATA", "SMSSent", ""+Core.defaultSMSSent, "integer");
-		String networkType = Core.getSharedData("PANDROID_DATA", "networkType", Core.defaultNetworkType, "string");
-		String phoneType = Core.getSharedData("PANDROID_DATA", "networkType", Core.defaultNetworkType, "string");
-		String signalStrength = Core.getSharedData("PANDROID_DATA", "signalStrength", ""+Core.defaultSignalStrength, "integer");
-		String incomingCalls = Core.getSharedData("PANDROID_DATA", "incomingCalls", ""+Core.defaultIncomingCalls, "integer");
-		String missedCalls = Core.getSharedData("PANDROID_DATA", "missedCalls", ""+Core.defaultMissedCalls, "integer");
-		String outgoingCalls = Core.getSharedData("PANDROID_DATA", "outgoingCalls", ""+Core.defaultOutgoingCalls, "integer");
-		String receiveBytes = Core.getSharedData("PANDROID_DATA", "receiveBytes", ""+Core.defaultReceiveBytes, "long");
-		String transmitBytes = Core.getSharedData("PANDROID_DATA", "transmitBytes", ""+Core.defaultTransmitBytes, "long");
-		String helloSignal = Core.getSharedData("PANDROID_DATA", "helloSignal", ""+Core.defaultHelloSignal, "integer");
-		String roaming = Core.getSharedData("PANDROID_DATA", "roaming", ""+Core.defaultRoaming, "integer");
+		String SimID = getSharedData("PANDROID_DATA", "simID", Core.defaultSimID, "string");
+		String networkOperator  = getSharedData("PANDROID_DATA", "networkOperator", Core.defaultNetworkOperator, "string");
+		String networkType = getSharedData("PANDROID_DATA", "networkType", Core.defaultNetworkType, "string");
+		String phoneType = getSharedData("PANDROID_DATA", "networkType", Core.defaultNetworkType, "string");
+		String signalStrength = getSharedData("PANDROID_DATA", "signalStrength", ""+Core.defaultSignalStrength, "integer");
+		String SMSReceived = getSharedData("PANDROID_DATA", "SMSReceived", ""+Core.defaultSMSReceived, "integer");
+		String SMSSent = getSharedData("PANDROID_DATA", "SMSSent", ""+Core.defaultSMSSent, "integer");
+		String incomingCalls = getSharedData("PANDROID_DATA", "incomingCalls", ""+Core.defaultIncomingCalls, "integer");
+		String missedCalls = getSharedData("PANDROID_DATA", "missedCalls", ""+Core.defaultMissedCalls, "integer");
+		String outgoingCalls = getSharedData("PANDROID_DATA", "outgoingCalls", ""+Core.defaultOutgoingCalls, "integer");
+		String receiveBytes = getSharedData("PANDROID_DATA", "receiveBytes", ""+Core.defaultReceiveBytes, "long");
+		String transmitBytes = getSharedData("PANDROID_DATA", "transmitBytes", ""+Core.defaultTransmitBytes, "long");
+		String roaming = getSharedData("PANDROID_DATA", "roaming", ""+Core.defaultRoaming, "integer");
 		
-		String simIDReport = Core.getSharedData("PANDROID_DATA", "simIDReport", Core.defaultSimIDReport, "string");
-		String DeviceUpTimeReport = Core.getSharedData("PANDROID_DATA", "DeviceUpTimeReport", Core.defaultDeviceUpTimeReport, "string");
-		String NetworkOperatorReport = Core.getSharedData("PANDROID_DATA", "NetworkOperatorReport", Core.defaultNetworkOperatorReport, "string");
-		String NetworkTypeReport = Core.getSharedData("PANDROID_DATA", "NetworkTypeReport", Core.defaultNetworkTypeReport, "string");
-		String PhoneTypeReport = Core.getSharedData("PANDROID_DATA", "PhoneTypeReport", Core.defaultPhoneTypeReport, "string");
-		String SignalStrengthReport = Core.getSharedData("PANDROID_DATA", "SignalStrengthReport", Core.defaultSignalStrengthReport, "string");
-		String ReceivedSMSReport = Core.getSharedData("PANDROID_DATA", "ReceivedSMSReport", Core.defaultReceivedSMSReport, "string");
-		String SentSMSReport = Core.getSharedData("PANDROID_DATA", "SentSMSReport", Core.defaultSentSMSReport, "string");
-		String IncomingCallsReport = Core.getSharedData("PANDROID_DATA", "IncomingCallsReport", Core.defaultIncomingCallsReport, "string");
-		String MissedCallsReport = Core.getSharedData("PANDROID_DATA", "MissedCallsReport", Core.defaultMissedCallsReport, "string");
-		String OutgoingCallsReport = Core.getSharedData("PANDROID_DATA", "OutgoingCallsReport", Core.defaultOutgoingCallsReport, "string");
-		String BytesReceivedReport = Core.getSharedData("PANDROID_DATA", "BytesReceivedReport", Core.defaultBytesReceivedReport, "string");
-		String BytesSentReport = Core.getSharedData("PANDROID_DATA", "BytesSentReport", Core.defaultBytesSentReport, "string");
-		String HelloSignalReport = Core.getSharedData("PANDROID_DATA", "HelloSignalReport", Core.defaultHelloSignalReport, "string");
-		String BatteryLevelReport = Core.getSharedData("PANDROID_DATA", "BatteryLevelReport", Core.defaultBatteryLevelReport, "string");
-		String RoamingReport = Core.getSharedData("PANDROID_DATA", "RoamingReport", Core.defaultRoamingReport, "string");
-		String InventoryReport = Core.getSharedData("PANDROID_DATA", "InventoryReport", Core.defaultInventoryReport, "string");
+		String simIDReport = getSharedData("PANDROID_DATA", "simIDReport", Core.defaultSimIDReport, "string");
+		String DeviceUpTimeReport = getSharedData("PANDROID_DATA", "DeviceUpTimeReport", Core.defaultDeviceUpTimeReport, "string");
+		String NetworkOperatorReport = getSharedData("PANDROID_DATA", "NetworkOperatorReport", Core.defaultNetworkOperatorReport, "string");
+		String NetworkTypeReport = getSharedData("PANDROID_DATA", "NetworkTypeReport", Core.defaultNetworkTypeReport, "string");
+		String PhoneTypeReport = getSharedData("PANDROID_DATA", "PhoneTypeReport", Core.defaultPhoneTypeReport, "string");
+		String SignalStrengthReport = getSharedData("PANDROID_DATA", "SignalStrengthReport", Core.defaultSignalStrengthReport, "string");
+		String ReceivedSMSReport = getSharedData("PANDROID_DATA", "ReceivedSMSReport", Core.defaultReceivedSMSReport, "string");
+		String SentSMSReport = getSharedData("PANDROID_DATA", "SentSMSReport", Core.defaultSentSMSReport, "string");
+		String IncomingCallsReport = getSharedData("PANDROID_DATA", "IncomingCallsReport", Core.defaultIncomingCallsReport, "string");
+		String MissedCallsReport = getSharedData("PANDROID_DATA", "MissedCallsReport", Core.defaultMissedCallsReport, "string");
+		String OutgoingCallsReport = getSharedData("PANDROID_DATA", "OutgoingCallsReport", Core.defaultOutgoingCallsReport, "string");
+		String BytesReceivedReport = getSharedData("PANDROID_DATA", "BytesReceivedReport", Core.defaultBytesReceivedReport, "string");
+		String BytesSentReport = getSharedData("PANDROID_DATA", "BytesSentReport", Core.defaultBytesSentReport, "string");
+		String HelloSignalReport = getSharedData("PANDROID_DATA", "HelloSignalReport", Core.defaultHelloSignalReport, "string");
+		String BatteryLevelReport = getSharedData("PANDROID_DATA", "BatteryLevelReport", Core.defaultBatteryLevelReport, "string");
+		String RoamingReport = getSharedData("PANDROID_DATA", "RoamingReport", Core.defaultRoamingReport, "string");
+		String InventoryReport = getSharedData("PANDROID_DATA", "InventoryReport", Core.defaultInventoryReport, "string");
 
 		if(InventoryReport.equals("enabled"))
 		{
@@ -427,13 +404,13 @@ public class PandroidAgentListener extends Service {
 		if (BatteryLevelReport.equals("enabled")) 
 			buffer += buildmoduleXML("battery_level", "The current Battery level", "generic_data", batteryLevel);	
 		
-		if(!orientation.equals("361.0")) {
-			buffer += buildmoduleXML("orientation", "The actually device orientation (in degrees)", "generic_data", orientation);		
-		}
-		
-		if(!proximity.equals("-1.0")) {
-			buffer += buildmoduleXML("proximity", "The actually device proximity detector (0/1)", "generic_data", proximity);		
-		}		
+//		if(!orientation.equals("361.0")) {
+//			buffer += buildmoduleXML("orientation", "The actually device orientation (in degrees)", "generic_data", orientation);		
+//		}
+//		
+//		if(!proximity.equals("-1.0")) {
+//			buffer += buildmoduleXML("proximity", "The actually device proximity detector (0/1)", "generic_data", proximity);		
+//		}		
 		
 		if (taskStatus.equals("enabled")) {
 			buffer += buildmoduleXML("taskHumanName", "The task's human name.", "async_string", taskHumanName);
@@ -457,6 +434,9 @@ public class PandroidAgentListener extends Service {
 		buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);
 		if (DeviceUpTimeReport.equals("enabled"))
 			buffer += buildmoduleXML("upTime","Total device uptime in seconds.", "generic_data", upTime);
+		
+		if (HelloSignalReport.equals("enabled"))
+			buffer += buildmoduleXML("helloSignal","Hello Signal", "generic_data", helloSignal);
 		
 		if (Core.hasSim){
 			if (simIDReport.equals("enabled"))
@@ -486,18 +466,8 @@ public class PandroidAgentListener extends Service {
 			if (RoamingReport.equals("enabled"))
 				buffer += buildmoduleXML("roaming","Device is roaming", "generic_data", roaming);
 		}// end if sim card
-		if (HelloSignalReport.equals("enabled"))
-			buffer += buildmoduleXML("helloSignal","Hello Signal", "generic_data", helloSignal);
 		
 		
-		//UTF-8 TEST//
-		
-		//String iso_8859_1String = "ÀÁÈÉÌÍÙÚÜàáèéìíòóùúü";
-		
-		//buffer += buildmoduleXML("iso-8859-1Test","Testing iso-8859-1 Values", "generic_data_string", iso_8859_1String);
-			
-		
-		// End_Modules
 		
 		buffer += "</agent_data>";
 		
@@ -572,7 +542,7 @@ public class PandroidAgentListener extends Service {
 		      module_xml += "]]></data>\n";
 		}
 		
-		/* Close the datalist and module_inventory */
+		/* Close the data list and module_inventory */
 		module_xml += "\t\t\t</datalist>\n\t\t</inventory_module>\n";
 		/* Close inventory */
 		module_xml += "\t</inventory>\n";
@@ -602,8 +572,8 @@ public class PandroidAgentListener extends Service {
 			//if(latitude != loc.getLatitude() || longitude != loc.getLongitude()) {
 				lastGpsContactDateTime = getHumanDateTime(-1);
 			//}
-            Core.putSharedData("PANDROID_DATA", "latitude", Double.valueOf(loc.getLatitude()).toString(), "float");
-            Core.putSharedData("PANDROID_DATA", "longitude", Double.valueOf(loc.getLongitude()).toString(), "float");
+            putSharedData("PANDROID_DATA", "latitude", Double.valueOf(loc.getLatitude()).toString(), "float");
+            putSharedData("PANDROID_DATA", "longitude", Double.valueOf(loc.getLongitude()).toString(), "float");
 		}
 		else {
 			Criteria criteria = new Criteria();
@@ -623,9 +593,9 @@ public class PandroidAgentListener extends Service {
 			lm.requestLocationUpdates(bestProvider, Core.defaultInterval, 1000,
 				new LocationListener() {
 					public void onLocationChanged(Location location) {
-						Core.putSharedData("PANDROID_DATA", "latitude",
+						putSharedData("PANDROID_DATA", "latitude",
 								Double.valueOf(location.getLatitude()).toString(), "float");
-				        Core.putSharedData("PANDROID_DATA", "longitude",
+				        putSharedData("PANDROID_DATA", "longitude",
 				        		Double.valueOf(location.getLongitude()).toString(), "float");
 					}
 					public void onStatusChanged(String s, int i, Bundle bundle) {
@@ -635,7 +605,7 @@ public class PandroidAgentListener extends Service {
 						// try switching to a different provider
 					}
 					public void onProviderDisabled(String s) {
-						Core.putSharedData("PANDROID_DATA", "enabled_location_provider",
+						putSharedData("PANDROID_DATA", "enabled_location_provider",
 							"disabled", "string");
 					}
 				});
@@ -650,7 +620,7 @@ public class PandroidAgentListener extends Service {
     		int scale = batteryIntent.getIntExtra("scale", -1);
     		//double level = -1;
     		if (rawlevel >= 0 && scale > 0) {
-    			Core.putSharedData("PANDROID_DATA", "batteryLevel", Integer.valueOf((rawlevel * 100) / scale).toString(), "integer");
+    			putSharedData("PANDROID_DATA", "batteryLevel", Integer.valueOf((rawlevel * 100) / scale).toString(), "integer");
     		}
     }
     
@@ -659,7 +629,7 @@ public class PandroidAgentListener extends Service {
     	
         SensorEventListener orientationLevelReceiver = new SensorEventListener() {
             public void onSensorChanged(SensorEvent sensorEvent) {
-                Core.putSharedData("PANDROID_DATA", "orientation", Float.toString(sensorEvent.values[0]), "float");
+                putSharedData("PANDROID_DATA", "orientation", Float.toString(sensorEvent.values[0]), "float");
             }
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
             }
@@ -667,7 +637,7 @@ public class PandroidAgentListener extends Service {
         
         SensorEventListener proximityLevelReceiver = new SensorEventListener() {
             public void onSensorChanged(SensorEvent sensorEvent) {
-                Core.putSharedData("PANDROID_DATA", "proximity", Float.toString(sensorEvent.values[0]), "float");
+                putSharedData("PANDROID_DATA", "proximity", Float.toString(sensorEvent.values[0]), "float");
             }
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
             }
@@ -717,7 +687,7 @@ public class PandroidAgentListener extends Service {
 	private void updateValues() {
 		
 		batteryLevel();
-        String gpsStatus = Core.getSharedData("PANDROID_DATA", "gpsStatus", Core.defaultGpsStatus, "string");
+        String gpsStatus = getSharedData("PANDROID_DATA", "gpsStatus", Core.defaultGpsStatus, "string");
         
         if(gpsStatus.equals("enabled")) {
         	Log.d("PANDROID AGENT", "ENABLED");
@@ -725,8 +695,8 @@ public class PandroidAgentListener extends Service {
         }
         else {
         	Log.d("PANDROID AGENT", "DISABLED");
-            Core.putSharedData("PANDROID_DATA", "latitude", "181.0", "float");
-            Core.putSharedData("PANDROID_DATA", "longitude", "181.0", "float");
+            putSharedData("PANDROID_DATA", "latitude", "181.0", "float");
+            putSharedData("PANDROID_DATA", "longitude", "181.0", "float");
         }
         
         //sensors();
@@ -749,7 +719,7 @@ public class PandroidAgentListener extends Service {
 	}
 	
 	private void getMemoryStatus() {
-		String memoryStatus = Core.getSharedData("PANDROID_DATA", "memoryStatus", Core.defaultMemoryStatus, "string");
+		String memoryStatus = getSharedData("PANDROID_DATA", "memoryStatus", Core.defaultMemoryStatus, "string");
 		long availableRamKb = 0;
 		long totalRamKb = 0;
 		
@@ -775,14 +745,14 @@ public class PandroidAgentListener extends Service {
 		    }
 		}
 		
-		Core.putSharedData("PANDROID_DATA", "availableRamKb", "" + availableRamKb, "long");
-		Core.putSharedData("PANDROID_DATA", "totalRamKb", "" + totalRamKb, "long");
+		putSharedData("PANDROID_DATA", "availableRamKb", "" + availableRamKb, "long");
+		putSharedData("PANDROID_DATA", "totalRamKb", "" + totalRamKb, "long");
 	}// end getMemoryStatus
 	
 	private void getTaskStatus() {
-		String taskStatus = Core.getSharedData("PANDROID_DATA", "taskStatus", Core.defaultTaskStatus, "string");
-		String task = Core.getSharedData("PANDROID_DATA", "task", Core.defaultTask, "string");
-		String taskHumanName = Core.getSharedData("PANDROID_DATA", "taskHumanName", Core.defaultTaskHumanName, "string");
+		String taskStatus = getSharedData("PANDROID_DATA", "taskStatus", Core.defaultTaskStatus, "string");
+		String task = getSharedData("PANDROID_DATA", "task", Core.defaultTask, "string");
+		String taskHumanName = getSharedData("PANDROID_DATA", "taskHumanName", Core.defaultTaskHumanName, "string");
 		String run = "false";
 		
 		if (taskStatus.equals("enabled")) {
@@ -802,7 +772,7 @@ public class PandroidAgentListener extends Service {
 				}
 			}
 		}
-		Core.putSharedData("PANDROID_DATA", "taskRun", run, "string");
+		putSharedData("PANDROID_DATA", "taskRun", run, "string");
 	}//end getTaskStatus
 	
 	/**
@@ -810,12 +780,12 @@ public class PandroidAgentListener extends Service {
 	 */
 	private void getSimID(){
 		
-			String simID = Core.getSharedData("PANDROID_DATA", "simID", Core.defaultSimID, "string");
+			String simID = getSharedData("PANDROID_DATA", "simID", Core.defaultSimID, "string");
 		
 			String serviceName = Context.TELEPHONY_SERVICE;
 			TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(serviceName);
 			simID = telephonyManager.getSimSerialNumber();
-			Core.putSharedData("PANDROID_DATA", "simID", simID, "string");
+			putSharedData("PANDROID_DATA", "simID", simID, "string");
 	}
 	/**
 	 * 	Retrieves the time in seconds since the device was switched on
@@ -824,7 +794,7 @@ public class PandroidAgentListener extends Service {
 		long upTime = Core.defaultUpTime;
 		upTime = SystemClock.elapsedRealtime()/1000;
 		if(upTime != 0)
-			Core.putSharedData("PANDROID_DATA", "upTime", ""+upTime, "long");
+			putSharedData("PANDROID_DATA", "upTime", ""+upTime, "long");
 	}
 	/**
 	 * 	Retrieve currently registered network operator, i.e. vodafone, movistar, etc...
@@ -836,7 +806,7 @@ public class PandroidAgentListener extends Service {
 		networkOperator = telephonyManager.getNetworkOperatorName();
 	    
 		if(networkOperator != null)
-			Core.putSharedData("PANDROID_DATA", "networkOperator", networkOperator, "string");
+			putSharedData("PANDROID_DATA", "networkOperator", networkOperator, "string");
 	}
 	/**
 	 *  Retrieves the number of sent sms messages using the android messaging app only
@@ -844,7 +814,7 @@ public class PandroidAgentListener extends Service {
 	private void getSMSSent(){
 		
 		String SMSSent = ""+Core.defaultSMSSent;
-		SMSSent = Core.getSharedData("PANDROID_DATA", "SMSSent", ""+Core.defaultSMSSent, "integer");
+		SMSSent = getSharedData("PANDROID_DATA", "SMSSent", ""+Core.defaultSMSSent, "integer");
 		Uri allMessages = Uri.parse("content://sms/sent");
 		Cursor c = getContentResolver().query(allMessages, null, null, null, null);
 		int totalMessages = 0;
@@ -863,7 +833,7 @@ public class PandroidAgentListener extends Service {
 		SMSSent =""+ totalMessages;
 		
 		if(SMSSent != null)
-			Core.putSharedData("PANDROID_DATA", "SMSSent", SMSSent, "integer");
+			putSharedData("PANDROID_DATA", "SMSSent", SMSSent, "integer");
 		
 	}// end getSMSSent
 	/**
@@ -927,7 +897,7 @@ public class PandroidAgentListener extends Service {
 				break;          
 		}
 		if(networkType != null)
-			Core.putSharedData("PANDROID_DATA", "networkType", networkType, "string");
+			putSharedData("PANDROID_DATA", "networkType", networkType, "string");
 		
 	}// end getNetworkType
 	
@@ -956,7 +926,7 @@ public class PandroidAgentListener extends Service {
 				break;
 		}
 		if(phoneType != null)
-			Core.putSharedData("PANDROID_DATA", "phoneType", phoneType, "string");
+			putSharedData("PANDROID_DATA", "phoneType", phoneType, "string");
 	}// end getPhoneType
 	
 	/**
@@ -990,9 +960,9 @@ public class PandroidAgentListener extends Service {
                     c.moveToNext();
 			}
             
-			Core.putSharedData("PANDROID_DATA", "incomingCalls", ""+incoming, "integer");
-            Core.putSharedData("PANDROID_DATA", "missedCalls", ""+missed, "integer");
-            Core.putSharedData("PANDROID_DATA", "outgoingCalls", ""+outgoing, "integer");
+			putSharedData("PANDROID_DATA", "incomingCalls", ""+incoming, "integer");
+            putSharedData("PANDROID_DATA", "missedCalls", ""+missed, "integer");
+            putSharedData("PANDROID_DATA", "outgoingCalls", ""+outgoing, "integer");
 		}
 		
 		c.close();
@@ -1023,7 +993,7 @@ public class PandroidAgentListener extends Service {
 			else{
                signalStrengthValue ="" + (signalStrength.getCdmaDbm());
             }
-			Core.putSharedData("PANDROID_DATA", "signalStrength", signalStrengthValue, "integer");
+			putSharedData("PANDROID_DATA", "signalStrength", signalStrengthValue, "integer");
 		}
 	};
 	/**
@@ -1037,8 +1007,8 @@ public class PandroidAgentListener extends Service {
 		
 		if (receiveBytes != TrafficStats.UNSUPPORTED && transmitBytes != TrafficStats.UNSUPPORTED) 
 		{
-			Core.putSharedData("PANDROID_DATA", "receiveBytes", ""+receiveBytes, "long" );
-			Core.putSharedData("PANDROID_DATA", "transmitBytes", ""+transmitBytes, "long" );
+			putSharedData("PANDROID_DATA", "receiveBytes", ""+receiveBytes, "long" );
+			putSharedData("PANDROID_DATA", "transmitBytes", ""+transmitBytes, "long" );
 		}
 	}
 	/**
@@ -1050,13 +1020,72 @@ public class PandroidAgentListener extends Service {
 		boolean roaming = telephone.isNetworkRoaming();
 		
 		if(roaming)
-			Core.putSharedData("PANDROID_DATA", "roaming", "1", "integer" );
+			putSharedData("PANDROID_DATA", "roaming", "1", "integer" );
 		else
-			Core.putSharedData("PANDROID_DATA", "roaming", "0", "integer" );
+			putSharedData("PANDROID_DATA", "roaming", "0", "integer" );
 	}
 	
 	
-	
+	private void putSharedData(String preferenceName, String tokenName, String data, String type) {
+		
+		SharedPreferences agentPreferences = this.getSharedPreferences(
+    			this.getString(R.string.const_string_preferences),
+    			Activity.MODE_PRIVATE);
+        
+        Editor editor = agentPreferences.edit();
+		
+		if(type == "boolean") {
+			editor.putBoolean(tokenName, Boolean.parseBoolean(data));
+			editor.commit();
+		}
+		else if(type == "float") {
+			editor.putFloat(tokenName, Float.parseFloat(data));
+			editor.commit();
+		}
+		else if(type == "integer") {
+			editor.putInt(tokenName, Integer.parseInt(data));
+			editor.commit();
+		}
+		else if(type == "long") {
+			editor.putLong(tokenName, Long.parseLong(data));
+			editor.commit();
+		}
+		else if(type == "string") {
+			editor.putString(tokenName, data);
+			editor.commit();
+		}
+		
+		editor.commit();
+    }
+    
+    private String getSharedData(String preferenceName, String tokenName, String defaultValue, String type) {
+		
+    	SharedPreferences agentPreferences = this.getSharedPreferences(
+    			this.getString(R.string.const_string_preferences),
+    			Activity.MODE_PRIVATE);
+		
+		if(type == "boolean") {
+			boolean a = agentPreferences.getBoolean(tokenName, Boolean.parseBoolean(defaultValue));
+			return Boolean.valueOf(a).toString();
+		}
+		else if(type == "float") {
+			float a = agentPreferences.getFloat(tokenName, Float.parseFloat(defaultValue));
+			return Float.valueOf(a).toString();
+		}
+		else if(type == "integer") {
+			int a = agentPreferences.getInt(tokenName, Integer.parseInt(defaultValue));
+			return Integer.valueOf(a).toString();
+		}
+		else if(type == "long") {
+			long a = agentPreferences.getLong(tokenName, Long.parseLong(defaultValue));
+			return Long.valueOf(a).toString();
+		}
+		else if(type == "string") {
+			return agentPreferences.getString(tokenName, defaultValue);
+		}
+		
+		return "";
+    }
 	
     private String getHumanDateTime(long unixtime){
         Calendar dateTime = Calendar.getInstance();
@@ -1100,6 +1129,7 @@ public class PandroidAgentListener extends Service {
         return humanDateTime;
     }
     
+    //TODO
     public static void CancelNotification(Context ctx, int notifyId) {
 	    String ns = Context.NOTIFICATION_SERVICE;
 	    NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
@@ -1116,8 +1146,8 @@ public class PandroidAgentListener extends Service {
     
 		@Override
 	    public void onLocationChanged(Location loc) {
-            Core.putSharedData("PANDROID_DATA", "latitude", Double.valueOf(loc.getLatitude()).toString(), "float");
-            Core.putSharedData("PANDROID_DATA", "longitude", Double.valueOf(loc.getLongitude()).toString(), "float");
+            putSharedData("PANDROID_DATA", "latitude", Double.valueOf(loc.getLatitude()).toString(), "float");
+            putSharedData("PANDROID_DATA", "longitude", Double.valueOf(loc.getLongitude()).toString(), "float");
 	    }
 	    
 	    @Override

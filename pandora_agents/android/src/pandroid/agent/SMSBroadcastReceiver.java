@@ -36,7 +36,7 @@ import android.util.Log;
 	        			int defaultSMSReceived = 0;
 	        			int mode = Activity.MODE_PRIVATE;
 	        			
-	        			SharedPreferences pref = PandroidAgent.getSharedPrefs();
+	        			SharedPreferences pref = context.getSharedPreferences("PANDROID_DATA", mode);
 	        			int sms = pref.getInt("SMSReceived", defaultSMSReceived);
 	        			
 	        			sms++;

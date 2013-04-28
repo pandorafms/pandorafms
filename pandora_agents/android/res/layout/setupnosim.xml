@@ -12,8 +12,7 @@
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details. 
--->
+// GNU General Public License for more details. -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/setupnosim"
     android:layout_width="fill_parent"
@@ -32,6 +31,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
+                
+                <CheckBox
+                    android:id="@+id/checkNotification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/notificationCheck"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/field1"
@@ -44,6 +51,7 @@
                     android:id="@+id/serverAddrInput"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="textNoSuggestions" 
                     android:singleLine="true" />
 
                 <TextView
@@ -82,22 +90,11 @@
                     android:id="@+id/agentNameInput"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="textNoSuggestions" 
                     android:singleLine="true" />
                 
                 <TextView
                     android:id="@+id/field5"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/mobileWebURL" />
-
-                <EditText
-                    android:id="@+id/mobileWebURLInput"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true" />
-                
-                <TextView
-                    android:id="@+id/field6"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/bufferSize" />
@@ -106,38 +103,33 @@
                     android:id="@+id/bufferSize"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="number"
                     android:singleLine="true" />
+                
+                <TextView
+                    android:id="@+id/field6"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mobileWebURL" />
 
+                <EditText
+                    android:id="@+id/mobileWebURLInput"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textUri"
+                    android:singleLine="true" />
+                
                 <Button
                     android:id="@+id/goToWebButton"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/go_to_web" />
-
-                <CheckBox
-                    android:id="@+id/checkGpsReport"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/gpsReport"
-                    android:textColor="#bbbbbb"
-                    android:textSize="14dip" />
-
-                <CheckBox
-                    android:id="@+id/checkBatteryLevelReport"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/BatteryLevelReport"
-                    android:textColor="#bbbbbb"
-                    android:textSize="14dip" />
-
                 
-                <CheckBox
-                    android:id="@+id/checkTaskReport"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/field7"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/taskReport"
-                    android:textColor="#bbbbbb"
-                    android:textSize="14dip" />
+                    android:text="@string/taskToReport" />
                 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -157,13 +149,44 @@
                 </LinearLayout>
                 
                 <CheckBox
+                    android:id="@+id/checkTaskReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/taskReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14sp" />
+
+                <CheckBox
+                    android:id="@+id/checkGpsReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gpsReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14sp" />
+
+                <CheckBox
+                    android:id="@+id/checkBatteryLevelReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/BatteryLevelReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14sp" />
+
+                <CheckBox
                     android:id="@+id/checkMemoryReport"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/memoryReport"
                     android:textColor="#bbbbbb"
-                    android:textSize="14dip" />
+                    android:textSize="14sp" />
                 
+                <CheckBox
+                    android:id="@+id/checkDeviceUpTimeReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/uptimeReport"
+                    android:textColor="#bbbbbb"
+                    android:textSize="14sp" />
                                 
                 <CheckBox
                     android:id="@+id/checkInventoryReport"
@@ -171,34 +194,15 @@
                     android:layout_height="wrap_content"
                     android:text="@string/InventoryReport"
                     android:textColor="#bbbbbb"
-                    android:textSize="14dip" />
+                    android:textSize="14sp" />
                 
-
-                <CheckBox
-                    android:id="@+id/checkDeviceUpTimeReport"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/uptimeReport"
-                    android:textColor="#bbbbbb"
-                    android:textSize="14dip" />
-
                 <CheckBox
                     android:id="@+id/checkHelloSignalReport"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/HelloSignalReport"
                     android:textColor="#bbbbbb"
-                    android:textSize="14dip" />
-
-                               
-
-                <CheckBox
-                    android:id="@+id/checkNotification"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/notificationCheck"
-                    android:textColor="#bbbbbb"
-                    android:textSize="14dip" />
+                    android:textSize="14sp" />
                  
                 <Button
                     android:id="@+id/update"

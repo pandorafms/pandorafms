@@ -30,7 +30,7 @@
 	<string name="summary">"配置："</string>
 	<string name="starStop">"重新启动(Restart)"</string>
 	<string name="gpsLast">"最后已知的位置"</string>
-	<string name="loading">"载入中..."</string>
+	<string name="loading">"载入中…"</string>
 	<string name="last_values">"最后一个值"</string>
 	<string name="latitude">"纬度"</string>
 	<string name="longitude">"经度"</string>
@@ -124,6 +124,7 @@
 	<string name="simIDReport">"报告SIM卡ID"</string>
 	<string name="gpsReport">"报告GPS数据"</string>
 	<string name="memoryReport">"报告可用内存"</string>
+	<string name="taskToReport">選擇任務報告：</string>
 	<string name="taskReport">"报告任务"</string>
 	<string name="uptimeReport">"报告设备的正常运行时间"</string>
 	<string name="NetworkOperatorReport">"报告网络运营商"</string>

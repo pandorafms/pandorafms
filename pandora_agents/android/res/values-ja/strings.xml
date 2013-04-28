@@ -123,6 +123,7 @@
 	<string name="simIDReport">"SIM番号をレポート"</string>
 	<string name="gpsReport">"GPSデータをレポート"</string>
 	<string name="memoryReport">"利用可能メモリをレポート"</string>
+	<string name="taskToReport">報告するには、タスクを選択してください：</string>
 	<string name="taskReport">"タスクをレポート"</string>
 	<string name="uptimeReport">"起動時間をレポート"</string>
 	<string name="NetworkOperatorReport">"ネットワークオペレータをレポート"</string>

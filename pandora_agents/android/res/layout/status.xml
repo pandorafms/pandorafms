@@ -493,7 +493,7 @@
 		    </TableLayout>
 
 	
-			<!--
+			<!-- for debugging
 		    <Button
 		        android:id="@+id/start"
 		        android:layout_width="fill_parent"

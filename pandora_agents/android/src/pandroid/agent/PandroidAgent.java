@@ -26,10 +26,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.widget.TabHost;
-//import android.app.Dialog;
-//import android.util.Log;
-//import android.view.WindowManager.LayoutParams;
-
 
 
 public class PandroidAgent extends TabActivity {
@@ -38,26 +34,11 @@ public class PandroidAgent extends TabActivity {
     int defaultInterval = 300;
     TabHost tabHost;
     
-    static SharedPreferences agentPreferences;
-    static Editor editor;
-  
-    
+   
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        //database//
-        
-        
-        agentPreferences = this.getSharedPreferences(
-    			this.getString(R.string.const_string_preferences),
-    			Activity.MODE_PRIVATE);
-        
-        editor = agentPreferences.edit();
-        
-        //Core.loadConfDatabase(this);
-        //Core.loadLastValuesDatabase(this);
-        //Core.updateConf(this);
         
         /*
         final Dialog dialog = new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
@@ -130,6 +111,7 @@ public class PandroidAgent extends TabActivity {
     	//Core.updateDatabase(this);
     	
     }
+    
     //Sets hello signal to 1(first connect since pandroid was closed)
     public void onResume(){
     	super.onResume();
@@ -143,16 +125,5 @@ public class PandroidAgent extends TabActivity {
     public void switchTab(int tab){
         tabHost.setCurrentTab(tab);
     }
-
-	public static SharedPreferences getSharedPrefs() {
-		// TODO Auto-generated method stub
-		return agentPreferences;
-	}
-	
-	public static Editor getEditor() {
-		// TODO Auto-generated method stub
-		return editor;
-	}
-    
     
 }

@@ -30,7 +30,7 @@
 	<string name="summary">"La configurazione attuale:"</string>
 	<string name="starStop">"Riavviare"</string>
 	<string name="gpsLast">"Ultima posizione nota"</string>
-	<string name="loading">"Caricamento..."</string>
+	<string name="loading">"Caricamento…"</string>
 	<string name="last_values">"Ultimi valori"</string>
 	<string name="latitude">"Latitudine"</string>
 	<string name="longitude">"Longitudine"</string>
@@ -125,6 +125,7 @@
 	<string name="simIDReport">"Report Sim ID"</string>
 	<string name="gpsReport">"Report dati GPS"</string>
 	<string name="memoryReport">"Report memoria disponibile"</string>
+	<string name="taskToReport">Scegli compito di segnalare:</string>
 	<string name="taskReport">"Relazione della task"</string>
 	<string name="uptimeReport">"Report dispositivo Tempo"</string>
 	<string name="NetworkOperatorReport">"Protocollo operativo di rete"</string>

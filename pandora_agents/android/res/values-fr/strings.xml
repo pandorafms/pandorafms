@@ -30,7 +30,7 @@
 	<string name="summary">"Configuration actuelle:"</string>
 	<string name="starStop">"Redém."</string>
 	<string name="gpsLast">"Dernière position connue"</string>
-	<string name="loading">"Chargement ..."</string>
+	<string name="loading">"Chargement…"</string>
 	<string name="last_values">"Dernières valeurs"</string>
 	<string name="latitude">"Latitude"</string>
 	<string name="longitude">"Longitude"</string>
@@ -117,7 +117,7 @@
 	
 	<string name="bufferSize">taille du buffer XML(KB)</string>
 	
-	<string name="enter">"Entrer..."</string>
+	<string name="enter">"Entrer…"</string>
 	<string name="back">"arrière"</string>
 	<string name="yes">"oui"</string>
 	<string name="no">"no"</string>
@@ -125,6 +125,7 @@
 	<string name="simIDReport">"Rapport Sim ID"</string>
 	<string name="gpsReport">"Rapport de données GPS"</string>
 	<string name="memoryReport">"Signaler mémoire disponible"</string>
+	<string name="taskToReport">Choisissez tâche de rendre compte:</string>
 	<string name="taskReport">"Tâche de rapport"</string>
 	<string name="uptimeReport">"Signaler appareil le temps"</string>
 	<string name="NetworkOperatorReport">"Signaler opérateur de réseau"</string>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MainTheme" parent="@android:style/Theme.Holo.NoActionBar">
+        <item name="android:typeface">normal</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+</resources>

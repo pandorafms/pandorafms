@@ -1,4 +1,21 @@
 2013-04-28 Mark Holland <mark@mark-holland.me.uk>
+	
+	* AndroidMainfest.xml: Set theme to themes.xml, moved permissions
+	and uses to top of file.
+
+	* layout/spinner.xml: Theme for spinner that sets text
+	color to grey.	
+
+	* values/themes.xml: For setting theme on devices < sdk 11
+	(android 3.0)	
+
+	* values-v11/themes.xml: For setting theme on device above
+	sdk 11
+
+	* src/pandroid/agent/Setup.java: Set spinnner to use new
+	theme for setting text color
+
+2013-04-28 Mark Holland <mark@mark-holland.me.uk>
 
 	* assets/database/pandroid.zip: Removed as no longer needed
 

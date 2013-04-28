@@ -62,12 +62,12 @@
 		 GPS, cuanta batería le queda al dispositivo, memoria disponible, si un proceso está activo, El tiempoe que lleva encendido el dispositivo,
 		un señal de saludo para monotrorizar instalaciones de pandroid, un inventario con información de todos los apps instalados. También
 		datos de moviles, la ID del sim, número de SMS enviados/recibidos, número de llamadas entrantes/perdidas/recibidas, el nombre del operador
-		y el tipo, el tipo de movil, la potencia de señal, el número de bytes enviados/recibidos por la red movil.
+		y el tipo, el tipo de móvil, la potencia de señal, el número de bytes enviados/recibidos por la red móvil.
 		 El código fuente esta disponible.&lt;p&gt;Puedes informarte de esto y mas en Pandora FMS en &lt;a href=&quot;http://pandorafms.org&quot;&gt;http://pandorafms.org&lt;/a&gt;&lt;/p&gt;
 	</string>
 	<string name="start">Iniciar</string>
-	<string name="correct_start">Conexion con exito</string>
-	<string name="config_saved">Configuración guardado con exito</string>
+	<string name="correct_start">Conexion con éxito</string>
+	<string name="config_saved">Configuración guardado con éxito</string>
 	<string name="contact_stopped_str">Agente parado</string>
 	<string name="seconds">Segundos</string>
 	<string name="running">En marcha</string>
@@ -86,7 +86,7 @@
 	<string name="network_operator_value"/>
 	<string name="network_type">Tipo red:</string>
 	<string name="network_type_value"/>
-	<string name="phone_type">Tipo movil:</string>
+	<string name="phone_type">Tipo móvil:</string>
 	<string name="phone_type_value"/>
 	<string name="signal_strength">Potencia señal:</string>
 	<string name="signal_strength_value"/>
@@ -119,8 +119,8 @@
 	<string name="password_removed">Sin contraseña</string>
 	<string name="set_password">Crear/Cambiar contraseña</string>
 	
-	<string name="mobileWebURL">URL de servidor movil:</string>
-	<string name="go_to_web">Ver sitio movil</string>
+	<string name="mobileWebURL">URL de servidor móvil:</string>
+	<string name="go_to_web">Ver sitio móvil</string>
 	
 	<string name="bufferSize">Tamaño de búfer XML(KB)</string>
 	
@@ -132,11 +132,12 @@
 	<string name="simIDReport">Reporta Sim ID</string>
 	<string name="gpsReport">Reporta datos GPS</string>
 	<string name="memoryReport">Reporta estado memoria</string>
+	<string name="taskToReport">Elegir tarea a reportar:</string>
 	<string name="taskReport">Reporta tarea</string>
 	<string name="uptimeReport">Reporta tiempo encendido</string>
 	<string name="NetworkOperatorReport">Reporta operador de red</string>
 	<string name="NetworkTypeReport">Reporta tipo de red</string>
-	<string name="PhoneTypeReport">Reporta tipo de movil</string>
+	<string name="PhoneTypeReport">Reporta tipo de móvil</string>
 	<string name="SignalStrengthReport">Reporta potencia de señal</string>
 	<string name="ReceivedSMSReport">Reporta numero de SMS recibido</string>
 	<string name="SentSMSReport">Reporta numero de SMS enviado</string>

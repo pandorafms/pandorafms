@@ -1,3 +1,51 @@
+2013-04-28 Mark Holland <mark@mark-holland.me.uk>
+
+	* assets/database/pandroid.zip: Removed as no longer needed
+
+	* assets/libs/android-sqlite-asset-helper: Removed as no longer 
+	needed
+
+	* layout/setup.xml: Disabled autocorrect on server address
+	and agent name text edits. Changed all dip to sp. Changed order
+	of some objects
+
+	* layout/setupnosim.xml: Disabled autocorrect on server address
+	and agent name text edits. Changed all dip to sp. Changed order
+	of some objects
+
+	* src/pandroid/agent/Core.java: Reordered lots of code 
+	to improve legibility.
+
+	* src/pandroid/agent/DataBaseHandler.java: Removed as 
+	no longer needed
+
+	* src/pandroid/agent/DataBaseHandler.java: Removed as 
+	no longer needed
+
+	* src/pandroid/agent/HelperSharedPreferences: Removed 
+	as no longer needed
+
+	* src/pandroid/agent/PandroidAgent.java: Removed all relating
+	to SharedPreferences
+
+	* src/pandroid/agent/PandroidAgentListener.java: loadConf on service
+	start. Restored SharedPreferences getter and setter. Notification
+	shows the whole time alarm enabled, on stop agent dissapears. On
+	connection shows message(unavoidable at current time).
+
+	* src/pandroid/agent/PandroidAgentTentacle.java: Changed socket
+	timeout to 2000ms.
+
+	* src/pandroid/agent/Setup.java: Reordered lots of code 
+	to improve legibility.
+
+	* src/pandroid/agent/SMSBroadcastReceiver.java: Returned
+	to using local SharedPreferences.
+
+	* values: Added value for choosing task to report, odd suggestions.
+
+	* Pandroid Agent v3.0_iso-8859-1.apk: Updated to latest version.
+
 2013-04-27 Mark Holland <mark@mark-holland.me.uk>
 
 	* Pandroid Agent v3.0_iso-8859-1.apk: Restored proper default values

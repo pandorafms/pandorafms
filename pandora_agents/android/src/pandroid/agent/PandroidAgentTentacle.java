@@ -74,8 +74,10 @@ class tentacle_client {
 	    
 	    Socket socketCliente = new Socket();
 	    
+	    // TODO Maybe change socket to higher timeout value
+	    
 	    try {
-	    	socketCliente.connect(new InetSocketAddress(address, port), 1000);
+	    	socketCliente.connect(new InetSocketAddress(address, port), 2000);
 	    	
 	    } catch (UnknownHostException e) {
 	    	getError("Host don't exists");

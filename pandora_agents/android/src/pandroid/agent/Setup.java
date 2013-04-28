@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -163,7 +164,7 @@ public class Setup extends Activity {
         stopAgent.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
         		 Core.stopAgentListener();
-        		 CancelNotification(getApplicationContext(),1);
+        		 CancelNotification(getApplicationContext(),42);
         	}
         });
         
@@ -173,8 +174,6 @@ public class Setup extends Activity {
         		 Core.restartAgentListener(getApplicationContext());
                	}
         });
-        
-
         
 	}// end setButtonEvents
     
@@ -233,7 +232,7 @@ public class Setup extends Activity {
 		    	if (position == -1) {
 		    		listProcesses.put(Core.task, text);
 		    		
-		    		//The asociative array is reordened, and need to extract the sub arrays again.
+		    		//The associative array is reordered, and need to extract the sub arrays again.
 		    		listProcess = new ArrayList<String>(listProcesses.keySet());
 					listProcessHuman = new ArrayList<String>(listProcesses.values());
 		    		
@@ -271,48 +270,45 @@ public class Setup extends Activity {
     }// end onPostExecute
 	
     private void getDataFromView() {
-        // Init form values
+        // Declare view objects
 		EditText editText;
 		CheckBox checkBox;
 		Spinner combo;
 		
+		// notification
+		checkBox = (CheckBox) findViewById(R.id.checkNotification);
+        if (checkBox.isChecked())
+        	Core.NotificationCheck = "enabled";
+        else
+        	Core.NotificationCheck = "disabled";
+        Log.d("notif", ""+Core.NotificationCheck);
+        		
+		// serverAddress
 		editText = (EditText) findViewById(R.id.serverAddrInput);
 		Core.serverAddr = editText.getText().toString();
         
+		// serverPort
 		editText = (EditText) findViewById(R.id.serverPortInput);
 		Core.serverPort = editText.getText().toString();
         
+		// interval
 		editText = (EditText) findViewById(R.id.intervalInput);
 		Core.interval = Integer.valueOf(editText.getText().toString()).intValue();
         
+		// agentName
 		editText = (EditText) findViewById(R.id.agentNameInput);
 		Core.agentName = editText.getText().toString();
 		
+		// bufferSize
+		editText = (EditText) findViewById(R.id.bufferSize);
+		Core.bufferSize = Long.valueOf(editText.getText().toString()).longValue();
+		
+		// mobileWebURL
 		editText = (EditText) findViewById(R.id.mobileWebURLInput);
 		Core.mobileWebURL = editText.getText().toString();
 		
-		editText = (EditText) findViewById(R.id.bufferSize);
-		Core.bufferSize = Long.valueOf(editText.getText().toString()).longValue();
-        
-        checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
-        if (checkBox.isChecked())
-        	Core.gpsStatus = "enabled";
-        else
-        	Core.gpsStatus = "disabled";
-        
-        checkBox = (CheckBox) findViewById(R.id.checkBatteryLevelReport);
-        if (checkBox.isChecked())
-        	Core.BatteryLevelReport = "enabled";
-        else
-        	Core.BatteryLevelReport = "disabled";
-        
-        checkBox = (CheckBox) findViewById(R.id.checkMemoryReport);
-        if (checkBox.isChecked())
-        	Core.memoryStatus = "enabled";
-        else
-        	Core.memoryStatus = "disabled";
-        
-        checkBox = (CheckBox) findViewById(R.id.checkTaskReport);
+		// taskReport
+		checkBox = (CheckBox) findViewById(R.id.checkTaskReport);
         if (checkBox.isChecked()) {
         	Core.taskStatus = "enabled";
         	
@@ -328,87 +324,137 @@ public class Setup extends Activity {
         	Core.task = "";
         	Core.taskHumanName = "";
         }
+		
+        // gpsReport
+        checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
+        if (checkBox.isChecked())
+        	Core.gpsStatus = "enabled";
+        else
+        	Core.gpsStatus = "disabled";
         
+        // batteryLevelReport
+        checkBox = (CheckBox) findViewById(R.id.checkBatteryLevelReport);
+        if (checkBox.isChecked())
+        	Core.BatteryLevelReport = "enabled";
+        else
+        	Core.BatteryLevelReport = "disabled";
+        
+        // memoryReport
+        checkBox = (CheckBox) findViewById(R.id.checkMemoryReport);
+        if (checkBox.isChecked())
+        	Core.memoryStatus = "enabled";
+        else
+        	Core.memoryStatus = "disabled";
+        
+        // upTimeReport
         checkBox = (CheckBox) findViewById(R.id.checkDeviceUpTimeReport);
         if (checkBox.isChecked())
         	Core.DeviceUpTimeReport = "enabled";
         else
         	Core.DeviceUpTimeReport = "disabled";
-
+        
+        // inventory Report
+        checkBox = (CheckBox) findViewById(R.id.checkInventoryReport);
+        if (checkBox.isChecked())
+        	Core.InventoryReport = "enabled";
+        else
+        	Core.InventoryReport = "disabled";
+        
+        // helloSignalReport
+        checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
+        if (checkBox.isChecked())
+        	Core.HelloSignalReport = "enabled";
+        else
+        	Core.HelloSignalReport = "disabled";
+               
+        // Only retrieve these values if a sim card is present
         if (Core.hasSim) {
         	
+        	// simIDReport
         	checkBox = (CheckBox) findViewById(R.id.checkSimIDReport);
             if (checkBox.isChecked())
             	Core.simIDReport = "enabled";
             else
             	Core.simIDReport = "disabled";
             
+            // networkOperatorReport
         	checkBox = (CheckBox) findViewById(R.id.checkNetworkOperatorReport);
         	if (checkBox.isChecked())
         		Core.NetworkOperatorReport = "enabled";
         	else
         		Core.NetworkOperatorReport = "disabled";
         
+        	// networkTypeReport
         	checkBox = (CheckBox) findViewById(R.id.checkNetworkTypeReport);
         	if (checkBox.isChecked())
         		Core.NetworkTypeReport = "enabled";
         	else
         		Core.NetworkTypeReport = "disabled";
         
+        	// phoneTypeReport
         	checkBox = (CheckBox) findViewById(R.id.checkPhoneTypeReport);
         	if (checkBox.isChecked())
         		Core.PhoneTypeReport = "enabled";
         	else
         		Core.PhoneTypeReport = "disabled";
         
+        	// signalStrengthReport
         	checkBox = (CheckBox) findViewById(R.id.checkSignalStrengthReport);
         	if (checkBox.isChecked())
         		Core.SignalStrengthReport = "enabled";
         	else
         		Core.SignalStrengthReport = "disabled";
-        	        
+        	       
+        	// receivedSMSReport
         	checkBox = (CheckBox) findViewById(R.id.checkReceivedSMSReport);
         	if (checkBox.isChecked())
         		Core.ReceivedSMSReport = "enabled";
         	else
         		Core.ReceivedSMSReport = "disabled";
         
+        	// sentSMSReport
         	checkBox = (CheckBox) findViewById(R.id.checkSentSMSReport);
         	if (checkBox.isChecked())
         		Core.SentSMSReport = "enabled";
         	else
         		Core.SentSMSReport = "disabled";
         
+        	// incomingCallsReport
         	checkBox = (CheckBox) findViewById(R.id.checkIncomingCallsReport);
         	if (checkBox.isChecked())
         		Core.IncomingCallsReport = "enabled";
         	else
         		Core.IncomingCallsReport = "disabled";
         
+        	// missedCallsReport
         	checkBox = (CheckBox) findViewById(R.id.checkMissedCallsReport);
         	if (checkBox.isChecked())
         		Core.MissedCallsReport = "enabled";
         	else
         		Core.MissedCallsReport = "disabled";
         
+        	// outgoingCallsReport
         	checkBox = (CheckBox) findViewById(R.id.checkOutgoingCallsReport);
         	if (checkBox.isChecked())
         		Core.OutgoingCallsReport = "enabled";
         	else
         		Core.OutgoingCallsReport = "disabled";
         
+        	// bytesReceivedReport
         	checkBox = (CheckBox) findViewById(R.id.checkBytesReceivedReport);
         	if (checkBox.isChecked())
         		Core.BytesReceivedReport = "enabled";
         	else
         		Core.BytesReceivedReport = "disabled";
         
+        	// bytesSentReport
         	checkBox = (CheckBox) findViewById(R.id.checkBytesSentReport);
         	if (checkBox.isChecked())
         		Core.BytesSentReport = "enabled";
         	else
         		Core.BytesSentReport = "disabled";
         	
+        	// roamingReport
         	checkBox = (CheckBox) findViewById(R.id.checkRoamingReport);
         	if (checkBox.isChecked())
         		Core.RoamingReport = "enabled";
@@ -416,120 +462,130 @@ public class Setup extends Activity {
         		Core.RoamingReport = "disabled";
         }// end if sim card
         
-        checkBox = (CheckBox) findViewById(R.id.checkInventoryReport);
-        if (checkBox.isChecked())
-        	Core.InventoryReport = "enabled";
-        else
-        	Core.InventoryReport = "disabled";
-        
-
-        checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
-        if (checkBox.isChecked())
-        	Core.HelloSignalReport = "enabled";
-        else
-        	Core.HelloSignalReport = "disabled";
-        
-        checkBox = (CheckBox) findViewById(R.id.checkNotification);
-        if (checkBox.isChecked())
-        	Core.NotificationCheck = "enabled";
-        else
-        	Core.NotificationCheck = "disabled";
-        
-        
+        // update saved values with new ones retrieved from view
         Core.updateConf(getApplicationContext());
     }
     
 	private void loadViews(){
-        // Init form values
+		// Declare view objects
 		EditText editText;
 		CheckBox checkBox;
 		
+		// notification
+		checkBox = (CheckBox) findViewById(R.id.checkNotification);
+        checkBox.setChecked(Core.NotificationCheck.equals("enabled"));
+		
+		// serverAddress
 		editText = (EditText) findViewById(R.id.serverAddrInput);
 		editText.setText(Core.serverAddr);
         
+		// serverPort
 		editText = (EditText) findViewById(R.id.serverPortInput);
 		editText.setText(Core.serverPort);
         
+		// interval
 		editText = (EditText) findViewById(R.id.intervalInput);
 		editText.setText(Integer.toString(Core.interval));
         
+		// agentName
 		editText = (EditText) findViewById(R.id.agentNameInput);
 		editText.setText(Core.agentName);
 		
+		// bufferSize
+		editText = (EditText) findViewById(R.id.bufferSize);
+		editText.setText(Long.toString(Core.bufferSize));
+		
+		// mobileWebURL
 		editText = (EditText) findViewById(R.id.mobileWebURLInput);
 		editText.setText(Core.mobileWebURL);
 		
-		editText = (EditText) findViewById(R.id.bufferSize);
-		editText.setText(Long.toString(Core.bufferSize));
-        
+		// taskReport
+		checkBox = (CheckBox) findViewById(R.id.checkTaskReport);
+        checkBox.setChecked(Core.taskStatus.equals("enabled"));
+		
+        // gpsReport
         checkBox = (CheckBox) findViewById(R.id.checkGpsReport);
         checkBox.setChecked(Core.gpsStatus.equals("enabled"));
         
+        // batteryLevelReport
         checkBox = (CheckBox) findViewById(R.id.checkBatteryLevelReport);
         checkBox.setChecked(Core.BatteryLevelReport.equals("enabled"));
        
+        // memoryReport
         checkBox = (CheckBox) findViewById(R.id.checkMemoryReport);
         checkBox.setChecked(Core.memoryStatus.equals("enabled"));   
         
-        checkBox = (CheckBox) findViewById(R.id.checkTaskReport);
-        checkBox.setChecked(Core.taskStatus.equals("enabled"));
-        
+        // upTimeReport
         checkBox = (CheckBox) findViewById(R.id.checkDeviceUpTimeReport);
         checkBox.setChecked(Core.DeviceUpTimeReport.equals("enabled"));
-
+        
+        // inventoryReport
+        checkBox = (CheckBox) findViewById(R.id.checkInventoryReport);
+    	checkBox.setChecked(Core.InventoryReport.equals("enabled"));
+       
+    	// helloSignalReport
+        checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
+        checkBox.setChecked(Core.HelloSignalReport.equals("enabled"));
+        
+        // Only retrieve these values if a sim card is present
         if (Core.hasSim) {
         	
+        	// simIDReport
         	checkBox = (CheckBox) findViewById(R.id.checkSimIDReport);
             checkBox.setChecked(Core.simIDReport.equals("enabled"));
             
+            // networkOperatorReport
         	checkBox = (CheckBox) findViewById(R.id.checkNetworkOperatorReport);
         	checkBox.setChecked(Core.NetworkOperatorReport.equals("enabled"));
         
+        	// networkTypeReport
         	checkBox = (CheckBox) findViewById(R.id.checkNetworkTypeReport);
         	checkBox.setChecked(Core.NetworkTypeReport.equals("enabled"));
         
+        	// phoneTypeReport
         	checkBox = (CheckBox) findViewById(R.id.checkPhoneTypeReport);
         	checkBox.setChecked(Core.PhoneTypeReport.equals("enabled"));
         
+        	// signalStrengthReport
         	checkBox = (CheckBox) findViewById(R.id.checkSignalStrengthReport);
         	checkBox.setChecked(Core.SignalStrengthReport.equals("enabled"));
         
+        	// receivedSMSReport
         	checkBox = (CheckBox) findViewById(R.id.checkReceivedSMSReport);
         	checkBox.setChecked(Core.ReceivedSMSReport.equals("enabled"));
         
+        	// sentSMSReport
         	checkBox = (CheckBox) findViewById(R.id.checkSentSMSReport);
         	checkBox.setChecked(Core.SentSMSReport.equals("enabled"));
         
+        	// incomingCallsReport
         	checkBox = (CheckBox) findViewById(R.id.checkIncomingCallsReport);
         	checkBox.setChecked(Core.IncomingCallsReport.equals("enabled"));
         
+        	// missedCallsReport
         	checkBox = (CheckBox) findViewById(R.id.checkMissedCallsReport);
         	checkBox.setChecked(Core.MissedCallsReport.equals("enabled"));
         
+        	// outgoingCallsReport
         	checkBox = (CheckBox) findViewById(R.id.checkOutgoingCallsReport);
         	checkBox.setChecked(Core.OutgoingCallsReport.equals("enabled"));
         
+        	// bytesReceivedReport
         	checkBox = (CheckBox) findViewById(R.id.checkBytesReceivedReport);
         	checkBox.setChecked(Core.BytesReceivedReport.equals("enabled"));
         
+        	// bytesSentReport
         	checkBox = (CheckBox) findViewById(R.id.checkBytesSentReport);
         	checkBox.setChecked(Core.BytesSentReport.equals("enabled"));
         	
+        	// roamingReport
         	checkBox = (CheckBox) findViewById(R.id.checkRoamingReport);
         	checkBox.setChecked(Core.RoamingReport.equals("enabled"));
         }//end if sim card
         
-        checkBox = (CheckBox) findViewById(R.id.checkInventoryReport);
-    	checkBox.setChecked(Core.InventoryReport.equals("enabled"));
-       
-        checkBox = (CheckBox) findViewById(R.id.checkHelloSignalReport);
-        checkBox.setChecked(Core.HelloSignalReport.equals("enabled"));
-        
-        checkBox = (CheckBox) findViewById(R.id.checkNotification);
-        checkBox.setChecked(Core.NotificationCheck.equals("enabled"));
-        
     }
 	
+	// For displaying a dialog in order to set/change password
 	public void passwordChoose() {
 		final Dialog dialog = new Dialog(this);
 		dialog.setContentView(R.layout.password_choose);
@@ -565,6 +621,7 @@ public class Setup extends Activity {
 		dialog.show();
 	}
 	
+	// For displaying a dialog in order to create a password
 	public void createPass() {
 		
 		final Dialog dialog = new Dialog(this);
@@ -592,6 +649,7 @@ public class Setup extends Activity {
 		    	{
 		    		Core.password = Core.defaultPassword;
 		    		Core.updateConf(getApplicationContext());
+		    		//TODO
 		    		InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
                     im.hideSoftInputFromWindow(text.getWindowToken(), 0);
 		    		dialog.dismiss();
@@ -614,7 +672,7 @@ public class Setup extends Activity {
 		        {
 		        	Core.password = createpass_password;
 		        	Core.updateConf(getApplicationContext());
-		        	//Core.restartAgentListener(getApplicationContext());
+		        	//TODO
 		        	InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
                     im.hideSoftInputFromWindow(text.getWindowToken(), 0);
                   
@@ -649,6 +707,7 @@ public class Setup extends Activity {
 
 	}// end createPass
 	
+	// For displaying a dialog in order to enter the password
 	public void enterPass() {
 		
 		final Dialog dialog = new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
@@ -673,6 +732,7 @@ public class Setup extends Activity {
 		    {
 		        if(password.equals(Core.password))
 		        {
+		        	//TODO
 		        	InputMethodManager im = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
                     im.hideSoftInputFromWindow(text.getWindowToken(), 0);
 		        	dialog.dismiss();
@@ -728,6 +788,7 @@ public class Setup extends Activity {
 		
 	}// end enterPass
 	
+	
 	/**
 	 * Allows this activity to switch the parent tab
 	 * @param indexTabToSwitchTo
@@ -738,7 +799,7 @@ public class Setup extends Activity {
         ParentActivity.switchTab(indexTabToSwitchTo);
 	}
 	
-	
+	//TODO
 	public static void CancelNotification(Context ctx, int notifyId) {
 	    String ns = Context.NOTIFICATION_SERVICE;
 	    NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);

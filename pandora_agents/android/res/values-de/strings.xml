@@ -125,6 +125,7 @@
 	<string name="simIDReport">"Bericht Sim ID"</string>
 	<string name="gpsReport">"Bericht GPS-Daten"</string>
 	<string name="memoryReport">"Bericht verfügbaren Speicher"</string>
+	<string name="taskToReport">Wählen Aufgabe zu berichten:</string>
 	<string name="taskReport">"Bericht Aufgabe"</string>
 	<string name="uptimeReport">"Bericht Gerät up-Zeit"</string>
 	<string name="NetworkOperatorReport">"Bericht Netzbetreiber"</string>
@@ -144,7 +145,7 @@
 	
 	<string name="notification_title">Pandroid</string>
 	<string name="notification_message">Agent ausgeführt wird</string>
-	<string name="ticker_text">Connecting…</string>
+	<string name="ticker_text">Verbindend…</string>
 	<string name="stopAgent">Stopp Agent</string>
 	<string name="restartAgent">Starten Agent</string>
 	<string name="notificationCheck">anzeigen Benachrichtigung, wenn läuft?</string>

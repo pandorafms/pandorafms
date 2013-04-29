@@ -1984,6 +1984,10 @@ div#pandora_logo_header {
 	float: left;
 }
 
+#header_table img {
+	margin-top: 0px;
+}
+
 .disabled_module {
 	color: #aaa;
 }

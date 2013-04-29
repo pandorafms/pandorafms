@@ -1,3 +1,14 @@
+2013-04-25 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extensions/update_manager/update_pandora.php: cleaned source code
+	style.
+	
+	* include/functions_events.php,
+	operation/events/events.build_table.php: show columns by group in
+	metaconsole.
+	
+	Fixes: #3609374
+
 2013-04-29  Sergio Martin <sergio.martin@artica.es>
 
 	* images/mod_async_proc.png

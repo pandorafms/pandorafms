@@ -1,5 +1,11 @@
 2013-04-29  Sergio Martin <sergio.martin@artica.es>
 
+	* include/php_to_js_values.php: Added a separated file
+	to store from php interesting values to ve retrieved 
+	from javascript
+
+2013-04-29  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions.php
 	include/javascript/pandora_modules.js
 	include/javascript/pandora.js

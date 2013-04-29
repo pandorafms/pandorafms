@@ -23,7 +23,12 @@ $table->head = array ();
 $table->data = array ();
 
 //fields that the user has selected to show
-$show_fields = explode (',', $config['event_fields']);
+if ($meta) {
+	$show_fields = events_meta_get_custom_fields_user();
+}
+else {
+	$show_fields = explode (',', $config['event_fields']);
+}
 
 //headers
 $i = 0;

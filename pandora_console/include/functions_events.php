@@ -18,10 +18,39 @@ include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_tags.php");
 enterprise_include_once ('meta/include/functions_events_meta.php');
 
+
+
 /**
  * @package Include
  * @subpackage Events
  */
+
+function events_get_all_fields() {
+	
+	$columns = array();
+	
+	$columns['id_evento'] = __('Event id');
+	$columns['evento'] = __('Event name');
+	$columns['id_agente'] = __('Agent name');
+	$columns['id_usuario'] = __('User');
+	$columns['id_grupo'] = __('Group');
+	$columns['estado'] = __('Status');
+	$columns['timestamp'] = __('Timestamp');
+	$columns['event_type'] = __('Event type');
+	$columns['id_agentmodule'] = __('Agent module');
+	$columns['id_alert_am'] = __('Alert');
+	$columns['criticity'] = __('Criticity');
+	$columns['user_comment'] = __('Comment');
+	$columns['tags'] = __('Tags');
+	$columns['source'] = __('Source');
+	$columns['id_extra'] = __('Extra id');
+	$columns['owner_user'] = __('Owner');
+	$columns['ack_utimestamp'] = __('ACK Timestamp');
+	$columns['instructions'] = __('Instructions');
+	$columns['server_name'] = __('Server name');
+	
+	return $columns;
+}
 
 /** 
  * Get all rows of events from the database, that
@@ -50,6 +79,14 @@ function events_get_events ($filter = false, $fields = false) {
 	return db_get_all_rows_filter ('tevento', $filter, $fields);
 }
 
+/**
+ * Get the event with the id pass as parameter.
+ * 
+ * @param int $id Event id
+ * @param mixed $fields The fields to show or by default all with false.
+ * 
+ * @return mixed False in case of error or invalid values passed. Event row otherwise
+ */
 function events_get_event ($id, $fields = false) {
 	if (empty ($id))
 		return false;

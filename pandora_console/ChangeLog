@@ -1,3 +1,85 @@
+2013-04-29  Sergio Martin <sergio.martin@artica.es>
+
+	* images/status_sets/faces/severity_informational.png
+	images/status_sets/faces/severity_warning_pixel.png
+	images/status_sets/faces/agent_critical_ball.png
+	images/status_sets/faces/module_unknown.png
+	images/status_sets/faces/module_warning_ball.png
+	images/status_sets/faces/module_ok_ball.png
+	images/status_sets/faces/module_alertsfired.png
+	images/status_sets/faces/severity_maintenance.png
+	images/status_sets/faces/agent_no_data_ball.png
+	images/status_sets/faces/agent_ok_ball.png
+	images/status_sets/faces/severity_normal_pixel.png
+	images/status_sets/faces/severity_critical.png
+	images/status_sets/faces/server_down_ball.png
+	images/status_sets/faces/alert_not_fired_ball.png
+	images/status_sets/faces/severity_informational_pixel.png
+	images/status_sets/faces/module_unknown_ball.png
+	images/status_sets/faces/severity_warning.png
+	images/status_sets/faces/agent_down_ball.png.png
+	images/status_sets/faces/module_no_data_ball.png
+	images/status_sets/faces/alert_fired_ball.png
+	images/status_sets/faces/agent_warning_ball.png
+	images/status_sets/faces/severity_maintenance_pixel.png
+	images/status_sets/faces/agent_no_monitors_ball.png
+	images/status_sets/faces/alert_disabled_square.png
+	images/status_sets/faces/severity_normal.png
+	images/status_sets/faces/severity_critical_pixel.png
+	images/status_sets/faces/alert_disabled_ball.png
+	images/status_sets/faces/module_critical_ball.png
+	images/status_sets/faces/server_ok_ball.png
+	images/status_sets/color_text/severity_informational.png
+	images/status_sets/color_text/module_critical.png
+	images/status_sets/color_text/server_ok.png
+	images/status_sets/color_text/alert_not_fired.png
+	images/status_sets/color_text/severity_warning_pixel.png
+	images/status_sets/color_text/agent_critical_ball.png
+	images/status_sets/color_text/module_unknown.png
+	images/status_sets/color_text/module_warning_ball.png
+	images/status_sets/color_text/module_ok_ball.png
+	images/status_sets/color_text/module_alertsfired.png
+	images/status_sets/color_text/module_no_data.png
+	images/status_sets/color_text/severity_maintenance.png
+	images/status_sets/color_text/agent_no_data_ball.png
+	images/status_sets/color_text/alert_fired.png
+	images/status_sets/color_text/agent_ok_ball.png
+	images/status_sets/color_text/agent_no_data.png
+	images/status_sets/color_text/severity_normal_pixel.png
+	images/status_sets/color_text/severity_critical.png
+	images/status_sets/color_text/agent_no_monitors.png
+	images/status_sets/color_text/agent_ok.png
+	images/status_sets/color_text/server_down_ball.png
+	images/status_sets/color_text/alert_not_fired_ball.png
+	images/status_sets/color_text/server_down.png
+	images/status_sets/color_text/severity_informational_pixel.png
+	images/status_sets/color_text/module_unknown_ball.png
+	images/status_sets/color_text/alert_disabled.png
+	images/status_sets/color_text/severity_warning.png
+	images/status_sets/color_text/module_no_data_ball.png
+	images/status_sets/color_text/agent_critical.png
+	images/status_sets/color_text/alert_fired_ball.png
+	images/status_sets/color_text/module_warning.png
+	images/status_sets/color_text/agent_warning_ball.png
+	images/status_sets/color_text/severity_maintenance_pixel.png
+	images/status_sets/color_text/agent_no_monitors_ball.png
+	images/status_sets/color_text/module_ok.png
+	images/status_sets/color_text/alert_disabled_square.png
+	images/status_sets/color_text/agent_down_ball.png
+	images/status_sets/color_text/severity_normal.png
+	images/status_sets/color_text/agent_warning.png
+	images/status_sets/color_text/agent_down.png
+	images/status_sets/color_text/severity_critical_pixel.png
+	images/status_sets/color_text/alert_disabled_ball.png
+	images/status_sets/color_text/module_critical_ball.png
+	images/status_sets/color_text/server_ok_ball.png
+	images/status_sets/default/severity_informational.png
+	images/status_sets/default/severity_maintenance.png
+	images/status_sets/default/severity_informational_pixel.png
+	images/status_sets/default/module_unknown_ball.png
+	images/status_sets/default/severity_maintenance_pixel.png:
+	Added missing icons for bug #3611748
+
 2013-04-28  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_html.php: Fixed notice on undef variable.

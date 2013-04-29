@@ -1738,5 +1738,12 @@ function is_snapshot_data ($data){
                 return 0;
 }
 
+/**
+*  Create an invisible div with a provided ID and value to
+* can retrieve it from javascript with function get_php_value(value)
+*/
+function set_js_value($name, $value) {
+	html_print_div(array('id' => 'php_to_js_value_' . $name, 'content' => $value, 'hidden' => true));
+}
 
 ?>

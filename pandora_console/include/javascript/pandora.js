@@ -791,3 +791,8 @@ function hidded_sidebar(position, menuW, menuH, icon_width, top_dist, autotop, r
 		break;
 	}
 }
+
+// Function that recover a previously stored value from php code
+function get_php_value(value) {
+	return $('#php_to_js_value_' + value).html();
+}

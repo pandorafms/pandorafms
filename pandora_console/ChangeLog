@@ -1,3 +1,14 @@
+2013-04-29  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions.php
+	include/javascript/pandora_modules.js
+	include/javascript/pandora.js
+	index.php
+	ajax.php: Added a simple system of interchange of
+	data from php to javascript with invisible divs.
+	Fixed ajax call of server plugin components macros
+	for bug 3612145
+
 2013-04-26  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css: Fix aesthetical issues

@@ -1,5 +1,33 @@
 2013-04-29  Sergio Martin <sergio.martin@artica.es>
 
+	* images/mod_async_proc.png
+	images/mod_string.png
+	images/mod_snmp_proc.png
+	images/mod_data.png
+	images/mod_tcp_inc.png
+	images/mod_web_data.png
+	images/mod_icmp_data.png
+	images/mod_async_string.png
+	images/mod_image_png.png
+	images/mod_proc.png
+	images/mod_snmp_string.png
+	images/mod_tcp_data.png
+	images/mod_web_proc.png
+	images/mod_icmp_proc.png
+	images/mod_image_jpg.png
+	images/mod_log4x.png
+	images/mod_async_inc.png
+	images/mod_async_data.png
+	images/mod_data_inc.png
+	images/mod_keepalive.png
+	images/mod_snmp_inc.png
+	images/mod_snmp_data.png
+	images/mod_tcp_string.png
+	images/mod_tcp_proc.png: Change module types icons
+	to new style
+
+2013-04-29  Sergio Martin <sergio.martin@artica.es>
+
 	* images/gis_map/icons/star.default.png
 	images/gis_map/icons/cross.warning.png
 	images/gis_map/icons/star.bad.png

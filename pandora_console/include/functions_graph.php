@@ -1705,6 +1705,7 @@ function graph_db_agentes_modulos($width, $height) {
 		case "postgresql":
 			$modules = db_get_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
 				FROM tagente_modulo
+				WHERE delete_pending = 0
 				GROUP BY id_agente
 				ORDER BY 1 DESC LIMIT 10');
 			break;
@@ -1712,6 +1713,7 @@ function graph_db_agentes_modulos($width, $height) {
 			$modules = db_get_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
 				FROM tagente_modulo
 				WHERE rownum <= 10
+				AND delete_pending = 0
 				GROUP BY id_agente
 				ORDER BY 1 DESC');
 			break;
@@ -1721,6 +1723,10 @@ function graph_db_agentes_modulos($width, $height) {
 	
 	foreach ($modules as $module) {
 		$agent_name = agents_get_name ($module['id_agente'], "none");
+		
+		if(empty($agent_name)) {
+			continue;
+		}
 		switch ($config['dbtype']){
 			case "mysql":
 			case "postgresql":

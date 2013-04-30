@@ -231,7 +231,7 @@ if ($config['activate_gis'] || $agent['url_address'] != '') {
 			$data[1] = __('There is no GIS data.');
 		}
 		else {
-			$data[$col] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
+			$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
 			if ($dataPositionAgent['description'] != "")
 				$data[1] .= $dataPositionAgent['description'];
 			else

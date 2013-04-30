@@ -1,5 +1,10 @@
 2013-04-30  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/agent_template.php: Add tags creation
+	in module tamplates application for bug #3611909
+
+2013-04-30  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/reporting/reporting_builder.item_editor.php: 
 	Reporting builder layout and hide graph per agent option
 	in agent events item for bug #3611908

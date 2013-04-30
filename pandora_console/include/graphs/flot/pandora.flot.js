@@ -215,8 +215,16 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark, maxvalue, water_
 		
 		$('#'+graph_id+' .yAxis .tickLabel').each(function() {			
 			inCanvasValuePos = parseInt(pixelPerValue * ($('#value_'+i+'_'+graph_id).html()));
+			label_width = ($('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);		
 			
-			$('#value_'+i+'_'+graph_id).css('left',plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);
+			label_left_offset = plot.offset().left + inCanvasValuePos + 5; //Label located on right side of bar + 5 pixels
+			
+			//If label fit into the bar just recalculate left position to fit on right side of bar
+			if (inCanvasValuePos > label_width) {
+				label_left_offset = plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3;
+			}
+			
+			$('#value_'+i+'_'+graph_id).css('left',label_left_offset);
 			i++;
 		});
 	});

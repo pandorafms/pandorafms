@@ -1,5 +1,21 @@
 2013-04-30  Sergio Martin <sergio.martin@artica.es>
 
+	* include/styles/pandora.css: Fix bad reposition
+	action of bar graphs values in pure mode
+
+	* include/graphs/flot/pandora.flot.js: Fix bad 
+	reposition action of bar graphs values when resize
+	container
+
+	* include/functions_graph.php: Fix the graph of 
+	database info of agents with most modules. Now
+	avoid pending delete and the data is showed properly
+
+	* operation/agentes/estado_generalagente.php: Fix a
+	missing change of agent view layout fix
+
+2013-04-30  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/modules/manage_network_components.php: Added 
 	type (network/plugin/wmi) icon near the other type 
 	(numeric/string/proc...) in the Type column in

@@ -106,7 +106,7 @@ function um_db_get_latest_package_by_status ($id_package = '0', $status = 'publi
 		WHERE status = "'.$status.'" AND id > ' . $id_package . '
 		ORDER BY id DESC LIMIT 1');
 	
-	if($result === false) {
+	if ($result === false) {
 		echo '<strong>Error reading latest package with status ' . $status . '</strong><br />';
 		return false;
 	}
@@ -145,7 +145,7 @@ function um_db_update_package ($id_package, $description = '', $status = 'disabl
 	
 	$result = db_process_sql_update(DB_PREFIX.'tupdate_package', $values, $where);
 	
-	if($result === false) {
+	if ($result === false) {
 		echo '<strong>Error updating package</strong><br />';
 		return false;
 	}

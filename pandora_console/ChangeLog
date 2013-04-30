@@ -1,3 +1,16 @@
+2013-05-01 Miguel de Dios <miguel.dedios@artica.es>
+
+	* extensions/system_info.php, extensions/agents_modules.php,
+	extensions/vnc_view.php, extensions/users_connected.php,
+	extensions/update_manager/lib/libupdate_manager.php,
+	extensions/update_manager/lib/libupdate_manager_updates.php,
+	extensions/snmp_explorer.php, extensions/insert_data.php,
+	operation/agentes/tactical.php: improved the source code.
+	
+	* include/functions_reporting.php: fixed the links of list modules.
+	
+	Fixes: #3612243
+
 2013-04-30  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/agent_template.php: Add tags creation

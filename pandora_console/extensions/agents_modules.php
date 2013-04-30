@@ -248,10 +248,10 @@ function mainAgentsModules() {
 		
 		$nmodules = 0;
 		
-		foreach($modules_by_name as $module) {
+		foreach ($modules_by_name as $module) {
 			$nmodules++;
 			
-			if($nmodules <= $hor_offset || $nmodules > ($hor_offset+$block)) {
+			if ($nmodules <= $hor_offset || $nmodules > ($hor_offset+$block)) {
 				continue;
 			}
 			
@@ -288,7 +288,7 @@ function mainAgentsModules() {
 				}
 			}
 			
-			if(!$match) {
+			if (!$match) {
 				echo "<td></td>";
 			}
 		}

@@ -51,7 +51,7 @@ else {
 ui_print_page_header (__("Tactical view"), "images/op_monitoring.png", false, "", false, $updated_time);
 $data = reporting_get_group_stats();
 
-if(tags_has_user_acl_tags()) {
+if (tags_has_user_acl_tags()) {
 	ui_print_tags_warning();
 }
 
@@ -74,7 +74,7 @@ $table->rowclass[] = '';
 
 
 html_print_table ($table);
-unset ($table);
+unset($table);
 
 // ---------------------------------------------------------------------
 // Monitor checks
@@ -94,6 +94,8 @@ $table->data[0][0] .= reporting_get_stats_agents_monitors($data);
 $table->rowclass[] = '';
 
 html_print_table($table);
+
+
 // ---------------------------------------------------------------------
 // Server performance 
 // ---------------------------------------------------------------------
@@ -106,10 +108,10 @@ if ($is_admin) {
 	$table->head = array ();
 	$table->data = array ();
 	$table->style = array ();
-
+	
 	$table->data[0][0] = reporting_get_stats_servers(false);
 	$table->rowclass[] = '';
-
+	
 	html_print_table($table);
 }
 

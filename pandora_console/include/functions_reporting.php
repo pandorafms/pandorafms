@@ -990,11 +990,21 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	// Link URLS
 	if ($links === false) {
 		$urls = array();
-		$urls['monitor_critical'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=2";
-		$urls['monitor_warning'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=1";
-		$urls['monitor_ok'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=0";
-		$urls['monitor_unknown'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=3";
-		$urls['monitor_not_init'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=5";
+		$urls['monitor_critical'] = "index.php?" .
+			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_CRITICAL_BAD;
+		$urls['monitor_warning'] = "index.php?" .
+			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_WARNING;
+		$urls['monitor_ok'] = "index.php?" .
+			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL;
+		$urls['monitor_unknown'] = "index.php?" .
+			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOW;
+		$urls['monitor_not_init'] = "index.php?" .
+			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT;
 	}
 	else {
 		$urls = array();

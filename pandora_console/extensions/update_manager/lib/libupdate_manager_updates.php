@@ -87,9 +87,9 @@ function um_db_get_orphan_updates () {
 
 	$cont = 0;
 	$updates = array();
-	while(true) {
+	while (true) {
 		$update = um_std_from_result($result, $cont);
-		if($update === false) {
+		if ($update === false) {
 			break;
 		}
 		$updates[$update['id']] = $update;
@@ -101,7 +101,7 @@ function um_db_get_orphan_updates () {
 
 function um_db_get_update ($id_update) {
 	$result = db_process_sql('SELECT * FROM '.DB_PREFIX.'tupdate WHERE id = "'.$id_update.'" LIMIT 1');
-
+	
 	if ($result === false) {
 		echo '<strong>Error getting update</strong> <br />';
 		return NULL;

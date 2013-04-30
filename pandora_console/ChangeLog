@@ -1,5 +1,55 @@
 2013-04-30  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/estado_generalagente.php
+	images/network_small.png
+	images/so_win.png
+	images/so_aix.png
+	images/so_aix_small.png
+	images/os_icons/so_win.png
+	images/os_icons/so_linux.png
+	images/os_icons/so_cisco.png
+	images/os_icons/so_bsd_small.png
+	images/os_icons/so_mac.png
+	images/os_icons/so_vmware.png
+	images/os_icons/so_solaris_small.png
+	images/os_icons/android_small.png
+	images/os_icons/so_bsd.png
+	images/os_icons/so_aix_small.png
+	images/os_icons/so_other_small.png
+	images/os_icons/so_hpux_small.png
+	images/os_icons/so_solaris.png
+	images/os_icons/android.png
+	images/os_icons/embedded_small.png
+	images/os_icons/network_small.png
+	images/os_icons/so_aix.png
+	images/os_icons/so_other.png
+	images/os_icons/so_hpux.png
+	images/os_icons/so_win_small.png
+	images/os_icons/so_linux_small.png
+	images/os_icons/so_cisco_small.png
+	images/os_icons/network.png
+	images/os_icons/embedded.png
+	images/os_icons/so_mac_small.png
+	images/os_icons/so_vmware_small.png
+	images/so_cisco_small.png
+	images/so_win_small.png
+	images/so_hpux_small.png
+	images/so_mac_small.png
+	images/so_bsd.png
+	images/so_linux_small.png
+	images/so_cisco.png
+	images/so_other.png
+	images/so_mac.png
+	images/so_other_small.png
+	images/so_solaris.png
+	images/so_linux.png
+	images/so_hpux.png
+	images/so_bsd_small.png
+	images/so_solaris_small.png: Added new OS
+	icons
+
+2013-04-30  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/pandora.css: Fix bad reposition
 	action of bar graphs values in pure mode
 

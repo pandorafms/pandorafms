@@ -87,9 +87,9 @@ $table_agent->cellstyle[][0] = '';
 
 $data = array();
 
-$data[0] = ui_print_os_icon ($agent["id_os"], true, true, true, false, false, false, array('style' => 'margin:0px 5px 0px 4px;')) . '&nbsp;';
+$data[0] = ui_print_os_icon ($agent["id_os"], true, true, true, false, false, false) . '&nbsp;';
 $data[0] .= ui_print_help_tip($agent["os_version"], true);
-$table_agent->cellstyle[][0] = 'padding-left:50px;';
+$table_agent->cellstyle[][0] = 'padding-left:40px;';
 
 $data[1] = graph_agent_status ($id_agente, 160, 120, true);
 $table_agent->rowspan[1][1] = 6;
@@ -111,7 +111,7 @@ if(!empty($address)) {
 	$data[0] .= '<span style="vertical-align:top; padding-top: 6px; display: inline-block;">';
 	$data[0] .= empty($address) ? '<em>' . __('N/A') . '</em>' : $address;
 	$data[0] .= '</div>';
-	$table_agent->cellstyle[][0] = 'padding-left:50px;';
+	$table_agent->cellstyle[][0] = 'padding-left:40px;';
 	$table_agent->data[] = $data;
 	$table_agent->rowclass[] = '';
 }
@@ -121,7 +121,7 @@ $data[0] = html_print_image('images/version.png', true, array('title' => __('Age
 $data[0] .= '<span style="vertical-align:top; padding-top: 6px; display: inline-block;">';
 $data[0] .= $agent["agent_version"];
 $data[0] .= '</span>';
-$table_agent->cellstyle[][0] = 'padding-left:50px;';
+$table_agent->cellstyle[][0] = 'padding-left:40px;';
 $table_agent->data[] = $data;
 $table_agent->rowclass[] = '';
 
@@ -130,7 +130,7 @@ $data[0] = html_print_image('images/default_list.png', true, array('title' => __
 $data[0] .= '<span style="vertical-align:top; padding-top: 6px; display: inline-block;">';
 $data[0] .= empty($agent["comentarios"]) ? '<em>' . __('N/A') . '</em>' : $agent["comentarios"];
 $data[0] .= '</span>';
-$table_agent->cellstyle[][0] = 'padding-left:50px;';
+$table_agent->cellstyle[][0] = 'padding-left:40px;';
 $table_agent->data[] = $data;
 $table_agent->rowclass[] = '';
 

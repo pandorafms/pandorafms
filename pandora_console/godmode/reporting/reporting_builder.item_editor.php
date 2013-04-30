@@ -456,7 +456,7 @@ html_print_input_hidden('id_item', $idItem);
 <table style="" class="databox" id="" border="0" cellpadding="4" cellspacing="4" width="98%">
 	<tbody>
 		<tr id="row_type" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Type'); ?></td>
+			<td style="vertical-align: top; width: 220px;"><?php echo __('Type'); ?></td>
 			<td style="">
 				<?php
 				if ($action == 'new') { 
@@ -1026,9 +1026,13 @@ html_print_input_hidden('id_item', $idItem);
 		<tr id="row_event_graphs" style="" class="datos">
 			<td><?php echo __('Event graphs'); ?></td>
 			<td>
+				<span id="row_event_graph_by_agent">
 				<?php
 				echo __('By agent');
 				html_print_checkbox ('event_graph_by_agent', true, $event_graph_by_agent);
+				?>
+				</span>
+				<?
 				echo __('By user validator');
 				html_print_checkbox ('event_graph_by_user_validator', true, $event_graph_by_user_validator);
 				echo __('By criticity');
@@ -1794,6 +1798,7 @@ function chooseType() {
 	$("#row_module_multi").hide();
 	$("#row_event_filter").hide();
 	$("#row_event_graphs").hide();
+	$("#row_event_graph_by_agent").show();
 	$("#row_netflow_filter").hide();
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
@@ -2006,6 +2011,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
+			$("#row_event_graph_by_agent").hide();
 		
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();

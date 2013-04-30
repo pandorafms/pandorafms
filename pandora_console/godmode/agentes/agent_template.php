@@ -100,6 +100,14 @@ if (isset ($_POST["template_id"])) {
 			
 			$name = $row2["name"];
 			
+			// Put tags in array if the component has to add them later
+			if(!empty($row2["tags"])) {
+				$tags = explode(',', $row2["tags"]);
+			}
+			else {
+				$tags = array();
+			}
+			
 			// Check if this module exists in the agent
 			$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $name, 'id_agente' => $id_agente));
 			
@@ -114,6 +122,19 @@ if (isset ($_POST["template_id"])) {
 					$error_count++;
 				}
 				else {
+					if(!empty($tags)) {
+						// Creating tags
+						$tag_ids = array();
+						foreach ($tags as $tag_name) {
+							$tag_id = tags_get_id($tag_name);
+							
+							//If tag exists in the system we store to create it
+							$tag_ids[] = $tag_id;
+						}
+						
+						tags_insert_module_tag ($id_agente_modulo, $tag_ids);
+					}
+			
 					$success_count++;
 				}
 			}

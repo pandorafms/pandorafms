@@ -1,3 +1,17 @@
+2013-04-30  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	include/functions_groups.php: Fix a little the
+	groups view style
+
+	* operation/agentes/estado_generalagente.php: Fix the 
+	layout of the agent main view table when url addres is 
+	setted for bug #3609651
+
+	* general/header.php: Remove completly the link of
+	the autorefresh button from the header when is disabled
+	to avoid confusing
+
 2013-04-29  Sergio Martin <sergio.martin@artica.es>
 
 	* include/styles/pandora.css

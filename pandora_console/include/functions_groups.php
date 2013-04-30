@@ -842,7 +842,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	echo ui_print_truncate_text($group['name']);
 	echo "</a>";
 	echo "</td>";
-	echo "<td class='group_view_data $group_class'  style='text-align: center; vertica-align: middle;'>";
+	echo "<td class='group_view_data' style='text-align: center; vertica-align: middle; background-color: #d3d3d3;'>";
 	if (check_acl ($config['id_user'], $id_group, "AW")) {
 		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' .
 			html_print_image("images/target.png", true, array("border" => '0', "alt" => __('Force'))) . '</a>';
@@ -954,7 +954,7 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	}
 	// Alerts fired
 	if ($data["monitor_alerts_fired"] > 0) {
-		echo "<td class='group_view_data_alrm $group_class' style='font-weight: bold; font-size: 18px;  text-align: center;'>";
+		echo "<td class='group_view_data_alrm $group_class last' style='font-weight: bold; font-size: 18px;  text-align: center;'>";
 		echo "<a class='group_view_data_alrm' style='font-weight: bold; font-size: 18px; text-align: center;'
 			href='index.php?sec=estado&sec2=operation/agentes/alerts_status&ag_group=$id_group&filter=fired'>";
 		echo $data["monitor_alerts_fired"];

@@ -127,16 +127,20 @@ config_check();
 					$autorefresh_additional .= html_print_select ($values, 'ref', '', '', __('Select'), '0', true, false, false);
 					$autorefresh_additional .= '</span>';
 					unset ($values);
+					
+					$autorefresh_link_open_img = '<a class="white autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
+					$autorefresh_link_open_txt = '<a class="white autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
+					$autorefresh_link_close = '</a>';
 				}
 				else {
-					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Disabled autorefresh')));
+					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot autorefresh_disabled', "alt" => 'lightning', 'title' => __('Disabled autorefresh')));
 					
 					$ignored_params['refr'] = false;
+					
+					$autorefresh_link_open_img = ''; 
+					$autorefresh_link_open_txt = ''; 
+					$autorefresh_link_close = '';
 				}
-				
-				$autorefresh_link_open_img = '<a class="white autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
-				$autorefresh_link_open_txt = '<a class="white autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
-				$autorefresh_link_close = '</a>';
 				
 				$table->data[0][1] = $autorefresh_link_open_img . $autorefresh_img . $autorefresh_link_close;
 				$table->data[0][2] = $autorefresh_link_open_txt . $autorefresh_txt . $autorefresh_link_close . $autorefresh_additional;

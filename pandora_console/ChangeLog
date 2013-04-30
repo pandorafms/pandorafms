@@ -1,5 +1,11 @@
 2013-04-30  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/reporting/reporting_builder.item_editor.php: 
+	Reporting builder layout and hide graph per agent option
+	in agent events item for bug #3611908
+
+2013-04-30  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/estado_generalagente.php
 	images/network_small.png
 	images/so_win.png

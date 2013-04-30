@@ -100,7 +100,7 @@ function mainInsertData() {
 					
 					$result = createXMLData($agent, $agentModule, trim($tokens[0]), trim($tokens[1]));
 					
-					if($result) {
+					if ($result) {
 						$done++;
 					}
 					else {
@@ -111,7 +111,7 @@ function mainInsertData() {
 			else {
 				$result = createXMLData($agent, $agentModule, $date_xml, $data);
 				
-				if($result) {
+				if ($result) {
 					$done++;
 				}
 				else {
@@ -120,16 +120,16 @@ function mainInsertData() {
 			}
 		}
 		
-		if($errors > 0) {
+		if ($errors > 0) {
 			$msg = sprintf(__('Can\'t save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']);
-			if($errors > 1) {
+			if ($errors > 1) {
 				$msg .= " ($errors)";
 			}
 			ui_print_error_message($msg);
 		}
 		if ($done > 0) {
 			$msg = sprintf(__('Save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']);
-			if($done > 1) {
+			if ($done > 1) {
 				$msg .= " ($done)";
 			}
 			ui_print_success_message($msg);

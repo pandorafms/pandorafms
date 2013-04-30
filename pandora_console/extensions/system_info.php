@@ -36,7 +36,7 @@ function getPandoraDiagnostic(&$systemInfo) {
 	$systemInfo['talert_commands'] = db_get_sql("SELECT COUNT(*) FROM tagente");
 	$systemInfo['talert_template_modules'] = db_get_sql("SELECT COUNT(*) FROM talert_template_modules");
 	$systemInfo['tlayout'] = db_get_sql("SELECT COUNT(*) FROM tlayout");
-	if($config['enterprise_installed'])
+	if ($config['enterprise_installed'])
 		$systemInfo['tlocal_component'] = db_get_sql("SELECT COUNT(*) FROM tlocal_component");
 	$systemInfo['tserver'] = db_get_sql("SELECT COUNT(*) FROM tserver");
 	$systemInfo['treport'] = db_get_sql("SELECT COUNT(*) FROM treport");
@@ -324,10 +324,10 @@ function mainSystemInfo() {
 		@unlink($zipArchive);
 		
 		$url_zip = ui_get_full_url(false);
-
+		
 		$url = '<a href="' .$url_zip . 'attachment/last_info.zip">' . __('download here') . '</a>';
-
-		if($log_info || $system_info || $pandora_diag) {
+		
+		if ($log_info || $system_info || $pandora_diag) {
 			echo '<b>' . __('File:') . '</b> ' . $url . '<br />';
 			echo '<b>' . __('Location:') . '</b> ' . $zipArchive;
 		}
@@ -488,7 +488,7 @@ function consoleMode() {
 				fclose($file);
 			}
 		}
-			
+		
 		if ($pandoraSystemInfo) {
 			$systemInfo = array();
 			getSystemInfo($systemInfo, true);

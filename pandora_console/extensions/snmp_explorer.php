@@ -71,11 +71,11 @@ function snmp_explorer() {
 			$keydata = explode('::',$key);
 			$keydata2 = explode('.',$keydata[1]);
 			
-			if(!isset($keydata2[1])) {
+			if (!isset($keydata2[1])) {
 				continue;
 			}
 			
-			if(array_key_exists(1,$data)) {
+			if (array_key_exists(1,$data)) {
 				$interfaces[$keydata2[1]][$keydata2[0]]['type'] = $data[0];
 				$interfaces[$keydata2[1]][$keydata2[0]]['value'] = $data[1];
 			}
@@ -95,20 +95,20 @@ function snmp_explorer() {
 		$id_snmp_serialize = get_parameter_post('id_snmp_serialize');
 		$interfaces = unserialize_in_temp($id_snmp_serialize);
 		
-		if(!$interfaces) {
+		if (!$interfaces) {
 			$interfaces = array();
 		}
 		
 		$values = array();
 		
-		if($tcp_port != '') {
+		if ($tcp_port != '') {
 			$values['tcp_port'] = $tcp_port;
 		}
 		$values['snmp_community'] = $snmp_community;
 		$values['ip_target'] = $ip_target;
 		$values['tcp_send'] = $snmp_version;
 		
-		if($snmp_version == '3') {
+		if ($snmp_version == '3') {
 			$values['plugin_user'] = $snmp3_auth_user;
 			$values['plugin_pass'] = $snmp3_auth_pass;
 			$values['plugin_parameter'] = $snmp3_auth_method;
@@ -118,10 +118,10 @@ function snmp_explorer() {
 		}
 		
 		$oids = array();
-		foreach($interfaces as $key => $interface) {
-			foreach($interface as $key2 => $module) {
+		foreach ($interfaces as $key => $interface) {
+			foreach ($interface as $key2 => $module) {
 				$oid = get_parameter($key."-".$key2, '');
-				if($oid != '') {
+				if ($oid != '') {
 					$interfaces[$key][$key2]['checked'] = 1;
 					$oids[$key][] = $interfaces[$key][$key2]['oid'];
 				}
@@ -133,12 +133,12 @@ function snmp_explorer() {
 		$modules = get_parameter('module', array());
 		$id_snmp = get_parameter('id_snmp');
 		
-		if($id_snmp == false) {
+		if ($id_snmp == false) {
 			ui_print_error_message (__('No modules selected'));
 			$id_snmp = array();
 		}
 		
-		if(agents_get_name($id_agent) == false) {
+		if (agents_get_name($id_agent) == false) {
 			ui_print_error_message (__('No agent selected or the agent does not exist'));
 			$id_snmp = array();
 		}
@@ -210,7 +210,7 @@ function snmp_explorer() {
 				$result = modules_create_agent_module ($id_agent, io_safe_input($name), $values);
 				
 				if (is_error($result)) {
-					if(!isset($errors[$result])) {
+					if (!isset($errors[$result])) {
 						$errors[$result] = 0;
 					}
 					$errors[$result]++;

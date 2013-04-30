@@ -27,7 +27,7 @@ function users_extension_main_god ($god = true) {
 		}
 	}
 	
-	if($god) {
+	if ($god) {
 		$image = "images/gm_users.png";
 	}
 	else {

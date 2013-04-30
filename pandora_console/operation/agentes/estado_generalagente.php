@@ -221,36 +221,33 @@ if(enterprise_installed()) {
 
 if ($config['activate_gis'] || $agent['url_address'] != '') {
 	$data = array();
-	$col = 0;
 	// Position Information
 	if ($config['activate_gis']) {
 		$dataPositionAgent = gis_get_data_last_position_agent($agent['id_agente']);
 		
-		$data[$col] = '<b>' . __('Position (Long, Lat)') . '</b>';
-		$col++;
+		$data[0] = '<b>' . __('Position (Long, Lat)') . '</b>';
 		
 		if ($dataPositionAgent === false) {
-			$data[$col] = __('There is no GIS data.');
+			$data[1] = __('There is no GIS data.');
 		}
 		else {
 			$data[$col] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
 			if ($dataPositionAgent['description'] != "")
-				$data[$col] .= $dataPositionAgent['description'];
+				$data[1] .= $dataPositionAgent['description'];
 			else
-				$data[$col] .= $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
-			$data[$col] .= "</a>";
+				$data[1] .= $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
+			$data[1] .= "</a>";
 		}
-		$col++;
+		$table_data->data[] = $data;
 	}
 	
 	// If the url description is setted
 	if ($agent['url_address'] != '') {
-		$data[$col] = '<b>' . __('Url address') . '</b>';
-		$col++;
-		$data[$col] = '<a href='.$agent["url_address"].'>' . $agent["url_address"] . '</a>';
+		$data = array();
+		$data[0] = '<b>' . __('Url address') . '</b>';
+		$data[1] = '<a href='.$agent["url_address"].'>' . $agent["url_address"] . '</a>';
+		$table_data->data[] = $data;
 	}
-	
-	$table_data->data[] = $data;
 }
 
 // Timezone Offset

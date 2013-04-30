@@ -304,6 +304,7 @@ div#foot {
 	z-index: -999;
 	
 	background-image: url('../../images/login_background.jpg');
+	background-color: #3f3f3f;
 	background-size: cover;
 	-moz-background-size: cover;
 	-webkit-background-size: cover;
@@ -1988,6 +1989,10 @@ div#pandora_logo_header {
 	margin-top: 0px;
 }
 
+.autorefresh_disabled {
+	cursor: not-allowed !important;
+}
+
 .disabled_module {
 	color: #aaa;
 }
@@ -2483,6 +2488,10 @@ span#plugin_description {
 
 .groupsview {
 	border-spacing: 0px 4px;
+}
+
+.groupsview tr {
+	background-color: #666;
 }
 
 .groupsview th {

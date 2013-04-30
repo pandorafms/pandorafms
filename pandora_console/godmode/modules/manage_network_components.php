@@ -473,7 +473,7 @@ $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
 $components = network_components_get_network_components (false, $filter,
 	array ('id_nc', 'name', 'description', 'id_group', 'type', 'max', 'min',
-		'module_interval'));
+		'module_interval', 'id_modulo'));
 if ($components === false)
 	$components = array ();
 
@@ -489,6 +489,7 @@ $table->head[5] = __('Max/Min');
 $table->head[6] = __('Action') .
 	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 $table->size = array ();
+$table->size[1] = '75px';
 $table->size[6] = '60px';
 $table->align[6] = 'center';
 $table->data = array ();
@@ -504,6 +505,17 @@ foreach ($components as $component) {
 	$data[0] .= io_safe_output($component['name']);
 	$data[0] .= '</a>';
 	$data[1] = ui_print_moduletype_icon ($component['type'], true);
+	switch($component['id_modulo']) {
+		case MODULE_NETWORK:
+			$data[1] .= html_print_image('images/network.png', true, array('title' => __('Network module')));
+			break;
+		case MODULE_WMI:
+			$data[1] .= html_print_image('images/wmi.png', true, array('title' => __('WMI module')));
+			break;
+		case MODULE_PLUGIN:
+			$data[1] .= html_print_image('images/plugin.png', true, array('title' => __('Plug-in module')));
+			break;
+	}
 	$data[3] = "<span style='font-size: 8px'>". mb_strimwidth (io_safe_output($component['description']), 0, 60, "...") . "</span>";
 	$data[4] = network_components_get_group_name ($component['id_group']);
 	$data[5] = $component['max']." / ".$component['min'];

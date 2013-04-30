@@ -1,5 +1,12 @@
 2013-04-30  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/modules/manage_network_components.php: Added 
+	type (network/plugin/wmi) icon near the other type 
+	(numeric/string/proc...) in the Type column in
+	network components list for bug #3609655
+
+2013-04-30  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/pandora.css
 	include/functions_groups.php: Fix a little the
 	groups view style

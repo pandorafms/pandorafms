@@ -74,6 +74,8 @@ $maximo = 0;
 $minimo = 0;
 $nombre_agente = "";
 $direccion_agente = get_parameter('direccion', '');
+$direccion_agente = trim(io_safe_output($direccion_agente));
+$direccion_agente = io_safe_input($direccion_agente);
 $intervalo = SECONDS_5MINUTES;
 $ff_interval = 0;
 $quiet_module = 0;
@@ -145,6 +147,8 @@ $create_agent = (bool)get_parameter('create_agent');
 if ($create_agent) {
 	$nombre_agente = (string) get_parameter_post("agente",'');
 	$direccion_agente = (string) get_parameter_post("direccion",'');
+	$direccion_agente = trim(io_safe_output($direccion_agente));
+	$direccion_agente = io_safe_input($direccion_agente);
 	$grupo = (int) get_parameter_post ("grupo");
 	$intervalo = (string) get_parameter_post ("intervalo", SECONDS_5MINUTES);
 	$comentarios = (string) get_parameter_post ("comentarios", '');
@@ -261,7 +265,7 @@ if ($id_agente) {
 		. html_print_image ("images/gm_modules.png", true, array ("title" =>__('Modules')))
 		. '</a>';
 	
-	if($tab == 'module')
+	if ($tab == 'module')
 		$moduletab['active'] = true;
 	else
 		$moduletab['active'] = false;
@@ -520,6 +524,8 @@ if ($update_agent) { // if modified some agent paramenter
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
+	$direccion_agente = trim(io_safe_output($direccion_agente));
+	$direccion_agente = io_safe_input($direccion_agente);
 	$address_list = (string) get_parameter_post ("address_list", '');
 	if ($address_list != $direccion_agente && $direccion_agente == agents_get_address ($id_agente) && $address_list != agents_get_address ($id_agente)) {
 		//If we selected another IP in the drop down list to be 'primary': 

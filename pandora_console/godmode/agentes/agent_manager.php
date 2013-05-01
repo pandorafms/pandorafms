@@ -96,7 +96,7 @@ enterprise_include ('godmode/agentes/agent_manager.php');
 require_once ('include/functions_servers.php');
 require_once ('include/functions_gis.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
-require_once ($config['homedir'].'/include/functions_users.php');
+require_once ($config['homedir'] . '/include/functions_users.php');
 
 ui_require_javascript_file('openlayers.pandora');
 

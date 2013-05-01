@@ -1,3 +1,11 @@
+2013-05-01 Mark Holland <mark@mark-holland.me.uk>
+	
+	* src/pandroid/agent/PandroidAgentListener.java: Changed gps module
+	to update coordinates after a time of "interval" AND "15 metres" if
+	no change then uses lastKnownLocation.
+
+	* Pandroid Agent v3.0_iso-8859-1.apk: Updated to latest version.
+
 2013-04-28 Mark Holland <mark@mark-holland.me.uk>
 	
 	* layout/spinner.xml: Changed spinnner text color to green.

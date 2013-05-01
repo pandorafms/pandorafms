@@ -560,101 +560,73 @@ public class PandroidAgentListener extends Service {
 		return module_xml;
 	}
 	
-	private void gpsLocation(){
-		
-		
-		//Start a location listener
-	    LocationListener onLocationChange=new LocationListener() {
-	        public void onLocationChanged(Location loc) {
-	            Log.d("latitude",""+loc.getLatitude());
-	            Log.d("Longitude",""+loc.getLongitude());   
-	            
-	        }
-	         
-	        public void onProviderDisabled(String provider) {
-	        // required for interface, not used
-	        }
-	         
-	        public void onProviderEnabled(String provider) {
-	        // required for interface, not used
-	        }
-	         
-	        public void onStatusChanged(String provider, int status,
-	        Bundle extras) {
-	        // required for interface, not used
-	        }
-	    };
-		
-	    locmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,10000.0f,onLocationChange);
-		
-	}
 	
 	
-//	private void gpsLocation() {
-//    	// Starts with GPS, if no GPS then gets network location
+	
+	private void gpsLocation() {
+    	// Starts with GPS, if no GPS then gets network location
 //    	
-//		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);  
-//		List<String> providers = lm.getProviders(true);
-//		Log.d("PANDROID providers count", "" + providers.size());
-//
-////		/* Loop over the array backwards, and if you get an accurate location, then break out the loop*/
-////		Location loc = null;
-////
-////		for (int i=providers.size()-1; i>=0; i--) {
-////			Log.d("PANDROID providers", providers.get(i));
-////		    loc = lm.getLastKnownLocation(providers.get(i));
-////		    if (loc != null) break;
-////		}
-////
-////		if (loc != null) {
-////			Log.d("PANDROID", "loc != null");
-////			//if(latitude != loc.getLatitude() || longitude != loc.getLongitude()) {
-////				lastGpsContactDateTime = getHumanDateTime(-1);
-////			//`}
-////			Log.d("LATITUDE",Double.valueOf(loc.getLatitude()).toString());
-////			Log.d("LONGITUDE",Double.valueOf(loc.getLongitude()).toString());
-////            putSharedData("PANDROID_DATA", "latitude", Double.valueOf(loc.getLatitude()).toString(), "float");
-////            putSharedData("PANDROID_DATA", "longitude", Double.valueOf(loc.getLongitude()).toString(), "float");
-////		}
-////		else {
-//			Criteria criteria = new Criteria();
-//			criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-//			criteria.setPowerRequirement(Criteria.POWER_LOW);
-//			criteria.setAltitudeRequired(false);
-//			criteria.setBearingRequired(false);
-//			criteria.setCostAllowed(true);
-//			String bestProvider = lm.getBestProvider(criteria, true);
-//			
-//			// If not provider found, abort GPS retrieving
-//			if (bestProvider == null) {
-//				Log.e("LOCATION", "No location provider found!");
-//				return;
-//			}
-//			
-//			lm.requestLocationUpdates(bestProvider, Core.defaultInterval, 1000,
-//				new LocationListener() {
-//					public void onLocationChanged(Location location) {
-//						Log.d("Best latitude", Double.valueOf(location.getLatitude()).toString());
-//						putSharedData("PANDROID_DATA", "latitude",
-//								Double.valueOf(location.getLatitude()).toString(), "float");
-//						Log.d("Best longitude", Double.valueOf(location.getLongitude()).toString());
-//				        putSharedData("PANDROID_DATA", "longitude",
-//				        		Double.valueOf(location.getLongitude()).toString(), "float");
-//					}
-//					public void onStatusChanged(String s, int i, Bundle bundle) {
-//						
-//					}
-//					public void onProviderEnabled(String s) {
-//						// try switching to a different provider
-//					}
-//					public void onProviderDisabled(String s) {
-//						putSharedData("PANDROID_DATA", "enabled_location_provider",
-//							"disabled", "string");
-//					}
-//				});
-//		//}
-//		
-//    }
+		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);  
+		List<String> providers = lm.getProviders(true);
+		Log.d("PANDROID providers count", "" + providers.size());
+
+		/* Loop over the array backwards, and if you get an accurate location, then break out the loop*/
+		Location loc = null;
+
+		for (int i=providers.size()-1; i>=0; i--) {
+			Log.d("PANDROID providers", providers.get(i));
+		    loc = lm.getLastKnownLocation(providers.get(i));
+		    if (loc != null) break;
+		}
+
+		if (loc != null) {
+			Log.d("PANDROID", "loc != null");
+			//if(latitude != loc.getLatitude() || longitude != loc.getLongitude()) {
+				lastGpsContactDateTime = getHumanDateTime(-1);
+			//`}
+			Log.d("LATITUDE",Double.valueOf(loc.getLatitude()).toString());
+			Log.d("LONGITUDE",Double.valueOf(loc.getLongitude()).toString());
+            putSharedData("PANDROID_DATA", "latitude", Double.valueOf(loc.getLatitude()).toString(), "float");
+            putSharedData("PANDROID_DATA", "longitude", Double.valueOf(loc.getLongitude()).toString(), "float");
+		}
+			Criteria criteria = new Criteria();
+			criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+			criteria.setPowerRequirement(Criteria.POWER_LOW);
+			criteria.setAltitudeRequired(false);
+			criteria.setBearingRequired(false);
+			criteria.setCostAllowed(true);
+			String bestProvider = lm.getBestProvider(criteria, true);
+			
+			// If not provider found, abort GPS retrieving
+			if (bestProvider == null) {
+				Log.e("LOCATION", "No location provider found!");
+				return;
+			}
+			
+			lm.requestLocationUpdates(bestProvider, Core.interval, 15,
+				new LocationListener() {
+					public void onLocationChanged(Location location) {
+						Log.d("Best latitude", Double.valueOf(location.getLatitude()).toString());
+						putSharedData("PANDROID_DATA", "latitude",
+								Double.valueOf(location.getLatitude()).toString(), "float");
+						Log.d("Best longitude", Double.valueOf(location.getLongitude()).toString());
+				        putSharedData("PANDROID_DATA", "longitude",
+				        		Double.valueOf(location.getLongitude()).toString(), "float");
+					}
+					public void onStatusChanged(String s, int i, Bundle bundle) {
+						
+					}
+					public void onProviderEnabled(String s) {
+						// try switching to a different provider
+					}
+					public void onProviderDisabled(String s) {
+						putSharedData("PANDROID_DATA", "enabled_location_provider",
+							"disabled", "string");
+					}
+				});
+		//}
+		
+    }
     
     private void batteryLevel() {
     	

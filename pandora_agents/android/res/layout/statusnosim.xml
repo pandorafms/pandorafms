@@ -19,10 +19,12 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 >
+
 	<ScrollView
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-	>
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_margin="5sp" >
+
 		<LinearLayout
 			android:orientation="vertical"
 	    	android:layout_width="fill_parent"
@@ -33,7 +35,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/last_values"
-				android:textSize="18dip"
+				android:textSize="18sp"
 				android:textStyle="bold"
 				android:layout_gravity="center_horizontal"
 			/>
@@ -45,23 +47,24 @@
 					android:id="@+id/lastContactInfo_label_str"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:textSize="14dip"
+					android:textSize="14sp"
 					android:textStyle="bold"
 				/>
 				<ImageView
 					android:id="@+id/img_logo"
 					android:layout_width="wrap_content"
 			   		android:layout_height="wrap_content"
-			   		android:padding="5px"
+			   		android:padding="5dp"
 			   		android:src="@drawable/logo"
 			   		android:layout_alignParentRight="true"
+			   		android:contentDescription="Logo"
 				/>
 				<TextView
 					android:id="@+id/latitude_label_str"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:text="@string/latitude"
-					android:textSize="14dip"
+					android:textSize="14sp"
 					android:textStyle="bold"
 					android:layout_below="@id/lastContactInfo_label_str"
 				/>
@@ -77,7 +80,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:text="@string/longitude"
-					android:textSize="14dip"
+					android:textSize="14sp"
 					android:textStyle="bold"
 					android:layout_below="@id/latitude_value_str"
 				/>
@@ -92,7 +95,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:text="@string/battery_level"
-					android:textSize="14dip"
+					android:textSize="14sp"
 					android:textStyle="bold"
 					android:layout_below="@id/longitude_value_str"
 				/>
@@ -138,7 +141,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/task"
-				android:textSize="14dip"
+				android:textSize="14sp"
 				android:textStyle="bold"
 			/>
 			<TextView
@@ -151,7 +154,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/memory"
-				android:textSize="14dip"
+				android:textSize="14sp"
 				android:textStyle="bold"
 			/>
 			<TextView
@@ -164,7 +167,7 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:text="@string/uptime"
-		        android:textSize="14dip"
+		        android:textSize="14sp"
 		        android:textStyle="bold" />
 			
 			<TextView

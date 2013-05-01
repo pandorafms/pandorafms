@@ -192,7 +192,7 @@ class tentacle_client {
     }
     
     private void log (String msg) {
-    	Log.e("Tentacle",msg);
+    	//Log.e("Tentacle",msg);
     	//Context context = getApplicationContext();
     	//int duration = Toast.LENGTH_SHORT;
 

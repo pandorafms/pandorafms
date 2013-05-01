@@ -1,5 +1,14 @@
 2013-05-01 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/agentes/agent_manager.php: improved the source code style.
+	
+	* godmode/agentes/configurar_agente.php: fixed the agents address
+	with white spaces in the both sides.
+	
+	Fixes: #2171
+
+2013-05-01 Miguel de Dios <miguel.dedios@artica.es>
+
 	* extensions/system_info.php, extensions/agents_modules.php,
 	extensions/vnc_view.php, extensions/users_connected.php,
 	extensions/update_manager/lib/libupdate_manager.php,

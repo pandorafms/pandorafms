@@ -29,8 +29,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,6 +53,8 @@ import android.widget.Toast;
 
 public class Setup extends Activity {
 	
+	Handler h = new Handler();
+	
 	private HashMap<String, String> listProcesses;
 	
     @Override
@@ -60,7 +62,8 @@ public class Setup extends Activity {
         super.onCreate(savedInstanceState);
         
         listProcesses = new HashMap<String, String>();
-        Core.loadConf(getApplicationContext());
+        //TODO removed to improve performance, untested
+        //Core.loadConf(getApplicationContext());
     }
     
     public void onResume() {
@@ -71,10 +74,11 @@ public class Setup extends Activity {
         else
         	setContentView(R.layout.setupnosim);
         
-     	loadViews();
+        loadViews();
         loadInBackgroundProcessInExecution();
-		setButtonEvents();
-       
+        setButtonEvents();
+        
+        
         if(Core.password.equals(Core.defaultPassword))
         {
         	if(Core.passwordCheck.equals("enabled"))

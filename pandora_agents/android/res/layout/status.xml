@@ -20,10 +20,11 @@
 	android:layout_height="fill_parent"
 	
 >
+
 	<ScrollView
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-	>
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_margin="5dp" >
 
 		<LinearLayout
 		    android:layout_width="fill_parent"
@@ -37,7 +38,7 @@
 		        android:layout_height="wrap_content"
 		        android:layout_gravity="center_horizontal"
 		        android:text="@string/last_values"
-		        android:textSize="18dip"
+		        android:textSize="18sp"
 		        android:textStyle="bold" 
 		    />
 
@@ -50,7 +51,7 @@
 		            android:id="@+id/lastContactInfo_label_str"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
-		            android:textSize="14dip"
+		            android:textSize="14sp"
 		            android:textStyle="bold" 
 		        />
 
@@ -59,7 +60,7 @@
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
 		            android:layout_alignParentRight="true"
-		            android:padding="5px"
+		            android:padding="5dp"
 		            android:src="@drawable/logo" 
 		        />
 
@@ -69,7 +70,7 @@
 		            android:layout_height="wrap_content"
 		            android:layout_below="@id/lastContactInfo_label_str"
 		            android:text="@string/latitude"
-		            android:textSize="14dip"
+		            android:textSize="14sp"
 		            android:textStyle="bold" 
 		        />
 
@@ -86,7 +87,7 @@
 		            android:layout_height="wrap_content"
 		            android:layout_below="@id/latitude_value_str"
 		            android:text="@string/longitude"
-		            android:textSize="14dip"
+		            android:textSize="14sp"
 		            android:textStyle="bold" 
 		        />
 
@@ -103,7 +104,7 @@
 		            android:layout_height="wrap_content"
 		            android:layout_below="@id/longitude_value_str"
 		            android:text="@string/battery_level"
-		            android:textSize="14dip"
+		            android:textSize="14sp"
 		            android:textStyle="bold" 
 		        />
 
@@ -153,7 +154,7 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:text="@string/task"
-		        android:textSize="14dip"
+		        android:textSize="14sp"
 		        android:textStyle="bold" 
 		    />
 
@@ -168,7 +169,7 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:text="@string/memory"
-		        android:textSize="14dip"
+		        android:textSize="14sp"
 		        android:textStyle="bold" 
 		    />
 
@@ -180,7 +181,7 @@
 			
 		    <TableLayout
 		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
+		        android:layout_height="0dp"
 		        android:layout_weight="1.18" 
 		    >
 		        <TableRow
@@ -193,7 +194,7 @@
 		      		 	android:layout_width="wrap_content"
 		      		 	android:layout_height="wrap_content"
 		        	 	android:text="@string/uptime"
-		        	 	android:textSize="14dip"
+		        	 	android:textSize="14sp"
 		        	 	android:textStyle="bold" 
 		        	/>
 
@@ -214,7 +215,7 @@
 		       	 		android:layout_width="wrap_content"
 		        		android:layout_height="wrap_content"
 		        		android:text="@string/sim_id"
-		       	 		android:textSize="14dip"
+		       	 		android:textSize="14sp"
 		        		android:textStyle="bold"
 		        	/>
 
@@ -236,7 +237,7 @@
 		        		android:layout_width="wrap_content"
 		        		android:layout_height="wrap_content"
 		        		android:text="@string/network_operator"
-		        		android:textSize="14dip"
+		        		android:textSize="14sp"
 		        		android:textStyle="bold" 
 		        		android:paddingRight="5dip"
 		        	/>
@@ -259,7 +260,7 @@
 		        		android:layout_width="wrap_content"
 		        		android:layout_height="wrap_content"
 		        		android:text="@string/network_type"
-		        		android:textSize="14dip"
+		        		android:textSize="14sp"
 		        		android:textStyle="bold" 
 		        	/>
 
@@ -282,7 +283,7 @@
 		        		android:layout_width="wrap_content"
 		       			android:layout_height="wrap_content"
 		        		android:text="@string/phone_type"
-		        		android:textSize="14dip"
+		        		android:textSize="14sp"
 		        		android:textStyle="bold" 
 		        	/>
 
@@ -304,7 +305,7 @@
 		        		android:layout_width="wrap_content"
 		        		android:layout_height="wrap_content"
 		       			android:text="@string/signal_strength"
-		        		android:textSize="14dip"
+		        		android:textSize="14sp"
 		        		android:textStyle="bold" 
 		        	/>
 
@@ -326,7 +327,7 @@
 		        		android:layout_width="wrap_content"
 		        		android:layout_height="wrap_content"
 		        		android:text="@string/sms_received"
-		        		android:textSize="14dip"
+		        		android:textSize="14sp"
 		        		android:textStyle="bold" 
 		        	/>
 
@@ -348,7 +349,7 @@
 		        		android:layout_width="wrap_content"
 		        		android:layout_height="wrap_content"
 		        		android:text="@string/sms_sent"
-		        		android:textSize="14dip"
+		        		android:textSize="14sp"
 		        		android:textStyle="bold" 
 		        	/>
 
@@ -370,7 +371,7 @@
 		        		android:layout_width="wrap_content"
 		        		android:layout_height="wrap_content"
 		        		android:text="@string/incoming_calls"
-		        		android:textSize="14dip"
+		        		android:textSize="14sp"
 		        		android:textStyle="bold" 
 		        	/>
 
@@ -392,7 +393,7 @@
 		        		android:layout_width="wrap_content"
 		        		android:layout_height="wrap_content"
 		        		android:text="@string/missed_calls"
-		        		android:textSize="14dip"
+		        		android:textSize="14sp"
 		        		android:textStyle="bold" 
 		        	/>
 
@@ -414,7 +415,7 @@
 		       	 		android:layout_width="wrap_content"
 		       	 		android:layout_height="wrap_content"
 		       	 		android:text="@string/outgoing_calls"
-		       	 		android:textSize="14dip"
+		       	 		android:textSize="14sp"
 		       	 		android:textStyle="bold" 
 		       	 	/>
 
@@ -436,7 +437,7 @@
 		       	 		android:layout_width="wrap_content"
 		       	 		android:layout_height="wrap_content"
 		       	 		android:text="@string/receive_bytes"
-		       	 		android:textSize="14dip"
+		       	 		android:textSize="14sp"
 		       	 		android:textStyle="bold" 
 		       	 	/>
 
@@ -458,7 +459,7 @@
 		       	 		android:layout_width="wrap_content"
 		       	 		android:layout_height="wrap_content"
 		       	 		android:text="@string/transmit_bytes"
-		       	 		android:textSize="14dip"
+		       	 		android:textSize="14sp"
 		       	 		android:textStyle="bold" 
 		       	 	/>
 
@@ -479,7 +480,7 @@
 		       	 		android:layout_width="wrap_content"
 		       	 		android:layout_height="wrap_content"
 		       	 		android:text="@string/roaming"
-		       	 		android:textSize="14dip"
+		       	 		android:textSize="14sp"
 		       	 		android:textStyle="bold" 
 		       	 	/>
 

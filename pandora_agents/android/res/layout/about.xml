@@ -14,23 +14,21 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
 -->
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="10dip"
->
+    android:padding="10dip" >
+
 	<ImageView
-		android:layout_weight="0"
-		android:id="@+id/img_logo_about"
-		android:layout_width="wrap_content"
-   		android:layout_height="0dp"
-   		android:layout_gravity="center"
-   		android:padding="5dp"
-   		android:contentDescription="@string/about_desc"
-   		android:src="@drawable/pandorafms_logo"
-	/>
+	    android:id="@+id/img_logo_about"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_gravity="center"
+	    android:layout_weight="0"
+	    android:contentDescription="@string/about_desc"
+	    android:src="@drawable/pandorafms_logo" />
+
 	<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"

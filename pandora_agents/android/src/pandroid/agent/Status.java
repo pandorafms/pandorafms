@@ -40,9 +40,9 @@ public class Status  extends Activity {
         else
         	setContentView(R.layout.statusnosim);
         
-        Core.loadLastValues(getApplicationContext());
-        showLastValues();
-        updateLastContactInfo();
+//        Core.loadLastValues(getApplicationContext());
+//        showLastValues();
+//        updateLastContactInfo();
         //setButtonEvents();
     }
     //TODO maybe remove duplicate from onCreate
@@ -54,10 +54,13 @@ public class Status  extends Activity {
         	setContentView(R.layout.status);
         else
         	setContentView(R.layout.statusnosim);
-        
+    	
     	Core.loadLastValues(getApplicationContext());
+        		
         showLastValues();
+        		       		
         updateLastContactInfo();
+        
     }
     
     public void onStart(){

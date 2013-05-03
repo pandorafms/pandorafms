@@ -2615,6 +2615,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$event_value = 0;
 		$alert_value = 0;
 		$unknown_value = 0;
+		$is_unknown = false;
 		
 		$event_ids = array();
 		$alert_ids = array();
@@ -2856,6 +2857,12 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	global $long_index;
 	global $series_type;
 	global $chart_extra_data;
+
+	if (empty($unit_name)) {
+		$unit = modules_get_unit($agent_module_id);
+	}
+	else
+		$unit = $unit_name;
 	
 	$series_suffix_str = '';
 	if ($compare !== false) {
@@ -3415,6 +3422,7 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	}
 	
 	$legend = array();
+	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
@@ -3432,33 +3440,35 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 				'utimestamp > '.$bottom,
 				'utimestamp < '.$top),
 			'event_type, utimestamp');
-		
-		$status = 'normal';
-		foreach($events as $event) {
-			if (empty($event['utimestamp'])) {
-				continue;
-			}
+
+		if (!empty($events)) {
+			$status = 'normal';
+			foreach($events as $event) {
+				if (empty($event['utimestamp'])) {
+					continue;
+				}
 			
-			switch($event['event_type']) {
-				case 'going_down_normal':
-				case 'going_up_normal':
-					// The default status is normal. Do nothing
-					break;
-				case 'going_unknown':
-					if($status == 'normal') {
-						$status = 'unknown';
-					}
-					break;
-				case 'going_up_warning':
-				case 'going_down_warning':
-					if($status == 'normal' || $status == 'unknown') {
-						$status = 'warning';
-					}
-					break;
-				case 'going_up_critical':
-				case 'going_down_critical':
-					$status = 'critical';
-					break;
+				switch($event['event_type']) {
+					case 'going_down_normal':
+					case 'going_up_normal':
+						// The default status is normal. Do nothing
+						break;
+					case 'going_unknown':
+						if($status == 'normal') {
+							$status = 'unknown';
+						}
+						break;
+					case 'going_up_warning':
+					case 'going_down_warning':
+						if($status == 'normal' || $status == 'unknown') {
+							$status = 'warning';
+						}
+						break;
+					case 'going_up_critical':
+					case 'going_down_critical':
+						$status = 'critical';
+						break;
+				}
 			}
 		}
 		

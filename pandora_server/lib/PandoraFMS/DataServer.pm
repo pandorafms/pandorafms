@@ -538,6 +538,7 @@ sub process_module_data ($$$$$$$$$) {
 	delete $module_conf->{'name'};
 
 	# Calculate the module interval in seconds
+	$module_conf->{'module_interval'} = 1 unless defined ($module_conf->{'module_interval'});
 	$module_conf->{'module_interval'} *= $interval if (defined ($module_conf->{'module_interval'}));
 
 	# Allow , as a decimal separator

@@ -85,53 +85,10 @@ sub pandora_purgedb ($$) {
 
 	my $ulimit_access_timestamp = time() - 86400;
 	my $ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
-	my $limit_timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($ulimit_timestamp));
 
-	my $first_mark;
-	my $total_time;
-	my $purge_steps;
-	my $purge_count;
-
-	my $mark1;
-	my $mark2;
-
-        # Numeric data deletion
-
+	# Delete old numeric data
 	print "[PURGE] Deleting old data... \n";
-
-	# This could be very timing consuming, so make this operation in $BIG_OPERATION_STEP 
-	# steps (100 fixed by default)
-	# Starting from the oldest record on the table
-
-	# WARNING. This code is EXTREMELLY important. This block (data deletion) could KILL a database if 
-	# you alter code and you don't know exactly what are you doing. Please take in mind this code executes each hour
-	# and has been patches MANY times. Before altering anything, think twice !
-
-	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos ORDER BY utimestamp ASC LIMIT 1');
-	if (defined ($first_mark)) {
-		$total_time = $ulimit_timestamp - $first_mark;
-		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-			
-		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-
-			$mark1 = $first_mark + ($purge_steps * $ax);
-			$mark2 = $first_mark + ($purge_steps * ($ax -1));	
-		
-			# Let's split the intervals in $SMALL_OPERATION_STEP deletes each
-			$purge_count = get_db_value ($dbh, "SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE utimestamp < $mark1 AND utimestamp > $mark2");
-			while ($purge_count > 0){
-				print ".";
-				db_do ($dbh, "DELETE FROM tagente_datos WHERE utimestamp < $mark1 AND utimestamp > $mark2 LIMIT $SMALL_OPERATION_STEP");
-				# Do a nanosleep here for 0,001 sec
-                        	usleep (10000);
-				$purge_count = $purge_count - $SMALL_OPERATION_STEP;
-			}
-			print "\n[PURGE] Data deletion Progress (".$ax."%) ";
-		}
-		print "\n";
-	} else {
-		print "[PURGE] No data in tagente_datos\n";
-	}
+	pandora_delete_old_module_data ('tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
 
     # Delete extended session data
     if (enterprise_load (\%conf) != 0) {
@@ -142,6 +99,10 @@ sub pandora_purgedb ($$) {
 
     # Delete inventory data, only if enterprise is enabled
     # We use the same value than regular data purge interval
+	my $first_mark;
+	my $total_time;
+	my $purge_steps;
+	my $purge_count;
 
     if (enterprise_load (\%conf) != 0) {
 
@@ -194,21 +155,10 @@ sub pandora_purgedb ($$) {
     if (!defined($conf->{'_string_purge'})){
         $conf->{'_string_purge'} = 7;
     }
-
-    my $string_limit = time() - 86400 * $conf->{'_string_purge'};
-	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_string ORDER BY utimestamp ASC LIMIT 1');
-	if (defined ($first_mark)) {
-		$total_time = $string_limit - $first_mark;
-		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-	
-		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-			db_do ($dbh, "DELETE FROM tagente_datos_string WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
-			print "[PURGE] String deletion Progress %$ax .. \r";
-		}
-	    print "\n";
-	} else {
-		print "[PURGE] No data in tagente_datos_string\n";
-	}
+	$ulimit_access_timestamp = time() - 86400;
+	$ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
+	print "[PURGE] Deleting old string data... \n";
+	pandora_delete_old_module_data ('tagente_datos_string', $ulimit_access_timestamp, $ulimit_timestamp);
 
     # Delete event data
     if (!defined($conf->{'_event_purge'})){
@@ -734,6 +684,55 @@ sub help_screen{
 	print "Usage: $0 <path to pandora_server.conf> [options]\n\n";
 	print "\t\t-p   Only purge and consistency check, skip compact.\n\n";
 	exit -1;
+}
+
+##############################################################################
+# Delete old module data.
+##############################################################################
+sub pandora_delete_old_module_data {
+	my ($table, $ulimit_access_timestamp, $ulimit_timestamp) = @_;
+	
+	my $first_mark;
+	my $total_time;
+	my $purge_steps;
+	my $purge_count;
+
+	my $mark1;
+	my $mark2;
+
+	# This could be very timing consuming, so make this operation in $BIG_OPERATION_STEP 
+	# steps (100 fixed by default)
+	# Starting from the oldest record on the table
+
+	# WARNING. This code is EXTREMELLY important. This block (data deletion) could KILL a database if 
+	# you alter code and you don't know exactly what are you doing. Please take in mind this code executes each hour
+	# and has been patches MANY times. Before altering anything, think twice !
+
+	$first_mark =  get_db_value ($dbh, "SELECT utimestamp FROM $table ORDER BY utimestamp ASC LIMIT 1");
+	if (defined ($first_mark)) {
+		$total_time = $ulimit_timestamp - $first_mark;
+		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
+			
+		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+
+			$mark1 = $first_mark + ($purge_steps * $ax);
+			$mark2 = $first_mark + ($purge_steps * ($ax -1));	
+		
+			# Let's split the intervals in $SMALL_OPERATION_STEP deletes each
+			$purge_count = get_db_value ($dbh, "SELECT COUNT(id_agente_modulo) FROM $table WHERE utimestamp < $mark1 AND utimestamp > $mark2");
+			while ($purge_count > 0){
+				print ".";
+				db_do ($dbh, "DELETE FROM $table WHERE utimestamp < $mark1 AND utimestamp > $mark2 LIMIT $SMALL_OPERATION_STEP");
+				# Do a nanosleep here for 0,001 sec
+                        	usleep (10000);
+				$purge_count = $purge_count - $SMALL_OPERATION_STEP;
+			}
+			print "\n[PURGE] Data deletion Progress (".$ax."%) ";
+		}
+		print "\n";
+	} else {
+		print "[PURGE] No data in $table\n";
+	}
 }
 
 ###############################################################################

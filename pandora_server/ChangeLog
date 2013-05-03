@@ -1,3 +1,9 @@
+2013-05-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Add a default module_interval.
+
+	* util/pandora_db.pl: Moved data deletion code to a generic function.
+
 2013-04-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Adjusted module counts.

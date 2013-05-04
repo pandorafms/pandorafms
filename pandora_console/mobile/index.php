@@ -46,6 +46,14 @@ if (!$user->isLogged()) {
 	$action = 'login';
 }
 
+if ($action != "ajax") {
+	$user_language = get_user_language ($system->getConfig('id_user'));
+	if (file_exists ('../include/languages/'.$user_language.'.mo')) {
+		$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
+		$l10n->load_tables();
+	}
+}
+
 switch ($action) {
 	case 'ajax':
 		$parameter1 = $system->getRequest('parameter1', false);
@@ -77,6 +85,11 @@ switch ($action) {
 		}
 		else {
 			if ($user->isLogged()) {
+				$user_language = get_user_language ($system->getConfig('id_user'));
+				if (file_exists ('../include/languages/'.$user_language.'.mo')) {
+					$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
+					$l10n->load_tables();
+				}
 				$home = new Home();
 				$home->show();
 			}

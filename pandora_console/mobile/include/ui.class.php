@@ -639,6 +639,7 @@ class Ui {
 		echo "<html>\n";
 		echo "	<head>\n";
 		echo "		<title>" . $this->title . "</title>\n";
+		echo "		<meta charset='UTF-8' />\n";
 		echo "		<meta name='viewport' content='width=device-width, initial-scale=1'>\n";
 		echo "		<link rel='stylesheet' href='include/style/main.css' />\n";
 		

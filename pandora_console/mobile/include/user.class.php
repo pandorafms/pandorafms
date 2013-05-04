@@ -111,11 +111,6 @@ class User {
 				require ("../general/noaccess.php");
 				return;
 			}
-			$user_language = get_user_language ($system->getConfig('id_user'));
-			if (file_exists ('../include/languages/'.$user_language.'.mo')) {
-				$l10n = new gettext_reader (new CachedFileReader ('../include/languages/'.$user_language.'.mo'));
-				$l10n->load_tables();
-			}
 		}
 		
 		return $this->logged;

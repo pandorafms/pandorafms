@@ -349,11 +349,11 @@ function get_system_time () {
 /**
  * This function provide the user language configuration if is not default, otherwise return the system language
  *
- *  @param int $id_user
+ *  @param string $id_user
  * 
  *  @return string user active language code
  */
-function get_user_language ($id_user = false) {
+function get_user_language ($id_user = null) {
 	global $config;
 
 	$quick_language = get_parameter('quick_language_change', 0);
@@ -370,11 +370,11 @@ function get_user_language ($id_user = false) {
 		}
 	}
 	
-	if($id_user === false && isset($config['id_user'])) {
+	if($id_user === null && isset($config['id_user'])) {
 		$id_user = $config['id_user'];
 	}
 	
-	if($id_user !== false) {
+	if($id_user !== null) {
 		$userinfo = get_user_info ($id_user);
 		if ($userinfo['language'] != 'default'){
 			return $userinfo['language'];

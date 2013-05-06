@@ -59,14 +59,24 @@ foreach ($files as $file) {
 }
 
 if (! $id || ! file_exists ($help_file)) {
-	echo "<div class='databox' id='login'><div id='login_f' class='databox'>";
-	echo '<h1 id="log_f" style="margin-top: 0px;" class="error">';
+	echo '<div id="main_help">';
+	echo '<span style="float:left; margin: 20px 20px 0px 20px; padding: 0px">';
+	echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
+	echo "</span>";
+	echo '<p style="text-align: right"><strong style="float: right; padding-top: 12px; padding-right: 8px;">'. html_print_image('images/interrogant.png', true, array('title' => __('Pandora FMS help system'))) . '</strong></p>';
+	echo '<div style="clear:both;"></div>';
+	echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left">';
+	echo '<div style="font-size: 12px; margin-left: 20px; margin-right:20px; " class="databox">';
+	echo '<h1>';
 	echo __('Help system error');
-	echo "</h1>";
-	echo "<div class='noa'>";
-	echo '<a href="../index.php">' . html_print_image("images/pandora_logo.png", array("border" => '0')) . '</a><br>';
+	echo "</h1><HR><br>";
+	echo "<div style='text-align: center;'>";
+	echo html_print_image("images/pandora_logo.png", array("border" => '0')) . '<br>';
 	echo "</div>";
 	echo '<div class="msg">'.__('Pandora FMS help system has been called with a help reference that currently don\'t exist. There is no help content to show.').'</div></div></div>';
+	echo '<br /><br />';
+	echo '<div style="text-align: center; padding: 15px; font-family: verdana, arial; font-size: 11px;">';
+	include ('footer.php');
 	return;
 }
 

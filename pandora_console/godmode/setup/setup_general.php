@@ -95,10 +95,6 @@ $table->data[18][0] = __('Enable Integria incidents in Pandora Console');
 $table->data[18][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('integria_enabled', 1, '', $config["integria_enabled"], true).'&nbsp;&nbsp;';
 $table->data[18][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('integria_enabled', 0, '', $config["integria_enabled"], true);
 
-$table->data[19][0] = __('Enable Netflow');
-$table->data[19][1] = __('Yes').'&nbsp;'.html_print_radio_button ('activate_netflow', 1, '', $config["activate_netflow"], true).'&nbsp;&nbsp;';
-$table->data[19][1] .= __('No').'&nbsp;'.html_print_radio_button ('activate_netflow', 0, '', $config["activate_netflow"], true);
-
 if ($config["integria_enabled"]) {
 	require_once('include/functions_incidents.php');
 	$invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".$config['integria_api_password']."&op=get_inventories"); 
@@ -163,6 +159,10 @@ if ($config["integria_enabled"]) {
 	$table->data[22][0] = __('Integria inventory');
 	$table->data[22][1] = html_print_select($inventories, 'integria_inventory', $config["integria_inventory"], '', '', '', true);
 }
+
+$table->data[19][0] = __('Enable Netflow');
+$table->data[19][1] = __('Yes').'&nbsp;'.html_print_radio_button ('activate_netflow', 1, '', $config["activate_netflow"], true).'&nbsp;&nbsp;';
+$table->data[19][1] .= __('No').'&nbsp;'.html_print_radio_button ('activate_netflow', 0, '', $config["activate_netflow"], true);
 
 $zone_name = array('Africa' => __('Africa'), 'America' => __('America'), 'Antarctica' => __('Antarctica'), 'Arctic' => __('Arctic'), 'Asia' => __('Asia'), 'Atlantic' => __('Atlantic'), 'Australia' => __('Australia'), 'Europe' => __('Europe'), 'Indian' => __('Indian'), 'Pacific' => __('Pacific'), 'UTC' => __('UTC'));
 

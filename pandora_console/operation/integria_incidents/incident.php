@@ -40,11 +40,11 @@ if ($tab == 'list' || $tab == 'editor') {
 		'list' => array(
 			'active' => false,
 			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=list">' . 
-				html_print_image ("images/page_white_text.png", true, array ("title" => __('Incidents'))) .'</a>'),
+				html_print_image ("images/list.png", true, array ("title" => __('Incidents'))) .'</a>'),
 		'editor' => array(
 			'active' => false,
 			'text' => '<a href="index.php?login=1&sec=incidencias&sec2=operation/integria_incidents/incident&tab=editor">' . 
-				html_print_image ("images/add.png", true, array ("title" => __('New Incident'))) .'</a>'));
+				html_print_image ("images/pen.png", true, array ("title" => __('New Incident'))) .'</a>'));
 }
 else {
 	$buttons = array(

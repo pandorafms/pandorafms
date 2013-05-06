@@ -524,7 +524,7 @@ sub parse_conf_modules($) {
 					for (my $i = 0; $i <= $#{$module->{$token}}; $i++) {
 						
 						# Array of configuration tokens
-						foreach my $key (keys ($module->{$token}->[$i])) {
+						foreach my $key (keys (%{$module->{$token}->[$i]})) {
 							
 							# Each configuration token is a hash
 							while (my ($macro, $subst) = each (%{$module->{'macros'}})) {

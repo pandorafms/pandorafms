@@ -24,6 +24,7 @@ use POSIX;
 use PandoraFMS::Sendmail;
 use HTML::Entities;
 use Encode;
+use Socket qw(inet_ntoa inet_aton);
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;
@@ -65,6 +66,7 @@ our @EXPORT = qw(
 	md5_init
 	pandora_ping
 	pandora_ping_latency
+	resolve_hostname
 	ticks_totime
 	safe_input
 	safe_output
@@ -1161,6 +1163,15 @@ sub cron_get_closest_in_range ($$) {
 	
 	# Inside the range
 	return $target;
+}
+
+###############################################################################
+# Attempt to resolve the given hostname.
+###############################################################################
+sub resolve_hostname ($) {
+	my ($hostname) = @_;
+	
+	return inet_ntoa(inet_aton($hostname));
 }
 
 # End of function declaration

@@ -1,5 +1,10 @@
 2013-05-07  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_groups.php: Fixed colors of the 
+	groups view numbers for bug 2129
+
+2013-05-07  Sergio Martin <sergio.martin@artica.es>
+
 	* include/help/en/help_module_tokens.php
 	include/help/es/help_module_tokens.php: Added help docs
 	to  explain the module configuration tokens when create

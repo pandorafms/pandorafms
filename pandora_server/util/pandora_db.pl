@@ -19,6 +19,7 @@
 
 # Includes list
 use strict;
+use warnings;
 use Time::Local;		# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
 use POSIX qw(strftime);
@@ -43,32 +44,6 @@ my $SMALL_OPERATION_STEP = 1000; # Each long operations has a LIMIT of SMALL_OPE
 # FLUSH in each IO 
 $| = 1;
 
-# Init
-pandora_init(\%conf);
-
-# Read config file
-pandora_load_config (\%conf);
-
-# Load enterprise module
-if (enterprise_load (\%conf) == 0) {
-	print " [*] Pandora FMS Enterprise module not available.\n\n";
-} else {
-	print " [*] Pandora FMS Enterprise module loaded.\n\n";
-}
-
-# Connect to the DB
-my $dbh = db_connect ('mysql', $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
-my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ('mysql', $conf{'_history_db_name'},
-		$conf{'_history_db_host'}, '3306', $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
-
-# Main
-pandoradb_main(\%conf, $dbh, $history_dbh);
-
-# Cleanup and exit
-db_disconnect ($history_dbh) if defined ($history_dbh);
-db_disconnect ($dbh);
-exit;
-
 ###############################################################################
 # Delete old data from the database.
 ###############################################################################
@@ -88,7 +63,7 @@ sub pandora_purgedb ($$) {
 
 	# Delete old numeric data
 	print "[PURGE] Deleting old data... \n";
-	pandora_delete_old_module_data ('tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
+	pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
 
     # Delete extended session data
     if (enterprise_load (\%conf) != 0) {
@@ -158,7 +133,7 @@ sub pandora_purgedb ($$) {
 	$ulimit_access_timestamp = time() - 86400;
 	$ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
 	print "[PURGE] Deleting old string data... \n";
-	pandora_delete_old_module_data ('tagente_datos_string', $ulimit_access_timestamp, $ulimit_timestamp);
+	pandora_delete_old_module_data ($dbh, 'tagente_datos_string', $ulimit_access_timestamp, $ulimit_timestamp);
 
     # Delete event data
     if (!defined($conf->{'_event_purge'})){
@@ -224,7 +199,7 @@ sub pandora_purgedb ($$) {
 	
     my $trap_limit = time() - 86400 * $conf->{'_trap_purge'};
     $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime($trap_limit));
-    print "[PURGE] Deleting old SNMP traps data (More than " . $conf->{'__trap_purge'} . " days)... \n";
+    print "[PURGE] Deleting old SNMP traps data (More than " . $conf->{'_trap_purge'} . " days)... \n";
 	db_do($dbh, "DELETE FROM ttrap WHERE timestamp < '$trap_limit'");
 	
     # Delete policy queue data
@@ -237,7 +212,7 @@ sub pandora_purgedb ($$) {
 
     my $gis_limit = time() - 86400 * $conf->{'_gis_purge'};
     $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime($gis_limit));
-    print "[PURGE] Deleting old GID data (More than " . $conf->{'__gis_purge'} . " days)... \n";
+    print "[PURGE] Deleting old GID data (More than " . $conf->{'_gis_purge'} . " days)... \n";
 	db_do($dbh, "DELETE FROM tgis_data_history WHERE end_timestamp < '$gis_limit'");
 
     # Delete pending modules
@@ -370,7 +345,7 @@ sub pandora_purge_log_dir ($$;$) {
 		if ($sub_dir < $limits->[$depth]) {
 			rmtree ($dir . '/' . $sub_dir);
 		} elsif ($sub_dir == $limits->[$depth]) {
-			pandora_purge_log_dir ($dir . '/' . $sub_dir, $limits, $depth + 1)
+			&pandora_purge_log_dir ($dir . '/' . $sub_dir, $limits, $depth + 1)
 		}
 	}
 	
@@ -469,6 +444,8 @@ sub pandora_init ($) {
 	help_screen () if ($#ARGV < 0);
 	
 	$conf->{'_pandora_path'} = shift(@ARGV);
+	$conf->{'_onlypurge'} = 0;
+	$conf->{'_force'} = 0;
 	
 	# If there are valid parameters store it
 	foreach my $param (@ARGV) {	
@@ -485,6 +462,9 @@ sub pandora_init ($) {
 		}
 		elsif ($param =~ m/-d\z/i) {
 			$conf->{'_debug'} = 1;
+		}
+		elsif ($param =~ m/-f\z/i) {
+			$conf->{'_force'} = 1;
 		}
 	}
 
@@ -682,7 +662,8 @@ sub pandora_checkdb_consistency {
 ##############################################################################
 sub help_screen{
 	print "Usage: $0 <path to pandora_server.conf> [options]\n\n";
-	print "\t\t-p   Only purge and consistency check, skip compact.\n\n";
+	print "\t\t-p   Only purge and consistency check, skip compact.\n";
+	print "\t\t-f   Force execution event if another instance of $0 is running.\n\n";
 	exit -1;
 }
 
@@ -690,7 +671,7 @@ sub help_screen{
 # Delete old module data.
 ##############################################################################
 sub pandora_delete_old_module_data {
-	my ($table, $ulimit_access_timestamp, $ulimit_timestamp) = @_;
+	my ($dbh, $table, $ulimit_access_timestamp, $ulimit_timestamp) = @_;
 	
 	my $first_mark;
 	my $total_time;
@@ -727,6 +708,7 @@ sub pandora_delete_old_module_data {
                         	usleep (10000);
 				$purge_count = $purge_count - $SMALL_OPERATION_STEP;
 			}
+			
 			print "\n[PURGE] Data deletion Progress (".$ax."%) ";
 		}
 		print "\n";
@@ -741,7 +723,7 @@ sub pandora_delete_old_module_data {
 sub pandoradb_main ($$$) {
 	my ($conf, $dbh, $history_dbh) = @_;
 
-	print "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";	
+	print "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
 
 	# Purge
 	pandora_purgedb ($conf, $dbh);
@@ -768,5 +750,43 @@ sub pandoradb_main ($$$) {
 	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
 
 	print "\nEnding at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
-    exit 0;
 }
+
+# Init
+pandora_init(\%conf);
+
+# Read config file
+pandora_load_config (\%conf);
+
+# Load enterprise module
+if (enterprise_load (\%conf) == 0) {
+	print " [*] Pandora FMS Enterprise module not available.\n\n";
+} else {
+	print " [*] Pandora FMS Enterprise module loaded.\n\n";
+}
+
+# Connect to the DB
+my $dbh = db_connect ('mysql', $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
+my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ('mysql', $conf{'_history_db_name'},
+		$conf{'_history_db_host'}, '3306', $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
+
+# Get a lock
+my $lock = db_get_lock ($dbh, 'pandora_db');
+if ($lock == 0 && $conf{'_force'} == 0) { 
+	print " [*] Another instance of pandora_db seems to be running.\n\n";
+	exit 1;
+}
+
+# Main
+pandoradb_main(\%conf, $dbh, $history_dbh);
+
+# Cleanup and exit
+db_disconnect ($history_dbh) if defined ($history_dbh);
+db_disconnect ($dbh);
+
+# Release the lock
+if ($lock == 1) {
+	db_release_lock ($dbh, 'pandora_db');
+}
+
+exit 0;

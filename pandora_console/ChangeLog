@@ -1,3 +1,15 @@
+2013-05-06 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/agentes/group_view.php, godmode/groups/group_list.php,
+	include/functions_groups.php: added pagination to groups views.
+	
+	PENDING TASK: #346
+	
+	* include/functions_component_groups.php: cleaned source code style.
+	
+	* include/functions.php: added function "is_array_empty" for
+	deepers arrays.
+
 2013-05-06  Sergio Martin <sergio.martin@artica.es>
 
 	* include/help/en/help_module_interval_factor.php

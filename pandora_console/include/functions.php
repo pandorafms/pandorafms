@@ -1746,4 +1746,20 @@ function set_js_value($name, $value) {
 	html_print_div(array('id' => 'php_to_js_value_' . $name, 'content' => $value, 'hidden' => true));
 }
 
+
+function is_array_empty($InputVariable)
+{
+	$Result = true;
+	
+	if (is_array($InputVariable) && count($InputVariable) > 0) {
+		foreach ($InputVariable as $Value) {
+			$Result = $Result && is_array_empty($Value);
+		}
+	}
+	else {
+		$Result = empty($InputVariable);
+	}
+	
+	return $Result;
+}
 ?>

@@ -30,7 +30,7 @@
  */
 function component_groups_get_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
 	$return = array();
-
+	
 	foreach ($groups as $key => $group) { 
 		if ($group['parent'] == $parent) {
 			$group['deep'] = $deep;

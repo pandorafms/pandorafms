@@ -85,28 +85,44 @@ $counter = 1;
 
 $agents = agents_get_group_agents(array_keys($groups));
 
+$offset = (int)get_parameter('offset', 0);
+
 if (count($agents) > 0) {
+	$groups_get_groups_with_agent = groups_get_groups_with_agent($config['id_user'], "AR", true, true);
+	ui_pagination(count($groups_get_groups_with_agent));
+	
 	echo '<table cellpadding="0" cellspacing="0" style="margin-top:10px;" class="groupsview" border="0" width="98%">';
 	echo "<tr>";
-	echo "<th width='25%' class='first opacity_cell'>".__("Group")."</th>";
+	echo "<th width='25%' class='first opacity_cell'>" . __("Group") . "</th>";
 	echo "<th style='min-width:26px;'></th>";
-	echo "<th width='10%' class='opacity_cell'>".__("Agents")."</th>";
-	echo "<th width='10%'>".__("Agent unknown")."</th>";
-	echo "<th width='10%' class='opacity_cell'>".__("Unknown")."</th>";
-	echo "<th width='10%'>".__("Not Init")."</th>";
-	echo "<th width='10%' class='opacity_cell'>".__("Normal")."</th>";
-	echo "<th width='10%'>".__("Warning")."</th>";
-	echo "<th width='10%' class='opacity_cell'>".__("Critical")."</th>";
-	echo "<th width='10%' class='last' style='min-width: 100px'>".__("Alert fired")."</th>";
+	echo "<th width='10%' class='opacity_cell'>" . __("Agents") . "</th>";
+	echo "<th width='10%'>" . __("Agent unknown") . "</th>";
+	echo "<th width='10%' class='opacity_cell'>" . __("Unknown") . "</th>";
+	echo "<th width='10%'>" . __("Not Init") . "</th>";
+	echo "<th width='10%' class='opacity_cell'>" . __("Normal") . "</th>";
+	echo "<th width='10%'>" . __("Warning") . "</th>";
+	echo "<th width='10%' class='opacity_cell'>" . __("Critical") . "</th>";
+	echo "<th width='10%' class='last' style='min-width: 100px'>" . __("Alert fired") . "</th>";
 	
 	$printed_groups = array();
 	
 	// For each valid group for this user, take data from agent and modules
+	$table_rows = array();
 	foreach ($groups as $id_group => $group) {
-		groups_get_group_row($id_group, $groups, $group, $printed_groups);
+		$rows = groups_get_group_row($id_group, $groups, $group, $printed_groups);
+		if (!is_array_empty($rows)) {
+			$table_rows += $rows;
+		}
+	}
+	
+	$table_rows = array_slice($table_rows, $offset, $config['block_size']);
+	foreach($table_rows as $row) {
+		echo $row;
 	}
 	
 	echo "</table>";
+	
+	ui_pagination(count($groups_get_groups_with_agent));
 }
 else {
 	echo "<div class='nf'>" . __('There are no defined agents') .

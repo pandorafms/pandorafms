@@ -973,6 +973,21 @@ function reporting_get_stats_servers($tiny = true) {
 			$table_srv->data[] = $tdata;
 		}
 		
+		$tdata = array();
+		$tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
+		$table_srv->colspan[count($table_srv->data)][0] = 4;
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+		
+		$system_events = db_get_value_sql('SELECT SQL_NO_CACHE COUNT(id_evento) FROM tevento');
+
+		$tdata = array();
+		$tdata[0] = html_print_image('images/lightning_go.png', true, array('title' => __('Total events'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($system_events) . '</span>';
+		
+		$table_srv->colspan[count($table_srv->data)][1] = 3;
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
 	}
 	
 	$output = '<fieldset class="databox tactical_set" style="width:93%;">

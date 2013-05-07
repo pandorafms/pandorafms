@@ -1,3 +1,15 @@
+2013-05-07  Sergio Martin <sergio.martin@artica.es>
+
+	* include/help/en/help_module_interval.php
+	include/help/en/help_module_interval_factor.php
+	include/help/es/help_module_interval.php
+	include/help/es/help_module_interval_factor.php
+	include/help/ja/help_module_interval.php
+	godmode/agentes/module_manager_editor_common.php: Change the
+	interval control when module is a data module. Added help
+	to know difference between interval and interval factor 
+	Merged from trunk. For bug 2112
+
 2013-05-04  Junichi Satoh  <junichi@rworks.jp>
 
 	* mobile/index.php, mobile/include/user.class.php,

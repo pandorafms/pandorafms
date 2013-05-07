@@ -238,11 +238,19 @@ $table_advanced->colspan[1][1] = 2;
 $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id,
 	'', 20, 65, true, $disabledBecauseInPolicy);
 
-$table_advanced->data[2][0] = __('Interval');
+// In the data modules, the interval is not in seconds. It is a factor 
+// to be multiplied for the agent interval
+if($moduletype == 1) {
+	$table_advanced->data[2][0] = __('Interval') . ui_print_help_icon ('module_interval_factor', true);
+	$table_advanced->colspan[2][1] = 2;
+	$table_advanced->data[2][1] = html_print_input_text ('module_interval', $interval, '', 4, 4, true);
+}
+else {
+	$table_advanced->data[2][0] = __('Interval') . ui_print_help_icon ('module_interval', true);
+	$table_advanced->colspan[2][1] = 2;
+	$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true, false, false);
+}
 
-$table_advanced->colspan[2][1] = 2;
-$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true, false, false, $disabledBecauseInPolicy);
-	
 $table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
 $table_advanced->data[2][4] = html_print_input_text ('post_process',
 	$post_process, '', 15, 25, true, $disabledBecauseInPolicy);

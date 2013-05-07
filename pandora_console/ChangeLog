@@ -1,3 +1,9 @@
+2013-05-07  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_config.php: Set a default value to 
+	enable_metaconsole_netflow config token to avoid metaconsole
+	ugly notice for bug #2210
+
 2013-05-06 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/agentes/group_view.php, godmode/groups/group_list.php,

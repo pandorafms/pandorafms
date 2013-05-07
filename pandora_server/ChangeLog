@@ -1,5 +1,9 @@
 2013-05-07  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Tools.pm: Added a function to resolve hostnames.
+
+2013-05-07  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/DB.pm,
 	  util/pandora_db.pl: Several improvements. Added support for detecting
 	  other running instances of the script.

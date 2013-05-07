@@ -248,6 +248,13 @@ db_clean_cache();
 $groups = users_get_groups_tree ($config['id_user'], "AR", true);
 $table->width = '98%';
 
+echo '<br />';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
+echo '</div>';
+echo '</form>';
+
 if (!empty($groups)) {
 	$table->head = array ();
 	$table->head[0] = __('Name');
@@ -262,6 +269,49 @@ if (!empty($groups)) {
 	$table->data = array ();
 	
 	$iterator = 0;
+	
+	
+	$all_group = $groups[0];
+	$groups = array_slice($groups, 1);
+	//Set the content of page of groups
+	$offset = (int)get_parameter('offset', 0);
+	$count_visible_groups = 0;
+	$count_visible_groups_block = 0;
+	$stop_count_block = false;
+	$count = 0;
+	$start = 0;
+	$stop = 0;
+	//$offset = $offset - $offset / $config['block_size'];
+	foreach ($groups as $group) {
+		if (((int)$group['parent']) == 0) {
+			$count_visible_groups++;
+			if (!$stop_count_block)
+				$count_visible_groups_block++;
+		}
+		
+		if (($count_visible_groups - 1) == ($offset) ) {
+			$stop_count_block = true;
+			$start = $count;
+		}
+		
+		// -1 for in the all pages is added all group
+		if (($count_visible_groups - 1) == ($offset + ($config['block_size'] - 1))) {
+			$stop_count_block = true;
+			$stop = $count;
+		}
+		
+		$count++;
+	}
+	if ($stop == 0) {
+		$stop = $start + $config['block_size'];
+	}
+	
+	// 1 for to add all group
+	ui_pagination($count_visible_groups + 1, false, 0, $config['block_size'] - 1);
+	
+	
+	$groups = array_slice($groups, $start, ($stop - $start));
+	$groups = array_merge(array($all_group), $groups);
 	
 	foreach ($groups as $id_group => $group) {
 		if ($group['deep'] == 0) {
@@ -364,6 +414,8 @@ if (!empty($groups)) {
 	}
 	
 	html_print_table ($table);
+	
+	ui_pagination($count_visible_groups + 1, false, 0, $config['block_size'] - 1);
 }
 else {
 	echo "<div class='nf'>".__('There are no defined groups')."</div>";

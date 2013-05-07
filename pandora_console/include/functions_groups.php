@@ -25,7 +25,7 @@ require_once ($config['homedir'].'/include/functions_users.php');
  */
 function groups_check_used($idGroup) {
 	global $config;
-
+	
 	$return = array();
 	$return['return'] = false;
 	$return['tables'] = array();
@@ -53,7 +53,7 @@ function groups_check_used($idGroup) {
 			$numRows = db_get_num_rows('SELECT * FROM talert_actions WHERE id_group = ' . $idGroup);
 			break;
 	}
-
+	
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Alert Actions'); 
@@ -68,7 +68,7 @@ function groups_check_used($idGroup) {
 			$numRows = db_get_num_rows('SELECT * FROM talert_templates WHERE id_group = ' . $idGroup);
 			break;
 	}
-
+	
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Alert Templates'); 
@@ -87,10 +87,10 @@ function groups_check_used($idGroup) {
 		$return['return'] = true;
 		$return['tables'][] = __('Recon task'); 
 	}
-
+	
 	switch ($config["dbtype"]) {
 		case "mysql":
-		case "postgresql":	
+		case "postgresql":
 			$numRows = db_get_num_rows('SELECT * FROM tgraph WHERE id_group = ' . $idGroup . ';');
 			break;
 		case "oracle":
@@ -125,7 +125,7 @@ function groups_check_used($idGroup) {
 			$numRows = db_get_num_rows('SELECT * FROM tlayout WHERE id_group = ' . $idGroup);
 			break;
 	}
-
+	
 	if ($numRows > 0) {
 		$return['return'] = true;
 		$return['tables'][] = __('Layout visual console'); 
@@ -236,9 +236,9 @@ function groups_get_childrens($parent, $groups = null) {
 	if (empty($groups)) {
 		$groups = db_get_all_rows_in_table('tgrupo');
 	}
-
+	
 	$return = array();
-
+	
 	foreach ($groups as $key => $group) {
 		if ($group['id_grupo'] == 0) {
 			continue;
@@ -247,7 +247,7 @@ function groups_get_childrens($parent, $groups = null) {
 			$return = $return + array($group['id_grupo'] => $group) + groups_get_childrens($group['id_grupo'], $groups);
 		}
 	}
-
+	
 	return $return;
 }
 
@@ -262,9 +262,9 @@ function groups_get_parents($parent, $onlyPropagate = false, $groups = null) {
 	if (empty($groups)) {
 		$groups = db_get_all_rows_in_table('tgrupo');
 	}
-
+	
 	$return = array();
-
+	
 	foreach ($groups as $key => $group) {
 		if ($group['id_grupo'] == 0) {
 			continue;
@@ -274,7 +274,7 @@ function groups_get_parents($parent, $onlyPropagate = false, $groups = null) {
 			$return = $return + array($group['id_grupo'] => $group) + groups_get_parents($group['parent'], $onlyPropagate, $groups);
 		}
 	}
-
+	
 	return $return;
 }
 
@@ -309,14 +309,14 @@ function groups_safe_acl ($id_user, $id_groups, $access) {
 	elseif (!is_array ($id_groups)) {
 		return array ();
 	}
-
+	
 	foreach ($id_groups as $group) {
 		//Check ACL. If it doesn't match, remove the group
 		if (!check_acl ($id_user, $group, $access)) {
 			unset ($id_groups[$group]);
 		}
 	}
-
+	
 	return $id_groups;
 }
 
@@ -343,9 +343,9 @@ function groups_is_all_group($idGroups) {
 	$arrayGroups = array($idGroups);
 	else
 	$arrayGroups = $idGroups;
-
+	
 	$groupsDB = db_get_all_rows_in_table ('tgrupo');
-
+	
 	$returnVar = true;
 	foreach ($groupsDB as $group) {
 		if (!in_array($group['id_grupo'], $arrayGroups)) {
@@ -372,7 +372,7 @@ function groups_get_icon ($id_group) {
 		$icon = (string) db_get_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 		
 		if ($icon == '') {
-			$icon = 'without_group';	
+			$icon = 'without_group';
 		}
 		
 		return $icon;
@@ -388,14 +388,14 @@ function groups_get_icon ($id_group) {
  */
 function groups_get_all($groupWithAgents = false) {
 	global $config;
-
+	
 	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
-
+	
 	global $config;
-
+	
 	if ($groupWithAgents)
 	$sql .= ' WHERE id_grupo IN (SELECT id_grupo FROM tagente GROUP BY id_grupo)';
-
+	
 	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
@@ -405,9 +405,9 @@ function groups_get_all($groupWithAgents = false) {
 			$sql .= ' ORDER BY dbms_lob.substr(nombre,4000,1) DESC';
 			break;
 	}
-
+	
 	$rows = db_get_all_rows_sql ($sql);
-
+	
 	if($rows === false) {
 		$rows = array();
 	}
@@ -417,7 +417,7 @@ function groups_get_all($groupWithAgents = false) {
 		if (check_acl ($config['id_user'], $row["id_grupo"], "AR"))
 		$return[$row['id_grupo']] = $row['nombre'];
 	}
-
+	
 	return $return;
 }
 
@@ -785,6 +785,21 @@ function groups_get_group_row_data($id_group, $group_all, $group, &$printed_grou
 	return $rows;
 }
 
+function groups_get_groups_with_agent($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
+	$groups = users_get_groups($id_user, $privilege, $returnAllGroup, $returnAllColumns, $id_groups, $keys_field);
+	
+	$return = array();
+	foreach ($groups as $group) {
+		$data = reporting_get_group_stats($group['id_grupo']);
+		
+		if ($data["total_agents"] != 0) {
+			$return[] = $group;
+		}
+	}
+	
+	return $return;
+}
+
 /**
  * Print a row in the groups view (Recursive function)
  *
@@ -797,15 +812,15 @@ function groups_get_group_row_data($id_group, $group_all, $group, &$printed_grou
 function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	global $config;
 	
+	if ($id_group < 0) 
+		return;
+	
 	if (isset($printed_groups[$id_group])) {
 		return;
 	}
 	
 	// Store printed group to not print it again
 	$printed_groups[$id_group] = 1;
-	
-	if ($id_group < 0) 
-		return; 
 	
 	// Get stats for this group
 	$data = reporting_get_group_stats($id_group);
@@ -832,6 +847,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	else {
 		$group_class = 'group_view_normal';
 	}
+	
+	ob_start();
 	
 	echo "<tr style='height: 35px;'>";
 	
@@ -863,11 +880,13 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	$data["total_agents"];
 	
 	if ($id_group != 0) {
-		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente) FROM tagente 
+		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente)
+			FROM tagente 
 			WHERE id_grupo = $id_group AND disabled = 0");
 	}
 	else {
-		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente) FROM tagente 
+		$data["total_agents"] = db_get_sql ("SELECT COUNT(id_agente)
+			FROM tagente 
 			WHERE disabled = 0");
 	}
 	
@@ -913,8 +932,8 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	else {
 		echo "<td class='$group_class'></td>";
 	}
-
-
+	
+	
 	// Monitors OK
 	echo "<td class='group_view_data_ok $group_class opacity_cell' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 	if ($data["monitor_ok"] > 0) {
@@ -967,10 +986,22 @@ function groups_get_group_row($id_group, $group_all, $group, &$printed_groups) {
 	
 	echo "</tr>";
 	
+	$row[$id_group] = ob_get_clean();
+	
+	
 	foreach($group['childs'] as $child) {
-		groups_get_group_row($child, $group_all, $group_all[$child], $printed_groups);
+		if (array_key_exists($child, $group_all)) {
+			$row_child = groups_get_group_row($child, $group_all, $group_all[$child], $printed_groups);
+			
+			if (!is_array_empty($row_child)) {
+				$row = $row + $row_child;
+			}
+		}
 	}
+	
+	return $row;
 }
+
 /**
  * Gets a group by id_group
  *

@@ -980,6 +980,10 @@ function config_process_config () {
 		if (!isset ($config['meta_num_elements'])) {
 			config_update_value('meta_num_elements', 100);
 		}
+		
+		if (!isset ($config['enable_metaconsole_netflow'])) {
+			config_update_value('enable_metaconsole_netflow', 0);
+		}
 	}
 	
 	if (!isset ($config['relative_path']) && (isset ($_POST['nick'])

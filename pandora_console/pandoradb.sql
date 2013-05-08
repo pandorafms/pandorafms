@@ -120,6 +120,7 @@ CREATE TABLE `tagente_estado` (
   `last_execution_try` bigint(20) NOT NULL default '0',
   `status_changes` tinyint(4) default 0,
   `last_status` tinyint(4) default 0,
+  `last_error` int(4) NOT NULL default '0',
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_1` (`id_agente_modulo`),
   KEY `idx_agente` (`id_agente`),

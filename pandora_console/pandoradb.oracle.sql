@@ -137,7 +137,8 @@ CREATE TABLE tagente_estado (
 	running_by NUMBER(10, 0) default 0,
 	last_execution_try NUMBER(19, 0) default 0 NOT NULL,
 	status_changes NUMBER(10, 0) default 0,
-	last_status NUMBER(10, 0) default 0
+	last_status NUMBER(10, 0) default 0,
+	last_error NUMBER(10, 0) default 0
 );
 CREATE INDEX tagente_estado_id_agente_idx ON tagente_estado(id_agente);
 CREATE INDEX tagente_estado_estado_idx ON tagente_estado(estado);

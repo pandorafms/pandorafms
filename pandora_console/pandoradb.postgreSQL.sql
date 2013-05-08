@@ -118,7 +118,8 @@ CREATE TABLE "tagente_estado" (
 	"running_by" INTEGER default 0,
 	"last_execution_try" BIGINT NOT NULL default 0,
 	"status_changes" INTEGER default 0,
-	"last_status" INTEGER default 0
+	"last_status" INTEGER default 0,
+	"last_error" INTEGER default 0
 );
 CREATE INDEX "tagente_estado_id_agente_modulo_idx" ON "tagente_estado"("id_agente_modulo");
 CREATE INDEX "tagente_estado_id_agente_idx" ON "tagente_estado"("id_agente");

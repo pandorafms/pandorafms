@@ -1189,29 +1189,44 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 				$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
 				$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0, $base_oid = "", $snmp_port = '') {
 					
-	snmp_set_quick_print ($quick_print);
+	// Note: quick_print is ignored
 	
 	// Fix for snmp port
 	if (!empty($snmp_port)){
 		$ip_target = $ip_target.':'.$snmp_port;
 	}
 	
+	// Escape the base OID
+	if ($base_oid != "") {
+		$base_oid = escapeshellarg ($base_oid);
+	}
+		
+	$output = array();
+	$rc = 0;
 	switch ($snmp_version) {
 		case '3':
-			$snmpwalk = @snmp3_real_walk ($ip_target, $snmp3_auth_user,
-				$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-				$snmp3_privacy_method, $snmp3_privacy_pass, $base_oid);
+			exec ('snmpwalk -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2>/dev/null', $output, $rc);
 			break;
 		case '2':
 		case '2c':
-			$snmpwalk = @snmp2_real_walk ($ip_target, $snmp_community, $base_oid);
-			break;
 		case '1':
 		default:
-			$snmpwalk = @snmprealwalk($ip_target, $snmp_community, $base_oid);	
+			exec ('snmpwalk -m ALL -v ' . escapeshellarg($snmp_version) . ' -c ' . escapeshellarg($snmp_community) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2>/dev/null', $output, $rc);	
 			break;
 	}
-	
+
+	// Parse the output of snmpwalk
+	foreach ($output as $line) {
+		
+		// Separate the OID from the value
+		$full_oid = explode ('=', $line);
+		if (isset ($full_oid[1])) {
+			$snmpwalk[$full_oid[0]] = $full_oid[1];
+		} else {
+			$snmpwalk[$full_oid[0]] = '';
+		}
+	}
+
 	return $snmpwalk;
 }
 

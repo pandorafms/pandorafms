@@ -1,3 +1,7 @@
+2013-05-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Tools.pm: Check that inet_aton does not return undef.
+
 2013-05-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Added a function to resolve hostnames.

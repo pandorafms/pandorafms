@@ -1171,7 +1171,10 @@ sub cron_get_closest_in_range ($$) {
 sub resolve_hostname ($) {
 	my ($hostname) = @_;
 	
-	return inet_ntoa(inet_aton($hostname));
+	$resolved_hostname = inet_aton($hostname);
+	return $hostname if (! defined ($resolved_hostname));
+	
+	return inet_ntoa($resolved_hostname);
 }
 
 # End of function declaration

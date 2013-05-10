@@ -71,16 +71,16 @@ if (isset($graph['color'])) {
 if (isset($graph['legend'])) {
 	$legend = $graph['legend'];
 }
-if(isset($graph['xaxisname'])) { 
+if (isset($graph['xaxisname'])) { 
 	$xaxisname = $graph['xaxisname'];
 }
-if(isset($graph['yaxisname'])) { 
+if (isset($graph['yaxisname'])) { 
 	$yaxisname = $graph['yaxisname'];
 }
-if(isset($graph['round_corner'])) { 
+if (isset($graph['round_corner'])) { 
 	$round_corner = $graph['round_corner'];
 }
-if(isset($graph['font'])) {
+if (isset($graph['font'])) {
 	if (!empty($graph['font'])) {
 		$font = $graph['font'];
 	}
@@ -234,7 +234,7 @@ if (empty($colors)) {
 	$colors = array();
 }
 
-foreach($colors as $i => $color) {
+foreach ($colors as $i => $color) {
 	$rgb['border'] = html_html2rgb($color['border']);
 	$rgb_color[$i]['border']['R'] = $rgb['border'][0];
 	$rgb_color[$i]['border']['G'] = $rgb['border'][1];
@@ -593,15 +593,16 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false,
 	$legend = array(), $font, $antialiasing, $water_mark = '', $font_size) {
+	
 	/* CAT:Vertical Charts */
-	if(!is_array($legend) || empty($legend)) {
+	if (!is_array($legend) || empty($legend)) {
 		unset($legend);
 	}
 	/*$legend=array('pep1' => 'pep1','pep2' => 'pep2','pep3' => 'pep3','pep4' => 'pep4');
 	$data=array(array('pep1' => 1, 'pep2' => 1, 'pep3' => 3, 'pep4' => 3), array('pep1' => 1, 'pep2' => 3, 'pep3' => 1,'pep4' => 4), array('pep1' => 3, 'pep2' => 1, 'pep3' => 1,'pep4' =>1), array('pep1' => 1, 'pep2' =>1, 'pep3' =>1,'pep4' =>0));
 	$index=array(1,2,3,4);
 	*/
-	if(is_array(reset($data))) {
+	if (is_array(reset($data))) {
 		$data2 = array();
 		foreach($data as $i =>$values) {
 			$c = 0;
@@ -619,8 +620,8 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	/* Create and populate the pData object */
 	$MyData = new pData();
 	
-	foreach($data as $i => $values) {
-		if(isset($legend)) {
+	foreach ($data as $i => $values) {
+		if (isset($legend)) {
 			$point_id = $legend[$i];
 		}
 		else {
@@ -676,7 +677,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 
 	 /* Set the default font */
 	 $myPicture->setFontProperties(array("FontName"=>$font, "FontSize"=>$font_size));
-
+	
  	if(isset($legend)) {
 		/* Set horizontal legend if is posible */
 		$legend_mode = LEGEND_HORIZONTAL;
@@ -736,15 +737,23 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 }
 
 	 $chart_size = ($digits_left * $font_size) + 20;
-
+	
+	$max_data = max(max($data));
+	
+	$default_chart_size = 40;
+	$rest_chars = strlen($max_data) - 6;
+	$default_chart_size += $rest_chars * 5;
+	
+	
 	/* Area depends on yaxisname */
-	if ($yaxisname != ''){
-		$chart_size += 40;	
+	if ($yaxisname != '') {
+		$chart_size += $default_chart_size;
 	}
 	else{
-		$chart_size = 40;
-	}	 
-	 
+		$chart_size = $default_chart_size;
+	}
+	//DEBUG CACA-CAMBIAR CHART_SIZE PARA NUMEROS GRANDES
+	
 	 if (isset($size['Height'])) {
 	 	/* Define the chart area */
 	 	//if ($yaxisname != ''){
@@ -758,12 +767,12 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	
 	 /*Get minimun value to draw axis properly*/
 	 $min_data = min(min($data));
-
+	
 	 $mode = SCALE_MODE_START0;
 	 if ($min_data < 0) {
 		$mode = SCALE_MODE_FLOATING;
 	 }
-
+	
 	 /* Draw the scale */
 	 $scaleSettings = array("GridR"=>200,
 		 "GridG"=>200,
@@ -776,7 +785,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		 "MinDivHeight" => 20,
 		 "TicksFontSize" => $font_size - 1);
 	 $myPicture->drawScale($scaleSettings);
-	 
+	
 	 /* Turn on shadow computing */ 
 	 //$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 
@@ -798,8 +807,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	 	"DisplayR"=>100,
 	 	"DisplayZeros"=> FALSE,
 	 	"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>TRUE);
-	 
-		
+	
 	 switch($graph_type) {
 	 	case "stacked_area":
 		case "area":
@@ -809,7 +817,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 				$myPicture->drawLineChart($settings);
 				break;
 	 }
-	 
+	
 	 /* Render the picture */
 	 $myPicture->stroke(); 
 }

@@ -901,6 +901,7 @@
    /* Write text */
    function drawText($X,$Y,$Text,$Format="")
     {
+	
      $R			= isset($Format["R"]) ? $Format["R"] : $this->FontColorR;
      $G			= isset($Format["G"]) ? $Format["G"] : $this->FontColorG;
      $B			= isset($Format["B"]) ? $Format["B"] : $this->FontColorB;
@@ -939,6 +940,7 @@
       }
 
      $TxtPos = $this->getTextBox($X,$Y,$FontName,$FontSize,$Angle,$Text);
+	
 
      if ( $DrawBox && ($Angle == 0 || $Angle == 90 || $Angle == 180 || $Angle == 270))
       {
@@ -2223,7 +2225,7 @@
           }
         }
 
-
+		
 
        if ( $Parameters["Identity"] == AXIS_Y )
         {
@@ -2247,7 +2249,7 @@
                $YPos  = $this->GraphAreaY2 - $Parameters["Margin"] - $Step*$i;
                $XPos  = $AxisPos["L"];
                $Value = $this->scaleFormat($Parameters["ScaleMin"] + $Parameters["RowHeight"]*$i,$Parameters["Display"],$Parameters["Format"],$Parameters["Unit"]);
-
+				
                if ( $i%2 == 1 ) { $BGColor = array("R"=>$BackgroundR1,"G"=>$BackgroundG1,"B"=>$BackgroundB1,"Alpha"=>$BackgroundAlpha1); } else { $BGColor = array("R"=>$BackgroundR2,"G"=>$BackgroundG2,"B"=>$BackgroundB2,"Alpha"=>$BackgroundAlpha2); }
                if ( $LastY != NULL && $CycleBackground && ( $DrawYLines == ALL || in_array($AxisID,$DrawYLines) )) { $this->drawFilledRectangle($this->GraphAreaX1+$FloatingOffset,$LastY,$this->GraphAreaX2-$FloatingOffset,$YPos,$BGColor); }
 
@@ -3688,6 +3690,7 @@
    /* Draw an area chart */
    function drawAreaChart($Format=NULL)
     {
+	
      $DisplayValues	= isset($Format["DisplayValues"]) ? $Format["DisplayValues"] : FALSE;
      $DisplayZeros	= isset($Format["DisplayZeros"]) ? $Format["DisplayZeros"] : TRUE;
      $DisplayOffset	= isset($Format["DisplayOffset"]) ? $Format["DisplayOffset"] : 2;

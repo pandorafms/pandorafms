@@ -591,7 +591,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	
 	
 	$series_suffix_str = '';
-	if($compare !== false) {
+	if ($compare !== false) {
 		$series_suffix = '2';
 		$series_suffix_str = ' ('.__('Previous').')';
 		// Build the data of the previous period
@@ -627,7 +627,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only, $pure,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$only_image, $homeurl, $ttl, $projection, $compare);
-	
+
 	if ($return_data) {
 		return $data_returned;
 	}
@@ -2440,8 +2440,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 }
 
 function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
-	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0,
-	$pure = 0, $date = 0, $only_image = false, $homeurl = '', $compare = false) {
+	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure = 0,
+	$date = 0, $only_image = false, $homeurl = '', $compare = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -2748,7 +2748,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	global $config;
 	global $graphic_type;
 	global $max_value;
-	
+
 	include_flash_chart_script($homeurl);
 
 	// Set variables

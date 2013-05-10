@@ -26,7 +26,7 @@ if (is_ajax()) {
 	$action = (string) get_parameter ("action", "");
 	$target_ip = (string) get_parameter ("target_ip", '');
 	$community = (string) get_parameter ("community", '');
-
+	
 	// SNMP browser
 	if ($action == "snmptree") {
 		$starting_oid = (string) get_parameter ("starting_oid", '.');
@@ -66,7 +66,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 }
 
 // Header
-$url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_browser&refr=' . $config["refr"] . '&pure=' . $config["pure"];
+$url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_browser&pure=' . $config["pure"];
 if ($config["pure"]) {
 	// Windowed
 	$link['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=30">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';

@@ -1,3 +1,9 @@
+2013-05-10 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/snmpconsole/snmp_browser.php: fixed the url to pure.
+	
+	Fixes: #2212
+
 2013-05-07  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php: Added to Server performance 

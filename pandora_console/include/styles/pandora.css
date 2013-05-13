@@ -357,7 +357,7 @@ div#login_in, #login_f {
 #login_outer {
 	-moz-box-shadow: 0px 0px 18px #ffffff; 
 	-webkit-box-shadow: 0px 0px 18px #ffffff; 
-	box-shadow: 0px 0px 18px rgba(200, 200, 200, 0.2);
+	box-shadow: 0px 0px 18px #ffffff;
 	padding: 3px;
 	border-radius: 11px;
 	width: 250px !important;

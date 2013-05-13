@@ -123,6 +123,9 @@ use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::GIS qw(distance_moved);
 
+# For Reverse Geocoding
+use LWP::Simple;
+
 #use Data::Dumper;
 
 require Exporter;

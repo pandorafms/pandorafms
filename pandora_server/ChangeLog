@@ -1,3 +1,9 @@
+2013-05-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Tools.pm: Merged from 4.0 branch. Directly call
+	  snmptranslate, since SNMP::translateObj does not seem to load
+	  enterprise MIBs.
+
 2013-05-13  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixes crash on inverse resolution for

@@ -984,15 +984,13 @@ sub month_have_days($$) {
 sub translate_obj ($$) {
 	my ($dbh, $obj) = @_;
 
-	# SNMP is not thread safe
-	if (defined ($SNMPSem)) {
-		$SNMPSem->down ();
+	# Translate!
+	my $oid = `snmptranslate -On -mALL $obj 2>/dev/null`;
+	if ($? != 0) {
+		return undef;
 	}
-	my $oid = SNMP::translateObj ($obj);
-	if (defined ($SNMPSem)) {
-		$SNMPSem->up ();
-	}
-		
+	chomp($oid);
+	
 	return $oid;
 }
 

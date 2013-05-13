@@ -951,6 +951,7 @@ function treeview_getData ($type) {
 
 // Get SQL for the first tree branch
 function treeview_getFirstBranchSQL ($type, $id, $avariableGroupsIds, $statusSel, $search_free) {
+	global $config;
 	
 	if (empty($avariableGroupsIds)) {
 		return false;

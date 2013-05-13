@@ -1,3 +1,28 @@
+2013-05-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	include/functions_treeview.php
+	images/events_responses.png
+	images/gm_setup.png
+	images/policies_mc.png
+	images/filter.png
+	images/op_alerts.png
+	images/network_mc.png
+	images/enterprise.png
+	images/profiles.png
+	images/operation.png
+	images/full_screen.png
+	images/list.png
+	images/gm_servers.png
+	images/normal_screen.png
+	images/database_history.png
+	images/gm_policies.png
+	images/gm_users.png
+	images/server_export_mc.png
+	images/custom_columns.png
+	images/templates.png: Little fixes and images
+	changes
+
 2013-05-13 Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/agentes/configurar_agente.php, include/functions_tags.php,

@@ -83,8 +83,6 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	$values['intervalo'] = $interval;
 	$values['direccion'] = $ip_address;
 	
-	db_process_sql_begin ();
-	
 	$id_agent = db_process_sql_insert ('tagente', $values);
 	if ($id_agent === false) {
 		db_process_sql_rollback ();
@@ -94,7 +92,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	// Create address for this agent in taddress
 	agents_add_address ($id_agent, $ip_address);
 	
-	// Create special module agent_keepalive	
+	// Create special module agent_keepalive
 	$values_modules = array ('id_tipo_modulo' => 100,
 			'descripcion' => __('Agent keepalive monitor'),
 			'id_modulo' => 1,
@@ -107,8 +105,6 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 		db_process_sql_rollback ();
 		return false;
 	}
-	
-	db_process_sql_commit ();
 	
 	db_pandora_audit ("Agent management", "New agent '$name' created");
 	
@@ -1693,9 +1689,6 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 	if (! is_array ($id_agents))
 	$id_agents = (array) $id_agents;
 	
-	//Start transaction
-	db_process_sql_begin ();
-	
 	foreach ($id_agents as $id_agent) {
 		$id_agent = (int) $id_agent; //Cast as integer
 		if ($id_agent < 1)
@@ -1807,11 +1800,9 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 	}
 	
 	if ($error) {
-		db_process_sql_rollback ();
 		return false;
 	}
 	else {
-		db_process_sql_commit ();
 		return true;
 	}
 }

@@ -1,5 +1,11 @@
 2013-05-13 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/agentes/configurar_agente.php, include/functions_tags.php,
+	include/functions_incidents.php, include/functions_agents.php,
+	operation/messages/message_list.php: erased the SQL transitions.
+
+2013-05-13 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_graph.php: fixed PHP warnings.
 	
 	* godmode/agentes/modificar_agente.php,

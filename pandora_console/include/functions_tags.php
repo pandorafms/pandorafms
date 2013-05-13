@@ -420,8 +420,6 @@ function tags_insert_module_tag ($id_agent_module, $tags) {
 function tags_insert_policy_module_tag ($id_agent_module, $tags) {
 	$errn = 0;
 	
-	db_process_sql_begin();
-	
 	$values = array();
 	foreach ($tags as $tag) {
 		//Protect against default insert
@@ -436,11 +434,9 @@ function tags_insert_policy_module_tag ($id_agent_module, $tags) {
 	}
 	
 	if ($errn > 0) {
-		db_process_sql_rollback();
 		return false;
 	}
 	else {
-		db_process_sql_commit();
 		return true;
 	}
 }

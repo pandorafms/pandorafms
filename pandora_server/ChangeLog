@@ -1,3 +1,9 @@
+2013-05-13  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixes crash on inverse resolution for
+	GIS information on openstreetmaps. This was due function was moved from
+	Dataserver to Core.pm and include for LWP::Simple not :(
+
 2013-05-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Check that inet_aton does not return undef.

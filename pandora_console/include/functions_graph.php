@@ -2641,8 +2641,10 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			$k++;
 		}
 		
-		if($is_unknown) {
-			$unknown_value++;
+		if (isset($is_unknown)) {
+			if ($is_unknown) {
+				$unknown_value++;
+			}
 		}
 		
 		// Set the title and time format
@@ -2799,15 +2801,15 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	': ' . $graph_stats['sum']['avg'] . '    ' . __('Min. Value').$series_suffix_str . ': ' . $graph_stats['sum']['min'] . '   ' . __('Units').$series_suffix_str . ': ' . $unit;
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
-	if($show_events) {
+	if ($show_events) {
 		$legend['event'.$series_suffix] = __('Events').$series_suffix_str;
 		$chart_extra_data['legend_events'] = $legend['event'.$series_suffix];
 	}
-	if($show_alerts) {
+	if ($show_alerts) {
 		$legend['alert'.$series_suffix] = __('Alerts').$series_suffix_str;
 		$chart_extra_data['legend_alerts'] = $legend['alert'.$series_suffix];
 	}
-	if($show_unknown) {
+	if ($show_unknown) {
 		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
 		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix];
 	}
@@ -2825,13 +2827,13 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	//$legend['baseline'.$series_suffix] = __('Baseline').$series_suffix_str;
 	/////////////////////////////////////////////////////////////////////////////////////////
-	if($show_events) {
+	if ($show_events) {
 		$color['event'.$series_suffix] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
 	}
-	if($show_alerts) {
+	if ($show_alerts) {
 		$color['alert'.$series_suffix] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
 	}
-	if($show_unknown) {
+	if ($show_unknown) {
 		$color['unknown'.$series_suffix] = array('border' => '#999999', 'color' => '#999999', 'alpha' => 50);
 	}
 	$color['max'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
@@ -2872,7 +2874,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$unit_name, $show_alerts, $avg_only, $date-$period, $series_suffix, 
 		$series_suffix_str, $show_unknown);
-		switch($compare) {
+		switch ($compare) {
 			case 'separated':
 				// Store the chart calculated
 				$chart_prev = $chart;
@@ -2889,7 +2891,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 				$legend_prev = $legend;
 				$series_type_prev = $series_type;
 				$color_prev = $color;
-				foreach($color_prev as $k => $col) {
+				foreach ($color_prev as $k => $col) {
 					$color_prev[$k]['color'] = '#'.get_complementary_rgb($color_prev[$k]['color']);
 				}
 				break;
@@ -2900,7 +2902,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	
 	if ($compare === 'overlapped') {
 		$i = 0;
-		foreach($chart as $k=>$v) {
+		foreach ($chart as $k=>$v) {
 			$chart[$k] = array_merge($v,$chart_prev[$i]);
 			$i++;
 		}

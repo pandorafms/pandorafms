@@ -87,12 +87,12 @@ if ($agent_to_delete) {
 	
 	// Check if the remote config file still exist
 	if (isset ($config["remote_config"])) {
-			$agent_md5 = md5 (agents_get_name($id_agente, ""), FALSE);
-			
-			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5") ||
-				file_exists ($config["remote_config"]."/conf/".$agent_md5.".conf")) {
-				ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
-			}
+		$agent_md5 = md5 (agents_get_name($id_agente, ""), FALSE);
+		
+		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5") ||
+			file_exists ($config["remote_config"]."/conf/".$agent_md5.".conf")) {
+			ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
+		}
 	}
 }
 
@@ -253,7 +253,7 @@ if ($ag_group > 0) {
 			%s',
 		$ag_group, $search_sql);
 	$total_agents = db_get_sql ($sql);
-
+	
 	$ag_groups = array();
 	$ag_groups = (array)$ag_group;
 	if ($recursion) {

@@ -1,3 +1,10 @@
+2013-05-13 Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_graph.php: fixed PHP warnings.
+	
+	* godmode/agentes/modificar_agente.php,
+	include/functions_agents.php: cleaned source code style.
+
 2013-05-10 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/snmpconsole/snmp_browser.php: fixed the url to pure.

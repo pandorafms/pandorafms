@@ -1,3 +1,8 @@
+2013-05-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Directly call snmptranslate, since
+	  SNMP::translateObj does not seem to load enterprise MIBs.
+
 2013-04-24  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_db.pl: patched the code of tagente_datos purge to have n chunks, 

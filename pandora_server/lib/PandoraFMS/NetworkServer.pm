@@ -530,17 +530,16 @@ sub exec_network_module ($$$$) {
 sub translate_obj ($$$) {
 	my ($dbh, $obj, $module_id) = @_;
 
-	# SNMP is not thread safe
-	$SNMPSem->down ();
-	my $oid = SNMP::translateObj ($obj);
-	$SNMPSem->up ();
+	# Translate!
+	my $oid = `snmptranslate -On -mALL $obj 2>/dev/null`;
+	if ($? != 0) {
 
-	# Could not translate OID, disable the module
-	if (! defined ($oid)) {
+		# Could not translate OID, disable the module
 		db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1 WHERE id_agente_modulo = ?', $module_id);
 		return '';
 	}
-	
+	chomp($oid);
+
 	# Update module configuration
 	db_do ($dbh, 'UPDATE tagente_modulo SET snmp_oid = ? WHERE id_agente_modulo = ?', $oid, $module_id);
 	

@@ -60,20 +60,13 @@ if ($delete_msg) {
 if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
 	
-	db_process_sql_begin();
-	
 	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tmensajes',
 			array ('id_mensaje' => $id));
 		
 		if ($result === false) {
-			db_process_sql_rollback();
 			break;
 		}
-	}
-	
-	if ($result !== false) {
-		db_process_sql_commit();
 	}
 	
 	ui_print_result_message ($result,

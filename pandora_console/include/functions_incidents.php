@@ -242,9 +242,7 @@ function incidents_delete_incident ($id_incident) {
 	$attachments = array ();
 	$errors = 0;
 	
-	//Start transaction
-	db_process_sql_begin ();
-		
+	
 	foreach ($ids as $id_inc) {
 		//Delete incident
 		$ret = db_process_sql_delete('tincidencia', array('id_incidencia' => $id_inc));
@@ -267,11 +265,8 @@ function incidents_delete_incident ($id_incident) {
 	}
 	
 	if ($errors > 0) {
-		//This will also rollback the audit log
-		db_process_sql_rollback ();
 		return false;
 	}
-	db_process_sql_commit ();
 	
 	return true;
 }
@@ -288,12 +283,6 @@ function incidents_delete_note ($id_note, $transact = true) {
 	$id_note = (array) safe_int ($id_note, 1); //cast as array
 	$errors = 0;
 	
-	//Start transaction
-	if ($transact == true){
-		db_process_sql_begin ();
-		db_process_sql_commit ();
-	}
-	
 	//Delete notes
 	foreach ($id_note as $id) {
 		$ret = db_process_sql_delete ('tnota', array ('id_nota' => $id));
@@ -302,15 +291,7 @@ function incidents_delete_note ($id_note, $transact = true) {
 		}
 	}
 	
-	if ($transact == true && $errors > 0) {
-		db_process_sql_rollback ();
-		return false;
-	}
-	elseif ($transact == true) {
-		db_process_sql_commit ();
-		return true;
-	}
-	elseif ($errors > 0) {
+	if ($errors > 0) {
 		return false;
 	}
 	else {
@@ -332,11 +313,6 @@ function incidents_delete_attach ($id_attach, $transact = true) {
 	$id_attach = (array) safe_int ($id_attach, 1); //cast as array
 	$errors = 0;
 	
-	//Start transaction
-	if ($transact == true) {
-		db_process_sql_begin ();
-	}
-	
 	//Delete attachment
 	foreach ($id_attach as $id) {
 		$filename = db_get_value ("filename", "tattachment", "id_attachment", $id);
@@ -348,15 +324,7 @@ function incidents_delete_attach ($id_attach, $transact = true) {
 		unlink ($config["attachment_store"]."/pand".$id."_".$filename);
 	}
 	
-	if ($transact == true && $errors > 0) {
-		db_process_sql_rollback ();
-		return false;
-	}
-	elseif ($transact == true) {
-		db_process_sql_commit ();
-		return true;
-	}
-	elseif ($errors > 0) {
+	if ($errors > 0) {
 		return false;
 	}
 	else {

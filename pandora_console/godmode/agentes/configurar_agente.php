@@ -1101,7 +1101,6 @@ if ($delete_module) { // DELETE agent module !
 	
 	//Init transaction
 	$error = 0;
-	db_process_sql_begin ();
 	
 	// First delete from tagente_modulo -> if not successful, increment
 	// error. NOTICE that we don't delete all data here, just marking for deletion
@@ -1203,11 +1202,9 @@ if ($delete_module) { // DELETE agent module !
 	
 	//Check for errors
 	if ($error != 0) {
-		db_process_sql_rollback ();
 		ui_print_error_message(__('There was a problem deleting the module'));
 	}
 	else {
-		db_process_sql_commit ();
 		ui_print_success_message(__('Module deleted succesfully'));
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
@@ -1293,8 +1290,6 @@ if ($updateGIS) {
 	$previusAgentGISData = db_get_row_sql("SELECT *
 		FROM tgis_data_status WHERE tagente_id_agente = " . $idAgente);
 	
-	db_process_sql_begin();
-	
 	db_process_sql_update('tagente', array('update_gis_data' => $updateGisData),
 		array('id_agente' => $idAgente));
 		
@@ -1336,7 +1331,6 @@ if ($updateGIS) {
 			"description" => __('Insert by Pandora Console')
 		));
 	}
-	db_process_sql_commit();
 }
 
 // -----------------------------------

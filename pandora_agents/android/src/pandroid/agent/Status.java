@@ -19,6 +19,7 @@ import java.util.Date;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -29,139 +30,154 @@ import android.widget.TextView;
 
 public class Status  extends Activity {
 	Handler h = new Handler();
-		
+
 	/** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        if(Core.hasSim)
-        	setContentView(R.layout.status);
-        else
-        	setContentView(R.layout.statusnosim);
-        
-//        Core.loadLastValues(getApplicationContext());
-//        showLastValues();
-//        updateLastContactInfo();
-        //setButtonEvents();
-    }
-    //TODO maybe remove duplicate from onCreate
-    @Override
-    public void onResume(){
-    	super.onResume();
-    	
-    	if(Core.hasSim)
-        	setContentView(R.layout.status);
-        else
-        	setContentView(R.layout.statusnosim);
-    	
-    	Core.loadLastValues(getApplicationContext());
-        		
-        showLastValues();
-        		       		
-        updateLastContactInfo();
-        
-    }
-    
-    public void onStart(){
-    	super.onStart();
-    	
-    	// Update the UI each second 
-    	h.post(new Runnable() {
-        	@Override
-        	public void run() {
-        		
-        		Core.loadLastValues(getApplicationContext());
-        		
-        		showLastValues();
-        		       		
-        		updateLastContactInfo();
-        		
-        		h.postDelayed(this, 1000);
-        	}
-        });
-    }
-    
-    //For options
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	Intent i;
-        switch (item.getItemId()) {
-            case R.id.help_button_menu_options:
-            	i = new Intent(this, Help.class);
-            	startActivity(i);
-            	break;
-            case R.id.about_button_menu_options:
-            	i = new Intent(this, About.class);
-            	startActivity(i);
-            	break;
-        }
-        return true;
-    }
-    
-    
-    private void updateLastContactInfo() {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		if(Core.hasSim)
+			setContentView(R.layout.status);
+		else
+			setContentView(R.layout.statusnosim);
+
+		//        Core.loadLastValues(getApplicationContext());
+		//        showLastValues();
+		//        updateLastContactInfo();
+		//setButtonEvents();
+	}
+	//TODO maybe remove duplicate from onCreate
+	@Override
+	public void onResume(){
+		super.onResume();
+
+		if(Core.hasSim)
+			setContentView(R.layout.status);
+		else
+			setContentView(R.layout.statusnosim);
+
+		new GetLastValuesAsyncTask().execute();
+
+		updateLastContactInfo();
+
+	}
+
+	public void onStart(){
+		super.onStart();
+
+		// Update the UI each second 
+		h.post(new Runnable() {
+			@Override
+			public void run() {
+
+				new GetLastValuesAsyncTask().execute();
+
+				updateLastContactInfo();
+
+				h.postDelayed(this, 1000);
+			}
+		});
+	}
+
+	//For options
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.options_menu, menu);
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent i;
+		switch (item.getItemId()) {
+		case R.id.help_button_menu_options:
+			i = new Intent(this, Help.class);
+			startActivity(i);
+			break;
+		case R.id.about_button_menu_options:
+			i = new Intent(this, About.class);
+			startActivity(i);
+			break;
+		}
+		return true;
+	}
+
+	public class GetLastValuesAsyncTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			Core.loadLastValues(getApplicationContext());
+			return null;
+		}
+
+
+		@Override
+		protected void onPostExecute(Void unused)
+		{
+			showLastValues();
+		}
+
+
+	}// end onPostExecute
+
+
+
+	private void updateLastContactInfo() {
 		long lastContact = Core.lastContact;
 		int contactError = Core.contactError;
 		boolean alarmEnabled = Core.alarmEnabled;
 		Date date = new Date();
-        long timestamp = date.getTime() / 1000;
-        long timeAgo = -1;
-        
-        //loading until error or connects
-        TextView lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
+		long timestamp = date.getTime() / 1000;
+		long timeAgo = -1;
+
+		//loading until error or connects
+		TextView lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
 		lastContactInfo.setTextColor(Color.parseColor("#FF0000"));
 		lastContactInfo.setText(getString(R.string.loading));
-        
-        if(lastContact != -1){
-            timeAgo = timestamp - lastContact;
-        }
-        
+
+		if(lastContact != -1){
+			timeAgo = timestamp - lastContact;
+		}
+
 		int interval = Core.interval;
 
-        if(timeAgo >= interval) {
-        	timeAgo = 0;
-        }
-        
-    	String stringAgo = "";
-    	
-    	if(!alarmEnabled){
-    		lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
-    		lastContactInfo.setTextColor(Color.parseColor("#FF0000"));
-    		lastContactInfo.setText(getString(R.string.contact_stopped_str));
-    	}
-    	
-    	else if(contactError == 1) {
-        	lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
-    		lastContactInfo.setTextColor(Color.parseColor("#FF0000"));
-    		lastContactInfo.setText(getString(R.string.conctact_error_str));
-        	
-        }
-    	else if(lastContact == -1) {
-    		stringAgo = getString(R.string.never_str);
-    	}
-    	else if(timeAgo == 0) {
-    		stringAgo = getString(R.string.now_str);
-    	}
-    	//TODO
-    	else if(contactError == 0) {
-        	stringAgo = timeAgo + " " + getString(R.string.seconds_str);
-        	lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
-    		lastContactInfo.setTextColor(Color.parseColor("#00FF00"));
-    		lastContactInfo.setText(getString(R.string.last_contact_str) + stringAgo);
-        }
-       
-    }//end updateLastContactInfo
-	
+		if(timeAgo >= interval) {
+			timeAgo = 0;
+		}
+
+		String stringAgo = "";
+
+		if(!alarmEnabled){
+			lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
+			lastContactInfo.setTextColor(Color.parseColor("#FF0000"));
+			lastContactInfo.setText(getString(R.string.contact_stopped_str));
+		}
+
+		else if(contactError == 1) {
+			lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
+			lastContactInfo.setTextColor(Color.parseColor("#FF0000"));
+			lastContactInfo.setText(getString(R.string.conctact_error_str));
+
+		}
+		else if(lastContact == -1) {
+			stringAgo = getString(R.string.never_str);
+		}
+		else if(timeAgo == 0) {
+			stringAgo = getString(R.string.now_str);
+		}
+		//TODO
+		else if(contactError == 0) {
+			stringAgo = timeAgo + " " + getString(R.string.seconds_str);
+			lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo_label_str);
+			lastContactInfo.setTextColor(Color.parseColor("#00FF00"));
+			lastContactInfo.setText(getString(R.string.last_contact_str) + stringAgo);
+		}
+
+	}//end updateLastContactInfo
+
 	//Set layout values to current
-    private void showLastValues() {
-		
+	private void showLastValues() {
+
 		// latitude
 		TextView textView = (TextView)findViewById(R.id.latitude_value_str);
 		textView.setText("");
@@ -180,23 +196,23 @@ public class Status  extends Activity {
 		if (Core.batteryLevel != Core.CONST_INVALID_BATTERY_LEVEL) {
 			textView.setText("" + Core.batteryLevel);
 		}
-		
-		
+
+
 		/*
 		textView = (TextView)findViewById(R.id.orientation_value_str);
 		textView.setText("");
-		
+
 		if (Core.orientation != Core.CONST_INVALID_ORIENTATION) {
 			textView.setText("" + Core.orientation);
 		}
-		
+
 		textView = (TextView)findViewById(R.id.proximity_value_str);
 		textView.setText("");
 		if (Core.proximity != Core.CONST_INVALID_PROXIMITY) {
 			textView.setText("" + Core.proximity);
 		}
-		*/
-		
+		 */
+
 		// task
 		textView = (TextView)findViewById(R.id.task_value_str);
 		textView.setText("");
@@ -210,7 +226,7 @@ public class Status  extends Activity {
 			}
 			textView.setText(text);		
 		}
-		
+
 		// freeMemory
 		textView = (TextView)findViewById(R.id.memory_value_str);
 		textView.setText("");
@@ -226,7 +242,7 @@ public class Status  extends Activity {
 		if (Core.upTime != 0) {
 			textView.setText("" + Core.upTime+" "+ getString(R.string.seconds));
 		}
-		
+
 		//Only set values if sim present
 		//if no sim these views aren't present as different layout is loaded
 		if (Core.hasSim) {
@@ -234,48 +250,48 @@ public class Status  extends Activity {
 			textView = (TextView)findViewById(R.id.sim_id_value);
 			textView.setText("");
 			textView.setText("" + Core.simID);
-			
+
 			// networkOperator
 			textView = (TextView)findViewById(R.id.network_operator_value);
 			textView.setText("");
 			if (Core.networkOperator != null) {
 				textView.setText("" + Core.networkOperator);
 			}
-			
+
 			// networkType
 			textView = (TextView)findViewById(R.id.network_type_value);
 			textView.setText("");
 			if (Core.networkType != null) {
 				textView.setText("" + Core.networkType);
 			}
-			
+
 			// phoneType
 			textView = (TextView)findViewById(R.id.phone_type_value);
 			textView.setText("");
 			if(Core.phoneType != null)
 				textView.setText("" + Core.phoneType);
-						
+
 			// signalStrength
 			textView = (TextView)findViewById(R.id.signal_strength_value);
 			textView.setText("");
 			if(Core.signalStrength != 0)
 				textView.setText("" + Core.signalStrength+"dB");
-						
+
 			// SMSReceived
 			textView = (TextView)findViewById(R.id.sms_received_value);
 			textView.setText("");
 			textView.setText("" + Core.SMSReceived);
-		
+
 			// SMSSent
 			textView = (TextView)findViewById(R.id.sms_sent_value);
 			textView.setText("");
 			textView.setText("" + Core.SMSSent);
-				
+
 			// incomingCalls
 			textView = (TextView)findViewById(R.id.incoming_calls_value);
 			textView.setText("");
 			textView.setText("" + Core.incomingCalls);
-		
+
 			// missedCalls
 			textView = (TextView)findViewById(R.id.missed_calls_value);
 			textView.setText("");
@@ -285,28 +301,28 @@ public class Status  extends Activity {
 			textView = (TextView)findViewById(R.id.outgoing_calls_value);
 			textView.setText("");
 			textView.setText("" + Core.outgoingCalls);
-		
+
 			// receiveBytes
 			textView = (TextView)findViewById(R.id.receive_bytes_value);
 			textView.setText("");
 			textView.setText("" + Core.receiveBytes);
-		
+
 			// transmiteBytes
 			textView = (TextView)findViewById(R.id.transmit_bytes_value);
 			textView.setText("");
 			textView.setText("" + Core.transmitBytes);
-			
+
 			// roaming
 			textView = (TextView)findViewById(R.id.roaming_value);
 			textView.setText("");
 			textView.setText("" + Core.roaming);
-		
+
 		}//end simID if
-		
+
 	}
-	
+
 	//For debugging
-	
+
 	/* For debugging
 	private void setButtonEvents() {
         // Set update button events
@@ -314,49 +330,49 @@ public class Status  extends Activity {
         Button xml = (Button) findViewById(R.id.get_xml);
         Button hidexml = (Button) findViewById(R.id.hide_xml);
         Button stop = (Button) findViewById(R.id.stop);
-        
-        
+
+
         xml.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
         		updateLastXML();
         	}
         });
-        
+
         hidexml.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
         		hideLastXML();
         	}
         });
-        
+
         stop.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
         		Core.stopAgentListener();
         	}
         });
-        
+
         start.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
         		Core.restartAgentListener(getApplicationContext());
         	}
         });
-        
+
     }//end button events
-	
-	
-	
+
+
+
 	private void updateLastXML() {
-		
+
 		TextView xml = (TextView) this.findViewById(R.id.xml);
 		SharedPreferences agentPreferences = PandroidAgent.getSharedPrefs();
-		
+
 		String lastXML = agentPreferences.getString("lastXML", "[no data]");
 		xml.setText("Last XML builded: \n\n" + lastXML);
-		
+
 	}
 	private void hideLastXML(){
 		TextView xml = (TextView) this.findViewById(R.id.xml);
 		xml.setText("");
 	}
-	
-	*/
+
+	 */
 }

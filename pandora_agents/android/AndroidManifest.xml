@@ -15,78 +15,79 @@
 // GNU General Public License for more details. 
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="pandroid.agent"
-      android:versionCode="2"
-      android:versionName="1.5">
-      
+    package="pandroid.agent"
+    android:versionCode="2"
+    android:versionName="1.5" >
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
-	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-	<uses-permission android:name="android.permission.GET_TASKS"/>
-	<uses-permission android:name="android.permission.BATTERY_STATS"/>
-	<uses-permission android:name="android.permission.RECEIVE_SMS"/>
-	<uses-permission android:name="android.permission.READ_CONTACTS"/>
-	<uses-permission android:name="android.permission.READ_CALL_LOG"/>
-	<uses-permission android:name="android.permission.READ_SMS"/>
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-	
-	<uses-feature android:name="android.hardware.sensor.light" />
-	<uses-feature android:name="android.hardware.location" />
-	
-    <application android:icon="@drawable/ic_launcher" android:label="@string/app_name">
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.BATTERY_STATS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-feature android:name="android.hardware.sensor.light" />
+    <uses-feature android:name="android.hardware.location" />
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" >
         <activity
-        	android:name=".PandroidAgent"
-			android:label="@string/app_name"
-			android:configChanges="keyboardHidden|orientation" 
-			android:theme="@style/MainTheme"
-		>
+            android:name=".PandroidAgent"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:theme="@style/MainTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity android:name=".Status" />
         <activity android:name=".Setup" />
-        
-    	<service android:enabled="true" android:name="pandroid.agent.PandroidAgentListener" />
-		<receiver android:name="pandroid.agent.EventReceiver" />
-		
-		<receiver
-    		android:name="pandroid.agent.StartMyServiceAtBootReceiver"
-    		android:enabled="true"
-    		android:exported="true"
-    		android:label="StartMyServiceAtBootReceiver">
-    		<intent-filter>
-        		<action android:name="android.intent.action.BOOT_COMPLETED" />
-    		</intent-filter>
-		</receiver>
-		
-		<service android:enabled="true" android:name="pandroid.agent.MyStartService" />
-		
-		
-		<activity
-        	android:name=".About"
-        	android:label="@string/pandroid_agent_str"
-        	android:theme="@android:style/Theme.Dialog"
-        />
-		<activity
-        	android:name=".Help"
-        	android:label="@string/help_str"
-        	android:theme="@android:style/Theme.Dialog"
-        />
-		
-		<receiver android:name=".SMSBroadcastReceiver">
+
+        <service
+            android:name="pandroid.agent.PandroidAgentListener"
+            android:enabled="true" />
+
+        <receiver android:name="pandroid.agent.EventReceiver" />
+        <receiver
+            android:name="pandroid.agent.StartMyServiceAtBootReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="StartMyServiceAtBootReceiver" >
             <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        
+
+        <service
+            android:name="pandroid.agent.MyStartService"
+            android:enabled="true" />
+
+        <activity
+            android:name=".About"
+            android:label="@string/pandroid_agent_str"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".Help"
+            android:label="@string/help_str"
+            android:theme="@android:style/Theme.Dialog" />
+
+        <receiver android:name=".SMSBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" >
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
-    
-	
-	
-    <uses-sdk android:minSdkVersion="8"/>
-</manifest> 
+
+    <uses-sdk android:minSdkVersion="8" />
+
+</manifest>

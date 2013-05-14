@@ -22,31 +22,31 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-	public class SMSBroadcastReceiver extends BroadcastReceiver {
+public class SMSBroadcastReceiver extends BroadcastReceiver {
 
-	        private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
-	        private static final String TAG = "SMSBroadcastReceiver";
+	private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+	private static final String TAG = "SMSBroadcastReceiver";
 
-	        @Override
-	        public void onReceive(Context context, Intent intent) {
-	             Log.i(TAG, "Intent recieved: " + intent.getAction());
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		Log.i(TAG, "Intent recieved: " + intent.getAction());
 
-	                if (intent.getAction().equals(SMS_RECEIVED)) {
-	    
-	        			int defaultSMSReceived = 0;
-	        			int mode = Activity.MODE_PRIVATE;
-	        			
-	        			SharedPreferences pref = context.getSharedPreferences("PANDROID_DATA", mode);
-	        			int sms = pref.getInt("SMSReceived", defaultSMSReceived);
-	        			
-	        			sms++;
-	        			
-	        			SharedPreferences.Editor editor = pref.edit();
-	        			editor.putInt("SMSReceived", sms);
-	        			editor.commit();
-	        		
-	                }//end if
-       
-	        }//end onRecieve
+		if (intent.getAction().equals(SMS_RECEIVED)) {
+
+			int defaultSMSReceived = 0;
+			int mode = Activity.MODE_PRIVATE;
+
+			SharedPreferences pref = context.getSharedPreferences("PANDROID_DATA", mode);
+			int sms = pref.getInt("SMSReceived", defaultSMSReceived);
+
+			sms++;
+
+			SharedPreferences.Editor editor = pref.edit();
+			editor.putInt("SMSReceived", sms);
+			editor.commit();
+
+		}//end if
+
+	}//end onRecieve
 }//end class
 

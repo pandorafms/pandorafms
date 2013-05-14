@@ -12,12 +12,12 @@
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details. -->
+// GNU General Public License for more details.
+-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/setupnosim"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+    android:layout_height="fill_parent" >
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -31,15 +31,15 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
-                
+
                 <CheckBox
                     android:id="@+id/checkNotification"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingTop="5sp"
                     android:text="@string/notificationCheck"
                     android:textColor="#bbbbbb"
-                    android:textSize="14sp" 
-                    android:paddingTop="5sp"/>
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/field1"
@@ -52,7 +52,7 @@
                     android:id="@+id/serverAddrInput"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textNoSuggestions" 
+                    android:inputType="textNoSuggestions"
                     android:singleLine="true" />
 
                 <TextView
@@ -91,9 +91,9 @@
                     android:id="@+id/agentNameInput"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textNoSuggestions" 
+                    android:inputType="textNoSuggestions"
                     android:singleLine="true" />
-                
+
                 <TextView
                     android:id="@+id/field5"
                     android:layout_width="fill_parent"
@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:singleLine="true" />
-                
+
                 <TextView
                     android:id="@+id/field6"
                     android:layout_width="fill_parent"
@@ -119,19 +119,19 @@
                     android:layout_height="wrap_content"
                     android:inputType="textUri"
                     android:singleLine="true" />
-                
+
                 <Button
                     android:id="@+id/goToWebButton"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/go_to_web" />
-                
+
                 <TextView
                     android:id="@+id/field7"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/taskToReport" />
-                
+
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -148,7 +148,7 @@
                         android:layout_height="wrap_content"
                         android:visibility="gone" />
                 </LinearLayout>
-                
+
                 <CheckBox
                     android:id="@+id/checkTaskReport"
                     android:layout_width="wrap_content"
@@ -180,7 +180,7 @@
                     android:text="@string/memoryReport"
                     android:textColor="#bbbbbb"
                     android:textSize="14sp" />
-                
+
                 <CheckBox
                     android:id="@+id/checkDeviceUpTimeReport"
                     android:layout_width="wrap_content"
@@ -188,7 +188,7 @@
                     android:text="@string/uptimeReport"
                     android:textColor="#bbbbbb"
                     android:textSize="14sp" />
-                                
+
                 <CheckBox
                     android:id="@+id/checkInventoryReport"
                     android:layout_width="wrap_content"
@@ -196,7 +196,7 @@
                     android:text="@string/InventoryReport"
                     android:textColor="#bbbbbb"
                     android:textSize="14sp" />
-                
+
                 <CheckBox
                     android:id="@+id/checkHelloSignalReport"
                     android:layout_width="wrap_content"
@@ -204,31 +204,30 @@
                     android:text="@string/HelloSignalReport"
                     android:textColor="#bbbbbb"
                     android:textSize="14sp" />
-                 
+
                 <Button
                     android:id="@+id/update"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/update" />
-                
+
                 <Button
                     android:id="@+id/set_password"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/set_password" />
-				
-				<Button
+
+                <Button
                     android:id="@+id/stopAgent"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/stopAgent" />
-				
-               <Button
+
+                <Button
                     android:id="@+id/restartAgent"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/restartAgent" />
-                
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

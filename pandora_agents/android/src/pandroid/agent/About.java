@@ -22,13 +22,13 @@ import android.widget.TextView;
 
 public class About extends Activity {
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        setContentView(R.layout.about);
-        
-        TextView text = (TextView) findViewById(R.id.url_pandora);
-        text.setText(Html.fromHtml("<a href='http://pandorafms.com/'>PandoraFMS.com</a>"));
-        text.setMovementMethod(LinkMovementMethod.getInstance());
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setContentView(R.layout.about);
+
+		TextView text = (TextView) findViewById(R.id.url_pandora);
+		text.setText(Html.fromHtml("<a href='http://pandorafms.com/'>PandoraFMS.com</a>"));
+		text.setMovementMethod(LinkMovementMethod.getInstance());
 	}
 }

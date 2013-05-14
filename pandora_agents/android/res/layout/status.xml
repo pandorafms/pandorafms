@@ -14,108 +14,94 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details. 
 -->
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	
->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
-	<ScrollView
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:layout_margin="5dp" >
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="5dp" >
 
-		<LinearLayout
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:orientation="vertical" 
-		>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
-		    <TextView
-		        android:id="@+id/last_values_label_str"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_gravity="center_horizontal"
-		        android:text="@string/last_values"
-		        android:textSize="18sp"
-		        android:textStyle="bold" 
-		    />
+            <TextView
+                android:id="@+id/last_values_label_str"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/last_values"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-		    <RelativeLayout
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content" 
-		    >
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
 
-		        <TextView
-		            android:id="@+id/lastContactInfo_label_str"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:textSize="14sp"
-		            android:textStyle="bold" 
-		        />
+                <TextView
+                    android:id="@+id/lastContactInfo_label_str"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-		        <ImageView
-		            android:id="@+id/img_logo"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_alignParentRight="true"
-		            android:padding="5dp"
-		            android:src="@drawable/logo" 
-		        />
+                <ImageView
+                    android:id="@+id/img_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:padding="5dp"
+                    android:src="@drawable/logo" />
 
-		        <TextView
-		            android:id="@+id/latitude_label_str"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_below="@id/lastContactInfo_label_str"
-		            android:text="@string/latitude"
-		            android:textSize="14sp"
-		            android:textStyle="bold" 
-		        />
+                <TextView
+                    android:id="@+id/latitude_label_str"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/lastContactInfo_label_str"
+                    android:text="@string/latitude"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-		        <TextView
-		            android:id="@+id/latitude_value_str"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_below="@id/latitude_label_str" 
-		        />
+                <TextView
+                    android:id="@+id/latitude_value_str"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/latitude_label_str" />
 
-		        <TextView
-		            android:id="@+id/longitude_label_str"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_below="@id/latitude_value_str"
-		            android:text="@string/longitude"
-		            android:textSize="14sp"
-		            android:textStyle="bold" 
-		        />
+                <TextView
+                    android:id="@+id/longitude_label_str"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/latitude_value_str"
+                    android:text="@string/longitude"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-		        <TextView
-		            android:id="@+id/longitude_value_str"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_below="@id/longitude_label_str" 
-		        />
+                <TextView
+                    android:id="@+id/longitude_value_str"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/longitude_label_str" />
 
-		        <TextView
-		            android:id="@+id/battery_label_str"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_below="@id/longitude_value_str"
-		            android:text="@string/battery_level"
-		            android:textSize="14sp"
-		            android:textStyle="bold" 
-		        />
+                <TextView
+                    android:id="@+id/battery_label_str"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/longitude_value_str"
+                    android:text="@string/battery_level"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-		        <TextView
-		            android:id="@+id/battery_value_str"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_below="@id/battery_label_str" 
-		        />
-		        
-		        <!--
+                <TextView
+                    android:id="@+id/battery_value_str"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/battery_label_str" />
+
+                <!--
 		        <TextView
 					android:id="@+id/orientation_label_str"
 					android:layout_width="wrap_content"
@@ -146,355 +132,310 @@
 					android:layout_height="wrap_content"
 					android:layout_below="@id/proximity_label_str"
 				/>
-		        -->
-		    </RelativeLayout>
+                -->
+            </RelativeLayout>
 
-		    <TextView
-		        android:id="@+id/task_label_str"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:text="@string/task"
-		        android:textSize="14sp"
-		        android:textStyle="bold" 
-		    />
+            <TextView
+                android:id="@+id/task_label_str"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/task"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-		    <TextView
-		        android:id="@+id/task_value_str"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content" 
-		    />
+            <TextView
+                android:id="@+id/task_value_str"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-		    <TextView
-		        android:id="@+id/memory_label_str"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:text="@string/memory"
-		        android:textSize="14sp"
-		        android:textStyle="bold" 
-		    />
+            <TextView
+                android:id="@+id/memory_label_str"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/memory"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-		    <TextView
-		        android:id="@+id/memory_value_str"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content" 
-		    />
-			
-		    <TableLayout
-		        android:layout_width="match_parent"
-		        android:layout_height="0dp"
-		        android:layout_weight="1.18" 
-		    >
-		        <TableRow
-		            android:id="@+id/tableRow0"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		     		<TextView
-		    		 	android:id="@+id/uptime"
-		      		 	android:layout_width="wrap_content"
-		      		 	android:layout_height="wrap_content"
-		        	 	android:text="@string/uptime"
-		        	 	android:textSize="14sp"
-		        	 	android:textStyle="bold" 
-		        	/>
+            <TextView
+                android:id="@+id/memory_value_str"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-		   			<TextView
-				     	android:id="@+id/uptime_value"
-				     	android:layout_width="wrap_content"
-		       		 	android:layout_height="wrap_content" 
-		       		/>
-		   		</TableRow>
-		        <TableRow
-		            android:id="@+id/tableRow1"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		   			
-		            <TextView
-		        		android:id="@+id/sim_id"
-		       	 		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content"
-		        		android:text="@string/sim_id"
-		       	 		android:textSize="14sp"
-		        		android:textStyle="bold"
-		        	/>
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1.18" >
 
-		    		<TextView
-		       		 	android:id="@+id/sim_id_value"
-		       		 	android:layout_width="wrap_content"
-		       		 	android:layout_height="wrap_content" 
-		       		/>
-		        </TableRow>
+                <TableRow
+                    android:id="@+id/tableRow0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
 
-		        <TableRow
-		            android:id="@+id/tableRow2"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    		
-		            <TextView
-		        		android:id="@+id/network_operator"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content"
-		        		android:text="@string/network_operator"
-		        		android:textSize="14sp"
-		        		android:textStyle="bold" 
-		        		android:paddingRight="5dip"
-		        	/>
+                    <TextView
+                        android:id="@+id/uptime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/uptime"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-		    		<TextView
-		        		android:id="@+id/network_operator_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content" 
-		        	/>
-		        </TableRow>
+                    <TextView
+                        android:id="@+id/uptime_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
 
-		        <TableRow
-		            android:id="@+id/tableRow3"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    
-		            <TextView
-		        		android:id="@+id/network_type"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content"
-		        		android:text="@string/network_type"
-		        		android:textSize="14sp"
-		        		android:textStyle="bold" 
-		        	/>
+                <TableRow
+                    android:id="@+id/tableRow1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
 
-		    		<TextView
-		        		android:id="@+id/network_type_value"
-		        		android:layout_width="wrap_content"
-		       			android:layout_height="wrap_content" 
-		       		/>
-		            
-		        </TableRow>
+                    <TextView
+                        android:id="@+id/sim_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sim_id"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-		        <TableRow
-		            android:id="@+id/tableRow4"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    
-		            <TextView
-		        		android:id="@+id/phone_type"
-		        		android:layout_width="wrap_content"
-		       			android:layout_height="wrap_content"
-		        		android:text="@string/phone_type"
-		        		android:textSize="14sp"
-		        		android:textStyle="bold" 
-		        	/>
+                    <TextView
+                        android:id="@+id/sim_id_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
 
-		    		<TextView
-		        		android:id="@+id/phone_type_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content" 
-		        	/>
-		        </TableRow>
-		        
-		        <TableRow
-		            android:id="@+id/tableRow5"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    
-		            <TextView
-		        		android:id="@+id/signal_strength"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content"
-		       			android:text="@string/signal_strength"
-		        		android:textSize="14sp"
-		        		android:textStyle="bold" 
-		        	/>
+                <TableRow
+                    android:id="@+id/tableRow2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
 
-		    		<TextView
-		       	 		android:id="@+id/signal_strength_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content" 
-		        	/>
-		        </TableRow>
-		        
-		        <TableRow
-		            android:id="@+id/tableRow6"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		         >
-		    
-		             <TextView
-		        		android:id="@+id/sms_received"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content"
-		        		android:text="@string/sms_received"
-		        		android:textSize="14sp"
-		        		android:textStyle="bold" 
-		        	/>
+                    <TextView
+                        android:id="@+id/network_operator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="5dip"
+                        android:text="@string/network_operator"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-		   			<TextView
-		        		android:id="@+id/sms_received_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content" 
-		        	/>
-		        </TableRow>
-		        
-		        <TableRow
-		            android:id="@+id/tableRow7"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    
-		             <TextView
-		        		android:id="@+id/sms_sent"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content"
-		        		android:text="@string/sms_sent"
-		        		android:textSize="14sp"
-		        		android:textStyle="bold" 
-		        	/>
+                    <TextView
+                        android:id="@+id/network_operator_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
 
-		    		<TextView
-		        		android:id="@+id/sms_sent_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content"
-		        	/>
-		        </TableRow>
-		        
-		        <TableRow
-		            android:id="@+id/tableRow8"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    
-		            <TextView
-		        		android:id="@+id/incoming_calls"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content"
-		        		android:text="@string/incoming_calls"
-		        		android:textSize="14sp"
-		        		android:textStyle="bold" 
-		        	/>
+                <TableRow
+                    android:id="@+id/tableRow3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
 
-		    		<TextView
-		        		android:id="@+id/incoming_calls_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content" 
-		        	/>
-		        </TableRow>
-		        
-		        <TableRow
-		            android:id="@+id/tableRow9"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    
-		             <TextView
-		        		android:id="@+id/missed_calls"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content"
-		        		android:text="@string/missed_calls"
-		        		android:textSize="14sp"
-		        		android:textStyle="bold" 
-		        	/>
+                    <TextView
+                        android:id="@+id/network_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/network_type"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-		    		<TextView
-		        		android:id="@+id/missed_calls_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content" 
-		        	/>
-		        </TableRow>
-		        
-		        <TableRow
-		            android:id="@+id/tableRow10"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    
-		       		<TextView
-		      	  		android:id="@+id/outgoing_calls"
-		       	 		android:layout_width="wrap_content"
-		       	 		android:layout_height="wrap_content"
-		       	 		android:text="@string/outgoing_calls"
-		       	 		android:textSize="14sp"
-		       	 		android:textStyle="bold" 
-		       	 	/>
+                    <TextView
+                        android:id="@+id/network_type_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
 
-		    		<TextView
-		        		android:id="@+id/outgoing_calls_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content" 
-		        	/>
-		        </TableRow>
-		        
-		        <TableRow
-		            android:id="@+id/tableRow11"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    
-		       		<TextView
-		      	  		android:id="@+id/receive_bytes"
-		       	 		android:layout_width="wrap_content"
-		       	 		android:layout_height="wrap_content"
-		       	 		android:text="@string/receive_bytes"
-		       	 		android:textSize="14sp"
-		       	 		android:textStyle="bold" 
-		       	 	/>
+                <TableRow
+                    android:id="@+id/tableRow4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
 
-		    		<TextView
-		        		android:id="@+id/receive_bytes_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content" 
-		        	/>
-		        </TableRow>
-		        
-		        <TableRow
-		            android:id="@+id/tableRow12"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    
-		       		<TextView
-		      	  		android:id="@+id/transmit_bytes"
-		       	 		android:layout_width="wrap_content"
-		       	 		android:layout_height="wrap_content"
-		       	 		android:text="@string/transmit_bytes"
-		       	 		android:textSize="14sp"
-		       	 		android:textStyle="bold" 
-		       	 	/>
+                    <TextView
+                        android:id="@+id/phone_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/phone_type"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-		    		<TextView
-		        		android:id="@+id/transmit_bytes_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content" 
-		        	/>
-		        </TableRow>
-		        
-		        <TableRow
-		            android:id="@+id/tableRow13"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content" 
-		        >
-		    		<TextView
-		      	  		android:id="@+id/roaming"
-		       	 		android:layout_width="wrap_content"
-		       	 		android:layout_height="wrap_content"
-		       	 		android:text="@string/roaming"
-		       	 		android:textSize="14sp"
-		       	 		android:textStyle="bold" 
-		       	 	/>
+                    <TextView
+                        android:id="@+id/phone_type_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
 
-		    		<TextView
-		        		android:id="@+id/roaming_value"
-		        		android:layout_width="wrap_content"
-		        		android:layout_height="wrap_content" 
-		        	/>
-		            
-		        </TableRow>
-		    </TableLayout>
+                <TableRow
+                    android:id="@+id/tableRow5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
 
-	
-			<!-- for debugging
+                    <TextView
+                        android:id="@+id/signal_strength"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/signal_strength"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/signal_strength_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/sms_received"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sms_received"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/sms_received_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/sms_sent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sms_sent"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/sms_sent_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/incoming_calls"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/incoming_calls"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/incoming_calls_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/missed_calls"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/missed_calls"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/missed_calls_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/outgoing_calls"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/outgoing_calls"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/outgoing_calls_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/receive_bytes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/receive_bytes"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/receive_bytes_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/transmit_bytes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/transmit_bytes"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/transmit_bytes_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tableRow13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/roaming"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/roaming"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/roaming_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+            </TableLayout>
+
+            <!--
+            for debugging
 		    <Button
 		        android:id="@+id/start"
 		        android:layout_width="fill_parent"
@@ -527,8 +468,8 @@
 		        android:layout_width="fill_parent"
 		        android:layout_height="wrap_content"
 		        android:text="Hide xml" />
-		          -->
-		</LinearLayout>
+            -->
+        </LinearLayout>
+    </ScrollView>
 
-	</ScrollView>
 </LinearLayout>

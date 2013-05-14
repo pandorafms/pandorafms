@@ -57,20 +57,13 @@ if ($delete){
 if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
 	
-	db_process_sql_begin();
-	
 	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tevent_filter',
 			array ('id_filter' => $id));
 		
 		if ($result === false) {
-			db_process_sql_rollback();
 			break;
 		}
-	}
-	
-	if ($result !== false) {
-		db_process_sql_commit();
 	}
 	
 	if ($result !== false) $result = true;
@@ -148,7 +141,8 @@ if (isset($data)) {
 	echo "</form>";
 }
 else {
-	echo "<div class='nf'>".__('There are no defined filters')."</div>";
+	echo "<div class='nf'>" .
+		__('There are no defined filters') . "</div>";
 }
 
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';
@@ -160,12 +154,12 @@ echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/eve
 ?>
 
 <script type="text/javascript">
-function check_all_checkboxes() {
-	if ($("input[name=all_delete]").attr('checked')) {
-		$(".check_delete").attr('checked', true);
+	function check_all_checkboxes() {
+		if ($("input[name=all_delete]").attr('checked')) {
+			$(".check_delete").attr('checked', true);
+		}
+		else {
+			$(".check_delete").attr('checked', false);
+		}
 	}
-	else {
-		$(".check_delete").attr('checked', false);
-	}
-}
 </script>

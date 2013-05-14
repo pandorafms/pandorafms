@@ -73,8 +73,6 @@ if ($delete) {
 if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
 	
-	db_process_sql_begin();
-	
 	foreach ($ids as $id) {
 		$id_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id);	
 		$result = db_process_sql_delete ('tnetflow_filter',
@@ -84,13 +82,8 @@ if ($multiple_delete) {
 			array ('id_filter' => $id_filter));
 		
 		if ($result === false) {
-			db_process_sql_rollback();
 			break;
 		}
-	}
-	
-	if ($result !== false) {
-		db_process_sql_commit();
 	}
 	
 	if ($result !== false) $result = true;

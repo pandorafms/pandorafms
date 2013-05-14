@@ -36,19 +36,19 @@ $id = (int)get_parameter('id');
 
 $buttons['report_list']['active'] = false;
 $buttons['report_list'] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report">'
-		. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
-		. '</a>';
-		
+	. html_print_image ("images/edit.png", true, array ("title" => __('Report list')))
+	. '</a>';
+
 $buttons['report_items']['active'] = true;
 $buttons['report_items']['text'] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_item_list&id='.$id.'">'
-		. html_print_image ("images/god6.png", true, array ("title" => __('Report items')))
-		. '</a>';
-		
+	. html_print_image ("images/god6.png", true, array ("title" => __('Report items')))
+	. '</a>';
+
 $buttons['edit_report']['active'] = false;
 $buttons['edit_report']['text'] = '<a href="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report_form&id='.$id.'">'
-		. html_print_image ("images/config.png", true, array ("title" => __('Edit report')))
-		. '</a>';
-		
+	. html_print_image ("images/config.png", true, array ("title" => __('Edit report')))
+	. '</a>';
+
 //Header
 if (! defined ('METACONSOLE')) {
 	ui_print_page_header (__('Report items'), "images/gm_netflow.png", false, "", true, $buttons);
@@ -69,7 +69,10 @@ $id_rc = (int) get_parameter ('id_rc');
 
 if ($order) {
 	$dir = get_parameter ('dir');
-	$old_order = db_get_value_sql('SELECT `order` FROM tnetflow_report_content WHERE id_rc = ' . $id_rc);
+	$old_order = db_get_value_sql('
+		SELECT `order`
+		FROM tnetflow_report_content
+		WHERE id_rc = ' . $id_rc);
 	switch ($dir) {
 		case 'up':
 			$new_order = $old_order-1;
@@ -78,20 +81,26 @@ if ($order) {
 			$new_order = $old_order + 1;
 			break;
 	}
-	$sql = "select id_rc from tnetflow_report_content where id_report=$id and `order`=$new_order";
+	
+	$sql = "SELECT id_rc
+		FROM tnetflow_report_content
+		WHERE id_report=$id AND `order`=$new_order";
+	
 	$item_cont = db_get_row_sql($sql);
 	$id_item_mod = $item_cont['id_rc'];
-	$result = db_process_sql_update('tnetflow_report_content', array('`order`' => $new_order), array('id_rc' => $id_rc));
-	$result2 = db_process_sql_update('tnetflow_report_content', array('`order`' => $old_order), array('id_rc' => $id_item_mod));
+	$result = db_process_sql_update('tnetflow_report_content',
+		array('`order`' => $new_order), array('id_rc' => $id_rc));
+	$result2 = db_process_sql_update('tnetflow_report_content',
+		array('`order`' => $old_order), array('id_rc' => $id_item_mod));
 }
 
 if ($delete) {
 	$result = db_process_sql_delete ('tnetflow_report_content',
 		array ('id_rc' => $id_rc));
-		
+	
 	if ($result !== false) $result = true;
 	else $result = false;
-		
+	
 	ui_print_result_message ($result,
 		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));
@@ -100,21 +109,14 @@ if ($delete) {
 
 if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
-
-	db_process_sql_begin();
 	
 	foreach ($ids as $id_delete) {
 		$result = db_process_sql_delete ('tnetflow_report_content',
 			array ('id_rc' => $id_delete));
 	
 		if ($result === false) {
-			db_process_sql_rollback();
 			break;
 		}
-	}
-	
-	if ($result !== false) {
-		db_process_sql_commit();
 	}
 	
 	if ($result !== false) $result = true;
@@ -133,9 +135,9 @@ $filter['limit'] = (int) $config['block_size'];
 $reports_item = db_get_all_rows_filter ('tnetflow_report_content', $filter);
 
 $reports_item = db_get_all_rows_sql("
-		SELECT *
-		FROM tnetflow_report_content
-		WHERE id_report=$id ORDER BY `order`");
+	SELECT *
+	FROM tnetflow_report_content
+	WHERE id_report=$id ORDER BY `order`");
 
 if ($reports_item === false)
 	$reports_item = array ();
@@ -148,7 +150,7 @@ $table->head[2] = __('Description');
 $table->head[3] = __('Max. values');
 $table->head[4] = __('Chart type');
 $table->head[5] = __('Action') . html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
-	
+
 $table->style = array ();
 $table->style[1] = 'font-weight: bold';
 $table->align = array ();
@@ -253,26 +255,25 @@ else {
 	echo "<div class='nf'>".__('There are no defined items')."</div>";
 }
 
-	echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report_item&id='.$id.'">';
-	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
-	html_print_submit_button (__('Create item'), 'crt', false, 'class="sub wand"');
-	echo "</div>";
-	echo "</form>";
+echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=' . $config['homedir'] . '/godmode/netflow/nf_report_item&id='.$id.'">';
+echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+html_print_submit_button (__('Create item'), 'crt', false, 'class="sub wand"');
+echo "</div>";
+echo "</form>";
 
 ?>
 
 <script type="text/javascript">
-
-$(document).ready (function () {
-	$("textarea").TextAreaResizer ();
-});
-
-function check_all_checkboxes() {
-	if ($("input[name=all_delete]").attr('checked')) {
-		$(".check_delete").attr('checked', true);
+	$(document).ready (function () {
+		$("textarea").TextAreaResizer ();
+	});
+	
+	function check_all_checkboxes() {
+		if ($("input[name=all_delete]").attr('checked')) {
+			$(".check_delete").attr('checked', true);
+		}
+		else {
+			$(".check_delete").attr('checked', false);
+		}
 	}
-	else {
-		$(".check_delete").attr('checked', false);
-	}
-}
 </script>

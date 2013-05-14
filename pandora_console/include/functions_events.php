@@ -363,8 +363,6 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1, $m
 	
 	events_comment($id_event, '', "Change status to $status_string", $meta, $history);
 	
-	db_process_sql_begin ();
-	
 	$alerts = array();
 	
 	foreach ($id_event as $event) {
@@ -397,12 +395,9 @@ function events_validate_event ($id_event, $similars = true, $new_status = 1, $m
 			array('id_evento' => $event), 'AND', false);
 		
 		if (($ret === false) || ($ret === 0)) {
-			db_process_sql_rollback ();
 			return false;
 		}
 	}
-	
-	db_process_sql_commit ();
 	
 	if ($meta && !empty($alerts)) {
 		$server = metaconsole_get_connection_by_id ($server_id);

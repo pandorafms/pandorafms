@@ -729,8 +729,6 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		}
 	}
 	
-	db_process_sql_begin ();
-	
 	if ($modules === false)
 		return false;
 	
@@ -739,13 +737,10 @@ function process_manage_edit ($module_name, $agents_select = null) {
 			$module['id_agente_modulo'], $values, true, $update_tags);
 		
 		if (is_error($result)) {
-			db_process_sql_rollback ();
 			
 			return false;
 		}
 	}
-	
-	db_process_sql_commit ();
 	
 	return true;
 }

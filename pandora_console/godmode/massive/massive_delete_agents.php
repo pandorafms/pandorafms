@@ -39,8 +39,6 @@ function process_manage_delete ($id_agents) {
 	$copy_modules = (bool) get_parameter ('copy_modules');
 	$copy_alerts = (bool) get_parameter ('copy_alerts');
 	
-	db_process_sql_begin ();
-	
 	$error = false;
 	$count_deleted = 0;
 	$agent_id_restore = 0;
@@ -54,17 +52,16 @@ function process_manage_delete ($id_agents) {
 	}
 	
 	if (! $success) {
-		ui_print_error_message(__('There was an error deleting the agent, the operation has been cancelled') . '.&nbsp;' . __('Could not delete agent').' '.agents_get_name ($agent_id_restore));
-		
-		//echo '<h3 class="error">'.__('There was an error deleting the agent, the operation has been cancelled').'</h3>';
-		//echo '<h4>'.__('Could not delete agent').' '.agents_get_name ($id_agent).'</h4>';
-		db_process_sql_rollback ();
+		ui_print_error_message(
+			sprintf(
+				__('There was an error deleting the agent, the operation has been cancelled Could not delete agent %s'),
+				agents_get_name ($agent_id_restore)));
 		
 		return false;
 	}
 	else {
-		ui_print_success_message(__('Successfully deleted') . '&nbsp;(' . $count_deleted . ')');
-		db_process_sql_commit ();
+		ui_print_success_message(sprintf(__('Successfully deleted (%s)',
+			$count_deleted)));
 		
 		return true;
 	}

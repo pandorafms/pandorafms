@@ -81,9 +81,6 @@ function messages_create_group ($usuario_origen, $dest_group, $subject, $mensaje
 		return true;
 	}
 	
-	//Start transaction so that if it fails somewhere along the way, we roll back
-	db_process_sql_begin ();
-	
 	// array unique
 	foreach ($group_users as $user) {
 		foreach ($user as $key=>$us) {
@@ -96,14 +93,10 @@ function messages_create_group ($usuario_origen, $dest_group, $subject, $mensaje
 	foreach ($group_user as $user) {
 		$return = messages_create_message ($usuario_origen, get_user_id ($user), $subject, $mensaje);
 		if ($return === false) {
-			//Error sending message, rollback and return false
-			db_process_sql_rollback ();
+			//Error sending message
 			return false;
 		}
 	}
-	
-	//We got here, so we can commit - if this function gets extended, make sure to do SQL above these lines
-	db_process_sql_commit ();
 	
 	return true;
 }

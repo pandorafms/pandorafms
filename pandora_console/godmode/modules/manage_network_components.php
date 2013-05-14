@@ -320,13 +320,10 @@ if ($delete_component) {
 if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
 	
-	db_process_sql_begin();
-	
 	foreach ($ids as $id) {
 		$result = network_components_delete_network_component ($id);
 		
 		if ($result === false) {
-			db_process_sql_rollback();
 			break;
 		}
 	}
@@ -337,10 +334,6 @@ if ($multiple_delete) {
 	}
 	else {
 		db_pandora_audit( "Module management", "Fail try to delete network component: $str_ids");
-	}
-	
-	if ($result !== false) {
-		db_process_sql_commit();
 	}
 	
 	ui_print_result_message ($result,

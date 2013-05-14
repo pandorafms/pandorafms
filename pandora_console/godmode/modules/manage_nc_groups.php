@@ -123,8 +123,6 @@ if ($delete) {
 if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
 	
-	db_process_sql_begin();
-	
 	foreach ($ids as $id) {
 		$result = db_process_sql_delete ('tnetwork_component_group',
 			array ('id_sg' => $id));
@@ -132,24 +130,22 @@ if ($multiple_delete) {
 		$result1 = db_process_sql_update('tnetwork_component_group', array('parent' => 0), array('parent' => $id));
 		
 		if (($result === false) or ($result1 === false)) {
-			db_process_sql_rollback();
 			break;
 		}
 	}
 	
-	if ($result !== false) {
-		db_process_sql_commit();
-	}
 	
 	if ($result !== false) $result = true;
 	else $result = false;
 	
 	$str_ids = implode (',', $ids);
 	if ($result) {
-		db_pandora_audit( "Module management", "Multiple delete component group: $str_ids");
+		db_pandora_audit( "Module management",
+			"Multiple delete component group: $str_ids");
 	}
 	else {
-		db_pandora_audit( "Module management", "Fail try to delete component group: $str_ids");
+		db_pandora_audit( "Module management",
+			"Fail try to delete component group: $str_ids");
 	}
 	ui_print_result_message ($result,
 		__('Successfully multiple deleted'),
@@ -244,12 +240,12 @@ echo '</div>';
 echo '</form>';
 ?>
 <script type="text/javascript">
-function check_all_checkboxes() {
-	if ($("input[name=all_delete]").attr('checked')) {
-		$(".check_delete").attr('checked', true);
+	function check_all_checkboxes() {
+		if ($("input[name=all_delete]").attr('checked')) {
+			$(".check_delete").attr('checked', true);
+		}
+		else {
+			$(".check_delete").attr('checked', false);
+		}
 	}
-	else {
-		$(".check_delete").attr('checked', false);
-	}
-}
 </script>

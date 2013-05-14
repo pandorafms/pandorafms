@@ -59,8 +59,6 @@ function process_manage_delete ($module_name, $id_agents) {
 		return false;
 	}
 	
-	db_process_sql_begin ();
-	
 	$module_name = (array)$module_name;
 	
 	// We are selecting "any" agent for the selected modules
@@ -91,13 +89,11 @@ function process_manage_delete ($module_name, $id_agents) {
 	$success = modules_delete_agent_module ($modules);
 	if (! $success) {
 		ui_print_error_message(__('There was an error deleting the modules, the operation has been cancelled'));
-		db_process_sql_rollback ();
 		
 		return false;
 	}
 	else {
 		ui_print_success_message(__('Successfully deleted') . '&nbsp;(' . $count_deleted_modules . ')');
-		db_process_sql_commit ();
 		
 		return true;
 	}

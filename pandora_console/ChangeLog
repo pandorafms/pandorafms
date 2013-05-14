@@ -1,5 +1,21 @@
 2013-05-14 Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/modules/manage_network_components.php,
+	godmode/modules/manage_nc_groups.php,
+	godmode/modules/manage_network_templates.php,
+	godmode/reporting/reporting_builder.php,
+	godmode/reporting/graphs.php, godmode/db/db_purge.php,
+	godmode/agentes/module_manager.php, godmode/events/event_filter.php,
+	godmode/massive/massive_delete_modules.php,
+	godmode/massive/massive_delete_agents.php,
+	godmode/massive/massive_edit_modules.php,
+	godmode/netflow/nf_edit.php, godmode/netflow/nf_item_list.php,
+	include/functions_agents.php, include/functions_tags.php,
+	include/functions_messages.php, include/functions_events.php:
+	erased deprecated SQL transaction. 
+
+2013-05-14 Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/constants.php: added constant "ITEMS_TO_SHOW_IN_MAIN_TAB".
 	
 	* operation/search_agents.getdata.php, operation/search_agents.php,

@@ -351,11 +351,9 @@ function tags_delete_tag ($id_tag) {
 		$errn++;
 	
 	if ($errn == 0) {
-		db_process_sql_commit();
 		return true;
 	}
 	else {
-		db_process_sql_rollback();
 		return false;
 	}
 	
@@ -398,15 +396,6 @@ function tags_insert_module_tag ($id_agent_module, $tags) {
 		if ($result_tag === false)
 			$errn++;
 	}
-	
-/*	if ($errn > 0) {
-		db_process_sql_rollback();
-		return false;
-	}
-	else{
-		db_process_sql_commit();
-		return true;
-	}*/
 }
 
 /**

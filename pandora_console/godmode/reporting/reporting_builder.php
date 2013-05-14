@@ -1297,8 +1297,6 @@ switch ($action) {
 						break;
 				}
 				
-				db_process_sql_begin();
-				
 				switch ($config["dbtype"]) {
 					case "mysql":
 						$resultOperationDB = db_process_sql_update('treport_content',
@@ -1313,31 +1311,31 @@ switch ($action) {
 					case "oracle":
 						$resultOperationDB = db_process_sql_update('treport_content',
 							array('"order"' => $oldOrder),
-							array('"order"' => $newOrder, 'id_report' => $idReport), 'AND', false);
+							array('"order"' => $newOrder, 'id_report' => $idReport),
+							'AND', false);
 						break;
 				}
 				if ($resultOperationDB !== false) {
 					switch ($config["dbtype"]) {
 						case "mysql":
-							$resultOperationDB = db_process_sql_update('treport_content', array('`order`' => $newOrder), array('id_rc' => $idItem));
+							$resultOperationDB = db_process_sql_update(
+								'treport_content',
+								array('`order`' => $newOrder), array('id_rc' => $idItem));
 							break;
 						case "postgresql":
-							$resultOperationDB = db_process_sql_update('treport_content', array('"order"' => $newOrder), array('id_rc' => $idItem));
+							$resultOperationDB = db_process_sql_update(
+								'treport_content',
+								array('"order"' => $newOrder), array('id_rc' => $idItem));
 							break;
 						case "oracle":
-							$resultOperationDB = db_process_sql_update('treport_content', array('"order"' => $newOrder), array('id_rc' => $idItem), 'AND', false);
+							$resultOperationDB = db_process_sql_update(
+								'treport_content',
+								array('"order"' => $newOrder), array('id_rc' => $idItem),
+								'AND', false);
 							break;
 					}
-					if ($resultOperationDB !== false) {
-						db_process_sql_commit();
-					}
-					else {
-						db_process_sql_rollback();
-					}
 				}
-				else {
-					db_process_sql_rollback();
-				}
+				
 				break;
 		}
 		break;

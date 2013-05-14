@@ -156,15 +156,16 @@ if ($multiple_delete) {
 		enterprise_include_once('include/functions_config_agents.php');
 		enterprise_hook('config_agents_delete_module_in_conf', array(modules_get_agentmodule_agent($id_agent_module_del), modules_get_agentmodule_name($id_agent_module_del)));
 		
-		//Init transaction
 		$error = 0;
-		db_process_sql_begin ();
 		
 		// First delete from tagente_modulo -> if not successful, increment
 		// error. NOTICE that we don't delete all data here, just marking for deletion
 		// and delete some simple data.
 		$status = '';
-		$module = db_get_row_sql ('SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente_modulo=' . (int)$id_agent_module_del);
+		$module = db_get_row_sql ('SELECT *
+			FROM tagente_modulo, tagente_estado
+			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+				AND tagente_modulo.id_agente_modulo=' . (int)$id_agent_module_del);
 		if (db_process_sql("UPDATE tagente_modulo
 			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del, "affected_rows", '', true, $status, false) === false) {
 			$error++;
@@ -173,22 +174,34 @@ if ($multiple_delete) {
 			// Update module status count
 			if ($module !== false) {
 				if ($module['estado'] == 0) {
-					db_process_sql ('UPDATE tagente SET normal_count=normal_count-1 WHERE id_agente=' . $module['id_agente']);
+					db_process_sql ('UPDATE tagente
+						SET normal_count=normal_count-1
+						WHERE id_agente=' . $module['id_agente']);
 				}
 				else if ($module['estado'] == 1) {
-					db_process_sql ('UPDATE tagente SET critical_count=critical_count-1 WHERE id_agente=' . $module['id_agente']);
+					db_process_sql ('UPDATE tagente
+						SET critical_count=critical_count-1
+						WHERE id_agente=' . $module['id_agente']);
 				}
 				else if ($module['estado'] == 2) {
-					db_process_sql ('UPDATE tagente SET warning_count=warning_count-1 WHERE id_agente=' . $module['id_agente']);
+					db_process_sql ('UPDATE tagente
+						SET warning_count=warning_count-1
+						WHERE id_agente=' . $module['id_agente']);
 				}
 				else if ($module['estado'] == 3) {
-					db_process_sql ('UPDATE tagente SET unknown_count=unknown_count-1 WHERE id_agente=' . $module['id_agente']);
+					db_process_sql ('UPDATE tagente
+						SET unknown_count=unknown_count-1
+						WHERE id_agente=' . $module['id_agente']);
 				}
 				else if ($module['estado'] == 4) {
-					db_process_sql ('UPDATE tagente SET notinit_count=notinit_count-1 WHERE id_agente=' . $module['id_agente']);
+					db_process_sql ('UPDATE tagente
+						SET notinit_count=notinit_count-1
+						WHERE id_agente=' . $module['id_agente']);
 				}
 				
-				db_process_sql ('UPDATE tagente SET total_count=total_count-1 WHERE id_agente=' . $module['id_agente']);
+				db_process_sql ('UPDATE tagente
+					SET total_count=total_count-1
+					WHERE id_agente=' . $module['id_agente']);
 			}
 		}
 		
@@ -247,10 +260,8 @@ if ($multiple_delete) {
 		
 		//Check for errors
 		if ($error != 0) {
-			db_process_sql_rollback ();
 		}
 		else {
-			db_process_sql_commit ();
 			$count_correct_delete_modules++;
 		}
 	}

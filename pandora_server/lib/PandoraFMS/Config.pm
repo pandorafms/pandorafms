@@ -152,6 +152,9 @@ sub pandora_get_sharedconfig ($$) {
 	# Log module configuration
 	$pa_config->{"log_dir"} = pandora_get_tconfig_token ($dbh, 'log_dir', '/var/spool/pandora/data_in/log');
 	$pa_config->{"log_interval"} = pandora_get_tconfig_token ($dbh, 'log_interval', 3600);
+
+	# Pandora FMS Console's attachment directory
+	$pa_config->{"attachment_dir"} = pandora_get_tconfig_token ($dbh, 'attachment_store', '/var/www/pandora_console/attachment');
 }
 
 ##########################################################################

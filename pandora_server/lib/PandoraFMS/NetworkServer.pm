@@ -27,7 +27,6 @@ use Thread::Semaphore;
 use IO::Socket::INET6;
 use HTML::Entities;
 use POSIX qw(strftime);
-use SNMP;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -285,6 +284,9 @@ sub pandora_snmp_get_command ($$$$$$$$$$$) {
 	$snmp_target = $snmp_target.":".$snmp_port;
     }
 
+	# Pandora FMS's console MIB directory
+	my $mib_dir = $pa_config->{'attachment_dir'} . '/mibs';
+	
     # On windows, we need the snmpget command from net-snmp, already present on win agent
     # the call is the same than in linux
     if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
@@ -298,9 +300,9 @@ sub pandora_snmp_get_command ($$$$$$$$$$$) {
     # by default LINUX/FreeBSD/Solaris calls
     else {
         if ($snmp_version ne "3"){
-            $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c '$snmp_community' $snmp_target $snmp_oid 2>/dev/null`;
+            $output = `$snmpget_cmd -M+"$mib_dir" -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c '$snmp_community' $snmp_target $snmp_oid 2>/dev/null`;
         } else {
-            $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -l $snmp3_security_level $snmp3_extra $snmp_target $snmp_oid 2>/dev/null`;
+            $output = `$snmpget_cmd -M+"$mib_dir" -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -l $snmp3_security_level $snmp3_extra $snmp_target $snmp_oid 2>/dev/null`;
         }
     }
 
@@ -345,7 +347,7 @@ sub pandora_query_snmp ($$$) {
 
 	return (undef, 0) unless ($snmp_oid ne '');
 	if ($snmp_oid =~ m/[a-zA-Z]/) {
-		$snmp_oid = translate_obj ($dbh, $snmp_oid, );
+		$snmp_oid = translate_obj ($pa_config, $dbh, $snmp_oid, );
 		
 		# Could not translate OID, disable the module
 		if (! defined ($snmp_oid) || $snmp_oid eq '') {

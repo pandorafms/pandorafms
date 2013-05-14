@@ -1,3 +1,16 @@
+2013-05-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm: Added the Pandora FMS's console MIB
+	  to snmp* calls.
+
+	* pandora_server_installer,
+	  pandora_server.spec,
+	  lib/PandoraFMS/Tools.pm,
+	  lib/PandoraFMS/Config.pm,
+	  Makefile.PL,
+	  pandora_server.redhat.spec,
+	  DEBIAN/control: Removed PERL's SNMP lib from the deps.
+
 2013-05-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Merged from 4.0 branch. Directly call

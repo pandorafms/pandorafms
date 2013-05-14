@@ -981,11 +981,15 @@ sub month_have_days($$) {
 ###############################################################################
 # Convert a text obj tag to an OID and update the module configuration.
 ###############################################################################
-sub translate_obj ($$) {
-	my ($dbh, $obj) = @_;
+sub translate_obj ($$$) {
+	my ($pa_config, $dbh, $obj) = @_;
+
+	# Pandora FMS's console MIB directory
+	my $mib_dir = $pa_config->{'attachment_dir'} . '/mibs';
 
 	# Translate!
-	my $oid = `snmptranslate -On -mALL $obj 2>/dev/null`;
+	my $oid = `snmptranslate -On -mALL -M+"$mib_dir" $obj 2>/dev/null`;
+
 	if ($? != 0) {
 		return undef;
 	}

@@ -33,8 +33,8 @@ if (defined('METACONSOLE'))
 	$sec = 'advanced';
 else
 	$sec = 'galertas';
-	
-$pure = get_parameter('pure', 0);	
+
+$pure = get_parameter('pure', 0);
 
 if (is_ajax ()) {
 	$get_alert_command = (bool) get_parameter ('get_alert_command');
@@ -42,7 +42,7 @@ if (is_ajax ()) {
 		$id = (int) get_parameter ('id', 0);
 		
 		// If command ID is not provided, check for action id
-		if($id == 0) {
+		if ($id == 0) {
 			$id_action = (int) get_parameter ('id_action');
 			$id = alerts_get_alert_action_alert_command_id($id_action);
 		}
@@ -50,7 +50,7 @@ if (is_ajax ()) {
 		$command = alerts_get_alert_command ($id);
 		
 		// If is setted a description, we change the carriage return by <br> tags
-		if(isset($command['description'])) {
+		if (isset($command['description'])) {
 			$command['description'] = io_safe_input(str_replace("\r\n","<br>", io_safe_output($command['description'])));
 		}
 		
@@ -58,39 +58,40 @@ if (is_ajax ()) {
 		
 		// Descriptions are stored in json
 		$fields_descriptions = empty($command['fields_descriptions']) ? '' : json_decode(io_safe_output($command['fields_descriptions']), true);
-
+		
 		// Fields values are stored in json
 		$fields_values = empty($command['fields_values']) ? '' : json_decode(io_safe_output($command['fields_values']), true);
-
+		
 		$fields_rows = array();
-		for($i=1;$i<=10;$i++) {
-			if(!empty($fields_descriptions[$i-1])) {
-				$fdesc = $fields_descriptions[$i-1].' <br><span style="font-size:xx-small; font-weight:normal;">'.sprintf(__('Field %s'), $i).'</span>';
+		for ($i = 1; $i <= 10; $i++) {
+			if (!empty($fields_descriptions[$i - 1])) {
+				$fdesc = $fields_descriptions[$i - 1] .
+					' <br><span style="font-size:xx-small; font-weight:normal;">' . sprintf(__('Field %s'), $i) . '</span>';
 			}
 			else {
 				// If the macro hasn't description and doesnt appear in command, set with empty description to dont show it
-				if(substr_count($command['command'], "_field$i_") > 0) {
+				if (substr_count($command['command'], "_field" . $i . "_") > 0) {
 					$fdesc = sprintf(__('Field %s'), $i);
 				}
 				else {
 					$fdesc = '';
 				}
 			}
-
-			if(!empty($fields_values[$i-1])) {
+			
+			if (!empty($fields_values[$i-1])) {
 				$fields_value_select = array();
 				$fv = $fields_values[$i-1];
 				$fv = explode(';', $fv);
 				
-				if(empty($fv)) {
+				if (empty($fv)) {
 					$fv = array();
 				}
 				
-				foreach($fv as $fv_option) {
+				foreach ($fv as $fv_option) {
 					$fv_option = explode(',', $fv_option);
 					$fields_value_select[$fv_option[0]] = $fv_option[1];
 				}
-
+				
 				$ffield = html_print_select($fields_value_select, 'field'.$i.'_value', '', '', '', 0, true, false, false);
 			}
 			else {
@@ -98,18 +99,19 @@ if (is_ajax ()) {
 			}
 			
 			// The empty descriptions will be ignored
-			if($fdesc == '') {
+			if ($fdesc == '') {
 				$fields_rows[$i] = '';
 			}
 			else {
-				$fields_rows[$i] = '<tr id="table1-field'.$i.'" class="datos">
-										<td style="font-weight:bold;width:20%" class="datos">
-										'.$fdesc.'
-										</td>
-										<td class="datos">
-										'.$ffield.'
-										</td>
-									</tr>';
+				$fields_rows[$i] =
+					'<tr id="table1-field' . $i . '" class="datos">
+						<td style="font-weight:bold;width:20%" class="datos">
+							' . $fdesc . '
+						</td>
+						<td class="datos">
+							' . $ffield . '
+						</td>
+					</tr>';
 			}
 		}
 		
@@ -134,17 +136,17 @@ if ($create_command) {
 	$name = (string) get_parameter ('name');
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
-
+	
 	$fields_descriptions = array();
 	$fields_values = array();
 	$info_fields = '';
 	$values = array();
-	for($i=1;$i<=10;$i++) {
+	for ($i=1;$i<=10;$i++) {
 		$fields_descriptions[] = (string) get_parameter ('field'.$i.'_description');
 		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
 		$info_fields .= ' Field'.$i.': ' . $fields_values[$i - 1];
 	}
-
+	
 	$values['fields_values'] = json_encode($fields_values);
 	$values['fields_descriptions'] = json_encode($fields_descriptions);
 	$values['description'] = $description;
@@ -190,7 +192,7 @@ if ($update_command) {
 	$fields_values = array();
 	$info_fields = '';
 	$values = array();
-	for($i=1;$i<=10;$i++) {
+	for ($i=1;$i<=10;$i++) {
 		$fields_descriptions[] = (string) get_parameter ('field'.$i.'_description');
 		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
 		$info_fields .= ' Field'.$i.': ' . $fields_values[$i - 1];
@@ -279,12 +281,14 @@ foreach ($commands as $command) {
 		$data[0] .= $command['name'];
 	$data[0] .= '</span>';
 	$data[1] = $command['id'];
-	$data[2] = str_replace("\r\n","<br>",io_safe_output($command['description']));
+	$data[2] = str_replace("\r\n","<br>",
+		io_safe_output($command['description']));
 	$data[3] = '';
-	if (! $command['internal'])
+	if (! $command['internal']) {
 		$data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 			html_print_image("images/cross.png", true) . '</a>';
+	}
 	
 	array_push ($table->data, $data);
 }
@@ -293,11 +297,13 @@ if (isset($data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('No alert commands configured')."</div>";
+	echo "<div class='nf'>" .
+		__('No alert commands configured') .
+	"</div>";
 }
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
+echo '<form method="post" action="index.php?sec=' . $sec . '&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
 html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 html_print_input_hidden ('create_alert', 1);
 echo '</form>';
